@@ -55,11 +55,11 @@ public class HistoricalMapGenerator {
         {-8.8, 31.6},   // Jebel Irhoud (Morocco / Western Maghreb)
         {-2.4, 34.8},   // Taforalt & Rhafas (Eastern Morocco / Western Algeria)
         {1.3, 35.4},    // Columnata / Tiaret (Central Algeria)
-        {5.4, 36.3},    // AÃ¯n Boucherit / AÃ¯n Hanech (Setif / Eastern Algeria)
+        {5.4, 36.3},    // Aïn Boucherit / Aïn Hanech (Setif / Eastern Algeria)
         {22.0, 32.0},   // Haua Fteah (Cyrenaica / Libya)
         {5.1, 7.4},     // Iho Eleru (West Africa)
         {-17.0, 14.7},  // Bargny / Dakar Peninsula (Senegal MSA / Western Tip)
-        {-12.0, 12.0},  // FalÃ©mÃ© / Ounjougou (West African Savanna MSA)
+        {-12.0, 12.0},  // Falémé / Ounjougou (West African Savanna MSA)
         {-14.0, 24.0},  // Bir Gandus / Western Sahara MSA
         {20.0, 0.0},    // Congo Basin
         {21.2, -34.4},  // Blombos / Klasies River (South Africa)
@@ -133,7 +133,7 @@ public class HistoricalMapGenerator {
         if (lat < -60.0 || lon < -26.0) return null; // Americas & Antarctica uninhabited
         if (lat < -35.2) return null; // All sub-Antarctic & South Indian islands (Marion, Crozet, Kerguelen, Bouvet)
         
-        // Madagascar & Mascarene Islands (Africa mainland coast is lon <= 41.0Â°E, Madagascar is >= 43.0Â°E)
+        // Madagascar & Mascarene Islands (Africa mainland coast is lon <= 41.0°E, Madagascar is >= 43.0°E)
         if (lat <= -10.0 && lat >= -30.0 && lon >= 43.0 && lon <= 65.0) return null;
         if (lat > -10.0 && lat <= -4.0 && lon >= 53.0 && lon <= 57.0) return null; // Seychelles
 
@@ -145,7 +145,7 @@ public class HistoricalMapGenerator {
         if (lon >= -6.5 && lon <= -5.0 && lat >= -16.5 && lat <= -15.5) return null; // Saint Helena
         if (lon >= -15.0 && lon <= -13.5 && lat >= -8.5 && lat <= -7.5) return null; // Ascension
 
-        if (lat >= -2.0 && lat <= 2.0 && lon >= 6.0 && lon <= 9.0) return null; // SÃ£o TomÃ© & PrÃ­ncipe
+        if (lat >= -2.0 && lat <= 2.0 && lon >= 6.0 && lon <= 9.0) return null; // São Tomé & Príncipe
         if (lat >= 12.0 && lat <= 13.0 && lon >= 53.0 && lon <= 55.0) return null; // Socotra Island
         if (lat <= -8.0 && lon >= 110.0) return null; // Australia / Sahul / Tasmania
         if (lat > -8.0 && lat <= 0.0 && lon >= 128.0) return null; // New Guinea
@@ -155,7 +155,7 @@ public class HistoricalMapGenerator {
         if (lat > 65.0) return null; // Arctic uninhabited
 
         // --- 2. SMOOTH PHYSICAL BARRIERS & MARINE STRAITS ---
-        // Himalayan / Tibetan mountain ridge barrier centered along (32Â°N, 85Â°E)
+        // Himalayan / Tibetan mountain ridge barrier centered along (32°N, 85°E)
         double himalayas = Math.exp(-(Math.pow(lat - 32.0, 2) + Math.pow((lon - 85.0) * 0.55, 2)) / 70.0);
 
         // Mediterranean Marine Strait Barrier (Strict separation: North Africa vs Southern Europe)
@@ -645,7 +645,7 @@ public class HistoricalMapGenerator {
             double dAsh = Math.exp(-(Math.pow(lat - 18.0, 2) / 120.0 + Math.pow(lon - 80.0, 2) / 220.0));
             double ashFactor = Math.max(0.08, 1.0 - dAsh * 0.88);
 
-            // Cold permafrost clamp at 52Â°N in Eurasia
+            // Cold permafrost clamp at 52°N in Eurasia
             double maxLat = 52.0;
             if (lat > maxLat) return 0.0;
             if (lat > 46.0) {
@@ -808,7 +808,7 @@ public class HistoricalMapGenerator {
                 return 0.0; // Barren periglacial desert immediately south of Laurentide
             }
 
-            // High Arctic extreme (beyond 72Â°N)
+            // High Arctic extreme (beyond 72°N)
             if (lat >= 72.0) return 0.0;
             double wArctic = 1.0;
             if (lat > 68.0) {
@@ -1167,15 +1167,66 @@ public class HistoricalMapGenerator {
      */
     public static boolean loadFromYearDirectory(Scenario scenario) {
         if (scenario == null) return false;
+        java.nio.file.Path baseEarthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth");
+        if (!java.nio.file.Files.isDirectory(baseEarthDir)) {
+            return false;
+        }
+
         long year = scenario.getStartDateYear();
-        java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
+        java.nio.file.Path earthDir = baseEarthDir.resolve(String.valueOf(year));
+        long resolvedYear = year;
+
+        if (!java.nio.file.Files.isDirectory(earthDir)) {
+            if (scenario.getPlanetPreset() != null) {
+                long assoc = scenario.getPlanetPreset().getAssociatedEpochYear();
+                java.nio.file.Path assocDir = baseEarthDir.resolve(String.valueOf(assoc));
+                if (java.nio.file.Files.isDirectory(assocDir)) {
+                    earthDir = assocDir;
+                    resolvedYear = assoc;
+                }
+            }
+            if (!java.nio.file.Files.isDirectory(earthDir)) {
+                try (java.util.stream.Stream<java.nio.file.Path> stream = java.nio.file.Files.list(baseEarthDir)) {
+                    java.util.Optional<Long> closest = stream
+                        .filter(java.nio.file.Files::isDirectory)
+                        .map(p -> {
+                            try {
+                                return Long.parseLong(p.getFileName().toString());
+                            } catch (NumberFormatException nfe) {
+                                return null;
+                            }
+                        })
+                        .filter(java.util.Objects::nonNull)
+                        .min(java.util.Comparator.comparingLong(y -> Math.abs(y - year)));
+                    if (closest.isPresent()) {
+                        resolvedYear = closest.get();
+                        earthDir = baseEarthDir.resolve(String.valueOf(resolvedYear));
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to list earth map dirs: {}", e.getMessage());
+                }
+            }
+        }
+
         if (!java.nio.file.Files.isDirectory(earthDir)) {
             return false;
         }
 
         try {
             // Check density
-            java.nio.file.Path densityFile = earthDir.resolve("earth_" + year + "_density.png");
+            java.nio.file.Path densityFile = earthDir.resolve("earth_" + resolvedYear + "_density.png");
+            if (!java.nio.file.Files.exists(densityFile)) {
+                // Try fallback with any *density.png in directory
+                try (java.util.stream.Stream<java.nio.file.Path> stream = java.nio.file.Files.list(earthDir)) {
+                    java.util.Optional<java.nio.file.Path> anyDensity = stream
+                        .filter(p -> p.getFileName().toString().endsWith("_density.png"))
+                        .findFirst();
+                    if (anyDensity.isPresent()) {
+                        densityFile = anyDensity.get();
+                    }
+                }
+            }
+
             if (java.nio.file.Files.exists(densityFile)) {
                 BufferedImage img = ImageIO.read(densityFile.toFile());
                 if (img != null) {
@@ -1188,7 +1239,7 @@ public class HistoricalMapGenerator {
                 "technology", "tradenetwork", "institutional", "ecological", "pathogen"
             };
             for (int i = 0; i < mapTags.length; i++) {
-                java.nio.file.Path p = earthDir.resolve("earth_" + year + "_" + mapTags[i] + ".png");
+                java.nio.file.Path p = earthDir.resolve("earth_" + resolvedYear + "_" + mapTags[i] + ".png");
                 if (java.nio.file.Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -1202,7 +1253,7 @@ public class HistoricalMapGenerator {
                 "helium3", "iron_copper", "precious_metals", "rare_earths", "geothermal", "aquifers"
             };
             for (int i = 0; i < geoTags.length; i++) {
-                java.nio.file.Path p = earthDir.resolve("earth_" + year + "_" + geoTags[i] + ".png");
+                java.nio.file.Path p = earthDir.resolve("earth_" + resolvedYear + "_" + geoTags[i] + ".png");
                 if (java.nio.file.Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -1213,7 +1264,7 @@ public class HistoricalMapGenerator {
 
             boolean loaded = scenario.getCustomDensityBase64() != null;
             if (loaded) {
-                logger.info("Successfully loaded scenario '{}' (Year {}) maps from standardized directory '{}'.", scenario.getName(), year, earthDir);
+                logger.info("Successfully loaded scenario '{}' (Year {}, resolved epoch {}) maps from standardized directory '{}'.", scenario.getName(), year, resolvedYear, earthDir);
             }
             return loaded;
         } catch (Exception e) {
@@ -1281,7 +1332,7 @@ public class HistoricalMapGenerator {
             tEq = 28.0; tNorthPole = -28.0; tSouthPole = -47.0; // Holocene Optimum
         }
 
-        // 1. Asymmetric hemispheric thermal baseline (thermal equator is naturally at ~6Â°N)
+        // 1. Asymmetric hemispheric thermal baseline (thermal equator is naturally at ~6°N)
         double baseTemp;
         if (lat >= 6.0) {
             double f = Math.sin(Math.toRadians((lat - 6.0) * (90.0 / 84.0)));
@@ -1294,12 +1345,12 @@ public class HistoricalMapGenerator {
         double tempC = baseTemp;
 
         // 2. Global Ocean Currents & Western/Eastern Boundary Gyres
-        // North Atlantic Drift & Gulf Stream (+6Â°C to +8.5Â°C in NE Atlantic & NW Europe)
+        // North Atlantic Drift & Gulf Stream (+6°C to +8.5°C in NE Atlantic & NW Europe)
         if (year > -10500L || year <= -70000L) {
             double dGulf = Math.exp(-(Math.pow(lat - 56.0, 2) / 220.0 + Math.pow(lon - 5.0, 2) / 600.0));
             tempC += dGulf * 7.5;
         }
-        // Kuroshio Current (+3.5Â°C off Japan & East Asia)
+        // Kuroshio Current (+3.5°C off Japan & East Asia)
         double dKuroshio = Math.exp(-(Math.pow(lat - 35.0, 2) / 120.0 + Math.pow(lon - 140.0, 2) / 300.0));
         tempC += dKuroshio * 3.5;
 
@@ -1326,7 +1377,7 @@ public class HistoricalMapGenerator {
             if (dCanada < 4.0) tempC -= (11.0 * Math.exp(-dCanada * 0.5));
         }
 
-        // 4. Elevation Lapse Rate (-6.5 Â°C per 1000m on land)
+        // 4. Elevation Lapse Rate (-6.5 °C per 1000m on land)
         if (elevM > 0.0) {
             tempC -= 0.0065 * elevM;
         }
@@ -1358,7 +1409,7 @@ public class HistoricalMapGenerator {
             tempC -= (coolLaurentide + coolFenno + amocPlume * 9.0);
         }
 
-        // 6. Spherical Harmonic & Planetary Wave Meander Noise (~1.5Â°C)
+        // 6. Spherical Harmonic & Planetary Wave Meander Noise (~1.5°C)
         double thermalNoise = CLIMATE_NOISE.noise(nx * 2.5, ny * 2.5, nz * 2.5) * 1.8
                             + CLIMATE_NOISE.noise(nx * 6.0, ny * 6.0, nz * 6.0) * 0.7;
         tempC += thermalNoise;
@@ -1387,22 +1438,22 @@ public class HistoricalMapGenerator {
         double ny = cosLat * Math.sin(radLon);
         double nz = sinLat;
 
-        // 1. Asymmetric undulating ITCZ (curved thermal equator between 4Â°N and 10Â°N)
+        // 1. Asymmetric undulating ITCZ (curved thermal equator between 4°N and 10°N)
         double itczLat = 6.0 + 3.0 * Math.sin(radLon * 2.0 + 0.5) + 2.0 * Math.cos(radLon * 3.0);
         double dItcz = Math.abs(lat - itczLat);
         double rainMm = 2400.0 * Math.exp(-(dItcz * dItcz) / 100.0);
 
-        // 2. Subtropical Hadley Descending Arid Belts (~20Â° to 34Â° in each hemisphere)
+        // 2. Subtropical Hadley Descending Arid Belts (~20° to 34° in each hemisphere)
         double dryNorth = Math.exp(-Math.pow(lat - 26.0, 2) / 65.0);
         double drySouth = Math.exp(-Math.pow(lat - (-24.0), 2) / 60.0);
         rainMm *= (1.0 - Math.max(dryNorth, drySouth) * 0.78);
 
-        // 3. Mid-latitude Storm Tracks (~42Â° to 58Â° N/S)
+        // 3. Mid-latitude Storm Tracks (~42° to 58° N/S)
         double stormNorth = Math.exp(-Math.pow(lat - 50.0, 2) / 80.0) * 1050.0;
         double stormSouth = Math.exp(-Math.pow(lat - (-48.0), 2) / 75.0) * 1250.0;
         rainMm += (stormNorth + stormSouth);
 
-        // 4. Polar Aridification (> 62Â° N/S)
+        // 4. Polar Aridification (> 62° N/S)
         double absLat = Math.abs(lat);
         if (absLat > 62.0) {
             rainMm = Math.max(60.0, rainMm * Math.exp(-(absLat - 62.0) / 8.5));
@@ -1506,18 +1557,18 @@ public class HistoricalMapGenerator {
         // 2. Fundamental Ocean vs Land Thermal Capacity Difference
         double ampC;
         if (elevM < 0.0) {
-            // Open Oceans have massive heat capacity: seasonal range is strictly buffered (2Â°C to 7Â°C)
+            // Open Oceans have massive heat capacity: seasonal range is strictly buffered (2°C to 7°C)
             ampC = 2.0 + Math.sin(Math.toRadians(absLat)) * 5.0;
             ampC += CLIMATE_NOISE.noise(nx * 4.0 + 20.0, ny * 4.0 + 20.0, nz * 4.0 + 20.0) * 0.8;
         } else {
             // Land continentality is strongly asymmetric and driven by landmass width
             ampC = baseAmp;
 
-            // Siberian Hyper-Continentality Core (Yakutia / Verkhoyansk ~64Â°N, 125Â°E)
+            // Siberian Hyper-Continentality Core (Yakutia / Verkhoyansk ~64°N, 125°E)
             double contSiberia = Math.exp(-(Math.pow(lat - 64.0, 2) / 250.0 + Math.pow(lon - 120.0, 2) / 600.0));
-            // Canadian Shield Continentality (~60Â°N, -100Â°W)
+            // Canadian Shield Continentality (~60°N, -100°W)
             double contCanada = Math.exp(-(Math.pow(lat - 60.0, 2) / 200.0 + Math.pow(lon - (-100.0), 2) / 450.0));
-            // Central Asian / Mongolian Continentality (~46Â°N, 85Â°E)
+            // Central Asian / Mongolian Continentality (~46°N, 85°E)
             double contAsia = Math.exp(-(Math.pow(lat - 46.0, 2) / 150.0 + Math.pow(lon - 85.0, 2) / 350.0));
 
             ampC += (contSiberia * 26.0 + contCanada * 18.0 + contAsia * 14.0);
@@ -1530,7 +1581,7 @@ public class HistoricalMapGenerator {
             double dEuro = Math.exp(-(Math.pow(lat - 52.0, 2) / 120.0 + Math.pow(lon - 5.0, 2) / 200.0));
             ampC -= dEuro * 6.0;
 
-            // Equatorial tropical landmasses (Amazon, Congo, Indonesia) have minimal seasonality (< 3Â°C)
+            // Equatorial tropical landmasses (Amazon, Congo, Indonesia) have minimal seasonality (< 3°C)
             if (absLat < 10.0) {
                 ampC = Math.min(4.0, ampC * 0.25);
             }
@@ -1605,7 +1656,7 @@ public class HistoricalMapGenerator {
 
                 double tempC = WorldClimEmpiricalRasterLoader.getTemperature(lat, lon, elevM, year);
 
-                // Encode temperature [-50Â°C, +50Â°C] -> [0, 255]
+                // Encode temperature [-50°C, +50°C] -> [0, 255]
                 double norm = Math.clamp((tempC + 50.0) / 100.0, 0.0, 1.0);
                 int gray = (int) Math.round(norm * 255.0);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
@@ -1664,7 +1715,7 @@ public class HistoricalMapGenerator {
 
                 double ampC = WorldClimEmpiricalRasterLoader.getSeasonality(lat, lon, elevM, year);
 
-                // Encode seasonality [1Â°C to 65Â°C] -> [0, 255] with full linear dynamic range
+                // Encode seasonality [1°C to 65°C] -> [0, 255] with full linear dynamic range
                 double norm = Math.clamp((ampC - 1.0) / 60.0, 0.0, 1.0);
                 int gray = (int) Math.round(norm * 255.0);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
@@ -1692,7 +1743,7 @@ public class HistoricalMapGenerator {
             writePngFile(imgTrade, earthDir.resolve("earth_" + year + "_tradenetwork.png").toFile());
             writePngFile(imgInst, earthDir.resolve("earth_" + year + "_institutional.png").toFile());
             writePngFile(imgEco, earthDir.resolve("earth_" + year + "_ecological.png").toFile());
-            // Invariant Geological & Energy Resource Tensors (Static across epochs â€” copy baseline if not passed)
+            // Invariant Geological & Energy Resource Tensors (Static across epochs — copy baseline if not passed)
             String[] staticMinerals = {"coal", "oil", "gas", "uranium", "helium3", "iron_copper", "precious_metals", "rare_earths", "geothermal"};
             BufferedImage[] staticImgs = {imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat};
             for (int i = 0; i < staticMinerals.length; i++) {
@@ -1792,10 +1843,10 @@ public class HistoricalMapGenerator {
               "era": "Epoch %d",
               "planet": "earth",
               "resolution": "2048x1024",
-              "projection": "Equirectangular (Plate CarrÃ©e, EPSG:4326)",
+              "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
               "overview": {
                 "summary_en": "Standard 25-raster cartographic and cliodynamic tensor suite for epoch %d.",
-                "summary_fr": "Suite cartographique et tensorielle cliodynamique standard Ã  25 rasters pour l'Ã©poque %d."
+                "summary_fr": "Suite cartographique et tensorielle cliodynamique standard à 25 rasters pour l'époque %d."
               },
               "layers": {
                 "elevation": {
@@ -1928,7 +1979,7 @@ public class HistoricalMapGenerator {
                   "filename": "earth_%d_precious_metals.png",
                   "category": "geology",
                   "data_sources": ["USGS MRDS Gold, Silver and PGM Deposits", "Ancient Metallurgical Inventories"],
-                  "reconstitution_rationale": "Ancient historical mines (Las MÃ©dulas, Rio Tinto, Laurion, RoÈ™ia MontanÄƒ, Nubia) and global giant provinces."
+                  "reconstitution_rationale": "Ancient historical mines (Las Médulas, Rio Tinto, Laurion, Roșia Montană, Nubia) and global giant provinces."
                 },
                 "rare_earths": {
                   "filename": "earth_%d_rare_earths.png",
@@ -1940,7 +1991,7 @@ public class HistoricalMapGenerator {
                   "filename": "earth_%d_geothermal.png",
                   "category": "geophysics",
                   "data_sources": ["Davies (2013) Global Mantle Heat Flow Database (IHFC)"],
-                  "reconstitution_rationale": "Empirical terrestrial surface heat flow (mW/mÂ²) across mid-ocean ridges, rifts, and cratons."
+                  "reconstitution_rationale": "Empirical terrestrial surface heat flow (mW/m²) across mid-ocean ridges, rifts, and cratons."
                 },
                 "aquifers": {
                   "filename": "earth_%d_aquifers.png",
@@ -1976,12 +2027,12 @@ public class HistoricalMapGenerator {
 
             // 3. Write README.md
             String readme = """
-            # Cartographic & Cliodynamic Tensor Documentation â€” Epoch %d
+            # Cartographic & Cliodynamic Tensor Documentation — Epoch %d
 
             ## ðŸŒ Overview
             * **Planet**: Earth
             * **Epoch Year**: %d
-            * **Resolution**: 2048 x 1024 (Equirectangular / Plate CarrÃ©e)
+            * **Resolution**: 2048 x 1024 (Equirectangular / Plate Carrée)
             * **Cartographic Standard**: 25 High-Definition Physical, Ecological, Cliodynamic, and Geological Resource Rasters.
 
             ---
@@ -2275,10 +2326,10 @@ public class HistoricalMapGenerator {
                 } else if (year <= -32000) {
                     // -40,000 to -35,000 BP (Late MIS 3 / Aurignacian / Tasmania Settled)
                     double densEuropeAurignacian = 0.0026 +
-                        0.0260 * Math.exp(-distSq(lng, lat, 4.4, 44.4) / 80.0) +      // Chauvet Cave / ArdÃ¨che
+                        0.0260 * Math.exp(-distSq(lng, lat, 4.4, 44.4) / 80.0) +      // Chauvet Cave / Ardèche
                         0.0220 * Math.exp(-distSq(lng, lat, 10.2, 48.6) / 80.0) +     // Vogelherd / Swabian Jura
                         0.0200 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 90.0) +      // Dordogne Aurignacian
-                        0.0180 * Math.exp(-distSq(lng, lat, 24.5, 45.5) / 100.0);     // PeÈ™tera cu Oase Romania
+                        0.0180 * Math.exp(-distSq(lng, lat, 24.5, 45.5) / 100.0);     // Peștera cu Oase Romania
 
                     double densSahulTasmania = 0.0024 +
                         0.0180 * Math.exp(-distSq(lng, lat, 132.9, -12.5) / 90.0) +
@@ -2297,7 +2348,7 @@ public class HistoricalMapGenerator {
                 } else if (year <= -22000) {
                     // -25,000 BP: Gravettian Horizon, Beringian Standstill, Early Americas Pioneers
                     double densEurope = 0.0035 +
-                        0.0380 * Math.exp(-distSq(lng, lat, 16.5, 48.8) / 80.0) +     // Pavlovian / DolnÃ­ VÄ›stonice / Willendorf
+                        0.0380 * Math.exp(-distSq(lng, lat, 16.5, 48.8) / 80.0) +     // Pavlovian / Dolní Věstonice / Willendorf
                         0.0340 * Math.exp(-distSq(lng, lat, 1.0, 45.0) / 90.0) +      // Franco-Cantabrian Gravettian (Laugerie, Abri Pataud)
                         0.0300 * Math.exp(-distSq(lng, lat, 39.0, 51.4) / 100.0) +    // Kostenki-Borshchevo / Don
                         0.0260 * Math.exp(-distSq(lng, lat, 40.5, 56.2) / 80.0) +     // Sungir / Upper Volga
@@ -2331,9 +2382,9 @@ public class HistoricalMapGenerator {
                 } else if (year <= -15000) {
                     // -20,000 BP: LGM Paroxysm Refugia & White Sands Peak
                     double densSolutrean =
-                        0.0450 * Math.exp(-distSq(lng, lat, 0.5, 44.8) / 60.0) +    // Dordogne & Aquitaine Solutrean Core (Laugerie-Haute, SolutrÃ©)
+                        0.0450 * Math.exp(-distSq(lng, lat, 0.5, 44.8) / 60.0) +    // Dordogne & Aquitaine Solutrean Core (Laugerie-Haute, Solutré)
                         0.0380 * Math.exp(-distSq(lng, lat, -4.5, 43.4) / 50.0) +   // Cantabrian / Altamira Solutrean
-                        0.0320 * Math.exp(-distSq(lng, lat, -3.5, 38.0) / 60.0) +   // Iberian Mediterranean (ParpallÃ³)
+                        0.0320 * Math.exp(-distSq(lng, lat, -3.5, 38.0) / 60.0) +   // Iberian Mediterranean (Parpalló)
                         0.0280 * Math.exp(-distSq(lng, lat, -8.5, 37.1) / 60.0);    // Portuguese Estremadura (Vale Almoinha)
 
                     double densMedEpigravettian =
@@ -2395,7 +2446,7 @@ public class HistoricalMapGenerator {
 
                     densKelpHighway = Math.max(densKelpHighway,
                         0.080 * Math.exp(-distSq(lng, lat, -73.8, -41.8) / 30.0) +   // Monte Verde II Chile (14.5k BP)
-                        0.065 * Math.exp(-distSq(lng, lat, -79.0, -8.0) / 30.0) +    // Huaca Prieta / PaijÃ¡n Peru
+                        0.065 * Math.exp(-distSq(lng, lat, -79.0, -8.0) / 30.0) +    // Huaca Prieta / Paiján Peru
                         0.060 * Math.exp(-distSq(lng, lat, -120.5, 42.7) / 30.0) +   // Paisley Caves OR
                         0.065 * Math.exp(-distSq(lng, lat, -119.8, 34.2) / 30.0) +   // Channel Islands CA
                         0.045 * Math.exp(-distSq(lng, lat, -80.4, 40.3) / 35.0) +    // Meadowcroft PA
@@ -2423,7 +2474,7 @@ public class HistoricalMapGenerator {
                         0.150 * Math.exp(-distSq(lng, lat, 35.58, 33.08) / 20.0) +    // Ain Mallaha / Hula Valley Natufian core
                         0.120 * Math.exp(-distSq(lng, lat, 35.22, 32.92) / 20.0) +    // Hayonim Cave
                         0.110 * Math.exp(-distSq(lng, lat, 37.00, 32.00) / 20.0) +    // Shubayqa 1 (Black Desert / early bread)
-                        0.090 * Math.exp(-distSq(lng, lat, 41.50, 38.10) / 20.0);   // Hallan Ã‡emi / Upper Tigris proto-sedentism
+                        0.090 * Math.exp(-distSq(lng, lat, 41.50, 38.10) / 20.0);   // Hallan Çemi / Upper Tigris proto-sedentism
 
                     // Americas: Structured riverine networks & Ice-Free Corridor
                     double densAmericasYD = 0.0;
@@ -2481,12 +2532,12 @@ public class HistoricalMapGenerator {
                     dens = Math.max(densNatufian, Math.max(densAmericasYD,
                            Math.max(densEuropeYD, densAsiaAfricaYD)));
                 } else if (year <= -9000) {
-                    // -10,000 BP: Early Holocene / Pre-Pottery Neolithic A (GÃ¶bekli Tepe, Jericho, Folsom)
+                    // -10,000 BP: Early Holocene / Pre-Pottery Neolithic A (Göbekli Tepe, Jericho, Folsom)
                     double densPPNA = 0.018 +
-                        0.45 * Math.exp(-distSq(lng, lat, 38.92, 37.22) / 30.0) +    // GÃ¶bekli Tepe / Karahan Tepe Monumental Core
+                        0.45 * Math.exp(-distSq(lng, lat, 38.92, 37.22) / 30.0) +    // Göbekli Tepe / Karahan Tepe Monumental Core
                         0.38 * Math.exp(-distSq(lng, lat, 35.44, 31.87) / 30.0) +    // Jericho PPNA (Tell es-Sultan)
                         0.32 * Math.exp(-distSq(lng, lat, 38.10, 35.90) / 35.0) +    // Mureybet / Jerf el Ahmar
-                        0.30 * Math.exp(-distSq(lng, lat, 39.70, 38.20) / 35.0) +    // Ã‡ayÃ¶nÃ¼ Tepesi
+                        0.30 * Math.exp(-distSq(lng, lat, 39.70, 38.20) / 35.0) +    // Çayönü Tepesi
                         0.25 * Math.exp(-distSq(lng, lat, 47.40, 32.50) / 40.0);     // Ali Kosh Zagros
 
                     double densChinaPPN = 0.014 +
@@ -2547,9 +2598,9 @@ public class HistoricalMapGenerator {
                     dens = Math.max(densPPNA, Math.max(densChinaPPN,
                            Math.max(densAmericasPaleo, Math.max(densEuropeMesolithic, densIndiaAfrica))));
                 } else if (year <= -7000) {
-                    // -8,000 BP: Early Neolithic / 8.2 ka Event (Ã‡atalhÃ¶yÃ¼k, Jiahu, Mehrgarh, Early European Farmers)
+                    // -8,000 BP: Early Neolithic / 8.2 ka Event (Çatalhöyük, Jiahu, Mehrgarh, Early European Farmers)
                     double densAnatoliaNeolithic = 0.08 +
-                        3.20 * Math.exp(-distSq(lng, lat, 32.83, 37.67) / 40.0) +   // Ã‡atalhÃ¶yÃ¼k Mega-Village Core
+                        3.20 * Math.exp(-distSq(lng, lat, 32.83, 37.67) / 40.0) +   // Çatalhöyük Mega-Village Core
                         2.50 * Math.exp(-distSq(lng, lat, 30.10, 37.60) / 40.0) +   // Hacilar
                         2.40 * Math.exp(-distSq(lng, lat, 35.95, 31.98) / 45.0) +   // Ain Ghazal Jordan
                         2.20 * Math.exp(-distSq(lng, lat, 39.10, 36.50) / 50.0) +   // Tell Sabi Abyad / Halaf
@@ -2589,7 +2640,7 @@ public class HistoricalMapGenerator {
                            Math.max(densEuropeEEF, Math.max(densMehrgarhIndus,
                            Math.max(densGreenSaharaPastoral, densAmericasArchaic)))));
                 } else if (year <= -4500) {
-                    // -6,000 BP: Middle Neolithic / Ubaid Period & Green Sahara Optimum (Eridu, Yangshao, VinÄa)
+                    // -6,000 BP: Middle Neolithic / Ubaid Period & Green Sahara Optimum (Eridu, Yangshao, Vinča)
                     double densUbaid = 0.12 +
                         6.50 * Math.exp(-distSq(lng, lat, 45.99, 30.82) / 40.0) +   // Eridu Temple Core (Proto-Urban Ubaid)
                         5.50 * Math.exp(-distSq(lng, lat, 45.88, 31.25) / 40.0) +   // Tell el-'Oueili
@@ -2609,8 +2660,8 @@ public class HistoricalMapGenerator {
                         3.20 * Math.exp(-distSq(lng, lat, 119.50, 41.30) / 60.0);   // Hongshan Niuheliang
 
                     double densEuropeVinca = 0.08 +
-                        4.20 * Math.exp(-distSq(lng, lat, 20.62, 44.76) / 40.0) +   // VinÄa-Belo Brdo proto-urban tell
-                        3.80 * Math.exp(-distSq(lng, lat, 21.36, 43.20) / 40.0) +   // PloÄnik copper metallurgy
+                        4.20 * Math.exp(-distSq(lng, lat, 20.62, 44.76) / 40.0) +   // Vinča-Belo Brdo proto-urban tell
+                        3.80 * Math.exp(-distSq(lng, lat, 21.36, 43.20) / 40.0) +   // Pločnik copper metallurgy
                         3.60 * Math.exp(-distSq(lng, lat, 27.00, 47.00) / 50.0) +   // Cucuteni-Trypillia early mega-sites
                         3.40 * Math.exp(-distSq(lng, lat, 16.50, 48.20) / 50.0) +   // Lengyel / mature LBK
                         3.00 * Math.exp(-distSq(lng, lat, -3.00, 47.60) / 45.0);   // Carnac / Atlantic Megalithic builders
@@ -2751,7 +2802,7 @@ public class HistoricalMapGenerator {
                 }
             }
 
-            // Geology tensor cache keys â€” indices must match setCustomGeologyTensorMapBase64 order:
+            // Geology tensor cache keys — indices must match setCustomGeologyTensorMapBase64 order:
             // 0=Coal, 1=Oil, 2=Gas, 3=Uranium, 4=He3, 5=IronCopper, 6=PreciousMetals, 7=RareEarths, 8=MantleHeat, 9=Aquifer
             String[] geoKeys = {
                 "_coal.png", "_oil.png", "_gas.png", "_uranium.png",
@@ -2991,7 +3042,7 @@ public class HistoricalMapGenerator {
 
     /*
      * Loads the altimetry-derived land/ocean mask from earth_elevation.png in data/maps/ether/.
-     * Pixels with luminance â‰¤ threshold (corresponding to â‰¤ 0m elevation) are ocean.
+     * Pixels with luminance ≤ threshold (corresponding to ≤ 0m elevation) are ocean.
      */
     public static BufferedImage loadElevationMask() {
         if (cachedElevationMask != null) return cachedElevationMask;
@@ -3033,7 +3084,7 @@ public class HistoricalMapGenerator {
                     }
                 }
                 if (elev == null) {
-                    logger.warn("earth_elevation.png not found â€” altimetry coastline mask disabled.");
+                    logger.warn("earth_elevation.png not found — altimetry coastline mask disabled.");
                     return null;
                 }
                 for (int y = 0; y < th; y++) {
@@ -3051,7 +3102,7 @@ public class HistoricalMapGenerator {
                     }
                 }
                 cachedElevationMask = mask;
-                logger.info("Altimetry coastline mask loaded from data/maps/ether/ ({}x{} â†’ {}x{}).",
+                logger.info("Altimetry coastline mask loaded from data/maps/ether/ ({}x{} → {}x{}).",
                         elev.getWidth(), elev.getHeight(), tw, th);
                 return cachedElevationMask;
             } catch (Exception e) {
@@ -3254,13 +3305,13 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{10.0, 5.0, 0xE67E22, 22.0});    // West / Central African LSA (#E67E22)
         } else if (year <= -9000L) {
             // -10,000 BP (Early Holocene)
-            empireCores.add(new double[]{38.92, 37.22, 0xE67E22, 12.0}); // GÃ¶bekli Tepe (#E67E22)
+            empireCores.add(new double[]{38.92, 37.22, 0xE67E22, 12.0}); // Göbekli Tepe (#E67E22)
             empireCores.add(new double[]{35.44, 31.87, 0xF39C12, 12.0}); // Jericho PPNA (#F39C12)
             empireCores.add(new double[]{113.6, 34.4, 0x2ECC71, 15.0});  // Peiligang Yellow River (#2ECC71)
             empireCores.add(new double[]{120.0, 29.5, 0x27AE60, 15.0});  // Shangshan Yangtze (#27AE60)
             empireCores.add(new double[]{22.0, 44.5, 0x3498DB, 12.0});   // Lepenski Vir Danube (#3498DB)
             empireCores.add(new double[]{-103.0, 36.0, 0x3F51B5, 16.0}); // Folsom Great Plains (#3F51B5)
-            empireCores.add(new double[]{-79.3, -7.7, 0x009688, 14.0});  // PaijÃ¡n Peru (#009688)
+            empireCores.add(new double[]{-79.3, -7.7, 0x009688, 14.0});  // Paiján Peru (#009688)
             empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // South African Wilton/Oakhurst (#F1C40F)
             empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australian Aboriginal Nations (#C0392B)
             empireCores.add(new double[]{77.6, 22.9, 0xD35400, 20.0});   // South Asian Foragers (#D35400)
@@ -3268,7 +3319,7 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{130.0, 62.0, 0x16A085, 22.0});  // Siberian Early Holocene (#16A085)
         } else if (year <= -7000L) {
             // -8,000 BP (Early Neolithic)
-            empireCores.add(new double[]{32.83, 37.67, 0xD35400, 14.0}); // Ã‡atalhÃ¶yÃ¼k (#D35400)
+            empireCores.add(new double[]{32.83, 37.67, 0xD35400, 14.0}); // Çatalhöyük (#D35400)
             empireCores.add(new double[]{35.95, 31.98, 0xF39C12, 12.0}); // Ain Ghazal (#F39C12)
             empireCores.add(new double[]{113.6, 33.6, 0xE74C3C, 15.0});  // Jiahu (#E74C3C)
             empireCores.add(new double[]{22.8, 39.3, 0x3498DB, 14.0});   // Sesklo Greece (#3498DB)
@@ -3286,7 +3337,7 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{48.26, 32.19, 0xF39C12, 14.0}); // Susa I (#F39C12)
             empireCores.add(new double[]{31.37, 26.99, 0xD35400, 14.0}); // Badari Egypt (#D35400)
             empireCores.add(new double[]{109.06, 34.27, 0x2ECC71, 16.0});// Banpo Yangshao (#2ECC71)
-            empireCores.add(new double[]{20.62, 44.76, 0x3498DB, 15.0}); // VinÄa Copper (#3498DB)
+            empireCores.add(new double[]{20.62, 44.76, 0x3498DB, 15.0}); // Vinča Copper (#3498DB)
             empireCores.add(new double[]{-3.00, 47.60, 0x9B59B6, 14.0}); // Carnac Megalithic (#9B59B6)
             empireCores.add(new double[]{22.0, -34.0, 0xF1C40F, 22.0});  // South Africa (#F1C40F)
             empireCores.add(new double[]{134.0, -24.0, 0xC0392B, 28.0}); // Australia (#C0392B)
@@ -3490,7 +3541,7 @@ public class HistoricalMapGenerator {
             empireCores.add(new double[]{-105.0, 45.0, 0x06B6D4, 25.0}); // Great Plains Indigenous Nations: Lakota / Comanche (#06B6D4)
             empireCores.add(new double[]{-90.0, 68.0, 0x607D8B, 30.0});  // Arctic Inuit / Thule Domain (#607D8B)
         } else if (year <= 1925L) {
-            // 1900 (Belle Ã‰poque & Global Empires)
+            // 1900 (Belle Époque & Global Empires)
             empireCores.add(new double[]{-0.13, 51.51, 0xDC2626, 26.0}); // British Empire Global (#DC2626)
             empireCores.add(new double[]{2.35, 48.86, 0x2563EB, 20.0});  // French Colonial Empire (#2563EB)
             empireCores.add(new double[]{13.40, 52.52, 0x1E293B, 16.0}); // German Empire Berlin (#1E293B)
@@ -3617,7 +3668,7 @@ public class HistoricalMapGenerator {
             mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(115.0, -34.0, 0xC0392B, 1.4, "Southwestern Sahul Domain (Devil's Lair)"));
             mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(143.0, -5.5, 0xEA580C, 1.5, "Papuan Highland Sahul Domain (Huon)"));
             mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(147.0, -42.0, 0xC0392B, 1.3, "Tasmanian Southern Sahul Foragers"));
-            // Neanderthal Late ChÃ¢telperronian & Regressing Mousterian (#1F618D & #1A5276)
+            // Neanderthal Late Châtelperronian & Regressing Mousterian (#1F618D & #1A5276)
             mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x1F618D, 1.3, "Western European Neanderthal (La Ferrassie/Spy)"));
             mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(16.0, 46.3, 0x1F618D, 1.2, "Central European Late Mousterian (Vindija)"));
             mis3Seeds.add(new OrographicGlottologPropagator.CulturalSeed(40.0, 44.2, 0x1A5276, 1.2, "Caucasus Late Neanderthal (Mezmaiskaya)"));
@@ -3695,10 +3746,10 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
                 if (lat < -60.0 && year < 1900L) {
-                    // Antarctica before modern era: uninhabited land â†’ neutral gray
+                    // Antarctica before modern era: uninhabited land → neutral gray
                     sovImg.setRGB(x, y, 0x2D3748);
                 } else if (occWeight <= 0.001 && year < 1900L) {
-                    // Uninhabited land (remote tundra, uninhabited islands) â†’ neutral gray
+                    // Uninhabited land (remote tundra, uninhabited islands) → neutral gray
                     sovImg.setRGB(x, y, 0x2D3748);
                 } else {
                     int currentRgb = sovImg.getRGB(x, y) & 0xFFFFFF;
@@ -4192,7 +4243,7 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
                 if (lat < -60.0 || occWeight <= 0.001) {
-                    // Antarctica and uninhabited land â†’ neutral gray (not ocean black)
+                    // Antarctica and uninhabited land → neutral gray (not ocean black)
                     kinImg.setRGB(x, y, 0x2D3748);
                 }
             }
@@ -4294,7 +4345,7 @@ public class HistoricalMapGenerator {
             mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(36.0, 0.5, 0x059669, 1.3, "Enkapune Ya Muto Shell Bead Traditions"));
             // European Aurignacian / IUP
             mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(4.4, 44.4, 0x4D7C0F, 1.4, "Chauvet Cave Megafauna Art"));
-            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(10.2, 48.5, 0x2E7D32, 1.3, "Swabian Jura LÃ¶wenmensch & Mammoth Ivory Flutes"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(10.2, 48.5, 0x2E7D32, 1.3, "Swabian Jura Löwenmensch & Mammoth Ivory Flutes"));
             mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(25.4, 43.0, 0x8B5CF6, 1.3, "Bacho Kiro IUP Bone Ornaments"));
             mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(11.2, 45.6, 0x3B82F6, 1.2, "Fumane Cave Ochre Painted Stones"));
             mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(115.9, 39.7, 0xD97706, 1.3, "Tianyuan Cave Red Ochre Adornment"));
@@ -4352,9 +4403,9 @@ public class HistoricalMapGenerator {
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(21.2, -34.4, 0x10B981, 1.5, "African LSA Symbolic Caches"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.6, 24.1, 0x15803D, 1.1, "Nile Qadan Cemetery Tradition"));
         } else if (year <= -7000L) {
-            // Early Neolithic / GÃ¶bekli Tepe / Ã‡atalhÃ¶yÃ¼k / Mehrgarh
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(38.92, 37.22, 0xEA580C, 1.2, "GÃ¶bekli Pillar Megalithic Shrines"));
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.83, 37.67, 0xEA580C, 1.1, "Ã‡atalhÃ¶yÃ¼k Bucrania Cults"));
+            // Early Neolithic / Göbekli Tepe / Çatalhöyük / Mehrgarh
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(38.92, 37.22, 0xEA580C, 1.2, "Göbekli Pillar Megalithic Shrines"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.83, 37.67, 0xEA580C, 1.1, "Çatalhöyük Bucrania Cults"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.44, 31.87, 0xB45309, 1.0, "Jericho Plastered Skull Sanctuary"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(22.0, 44.5, 0x4D7C0F, 1.1, "Lepenski Vir Fish-God Cults"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(113.6, 33.6, 0xEF4444, 1.3, "Jiahu Ancestral Bone Flute Cults"));
@@ -4365,10 +4416,10 @@ public class HistoricalMapGenerator {
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.0, 9.0, 0x1B5E20, 1.5, "West African Traditional Animism"));
         } else if (year <= -4500L) {
-            // Late Neolithic / Chalcolithic / Eridu / VinÄa / Carnac
+            // Late Neolithic / Chalcolithic / Eridu / Vinča / Carnac
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(45.99, 30.82, 0xB45309, 1.2, "Eridu Enki Temple & Proto-Ziggurats"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(31.37, 26.99, 0x15803D, 1.1, "Badari / Pre-Dynastic Egyptian Cults"));
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(20.62, 44.76, 0x4D7C0F, 1.2, "VinÄa Anthropomorphic Shrines"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(20.62, 44.76, 0x4D7C0F, 1.2, "Vinča Anthropomorphic Shrines"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-3.0, 47.6, 0x4D7C0F, 1.2, "Carnac Megalithic Alignments"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(109.06, 34.27, 0xEF4444, 1.3, "Yangshao Banpo Mortuary Complexes"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(68.05, 29.28, 0xF59E0B, 1.2, "Mehrgarh Proto-Indus Traditions"));
@@ -4464,7 +4515,7 @@ public class HistoricalMapGenerator {
                 double lon = -180.0 + (x + 0.5) / WIDTH * 360.0;
                 double occWeight = getHomininOccupancyWeight(lon, lat, year);
                 if (lat < -60.0 || occWeight <= 0.001) {
-                    // Antarctica and uninhabited land â†’ neutral gray (not ocean black)
+                    // Antarctica and uninhabited land → neutral gray (not ocean black)
                     ritImg.setRGB(x, y, 0x2D3748);
                 }
             }
@@ -4614,7 +4665,7 @@ public class HistoricalMapGenerator {
                 double andesCore = Math.exp(-(Math.pow(lat - (-11.0), 2) + Math.pow(lon - (-76.0), 2)) / 70.0); // Central Andean Civilizations
 
                 if (year <= -4500L) {
-                    // Early agricultural / metallurgy emergence (Fertile Crescent, VinÄa, Mehrgarh, Yangshao, Caral)
+                    // Early agricultural / metallurgy emergence (Fertile Crescent, Vinča, Mehrgarh, Yangshao, Caral)
                     tech += (fertCrescent * 55.0 + chinaCore * 45.0 + indiaCore * 40.0 + mesoCore * 25.0 + andesCore * 25.0);
                 } else if (year <= 500L) {
                     // Classical Antiquity & Axial Age (Rome, Alexandria, Chang'an, Pataliputra, Ctesiphon)
@@ -4661,16 +4712,16 @@ public class HistoricalMapGenerator {
 
         if (year <= -85000L) {
             // -100,000 BP Paleolithic Raw Material Circuits
-            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(180, 120, 40), 2.0);   // East African Rift Obsidian â€“ ochre
-            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}}, new Color(180, 120, 40), 2.0);             // South African Silcrete â€“ ochre
-            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}}, new Color(160, 70, 50), 2.0);                 // Levant Flint â€“ red sienna
-            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(160, 70, 50), 2.0);                 // Levant / Nile Flint â€“ red sienna
-            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {0.3, 45.2}}, new Color(200, 140, 30), 2.0);   // Franco-Cantabrian â€“ amber
-            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}}, new Color(200, 140, 30), 2.0);  // Danube / Balkans â€“ amber
-            drawTradeRoute(g, new double[][]{{34.2, 44.9}, {38.5, 44.5}, {40.2, 44.2}}, new Color(200, 140, 30), 2.0);                // Caucasus â€“ amber
-            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(200, 140, 30), 2.0);                              // Zagros â€“ amber
-            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(200, 140, 30), 2.0);                              // Altai â€“ amber
-            drawTradeRoute(g, new double[][]{{114.5, 40.2}, {115.9, 39.7}}, new Color(200, 140, 30), 2.0);                            // North China â€“ amber
+            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(180, 120, 40), 2.0);   // East African Rift Obsidian – ochre
+            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}}, new Color(180, 120, 40), 2.0);             // South African Silcrete – ochre
+            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}}, new Color(160, 70, 50), 2.0);                 // Levant Flint – red sienna
+            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(160, 70, 50), 2.0);                 // Levant / Nile Flint – red sienna
+            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {0.3, 45.2}}, new Color(200, 140, 30), 2.0);   // Franco-Cantabrian – amber
+            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}}, new Color(200, 140, 30), 2.0);  // Danube / Balkans – amber
+            drawTradeRoute(g, new double[][]{{34.2, 44.9}, {38.5, 44.5}, {40.2, 44.2}}, new Color(200, 140, 30), 2.0);                // Caucasus – amber
+            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(200, 140, 30), 2.0);                              // Zagros – amber
+            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(200, 140, 30), 2.0);                              // Altai – amber
+            drawTradeRoute(g, new double[][]{{114.5, 40.2}, {115.9, 39.7}}, new Color(200, 140, 30), 2.0);                            // North China – amber
         } else if (year <= -65000L) {
             // -74,000 BP: Toba Volcanic Winter Refugial Raw Material Corridors (Zero Asian Routes due to Ash Blanket)
             drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}}, new Color(180, 100, 40), 2.0);             // Cape Coastal Refugium Silcrete
@@ -4680,68 +4731,68 @@ public class HistoricalMapGenerator {
             drawTradeRoute(g, new double[][]{{44.2, 36.8}, {46.0, 35.5}}, new Color(190, 130, 30), 2.0);                               // Zagros Cave Corridor
         } else if (year <= -40000L) {
             // -50,000 BP: MIS 3 Sahul Crossing, Levantine IUP, African Ochre & European Keilmesser
-            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}, {31.9, -27.0}}, new Color(204, 120, 40), 2.5);  // South African Silcrete & Ochre â€“ ochre
-            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(204, 120, 40), 2.5);          // East African Rift Obsidian â€“ ochre
-            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}, {36.2, 34.0}}, new Color(200, 100, 80), 2.5);       // Levant IUP Flint Corridors â€“ coral
-            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(204, 120, 40), 2.0);                     // Nile Valley â€“ ochre
-            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {3.5, 47.5}}, new Color(200, 100, 80), 2.5);         // Franco-Cantabrian ChÃ¢telperronian Silex â€“ coral
-            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}, {25.0, 43.0}}, new Color(200, 100, 80), 2.5); // Danube/Balkans IUP Radiolarite â€“ coral
-            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(200, 100, 80), 2.0);                                   // Zagros â€“ coral
-            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(200, 100, 80), 2.0);                                   // Denisova / Altai â€“ coral
-            drawTradeRoute(g, new double[][]{{132.9, -12.5}, {130.0, -14.0}, {125.0, -16.0}}, new Color(30, 150, 140), 2.5);               // Sahul Northern Ochre & Baler Shells â€“ teal
-            drawTradeRoute(g, new double[][]{{143.0, -33.7}, {138.5, -34.5}, {134.0, -24.0}}, new Color(30, 150, 140), 2.5);               // Willandra Lakes / Lake Mungo Ochre â€“ teal
-            drawTradeRoute(g, new double[][]{{111.5, 25.5}, {108.0, 23.0}, {102.0, 20.0}}, new Color(200, 100, 80), 2.0);                  // South China / Indochina Quartz â€“ coral
+            drawTradeRoute(g, new double[][]{{20.5, -34.5}, {22.1, -34.2}, {24.4, -34.1}, {31.9, -27.0}}, new Color(204, 120, 40), 2.5);  // South African Silcrete & Ochre – ochre
+            drawTradeRoute(g, new double[][]{{36.1, 2.5}, {36.5, 0.5}, {36.4, -1.5}, {38.5, 8.5}}, new Color(204, 120, 40), 2.5);          // East African Rift Obsidian – ochre
+            drawTradeRoute(g, new double[][]{{35.0, 32.7}, {35.3, 32.7}, {35.6, 33.0}, {36.2, 34.0}}, new Color(200, 100, 80), 2.5);       // Levant IUP Flint Corridors – coral
+            drawTradeRoute(g, new double[][]{{31.5, 26.0}, {32.6, 25.7}, {32.9, 24.1}}, new Color(204, 120, 40), 2.0);                     // Nile Valley – ochre
+            drawTradeRoute(g, new double[][]{{-4.0, 43.4}, {-1.5, 43.5}, {1.0, 45.0}, {3.5, 47.5}}, new Color(200, 100, 80), 2.5);         // Franco-Cantabrian Châtelperronian Silex – coral
+            drawTradeRoute(g, new double[][]{{9.5, 48.5}, {13.0, 47.8}, {15.8, 46.1}, {17.1, 49.2}, {25.0, 43.0}}, new Color(200, 100, 80), 2.5); // Danube/Balkans IUP Radiolarite – coral
+            drawTradeRoute(g, new double[][]{{44.2, 36.8}, {47.1, 34.4}}, new Color(200, 100, 80), 2.0);                                   // Zagros – coral
+            drawTradeRoute(g, new double[][]{{83.9, 51.4}, {85.5, 51.7}}, new Color(200, 100, 80), 2.0);                                   // Denisova / Altai – coral
+            drawTradeRoute(g, new double[][]{{132.9, -12.5}, {130.0, -14.0}, {125.0, -16.0}}, new Color(30, 150, 140), 2.5);               // Sahul Northern Ochre & Baler Shells – teal
+            drawTradeRoute(g, new double[][]{{143.0, -33.7}, {138.5, -34.5}, {134.0, -24.0}}, new Color(30, 150, 140), 2.5);               // Willandra Lakes / Lake Mungo Ochre – teal
+            drawTradeRoute(g, new double[][]{{111.5, 25.5}, {108.0, 23.0}, {102.0, 20.0}}, new Color(200, 100, 80), 2.0);                  // South China / Indochina Quartz – coral
         } else if (year <= -22000L) {
             // -25,000 BP: Gravettian Mammoth Ivory Highway, Western European Marine Shells, Beringia Standstill
-            drawTradeRoute(g, new double[][]{{16.5, 48.8}, {17.5, 49.5}, {19.9, 50.0}, {30.5, 50.5}, {39.0, 51.4}}, new Color(210, 160, 30), 3.0);  // Gravettian Ivory Highway â€“ amber gold
-            drawTradeRoute(g, new double[][]{{-4.5, 43.4}, {0.5, 44.8}, {1.0, 45.0}, {7.5, 43.7}}, new Color(220, 100, 80), 2.5);                   // Atlantic Shell Route â€“ coral
-            drawTradeRoute(g, new double[][]{{39.0, 51.4}, {40.5, 56.2}}, new Color(210, 160, 30), 2.5);                                            // Kostenki -> Sungir Ivory Route â€“ amber gold
-            drawTradeRoute(g, new double[][]{{135.4, 70.7}, {145.0, 71.0}}, new Color(20, 140, 130), 2.5);                                          // Yana RHS / Berelekh Arctic Ivory â€“ deep teal
-            drawTradeRoute(g, new double[][]{{-168.0, 65.0}, {-140.7, 67.1}}, new Color(20, 140, 130), 2.5);                                        // Beringian Standstill Tool Tracks â€“ deep teal
-            drawTradeRoute(g, new double[][]{{35.2, 32.7}, {35.6, 32.8}, {36.0, 31.5}}, new Color(220, 100, 80), 2.5);                              // Levant Ohalo II Marine Shells â€“ coral
-            drawTradeRoute(g, new double[][]{{134.0, -24.0}, {143.0, -33.7}, {140.0, -37.0}}, new Color(20, 140, 130), 2.5);                        // Sahul Red Ochre Circuits â€“ deep teal
-            drawTradeRoute(g, new double[][]{{21.5, -34.2}, {25.0, -33.8}, {29.0, -31.0}}, new Color(220, 100, 80), 2.5);                           // South African LSA Beads â€“ coral
+            drawTradeRoute(g, new double[][]{{16.5, 48.8}, {17.5, 49.5}, {19.9, 50.0}, {30.5, 50.5}, {39.0, 51.4}}, new Color(210, 160, 30), 3.0);  // Gravettian Ivory Highway – amber gold
+            drawTradeRoute(g, new double[][]{{-4.5, 43.4}, {0.5, 44.8}, {1.0, 45.0}, {7.5, 43.7}}, new Color(220, 100, 80), 2.5);                   // Atlantic Shell Route – coral
+            drawTradeRoute(g, new double[][]{{39.0, 51.4}, {40.5, 56.2}}, new Color(210, 160, 30), 2.5);                                            // Kostenki -> Sungir Ivory Route – amber gold
+            drawTradeRoute(g, new double[][]{{135.4, 70.7}, {145.0, 71.0}}, new Color(20, 140, 130), 2.5);                                          // Yana RHS / Berelekh Arctic Ivory – deep teal
+            drawTradeRoute(g, new double[][]{{-168.0, 65.0}, {-140.7, 67.1}}, new Color(20, 140, 130), 2.5);                                        // Beringian Standstill Tool Tracks – deep teal
+            drawTradeRoute(g, new double[][]{{35.2, 32.7}, {35.6, 32.8}, {36.0, 31.5}}, new Color(220, 100, 80), 2.5);                              // Levant Ohalo II Marine Shells – coral
+            drawTradeRoute(g, new double[][]{{134.0, -24.0}, {143.0, -33.7}, {140.0, -37.0}}, new Color(20, 140, 130), 2.5);                        // Sahul Red Ochre Circuits – deep teal
+            drawTradeRoute(g, new double[][]{{21.5, -34.2}, {25.0, -33.8}, {29.0, -31.0}}, new Color(220, 100, 80), 2.5);                           // South African LSA Beads – coral
         } else if (year <= -15000L) {
             // -20,000 BP: Solutrean Leaf-Point & Pressure-Flaked Flint Network, LGM Refugia Exchanges
-            drawTradeRoute(g, new double[][]{{0.5, 44.8}, {0.7, 46.9}, {-1.0, 44.5}, {-4.5, 43.4}, {-8.5, 37.1}}, new Color(220, 150, 40), 3.0);  // Solutrean Silex â€“ amber
-            drawTradeRoute(g, new double[][]{{15.5, 41.7}, {12.5, 41.9}, {23.0, 38.5}}, new Color(60, 100, 180), 2.5);                             // Epigravettian Mediterranean maritime â€“ slate blue
-            drawTradeRoute(g, new double[][]{{31.0, 50.5}, {35.0, 50.5}, {39.0, 51.4}}, new Color(184, 115, 51), 2.5);                             // Mezhirich -> Mezin -> Kostenki Mammoth Architecture â€“ copper
-            drawTradeRoute(g, new double[][]{{35.5, 32.7}, {36.0, 31.8}, {36.5, 34.0}}, new Color(184, 115, 51), 2.5);                             // Kebaran Levant â€“ copper
-            drawTradeRoute(g, new double[][]{{-140.7, 67.1}, {-150.0, 65.0}, {-165.0, 65.0}}, new Color(184, 115, 51), 2.5);                       // Beringia Standstill â€“ copper
-            drawTradeRoute(g, new double[][]{{132.9, -12.5}, {143.0, -33.7}}, new Color(184, 115, 51), 2.5);                                       // Sahul Ochre â€“ copper
-            drawTradeRoute(g, new double[][]{{22.0, -34.0}, {24.0, -33.5}, {26.0, -32.5}}, new Color(184, 115, 51), 2.5);                          // South Africa Boomplaas / Nelson Bay â€“ copper
+            drawTradeRoute(g, new double[][]{{0.5, 44.8}, {0.7, 46.9}, {-1.0, 44.5}, {-4.5, 43.4}, {-8.5, 37.1}}, new Color(220, 150, 40), 3.0);  // Solutrean Silex – amber
+            drawTradeRoute(g, new double[][]{{15.5, 41.7}, {12.5, 41.9}, {23.0, 38.5}}, new Color(60, 100, 180), 2.5);                             // Epigravettian Mediterranean maritime – slate blue
+            drawTradeRoute(g, new double[][]{{31.0, 50.5}, {35.0, 50.5}, {39.0, 51.4}}, new Color(184, 115, 51), 2.5);                             // Mezhirich -> Mezin -> Kostenki Mammoth Architecture – copper
+            drawTradeRoute(g, new double[][]{{35.5, 32.7}, {36.0, 31.8}, {36.5, 34.0}}, new Color(184, 115, 51), 2.5);                             // Kebaran Levant – copper
+            drawTradeRoute(g, new double[][]{{-140.7, 67.1}, {-150.0, 65.0}, {-165.0, 65.0}}, new Color(184, 115, 51), 2.5);                       // Beringia Standstill – copper
+            drawTradeRoute(g, new double[][]{{132.9, -12.5}, {143.0, -33.7}}, new Color(184, 115, 51), 2.5);                                       // Sahul Ochre – copper
+            drawTradeRoute(g, new double[][]{{22.0, -34.0}, {24.0, -33.5}, {26.0, -32.5}}, new Color(184, 115, 51), 2.5);                          // South Africa Boomplaas / Nelson Bay – copper
         } else if (year <= -10500L) {
             // -10,900 BP: Younger Dryas / Natufian Flint & Marine Shell Transfers / Clovis Chert & Obsidian
-            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {36.5, 34.2}, {35.6, 33.1}, {35.2, 32.9}, {37.0, 32.0}}, new Color(220, 170, 50), 3.0); // Anatolian Obsidian / Natufian Dentalium â€“ warm gold
-            drawTradeRoute(g, new double[][]{{-103.3, 34.3}, {-101.5, 35.5}, {-97.7, 30.9}}, new Color(200, 90, 60), 2.5);                          // Clovis Americas â€“ terracotta
-            drawTradeRoute(g, new double[][]{{-110.7, 44.6}, {-103.0, 36.0}}, new Color(200, 90, 60), 2.5);                                         // Obsidian Cliff Americas â€“ terracotta
-            drawTradeRoute(g, new double[][]{{-75.1, 41.0}, {-77.0, 38.0}}, new Color(200, 90, 60), 2.5);                                           // Shawnee-Minisink Americas â€“ terracotta
-            drawTradeRoute(g, new double[][]{{-73.2, -41.5}, {-71.0, -45.0}, {-70.0, -52.0}}, new Color(200, 90, 60), 2.5);                         // Monte Verde to Fell's Cave Americas â€“ terracotta
-            drawTradeRoute(g, new double[][]{{-77.7, -9.2}, {-79.0, -7.0}}, new Color(200, 90, 60), 2.5);                                           // Guitarrero Cave Americas â€“ terracotta
-            drawTradeRoute(g, new double[][]{{-1.0, 44.5}, {1.0, 45.0}, {3.0, 46.5}, {15.5, 41.7}}, new Color(210, 150, 50), 2.5);                 // Magdalenian / Azilian Pyrenean Silex â€“ warm amber
-            drawTradeRoute(g, new double[][]{{138.5, 35.0}, {139.5, 35.7}, {140.5, 36.5}}, new Color(210, 150, 50), 2.5);                          // Incipient Jomon Kozushima Obsidian â€“ warm amber
-            drawTradeRoute(g, new double[][]{{32.5, 25.5}, {32.9, 24.1}, {31.5, 30.0}}, new Color(210, 150, 50), 2.5);                             // Nile Valley Qadan Exchange â€“ warm amber
-            drawTradeRoute(g, new double[][]{{134.0, -24.0}, {138.0, -28.0}, {143.0, -33.7}}, new Color(210, 150, 50), 2.5);                       // Australian Desert Ochre Tracks â€“ warm amber
+            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {36.5, 34.2}, {35.6, 33.1}, {35.2, 32.9}, {37.0, 32.0}}, new Color(220, 170, 50), 3.0); // Anatolian Obsidian / Natufian Dentalium – warm gold
+            drawTradeRoute(g, new double[][]{{-103.3, 34.3}, {-101.5, 35.5}, {-97.7, 30.9}}, new Color(200, 90, 60), 2.5);                          // Clovis Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-110.7, 44.6}, {-103.0, 36.0}}, new Color(200, 90, 60), 2.5);                                         // Obsidian Cliff Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-75.1, 41.0}, {-77.0, 38.0}}, new Color(200, 90, 60), 2.5);                                           // Shawnee-Minisink Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-73.2, -41.5}, {-71.0, -45.0}, {-70.0, -52.0}}, new Color(200, 90, 60), 2.5);                         // Monte Verde to Fell's Cave Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-77.7, -9.2}, {-79.0, -7.0}}, new Color(200, 90, 60), 2.5);                                           // Guitarrero Cave Americas – terracotta
+            drawTradeRoute(g, new double[][]{{-1.0, 44.5}, {1.0, 45.0}, {3.0, 46.5}, {15.5, 41.7}}, new Color(210, 150, 50), 2.5);                 // Magdalenian / Azilian Pyrenean Silex – warm amber
+            drawTradeRoute(g, new double[][]{{138.5, 35.0}, {139.5, 35.7}, {140.5, 36.5}}, new Color(210, 150, 50), 2.5);                          // Incipient Jomon Kozushima Obsidian – warm amber
+            drawTradeRoute(g, new double[][]{{32.5, 25.5}, {32.9, 24.1}, {31.5, 30.0}}, new Color(210, 150, 50), 2.5);                             // Nile Valley Qadan Exchange – warm amber
+            drawTradeRoute(g, new double[][]{{134.0, -24.0}, {138.0, -28.0}, {143.0, -33.7}}, new Color(210, 150, 50), 2.5);                       // Australian Desert Ochre Tracks – warm amber
         } else if (year <= -9000L) {
-            // -10,000 BP: GÃ¶bekli Tepe Anatolian Obsidian & PPNA Exchange
-            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {38.9, 37.2}, {38.1, 35.9}, {35.4, 31.9}}, new Color(230, 175, 40), 3.0);  // GÃ¶llÃ¼ DaÄŸ Obsidian to GÃ¶bekli & Jericho â€“ bright amber
-            drawTradeRoute(g, new double[][]{{41.5, 38.8}, {39.7, 38.2}, {44.0, 36.0}}, new Color(230, 175, 40), 2.5);                 // BingÃ¶l Obsidian to Tigris/Zagros â€“ bright amber
-            drawTradeRoute(g, new double[][]{{24.4, 36.7}, {23.1, 37.4}}, new Color(30, 130, 200), 2.5);                              // Melos Obsidian â€“ Aegean maritime â€“ sea blue
-            drawTradeRoute(g, new double[][]{{113.6, 34.4}, {116.0, 35.0}}, new Color(230, 175, 40), 2.5);                            // Peiligang Jade & Stone â€“ bright amber
+            // -10,000 BP: Göbekli Tepe Anatolian Obsidian & PPNA Exchange
+            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {38.9, 37.2}, {38.1, 35.9}, {35.4, 31.9}}, new Color(230, 175, 40), 3.0);  // Göllü Dağ Obsidian to Göbekli & Jericho – bright amber
+            drawTradeRoute(g, new double[][]{{41.5, 38.8}, {39.7, 38.2}, {44.0, 36.0}}, new Color(230, 175, 40), 2.5);                 // Bingöl Obsidian to Tigris/Zagros – bright amber
+            drawTradeRoute(g, new double[][]{{24.4, 36.7}, {23.1, 37.4}}, new Color(30, 130, 200), 2.5);                              // Melos Obsidian – Aegean maritime – sea blue
+            drawTradeRoute(g, new double[][]{{113.6, 34.4}, {116.0, 35.0}}, new Color(230, 175, 40), 2.5);                            // Peiligang Jade & Stone – bright amber
         } else if (year <= -7000L) {
-            // -8,000 BP: Early Neolithic Ã‡atalhÃ¶yÃ¼k Obsidian, Spondylus Shells, Mehrgarh Lapis
-            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {32.8, 37.7}, {35.0, 34.0}, {35.9, 32.0}}, new Color(235, 185, 45), 3.0);  // Ã‡atalhÃ¶yÃ¼k Obsidian Corridor â€“ warm gold
-            drawTradeRoute(g, new double[][]{{24.4, 36.7}, {22.8, 39.3}, {20.5, 44.8}, {16.0, 48.5}}, new Color(30, 180, 170), 3.0);  // Spondylus Shell Route â€“ turquoise
-            drawTradeRoute(g, new double[][]{{70.7, 36.2}, {68.0, 29.3}, {66.0, 26.0}}, new Color(40, 80, 200), 2.5);                 // Badakhshan Lapis Lazuli â€“ lapis blue
-            drawTradeRoute(g, new double[][]{{113.6, 33.6}, {120.2, 30.1}}, new Color(235, 185, 45), 2.5);                            // Jiahu - Yangtze Exchange â€“ warm gold
-            drawTradeRoute(g, new double[][]{{30.6, 22.5}, {32.5, 25.5}}, new Color(235, 185, 45), 2.5);                              // Nabta Playa - Nile Valley â€“ warm gold
+            // -8,000 BP: Early Neolithic Çatalhöyük Obsidian, Spondylus Shells, Mehrgarh Lapis
+            drawTradeRoute(g, new double[][]{{34.5, 38.0}, {32.8, 37.7}, {35.0, 34.0}, {35.9, 32.0}}, new Color(235, 185, 45), 3.0);  // Çatalhöyük Obsidian Corridor – warm gold
+            drawTradeRoute(g, new double[][]{{24.4, 36.7}, {22.8, 39.3}, {20.5, 44.8}, {16.0, 48.5}}, new Color(30, 180, 170), 3.0);  // Spondylus Shell Route – turquoise
+            drawTradeRoute(g, new double[][]{{70.7, 36.2}, {68.0, 29.3}, {66.0, 26.0}}, new Color(40, 80, 200), 2.5);                 // Badakhshan Lapis Lazuli – lapis blue
+            drawTradeRoute(g, new double[][]{{113.6, 33.6}, {120.2, 30.1}}, new Color(235, 185, 45), 2.5);                            // Jiahu - Yangtze Exchange – warm gold
+            drawTradeRoute(g, new double[][]{{30.6, 22.5}, {32.5, 25.5}}, new Color(235, 185, 45), 2.5);                              // Nabta Playa - Nile Valley – warm gold
         } else if (year <= -4500L) {
-            // -6,000 BP: Ubaid Maritime Gulf Routes, VinÄa Copper, European Spondylus & Flint
-            drawTradeRoute(g, new double[][]{{45.99, 30.82}, {48.5, 29.5}, {50.5, 26.0}, {56.0, 24.0}}, new Color(240, 190, 50), 3.5); // Ubaid Persian Gulf Maritime â€“ bright gold
+            // -6,000 BP: Ubaid Maritime Gulf Routes, Vinča Copper, European Spondylus & Flint
+            drawTradeRoute(g, new double[][]{{45.99, 30.82}, {48.5, 29.5}, {50.5, 26.0}, {56.0, 24.0}}, new Color(240, 190, 50), 3.5); // Ubaid Persian Gulf Maritime – bright gold
             drawTradeRoute(g, new double[][]{{21.36, 43.20}, {20.62, 44.76}, {16.5, 48.2}, {8.5, 50.0}, {2.5, 49.0}}, new Color(184, 115, 51), 3.0); // VinÄa Copper â€“ copper
-            drawTradeRoute(g, new double[][]{{-0.1, 46.4}, {-3.0, 47.6}, {-3.9, 48.7}}, new Color(50, 190, 170), 3.0);                 // Atlantic Megalithic Coastal Exchange â€“ seafoam
-            drawTradeRoute(g, new double[][]{{109.06, 34.27}, {111.3, 34.7}, {121.4, 30.0}}, new Color(240, 190, 50), 3.0);            // Yangshao - Hemudu Jade & Pottery â€“ bright gold
-            drawTradeRoute(g, new double[][]{{31.37, 26.99}, {33.5, 28.0}, {34.5, 29.0}}, new Color(240, 190, 50), 2.5);              // Badarian Red Sea Shell & Malachite â€“ bright gold
+            drawTradeRoute(g, new double[][]{{-0.1, 46.4}, {-3.0, 47.6}, {-3.9, 48.7}}, new Color(50, 190, 170), 3.0);                 // Atlantic Megalithic Coastal Exchange – seafoam
+            drawTradeRoute(g, new double[][]{{109.06, 34.27}, {111.3, 34.7}, {121.4, 30.0}}, new Color(240, 190, 50), 3.0);            // Yangshao - Hemudu Jade & Pottery – bright gold
+            drawTradeRoute(g, new double[][]{{31.37, 26.99}, {33.5, 28.0}, {34.5, 29.0}}, new Color(240, 190, 50), 2.5);              // Badarian Red Sea Shell & Malachite – bright gold
         } else if (year <= 500L) {
             // Classical Antiquity & Axial Age (-3000 BC to 500 AD)
             // 1. Overland Silk Road (Chang'an -> Dunhuang -> Kashgar -> Samarkand -> Merv -> Ctesiphon -> Palmyra -> Antioch -> Rome)
@@ -4801,7 +4852,7 @@ public class HistoricalMapGenerator {
             // 6. Venetian & Genoese Levant Maritime Conduits
             drawTradeRoute(g, new double[][]{{12.3, 45.4}, {16.0, 41.0}, {22.0, 37.0}, {25.0, 35.0}, {35.0, 33.0}, {35.5, 34.0}}, new Color(255, 140, 50), 3.2);
             drawTradeRoute(g, new double[][]{{8.9, 44.4}, {9.5, 38.0}, {15.0, 36.0}, {24.0, 37.5}, {29.0, 41.0}, {35.3, 45.0}}, new Color(255, 140, 50), 3.2);
-            // 7. Inca Imperial Highway (Qhapaq Ã‘an: Quito -> Cajamarca -> Cusco -> Lake Titicaca -> Tucuman)
+            // 7. Inca Imperial Highway (Qhapaq Ñan: Quito -> Cajamarca -> Cusco -> Lake Titicaca -> Tucuman)
             drawTradeRoute(g, new double[][]{{-78.5, -0.2}, {-78.5, -7.1}, {-77.0, -12.0}, {-71.9, -13.5}, {-69.0, -16.0}, {-65.3, -24.8}}, new Color(200, 80, 60), 3.5);
             // 8. Mesoamerican Pochteca Merchant Arteries (Tenochtitlan -> Soconusco -> Maya Highlands)
             drawTradeRoute(g, new double[][]{{-99.1, 19.4}, {-96.1, 19.2}, {-93.0, 16.5}, {-92.5, 15.0}, {-90.5, 14.6}, {-89.0, 20.0}}, new Color(80, 200, 120), 3.0);
@@ -4816,7 +4867,7 @@ public class HistoricalMapGenerator {
             // Leg 3: Caribbean / North America -> Western Europe (Sugar, tobacco, cotton, coffee, rum)
             drawTradeRoute(g, new double[][]{{-82.3, 23.1}, {-75.0, 28.0}, {-65.0, 35.0}, {-40.0, 43.0}, {-15.0, 47.0}, {-3.0, 47.5}, {-0.5, 45.0}, {-3.0, 53.4}}, new Color(255, 200, 50), 4.2);
 
-            // 2. PORTUGUESE CAPE ROUTE (Carreira da Ãndia: Lisbon -> Cape -> Goa -> Malacca -> Macau -> Nagasaki)
+            // 2. PORTUGUESE CAPE ROUTE (Carreira da Índia: Lisbon -> Cape -> Goa -> Malacca -> Macau -> Nagasaki)
             drawTradeRoute(g, new double[][]{{-9.1, 38.7}, {-16.0, 28.0}, {-25.0, 12.0}, {-30.0, -10.0}, {-20.0, -28.0}, {18.5, -34.8}, {40.5, -15.0}, {55.0, -2.0}, {73.8, 15.5}, {80.2, 6.9}, {98.0, 4.0}, {103.8, 1.3}, {113.5, 22.2}, {129.8, 32.7}}, new Color(30, 180, 210), 4.2);
 
             // 3. SPANISH MANILA GALLEONS (Acapulco <-> Manila Transpacific Circuit)
@@ -4897,7 +4948,7 @@ public class HistoricalMapGenerator {
         drawTradeRoute(g, new double[][]{{103.8, 36.0}, {108.9, 34.3}, {111.0, 34.8}, {114.3, 34.7}, {117.5, 37.5}}, riverCol, 2.8);
         drawTradeRoute(g, new double[][]{{104.0, 28.7}, {106.5, 29.5}, {112.5, 30.3}, {114.3, 30.6}, {118.8, 32.0}, {121.5, 31.2}}, riverCol, 3.4);
 
-        // 5. European Riverine Arteries (Rhine, Danube & RhÃ´ne-SaÃ´ne)
+        // 5. European Riverine Arteries (Rhine, Danube & Rhône-Saône)
         drawTradeRoute(g, new double[][]{{8.6, 47.6}, {7.6, 48.6}, {8.3, 50.0}, {6.9, 50.9}, {4.5, 51.9}}, riverCol, 2.6);
         drawTradeRoute(g, new double[][]{{10.0, 48.5}, {12.1, 49.0}, {16.4, 48.2}, {19.0, 47.5}, {20.5, 44.8}, {24.0, 43.7}, {28.0, 45.2}}, riverCol, 3.0);
         drawTradeRoute(g, new double[][]{{4.8, 47.3}, {4.8, 45.7}, {4.8, 43.9}, {5.4, 43.3}}, riverCol, 2.4);
@@ -5271,7 +5322,7 @@ public class HistoricalMapGenerator {
         }));
 
         // INLAND SEAS & MAJOR GULFS
-        // Mediterranean Sea (corrected boundary â€” avoids rectangular clipping at Gibraltar/Iberia/Anatolia)
+        // Mediterranean Sea (corrected boundary — avoids rectangular clipping at Gibraltar/Iberia/Anatolia)
         SEA_POLYGONS.add(createPolygon(new double[][]{
             {-5.4, 35.9}, {-1.8, 35.7}, {0.5, 37.5}, {3.2, 37.1}, {8.0, 37.5},
             {10.5, 38.2}, {12.5, 38.1}, {15.5, 38.1}, {17.0, 39.4}, {19.5, 39.0},
@@ -5389,7 +5440,7 @@ public class HistoricalMapGenerator {
             list.add(new CityPoint("Varanasi", 25.3, 83.0, 3.8, 2.2));
             list.add(new CityPoint("San Lorenzo", 17.8, -94.8, 3.0, 2.0));
         } else if (year <= 500L) {
-            // Classical Antiquity & Axial Age (Rome, Alexandria, Chang'an, Luoyang, Pataliputra, Ctesiphon, TeotihuacÃ¡n)
+            // Classical Antiquity & Axial Age (Rome, Alexandria, Chang'an, Luoyang, Pataliputra, Ctesiphon, Teotihuacán)
             list.add(new CityPoint("Rome", 41.9, 12.5, 4.5, 2.8));
             list.add(new CityPoint("Alexandria", 31.2, 29.9, 4.2, 2.5));
             list.add(new CityPoint("Chang'an", 34.2, 108.9, 4.5, 2.8));
@@ -5400,7 +5451,7 @@ public class HistoricalMapGenerator {
             list.add(new CityPoint("Carthage", 36.8, 10.3, 3.5, 2.0));
             list.add(new CityPoint("Athens", 37.9, 23.7, 3.4, 2.0));
             list.add(new CityPoint("Taxila", 33.7, 72.8, 3.5, 2.0));
-            list.add(new CityPoint("TeotihuacÃ¡n", 19.7, -98.9, 3.8, 2.4));
+            list.add(new CityPoint("Teotihuacán", 19.7, -98.9, 3.8, 2.4));
             list.add(new CityPoint("Tikal", 17.2, -89.6, 3.2, 2.0));
         } else if (year <= 1500L) {
             // Medieval Era (Constantinople, Baghdad, Kaifeng, Hangzhou, Cairo, Cordoba, Kyoto, Tenochtitlan, Cuzco)
@@ -5427,7 +5478,7 @@ public class HistoricalMapGenerator {
             list.add(new CityPoint("Delhi", 28.6, 77.2, 4.6, 2.5));
             list.add(new CityPoint("Amsterdam", 52.4, 4.9, 4.2, 2.2));
             list.add(new CityPoint("Mexico City", 19.4, -99.1, 4.2, 2.2));
-            list.add(new CityPoint("PotosÃ­", -19.6, -65.7, 3.8, 2.0));
+            list.add(new CityPoint("Potosí", -19.6, -65.7, 3.8, 2.0));
         } else if (year <= 1920L) {
             // 19th - Early 20th C Industrial (London, New York, Paris, Berlin, Vienna, St Petersburg, Chicago, Tokyo)
             list.add(new CityPoint("London", 51.5, -0.1, 5.4, 2.8));
@@ -5449,7 +5500,7 @@ public class HistoricalMapGenerator {
             list.add(new CityPoint("Mumbai Metropolis", 19.0, 72.8, 5.2, 2.6));
             list.add(new CityPoint("Cairo Nile Megacity", 30.0, 31.2, 4.8, 2.4));
             list.add(new CityPoint("Lagos Gulf Corridor", 6.5, 3.3, 4.5, 2.2));
-            list.add(new CityPoint("SÃ£o Paulo Hub", -23.5, -46.6, 4.8, 2.4));
+            list.add(new CityPoint("São Paulo Hub", -23.5, -46.6, 4.8, 2.4));
             list.add(new CityPoint("Beijing Capital Node", 39.9, 116.4, 5.2, 2.6));
             list.add(new CityPoint("Paris Isle Hub", 48.8, 2.35, 4.5, 2.2));
             list.add(new CityPoint("Mexico City Valley", 19.4, -99.1, 4.8, 2.4));
@@ -5525,8 +5576,8 @@ public class HistoricalMapGenerator {
                 list.add(new CityPoint("Iho Eleru & Congo (West/Central Africa)", 7.4, 5.1, 3.5, 16.0));
                 list.add(new CityPoint("Nile Corridor (African Bridge)", 22.0, 31.5, 4.0, 12.0));
                 // Archaic Hominins (Sparse population densities, expanded spatial range)
-                list.add(new CityPoint("Atapuerca & Spy (NÃ©andertal Ouest)", 42.3, -3.5, 1.2, 12.0));
-                list.add(new CityPoint("Shanidar (NÃ©andertal Moyen-Orient)", 36.8, 44.2, 1.2, 12.0));
+                list.add(new CityPoint("Atapuerca & Spy (Néandertal Ouest)", 42.3, -3.5, 1.2, 12.0));
+                list.add(new CityPoint("Shanidar (Néandertal Moyen-Orient)", 36.8, 44.2, 1.2, 12.0));
                 list.add(new CityPoint("Denisova & Xiahe (Denisovien Altai)", 51.4, 84.7, 0.9, 13.0));
                 break;
             default:
@@ -5598,7 +5649,7 @@ public class HistoricalMapGenerator {
                 break;
             case "MESOAMERICA":
             case "AMERICAS_1491":
-                EmpireTerritory aztec = new EmpireTerritory("Alliance AztÃ¨que", new Color(245, 158, 11));
+                EmpireTerritory aztec = new EmpireTerritory("Alliance Aztèque", new Color(245, 158, 11));
                 aztec.addBoundingBox(-102.0, 14.0, -95.0, 21.0);
                 list.add(aztec);
                 EmpireTerritory inca = new EmpireTerritory("Tawantinsuyu (Inca)", new Color(220, 38, 38));
@@ -5619,7 +5670,7 @@ public class HistoricalMapGenerator {
                 list.add(denisova);
                 break;
             default:
-                EmpireTerritory generic = new EmpireTerritory("SphÃ¨re DÃ©mographique", new Color(59, 130, 246));
+                EmpireTerritory generic = new EmpireTerritory("Sphère Démographique", new Color(59, 130, 246));
                 generic.addBoundingBox(-10.0, 25.0, 50.0, 55.0);
                 list.add(generic);
                 break;
@@ -5646,7 +5697,7 @@ public class HistoricalMapGenerator {
                     break;
                 case "ONE_CONTINENT":
                     list.add(new LanguageZone("Proto-Sapiens (Afrique)", 36.0, 4.5, new Color(234, 179, 8)));
-                    list.add(new LanguageZone("Proto-NÃ©andertalien (Eurasie Ouest)", -3.5, 42.3, new Color(14, 165, 233)));
+                    list.add(new LanguageZone("Proto-Néandertalien (Eurasie Ouest)", -3.5, 42.3, new Color(14, 165, 233)));
                     list.add(new LanguageZone("Proto-Denisovien (Asie & Altai)", 84.7, 51.4, new Color(217, 70, 239)));
                     return list;
             }
@@ -5695,7 +5746,7 @@ public class HistoricalMapGenerator {
                     list.add(new LanguageZone("Delphi Oracle", 22.5, 38.5, new Color(6, 182, 212)));
                     break;
                 case "FERTILE_CRESCENT":
-                    list.add(new LanguageZone("GÃ¶bekli Tepe Megalithic Shrine", 38.9, 37.2, new Color(239, 68, 68)));
+                    list.add(new LanguageZone("Göbekli Tepe Megalithic Shrine", 38.9, 37.2, new Color(239, 68, 68)));
                     list.add(new LanguageZone("Marduk Sanctuary", 44.4, 32.5, new Color(245, 158, 11)));
                     break;
                 case "ONE_CONTINENT":
@@ -6127,7 +6178,7 @@ public class HistoricalMapGenerator {
             {123.9, 41.9, 30, 2.6},  // Fushun / Liaoning (Ancient Open-Pit Coal Outcrops)
             {-2.5, 51.3, 26, 2.3},   // Somerset / Camerton (Roman Britain Hypocaust & Bath Heating)
             {-1.6, 54.9, 26, 2.3},   // Newcastle / Northumberland (Hadrian's Wall Coal Outcrops)
-            {5.6, 50.6, 24, 2.2},    // LiÃ¨ge / Meuse Valley (Medieval Surface Coal Seams)
+            {5.6, 50.6, 24, 2.2},    // Liège / Meuse Valley (Medieval Surface Coal Seams)
             {7.0, 49.3, 24, 2.2},    // Sarre Basin Outcrops
             {-79.5, 40.5, 36, 2.5},  // Appalachian Outcrops (Pittsburgh Coal Seam)
             {7.2, 51.5, 32, 2.4}     // Ruhr Valley Outcrops
@@ -6268,10 +6319,10 @@ public class HistoricalMapGenerator {
             {-105.0, 58.0, 38, 2.4},  // Athabasca Basin (Saskatchewan, Canada - High-Grade Unconformity U)
             {136.9, -30.4, 36, 2.3},  // Olympic Dam (South Australia - Giant Fe-Oxide Cu-Au-U)
             {68.0, 44.0, 42, 2.5},    // Chu-Sarysu Basin (Kazakhstan - Roll-front ISL Uranium)
-            {7.4, 18.7, 34, 2.2},     // Arlit / Tim MersoÃ¯ Basin (Niger - Sandstone U)
+            {7.4, 18.7, 34, 2.2},     // Arlit / Tim Mersoï Basin (Niger - Sandstone U)
             {27.5, -26.2, 34, 2.2},   // Witwatersrand Basin (South Africa - Conglomerate Au-U)
             {118.0, 50.0, 34, 2.2},   // Streltsovskoye Caldera (Transbaikal, Russia - Volcanic U)
-            {15.0, -22.5, 32, 2.0},   // RÃ¶ssing & Husab (Namibia - Alaskite U)
+            {15.0, -22.5, 32, 2.0},   // Rössing & Husab (Namibia - Alaskite U)
             {-108.5, 35.5, 30, 2.0},  // Grants Mineral Belt (New Mexico, USA)
             {132.8, -12.7, 32, 2.1},  // Ranger / Jabiluka (Northern Territory, Australia)
             {119.5, -23.5, 30, 1.9}   // Yeelirrie (Western Australia - Calcrete U)
@@ -6315,8 +6366,8 @@ public class HistoricalMapGenerator {
         double[][] majorMetals = {
             {118.0, -22.5, 40, 2.2},  // Pilbara / Hamersley BIFs (Western Australia)
             {120.5, -23.0, 36, 2.0},  // Mount Whaleback
-            {-50.0, -6.0, 42, 2.4},   // CarajÃ¡s Iron Giant (Amazon, Brazil)
-            {-43.5, -20.0, 36, 1.8},  // QuadrilÃ¡tero FerrÃ­fero (Minas Gerais, Brazil)
+            {-50.0, -6.0, 42, 2.4},   // Carajás Iron Giant (Amazon, Brazil)
+            {-43.5, -20.0, 36, 1.8},  // Quadrilátero Ferrífero (Minas Gerais, Brazil)
             {37.0, 51.5, 40, 2.2},    // Kursk Magnetic Anomaly (Russia)
             {33.5, 48.0, 36, 2.0},    // Krivoy Rog (Ukraine)
             {-91.5, 47.5, 36, 1.9},   // Mesabi Iron Range (Lake Superior, USA)
@@ -6376,21 +6427,21 @@ public class HistoricalMapGenerator {
 
         double[][] metallogenicProvinces = {
             // --- 1. Iberian Pyrite Belt & Roman Mining Districts (Spain & Portugal) ---
-            {-6.77, 42.46, 12.0, 4.2},  // Las MÃ©dulas (LeÃ³n - World's Largest Roman Hydraulic Gold Mine)
+            {-6.77, 42.46, 12.0, 4.2},  // Las Médulas (León - World's Largest Roman Hydraulic Gold Mine)
             {-6.50, 42.55, 9.0, 3.5},   // El Teleno / Bierzo Gold Placers
             {-8.10, 42.15, 8.0, 2.8},   // Galicia / Sil River Auriferous Alluvium
             {-6.56, 37.69, 14.0, 4.0},  // Rio Tinto / Tharsis (Baetica / Huelva - Giant Silver & Gold Smelting)
-            {-6.20, 37.75, 10.0, 3.2},  // AznalcÃ³llar / Guadiamar River
-            {-4.84, 38.77, 11.0, 3.6},  // AlmadÃ©n / Sierra Morena (Silver, Cinnabar & Gold)
+            {-6.20, 37.75, 10.0, 3.2},  // Aznalcóllar / Guadiamar River
+            {-4.84, 38.77, 11.0, 3.6},  // Almadén / Sierra Morena (Silver, Cinnabar & Gold)
             {-5.90, 38.30, 9.0, 3.0},   // Ossa Morena Metallogenic Belt
             {-6.60, 40.20, 8.0, 2.6},   // Tagus Basin Roman Gold Washings
 
             // --- 2. Balkan-Carpathian-Hellenic Metallogenic Arc (Classical & Roman) ---
             {24.06, 37.71, 12.0, 4.2},  // Laurion (Attica, Greece - Classical Athenian Silver Mines)
             {24.20, 40.90, 11.0, 3.8},  // Mount Pangaeon / Philippi (Macedonian Gold of Philip II)
-            {23.13, 46.30, 14.0, 4.5},  // RoÈ™ia MontanÄƒ / Alburnus Major (Dacia / Apuseni Golden Quadrilateral)
-            {22.85, 46.10, 10.0, 3.5},  // Brad / SÄƒcÄƒrÃ¢mb Gold District
-            {21.43, 42.62, 11.0, 3.6},  // Novo Brdo / TrepÄa Silver-Lead-Gold Belt (Balkans)
+            {23.13, 46.30, 14.0, 4.5},  // Roșia Montană / Alburnus Major (Dacia / Apuseni Golden Quadrilateral)
+            {22.85, 46.10, 10.0, 3.5},  // Brad / Săcărâmb Gold District
+            {21.43, 42.62, 11.0, 3.6},  // Novo Brdo / Trepča Silver-Lead-Gold Belt (Balkans)
             {22.18, 42.08, 9.0, 3.0},   // Kratovo / Osogovo Thracian-Roman Gold
             {24.70, 36.97, 7.0, 2.6},   // Siphnos (Archaic Aegean Silver & Gold)
             {8.03, 45.55, 10.0, 3.4},   // Bessa / Victimulae (Piedmont, Italy - Roman Gold Placers)
@@ -6419,7 +6470,7 @@ public class HistoricalMapGenerator {
             {138.30, 38.00, 9.0, 3.2},  // Sado Island Gold Mine (Japan)
 
             // --- 5. Sub-Saharan African Gold Belts ---
-            {-11.50, 13.50, 14.0, 4.0}, // Bambouk / FalÃ©mÃ© Goldfields (West Africa)
+            {-11.50, 13.50, 14.0, 4.0}, // Bambouk / Falémé Goldfields (West Africa)
             {-9.50, 11.50, 13.0, 3.8},  // Bure Goldfields (Upper Niger River)
             {-1.67, 6.20, 16.0, 4.6},   // Ashanti Gold Belt / Obuasi (Ghana - Gold Coast)
             {30.00, -20.00, 13.0, 3.8}, // Great Zimbabwe / Shona Gold Belt
@@ -6427,10 +6478,10 @@ public class HistoricalMapGenerator {
             {29.00, -24.50, 18.0, 4.8}, // Bushveld Complex Platinum Group Elements (South Africa)
 
             // --- 6. Americas (Pre-Columbian & Supergiant Mineralized Belts) ---
-            {-76.60, 5.70, 14.0, 4.2},  // ChocÃ³ & Calima (Colombia - Pre-Columbian Gold & Platinum Placers)
+            {-76.60, 5.70, 14.0, 4.2},  // Chocó & Calima (Colombia - Pre-Columbian Gold & Platinum Placers)
             {-79.50, -6.70, 12.0, 3.8}, // Lambayeque / Moche Valley (Peru - Ancient Sican/Moche Gold)
             {-70.20, -14.20, 13.0, 4.0},// Carabaya & Lake Titicaca Gold Belt (Inca Coricancha)
-            {-65.75, -19.58, 18.0, 5.2},// Cerro Rico / PotosÃ­ (Bolivia - Giant Silver Mountain)
+            {-65.75, -19.58, 18.0, 5.2},// Cerro Rico / Potosí (Bolivia - Giant Silver Mountain)
             {-102.58, 22.77, 16.0, 4.6},// Zacatecas / Guanajuato Silver Belt (Mexico)
             {-116.00, 40.80, 16.0, 4.5},// Carlin Trend (Nevada, USA - Giant Epithermal Gold)
             {121.50, -30.75, 16.0, 4.5},// Kalgoorlie Golden Mile (Western Australia)
@@ -6463,18 +6514,18 @@ public class HistoricalMapGenerator {
         var spots = loadMRDSDeposits("rare earth", "bastnasite", "monazite", "xenotime", "neodymium", "dysprosium", "yttrium", "lanthanum", "cerium", "lithium", "spodumene", "carbonatite", "loparite", "allanite");
         double[][] majorREE = {
             {109.9, 41.8, 55, 3.0},   // Bayan Obo (Inner Mongolia, China - Giant REE/Fe)
-            {-115.5, 35.5, 42, 2.6},  // Mountain Pass (California, USA - BastnÃ¤site)
+            {-115.5, 35.5, 42, 2.6},  // Mountain Pass (California, USA - Bastnäsite)
             {122.5, -28.7, 45, 2.7},  // Mount Weld (Western Australia - Carbonatite REE)
-            {-46.0, 60.9, 45, 2.6},   // Kvanefjeld / IlÃ­maussaq (Greenland - REE/U)
+            {-46.0, 60.9, 45, 2.6},   // Kvanefjeld / Ilímaussaq (Greenland - REE/U)
             {116.5, 71.0, 45, 2.6},   // Tomtor (Yakutia, Russia - Carbonatite Nb/REE)
             {34.6, 67.8, 40, 2.4},    // Lovozero (Kola Peninsula, Russia - Loparite REE)
             {115.0, 25.5, 50, 2.8},   // Ganzhou / Jiangxi (South China - Heavy Ionic Clays)
-            {103.5, 22.4, 38, 2.3},   // Dong Pao (Vietnam - BastnÃ¤site)
-            {-46.9, -19.6, 42, 2.5},  // AraxÃ¡ (Minas Gerais, Brazil - Carbonatite Nb/REE)
+            {103.5, 22.4, 38, 2.3},   // Dong Pao (Vietnam - Bastnäsite)
+            {-46.9, -19.6, 42, 2.5},  // Araxá (Minas Gerais, Brazil - Carbonatite Nb/REE)
             {-67.5, -21.0, 52, 2.8},  // Salar de Atacama (Chile - Lithium Brines)
             {-68.0, -23.5, 50, 2.7},  // Salar de Uyuni (Bolivia - Lithium Brines)
             {116.0, -33.8, 42, 2.5},  // Greenbushes (Australia - Spodumene Lithium)
-            {14.6, 58.1, 35, 2.2},    // Norra KÃ¤rr (Sweden - Heavy REE)
+            {14.6, 58.1, 35, 2.2},    // Norra Kärr (Sweden - Heavy REE)
             {20.2, 67.8, 38, 2.3},    // Kiruna / Per Geijer (Sweden - Apatite REE)
             {-64.2, 56.3, 40, 2.4},   // Strange Lake (Quebec/Labrador, Canada)
             {-112.6, 62.1, 38, 2.3}   // Nechalacho (NWT, Canada - REE/Zr)
@@ -6531,12 +6582,12 @@ public class HistoricalMapGenerator {
                 for (int gy = 0; gy < 90; gy++) {
                     for (int gx = 0; gx < 180; gx++) {
                         if (!filled[gy][gx] || grid[gy][gx] <= 0) {
-                            grid[gy][gx] = 65.0f; // Global mean continental heat flow baseline (mW/mÂ²)
+                            grid[gy][gx] = 65.0f; // Global mean continental heat flow baseline (mW/m²)
                         }
                     }
                 }
 
-                // Continuous smooth Bilinear Interpolation across 2D spherical coordinates with 360Â° periodic wrapping
+                // Continuous smooth Bilinear Interpolation across 2D spherical coordinates with 360° periodic wrapping
                 for (int y = 0; y < height; y++) {
                     double lat = 90.0 - (y / (double) height) * 180.0;
                     double gyDouble = Math.clamp(((90.0 - lat) / 180.0) * 90.0 - 0.5, 0.0, 88.999);
@@ -6609,7 +6660,7 @@ public class HistoricalMapGenerator {
             double dMed = Math.exp(-(Math.pow(lat - 35.0, 2) / 150.0 + Math.pow(lon - 20.0, 2) / 450.0));
             return 0.85 + (dSahul * 0.75) + (dMed * 0.40);
         } else if (year <= -16000L) {
-            // -25,000 to -16,000 BP: LGM Glacial Aridity Peak (Continuous Sigmoidal Permafrost curve â€” zero line artifacts)
+            // -25,000 to -16,000 BP: LGM Glacial Aridity Peak (Continuous Sigmoidal Permafrost curve — zero line artifacts)
             double permafrostFactor = 1.0 / (1.0 + Math.exp(-(lat - 45.0) / 4.0));
             return 0.55 - (permafrostFactor * 0.15);
         } else if (year <= -5000L) {
@@ -6696,7 +6747,7 @@ public class HistoricalMapGenerator {
                                 int code = (hygeoCodes != null && curRec < hygeoCodes.length) ? hygeoCodes[curRec] : 11;
                                 int colorVal;
                                 if (code >= 10 && code <= 19) {
-                                    // Major groundwater basins (sedimentary porous aquifers: NSAS, Ogallala, GuaranÃ­, GAB, West Siberia, Paris basin...)
+                                    // Major groundwater basins (sedimentary porous aquifers: NSAS, Ogallala, Guaraní, GAB, West Siberia, Paris basin...)
                                     colorVal = 215 + (code % 5) * 5; // 215 - 240
                                 } else if (code >= 20 && code <= 29) {
                                     // Complex hydrogeological structures (fissured / karst / layered)

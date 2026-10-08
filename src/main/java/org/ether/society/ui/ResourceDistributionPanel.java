@@ -49,7 +49,7 @@ import java.util.function.Function;
 
 /**
  * Enhanced UI Panel for editing planet-wide ecological and resource distribution 
- * using real scientific metric variables (GtC, Gt, Mt, mW/mÂ², 10Â³ kmÂ³).
+ * using real scientific metric variables (GtC, Gt, Mt, mW/m², 10³ km³).
  * 
  * Features automated planetary derivation from Tab 1 physics, spatial dispersion algorithms,
  * custom biome/geology map imports (PNG / WMS / ESRI World Files), and real-time 2D visualization.
@@ -129,8 +129,8 @@ public class ResourceDistributionPanel extends BorderPane {
     private Slider aquaticBiomassSlider;      // GtC (Marine & freshwater life)
     private Slider crustalMetalSlider;        // Gt (Industrial base metals: Fe, Cu, Al)
     private Slider preciousMetalSlider;       // Mt (Precious & rare earth ores: Au, Pt, REE)
-    private Slider mantleHeatSlider;          // mW/mÂ² (Mantle heat flow & geothermal/tectonic index)
-    private Slider freshwaterAquiferSlider;   // 10Â³ kmÂ³ (Groundwater & deep aquifer reserves)
+    private Slider mantleHeatSlider;          // mW/m² (Mantle heat flow & geothermal/tectonic index)
+    private Slider freshwaterAquiferSlider;   // 10³ km³ (Groundwater & deep aquifer reserves)
 
     // Custom Map Controls & Buttons
     private Label mapsSecHeader;
@@ -373,7 +373,7 @@ public class ResourceDistributionPanel extends BorderPane {
         if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) return "earth";
         if (lower.contains("mars") || lower.contains("ares")) return "mars";
         if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) return "moon";
-        if (lower.contains("vÃ©nus") || lower.contains("venus") || lower.contains("hesperos")) return "venus";
+        if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) return "venus";
         if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) return "mercury";
         return "none";
     }
@@ -501,7 +501,7 @@ public class ResourceDistributionPanel extends BorderPane {
         planetContextLabel.setWrapText(true);
         planetContextLabel.getStyleClass().add("planet-context-badge");
 
-        syncPlanetBtn = new Button(I18n.getOrDefault("resource.btn.sync_planet", "ðŸ”„ Synchronize with Tab 1 Planet"));
+        syncPlanetBtn = new Button(I18n.getOrDefault("resource.btn.sync_planet", "🔄 Synchronize with Tab 1 Planet"));
         syncPlanetBtn.getStyleClass().add("button-secondary");
         syncPlanetBtn.setMaxWidth(Double.MAX_VALUE);
         syncPlanetBtn.setOnAction(e -> {
@@ -514,7 +514,7 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
-        autoDeriveMasterBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_all", "âš¡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
+        autoDeriveMasterBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_all", "⚡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
         autoDeriveMasterBtn.getStyleClass().addAll("button-secondary", "button-accent-blue");
         autoDeriveMasterBtn.setMaxWidth(Double.MAX_VALUE);
         autoDeriveMasterBtn.setOnAction(e -> {
@@ -538,7 +538,7 @@ public class ResourceDistributionPanel extends BorderPane {
         ));
 
         // --- 2. Standardized Preset Control Bar for Ecology ---
-        ecologyPresetBar = new PresetControlBar<>("resource.preset_title", "PrÃ©rÃ©glage Ã‰cologique & Ressources");
+        ecologyPresetBar = new PresetControlBar<>("resource.preset_title", "Préréglage Écologique & Ressources");
         ecologyPresetBar.setExportCategory("ecology");
         ecologyPresetBar.setPresets(org.ether.society.persistence.PresetStorageService.loadAllEcologyPresets(), EcologyPreset.EARTH_STANDARD);
 
@@ -694,7 +694,7 @@ public class ResourceDistributionPanel extends BorderPane {
         mapSourceCombo.setOnAction(e -> applyPresetMapSource(mapSourceCombo.getValue()));
 
         biomeMapRowLabel = new Label(I18n.getOrDefault("resource.param.biome_map", "Biome / Extraterrestrial Vegetation Map (PNG):"));
-        biomeFileLabel = new Label(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+        biomeFileLabel = new Label(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
         biomeFileLabel.getStyleClass().add("value-label");
         loadBiomeBtn = new Button(I18n.get("planet.map.btn_load"));
         loadBiomeBtn.getStyleClass().add("button-secondary");
@@ -710,7 +710,7 @@ public class ResourceDistributionPanel extends BorderPane {
             alert.showAndWait().ifPresent(res -> {
                 if (res == ButtonType.OK) {
                     customBiomeImage = null;
-                    biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+                    biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
                     updatePreviewCanvas();
                     updateSummary();
                 }
@@ -719,12 +719,12 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox biomeBox = new HBox(5, loadBiomeBtn, clearBiomeBtn);
 
         biomeFormatHintLabel = new Label(I18n.getOrDefault("resource.format.biome_hint",
-                "PNG / JPEG (projection Ã©quirectangulaire 2:1) :\nImage de biomes ou couvert vÃ©gÃ©tal (niveaux de gris ou RGB)."));
+                "PNG / JPEG (projection équirectangulaire 2:1) :\nImage de biomes ou couvert végétal (niveaux de gris ou RGB)."));
         biomeFormatHintLabel.setWrapText(true);
         biomeFormatHintLabel.getStyleClass().add("hint-label");
 
         resourceMapRowLabel = new Label(I18n.getOrDefault("resource.param.resource_map", "Geological & Multi-Channel Ore Map (PNG):"));
-        resourceFileLabel = new Label(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+        resourceFileLabel = new Label(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
         resourceFileLabel.getStyleClass().add("value-label");
         loadResourceBtn = new Button(I18n.get("planet.map.btn_load"));
         loadResourceBtn.getStyleClass().add("button-secondary");
@@ -740,7 +740,7 @@ public class ResourceDistributionPanel extends BorderPane {
             alert.showAndWait().ifPresent(res -> {
                 if (res == ButtonType.OK) {
                     customResourceImage = null;
-                    resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+                    resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
                     updatePreviewCanvas();
                     updateSummary();
                 }
@@ -749,12 +749,12 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox resourceBox = new HBox(5, loadResourceBtn, clearResourceBtn);
 
         geologyFormatHintLabel = new Label(I18n.getOrDefault("resource.format.geology_hint",
-                "PNG multi-canaux (projection Ã©quirectangulaire 2:1) :\n â€¢ Canal R (Rouge) = MÃ©taux crustaux industriels (Fer/Cuivre)\n â€¢ Canal G (Vert) = Minerais prÃ©cieux & terres rares (Or/Pt)\n â€¢ Canal B (Bleu) = Flux thermique du manteau & aquifÃ¨res"));
+                "PNG multi-canaux (projection équirectangulaire 2:1) :\n • Canal R (Rouge) = Métaux crustaux industriels (Fer/Cuivre)\n • Canal G (Vert) = Minerais précieux & terres rares (Or/Pt)\n • Canal B (Bleu) = Flux thermique du manteau & aquifères"));
         geologyFormatHintLabel.setWrapText(true);
         geologyFormatHintLabel.getStyleClass().add("hint-label");
 
         hydroMapRowLabel = new Label(I18n.getOrDefault("resource.param.hydro_map", "Hydrographic & Rivers Map (PNG Watercourses):"));
-        hydroFileLabel = new Label(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+        hydroFileLabel = new Label(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
         hydroFileLabel.getStyleClass().add("value-label");
         loadHydroBtn = new Button(I18n.get("planet.map.btn_load"));
         loadHydroBtn.getStyleClass().add("button-secondary");
@@ -770,7 +770,7 @@ public class ResourceDistributionPanel extends BorderPane {
             alert.showAndWait().ifPresent(res -> {
                 if (res == ButtonType.OK) {
                     customHydroImage = null;
-                    hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+                    hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
                     updatePreviewCanvas();
                     updateSummary();
                 }
@@ -779,7 +779,7 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox hydroBox = new HBox(5, loadHydroBtn, clearHydroBtn);
 
         hydroFormatHintLabel = new Label(I18n.getOrDefault("resource.format.hydro_hint",
-                "PNG / JPEG (projection Ã©quirectangulaire 2:1) :\nNoir (0) = sans eau | Blanc (255) = rÃ©seau fluvial / dÃ©bit max."));
+                "PNG / JPEG (projection équirectangulaire 2:1) :\nNoir (0) = sans eau | Blanc (255) = réseau fluvial / débit max."));
         hydroFormatHintLabel.setWrapText(true);
         hydroFormatHintLabel.getStyleClass().add("hint-label");
 
@@ -788,7 +788,7 @@ public class ResourceDistributionPanel extends BorderPane {
         fetchOnlineHydroBtn.getStyleClass().add("button-secondary");
         fetchOnlineHydroBtn.setOnAction(e -> fetchOnlineHydroData());
 
-        proceduralHydroBtn = new Button(I18n.getOrDefault("resource.btn.procedural_hydro", "âš¡ Auto-generate Rivers & Watercourses (Procedural Slope)"));
+        proceduralHydroBtn = new Button(I18n.getOrDefault("resource.btn.procedural_hydro", "⚡ Auto-generate Rivers & Watercourses (Procedural Slope)"));
         proceduralHydroBtn.setMaxWidth(Double.MAX_VALUE);
         proceduralHydroBtn.getStyleClass().add("button-secondary");
         proceduralHydroBtn.setOnAction(e -> generateProceduralHydrography());
@@ -798,7 +798,7 @@ public class ResourceDistributionPanel extends BorderPane {
         fetchOnlineBtn.getStyleClass().add("button-secondary");
         fetchOnlineBtn.setOnAction(e -> fetchOnlineSatelliteData());
 
-        exportMapsBtn = new Button(I18n.getOrDefault("resource.btn.export_maps", "ðŸ“¤ Export Maps (PNG + WorldFile .tfw)"));
+        exportMapsBtn = new Button(I18n.getOrDefault("resource.btn.export_maps", "📤 Export Maps (PNG + WorldFile .tfw)"));
         exportMapsBtn.setMaxWidth(Double.MAX_VALUE);
         exportMapsBtn.getStyleClass().add("button-secondary");
         exportMapsBtn.setOnAction(e -> exportMapsWithWorldFiles());
@@ -811,10 +811,10 @@ public class ResourceDistributionPanel extends BorderPane {
         mapStatusLabel = new Label();
         mapStatusLabel.getStyleClass().add("value-label");
         mapStatusLabel.setWrapText(true);
-        // Note: customMapsSection legacy wrapper removed â€” controls are assembled
+        // Note: customMapsSection legacy wrapper removed — controls are assembled
         // inside their respective domain import boxes (biomeDomainSection, hydroDomainSection, geologyDomainSection).
 
-        // --- Climate map controls (used inside climateDomainSection â†’ climateImportBox) ---
+        // --- Climate map controls (used inside climateDomainSection → climateImportBox) ---
         climateMapRowLabel = new Label();
         climateFileLabel = new Label(I18n.get("planet.map.none"));
         climateFileLabel.getStyleClass().add("value-label");
@@ -938,7 +938,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         crustalMetalRowLabel = new Label(I18n.getOrDefault("resource.label.industrial_metals", "Industrial Metal Reserves (Iron/Copper):"));
         preciousMetalRowLabel = new Label(I18n.getOrDefault("resource.label.precious_metals", "Precious Ores & REE (Gold/Pt):"));
-        mantleHeatRowLabel = new Label(I18n.getOrDefault("resource.param.mantle_heat", "Mantle Heat Flux (mW/mÂ²):"));
+        mantleHeatRowLabel = new Label(I18n.getOrDefault("resource.param.mantle_heat", "Mantle Heat Flux (mW/m²):"));
         freshwaterAquiferRowLabel = new Label(I18n.getOrDefault("resource.label.freshwater", "Freshwater Reserves & Aquifers:"));
 
         // ---- DOMAIN SEEDS (one per domain, replacing global seed section) ----
@@ -946,8 +946,8 @@ public class ResourceDistributionPanel extends BorderPane {
 
         // --- DOMAINE 1 : BIOMES & FLORE ---
         ToggleGroup biomeGroup = new ToggleGroup();
-        radioProcBiome = new RadioButton(I18n.getOrDefault("resource.mode.procedural_biome", "â–¶ Procedural Biomes"));
-        radioImportBiome = new RadioButton(I18n.getOrDefault("resource.mode.import_biome", "ðŸ“‚ Biome Map (PNG)"));
+        radioProcBiome = new RadioButton(I18n.getOrDefault("resource.mode.procedural_biome", "▶ Procedural Biomes"));
+        radioImportBiome = new RadioButton(I18n.getOrDefault("resource.mode.import_biome", "📂 Biome Map (PNG)"));
         radioProcBiome.setToggleGroup(biomeGroup);
         radioImportBiome.setToggleGroup(biomeGroup);
         radioProcBiome.setSelected(true);
@@ -959,7 +959,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
             updatePreviewCanvas();
         });
-        randSeedBtn = new Button("ðŸŽ²");
+        randSeedBtn = new Button("🎲");
         randSeedBtn.getStyleClass().add("button-secondary");
         randSeedBtn.setOnAction(e -> {
             biomeSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
@@ -970,13 +970,13 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox.setHgrow(biomeSeedField, Priority.ALWAYS);
         seedField = biomeSeedField; // EcologyPreset compat
 
-        exportBiomeBtn = new Button(I18n.getOrDefault("resource.btn.export_biome", "ðŸ“¤ Export Biome Map (PNG / JPEG)"));
+        exportBiomeBtn = new Button(I18n.getOrDefault("resource.btn.export_biome", "📤 Export Biome Map (PNG / JPEG)"));
         exportBiomeBtn.setMaxWidth(Double.MAX_VALUE);
         exportBiomeBtn.getStyleClass().add("button-secondary");
         exportBiomeBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_biome", "Export the active biome map as high-resolution raster (PNG / JPEG).")));
         exportBiomeBtn.setOnAction(e -> exportBiomeMap());
 
-        autoDeriveEcologyBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_eco", "âš¡ Auto-derive Ecology & Biomes from Physics"));
+        autoDeriveEcologyBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_eco", "⚡ Auto-derive Ecology & Biomes from Physics"));
         autoDeriveEcologyBtn.getStyleClass().add("button-secondary");
         autoDeriveEcologyBtn.setMaxWidth(Double.MAX_VALUE);
         autoDeriveEcologyBtn.setOnAction(e -> autoDeriveEcologyFromPlanet());
@@ -1045,8 +1045,8 @@ public class ResourceDistributionPanel extends BorderPane {
 
         // --- DOMAINE 2 : HYDROGRAPHIE & EAU DOUCE ---
         ToggleGroup hydroGroup = new ToggleGroup();
-        radioProcHydro = new RadioButton(I18n.getOrDefault("resource.mode.procedural_hydro", "â–¶ Procedural Hydrography"));
-        radioImportHydro = new RadioButton(I18n.getOrDefault("resource.mode.import_hydro", "ðŸ“‚ Hydrographic Map (PNG)"));
+        radioProcHydro = new RadioButton(I18n.getOrDefault("resource.mode.procedural_hydro", "▶ Procedural Hydrography"));
+        radioImportHydro = new RadioButton(I18n.getOrDefault("resource.mode.import_hydro", "📂 Hydrographic Map (PNG)"));
         radioProcHydro.setToggleGroup(hydroGroup);
         radioImportHydro.setToggleGroup(hydroGroup);
         radioProcHydro.setSelected(true);
@@ -1058,7 +1058,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
             updatePreviewCanvas();
         });
-        Button hydroRandBtn = new Button("ðŸŽ²");
+        Button hydroRandBtn = new Button("🎲");
         hydroRandBtn.getStyleClass().add("button-secondary");
         hydroRandBtn.setOnAction(e -> {
             hydroSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
@@ -1068,7 +1068,7 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox hydroSeedBox = new HBox(5, hydroSeedField, hydroRandBtn);
         HBox.setHgrow(hydroSeedField, Priority.ALWAYS);
 
-        autoDeriveHydroBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_hydro", "ðŸ’§ Auto-derive Aquifers & Freshwater from Physics"));
+        autoDeriveHydroBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_hydro", "💧 Auto-derive Aquifers & Freshwater from Physics"));
         autoDeriveHydroBtn.getStyleClass().add("button-secondary");
         autoDeriveHydroBtn.setMaxWidth(Double.MAX_VALUE);
         autoDeriveHydroBtn.setOnAction(e -> autoDeriveHydroFromPlanet());
@@ -1077,7 +1077,7 @@ public class ResourceDistributionPanel extends BorderPane {
         hydroStatusLabel.getStyleClass().add("subcard-status-label");
         hydroStatusLabel.setWrapText(true);
 
-        exportHydroBtn = new Button(I18n.getOrDefault("resource.btn.export_hydro", "ðŸ“¤ Export Hydrography Map (PNG / JPEG)"));
+        exportHydroBtn = new Button(I18n.getOrDefault("resource.btn.export_hydro", "📤 Export Hydrography Map (PNG / JPEG)"));
         exportHydroBtn.setMaxWidth(Double.MAX_VALUE);
         exportHydroBtn.getStyleClass().add("button-secondary");
         exportHydroBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_hydro", "Export the active hydrographic map as high-resolution raster (PNG / JPEG).")));
@@ -1088,7 +1088,7 @@ public class ResourceDistributionPanel extends BorderPane {
                         I18n.getOrDefault("resource.tooltip.seed_hydro", "Random seed for procedural rivers and watercourses")),
                 autoDeriveHydroBtn,
                 hydroStatusLabel,
-                createControlRow(freshwaterAquiferRowLabel, freshwaterAquiferSlider, "%.0f x10Â³ kmÂ³", I18n.getOrDefault("resource.desc.freshwater_aquifer", "Total volume of groundwater and continental aquifers")),
+                createControlRow(freshwaterAquiferRowLabel, freshwaterAquiferSlider, "%.0f x10³ km³", I18n.getOrDefault("resource.desc.freshwater_aquifer", "Total volume of groundwater and continental aquifers")),
                 exportHydroBtn
         );
         hydroProcBox.getStyleClass().add("subcard-procedural-box");
@@ -1142,10 +1142,10 @@ public class ResourceDistributionPanel extends BorderPane {
                 radioProcHydro, hydroProcBox, radioImportHydro, hydroImportBox
         ));
 
-        // --- DOMAINE 3 : CLIMAT & ATMOSPHÃˆRE ---
+        // --- DOMAINE 3 : CLIMAT & ATMOSPHÈRE ---
         ToggleGroup climateGroup = new ToggleGroup();
-        radioProcClimate = new RadioButton(I18n.getOrDefault("resource.mode.procedural_climate", "â–¶ Procedural Climate"));
-        radioImportClimate = new RadioButton(I18n.getOrDefault("resource.mode.import_climate", "ðŸ“‚ Climate Maps (PNG)"));
+        radioProcClimate = new RadioButton(I18n.getOrDefault("resource.mode.procedural_climate", "▶ Procedural Climate"));
+        radioImportClimate = new RadioButton(I18n.getOrDefault("resource.mode.import_climate", "📂 Climate Maps (PNG)"));
         radioProcClimate.setToggleGroup(climateGroup);
         radioImportClimate.setToggleGroup(climateGroup);
         radioProcClimate.setSelected(true);
@@ -1157,7 +1157,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
             updatePreviewCanvas();
         });
-        Button climateRandBtn = new Button("ðŸŽ²");
+        Button climateRandBtn = new Button("🎲");
         climateRandBtn.getStyleClass().add("button-secondary");
         climateRandBtn.setOnAction(e -> {
             climateSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
@@ -1228,10 +1228,10 @@ public class ResourceDistributionPanel extends BorderPane {
                 radioProcClimate, climateProcBox, radioImportClimate, climateImportBox
         ));
 
-        // --- DOMAINE 4 : GÃ‰OLOGIE, TECTONIQUE & MINERAIS ---
+        // --- DOMAINE 4 : GÉOLOGIE, TECTONIQUE & MINERAIS ---
         ToggleGroup geologyGroup = new ToggleGroup();
-        radioProcGeology = new RadioButton(I18n.getOrDefault("resource.mode.procedural_geology", "â–¶ Procedural Geology"));
-        radioImportGeology = new RadioButton(I18n.getOrDefault("resource.mode.import_geology", "ðŸ“‚ Geological Map (PNG)"));
+        radioProcGeology = new RadioButton(I18n.getOrDefault("resource.mode.procedural_geology", "▶ Procedural Geology"));
+        radioImportGeology = new RadioButton(I18n.getOrDefault("resource.mode.import_geology", "📂 Geological Map (PNG)"));
         radioProcGeology.setToggleGroup(geologyGroup);
         radioImportGeology.setToggleGroup(geologyGroup);
         radioProcGeology.setSelected(true);
@@ -1243,7 +1243,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
             updatePreviewCanvas();
         });
-        Button geologyRandBtn = new Button("ðŸŽ²");
+        Button geologyRandBtn = new Button("🎲");
         geologyRandBtn.getStyleClass().add("button-secondary");
         geologyRandBtn.setOnAction(e -> {
             geologySeedField.setText(String.valueOf(new Random().nextLong(1000000)));
@@ -1253,12 +1253,12 @@ public class ResourceDistributionPanel extends BorderPane {
         HBox geologySeedBox = new HBox(5, geologySeedField, geologyRandBtn);
         HBox.setHgrow(geologySeedField, Priority.ALWAYS);
 
-        exportGeologyBtn = new Button(I18n.getOrDefault("resource.btn.export_geology", "ðŸ“¤ Export Geological Map (PNG + WorldFile)"));
+        exportGeologyBtn = new Button(I18n.getOrDefault("resource.btn.export_geology", "📤 Export Geological Map (PNG + WorldFile)"));
         exportGeologyBtn.setMaxWidth(Double.MAX_VALUE);
         exportGeologyBtn.getStyleClass().add("button-secondary");
         exportGeologyBtn.setOnAction(e -> exportMapsWithWorldFiles());
 
-        autoDeriveGeologyBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_geo", "ðŸŒ‹ Calculate Tectonics & Metals from Mantle"));
+        autoDeriveGeologyBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_geo", "🌋 Calculate Tectonics & Metals from Mantle"));
         autoDeriveGeologyBtn.getStyleClass().add("button-secondary");
         autoDeriveGeologyBtn.setMaxWidth(Double.MAX_VALUE);
         autoDeriveGeologyBtn.setOnAction(e -> autoDeriveGeologyFromPlanet());
@@ -1276,7 +1276,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 createControlRow(volcanicRowLabel, volcanicActivitySlider, "%.1f VEI", I18n.getOrDefault("resource.desc.volcanic_activity", "Volcanic activity level generating eruptions")),
                 createControlRow(crustalMetalRowLabel, crustalMetalSlider, "%.0f Gt", I18n.getOrDefault("resource.desc.crustal_metal", "Industrial metal reserves in crust (Gigatons)")),
                 createControlRow(preciousMetalRowLabel, preciousMetalSlider, "%.0f Mt", I18n.getOrDefault("resource.desc.precious_metal", "Precious elements and rare earth stock (Megatons)")),
-                createControlRow(mantleHeatRowLabel, mantleHeatSlider, "%.1f mW/mÂ²", I18n.getOrDefault("resource.desc.mantle_heat", "Mantle heat flux, volcanism, and geothermal activity")),
+                createControlRow(mantleHeatRowLabel, mantleHeatSlider, "%.1f mW/m²", I18n.getOrDefault("resource.desc.mantle_heat", "Mantle heat flux, volcanism, and geothermal activity")),
                 exportGeologyBtn
         );
         geologyProcBox.getStyleClass().add("subcard-procedural-box");
@@ -1356,22 +1356,22 @@ public class ResourceDistributionPanel extends BorderPane {
         // View Mode Selector
         viewModeCombo = new ComboBox<>();
         viewModeCombo.getItems().addAll(
-                I18n.getOrDefault("resource.view.section_base", "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ 12 CARTES CANONIQUES DE BASE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"),
-                I18n.getOrDefault("resource.view.biomes", "ðŸŒ¿ 1. Biomes & Couverture VÃ©gÃ©tale"),
-                I18n.getOrDefault("resource.view.hydro", "ðŸŒŠ 2. Hydrographie & RÃ©seau Fluvial"),
+                I18n.getOrDefault("resource.view.section_base", "────────── 12 CARTES CANONIQUES DE BASE ──────────"),
+                I18n.getOrDefault("resource.view.biomes", "🌿 1. Biomes & Couverture Végétale"),
+                I18n.getOrDefault("resource.view.hydro", "🌊 2. Hydrographie & Réseau Fluvial"),
                 I18n.getOrDefault("resource.view.coal", "â›ï¸ 3. Gisements de Charbon"),
                 I18n.getOrDefault("resource.view.oil", "ðŸ›¢ï¸ 4. RÃ©serves de PÃ©trole Brut"),
-                I18n.getOrDefault("resource.view.gas", "ðŸ”¥ 5. Champs de Gaz Naturel"),
+                I18n.getOrDefault("resource.view.gas", "🔥 5. Champs de Gaz Naturel"),
                 I18n.getOrDefault("resource.view.uranium", "âš›ï¸ 6. Minerais d'Uranium & Fission"),
-                I18n.getOrDefault("resource.view.helium3", "ðŸŒŒ 7. HÃ©lium-3 & Fusion Lunaires"),
+                I18n.getOrDefault("resource.view.helium3", "🌌 7. Hélium-3 & Fusion Lunaires"),
                 I18n.getOrDefault("resource.view.iron_copper", "â›“ï¸ 8. MÃ©taux Fer BIF & Cuivre"),
-                I18n.getOrDefault("resource.view.precious_metals", "ðŸ’Ž 9. MÃ©taux PrÃ©cieux (Or, Argent, PGM)"),
-                I18n.getOrDefault("resource.view.rare_earths", "ðŸ”‹ 10. Terres Rares & MinÃ©raux Critiques"),
-                I18n.getOrDefault("resource.view.heat", "ðŸŒ‹ 11. Flux Thermique du Manteau"),
-                I18n.getOrDefault("resource.view.aquifer", "ðŸ’§ 12. AquifÃ¨res & Eau Douce"),
-                I18n.getOrDefault("resource.view.section_derived", "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CARTES DÃ‰DUITES / ANOMALIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"),
+                I18n.getOrDefault("resource.view.precious_metals", "💎 9. Métaux Précieux (Or, Argent, PGM)"),
+                I18n.getOrDefault("resource.view.rare_earths", "🔋 10. Terres Rares & Minéraux Critiques"),
+                I18n.getOrDefault("resource.view.heat", "🌋 11. Flux Thermique du Manteau"),
+                I18n.getOrDefault("resource.view.aquifer", "💧 12. Aquifères & Eau Douce"),
+                I18n.getOrDefault("resource.view.section_derived", "────────── CARTES DÉDUITES / ANOMALIES ──────────"),
                 I18n.getOrDefault("resource.view.temp", "ðŸŒ¡ï¸ 13. TempÃ©ratures Surface & Microclimats"),
-                I18n.getOrDefault("resource.view.seismic", "ðŸŒ‹ 14. Tectonique & AlÃ©a Sismique/Volcanique"),
+                I18n.getOrDefault("resource.view.seismic", "🌋 14. Tectonique & Aléa Sismique/Volcanique"),
                 I18n.getOrDefault("resource.view.aridity", "ðŸœï¸ 15. AriditÃ© & Salinisation des Sols")
         );
         viewModeCombo.setValue(viewModeCombo.getItems().get(1));
@@ -1391,7 +1391,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 if (empty || item == null) {
                     setText(null);
                     setDisable(false);
-                } else if (item.startsWith("â”€â”€â”€â”€â”€â”€")) {
+                } else if (item.startsWith("──────")) {
                     setText(item);
                     setDisable(true);
                     setStyle("-fx-font-weight: bold; -fx-opacity: 0.6; -fx-padding: 4 8;");
@@ -1404,7 +1404,7 @@ public class ResourceDistributionPanel extends BorderPane {
         });
         viewModeCombo.setOnAction(e -> {
             String val = viewModeCombo.getValue();
-            if (val != null && val.startsWith("â”€â”€â”€â”€â”€â”€")) {
+            if (val != null && val.startsWith("──────")) {
                 viewModeCombo.setValue(viewModeCombo.getItems().get(1));
                 return;
             }
@@ -1420,7 +1420,7 @@ public class ResourceDistributionPanel extends BorderPane {
         btnReliefOverlay = new ToggleButton(I18n.getOrDefault("resource.btn.relief_overlay", "â›°ï¸ Relief"));
         btnReliefOverlay.setSelected(false);
         btnReliefOverlay.getStyleClass().add("button-secondary");
-        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec dÃ©limitation du trait de cÃ´te.")));
+        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
         btnReliefOverlay.setOnAction(e -> updatePreviewCanvas());
 
         HBox viewModeControlBar = new HBox(8, viewModeCombo, btnReliefOverlay);
@@ -1552,7 +1552,7 @@ public class ResourceDistributionPanel extends BorderPane {
         aquaticBiomassSlider.setValue(aBiomass);
 
         if (biomeStatusLabel != null) {
-            biomeStatusLabel.setText(String.format(I18n.getOrDefault("resource.status.auto_derived_biome", "âš¡ Auto-derived from %s: Plant=%.0f GtC | Soils=%.0f GtC | Fauna=%.2f GtC | Aquatic=%.2f GtC"),
+            biomeStatusLabel.setText(String.format(I18n.getOrDefault("resource.status.auto_derived_biome", "⚡ Auto-derived from %s: Plant=%.0f GtC | Soils=%.0f GtC | Fauna=%.2f GtC | Aquatic=%.2f GtC"),
                     p.name(), tBiomass, sCarbon, fBiomass, aBiomass));
         }
 
@@ -1578,7 +1578,7 @@ public class ResourceDistributionPanel extends BorderPane {
             radioProcHydro.setSelected(true);
         }
         if (hydroStatusLabel != null) {
-            hydroStatusLabel.setText(String.format(I18n.getOrDefault("resource.status.auto_derived_hydro", "âš¡ Auto-derived from %s: Groundwater / Aquifers=%.0f x10Â³ kmÂ³"), p.name(), aquifer));
+            hydroStatusLabel.setText(String.format(I18n.getOrDefault("resource.status.auto_derived_hydro", "⚡ Auto-derived from %s: Groundwater / Aquifers=%.0f x10³ km³"), p.name(), aquifer));
         }
 
         if (ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
@@ -1617,7 +1617,7 @@ public class ResourceDistributionPanel extends BorderPane {
             radioProcGeology.setSelected(true);
         }
         if (geologyStatusLabel != null) {
-            geologyStatusLabel.setText(String.format(I18n.getOrDefault("resource.status.auto_derived_geo", "âš¡ Auto-derived from %s: Metals=%.0f Gt | Precious=%.0f Mt | Mantle=%.1f mW/mÂ² | Seismic=%.1f Mag | Volcanism=%.1f VEI"),
+            geologyStatusLabel.setText(String.format(I18n.getOrDefault("resource.status.auto_derived_geo", "⚡ Auto-derived from %s: Metals=%.0f Gt | Precious=%.0f Mt | Mantle=%.1f mW/m² | Seismic=%.1f Mag | Volcanism=%.1f VEI"),
                     p.name(), crustal, precious, heat, seismic, volcanic));
         }
 
@@ -1655,22 +1655,22 @@ public class ResourceDistributionPanel extends BorderPane {
         if (p == null) p = PlanetPreset.EARTH_LIKE;
 
         StringBuilder sb = new StringBuilder();
-        sb.append(I18n.getOrDefault("planet.thermo.header", "ðŸ”¬ **SynthÃ¨se Thermodynamique (%s)** :\n", I18n.getPlanetPresetDisplayName(p.name())));
+        sb.append(I18n.getOrDefault("planet.thermo.header", "🔬 **Synthèse Thermodynamique (%s)** :\n", I18n.getPlanetPresetDisplayName(p.name())));
 
         if (p.atmospherePressureAtm() < 0.01) {
-            sb.append(I18n.getOrDefault("planet.thermo.no_atmosphere", "â€¢ **AtmosphÃ¨re absente ou extrÃªmement faible** (%s atm) : Eau liquide impossible Ã  la surface (sublimation). PluviomÃ©trie nulle, biomasse nulle.\n", String.format("%.3f", p.atmospherePressureAtm())));
+            sb.append(I18n.getOrDefault("planet.thermo.no_atmosphere", "• **Atmosphère absente ou extrêmement faible** (%s atm) : Eau liquide impossible à la surface (sublimation). Pluviométrie nulle, biomasse nulle.\n", String.format("%.3f", p.atmospherePressureAtm())));
         } else if (p.waterLevel() < -0.2) {
-            sb.append(I18n.getOrDefault("planet.thermo.arid", "â€¢ **Monde Aride / DÃ©sertique** (Eau %s%%) : AquifÃ¨res restreints, faune concentrÃ©e dans les bassins continentaux.\n", String.format("%.0f", (1.0 + p.waterLevel()) * 50)));
+            sb.append(I18n.getOrDefault("planet.thermo.arid", "• **Monde Aride / Désertique** (Eau %s%%) : Aquifères restreints, faune concentrée dans les bassins continentaux.\n", String.format("%.0f", (1.0 + p.waterLevel()) * 50)));
         } else if (p.waterLevel() > 0.4) {
-            sb.append(I18n.getOrDefault("planet.thermo.ocean", "â€¢ **Monde OcÃ©an** (Eau %s%%) : Biomasse marine hyper-dominante (phytoplancton), rÃ©serves en eau douce majeures.\n", String.format("%.0f", (1.0 + p.waterLevel()) * 50)));
+            sb.append(I18n.getOrDefault("planet.thermo.ocean", "• **Monde Océan** (Eau %s%%) : Biomasse marine hyper-dominante (phytoplancton), réserves en eau douce majeures.\n", String.format("%.0f", (1.0 + p.waterLevel()) * 50)));
         } else {
-            sb.append(I18n.getOrDefault("planet.thermo.balanced", "â€¢ **Balanced Ecosystem (Earth-Like)**: Complete continental water cycle, optimal forest and wildlife biomass.\n"));
+            sb.append(I18n.getOrDefault("planet.thermo.balanced", "• **Balanced Ecosystem (Earth-Like)**: Complete continental water cycle, optimal forest and wildlife biomass.\n"));
         }
 
         if (p.isSatellite() || p.radiusKm() < 3000) {
-            sb.append(I18n.getOrDefault("planet.thermo.small_body", "â€¢ **Corps de Faible Rayon (%s km)** : Refroidissement du manteau rapide âž” Flux thermique et mÃ©taux industriels rÃ©duits.", String.format("%.0f", p.radiusKm())));
+            sb.append(I18n.getOrDefault("planet.thermo.small_body", "• **Corps de Faible Rayon (%s km)** : Refroidissement du manteau rapide ➔ Flux thermique et métaux industriels réduits.", String.format("%.0f", p.radiusKm())));
         } else {
-            sb.append(I18n.getOrDefault("planet.thermo.massive_body", "â€¢ **Corps Massif (%s km)** : Tectonique des plaques active, rÃ©serves mÃ©talliques crustales et minerais prÃ©cieux abondants.", String.format("%.0f", p.radiusKm())));
+            sb.append(I18n.getOrDefault("planet.thermo.massive_body", "• **Corps Massif (%s km)** : Tectonique des plaques active, réserves métalliques crustales et minerais précieux abondants.", String.format("%.0f", p.radiusKm())));
         }
 
         thermoSynthesisBadge.setText(sb.toString());
@@ -1762,7 +1762,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         if (p.customBiomeBase64() != null) {
             customBiomeImage = ImageMapLoader.base64PngToImage(p.customBiomeBase64());
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "ðŸŒ¿ Preset Biomes"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "🌿 Preset Biomes"));
             if (radioImportBiome != null) radioImportBiome.setSelected(true);
         } else if ("earth".equals(planetKey)) {
             if (biomeSourceCombo != null) biomeSourceCombo.setValue("earth");
@@ -1777,14 +1777,14 @@ public class ResourceDistributionPanel extends BorderPane {
             if (radioImportBiome != null) radioImportBiome.setSelected(true);
         } else {
             customBiomeImage = null;
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (radioProcBiome != null) radioProcBiome.setSelected(true);
             if (biomeSourceCombo != null) biomeSourceCombo.setValue("none");
         }
 
         if (p.customResourceBase64() != null) {
             customResourceImage = ImageMapLoader.base64PngToImage(p.customResourceBase64());
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.preset.resources", "ðŸª¨ Preset Resources"));
+            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.preset.resources", "🪨 Preset Resources"));
             if (radioImportGeology != null) radioImportGeology.setSelected(true);
         } else if ("earth".equals(planetKey)) {
             if (geologySourceCombo != null) geologySourceCombo.setValue("earth");
@@ -1799,14 +1799,14 @@ public class ResourceDistributionPanel extends BorderPane {
             prepopulateGeologyTensors(planetKey, epochYear);
         } else {
             customResourceImage = null;
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (radioProcGeology != null) radioProcGeology.setSelected(true);
             if (geologySourceCombo != null) geologySourceCombo.setValue("none");
         }
 
         if (p.customHydroBase64() != null) {
             customHydroImage = ImageMapLoader.base64PngToImage(p.customHydroBase64());
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.preset.hydro", "ðŸ’§ Preset Hydro"));
+            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.preset.hydro", "💧 Preset Hydro"));
             if (radioImportHydro != null) radioImportHydro.setSelected(true);
         } else if ("earth".equals(planetKey)) {
             if (hydroSourceCombo != null) hydroSourceCombo.setValue("earth");
@@ -1821,7 +1821,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (radioImportHydro != null) radioImportHydro.setSelected(true);
         } else {
             customHydroImage = null;
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (radioProcHydro != null) radioProcHydro.setSelected(true);
             if (hydroSourceCombo != null) hydroSourceCombo.setValue("none");
         }
@@ -1841,7 +1841,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (radioImportClimate != null) radioImportClimate.setSelected(true);
         } else {
             customClimateImage = null;
-            if (climateFileLabel != null) climateFileLabel.setText("â€”");
+            if (climateFileLabel != null) climateFileLabel.setText("—");
             if (radioProcClimate != null) radioProcClimate.setSelected(true);
         }
 
@@ -1860,7 +1860,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (radioImportClimate != null) radioImportClimate.setSelected(true);
         } else {
             customRainfallImage = null;
-            if (rainfallFileLabel != null) rainfallFileLabel.setText("â€”");
+            if (rainfallFileLabel != null) rainfallFileLabel.setText("—");
         }
 
         if (p.customSeasonalityBase64() != null) {
@@ -1878,7 +1878,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (radioImportClimate != null) radioImportClimate.setSelected(true);
         } else {
             customSeasonalityImage = null;
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText("â€”");
+            if (seasonalityFileLabel != null) seasonalityFileLabel.setText("—");
         }
 
         if (viewModeCombo != null) {
@@ -1902,7 +1902,7 @@ public class ResourceDistributionPanel extends BorderPane {
         if (file != null) {
             try {
                 customBiomeImage = new Image(new FileInputStream(file));
-                biomeFileLabel.setText("ðŸ“· " + file.getName());
+                biomeFileLabel.setText("📷 " + file.getName());
                 if (viewModeCombo != null) {
                     viewModeCombo.getSelectionModel().select(1);
                 }
@@ -1923,7 +1923,7 @@ public class ResourceDistributionPanel extends BorderPane {
         if (file != null) {
             try {
                 customResourceImage = new Image(new FileInputStream(file));
-                resourceFileLabel.setText("ðŸª¨ " + file.getName());
+                resourceFileLabel.setText("🪨 " + file.getName());
                 updateSummary();
                 updatePreviewCanvas();
             } catch (Exception ex) {
@@ -2014,18 +2014,18 @@ public class ResourceDistributionPanel extends BorderPane {
     // Helper subroutine: show climate import format help - internal state computation & bounds checking
     private void showClimateImportFormatHelp() {
         WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("planet.dialog.climate_help_title", "SpÃ©cifications des Cartes Climatiques"),
-                I18n.getOrDefault("planet.dialog.climate_help_header", "Formats d'Image SupportÃ©s pour les DonnÃ©es Climatiques"),
-                "Images PNG/JPEG au ratio 2:1 (ex: 2048Ã—1024 px, projection Ã©quirectangulaire Plate CarrÃ©e).\n\n" +
-                "1. CARTES SÃ‰PARÃ‰ES EN NIVEAUX DE GRIS OU DÃ‰GRADÃ‰S THERMIQUES :\n" +
-                "   â€¢ TempÃ©ratures : Noir / Bleu = âˆ’50Â°C, Blanc / Rouge = +50Â°C\n" +
-                "   â€¢ PrÃ©cipitations : Noir = 0 mm/an, Blanc / Bleu foncÃ© = 3000 mm/an\n" +
-                "   â€¢ SaisonnalitÃ© : Noir = 0Â°C, Blanc / Magenta = 50Â°C d'amplitude annuelle\n\n" +
-                "2. CARTE COMBINÃ‰E MULTI-CANAUX RGB :\n" +
-                "   â€¢ R (Rouge) = TempÃ©rature (âˆ’50Â°C Ã  +50Â°C)\n" +
-                "   â€¢ G (Vert) = PrÃ©cipitations (0 Ã  3000 mm/an)\n" +
-                "   â€¢ B (Bleu) = SaisonnalitÃ© / Amplitude thermique (0 Ã  50Â°C)\n\n" +
-                "3. TÃ‰LÃ‰CHARGEMENT SATELLITE WMS :\n" +
+                I18n.getOrDefault("planet.dialog.climate_help_title", "Spécifications des Cartes Climatiques"),
+                I18n.getOrDefault("planet.dialog.climate_help_header", "Formats d'Image Supportés pour les Données Climatiques"),
+                "Images PNG/JPEG au ratio 2:1 (ex: 2048×1024 px, projection équirectangulaire Plate Carrée).\n\n" +
+                "1. CARTES SÉPARÉES EN NIVEAUX DE GRIS OU DÉGRADÉS THERMIQUES :\n" +
+                "   • Températures : Noir / Bleu = −50°C, Blanc / Rouge = +50°C\n" +
+                "   • Précipitations : Noir = 0 mm/an, Blanc / Bleu foncé = 3000 mm/an\n" +
+                "   • Saisonnalité : Noir = 0°C, Blanc / Magenta = 50°C d'amplitude annuelle\n\n" +
+                "2. CARTE COMBINÉE MULTI-CANAUX RGB :\n" +
+                "   • R (Rouge) = Température (−50°C à +50°C)\n" +
+                "   • G (Vert) = Précipitations (0 à 3000 mm/an)\n" +
+                "   • B (Bleu) = Saisonnalité / Amplitude thermique (0 à 50°C)\n\n" +
+                "3. TÉLÉCHARGEMENT SATELLITE WMS :\n" +
                 "   â€¢ Le bouton Â« ðŸŒ TÃ©lÃ©charger Climat Satellite Â» permet d'obtenir directement les flux officiels NASA MODIS (tempÃ©rature) et GPM (pluviomÃ©trie)."
         );
     }
@@ -2048,19 +2048,19 @@ public class ResourceDistributionPanel extends BorderPane {
                 isCompatible = true;
             } else if (!planetName.contains("earth") && !planetName.contains("terre") && !planetName.contains("terran")
                     && !planetName.contains("terrestre") && !planetName.contains("standard") && !planetName.contains("gaia")
-                    && !planetName.contains("archipel") && !planetName.contains("oceania") && !planetName.contains("ocÃ©an") && !planetName.contains("ocean")) {
+                    && !planetName.contains("archipel") && !planetName.contains("oceania") && !planetName.contains("océan") && !planetName.contains("ocean")) {
                 isCompatible = false;
             }
         } else if ("mars".equalsIgnoreCase(sourceKey)) {
             if ("mars".equalsIgnoreCase(elevSrc)) {
                 isCompatible = true;
-            } else if (!planetName.contains("mars") && !planetName.contains("ares") && !planetName.contains("dÃ©sert") && !planetName.contains("desert")) {
+            } else if (!planetName.contains("mars") && !planetName.contains("ares") && !planetName.contains("désert") && !planetName.contains("desert")) {
                 isCompatible = false;
             }
         } else if ("venus".equalsIgnoreCase(sourceKey)) {
             if ("venus".equalsIgnoreCase(elevSrc)) {
                 isCompatible = true;
-            } else if (!planetName.contains("venus") && !planetName.contains("vÃ©nus") && !planetName.contains("hesperos")) {
+            } else if (!planetName.contains("venus") && !planetName.contains("vénus") && !planetName.contains("hesperos")) {
                 isCompatible = false;
             }
         } else if ("moon".equalsIgnoreCase(sourceKey)) {
@@ -2088,7 +2088,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         if (ecoCompatibilityLabel != null) {
             String activeDisplayName = activePreset != null ? activePreset.name() : "Standard";
-            ecoCompatibilityLabel.setText(String.format(I18n.getOrDefault("resource.status.compatible_map", "âœ… Carte Â« %s Â» vÃ©rifiÃ©e et compatible avec le terrain Â« %s Â»"), sourceKey.toUpperCase(), activeDisplayName));
+            ecoCompatibilityLabel.setText(String.format(I18n.getOrDefault("resource.status.compatible_map", "✅ Carte « %s » vérifiée et compatible avec le terrain « %s »"), sourceKey.toUpperCase(), activeDisplayName));
             ecoCompatibilityLabel.getStyleClass().setAll("compatibility-success");
         }
         return true;
@@ -2117,12 +2117,12 @@ public class ResourceDistributionPanel extends BorderPane {
             sourceKey = "mars";
         } else if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) {
             sourceKey = "moon";
-        } else if (lower.contains("vÃ©nus") || lower.contains("venus") || lower.contains("hesperos")) {
+        } else if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) {
             sourceKey = "venus";
         } else if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) {
             sourceKey = "mercury";
         } else {
-            // Unknown body â†’ stay procedural
+            // Unknown body → stay procedural
             applyPresetMapSource("none");
             return;
         }
@@ -2219,7 +2219,7 @@ public class ResourceDistributionPanel extends BorderPane {
         if (file != null) {
             try {
                 customHydroImage = new Image(new FileInputStream(file));
-                if (hydroFileLabel != null) hydroFileLabel.setText("ðŸŒŠ " + file.getName());
+                if (hydroFileLabel != null) hydroFileLabel.setText("🌊 " + file.getName());
                 if (viewModeCombo != null) {
                     viewModeCombo.getSelectionModel().select(2);
                 }
@@ -2253,7 +2253,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 updateSummary();
             } else {
                 if ("earth".equals(sourceKey) && radioImportHydro != null && radioImportHydro.isSelected()) {
-                    if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.source.earth_hydro_wms", "ðŸŒŠ Earth SWBD / USGS HydroSHEDS Hydrographie"));
+                    if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.source.earth_hydro_wms", "🌊 Earth SWBD / USGS HydroSHEDS Hydrographie"));
                     if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.status.usgs_active", "ðŸŒ Earth Hydrographic Map USGS HydroSHEDS / SWBD active."));
                     updatePreviewCanvas();
                     updateSummary();
@@ -2272,8 +2272,8 @@ public class ResourceDistributionPanel extends BorderPane {
         if (viewModeCombo != null) {
             viewModeCombo.getSelectionModel().select(2);
         }
-        if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.mode.procedural_hydro", "âš¡ Procedural Hydrography (Rivers/Slope)"));
-        if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.map.procedural_generated", "âš¡ Procedural hydrographic map generated via slope and watershed calculation."));
+        if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.mode.procedural_hydro", "⚡ Procedural Hydrography (Rivers/Slope)"));
+        if (mapStatusLabel != null) mapStatusLabel.setText(I18n.getOrDefault("resource.map.procedural_generated", "⚡ Procedural hydrographic map generated via slope and watershed calculation."));
         if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
         updateLegend();
         updatePreviewCanvas();
@@ -2411,39 +2411,39 @@ public class ResourceDistributionPanel extends BorderPane {
     // Helper subroutine: show ecology import format help - internal state computation & bounds checking
     private void showEcologyImportFormatHelp() {
         WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("resource.dialog.specs_title", "SpÃ©cifications des Biomes & Ressources GÃ©ologiques"),
-                I18n.getOrDefault("resource.dialog.specs_header", "Formats Attendus : Biomes Polychromes & Gisements MinÃ©raux"),
-                "Vous pouvez importer des cartes de biomes et de ressources gÃ©ologiques (PNG/JPEG ratio 2:1) :\n\n" +
-                "1. CARTE DE BIOMES (POLYCHROME DISCRET CATÃ‰GORIEL) :\n" +
-                "   Chaque biome correspond Ã  un code couleur RVB strict (identique sur toutes les planÃ¨tes) :\n" +
-                "   â€¢ OcÃ©an Profond : RGB(0, 0, 100)\n" +
-                "   â€¢ OcÃ©an / Mer : RGB(0, 50, 200)\n" +
-                "   â€¢ Plage / Littoral : RGB(240, 220, 150)\n" +
-                "   â€¢ Plaines / Prairies : RGB(100, 200, 50)\n" +
-                "   â€¢ ForÃªt TempÃ©rÃ©e : RGB(20, 120, 20)\n" +
-                "   â€¢ Jungle Tropicale : RGB(0, 80, 0)\n" +
-                "   â€¢ DÃ©sert Aride : RGB(255, 200, 50)\n" +
-                "   â€¢ Collines : RGB(150, 150, 100)\n" +
-                "   â€¢ Montagnes : RGB(100, 100, 100)\n" +
-                "   â€¢ Toundra : RGB(150, 200, 220)\n" +
-                "   â€¢ Neige / Glaciers : RGB(255, 255, 255)\n\n" +
-                "2. CARTES GÃ‰OLOGIQUES & Ã‰NERGÃ‰TIQUES UNIFIÃ‰ES (PAR CORPS CÃ‰LESTE) :\n" +
-                "   Les couches gÃ©ologiques utilisent une charte chromatique standardisÃ©e :\n" +
-                "   â€¢ ðŸª¨ Charbon : DÃ©gradÃ© Ambre / Brun dorÃ© (#92400E â†’ #FBBF24)\n" +
+                I18n.getOrDefault("resource.dialog.specs_title", "Spécifications des Biomes & Ressources Géologiques"),
+                I18n.getOrDefault("resource.dialog.specs_header", "Formats Attendus : Biomes Polychromes & Gisements Minéraux"),
+                "Vous pouvez importer des cartes de biomes et de ressources géologiques (PNG/JPEG ratio 2:1) :\n\n" +
+                "1. CARTE DE BIOMES (POLYCHROME DISCRET CATÉGORIEL) :\n" +
+                "   Chaque biome correspond à un code couleur RVB strict (identique sur toutes les planètes) :\n" +
+                "   • Océan Profond : RGB(0, 0, 100)\n" +
+                "   • Océan / Mer : RGB(0, 50, 200)\n" +
+                "   • Plage / Littoral : RGB(240, 220, 150)\n" +
+                "   • Plaines / Prairies : RGB(100, 200, 50)\n" +
+                "   • Forêt Tempérée : RGB(20, 120, 20)\n" +
+                "   • Jungle Tropicale : RGB(0, 80, 0)\n" +
+                "   • Désert Aride : RGB(255, 200, 50)\n" +
+                "   • Collines : RGB(150, 150, 100)\n" +
+                "   • Montagnes : RGB(100, 100, 100)\n" +
+                "   • Toundra : RGB(150, 200, 220)\n" +
+                "   • Neige / Glaciers : RGB(255, 255, 255)\n\n" +
+                "2. CARTES GÉOLOGIQUES & ÉNERGÉTIQUES UNIFIÉES (PAR CORPS CÉLESTE) :\n" +
+                "   Les couches géologiques utilisent une charte chromatique standardisée :\n" +
+                "   • 🪨 Charbon : Dégradé Ambre / Brun doré (#92400E → #FBBF24)\n" +
                 "   â€¢ ðŸ›¢ï¸ PÃ©trole : DÃ©gradÃ© Rouge Rubis / Carmin (#991B1B â†’ #F87171)\n" +
-                "   â€¢ ðŸ’¨ Gaz Naturel : DÃ©gradÃ© Cyan / Bleu Ciel (#0E7490 â†’ #38BDF8)\n" +
+                "   • 💨 Gaz Naturel : Dégradé Cyan / Bleu Ciel (#0E7490 → #38BDF8)\n" +
                 "   â€¢ â˜¢ï¸ Uranium / Thorium : Vert Ã‰meraude (#22C55E)\n" +
                 "   â€¢ âš›ï¸ HÃ©lium-3 : Violet NÃ©on / Pourpre (#A855F7)\n" +
                 "   â€¢ â›ï¸ Fer & Cuivre : Rouille / Cuivre OrangÃ© (#8B4513 â†’ #F97316)\n" +
-                "   â€¢ ðŸª™ MÃ©taux PrÃ©cieux & Terres Rares : Or / Jaune (#EAB308)\n" +
-                "   â€¢ ðŸŒ‹ GÃ©othermie / Chaleur Mantellique : Incandescence Rouge-Orange (#EF4444)\n" +
-                "   â€¢ ðŸ’§ AquifÃ¨res & Glace d'Eau : Bleu Azur (#3B82F6)\n\n" +
-                "3. CARTE GÃ‰OLOGIQUE MULTI-CANAUX COMBINÃ‰E (RGB) :\n" +
-                "   â€¢ Canal Rouge (R) = Gisements MÃ©talliques (Fer, Cuivre)\n" +
-                "   â€¢ Canal Vert (V) = Biomasse VÃ©gÃ©tale et ForÃªts\n" +
-                "   â€¢ Canal Bleu (B) = Eau Souterraine / AquifÃ¨res\n\n" +
-                "4. GÃ‰ORÃ‰FÃ‰RENCEMENT ESRI WORLD FILE (.tfw) :\n" +
-                "   â€¢ L'export gÃ©nÃ¨re automatiquement un fichier .tfw pour l'ouverture directe dans QGIS / ArcGIS."
+                "   • 🪙 Métaux Précieux & Terres Rares : Or / Jaune (#EAB308)\n" +
+                "   • 🌋 Géothermie / Chaleur Mantellique : Incandescence Rouge-Orange (#EF4444)\n" +
+                "   • 💧 Aquifères & Glace d'Eau : Bleu Azur (#3B82F6)\n\n" +
+                "3. CARTE GÉOLOGIQUE MULTI-CANAUX COMBINÉE (RGB) :\n" +
+                "   • Canal Rouge (R) = Gisements Métalliques (Fer, Cuivre)\n" +
+                "   • Canal Vert (V) = Biomasse Végétale et Forêts\n" +
+                "   • Canal Bleu (B) = Eau Souterraine / Aquifères\n\n" +
+                "4. GÉORÉFÉRENCEMENT ESRI WORLD FILE (.tfw) :\n" +
+                "   • L'export génère automatiquement un fichier .tfw pour l'ouverture directe dans QGIS / ArcGIS."
         );
     }
 
@@ -2530,7 +2530,7 @@ public class ResourceDistributionPanel extends BorderPane {
         {27.0, -26.5, 55, 1.8},  // Witwatersrand (South Africa - Giant Gold)
         {29.0, -24.5, 50, 1.6},  // Bushveld Complex (South Africa - Platinum)
         {-116.0, 40.8, 50, 1.5}, // Carlin Trend Nevada (USA - Gold)
-        {-65.7, -19.6, 55, 1.6}, // PotosÃ­ Cerro Rico (Bolivia - Silver)
+        {-65.7, -19.6, 55, 1.6}, // Potosí Cerro Rico (Bolivia - Silver)
         {121.5, -30.7, 50, 1.4}, // Kalgoorlie Super Pit (Australia - Gold)
         {64.6, 41.5, 50, 1.5},   // Muruntau Gold (Uzbekistan)
         {88.2, 69.3, 55, 1.6},   // Norilsk-Talnakh PGMs (Russia)
@@ -2540,18 +2540,18 @@ public class ResourceDistributionPanel extends BorderPane {
     };
     private static final double[][] RARE_EARTH_SPOTS = {
         {109.9, 41.8, 65, 2.0},  // Bayan Obo (Inner Mongolia, China - Giant REE)
-        {-115.5, 35.5, 50, 1.5}, // Mountain Pass (California, USA - BastnÃ¤site)
+        {-115.5, 35.5, 50, 1.5}, // Mountain Pass (California, USA - Bastnäsite)
         {122.5, -28.7, 55, 1.6}, // Mount Weld (Western Australia - Carbonatite REE)
-        {-46.0, 60.9, 50, 1.5},  // Kvanefjeld / IlÃ­maussaq (Greenland - REE/U)
+        {-46.0, 60.9, 50, 1.5},  // Kvanefjeld / Ilímaussaq (Greenland - REE/U)
         {116.5, 71.0, 50, 1.5},  // Tomtor (Yakutia, Russia - Carbonatite Nb/REE)
         {34.6, 67.8, 45, 1.4},   // Lovozero (Kola Peninsula, Russia - Loparite REE)
         {115.0, 25.5, 55, 1.7},  // Ganzhou / Jiangxi (South China - Heavy Ionic Clays)
-        {103.5, 22.4, 45, 1.3},  // Dong Pao (Vietnam - BastnÃ¤site)
-        {-46.9, -19.6, 48, 1.4}, // AraxÃ¡ (Minas Gerais, Brazil - Carbonatite Nb/REE)
+        {103.5, 22.4, 45, 1.3},  // Dong Pao (Vietnam - Bastnäsite)
+        {-46.9, -19.6, 48, 1.4}, // Araxá (Minas Gerais, Brazil - Carbonatite Nb/REE)
         {-67.5, -21.0, 60, 1.6}, // Salar de Atacama (Chile - Lithium Brines)
         {-68.0, -23.5, 55, 1.5}, // Salar de Uyuni (Bolivia - Lithium Brines)
         {116.0, -33.8, 48, 1.4}, // Greenbushes (Australia - Spodumene Lithium)
-        {14.6, 58.1, 40, 1.2},   // Norra KÃ¤rr (Sweden - Heavy REE)
+        {14.6, 58.1, 40, 1.2},   // Norra Kärr (Sweden - Heavy REE)
         {20.2, 67.8, 42, 1.3},   // Kiruna / Per Geijer (Sweden - Apatite REE)
         {-64.2, 56.3, 42, 1.3},  // Strange Lake (Quebec/Labrador, Canada)
         {-112.6, 62.1, 42, 1.3}  // Nechalacho (NWT, Canada - REE/Zr)
@@ -2563,10 +2563,10 @@ public class ResourceDistributionPanel extends BorderPane {
     };
     private static final double[][] AQUIFER_SPOTS = {
         // Major Global Sedimentary Aquifer Systems (UNESCO WHYMAP)
-        {25.0, 22.0, 85, 1.5},   // Nubian Sandstone Aquifer System (2.2M kmÂ²)
+        {25.0, 22.0, 85, 1.5},   // Nubian Sandstone Aquifer System (2.2M km²)
         {-100.0, 38.0, 65, 1.3}, // Ogallala Aquifer USA
-        {-54.0, -25.0, 80, 1.5}, // GuaranÃ­ Aquifer South America (1.2M kmÂ²)
-        {138.0, -26.0, 85, 1.4}, // Great Artesian Basin Australia (1.7M kmÂ²)
+        {-54.0, -25.0, 80, 1.5}, // Guaraní Aquifer South America (1.2M km²)
+        {138.0, -26.0, 85, 1.4}, // Great Artesian Basin Australia (1.7M km²)
         {10.0, 30.0, 70, 1.3},   // Northern Sahara Aquifer System
         {80.0, 27.0, 75, 1.4},   // Indo-Gangetic Basin
         {2.0, 47.0, 55, 1.2},    // Paris & Aquitaine Basins Europe
@@ -2575,7 +2575,7 @@ public class ResourceDistributionPanel extends BorderPane {
         {75.0, 60.0, 85, 1.4},   // West Siberian Basin Aquifer
         {122.0, -18.0, 60, 1.2}, // Canning Basin Australia
         {82.0, 39.0, 55, 1.2},   // Tarim Basin Aquifer
-        {-48.0, -1.5, 50, 1.2},  // MarajÃ³ Aquifer System
+        {-48.0, -1.5, 50, 1.2},  // Marajó Aquifer System
         {-118.0, 36.0, 45, 1.2}, // California Central Valley Aquifer
         {45.0, 25.0, 60, 1.3},   // Arabian Aquifer System
         {16.0, 14.0, 65, 1.3},   // Chad Basin Aquifer
@@ -2750,10 +2750,10 @@ public class ResourceDistributionPanel extends BorderPane {
             addLegendItem("MED", Color.rgb(40, 120, 200), I18n.getOrDefault("resource.legend.aquifer_med", "Moderate Aquifer"));
             addLegendItem("HIGH", Color.rgb(0, 220, 255), I18n.getOrDefault("resource.legend.aquifer_high", "Giant Basin Aquifer"));
         } else if (selectedIdx == 12) { // SURFACE TEMPERATURE & MICROCLIMATES
-            addLegendItem("POLAR", Color.rgb(35, 120, 230), I18n.getOrDefault("resource.legend.temp_polar", "Polar / Glacial (< 0Â°C)"));
-            addLegendItem("TEMPERATE", Color.rgb(80, 200, 120), I18n.getOrDefault("resource.legend.temp_temperate", "Temperate (10Â°C - 22Â°C)"));
-            addLegendItem("TROPICAL", Color.rgb(250, 130, 20), I18n.getOrDefault("resource.legend.temp_tropical", "Tropical / Warm (22Â°C - 34Â°C)"));
-            addLegendItem("TORRID", Color.rgb(245, 20, 40), I18n.getOrDefault("resource.legend.temp_torrid", "Torrid Extreme (> 34Â°C)"));
+            addLegendItem("POLAR", Color.rgb(35, 120, 230), I18n.getOrDefault("resource.legend.temp_polar", "Polar / Glacial (< 0°C)"));
+            addLegendItem("TEMPERATE", Color.rgb(80, 200, 120), I18n.getOrDefault("resource.legend.temp_temperate", "Temperate (10°C - 22°C)"));
+            addLegendItem("TROPICAL", Color.rgb(250, 130, 20), I18n.getOrDefault("resource.legend.temp_tropical", "Tropical / Warm (22°C - 34°C)"));
+            addLegendItem("TORRID", Color.rgb(245, 20, 40), I18n.getOrDefault("resource.legend.temp_torrid", "Torrid Extreme (> 34°C)"));
         } else if (selectedIdx == 13) { // SEISMIC & VOLCANIC TECTONISM
             addLegendItem("QUIET", Color.rgb(40, 45, 55), I18n.getOrDefault("resource.legend.seismic_quiet", "Stable Shield / Craton"));
             addLegendItem("MODERATE", Color.rgb(200, 100, 30), I18n.getOrDefault("resource.legend.seismic_med", "Active Fault / Orogeny"));
@@ -3297,7 +3297,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
         summaryLabel.setText(String.format(
                 I18n.getOrDefault("resource.summary.format",
-                        "ðŸŒ² VÃ©gÃ©tale : %.0f GtC  |  ðŸŒ¾ Sols : %.0f GtC  |  ðŸ¦Œ Faune : %.2f GtC\n" +
+                        "🌲 Végétale : %.0f GtC  |  🌾 Sols : %.0f GtC  |  🦌 Faune : %.2f GtC\n" +
                         "â›ï¸ MÃ©taux : %.0f Gt  |  ðŸ’Ž PrÃ©cieux : %.0f Mt  |  ðŸŒ‹ Manteau : %.1f mW/mÂ²  |  ðŸ’§ AquifÃ¨res : %.0f x10Â³ kmÂ³"),
                 terrestrialBiomassSlider != null ? terrestrialBiomassSlider.getValue() : 450.0,
                 soilCarbonSlider != null ? soilCarbonSlider.getValue() : 1500.0,
@@ -3337,10 +3337,10 @@ public class ResourceDistributionPanel extends BorderPane {
             if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("resource.title", "RESOURCE DISTRIBUTION & ECOLOGY (SCIENTIFIC METRICS)"));
             if (rightViewTitle != null) rightViewTitle.setText(I18n.getOrDefault("resource.title.right_view", "Dynamic 2D Equirectangular Planetary Preview"));
 
-            if (syncPlanetBtn != null) syncPlanetBtn.setText(I18n.getOrDefault("resource.btn.sync_planet", "ðŸ”„ Synchronize with Tab 1 Planet"));
-            if (autoDeriveEcologyBtn != null) autoDeriveEcologyBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_eco", "âš¡ Auto-derive Ecology & Biomes from Physics"));
-            if (autoDeriveHydroBtn != null) autoDeriveHydroBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_hydro", "ðŸ’§ Auto-derive Aquifers & Freshwater from Physics"));
-            if (autoDeriveGeologyBtn != null) autoDeriveGeologyBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_geo", "ðŸŒ‹ Calculate Tectonics & Metals from Mantle"));
+            if (syncPlanetBtn != null) syncPlanetBtn.setText(I18n.getOrDefault("resource.btn.sync_planet", "🔄 Synchronize with Tab 1 Planet"));
+            if (autoDeriveEcologyBtn != null) autoDeriveEcologyBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_eco", "⚡ Auto-derive Ecology & Biomes from Physics"));
+            if (autoDeriveHydroBtn != null) autoDeriveHydroBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_hydro", "💧 Auto-derive Aquifers & Freshwater from Physics"));
+            if (autoDeriveGeologyBtn != null) autoDeriveGeologyBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_geo", "🌋 Calculate Tectonics & Metals from Mantle"));
             if (mapsSecHeader != null) mapsSecHeader.setText(I18n.getOrDefault("resource.section.imports", "TAB 1 ECOLOGY, GEOLOGY & HYDROLOGY IMPORTS"));
 
             if (mapSourceRowLabel != null) mapSourceRowLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body Model / Satellite:"));
@@ -3352,11 +3352,11 @@ public class ResourceDistributionPanel extends BorderPane {
             if (seasonalityMapRowLabel != null) seasonalityMapRowLabel.setText(I18n.getOrDefault("planet.map.seasonality", "Seasonality / Variance Map:"));
 
             if (fetchOnlineHydroBtn != null) fetchOnlineHydroBtn.setText(I18n.getOrDefault("resource.btn.fetch_online_hydro", "ðŸŒ Download Satellite Hydrography (Earth WMS / Earth Preset)"));
-            if (proceduralHydroBtn != null) proceduralHydroBtn.setText(I18n.getOrDefault("resource.btn.procedural_hydro", "âš¡ Auto-generate Rivers & Watercourses (Procedural Slope)"));
+            if (proceduralHydroBtn != null) proceduralHydroBtn.setText(I18n.getOrDefault("resource.btn.procedural_hydro", "⚡ Auto-generate Rivers & Watercourses (Procedural Slope)"));
             if (fetchOnlineBtn != null) fetchOnlineBtn.setText(I18n.getOrDefault("resource.btn.fetch_online", "ðŸŒ Download WMS Satellite Maps (USGS / NASA)"));
             if (fetchOnlineClimateBtn != null) fetchOnlineClimateBtn.setText(I18n.getOrDefault("planet.map.btn_fetch_online_climate", "ðŸŒ Download Satellite Climate NASA/USGS (WMS)"));
             if (climateHelpBtn != null) climateHelpBtn.setText(I18n.getOrDefault("planet.map.btn_climate_help", "â„¹ï¸ Climate Map Specifications"));
-            if (exportMapsBtn != null) exportMapsBtn.setText(I18n.getOrDefault("resource.btn.export_maps", "ðŸ“¤ Export Maps (PNG + WorldFile .tfw)"));
+            if (exportMapsBtn != null) exportMapsBtn.setText(I18n.getOrDefault("resource.btn.export_maps", "📤 Export Maps (PNG + WorldFile .tfw)"));
             if (specsHelpBtn != null) specsHelpBtn.setText(I18n.getOrDefault("resource.btn.specs_help", "â„¹ï¸ Biome & Geology Map Specifications"));
 
             if (terrestrialBiomassRowLabel != null) terrestrialBiomassRowLabel.setText(I18n.getOrDefault("resource.param.terrestrial_biomass", "Terrestrial Plant Biomass (GtC):"));
@@ -3365,19 +3365,19 @@ public class ResourceDistributionPanel extends BorderPane {
             if (aquaticBiomassRowLabel != null) aquaticBiomassRowLabel.setText(I18n.getOrDefault("resource.param.aquatic_biomass", "Aquatic Biomass & Fauna (GtC):"));
             if (crustalMetalRowLabel != null) crustalMetalRowLabel.setText(I18n.getOrDefault("resource.param.crustal_metal", "Crustal Metal Wealth (Gt):"));
             if (preciousMetalRowLabel != null) preciousMetalRowLabel.setText(I18n.getOrDefault("resource.param.precious_metal", "Precious Metal Concentration (Mt):"));
-            if (mantleHeatRowLabel != null) mantleHeatRowLabel.setText(I18n.getOrDefault("resource.param.mantle_heat", "Mantle Heat Flux (mW/mÂ²):"));
-            if (freshwaterAquiferRowLabel != null) freshwaterAquiferRowLabel.setText(I18n.getOrDefault("resource.param.freshwater_aquifer", "Groundwater Aquifer Capacity (10Â³ kmÂ³):"));
+            if (mantleHeatRowLabel != null) mantleHeatRowLabel.setText(I18n.getOrDefault("resource.param.mantle_heat", "Mantle Heat Flux (mW/m²):"));
+            if (freshwaterAquiferRowLabel != null) freshwaterAquiferRowLabel.setText(I18n.getOrDefault("resource.param.freshwater_aquifer", "Groundwater Aquifer Capacity (10³ km³):"));
             if (seismicRowLabel != null) seismicRowLabel.setText(I18n.getOrDefault("resource.param.seismic", "Seismic & Tectonic Activity (Mag Richter):"));
             if (volcanicRowLabel != null) volcanicRowLabel.setText(I18n.getOrDefault("resource.param.volcanic", "Global Volcanic Activity (VEI):"));
 
-            if (radioProcBiome != null) radioProcBiome.setText(I18n.getOrDefault("resource.mode.procedural_biome", "â–¶ Procedural Biomes"));
-            if (radioImportBiome != null) radioImportBiome.setText(I18n.getOrDefault("resource.mode.import_biome", "ðŸ“‚ Biome Map (PNG)"));
-            if (radioProcHydro != null) radioProcHydro.setText(I18n.getOrDefault("resource.mode.procedural_hydro", "â–¶ Procedural Hydrography"));
-            if (radioImportHydro != null) radioImportHydro.setText(I18n.getOrDefault("resource.mode.import_hydro", "ðŸ“‚ Hydrographic Map (PNG)"));
-            if (radioProcClimate != null) radioProcClimate.setText(I18n.getOrDefault("resource.mode.procedural_climate", "â–¶ Procedural Climate"));
-            if (radioImportClimate != null) radioImportClimate.setText(I18n.getOrDefault("resource.mode.import_climate", "ðŸ“‚ Climate Maps (PNG)"));
-            if (radioProcGeology != null) radioProcGeology.setText(I18n.getOrDefault("resource.mode.procedural_geology", "â–¶ Procedural Geology"));
-            if (radioImportGeology != null) radioImportGeology.setText(I18n.getOrDefault("resource.mode.import_geology", "ðŸ“‚ Geological Map (PNG)"));
+            if (radioProcBiome != null) radioProcBiome.setText(I18n.getOrDefault("resource.mode.procedural_biome", "▶ Procedural Biomes"));
+            if (radioImportBiome != null) radioImportBiome.setText(I18n.getOrDefault("resource.mode.import_biome", "📂 Biome Map (PNG)"));
+            if (radioProcHydro != null) radioProcHydro.setText(I18n.getOrDefault("resource.mode.procedural_hydro", "▶ Procedural Hydrography"));
+            if (radioImportHydro != null) radioImportHydro.setText(I18n.getOrDefault("resource.mode.import_hydro", "📂 Hydrographic Map (PNG)"));
+            if (radioProcClimate != null) radioProcClimate.setText(I18n.getOrDefault("resource.mode.procedural_climate", "▶ Procedural Climate"));
+            if (radioImportClimate != null) radioImportClimate.setText(I18n.getOrDefault("resource.mode.import_climate", "📂 Climate Maps (PNG)"));
+            if (radioProcGeology != null) radioProcGeology.setText(I18n.getOrDefault("resource.mode.procedural_geology", "▶ Procedural Geology"));
+            if (radioImportGeology != null) radioImportGeology.setText(I18n.getOrDefault("resource.mode.import_geology", "📂 Geological Map (PNG)"));
 
             if (btnReliefOverlay != null) {
                 btnReliefOverlay.setText(I18n.getOrDefault("resource.btn.relief_overlay", "â›°ï¸ Relief"));
@@ -3386,22 +3386,22 @@ public class ResourceDistributionPanel extends BorderPane {
             if (viewModeCombo != null) {
                 int selected = viewModeCombo.getSelectionModel().getSelectedIndex();
                 viewModeCombo.getItems().setAll(
-                    I18n.getOrDefault("resource.view.section_base", "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ 12 CARTES CANONIQUES DE BASE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"),
-                    I18n.getOrDefault("resource.view.biomes", "ðŸŒ¿ 1. Biomes & Couverture VÃ©gÃ©tale"),
-                    I18n.getOrDefault("resource.view.hydro", "ðŸŒŠ 2. Hydrographie & RÃ©seau Fluvial"),
+                    I18n.getOrDefault("resource.view.section_base", "────────── 12 CARTES CANONIQUES DE BASE ──────────"),
+                    I18n.getOrDefault("resource.view.biomes", "🌿 1. Biomes & Couverture Végétale"),
+                    I18n.getOrDefault("resource.view.hydro", "🌊 2. Hydrographie & Réseau Fluvial"),
                     I18n.getOrDefault("resource.view.coal", "â›ï¸ 3. Gisements de Charbon"),
                     I18n.getOrDefault("resource.view.oil", "ðŸ›¢ï¸ 4. RÃ©serves de PÃ©trole Brut"),
-                    I18n.getOrDefault("resource.view.gas", "ðŸ”¥ 5. Champs de Gaz Naturel"),
+                    I18n.getOrDefault("resource.view.gas", "🔥 5. Champs de Gaz Naturel"),
                     I18n.getOrDefault("resource.view.uranium", "âš›ï¸ 6. Minerais d'Uranium & Fission"),
-                    I18n.getOrDefault("resource.view.helium3", "ðŸŒŒ 7. HÃ©lium-3 & Fusion Lunaires"),
+                    I18n.getOrDefault("resource.view.helium3", "🌌 7. Hélium-3 & Fusion Lunaires"),
                     I18n.getOrDefault("resource.view.iron_copper", "â›“ï¸ 8. MÃ©taux Fer BIF & Cuivre"),
-                    I18n.getOrDefault("resource.view.precious_metals", "ðŸ’Ž 9. MÃ©taux PrÃ©cieux (Or, Argent, PGM)"),
-                    I18n.getOrDefault("resource.view.rare_earths", "ðŸ”‹ 10. Terres Rares & MinÃ©raux Critiques / Lithium"),
-                    I18n.getOrDefault("resource.view.heat", "ðŸŒ‹ 11. Flux Thermique du Manteau"),
-                    I18n.getOrDefault("resource.view.aquifer", "ðŸ’§ 12. AquifÃ¨res & Eau Douce"),
-                    I18n.getOrDefault("resource.view.section_derived", "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CARTES DÃ‰DUITES / ANOMALIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"),
+                    I18n.getOrDefault("resource.view.precious_metals", "💎 9. Métaux Précieux (Or, Argent, PGM)"),
+                    I18n.getOrDefault("resource.view.rare_earths", "🔋 10. Terres Rares & Minéraux Critiques / Lithium"),
+                    I18n.getOrDefault("resource.view.heat", "🌋 11. Flux Thermique du Manteau"),
+                    I18n.getOrDefault("resource.view.aquifer", "💧 12. Aquifères & Eau Douce"),
+                    I18n.getOrDefault("resource.view.section_derived", "────────── CARTES DÉDUITES / ANOMALIES ──────────"),
                     I18n.getOrDefault("resource.view.temp", "ðŸŒ¡ï¸ 13. TempÃ©ratures Surface & Microclimats"),
-                    I18n.getOrDefault("resource.view.seismic", "ðŸŒ‹ 14. Tectonique & AlÃ©a Sismique/Volcanique"),
+                    I18n.getOrDefault("resource.view.seismic", "🌋 14. Tectonique & Aléa Sismique/Volcanique"),
                     I18n.getOrDefault("resource.view.aridity", "ðŸœï¸ 15. AriditÃ© & Salinisation des Sols")
                 );
                 if (selected >= 0 && selected < viewModeCombo.getItems().size()) {
@@ -3424,22 +3424,22 @@ public class ResourceDistributionPanel extends BorderPane {
             if (loadRainfallBtn != null) loadRainfallBtn.setText(I18n.get("planet.map.btn_load"));
             if (loadSeasonalityBtn != null) loadSeasonalityBtn.setText(I18n.get("planet.map.btn_load"));
 
-            if (customBiomeImage == null && biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” No file loaded â€”"));
-            if (customResourceImage == null && resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” No file loaded â€”"));
-            if (customHydroImage == null && hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” No file loaded â€”"));
-            if (customClimateImage == null && climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” No file loaded â€”"));
-            if (customRainfallImage == null && rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” No file loaded â€”"));
-            if (customSeasonalityImage == null && seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” No file loaded â€”"));
+            if (customBiomeImage == null && biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
+            if (customResourceImage == null && resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
+            if (customHydroImage == null && hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
+            if (customClimateImage == null && climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
+            if (customRainfallImage == null && rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
+            if (customSeasonalityImage == null && seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
 
             if (biomeFormatHintLabel != null) biomeFormatHintLabel.setText(I18n.getOrDefault("resource.format.biome_hint", "PNG / JPEG (2:1 equirectangular projection):\n  Biome image or vegetation cover (grayscale or RGB)."));
             if (hydroFormatHintLabel != null) hydroFormatHintLabel.setText(I18n.getOrDefault("resource.format.hydro_hint", "PNG / JPEG (2:1 equirectangular projection):\n  Black (0) = no water | White (255) = river network / max flow."));
-            if (geologyFormatHintLabel != null) geologyFormatHintLabel.setText(I18n.getOrDefault("resource.format.geology_hint", "Multi-channel PNG (2:1 equirectangular projection):\n â€¢ R Channel (Red) = Industrial crustal metals (Iron/Copper)\n â€¢ G Channel (Green) = Precious ores & REE (Gold/Pt)\n â€¢ B Channel (Blue) = Mantle heat flux & aquifers"));
+            if (geologyFormatHintLabel != null) geologyFormatHintLabel.setText(I18n.getOrDefault("resource.format.geology_hint", "Multi-channel PNG (2:1 equirectangular projection):\n • R Channel (Red) = Industrial crustal metals (Iron/Copper)\n • G Channel (Green) = Precious ores & REE (Gold/Pt)\n • B Channel (Blue) = Mantle heat flux & aquifers"));
             if (climateSummaryLabel != null) climateSummaryLabel.setText(I18n.getOrDefault("resource.climate.summary", "ðŸŒ¡ï¸ Climate Model: Inherited from Tab 1 planet parameters (Temperature, Gradient, Pressure, Oâ‚‚, COâ‚‚, Albedo)"));
 
-            if (applyBtn != null) applyBtn.setText(I18n.getOrDefault("resource.btn.apply", "âœ… Apply scientific distribution to simulation"));
+            if (applyBtn != null) applyBtn.setText(I18n.getOrDefault("resource.btn.apply", "✅ Apply scientific distribution to simulation"));
 
             if (btnGenerateProceduralGeologyTensors != null) {
-                btnGenerateProceduralGeologyTensors.setText(I18n.getOrDefault("resource.btn.regen_tensors", "ðŸª„ Regenerate Tensors"));
+                btnGenerateProceduralGeologyTensors.setText(I18n.getOrDefault("resource.btn.regen_tensors", "🪄 Regenerate Tensors"));
                 btnGenerateProceduralGeologyTensors.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.regen_geology_tensors", "Switch all geological tensors to procedural mode and regenerate maps according to parameters and stochastic seed.")));
             }
 
@@ -3450,11 +3450,11 @@ public class ResourceDistributionPanel extends BorderPane {
                     Tooltip.install(geologySubTitles.get(i), new Tooltip(getGeologyTensorTooltip(i)));
                 }
                 if (geologyProcRadios.containsKey(i) && geologyProcRadios.get(i) != null) {
-                    geologyProcRadios.get(i).setText(I18n.getOrDefault("resource.mode.procedural", "â–¶ Procedural Generation (Hotspots & Physics)"));
+                    geologyProcRadios.get(i).setText(I18n.getOrDefault("resource.mode.procedural", "▶ Procedural Generation (Hotspots & Physics)"));
                     geologyProcRadios.get(i).setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.mode_proc", "Analytical and procedural synthesis driven by stochastic seed and physical parameters.")));
                 }
                 if (geologyImportRadios.containsKey(i) && geologyImportRadios.get(i) != null) {
-                    geologyImportRadios.get(i).setText(I18n.getOrDefault("resource.mode.import_file", "ðŸ“‚ External Source (PNG / GeoTIFF)"));
+                    geologyImportRadios.get(i).setText(I18n.getOrDefault("resource.mode.import_file", "📂 External Source (PNG / GeoTIFF)"));
                     geologyImportRadios.get(i).setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.mode_import", "Load an empirical raster dataset or external GeoTIFF/PNG map.")));
                 }
                 if (geologySourceLabels.containsKey(i) && geologySourceLabels.get(i) != null) {
@@ -3464,7 +3464,7 @@ public class ResourceDistributionPanel extends BorderPane {
                     geologySeedLabels.get(i).setText(I18n.getOrDefault("resource.label.tensor_seed", "Generation Seed:"));
                 }
                 if (geologyGenBtns.containsKey(i) && geologyGenBtns.get(i) != null) {
-                    geologyGenBtns.get(i).setText(I18n.getOrDefault("resource.btn.export_single_tensor", "ðŸ“¤ Export"));
+                    geologyGenBtns.get(i).setText(I18n.getOrDefault("resource.btn.export_single_tensor", "📤 Export"));
                     geologyGenBtns.get(i).setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_tensor", "Export this tensor layer as a high-resolution PNG or GeoTIFF.")));
                 }
                 if (geologyLoadBtns.containsKey(i) && geologyLoadBtns.get(i) != null) {
@@ -3476,7 +3476,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 }
                 if (geologyFileLabels.containsKey(i) && geologyFileLabels.get(i) != null && customGeologyLayerImages.containsKey(i) && customGeologyLayerImages.get(i) != null) {
                     String cur = geologyFileLabels.get(i).getText();
-                    if (cur != null && (cur.contains("Baseline") || cur.contains("RÃ©fÃ©rence") || cur.contains("Earth") || cur.contains("Planetary") || cur.contains("ðŸ“·"))) {
+                    if (cur != null && (cur.contains("Baseline") || cur.contains("Référence") || cur.contains("Earth") || cur.contains("Planetary") || cur.contains("📷"))) {
                         geologyFileLabels.get(i).setText(getGeologyBaselineName(i));
                     }
                 }
@@ -3505,13 +3505,13 @@ public class ResourceDistributionPanel extends BorderPane {
                 btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_gis", "Export all 10 geological tensors in professional GIS formats (GeoTIFF, NetCDF-4, GeoJSON).")));
             }
             if (btnExportProvenanceManifest != null) {
-                btnExportProvenanceManifest.setText(I18n.getOrDefault("resource.btn.provenance_manifest", "ðŸ”’ SHA-256 Provenance Manifest"));
+                btnExportProvenanceManifest.setText(I18n.getOrDefault("resource.btn.provenance_manifest", "🔒 SHA-256 Provenance Manifest"));
                 btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.gen_provenance", "Generate a cryptographic JSON manifest (provenance.json) containing SHA-256 hashes of geological datasets.")));
             }
-            if (autoDeriveMasterBtn != null) autoDeriveMasterBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_all", "âš¡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
-            if (exportBiomeBtn != null) exportBiomeBtn.setText(I18n.getOrDefault("resource.btn.export_biome", "ðŸ“¤ Export Biome Map (PNG + WorldFile)"));
-            if (exportHydroBtn != null) exportHydroBtn.setText(I18n.getOrDefault("resource.btn.export_hydro", "ðŸ“¤ Export Hydrographic Map (PNG + WorldFile)"));
-            if (exportGeologyBtn != null) exportGeologyBtn.setText(I18n.getOrDefault("resource.btn.export_geology", "ðŸ“¤ Export Geological Map (PNG + WorldFile)"));
+            if (autoDeriveMasterBtn != null) autoDeriveMasterBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_all", "⚡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
+            if (exportBiomeBtn != null) exportBiomeBtn.setText(I18n.getOrDefault("resource.btn.export_biome", "📤 Export Biome Map (PNG + WorldFile)"));
+            if (exportHydroBtn != null) exportHydroBtn.setText(I18n.getOrDefault("resource.btn.export_hydro", "📤 Export Hydrographic Map (PNG + WorldFile)"));
+            if (exportGeologyBtn != null) exportGeologyBtn.setText(I18n.getOrDefault("resource.btn.export_geology", "📤 Export Geological Map (PNG + WorldFile)"));
             if (biomeSourcePromptLabel != null) biomeSourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
             if (hydroSourcePromptLabel != null) hydroSourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
             if (climateSourcePromptLabel != null) climateSourcePromptLabel.setText(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
@@ -3599,9 +3599,9 @@ public class ResourceDistributionPanel extends BorderPane {
         String lower = name.toLowerCase();
         if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) return PlanetPreset.EARTH_LIG_100000BP;
         if (lower.contains("-50") || lower.contains("sahul") || lower.contains("mis3") || lower.contains("mis 3")) return PlanetPreset.EARTH_MIS3_50000BP;
-        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("bÃ©ringie")) return PlanetPreset.EARTH_LGM_ONSET_25000BP;
-        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire") || lower.contains("solutrean") || lower.contains("solutrÃ©en")) return PlanetPreset.EARTH_LGM_20000BP;
-        if (lower.contains("-10") || lower.contains("eh") || lower.contains("prÃ©coce") || lower.contains("early holocene") || lower.contains("dryas")) return PlanetPreset.EARTH_EH_10000BP;
+        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) return PlanetPreset.EARTH_LGM_ONSET_25000BP;
+        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire") || lower.contains("solutrean") || lower.contains("solutréen")) return PlanetPreset.EARTH_LGM_20000BP;
+        if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene") || lower.contains("dryas")) return PlanetPreset.EARTH_EH_10000BP;
         if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene")) return PlanetPreset.EARTH_MH_6000BP;
         if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) return PlanetPreset.EARTH_LH_3000BP;
         if (lower.contains("-1900") || lower.contains("bronze")) return PlanetPreset.EARTH_BRONZE_1900BP;
@@ -3730,7 +3730,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 StringBuilder errorMsg = new StringBuilder();
                 // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (String err : errors) {
-                    errorMsg.append("â€¢ ").append(err).append("\n");
+                    errorMsg.append("• ").append(err).append("\n");
                 }
                 validationWarningLabel.setText(errorMsg.toString().trim());
                 validationWarningBanner.setVisible(true);
@@ -3849,7 +3849,7 @@ public class ResourceDistributionPanel extends BorderPane {
                                 matches = true;
                             } else if (body.equals("mars") && itmLow.contains("mars")) {
                                 matches = true;
-                            } else if (body.equals("venus") && (itmLow.contains("venus") || itmLow.contains("vÃ©nus"))) {
+                            } else if (body.equals("venus") && (itmLow.contains("venus") || itmLow.contains("vénus"))) {
                                 matches = true;
                             } else if (body.equals("moon") && (itmLow.contains("moon") || itmLow.contains("lune") || itmLow.contains("lunar") || itmLow.contains("lola"))) {
                                 matches = true;
@@ -3888,11 +3888,11 @@ public class ResourceDistributionPanel extends BorderPane {
     private String getBiomeSourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
-            case "mars" -> "ðŸŒ¿ Mars MOLA & Biomes Reconstitution";
-            case "moon" -> "ðŸŒ¿ Moon Clementine Regolith (Barren Biome)";
-            case "venus" -> "ðŸŒ¿ Venus Magellan Radar (Supercritical Biome)";
-            case "mercury" -> "ðŸŒ¿ Mercury MESSENGER Surface (Airless Biome)";
-            default -> I18n.getOrDefault("planet.source.earth_modis_biomes", "ðŸŒ¿ Earth MODIS Biomes");
+            case "mars" -> "🌿 Mars MOLA & Biomes Reconstitution";
+            case "moon" -> "🌿 Moon Clementine Regolith (Barren Biome)";
+            case "venus" -> "🌿 Venus Magellan Radar (Supercritical Biome)";
+            case "mercury" -> "🌿 Mercury MESSENGER Surface (Airless Biome)";
+            default -> I18n.getOrDefault("planet.source.earth_modis_biomes", "🌿 Earth MODIS Biomes");
         };
     }
 
@@ -3900,11 +3900,11 @@ public class ResourceDistributionPanel extends BorderPane {
     private String getHydroSourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
-            case "mars" -> "ðŸŒŠ Mars MARSIS / Ancient Paleochannels Hydrography";
-            case "moon" -> "ðŸŒŠ Moon Polar Traps (Dry Crust Hydrography)";
-            case "venus" -> "ðŸŒŠ Venus Volcanic Channels (Anhydrous Hydrography)";
-            case "mercury" -> "ðŸŒŠ Mercury Polar Cold Traps Hydrography";
-            default -> I18n.getOrDefault("resource.source.earth_hydro", "ðŸŒŠ Earth SWBD Hydrography");
+            case "mars" -> "🌊 Mars MARSIS / Ancient Paleochannels Hydrography";
+            case "moon" -> "🌊 Moon Polar Traps (Dry Crust Hydrography)";
+            case "venus" -> "🌊 Venus Volcanic Channels (Anhydrous Hydrography)";
+            case "mercury" -> "🌊 Mercury Polar Cold Traps Hydrography";
+            default -> I18n.getOrDefault("resource.source.earth_hydro", "🌊 Earth SWBD Hydrography");
         };
     }
 
@@ -3912,11 +3912,11 @@ public class ResourceDistributionPanel extends BorderPane {
     private String getGeologySourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase()) {
-            case "mars" -> "ðŸª¨ Mars MOLA & GRS Geology Tensors";
-            case "moon" -> "ðŸª¨ Moon Clementine & KREEP Geology Tensors";
-            case "venus" -> "ðŸª¨ Venus Magellan Radar Geology Tensors";
-            case "mercury" -> "ðŸª¨ Mercury MESSENGER GRS/XRS Geology Tensors";
-            default -> I18n.getOrDefault("resource.source.earth_geology", "ðŸª¨ Earth USGS Geology");
+            case "mars" -> "🪨 Mars MOLA & GRS Geology Tensors";
+            case "moon" -> "🪨 Moon Clementine & KREEP Geology Tensors";
+            case "venus" -> "🪨 Venus Magellan Radar Geology Tensors";
+            case "mercury" -> "🪨 Mercury MESSENGER GRS/XRS Geology Tensors";
+            default -> I18n.getOrDefault("resource.source.earth_geology", "🪨 Earth USGS Geology");
         };
     }
 
@@ -3961,14 +3961,14 @@ public class ResourceDistributionPanel extends BorderPane {
         return switch (index) {
             case 0 -> I18n.getOrDefault("resource.tensor.1.title", "â›ï¸ 4.2.1 Gisements de Charbon (COAL â€” USGS / BGR)");
             case 1 -> I18n.getOrDefault("resource.tensor.2.title", "ðŸ›¢ï¸ 4.2.2 RÃ©serves de PÃ©trole Brut (CRUDE_OIL â€” WEP / BGR)");
-            case 2 -> I18n.getOrDefault("resource.tensor.3.title", "ðŸ”¥ 4.2.3 Champs de Gaz Naturel (NATURAL_GAS â€” WEP / BGR)");
+            case 2 -> I18n.getOrDefault("resource.tensor.3.title", "🔥 4.2.3 Champs de Gaz Naturel (NATURAL_GAS — WEP / BGR)");
             case 3 -> I18n.getOrDefault("resource.tensor.4.title", "âš›ï¸ 4.2.4 Minerais d'Uranium & Fission (URANIUM â€” IAEA UDEPO)");
-            case 4 -> I18n.getOrDefault("resource.tensor.5.title", "ðŸŒŒ 4.2.5 HÃ©lium-3 & Fusion Lunaires (HELIUM_3 â€” NASA / LPI)");
+            case 4 -> I18n.getOrDefault("resource.tensor.5.title", "🌌 4.2.5 Hélium-3 & Fusion Lunaires (HELIUM_3 — NASA / LPI)");
             case 5 -> I18n.getOrDefault("resource.tensor.6.title", "â›“ï¸ 4.2.6 MÃ©taux Fer BIF & Cuivre (IRON_COPPER)");
-            case 6 -> I18n.getOrDefault("resource.tensor.7.title", "ðŸ’Ž 4.2.7 MÃ©taux PrÃ©cieux (Or, Argent, PGM â€” USGS MRDS)");
-            case 7 -> I18n.getOrDefault("resource.tensor.8.title", "ðŸ”‹ 4.2.8 Terres Rares & MinÃ©raux Critiques (CRITICAL_REE â€” USGS REE/Salars)");
-            case 8 -> I18n.getOrDefault("resource.tensor.9.title", "ðŸŒ‹ 4.2.9 Flux Thermique du Manteau (MANTLE_HEAT â€” IHFC / Davies 2013)");
-            case 9 -> I18n.getOrDefault("resource.tensor.10.title", "ðŸ’§ 4.2.10 AquifÃ¨res Profonds & Eau Douce (FRESHWATER_AQUIFERS â€” WHYMAP)");
+            case 6 -> I18n.getOrDefault("resource.tensor.7.title", "💎 4.2.7 Métaux Précieux (Or, Argent, PGM — USGS MRDS)");
+            case 7 -> I18n.getOrDefault("resource.tensor.8.title", "🔋 4.2.8 Terres Rares & Minéraux Critiques (CRITICAL_REE — USGS REE/Salars)");
+            case 8 -> I18n.getOrDefault("resource.tensor.9.title", "🌋 4.2.9 Flux Thermique du Manteau (MANTLE_HEAT — IHFC / Davies 2013)");
+            case 9 -> I18n.getOrDefault("resource.tensor.10.title", "💧 4.2.10 Aquifères Profonds & Eau Douce (FRESHWATER_AQUIFERS — WHYMAP)");
             default -> I18n.getOrDefault("resource.tensor.custom.title_prefix", "â›ï¸ 4.2.") + (index + 1) + I18n.getOrDefault("resource.tensor.custom.title_mid", " Tenseur GÃ©ologique ") + (index + 1);
         };
     }
@@ -3983,8 +3983,8 @@ public class ResourceDistributionPanel extends BorderPane {
             case 4 -> I18n.getOrDefault("resource.tensor.5.desc", "Regolith enriched in Helium-3 (lunar basin & planetary deposits). Source: NASA PDS / LPI.");
             case 5 -> I18n.getOrDefault("resource.tensor.6.desc", "Banded iron formations (BIF) and porphyry copper deposits. Source: USGS Mineral Resources Program.");
             case 6 -> I18n.getOrDefault("resource.tensor.7.desc", "Gold (Au), Silver (Ag), Platinum (Pt), and Palladium (Pd) deposits. Source: USGS MRDS.");
-            case 7 -> I18n.getOrDefault("resource.tensor.8.desc", "Rare Earth Elements (REE, Neodymium, Dysprosium), BastnÃ¤site, Monazite, and Lithium brines/spodumene. Source: USGS REE.");
-            case 8 -> I18n.getOrDefault("resource.tensor.9.desc", "Geothermal mantle heat flux (mW/mÂ²). Source: IHFC / Davies 2013 Global Heat Flow.");
+            case 7 -> I18n.getOrDefault("resource.tensor.8.desc", "Rare Earth Elements (REE, Neodymium, Dysprosium), Bastnäsite, Monazite, and Lithium brines/spodumene. Source: USGS REE.");
+            case 8 -> I18n.getOrDefault("resource.tensor.9.desc", "Geothermal mantle heat flux (mW/m²). Source: IHFC / Davies 2013 Global Heat Flow.");
             case 9 -> I18n.getOrDefault("resource.tensor.10.desc", "Deep groundwater tables and large fossil aquifers. Source: UNESCO WHYMAP.");
             default -> I18n.getOrDefault("resource.tensor.custom.desc", "Extensible geological layer.");
         };
@@ -4017,7 +4017,7 @@ public class ResourceDistributionPanel extends BorderPane {
             case 2 -> switch (body) {
                 case "mars" -> "Mars Subsurface Methane & Clathrates (Mars Odyssey)";
                 case "moon" -> "Lunar Solar-Wind Entrapped Gas (Moon Trace)";
-                case "venus" -> "Venus Supercritical High-Pressure COâ‚‚ Reservoir";
+                case "venus" -> "Venus Supercritical High-Pressure CO₂ Reservoir";
                 case "mercury" -> "Mercury Exospheric Outgassing (Void)";
                 default -> "WEP / BGR Natural Gas Fields (Earth Baseline)";
             };
@@ -4079,14 +4079,14 @@ public class ResourceDistributionPanel extends BorderPane {
         return switch (index) {
             case 0 -> I18n.getOrDefault("resource.tensor.1.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 Gt | White (255) = 5.0 Gt (USGS MRDS / BGR Germany)");
             case 1 -> I18n.getOrDefault("resource.tensor.2.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 Gt | White (255) = 5.0 Gt (World Energy Projection / BGR)");
-            case 2 -> I18n.getOrDefault("resource.tensor.3.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 10Â¹Â² mÂ³ | White (255) = 5.0 10Â¹Â² mÂ³ (WEP / BGR Germany)");
+            case 2 -> I18n.getOrDefault("resource.tensor.3.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 10¹² m³ | White (255) = 5.0 10¹² m³ (WEP / BGR Germany)");
             case 3 -> I18n.getOrDefault("resource.tensor.4.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 ppm | White (255) = 1,000 ppm U (IAEA UDEPO / NFCIS)");
             case 4 -> I18n.getOrDefault("resource.tensor.5.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 ppb | White (255) = 100 ppb He-3 (NASA PDS / Lunar Prospector)");
             case 5 -> I18n.getOrDefault("resource.tensor.6.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 Gt | White (255) = 5.0 Gt (USGS Mineral Resources / BIF)");
             case 6 -> I18n.getOrDefault("resource.tensor.7.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 kt | White (255) = 1,000 kt Au/Ag/Pt (USGS MRDS)");
             case 7 -> I18n.getOrDefault("resource.tensor.8.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 Mt | White (255) = 5.0 Mt REE/Li (USGS REE & Salars)");
-            case 8 -> I18n.getOrDefault("resource.tensor.9.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 20 mW/mÂ² | White (255) = 250 mW/mÂ² (IHFC / Davies 2013)");
-            case 9 -> I18n.getOrDefault("resource.tensor.10.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 10Â³ kmÂ³ | White (255) = 5.0 10Â³ kmÂ³ (UNESCO / WHYMAP)");
+            case 8 -> I18n.getOrDefault("resource.tensor.9.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 20 mW/m² | White (255) = 250 mW/m² (IHFC / Davies 2013)");
+            case 9 -> I18n.getOrDefault("resource.tensor.10.format", "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0 10³ km³ | White (255) = 5.0 10³ km³ (UNESCO / WHYMAP)");
             default -> I18n.getOrDefault("resource.hint.geo_format", "PNG / GeoTIFF image in 2:1 equirectangular projection");
         };
     }
@@ -4099,77 +4099,77 @@ public class ResourceDistributionPanel extends BorderPane {
         switch (index) {
             case 0 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” USGS MRDS & BGR Coal Basins [Global, -360 Ma (CarbonifÃ¨re) Ã  Actuel]",
-                "ðŸ”´ Mars â€” Regolith & Abiotic Crust [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (Abiotique / StÃ©rile)]",
-                "ðŸŸ¡ VÃ©nus â€” Pyrolyzed Carbon Crust [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (Pyrolyse / StÃ©rile)]",
-                "âšª Lune â€” Regolith & Vacuum Crust [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (Abiotique / StÃ©rile)]",
-                "âšª Mercure â€” Silicate Crust [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (Abiotique / StÃ©rile)]"
+                "🔴 Mars — Regolith & Abiotic Crust [Planétaire (Mars), -4.1 Ga à Actuel (Abiotique / Stérile)]",
+                "🟡 Vénus — Pyrolyzed Carbon Crust [Planétaire (Vénus), -500 Ma à Actuel (Pyrolyse / Stérile)]",
+                "⚪ Lune — Regolith & Vacuum Crust [Planétaire (Lune), -4.5 Ga à Actuel (Abiotique / Stérile)]",
+                "⚪ Mercure — Silicate Crust [Planétaire (Mercure), -4.0 Ga à Actuel (Abiotique / Stérile)]"
             );
             case 1 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” USGS WPA & BGR Oil Assessment [Global, -250 Ma (MÃ©sozoÃ¯que) Ã  Actuel]",
-                "ðŸ”´ Mars â€” Lacustrine Bedrocks [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (Traces PalÃ©o-Lacustres)]",
-                "ðŸŸ¡ VÃ©nus â€” Supercritical COâ‚‚ Crust [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (Pyrolyse / StÃ©rile)]",
-                "âšª Lune â€” Sterile Regolith [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (StÃ©rile / Vide)]",
-                "âšª Mercure â€” Airless Crust [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (StÃ©rile / Vide)]"
+                "🔴 Mars — Lacustrine Bedrocks [Planétaire (Mars), -4.1 Ga à Actuel (Traces Paléo-Lacustres)]",
+                "🟡 Vénus — Supercritical CO₂ Crust [Planétaire (Vénus), -500 Ma à Actuel (Pyrolyse / Stérile)]",
+                "⚪ Lune — Sterile Regolith [Planétaire (Lune), -4.5 Ga à Actuel (Stérile / Vide)]",
+                "⚪ Mercure — Airless Crust [Planétaire (Mercure), -4.0 Ga à Actuel (Stérile / Vide)]"
             );
             case 2 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” USGS & WEP/BGR Natural Gas Fields [Global, -300 Ma Ã  Actuel]",
-                "ðŸ”´ Mars â€” Subsurface Methane & Clathrates [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (Traces MÃ©thanogÃ¨nes)]",
-                "ðŸŸ¡ VÃ©nus â€” Supercritical Atmosphere & Crustal Gas Traps [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (PiÃ¨ges Crustaux)]",
-                "âšª Lune â€” Solar Wind Entrapped Gases [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (PiÃ¨ges Vent Solaire)]",
-                "âšª Mercure â€” Exospheric Outgassing [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (Traces ExosphÃ©riques)]"
+                "🔴 Mars — Subsurface Methane & Clathrates [Planétaire (Mars), -4.1 Ga à Actuel (Traces Méthanogènes)]",
+                "🟡 Vénus — Supercritical Atmosphere & Crustal Gas Traps [Planétaire (Vénus), -500 Ma à Actuel (Pièges Crustaux)]",
+                "⚪ Lune — Solar Wind Entrapped Gases [Planétaire (Lune), -4.5 Ga à Actuel (Pièges Vent Solaire)]",
+                "⚪ Mercure — Exospheric Outgassing [Planétaire (Mercure), -4.0 Ga à Actuel (Traces Exosphériques)]"
             );
             case 3 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” IAEA UDEPO & NEA Red Book Uranium [Global, -2.5 Ga (ProtÃ©rozoÃ¯que) Ã  Actuel]",
-                "ðŸ”´ Mars â€” Mars Odyssey GRS Thorium & Uranium [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (SpectromÃ©trie Gamma)]",
-                "ðŸŸ¡ VÃ©nus â€” Venera 8/9/10 Gamma-Ray Spectrometry [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (Sondes Venera)]",
-                "âšª Lune â€” Lunar Prospector KREEP GRS Thorium [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (Terrains KREEP)]",
-                "âšª Mercure â€” MESSENGER GRS/XRS Thorium & Uranium [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (SpectromÃ©trie X/GRS)]"
+                "🔴 Mars — Mars Odyssey GRS Thorium & Uranium [Planétaire (Mars), -4.1 Ga à Actuel (Spectrométrie Gamma)]",
+                "🟡 Vénus — Venera 8/9/10 Gamma-Ray Spectrometry [Planétaire (Vénus), -500 Ma à Actuel (Sondes Venera)]",
+                "⚪ Lune — Lunar Prospector KREEP GRS Thorium [Planétaire (Lune), -4.5 Ga à Actuel (Terrains KREEP)]",
+                "⚪ Mercure — MESSENGER GRS/XRS Thorium & Uranium [Planétaire (Mercure), -4.0 Ga à Actuel (Spectrométrie X/GRS)]"
             );
             case 4 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” Atmosphere Shielded Crust [Global, -4.5 Ga Ã  Actuel (Traces NÃ©gligeables / Bouclier MagnÃ©tique)]",
-                "ðŸ”´ Mars â€” Low-Magnetism Regolith Infiltration [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (Infiltration RÃ©golithe)]",
-                "ðŸŸ¡ VÃ©nus â€” Upper Ionosphere Solar Traps [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (Haute AtmosphÃ¨re)]",
-                "âšª Lune â€” LRO LOLA & Lunar Prospector Ilmenite [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (RÃ©golithe Titane/IlmÃ©nite)]",
-                "âšª Mercure â€” MESSENGER Magnetosphere Solar Wind Trap [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (PiÃ¨ges MagnÃ©tiques)]"
+                "🔴 Mars — Low-Magnetism Regolith Infiltration [Planétaire (Mars), -4.1 Ga à Actuel (Infiltration Régolithe)]",
+                "🟡 Vénus — Upper Ionosphere Solar Traps [Planétaire (Vénus), -500 Ma à Actuel (Haute Atmosphère)]",
+                "⚪ Lune — LRO LOLA & Lunar Prospector Ilmenite [Planétaire (Lune), -4.5 Ga à Actuel (Régolithe Titane/Ilménite)]",
+                "⚪ Mercure — MESSENGER Magnetosphere Solar Wind Trap [Planétaire (Mercure), -4.0 Ga à Actuel (Pièges Magnétiques)]"
             );
             case 5 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” USGS MRDS & Banded Iron Formations Atlas [Global, -3.8 Ga (ArchÃ©en) Ã  Actuel]",
-                "ðŸ”´ Mars â€” Mars Express OMEGA & CRISM Hematite [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (HÃ©matite / Oxydes de Fer)]",
-                "ðŸŸ¡ VÃ©nus â€” Magellan SAR Basaltic Volcanism & Pyrite [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (Sulfures & Pyrites)]",
-                "âšª Lune â€” Clementine & Lunar Prospector FeO Basalts [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (Basaltes des Mers)]",
-                "âšª Mercure â€” MESSENGER High-Iron Crust & Regolith [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (Noyau GÃ©ant Ferrique)]"
+                "🔴 Mars — Mars Express OMEGA & CRISM Hematite [Planétaire (Mars), -4.1 Ga à Actuel (Hématite / Oxydes de Fer)]",
+                "🟡 Vénus — Magellan SAR Basaltic Volcanism & Pyrite [Planétaire (Vénus), -500 Ma à Actuel (Sulfures & Pyrites)]",
+                "⚪ Lune — Clementine & Lunar Prospector FeO Basalts [Planétaire (Lune), -4.5 Ga à Actuel (Basaltes des Mers)]",
+                "⚪ Mercure — MESSENGER High-Iron Crust & Regolith [Planétaire (Mercure), -4.0 Ga à Actuel (Noyau Géant Ferrique)]"
             );
             case 6 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” USGS MRDS Precious Metals Au/Ag/PGM [Global, -3.8 Ga Ã  Actuel (Gisements OrogÃ©niques & Alluvionnaires)]",
-                "ðŸ”´ Mars â€” Hydrothermal Quartz & Native Gold Model [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (PalÃ©o-Hydrothermalisme)]",
-                "ðŸŸ¡ VÃ©nus â€” Heavy Metallic Pyrite & Telluride Frosts [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (Gels MÃ©talliques Sommitaux)]",
-                "âšª Lune â€” Impact Siderophile & Native Platinum Traces [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (Ã‰jectas SidÃ©rophiles)]",
-                "âšª Mercure â€” Core-Mantle Precious Metals & Sulfides [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (DiffÃ©renciation Manteau/Noyau)]"
+                "🔴 Mars — Hydrothermal Quartz & Native Gold Model [Planétaire (Mars), -4.1 Ga à Actuel (Paléo-Hydrothermalisme)]",
+                "🟡 Vénus — Heavy Metallic Pyrite & Telluride Frosts [Planétaire (Vénus), -500 Ma à Actuel (Gels Métalliques Sommitaux)]",
+                "⚪ Lune — Impact Siderophile & Native Platinum Traces [Planétaire (Lune), -4.5 Ga à Actuel (Éjectas Sidérophiles)]",
+                "⚪ Mercure — Core-Mantle Precious Metals & Sulfides [Planétaire (Mercure), -4.0 Ga à Actuel (Différenciation Manteau/Noyau)]"
             );
             case 7 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” USGS Rare Earth Elements & Salars [Global, -2.5 Ga Ã  Actuel (Pegmatites, Carbonatites & Salars)]",
-                "ðŸ”´ Mars â€” Acid Fog & Hydrothermal REE Model [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (AltÃ©ration Hydrothermale Acide)]",
-                "ðŸŸ¡ VÃ©nus â€” Alkaline Carbonatites & REE Model [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (Carbonatites Alcalines)]",
-                "âšª Lune â€” KREEP Basalts & Rare Earth Elements [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (Complexes Magmatiques KREEP)]",
-                "âšª Mercure â€” Magmatic Sulfide & REE Model [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (Sulfures Magmatiques)]"
+                "🔴 Mars — Acid Fog & Hydrothermal REE Model [Planétaire (Mars), -4.1 Ga à Actuel (Altération Hydrothermale Acide)]",
+                "🟡 Vénus — Alkaline Carbonatites & REE Model [Planétaire (Vénus), -500 Ma à Actuel (Carbonatites Alcalines)]",
+                "⚪ Lune — KREEP Basalts & Rare Earth Elements [Planétaire (Lune), -4.5 Ga à Actuel (Complexes Magmatiques KREEP)]",
+                "⚪ Mercure — Magmatic Sulfide & REE Model [Planétaire (Mercure), -4.0 Ga à Actuel (Sulfures Magmatiques)]"
             );
             case 8 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” IHFC / Davies Global Crustal Heat Flow [Global, -4.5 Ga Ã  Actuel (Flux 40 Ã  120 mW/mÂ²)]",
-                "ðŸ”´ Mars â€” InSight Crustal Heat Flow & Volcanic Plumes [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (Panaches RÃ©siduels Tharsis/Elysium)]",
-                "ðŸŸ¡ VÃ©nus â€” Magellan Coronae & Mantle Plumes [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (Points Chauds & Coronae)]",
-                "âšª Lune â€” Apollo 15/17 Lunar Heat Flow Experiment [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (Flux RÃ©siduel 15-20 mW/mÂ²)]",
-                "âšª Mercure â€” MESSENGER Core Conduction & Residual Heat [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (Conduction Thermique du Noyau)]"
+                "🔴 Mars — InSight Crustal Heat Flow & Volcanic Plumes [Planétaire (Mars), -4.1 Ga à Actuel (Panaches Résiduels Tharsis/Elysium)]",
+                "🟡 Vénus — Magellan Coronae & Mantle Plumes [Planétaire (Vénus), -500 Ma à Actuel (Points Chauds & Coronae)]",
+                "⚪ Lune — Apollo 15/17 Lunar Heat Flow Experiment [Planétaire (Lune), -4.5 Ga à Actuel (Flux Résiduel 15-20 mW/m²)]",
+                "⚪ Mercure — MESSENGER Core Conduction & Residual Heat [Planétaire (Mercure), -4.0 Ga à Actuel (Conduction Thermique du Noyau)]"
             );
             case 9 -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” UNESCO / WHYMAP Global Groundwater Aquifers [Global, -10 000 BP Ã  Actuel (HolocÃ¨ne & AquifÃ¨res Fossiles)]",
-                "ðŸ”´ Mars â€” Mars Express MARSIS Subsurface Ice [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel (Calottes & Glace Enfouie)]",
-                "ðŸŸ¡ VÃ©nus â€” Atmospheric Supercritical Vapor [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel (CroÃ»te DessÃ©chÃ©e)]",
-                "âšª Lune â€” LRO / LCROSS Polar Cold Trap Ice [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel (PiÃ¨ges Froids Polaires)]",
-                "âšª Mercure â€” MESSENGER Polar Crater Water Ice [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel (CratÃ¨res d'Ombre)]"
+                "🔴 Mars — Mars Express MARSIS Subsurface Ice [Planétaire (Mars), -4.1 Ga à Actuel (Calottes & Glace Enfouie)]",
+                "🟡 Vénus — Atmospheric Supercritical Vapor [Planétaire (Vénus), -500 Ma à Actuel (Croûte Desséchée)]",
+                "⚪ Lune — LRO / LCROSS Polar Cold Trap Ice [Planétaire (Lune), -4.5 Ga à Actuel (Pièges Froids Polaires)]",
+                "⚪ Mercure — MESSENGER Polar Crater Water Ice [Planétaire (Mercure), -4.0 Ga à Actuel (Cratères d'Ombre)]"
             );
             default -> combo.getItems().addAll(
                 "ðŸŒ Terre â€” USGS Scientific Dataset [Global, -4.5 Ga Ã  Actuel]",
-                "Global Planetary Survey [PlanÃ©taire, -4.5 Ga Ã  Actuel]"
+                "Global Planetary Survey [Planétaire, -4.5 Ga à Actuel]"
             );
         }
         org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
@@ -4192,7 +4192,7 @@ public class ResourceDistributionPanel extends BorderPane {
                     customGeologyLayerImages.put(index, img);
                 }
                 if (geologyFileLabels.containsKey(index)) {
-                    geologyFileLabels.get(index).setText("ðŸ“· " + val);
+                    geologyFileLabels.get(index).setText("📷 " + val);
                 }
                 if (geologyImportRadios.containsKey(index)) {
                     geologyImportRadios.get(index).setSelected(true);
@@ -4209,13 +4209,13 @@ public class ResourceDistributionPanel extends BorderPane {
 
     // Helper subroutine: create geology vector and layers section - internal state computation & bounds checking
     private VBox createGeologyVectorAndLayersSection() {
-        geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÃ‰OLOGIE, TECTONIQUE & MINERAIS"));
+        geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÉOLOGIE, TECTONIQUE & MINERAIS"));
 
-        // Section 4.1 : ContrÃ´le Global, Graine & Formats
+        // Section 4.1 : Contrôle Global, Graine & Formats
         sec41Header = new Label(I18n.getOrDefault("resource.section.geology_4_1.title", "âš™ï¸ 4.1 ContrÃ´le Global, Graine & Formats"));
         sec41Header.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
-        btnGenerateProceduralGeologyTensors = new Button(I18n.getOrDefault("resource.btn.regen_tensors", "ðŸª„ RÃ©gÃ©nÃ©rer tous les tenseurs gÃ©ologiques"));
+        btnGenerateProceduralGeologyTensors = new Button(I18n.getOrDefault("resource.btn.regen_tensors", "🪄 Régénérer tous les tenseurs géologiques"));
         btnGenerateProceduralGeologyTensors.getStyleClass().add("button");
         btnGenerateProceduralGeologyTensors.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnGenerateProceduralGeologyTensors.setMinWidth(Region.USE_PREF_SIZE);
@@ -4231,7 +4231,7 @@ public class ResourceDistributionPanel extends BorderPane {
             }
         });
 
-        Button geoRandSeedBtn = new Button("ðŸŽ²");
+        Button geoRandSeedBtn = new Button("🎲");
         geoRandSeedBtn.getStyleClass().add("button-secondary");
         geoRandSeedBtn.setStyle("-fx-font-size: 11px;");
         geoRandSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.random_geology_seed", "Draw a new random stochastic seed for all geological tensors.")));
@@ -4242,7 +4242,7 @@ public class ResourceDistributionPanel extends BorderPane {
         });
 
         geoSeedLabel = new Label(I18n.getOrDefault("resource.label.geology_seed", "Graine :"));
-        HBox geoSeedBox = new HBox(4, geoSeedLabel, new Label("ðŸŽ²"), geologySeedInput, geoRandSeedBtn);
+        HBox geoSeedBox = new HBox(4, geoSeedLabel, new Label("🎲"), geologySeedInput, geoRandSeedBtn);
         geoSeedBox.setAlignment(Pos.CENTER_LEFT);
 
         HBox seedRow = new HBox(8, geoSeedBox, btnGenerateProceduralGeologyTensors);
@@ -4253,19 +4253,19 @@ public class ResourceDistributionPanel extends BorderPane {
         geologyHelpBtn.getStyleClass().add("button-secondary");
         geologyHelpBtn.setStyle("-fx-font-size: 11px;");
         geologyHelpBtn.setMinWidth(Region.USE_PREF_SIZE);
-        geologyHelpBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.geology_specs", "SpÃ©cifications des formats d'image et standards gÃ©ologiques (PNG, GeoTIFF, NetCDF, ASC, GeoJSON).")));
+        geologyHelpBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.geology_specs", "Spécifications des formats d'image et standards géologiques (PNG, GeoTIFF, NetCDF, ASC, GeoJSON).")));
         geologyHelpBtn.setOnAction(e -> showGeologyImportFormatHelp());
 
         btnExportGisMultiFormat = new Button(I18n.getOrDefault("resource.btn.export_gis", "ðŸ—ºï¸ Export SIG Multi-Format"));
         btnExportGisMultiFormat.getStyleClass().add("button-secondary");
         btnExportGisMultiFormat.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-        btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_gis", "Exporter les 10 tenseurs gÃ©ologiques sous formats SIG professionnels (GeoTIFF, NetCDF-4, GeoJSON).")));
+        btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_gis", "Exporter les 10 tenseurs géologiques sous formats SIG professionnels (GeoTIFF, NetCDF-4, GeoJSON).")));
         btnExportGisMultiFormat.setOnAction(e -> exportGisMultiFormat());
 
-        btnExportProvenanceManifest = new Button(I18n.getOrDefault("resource.btn.provenance_manifest", "ðŸ”’ Manifeste Provenance SHA-256"));
+        btnExportProvenanceManifest = new Button(I18n.getOrDefault("resource.btn.provenance_manifest", "🔒 Manifeste Provenance SHA-256"));
         btnExportProvenanceManifest.getStyleClass().add("button-secondary");
         btnExportProvenanceManifest.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-        btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.gen_provenance", "GÃ©nÃ©rer un manifeste cryptographique JSON (provenance.json) contenant les hashs SHA-256 des jeux de donnÃ©es gÃ©ologiques.")));
+        btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.gen_provenance", "Générer un manifeste cryptographique JSON (provenance.json) contenant les hashs SHA-256 des jeux de données géologiques.")));
         btnExportProvenanceManifest.setOnAction(e -> exportProvenanceManifest());
 
         HBox formatRow = new HBox(8, geologyHelpBtn, btnExportGisMultiFormat, btnExportProvenanceManifest);
@@ -4274,7 +4274,7 @@ public class ResourceDistributionPanel extends BorderPane {
         VBox sec41Box = new VBox(6, sec41Header, seedRow, formatRow);
         sec41Box.setStyle("-fx-padding: 8px 10px; -fx-background-color: rgba(148, 163, 184, 0.08); -fx-background-radius: 6px; -fx-border-color: rgba(148, 163, 184, 0.25); -fx-border-radius: 6px; -fx-border-width: 1px;");
 
-        // Section 4.2 : Tenseurs GÃ©ologiques Canoniques
+        // Section 4.2 : Tenseurs Géologiques Canoniques
         sec42Header = new Label(I18n.getOrDefault("resource.section.geology_4_2.title", "ðŸ—ºï¸ 4.2 TENSEURS GÃ‰OLOGIQUES & Ã‰NERGÃ‰TIQUES CANONIQUES (10 Sous-Blocs)"));
         sec42Header.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         sec42Header.setWrapText(true);
@@ -4296,21 +4296,21 @@ public class ResourceDistributionPanel extends BorderPane {
 
         String content = I18n.getOrDefault("resource.help.geology_specs_body",
             "ðŸ“ STANDARDIZED PROJECTION & RESOLUTION:\n" +
-            "â€¢ Projection: Standard WGS84 Equirectangular (2:1, Longitude [-180Â°, +180Â°], Latitude [-90Â°, +90Â°]).\n" +
-            "â€¢ Supported formats: PNG (8/16-bit), GeoTIFF (.tif/.tiff), ESRI Arc/Info ASCII (.asc), GeoJSON (.geojson), NetCDF-4 (.nc.json).\n" +
-            "â€¢ Recommended resolution: 720Ã—360 (fast), 1440Ã—720 (standard HD), or 3600Ã—1800 (ultra-precise).\n\n" +
-            "ðŸ’Ž CHANNELS & SCIENTIFIC UNITS OF THE 10 TENSORS:\n" +
+            "• Projection: Standard WGS84 Equirectangular (2:1, Longitude [-180°, +180°], Latitude [-90°, +90°]).\n" +
+            "• Supported formats: PNG (8/16-bit), GeoTIFF (.tif/.tiff), ESRI Arc/Info ASCII (.asc), GeoJSON (.geojson), NetCDF-4 (.nc.json).\n" +
+            "• Recommended resolution: 720×360 (fast), 1440×720 (standard HD), or 3600×1800 (ultra-precise).\n\n" +
+            "💎 CHANNELS & SCIENTIFIC UNITS OF THE 10 TENSORS:\n" +
             "1. Coal (COAL): Gt/cell (USGS MRDS / BGR Germany).\n" +
             "2. Crude Oil (CRUDE_OIL): Gt/cell (World Energy Projection / BGR).\n" +
-            "3. Natural Gas (NATURAL_GAS): 10Â¹Â² mÂ³/cell (WEP / BGR Germany).\n" +
+            "3. Natural Gas (NATURAL_GAS): 10¹² m³/cell (WEP / BGR Germany).\n" +
             "4. Uranium & Fission (URANIUM): ppm U (IAEA UDEPO / NFCIS).\n" +
             "5. Helium-3 & Fusion (HELIUM_3): ppb He-3 (NASA PDS / Lunar Prospector).\n" +
             "6. Iron BIF & Copper Metals (IRON_COPPER): Gt/cell (USGS BIF Atlas).\n" +
             "7. Precious Metals Au/Ag/Pt (PRECIOUS_METALS): kt/cell (USGS MRDS).\n" +
             "8. Rare Earths & Lithium (CRITICAL_REE): Mt/cell (USGS REE / Salars).\n" +
-            "9. Mantle Heat Flux (MANTLE_HEAT): mW/mÂ² (IHFC / Davies 2013).\n" +
-            "10. Deep Aquifers & Groundwater (FRESHWATER_AQUIFERS): 10Â³ kmÂ³/cell (UNESCO WHYMAP).\n\n" +
-            "ðŸ”’ TRACEABILITY & PROVENANCE:\n" +
+            "9. Mantle Heat Flux (MANTLE_HEAT): mW/m² (IHFC / Davies 2013).\n" +
+            "10. Deep Aquifers & Groundwater (FRESHWATER_AQUIFERS): 10³ km³/cell (UNESCO WHYMAP).\n\n" +
+            "🔒 TRACEABILITY & PROVENANCE:\n" +
             "Each imported layer is validated by SHA-256 cryptographic fingerprint and logged in the provenance.json manifest."
         );
 
@@ -4406,7 +4406,7 @@ public class ResourceDistributionPanel extends BorderPane {
         if (geologyFileLabels != null) {
             for (Integer idx : geologyFileLabels.keySet()) {
                 if (geologyFileLabels.get(idx) != null) {
-                    geologyFileLabels.get(idx).setText("â€”");
+                    geologyFileLabels.get(idx).setText("—");
                 }
             }
         }
@@ -4463,73 +4463,73 @@ public class ResourceDistributionPanel extends BorderPane {
     private static final TensorSliderMeta[][] GEOLOGY_SLIDER_SPECS = {
         // Tensor 4.1: COAL
         {
-            new TensorSliderMeta("resource.tensor.1.param1", "Abondance & Ã‰paisseur Veines Charbon", "resource.tensor.1.param1.tt", "RÃ¨gle l'abondance globale et l'Ã©paisseur moyenne des veines de charbon dans les bassins sÃ©dimentaires (Gt).", 0.1, 5.0, 1.0, "Gt", "%.2f Gt"),
-            new TensorSliderMeta("resource.tensor.1.param2", "Seuil PalÃ©o-Biomasse MarÃ©cages", "resource.tensor.1.param2.tt", "Pourcentage minimal de vÃ©gÃ©tation palÃ©olithique et zones humides requis pour l'accumulation de tourbe.", 0.0, 1.0, 0.35, "%", "%.0f %%"),
-            new TensorSliderMeta("resource.tensor.1.param3", "Rang de Carbonisation (Anthracitisation)", "resource.tensor.1.param3.tt", "DegrÃ© de mÃ©tamorphisme thermique (%Ro vitrinite). 0=Lignite, 0.5=Bitumineux, 1.0=Anthracite pure.", 0.0, 1.0, 0.50, "%Ro", "%.2f %%Ro"),
-            new TensorSliderMeta("resource.tensor.1.param4", "Ã‰paisseur Couvert SÃ©dimentaire", "resource.tensor.1.param4.tt", "Profondeur d'enfouissement lithostatique dans les bassins paraliques favorisant la compaction.", 0.5, 10.0, 2.5, "km", "%.1f km")
+            new TensorSliderMeta("resource.tensor.1.param1", "Abondance & Épaisseur Veines Charbon", "resource.tensor.1.param1.tt", "Règle l'abondance globale et l'épaisseur moyenne des veines de charbon dans les bassins sédimentaires (Gt).", 0.1, 5.0, 1.0, "Gt", "%.2f Gt"),
+            new TensorSliderMeta("resource.tensor.1.param2", "Seuil Paléo-Biomasse Marécages", "resource.tensor.1.param2.tt", "Pourcentage minimal de végétation paléolithique et zones humides requis pour l'accumulation de tourbe.", 0.0, 1.0, 0.35, "%", "%.0f %%"),
+            new TensorSliderMeta("resource.tensor.1.param3", "Rang de Carbonisation (Anthracitisation)", "resource.tensor.1.param3.tt", "Degré de métamorphisme thermique (%Ro vitrinite). 0=Lignite, 0.5=Bitumineux, 1.0=Anthracite pure.", 0.0, 1.0, 0.50, "%Ro", "%.2f %%Ro"),
+            new TensorSliderMeta("resource.tensor.1.param4", "Épaisseur Couvert Sédimentaire", "resource.tensor.1.param4.tt", "Profondeur d'enfouissement lithostatique dans les bassins paraliques favorisant la compaction.", 0.5, 10.0, 2.5, "km", "%.1f km")
         },
         // Tensor 4.2: CRUDE_OIL
         {
-            new TensorSliderMeta("resource.tensor.2.param1", "Volume RÃ©serves & PiÃ¨ges PÃ©trole", "resource.tensor.2.param1.tt", "Volume total d'hydrocarbures liquides emmagasinÃ©s dans les rÃ©servoirs sous-terrains (Gt).", 0.1, 5.0, 1.0, "Gt", "%.2f Gt"),
-            new TensorSliderMeta("resource.tensor.2.param2", "Maturation Roche-MÃ¨re Anoxique", "resource.tensor.2.param2.tt", "Taux de Carbone Organique Total (TOC) dÃ©posÃ© dans les schistes marins en milieu anoxique.", 0.0, 1.0, 0.40, "% TOC", "%.0f %% TOC"),
-            new TensorSliderMeta("resource.tensor.2.param3", "DensitÃ© PiÃ¨ges Anticlinaux & Failles", "resource.tensor.2.param3.tt", "FrÃ©quence des dÃ©formations tectoniques plissÃ©es et dÃ´mes salins stoppant la migration du pÃ©trole.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.2.param4", "TempÃ©rature FenÃªtre Ã  PÃ©trole", "resource.tensor.2.param4.tt", "Plage de tempÃ©rature de pyrolyse naturelle (60Â°C-175Â°C) convertissant le kÃ©rogÃ¨ne en pÃ©trole brut.", 60.0, 180.0, 120.0, "Â°C", "%.0f Â°C")
+            new TensorSliderMeta("resource.tensor.2.param1", "Volume Réserves & Pièges Pétrole", "resource.tensor.2.param1.tt", "Volume total d'hydrocarbures liquides emmagasinés dans les réservoirs sous-terrains (Gt).", 0.1, 5.0, 1.0, "Gt", "%.2f Gt"),
+            new TensorSliderMeta("resource.tensor.2.param2", "Maturation Roche-Mère Anoxique", "resource.tensor.2.param2.tt", "Taux de Carbone Organique Total (TOC) déposé dans les schistes marins en milieu anoxique.", 0.0, 1.0, 0.40, "% TOC", "%.0f %% TOC"),
+            new TensorSliderMeta("resource.tensor.2.param3", "Densité Pièges Anticlinaux & Failles", "resource.tensor.2.param3.tt", "Fréquence des déformations tectoniques plissées et dômes salins stoppant la migration du pétrole.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.2.param4", "Température Fenêtre à Pétrole", "resource.tensor.2.param4.tt", "Plage de température de pyrolyse naturelle (60°C-175°C) convertissant le kérogène en pétrole brut.", 60.0, 180.0, 120.0, "°C", "%.0f °C")
         },
         // Tensor 4.3: NATURAL_GAS
         {
-            new TensorSliderMeta("resource.tensor.3.param1", "Pression & Abondance Gaz", "resource.tensor.3.param1.tt", "Volume total de gaz naturel conventionnel et non-conventionnel emmagasinÃ© sous pression (10Â¹Â² mÂ³).", 0.1, 5.0, 1.0, "10Â¹Â² mÂ³", "%.2f 10Â¹Â² mÂ³"),
-            new TensorSliderMeta("resource.tensor.3.param2", "Fraction Gaz de Schiste ThermogÃ¨ne", "resource.tensor.3.param2.tt", "Proportion de gaz formÃ© par cracking thermique profond par rapport au gaz biogÃ©nique de surface.", 0.0, 1.0, 0.40, "%", "%.0f %%"),
-            new TensorSliderMeta("resource.tensor.3.param3", "Profondeur RÃ©servoir Cratonique", "resource.tensor.3.param3.tt", "Profondeur des formations grÃ©seuses et carbonatÃ©es rÃ©servoirs impactant la rÃ©tention gazeuse.", 0.5, 8.0, 3.2, "km", "%.1f km"),
-            new TensorSliderMeta("resource.tensor.3.param4", "Ã‰tanchÃ©itÃ© Roches-Couverture", "resource.tensor.3.param4.tt", "CapacitÃ© d'Ã©tanchÃ©itÃ© des couches d'Ã©vaporites et d'argilites empÃªchant la fuite vers la surface.", 0.0, 1.0, 0.60, "Indice", "%.2f")
+            new TensorSliderMeta("resource.tensor.3.param1", "Pression & Abondance Gaz", "resource.tensor.3.param1.tt", "Volume total de gaz naturel conventionnel et non-conventionnel emmagasiné sous pression (10¹² m³).", 0.1, 5.0, 1.0, "10¹² m³", "%.2f 10¹² m³"),
+            new TensorSliderMeta("resource.tensor.3.param2", "Fraction Gaz de Schiste Thermogène", "resource.tensor.3.param2.tt", "Proportion de gaz formé par cracking thermique profond par rapport au gaz biogénique de surface.", 0.0, 1.0, 0.40, "%", "%.0f %%"),
+            new TensorSliderMeta("resource.tensor.3.param3", "Profondeur Réservoir Cratonique", "resource.tensor.3.param3.tt", "Profondeur des formations gréseuses et carbonatées réservoirs impactant la rétention gazeuse.", 0.5, 8.0, 3.2, "km", "%.1f km"),
+            new TensorSliderMeta("resource.tensor.3.param4", "Étanchéité Roches-Couverture", "resource.tensor.3.param4.tt", "Capacité d'étanchéité des couches d'évaporites et d'argilites empêchant la fuite vers la surface.", 0.0, 1.0, 0.60, "Indice", "%.2f")
         },
         // Tensor 4.4: URANIUM
         {
-            new TensorSliderMeta("resource.tensor.4.param1", "Teneur Crustale Pegmatites Uranium", "resource.tensor.4.param1.tt", "Concentration moyenne en Uranium de la croÃ»te magmatique et des granites fertiles (ppm).", 10.0, 1000.0, 250.0, "ppm U", "%.0f ppm"),
-            new TensorSliderMeta("resource.tensor.4.param2", "Infiltration Hydrothermale & AltÃ©ration", "resource.tensor.4.param2.tt", "Circulation des fluides hydrothermaux lessivant et prÃ©cipitant la pechblende (UOâ‚‚) dans les filons.", 0.0, 1.0, 0.45, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.4.param3", "Rapport Massique Thorium/Uranium", "resource.tensor.4.param3.tt", "Rapport isotopique naturel ThÂ²Â³Â²/UÂ²Â³â¸. Un ratio Ã©levÃ© favorise les minÃ©ralisations en Thorium.", 0.5, 10.0, 3.5, "Th/U", "%.1f Th/U"),
-            new TensorSliderMeta("resource.tensor.4.param4", "Fronts Redox & Discordances", "resource.tensor.4.param4.tt", "IntensitÃ© des piÃ¨ges d'oxydo-rÃ©duction aux discordances ProtÃ©rozoÃ¯ques (type Athabasca).", 0.0, 1.0, 0.50, "Indice", "%.2f")
+            new TensorSliderMeta("resource.tensor.4.param1", "Teneur Crustale Pegmatites Uranium", "resource.tensor.4.param1.tt", "Concentration moyenne en Uranium de la croûte magmatique et des granites fertiles (ppm).", 10.0, 1000.0, 250.0, "ppm U", "%.0f ppm"),
+            new TensorSliderMeta("resource.tensor.4.param2", "Infiltration Hydrothermale & Altération", "resource.tensor.4.param2.tt", "Circulation des fluides hydrothermaux lessivant et précipitant la pechblende (UO₂) dans les filons.", 0.0, 1.0, 0.45, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.4.param3", "Rapport Massique Thorium/Uranium", "resource.tensor.4.param3.tt", "Rapport isotopique naturel Th²³²/U²³⁸. Un ratio élevé favorise les minéralisations en Thorium.", 0.5, 10.0, 3.5, "Th/U", "%.1f Th/U"),
+            new TensorSliderMeta("resource.tensor.4.param4", "Fronts Redox & Discordances", "resource.tensor.4.param4.tt", "Intensité des pièges d'oxydo-réduction aux discordances Protérozoïques (type Athabasca).", 0.0, 1.0, 0.50, "Indice", "%.2f")
         },
         // Tensor 4.5: HELIUM_3
         {
-            new TensorSliderMeta("resource.tensor.5.param1", "Concentration RÃ©golithe Surface HÃ©lium-3", "resource.tensor.5.param1.tt", "DensitÃ© d'HÃ©lium-3 piÃ©gÃ© dans la couche supÃ©rieure du rÃ©golithe par le vent solaire (ppb).", 1.0, 100.0, 15.0, "ppb", "%.1f ppb"),
-            new TensorSliderMeta("resource.tensor.5.param2", "Taux IlmÃ©nite FeTiOâ‚ƒ", "resource.tensor.5.param2.tt", "Pourcentage d'ilmÃ©nite dans la roche spatiale, minÃ©ral retenant prÃ©fÃ©rentiellement les ions d'He-3.", 0.0, 1.0, 0.40, "%", "%.0f %%"),
-            new TensorSliderMeta("resource.tensor.5.param3", "Flux Vent Solaire (Ionique)", "resource.tensor.5.param3.tt", "IntensitÃ© du bombardement de protons/alphas du vent solaire (inverse du champ magnÃ©tique).", 0.0, 5.0, 1.0, "Ã—Terre", "%.1f Ã—Terre"),
-            new TensorSliderMeta("resource.tensor.5.param4", "Jardinage RÃ©golithe par CratÃ¨res", "resource.tensor.5.param4.tt", "Profondeur de brassage du rÃ©golithe par les micro-impacts mÃ©tÃ©oritiques enfouissant l'He-3.", 0.5, 15.0, 3.0, "m", "%.1f m")
+            new TensorSliderMeta("resource.tensor.5.param1", "Concentration Régolithe Surface Hélium-3", "resource.tensor.5.param1.tt", "Densité d'Hélium-3 piégé dans la couche supérieure du régolithe par le vent solaire (ppb).", 1.0, 100.0, 15.0, "ppb", "%.1f ppb"),
+            new TensorSliderMeta("resource.tensor.5.param2", "Taux Ilménite FeTiO₃", "resource.tensor.5.param2.tt", "Pourcentage d'ilménite dans la roche spatiale, minéral retenant préférentiellement les ions d'He-3.", 0.0, 1.0, 0.40, "%", "%.0f %%"),
+            new TensorSliderMeta("resource.tensor.5.param3", "Flux Vent Solaire (Ionique)", "resource.tensor.5.param3.tt", "Intensité du bombardement de protons/alphas du vent solaire (inverse du champ magnétique).", 0.0, 5.0, 1.0, "×Terre", "%.1f ×Terre"),
+            new TensorSliderMeta("resource.tensor.5.param4", "Jardinage Régolithe par Cratères", "resource.tensor.5.param4.tt", "Profondeur de brassage du régolithe par les micro-impacts météoritiques enfouissant l'He-3.", 0.5, 15.0, 3.0, "m", "%.1f m")
         },
         // Tensor 4.6: IRON_COPPER
         {
-            new TensorSliderMeta("resource.tensor.6.param1", "Abondance Fer BIF & Cuivre", "resource.tensor.6.param1.tt", "Masse totale des formations de Fer rubanÃ© (BIF) et des gisements de cuivre porphyrique (Gt).", 0.1, 5.0, 1.0, "Gt", "%.2f Gt"),
-            new TensorSliderMeta("resource.tensor.6.param2", "ActivitÃ© Magmatique MÃ©tallogÃ©nique", "resource.tensor.6.param2.tt", "IntensitÃ© du volcanisme d'arc et des intrusions magmatiques injectant le cuivre hydrothermal.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.6.param3", "PrÃ©cipitation ArchÃ©enne BIF (Oâ‚‚ Indice)", "resource.tensor.6.param3.tt", "Ã‰vÃ©nement de Grande Oxydation (GOE) prÃ©cipitant le fer dissous ocÃ©anique sous forme d'hÃ©matite.", 0.0, 1.0, 0.60, "Indice Oâ‚‚", "%.2f"),
-            new TensorSliderMeta("resource.tensor.6.param4", "Teneur Cuivre Porphyrique", "resource.tensor.6.param4.tt", "Teneur moyenne en cuivre du minerai brut (% massique de Cu). Porphyres gÃ©ants: 0.4%-2.5% Cu.", 0.1, 3.0, 0.8, "% Cu", "%.1f %% Cu")
+            new TensorSliderMeta("resource.tensor.6.param1", "Abondance Fer BIF & Cuivre", "resource.tensor.6.param1.tt", "Masse totale des formations de Fer rubané (BIF) et des gisements de cuivre porphyrique (Gt).", 0.1, 5.0, 1.0, "Gt", "%.2f Gt"),
+            new TensorSliderMeta("resource.tensor.6.param2", "Activité Magmatique Métallogénique", "resource.tensor.6.param2.tt", "Intensité du volcanisme d'arc et des intrusions magmatiques injectant le cuivre hydrothermal.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.6.param3", "Précipitation Archéenne BIF (O₂ Indice)", "resource.tensor.6.param3.tt", "Événement de Grande Oxydation (GOE) précipitant le fer dissous océanique sous forme d'hématite.", 0.0, 1.0, 0.60, "Indice O₂", "%.2f"),
+            new TensorSliderMeta("resource.tensor.6.param4", "Teneur Cuivre Porphyrique", "resource.tensor.6.param4.tt", "Teneur moyenne en cuivre du minerai brut (% massique de Cu). Porphyres géants: 0.4%-2.5% Cu.", 0.1, 3.0, 0.8, "% Cu", "%.1f %% Cu")
         },
         // Tensor 4.7: PRECIOUS_METALS
         {
-            new TensorSliderMeta("resource.tensor.7.param1", "Abondance MÃ©taux PrÃ©cieux (Au, Ag, Pt)", "resource.tensor.7.param1.tt", "Masse totale d'Or, Argent et mÃ©taux du groupe du platine (PGM) exploitables (kt).", 0.1, 5.0, 1.0, "kt", "%.2f kt"),
-            new TensorSliderMeta("resource.tensor.7.param2", "Placers Alluvionnaires & PalÃ©oplacers", "resource.tensor.7.param2.tt", "Concentration mÃ©canique par Ã©rosion fluviatile et palÃ©oconglomÃ©rats aurifÃ¨res (type Witwatersrand).", 0.0, 1.0, 0.45, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.7.param3", "Filons Ã‰pithermaux & OrogÃ©niques", "resource.tensor.7.param3.tt", "DensitÃ© des filons hydrothermaux de quartz aurifÃ¨re liÃ©s aux orogenÃ¨ses et zones de cisaillement.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.7.param4", "Complexes IgnÃ©s StratifiÃ©s (PGM)", "resource.tensor.7.param4.tt", "Intrusions mafiques et ultramafiques diffÃ©renciÃ©es riches en platine et palladium (type Bushveld).", 0.0, 1.0, 0.40, "Indice", "%.2f")
+            new TensorSliderMeta("resource.tensor.7.param1", "Abondance Métaux Précieux (Au, Ag, Pt)", "resource.tensor.7.param1.tt", "Masse totale d'Or, Argent et métaux du groupe du platine (PGM) exploitables (kt).", 0.1, 5.0, 1.0, "kt", "%.2f kt"),
+            new TensorSliderMeta("resource.tensor.7.param2", "Placers Alluvionnaires & Paléoplacers", "resource.tensor.7.param2.tt", "Concentration mécanique par érosion fluviatile et paléoconglomérats aurifères (type Witwatersrand).", 0.0, 1.0, 0.45, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.7.param3", "Filons Épithermaux & Orogéniques", "resource.tensor.7.param3.tt", "Densité des filons hydrothermaux de quartz aurifère liés aux orogenèses et zones de cisaillement.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.7.param4", "Complexes Ignés Stratifiés (PGM)", "resource.tensor.7.param4.tt", "Intrusions mafiques et ultramafiques différenciées riches en platine et palladium (type Bushveld).", 0.0, 1.0, 0.40, "Indice", "%.2f")
         },
         // Tensor 4.8: CRITICAL_REE
         {
-            new TensorSliderMeta("resource.tensor.8.param1", "Abondance Terres Rares & Lithium", "resource.tensor.8.param1.tt", "Volume total d'oxydes de terres rares (TREO) et de carbonate de lithium Ã©quivalent (LCE) (Mt).", 0.1, 5.0, 1.0, "Mt", "%.2f Mt"),
-            new TensorSliderMeta("resource.tensor.8.param2", "Concentration Salars & Saumures Li", "resource.tensor.8.param2.tt", "Enrichissement Ã©vaporitique des saumures de Lithium (Liâº) dans les dÃ©pressions endorÃ©iques et salars.", 0.0, 1.0, 0.40, "%", "%.0f %%"),
-            new TensorSliderMeta("resource.tensor.8.param3", "Carbonatites & Roches Alcalines (REE)", "resource.tensor.8.param3.tt", "FrÃ©quence des complexes de carbonatite concentrant bastnÃ¤site, monazite et nÃ©odyme/prasÃ©odyme.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.8.param4", "Pegmatites Ã  SpodumÃ¨ne & Clays", "resource.tensor.8.param4.tt", "Filons pegmatitiques LCT (Lithium-CÃ©sium-Tantale) et argiles ioniques d'altÃ©ration latÃ©ritique.", 0.1, 5.0, 1.5, "% Liâ‚‚O", "%.1f %% Liâ‚‚O")
+            new TensorSliderMeta("resource.tensor.8.param1", "Abondance Terres Rares & Lithium", "resource.tensor.8.param1.tt", "Volume total d'oxydes de terres rares (TREO) et de carbonate de lithium équivalent (LCE) (Mt).", 0.1, 5.0, 1.0, "Mt", "%.2f Mt"),
+            new TensorSliderMeta("resource.tensor.8.param2", "Concentration Salars & Saumures Li", "resource.tensor.8.param2.tt", "Enrichissement évaporitique des saumures de Lithium (Li⁺) dans les dépressions endoréiques et salars.", 0.0, 1.0, 0.40, "%", "%.0f %%"),
+            new TensorSliderMeta("resource.tensor.8.param3", "Carbonatites & Roches Alcalines (REE)", "resource.tensor.8.param3.tt", "Fréquence des complexes de carbonatite concentrant bastnäsite, monazite et néodyme/praséodyme.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.8.param4", "Pegmatites à Spodumène & Clays", "resource.tensor.8.param4.tt", "Filons pegmatitiques LCT (Lithium-Césium-Tantale) et argiles ioniques d'altération latéritique.", 0.1, 5.0, 1.5, "% Li₂O", "%.1f %% Li₂O")
         },
         // Tensor 4.9: MANTLE_HEAT
         {
-            new TensorSliderMeta("resource.tensor.9.param1", "Flux Thermique Manteau", "resource.tensor.9.param1.tt", "Dissipation thermique conductive moyenne Ã  travers la croÃ»te planÃ©taire en mW/mÂ².", 20.0, 250.0, 65.0, "mW/mÂ²", "%.0f mW/mÂ²"),
-            new TensorSliderMeta("resource.tensor.9.param2", "IntensitÃ© Plumes & Rifts Tectoniques", "resource.tensor.9.param2.tt", "Multiplicateur d'anomalie thermique aux limites de plaques divergentes et plumes mantelliques.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.9.param3", "Ã‰paisseur Cratons LithosphÃ©riques", "resource.tensor.9.param3.tt", "Ã‰paisseur de la racine cratonique continentale isolant le flux thermique de surface.", 30.0, 300.0, 150.0, "km", "%.0f km"),
-            new TensorSliderMeta("resource.tensor.9.param4", "Chaleur RadiogÃ©nique Crustale", "resource.tensor.9.param4.tt", "Production de chaleur par dÃ©sintÃ©gration radioactive de K, U, Th dans la croÃ»te supÃ©rieure.", 0.1, 5.0, 1.2, "ÂµW/mÂ³", "%.1f ÂµW/mÂ³")
+            new TensorSliderMeta("resource.tensor.9.param1", "Flux Thermique Manteau", "resource.tensor.9.param1.tt", "Dissipation thermique conductive moyenne à travers la croûte planétaire en mW/m².", 20.0, 250.0, 65.0, "mW/m²", "%.0f mW/m²"),
+            new TensorSliderMeta("resource.tensor.9.param2", "Intensité Plumes & Rifts Tectoniques", "resource.tensor.9.param2.tt", "Multiplicateur d'anomalie thermique aux limites de plaques divergentes et plumes mantelliques.", 0.0, 1.0, 0.50, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.9.param3", "Épaisseur Cratons Lithosphériques", "resource.tensor.9.param3.tt", "Épaisseur de la racine cratonique continentale isolant le flux thermique de surface.", 30.0, 300.0, 150.0, "km", "%.0f km"),
+            new TensorSliderMeta("resource.tensor.9.param4", "Chaleur Radiogénique Crustale", "resource.tensor.9.param4.tt", "Production de chaleur par désintégration radioactive de K, U, Th dans la croûte supérieure.", 0.1, 5.0, 1.2, "µW/m³", "%.1f µW/m³")
         },
         // Tensor 4.10: FRESHWATER_AQUIFERS
         {
-            new TensorSliderMeta("resource.tensor.10.param1", "CapacitÃ© AquifÃ¨res Subsurface", "resource.tensor.10.param1.tt", "Volume total d'eau douce souterraine emmagasinÃ©e dans les nappes phrÃ©atiques et bassins fossiles (10Â³ kmÂ³).", 0.1, 5.0, 1.0, "10Â³ kmÂ³", "%.2f 10Â³ kmÂ³"),
-            new TensorSliderMeta("resource.tensor.10.param2", "ConductivitÃ© Hydraulique / PermÃ©abilitÃ©", "resource.tensor.10.param2.tt", "PermÃ©abilitÃ© de la roche aquifÃ¨re permettant la vitesse de recharge et d'Ã©coulement sous gravitÃ©.", 0.0, 1.0, 0.40, "Indice", "%.2f"),
-            new TensorSliderMeta("resource.tensor.10.param3", "PorositÃ© Roches RÃ©servoirs", "resource.tensor.10.param3.tt", "Pourcentage de vides interstitiels dans les grÃ¨s et calcaires retenant l'eau sous pression.", 5.0, 35.0, 18.0, "%", "%.1f %%"),
-            new TensorSliderMeta("resource.tensor.10.param4", "Profondeur Permafrost / CryosphÃ¨re", "resource.tensor.10.param4.tt", "Ã‰paisseur du sol gelÃ© en permanence (permafrost) scellant les aquifÃ¨res liquides sous-jacents.", 0.0, 2000.0, 300.0, "m", "%.0f m")
+            new TensorSliderMeta("resource.tensor.10.param1", "Capacité Aquifères Subsurface", "resource.tensor.10.param1.tt", "Volume total d'eau douce souterraine emmagasinée dans les nappes phréatiques et bassins fossiles (10³ km³).", 0.1, 5.0, 1.0, "10³ km³", "%.2f 10³ km³"),
+            new TensorSliderMeta("resource.tensor.10.param2", "Conductivité Hydraulique / Perméabilité", "resource.tensor.10.param2.tt", "Perméabilité de la roche aquifère permettant la vitesse de recharge et d'écoulement sous gravité.", 0.0, 1.0, 0.40, "Indice", "%.2f"),
+            new TensorSliderMeta("resource.tensor.10.param3", "Porosité Roches Réservoirs", "resource.tensor.10.param3.tt", "Pourcentage de vides interstitiels dans les grès et calcaires retenant l'eau sous pression.", 5.0, 35.0, 18.0, "%", "%.1f %%"),
+            new TensorSliderMeta("resource.tensor.10.param4", "Profondeur Permafrost / Cryosphère", "resource.tensor.10.param4.tt", "Épaisseur du sol gelé en permanence (permafrost) scellant les aquifères liquides sous-jacents.", 0.0, 2000.0, 300.0, "m", "%.0f m")
         }
     };
 
@@ -4552,8 +4552,8 @@ public class ResourceDistributionPanel extends BorderPane {
             geologySubTitles.put(layerIdx, subTitle);
 
             ToggleGroup tg = new ToggleGroup();
-            RadioButton radioProc = new RadioButton(I18n.getOrDefault("resource.mode.procedural", "â–¶ Procedural Generation (Hotspots & Physics)"));
-            RadioButton radioImport = new RadioButton(I18n.getOrDefault("resource.mode.import_file", "ðŸ“‚ External Source (PNG / GeoTIFF)"));
+            RadioButton radioProc = new RadioButton(I18n.getOrDefault("resource.mode.procedural", "▶ Procedural Generation (Hotspots & Physics)"));
+            RadioButton radioImport = new RadioButton(I18n.getOrDefault("resource.mode.import_file", "📂 External Source (PNG / GeoTIFF)"));
             radioProc.setToggleGroup(tg);
             radioImport.setToggleGroup(tg);
             radioProc.getStyleClass().add("radio-proc");
@@ -4579,7 +4579,7 @@ public class ResourceDistributionPanel extends BorderPane {
             });
             geologyTensorSeeds.put(layerIdx, seedTF);
 
-            Button randSeedBtn = new Button("ðŸŽ²");
+            Button randSeedBtn = new Button("🎲");
             randSeedBtn.getStyleClass().add("button-secondary");
             randSeedBtn.setStyle("-fx-font-size: 11px;");
             randSeedBtn.setOnAction(e -> {
@@ -4592,10 +4592,10 @@ public class ResourceDistributionPanel extends BorderPane {
                 updatePreviewCanvas();
             });
 
-            Button btnExportTensor = new Button(I18n.getOrDefault("resource.btn.export_single_tensor", "ðŸ“¤ Exporter"));
+            Button btnExportTensor = new Button(I18n.getOrDefault("resource.btn.export_single_tensor", "📤 Exporter"));
             btnExportTensor.getStyleClass().add("button-secondary");
             btnExportTensor.setStyle("-fx-font-size: 11px;");
-            btnExportTensor.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_tensor", "Exporter ce tenseur gÃ©ologique sous forme d'image raster haute rÃ©solution (PNG / JPEG).")));
+            btnExportTensor.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_tensor", "Exporter ce tenseur géologique sous forme d'image raster haute résolution (PNG / JPEG).")));
             btnExportTensor.setOnAction(e -> exportGeologyTensor(layerIdx));
             geologyGenBtns.put(layerIdx, btnExportTensor);
 
@@ -4678,7 +4678,7 @@ public class ResourceDistributionPanel extends BorderPane {
             HBox btnBox = new HBox(6, btnLoad, btnClear);
             btnBox.setAlignment(Pos.CENTER_LEFT);
 
-            Label fileLbl = new Label(hasImage ? getGeologyBaselineName(layerIdx) : "â€”");
+            Label fileLbl = new Label(hasImage ? getGeologyBaselineName(layerIdx) : "—");
             fileLbl.getStyleClass().add("value-label");
             fileLbl.setStyle("-fx-font-size: 10px;");
             geologyFileLabels.put(layerIdx, fileLbl);
@@ -4711,7 +4711,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
             btnLoad.setOnAction(e -> loadCustomGeologyLayer(layerIdx, img -> {
                 customGeologyLayerImages.put(layerIdx, img);
-                fileLbl.setText(I18n.getOrDefault("resource.status.geo_loaded", "ðŸ“· Custom geological layer loaded"));
+                fileLbl.setText(I18n.getOrDefault("resource.status.geo_loaded", "📷 Custom geological layer loaded"));
                 radioImport.setSelected(true);
                 if (viewModeCombo != null) {
                     viewModeCombo.getSelectionModel().select(getGeologyViewComboIndex(layerIdx));
@@ -4722,7 +4722,7 @@ public class ResourceDistributionPanel extends BorderPane {
 
             btnClear.setOnAction(e -> {
                 customGeologyLayerImages.remove(layerIdx);
-                fileLbl.setText("â€”");
+                fileLbl.setText("—");
                 radioProc.setSelected(true);
                 if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
                 updatePreviewCanvas();
@@ -4886,7 +4886,7 @@ public class ResourceDistributionPanel extends BorderPane {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("resource.dialog.import_geology_title", "Import geological map ") + getGeologyTensorTitle(layerIdx));
         chooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("DonnÃ©es Spatiales & Tenseurs (PNG, ASC, GeoJSON, TIF, JPG)", "*.png", "*.asc", "*.geojson", "*.json", "*.tif", "*.tiff", "*.jpg", "*.jpeg")
+            new FileChooser.ExtensionFilter("Données Spatiales & Tenseurs (PNG, ASC, GeoJSON, TIF, JPG)", "*.png", "*.asc", "*.geojson", "*.json", "*.tif", "*.tiff", "*.jpg", "*.jpeg")
         );
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {

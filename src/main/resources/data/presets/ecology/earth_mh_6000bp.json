@@ -45,9 +45,9 @@
     "seasonSource" : "ðŸŒ Terre (-6000 BP) â€” SaisonnalitÃ© HolocÃ¨ne Moyen",
     "seasonSeed" : 14347,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères.",
-    "associatedEpochYear" : -6000
+    "associatedEpochYear" : -6000,
+    "presetDescription" : "­ƒî┤ EARTH (-6,000 BP / Mid-Holocene & Green Sahara): Holocene Thermal Maximum with amplified African monsoons. The Sahara is a fertile savanna with mega-lakes and rivers supporting thriving pastoral communities.",
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 680.0,
   "soilOrganicCarbonGtC" : 1900.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
-  "presetDescription" : "\uD83C\uDF34 TERRE (-6 000 / Holocène Moyen & Sahara Vert) : Maximum thermique holocène et amplification de la mousson africaine. Le Sahara est une savane fertile dotée de mégalacs et de fleuves soutenant des sociétés pastorales prospères.",
-  "associatedEpochYear" : -6000
+  "associatedEpochYear" : -6000,
+  "presetDescription" : "­ƒî┤ EARTH (-6,000 BP / Mid-Holocene & Green Sahara): Holocene Thermal Maximum with amplified African monsoons. The Sahara is a fertile savanna with mega-lakes and rivers supporting thriving pastoral communities."
 }

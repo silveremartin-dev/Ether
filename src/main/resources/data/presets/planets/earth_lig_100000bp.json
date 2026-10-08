@@ -42,7 +42,7 @@
   "seasonSource" : "ðŸŒ Terre (-100000 BP) â€” SaisonnalitÃ© EÃ©mienne",
   "seasonSeed" : 14350,
   "canonicalPlanet" : "earth",
-  "tidalLocked" : false,
-  "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique.",
-  "associatedEpochYear" : -100000
+  "associatedEpochYear" : -100000,
+  "presetDescription" : "­ƒîì EARTH (-100,000 BP / Last Interglacial / Eemian): Warm interglacial climate (+1 to +2┬░C above pre-industrial), sea level +6 to +9m above modern datum. Green Sahara corridors and early Homo Sapiens expansion out of Africa.",
+  "tidalLocked" : false
 }

@@ -119,7 +119,7 @@ public class EarthScenarioPerformanceBenchmarkTest {
         double avgLifespan = earthGrid.stream().mapToDouble(c -> c.getLifespan() != null ? c.getLifespan() : 0.0).average().orElse(0.0);
 
         logger.info("===============================================================================");
-        logger.info("ðŸ“Š BENCHMARK PERFORMANCE RESULTS");
+        logger.info("📊 BENCHMARK PERFORMANCE RESULTS");
         logger.info("===============================================================================");
         logger.info("Total Simulated Cycles       : {} Years", cycles);
         logger.info("Grid Resolution              : {} H3 Cells", totalCells);

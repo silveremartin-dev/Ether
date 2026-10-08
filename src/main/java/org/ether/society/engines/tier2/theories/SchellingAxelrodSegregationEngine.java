@@ -18,7 +18,7 @@ import java.util.List;
  *
  * <p>Models macro-spatial enclave segregation emerging from mild micro-preferences for cultural homophily:</p>
  * <pre>
- *   U_i = 1  if  [ Î£_{j âˆˆ N(i)} 1(C_j == C_i) / |N(i)| ] â‰¥ Ï„_tolerance
+ *   U_i = 1  if  [ Σ_{j ∈ N(i)} 1(C_j == C_i) / |N(i)| ] ≥ τ_tolerance
  *   U_i = 0  otherwise (triggers relocation / social tension friction)
  * </pre>
  *
@@ -62,10 +62,10 @@ public class SchellingAxelrodSegregationEngine implements ProceduralEnginePlugin
     public String getEquationsTooltip() {
         return """
                [Schelling-Axelrod Cultural Homophily Model]
-               â€¢ Neighborhood Similarity:  s_i = Î£_{j âˆˆ N(i)} Î´(C_i, C_j) / |N(i)|
-               â€¢ Satisfaction Utility:     U_i = 1 if s_i â‰¥ Ï„_tol (0.40), else 0
-               â€¢ Spatial Tension Friction: Î”Friction_i = (1 - U_i) Â· 0.10 Â· (1 - s_i)
-               Units: s_i [0.0, 1.0], Ï„_tol [seuil de tolÃ©rance homophile], U_i [utilitÃ© boolÃ©enne]
+               • Neighborhood Similarity:  s_i = Σ_{j ∈ N(i)} δ(C_i, C_j) / |N(i)|
+               • Satisfaction Utility:     U_i = 1 if s_i ≥ τ_tol (0.40), else 0
+               • Spatial Tension Friction: ΔFriction_i = (1 - U_i) · 0.10 · (1 - s_i)
+               Units: s_i [0.0, 1.0], τ_tol [seuil de tolérance homophile], U_i [utilité booléenne]
                Ref: T. Schelling (1971) "Dynamic Models of Segregation", R. Axelrod (1997) "Dissemination of Culture"
                """;
     }

@@ -601,25 +601,32 @@ public class ControlPanel extends VBox {
         eventsHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-style: italic;");
         eventsHintLabel.setWrapText(true);
 
-        filterGeophysicalCheck = new CheckBox(I18n.getOrDefault("sim.filter.geophysical", "🌋 Géophysique & Catastrophes"));
+        filterGeophysicalCheck = new CheckBox(I18n.getOrDefault("sim.filter.geophysical", "🌋 Événements géophysiques & catastrophes"));
         filterGeophysicalCheck.setSelected(true);
+        filterGeophysicalCheck.setWrapText(true);
+        filterGeophysicalCheck.setMaxWidth(Double.MAX_VALUE);
         filterGeophysicalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_geophysical", "Afficher ou masquer les séismes, volcans, tsunamis, inondations, sécheresses et désastres naturels.")));
         filterGeophysicalCheck.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #f87171; -fx-cursor: hand;");
         filterGeophysicalCheck.setOnAction(e -> applyEventsFilter());
 
-        filterHistoricalCheck = new CheckBox(I18n.getOrDefault("sim.filter.historical_leaders", "👑 Personnages & Figures"));
+        filterHistoricalCheck = new CheckBox(I18n.getOrDefault("sim.filter.historical_leaders", "👑 Personnages & figures historiques"));
         filterHistoricalCheck.setSelected(true);
+        filterHistoricalCheck.setWrapText(true);
+        filterHistoricalCheck.setMaxWidth(Double.MAX_VALUE);
         filterHistoricalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_historical", "Afficher ou masquer les figures historiques, dirigeants, conquérants et réformateurs.")));
         filterHistoricalCheck.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #a78bfa; -fx-cursor: hand;");
         filterHistoricalCheck.setOnAction(e -> applyEventsFilter());
 
-        filterChronicleCheck = new CheckBox(I18n.getOrDefault("sim.filter.chronicle_emergences", "📜 Chroniques & Émergences"));
+        filterChronicleCheck = new CheckBox(I18n.getOrDefault("sim.filter.chronicle_emergences", "📜 Chroniques, systèmes & émergences (Informatif)"));
         filterChronicleCheck.setSelected(true);
-        filterChronicleCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_chronicle", "Afficher ou masquer les émergences procédurales, fondations d'empires, transitions d'ères et chroniques historiques.")));
+        filterChronicleCheck.setWrapText(true);
+        filterChronicleCheck.setMaxWidth(Double.MAX_VALUE);
+        filterChronicleCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_chronicle", "Afficher ou masquer les émergences procédurales (purement informatives / résultat de la simulation).")));
         filterChronicleCheck.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #34d399; -fx-cursor: hand;");
         filterChronicleCheck.setOnAction(e -> applyEventsFilter());
 
-        HBox filtersBox = new HBox(6, filterGeophysicalCheck, filterHistoricalCheck, filterChronicleCheck);
+        VBox filtersBox = new VBox(4, filterGeophysicalCheck, filterHistoricalCheck, filterChronicleCheck);
+        filtersBox.setFillWidth(true);
         filtersBox.setAlignment(Pos.CENTER_LEFT);
 
         noEventsLabel = new Label(I18n.getOrDefault("sim.events.no_events", "Aucun événement enregistré pour le moment."));
@@ -1345,9 +1352,6 @@ public class ControlPanel extends VBox {
             if (mapCanvas != null) {
                 mapCanvas.flyTo(evt.getLatitude(), evt.getLongitude());
                 mapCanvas.pingLocation(evt.getLatitude(), evt.getLongitude(), evt.getTitle(), evt.getType(), evt.getMagnitude());
-                if (notificationOverlay != null) {
-                    notificationOverlay.showNotification("🎯 Centrage sur l'événement :\n" + evt.getTitle(), "#38bdf8");
-                }
             }
         });
 
@@ -1575,16 +1579,16 @@ public class ControlPanel extends VBox {
             eventsHintLabel.setText(I18n.getOrDefault("sim.events.double_click_hint", "💡 Double-click an event to fly camera to its epicenter location."));
         }
         if (filterGeophysicalCheck != null) {
-            filterGeophysicalCheck.setText(I18n.getOrDefault("sim.filter.geophysical", "🌋 Geophysics & Catastrophes"));
+            filterGeophysicalCheck.setText(I18n.getOrDefault("sim.filter.geophysical", "🌋 Événements géophysiques & catastrophes"));
             filterGeophysicalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_geophysical", "Show or hide earthquakes, volcanoes, tsunamis, floods, droughts, and natural disasters.")));
         }
         if (filterHistoricalCheck != null) {
-            filterHistoricalCheck.setText(I18n.getOrDefault("sim.filter.historical_leaders", "👑 Historical Leaders & Figures"));
+            filterHistoricalCheck.setText(I18n.getOrDefault("sim.filter.historical_leaders", "👑 Personnages & figures historiques"));
             filterHistoricalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_historical", "Show or hide historical figures, leaders, conquerors, and reformers.")));
         }
         if (filterChronicleCheck != null) {
-            filterChronicleCheck.setText(I18n.getOrDefault("sim.filter.chronicle_emergences", "📜 Chronicles & Emergences"));
-            filterChronicleCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_chronicle", "Show or hide procedural emergences, empire foundations, era transitions, and historical chronicles.")));
+            filterChronicleCheck.setText(I18n.getOrDefault("sim.filter.chronicle_emergences", "📜 Chroniques, systèmes & émergences (Informatif)"));
+            filterChronicleCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_chronicle", "Show or hide procedural emergences (purely informative telemetry / simulation outcomes).")));
         }
         if (noEventsLabel != null) {
             noEventsLabel.setText(I18n.getOrDefault("sim.events.no_events", "No events recorded yet."));

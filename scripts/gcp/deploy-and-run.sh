@@ -58,12 +58,12 @@ if [ "${CLUSTER_MODE}" = "true" ]; then
     gcloud compute scp --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --recurse scripts/start-worker.sh ether-worker:/opt/ether/scripts/
 
     echo "Launching Worker node in background..."
-    gcloud compute ssh ether-worker --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --command="cd /opt/ether && chmod +x scripts/*.sh && ( nohup ./scripts/start-worker.sh ${MASTER_INTERNAL_IP} 9090 EtherClusterSecret2026 > logs/worker.log 2>&1 & ) < /dev/null > /dev/null 2>&1"
+    gcloud compute ssh ether-worker --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --command="cd /opt/ether && chmod +x scripts/*.sh && ( nohup ./scripts/start-worker.sh ${MASTER_INTERNAL_IP} 9090 \"\${CLUSTER_SECRET:-default-cluster-token}\" > logs/worker.log 2>&1 & ) < /dev/null > /dev/null 2>&1"
 
     sleep 4
 
     echo "Executing Master Simulation Node in Cluster Mode..."
-    gcloud compute ssh ether-master --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --command="cd /opt/ether && chmod +x scripts/*.sh && ./scripts/start-master.sh '${SCENARIO}' 9090 EtherClusterSecret2026 ${TICKS} ${CELLS} '${RESOLUTION}'"
+    gcloud compute ssh ether-master --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --command="cd /opt/ether && chmod +x scripts/*.sh && ./scripts/start-master.sh '${SCENARIO}' 9090 \"\${CLUSTER_SECRET:-default-cluster-token}\" ${TICKS} ${CELLS} '${RESOLUTION}'"
 else
     echo "[5/5] Launching Headless Simulation on ether-master..."
     RES_FLAG=""

@@ -13,7 +13,7 @@ set PORT=%~2
 if "%PORT%"=="" set PORT=9090
 
 set SECRET=%~3
-if "%SECRET%"=="" set SECRET=EtherClusterSecret2026
+if "%SECRET%"=="" if defined ETHER_CLUSTER_SECRET (set SECRET=%ETHER_CLUSTER_SECRET%) else (set SECRET=default-cluster-token)
 
 echo ==========================================================
 echo      ETHER -- STARTING CLUSTER WORKER NODE                

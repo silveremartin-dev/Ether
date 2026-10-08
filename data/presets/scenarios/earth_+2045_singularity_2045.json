@@ -1,6 +1,6 @@
 {
-  "name" : "SingularitÃ© Technologique, ASI & Fusion D-T (2045)",
-  "description" : "ðŸ¤– SCÃ‰NARIO FUTUR : SingularitÃ© Technologique & Ã‰nergie de Fusion D-T\n\n[DESCRIPTION DES TERMES DE FORÃ‡AGE PHYSIQUE (Tâ‚€)]\nFranchissement du seuil d'Ã©mergence d'une Super-Intelligence Artificielle (ASI) et maÃ®trise industrielle de la fusion nuclÃ©aire deutÃ©rium-tritium.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Croissance exponentielle des rendements de la recherche et automatisation intÃ©grale du travail physique.\nâ€¢ DÃ©ploiement massif de rÃ©acteurs Ã  fusion deutÃ©rium-tritium confÃ©rant une abondance Ã©nergÃ©tique quasi-infinie.\nâ€¢ Ã‰limination des pÃ©nuries matÃ©rielles, transition vers l'Ã©chelle de Kardashev Type I et rÃ©gulation systÃ©mique.\n",
+  "name" : "Singularité Technologique, ASI & Fusion D-T (2045)",
+  "description" : "\uD83E\uDD16 SCÉNARIO FUTUR : Singularité Technologique & Énergie de Fusion D-T\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nFranchissement du seuil d'émergence d'une Super-Intelligence Artificielle (ASI) et maîtrise industrielle de la fusion nucléaire deutérium-tritium.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Croissance exponentielle des rendements de la recherche et automatisation intégrale du travail physique.\n• Déploiement massif de réacteurs à fusion deutérium-tritium conférant une abondance énergétique quasi-infinie.\n• Élimination des pénuries matérielles, transition vers l'échelle de Kardashev Type I et régulation systémique.\n",
   "id" : null,
   "presetKey" : "singularity_2045",
   "planetPreset" : {
@@ -47,9 +47,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -185,6 +185,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Singularité Technologique & Transition IA (2045)",
-  "displayDescription" : "\uD83E\uDD16 SCÉNARIO FUTURISTE : La Singularité Technologique & L'Ère de l'AGI (2045 apr. J.-C.)\n\nCroissance technologique exponentielle, automatisation totale de la production, nanotechnologies et transformation post-humaine."
+  "displayName" : "Technological Singularity & AGI Transition (2045 AD)",
+  "displayDescription" : "FUTURE SCENARIO: Post-Scarcity & Superintelligence Transition (2045 AD)\n\nExponential technological growth, automated production, molecular nanotechnology, space resource extraction, and post-human societal transformations."
 }

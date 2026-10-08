@@ -81,7 +81,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         planetaryGrid.forEach(c -> cellMap.put(c.getH3Index(), c));
 
         Scenario scenario = new Scenario();
-        scenario.setName("Sortie d'Afrique & Incursion Maritime Sahul (-100000 Ã  -40000)");
+        scenario.setName("Sortie d'Afrique & Incursion Maritime Sahul (-100000 à -40000)");
         scenario.setStartDateYear(-100000);
         scenario.setInitialHumanCount(50_000L);
         scenario.setInitialCapitalPerCapita(3.0); // Stone tools & early watercraft/canoes
@@ -146,7 +146,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         planetaryGrid.forEach(c -> cellMap.put(c.getH3Index(), c));
 
         Scenario scenario = new Scenario();
-        scenario.setName("Peuplement des AmÃ©riques & BÃ©ringie (-25000 Ã  -12000)");
+        scenario.setName("Peuplement des Amériques & Béringie (-25000 à -12000)");
         scenario.setStartDateYear(-25000);
         scenario.setInitialHumanCount(15_000L);
         scenario.setInitialCapitalPerCapita(4.0);
@@ -206,7 +206,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         planetaryGrid.forEach(c -> cellMap.put(c.getH3Index(), c));
 
         Scenario scenario = new Scenario();
-        scenario.setName("Croissant Fertile & RÃ©volution NÃ©olithique (-8000)");
+        scenario.setName("Croissant Fertile & Révolution Néolithique (-8000)");
         scenario.setStartDateYear(-8000);
         scenario.setInitialHumanCount(30_000L);
         scenario.setPopulationDensityType("RIVER_VALLEYS");
@@ -265,7 +265,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
 
         Scenario scenario = new Scenario();
-        scenario.setName("Le Sahara Vert & PÃ©riode Humide Africaine (-6000)");
+        scenario.setName("Le Sahara Vert & Période Humide Africaine (-6000)");
         scenario.setStartDateYear(-6000);
         scenario.setInitialHumanCount(60_000L);
         scenario.setPopulationDensityType("GREEN_SAHARA");
@@ -301,7 +301,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
 
         Scenario scenario = new Scenario();
-        scenario.setName("Le RÃ©cents Dryas & Choc Climatique Natufien (-10900)");
+        scenario.setName("Le Récents Dryas & Choc Climatique Natufien (-10900)");
         scenario.setStartDateYear(-10900);
         scenario.setInitialHumanCount(40_000L);
         scenario.setPopulationDensityType("YOUNGER_DRYAS");
@@ -411,7 +411,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
     public void testEgyptNileScenario() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
         Scenario scenario = new Scenario();
-        scenario.setName("Ã‰gypte Antique (-3000)");
+        scenario.setName("Égypte Antique (-3000)");
         scenario.setStartDateYear(-3000);
         scenario.setInitialHumanCount(1_500_000L);
         scenario.setPopulationDensityType("EGYPT_NILE");
@@ -442,7 +442,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
     public void testMesoamericaScenario() {
         List<H3Cell> planetaryGrid = generator.generatePlanet(PLANETARY_EARTH);
         Scenario scenario = new Scenario();
-        scenario.setName("Civilisations MÃ©soamÃ©ricaines (-1500)");
+        scenario.setName("Civilisations Mésoaméricaines (-1500)");
         scenario.setStartDateYear(-1500);
         scenario.setInitialHumanCount(3_000_000L);
         scenario.setPopulationDensityType("MESOAMERICA");

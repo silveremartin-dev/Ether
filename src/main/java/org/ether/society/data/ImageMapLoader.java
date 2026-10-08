@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * Loads and exports simulation data from/to standard map images (Heightmaps/Biomemaps/Resource maps).
- * Assumes Equirectangular projection (Plate CarrÃ©e).
+ * Assumes Equirectangular projection (Plate Carrée).
  * 
  * Supports:
  * - PNG / JPEG / GeoTIFF image mapping
@@ -226,7 +226,7 @@ public class ImageMapLoader {
                 int x = (int) Math.min(u * wClimate, wClimate - 1);
                 int y = (int) Math.min(v * hClimate, hClimate - 1);
                 Color c = climateReader.getColor(x, y);
-                // Red channel or brightness represents temperature (-50Â°C to +50Â°C)
+                // Red channel or brightness represents temperature (-50°C to +50°C)
                 double tempC = -50.0 + c.getRed() * 100.0;
                 cell.setTemperature(tempC);
                 // Green channel represents rainfall (0 to 3000 mm/yr) if no separate rainfall map
@@ -248,7 +248,7 @@ public class ImageMapLoader {
                 int x = (int) Math.min(u * wSeason, wSeason - 1);
                 int y = (int) Math.min(v * hSeason, hSeason - 1);
                 Color c = seasonalityReader.getColor(x, y);
-                // Brightness represents seasonal temperature delta (0Â°C to 50Â°C)
+                // Brightness represents seasonal temperature delta (0°C to 50°C)
                 double seasonalDelta = c.getBrightness() * 50.0;
                 cell.setTemperature(cell.getTemperature() + (Math.sin(Math.toRadians(lat)) * seasonalDelta * 0.5));
             }
@@ -462,7 +462,7 @@ public class ImageMapLoader {
             reader.getColor(w / 2, h / 2);
             reader.getColor(w - 1, h - 1);
         } catch (Exception ex) {
-            return new ImageValidationResult(false, "Ã‰chec de lecture des pixels raster: " + ex.getMessage(), w, h, 0.0);
+            return new ImageValidationResult(false, "Échec de lecture des pixels raster: " + ex.getMessage(), w, h, 0.0);
         }
         double ratio = (double) w / (double) h;
         return new ImageValidationResult(true, String.format("Valide (%dx%d, ratio %.2f)", w, h, ratio), w, h, ratio);

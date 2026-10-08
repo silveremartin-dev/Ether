@@ -1,6 +1,6 @@
 {
-  "name" : "RÃ©volution Industrielle & Transition CharbonniÃ¨re (1800)",
-  "description" : "âš™ï¸ SCÃ‰NARIO HISTORIQUE : La Machine Ã  Vapeur & L'Ã‰mergence du Charbon (1800 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nBasculement Ã©nergÃ©tique mondial du rÃ©gime organique vers le rÃ©gime minÃ©ral fossile (charbon de terre, machine Ã  vapeur de Watt).\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Rupture du piÃ¨ge malthusien : dÃ©couplage entre croissance dÃ©mographique et contrainte surfacique des sols.\nâ€¢ Paradoxe de Jevons : les gains d'efficacitÃ© des machines Ã  vapeur dÃ©cuplent la consommation globale de charbon.\nâ€¢ Urbanisation industrielle ultra-rapide (exode rural) et amorce des Ã©missions anthropiques massives de COâ‚‚.\n",
+  "name" : "Révolution Industrielle & Transition Charbonnière (1800)",
+  "description" : "âš™ï¸ SCÃ‰NARIO HISTORIQUE : La Machine Ã  Vapeur & L'Ã‰mergence du Charbon (1800 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nBasculement énergétique mondial du régime organique vers le régime minéral fossile (charbon de terre, machine à vapeur de Watt).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Rupture du piège malthusien : découplage entre croissance démographique et contrainte surfacique des sols.\n• Paradoxe de Jevons : les gains d'efficacité des machines à vapeur décuplent la consommation globale de charbon.\n• Urbanisation industrielle ultra-rapide (exode rural) et amorce des émissions anthropiques massives de CO₂.\n",
   "id" : null,
   "presetKey" : "industrial_1800",
   "planetPreset" : {
@@ -47,9 +47,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -190,6 +190,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Révolution Industrielle & Énergie Fossile (1800)",
-  "displayDescription" : "⚙ SCÉNARIO HISTORIQUE : La Grande Divergence & La Révolution de la Vapeur (1800 apr. J.-C.)\n\nTransition de l'économie organique vers l'énergie fossile (charbon), mécanisation de la vapeur, urbanisation rapide et explosion démographique."
+  "displayName" : "First Industrial Revolution & Fossil Energy (1800 AD)",
+  "displayDescription" : "HISTORICAL SCENARIO: The Great Divergence & Coal Steam Transition (1800 AD)\n\nTransition from organic economy to fossil energy regime, steam engine mechanization, rapid urbanization, and exponential population explosion."
 }

@@ -18,8 +18,8 @@ import java.util.List;
  *
  * <p>Models the economic extraction dynamics and price path of exhaustible mineral and fossil reserves:</p>
  * <pre>
- *   [P(t) - MC(Q)] / [P_0 - MC(Q_0)] = exp(r Â· t)
- *   MC(Q) = MC_0 / (1 - Q_cumul / Q_total)^Î»
+ *   [P(t) - MC(Q)] / [P_0 - MC(Q_0)] = exp(r · t)
+ *   MC(Q) = MC_0 / (1 - Q_cumul / Q_total)^λ
  * </pre>
  * where:
  * <ul>
@@ -67,10 +67,10 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
     public String getEquationsTooltip() {
         return """
                [Hotelling Exhaustible Resource Valuation Rule (JPE 1931)]
-               â€¢ Scarcity Rent:     [P(t) - MC] = [P_0 - MC] Â· exp(r Â· t)
-               â€¢ Marginal Cost:     MC(Q) = MC_0 / (1 - Q_extracted / Q_initial)^1.5
-               â€¢ Depletion Flow:    dQ/dt = -min(Q_remaining, Demand Â· (P / P_substitute)^-Îµ)
-               Units: P, MC [$/tonne], Q [tonnes minerais/pÃ©trole], r [%/an]
+               • Scarcity Rent:     [P(t) - MC] = [P_0 - MC] · exp(r · t)
+               • Marginal Cost:     MC(Q) = MC_0 / (1 - Q_extracted / Q_initial)^1.5
+               • Depletion Flow:    dQ/dt = -min(Q_remaining, Demand · (P / P_substitute)^-ε)
+               Units: P, MC [$/tonne], Q [tonnes minerais/pétrole], r [%/an]
                Ref: H. Hotelling (1931) "The Economics of Exhaustible Resources"
                """;
     }

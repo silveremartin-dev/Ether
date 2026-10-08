@@ -18,12 +18,12 @@ import java.util.List;
  *
  * <p>Models non-linear tipping points and spontaneous collective mobilization cascades:</p>
  * <pre>
- *   Decision_i(t + 1) = 1  if  [ N_active(t) / N_total ] â‰¥ Î¸_i
+ *   Decision_i(t + 1) = 1  if  [ N_active(t) / N_total ] ≥ θ_i
  *   Decision_i(t + 1) = 0  otherwise
  * </pre>
  * where:
  * <ul>
- *   <li><b>Î¸_i</b>: Individual risk-tolerance threshold drawn from distribution $\theta_i \sim \mathcal{N}(\mu, \sigma^2)$.</li>
+ *   <li><b>θ_i</b>: Individual risk-tolerance threshold drawn from distribution $\theta_i \sim \mathcal{N}(\mu, \sigma^2)$.</li>
  *   <li><b>Cascade Condition</b>: A small radical minority ($\theta \approx 0$) can trigger an avalanche if intermediate thresholds are present.</li>
  * </ul>
  *
@@ -65,11 +65,11 @@ public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin
     public String getEquationsTooltip() {
         return """
                [Granovetter Collective Action Threshold Model (AJS 1978)]
-               â€¢ Individual Rule:     Act_i(t+1) = 1  iff  f_active(t) â‰¥ Î¸_i
-               â€¢ Threshold Density:   Î¸_i ~ Normal(Î¼_tolerance, Ïƒ_variance^2)
-               â€¢ Avalanche Cascade:   df_active/dt = âˆ«_0^{f_active} P(Î¸) dÎ¸ - f_active
-               â€¢ Critical Phase Shift: Complete regime shift when distribution contains uninterrupted chain of thresholds.
-               Units: f_active [fraction mobilisÃ©e [0, 1]], Î¸_i [seuil de bascule individuel [0, 1]]
+               • Individual Rule:     Act_i(t+1) = 1  iff  f_active(t) ≥ θ_i
+               • Threshold Density:   θ_i ~ Normal(μ_tolerance, σ_variance^2)
+               • Avalanche Cascade:   df_active/dt = ∫_0^{f_active} P(θ) dθ - f_active
+               • Critical Phase Shift: Complete regime shift when distribution contains uninterrupted chain of thresholds.
+               Units: f_active [fraction mobilisée [0, 1]], θ_i [seuil de bascule individuel [0, 1]]
                Ref: M. Granovetter (1978) "Threshold Models of Collective Behavior", American Journal of Sociology
                """;
     }

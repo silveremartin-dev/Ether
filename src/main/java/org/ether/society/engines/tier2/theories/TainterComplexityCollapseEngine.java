@@ -19,9 +19,9 @@ import java.util.List;
  * <p>Models the diminishing marginal returns to bureaucratic and technological complexity,
  * and the vulnerability of over-complex societies to catastrophic fiscal/energetic collapse:</p>
  * <pre>
- *   C_i = ln(1 + 0.1 Â· K_i)
- *   Î£_maint = C_i^1.15 Â· E_base
- *   dK_i/dt = Production_i Â· s - Î£_maint
+ *   C_i = ln(1 + 0.1 · K_i)
+ *   Σ_maint = C_i^1.15 · E_base
+ *   dK_i/dt = Production_i · s - Σ_maint
  * </pre>
  *
  * @author Silvere Martin-Michiellot
@@ -62,11 +62,11 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
     public String getEquationsTooltip() {
         return """
                [Tainter Law of Diminishing Marginal Returns on Complexity (1988)]
-               â€¢ Complexity Level:   C_i = ln(1 + 0.05 Â· Capital_i)
-               â€¢ Maintenance Burden: Î£_maint = C_i^1.20 Â· 50.0 Joules
-               â€¢ Net Growth Rate:    dCapital/dt = NetSurplus_i - Î£_maint
-               â€¢ Collapse Condition: If Î£_maint > Surplus -> Rapid Simplification / Capital Decay
-               Units: C [score complexitÃ© sans dimension], Î£_maint [Joules maintenance institutionnelle/an]
+               • Complexity Level:   C_i = ln(1 + 0.05 · Capital_i)
+               • Maintenance Burden: Σ_maint = C_i^1.20 · 50.0 Joules
+               • Net Growth Rate:    dCapital/dt = NetSurplus_i - Σ_maint
+               • Collapse Condition: If Σ_maint > Surplus -> Rapid Simplification / Capital Decay
+               Units: C [score complexité sans dimension], Σ_maint [Joules maintenance institutionnelle/an]
                Ref: J. A. Tainter (1988) "The Collapse of Complex Societies", Cambridge Univ. Press
                """;
     }

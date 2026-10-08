@@ -36,18 +36,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "mars",
     "tempUseImport" : true,
-    "tempSource" : "ðŸ”´ Mars â€” MGS TES Thermal Radiometry",
+    "tempSource" : "\uD83D\uDD34 Mars — MGS TES Thermal Radiometry",
     "tempSeed" : 98865,
     "precipUseImport" : true,
-    "precipSource" : "ðŸ”´ Mars â€” Frost & Sublimation Model",
+    "precipSource" : "\uD83D\uDD34 Mars — Frost & Sublimation Model",
     "precipSeed" : 99765,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸ”´ Mars â€” Orbital Eccentricity Insolation Model",
+    "seasonSource" : "\uD83D\uDD34 Mars — Orbital Eccentricity Insolation Model",
     "seasonSeed" : 100765,
     "canonicalPlanet" : "mars",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒö┤ MARS (Ares): Hyper-arid desert world with thin COÔéé atmosphere (0.006 atm), ancient volcanic shield volcanoes (Olympus Mons), canyon systems (Valles Marineris), and polar dry-ice caps.",
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 0.0,
   "soilOrganicCarbonGtC" : 0.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "mars",
-  "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-  "associatedEpochYear" : 2026
+  "associatedEpochYear" : 2026,
+  "presetDescription" : "­ƒö┤ MARS (Ares): Hyper-arid desert world with thin COÔéé atmosphere (0.006 atm), ancient volcanic shield volcanoes (Olympus Mons), canyon systems (Valles Marineris), and polar dry-ice caps."
 }

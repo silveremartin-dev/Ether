@@ -18,9 +18,9 @@ import java.util.List;
  *
  * <p>Models endogenous technological shifts driven by demographic carrying capacity pressure:</p>
  * <pre>
- *   Stage: Foraging â†’ Forest-Fallow â†’ Bush-Fallow â†’ Short-Fallow â†’ Multi-Cropping Irrigation
+ *   Stage: Foraging → Forest-Fallow → Bush-Fallow → Short-Fallow → Multi-Cropping Irrigation
  *   Labor_req âˆ Yield^1.40
- *   Trigger: Density = Population / Habitable_Area â‰¥ Threshold_k
+ *   Trigger: Density = Population / Habitable_Area ≥ Threshold_k
  * </pre>
  *
  * @author Silvere Martin-Michiellot
@@ -61,11 +61,11 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
     public String getEquationsTooltip() {
         return """
                [Boserup Agricultural Intensification Model (1965)]
-               â€¢ Density Trigger:     D_i = N_i / Area_km2
-               â€¢ Labor Demand:        L_req = L_0 Â· (Yield_target / Yield_0)^1.40
-               â€¢ Technology Stages:   1: Foraging (D < 2), 2: Long Fallow (D < 10), 3: Annual Crop (D < 50), 4: Multi-Crop Irrigation (D >= 50)
-               â€¢ Boserup Axiom:       Population pressure is the mother of agricultural innovation (anti-Malthusian).
-               Units: D [hab/kmÂ²], L_req [heures-homme/hectare], Yield [kg/ha]
+               • Density Trigger:     D_i = N_i / Area_km2
+               • Labor Demand:        L_req = L_0 · (Yield_target / Yield_0)^1.40
+               • Technology Stages:   1: Foraging (D < 2), 2: Long Fallow (D < 10), 3: Annual Crop (D < 50), 4: Multi-Crop Irrigation (D >= 50)
+               • Boserup Axiom:       Population pressure is the mother of agricultural innovation (anti-Malthusian).
+               Units: D [hab/km²], L_req [heures-homme/hectare], Yield [kg/ha]
                Ref: E. Boserup (1965) "The Conditions of Agricultural Growth"
                """;
     }
@@ -99,7 +99,7 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 
-            // Approximate cell area ~1000 kmÂ²
+            // Approximate cell area ~1000 km²
             double density = pop / 1000.0;
             double agriBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 50.0;
 

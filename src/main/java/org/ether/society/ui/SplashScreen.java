@@ -82,7 +82,7 @@ public class SplashScreen {
         Label titleLabel = new Label(I18n.getOrDefault("splash.title", "ETHER"));
         titleLabel.setStyle("-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-effect: dropshadow(three-pass-box, rgba(56,189,248,0.7), 16, 0, 0, 0);");
 
-        Label versionBadge = new Label(I18n.getOrDefault("splash.version", "v1.0 b1"));
+        Label versionBadge = new Label(org.ether.society.config.AppVersion.getDisplayVersion());
         versionBadge.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-background-color: rgba(56, 189, 248, 0.2); -fx-padding: 3 8; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.6); -fx-border-radius: 6;");
 
         HBox titleBox = new HBox(12, titleLabel, versionBadge);

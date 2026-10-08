@@ -11,7 +11,7 @@ cd "$ROOT_DIR"
 
 SCENARIO="${1:-OUT_OF_AFRICA}"
 PORT="${2:-9090}"
-SECRET="${3:-EtherClusterSecret2026}"
+SECRET="${3:-${ETHER_CLUSTER_SECRET:-default-cluster-token}}"
 TICKS="${4:-500}"
 CELLS="${5:-10000}"
 

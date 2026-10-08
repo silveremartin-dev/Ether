@@ -117,7 +117,7 @@ public class MarineSubmersionEngine {
                     cell.setPopulation(remainingPop);
                     cell.setResourceCapital(cell.getResourceCapital() * 0.50); // 50% fixed capital submerged
 
-                    logger.info("ðŸŒŠ Marine Submersion Evacuation: Cell {} evacuated {} humans ({}) to {} safe neighbor cells.",
+                    logger.info("🌊 Marine Submersion Evacuation: Cell {} evacuated {} humans ({}) to {} safe neighbor cells.",
                             cell.getH3Index(), evacuatedPop, String.format("%.1f%%", evacuationRatio * 100), safeNeighbors.size());
                 }
 

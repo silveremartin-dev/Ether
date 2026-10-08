@@ -38,18 +38,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "mars",
     "tempUseImport" : true,
-    "tempSource" : "ðŸ”´ Mars â€” MGS TES Thermal Radiometry",
+    "tempSource" : "\uD83D\uDD34 Mars — MGS TES Thermal Radiometry",
     "tempSeed" : 98865,
     "precipUseImport" : true,
-    "precipSource" : "ðŸ”´ Mars â€” Frost & Sublimation Model",
+    "precipSource" : "\uD83D\uDD34 Mars — Frost & Sublimation Model",
     "precipSeed" : 99765,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸ”´ Mars â€” Orbital Eccentricity Insolation Model",
+    "seasonSource" : "\uD83D\uDD34 Mars — Orbital Eccentricity Insolation Model",
     "seasonSeed" : 100765,
     "canonicalPlanet" : "mars",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒö┤ MARS (Ares): Hyper-arid desert world with thin COÔéé atmosphere (0.006 atm), ancient volcanic shield volcanoes (Olympus Mons), canyon systems (Valles Marineris), and polar dry-ice caps.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Mars (Ares)",
@@ -89,18 +89,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "mars",
       "tempUseImport" : true,
-      "tempSource" : "ðŸ”´ Mars â€” MGS TES Thermal Radiometry",
+      "tempSource" : "\uD83D\uDD34 Mars — MGS TES Thermal Radiometry",
       "tempSeed" : 98865,
       "precipUseImport" : true,
-      "precipSource" : "ðŸ”´ Mars â€” Frost & Sublimation Model",
+      "precipSource" : "\uD83D\uDD34 Mars — Frost & Sublimation Model",
       "precipSeed" : 99765,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸ”´ Mars â€” Orbital Eccentricity Insolation Model",
+      "seasonSource" : "\uD83D\uDD34 Mars — Orbital Eccentricity Insolation Model",
       "seasonSeed" : 100765,
       "canonicalPlanet" : "mars",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒö┤ MARS (Ares): Hyper-arid desert world with thin COÔéé atmosphere (0.006 atm), ancient volcanic shield volcanoes (Olympus Mons), canyon systems (Valles Marineris), and polar dry-ice caps.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 0.0,
     "soilOrganicCarbonGtC" : 0.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "mars",
-    "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒö┤ MARS (Ares): Hyper-arid desert world with thin COÔéé atmosphere (0.006 atm), ancient volcanic shield volcanoes (Olympus Mons), canyon systems (Valles Marineris), and polar dry-ice caps."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -185,5 +185,5 @@
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
   "displayName" : "Colonisation Martienne : Dômes Chryse & Cratère Jezero (2050)",
-  "displayDescription" : "\uD83D\uDD34 SCÉNARIO EXOPLANÉTAIRE : Colonisation Martienne & Dômes Sous Régolithe (2050 ap. J.-C.)\n\nPremiers habitats humains permanents au cratère Jezero et Chryse Planitia. Utilisation du cycle de Sabatier (méthanation CO₂), extraction d'eau in-situ, dômes imprimés 3D en basalte et support de vie ECLSS en boucle fermée face à une pression quasi-nulle (0,006 atm) et aux rayonnements ionisants."
+  "displayDescription" : "\uD83D\uDD34 SCÉNARIO EXOPLANÉTAIRE : Colonisation Martienne & Dômes Sous Régolithe (2050 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nPremiers habitats humains permanents au cratère Jezero et Chryse Planitia. Utilisation du cycle de Sabatier (méthanation CO₂), extraction d'eau in-situ, dômes imprimés 3D en basalte et support de vie ECLSS en boucle fermée face à une pression quasi-nulle (0,006 atm) et aux rayonnements ionisants.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Déploiement d'avant-postes pressurisés et croissance du stock de capital technique et d'énergie par habitant.\n• Autarcie progressive grâce à l'ISRU (In-Situ Resource Utilization) et aux technologies combinatoires.\n• Résilience face aux tempêtes de poussière martiennes et aux risques de brèche structurelle.\n"
 }

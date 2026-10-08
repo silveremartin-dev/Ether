@@ -49,7 +49,7 @@ public class ProceduralEngineSpiLoader {
             for (ProceduralEnginePlugin plugin : loader) {
                 String name = plugin.getClass().getSimpleName();
                 ProceduralEngineRegistry.registerPlugin(name, plugin);
-                logger.info("ðŸ“¦ SPI: Registered classpath engine plugin: {}", name);
+                logger.info("📦 SPI: Registered classpath engine plugin: {}", name);
                 count++;
             }
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public class ProceduralEngineSpiLoader {
             for (ProceduralEnginePlugin plugin : loader) {
                 String name = plugin.getClass().getSimpleName();
                 ProceduralEngineRegistry.registerPlugin(name, plugin);
-                logger.info("ðŸ“¦ SPI: Registered external JAR engine plugin: {}", name);
+                logger.info("📦 SPI: Registered external JAR engine plugin: {}", name);
                 count++;
             }
         } catch (Exception e) {

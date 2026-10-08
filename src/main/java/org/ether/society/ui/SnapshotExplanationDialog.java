@@ -107,6 +107,14 @@ public class SnapshotExplanationDialog extends Stage {
                 "-fx-text-fill: #a855f7;"
         ));
 
+        // Card 5: Autonomous Pruning & Logarithmic Time-Decay
+        contentBox.getChildren().add(createCard(
+                I18n.getOrDefault("snapshot.modal.card5.title", "🧹 5. GESTION AUTOMATIQUE & ÉLAGAGE TEMPOREL LOGARITHMIQUE"),
+                I18n.getOrDefault("snapshot.modal.card5.body", "• Aucune Gestion Manuelle Requise : Le système de persistance gère les snapshots de manière 100% autonome pour éviter à l'utilisateur d'avoir à supprimer des fichiers manuellement.\n"
+                        + "• Rétention Logarithmique (Time-Decay) : Les snapshots récents sont conservés à haute fréquence temporelle, tandis que les époques plus anciennes sont automatiquement espacées selon une échelle logarithmique. Cela garantit un historique complet sur des millénaires tout en maintenant une empreinte disque et mémoire ultra-légère."),
+                "-fx-text-fill: #ec4899;"
+        ));
+
         ScrollPane scrollPane = new ScrollPane(contentBox);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");

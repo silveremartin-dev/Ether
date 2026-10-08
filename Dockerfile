@@ -32,13 +32,13 @@ FROM eclipse-temurin:21-jre-alpine
 
 LABEL maintainer="Silvère Martin-Michiellot <silvere.martin@gmail.com>"
 LABEL description="Ether — Cliodynamic & Historical Planetary Simulation Engine"
-LABEL version="1.0.0-beta.1"
+LABEL version="1.0.0-beta.2"
 LABEL org.opencontainers.image.source="https://github.com/silveremartin-dev/Ether"
 
 WORKDIR /app
 
 # Copy the self-contained executable jar from the build stage
-COPY --from=build /app/target/society-simulation-1.0.0-beta.1-executable.jar ether.jar
+COPY --from=build /app/target/society-simulation-1.0.0-beta.2-executable.jar ether.jar
 
 # Persistent volumes: saves/snapshots, logs, and geospatial data
 VOLUME ["/app/saves", "/app/logs", "/app/data"]
@@ -58,7 +58,7 @@ ENV CELLS=5000
 # Cluster networking (used in master and worker modes)
 ENV MASTER_HOST=ether-master
 ENV MASTER_PORT=9090
-ENV CLUSTER_SECRET=EtherClusterSecret2026
+ENV CLUSTER_SECRET=default-cluster-token
 # PostgreSQL connection (optional — Ether falls back to H2 in-memory if not set)
 ENV DB_HOST=postgres
 ENV DB_PORT=5432

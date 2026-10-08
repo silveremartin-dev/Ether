@@ -12,9 +12,13 @@
 
 ---
 
-## ⚡ Instant Standalone Deployment (1-Click)
+## ⚡ Instant Standalone Deployment (1-Click) & 100% Offline Capability
 
-Ether runs out of the box **without requiring any external database configuration**:
+Ether runs out of the box **without requiring any external database configuration or internet connection**:
+* **100% Offline Operational**: All core baseline historical scenarios, planet archetypes, ecology models, and cliodynamic equations are embedded directly inside the JAR. You can run, experiment, modify parameters, and save completely offline.
+* **Ultra-Lightweight Distribution (~44 MB)**: Portable standalone distribution package (`dist/Ether-v1.0.0-beta.2-standalone.zip`).
+* **Non-Blocking Background Sync (Optional)**: When connected to the internet, official extra scenarios, maps (`data/maps/ether/**`), chronicles (`data/events/`), and snapshots (`saves/**`) sync automatically in the background without stalling the interface.
+* **Branch & Customization Protection**: Local user edits (changed H3 resolution, cohort size, time steps, custom scenarios, user saves) are protected via SHA-256 and are **never overwritten**. Reference scenarios always remain accessible alongside user custom presets.
 
 ```bash
 # Windows
@@ -30,10 +34,7 @@ chmod +x run.sh run.command
 ```
 
 To build a standalone portable release distribution:
-* **Windows (.zip + SHA256)**: `scripts\build\deploy-release-windows.bat`
-* **Linux (.tar.gz + SHA256)**: `./scripts/build/deploy-release-linux.sh`
-* **macOS (.command + .zip)**: `./scripts/build/deploy-release-macos.sh`
-* **All-in-One Multi-OS**: `scripts\build\deploy-release-all.bat` / `./scripts/build/deploy-release-all.sh`
+* **Standalone Release (.zip + .tar.gz + SHA256)**: `powershell -ExecutionPolicy Bypass -File scripts\build\package-release.ps1 -Platform standalone`
 
 For complete deployment options (standalone, Docker PostGIS, distributed cluster, and headless batch CLI), see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 

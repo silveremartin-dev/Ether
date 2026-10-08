@@ -647,6 +647,9 @@ public class MainView extends StackPane {
             if (meta != null) {
                 logger.info("Resuming simulation from snapshot: {} (Year {}, Month {})", meta.getName(), meta.getYear(), meta.getMonth());
                 engine.loadSimulation(meta.getId());
+                if (scenario != null) {
+                    engine.setCurrentScenario(scenario);
+                }
                 if (meta.getYear() != 0) {
                     engine.getTimeManager().reset((int) meta.getYear());
                 }

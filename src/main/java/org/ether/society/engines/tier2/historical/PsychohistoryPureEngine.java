@@ -60,7 +60,7 @@ public class PsychohistoryPureEngine {
 
         double crisisProb = calculateSeldonCrisisProbability(totalPop, 0.45);
         if (crisisProb > 0.75) {
-            logger.info("ðŸ”® Psychohistory Engine: Seldon Crisis Impending! Probability = {}%", String.format("%.1f", crisisProb * 100));
+            logger.info("🔮 Psychohistory Engine: Seldon Crisis Impending! Probability = {}%", String.format("%.1f", crisisProb * 100));
         }
     }
 }

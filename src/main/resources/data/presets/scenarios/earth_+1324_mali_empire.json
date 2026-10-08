@@ -1,6 +1,6 @@
 {
   "name" : "Empire du Mali & Commerce Trans-Saharien (1324)",
-  "description" : "ðŸ•Œ SCÃ‰NARIO HISTORIQUE : L'ApogÃ©e de l'Empire du Mali sous Mansa Musa (1324 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise le rÃ©seau urbain et marchand trans-saharien de la boucle du Niger (Tombouctou, Gao, DjennÃ©). ContrÃ´le des mines d'or de Bambouk/Boure et des salines de Teghaza.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Flux caravaniers trans-sahariens de mÃ©taux prÃ©cieux (or) contre sel gemme, textiles et manuscrits.\nâ€¢ Essor acadÃ©mique et thÃ©ologique de Tombouctou (UniversitÃ© SankorÃ©) et sÃ©dentarisation sahÃ©lienne.\nâ€¢ Choc monÃ©taire mondial provoquÃ© par les dÃ©penses d'or de Mansa Musa lors de son pÃ¨lerinage au Caire.\n",
+  "description" : "\uD83D\uDD4C SCÉNARIO HISTORIQUE : L'Apogée de l'Empire du Mali sous Mansa Musa (1324 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le réseau urbain et marchand trans-saharien de la boucle du Niger (Tombouctou, Gao, Djenné). Contrôle des mines d'or de Bambouk/Boure et des salines de Teghaza.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Flux caravaniers trans-sahariens de métaux précieux (or) contre sel gemme, textiles et manuscrits.\n• Essor académique et théologique de Tombouctou (Université Sankoré) et sédentarisation sahélienne.\n• Choc monétaire mondial provoqué par les dépenses d'or de Mansa Musa lors de son pèlerinage au Caire.\n",
   "id" : null,
   "presetKey" : "mali_empire",
   "planetPreset" : {
@@ -47,9 +47,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -187,6 +187,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Empire du Mali & Routes de l'Or Transsahariennes (1324)",
-  "displayDescription" : "\uD83D\uDD4C SCÉNARIO HISTORIQUE : L'Empire du Mali & Le Pèlerinage de Kankou Moussa (1324 apr. J.-C.)\n\nCommerce transsaharien de l'or et du sel, universités scolastiques de Tombouctou, logistique des caravanes et urbanisme sahélien ouest-africain."
+  "displayName" : "Mali Empire & Trans-Saharan Gold Routes (1324 AD)",
+  "displayDescription" : "HISTORICAL SCENARIO: Mansa Musa Pilgrimage & Trans-Saharan Trade Peak (1324 AD)\n\nTrans-Saharan gold and salt trade, Timbuktu scholastic centers, caravan logistics, and West African Sahelian urbanism."
 }

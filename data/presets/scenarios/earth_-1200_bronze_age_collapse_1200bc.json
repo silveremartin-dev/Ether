@@ -1,10 +1,10 @@
 {
-  "name" : "Effondrement de l'Ã‚ge du Bronze RÃ©cent & Peuples de la Mer (-1200)",
-  "description" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : La Grande Rupture SystÃ©mique de -1200 & Chute des Palais MycÃ©niens et Hittites\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise l'effondrement simultanÃ© en cascade des civilisations palatiales de MÃ©diterranÃ©e orientale (MycÃ¨nes, Ugarit, Empire Hittite, affaiblissement de l'Ã‰gypte). Combinaison d'une mÃ©ga-sÃ©cheresse centennale, de ruptures des routes de l'Ã©tain et des invasions des Peuples de la Mer.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Effondrement en chaÃ®ne des rÃ©seaux commerciaux interconnectÃ©s du bronze.\nâ€¢ Chute brutale de la complexitÃ© institutionnelle (disparition de l'Ã©criture LinÃ©aire B, dÃ©population urbaine).\nâ€¢ PÃ©riode d'Ã‚ges Sombres mÃ©diterranÃ©ens prÃ©parant la transition dÃ©centralisÃ©e vers le fer.\n",
+  "name" : "Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)",
+  "description" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : La Grande Rupture SystÃ©mique de -1200 & Chute des Palais MycÃ©niens et Hittites\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'effondrement simultané en cascade des civilisations palatiales de Méditerranée orientale (Mycènes, Ugarit, Empire Hittite, affaiblissement de l'Égypte). Combinaison d'une méga-sécheresse centennale, de ruptures des routes de l'étain et des invasions des Peuples de la Mer.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Effondrement en chaîne des réseaux commerciaux interconnectés du bronze.\n• Chute brutale de la complexité institutionnelle (disparition de l'écriture Linéaire B, dépopulation urbaine).\n• Période d'Âges Sombres méditerranéens préparant la transition décentralisée vers le fer.\n",
   "id" : null,
   "presetKey" : "bronze_age_collapse_1200bc",
   "planetPreset" : {
-    "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+    "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -47,15 +47,15 @@
     "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-    "associatedEpochYear" : -1900
+    "associatedEpochYear" : -1900,
+    "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
-    "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
-    "planetPresetName" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+    "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
+    "planetPresetName" : "Terre (-1 900 / Âge du Bronze Moyen)",
     "embeddedPlanetPreset" : {
-      "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+      "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
       "resolution" : 4,
       "radiusKm" : 6371.0,
       "dayLengthHours" : 24.0,
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-      "associatedEpochYear" : -1900
+      "associatedEpochYear" : -1900,
+      "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 590.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-    "associatedEpochYear" : -1900
+    "associatedEpochYear" : -1900,
+    "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -178,7 +178,7 @@
   "typeBEngineParameters" : { },
   "climateEvents" : [ {
     "type" : "MEGADROUGHT",
-    "name" : "MÃ©ga-SÃ©cheresse Centennale de MÃ©diterranÃ©e Orientale",
+    "name" : "Méga-Sécheresse Centennale de Méditerranée Orientale",
     "year" : -1200,
     "latitude" : 35.0,
     "longitude" : 33.0,
@@ -193,6 +193,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Effondrement de l'Ã‚ge du Bronze RÃ©cent & Peuples de la Mer (-1200)",
-  "displayDescription" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : La Grande Rupture SystÃ©mique de -1200 & Chute des Palais MycÃ©niens et Hittites\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise l'effondrement simultanÃ© en cascade des civilisations palatiales de MÃ©diterranÃ©e orientale (MycÃ¨nes, Ugarit, Empire Hittite, affaiblissement de l'Ã‰gypte). Combinaison d'une mÃ©ga-sÃ©cheresse centennale, de ruptures des routes de l'Ã©tain et des invasions des Peuples de la Mer.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Effondrement en chaÃ®ne des rÃ©seaux commerciaux interconnectÃ©s du bronze.\nâ€¢ Chute brutale de la complexitÃ© institutionnelle (disparition de l'Ã©criture LinÃ©aire B, dÃ©population urbaine).\nâ€¢ PÃ©riode d'Ã‚ges Sombres mÃ©diterranÃ©ens prÃ©parant la transition dÃ©centralisÃ©e vers le fer.\n"
+  "displayName" : "Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)",
+  "displayDescription" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : La Grande Rupture SystÃ©mique de -1200 & Chute des Palais MycÃ©niens et Hittites\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'effondrement simultané en cascade des civilisations palatiales de Méditerranée orientale (Mycènes, Ugarit, Empire Hittite, affaiblissement de l'Égypte). Combinaison d'une méga-sécheresse centennale, de ruptures des routes de l'étain et des invasions des Peuples de la Mer.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Effondrement en chaîne des réseaux commerciaux interconnectés du bronze.\n• Chute brutale de la complexité institutionnelle (disparition de l'écriture Linéaire B, dépopulation urbaine).\n• Période d'Âges Sombres méditerranéens préparant la transition décentralisée vers le fer.\n"
 }

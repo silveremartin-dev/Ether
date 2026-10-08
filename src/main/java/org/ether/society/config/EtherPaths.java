@@ -104,8 +104,13 @@ public final class EtherPaths {
         if (envCache != null && !envCache.isBlank()) {
             cacheDir = Paths.get(envCache).toAbsolutePath().normalize();
         } else {
-            String userHome = System.getProperty("user.home", ".");
-            cacheDir = Paths.get(userHome, ".ether_society", "cache").toAbsolutePath().normalize();
+            Path localDataCache = Paths.get("data", "cache").toAbsolutePath().normalize();
+            if (Files.exists(localDataCache) || Files.exists(Paths.get("data"))) {
+                cacheDir = localDataCache;
+            } else {
+                String userHome = System.getProperty("user.home", ".");
+                cacheDir = Paths.get(userHome, ".ether_society", "cache").toAbsolutePath().normalize();
+            }
         }
 
         ensureDirectories();

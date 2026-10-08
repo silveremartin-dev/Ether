@@ -18,7 +18,7 @@ import java.util.List;
  *
  * <p>Models the secular cycles of socio-political instability, elite overproduction, and state breakdown:</p>
  * <pre>
- *   PSI = MMP Â· EMP Â· SF
+ *   PSI = MMP · EMP · SF
  * </pre>
  * where:
  * <ul>
@@ -72,11 +72,11 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
     public String getEquationsTooltip() {
         return """
                [Goldstone-Turchin Political Stress Index (SDT / PSI)]
-               â€¢ Political Stress Index:  PSI = MMP Â· EMP Â· SF
-               â€¢ Mass Immiseration (MMP): MMP = (w_ref / RealWage) Â· UrbanFraction
-               â€¢ Elite Overproduction:    EMP = (N_elites / Office_capacity) Â· Gini_index
-               â€¢ State Fiscal Distress:   SF  = SovereignDebt / AnnualTaxRevenue
-               â€¢ Secular Breakdown Trap:  If PSI > 10.0 -> State Fragmentation & Civil Conflict
+               • Political Stress Index:  PSI = MMP · EMP · SF
+               • Mass Immiseration (MMP): MMP = (w_ref / RealWage) · UrbanFraction
+               • Elite Overproduction:    EMP = (N_elites / Office_capacity) · Gini_index
+               • State Fiscal Distress:   SF  = SovereignDebt / AnnualTaxRevenue
+               • Secular Breakdown Trap:  If PSI > 10.0 -> State Fragmentation & Civil Conflict
                Units: PSI [indice sans dimension [0, +inf]], MMP, EMP, SF [multiplicateurs adimensionnels]
                Ref: P. Turchin (2016) "Ages of Discord", J. A. Goldstone (1991) "Revolution and Rebellion"
                """;

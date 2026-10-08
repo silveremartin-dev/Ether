@@ -42,7 +42,7 @@ Ether provides cross-platform execution scripts for Windows, Linux, and macOS:
 | **Standalone GUI (In-Memory)** | `start-no-db` | `scripts\start-no-db.bat`<br>`./scripts/start-no-db.sh` | Launch JavaFX UI directly in memory without Docker or PostgreSQL. |
 | **Docker + PostgreSQL** | `start-with-db` | `scripts\start-with-db.bat`<br>`./scripts/start-with-db.sh` | Start PostgreSQL/PostGIS container, apply migrations & launch GUI. |
 | **Headless CLI Mode** | `start-headless` | `scripts\start-headless.bat OUT_OF_AFRICA 500 3000`<br>`./scripts/start-headless.sh OUT_OF_AFRICA 500 3000` | Run headless simulation without JavaFX for fast automated benchmarks. |
-| **Distributed Master** | `start-master` | `scripts\start-master.bat OUT_OF_AFRICA 9090 EtherClusterSecret2026`<br>`./scripts/start-master.sh OUT_OF_AFRICA 9090 EtherClusterSecret2026` | Launch gRPC Master cluster node to partition H3 mesh across workers. |
+| **Distributed Master** | `start-master` | `scripts\start-master.bat OUT_OF_AFRICA 9090 YOUR_CLUSTER_SECRET`<br>`./scripts/start-master.sh OUT_OF_AFRICA 9090 YOUR_CLUSTER_SECRET` | Launch gRPC Master cluster node to partition H3 mesh across workers. |
 | **Distributed Worker** | `start-worker` | `scripts\start-worker.bat 192.168.1.50 9090`<br>`./scripts/start-worker.sh 192.168.1.50 9090` | Connect worker node to remote master node for parallel spatial compute. |
 | **Database Control** | `database-status` / `stop-docker` | `scripts\database-status.bat` / `scripts\stop-docker.bat`<br>`./scripts/database-status.sh` / `./scripts/stop-docker.sh` | Inspect PostgreSQL health or stop active Docker database containers. |
 | **Javadoc & Build** | `javadoc` | `scripts\javadoc.bat` / `./scripts/javadoc.sh` | Generate Javadoc HTML API docs. |

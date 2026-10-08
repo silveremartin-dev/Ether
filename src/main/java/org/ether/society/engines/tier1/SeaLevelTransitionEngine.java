@@ -37,7 +37,7 @@ public class SeaLevelTransitionEngine {
     public static void applySeaLevelTransition(List<H3Cell> cells, double targetSeaLevelOffsetMeters) {
         if (cells == null || cells.isEmpty()) return;
 
-        logger.info("ðŸŒŠ Applying Dynamic Sea Level Transition: offset = {} meters across {} cells",
+        logger.info("🌊 Applying Dynamic Sea Level Transition: offset = {} meters across {} cells",
                 targetSeaLevelOffsetMeters, cells.size());
 
         int submergedCount = 0;
@@ -104,7 +104,7 @@ public class SeaLevelTransitionEngine {
             }
         }
 
-        logger.info("ðŸŒŠ Sea Level Transition Complete: {} cells submerged, {} cells emerged.",
+        logger.info("🌊 Sea Level Transition Complete: {} cells submerged, {} cells emerged.",
                 submergedCount, emergedCount);
     }
 }

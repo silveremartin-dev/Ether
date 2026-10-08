@@ -88,6 +88,19 @@ public enum LeaderArchetype {
             "🔥",
             15,
             8.0
+    ),
+
+    /*
+     * Philosophical formulation, scientific treatise codification, historical documentation, and astronomical/medical innovation.
+     * Purely informative/intellectual contingent figure boosting collective memory and technical knowledge without executive sovereign tyranny.
+     * Examples: Aristotle, Thucydides, Ibn Khaldun, Leonardo da Vinci, Isaac Newton, Sima Qian.
+     */
+    INTELLECTUAL_CHRONICLER(
+            "leader.archetype.intellectual_chronicler",
+            "leader.archetype.intellectual_chronicler.desc",
+            "📜",
+            45,
+            3.5
     );
 
     /* Internal state variable for name key (String). */
@@ -177,6 +190,22 @@ public enum LeaderArchetype {
      */
     public String getDescription() {
         return I18n.getOrDefault(descKey, name());
+    }
+
+    /*
+     * Returns true if this archetype represents an active sovereign/executive ruler exerting high physical/state magnitude.
+     */
+    public boolean isExecutiveLeader() {
+        return this == MILITARY_CONQUEROR || this == INFRASTRUCTURE_BUILDER
+                || this == INSTITUTIONAL_REFORMER || this == HYDRAULIC_AGRARIAN_INNOVATOR
+                || this == TOTALITARIAN_PURGER;
+    }
+
+    /*
+     * Returns true if this archetype is primarily an informative/intellectual cultural milestone.
+     */
+    public boolean isInformativeMilestone() {
+        return !isExecutiveLeader();
     }
 
     @Override

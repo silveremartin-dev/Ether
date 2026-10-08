@@ -1,6 +1,6 @@
 {
-  "name" : "Hiver NuclÃ©aire & Ombre StratosphÃ©rique (2035)",
-  "description" : "â˜¢ï¸ SCÃ‰NARIO FUTUR : Catastrophe de la Guerre NuclÃ©aire & Hiver StratosphÃ©rique\n\n[DESCRIPTION DES TERMES DE FORÃ‡AGE PHYSIQUE (Tâ‚€)]\nConflit nuclÃ©aire Ã  haute intensitÃ© dÃ©clenchant d'immenses tempÃªtes de feu urbaines et l'injection massive de carbone suie dans la stratosphÃ¨re.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planÃ©taire de -15Â°C Ã  -25Â°C.\nâ€¢ Effondrement total de la photosynthÃ¨se et rupture gÃ©nÃ©ralisÃ©e des chaÃ®nes alimentaires en moins de 60 jours.\nâ€¢ Survie dÃ©mographique rÃ©siduelle restreinte aux refuges souterrains, biomes marins profonds et serres protÃ©gÃ©es.\n",
+  "name" : "Hiver Nucléaire & Ombre Stratosphérique (2035)",
+  "description" : "â˜¢ï¸ SCÃ‰NARIO FUTUR : Catastrophe de la Guerre NuclÃ©aire & Hiver StratosphÃ©rique\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nConflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planétaire de -15°C à -25°C.\n• Effondrement total de la photosynthèse et rupture généralisée des chaînes alimentaires en moins de 60 jours.\n• Survie démographique résiduelle restreinte aux refuges souterrains, biomes marins profonds et serres protégées.\n",
   "id" : null,
   "presetKey" : "nuclear_winter_2035",
   "planetPreset" : {
@@ -47,9 +47,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -176,7 +176,7 @@
   "typeBEngineParameters" : { },
   "climateEvents" : [ {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃ©gique : Washington D.C. & Pentagone",
+    "name" : "Frappe Stratégique : Washington D.C. & Pentagone",
     "year" : 2035,
     "latitude" : 38.88,
     "longitude" : -77.05,
@@ -208,7 +208,7 @@
     "magnitude" : 9.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-CitÃ©s : AgglomÃ©ration New York & Hub Maritime",
+    "name" : "Frappe Anti-Cités : Agglomération New York & Hub Maritime",
     "year" : 2035,
     "latitude" : 40.71,
     "longitude" : -74.0,
@@ -216,7 +216,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-CitÃ©s : MÃ©galopole Los Angeles / Long Beach",
+    "name" : "Frappe Anti-Cités : Mégalopole Los Angeles / Long Beach",
     "year" : 2035,
     "latitude" : 34.05,
     "longitude" : -118.24,
@@ -224,7 +224,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃ©gique : Moscou & Centre de Commandement",
+    "name" : "Frappe Stratégique : Moscou & Centre de Commandement",
     "year" : 2035,
     "latitude" : 55.75,
     "longitude" : 37.61,
@@ -256,7 +256,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-CitÃ©s : MÃ©tropole Saint-PÃ©tersbourg & Baltique",
+    "name" : "Frappe Anti-Cités : Métropole Saint-Pétersbourg & Baltique",
     "year" : 2035,
     "latitude" : 59.93,
     "longitude" : 30.33,
@@ -264,7 +264,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃ©gique : Londres & AmirautÃ© Britannique",
+    "name" : "Frappe Stratégique : Londres & Amirauté Britannique",
     "year" : 2035,
     "latitude" : 51.5,
     "longitude" : -0.12,
@@ -280,7 +280,7 @@
     "magnitude" : 8.5
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃ©gique : Paris & Commandement des Forces AÃ©riennes",
+    "name" : "Frappe Stratégique : Paris & Commandement des Forces Aériennes",
     "year" : 2035,
     "latitude" : 48.85,
     "longitude" : 2.35,
@@ -288,7 +288,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Navale : Base SNLE ÃŽle Longue (Brest)",
+    "name" : "Frappe Navale : Base SNLE Île Longue (Brest)",
     "year" : 2035,
     "latitude" : 48.3,
     "longitude" : -4.5,
@@ -296,7 +296,7 @@
     "magnitude" : 8.5
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃ©gique : PÃ©kin & Commission Militaire Centrale",
+    "name" : "Frappe Stratégique : Pékin & Commission Militaire Centrale",
     "year" : 2035,
     "latitude" : 39.9,
     "longitude" : 116.4,
@@ -312,7 +312,7 @@
     "magnitude" : 9.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-CitÃ©s : MÃ©galopole Industrielle Shanghai / Yangtze",
+    "name" : "Frappe Anti-Cités : Mégalopole Industrielle Shanghai / Yangtze",
     "year" : 2035,
     "latitude" : 31.23,
     "longitude" : 121.47,
@@ -320,7 +320,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃ©gique : Tokyo & Complexe Industriel Kanto",
+    "name" : "Frappe Stratégique : Tokyo & Complexe Industriel Kanto",
     "year" : 2035,
     "latitude" : 35.68,
     "longitude" : 139.69,
@@ -328,7 +328,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-Forces : Base StratÃ©gique Andersen (Guam)",
+    "name" : "Frappe Anti-Forces : Base Stratégique Andersen (Guam)",
     "year" : 2035,
     "latitude" : 13.58,
     "longitude" : 144.92,
@@ -336,7 +336,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-Forces : Base AÃ©rienne Ramstein (OTAN)",
+    "name" : "Frappe Anti-Forces : Base Aérienne Ramstein (OTAN)",
     "year" : 2035,
     "latitude" : 49.43,
     "longitude" : 7.6,
@@ -344,7 +344,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃ©gique : New Delhi & Centres StratÃ©giques",
+    "name" : "Frappe Stratégique : New Delhi & Centres Stratégiques",
     "year" : 2035,
     "latitude" : 28.61,
     "longitude" : 77.2,
@@ -352,7 +352,7 @@
     "magnitude" : 8.0
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃ©gique : Islamabad & Complexe NuclÃ©aire Kahuta",
+    "name" : "Frappe Stratégique : Islamabad & Complexe Nucléaire Kahuta",
     "year" : 2035,
     "latitude" : 33.68,
     "longitude" : 73.04,
@@ -367,6 +367,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Guerre Thermonucléaire & Hiver Nucléaire (2035)",
-  "displayDescription" : "⚠ SCÉNARIO DE CRISE : Conflit Thermonucléaire Global & Hiver Nucléaire (2035 apr. J.-C.)\n\nInjection de 150 Tg de suie dans la stratosphère, effondrement de l'irradiance solaire, gel mondial, ruine des cultures et effondrement sociétal."
+  "displayName" : "Global Thermonuclear War & Nuclear Winter (2035 AD)",
+  "displayDescription" : "CRISIS SCENARIO: Thermonuclear Exchange & Stratospheric Soot Shock (2035 AD)\n\n150 Tg stratospheric soot injection, global solar irradiance collapse, abrupt freezing temperatures, crop failure, and societal breakdown."
 }

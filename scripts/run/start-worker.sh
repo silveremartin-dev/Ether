@@ -11,7 +11,7 @@ cd "$ROOT_DIR"
 
 MASTER_HOST="${1:-127.0.0.1}"
 PORT="${2:-9090}"
-SECRET="${3:-EtherClusterSecret2026}"
+SECRET="${3:-${ETHER_CLUSTER_SECRET:-default-cluster-token}}"
 
 echo "=========================================================="
 echo "     ETHER -- STARTING CLUSTER WORKER NODE (Linux)        "

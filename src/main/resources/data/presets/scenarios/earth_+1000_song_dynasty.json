@@ -1,6 +1,6 @@
 {
-  "name" : "Dynastie Song & PrÃ©-Industrialisation Hydraulique (1000)",
-  "description" : "ðŸ® SCÃ‰NARIO HISTORIQUE : Le SiÃ¨cle d'Or de la Dynastie Song (1000 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nLa Chine des Song a connu la premiÃ¨re prÃ©-industrialisation de l'histoire, avec une utilisation massive du charbon de terre pour la fonte du fer et des rÃ©seaux de transport fluviaux ultra-efficaces.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ RÃ©volution Ã©nergÃ©tique prÃ©-industrielle : transition massive vers le charbon minÃ©ral et hauts-fourneaux au coke.\nâ€¢ RÃ©volution monÃ©taire et commerciale : premiÃ¨re monnaie fiduciaire en papier (Jiaozi) et navigation Ã  la boussole.\nâ€¢ Hyper-urbanisation fluviale (Kaifeng, Hangzhou) et vulnÃ©rabilitÃ© militaire face aux cavaliers nomades du Nord.\n",
+  "name" : "Dynastie Song & Pré-Industrialisation Hydraulique (1000)",
+  "description" : "ðŸ® SCÃ‰NARIO HISTORIQUE : Le SiÃ¨cle d'Or de la Dynastie Song (1000 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nLa Chine des Song a connu la première pré-industrialisation de l'histoire, avec une utilisation massive du charbon de terre pour la fonte du fer et des réseaux de transport fluviaux ultra-efficaces.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Révolution énergétique pré-industrielle : transition massive vers le charbon minéral et hauts-fourneaux au coke.\n• Révolution monétaire et commerciale : première monnaie fiduciaire en papier (Jiaozi) et navigation à la boussole.\n• Hyper-urbanisation fluviale (Kaifeng, Hangzhou) et vulnérabilité militaire face aux cavaliers nomades du Nord.\n",
   "id" : null,
   "presetKey" : "song_dynasty",
   "planetPreset" : {
@@ -47,9 +47,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -191,6 +191,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Industrialisation Song & Commerce Maritime (1000)",
-  "displayDescription" : "\uD83D\uDC09 SCÉNARIO HISTORIQUE : La Révolution Proto-Industrielle Song (1000 apr. J.-C.)\n\nEssor économique sous la dynastie Song, papier-monnaie (Jiaozi), métallurgie au coke, boussole maritime et réseaux commerciaux fluviaux et maritimes hyper-développés."
+  "displayName" : "Song Dynasty Industrialization & Maritime Trade (1000 AD)",
+  "displayDescription" : "HISTORICAL SCENARIO: Proto-Industrial Revolution & Maritime Silk Road (1000 AD)\n\nSong Dynasty economic boom, paper currency (Jiaozi), coke-fueled iron smelting, compass navigation, and commercialized river/maritime networks."
 }

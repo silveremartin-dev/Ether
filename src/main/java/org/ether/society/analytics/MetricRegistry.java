@@ -46,24 +46,24 @@ public class MetricRegistry {
 
     // Helper subroutine: register default metrics - internal state computation & bounds checking
     private void registerDefaultMetrics() {
-        // --- âš¡ 1. Ã‰NERGIE & MATIÃˆRE ---
+        // --- ⚡ 1. ÉNERGIE & MATIÈRE ---
         register(new MetricDescriptor(
-            "energyCaptured", "Ã‰nergie CaptÃ©e", MetricDescriptor.Category.ENERGY_MATTER, "MW",
-            "P_tot = âˆ‘ (P_solaire + P_biomasse + P_gÃ©othermie). Total de la puissance brute extraite du milieu physique.",
+            "energyCaptured", "Énergie Captée", MetricDescriptor.Category.ENERGY_MATTER, "MW",
+            "P_tot = ∑ (P_solaire + P_biomasse + P_géothermie). Total de la puissance brute extraite du milieu physique.",
             cell -> cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getEnergySolar() != null ? c.getEnergySolar() : 0.0).sum()
         ));
 
         register(new MetricDescriptor(
-            "resourceDepletion", "DÃ©plÃ©tion des Ressources", MetricDescriptor.Category.ENERGY_MATTER, "%",
-            "Pourcentage cumulÃ© de consommation des rÃ©serves minÃ©rales non-renouvelables.",
+            "resourceDepletion", "Déplétion des Ressources", MetricDescriptor.Category.ENERGY_MATTER, "%",
+            "Pourcentage cumulé de consommation des réserves minérales non-renouvelables.",
             cell -> cell.getResourceMetal() != null ? Math.max(0.0, 100.0 - cell.getResourceMetal()) : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getResourceMetal() != null ? Math.max(0.0, 100.0 - c.getResourceMetal()) : 0.0).average().orElse(0.0)
         ));
 
         register(new MetricDescriptor(
-            "energyPerCapita", "Ã‰nergie / Individu", MetricDescriptor.Category.ENERGY_MATTER, "MJ/hab",
-            "Ã‰nergie primaire utilisable disponible par habitant selon la loi de Leslie White.",
+            "energyPerCapita", "Énergie / Individu", MetricDescriptor.Category.ENERGY_MATTER, "MJ/hab",
+            "Énergie primaire utilisable disponible par habitant selon la loi de Leslie White.",
             cell -> cell.getPopulation() != null && cell.getPopulation() > 0 ? (cell.getEnergySolar() != null ? cell.getEnergySolar() / cell.getPopulation() : 0.0) : 0.0,
             cells -> {
                 long pop = cells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
@@ -74,7 +74,7 @@ public class MetricRegistry {
 
         register(new MetricDescriptor(
             "foodPerCapita", "Stock Alimentaire / Habitant", MetricDescriptor.Category.ENERGY_MATTER, "GJ/hab",
-            "Stock d'Ã©nergie trophique disponible par habitant (1 hab = 9 205 kJ/jour = 3,362 GJ/an).",
+            "Stock d'énergie trophique disponible par habitant (1 hab = 9 205 kJ/jour = 3,362 GJ/an).",
             cell -> cell.getPopulation() != null && cell.getPopulation() > 0 ? (cell.getFoodResource() != null ? cell.getFoodResource() / cell.getPopulation() : 0.0) : 0.0,
             cells -> {
                 long pop = cells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
@@ -85,114 +85,114 @@ public class MetricRegistry {
 
         register(new MetricDescriptor(
             "eroiAlim", "EROI Alimentaire (Rendement Net)", MetricDescriptor.Category.ENERGY_MATTER, "Ratio",
-            "Ratio entre l'Ã©nergie mÃ©tabolisable acquise et l'Ã©nergie dÃ©pensÃ©e pour la capturer ou la produire (E_out / E_in).",
+            "Ratio entre l'énergie métabolisable acquise et l'énergie dépensée pour la capturer ou la produire (E_out / E_in).",
             cell -> 7.0,
             cells -> 7.0
         ));
 
         register(new MetricDescriptor(
-            "netSurplus", "Surplus Ã‰nergÃ©tique Net", MetricDescriptor.Category.ENERGY_MATTER, "%",
-            "Fraction d'Ã©nergie nette disponible pour les structures non-agricoles Phi = 1 - 1/EROI.",
+            "netSurplus", "Surplus Énergétique Net", MetricDescriptor.Category.ENERGY_MATTER, "%",
+            "Fraction d'énergie nette disponible pour les structures non-agricoles Phi = 1 - 1/EROI.",
             cell -> 85.0,
             cells -> 85.0
         ));
 
         register(new MetricDescriptor(
             "trophicMultiplier", "Empreinte Trophique (Multiplicateur)", MetricDescriptor.Category.ENERGY_MATTER, "x",
-            "Multiplicateur de biomasse brute mobilisÃ©e par rapport Ã  l'ingestion mÃ©tabolique (2x Ã  25x).",
+            "Multiplicateur de biomasse brute mobilisée par rapport à l'ingestion métabolique (2x à 25x).",
             cell -> 2.25,
             cells -> 2.25
         ));
 
         register(new MetricDescriptor(
-            "biomassMobilized", "Biomasse MobilisÃ©e / Habitant", MetricDescriptor.Category.ENERGY_MATTER, "kg/an",
-            "Masse brute annuelle de biomasse mobilisÃ©e par individu (chasse, rÃ©coltes, fourrage bÃ©tail).",
+            "biomassMobilized", "Biomasse Mobilisée / Habitant", MetricDescriptor.Category.ENERGY_MATTER, "kg/an",
+            "Masse brute annuelle de biomasse mobilisée par individu (chasse, récoltes, fourrage bétail).",
             cell -> 1000.0,
             cells -> 1000.0
         ));
 
         register(new MetricDescriptor(
-            "potableWater", "Ressources en Eau Disponibles", MetricDescriptor.Category.ENERGY_MATTER, "10Â³ mÂ³",
-            "Niveau des rÃ©serves d'eau douce (aquifÃ¨res, riviÃ¨res et lacs) disponibles.",
+            "potableWater", "Ressources en Eau Disponibles", MetricDescriptor.Category.ENERGY_MATTER, "10³ m³",
+            "Niveau des réserves d'eau douce (aquifères, rivières et lacs) disponibles.",
             cell -> cell.getWaterResource() != null ? cell.getWaterResource() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getWaterResource() != null ? c.getWaterResource() : 0.0).sum()
         ));
 
         register(new MetricDescriptor(
             "entropyPollution", "Entropie & Pollution", MetricDescriptor.Category.ENERGY_MATTER, "Idx",
-            "GÃ©nÃ©ration d'entropie thermodynamique, rejets polluants et dÃ©gradations toxiques.",
+            "Génération d'entropie thermodynamique, rejets polluants et dégradations toxiques.",
             cell -> cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getPollutionLevel() != null ? c.getPollutionLevel() : 0.0).average().orElse(0.0)
         ));
 
         register(new MetricDescriptor(
-            "temperature", "TempÃ©rature Moyenne", MetricDescriptor.Category.ENERGY_MATTER, "Â°C",
-            "TempÃ©rature de surface (Â°C) calculÃ©e par l'insolation solaire et l'albÃ©do.",
+            "temperature", "Température Moyenne", MetricDescriptor.Category.ENERGY_MATTER, "°C",
+            "Température de surface (°C) calculée par l'insolation solaire et l'albédo.",
             cell -> cell.getTemperature() != null ? cell.getTemperature() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getTemperature() != null ? c.getTemperature() : 0.0).average().orElse(0.0)
         ));
 
         register(new MetricDescriptor(
-            "precipitation", "PrÃ©cipitations Moyennes", MetricDescriptor.Category.ENERGY_MATTER, "mm",
-            "PrÃ©cipitations annuelles moyennes en millimÃ¨tres d'eau.",
+            "precipitation", "Précipitations Moyennes", MetricDescriptor.Category.ENERGY_MATTER, "mm",
+            "Précipitations annuelles moyennes en millimètres d'eau.",
             cell -> cell.getRainfall() != null ? cell.getRainfall() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getRainfall() != null ? c.getRainfall() : 0.0).average().orElse(0.0)
         ));
 
-        // --- ðŸ‘¥ 2. DÃ‰MOGRAPHIE & SANTÃ‰ ---
+        // --- 👥 2. DÉMOGRAPHIE & SANTÉ ---
         register(new MetricDescriptor(
             "population", "Population Humaine", MetricDescriptor.Category.DEMOGRAPHICS, "hab",
-            "Nombre d'habitants rÃ©sidant dans la maille hexagonale H3.",
+            "Nombre d'habitants résidant dans la maille hexagonale H3.",
             cell -> cell.getPopulation() != null ? cell.getPopulation().doubleValue() : 0.0,
             cells -> (double) cells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum()
         ));
 
         register(new MetricDescriptor(
             "populationSurvivalRate", "Taux de Survie de la Population", MetricDescriptor.Category.DEMOGRAPHICS, "%",
-            "Pourcentage d'habitants survivants par rapport au pic dÃ©mographique historique.",
+            "Pourcentage d'habitants survivants par rapport au pic démographique historique.",
             cell -> 100.0,
             cells -> 100.0
         ));
 
         register(new MetricDescriptor(
-            "fertilityRate", "Taux de FertilitÃ©", MetricDescriptor.Category.DEMOGRAPHICS, "enf/femme",
-            "Nombre moyen d'enfants par femme en Ã¢ge de procrÃ©er.",
+            "fertilityRate", "Taux de Fertilité", MetricDescriptor.Category.DEMOGRAPHICS, "enf/femme",
+            "Nombre moyen d'enfants par femme en âge de procréer.",
             cell -> cell.getFertility() != null ? cell.getFertility() : 2.1,
             cells -> cells.stream().mapToDouble(c -> c.getFertility() != null ? c.getFertility() : 2.1).average().orElse(2.1)
         ));
 
         register(new MetricDescriptor(
-            "lifeExpectancy", "EspÃ©rance de Vie", MetricDescriptor.Category.DEMOGRAPHICS, "ans",
-            "EspÃ©rance de vie moyenne thÃ©orique et rÃ©sistance immunitaire globale.",
+            "lifeExpectancy", "Espérance de Vie", MetricDescriptor.Category.DEMOGRAPHICS, "ans",
+            "Espérance de vie moyenne théorique et résistance immunitaire globale.",
             cell -> cell.getLifespan() != null ? cell.getLifespan() : 60.0,
             cells -> cells.stream().mapToDouble(c -> c.getLifespan() != null ? c.getLifespan() : 60.0).average().orElse(60.0)
         ));
 
         register(new MetricDescriptor(
-            "educationLevel", "Niveau d'Ã‰ducation", MetricDescriptor.Category.DEMOGRAPHICS, "%",
-            "Part de la population maÃ®trisant les compÃ©tences techniques et l'Ã©criture.",
+            "educationLevel", "Niveau d'Éducation", MetricDescriptor.Category.DEMOGRAPHICS, "%",
+            "Part de la population maîtrisant les compétences techniques et l'écriture.",
             cell -> cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() * 10.0 : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() * 10.0 : 0.0).average().orElse(0.0)
         ));
 
         // --- ðŸ›ï¸ 3. SOCIÃ‰TÃ‰ & INSTITUTIONS ---
         register(new MetricDescriptor(
-            "asabiyyah", "CohÃ©sion sociale (Asabiyyah %)", MetricDescriptor.Category.SOCIETY_POLITICS, "%",
-            "Indice Khaldounien de cohÃ©sion sociale, solidaritÃ© de groupe et sÃ©rÃ©nitÃ©.",
+            "asabiyyah", "Cohésion sociale (Asabiyyah %)", MetricDescriptor.Category.SOCIETY_POLITICS, "%",
+            "Indice Khaldounien de cohésion sociale, solidarité de groupe et sérénité.",
             cell -> 50.0,
             cells -> 50.0
         ));
 
         register(new MetricDescriptor(
             "happiness", "Indice de Bonheur", MetricDescriptor.Category.SOCIETY_POLITICS, "%",
-            "Indice synthÃ©tique de satisfaction de vie et de sÃ©rÃ©nitÃ© sociale.",
+            "Indice synthétique de satisfaction de vie et de sérénité sociale.",
             cell -> cell.getLifespan() != null ? Math.min(100.0, cell.getLifespan() * 1.25) : 50.0,
             cells -> cells.stream().mapToDouble(c -> c.getLifespan() != null ? Math.min(100.0, c.getLifespan() * 1.25) : 50.0).average().orElse(50.0)
         ));
 
         register(new MetricDescriptor(
             "conflict", "Taux de Conflits", MetricDescriptor.Category.SOCIETY_POLITICS, "%",
-            "Taux de friction, violence inter-groupe et opÃ©rations de guerre.",
+            "Taux de friction, violence inter-groupe et opérations de guerre.",
             cell -> cell.getPollutionLevel() != null ? Math.min(100.0, cell.getPollutionLevel()) : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getPollutionLevel() != null ? Math.min(100.0, c.getPollutionLevel()) : 0.0).average().orElse(0.0)
         ));
@@ -205,8 +205,8 @@ public class MetricRegistry {
         ));
 
         register(new MetricDescriptor(
-            "kardashev", "Ã‰chelle de Kardashev", MetricDescriptor.Category.SOCIETY_POLITICS, "Type K",
-            "K = (log10(P_watts) - 6) / 10. Niveau de maÃ®trise Ã©nergÃ©tique globale.",
+            "kardashev", "Échelle de Kardashev", MetricDescriptor.Category.SOCIETY_POLITICS, "Type K",
+            "K = (log10(P_watts) - 6) / 10. Niveau de maîtrise énergétique globale.",
             cell -> 0.0,
             cells -> {
                 double totalEnergyWatts = cells.stream().mapToDouble(c -> c.getEnergySolar() != null ? c.getEnergySolar() * 1e6 : 0.0).sum();
@@ -215,16 +215,16 @@ public class MetricRegistry {
         ));
 
         register(new MetricDescriptor(
-            "institutionalMaturity", "MaturitÃ© Institutionnelle", MetricDescriptor.Category.SOCIETY_POLITICS, "Idx",
-            "DegrÃ© de complexitÃ© administrative et juridique de l'Ã‰tat.",
+            "institutionalMaturity", "Maturité Institutionnelle", MetricDescriptor.Category.SOCIETY_POLITICS, "Idx",
+            "Degré de complexité administrative et juridique de l'État.",
             cell -> cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0).average().orElse(0.0)
         ));
 
-        // --- ðŸ’Ž 4. Ã‰CONOMIE & RICHESSE ---
+        // --- 💎 4. ÉCONOMIE & RICHESSE ---
         register(new MetricDescriptor(
-            "gini", "Indice de Gini (InÃ©galitÃ©)", MetricDescriptor.Category.ECONOMY, "Coeff",
-            "G = A / (A + B). Mesure de concentration des richesses (0 = Ã©galitÃ©, 1 = inÃ©galitÃ© absolue).",
+            "gini", "Indice de Gini (Inégalité)", MetricDescriptor.Category.ECONOMY, "Coeff",
+            "G = A / (A + B). Mesure de concentration des richesses (0 = égalité, 1 = inégalité absolue).",
             cell -> cell.getGiniIndex() != null ? cell.getGiniIndex().doubleValue() : 0.0,
             cells -> {
                 float[] pops = new float[cells.size()];
@@ -238,94 +238,94 @@ public class MetricRegistry {
 
         register(new MetricDescriptor(
             "gdp", "PIB Global (GDP)", MetricDescriptor.Category.ECONOMY, "G$",
-            "Produit IntÃ©rieur Brut total converti en monnaie constante.",
+            "Produit Intérieur Brut total converti en monnaie constante.",
             cell -> cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).sum()
         ));
 
         register(new MetricDescriptor(
-            "builtCapital", "Capital BÃ¢ti & Outillage", MetricDescriptor.Category.ECONOMY, "kg/hab",
+            "builtCapital", "Capital Bâti & Outillage", MetricDescriptor.Category.ECONOMY, "kg/hab",
             "Stock total d'infrastructures physiques et de machines par habitant.",
             cell -> cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0)
         ));
 
-        // --- ðŸ§  5. COGNITION & INFORMATION ---
+        // --- 🧠 5. COGNITION & INFORMATION ---
         register(new MetricDescriptor(
-            "collectiveMemory", "Stock MÃ©moire Collective", MetricDescriptor.Category.COGNITION, "TB",
-            "Volume cumulÃ© des connaissances, donnÃ©es et patrimoines Ã©crits.",
+            "collectiveMemory", "Stock Mémoire Collective", MetricDescriptor.Category.COGNITION, "TB",
+            "Volume cumulé des connaissances, données et patrimoines écrits.",
             cell -> cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0).sum()
         ));
 
         register(new MetricDescriptor(
-            "languageDiversity", "DiversitÃ© Isoglosse & Langues", MetricDescriptor.Category.COGNITION, "Entropie",
-            "DiversitÃ© et rÃ©partition des isoglosses et dialectes parlÃ©s.",
+            "languageDiversity", "Diversité Isoglosse & Langues", MetricDescriptor.Category.COGNITION, "Entropie",
+            "Diversité et répartition des isoglosses et dialectes parlés.",
             cell -> cell.getLinguisticDrift() != null ? cell.getLinguisticDrift() : 1.0,
             cells -> cells.stream().mapToDouble(c -> c.getLinguisticDrift() != null ? c.getLinguisticDrift() : 1.0).average().orElse(1.0)
         ));
 
         // --- â³ 6. CLIODYNAMIQUE & RISQUES SYSTÃ‰MIQUES ---
         register(new MetricDescriptor(
-            "eliteOverproduction", "Surproduction Ã‰litaire (Turchin)", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
-            "Ratio de compÃ©tition pour le pouvoir et d'aspiration des Ã©lites.",
+            "eliteOverproduction", "Surproduction Élitaire (Turchin)", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
+            "Ratio de compétition pour le pouvoir et d'aspiration des élites.",
             cell -> cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getGiniIndex() != null ? c.getGiniIndex() : 0.0).average().orElse(0.0)
         ));
 
         register(new MetricDescriptor(
             "collapseRisk", "Risque d'Effondrement", MetricDescriptor.Category.CLIODYNAMICS, "%",
-            "ProbabilitÃ© mathÃ©matique d'effondrement systÃ©mique ou de crise d'entropie.",
+            "Probabilité mathématique d'effondrement systémique ou de crise d'entropie.",
             cell -> cell.getPollutionLevel() != null ? cell.getPollutionLevel() / 10.0 : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getPollutionLevel() != null ? c.getPollutionLevel() / 10.0 : 0.0).average().orElse(0.0)
         ));
 
         // --- âš™ï¸ 7. COMPLEXITÃ‰ SYSTÃ‰MIQUE & PALÃ‰OLITHIQUE ---
         register(new MetricDescriptor(
-            "systemInterdependence", "InterdÃ©pendance & ComplexitÃ© SystÃ©mique", MetricDescriptor.Category.COMPLEXITY, "%",
-            "Indice d'interconnexion et de fragilitÃ© des chaÃ®nes logistiques.",
+            "systemInterdependence", "Interdépendance & Complexité Systémique", MetricDescriptor.Category.COMPLEXITY, "%",
+            "Indice d'interconnexion et de fragilité des chaînes logistiques.",
             cell -> cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0).average().orElse(0.0)
         ));
 
         register(new MetricDescriptor(
-            "megafaunaIndex", "ðŸ¦£ Abondance MÃ©gafaune", MetricDescriptor.Category.CLIODYNAMICS, "%",
-            "Indice d'abondance relative des grands herbivores prÃ©historiques (Mammouths, Bisons, RhinocÃ©ros laineux).",
+            "megafaunaIndex", "🦣 Abondance Mégafaune", MetricDescriptor.Category.CLIODYNAMICS, "%",
+            "Indice d'abondance relative des grands herbivores préhistoriques (Mammouths, Bisons, Rhinocéros laineux).",
             cell -> 100.0,
             cells -> 100.0
         ));
 
         register(new MetricDescriptor(
             "milankovitchInsolation", "â˜€ï¸ Insolation Milankovitch 65Â°N", MetricDescriptor.Category.CLIODYNAMICS, "W/mÂ²",
-            "Insolation solaire d'Ã©tÃ© aux hautes latitudes nordique gouvernant les cycles d'englaciation et le Sahara Vert.",
+            "Insolation solaire d'été aux hautes latitudes nordique gouvernant les cycles d'englaciation et le Sahara Vert.",
             cell -> 480.0,
             cells -> 480.0
         ));
 
         register(new MetricDescriptor(
             "zeroContainmentScore", "ðŸ›¡ï¸ Confinement BiogÃ©ographique", MetricDescriptor.Category.CLIODYNAMICS, "%",
-            "Respect strict des contraintes d'absence de population humaine dans les amÃ©riques (< -25k BP) et le Sahul (< -50k BP).",
+            "Respect strict des contraintes d'absence de population humaine dans les amériques (< -25k BP) et le Sahul (< -50k BP).",
             cell -> 100.0,
             cells -> 100.0
         ));
 
         register(new MetricDescriptor(
-            "lyapunovExponent", "ðŸŒ€ Exposant de Lyapunov Î»_max", MetricDescriptor.Category.COMPLEXITY, "1/an",
-            "Mesure la divergence exponentielle des trajectoires d'ombre (sensibilitÃ© aux conditions initiales et chaos dÃ©terministe).",
+            "lyapunovExponent", "🌀 Exposant de Lyapunov λ_max", MetricDescriptor.Category.COMPLEXITY, "1/an",
+            "Mesure la divergence exponentielle des trajectoires d'ombre (sensibilité aux conditions initiales et chaos déterministe).",
             cell -> 0.0,
             cells -> 0.0
         ));
 
         register(new MetricDescriptor(
-            "epistemicDiscrepancy", "ðŸ”¬ Ã‰cart Ã‰pistÃ©mique Î©_k", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
-            "Distance quadratique entre la prÃ©diction du modÃ¨le physique et les repÃ¨res empiriques historiques (Seshat, HYDE).",
+            "epistemicDiscrepancy", "🔬 Écart Épistémique Ω_k", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
+            "Distance quadratique entre la prédiction du modèle physique et les repères empiriques historiques (Seshat, HYDE).",
             cell -> 0.0,
             cells -> 0.0
         ));
 
         register(new MetricDescriptor(
-            "psiStressIndex", "âš¡ Stress Politique PSI (Turchin)", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
-            "Indice de tension structurelle-dÃ©mographique : PSI = MMP Â· EMP Â· SF.",
+            "psiStressIndex", "⚡ Stress Politique PSI (Turchin)", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
+            "Indice de tension structurelle-démographique : PSI = MMP · EMP · SF.",
             cell -> cell.getGiniIndex() != null ? cell.getGiniIndex() * 2.0 : 0.0,
             cells -> cells.stream().mapToDouble(c -> c.getGiniIndex() != null ? c.getGiniIndex() * 2.0 : 0.0).average().orElse(0.0)
         ));

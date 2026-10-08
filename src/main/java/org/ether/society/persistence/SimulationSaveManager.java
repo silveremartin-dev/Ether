@@ -168,12 +168,15 @@ public class SimulationSaveManager {
             }
 
             // 5. Save Metadata (metadata.json)
+            int h3Res = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getH3Resolution() : 3;
             SaveMetadata metadata = new SaveMetadata(
                     saveId,
                     saveName,
                     engine.getTimeManager().getCurrentYear(),
                     engine.getTimeManager().getCurrentMonth(),
-                    engine.getCurrentScenario() != null ? engine.getCurrentScenario().getName() : "Unknown"
+                    engine.getCurrentScenario() != null ? engine.getCurrentScenario().getName() : "Unknown",
+                    cells.size(),
+                    h3Res
             );
             objectMapper.writeValue(savePath.resolve(METADATA_FILE).toFile(), metadata);
 
@@ -221,7 +224,19 @@ public class SimulationSaveManager {
 
             logger.info("Loading unified simulation save from: {}", savePath);
 
-            // 1. Restore Metadata & Time
+            // 1. Restore Metadata, Scenario & Time
+            File scenarioFile = savePath.resolve(SCENARIO_FILE).toFile();
+            if (scenarioFile.exists()) {
+                try {
+                    org.ether.society.model.Scenario loadedScenario = objectMapper.readValue(scenarioFile, org.ether.society.model.Scenario.class);
+                    if (loadedScenario != null) {
+                        engine.setCurrentScenario(loadedScenario);
+                    }
+                } catch (Exception ex) {
+                    logger.warn("Could not deserialize scenario.json from save: {}", ex.getMessage());
+                }
+            }
+
             File metaFile = savePath.resolve(METADATA_FILE).toFile();
             if (metaFile.exists()) {
                 SaveMetadata metadata = objectMapper.readValue(metaFile, SaveMetadata.class);
@@ -229,7 +244,8 @@ public class SimulationSaveManager {
                     long totalTicks = 0;
                     if (engine.getCurrentScenario() != null) {
                         long startYear = engine.getCurrentScenario().getStartDateYear();
-                        totalTicks = Math.max(0, (metadata.getYear() - startYear) * 12 + metadata.getMonth());
+                        double dtDays = engine.getCurrentScenario().getTemporalResolutionDays() > 0 ? engine.getCurrentScenario().getTemporalResolutionDays() : 30.0;
+                        totalTicks = Math.max(0, (long) ((metadata.getYear() - startYear) * (365.25 / dtDays) + metadata.getMonth() * (30.0 / dtDays)));
                     }
                     engine.getTimeManager().setTime((int) metadata.getYear(), metadata.getMonth(), 1, totalTicks);
                 }
@@ -386,18 +402,18 @@ public class SimulationSaveManager {
         Path baseSaveDir = getSaveDirectory();
         if (!Files.exists(baseSaveDir)) return list;
 
-        try (Stream<Path> stream = Files.walk(baseSaveDir, 2)) {
-            stream.filter(p -> p.getFileName().toString().equals(METADATA_FILE))
-                    .forEach(jsonFile -> {
-                        try {
-                            SaveMetadata meta = objectMapper.readValue(jsonFile.toFile(), SaveMetadata.class);
-                            if (meta != null && meta.getId() != null) {
-                                boolean exists = list.stream().anyMatch(existing -> existing.getId().equals(meta.getId()));
-                                if (!exists) {
+        try (Stream<Path> stream = Files.list(baseSaveDir)) {
+            stream.filter(Files::isDirectory)
+                    .forEach(dir -> {
+                        Path metaFile = dir.resolve(METADATA_FILE);
+                        if (Files.exists(metaFile)) {
+                            try {
+                                SaveMetadata meta = objectMapper.readValue(metaFile.toFile(), SaveMetadata.class);
+                                if (meta != null && meta.getId() != null) {
                                     list.add(meta);
                                 }
-                            }
-                        } catch (Exception ignored) {}
+                            } catch (Exception ignored) {}
+                        }
                     });
         } catch (IOException e) {
             logger.error("Failed to list saves", e);

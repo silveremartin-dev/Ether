@@ -117,20 +117,21 @@ public class AutoEpochScenarioDialog extends Stage {
         lblPlanet.getStyleClass().add("control-label");
         lblPlanet.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
-        planetSelector.getItems().addAll("earth", "mars", "moon", "venus", "mercury");
+        planetSelector.getItems().clear();
+        for (org.ether.society.generation.PlanetPreset p : org.ether.society.persistence.PresetStorageService.loadAllPlanetPresets()) {
+            String pKey = p.getCanonicalPlanet();
+            if (!planetSelector.getItems().contains(pKey)) {
+                planetSelector.getItems().add(pKey);
+            }
+        }
+        if (planetSelector.getItems().isEmpty()) {
+            planetSelector.getItems().addAll("earth", "mars", "moon", "venus", "mercury", "titan", "super_earth", "eyeball_world", "oceania", "boreas", "archipelago");
+        }
         String pNorm = TemporalMapTensorManager.normalizePlanet(initialPlanetKey);
         planetSelector.setValue(planetSelector.getItems().contains(pNorm) ? pNorm : "earth");
         planetSelector.setCellFactory(lv -> new ListCell<>() {
             @Override
-            /*
-             * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioDialog}.
-             *
-             * @param item the item parameter (String)
-             * @param empty the empty parameter (boolean)
-             */
             protected void updateItem(String item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -206,23 +207,15 @@ public class AutoEpochScenarioDialog extends Stage {
 
         HBox fallbackRow = new HBox(10);
         fallbackRow.setAlignment(Pos.CENTER_LEFT);
-        Label lblFallback = new Label(I18n.getOrDefault("scenario.autodialog.fallback_label", "Stratégie de résolution des dates intermédiaires :"));
+        Label lblFallback = new Label(I18n.getOrDefault("scenario.autodialog.fallback_label", "Stratégie de résolution des dates intermédiaires (Onglet 3) :"));
         lblFallback.getStyleClass().add("control-label");
         lblFallback.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
         fallbackSelector.getItems().addAll(TemporalMapTensorManager.DataFallbackStrategy.values());
-        fallbackSelector.setValue(TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
+        fallbackSelector.setValue(TemporalMapTensorManager.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH);
         fallbackSelector.setCellFactory(lv -> new ListCell<>() {
             @Override
-            /*
-             * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioDialog}.
-             *
-             * @param item the item parameter (TemporalMapTensorManager.DataFallbackStrategy)
-             * @param empty the empty parameter (boolean)
-             */
             protected void updateItem(TemporalMapTensorManager.DataFallbackStrategy item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -236,7 +229,7 @@ public class AutoEpochScenarioDialog extends Stage {
         fallbackSelector.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(fallbackSelector, Priority.ALWAYS);
         fallbackSelector.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.fallback", 
-                "Choisissez comment les calques cartographiques sont résolus en l'absence de données empiriques directes pour l'année exacte.")));
+                "Choisissez comment les calques cartographiques de l'Onglet 3 (démographie et tenseurs culturels) sont résolus en l'absence de données empiriques directes pour l'année exacte.")));
 
         fallbackRow.getChildren().addAll(lblFallback, fallbackSelector);
 
@@ -481,8 +474,9 @@ public class AutoEpochScenarioDialog extends Stage {
         double k0 = AutoEpochScenarioGenerator.estimateCapitalPerCapita(planet, year);
         double e0 = AutoEpochScenarioGenerator.estimateEnergyPerCapita(planet, year);
         String demoFormat = I18n.getOrDefault("scenario.autodialog.demo_preview", 
-                "👥 Onglet 3 (Démographie & Tenseurs) : N₀ = %,d hab. | Capital K₀ = %.1f kg/hab. | Énergie E₀ = %.1f MJ/hab. | 9 tenseurs culturels calibrés.");
-        demoPreviewLabel.setText(String.format(Locale.ROOT, demoFormat, pop, k0, e0));
+                "👥 Onglet 3 (Démographie & Tenseurs) : N₀ = %,d hab. | Capital K₀ = %.1f kg/hab. | Énergie E₀ = %.1f MJ/hab. | Horizon recommandé : %d ans");
+        long horizon = Math.abs(AutoEpochScenarioGenerator.computeRecommendedEndYear(year) - year);
+        demoPreviewLabel.setText(String.format(Locale.ROOT, demoFormat, pop, k0, e0, horizon));
 
         Map<String, Boolean> engines = AutoEpochScenarioGenerator.calibrateTypeBEngines(planet, year);
         long activeCount = engines.values().stream().filter(Boolean::booleanValue).count();
@@ -499,14 +493,15 @@ public class AutoEpochScenarioDialog extends Stage {
 
     // Helper subroutine: get strategy explanation - internal state computation & bounds checking
     private String getStrategyExplanation(TemporalMapTensorManager.DataFallbackStrategy strategy) {
-        if (strategy == null) strategy = TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION;
+        if (strategy == null) strategy = TemporalMapTensorManager.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH;
+        String note = " " + I18n.getOrDefault("scenario.autodialog.tab3_scope_note", "💡 Remarque : Ce réglage s'applique spécifiquement aux calques de l'Onglet 3 (données démographiques initiales et tenseurs culturels).");
         return switch (strategy) {
             case CONTINUOUS_INTERPOLATION -> I18n.getOrDefault("scenario.fallback.interpolation.desc", 
-                    "🔄 Interpolation temporelle continue (Fondu barycentrique) : Effectue un fondu progressif entre les 2 époques empiriques encadrant la date. Idéal pour modéliser des transitions fluides de topographie (montée des eaux, fonte glaciaire) et de climat.");
+                    "🔄 Interpolation temporelle continue (Fondu barycentrique) : Effectue un fondu progressif entre les 2 époques empiriques encadrant la date.") + note;
             case PREVIOUS_EARLIER_EPOCH -> I18n.getOrDefault("scenario.fallback.earlier_epoch.desc", 
-                    "⏮️ Repli conservateur sur l'époque antérieure : Verrouille strictement les données sur l'époque documentée précédente. Prévient tout anachronisme technologique, institutionnel ou géopolitique prématuré.");
+                    "⏮️ Repli conservateur sur l'époque antérieure : Verrouille strictement les données sur l'époque documentée précédente. Prévient tout anachronisme technologique, institutionnel ou géopolitique.") + note;
             case CLOSEST_ANCHOR_EPOCH -> I18n.getOrDefault("scenario.fallback.closest_anchor.desc", 
-                    "🎯 Jalon étalonné le plus proche : Aligne immédiatement l'ensemble des données sur le jalon historique ayant la distance chronologique minimale (|t - t_jalon| min). Idéal pour se baser sur une époque de référence certifiée.");
+                    "🎯 Jalon étalonné le plus proche : Aligne immédiatement l'ensemble des données sur le jalon historique ayant la distance chronologique minimale (|t - t_jalon| min).") + note;
         };
     }
 

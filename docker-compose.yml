@@ -117,7 +117,7 @@ services:
       TICKS: ${TICKS:-500}
       CELLS: ${CELLS:-5000}
       MASTER_PORT: 9090
-      CLUSTER_SECRET: ${CLUSTER_SECRET:-EtherClusterSecret2026}
+      CLUSTER_SECRET: ${CLUSTER_SECRET:-default-cluster-token}
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: ${POSTGRES_DB:-ether_simulation}
@@ -158,7 +158,7 @@ services:
       MODE: worker
       MASTER_HOST: ether-master
       MASTER_PORT: 9090
-      CLUSTER_SECRET: ${CLUSTER_SECRET:-EtherClusterSecret2026}
+      CLUSTER_SECRET: ${CLUSTER_SECRET:-default-cluster-token}
     volumes:
       - ./logs:/app/logs
     depends_on:

@@ -1,10 +1,10 @@
 {
-  "name" : "Civilisations MÃ©soamÃ©ricaines (OlmÃ¨ques & Mayas) (-1500)",
-  "description" : "ðŸŒ½ SCÃ‰NARIO HISTORIQUE : Culture MÃ¨re OlmÃ¨que & CitÃ©s-Ã‰tats Mayas (-1500 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nÃ‰mergence des centres cÃ©rÃ©moniels de San Lorenzo et La Venta, puis essor de la civilisation maya classique. ModÃ©lise la maÃ¯siculture intensive, les rÃ©servoirs d'eau pluviale et l'astronomie de prÃ©cision.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Intensification agricole sur terrasses et chinampas sans bÃªtes de trait ni mÃ©tallurgie du fer.\nâ€¢ CyclicitÃ©s de sÃ©cheresse mÃ©soamÃ©ricaines et rÃ©silience des rÃ©servoirs d'eau (aguadas, chultuns, cÃ©notes).\nâ€¢ Ã‰volution fractale et dispersion des citÃ©s cÃ©rÃ©monielles mayas suivies d'effondrements rÃ©gionaux.\n",
+  "name" : "Civilisations Mésoaméricaines (Olmèques & Mayas) (-1500)",
+  "description" : "\uD83C\uDF3D SCÉNARIO HISTORIQUE : Culture Mère Olmèque & Cités-États Mayas (-1500 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nÉmergence des centres cérémoniels de San Lorenzo et La Venta, puis essor de la civilisation maya classique. Modélise la maïsiculture intensive, les réservoirs d'eau pluviale et l'astronomie de précision.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Intensification agricole sur terrasses et chinampas sans bêtes de trait ni métallurgie du fer.\n• Cyclicités de sécheresse mésoaméricaines et résilience des réservoirs d'eau (aguadas, chultuns, cénotes).\n• Évolution fractale et dispersion des cités cérémonielles mayas suivies d'effondrements régionaux.\n",
   "id" : null,
   "presetKey" : "mesoamerica",
   "planetPreset" : {
-    "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+    "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -47,15 +47,15 @@
     "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-    "associatedEpochYear" : -1900
+    "associatedEpochYear" : -1900,
+    "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
-    "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
-    "planetPresetName" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+    "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
+    "planetPresetName" : "Terre (-1 900 / Âge du Bronze Moyen)",
     "embeddedPlanetPreset" : {
-      "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+      "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
       "resolution" : 4,
       "radiusKm" : 6371.0,
       "dayLengthHours" : 24.0,
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-      "associatedEpochYear" : -1900
+      "associatedEpochYear" : -1900,
+      "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 590.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-    "associatedEpochYear" : -1900
+    "associatedEpochYear" : -1900,
+    "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -188,6 +188,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Hégémonie Olmèque & Urbanisation Mésoaméricaine (-1200)",
-  "displayDescription" : "\uD83C\uDFFA SCÉNARIO HISTORIQUE : Le Cœur Olmèque & L'Urbanisation Mésoaméricaine (-1200 av. J.-C.)\n\nAgriculture de milpa (maïs), monumentalité basaltique, jeu de balle rituel et réseaux de centres cérémoniels dans les terres basses tropicales du Golfe."
+  "displayName" : "Olmec Hegemony & Mesoamerican Urbanization (-1200 BP)",
+  "displayDescription" : "HISTORICAL SCENARIO: Olmec Heartlands & Early Mesoamerican Urbanization (-1200 BC)\n\nMilpa maize agriculture, basalt monumentality, ritual ballgames, and ceremonial center networks across Gulf Coast tropical lowlands."
 }

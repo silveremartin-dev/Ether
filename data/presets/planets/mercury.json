@@ -33,16 +33,16 @@
   "elevationUseImport" : true,
   "elevationMapSource" : "mercury",
   "tempUseImport" : true,
-  "tempSource" : "âšª Mercure â€” MESSENGER MLA Extreme Thermal Model",
+  "tempSource" : "⚪ Mercure — MESSENGER MLA Extreme Thermal Model",
   "tempSeed" : 66766,
   "precipUseImport" : true,
-  "precipSource" : "âšª Mercure â€” MESSENGER Exospheric Vacuum Model",
+  "precipSource" : "⚪ Mercure — MESSENGER Exospheric Vacuum Model",
   "precipSeed" : 67666,
   "seasonUseImport" : true,
-  "seasonSource" : "âšª Mercure â€” 3:2 Spin-Orbit Thermal Variance Model",
+  "seasonSource" : "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model",
   "seasonSeed" : 68666,
   "canonicalPlanet" : "mercury",
-  "tidalLocked" : false,
-  "presetDescription" : "⚪ MERCURE (Hermes) : Monde métallique sans atmosphère proche du Soleil, flux solaire extrême (10 kW/m²), immense noyau ferreux, bassin d'impact Caloris et résonance spin-orbite 3:2.",
-  "associatedEpochYear" : 2026
+  "associatedEpochYear" : 2026,
+  "presetDescription" : "Mercure (Hermes)",
+  "tidalLocked" : false
 }

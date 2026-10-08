@@ -14,7 +14,7 @@
 [CmdletBinding()]
 param(
     [string]$Version,
-    [ValidateSet("all", "windows", "linux", "macos", "all-in-one")]
+    [ValidateSet("all", "windows", "linux", "macos", "all-in-one", "standalone")]
     [string]$Platform = "all",
     [switch]$SkipBuild
 )
@@ -76,7 +76,7 @@ function Copy-RuntimeData {
 
     New-Item -ItemType Directory -Path $DestDataDir -Force | Out-Null
 
-    # Copy events, history, presets
+    # Copy official scenarios, presets, events, and chronicles
     @("events", "history", "presets") | ForEach-Object {
         $Src = Join-Path $RootDir "data\$_"
         if (Test-Path $Src) {
@@ -84,15 +84,30 @@ function Copy-RuntimeData {
         }
     }
 
-    # Copy active ether maps (PNG rasters, JSON provenance, and READMEs)
-    $EtherMapsSrc = Join-Path $RootDir "data\maps\ether"
-    if (Test-Path $EtherMapsSrc) {
-        $EtherMapsDest = Join-Path $DestDataDir "maps\ether"
-        New-Item -ItemType Directory -Path $EtherMapsDest -Force | Out-Null
-        Copy-Item -Path "$EtherMapsSrc\*" -Destination $EtherMapsDest -Recurse -Force
+    # Copy all planetary maps (Mars, Moon, Venus, Mercury)
+    @("mars", "mercury", "moon", "venus") | ForEach-Object {
+        $PlanetSrc = Join-Path $RootDir "data\maps\ether\$_"
+        if (Test-Path $PlanetSrc) {
+            $PlanetDest = Join-Path $DestDataDir "maps\ether\$_"
+            New-Item -ItemType Directory -Path $PlanetDest -Force | Out-Null
+            Copy-Item -Path "$PlanetSrc\*" -Destination $PlanetDest -Recurse -Force
+        }
     }
 
-    # Copy maps metadata
+    # Copy all 36 milestone Earth historical epochs (-100,000 BP to 2060)
+    $Milestones = @("-100000", "-74000", "-50000", "-25000", "-20000", "-10900", "-10000", "-8000", "-6000", "-3000", "-1900", "-1500", "-1200", "-1000", "-334", "-300", "0", "536", "632", "1000", "1206", "1324", "1347", "1491", "1492", "1639", "1800", "1900", "1914", "1950", "2000", "2026", "2035", "2045", "2050", "2060")
+    $EarthDest = Join-Path $DestDataDir "maps\ether\earth"
+    New-Item -ItemType Directory -Path $EarthDest -Force | Out-Null
+    foreach ($m in $Milestones) {
+        $mSrc = Join-Path $RootDir "data\maps\ether\earth\$m"
+        if (Test-Path $mSrc) {
+            $mDest = Join-Path $EarthDest $m
+            New-Item -ItemType Directory -Path $mDest -Force | Out-Null
+            Copy-Item -Path "$mSrc\*" -Destination $mDest -Recurse -Force
+        }
+    }
+
+    # Copy maps metadata and download status
     @("download_status.json", "README.md") | ForEach-Object {
         $MetaSrc = Join-Path $RootDir "data\maps\$_"
         if (Test-Path $MetaSrc) {
@@ -245,8 +260,8 @@ if ($Platform -eq "linux" -or $Platform -eq "all") {
 if ($Platform -eq "macos" -or $Platform -eq "all") {
     Build-Package -PkgName "Ether-v$Version-macos-universal" -Launchers @("linux", "macos") -Formats @("tar.gz", "zip")
 }
-if ($Platform -eq "all-in-one" -or $Platform -eq "all") {
-    Build-Package -PkgName "Ether-v$Version-all-in-one" -Launchers @("windows", "linux", "macos") -Formats @("zip", "tar.gz")
+if ($Platform -eq "standalone" -or $Platform -eq "all-in-one" -or $Platform -eq "all") {
+    Build-Package -PkgName "Ether-v$Version-standalone" -Launchers @("windows", "linux", "macos") -Formats @("zip", "tar.gz")
 }
 
 Write-Host "`n============================================================" -ForegroundColor Cyan

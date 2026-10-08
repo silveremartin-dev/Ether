@@ -156,6 +156,9 @@ public class EtherApp extends Application {
 
                     startAnimationTimer();
                     logger.info("Application started successfully");
+
+                    // Asynchronously synchronize official scenarios, maps, events, and snapshots in background
+                    org.ether.society.data.sync.GitHubContentSyncService.startBackgroundSync();
                 } catch (Exception ex) {
                     logger.error("Error setting up main stage after splash completion", ex);
                 }
@@ -277,6 +280,6 @@ public class EtherApp extends Application {
 
     // Helper subroutine: update texts - internal state computation & bounds checking
     private void updateTexts() {
-        primaryStage.setTitle(I18n.get("app.title"));
+        primaryStage.setTitle(I18n.get("app.title") + " — " + org.ether.society.config.AppVersion.getFullDisplayVersion());
     }
 }

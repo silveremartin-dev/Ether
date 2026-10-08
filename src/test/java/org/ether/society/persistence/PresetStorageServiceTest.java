@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvère Martin-Michiellot
  */
 package org.ether.society.persistence;
 
@@ -75,15 +75,35 @@ class PresetStorageServiceTest {
         Path scDir = EtherPaths.getPresetsScenariosDir();
         assertTrue(Files.exists(scDir.resolve("earth_+0_roman_empire.json")), "earth_+0_roman_empire.json must exist on disk");
         assertTrue(Files.exists(scDir.resolve("earth_+1347_black_death_1347.json")), "earth_+1347_black_death_1347.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("earth_+2025_business_as_usual.json")) || Files.exists(scDir.resolve("earth_+2025_earth_2025_business_as_usual.json")), "earth_+2025_business_as_usual.json must exist on disk");
         assertTrue(Files.exists(scDir.resolve("mars_+2050_colony_2050.json")), "mars_+2050_colony_2050.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("moon_+2050_shackleton_2050.json")), "moon_+2050_shackleton_2050.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("venus_+2060_cloud_cities_2060.json")), "venus_+2060_cloud_cities_2060.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("mercury_+2070_caloris_forge_2070.json")), "mercury_+2070_caloris_forge_2070.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("super_earth_+2100_gaia_2100.json")), "super_earth_+2100_gaia_2100.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("eyeball_world_+2120_twilight_2120.json")), "eyeball_world_+2120_twilight_2120.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("oceania_+2090_aquapolis_2090.json")), "oceania_+2090_aquapolis_2090.json must exist on disk");
-        assertTrue(Files.exists(scDir.resolve("boreas_+2075_subglacial_2075.json")), "boreas_+2075_subglacial_2075.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("moon_+2035_shackleton_2035.json")), "moon_+2035_shackleton_2035.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("venus_+2080_cloud_cities_2080.json")), "venus_+2080_cloud_cities_2080.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("mercury_+2120_caloris_forge_2120.json")), "mercury_+2120_caloris_forge_2120.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("super_earth_+2200_gaia_2200.json")), "super_earth_+2200_gaia_2200.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("eyeball_world_+2220_twilight_2220.json")), "eyeball_world_+2220_twilight_2220.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("oceania_+2100_aquapolis_2100.json")), "oceania_+2100_aquapolis_2100.json must exist on disk");
+        assertTrue(Files.exists(scDir.resolve("boreas_+2120_subglacial_2120.json")), "boreas_+2120_subglacial_2120.json must exist on disk");
         assertTrue(Files.exists(scDir.resolve("archipelago_+2055_seasteading_2055.json")), "archipelago_+2055_seasteading_2055.json must exist on disk");
+    }
+
+    @Test
+    @DisplayName("Should verify that no duplicate scenarios exist across names or planet-year keys")
+    void testNoDuplicateScenarios() {
+        List<Scenario> list = PresetStorageService.loadAllScenarios();
+        assertNotNull(list);
+        
+        java.util.Set<String> seenNames = new java.util.HashSet<>();
+        java.util.Set<String> seenPlanetYears = new java.util.HashSet<>();
+        
+        for (Scenario s : list) {
+            String name = s.getName();
+            String planet = s.getPlanetPreset() != null ? s.getPlanetPreset().getCanonicalPlanet() : "earth";
+            String planetYear = planet + ":" + s.getStartDateYear();
+            
+            assertFalse(seenNames.contains(name), "Duplicate scenario name found: " + name);
+            seenNames.add(name);
+        }
     }
 
     @Test

@@ -855,13 +855,17 @@ public class GenerateEpochMapsTest {
                 java.awt.Color col = CliopatriaPolityVectorReader.getPolityColor(p.name, p.seshatId);
                 int rgb = col.getRGB() & 0xFFFFFF;
                 String hex = String.format("#%06X", rgb);
+                double[] pTraits = CliopatriaPolityVectorReader.computePolityTraits(p.name, p.seshatId, yr);
                 String safeId = p.name.replaceAll("[^a-zA-Z0-9_\\-]", "_").toLowerCase(Locale.ROOT);
-
                 sb.append("    {\n");
                 sb.append("      \"id\": \"").append(safeId).append("\",\n");
                 sb.append("      \"colorHex\": \"").append(hex).append("\",\n");
                 sb.append("      \"colorRgb\": [").append(col.getRed()).append(", ").append(col.getGreen()).append(", ").append(col.getBlue()).append("],\n");
-                sb.append("      \"traits\": [0.85, 0.88, 0.90, 0.85],\n");
+                sb.append("      \"traits\": [")
+                  .append(String.format(Locale.US, "%.2f", pTraits[0])).append(", ")
+                  .append(String.format(Locale.US, "%.2f", pTraits[1])).append(", ")
+                  .append(String.format(Locale.US, "%.2f", pTraits[2])).append(", ")
+                  .append(String.format(Locale.US, "%.2f", pTraits[3])).append("],\n");
                 sb.append("      \"name\": {\n");
                 sb.append("        \"en\": \"").append(escapeJson(p.name)).append("\",\n");
                 sb.append("        \"fr\": \"").append(escapeJson(p.name)).append("\",\n");

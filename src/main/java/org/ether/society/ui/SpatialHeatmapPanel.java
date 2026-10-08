@@ -394,7 +394,6 @@ public class SpatialHeatmapPanel extends VBox {
         btnExportVideo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.export_video", "Exporte l'atlas dynamique et ses couches multicouches au format vidéo / GIF animé haute fidélité.")));
 
         updateRangeLabel();
-        renderMap();
     }
 
     /*

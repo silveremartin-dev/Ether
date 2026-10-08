@@ -33,7 +33,7 @@ import java.util.Optional;
  *   the name field is cleared to signal an unsaved custom state.
  * - The name field is always directly editable (user can type a new name or rename).
  * - Saving uses the text currently in the name field.
- * - Renaming an existing preset: edit the name field + Save â†’ updates the preset name.
+ * - Renaming an existing preset: edit the name field + Save → updates the preset name.
  *
  * @param <T> Preset type
  * @author Silvere Martin-Michiellot
@@ -114,11 +114,11 @@ public class PresetControlBar<T> extends VBox {
         presetLabel = new Label(initialLabelText + ":");
         presetLabel.getStyleClass().add("control-label");
 
-        // --- ComboBox (no default selection â€” starts blank) ---
+        // --- ComboBox (no default selection — starts blank) ---
         presetCombo = new ComboBox<>();
         presetCombo.setMaxWidth(Double.MAX_VALUE);
         presetCombo.setPrefWidth(220);
-        presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "â€” Select a preset â€”"));
+        presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Select a preset —"));
         HBox.setHgrow(presetCombo, Priority.ALWAYS);
 
         presetCombo.setConverter(new StringConverter<T>() {
@@ -148,10 +148,10 @@ public class PresetControlBar<T> extends VBox {
 
         // --- Inline editable name field ---
         nameField = new TextField();
-        nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset nameâ€¦"));
+        nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
         nameField.setMaxWidth(Double.MAX_VALUE);
         nameField.setTooltip(new Tooltip(I18n.getOrDefault("preset.name.tooltip",
-                "Nom du prÃ©rÃ©glage. Modifiez-le librement puis cliquez sur Enregistrer.")));
+                "Nom du préréglage. Modifiez-le librement puis cliquez sur Enregistrer.")));
         HBox.setHgrow(nameField, Priority.ALWAYS);
 
         nameField.textProperty().addListener((obs, old, val) -> {
@@ -372,11 +372,11 @@ public class PresetControlBar<T> extends VBox {
             String current = nameField.getText() != null ? nameField.getText().trim() : "";
             if (presetCombo.getValue() != null) {
                 String presetName = formatPresetItem(presetCombo.getValue());
-                if (!presetName.contains("PersonnalisÃ©") && !presetName.contains("Custom")) {
+                if (!presetName.contains("Personnalisé") && !presetName.contains("Custom")) {
                     presetName = presetName + I18n.getOrDefault("preset.name.custom_suffix", " (Custom)");
                 }
                 nameField.setText(presetName);
-            } else if (!current.contains("PersonnalisÃ©") && !current.equalsIgnoreCase("Custom")) {
+            } else if (!current.contains("Personnalisé") && !current.equalsIgnoreCase("Custom")) {
                 nameField.setText(current.isBlank() ? I18n.getOrDefault("preset.name.custom", "Custom") : current + I18n.getOrDefault("preset.name.custom_suffix", " (Custom)"));
             }
             nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
@@ -400,15 +400,15 @@ public class PresetControlBar<T> extends VBox {
             alert.initOwner(ownerWindow);
         }
 
-        alert.setTitle(I18n.getOrDefault("preset.dialog.unsaved_title", "Modifications non enregistrÃ©es"));
+        alert.setTitle(I18n.getOrDefault("preset.dialog.unsaved_title", "Modifications non enregistrées"));
         String rawName = (presetCombo.getValue() != null) ? formatPresetItem(presetCombo.getValue()) : (nameField.getText() != null ? nameField.getText() : "");
-        String cleanName = rawName.replace("(Custom)", "").replace("(PersonnalisÃ©)", "").trim();
+        String cleanName = rawName.replace("(Custom)", "").replace("(Personnalisé)", "").trim();
         if (cleanName.isBlank()) {
-            cleanName = I18n.getOrDefault("preset.name.custom", "PersonnalisÃ©");
+            cleanName = I18n.getOrDefault("preset.name.custom", "Personnalisé");
         }
         alert.setContentText(I18n.get("preset.dialog.unsaved_content", cleanName));
 
-        ButtonType btnSave = new ButtonType("ðŸ’¾ " + I18n.getOrDefault("preset.save", "Enregistrer"), ButtonBar.ButtonData.YES);
+        ButtonType btnSave = new ButtonType("💾 " + I18n.getOrDefault("preset.save", "Enregistrer"), ButtonBar.ButtonData.YES);
         ButtonType btnDiscard = new ButtonType(I18n.getOrDefault("preset.dialog.discard", "Ignorer"), ButtonBar.ButtonData.NO);
         ButtonType btnCancel = new ButtonType(I18n.getOrDefault("preset.btn.cancel", "Annuler"), ButtonBar.ButtonData.CANCEL_CLOSE);
 
@@ -479,8 +479,8 @@ public class PresetControlBar<T> extends VBox {
      */
     public boolean doSave() {
         String name = nameField.getText().trim();
-        if (name.isBlank() || name.contains("(Custom)") || name.contains("(PersonnalisÃ©)")) {
-            String defaultName = name.isBlank() ? I18n.getOrDefault("preset.dialog.default_name", "My Preset") : name.replace("(Custom)", "").replace("(PersonnalisÃ©)", "").trim();
+        if (name.isBlank() || name.contains("(Custom)") || name.contains("(Personnalisé)")) {
+            String defaultName = name.isBlank() ? I18n.getOrDefault("preset.dialog.default_name", "My Preset") : name.replace("(Custom)", "").replace("(Personnalisé)", "").trim();
             TextInputDialog dialog = new TextInputDialog(defaultName);
             WindowUtils.applyWindowIcon(dialog);
             WindowUtils.styleDialogPane(dialog.getDialogPane());
@@ -513,7 +513,7 @@ public class PresetControlBar<T> extends VBox {
             confirm.setTitle(I18n.getOrDefault("preset.dialog.overwrite_title", "Preset Exists"));
             confirm.setHeaderText(I18n.getOrDefault("preset.dialog.overwrite_header", "Replace existing preset"));
             confirm.setContentText(I18n.getOrDefault("preset.dialog.overwrite_content",
-                    "Un prÃ©rÃ©glage nommÃ© '" + name + "' existe dÃ©jÃ . Voulez-vous l'Ã©craser ?"));
+                    "Un préréglage nommé '" + name + "' existe déjà. Voulez-vous l'écraser ?"));
             Optional<ButtonType> result = confirm.showAndWait();
             if (result.isEmpty() || result.get() != ButtonType.OK) {
                 return false;
@@ -525,7 +525,7 @@ public class PresetControlBar<T> extends VBox {
         if (listener != null) {
             listener.onSavePreset(name);
         }
-        showToast(I18n.getOrDefault("preset.toast.saved", "âœ… Preset saved: ") + name,
+        showToast(I18n.getOrDefault("preset.toast.saved", "✅ Preset saved: ") + name,
                 "-fx-background-color: rgba(16,185,129,0.9);");
         return true;
     }
@@ -534,14 +534,14 @@ public class PresetControlBar<T> extends VBox {
     private void promptDelete() {
         T selected = presetCombo.getValue();
         if (selected == null) {
-            showToast(I18n.getOrDefault("preset.toast.no_selection", "âš ï¸ Select a preset to delete."),
+            showToast(I18n.getOrDefault("preset.toast.no_selection", "⚠️ Select a preset to delete."),
                     "-fx-background-color: rgba(234,179,8,0.9);");
             return;
         }
 
         String name = formatPresetItem(selected);
 
-        toastLabel.setText(I18n.getOrDefault("preset.toast.confirm_delete", "âš ï¸ Supprimer Â« ") + name + " Â» ?");
+        toastLabel.setText(I18n.getOrDefault("preset.toast.confirm_delete", "⚠️ Supprimer « ") + name + " » ?");
         toastLabel.setStyle("-fx-background-color: rgba(239,68,68,0.92); -fx-text-fill: white; -fx-padding: 6 12; -fx-background-radius: 6; -fx-font-size: 12px;");
         toastLabel.setVisible(true);
         toastLabel.setManaged(true);
@@ -568,7 +568,7 @@ public class PresetControlBar<T> extends VBox {
                 presetCombo.getItems().remove(selected);
                 nameField.clear();
                 trackingChanges = false;
-                showToast(I18n.getOrDefault("preset.toast.deleted", "ðŸ—‘ï¸ Preset deleted: ") + name,
+                showToast(I18n.getOrDefault("preset.toast.deleted", "🗑️ Preset deleted: ") + name,
                         "-fx-background-color: rgba(239,68,68,0.85);");
             }
         });
@@ -583,7 +583,7 @@ public class PresetControlBar<T> extends VBox {
     private void promptExport() {
         T selected = presetCombo.getValue();
         if (selected == null) {
-            showToast(I18n.getOrDefault("preset.toast.no_selection", "âš ï¸ Select a preset to export."),
+            showToast(I18n.getOrDefault("preset.toast.no_selection", "⚠️ Select a preset to export."),
                     "-fx-background-color: rgba(234,179,8,0.9);");
             return;
         }
@@ -608,7 +608,7 @@ public class PresetControlBar<T> extends VBox {
         File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null && listener != null) {
             listener.onExportPreset(file, selected);
-            showToast(I18n.getOrDefault("preset.toast.exported", "ðŸ“¤ Exported: ") + file.getName(),
+            showToast(I18n.getOrDefault("preset.toast.exported", "📤 Exported: ") + file.getName(),
                     "-fx-background-color: rgba(16,185,129,0.9);");
         }
     }
@@ -621,7 +621,7 @@ public class PresetControlBar<T> extends VBox {
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null && listener != null) {
             listener.onImportPreset(file);
-            showToast(I18n.getOrDefault("preset.toast.imported", "ðŸ“¥ Imported: ") + file.getName(),
+            showToast(I18n.getOrDefault("preset.toast.imported", "📥 Imported: ") + file.getName(),
                     "-fx-background-color: rgba(16,185,129,0.9);");
         }
     }
@@ -669,12 +669,12 @@ public class PresetControlBar<T> extends VBox {
         if (presetLabel != null && labelKey != null) {
             presetLabel.setText(I18n.getOrDefault(labelKey, defaultLabelText) + ":");
         }
-        if (saveBtn != null) saveBtn.setText("ðŸ’¾ " + I18n.getOrDefault("preset.save", "Enregistrer"));
-        if (deleteBtn != null) deleteBtn.setText("ðŸ—‘ï¸ " + I18n.getOrDefault("preset.delete", "Supprimer"));
-        if (exportBtn != null) exportBtn.setText("ðŸ“¤ " + I18n.getOrDefault("preset.export", "Export"));
-        if (importBtn != null) importBtn.setText("ðŸ“¥ " + I18n.getOrDefault("preset.import", "Import"));
+        if (saveBtn != null) saveBtn.setText("💾 " + I18n.getOrDefault("preset.save", "Enregistrer"));
+        if (deleteBtn != null) deleteBtn.setText("🗑️ " + I18n.getOrDefault("preset.delete", "Supprimer"));
+        if (exportBtn != null) exportBtn.setText("📤 " + I18n.getOrDefault("preset.export", "Export"));
+        if (importBtn != null) importBtn.setText("📥 " + I18n.getOrDefault("preset.import", "Import"));
         if (presetCombo != null) {
-            presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "â€” Select a preset â€”"));
+            presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Select a preset —"));
             presetCombo.setButtonCell(createPresetListCell());
             T cur = presetCombo.getValue();
             if (cur != null) {
@@ -684,7 +684,7 @@ public class PresetControlBar<T> extends VBox {
             }
         }
         if (nameField != null)
-            nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset nameâ€¦"));
+            nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
         updateTooltips();
     }
 
@@ -694,7 +694,7 @@ public class PresetControlBar<T> extends VBox {
         if (presetCombo != null) presetCombo.setTooltip(new Tooltip(
                 I18n.getOrDefault("preset.tooltip.combo", "Select an existing preset")));
         if (nameField != null) nameField.setTooltip(new Tooltip(
-                I18n.getOrDefault("preset.name.tooltip", "Preset name â€” directly editable to name or rename")));
+                I18n.getOrDefault("preset.name.tooltip", "Preset name — directly editable to name or rename")));
         if (saveBtn != null) saveBtn.setTooltip(new Tooltip(
                 I18n.getOrDefault("planet.tooltip.preset_save", "Enregistrer la configuration actuelle sous ce nom")));
         if (deleteBtn != null) deleteBtn.setTooltip(new Tooltip(
@@ -801,7 +801,7 @@ public class PresetControlBar<T> extends VBox {
                     String dateText = getPresetDateText(item);
                     if (dateText != null && !dateText.isBlank()) {
                         nameLabel.setText(formattedName);
-                        dateLabel.setText("ðŸ“… " + dateText);
+                        dateLabel.setText("📅 " + dateText);
                         setGraphic(container);
                         setText(null);
                     } else {

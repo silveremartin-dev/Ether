@@ -1,8 +1,8 @@
 {
-  "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
-  "planetPresetName" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+  "name" : "Terre (-1 000 / Début Âge du Fer)",
+  "planetPresetName" : "Terre (-1 000 / Début Âge du Fer)",
   "embeddedPlanetPreset" : {
-    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -45,9 +45,9 @@
     "seasonSource" : "ðŸŒ Terre (-1000 BP) â€” SaisonnalitÃ©",
     "seasonSeed" : 14344,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-    "associatedEpochYear" : -1000
+    "associatedEpochYear" : -1000,
+    "presetDescription" : "ÔÜö´©Å EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia.",
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 580.0,
   "soilOrganicCarbonGtC" : 1780.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
-  "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-  "associatedEpochYear" : -1000
+  "associatedEpochYear" : -1000,
+  "presetDescription" : "ÔÜö´©Å EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
 }

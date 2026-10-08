@@ -65,7 +65,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         int passCount = 0;
         for (BenchmarkResult r : results) {
             String status = r.passed() ? "âœ… PASSED" : "âŒ FAILED";
-            logger.info(String.format("â€¢ %-36s | %-16s | Res %d | Î”t %3.0fd | r: %6.4f | MAPE: %5.2f%% | Î”R: %5.1f km | %s",
+            logger.info(String.format("• %-36s | %-16s | Res %d | Δt %3.0fd | r: %6.4f | MAPE: %5.2f%% | ΔR: %5.1f km | %s",
                     r.scenarioName(), r.boundaryMode(), r.spatialResolution(), r.timeStepDays(),
                     r.pearsonCorrelation(), r.coreMAPE() * 100, r.centroidShiftKm(), status));
             if (r.passed()) passCount++;
@@ -100,35 +100,35 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         // Compare simulated trajectories against empirical historical ground truth
         List<BenchmarkResult> results = new ArrayList<>();
 
-        // â”€â”€ 1. Boundary Mode Triad Sweep (Fertile Crescent / East-Med -8000 to -7950 BP) â”€â”€
+        // ── 1. Boundary Mode Triad Sweep (Fertile Crescent / East-Med -8000 to -7950 BP) ──
         logger.info(">>> Running Benchmark 1: Boundary Mode Comparison Triad (Reservoir vs Closed vs Toroidal)...");
         results.addAll(runBoundaryModeTriadBenchmark());
 
-        // â”€â”€ 2. Spatial Resolution Sweep (H3 Res 1 to Res 6 Global/Window, and Res 7 Regional Window) â”€â”€
+        // ── 2. Spatial Resolution Sweep (H3 Res 1 to Res 6 Global/Window, and Res 7 Regional Window) ──
         logger.info(">>> Running Benchmark 2: Multi-Resolution Spatial Convergence Sweep (Res 1 to 7)...");
         results.addAll(runSpatialResolutionSweepBenchmark());
 
-        // â”€â”€ 3. Temporal Resolution Sweep (Daily 1d, Weekly 7d, Monthly 30d, Quarterly 90d, Annual 365d) â”€â”€
+        // ── 3. Temporal Resolution Sweep (Daily 1d, Weekly 7d, Monthly 30d, Quarterly 90d, Annual 365d) ──
         logger.info(">>> Running Benchmark 3: Temporal Step Discretization Sweep (1d to 365d)...");
         results.addAll(runTemporalStepSweepBenchmark());
 
-        // â”€â”€ 4. Pre-Columbian Americas (1000 AD to 1491 AD) Continental Isolation â”€â”€
+        // ── 4. Pre-Columbian Americas (1000 AD to 1491 AD) Continental Isolation ──
         logger.info(">>> Running Benchmark 4: Pre-Columbian Americas (1000-1491 AD) Continental Isolation...");
         results.add(runAmericas1491IsolationBenchmark());
 
-        // â”€â”€ 5. Madagascar Island (500 AD to 1000 AD) Maritime vs Insular Isolation â”€â”€
+        // ── 5. Madagascar Island (500 AD to 1000 AD) Maritime vs Insular Isolation ──
         logger.info(">>> Running Benchmark 5: Madagascar Island (500-1000 AD) Maritime Network Isolation...");
         results.add(runMadagascarIslandBenchmark());
 
-        // â”€â”€ 6. Tasmania Island (-10,000 BP to 1800 AD) Extreme Isolation & Technological Threshold â”€â”€
+        // ── 6. Tasmania Island (-10,000 BP to 1800 AD) Extreme Isolation & Technological Threshold ──
         logger.info(">>> Running Benchmark 6: Tasmania Insular Isolation & Tech Dynamics...");
         results.add(runTasmaniaIsolationBenchmark());
 
-        // â”€â”€ 7. Easter Island / Rapa Nui (1200 AD to 1722 AD) Ecological Carrying Capacity Overshoot â”€â”€
+        // ── 7. Easter Island / Rapa Nui (1200 AD to 1722 AD) Ecological Carrying Capacity Overshoot ──
         logger.info(">>> Running Benchmark 7: Easter Island (Rapa Nui) Ecological Overshoot...");
         results.add(runEasterIslandBenchmark());
 
-        // â”€â”€ 8. Medieval Iceland (874 AD to 1400 AD) Subarctic Agricultural Margin & Maritime Connectivity â”€â”€
+        // ── 8. Medieval Iceland (874 AD to 1400 AD) Subarctic Agricultural Margin & Maritime Connectivity ──
         logger.info(">>> Running Benchmark 8: Medieval Iceland Subarctic Margin & Connectivity...");
         results.add(runIcelandBenchmark());
 
@@ -437,7 +437,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         // Compare simulated trajectories against empirical historical ground truth
         List<BenchmarkResult> list = new ArrayList<>();
 
-        // Baseline reference: Monthly Î”t = 30d
+        // Baseline reference: Monthly Δt = 30d
         Scenario refSc = new Scenario();
         refSc.setName("Temporal_Ref_30d");
         refSc.setStartDateYear(-2000);
@@ -993,7 +993,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         sb.append("**Engine**: Ether Physical Historical Simulation Engine\n");
         sb.append("**Target Platforms**: Local Multi-Core & Google Cloud Platform Compute Engine\n\n");
         sb.append("## 1. Multi-Dimensional Benchmark Summary Matrix\n\n");
-        sb.append("| Historical Scenario | Category | Boundary Regime | H3 Res | Time Step Î”t | Pearson r | Core MAPE | Centroid Shift | Reflection Index | Status |\n");
+        sb.append("| Historical Scenario | Category | Boundary Regime | H3 Res | Time Step Δt | Pearson r | Core MAPE | Centroid Shift | Reflection Index | Status |\n");
         sb.append("| :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n");
         for (BenchmarkResult r : results) {
             sb.append(String.format("| %s | %s | %s | %d | %.0fd | **%.4f** | **%.2f%%** | **%.1f km** | **%.2f** | %s |\n",

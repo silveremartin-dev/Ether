@@ -20,8 +20,8 @@ import java.util.List;
  * <p>Models the progressive accumulation of soluble salts ($Na^+$, $Cl^-$, $Ca^{2+}$, $SO_4^{2-}$) in
  * irrigated agricultural topsoils under arid/semi-arid conditions with high potential evapotranspiration (PET):</p>
  * <pre>
- *   d[Salts]/dt = Q_irrigation Â· [Salts]_in - Q_drainage Â· [Salts]_leach - Î³_flush
- *   Yield_Penalty = max(0.20, 1.0 - k_salts Â· [Salts]_soil)
+ *   d[Salts]/dt = Q_irrigation · [Salts]_in - Q_drainage · [Salts]_leach - γ_flush
+ *   Yield_Penalty = max(0.20, 1.0 - k_salts · [Salts]_soil)
  * </pre>
  *
  * <p>Historically documented in Sumerian Mesopotamia (-2400 to -1700 BCE), the Indus Valley,
@@ -65,10 +65,10 @@ public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
     public String getEquationsTooltip() {
         return """
                [Soil Salinization & Irrigation Mass Balance (Jacobsen & Adams 1958, FAO 1985)]
-               â€¢ Mass Balance:       d[Salts]/dt = (Q_irr Â· [Salts]_water) / Depth_rhizosphere - (Q_drain Â· [Salts]_leached)
-               â€¢ Potential Evapo:    PET = 1.6 Â· (10 Â· Temp / I_heat)^a  (Thornthwaite)
-               â€¢ Yield Degradation:  Y(t) = Y_0 Â· max(0.15, 1.0 - 0.08 Â· [Salts_dS/m])
-               â€¢ Crop Substitution:  Wheat -> Barley (Tolerance shift) -> Final Sterilization
+               • Mass Balance:       d[Salts]/dt = (Q_irr · [Salts]_water) / Depth_rhizosphere - (Q_drain · [Salts]_leached)
+               • Potential Evapo:    PET = 1.6 · (10 · Temp / I_heat)^a  (Thornthwaite)
+               • Yield Degradation:  Y(t) = Y_0 · max(0.15, 1.0 - 0.08 · [Salts_dS/m])
+               • Crop Substitution:  Wheat -> Barley (Tolerance shift) -> Final Sterilization
                Ref: T. Jacobsen & R. M. Adams (1958) "Salt and Silt in Ancient Mesopotamian Agriculture", Science 128
                """;
     }
@@ -106,7 +106,7 @@ public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
             double temp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
             double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
-            // Salinization is acute in arid/semi-arid plains and lowlands (Rain < 400mm, Temp > 20Â°C)
+            // Salinization is acute in arid/semi-arid plains and lowlands (Rain < 400mm, Temp > 20°C)
             if (rainfall < 400.0 && temp > 18.0 && elevation < 600.0) {
                 double food = cell.getFoodResource() != null ? cell.getFoodResource() : 1000.0;
                 double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;

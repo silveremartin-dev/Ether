@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvère Martin-Michiellot
  */
 package org.ether.society.persistence;
 
@@ -94,7 +94,7 @@ public final class PresetStorageService {
         return slug.isBlank() ? "preset_" + Math.abs(name.hashCode()) : slug;
     }
 
-    // â”€â”€ Planetary Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Planetary Presets ─────────────────────────────────────────────────────
 
     /*
      * Load all planet presets.
@@ -151,7 +151,7 @@ public final class PresetStorageService {
         return new ArrayList<>(presets.values());
     }
 
-    // â”€â”€ Ecology Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Ecology Presets ───────────────────────────────────────────────────────
 
     /*
      * Load all ecology presets.
@@ -190,7 +190,7 @@ public final class PresetStorageService {
         return new ArrayList<>(presets.values());
     }
 
-    // â”€â”€ Scenario Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Scenario Presets ──────────────────────────────────────────────────────
 
     /*
      * Load all scenarios.
@@ -200,11 +200,24 @@ public final class PresetStorageService {
      */
     public static List<Scenario> loadAllScenarios() {
         Map<String, Scenario> scenarios = new LinkedHashMap<>();
+        java.util.function.Function<Scenario, String> keyExtractor = s -> {
+            String key = s.getPresetKey();
+            if (key == null || key.isBlank()) {
+                key = s.resolvePresetKey();
+            }
+            if (key != null && !key.isBlank()) {
+                String clean = key.toLowerCase(Locale.ROOT).trim();
+                // Strip redundant planet prefix
+                clean = clean.replaceAll("^(earth|mars|moon|venus|mercury|titan|super_earth|eyeball_world|oceania|boreas|archipelago)_+", "");
+                return clean;
+            }
+            return slugify(s.getName());
+        };
 
         // 1. Built-in defaults
         for (Scenario s : Scenario.getBuiltInScenarios()) {
             if (s.getName() != null) {
-                scenarios.put(s.getName(), s);
+                scenarios.put(keyExtractor.apply(s), s);
             }
         }
 
@@ -217,7 +230,7 @@ public final class PresetStorageService {
                             try {
                                 Scenario loaded = mapper.readValue(p.toFile(), Scenario.class);
                                 if (loaded != null && loaded.getName() != null) {
-                                    scenarios.put(loaded.getName(), loaded);
+                                    scenarios.put(keyExtractor.apply(loaded), loaded);
                                 }
                             } catch (Exception e) {
                                 logger.warn("Could not read scenario preset JSON {}: {}", p.getFileName(), e.getMessage());
@@ -237,7 +250,7 @@ public final class PresetStorageService {
                 if (userList != null) {
                     for (Scenario us : userList) {
                         if (us != null && us.getName() != null) {
-                            scenarios.put(us.getName(), us);
+                            scenarios.put(keyExtractor.apply(us), us);
                         }
                     }
                 }
@@ -246,12 +259,20 @@ public final class PresetStorageService {
             }
         }
 
-        List<Scenario> result = new ArrayList<>(scenarios.values());
+        // 4. Secondary deduplication by (Planet + StartYear + Normalized Key)
+        Map<String, Scenario> deduplicated = new LinkedHashMap<>();
+        for (Scenario s : scenarios.values()) {
+            String pName = s.getPlanetPreset() != null ? s.getPlanetPreset().getCanonicalPlanet() : "earth";
+            String dedupKey = pName + ":" + s.getStartDateYear() + ":" + keyExtractor.apply(s);
+            deduplicated.put(dedupKey, s);
+        }
+
+        List<Scenario> result = new ArrayList<>(deduplicated.values());
         result.sort(Comparator.comparingLong(Scenario::getStartDateYear));
         return result;
     }
 
-    // â”€â”€ Factory Presets Disk Synchronization â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Factory Presets Disk Synchronization ─────────────────────────────────
 
     /*
      * Exports all factory presets (planets, ecology, scenarios) to the project data/presets directory
@@ -295,17 +316,18 @@ public final class PresetStorageService {
     public static String getStandardizedScenarioFilename(Scenario s) {
         String planetSlug = "earth";
         if (s.getPlanetPreset() != null && s.getPlanetPreset().name() != null) {
-            String pName = s.getPlanetPreset().name().toLowerCase();
-            if (pName.contains("mars") || pName.contains("ares")) planetSlug = "mars";
+            String pName = s.getPlanetPreset().name().toLowerCase(Locale.ROOT);
+            if (pName.contains("super-terre") || pName.contains("super_earth") || pName.contains("gaia")) planetSlug = "super_earth";
+            else if (pName.contains("mars") || pName.contains("ares")) planetSlug = "mars";
             else if (pName.contains("venus") || pName.contains("vénus") || pName.contains("hesperos")) planetSlug = "venus";
             else if (pName.contains("moon") || pName.contains("lune") || pName.contains("selene")) planetSlug = "moon";
             else if (pName.contains("mercury") || pName.contains("mercure") || pName.contains("hermes")) planetSlug = "mercury";
             else if (pName.contains("titan")) planetSlug = "titan";
-            else if (pName.contains("super-terre") || pName.contains("super_earth") || pName.contains("gaia")) planetSlug = "super_earth";
             else if (pName.contains("synchrone") || pName.contains("eyeball")) planetSlug = "eyeball_world";
             else if (pName.contains("ocean") || pName.contains("océan") || pName.contains("oceania")) planetSlug = "oceania";
-            else if (pName.contains("boreas") || pName.contains("glaciaire")) planetSlug = "boreas";
+            else if (pName.contains("boreas")) planetSlug = "boreas";
             else if (pName.contains("archipel") || pName.contains("archipelago")) planetSlug = "archipelago";
+            else if (pName.contains("terre") || pName.contains("earth") || pName.contains("glaciaire") || pName.contains("interglaciaire")) planetSlug = "earth";
         }
         long startYear = s.getStartDateYear();
         String yearPart = (startYear >= 0 ? "+" + startYear : String.valueOf(startYear));

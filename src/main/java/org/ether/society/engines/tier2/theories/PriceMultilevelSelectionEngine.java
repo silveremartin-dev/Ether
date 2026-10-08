@@ -19,12 +19,12 @@ import java.util.List;
  * <p>Models the evolution of altruistic cooperation, prosocial norms, and military solidarity
  * through between-group vs within-group cultural selection pressures:</p>
  * <pre>
- *   Î”zÌ„ = Cov(w_i, z_i) / wÌ„  +  E[w_i Â· Î”z_i] / wÌ„
+ *   Δz̄ = Cov(w_i, z_i) / w̄  +  E[w_i · Δz_i] / w̄
  * </pre>
  * where:
  * <ul>
- *   <li><b>Cov(w_i, z_i) / wÌ„</b>: Between-group selection term (prosocial/altruistic groups win inter-polity wars).</li>
- *   <li><b>E[w_i Â· Î”z_i] / wÌ„</b>: Within-group individual selection term (free-riders / selfish agents outcompete altruists internally).</li>
+ *   <li><b>Cov(w_i, z_i) / w̄</b>: Between-group selection term (prosocial/altruistic groups win inter-polity wars).</li>
+ *   <li><b>E[w_i · Δz_i] / w̄</b>: Within-group individual selection term (free-riders / selfish agents outcompete altruists internally).</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
@@ -65,11 +65,11 @@ public class PriceMultilevelSelectionEngine implements ProceduralEnginePlugin {
     public String getEquationsTooltip() {
         return """
                [Price Equation Multilevel Selection (Nature 1970)]
-               â€¢ Full Equation:       Î”zÌ„ = [ Cov(w_g, z_g) + E(w_g Â· Î”z_g) ] / wÌ„
-               â€¢ Between-Group Term:  Cov(w_g, z_g) > 0 (Cooperative tribes triumph in inter-polity warfare)
-               â€¢ Within-Group Term:   E(w_g Â· Î”z_g) < 0 (Free-riders exploit altruists internally)
-               â€¢ Evolutionary Stable: Altruism spreads when Between-Group Covariance > Within-Group Defection
-               Units: z [degrÃ© d'altruisme / civisme [0, 1]], w [fitness culturelle / survie dÃ©mographique]
+               • Full Equation:       Δz̄ = [ Cov(w_g, z_g) + E(w_g · Δz_g) ] / w̄
+               • Between-Group Term:  Cov(w_g, z_g) > 0 (Cooperative tribes triumph in inter-polity warfare)
+               • Within-Group Term:   E(w_g · Δz_g) < 0 (Free-riders exploit altruists internally)
+               • Evolutionary Stable: Altruism spreads when Between-Group Covariance > Within-Group Defection
+               Units: z [degré d'altruisme / civisme [0, 1]], w [fitness culturelle / survie démographique]
                Ref: G. R. Price (1970) "Selection and Covariance", Nature; Bowles & Gintis (2011) "A Cooperative Species"
                """;
     }

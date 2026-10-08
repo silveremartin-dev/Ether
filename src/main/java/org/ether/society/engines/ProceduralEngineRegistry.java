@@ -36,7 +36,7 @@ public class ProceduralEngineRegistry {
     public static void registerPlugin(String name, ProceduralEnginePlugin plugin) {
         if (name == null || plugin == null) return;
         registeredPlugins.put(name, plugin);
-        logger.info("ðŸ”Œ Registered custom procedural engine plugin: {}", name);
+        logger.info("🔌 Registered custom procedural engine plugin: {}", name);
     }
 
     /*
@@ -48,7 +48,7 @@ public class ProceduralEngineRegistry {
     public static void unregisterPlugin(String name) {
         if (name != null) {
             registeredPlugins.remove(name);
-            logger.info("ðŸ”Œ Unregistered custom procedural engine plugin: {}", name);
+            logger.info("🔌 Unregistered custom procedural engine plugin: {}", name);
         }
     }
 

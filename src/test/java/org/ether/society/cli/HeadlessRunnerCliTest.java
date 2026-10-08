@@ -169,5 +169,37 @@ public class HeadlessRunnerCliTest {
         assertTrue(config.isStrictDeterminism());
         assertFalse(config.isEnableSparseCellSkipping());
     }
+
+    @Test
+    /*
+     * Test headless execution and snapshot creation for Ramesses II scenario.
+     */
+    public void testHeadlessExecutionRamessesIIScenario() {
+        String[] args = new String[]{
+                "--ticks=5",
+                "--cells=30",
+                "--scenario=ramesses_ii",
+                "--save=Test_Ramesses_II_Snapshot",
+                "--safe",
+                "--no-profile"
+        };
+        assertDoesNotThrow(() -> HeadlessRunner.run(args));
+    }
+
+    @Test
+    /*
+     * Test headless execution and snapshot creation for Earth 2025 Business-As-Usual scenario.
+     */
+    public void testHeadlessExecutionEarth2025BAUScenario() {
+        String[] args = new String[]{
+                "--ticks=5",
+                "--cells=30",
+                "--scenario=business_as_usual",
+                "--save=Test_Earth_2025_BAU_Snapshot",
+                "--safe",
+                "--no-profile"
+        };
+        assertDoesNotThrow(() -> HeadlessRunner.run(args));
+    }
 }
 

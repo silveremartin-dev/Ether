@@ -42,20 +42,20 @@ public class SimulationReportGenerator {
 
         StringBuilder sb = new StringBuilder();
         sb.append("# ðŸŒ Ether - Rapport d'Ã‰valuation Cliodynamique & Thermodynamique\n\n");
-        sb.append("**AnnÃ©e de Simulation :** ").append(year).append("\n");
+        sb.append("**Année de Simulation :** ").append(year).append("\n");
         sb.append("**Nombre de Cellules Actives :** ").append(cells != null ? cells.size() : 0).append("\n\n");
 
         sb.append("--- \n\n");
-        sb.append("## ðŸ“Š Ã‰valuation des 9 Limites PlanÃ©taires\n\n");
+        sb.append("## 📊 Évaluation des 9 Limites Planétaires\n\n");
 
         var boundaries = PlanetaryBoundariesEngine.assessBoundaries(cells);
-        sb.append(String.format("- **ForÃ§age Climatique** : %.1f%%\n", boundaries.climateChangeRisk() * 100));
-        sb.append(String.format("- **IntÃ©gritÃ© de la BiosphÃ¨re** : %.1f%%\n", boundaries.biosphereIntegrityRisk() * 100));
-        sb.append(String.format("- **Ã‰puisement Eau Douce** : %.1f%%\n", boundaries.freshwaterDepletionRisk() * 100));
+        sb.append(String.format("- **Forçage Climatique** : %.1f%%\n", boundaries.climateChangeRisk() * 100));
+        sb.append(String.format("- **Intégrité de la Biosphère** : %.1f%%\n", boundaries.biosphereIntegrityRisk() * 100));
+        sb.append(String.format("- **Épuisement Eau Douce** : %.1f%%\n", boundaries.freshwaterDepletionRisk() * 100));
         sb.append(String.format("- **Cycle N-P-K & Carbone** : %.1f%%\n", boundaries.biogeochemicalNPKRisk() * 100));
-        sb.append(String.format("- **AÃ©rosols StratosphÃ©riques** : %.1f%%\n\n", boundaries.atmosphericAerosolRisk() * 100));
+        sb.append(String.format("- **Aérosols Stratosphériques** : %.1f%%\n\n", boundaries.atmosphericAerosolRisk() * 100));
 
-        sb.append("## ðŸ§  Conseiller Cliodynamique & Alertes Physique\n\n");
+        sb.append("## 🧠 Conseiller Cliodynamique & Alertes Physique\n\n");
         var alerts = CliodynamicAdvisorEngine.generateAdvisorAlerts(cells, year);
         for (var alert : alerts) {
             sb.append("### [").append(alert.severity()).append("] ").append(alert.title()).append("\n");

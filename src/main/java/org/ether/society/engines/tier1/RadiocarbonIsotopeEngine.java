@@ -25,9 +25,9 @@ import java.util.List;
  *     $$t_{\text{BP}} = -\frac{1}{\lambda_{14}} \ln\left(\frac{A}{A_0}\right) = -8033 \ln\left(\frac{A}{A_0}\right)$$
  *   </li>
  *   <li><b>Photosynthetic Fractionation ($\delta^{13}\text{C}$)</b>:
- *     - C3 plants (forest, temperate crops like wheat, rice): $\delta^{13}\text{C} \approx -28\text{ â€°}$.
- *     - C4 plants (savannah grasses, maize, millet, sugarcane): $\delta^{13}\text{C} \approx -12\text{ â€°}$.
- *     - Marine carbon (carbonate, coastal fish): $\delta^{13}\text{C} \approx 0\text{ â€°}$ to $-2\text{ â€°}$.
+ *     - C3 plants (forest, temperate crops like wheat, rice): $\delta^{13}\text{C} \approx -28\text{ ‰}$.
+ *     - C4 plants (savannah grasses, maize, millet, sugarcane): $\delta^{13}\text{C} \approx -12\text{ ‰}$.
+ *     - Marine carbon (carbonate, coastal fish): $\delta^{13}\text{C} \approx 0\text{ ‰}$ to $-2\text{ ‰}$.
  *   </li>
  * </ul>
  *
@@ -40,7 +40,7 @@ public class RadiocarbonIsotopeEngine {
     /* Half-life of Carbon-14 in years */
     public static final double C14_HALF_LIFE_YEARS = 5730.0;
 
-    /* Nuclear decay constant Î»_14 in yrâ»Â¹ */
+    /* Nuclear decay constant λ_14 in yr⁻¹ */
     public static final double LAMBDA_14 = Math.log(2.0) / C14_HALF_LIFE_YEARS; // ~1.20968e-4
 
     /* Mean Libby lifetime in years (8033 yr) */
@@ -75,7 +75,7 @@ public class RadiocarbonIsotopeEngine {
     }
 
     /*
-     * Determines characteristic $\delta^{13}\text{C}$ isotopic signature (in â€° vs VPDB) based on biome and flora.
+     * Determines characteristic $\delta^{13}\text{C}$ isotopic signature (in ‰ vs VPDB) based on biome and flora.
      */
     public static double determineIsotopicSignatureDelta13C(Biome biome) {
         if (biome == null) return -26.0;

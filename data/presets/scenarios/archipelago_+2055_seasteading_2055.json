@@ -47,9 +47,9 @@
     "seasonSource" : "",
     "seasonSeed" : 79777,
     "canonicalPlanet" : "none",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒÅØ´©Å ARCHIPELAGO WORLD: Oceanic world dotted with micro-continents, island chains, and shallow seas. High maritime transport efficiency, low continuous agricultural landmasses, strong naval trade dependencies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Archipel",
@@ -98,9 +98,9 @@
       "seasonSource" : "",
       "seasonSeed" : 79777,
       "canonicalPlanet" : "none",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒÅØ´©Å ARCHIPELAGO WORLD: Oceanic world dotted with micro-continents, island chains, and shallow seas. High maritime transport efficiency, low continuous agricultural landmasses, strong naval trade dependencies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 550.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "none",
-    "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒÅØ´©Å ARCHIPELAGO WORLD: Oceanic world dotted with micro-continents, island chains, and shallow seas. High maritime transport efficiency, low continuous agricultural landmasses, strong naval trade dependencies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -184,5 +184,5 @@
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
   "displayName" : "Archipel : Confédération Océanique & Seasteading Autonome (2055)",
-  "displayDescription" : "\uD83C\uDFDD SCÉNARIO FUTUR : Micro-États Insulaires & Réseaux de Seasteading (2055 ap. J.-C.)\n\nMonde fragmenté en milliers d'atolls tropicaux et de plates-formes artificielles de seasteading reliées par hydroptères solaires et gouvernance polycentrique décentralisée."
+  "displayDescription" : "\uD83C\uDFDD SCÉNARIO FUTUR : Micro-États Insulaires & Réseaux de Seasteading (2055 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nMonde fragmenté en milliers d'atolls tropicaux et de plates-formes artificielles de seasteading reliées par hydroptères solaires et gouvernance polycentrique décentralisée.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Forte résilience institutionnelle décentralisée et innovation polycentrique (théorie d'Elinor Ostrom).\n• Mix énergétique 100% renouvelable combinant énergie houlomotrice, solaire flottant et biocarburants marins.\n• Équilibre écologique entre préservation des récifs coralliens et densité urbaine insulaire.\n"
 }

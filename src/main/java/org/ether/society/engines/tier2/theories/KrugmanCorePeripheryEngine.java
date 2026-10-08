@@ -19,12 +19,12 @@ import java.util.List;
  * <p>Models endogenous industrial clustering driven by increasing returns to scale,
  * Dixit-Stiglitz monopolistic competition, and iceberg transport costs:</p>
  * <pre>
- *   Ï‰_i = [ Î£_j Y_j Â· P_j^(Ïƒ - 1) Â· exp(-Ï„_ij Â· (Ïƒ - 1)) ]^(1 / Ïƒ)
+ *   ω_i = [ Σ_j Y_j · P_j^(σ - 1) · exp(-τ_ij · (σ - 1)) ]^(1 / σ)
  * </pre>
  * where:
  * <ul>
- *   <li><b>Ïƒ > 1</b>: Elasticity of substitution among manufacturing varieties (~4.0).</li>
- *   <li><b>Ï„_ij</b>: Iceberg transport cost between regions $i$ and $j$.</li>
+ *   <li><b>σ > 1</b>: Elasticity of substitution among manufacturing varieties (~4.0).</li>
+ *   <li><b>τ_ij</b>: Iceberg transport cost between regions $i$ and $j$.</li>
  *   <li><b>Centripetal forces</b> (market size effect & thick labor markets) pull capital towards core hubs.</li>
  *   <li><b>Centrifugal forces</b> (immobile agricultural demand & land rent competition) disperse activity.</li>
  * </ul>
@@ -70,10 +70,10 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
     public String getEquationsTooltip() {
         return """
                [Krugman Core-Periphery NEG Formulation (JPE 1991)]
-               â€¢ Nominal Wage Index:  Ï‰_i = [ Î£_j Y_j Â· P_j^(Ïƒ - 1) Â· exp(-Ï„_ij Â· (Ïƒ - 1)) ]^(1 / Ïƒ)
-               â€¢ Price Index:         P_i = [ Î£_j Î»_j Â· (w_j Â· exp(Ï„_ij))^(1 - Ïƒ) ]^(1 / (1 - Ïƒ))
-               â€¢ Manufacturing Share: dÎ»_i/dt = Î³_mob Â· (Ï‰_i / P_i^Î¼ - RealWage_mean) Â· Î»_i
-               Units: Ï‰, w [$/h], P [indice de prix], Ï„ [friction transport iceberg], Ïƒ [Ã©lasticitÃ© CES]
+               • Nominal Wage Index:  ω_i = [ Σ_j Y_j · P_j^(σ - 1) · exp(-τ_ij · (σ - 1)) ]^(1 / σ)
+               • Price Index:         P_i = [ Σ_j λ_j · (w_j · exp(τ_ij))^(1 - σ) ]^(1 / (1 - σ))
+               • Manufacturing Share: dλ_i/dt = γ_mob · (ω_i / P_i^μ - RealWage_mean) · λ_i
+               Units: ω, w [$/h], P [indice de prix], τ [friction transport iceberg], σ [élasticité CES]
                Ref: P. Krugman (1991) "Increasing Returns and Economic Geography", Journal of Political Economy
                """;
     }

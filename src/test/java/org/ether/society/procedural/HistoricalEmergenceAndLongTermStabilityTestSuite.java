@@ -189,7 +189,7 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
      */
     public void testNeolithicAgriculturalRevolutionAndDemographicSurplus() {
         Scenario scenario = new Scenario();
-        scenario.setName("Croissant Fertile & NÃ©olithique (-8000)");
+        scenario.setName("Croissant Fertile & Néolithique (-8000)");
         scenario.setStartDateYear(-8000);
         scenario.setInitialHumanCount(25_000L);
         scenario.setInitialCapitalPerCapita(5.0);

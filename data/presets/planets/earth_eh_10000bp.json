@@ -1,5 +1,5 @@
 {
-  "name" : "Terre (-10 000 / HolocÃ¨ne PrÃ©coce)",
+  "name" : "Terre (-10 000 / Holocène Précoce)",
   "resolution" : 4,
   "radiusKm" : 6371.0,
   "dayLengthHours" : 24.0,
@@ -42,7 +42,7 @@
   "seasonSource" : "ðŸŒ Terre (-10000 BP) â€” SaisonnalitÃ©",
   "seasonSeed" : 14348,
   "canonicalPlanet" : "earth",
-  "tidalLocked" : false,
-  "presetDescription" : "\uD83C\uDF3E TERRE (-10 000 / Holocène Précoce & Révolution Agricole) : Réchauffement post-glaciaire rapide, fonte des calottes continentales, récolte intensive de céréales sauvages au Croissant Fertile et premières domestications de plantes/animaux.",
-  "associatedEpochYear" : -10000
+  "associatedEpochYear" : -10000,
+  "presetDescription" : "­ƒî¥ EARTH (-10,000 BP / Early Holocene & Agriculture): Rapid post-glacial warming, melting continental ice sheets, wild cereal harvesting in the Fertile Crescent, and dawn of plant/animal domestication.",
+  "tidalLocked" : false
 }

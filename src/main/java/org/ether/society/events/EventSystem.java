@@ -11,6 +11,7 @@ import org.ether.society.model.Nation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -350,6 +351,34 @@ public class EventSystem {
         return getRandomLandCell(cells);
     }
 
+    // Helper subroutine: find best populated or land cell near target coordinates
+    private H3Cell findBestPopulatedOrLandCellNear(List<H3Cell> cells, double targetLat, double targetLng) {
+        if (cells == null || cells.isEmpty()) return null;
+
+        // 1. Primary Priority: Land cell with human population
+        H3Cell closestPopulated = null;
+        double minPopDist = Double.MAX_VALUE;
+        for (H3Cell c : cells) {
+            Biome b = c.getBiome();
+            boolean isLand = (b != Biome.OCEAN && b != Biome.DEEP_OCEAN) || (c.getElevation() != null && c.getElevation() > 0);
+            if (isLand && c.getPopulation() != null && c.getPopulation() > 0) {
+                double dLat = c.getLatitude() - targetLat;
+                double dLng = c.getLongitude() - targetLng;
+                double dist = dLat * dLat + dLng * dLng;
+                if (dist < minPopDist) {
+                    minPopDist = dist;
+                    closestPopulated = c;
+                }
+            }
+        }
+        if (closestPopulated != null) {
+            return closestPopulated;
+        }
+
+        // 2. Fallback if world is not yet populated: Closest habitable land cell (never deep ocean)
+        return findBestLandCell(cells, targetLat, targetLng);
+    }
+
     // Helper subroutine: find highest population cell - internal state computation & bounds checking
     private H3Cell findHighestPopulationCell(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return null;
@@ -357,6 +386,44 @@ public class EventSystem {
                 .filter(c -> (c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN) || (c.getElevation() != null && c.getElevation() > 0))
                 .max(java.util.Comparator.comparingInt(c -> c.getPopulation() != null ? c.getPopulation() : 0))
                 .orElse(getRandomLandCell(cells));
+    }
+
+    // Helper subroutine: find best volcanic cell on tectonic plate boundaries and fault lines
+    private H3Cell findBestVolcanicFaultCell(List<H3Cell> cells, double targetLat, double targetLng, boolean nearestToTarget) {
+        if (cells == null || cells.isEmpty()) return null;
+
+        // Volcanoes occur along active tectonic plate faults, subduction zones, and orogenic hotspots
+        List<H3Cell> candidates = cells.stream()
+                .filter(c -> {
+                    boolean isLandOrIsland = (c.getBiome() != Biome.DEEP_OCEAN) && (c.getElevation() != null && c.getElevation() > -100.0);
+                    boolean isRelief = c.getBiome() == Biome.MOUNTAINS || c.getBiome() == Biome.HILLS || (c.getElevation() != null && c.getElevation() > 300.0);
+                    return isLandOrIsland && isRelief;
+                })
+                .toList();
+
+        if (candidates.isEmpty()) {
+            candidates = cells.stream()
+                    .filter(c -> c.getBiome() != Biome.DEEP_OCEAN)
+                    .toList();
+        }
+        if (candidates.isEmpty()) return getRandomLandCell(cells);
+
+        // Score cells based on tectonic geothermal flux (mantleHeatFlow), relief elevation, and coastal subduction arcs
+        return candidates.stream()
+                .max(java.util.Comparator.comparingDouble(c -> {
+                    double heatScore = (c.getMantleHeatFlow() != null ? c.getMantleHeatFlow() : 87.0);
+                    double elevScore = (c.getElevation() != null ? Math.max(0.0, c.getElevation()) : 0.0) / 100.0;
+                    double mountainBonus = (c.getBiome() == Biome.MOUNTAINS) ? 60.0 : (c.getBiome() == Biome.HILLS ? 30.0 : 0.0);
+                    double coastalArcBonus = (c.getIsCoastal() != null && c.getIsCoastal()) ? 25.0 : 0.0;
+                    double distPenalty = 0.0;
+                    if (nearestToTarget) {
+                        double dLat = c.getLatitude() - targetLat;
+                        double dLng = c.getLongitude() - targetLng;
+                        distPenalty = Math.sqrt(dLat * dLat + dLng * dLng) * 3.0;
+                    }
+                    return (heatScore * 1.5) + elevScore + mountainBonus + coastalArcBonus - distPenalty + (random.nextDouble() * 15.0);
+                }))
+                .orElse(candidates.get(0));
     }
 
     /*
@@ -382,14 +449,23 @@ public class EventSystem {
             }
         }
 
-        // 2. Earth Historical Contingency Leaders
+        // 2. Earth Historical Contingency Leaders (snapped to real populated/land cells)
         if (enableEarthHistoricalLeaders) {
             List<HistoricalIntervention> starters = historicalCatalog.getInterventionsStartingInYear(year);
             for (HistoricalIntervention hi : starters) {
                 if (!firedInterventionIds.contains(hi.getId())) {
                     activeInterventions.add(hi);
                     firedInterventionIds.add(hi.getId());
-                    ActiveEvent ae = new ActiveEvent(hi, year, month, 1);
+                    H3Cell snapCell = findBestPopulatedOrLandCellNear(cells, hi.getLatitude(), hi.getLongitude());
+                    double sLat = snapCell != null ? snapCell.getLatitude() : hi.getLatitude();
+                    double sLng = snapCell != null ? snapCell.getLongitude() : hi.getLongitude();
+                    String tagPrefix = hi.getArchetype().isExecutiveLeader() ? "👑 LEADER & DIRIGEANT" : "📜 FIGURE & CHRONIQUE";
+                    ActiveEvent ae = new ActiveEvent(
+                        hi.getId(),
+                        tagPrefix + " [Mag. " + String.format(Locale.ROOT, "%.1f", hi.getMagnitude()) + "] : " + hi.getName() + " (" + hi.getArchetype().getDisplayName() + ")",
+                        "LEADER",
+                        sLat, sLng, year, month, 1, hi.getRadiusKm(), hi.getMagnitude()
+                    );
                     recordSpatialEvent(ae);
                 }
             }
@@ -401,7 +477,13 @@ public class EventSystem {
             if (procLeader != null && !firedInterventionIds.contains(procLeader.getId())) {
                 activeInterventions.add(procLeader);
                 firedInterventionIds.add(procLeader.getId());
-                ActiveEvent ae = new ActiveEvent(procLeader, year, month, 1);
+                String tagPrefix = procLeader.getArchetype().isExecutiveLeader() ? "👑 ÉMERGENCE DIRIGEANT" : "📜 PENSEUR & CHRONIQUE";
+                ActiveEvent ae = new ActiveEvent(
+                    procLeader.getId(),
+                    tagPrefix + " [Mag. " + String.format(Locale.ROOT, "%.1f", procLeader.getMagnitude()) + "] : " + procLeader.getName() + " (" + procLeader.getArchetype().getDisplayName() + ")",
+                    "LEADER",
+                    procLeader.getLatitude(), procLeader.getLongitude(), year, month, 1, procLeader.getRadiusKm(), procLeader.getMagnitude()
+                );
                 recordSpatialEvent(ae);
             }
         }
@@ -591,27 +673,40 @@ public class EventSystem {
         double lat = target != null ? target.getLatitude() : 0.0;
         double lng = target != null ? target.getLongitude() : 0.0;
 
-        // Drought
+        // Drought (Strictly on populated or vegetated land)
         if (year - lastDroughtYear > 20 && random.nextDouble() < 0.005) {
-            recordSpatialEvent(new ActiveEvent("DROUGHT_" + year, "☀️ SÉCHERESSE : Stress hydrique prolongé et assèchement des nappes.", "DROUGHT", lat, lng, year, month, 1, 20.0, 5.5));
+            H3Cell droughtTarget = null;
+            if (cells != null && !cells.isEmpty()) {
+                List<H3Cell> landCrops = cells.stream()
+                        .filter(c -> (c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                                && ((c.getPopulation() != null && c.getPopulation() > 0) || (c.getFoodResource() != null && c.getFoodResource() > 10.0)))
+                        .toList();
+                if (!landCrops.isEmpty()) {
+                    droughtTarget = landCrops.get(random.nextInt(landCrops.size()));
+                }
+            }
+            if (droughtTarget == null) droughtTarget = target;
+            double dLat = droughtTarget != null ? droughtTarget.getLatitude() : lat;
+            double dLng = droughtTarget != null ? droughtTarget.getLongitude() : lng;
+            recordSpatialEvent(new ActiveEvent("DROUGHT_" + year, "☀️ SÉCHERESSE : Stress hydrique prolongé et assèchement des nappes.", "DROUGHT", dLat, dLng, year, month, 1, 20.0, 5.5));
             lastDroughtYear = year;
         }
 
-        // Volcanic eruption
+        // Volcanic eruption (Strictly along active tectonic fault lines & volcanic mountain arcs)
         if (year - lastVolcanoYear > 100 && random.nextDouble() < 0.001) {
-            H3Cell mCell = (cells != null) ? cells.stream().filter(c -> c.getBiome() == Biome.MOUNTAINS || c.getBiome() == Biome.HILLS).findAny().orElse(target) : target;
-            double vLat = mCell != null ? mCell.getLatitude() : lat;
-            double vLng = mCell != null ? mCell.getLongitude() : lng;
-            recordSpatialEvent(new ActiveEvent("VOLCANO_" + year, "🌋 ÉRUPTION VOLCANIQUE : Éjection massive de cendres stratosphériques!", "VOLCANO", vLat, vLng, year, month, 1, 25.0, 8.0));
+            H3Cell vCell = findBestVolcanicFaultCell(cells, lat, lng, false);
+            double vLat = vCell != null ? vCell.getLatitude() : lat;
+            double vLng = vCell != null ? vCell.getLongitude() : lng;
+            recordSpatialEvent(new ActiveEvent("VOLCANO_" + year, "🌋 ÉRUPTION VOLCANIQUE : Éjection massive de cendres le long d'une faille tectonique!", "VOLCANO", vLat, vLng, year, month, 1, 25.0, 8.0));
             lastVolcanoYear = year;
         }
 
-        // Earthquake
+        // Earthquake (Continental landmasses and mountain belts)
         if (random.nextDouble() < 0.002) {
             recordSpatialEvent(new ActiveEvent("EARTHQUAKE_" + year, "🌍 SÉISME / TREMBLEMENT DE TERRE : Secousse cataclysmique locale.", "EARTHQUAKE", lat, lng, year, month, 1, 20.0, 6.8));
         }
 
-        // Flood
+        // Flood (Strictly lowlands, river valleys or floodplains, never ocean)
         if (random.nextDouble() < 0.003) {
             H3Cell floodTarget = null;
             if (cells != null && !cells.isEmpty()) {
@@ -631,6 +726,17 @@ public class EventSystem {
             double fLat = floodTarget != null ? floodTarget.getLatitude() : lat;
             double fLng = floodTarget != null ? floodTarget.getLongitude() : lng;
             recordSpatialEvent(new ActiveEvent("FLOOD_" + year, "🌊 INONDATION / CRUE MAJEURE : Les cours d'eau débordent de leur lit.", "FLOOD", fLat, fLng, year, month, 1, 20.0, 5.2));
+        }
+
+        // Tsunami (Strictly oceanic epicenter or coastal submersion)
+        if (random.nextDouble() < 0.0015 && cells != null && !cells.isEmpty()) {
+            List<H3Cell> coastalOrOcean = cells.stream()
+                    .filter(c -> c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN || (c.getElevation() != null && c.getElevation() <= 50.0))
+                    .toList();
+            if (!coastalOrOcean.isEmpty()) {
+                H3Cell tCell = coastalOrOcean.get(random.nextInt(coastalOrOcean.size()));
+                recordSpatialEvent(new ActiveEvent("TSUNAMI_" + year, "🌊 TSUNAMI / SUBMERSION CÔTIÈRE : Onde océanique déferlante sur les rivages.", "TSUNAMI", tCell.getLatitude(), tCell.getLongitude(), year, month, 1, 25.0, 7.8));
+            }
         }
     }
 

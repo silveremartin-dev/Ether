@@ -1,10 +1,10 @@
 {
-  "name" : "Expansion HellÃ©nistique & Choc d'Alexandre le Grand (-334)",
-  "description" : "âš¡ SCÃ‰NARIO HISTORIQUE : ConquÃªte MacÃ©donienne & Mondialisation HellÃ©nistique (-334 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise l'effondrement foudroyant de l'Empire AchÃ©mÃ©nide sous la phalange macÃ©donienne d'Alexandre. IntÃ©gration d'un corridor urbain et monÃ©taire unifiÃ© de la GrÃ¨ce Ã  l'Indus (fondation d'Alexandries, monÃ©tarisation de l'or perse, koinÃ¨ grecque).\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Vitesse de projection militaire et rÃ©duction spectaculaire de la friction logistique le long des routes royales perses.\nâ€¢ MonÃ©tarisation massive et urbanisation grecque en Orient (Alexandrie, SÃ©leucie, Antioche).\nâ€¢ Fragmentation politique immÃ©diate post-Alexandre (guerres des Diadoques) sans destruction du rÃ©seau urbain commercial.\n",
+  "name" : "Expansion Hellénistique & Choc d'Alexandre le Grand (-334)",
+  "description" : "⚡ SCÉNARIO HISTORIQUE : Conquête Macédonienne & Mondialisation Hellénistique (-334 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'effondrement foudroyant de l'Empire Achéménide sous la phalange macédonienne d'Alexandre. Intégration d'un corridor urbain et monétaire unifié de la Grèce à l'Indus (fondation d'Alexandries, monétarisation de l'or perse, koinè grecque).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse de projection militaire et réduction spectaculaire de la friction logistique le long des routes royales perses.\n• Monétarisation massive et urbanisation grecque en Orient (Alexandrie, Séleucie, Antioche).\n• Fragmentation politique immédiate post-Alexandre (guerres des Diadoques) sans destruction du réseau urbain commercial.\n",
   "id" : null,
   "presetKey" : "alexander_hellenistic_334bc",
   "planetPreset" : {
-    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -47,15 +47,15 @@
     "seasonSource" : "ðŸŒ Terre (-1000 BP) â€” SaisonnalitÃ©",
     "seasonSeed" : 14344,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-    "associatedEpochYear" : -1000
+    "associatedEpochYear" : -1000,
+    "presetDescription" : "ÔÜö´©Å EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
-    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
-    "planetPresetName" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
+    "planetPresetName" : "Terre (-1 000 / Début Âge du Fer)",
     "embeddedPlanetPreset" : {
-      "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+      "name" : "Terre (-1 000 / Début Âge du Fer)",
       "resolution" : 4,
       "radiusKm" : 6371.0,
       "dayLengthHours" : 24.0,
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre (-1000 BP) â€” SaisonnalitÃ©",
       "seasonSeed" : 14344,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-      "associatedEpochYear" : -1000
+      "associatedEpochYear" : -1000,
+      "presetDescription" : "ÔÜö´©Å EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 580.0,
     "soilOrganicCarbonGtC" : 1780.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-    "associatedEpochYear" : -1000
+    "associatedEpochYear" : -1000,
+    "presetDescription" : "ÔÜö´©Å EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -187,6 +187,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Expansion HellÃ©nistique & Choc d'Alexandre le Grand (-334)",
-  "displayDescription" : "âš¡ SCÃ‰NARIO HISTORIQUE : ConquÃªte MacÃ©donienne & Mondialisation HellÃ©nistique (-334 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise l'effondrement foudroyant de l'Empire AchÃ©mÃ©nide sous la phalange macÃ©donienne d'Alexandre. IntÃ©gration d'un corridor urbain et monÃ©taire unifiÃ© de la GrÃ¨ce Ã  l'Indus (fondation d'Alexandries, monÃ©tarisation de l'or perse, koinÃ¨ grecque).\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Vitesse de projection militaire et rÃ©duction spectaculaire de la friction logistique le long des routes royales perses.\nâ€¢ MonÃ©tarisation massive et urbanisation grecque en Orient (Alexandrie, SÃ©leucie, Antioche).\nâ€¢ Fragmentation politique immÃ©diate post-Alexandre (guerres des Diadoques) sans destruction du rÃ©seau urbain commercial.\n"
+  "displayName" : "Expansion Hellénistique & Choc d'Alexandre le Grand (-334)",
+  "displayDescription" : "⚡ SCÉNARIO HISTORIQUE : Conquête Macédonienne & Mondialisation Hellénistique (-334 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'effondrement foudroyant de l'Empire Achéménide sous la phalange macédonienne d'Alexandre. Intégration d'un corridor urbain et monétaire unifié de la Grèce à l'Indus (fondation d'Alexandries, monétarisation de l'or perse, koinè grecque).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse de projection militaire et réduction spectaculaire de la friction logistique le long des routes royales perses.\n• Monétarisation massive et urbanisation grecque en Orient (Alexandrie, Séleucie, Antioche).\n• Fragmentation politique immédiate post-Alexandre (guerres des Diadoques) sans destruction du réseau urbain commercial.\n"
 }

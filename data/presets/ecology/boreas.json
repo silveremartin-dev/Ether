@@ -45,9 +45,9 @@
     "seasonSource" : "",
     "seasonSeed" : 13111,
     "canonicalPlanet" : "none",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
-    "associatedEpochYear" : -20000
+    "associatedEpochYear" : -20000,
+    "presetDescription" : "­ƒºè ICE WORLD (Boreas): Deep snowball planet locked in runaway glaciation. Global ice sheets, cryogenic oceans under thick pack ice, high albedo (0.65), and severe biological productivity constraints.",
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 30.0,
   "soilOrganicCarbonGtC" : 150.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "none",
-  "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
-  "associatedEpochYear" : -20000
+  "associatedEpochYear" : -20000,
+  "presetDescription" : "­ƒºè ICE WORLD (Boreas): Deep snowball planet locked in runaway glaciation. Global ice sheets, cryogenic oceans under thick pack ice, high albedo (0.65), and severe biological productivity constraints."
 }

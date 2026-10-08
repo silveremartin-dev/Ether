@@ -32,12 +32,12 @@ public class AutoEpochScenarioGenerator {
 
     public static final List<EpochMilestone> EARTH_KEY_MILESTONES = List.of(
             new EpochMilestone(-100000L, "epoch.name.out_of_africa", "ðŸŒ Out of Africa (-100k BP)", "epoch.desc.out_of_africa", "Early Sapiens migration across the Old World, hunter-gatherer bands, megafauna interactions."),
-            new EpochMilestone(-74000L, "epoch.name.toba", "ðŸŒ‹ Toba Bottleneck (-74k BP)", "epoch.desc.toba", "Supervolcano eruption, volcanic winter, demographic bottleneck & coastal refugia."),
-            new EpochMilestone(-50000L, "epoch.name.sahul", "ðŸ¦˜ Sahul Colonization (-50k BP)", "epoch.desc.sahul", "Wallace line crossing, colonization of Australia & megafaunal extinctions."),
+            new EpochMilestone(-74000L, "epoch.name.toba", "🌋 Toba Bottleneck (-74k BP)", "epoch.desc.toba", "Supervolcano eruption, volcanic winter, demographic bottleneck & coastal refugia."),
+            new EpochMilestone(-50000L, "epoch.name.sahul", "🦘 Sahul Colonization (-50k BP)", "epoch.desc.sahul", "Wallace line crossing, colonization of Australia & megafaunal extinctions."),
             new EpochMilestone(-20000L, "epoch.name.lgm", "â„ï¸ Last Glacial Maximum (-20k BP)", "epoch.desc.lgm", "LGM peak, sea level at -120m, Mammoth steppe, Beringia land bridge."),
             new EpochMilestone(-10900L, "epoch.name.younger_dryas", "â„ï¸ Younger Dryas (-10.9k BP)", "epoch.desc.younger_dryas", "Abrupt cold snap in the Northern Hemisphere, Natufian broad-spectrum foraging pressure."),
-            new EpochMilestone(-8000L, "epoch.name.neolithic", "ðŸŒ¾ Neolithic Revolution (-8k BP)", "epoch.desc.neolithic", "Early agriculture in Fertile Crescent, animal domestication, permanent hamlets."),
-            new EpochMilestone(-6000L, "epoch.name.green_sahara", "ðŸŒ´ Green Sahara (-6k BP)", "epoch.desc.green_sahara", "African Humid Period, Mega-Chad lake, pastoral nomadism across green savannas."),
+            new EpochMilestone(-8000L, "epoch.name.neolithic", "🌾 Neolithic Revolution (-8k BP)", "epoch.desc.neolithic", "Early agriculture in Fertile Crescent, animal domestication, permanent hamlets."),
+            new EpochMilestone(-6000L, "epoch.name.green_sahara", "🌴 Green Sahara (-6k BP)", "epoch.desc.green_sahara", "African Humid Period, Mega-Chad lake, pastoral nomadism across green savannas."),
             new EpochMilestone(-3000L, "epoch.name.bronze_age", "ðŸ›ï¸ Bronze Age (-3k BP)", "epoch.desc.bronze_age", "First urban civilizations, early metallurgy, irrigation canals, writing."),
             new EpochMilestone(-1200L, "epoch.name.bronze_collapse", "âš”ï¸ Bronze Age Collapse (-1.2k BP)", "epoch.desc.bronze_collapse", "Eastern Mediterranean systemic breakdown, Sea Peoples, trade disruptions."),
             new EpochMilestone(-1000L, "epoch.name.iron_age", "ðŸ›¡ï¸ Iron Age (-1k BP)", "epoch.desc.iron_age", "Widespread iron smelting, Phoenician and Greek Mediterranean trade colonies."),
@@ -45,11 +45,11 @@ public class AutoEpochScenarioGenerator {
             new EpochMilestone(536L, "epoch.name.late_antique_ice", "â„ï¸ Volcanic Winter (536 AD)", "epoch.desc.late_antique_ice", "Late Antique Little Ice Age, crop failures, Justinian Plague, nomadic migrations."),
             new EpochMilestone(1000L, "epoch.name.medieval_optimum", "ðŸ‰ Song Dynasty & Medieval (1000 AD)", "epoch.desc.medieval_optimum", "Medieval Climate Anomaly, Song proto-industrialization, trans-Eurasian trade."),
             new EpochMilestone(1347L, "epoch.name.black_death", "â˜ ï¸ Black Death (1347 AD)", "epoch.desc.black_death", "Yersinia pestis pandemic, labor shortages, demographic reset, peasant wage shocks."),
-            new EpochMilestone(1492L, "epoch.name.columbian_exchange", "â›µ Columbian Exchange (1492 AD)", "epoch.desc.columbian_exchange", "Global oceanic trade networks, trans-Atlantic crop and pathogen exchange."),
+            new EpochMilestone(1492L, "epoch.name.columbian_exchange", "⛵ Columbian Exchange (1492 AD)", "epoch.desc.columbian_exchange", "Global oceanic trade networks, trans-Atlantic crop and pathogen exchange."),
             new EpochMilestone(1800L, "epoch.name.industrial_rev", "âš™ï¸ Industrial Revolution (1800 AD)", "epoch.desc.industrial_rev", "Steam power, coal extraction, demographic transition, fossil energy regime."),
-            new EpochMilestone(1950L, "epoch.name.great_acceleration", "ðŸš€ Great Acceleration (1950 AD)", "epoch.desc.great_acceleration", "Global hydrocarbon exploitation, deep aquifer pumping, exponential demographic boom."),
+            new EpochMilestone(1950L, "epoch.name.great_acceleration", "🚀 Great Acceleration (1950 AD)", "epoch.desc.great_acceleration", "Global hydrocarbon exploitation, deep aquifer pumping, exponential demographic boom."),
             new EpochMilestone(2026L, "epoch.name.modern_baseline", "ðŸŒ Anthropocene Baseline (2026 AD)", "epoch.desc.modern_baseline", "Present-day empirical satellite baseline, global trade networks, energy transition."),
-            new EpochMilestone(2050L, "epoch.name.mid_century", "ðŸ¤– Energy & Demographics (2050 AD)", "epoch.desc.mid_century", "Demographic stabilization, post-fossil transition, resource circularity.")
+            new EpochMilestone(2050L, "epoch.name.mid_century", "🤖 Energy & Demographics (2050 AD)", "epoch.desc.mid_century", "Demographic stabilization, post-fossil transition, resource circularity.")
     );
 
     /*
@@ -133,16 +133,16 @@ public class AutoEpochScenarioGenerator {
         s.setCultureVectorDimensions(9);
 
         if (isEarth) {
-            s.setPopulationDensityType("IMPORT_CUSTOM");
+            s.setPopulationDensityType(s.getCustomDensityBase64() != null ? "IMPORT_CUSTOM" : "UNBIASED_NATURAL");
         } else {
             s.setPopulationDensityType("PROCEDURAL");
-            // Set all tensors to procedural for extraterrestrial planets
-            List<Boolean> procModes = new ArrayList<>();
-            for (int i = 0; i < 9; i++) {
-                procModes.add(true);
-            }
-            s.setTensorProceduralModes(procModes);
         }
+        // Set all tensors to procedural by default
+        List<Boolean> procModes = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            procModes.add(true);
+        }
+        s.setTensorProceduralModes(procModes);
 
         // 6. Type B Optional Engine State Calibration
         Map<String, Boolean> typeBStates = calibrateTypeBEngines(pKey, targetYear);
@@ -525,7 +525,7 @@ public class AutoEpochScenarioGenerator {
         if (year < 0) {
             return Math.abs(year) + " BP (" + Math.abs(year) + " av. J.-C.)";
         } else if (year == 0) {
-            return "0 AD (An 0 / AntiquitÃ©)";
+            return "0 AD (An 0 / Antiquité)";
         } else {
             return year + " AD (" + year + " ap. J.-C.)";
         }
@@ -536,17 +536,17 @@ public class AutoEpochScenarioGenerator {
         return String.format(Locale.ROOT, """
             ðŸŒ SCÃ‰NARIO AUTOMATIQUE D'Ã‰POQUE : %s â€” %s
             
-            [PARAMÃ‰TRAGE SCIENTIFIQUE & GÃ‰OPHYSIQUE (TIER 1)]
-            â€¢ PlanÃ¨te cible : %s
-            â€¢ AnnÃ©e de dÃ©part : %s (Horizon temporel recommandÃ© : %d ans)
-            â€¢ Population mondiale estimÃ©e Nâ‚€ : %,d habitants
-            â€¢ Capital physique Kâ‚€ : %.1f kg/habitant
-            â€¢ Ã‰nergie stockÃ©e Eâ‚€ : %.1f MJ/habitant
+            [PARAMÉTRAGE SCIENTIFIQUE & GÉOPHYSIQUE (TIER 1)]
+            • Planète cible : %s
+            • Année de départ : %s (Horizon temporel recommandé : %d ans)
+            • Population mondiale estimée N₀ : %,d habitants
+            • Capital physique K₀ : %.1f kg/habitant
+            • Énergie stockée E₀ : %.1f MJ/habitant
             
             [SYNCHRONISATION INTER-ONGLETS]
-            â€¢ Onglet 1 (PlanÃ¨te) : ModÃ¨le numÃ©rique d'Ã©lÃ©vation, biomes et palÃ©oclimat de l'Ã©poque %s.
-            â€¢ Onglet 2 (Ressources) : Nappes phrÃ©atiques, minerais et rÃ©serves vierges prÃ©-industrielles.
-            â€¢ Onglet 3 (SociÃ©tÃ© & Moteurs) : Filtrage des modules de Type B adaptÃ©s Ã  la pÃ©riode.
+            • Onglet 1 (Planète) : Modèle numérique d'élévation, biomes et paléoclimat de l'époque %s.
+            • Onglet 2 (Ressources) : Nappes phréatiques, minerais et réserves vierges pré-industrielles.
+            • Onglet 3 (Société & Moteurs) : Filtrage des modules de Type B adaptés à la période.
             """,
                 capitalize(planet), epochLabel, capitalize(planet), epochLabel,
                 computeRecommendedEndYear(year) - year, estimatePopulation(planet, year),

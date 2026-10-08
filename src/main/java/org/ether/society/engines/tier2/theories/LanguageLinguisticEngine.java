@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Language, Cultural Isolation & Linguistic Diffusion Engine.
  * Dynamic simulation models:
- * 1. <b>Isolat Culturel / InsularitÃ© (Cultural Isolation like Japan/Sakoku)</b>: Island & geographically isolated
+ * 1. <b>Isolat Culturel / Insularité (Cultural Isolation like Japan/Sakoku)</b>: Island & geographically isolated
  *    territories develop high internal cultural cohesion, preserving unique linguistic groups and resisting
  *    foreign assimilation and uncontrolled immigration.
  * 2. <b>Linguistic Divergence & Dialect Speciation</b>: High terrain friction accelerates local dialect formation.

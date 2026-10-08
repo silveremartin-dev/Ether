@@ -66,11 +66,11 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
     public String getEquationsTooltip() {
         return """
                [Draft Animal Energetics & Fodder Trade-Off (Smil 2017, Wrigley 2010)]
-               â€¢ Mechanical Power:   P_draft = N_animals Â· 600 Watts
-               â€¢ Work Multiplier:    Productivity_agri = Baseline Â· (1.0 + 0.45 Â· Animal_Labor_Ratio)
-               â€¢ Fodder Competition: Area_fodder = N_animals Â· (1.2 ha/horse)
-               â€¢ Net Caloric Yield:  Food_net = Food_gross Â· (1.0 - 0.22 Â· Animal_Density_Share)
-               â€¢ Motor Transition:   Tech > 4.5 (Internal Combustion) -> Fodder Land Freed (+25% Food)
+               • Mechanical Power:   P_draft = N_animals · 600 Watts
+               • Work Multiplier:    Productivity_agri = Baseline · (1.0 + 0.45 · Animal_Labor_Ratio)
+               • Fodder Competition: Area_fodder = N_animals · (1.2 ha/horse)
+               • Net Caloric Yield:  Food_net = Food_gross · (1.0 - 0.22 · Animal_Density_Share)
+               • Motor Transition:   Tech > 4.5 (Internal Combustion) -> Fodder Land Freed (+25% Food)
                Ref: V. Smil (2017) "Energy and Civilization: A History", MIT Press
                """;
     }

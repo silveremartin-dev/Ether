@@ -3,7 +3,7 @@
   "planetPresetName" : "Vénus (Hesperos)",
   "embeddedPlanetPreset" : {
     "name" : "Vénus (Hesperos)",
-    "resolution" : 3,
+    "resolution" : 4,
     "radiusKm" : 6051.8,
     "dayLengthHours" : 2802.0,
     "axialTiltDegrees" : 177.3,
@@ -44,10 +44,10 @@
     "seasonUseImport" : true,
     "seasonSource" : "\uD83D\uDFE1 Vénus — Super-Rotation Low Variance Model",
     "seasonSeed" : 57555,
+    "canonicalPlanet" : "venus",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
-    "tidalLocked" : false,
-    "canonicalPlanet" : "venus"
+    "presetDescription" : "­ƒƒí VENUS (Hesperos): Runaway greenhouse hellscape with 92 atm COÔéé atmosphere, 465┬░C surface temperature, sulfuric acid clouds, active basaltic volcanism, and complete absence of liquid water.",
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 0.0,
   "soilOrganicCarbonGtC" : 0.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
+  "canonicalPlanet" : "venus",
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
-  "canonicalPlanet" : "venus"
+  "presetDescription" : "­ƒƒí VENUS (Hesperos): Runaway greenhouse hellscape with 92 atm COÔéé atmosphere, 465┬░C surface temperature, sulfuric acid clouds, active basaltic volcanism, and complete absence of liquid water."
 }

@@ -66,7 +66,7 @@ public class HeadlessRunner {
      */
     public static void run(String[] args) {
         System.out.println("================================================================================");
-        System.out.println("           ETHER PLANETARY SIMULATION ENGINE â€” HIGH-PERFORMANCE CLI             ");
+        System.out.println("           ETHER PLANETARY SIMULATION ENGINE — HIGH-PERFORMANCE CLI             ");
         System.out.println("================================================================================");
 
         int ticksToRun = 300;
@@ -87,7 +87,7 @@ public class HeadlessRunner {
         ClusterManager.PartitionStrategy partitionStrategy = ClusterManager.PartitionStrategy.HILBERT;
         String masterHost = "127.0.0.1";
         int port = 9090;
-        String secretToken = "EtherClusterSecret2026";
+        String secretToken = System.getenv("ETHER_CLUSTER_SECRET") != null ? System.getenv("ETHER_CLUSTER_SECRET") : "default-cluster-token";
         int syncInterval = 5;
         long barrierTimeoutMs = 3000;
         int heartbeatIntervalSec = 2;
@@ -458,7 +458,32 @@ public class HeadlessRunner {
                 }
             }
 
-            // 3. Check StartDatePreset by enum key or full descriptive display name
+            // 3. Check JSON Preset Storage
+            if (!matched) {
+                for (Scenario jsonPreset : org.ether.society.persistence.PresetStorageService.loadAllScenarios()) {
+                    if ((jsonPreset.getPresetKey() != null && jsonPreset.getPresetKey().equalsIgnoreCase(scenarioName))
+                            || (jsonPreset.getName() != null && jsonPreset.getName().equalsIgnoreCase(scenarioName))
+                            || (jsonPreset.getPresetKey() != null && scenarioName.toLowerCase().contains(jsonPreset.getPresetKey().toLowerCase()))) {
+                        scenario.setStartDateYear(jsonPreset.getStartDateYear());
+                        scenario.setEndDateYear(jsonPreset.getEndDateYear());
+                        scenario.setInitialHumanCount(jsonPreset.getInitialHumanCount());
+                        scenario.setInitialCapitalPerCapita(jsonPreset.getInitialCapitalPerCapita());
+                        scenario.setInitialEnergyPerCapita(jsonPreset.getInitialEnergyPerCapita());
+                        scenario.setInitialTechLevel(jsonPreset.getInitialTechLevel());
+                        scenario.setTemporalResolutionDays(jsonPreset.getTemporalResolutionDays());
+                        scenario.setName(jsonPreset.getName());
+                        scenario.setDescription(jsonPreset.getDescription());
+                        scenario.setPlanetPreset(jsonPreset.getPlanetPreset());
+                        scenario.setPresetKey(jsonPreset.getPresetKey());
+                        logger.info("Matched JSON Scenario Preset: '{}' (Years {} -> {}, Initial Pop: {})",
+                                jsonPreset.getName(), jsonPreset.getStartDateYear(), jsonPreset.getEndDateYear(), jsonPreset.getInitialHumanCount());
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+
+            // 4. Check StartDatePreset by enum key or full descriptive display name
             if (!matched) {
                 for (org.ether.society.model.StartDatePreset preset : org.ether.society.model.StartDatePreset.values()) {
                     if (preset.name().equalsIgnoreCase(scenarioName)
@@ -527,31 +552,31 @@ public class HeadlessRunner {
                         ticksToRun, scenario.getStartDateYear(), scenario.getEndDateYear());
             }
 
-            System.out.println("ðŸ”§ Configuration Summary:");
+            System.out.println("🔧 Configuration Summary:");
             System.out.printf("   [Tab 4: Execution Context & Infrastructure]\n");
-            System.out.printf("   â€¢ Engine Backend      : %s\n", engineMode);
-            System.out.printf("   â€¢ Threading Mode      : %s (%d worker threads)\n", isSingleCore ? "Single-Core (MonocÅ“ur)" : "Multi-Core (MulticÅ“ur)", threadCount);
-            System.out.printf("   â€¢ Topology Mode       : %s\n", isClusterMode ? "Distributed Cluster (" + clusterRole + ")" : "Local Standalone");
+            System.out.printf("   • Engine Backend      : %s\n", engineMode);
+            System.out.printf("   • Threading Mode      : %s (%d worker threads)\n", isSingleCore ? "Single-Core (Monocœur)" : "Multi-Core (Multicœur)", threadCount);
+            System.out.printf("   • Topology Mode       : %s\n", isClusterMode ? "Distributed Cluster (" + clusterRole + ")" : "Local Standalone");
             if (isClusterMode) {
-                System.out.printf("   â€¢ Cluster Connection  : %s:%d (Secret Token: %s)\n", masterHost, port, secretToken.replaceAll(".", "*"));
-                System.out.printf("   â€¢ Partition Strategy  : %s (Sync Interval: %d ticks, Barrier Timeout: %d ms)\n", partitionStrategy, syncInterval, barrierTimeoutMs);
+                System.out.printf("   • Cluster Connection  : %s:%d (Secret Token: %s)\n", masterHost, port, secretToken.replaceAll(".", "*"));
+                System.out.printf("   • Partition Strategy  : %s (Sync Interval: %d ticks, Barrier Timeout: %d ms)\n", partitionStrategy, syncInterval, barrierTimeoutMs);
                 if (clusterRole == ClusterManager.ClusterRole.WORKER) {
-                    System.out.printf("   â€¢ Worker Node ID      : %s (Capacity: %s, GPU Offload: %s)\n",
+                    System.out.printf("   • Worker Node ID      : %s (Capacity: %s, GPU Offload: %s)\n",
                             workerNodeId != null ? workerNodeId : "Auto-Generated", workerCapacity, workerGpuEnabled ? "ENABLED" : "DISABLED");
                 }
                 if (snapshotsEnabled) {
-                    System.out.printf("   â€¢ Snapshot Cadence    : Every %d ticks -> %s (max retained: %d)\n", snapshotIntervalTicks, snapshotDir, maxSnapshots);
+                    System.out.printf("   • Snapshot Cadence    : Every %d ticks -> %s (max retained: %d)\n", snapshotIntervalTicks, snapshotDir, maxSnapshots);
                 }
             }
             System.out.printf("\n   [Tab 3: Scenario Determinism & Approximations]\n");
-            System.out.printf("   â€¢ Strict Determinism  : %s\n", effectivePerfConfig.isStrictDeterminism() ? "ON (Tier 1 Bit-Identical Physics)" : "OFF (Heuristic Shortcuts Allowed)");
-            System.out.printf("   â€¢ Sparse Cell Skip    : %s (Deserts & Abyssal Oceans)\n", effectivePerfConfig.isEnableSparseCellSkipping() ? "ENABLED" : "DISABLED");
-            System.out.printf("   â€¢ Ocean Macro-Aggreg  : %s (Deep Basins z < -200m)\n", effectivePerfConfig.isEnableOceanMacroAggregation() ? "ENABLED" : "DISABLED");
-            System.out.printf("   â€¢ Coastal Nav Only    : %s (Pathfinding Focused on Coasts)\n", effectivePerfConfig.isEnableCoastalNavigationOnly() ? "ENABLED" : "DISABLED");
-            System.out.printf("   â€¢ Multi-Rate Climate  : %s (Every %d Ticks)\n", effectivePerfConfig.isEnableMultiFreqClimateTicks() ? "ENABLED" : "DISABLED", effectivePerfConfig.getClimateTickFrequency());
-            System.out.printf("   â€¢ Async Parallelism   : %s (%d Threads)\n", effectivePerfConfig.isEnableParallelExecution() ? "ENABLED" : "DISABLED", threadCount);
-            System.out.printf("   â€¢ Spatial Truncation  : %s (10^-6 Cutoff)\n", effectivePerfConfig.isEnableSpatialRangeTruncation() ? "ENABLED" : "DISABLED");
-            System.out.printf("   â€¢ Scenario Epoch      : %s (Start: %d, End: %d, H3 Res: %s)\n",
+            System.out.printf("   • Strict Determinism  : %s\n", effectivePerfConfig.isStrictDeterminism() ? "ON (Tier 1 Bit-Identical Physics)" : "OFF (Heuristic Shortcuts Allowed)");
+            System.out.printf("   • Sparse Cell Skip    : %s (Deserts & Abyssal Oceans)\n", effectivePerfConfig.isEnableSparseCellSkipping() ? "ENABLED" : "DISABLED");
+            System.out.printf("   • Ocean Macro-Aggreg  : %s (Deep Basins z < -200m)\n", effectivePerfConfig.isEnableOceanMacroAggregation() ? "ENABLED" : "DISABLED");
+            System.out.printf("   • Coastal Nav Only    : %s (Pathfinding Focused on Coasts)\n", effectivePerfConfig.isEnableCoastalNavigationOnly() ? "ENABLED" : "DISABLED");
+            System.out.printf("   • Multi-Rate Climate  : %s (Every %d Ticks)\n", effectivePerfConfig.isEnableMultiFreqClimateTicks() ? "ENABLED" : "DISABLED", effectivePerfConfig.getClimateTickFrequency());
+            System.out.printf("   • Async Parallelism   : %s (%d Threads)\n", effectivePerfConfig.isEnableParallelExecution() ? "ENABLED" : "DISABLED", threadCount);
+            System.out.printf("   • Spatial Truncation  : %s (10^-6 Cutoff)\n", effectivePerfConfig.isEnableSpatialRangeTruncation() ? "ENABLED" : "DISABLED");
+            System.out.printf("   • Scenario Epoch      : %s (Start: %d, End: %d, H3 Res: %s)\n",
                     scenarioName, scenario.getStartDateYear(), scenario.getEndDateYear(), h3Resolution >= 0 ? "Res " + h3Resolution : "Default");
             System.out.println("--------------------------------------------------------------------------------");
 
@@ -606,10 +631,10 @@ public class HeadlessRunner {
             if (saveEnabled) {
                 try {
                     String saveTarget = customSaveName != null ? customSaveName : "Headless_" + scenarioName;
-                    System.out.printf("ðŸ’¾ Persisting simulation save '%s'...\n", saveTarget);
+                    System.out.printf("💾 Persisting simulation save '%s'...\n", saveTarget);
                     if (engine.getSimulationSaveManager() != null) {
                         engine.getSimulationSaveManager().saveSimulation(engine, saveTarget);
-                        System.out.println("âœ… Simulation state successfully persisted to disk & database.");
+                        System.out.println("✅ Simulation state successfully persisted to disk & database.");
                     }
                 } catch (Exception e) {
                     logger.warn("Could not persist simulation save: {}", e.getMessage());
@@ -671,7 +696,7 @@ public class HeadlessRunner {
         System.out.println("  --snapshot-interval=<N>                       Snapshot checkpoint interval in ticks (Default: 50)");
         System.out.println("  --snapshot-dir=<PATH>                         Snapshot directory path (Default: saves/cluster_snapshots)");
         System.out.println("  --worker-gpu, --worker-rust, --worker-simd    Acceleration backend specifically on worker nodes");
-        System.out.println("\nâš¡ [Tab 3] Scenario Determinism & Approximation Options:");
+        System.out.println("\n⚡ [Tab 3] Scenario Determinism & Approximation Options:");
         System.out.println("  --strict-determinism[=true|false]             Enforce strict bit-identical physical conservation (Tier 1)");
         System.out.println("  --no-determinism, --fast                      Disable strict determinism to allow heuristic approximations");
         System.out.println("  --sparse-skipping[=true|false], --sparse-cells Skip compute updates on empty ocean/desert cells");
@@ -692,7 +717,7 @@ public class HeadlessRunner {
         System.out.println("  --initial-pop=<N>, --pop=<N>                  Override initial human population count");
         System.out.println("  --initial-tech=<N>, --tech=<N>                Override initial technological level (0..10)");
         System.out.println("  --seed=<LONG>                                 PRNG deterministic random seed");
-        System.out.println("\nðŸ’¾ Persistence, Profiling & Global Preferences:");
+        System.out.println("\n💾 Persistence, Profiling & Global Preferences:");
         System.out.println("  --save=<NAME>                                 Custom save file name for persistence");
         System.out.println("  --no-save                                     Disable simulation saving upon completion");
         System.out.println("  --profile, -p / --no-profile                  Display end-of-run profiling telemetry report");

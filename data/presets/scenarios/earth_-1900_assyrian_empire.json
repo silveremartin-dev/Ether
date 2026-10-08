@@ -1,10 +1,10 @@
 {
-  "name" : "Ã‚ge du Bronze Moyen & MÃ©sopotamie (-1900)",
-  "description" : "ðŸ›ï¸ SCÃ‰NARIO HISTORIQUE : Hydraulique, Salinisation & CitÃ©s-Ã‰tats de l'Ã‚ge du Bronze (-1900 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise l'apogÃ©e du Bronze Moyen (Code d'Hammurabi, premiÃ¨re dynastie de Babylone, dynastie Shang en Chine, fin de la civilisation de l'Indus) et les vulnÃ©rabilitÃ©s Ã©cologiques d'irrigation intensive.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Salinisation progressive des sols irriguÃ©s de basse MÃ©sopotamie (baisse du blÃ© au profit de l'orge).\nâ€¢ Dynamique d'Asabiyyah des peuples pÃ©riphÃ©riques et militarisation de l'Empire NÃ©o-Assyrien.\nâ€¢ RÃ©seaux urbains denses le long des canaux et dÃ©pendance au commerce du cuivre et de l'Ã©tain.\n",
+  "name" : "Âge du Bronze Moyen & Mésopotamie (-1900)",
+  "description" : "ðŸ›ï¸ SCÃ‰NARIO HISTORIQUE : Hydraulique, Salinisation & CitÃ©s-Ã‰tats de l'Ã‚ge du Bronze (-1900 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'apogée du Bronze Moyen (Code d'Hammurabi, première dynastie de Babylone, dynastie Shang en Chine, fin de la civilisation de l'Indus) et les vulnérabilités écologiques d'irrigation intensive.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Salinisation progressive des sols irrigués de basse Mésopotamie (baisse du blé au profit de l'orge).\n• Dynamique d'Asabiyyah des peuples périphériques et militarisation de l'Empire Néo-Assyrien.\n• Réseaux urbains denses le long des canaux et dépendance au commerce du cuivre et de l'étain.\n",
   "id" : null,
   "presetKey" : "assyrian_empire",
   "planetPreset" : {
-    "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+    "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -47,15 +47,15 @@
     "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-    "associatedEpochYear" : -1900
+    "associatedEpochYear" : -1900,
+    "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
-    "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
-    "planetPresetName" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+    "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
+    "planetPresetName" : "Terre (-1 900 / Âge du Bronze Moyen)",
     "embeddedPlanetPreset" : {
-      "name" : "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+      "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
       "resolution" : 4,
       "radiusKm" : 6371.0,
       "dayLengthHours" : 24.0,
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-      "associatedEpochYear" : -1900
+      "associatedEpochYear" : -1900,
+      "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 590.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-    "associatedEpochYear" : -1900
+    "associatedEpochYear" : -1900,
+    "presetDescription" : "­ƒÅ║ EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -188,6 +188,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Effondrement du Bronze & Empire Néo-Assyrien (-1200)",
-  "displayDescription" : "⚔ SCÉNARIO HISTORIQUE : L'Effondrement de l'Âge du Bronze & l'Expansion Assyrienne (-1200 av. J.-C.)\n\nModélise la rupture systémique des réseaux commerciaux de Méditerranée orientale, les épisodes de sécheresse et l'essor de la métallurgie du fer et des structures impériales militarisées."
+  "displayName" : "Bronze Age Collapse & Neo-Assyrian Empire (-1200 BP)",
+  "displayDescription" : "HISTORICAL SCENARIO: Late Bronze Age Collapse & Neo-Assyrian Imperial Expansion (-1200 BC)\n\nSimulates systemic breakdown of Eastern Mediterranean trade networks, drought crisis, and rise of iron metallurgy and empire building."
 }

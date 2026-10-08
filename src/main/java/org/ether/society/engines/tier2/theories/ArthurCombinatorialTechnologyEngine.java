@@ -19,8 +19,8 @@ import java.util.List;
  * <p>Models technological innovation not as a linear scalar progress, but as recombinant
  * synthesis of modular technological building blocks (autocatalytic combinatorial sets):</p>
  * <pre>
- *   T_new = T_i âŠ— T_j  if  Research_Capital â‰¥ Cost(T_i, T_j)
- *   Innovation_Rate = k_comb Â· Tech_Primitives^(1.5)
+ *   T_new = T_i ⊗ T_j  if  Research_Capital ≥ Cost(T_i, T_j)
+ *   Innovation_Rate = k_comb · Tech_Primitives^(1.5)
  * </pre>
  *
  * @author Silvere Martin-Michiellot
@@ -62,8 +62,8 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
         return """
                [W. Brian Arthur Combinatorial Evolution (The Nature of Technology 2009)]
                â€¢ Combinatorial Space: |Combinations| = C(N_primitives, 2) âˆ N^2
-               â€¢ Emergence Rate:      dTech/dt = Î¼_comb Â· (Tech_level)^1.25 Â· (Capital_R&D / Pop)^0.5
-               â€¢ Autocatalysis:       Every new invention becomes a candidate building block for future inventions.
+               • Emergence Rate:      dTech/dt = μ_comb · (Tech_level)^1.25 · (Capital_R&D / Pop)^0.5
+               • Autocatalysis:       Every new invention becomes a candidate building block for future inventions.
                Units: Tech [niveau technologique sans dimension], Capital_R&D [Joules / $]
                Ref: W. B. Arthur (2009) "The Nature of Technology: What It Is and How It Evolves"
                """;

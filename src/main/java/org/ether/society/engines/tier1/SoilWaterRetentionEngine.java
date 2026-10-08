@@ -14,19 +14,19 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * PÃ©dological Soil Water Retention & van Genuchten Moisture Characteristic Engine.
+ * Pédological Soil Water Retention & van Genuchten Moisture Characteristic Engine.
  *
  * <p>Models soil water matric potential and Available Water Capacity (AWC) via the
  * standard van Genuchten (1980) hydraulic formulation:</p>
  * <pre>
- *   Î¸(h) = Î¸_r + (Î¸_s - Î¸_r) / [1 + (Î± * |h|)^n]^m
+ *   θ(h) = θ_r + (θ_s - θ_r) / [1 + (α * |h|)^n]^m
  * </pre>
  * where:
  * <ul>
  *   <li><b>h</b>: Soil matric suction head (cm or kPa).</li>
- *   <li><b>Î¸_s</b>: Saturated water content (~0.43 cmÂ³/cmÂ³ for loam).</li>
- *   <li><b>Î¸_r</b>: Residual water content (~0.078 cmÂ³/cmÂ³).</li>
- *   <li><b>Î±</b>: Inverse of air-entry suction parameter (~0.036 cmâ»Â¹).</li>
+ *   <li><b>θ_s</b>: Saturated water content (~0.43 cm³/cm³ for loam).</li>
+ *   <li><b>θ_r</b>: Residual water content (~0.078 cm³/cm³).</li>
+ *   <li><b>α</b>: Inverse of air-entry suction parameter (~0.036 cm⁻¹).</li>
  *   <li><b>n</b>: Pore-size distribution index (~1.56).</li>
  *   <li><b>m</b>: Mualem constraint $m = 1 - 1/n \approx 0.359$.</li>
  *   <li><b>Field Capacity ($\theta_{FC}$)</b>: Measured at suction head $h = -330\text{ cm}$ ($\text{pF} = 2.5$).</li>
@@ -51,10 +51,10 @@ public class SoilWaterRetentionEngine {
     public static final double HEAD_WILTING_POINT_CM = 15000.0;     // -1500 kPa (pF 4.2)
 
     /*
-     * Calculates volumetric soil water content Î¸(h) for matric suction head h (in cm).
+     * Calculates volumetric soil water content θ(h) for matric suction head h (in cm).
      *
      * @param matricSuctionHeadCm Suction head |h| in cm of water
-     * @return Volumetric water content Î¸ (cmÂ³/cmÂ³)
+     * @return Volumetric water content θ (cm³/cm³)
      */
     public static double calculateWaterContent(double matricSuctionHeadCm) {
         // Phase 1: Invariant state validation and environmental boundary initialization

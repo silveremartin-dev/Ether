@@ -15,17 +15,17 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Biophysical Exergy Economics Engine (KÃ¼mmel, 1982 / Ayres & Warr, 2009).
+ * Biophysical Exergy Economics Engine (Kümmel, 1982 / Ayres & Warr, 2009).
  *
  * <p>Models macroeconomic production with thermodynamic exergy as an essential physical factor:</p>
  * <pre>
- *   Y_i = A_i Â· K_i^Î± Â· L_i^Î² Â· (E_useful,i)^Î³
+ *   Y_i = A_i · K_i^α · L_i^β · (E_useful,i)^γ
  * </pre>
  * where:
  * <ul>
- *   <li><b>Î± + Î² + Î³ = 1</b> (Constant returns to scale).</li>
- *   <li><b>Î³ â‰ˆ 0.45 - 0.50</b>: Output elasticity of useful exergy (much higher than neoclassical cost share ~5%).</li>
- *   <li><b>E_useful = E_primary Â· Î·_thermo(t)</b>: Primary energy multiplied by thermodynamic conversion efficiency.</li>
+ *   <li><b>α + β + γ = 1</b> (Constant returns to scale).</li>
+ *   <li><b>γ ≈ 0.45 - 0.50</b>: Output elasticity of useful exergy (much higher than neoclassical cost share ~5%).</li>
+ *   <li><b>E_useful = E_primary · η_thermo(t)</b>: Primary energy multiplied by thermodynamic conversion efficiency.</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
@@ -46,7 +46,7 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
      * @return the resulting computation or state reference
      */
     public String getName() {
-        return "KÃ¼mmel / Ayres-Warr Biophysical Exergy Economics";
+        return "Kümmel / Ayres-Warr Biophysical Exergy Economics";
     }
 
     @Override
@@ -57,7 +57,7 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
      * @return the resulting computation or state reference
      */
     public String getDescription() {
-        return "Thermodynamic macroeconomic production function Y = A Â· K^Î± Â· L^Î² Â· E_useful^Î³ where useful work/exergy is the prime driver of industrial output.";
+        return "Thermodynamic macroeconomic production function Y = A · K^α · L^β · E_useful^γ where useful work/exergy is the prime driver of industrial output.";
     }
 
     @Override
@@ -69,12 +69,12 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
      */
     public String getEquationsTooltip() {
         return """
-               [KÃ¼mmel & Ayres-Warr Useful Exergy Production Function]
-               â€¢ Output Function:  Y_i = A_i Â· K_i^0.25 Â· L_i^0.25 Â· (E_useful,i)^0.50
-               â€¢ Useful Exergy:    E_useful,i = E_primary,i Â· Î·_thermodynamic(t)
-               â€¢ Constraint:       Î± + Î² + Î³ = 1.0 (Euler Homogeneity)
-               Units: Y [$/an], K [Joules capital matÃ©riel], L [heures-homme], E_useful [Joules utiles / Watt-heures]
-               Ref: R. KÃ¼mmel (2011) "The Second Law of Economics", Ayres & Warr (2009) "The Economic Growth Engine"
+               [Kümmel & Ayres-Warr Useful Exergy Production Function]
+               • Output Function:  Y_i = A_i · K_i^0.25 · L_i^0.25 · (E_useful,i)^0.50
+               • Useful Exergy:    E_useful,i = E_primary,i · η_thermodynamic(t)
+               • Constraint:       α + β + γ = 1.0 (Euler Homogeneity)
+               Units: Y [$/an], K [Joules capital matériel], L [heures-homme], E_useful [Joules utiles / Watt-heures]
+               Ref: R. Kümmel (2011) "The Second Law of Economics", Ayres & Warr (2009) "The Economic Growth Engine"
                """;
     }
 
@@ -119,7 +119,7 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
             double etaThermo = Math.min(0.45, 0.05 + 0.05 * Math.log(1.0 + techLevel));
             double usefulExergy = Math.max(1.0, totalPrimaryWatts * etaThermo);
 
-            // KÃ¼mmel-Ayres production function Y = A * K^Î± * L^Î² * E_useful^Î³
+            // Kümmel-Ayres production function Y = A * K^α * L^β * E_useful^γ
             double tfp = 1.0;
             double economicOutput = tfp * Math.pow(capital, ALPHA_K) * Math.pow(labor, BETA_L) * Math.pow(usefulExergy, GAMMA_E);
 

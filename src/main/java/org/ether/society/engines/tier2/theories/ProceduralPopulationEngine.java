@@ -327,7 +327,7 @@ public class ProceduralPopulationEngine {
 
     /*
      * Temperature comfort rating.
-     * Optimal range: 12Â°C - 24Â°C.
+     * Optimal range: 12°C - 24°C.
      * Low tech has narrow tolerance; High tech broadens thermal adaptation.
      */
     private static double calculateTemperatureSuitability(double temp, double techLevel) {
@@ -343,10 +343,10 @@ public class ProceduralPopulationEngine {
     }
 
     /*
-     * Calculates planetary solar insolation (W/mÂ²) dynamically based on celestial mechanics.
-     * For Earth (isEarth = true), uses Earth's Milankovitch orbital cycles at 65Â°N.
+     * Calculates planetary solar insolation (W/m²) dynamically based on celestial mechanics.
+     * For Earth (isEarth = true), uses Earth's Milankovitch orbital cycles at 65°N.
      * For Mars, Venus, or procedural exoplanets (isEarth = false), computes solar flux from orbital parameters:
-     * F_solar = (S_0 / aÂ²) * (1 - eÂ²)^(-0.5) * cos(lat - declination).
+     * F_solar = (S_0 / a²) * (1 - e²)^(-0.5) * cos(lat - declination).
      */
     public static double calculatePlanetarySolarInsolation(double lat, double obliquityDeg, double eccentricity, double semiMajorAxisAU, long startYearBP, boolean isEarth) {
         // Step 1: Read institutional, demographic, and economic state tensors
@@ -360,7 +360,7 @@ public class ProceduralPopulationEngine {
             return 480.0 + precession + obliquity + ecc;
         } else {
             // Celestial Mechanics General Solar Flux Equilibrium
-            double solarConstant = 1361.0; // Watts/mÂ² at 1 AU
+            double solarConstant = 1361.0; // Watts/m² at 1 AU
             double distSq = Math.max(0.1, semiMajorAxisAU * semiMajorAxisAU);
             double orbitalCorrection = 1.0 / Math.sqrt(Math.max(0.01, 1.0 - eccentricity * eccentricity));
             double declination = Math.toRadians(obliquityDeg) * Math.sin(2.0 * Math.PI * (startYearBP % 365) / 365.0);
@@ -371,7 +371,7 @@ public class ProceduralPopulationEngine {
     }
 
     /*
-     * Standard Earth-preset wrapper for Milankovitch summer insolation at 65Â°N.
+     * Standard Earth-preset wrapper for Milankovitch summer insolation at 65°N.
      */
     public static double calculateMilankovitchSummerInsolation65N(long startYearBP) {
         // Step 1: Read institutional, demographic, and economic state tensors
@@ -452,7 +452,7 @@ public class ProceduralPopulationEngine {
         boolean isCoastal = (b == Biome.BEACH || b == Biome.PLAINS || cell.getElevation() < 50);
         boolean isRiverValley = (b == Biome.PLAINS && cell.getRainfall() > 0.4) || water > 400.0;
 
-        // Base water score combining surface water, coastal access, AND accessible groundwater table (nappe phrÃ©atique accessible)
+        // Base water score combining surface water, coastal access, AND accessible groundwater table (nappe phréatique accessible)
         double aquiferScore = Math.min(1.0, accessibleAquifer / 10000.0);
         double baseWaterScore = (water / 1000.0) * 0.45 + (aquiferScore * 0.35) + (isCoastal ? 0.2 : 0.0);
         if (isRiverValley) baseWaterScore += 0.3;

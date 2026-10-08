@@ -145,7 +145,7 @@ public class HeadlessBatchRunner {
         // Compare simulated trajectories against empirical historical ground truth
         if (scenario == null) return null;
 
-        logger.info("âš¡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
+        logger.info("⚡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
             scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
 
         String runId = "RUN-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase() + "-" + (System.currentTimeMillis() % 10000);
@@ -153,17 +153,17 @@ public class HeadlessBatchRunner {
         Map<String, String> parameterMatrix = new LinkedHashMap<>();
         parameterMatrix.put("Population Initiale", String.format("%,d", scenario.getInitialHumanCount()));
         parameterMatrix.put("Capital Physique K0", String.format("%.1f kg/hab", scenario.getInitialCapitalPerCapita()));
-        parameterMatrix.put("Ã‰nergie Initiale E0", String.format("%.1f MJ/hab", scenario.getInitialEnergyPerCapita()));
-        parameterMatrix.put("RÃ©serves Food F0", String.format("%.1f mois", scenario.getInitialFoodReserveMonths()));
-        parameterMatrix.put("PrÃ©rÃ©glage PlanÃ©taire", scenario.getPlanetPreset() != null ? scenario.getPlanetPreset().name() : "EARTH_LIKE");
-        parameterMatrix.put("ModÃ¨le de DensitÃ©", scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL");
+        parameterMatrix.put("Énergie Initiale E0", String.format("%.1f MJ/hab", scenario.getInitialEnergyPerCapita()));
+        parameterMatrix.put("Réserves Food F0", String.format("%.1f mois", scenario.getInitialFoodReserveMonths()));
+        parameterMatrix.put("Préréglage Planétaire", scenario.getPlanetPreset() != null ? scenario.getPlanetPreset().name() : "EARTH_LIKE");
+        parameterMatrix.put("Modèle de Densité", scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL");
 
-        parameterMatrix.put("Contexte MatÃ©riel", "CPU_JIT (Headless)");
+        parameterMatrix.put("Contexte Matériel", "CPU_JIT (Headless)");
 
         if (scenario.getTypeBEngineStates() != null && !scenario.getTypeBEngineStates().isEmpty()) {
             for (var entry : scenario.getTypeBEngineStates().entrySet()) {
                 if (entry.getValue()) {
-                    parameterMatrix.put("Engine: " + entry.getKey(), "âœ… ActivÃ©");
+                    parameterMatrix.put("Engine: " + entry.getKey(), "✅ Activé");
                 }
             }
         }
@@ -210,11 +210,16 @@ public class HeadlessBatchRunner {
             cells = ProceduralGenerator.getInstance().generatePlanet(preset);
         }
 
-        // Distribute initial human population across habitable land cells
+        // Distribute initial human population across habitable land cells.
+        // Earth scenarios: population is NOT seeded here; PreComputePhase samples the empirical epoch
+        // density raster (data/maps/ether/earth/<year>/earth_<year>_density.png). The biome heuristic
+        // below is reserved for non-Earth / sandbox planets.
+        boolean isEarthScenario = preset != null
+                && ("earth".equalsIgnoreCase(preset.getCanonicalPlanet()) || "earth".equalsIgnoreCase(preset.elevationMapSource()));
         long initialPopTarget = scenario.getInitialHumanCount() > 0 ? scenario.getInitialHumanCount() : 1_000_000L;
         double totalWeight = 0.0;
         double[] weights = new double[cells.size()];
-        for (int i = 0; i < cells.size(); i++) {
+        for (int i = 0; i < cells.size() && !isEarthScenario; i++) {
             H3Cell c = cells.get(i);
             boolean isWater = (c.getBiome() == org.ether.society.model.Biome.OCEAN || c.getBiome() == org.ether.society.model.Biome.DEEP_OCEAN || (c.getElevation() != null && c.getElevation() < 0.0));
             if (isWater) {
@@ -239,7 +244,7 @@ public class HeadlessBatchRunner {
             totalWeight += w;
         }
 
-        if (totalWeight > 0.0) {
+        if (!isEarthScenario && totalWeight > 0.0) {
             // Iterate over spatial cell domains and apply localized cellular state transformations
             for (int i = 0; i < cells.size(); i++) {
                 H3Cell c = cells.get(i);
@@ -279,6 +284,9 @@ public class HeadlessBatchRunner {
         perfConfig.setParallelThreadCount(Math.max(1, cores));
         engine.setPerformanceConfig(perfConfig);
         engine.setTemporalScale(H3SimulationEngine.TemporalScale.MONTHLY);
+        if (engine.getHistoryManager() != null) {
+            engine.getHistoryManager().setMaxSnapshots(12);
+        }
 
         engine.initializeFromScenario(scenario, cells);
 
@@ -322,8 +330,8 @@ public class HeadlessBatchRunner {
             if (currentSimYear > lastSampledYear || ticksExecuted >= totalTicks) {
                 recordCurrentTelemetrySnapshot(record, engine, (int) currentSimYear);
                 
-                // Capture spatial state snapshot only at key milestones (every 25 years or at completion)
-                if (currentSimYear % 25 == 0 || ticksExecuted >= totalTicks) {
+                // Capture spatial state snapshot only at key milestones (at start, midway and completion)
+                if (record.getSpatialSnapshots().size() < 8 && (currentSimYear % 25 == 0 || ticksExecuted >= totalTicks)) {
                     record.addSpatialSnapshot((int) currentSimYear, engine.getCells());
                 }
                 lastSampledYear = currentSimYear;

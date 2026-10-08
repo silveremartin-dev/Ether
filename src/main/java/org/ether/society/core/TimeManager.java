@@ -152,8 +152,11 @@ public class TimeManager {
         String era = currentYear < 0 ? "BC" : "AD";
         int year = Math.abs(currentYear);
         Month month = Month.of(currentMonth + 1);
-        String monthName = month.getDisplayName(TextStyle.SHORT, locale);
-        return String.format("Day %d, %s %d %s", currentDay, monthName, year, era);
+        String monthName = month.getDisplayName(TextStyle.SHORT, locale != null ? locale : Locale.ENGLISH);
+        if (currentDay == 1) {
+            return String.format("%s %d %s (An %d)", monthName, year, era, currentYear);
+        }
+        return String.format("J.%d %s %d %s (An %d)", currentDay, monthName, year, era, currentYear);
     }
 
     /*
@@ -178,9 +181,9 @@ public class TimeManager {
         if (temporalResolutionDays >= 360.0) {
             return String.format(Locale.ROOT, "An %d", currentYear);
         } else if (temporalResolutionDays >= 28.0) {
-            return String.format(Locale.ROOT, "An %d - M.%02d", currentYear, currentMonth + 1);
+            return String.format(Locale.ROOT, "An %d (Mois %d)", currentYear, currentMonth + 1);
         } else {
-            return String.format(Locale.ROOT, "An %d - M.%02d D.%02d", currentYear, currentMonth + 1, currentDay);
+            return String.format(Locale.ROOT, "An %d (Mois %d, Jour %d)", currentYear, currentMonth + 1, currentDay);
         }
     }
 

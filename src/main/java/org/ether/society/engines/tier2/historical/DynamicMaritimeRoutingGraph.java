@@ -92,7 +92,7 @@ public class DynamicMaritimeRoutingGraph {
      * Rebuilds the dynamic trans-oceanic routing graph based on current physical properties.
      */
     private static void rebuildRoutingGraph(List<H3Cell> cells) {
-        logger.info("ðŸŒŠ Dynamically recalculating Trans-Oceanic Maritime Routing Graph (Avg Tech: {}, Nodes: {})...",
+        logger.info("🌊 Dynamically recalculating Trans-Oceanic Maritime Routing Graph (Avg Tech: {}, Nodes: {})...",
                 String.format("%.2f", cachedAvgTech), cachedNodeCount);
 
         routingGraph.clear();
@@ -149,7 +149,7 @@ public class DynamicMaritimeRoutingGraph {
             }
         }
 
-        logger.info("âœ… Trans-Oceanic Maritime Routing Graph rebuilt successfully with {} active route hubs.", routingGraph.size());
+        logger.info("✅ Trans-Oceanic Maritime Routing Graph rebuilt successfully with {} active route hubs.", routingGraph.size());
     }
 
     /*
@@ -165,7 +165,7 @@ public class DynamicMaritimeRoutingGraph {
         double elevationNorm = Math.min(0.0, elevationMeters);
         double bathymetryFactor = 1.0 / (1.0 + Math.exp((elevationNorm + 200.0) / 100.0));
 
-        // Latitude storm intensity & atmospheric fetch (baroclinic instability around 40Â°-60Â° latitudes):
+        // Latitude storm intensity & atmospheric fetch (baroclinic instability around 40°-60° latitudes):
         double latRad = Math.toRadians(latitudeDegrees);
         double stormLatitudeFactor = 1.0 + 1.2 * Math.pow(Math.sin(2.0 * latRad), 2);
 

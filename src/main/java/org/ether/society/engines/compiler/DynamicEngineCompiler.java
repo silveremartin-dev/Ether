@@ -110,7 +110,7 @@ public class DynamicEngineCompiler {
             // 1. Static Security Validation
             String securityViolation = validateSourceCodeSecurity(sourceCode);
             if (securityViolation != null) {
-                logger.warn("ðŸ›‘ Rejected untrusted engine file '{}': {}", fileName, securityViolation);
+                logger.warn("🛑 Rejected untrusted engine file '{}': {}", fileName, securityViolation);
                 return new CompilationResult(false, fileName, "Security Error: " + securityViolation, null);
             }
 
@@ -161,7 +161,7 @@ public class DynamicEngineCompiler {
             ProceduralEngineRegistry.registerPlugin(simpleClassName, pluginInstance);
 
             EtherSecurityAuditLogger.logAuditEvent("ENGINE_LOADED", "DynamicEngineCompiler", "Loaded custom engine: " + fullClassName);
-            logger.info("âš¡ Custom Engine '{}' successfully verified, compiled & registered into ProceduralEngineRegistry!", fullClassName);
+            logger.info("⚡ Custom Engine '{}' successfully verified, compiled & registered into ProceduralEngineRegistry!", fullClassName);
             return new CompilationResult(true, simpleClassName, 
                     I18n.getOrDefault("dynamic_engine.status.success", "Engine compiled and registered successfully!"), pluginInstance);
 

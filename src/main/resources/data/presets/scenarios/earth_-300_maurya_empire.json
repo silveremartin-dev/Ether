@@ -1,10 +1,10 @@
 {
   "name" : "Empire Maurya & Civilisation de l'Indus-Gange (-300)",
-  "description" : "â˜¸ï¸ SCÃ‰NARIO HISTORIQUE : L'Empire Maurya d'Ashoka & La VallÃ©e du Gange (-300 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nUnification du sous-continent indien sous Chandragupta et Ashoka. ModÃ©lise l'agriculture rizicole de la plaine gÃ¢ngÃ©tique, les routes commerciales de la Soie et le rÃ©seau urbain autour de Pataliputra et Taxila.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Densification dÃ©mographique extrÃªme de la plaine indo-gangÃ©tique grÃ¢ce au riz irriguÃ©.\nâ€¢ Diffusion des Ã©dits impÃ©riaux et baisse institutionnelle de la violence (pacification d'Ashoka).\nâ€¢ IntÃ©gration commerciale transasiatique le long de la Grand Trunk Road et des ports de l'ocÃ©an Indien.\n",
+  "description" : "â˜¸ï¸ SCÃ‰NARIO HISTORIQUE : L'Empire Maurya d'Ashoka & La VallÃ©e du Gange (-300 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nUnification du sous-continent indien sous Chandragupta et Ashoka. Modélise l'agriculture rizicole de la plaine gângétique, les routes commerciales de la Soie et le réseau urbain autour de Pataliputra et Taxila.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Densification démographique extrême de la plaine indo-gangétique grâce au riz irrigué.\n• Diffusion des édits impériaux et baisse institutionnelle de la violence (pacification d'Ashoka).\n• Intégration commerciale transasiatique le long de la Grand Trunk Road et des ports de l'océan Indien.\n",
   "id" : null,
   "presetKey" : "maurya_empire",
   "planetPreset" : {
-    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -47,15 +47,15 @@
     "seasonSource" : "ðŸŒ Terre (-1000 BP) â€” SaisonnalitÃ©",
     "seasonSeed" : 14344,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-    "associatedEpochYear" : -1000
+    "associatedEpochYear" : -1000,
+    "presetDescription" : "ÔÜö´©Å EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
-    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
-    "planetPresetName" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
+    "planetPresetName" : "Terre (-1 000 / Début Âge du Fer)",
     "embeddedPlanetPreset" : {
-      "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+      "name" : "Terre (-1 000 / Début Âge du Fer)",
       "resolution" : 4,
       "radiusKm" : 6371.0,
       "dayLengthHours" : 24.0,
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre (-1000 BP) â€” SaisonnalitÃ©",
       "seasonSeed" : 14344,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-      "associatedEpochYear" : -1000
+      "associatedEpochYear" : -1000,
+      "presetDescription" : "ÔÜö´©Å EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 580.0,
     "soilOrganicCarbonGtC" : 1780.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-    "associatedEpochYear" : -1000
+    "associatedEpochYear" : -1000,
+    "presetDescription" : "ÔÜö´©Å EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -188,6 +188,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Empire Maurya & Route de la Soie Âge du Fer (-322)",
-  "displayDescription" : "\uD83D\uDC18 SCÉNARIO HISTORIQUE : L'Unification Maurya & Les Routes Commerciales Pan-Asiatiques (-322 av. J.-C.)\n\nUnification du sous-continent indien sous Chandragupta et Ashoka, codification des édits et expansion des routes commerciales terrestres et maritimes."
+  "displayName" : "Maurya Empire & Iron Age Silk Road (-322 BP)",
+  "displayDescription" : "HISTORICAL SCENARIO: Maurya Imperial Unification & Pan-Asian Trade Routes (-322 BC)\n\nUnification of the Indian subcontinent under Chandragupta and Ashoka, edict codification, and expansion of land and maritime Silk Road trade."
 }

@@ -22,28 +22,49 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-:: 2. Launch using executable jar if present, else launch via Maven
+:: 2. Launch Strategy
+:: Priority A: Standalone release distribution (bin\ether.jar)
 if exist "bin\ether.jar" (
+    echo [INFO] Launching Ether standalone package...
     java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar bin\ether.jar %*
-) else if exist "target\society-simulation-1.0.0-beta.2-executable.jar" (
-    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar target\society-simulation-1.0.0-beta.2-executable.jar %*
-) else (
-    set "FOUND_JAR="
-    for %%F in (target\*executable.jar) do (
-        set "FOUND_JAR=%%F"
-    )
-    if defined FOUND_JAR (
-        java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "!FOUND_JAR!" %*
-    ) else (
-        where mvn >nul 2>&1
-        if !ERRORLEVEL! EQU 0 (
-            echo [INFO] Running via Maven...
-            call mvn javafx:run
+) else if exist "pom.xml" (
+    :: Priority B: Development workspace -> Check Maven
+    where mvn >nul 2>&1
+    if !ERRORLEVEL! EQU 0 (
+        if "%~1"=="--jar" (
+            echo [INFO] Rebuilding executable JAR...
+            call mvn clean package -DskipTests
+            for %%F in (target\*executable.jar) do (
+                java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "%%F" %*
+                goto :done
+            )
         ) else (
-            echo [ERROR] Could not find executable JAR or Maven.
-            echo Please build the project first via 'mvn clean package'.
+            echo [INFO] Compiling and running latest code via Maven (JavaFX)...
+            call mvn javafx:run
+        )
+    ) else (
+        :: Maven not in PATH -> Fall back to target JAR
+        set "FOUND_JAR="
+        for %%F in (target\*executable.jar) do set "FOUND_JAR=%%F"
+        if defined FOUND_JAR (
+            echo [INFO] Launching existing build: !FOUND_JAR!
+            java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "!FOUND_JAR!" %*
+        ) else (
+            echo [ERROR] Maven not found and no executable JAR in target\.
+            echo Please install Apache Maven or build the project.
             pause
         )
     )
+) else (
+    :: Priority C: Loose folder with target JAR
+    set "FOUND_JAR="
+    for %%F in (target\*executable.jar) do set "FOUND_JAR=%%F"
+    if defined FOUND_JAR (
+        java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "!FOUND_JAR!" %*
+    ) else (
+        echo [ERROR] No runnable artifact found.
+        pause
+    )
 )
+:done
 endlocal

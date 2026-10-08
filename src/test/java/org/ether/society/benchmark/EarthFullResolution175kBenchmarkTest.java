@@ -116,7 +116,7 @@ public class EarthFullResolution175kBenchmarkTest {
         long memBeforeMB = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
 
         // 4. Run Full Simulation Loop for up to 10 Seconds
-        logger.info("ðŸš€ Executing Full Simulation Engines Loop (Max 10 seconds)...");
+        logger.info("🚀 Executing Full Simulation Engines Loop (Max 10 seconds)...");
         long benchStartTime = System.currentTimeMillis();
         int completedTicks = 0;
 
@@ -157,7 +157,7 @@ public class EarthFullResolution175kBenchmarkTest {
         double finalCapital = earthGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).sum();
 
         logger.info("===============================================================================");
-        logger.info("ðŸ“ˆ FULL EARTH 175k BENCHMARK FINAL RESULTS");
+        logger.info("📈 FULL EARTH 175k BENCHMARK FINAL RESULTS");
         logger.info("===============================================================================");
         logger.info("Grid Resolution              : {} H3 Cells", earthGrid.size());
         logger.info("Initial / Final Population   : {} / {} Humans", initialTotalPop, finalPop);

@@ -22,8 +22,9 @@ public class ProceduralLeaderGenerator {
     private static final String[] LEADER_TITLES_BUILDER = {"Grand Architecte", "Bâtisseur", "Consul", "Empereur des Travaux", "Penseur Urbain"};
     private static final String[] LEADER_TITLES_REFORMER = {"Législateur", "Grand Chancelier", "Codificateur", "Archonte", "Ministre Réformateur"};
     private static final String[] LEADER_TITLES_HYDRAULIC = {"Maître des Eaux", "Ingénieur Agraire", "Canalisateur", "Pionnier des Moissons"};
-    private static final String[] LEADER_TITLES_SAGE = {"Prophète", "Sage Éclairé", "Patriarche", "Guide Spirituel", "Philosophe Errant"};
+    private static final String[] LEADER_TITLES_SAGE = {"Prophète", "Sage Éclairé", "Patriarche", "Guide Spirituel", "Maître Moral"};
     private static final String[] LEADER_TITLES_PURGER = {"Autocrate", "Inquisiteur", "Purificateur", "Dictateur Central", "Commandeur"};
+    private static final String[] LEADER_TITLES_CHRONICLER = {"Philosophe", "Chroniqueur Historique", "Grand Érudit", "Astronome Royal", "Archiviste Suprême"};
 
     /*
      * Set seed.
@@ -53,21 +54,51 @@ public class ProceduralLeaderGenerator {
             return null;
         }
 
-        // Select a suitable populated cell as the epicenter of emergence
+        // Filter candidate cells to populated land cells, sorted descending by population density
         List<H3Cell> populated = cells.stream()
-                .filter(c -> c.getPopulation() != null && c.getPopulation() > 50)
+                .filter(c -> (c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                        && c.getPopulation() != null && c.getPopulation() > 0)
+                .sorted((a, b) -> Integer.compare(b.getPopulation(), a.getPopulation()))
                 .toList();
-        H3Cell originCell = !populated.isEmpty() ? populated.get(random.nextInt(populated.size())) : cells.get(random.nextInt(cells.size()));
+        if (populated.isEmpty()) {
+            return null; // A historical leader cannot emerge in an unpopulated world or in the ocean
+        }
+
+        // Leaders and historical figures emerge in core demographic centers and urban/agrarian hubs (top 20% highest density cells)
+        int topK = Math.max(1, (int) Math.ceil(populated.size() * 0.20));
+        List<H3Cell> topHubs = populated.subList(0, topK);
+
+        // Roulette-wheel selection among top hubs proportional to population
+        long totalHubPop = 0;
+        for (H3Cell hub : topHubs) {
+            totalHubPop += Math.max(1, hub.getPopulation());
+        }
+        long randWeight = (long) (random.nextDouble() * totalHubPop);
+        long cumWeight = 0;
+        H3Cell originCell = topHubs.get(0);
+        for (H3Cell hub : topHubs) {
+            cumWeight += Math.max(1, hub.getPopulation());
+            if (cumWeight >= randWeight) {
+                originCell = hub;
+                break;
+            }
+        }
 
         // Determine Archetype based on local physical and sociological state
         LeaderArchetype archetype = determineArchetype(originCell);
 
-        // Magnitude drawn from a skewed distribution (mean 6.2, rare legendary > 8.5)
-        double rawMag = 4.5 + (random.nextGaussian() * 1.5) + (random.nextDouble() * 2.0);
-        double magnitude = Math.max(1.5, Math.min(10.0, rawMag));
+        // Active executive leaders have high magnitude (5.0 to 9.5); informative chroniclers/sages have moderate cultural magnitude (2.0 to 4.5)
+        double magnitude;
+        if (archetype.isExecutiveLeader()) {
+            double rawMag = 5.5 + (random.nextGaussian() * 1.2) + (random.nextDouble() * 2.0);
+            magnitude = Math.max(4.5, Math.min(10.0, rawMag));
+        } else {
+            double rawMag = 2.5 + (random.nextDouble() * 2.0);
+            magnitude = Math.max(1.5, Math.min(5.0, rawMag));
+        }
 
         int duration = (int) (archetype.getDefaultDurationYears() * (0.7 + (random.nextDouble() * 0.6)));
-        double radiusKm = 400.0 + (magnitude * 150.0);
+        double radiusKm = 300.0 + (magnitude * 150.0);
 
         String id = "PROC_LEADER_" + year + "_" + Math.abs(random.nextInt(10000));
         String title = generateTitle(archetype);
@@ -88,7 +119,7 @@ public class ProceduralLeaderGenerator {
         double r = random.nextDouble();
         Biome biome = cell.getBiome();
 
-        // Nomadic / Savannah / Plains / Hills encourage conquerors
+        // Nomadic / Savannah / Plains / Hills encourage conquerors or sages
         if (biome == Biome.SAVANNAH || biome == Biome.PLAINS || biome == Biome.TUNDRA || biome == Biome.HILLS) {
             if (r < 0.45) return LeaderArchetype.MILITARY_CONQUEROR;
             if (r < 0.70) return LeaderArchetype.MORAL_RELIGIOUS_SAGE;
@@ -106,12 +137,13 @@ public class ProceduralLeaderGenerator {
             if (r < 0.70) return LeaderArchetype.MORAL_RELIGIOUS_SAGE;
         }
 
-        // Default balanced distribution
-        if (r < 0.20) return LeaderArchetype.MILITARY_CONQUEROR;
-        if (r < 0.40) return LeaderArchetype.INFRASTRUCTURE_BUILDER;
-        if (r < 0.60) return LeaderArchetype.INSTITUTIONAL_REFORMER;
-        if (r < 0.75) return LeaderArchetype.HYDRAULIC_AGRARIAN_INNOVATOR;
-        if (r < 0.90) return LeaderArchetype.MORAL_RELIGIOUS_SAGE;
+        // Balanced distribution across all archetypes including intellectual chroniclers
+        if (r < 0.18) return LeaderArchetype.MILITARY_CONQUEROR;
+        if (r < 0.35) return LeaderArchetype.INFRASTRUCTURE_BUILDER;
+        if (r < 0.52) return LeaderArchetype.INSTITUTIONAL_REFORMER;
+        if (r < 0.68) return LeaderArchetype.HYDRAULIC_AGRARIAN_INNOVATOR;
+        if (r < 0.82) return LeaderArchetype.MORAL_RELIGIOUS_SAGE;
+        if (r < 0.92) return LeaderArchetype.INTELLECTUAL_CHRONICLER;
         return LeaderArchetype.TOTALITARIAN_PURGER;
     }
 
@@ -126,6 +158,7 @@ public class ProceduralLeaderGenerator {
             case HYDRAULIC_AGRARIAN_INNOVATOR -> LEADER_TITLES_HYDRAULIC[random.nextInt(LEADER_TITLES_HYDRAULIC.length)];
             case MORAL_RELIGIOUS_SAGE -> LEADER_TITLES_SAGE[random.nextInt(LEADER_TITLES_SAGE.length)];
             case TOTALITARIAN_PURGER -> LEADER_TITLES_PURGER[random.nextInt(LEADER_TITLES_PURGER.length)];
+            case INTELLECTUAL_CHRONICLER -> LEADER_TITLES_CHRONICLER[random.nextInt(LEADER_TITLES_CHRONICLER.length)];
         });
     }
 }

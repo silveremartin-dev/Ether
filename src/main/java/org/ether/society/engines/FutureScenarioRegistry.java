@@ -111,18 +111,28 @@ public class FutureScenarioRegistry {
      * Finds matching PhysicalScenarioPreset for a given Scenario based on name or description.
      */
     public static PhysicalScenarioPreset findPresetForScenario(Scenario scenario) {
-        if (scenario == null || scenario.getName() == null) return null;
-        String name = scenario.getName().toLowerCase();
+        if (scenario == null) return null;
+        if (scenario.getPresetKey() != null) {
+            String key = scenario.getPresetKey().toLowerCase();
+            if (key.equals("business_as_usual") || key.equals("ssp5_85")) return SCENARIO_BAU;
+            if (key.contains("nuclear_winter") || key.contains("guerre_nucleaire")) return SCENARIO_NUCLEAR_WINTER;
+            if (key.contains("singularity")) return SCENARIO_SINGULARITY;
+            if (key.contains("amoc")) return SCENARIO_AMOC_COLLAPSE;
+            if (key.contains("phosphate")) return SCENARIO_PEAK_PHOSPHORUS;
+            if (key.contains("space")) return SCENARIO_SPACE_COLONY;
+        }
+
+        String name = scenario.getName() != null ? scenario.getName().toLowerCase() : "";
         String desc = scenario.getDescription() != null ? scenario.getDescription().toLowerCase() : "";
 
         if (name.contains("sovereign") || name.contains("maître du monde") || name.contains("leviathan") || desc.contains("gouvernance ia")) {
             return name.contains("multipolar") || name.contains("guerre froide") ? SCENARIO_SOVEREIGN_AI_MULTIPOLAR : SCENARIO_SOVEREIGN_AI_SINGLE;
         }
-        if (name.contains("nucléaire") || name.contains("nuclear") || desc.contains("nucléaire") || desc.contains("soot")) {
-            return SCENARIO_NUCLEAR_WINTER;
-        }
-        if (name.contains("business as usual") || name.contains("ssp5") || name.contains("bau")) {
+        if (name.contains("business as usual") || name.contains("ssp5") || name.contains("bau") || name.contains("tendancielle biophysique")) {
             return SCENARIO_BAU;
+        }
+        if (name.contains("hiver nucléaire") || name.contains("nuclear winter") || desc.contains("hiver nucléaire") || desc.contains("nuclear winter") || name.contains("guerre nucléaire")) {
+            return SCENARIO_NUCLEAR_WINTER;
         }
         if (name.contains("singularité") || name.contains("singularity") || name.contains("asi")) {
             return SCENARIO_SINGULARITY;

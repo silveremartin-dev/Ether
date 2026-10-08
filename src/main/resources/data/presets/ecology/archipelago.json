@@ -45,9 +45,9 @@
     "seasonSource" : "",
     "seasonSeed" : 79777,
     "canonicalPlanet" : "none",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒÅØ´©Å ARCHIPELAGO WORLD: Oceanic world dotted with micro-continents, island chains, and shallow seas. High maritime transport efficiency, low continuous agricultural landmasses, strong naval trade dependencies.",
+    "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 550.0,
   "soilOrganicCarbonGtC" : 1800.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "none",
-  "presetDescription" : "\uD83C\uDFDD ARCHIPEL (Archipelago) : Monde insulaire fragmenté en milliers d'atolls tropicaux, lagons turquoise peu profonds, récifs coralliens et connectivité maritime maximale.",
-  "associatedEpochYear" : 2026
+  "associatedEpochYear" : 2026,
+  "presetDescription" : "­ƒÅØ´©Å ARCHIPELAGO WORLD: Oceanic world dotted with micro-continents, island chains, and shallow seas. High maritime transport efficiency, low continuous agricultural landmasses, strong naval trade dependencies."
 }

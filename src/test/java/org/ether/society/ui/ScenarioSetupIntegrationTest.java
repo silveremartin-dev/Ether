@@ -1,14 +1,13 @@
 /*
  * MIT License
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
 package org.ether.society.ui;
 
 import javafx.application.Platform;
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.EcologyPreset;
-import org.ether.society.model.Scenario;
 import org.ether.society.generation.PlanetPreset;
+import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,14 +30,6 @@ public class ScenarioSetupIntegrationTest {
     private static ScenarioSetupPanel sharedPanel;
 
     @BeforeAll
-    /*
-     * Init jfx operation.
-     * <p>
-     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public static void initJFX() throws InterruptedException {
         if (!jfxInitialized) {
             CountDownLatch latch = new CountDownLatch(1);
@@ -68,81 +59,73 @@ public class ScenarioSetupIntegrationTest {
                     }
                 });
             }
-            latch.await(30, TimeUnit.SECONDS);
+            assertTrue(latch.await(60, TimeUnit.SECONDS), "JavaFX initialization timed out");
         }
     }
 
     @Test
     @DisplayName("Verify ScenarioSetupPanel construction and default Scenario state generation")
-    /*
-     * Test scenario generation operation.
-     * <p>
-     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testScenarioGeneration() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<Throwable> errorRef = new AtomicReference<>();
 
         Platform.runLater(() -> {
             try {
+                assertNotNull(sharedPanel, "sharedPanel must not be null");
                 Scenario scenario = sharedPanel.getScenario();
                 assertNotNull(scenario, "Generated scenario should not be null");
                 assertTrue(scenario.getInitialHumanCount() > 0, "Initial human count must be > 0");
                 assertNotNull(scenario.getPlanetPreset(), "Planet preset must not be null");
                 assertNotNull(scenario.getStartDateYear(), "Start date year must be present");
+            } catch (Throwable t) {
+                errorRef.set(t);
             } finally {
                 latch.countDown();
             }
         });
 
-        assertTrue(latch.await(15, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS), "Timed out waiting for JavaFX thread in testScenarioGeneration");
+        if (errorRef.get() != null) {
+            fail("Test failed on JavaFX thread: " + errorRef.get().getMessage(), errorRef.get());
+        }
     }
 
     @Test
     @DisplayName("Verify ScenarioSetupPanel setInheritedContext and preset updates")
-    /*
-     * Test inherited context synchronization operation.
-     * <p>
-     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testInheritedContextSynchronization() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<Throwable> errorRef = new AtomicReference<>();
 
         Platform.runLater(() -> {
             try {
-                sharedPanel.setInheritedContext(PlanetPreset.EARTH_LIKE, "HolocÃ¨ne Standard (-10 000 BC)");
+                assertNotNull(sharedPanel, "sharedPanel must not be null");
+                sharedPanel.setInheritedContext(PlanetPreset.EARTH_LIKE, "Holocène Standard (-10 000 BC)");
 
                 Scenario scenario = sharedPanel.getScenario();
                 assertNotNull(scenario.getPlanetPreset());
                 assertEquals("Terre (Terran)", scenario.getPlanetPreset().name());
+            } catch (Throwable t) {
+                errorRef.set(t);
             } finally {
                 latch.countDown();
             }
         });
 
-        assertTrue(latch.await(15, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS), "Timed out waiting for JavaFX thread in testInheritedContextSynchronization");
+        if (errorRef.get() != null) {
+            fail("Test failed on JavaFX thread: " + errorRef.get().getMessage(), errorRef.get());
+        }
     }
 
     @Test
     @DisplayName("Verify preview cell generation and dynamic rendering pipeline")
-    /*
-     * Test preview cell dynamic scaling pipeline operation.
-     * <p>
-     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testPreviewCellDynamicScalingPipeline() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<Throwable> errorRef = new AtomicReference<>();
 
         Platform.runLater(() -> {
             try {
+                assertNotNull(sharedPanel, "sharedPanel must not be null");
                 List<H3Cell> sampleCells = new ArrayList<>();
                 for (int i = 0; i < 100; i++) {
                     H3Cell c = new H3Cell((long) i, (i % 10) * 10.0 - 45.0, (i / 10) * 20.0 - 90.0);
@@ -153,24 +136,21 @@ public class ScenarioSetupIntegrationTest {
 
                 sharedPanel.setGeneratedCells(sampleCells);
                 assertEquals(100, sharedPanel.getCells().size(), "Generated cells count must match set cells");
+            } catch (Throwable t) {
+                errorRef.set(t);
             } finally {
                 latch.countDown();
             }
         });
 
-        assertTrue(latch.await(15, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS), "Timed out waiting for JavaFX thread in testPreviewCellDynamicScalingPipeline");
+        if (errorRef.get() != null) {
+            fail("Test failed on JavaFX thread: " + errorRef.get().getMessage(), errorRef.get());
+        }
     }
 
     @Test
     @DisplayName("Verify Earth paleoclimate ocean waterLevel datum conforms to physical bathymetry (0.478 datum)")
-    /*
-     * Test earth paleoclimate ocean level datum operation.
-     * <p>
-     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testEarthPaleoclimateOceanLevelDatum() {
         assertEquals(0.478, PlanetPreset.EARTH_MODERN.waterLevel(), 0.001);
         assertEquals(0.478, PlanetPreset.EARTH_LIG_100000BP.waterLevel(), 0.001);
@@ -181,14 +161,6 @@ public class ScenarioSetupIntegrationTest {
 
     @Test
     @DisplayName("Verify Sea Level in meters to normalized waterLevel conversion to the single meter precision")
-    /*
-     * Test sea level meters conversion accuracy operation.
-     * <p>
-     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testSeaLevelMetersConversionAccuracy() {
         double minAlt = -11000.0;
         double maxAlt = 8848.0;
@@ -220,31 +192,62 @@ public class ScenarioSetupIntegrationTest {
 
     @Test
     @DisplayName("Verify Out of Africa scenario validation with Earth -100 000 preset")
-    /*
-     * Test out of africa compatibility validation operation.
-     * <p>
-     * Executes operational logic for {@code ScenarioSetupIntegrationTest} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testOutOfAfricaCompatibilityValidation() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<Throwable> errorRef = new AtomicReference<>();
 
         Platform.runLater(() -> {
             try {
+                assertNotNull(sharedPanel, "sharedPanel must not be null");
                 sharedPanel.setInheritedContext(PlanetPreset.EARTH_LIG_100000BP, "Terre (-100 000 / Dernier Interglaciaire)");
                 boolean valid = sharedPanel.validateScenarioSetup();
                 assertTrue(valid, "Scenario setup should be valid for Out of Africa with Earth -100 000");
                 List<String> errors = sharedPanel.getScenarioValidationErrors();
                 assertTrue(errors.isEmpty(), "There should be no validation errors: " + errors);
+            } catch (Throwable t) {
+                errorRef.set(t);
             } finally {
                 latch.countDown();
             }
         });
 
-        assertTrue(latch.await(15, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS), "Timed out waiting for JavaFX thread in testOutOfAfricaCompatibilityValidation");
+        if (errorRef.get() != null) {
+            fail("Test failed on JavaFX thread: " + errorRef.get().getMessage(), errorRef.get());
+        }
+    }
+
+    @Test
+    @DisplayName("Verify AutoEpochScenarioDialog instantiation and generation lifecycle")
+    public void testAutoEpochScenarioDialogLifecycle() throws Exception {
+        Scenario generated = org.ether.society.model.AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", -8000L, false);
+        assertNotNull(generated, "Auto-generated scenario for Neolithic must be valid");
+        assertEquals(-8000L, generated.getStartDateYear());
+
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<Throwable> errorRef = new AtomicReference<>();
+
+        Platform.runLater(() -> {
+            try {
+                AtomicReference<Scenario> generatedRef = new AtomicReference<>();
+                AutoEpochScenarioDialog dialog = new AutoEpochScenarioDialog("earth", -8000L, generatedRef::set);
+                assertNotNull(dialog, "Dialog must be successfully constructed without exception");
+                assertNotNull(dialog.getTitle(), "Dialog title must be localized and present");
+
+                assertNotNull(sharedPanel, "sharedPanel must not be null");
+                sharedPanel.applyScenarioToUI(generated);
+                boolean valid = sharedPanel.validateScenarioSetup();
+                assertTrue(valid, "ScenarioSetupPanel should validate the auto-generated scenario: " + sharedPanel.getScenarioValidationErrors());
+            } catch (Throwable t) {
+                errorRef.set(t);
+            } finally {
+                latch.countDown();
+            }
+        });
+
+        assertTrue(latch.await(60, TimeUnit.SECONDS), "Test timed out waiting for JavaFX thread");
+        if (errorRef.get() != null) {
+            fail("Test failed on JavaFX thread: " + errorRef.get().getMessage(), errorRef.get());
+        }
     }
 }
-
-

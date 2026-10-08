@@ -104,7 +104,23 @@ public class PreferencesPanel extends BorderPane {
         themeHeaderLabel.getStyleClass().add("label-section-header");
         themeSection = createCardSectionWithHeader(themeHeaderLabel, new VBox(10, themeOptions));
 
-        root.getChildren().addAll(titleHeader, langSection, themeSection);
+        // 3. About & Version Section
+        Label aboutHeaderLabel = new Label("ℹ️ " + I18n.getOrDefault("pref.about.title", "About Ether & System Information"));
+        aboutHeaderLabel.getStyleClass().add("label-section-header");
+        
+        Label versionBadge = new Label(org.ether.society.config.AppVersion.getReleaseTitle() + " (" + org.ether.society.config.AppVersion.getRawVersion() + ")");
+        versionBadge.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-background-color: rgba(56, 189, 248, 0.15); -fx-padding: 4 10; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6;");
+
+        Label engineDesc = new Label(I18n.getOrDefault("pref.about.desc", "Physical-based Cliodynamic & Historical Planetary Simulation Engine"));
+        engineDesc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 12px;");
+
+        Label javaRuntime = new Label(String.format("Java %s (%s) — %s", System.getProperty("java.version"), System.getProperty("os.arch"), System.getProperty("os.name")));
+        javaRuntime.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-family: monospace;");
+
+        VBox aboutContent = new VBox(8, versionBadge, engineDesc, javaRuntime);
+        VBox aboutSection = createCardSectionWithHeader(aboutHeaderLabel, aboutContent);
+
+        root.getChildren().addAll(titleHeader, langSection, themeSection, aboutSection);
 
         ScrollPane scroll = new ScrollPane(root);
         scroll.setFitToWidth(true);

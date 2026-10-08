@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test suite verifying Tier 2 Optional Cliodynamic & Phenomenological Plugins:
  * 1. West-Bettencourt Urban Allometry Engine
- * 2. KÃ¼mmel / Ayres-Warr Biophysical Exergy Economics Engine
+ * 2. Kümmel / Ayres-Warr Biophysical Exergy Economics Engine
  * 3. Spatial Metapopulation SEIR-V Epidemiology Engine
  * 4. Hotelling Resource Depletion Engine
  * 5. Krugman NEG Core-Periphery Agglomeration Engine
@@ -94,7 +94,7 @@ public class Tier2CliodynamicPluginsTestSuite {
     }
 
     @Test
-    @DisplayName("KÃ¼mmel / Ayres-Warr Exergy: Thermodynamic production function")
+    @DisplayName("Kümmel / Ayres-Warr Exergy: Thermodynamic production function")
     /*
      * Test kummel ayres exergy operation.
      * <p>

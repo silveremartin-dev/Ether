@@ -41,16 +41,34 @@ public class I18n {
 
     private static final ResourceBundle.Control NO_DEFAULT_LOCALE_CONTROL = new ResourceBundle.Control() {
         @Override
-        /*
-         * Get candidate locales.
-         * Enforces physical invariants and updates associated state variables within {@code for}.
-         *
-         * @param baseName the base name parameter (String)
-         * @param locale the locale parameter (Locale)
-         * @return the resulting computation or state reference
-         */
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return List.of(locale, Locale.ROOT);
+        }
+
+        @Override
+        public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
+                throws IllegalAccessException, InstantiationException, java.io.IOException {
+            String bundleName = toBundleName(baseName, locale);
+            String resourceName = toResourceName(bundleName, "properties");
+            java.io.InputStream stream = null;
+            if (reload) {
+                java.net.URL url = loader.getResource(resourceName);
+                if (url != null) {
+                    java.net.URLConnection connection = url.openConnection();
+                    if (connection != null) {
+                        connection.setUseCaches(false);
+                        stream = connection.getInputStream();
+                    }
+                }
+            } else {
+                stream = loader.getResourceAsStream(resourceName);
+            }
+            if (stream != null) {
+                try (java.io.InputStreamReader reader = new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)) {
+                    return new java.util.PropertyResourceBundle(reader);
+                }
+            }
+            return super.newBundle(baseName, locale, format, loader, reload);
         }
     };
 

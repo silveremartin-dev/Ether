@@ -130,6 +130,10 @@ public class HistoricalIntervention {
                 this.stateCapacityDelta = -intensity * 0.20;
                 this.politicalInstabilityDelta = intensity * 0.40;
             }
+            case INTELLECTUAL_CHRONICLER -> {
+                this.asabiyyahDelta = intensity * 0.15;
+                this.stateCapacityDelta = intensity * 0.10;
+            }
         }
     }
 
@@ -232,6 +236,7 @@ public class HistoricalIntervention {
                     case INSTITUTIONAL_REFORMER -> 0.35;
                     case MORAL_RELIGIOUS_SAGE -> 0.30;
                     case TOTALITARIAN_PURGER -> 0.20;
+                    case INTELLECTUAL_CHRONICLER -> 0.40;
                 };
             }
         }

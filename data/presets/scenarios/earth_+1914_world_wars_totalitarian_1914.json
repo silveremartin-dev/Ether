@@ -1,6 +1,6 @@
 {
-  "name" : "Guerres Mondiales, Rupture Totalitaire & Ãˆre NuclÃ©aire (1914)",
-  "description" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : Guerre Industrielle Totale, Ruptures IdÃ©ologiques & Bombe Atomique (1914 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise la pÃ©riode de crise systÃ©mique paroxystique de la modernitÃ© industrielle (1914-1945). Mobilisation intÃ©grale de l'exergie fossile et chimique (synthÃ¨se Haber-Bosch), ruptures totalitaires (1917, 1933), destruction massive de capital en Europe/Asie, et franchissement du seuil de destruction thermonuclÃ©aire (1945).\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ DÃ©ploiement de la guerre industrielle et de la puissance de feu cinÃ©tique (artillerie lourde, aviation, blindÃ©s).\nâ€¢ Ruptures de rÃ©gime idÃ©ologiques extrÃªmes (collectivisme soviÃ©tique, militarisme fasciste) et purges dÃ©mographiques.\nâ€¢ Chute brutale du capital en 1939-1945 suivie de la reconstruction fordiste accÃ©lÃ©rÃ©e des Trente Glorieuses.\n",
+  "name" : "Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)",
+  "description" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : Guerre Industrielle Totale, Ruptures IdÃ©ologiques & Bombe Atomique (1914 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la période de crise systémique paroxystique de la modernité industrielle (1914-1945). Mobilisation intégrale de l'exergie fossile et chimique (synthèse Haber-Bosch), ruptures totalitaires (1917, 1933), destruction massive de capital en Europe/Asie, et franchissement du seuil de destruction thermonucléaire (1945).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Déploiement de la guerre industrielle et de la puissance de feu cinétique (artillerie lourde, aviation, blindés).\n• Ruptures de régime idéologiques extrêmes (collectivisme soviétique, militarisme fasciste) et purges démographiques.\n• Chute brutale du capital en 1939-1945 suivie de la reconstruction fordiste accélérée des Trente Glorieuses.\n",
   "id" : null,
   "presetKey" : "world_wars_totalitarian_1914",
   "planetPreset" : {
@@ -47,9 +47,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -188,6 +188,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Guerres Mondiales, Rupture Totalitaire & Ãˆre NuclÃ©aire (1914)",
-  "displayDescription" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : Guerre Industrielle Totale, Ruptures IdÃ©ologiques & Bombe Atomique (1914 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise la pÃ©riode de crise systÃ©mique paroxystique de la modernitÃ© industrielle (1914-1945). Mobilisation intÃ©grale de l'exergie fossile et chimique (synthÃ¨se Haber-Bosch), ruptures totalitaires (1917, 1933), destruction massive de capital en Europe/Asie, et franchissement du seuil de destruction thermonuclÃ©aire (1945).\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ DÃ©ploiement de la guerre industrielle et de la puissance de feu cinÃ©tique (artillerie lourde, aviation, blindÃ©s).\nâ€¢ Ruptures de rÃ©gime idÃ©ologiques extrÃªmes (collectivisme soviÃ©tique, militarisme fasciste) et purges dÃ©mographiques.\nâ€¢ Chute brutale du capital en 1939-1945 suivie de la reconstruction fordiste accÃ©lÃ©rÃ©e des Trente Glorieuses.\n"
+  "displayName" : "Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)",
+  "displayDescription" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : Guerre Industrielle Totale, Ruptures IdÃ©ologiques & Bombe Atomique (1914 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la période de crise systémique paroxystique de la modernité industrielle (1914-1945). Mobilisation intégrale de l'exergie fossile et chimique (synthèse Haber-Bosch), ruptures totalitaires (1917, 1933), destruction massive de capital en Europe/Asie, et franchissement du seuil de destruction thermonucléaire (1945).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Déploiement de la guerre industrielle et de la puissance de feu cinétique (artillerie lourde, aviation, blindés).\n• Ruptures de régime idéologiques extrêmes (collectivisme soviétique, militarisme fasciste) et purges démographiques.\n• Chute brutale du capital en 1939-1945 suivie de la reconstruction fordiste accélérée des Trente Glorieuses.\n"
 }

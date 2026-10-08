@@ -24,8 +24,12 @@ public class SaveMetadata {
     private int month;
     /* Internal state variable for scenario name (String). */
     private String scenarioName;
-    /* Internal state variable for version (String). */
-    private String version;
+    /* Internal state variable for cell count (int). */
+    private int cellCount;
+    /* Internal state variable for H3 resolution (int). */
+    private int h3Resolution;
+    /* Internal state variable for software version (String). */
+    private String version = org.ether.society.config.AppVersion.getRawVersion();
 
     /*
      * Save metadata.
@@ -46,14 +50,59 @@ public class SaveMetadata {
      * @param scenarioName the scenario name parameter (String)
      */
     public SaveMetadata(String id, String name, long year, int month, String scenarioName) {
+        this(id, name, year, month, scenarioName, 0, 3);
+    }
+
+    /*
+     * Save metadata with spatial topology parameters.
+     *
+     * @param id the save ID
+     * @param name the save name
+     * @param year current simulation year
+     * @param month current simulation month
+     * @param scenarioName name of scenario
+     * @param cellCount total hexagonal cells in grid
+     * @param h3Resolution H3 spatial resolution level
+     */
+    public SaveMetadata(String id, String name, long year, int month, String scenarioName, int cellCount, int h3Resolution) {
         this.id = id;
         this.name = name;
         this.timestamp = LocalDateTime.now();
         this.year = year;
         this.month = month;
         this.scenarioName = scenarioName;
+        this.cellCount = cellCount;
+        this.h3Resolution = h3Resolution;
         this.version = "1.0.0-beta.2";
     }
+
+    /*
+     * Get cell count.
+     *
+     * @return number of cells in simulation grid
+     */
+    public int getCellCount() { return cellCount; }
+
+    /*
+     * Set cell count.
+     *
+     * @param cellCount the cell count
+     */
+    public void setCellCount(int cellCount) { this.cellCount = cellCount; }
+
+    /*
+     * Get H3 spatial resolution.
+     *
+     * @return resolution level
+     */
+    public int getH3Resolution() { return h3Resolution; }
+
+    /*
+     * Set H3 spatial resolution.
+     *
+     * @param h3Resolution the resolution level
+     */
+    public void setH3Resolution(int h3Resolution) { this.h3Resolution = h3Resolution; }
 
     /*
      * Get id.

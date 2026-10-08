@@ -1,4 +1,4 @@
-﻿# Ether Deployment & Release Guide
+# Ether Deployment & Release Guide
 
 > **Zero-Configuration Instant Deployment, Standalone Portable Execution, and High-Performance Clustered Computing**
 
@@ -62,17 +62,49 @@ To generate a fully self-contained distribution archive for end-user distributio
 
 ### On Windows:
 ```cmd
-scripts\package_release.bat 1.0.0-beta.2
+powershell -ExecutionPolicy Bypass -File scripts\build\package-release.ps1 -Platform standalone
 ```
 
 ### On Linux / macOS:
 ```bash
-bash scripts/package_release.sh 1.0.0-beta.2
+./scripts/build/package-release.ps1 -Platform standalone
 ```
 
 This generates:
-* `dist/Ether-v1.0.0-beta.2-standalone/` — Unpacked ready-to-run folder
-* `dist/Ether-v1.0.0-beta.2-standalone.zip` (and `.tar.gz`) — Portable compressed archive with executable fat JAR, all documentation, GIS presets, and launcher scripts.
+* `dist/Ether-v1.0.0-beta.2-standalone/` — Unpacked ready-to-run folder (~44 MB)
+* `dist/Ether-v1.0.0-beta.2-standalone.zip` (and `.tar.gz`) — Portable compressed archive with executable fat JAR, documentation, and multi-OS launcher scripts.
+
+---
+
+## 4. Offline Execution, Background Sync & Non-Destructive Branching
+
+### 🛡️ 100% Offline Capability (Zero Network Dependency)
+Ether is fully functional in completely offline, air-gapped, or field environments:
+* All built-in baseline scenario archetypes (Paleolithic, Neolithic, Bronze Age, Classical, Medieval, Modern, Planetary), planet models, and cliodynamic equations are **embedded directly into the executable fat JAR**.
+* An internet connection is **never mandatory** to launch, simulate, modify parameters, save checkpoints, or export analytics.
+
+### 🌐 Asynchronous GitHub Content Synchronization
+When an internet connection is available, Ether launches a background daemon worker (`GitHubContentSyncService`) on startup:
+* **Non-blocking**: Downloads official scenario updates, cartographic tensors (`data/maps/ether/**`), historical event chronicles (`data/events/`, `data/history/`), and official baseline checkpoints (`saves/**`) in the background without stalling the JavaFX UI.
+* **Dynamic Scenario Discovery**: Newly published scenarios on GitHub appear automatically in the `ScenarioSetupPanel` dropdown in real time without requiring an application restart.
+
+### 🔒 Non-Destructive Conflict & Branching Protection
+If a user customizes a scenario (e.g. changes H3 resolution, time step, cohort size, active theories, custom maps, or saves a custom run):
+* The sync engine computes local SHA-256 hashes against the sync manifest (`data/.sync_manifest.json`).
+* **User modifications and custom branches are strictly protected**: the synchronizer detects local edits and **never overwrites** user-modified files or user saves.
+* Factory reference scenarios always remain accessible alongside user-created presets.
+
+---
+
+## 5. Multi-Platform Cache Management (Desktop, Cloud, Docker)
+
+Cache storage is unified and automatically managed across desktop, cloud, and containerized deployments via `EtherPaths.getCacheDir()`:
+
+| Environment | Cache Path Priority | Configuration |
+|---|---|---|
+| **Container / Cloud (Docker, Kubernetes, GCP)** | `ETHER_CACHE_DIR` environment variable | Set `ENV ETHER_CACHE_DIR=/tmp/ether_cache` or mount a volume |
+| **Standalone Portable Desktop** | `./data/cache/` in project root | Automatically created in the application working folder |
+| **System-Wide Desktop Install** | `~/.ether_society/cache/` | User home fallback if no local data folder is present |
 
 ---
 
@@ -134,7 +166,7 @@ Launch the central master server orchestrator with custom spatial partitioning, 
 # Start Master Cluster Server
 java -jar bin/ether.jar --role=master \
      --port=9090 \
-     --secret=EtherClusterSecret2026 \
+     --secret=${CLUSTER_SECRET:-YOUR_CLUSTER_SECRET} \
      --partition-strategy=LOAD_AWARE \
      --barrier-timeout=5000 \
      --snapshots --snapshot-interval=50 \
@@ -151,7 +183,7 @@ You can scale horizontally by launching as many heterogeneous worker nodes as de
 # Node 1: Dedicated GPU Compute Worker (OpenCL Shaders)
 java -jar bin/ether.jar --role=worker \
      --master-host=192.168.1.100 --port=9090 \
-     --secret=EtherClusterSecret2026 \
+     --secret=${CLUSTER_SECRET:-YOUR_CLUSTER_SECRET} \
      --node-id=worker-gpu-01 \
      --worker-capacity="NVIDIA RTX 4090 (24GB VRAM)" \
      --engine=gpu --worker-gpu
@@ -159,7 +191,7 @@ java -jar bin/ether.jar --role=worker \
 # Node 2: Native Rust Multi-Core Worker (Rayon + AVX-512)
 java -jar bin/ether.jar --role=worker \
      --master-host=192.168.1.100 --port=9090 \
-     --secret=EtherClusterSecret2026 \
+     --secret=${CLUSTER_SECRET:-YOUR_CLUSTER_SECRET} \
      --node-id=worker-rust-02 \
      --worker-capacity="AMD EPYC 64-Core Native Rust" \
      --engine=rust --threads=64
@@ -167,7 +199,7 @@ java -jar bin/ether.jar --role=worker \
 # Node 3: Java 21 SIMD Vector Worker
 java -jar bin/ether.jar --role=worker \
      --master-host=192.168.1.100 --port=9090 \
-     --secret=EtherClusterSecret2026 \
+     --secret=${CLUSTER_SECRET:-YOUR_CLUSTER_SECRET} \
      --node-id=worker-simd-03 \
      --worker-capacity="Intel Xeon 32-Core SIMD" \
      --engine=simd --threads=32
@@ -175,7 +207,7 @@ java -jar bin/ether.jar --role=worker \
 # Node 4: Ultra-Deterministic Batch Node (Single-Thread SW Fallback)
 java -jar bin/ether.jar --role=worker \
      --master-host=192.168.1.100 --port=9090 \
-     --secret=EtherClusterSecret2026 \
+     --secret=${CLUSTER_SECRET:-YOUR_CLUSTER_SECRET} \
      --node-id=worker-safe-04 \
      --engine=safe --single-core
 ```

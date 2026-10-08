@@ -42,7 +42,7 @@
   "seasonSource" : "",
   "seasonSeed" : 35333,
   "canonicalPlanet" : "none",
-  "tidalLocked" : true,
-  "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
-  "associatedEpochYear" : 2026
+  "associatedEpochYear" : 2026,
+  "presetDescription" : "­ƒæü´©Å TIDALLY LOCKED WORLD (Eyeball): Synchronous rotation around a red dwarf star. Permanent blistering day side, frozen night hemisphere, and a narrow habitable twilight terminator ring.",
+  "tidalLocked" : true
 }

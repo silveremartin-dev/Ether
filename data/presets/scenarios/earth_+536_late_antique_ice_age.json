@@ -1,6 +1,6 @@
 {
-  "name" : "Le Petit Ã‚ge Glaciaire de l'AntiquitÃ© Tardive & Peste de Justinien (536)",
-  "description" : "ðŸŒ‹ SCÃ‰NARIO HISTORIQUE : L'Anomalie Climatique Volcanique de 536 & Choc Sanitaire\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nL'annÃ©e 536 est considÃ©rÃ©e par les historiens du climat comme \"la pire annÃ©e de l'histoire humaine\". Deux Ã©ruptions volcaniques super-massives consÃ©cutives ont injectÃ© un voile d'aÃ©rosols stratosphÃ©riques occultant le Soleil pendant 18 mois.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Chute brutale des tempÃ©ratures estivales (-2Â°C Ã  -3Â°C) et effondrement des rÃ©coltes cÃ©rÃ©aliÃ¨res eurasiennes.\nâ€¢ Propagation fulgurante de la Peste de Justinien (Yersinia pestis) le long des routes de commerce maritime.\nâ€¢ DÃ©stabilisation militaire des frontiÃ¨res impÃ©riales byzantines et grandes migrations de peuples des steppes.\n",
+  "name" : "Le Petit Âge Glaciaire de l'Antiquité Tardive & Peste de Justinien (536)",
+  "description" : "\uD83C\uDF0B SCÉNARIO HISTORIQUE : L'Anomalie Climatique Volcanique de 536 & Choc Sanitaire\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nL'année 536 est considérée par les historiens du climat comme \"la pire année de l'histoire humaine\". Deux éruptions volcaniques super-massives consécutives ont injecté un voile d'aérosols stratosphériques occultant le Soleil pendant 18 mois.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute brutale des températures estivales (-2°C à -3°C) et effondrement des récoltes céréalières eurasiennes.\n• Propagation fulgurante de la Peste de Justinien (Yersinia pestis) le long des routes de commerce maritime.\n• Déstabilisation militaire des frontières impériales byzantines et grandes migrations de peuples des steppes.\n",
   "id" : null,
   "presetKey" : "late_antique_ice_age",
   "planetPreset" : {
@@ -47,9 +47,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -188,6 +188,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Petit Âge Glaciaire de l'Antiquité Tardive (536)",
-  "displayDescription" : "❄ SCÉNARIO PALÉOCLIMATIQUE : L'Hiver Volcanique de 536 & La Crise de l'Antiquité Tardive (536 apr. J.-C.)\n\nRefroidissement mondial brutal déclenché par une série d'éruptions volcaniques majeures. Effondrement des récoltes, peste de Justinien et grandes migrations eurasiennes."
+  "displayName" : "Late Antique Little Ice Age & Migrations (536 AD)",
+  "displayDescription" : "PALEOCLIMATE SCENARIO: Volcanic Winter 536 AD & Late Antique Crisis\n\nTriple volcanic eruptions trigger severe global cooling, crop failures, Justinianic Plague pandemic, and large-scale Eurasian barbarian migrations."
 }

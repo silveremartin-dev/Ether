@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Advanced Maritime Strategy & Land Reclamation Engine (PoldÃ©risation & Seasteading).
+ * Advanced Maritime Strategy & Land Reclamation Engine (Poldérisation & Seasteading).
  *
- * 1. PoldÃ©risation: Transforms shallow coastal/marine cells into fertile reclaimed land (polders)
+ * 1. Poldérisation: Transforms shallow coastal/marine cells into fertile reclaimed land (polders)
  *    when local technology level >= 4.0 and capital investment >= 100.0.
  * 2. Seasteading: Deploys deep-sea floating platforms & oceanic habitats
  *    when local technology level >= 8.5 and capital investment >= 500.0.
@@ -64,7 +64,7 @@ public class LandReclamationEngine {
             boolean isCoastal = cell.getIsCoastal();
             Biome biome = cell.getBiome();
 
-            // 1. PoldÃ©risation check (Coastal water / shallow elevation reclamation)
+            // 1. Poldérisation check (Coastal water / shallow elevation reclamation)
             if (!cell.getIsPolder() && (isCoastal || biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() <= 0))) {
                 if (tech >= polderTechThreshold && capital >= polderCapitalThreshold) {
                     cell.setIsPolder(true);

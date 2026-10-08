@@ -1,5 +1,5 @@
 {
-  "name" : "Terre (-25 000 / DÃ©but LGM & BÃ©ringie)",
+  "name" : "Terre (-25 000 / Début LGM & Béringie)",
   "resolution" : 4,
   "radiusKm" : 6371.0,
   "dayLengthHours" : 24.0,
@@ -42,7 +42,7 @@
   "seasonSource" : "ðŸŒ Terre (-25000 BP) â€” SaisonnalitÃ© Glaciaire",
   "seasonSeed" : 14351,
   "canonicalPlanet" : "earth",
-  "tidalLocked" : false,
-  "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique.",
-  "associatedEpochYear" : -25000
+  "associatedEpochYear" : -25000,
+  "presetDescription" : "­ƒÅö´©Å EARTH (-25,000 BP / LGM Onset & Beringia): Onset of the Last Glacial Maximum. Falling sea levels (-100m) expose the Bering land bridge connecting Siberia and Alaska, enabling human migration to the Americas.",
+  "tidalLocked" : false
 }

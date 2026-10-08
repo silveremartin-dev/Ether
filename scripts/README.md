@@ -91,7 +91,7 @@ Executes a fast headless simulation run directly on the host machine without gra
 * **Linux / macOS**: `./scripts/run/start-headless.sh CLASSICAL 1000 5000`
 
 ### `start-master` & `start-worker` (Distributed Cluster)
-* **Master Node**: `scripts\run\start-master.bat MESOPOTAMIA_BRONZE_AGE 9090 EtherClusterSecret2026 2000 20000`
+* **Master Node**: `scripts\run\start-master.bat MESOPOTAMIA_BRONZE_AGE 9090 YOUR_CLUSTER_SECRET 2000 20000`
 * **Worker Node**: `scripts\run\start-worker.bat 192.168.1.50 9090`
 
 ---

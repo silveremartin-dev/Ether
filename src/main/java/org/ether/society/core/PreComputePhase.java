@@ -314,15 +314,98 @@ public class PreComputePhase {
             return;
         }
 
-        // 2. Otherwise distribute via standard ProceduralPopulationEngine
-        logger.info("Distributing initial population via ProceduralPopulationEngine: {} humans", scenario.getInitialHumanCount());
+        // 2. Otherwise: empirical raster for Earth, procedural engine for non-Earth planets only
         long totalPop = scenario.getInitialHumanCount();
         double capitalK0 = scenario.getInitialCapitalPerCapita();
         double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
         String pattern = scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL";
         long startYear = scenario.getStartDateYear();
 
+        // Earth is identified exclusively by the Tab 1 PlanetPreset canonical planet / elevation source.
+        // A null preset (synthetic unit-test grids) is NOT treated as Earth.
+        boolean isEarth = scenario.getPlanetPreset() != null
+                && ("earth".equalsIgnoreCase(scenario.getPlanetPreset().getCanonicalPlanet())
+                    || "earth".equalsIgnoreCase(scenario.getPlanetPreset().elevationMapSource()));
+
+        if (isEarth) {
+            // Empirical path: sample the epoch density raster (HYDE-derived earth_<year>_density.png).
+            distributeEmpiricalEarthPopulation(cells, totalPop, startYear);
+            return;
+        }
+
+        // Procedural path: reserved for non-Earth / user-created sandbox planets only.
+        logger.info("Distributing initial population via ProceduralPopulationEngine (non-Earth planet): {} humans", totalPop);
         org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, false, startYear);
+    }
+
+    /**
+     * Distributes the initial Earth population strictly proportionally to the empirical epoch density raster.
+     * <p>
+     * The raster is resolved by {@link org.ether.society.data.HistoricalMapGenerator#populateScenarioHistoricalMaps}
+     * from {@code data/maps/ether/earth/<year>/earth_<year>_density.png} (nearest anchored epoch). Each land cell
+     * receives
+     * $$P_i = P_{tot} \cdot \frac{\rho_i}{\sum_j \rho_j}$$
+     * where $\rho_i \in [0,1]$ is the equirectangular raster luminance sampled at the cell centroid. Total population
+     * is conserved exactly (no arbitrary multiplier). No procedural fallback is permitted for Earth.
+     *
+     * @param cells     simulation cells (possibly a clipped regional window)
+     * @param totalPop  target initial population inside the simulated window (humans)
+     * @param startYear scenario start year (used for logging only; epoch resolution is done by the map loader)
+     * @throws IllegalStateException if no empirical density raster can be resolved for this Earth scenario
+     */
+    private void distributeEmpiricalEarthPopulation(List<H3Cell> cells, long totalPop, long startYear) {
+        if (scenario.getCustomDensityBase64() == null || scenario.getCustomDensityBase64().isBlank()) {
+            org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(scenario);
+        }
+        String b64 = scenario.getCustomDensityBase64();
+        java.awt.image.BufferedImage densityImg = null;
+        if (b64 != null && !b64.isBlank()) {
+            try {
+                String payload = b64.contains(",") ? b64.substring(b64.indexOf(',') + 1) : b64;
+                densityImg = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(java.util.Base64.getDecoder().decode(payload)));
+            } catch (Exception e) {
+                logger.error("Failed to decode empirical Earth density raster: {}", e.getMessage());
+            }
+        }
+        if (densityImg == null) {
+            throw new IllegalStateException("No empirical density raster found for Earth scenario '" + scenario.getName()
+                    + "' (year " + startYear + "). Procedural population fallback is forbidden for Earth.");
+        }
+
+        double[] weights = new double[cells.size()];
+        double total = 0.0;
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            c.setPopulation(0);
+            c.setBiomassHuman(0.0);
+            if (c.getLatitude() == null || c.getLongitude() == null) continue;
+            double rho = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(densityImg, c.getLatitude(), c.getLongitude());
+            if (rho > 0.0) {
+                if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN || (c.getElevation() != null && c.getElevation() < 0.0)) {
+                    c.setElevation(Math.max(15.0, c.getElevation() != null ? Math.abs(c.getElevation()) : 50.0));
+                    c.setBiome(Biome.PLAINS);
+                }
+                weights[i] = rho;
+                total += rho;
+            }
+        }
+        if (total <= 0.0) {
+            throw new IllegalStateException("Empirical density raster is empty over the simulated window for '" + scenario.getName() + "'.");
+        }
+        long assigned = 0;
+        int populated = 0;
+        for (int i = 0; i < cells.size(); i++) {
+            if (weights[i] <= 0.0) continue;
+            long p = Math.round(totalPop * (weights[i] / total));
+            if (p <= 0) continue;
+            H3Cell c = cells.get(i);
+            c.setPopulation((int) Math.min(Integer.MAX_VALUE, p));
+            c.setBiomassHuman((double) p);
+            assigned += p;
+            populated++;
+        }
+        logger.info("Empirical Earth density raster applied: {} humans across {} cells (year {}, no procedural generation)",
+                assigned, populated, startYear);
     }
 
     /*

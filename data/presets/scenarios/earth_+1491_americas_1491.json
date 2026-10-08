@@ -1,6 +1,6 @@
 {
-  "name" : "AmÃ©riques PrÃ©colombiennes : Tawantinsuyu & Anahuac (1491)",
-  "description" : "ðŸŒ½ SCÃ‰NARIO HISTORIQUE : Les AmÃ©riques Ã  la Veille du Contact (1491 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModÃ©lise les grands empires prÃ©colombiens (Empire Inca du Tawantinsuyu, Empire AztÃ¨que de la Triple Alliance) et les sociÃ©tÃ©s Mississippiennes avant la rupture Ã©pidÃ©mique.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Optimisation Ã©cologique des paysages anthropiques (terra preta amazonienne, terrasses andines, canaux chinampas).\nâ€¢ DensitÃ©s urbaines prÃ©colombiennes culminantes dans les bassins de Mexico (Tenochtitlan) et de Cuzco.\nâ€¢ Absence d'immunitÃ© croisÃ©e et vulnÃ©rabilitÃ© maximale face aux pathogÃ¨nes de l'Ancien Monde.\n",
+  "name" : "Amériques Précolombiennes : Tawantinsuyu & Anahuac (1491)",
+  "description" : "\uD83C\uDF3D SCÉNARIO HISTORIQUE : Les Amériques à la Veille du Contact (1491 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise les grands empires précolombiens (Empire Inca du Tawantinsuyu, Empire Aztèque de la Triple Alliance) et les sociétés Mississippiennes avant la rupture épidémique.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Optimisation écologique des paysages anthropiques (terra preta amazonienne, terrasses andines, canaux chinampas).\n• Densités urbaines précolombiennes culminantes dans les bassins de Mexico (Tenochtitlan) et de Cuzco.\n• Absence d'immunité croisée et vulnérabilité maximale face aux pathogènes de l'Ancien Monde.\n",
   "id" : null,
   "presetKey" : "americas_1491",
   "planetPreset" : {
@@ -47,9 +47,9 @@
     "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -98,9 +98,9 @@
       "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "associatedEpochYear" : 2026
+      "associatedEpochYear" : 2026,
+      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -119,8 +119,8 @@
     "customSeasonalityBase64" : null,
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -187,6 +187,6 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Amériques Précolombiennes & Réseaux Indigènes (1491)",
-  "displayDescription" : "\uD83C\uDFF9 SCÉNARIO HISTORIQUE : Le Monde Précolombien avant le Contact (1491 apr. J.-C.)\n\nInca (terrasses et voies royales), Aztèques (chinampas), Mississippiens (terramares) et sols anthropiques d'Amazonie (Terra Preta)."
+  "displayName" : "Pre-Columbian Americas Peak & Indigenous Networks (1491 AD)",
+  "displayDescription" : "HISTORICAL SCENARIO: Pre-Columbian Hemispheric Baseline (1491 AD)\n\nHigh-density Inca terrace engineering, Aztec chinampa hydro-agriculture, Mississippian mound centers, and Amazonian Terra Preta anthropogenic soils."
 }

@@ -23,10 +23,10 @@ import java.util.Objects;
  * <p>Models pathogen incubation (E), clinical infectious transmission (I), recovery/immunity (R),
  * and spatial cross-cell mobility diffusion:</p>
  * <pre>
- *   dS_i/dt = -Î²_i Â· S_i Â· (I_i / N_i) + Î£_j (M_ji S_j - M_ij S_i)
- *   dE_i/dt = Î²_i Â· S_i Â· (I_i / N_i) - Ïƒ Â· E_i
- *   dI_i/dt = Ïƒ Â· E_i - (Î³ + Î¼_v) Â· I_i
- *   dR_i/dt = Î³ Â· I_i
+ *   dS_i/dt = -β_i · S_i · (I_i / N_i) + Σ_j (M_ji S_j - M_ij S_i)
+ *   dE_i/dt = β_i · S_i · (I_i / N_i) - σ · E_i
+ *   dI_i/dt = σ · E_i - (γ + μ_v) · I_i
+ *   dR_i/dt = γ · I_i
  * </pre>
  *
  * @author Silvere Martin-Michiellot
@@ -71,12 +71,12 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
     public String getEquationsTooltip() {
         return """
                [Spatial Metapopulation SEIR-V Differential System]
-               â€¢ Susceptible:  dS_i/dt = -Î²_i Â· S_i Â· (I_i / N_i) + Î£_j (M_ji S_j - M_ij S_i)
-               â€¢ Exposed:      dE_i/dt = Î²_i Â· S_i Â· (I_i / N_i) - Ïƒ Â· E_i
-               â€¢ Infectious:   dI_i/dt = Ïƒ Â· E_i - (Î³ + Î¼_v) Â· I_i
-               â€¢ Recovered:    dR_i/dt = Î³ Â· I_i
-               â€¢ Mobility:     M_ij = D_mobility Â· exp(-dist_ij / L_commute)
-               Units: S, E, I, R [personnes], Î² [1/j], Ïƒ [1/j], Î³ [1/j], Î¼_v [mortalitÃ©]
+               • Susceptible:  dS_i/dt = -β_i · S_i · (I_i / N_i) + Σ_j (M_ji S_j - M_ij S_i)
+               • Exposed:      dE_i/dt = β_i · S_i · (I_i / N_i) - σ · E_i
+               • Infectious:   dI_i/dt = σ · E_i - (γ + μ_v) · I_i
+               • Recovered:    dR_i/dt = γ · I_i
+               • Mobility:     M_ij = D_mobility · exp(-dist_ij / L_commute)
+               Units: S, E, I, R [personnes], β [1/j], σ [1/j], γ [1/j], μ_v [mortalité]
                Ref: Kermack-McKendrick (1927), Colizza & Vespignani (2007) Nature Physics
                """;
     }

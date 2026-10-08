@@ -18,7 +18,7 @@ import java.util.List;
  * Technological Singularity & Algorithmic Self-Improvement Engine.
  * Models:
  * 1. <b>Shannon Information Throughput & Artificial Super-Intelligence (ASI)</b>: Algorithmic processing throughput (bits/sec) exceeds human cognitive capacity (>= 10^16 bits/sec).
- * 2. <b>Carnot Thermodynamic Limit Optimization</b>: ASI optimizes thermal energy converter efficiency (ÃŽÂ· -> 0.98), approaching physical Carnot limits.
+ * 2. <b>Carnot Thermodynamic Limit Optimization</b>: ASI optimizes thermal energy converter efficiency (Î· -> 0.98), approaching physical Carnot limits.
  * 3. <b>Post-Scarcity & Trans-Human Energy Grid</b>: Ultra-high EROEI (>= 100:1) with automated molecular assembly, zero pollution generation, and trans-biological demographic stability.
  *
  * @author Silvere Martin-Michiellot

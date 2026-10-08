@@ -252,7 +252,7 @@ public class ClusterManager {
         this.localRole = role;
         this.masterHost = masterHost != null ? masterHost : "127.0.0.1";
         this.port = port > 0 ? port : 9090;
-        this.secretToken = secretToken != null && !secretToken.isEmpty() ? secretToken : "EtherClusterSecret2026";
+        this.secretToken = secretToken != null && !secretToken.isEmpty() ? secretToken : "default-cluster-token";
 
         try {
             byte[] keyBytes = new byte[32];

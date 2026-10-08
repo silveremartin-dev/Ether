@@ -18,8 +18,8 @@ import java.util.List;
  *
  * <p>Models the long-run divergence of wealth, property rights security, and state capacity:</p>
  * <pre>
- *   dI_inclusive/dt = Î¼_inst Â· (BalanceOfPower - MonopolyRents)
- *   Innovation_Incentive = I_inclusive Â· Tech_level
+ *   dI_inclusive/dt = μ_inst · (BalanceOfPower - MonopolyRents)
+ *   Innovation_Incentive = I_inclusive · Tech_level
  * </pre>
  * where:
  * <ul>
@@ -65,10 +65,10 @@ public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugi
     public String getEquationsTooltip() {
         return """
                [Acemoglu & Robinson Institutional Divergence Model (2012)]
-               â€¢ Inclusiveness Evolution:  dI_inc/dt = Î¼ Â· (Pluralism_score - Elite_monopoly_rents)
-               â€¢ Creative Destruction:     Investment_rate = I_inc Â· (1.0 - Monopolistic_entry_barriers)
-               â€¢ Extractive Trap:          When Elite extractive rents dominate -> Growth stagnation & Capital flight
-               Units: I_inc [indice d'inclusivitÃ© institutionnelle [0, 1]], Pluralism [0, 1]
+               • Inclusiveness Evolution:  dI_inc/dt = μ · (Pluralism_score - Elite_monopoly_rents)
+               • Creative Destruction:     Investment_rate = I_inc · (1.0 - Monopolistic_entry_barriers)
+               • Extractive Trap:          When Elite extractive rents dominate -> Growth stagnation & Capital flight
+               Units: I_inc [indice d'inclusivité institutionnelle [0, 1]], Pluralism [0, 1]
                Ref: D. Acemoglu & J. A. Robinson (2012) "Why Nations Fail: The Origins of Power, Prosperity, and Poverty"
                """;
     }

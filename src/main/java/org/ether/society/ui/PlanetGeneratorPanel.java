@@ -127,7 +127,7 @@ public class PlanetGeneratorPanel extends BorderPane {
     private Slider tempGradSlider;
     private Slider oxygenSlider;
     private Slider co2Slider;
-    private Slider albedoSlider; // kept hidden â€” auto-calculated from biome
+    private Slider albedoSlider; // kept hidden — auto-calculated from biome
     private Slider atmoPressureSlider;
 
     // Climate sub-map radio toggles
@@ -277,7 +277,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         validationWarningBanner.setManaged(false);
 
         // --- 1. Global Presets Control Bar ---
-        PresetControlBar<PlanetPreset> topPresetBar = new PresetControlBar<>("planet.preset", "PrÃ©rÃ©glage Global");
+        PresetControlBar<PlanetPreset> topPresetBar = new PresetControlBar<>("planet.preset", "Préréglage Global");
         this.presetBar = topPresetBar;
         topPresetBar.setExportCategory("planetgenerator");
         presetCombo = topPresetBar.getPresetCombo();
@@ -383,7 +383,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         generalSecHeader = new Label(I18n.getOrDefault("planet.section.general", "GENERAL PARAMETERS"));
         resRowLabel = new Label();
 
-        // Resolution combo (internal use only â€” displayed in Tab 3)
+        // Resolution combo (internal use only — displayed in Tab 3)
         resolutionCombo = new ComboBox<>();
         resolutionCombo.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8);
         resolutionCombo.setValue(3);
@@ -409,7 +409,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             updatePreview();
         });
 
-        // generalControls is empty â€” seed is now inside the procedural panel
+        // generalControls is empty — seed is now inside the procedural panel
         VBox generalSection = createSection(generalSecHeader, generalControls);
 
         // --- 3. Astronomical & Physical Section (Planets & Natural Satellites / Moons) ---
@@ -435,7 +435,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                     setText("");
                 } else {
                     setText("satellite".equals(item) ? 
-                            I18n.getOrDefault("planet.body_type.satellite", "ðŸŒ™ Natural Satellite / Moon (Planetary Orbit)") :
+                            I18n.getOrDefault("planet.body_type.satellite", "🌙 Natural Satellite / Moon (Planetary Orbit)") :
                             I18n.getOrDefault("planet.body_type.planet", "ðŸŒ Independent Planet (Direct Stellar Orbit)"));
                 }
             }
@@ -454,7 +454,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         orbitDistanceParentRowLabel = new Label();
 
         satelliteRowBox = new VBox(6,
-                createControlRow(parentMassRowLabel, parentMassSlider, "%.1f MâŠ•", I18n.getOrDefault("planet.tooltip.parent_mass", "Mass of host planet around which satellite orbits")),
+                createControlRow(parentMassRowLabel, parentMassSlider, "%.1f M⊕", I18n.getOrDefault("planet.tooltip.parent_mass", "Mass of host planet around which satellite orbits")),
                 createControlRow(orbitDistanceParentRowLabel, orbitDistanceParentSlider, "%.0f km", I18n.getOrDefault("planet.tooltip.parent_dist", "Average orbital distance around host planet"))
         );
         satelliteRowBox.setVisible(false);
@@ -488,18 +488,18 @@ public class PlanetGeneratorPanel extends BorderPane {
                 satelliteRowBox,
                 createControlRow(radiusRowLabel, radiusSlider, "%.0f km", I18n.getOrDefault("planet.tooltip.radius", "Average planetary radius in km")),
                 createControlRow(dayRowLabel, dayLengthSlider, "%.1f h", I18n.getOrDefault("planet.tooltip.day_length", "Planetary rotation duration in hours")),
-                createControlRow(tiltRowLabel, axialTiltSlider, "%.1fÂ°", I18n.getOrDefault("planet.tooltip.axial_tilt", "Inclinaison de l'axe de rotation")),
+                createControlRow(tiltRowLabel, axialTiltSlider, "%.1f°", I18n.getOrDefault("planet.tooltip.axial_tilt", "Inclinaison de l'axe de rotation")),
                 createControlRow(yearRowLabel, yearLengthSlider, "%.0f d", I18n.getOrDefault("planet.tooltip.year_length", "Revolution duration in days")),
                 createControlRow(distRowLabel, distanceSunSlider, "%.2f AU", I18n.getOrDefault("planet.tooltip.distance_sun", "Distance to central star in AU")),
-                createControlRow(lumRowLabel, solarLumSlider, "%.2f Lâ˜‰", I18n.getOrDefault("planet.tooltip.solar_lum", "Central star luminosity")),
+                createControlRow(lumRowLabel, solarLumSlider, "%.2f L☉", I18n.getOrDefault("planet.tooltip.solar_lum", "Central star luminosity")),
                 irradianceLabel,
-                createControlRow(tempRowLabel, avgTempSlider, "%.1f Â°C", I18n.getOrDefault("planet.tooltip.avg_temp", "Average global surface temperature"))
+                createControlRow(tempRowLabel, avgTempSlider, "%.1f °C", I18n.getOrDefault("planet.tooltip.avg_temp", "Average global surface temperature"))
         );
 
         astroSecHeader = new Label(I18n.getOrDefault("planet.section.astro", "1. ASTRONOMY, PHYSICS & CELESTIAL BODIES DOMAIN"));
         VBox astroSection = createSection(astroSecHeader, astroControls);
 
-        // --- 4. Topography & Relief Section â€” Common Physical Scale Header + RadioButton: Procedural OR Import ---
+        // --- 4. Topography & Relief Section — Common Physical Scale Header + RadioButton: Procedural OR Import ---
         VBox topoControls = new VBox(10);
 
         minAltSlider = createSlider(-15000, -500, -11000);
@@ -556,7 +556,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         waterNormValLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
 
         String seaLevelTooltip = I18n.getOrDefault("planet.tooltip.sea_level_meters",
-                "Niveau de la mer au mÃ¨tre prÃ¨s. RÃ©glez l'altitude eustatique exacte en mÃ¨tres (ex: 0 m actuel, -125 m LGM). La valeur est convertie selon le datum NOAA ETOPO (0.478 Ã  0 m).");
+                "Niveau de la mer au mètre près. Réglez l'altitude eustatique exacte en mètres (ex: 0 m actuel, -125 m LGM). La valeur est convertie selon le datum NOAA ETOPO (0.478 à 0 m).");
         Tooltip slTt = new Tooltip(seaLevelTooltip);
         seaLevelMetersLabel.setTooltip(slTt);
         seaLevelMetersSpinner.setTooltip(slTt);
@@ -610,7 +610,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (!isUpdatingFromPreset && presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
-        randSeedBtn = new Button("ðŸŽ²");
+        randSeedBtn = new Button("🎲");
         randSeedBtn.getStyleClass().add("button-secondary");
         randSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.seed_rand", "New random seed")));
         randSeedBtn.setOnAction(e -> {
@@ -631,7 +631,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             int rec = circumference > 60000 ? 2048 : (circumference > 20000 ? 1024 : 512);
             resolutionInfoLabel.setText(String.format(
                 I18n.getOrDefault("planet.hint.map_resolution",
-                    "ðŸ“Ž Rayon %.0f km â†’ circonfÃ©rence %.0f km. RÃ©solution recommandÃ©e : %dÃ—%d px min."),
+                    "📎 Rayon %.0f km → circonférence %.0f km. Résolution recommandée : %d×%d px min."),
                 r, circumference, rec, rec / 2));
         });
         double initR = radiusSlider.getValue();
@@ -639,19 +639,19 @@ public class PlanetGeneratorPanel extends BorderPane {
         int initRec = initC > 60000 ? 2048 : (initC > 20000 ? 1024 : 512);
         resolutionInfoLabel.setText(String.format(
             I18n.getOrDefault("planet.hint.map_resolution",
-                "ðŸ“Ž Rayon %.0f km â†’ circonfÃ©rence %.0f km. RÃ©solution recommandÃ©e : %dÃ—%d px min."),
+                "📎 Rayon %.0f km → circonférence %.0f km. Résolution recommandée : %d×%d px min."),
             initR, initC, initRec, initRec / 2));
 
         // Export procedural heightmap button
-        Button exportProceduralBtn = new Button(I18n.getOrDefault("planet.btn.export_procedural", "ðŸ“¤ Export Procedural Heightmap (PNG)"));
+        Button exportProceduralBtn = new Button(I18n.getOrDefault("planet.btn.export_procedural", "📤 Export Procedural Heightmap (PNG)"));
         exportProceduralBtn.setMaxWidth(Double.MAX_VALUE);
         exportProceduralBtn.getStyleClass().add("button-secondary");
         exportProceduralBtn.setOnAction(e -> exportProceduralHeightmap());
 
         // --- RadioButton toggle: Procedural vs Import ---
         ToggleGroup elevSourceGroup = new ToggleGroup();
-        radioProc = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
-        radioImport = new RadioButton(I18n.getOrDefault("planet.radio.import", "ðŸ“‚ Import Heightmap Externe (PNG/GeoTIFF)"));
+        radioProc = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
+        radioImport = new RadioButton(I18n.getOrDefault("planet.radio.import", "📂 Import Heightmap Externe (PNG/GeoTIFF)"));
         radioProc.setToggleGroup(elevSourceGroup);
         radioImport.setToggleGroup(elevSourceGroup);
         radioProc.setSelected(true);
@@ -710,7 +710,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         VBox importPanel = new VBox(8,
                 createControlRow(mapSourceRowLabel, mapSourceCombo,
-                    I18n.getOrDefault("planet.tooltip.map_source", "Celestial body preset (Earth, Mars, Venus, Moon) â€” selects predefined elevation map")),
+                    I18n.getOrDefault("planet.tooltip.map_source", "Celestial body preset (Earth, Mars, Venus, Moon) — selects predefined elevation map")),
                 createControlRow(elevMapRowLabel, new VBox(3, elevBox, elevFileLabel),
                     I18n.getOrDefault("planet.tooltip.elev_map", "Import d'une heightmap PNG en niveaux de gris (noir=min alt, blanc=max alt)"))
         );
@@ -757,12 +757,12 @@ public class PlanetGeneratorPanel extends BorderPane {
         topoSecHeader = new Label(I18n.getOrDefault("planet.section.topo", "2. TOPOGRAPHY & PLANETARY RELIEF DOMAIN"));
         VBox topoSection = createSection(topoSecHeader, topoControls);
 
-        // --- 5. Climate & Ecosystem Section â€” 3 independent sub-blocks ---
+        // --- 5. Climate & Ecosystem Section — 3 independent sub-blocks ---
         // Global atmospheric sliders (always visible)
         tempGradSlider   = createSlider(0, 100, 40);
         oxygenSlider     = createSlider(0, 50, 21);
         co2Slider        = createSlider(0, 1_000_000, 420);
-        albedoSlider     = createSlider(0.0, 1.0, 0.30); // hidden â€“ auto-calculated
+        albedoSlider     = createSlider(0.0, 1.0, 0.30); // hidden – auto-calculated
         atmoPressureSlider = createSlider(0.0, 10.0, 1.0);
 
         albedoSlider.valueProperty().addListener((obs, old, val) -> calculateStellarIrradiance());
@@ -777,21 +777,21 @@ public class PlanetGeneratorPanel extends BorderPane {
         atmoPressureRowLabel = new Label();
 
         VBox atmosphericGlobal = new VBox(8,
-                createControlRow(gradRowLabel, tempGradSlider, "%.1f Â°C",
-                        "Gradient thermique Ã©quateur-pÃ´les (diffÃ©rentiel thermique en Â°C entre l'Ã©quateur et les pÃ´les)"),
+                createControlRow(gradRowLabel, tempGradSlider, "%.1f °C",
+                        "Gradient thermique équateur-pôles (différentiel thermique en °C entre l'équateur et les pôles)"),
                 createControlRow(oxygenRowLabel, oxygenSlider, "%.1f %%",
-                        "Taux d'oxygÃ¨ne atmosphÃ©rique Oâ‚‚ â€” 21% pour Terre ; < 10% = hypoxie ; > 35% = risque incendie"),
+                        "Taux d'oxygène atmosphérique O₂ — 21% pour Terre ; < 10% = hypoxie ; > 35% = risque incendie"),
                 createControlRow(co2RowLabel, co2Slider, "%.0f ppm",
-                        "COâ‚‚ atmosphÃ©rique (ppm). Terre actuelle: 420 ppm. CrÃ©tacÃ©: ~1000-2000 ppm. VÃ©nus: ~960 000 ppm"),
+                        "CO₂ atmosphérique (ppm). Terre actuelle: 420 ppm. Crétacé: ~1000-2000 ppm. Vénus: ~960 000 ppm"),
                 createControlRow(atmoPressureRowLabel, atmoPressureSlider, "%.2f atm",
-                        "Pression atmosphÃ©rique au sol. Terre = 1.0 atm. Mars â‰ˆ 0.006 atm. VÃ©nus â‰ˆ 92 atm")
+                        "Pression atmosphérique au sol. Terre = 1.0 atm. Mars ≈ 0.006 atm. Vénus ≈ 92 atm")
         );
 
         // --- Helper: build a climate map sub-block ---
         // SUB-BLOCK 1: Temperature / Thermal Map
         ToggleGroup tempToggle = new ToggleGroup();
-        radioTempProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
-        radioTempImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "ðŸ“‚ External Source (PNG / WMS)"));
+        radioTempProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
+        radioTempImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "📂 External Source (PNG / WMS)"));
         radioTempProc.setToggleGroup(tempToggle); radioTempProc.setSelected(true);
         radioTempProc.getStyleClass().add("radio-proc");
         radioTempImport.getStyleClass().add("radio-import");
@@ -802,7 +802,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (!isUpdatingFromPreset && presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
-        Button tempRandBtn = new Button("ðŸŽ²");
+        Button tempRandBtn = new Button("🎲");
         tempRandBtn.getStyleClass().add("button-secondary");
         tempRandBtn.setOnAction(e -> {
             tempSeedField.setText(String.valueOf(new java.util.Random().nextLong(1_000_000)));
@@ -813,11 +813,11 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         tempSeedLabel = new Label(I18n.getOrDefault("planet.climate.seed_label", "Generation Seed:"));
         tempHintLabel = new Label(I18n.getOrDefault("planet.climate.temp.hint",
-                "â„¹  The thermal map is derived from the equator-to-pole gradient and the random seed bias."));
+                "ℹ  The thermal map is derived from the equator-to-pole gradient and the random seed bias."));
         tempHintLabel.setWrapText(true);
         tempHintLabel.getStyleClass().add("card-description-muted");
 
-        Button exportTempBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_temp", "ðŸ“¤ Export Procedural Thermal Map (PNG)"));
+        Button exportTempBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_temp", "📤 Export Procedural Thermal Map (PNG)"));
         exportTempBtn.setMaxWidth(Double.MAX_VALUE);
         exportTempBtn.getStyleClass().add("button-secondary");
         exportTempBtn.setOnAction(e -> exportProceduralClimateMap("temp"));
@@ -826,20 +826,20 @@ public class PlanetGeneratorPanel extends BorderPane {
         tempProcPanel.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(168, 85, 247, 0.3); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
 
         tempSourceCombo = buildClimateSourceCombo("temp");
-        climateFileLabel = new Label("â€”"); climateFileLabel.getStyleClass().add("value-label");
+        climateFileLabel = new Label("—"); climateFileLabel.getStyleClass().add("value-label");
         loadClimateBtn = new Button(I18n.get("planet.map.btn_load")); loadClimateBtn.getStyleClass().add("button-secondary");
         loadClimateBtn.setOnAction(e -> chooseClimateMapFile());
         clearClimateBtn = new Button("âŒ"); clearClimateBtn.getStyleClass().add("button-secondary");
         clearClimateBtn.setOnAction(e -> {
             customClimateImage = null;
-            climateFileLabel.setText("â€”");
+            climateFileLabel.setText("—");
             if (!isUpdatingFromPreset && presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
         HBox tempImportBtns = new HBox(5, loadClimateBtn, clearClimateBtn);
 
         tempFormatHintLabel = new Label(I18n.getOrDefault("planet.climate.temp.format",
-                "Grayscale PNG (equirectangular 2:1):\n  Black (0) = âˆ’50Â°C | White (255) = +50Â°C"));
+                "Grayscale PNG (equirectangular 2:1):\n  Black (0) = −50°C | White (255) = +50°C"));
         tempFormatHintLabel.setWrapText(true);
         tempFormatHintLabel.getStyleClass().add("card-description-muted");
         tempSourceLabel = new Label(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
@@ -867,15 +867,15 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(1);
             updatePreview();
         });
-        tempSubHeader = new Label(I18n.getOrDefault("planet.climate.temp.header", "ðŸŒ¡  Temperature & Thermal:"));
+        tempSubHeader = new Label(I18n.getOrDefault("planet.climate.temp.header", "🌡  Temperature & Thermal:"));
         tempSubHeader.getStyleClass().add("control-label");
         VBox tempSubBlock = new VBox(6, tempSubHeader, radioTempProc, tempProcPanel, radioTempImport, tempImportPanel);
         tempSubBlock.setStyle("-fx-padding: 10 10 10 10; -fx-background-color: rgba(168, 85, 247, 0.08); -fx-background-radius: 6; -fx-border-color: rgba(168, 85, 247, 0.25); -fx-border-radius: 6;");
 
         // SUB-BLOCK 2: Precipitation / Rainfall Map
         ToggleGroup precipToggle = new ToggleGroup();
-        radioPrecipProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
-        radioPrecipImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "ðŸ“‚ External Source (PNG / WMS)"));
+        radioPrecipProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
+        radioPrecipImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "📂 External Source (PNG / WMS)"));
         radioPrecipProc.setToggleGroup(precipToggle); radioPrecipProc.setSelected(true);
         radioPrecipProc.getStyleClass().add("radio-proc");
         radioPrecipImport.getStyleClass().add("radio-import");
@@ -886,7 +886,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (!isUpdatingFromPreset && presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
-        Button precipRandBtn = new Button("ðŸŽ²");
+        Button precipRandBtn = new Button("🎲");
         precipRandBtn.getStyleClass().add("button-secondary");
         precipRandBtn.setOnAction(e -> {
             precipSeedField.setText(String.valueOf(new java.util.Random().nextLong(1_000_000)));
@@ -897,11 +897,11 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         precipSeedLabel = new Label(I18n.getOrDefault("planet.climate.seed_label", "Generation Seed:"));
         precipHintLabel = new Label(I18n.getOrDefault("planet.climate.precip.hint",
-                "â„¹  The rainfall map is generated from the latitudinal hygrometric bias and seed."));
+                "ℹ  The rainfall map is generated from the latitudinal hygrometric bias and seed."));
         precipHintLabel.setWrapText(true);
         precipHintLabel.getStyleClass().add("card-description-muted");
 
-        Button exportPrecipBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_precip", "ðŸ“¤ Export Procedural Rainfall Map (PNG)"));
+        Button exportPrecipBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_precip", "📤 Export Procedural Rainfall Map (PNG)"));
         exportPrecipBtn.setMaxWidth(Double.MAX_VALUE);
         exportPrecipBtn.getStyleClass().add("button-secondary");
         exportPrecipBtn.setOnAction(e -> exportProceduralClimateMap("precip"));
@@ -910,13 +910,13 @@ public class PlanetGeneratorPanel extends BorderPane {
         precipProcPanel.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(2, 132, 199, 0.3); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
 
         precipSourceCombo = buildClimateSourceCombo("precip");
-        rainfallFileLabel = new Label("â€”"); rainfallFileLabel.getStyleClass().add("value-label");
+        rainfallFileLabel = new Label("—"); rainfallFileLabel.getStyleClass().add("value-label");
         loadRainfallBtn = new Button(I18n.get("planet.map.btn_load")); loadRainfallBtn.getStyleClass().add("button-secondary");
         loadRainfallBtn.setOnAction(e -> chooseRainfallMapFile());
         clearRainfallBtn = new Button("âŒ"); clearRainfallBtn.getStyleClass().add("button-secondary");
         clearRainfallBtn.setOnAction(e -> {
             customRainfallImage = null;
-            rainfallFileLabel.setText("â€”");
+            rainfallFileLabel.setText("—");
             if (!isUpdatingFromPreset && presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
@@ -951,15 +951,15 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(2);
             updatePreview();
         });
-        precipSubHeader = new Label(I18n.getOrDefault("planet.climate.precip.header", "ðŸŒ§  Precipitation / Humidity:"));
+        precipSubHeader = new Label(I18n.getOrDefault("planet.climate.precip.header", "🌧  Precipitation / Humidity:"));
         precipSubHeader.getStyleClass().add("control-label");
         VBox precipSubBlock = new VBox(6, precipSubHeader, radioPrecipProc, precipProcPanel, radioPrecipImport, precipImportPanel);
         precipSubBlock.setStyle("-fx-padding: 10 10 10 10; -fx-background-color: rgba(2, 132, 199, 0.08); -fx-background-radius: 6; -fx-border-color: rgba(2, 132, 199, 0.25); -fx-border-radius: 6;");
 
         // SUB-BLOCK 3: Seasonality / Thermal Variance Map
         ToggleGroup seasonToggle = new ToggleGroup();
-        radioSeasonProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
-        radioSeasonImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "ðŸ“‚ External Source (PNG / WMS)"));
+        radioSeasonProc   = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
+        radioSeasonImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "📂 External Source (PNG / WMS)"));
         radioSeasonProc.setToggleGroup(seasonToggle); radioSeasonProc.setSelected(true);
         radioSeasonProc.getStyleClass().add("radio-proc");
         radioSeasonImport.getStyleClass().add("radio-import");
@@ -970,7 +970,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (!isUpdatingFromPreset && presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
-        Button seasonRandBtn = new Button("ðŸŽ²");
+        Button seasonRandBtn = new Button("🎲");
         seasonRandBtn.getStyleClass().add("button-secondary");
         seasonRandBtn.setOnAction(e -> {
             seasonSeedField.setText(String.valueOf(new java.util.Random().nextLong(1_000_000)));
@@ -981,11 +981,11 @@ public class PlanetGeneratorPanel extends BorderPane {
 
         seasonSeedLabel = new Label(I18n.getOrDefault("planet.climate.seed_label", "Generation Seed:"));
         seasonHintLabel = new Label(I18n.getOrDefault("planet.climate.season.hint",
-                "â„¹  Seasonality is derived from axial tilt and a random latitudinal bias."));
+                "ℹ  Seasonality is derived from axial tilt and a random latitudinal bias."));
         seasonHintLabel.setWrapText(true);
         seasonHintLabel.getStyleClass().add("card-description-muted");
 
-        Button exportSeasonBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_season", "ðŸ“¤ Export Procedural Seasonality Map (PNG)"));
+        Button exportSeasonBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_season", "📤 Export Procedural Seasonality Map (PNG)"));
         exportSeasonBtn.setMaxWidth(Double.MAX_VALUE);
         exportSeasonBtn.getStyleClass().add("button-secondary");
         exportSeasonBtn.setOnAction(e -> exportProceduralClimateMap("season"));
@@ -994,20 +994,20 @@ public class PlanetGeneratorPanel extends BorderPane {
         seasonProcPanel.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(245, 158, 11, 0.3); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
 
         seasonSourceCombo = buildClimateSourceCombo("season");
-        seasonalityFileLabel = new Label("â€”"); seasonalityFileLabel.getStyleClass().add("value-label");
+        seasonalityFileLabel = new Label("—"); seasonalityFileLabel.getStyleClass().add("value-label");
         loadSeasonalityBtn = new Button(I18n.get("planet.map.btn_load")); loadSeasonalityBtn.getStyleClass().add("button-secondary");
         loadSeasonalityBtn.setOnAction(e -> chooseSeasonalityMapFile());
         clearSeasonalityBtn = new Button("âŒ"); clearSeasonalityBtn.getStyleClass().add("button-secondary");
         clearSeasonalityBtn.setOnAction(e -> {
             customSeasonalityImage = null;
-            seasonalityFileLabel.setText("â€”");
+            seasonalityFileLabel.setText("—");
             if (!isUpdatingFromPreset && presetBar != null) presetBar.notifyParametersChanged();
             updatePreview();
         });
         HBox seasonImportBtns = new HBox(5, loadSeasonalityBtn, clearSeasonalityBtn);
 
         seasonFormatHintLabel = new Label(I18n.getOrDefault("planet.climate.season.format",
-                "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0Â°C amplitude | White (255) = 50Â°C annual amplitude"));
+                "Grayscale PNG (equirectangular 2:1):\n  Black (0) = 0°C amplitude | White (255) = 50°C annual amplitude"));
         seasonFormatHintLabel.setWrapText(true);
         seasonFormatHintLabel.getStyleClass().add("card-description-muted");
         seasonSourceLabel = new Label(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
@@ -1092,9 +1092,9 @@ public class PlanetGeneratorPanel extends BorderPane {
         viewModeCombo = new ComboBox<>();
         viewModeCombo.getItems().addAll(
                 I18n.getOrDefault("planet.view.heightmap", "MAP 1. Heightmap & Relief Map"),
-                I18n.getOrDefault("planet.view.temperature", "MAP 2. Temperature Map (Â°C)"),
+                I18n.getOrDefault("planet.view.temperature", "MAP 2. Temperature Map (°C)"),
                 I18n.getOrDefault("planet.view.precipitation", "MAP 3. Precipitation Map (mm/yr)"),
-                I18n.getOrDefault("planet.view.seasonality", "MAP 4. Seasonality / Thermal Amplitude Map (Â°C)")
+                I18n.getOrDefault("planet.view.seasonality", "MAP 4. Seasonality / Thermal Amplitude Map (°C)")
         );
         viewModeCombo.setValue(viewModeCombo.getItems().get(0));
         viewModeCombo.setMaxWidth(420);
@@ -1214,24 +1214,24 @@ public class PlanetGeneratorPanel extends BorderPane {
     }
 
     public static final String CLIMATE_SRC_TEMP_EARTH = "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
-    public static final String CLIMATE_SRC_TEMP_MARS = "ðŸ”´ Mars â€” MGS TES Thermal Radiometry [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel]";
-    public static final String CLIMATE_SRC_TEMP_VENUS = "ðŸŸ¡ VÃ©nus â€” Magellan SAR & Hypsometric Model [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel]";
-    public static final String CLIMATE_SRC_TEMP_MOON = "âšª Lune â€” LRO Diviner Thermal Radiometer [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel]";
-    public static final String CLIMATE_SRC_TEMP_MERCURY = "âšª Mercure â€” MESSENGER MLA Extreme Thermal Model [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel]";
+    public static final String CLIMATE_SRC_TEMP_MARS = "🔴 Mars — MGS TES Thermal Radiometry [Planétaire (Mars), -4.1 Ga à Actuel]";
+    public static final String CLIMATE_SRC_TEMP_VENUS = "🟡 Vénus — Magellan SAR & Hypsometric Model [Planétaire (Vénus), -500 Ma à Actuel]";
+    public static final String CLIMATE_SRC_TEMP_MOON = "⚪ Lune — LRO Diviner Thermal Radiometer [Planétaire (Lune), -4.5 Ga à Actuel]";
+    public static final String CLIMATE_SRC_TEMP_MERCURY = "⚪ Mercure — MESSENGER MLA Extreme Thermal Model [Planétaire (Mercure), -4.0 Ga à Actuel]";
     public static final String CLIMATE_SRC_TEMP_WMS = "ðŸŒ NASA MERRA-2 (WMS Satellite) [Global, 1980 AD Ã  Actuel]";
 
     public static final String CLIMATE_SRC_PRECIP_EARTH = "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
-    public static final String CLIMATE_SRC_PRECIP_MARS = "ðŸ”´ Mars â€” Frost & Sublimation Model [PlanÃ©taire (Mars), -4.1 Ga Ã  Actuel]";
-    public static final String CLIMATE_SRC_PRECIP_VENUS = "ðŸŸ¡ VÃ©nus â€” H2SO4 Virga Cycle Model [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel]";
-    public static final String CLIMATE_SRC_PRECIP_MOON = "âšª Lune â€” LRO LEND Vacuum Exosphere [PlanÃ©taire (Lune), -4.5 Ga Ã  Actuel]";
-    public static final String CLIMATE_SRC_PRECIP_MERCURY = "âšª Mercure â€” MESSENGER Exospheric Vacuum Model [PlanÃ©taire (Mercure), -4.0 Ga Ã  Actuel]";
+    public static final String CLIMATE_SRC_PRECIP_MARS = "🔴 Mars — Frost & Sublimation Model [Planétaire (Mars), -4.1 Ga à Actuel]";
+    public static final String CLIMATE_SRC_PRECIP_VENUS = "🟡 Vénus — H2SO4 Virga Cycle Model [Planétaire (Vénus), -500 Ma à Actuel]";
+    public static final String CLIMATE_SRC_PRECIP_MOON = "⚪ Lune — LRO LEND Vacuum Exosphere [Planétaire (Lune), -4.5 Ga à Actuel]";
+    public static final String CLIMATE_SRC_PRECIP_MERCURY = "⚪ Mercure — MESSENGER Exospheric Vacuum Model [Planétaire (Mercure), -4.0 Ga à Actuel]";
     public static final String CLIMATE_SRC_PRECIP_WMS = "ðŸŒ NASA GPM IMERG (WMS Satellite) [Global, 2000 AD Ã  Actuel]";
 
     public static final String CLIMATE_SRC_SEASON_EARTH = "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
-    public static final String CLIMATE_SRC_SEASON_MARS = "ðŸ”´ Mars â€” Orbital Eccentricity Insolation Model [PlanÃ©taire (Mars), Cycles Milankovitch Martiens]";
-    public static final String CLIMATE_SRC_SEASON_VENUS = "ðŸŸ¡ VÃ©nus â€” Super-Rotation Low Variance Model [PlanÃ©taire (VÃ©nus), -500 Ma Ã  Actuel]";
-    public static final String CLIMATE_SRC_SEASON_MOON = "âšª Lune â€” Diurnal Insolation Amplitude Model [PlanÃ©taire (Lune), Cycle Synodique 29.5j]";
-    public static final String CLIMATE_SRC_SEASON_MERCURY = "âšª Mercure â€” 3:2 Spin-Orbit Thermal Variance Model [PlanÃ©taire (Mercure), RÃ©sonance 3:2]";
+    public static final String CLIMATE_SRC_SEASON_MARS = "🔴 Mars — Orbital Eccentricity Insolation Model [Planétaire (Mars), Cycles Milankovitch Martiens]";
+    public static final String CLIMATE_SRC_SEASON_VENUS = "🟡 Vénus — Super-Rotation Low Variance Model [Planétaire (Vénus), -500 Ma à Actuel]";
+    public static final String CLIMATE_SRC_SEASON_MOON = "⚪ Lune — Diurnal Insolation Amplitude Model [Planétaire (Lune), Cycle Synodique 29.5j]";
+    public static final String CLIMATE_SRC_SEASON_MERCURY = "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model [Planétaire (Mercure), Résonance 3:2]";
     public static final String CLIMATE_SRC_SEASON_WMS = "ðŸŒ NASA MODIS LST Amplitude (WMS Satellite) [Global, 2002 AD Ã  Actuel]";
 
     /*
@@ -1296,7 +1296,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 case "precip" -> "mars_precipitation.png";
                 default -> "mars_seasonality.png";
             };
-        } else if (key.contains("vÃ©nus") || key.contains("venus") || key.contains("magellan")) {
+        } else if (key.contains("vénus") || key.contains("venus") || key.contains("magellan")) {
             file = switch (mapType) {
                 case "temp" -> "venus_temperature.png";
                 case "precip" -> "venus_precipitation.png";
@@ -1474,7 +1474,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             }
         });
 
-        String unit = formatPattern.replaceAll("[^a-zA-ZÂ°â˜‰%Â²Â³/]", "").trim();
+        String unit = formatPattern.replaceAll("[^a-zA-Z°☉%²³/]", "").trim();
         Label unitLbl = new Label(unit);
         unitLbl.getStyleClass().add("unit-label");
         HBox valBox = new HBox(4, spinner, unitLbl);
@@ -1497,7 +1497,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (waterNormValLabel != null) {
             waterNormValLabel.setText(String.format(
-                    I18n.getOrDefault("planet.param.water_norm_info", "Seuil normalisÃ© : %.4f | Niveau marin : %,.0f m"),
+                    I18n.getOrDefault("planet.param.water_norm_info", "Seuil normalisé : %.4f | Niveau marin : %,.0f m"),
                     normWater, meters
             ));
         }
@@ -1512,7 +1512,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (file != null) {
             try {
                 customElevImage = new Image(new FileInputStream(file));
-                elevFileLabel.setText("ðŸ“· " + file.getName());
+                elevFileLabel.setText("📷 " + file.getName());
                 if (viewModeCombo != null) viewModeCombo.getSelectionModel().select(0);
                 if (presetBar != null) presetBar.notifyParametersChanged();
                 // Update the source combo to reflect the loaded local file
@@ -1608,7 +1608,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         if ("temp".equalsIgnoreCase(type)) {
             minVal = (float) minTemp;
             maxVal = (float) maxTemp;
-            unit = "Â°C";
+            unit = "°C";
             for (int y = 0; y < recH; y++) {
                 double lat = 90.0 - ((double) y / recH) * 180.0;
                 for (int x = 0; x < recW; x++) {
@@ -1634,7 +1634,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         } else {
             minVal = 0.0f;
             maxVal = (float) maxAmp;
-            unit = "Â°C";
+            unit = "°C";
             for (int y = 0; y < recH; y++) {
                 double lat = 90.0 - ((double) y / recH) * 180.0;
                 for (int x = 0; x < recW; x++) {
@@ -1669,7 +1669,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (file != null) {
             try {
                 customBiomeImage = new Image(new FileInputStream(file));
-                biomeFileLabel.setText("ðŸŒ¿ " + file.getName());
+                biomeFileLabel.setText("🌿 " + file.getName());
                 updatePreview();
             } catch (Exception ex) {
                 logger.error("Failed to load biome map image", ex);
@@ -1686,7 +1686,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (file != null) {
             try {
                 customResourceImage = new Image(new FileInputStream(file));
-                resourceFileLabel.setText("ðŸª¨ " + file.getName());
+                resourceFileLabel.setText("🪨 " + file.getName());
                 updatePreview();
             } catch (Exception ex) {
                 logger.error("Failed to load resource map image", ex);
@@ -1754,25 +1754,25 @@ public class PlanetGeneratorPanel extends BorderPane {
     // Helper subroutine: show climate import format help - internal state computation & bounds checking
     private void showClimateImportFormatHelp() {
         WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("planet.dialog.climate_title", "SpÃ©cifications des Cartes de Relief & Climat"),
-                I18n.getOrDefault("planet.dialog.climate_header", "Formats d'Image SupportÃ©s (Projection Ã‰quirectangulaire 2:1)"),
-                "Vous pouvez importer des cartes d'Ã©lÃ©vation et de climat sous forme d'images PNG/JPEG au ratio 2:1 (ex: 2048x1024 pixels, Plate CarrÃ©e) :\n\n" +
-                "1. CARTES D'Ã‰LÃ‰VATION / RELIEF (FAUSSES COULEURS HYPSOMÃ‰TRIQUES & BATHYMÃ‰TRIQUES) :\n" +
-                "   â€¢ DÃ©pressions / Fosses ocÃ©aniques : Bleu nuit / Bleu roi\n" +
-                "   â€¢ Plaines / Basses terres : Vert Ã©meraude / Vert clair\n" +
-                "   â€¢ Collines / Plateaux : Ocre / Jaune / Orange\n" +
-                "   â€¢ Hautes Montagnes & Volcans : Brun / Rouge foncÃ©\n" +
-                "   â€¢ Plus hauts sommets : Blanc neigeux\n" +
-                "   â€¢ Mode Niveaux de Gris : Noir (0) = Altitude minimale, Blanc (255) = Altitude maximale.\n\n" +
-                "2. CARTES CLIMATIQUES SÃ‰PARÃ‰ES :\n" +
-                "   â€¢ TempÃ©ratures : Noir / Bleu froid = -50Â°C, Blanc / Rouge chaud = +50Â°C\n" +
-                "   â€¢ PrÃ©cipitations : Noir = 0 mm/an, Blanc = 3000 mm/an\n" +
-                "   â€¢ SaisonnalitÃ© : Noir = 0Â°C, Blanc = 50Â°C d'amplitude annuelle\n\n" +
-                "3. CARTE COMBINÃ‰E MULTI-CANAUX RGB :\n" +
-                "   â€¢ Canal Rouge (R) = TempÃ©rature (-50Â°C Ã  +50Â°C)\n" +
-                "   â€¢ Canal Vert (V) = PrÃ©cipitations (0 Ã  3000 mm/an)\n" +
-                "   â€¢ Canal Bleu (B) = SaisonnalitÃ© / Amplitude (0 Ã  50Â°C)\n\n" +
-                "4. TÃ‰LÃ‰CHARGEMENT SATELLITE EN LIGNE (WMS) :\n" +
+                I18n.getOrDefault("planet.dialog.climate_title", "Spécifications des Cartes de Relief & Climat"),
+                I18n.getOrDefault("planet.dialog.climate_header", "Formats d'Image Supportés (Projection Équirectangulaire 2:1)"),
+                "Vous pouvez importer des cartes d'élévation et de climat sous forme d'images PNG/JPEG au ratio 2:1 (ex: 2048x1024 pixels, Plate Carrée) :\n\n" +
+                "1. CARTES D'ÉLÉVATION / RELIEF (FAUSSES COULEURS HYPSOMÉTRIQUES & BATHYMÉTRIQUES) :\n" +
+                "   • Dépressions / Fosses océaniques : Bleu nuit / Bleu roi\n" +
+                "   • Plaines / Basses terres : Vert émeraude / Vert clair\n" +
+                "   • Collines / Plateaux : Ocre / Jaune / Orange\n" +
+                "   • Hautes Montagnes & Volcans : Brun / Rouge foncé\n" +
+                "   • Plus hauts sommets : Blanc neigeux\n" +
+                "   • Mode Niveaux de Gris : Noir (0) = Altitude minimale, Blanc (255) = Altitude maximale.\n\n" +
+                "2. CARTES CLIMATIQUES SÉPARÉES :\n" +
+                "   • Températures : Noir / Bleu froid = -50°C, Blanc / Rouge chaud = +50°C\n" +
+                "   • Précipitations : Noir = 0 mm/an, Blanc = 3000 mm/an\n" +
+                "   • Saisonnalité : Noir = 0°C, Blanc = 50°C d'amplitude annuelle\n\n" +
+                "3. CARTE COMBINÉE MULTI-CANAUX RGB :\n" +
+                "   • Canal Rouge (R) = Température (-50°C à +50°C)\n" +
+                "   • Canal Vert (V) = Précipitations (0 à 3000 mm/an)\n" +
+                "   • Canal Bleu (B) = Saisonnalité / Amplitude (0 à 50°C)\n\n" +
+                "4. TÉLÉCHARGEMENT SATELLITE EN LIGNE (WMS) :\n" +
                 "   â€¢ Le bouton 'ðŸŒ TÃ©lÃ©charger Climat Satellite' permet de rÃ©cupÃ©rer directement les flux officiels MODIS et GPM de la NASA !"
         );
     }
@@ -1794,9 +1794,9 @@ public class PlanetGeneratorPanel extends BorderPane {
             customSeasonalityImage = ImageMapLoader.loadMapImage("earth", epochYear, "seasonality");
 
             String yearStr = (epochYear <= 0) ? Math.abs(epochYear) + " BP" : epochYear + " AD";
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.status.earth_dem_active", "ðŸ“· Active preset: Earth Elevation") + " (" + yearStr + ")");
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.status.earth_biome_active", "ðŸŒ¿ Active preset: Earth Biomes & Land Cover") + " (" + yearStr + ")");
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.status.no_file_proc", "ðŸ“„ No file loaded (Procedural active)"));
+            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.status.earth_dem_active", "📷 Active preset: Earth Elevation") + " (" + yearStr + ")");
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.status.earth_biome_active", "🌿 Active preset: Earth Biomes & Land Cover") + " (" + yearStr + ")");
+            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.status.no_file_proc", "📄 No file loaded (Procedural active)"));
             if (climateFileLabel != null) climateFileLabel.setText("ðŸŒ¡ï¸ " + CLIMATE_SRC_TEMP_EARTH + " (" + yearStr + ")");
             if (rainfallFileLabel != null) rainfallFileLabel.setText("ðŸŒ§ï¸ " + CLIMATE_SRC_PRECIP_EARTH + " (" + yearStr + ")");
             if (seasonalityFileLabel != null) seasonalityFileLabel.setText("â˜€ï¸ " + CLIMATE_SRC_SEASON_EARTH + " (" + yearStr + ")");
@@ -1819,7 +1819,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         cachedClimateB64 = null;
         cachedRainfallB64 = null;
         cachedSeasonalityB64 = null;
-        String procDefault = I18n.getOrDefault("planet.status.no_file_proc", "ðŸ“„ No external file (Procedural generation active)");
+        String procDefault = I18n.getOrDefault("planet.status.no_file_proc", "📄 No external file (Procedural generation active)");
         if (elevFileLabel != null) elevFileLabel.setText(procDefault);
         if (biomeFileLabel != null) biomeFileLabel.setText(procDefault);
         if (resourceFileLabel != null) resourceFileLabel.setText(procDefault);
@@ -1897,9 +1897,9 @@ public class PlanetGeneratorPanel extends BorderPane {
                 if (precipSourceCombo != null) precipSourceCombo.setValue(CLIMATE_SRC_PRECIP_MARS);
                 if (seasonSourceCombo != null) seasonSourceCombo.setValue(CLIMATE_SRC_SEASON_MARS);
 
-                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mars_dem", "ðŸ“· Mars MOLA Topography (NASA PDS)"));
-                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.mars_biome", "ðŸŒ¿ Mars Planetary Terrains & Volcanic Plains"));
-                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.mars_geology", "ðŸª¨ Mars Multi-mineral Deposits"));
+                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mars_dem", "📷 Mars MOLA Topography (NASA PDS)"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.mars_biome", "🌿 Mars Planetary Terrains & Volcanic Plains"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.mars_geology", "🪨 Mars Multi-mineral Deposits"));
                 if (climateFileLabel != null) climateFileLabel.setText("ðŸŒ¡ï¸ " + CLIMATE_SRC_TEMP_MARS);
                 if (rainfallFileLabel != null) rainfallFileLabel.setText("ðŸŒ§ï¸ " + CLIMATE_SRC_PRECIP_MARS);
                 if (seasonalityFileLabel != null) seasonalityFileLabel.setText("â˜€ï¸ " + CLIMATE_SRC_SEASON_MARS);
@@ -1935,9 +1935,9 @@ public class PlanetGeneratorPanel extends BorderPane {
                 if (precipSourceCombo != null) precipSourceCombo.setValue(CLIMATE_SRC_PRECIP_VENUS);
                 if (seasonSourceCombo != null) seasonSourceCombo.setValue(CLIMATE_SRC_SEASON_VENUS);
 
-                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.venus_dem", "ðŸ“· Venus Magellan Topography (NASA PDS)"));
-                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.venus_biome", "ðŸŒ¿ Venus Volcanic Plains & Tesserae"));
-                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.venus_geology", "ðŸª¨ Venus Magellan Pyrite / Radar Minerals"));
+                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.venus_dem", "📷 Venus Magellan Topography (NASA PDS)"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.venus_biome", "🌿 Venus Volcanic Plains & Tesserae"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.venus_geology", "🪨 Venus Magellan Pyrite / Radar Minerals"));
                 if (climateFileLabel != null) climateFileLabel.setText("ðŸŒ¡ï¸ " + CLIMATE_SRC_TEMP_VENUS);
                 if (rainfallFileLabel != null) rainfallFileLabel.setText("ðŸŒ§ï¸ " + CLIMATE_SRC_PRECIP_VENUS);
                 if (seasonalityFileLabel != null) seasonalityFileLabel.setText("â˜€ï¸ " + CLIMATE_SRC_SEASON_VENUS);
@@ -1973,9 +1973,9 @@ public class PlanetGeneratorPanel extends BorderPane {
                 if (precipSourceCombo != null) precipSourceCombo.setValue(CLIMATE_SRC_PRECIP_MOON);
                 if (seasonSourceCombo != null) seasonSourceCombo.setValue(CLIMATE_SRC_SEASON_MOON);
 
-                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.moon_dem", "ðŸ“· Moon LRO LOLA Topography (NASA PDS)"));
-                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.moon_biome", "ðŸŒ¿ Moon Lunar Maria & Anorthosite Highlands"));
-                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.moon_geology", "ðŸª¨ Moon KREEP & Ilmenite Deposits"));
+                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.moon_dem", "📷 Moon LRO LOLA Topography (NASA PDS)"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.moon_biome", "🌿 Moon Lunar Maria & Anorthosite Highlands"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.moon_geology", "🪨 Moon KREEP & Ilmenite Deposits"));
                 if (climateFileLabel != null) climateFileLabel.setText("ðŸŒ¡ï¸ " + CLIMATE_SRC_TEMP_MOON);
                 if (rainfallFileLabel != null) rainfallFileLabel.setText("ðŸŒ§ï¸ " + CLIMATE_SRC_PRECIP_MOON);
                 if (seasonalityFileLabel != null) seasonalityFileLabel.setText("â˜€ï¸ " + CLIMATE_SRC_SEASON_MOON);
@@ -2011,9 +2011,9 @@ public class PlanetGeneratorPanel extends BorderPane {
                 if (precipSourceCombo != null) precipSourceCombo.setValue(CLIMATE_SRC_PRECIP_MERCURY);
                 if (seasonSourceCombo != null) seasonSourceCombo.setValue(CLIMATE_SRC_SEASON_MERCURY);
 
-                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mercury_dem", "ðŸ“· Mercury MESSENGER MLA DEM (NASA PDS)"));
-                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.mercury_biome", "ðŸŒ¿ Mercury Smooth & Intercrater Plains"));
-                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.mercury_geology", "ðŸª¨ Mercury High-Iron & PSR Ice Deposits"));
+                if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.source.mercury_dem", "📷 Mercury MESSENGER MLA DEM (NASA PDS)"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.source.mercury_biome", "🌿 Mercury Smooth & Intercrater Plains"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("resource.source.mercury_geology", "🪨 Mercury High-Iron & PSR Ice Deposits"));
                 if (climateFileLabel != null) climateFileLabel.setText("ðŸŒ¡ï¸ " + CLIMATE_SRC_TEMP_MERCURY);
                 if (rainfallFileLabel != null) rainfallFileLabel.setText("ðŸŒ§ï¸ " + CLIMATE_SRC_PRECIP_MERCURY);
                 if (seasonalityFileLabel != null) seasonalityFileLabel.setText("â˜€ï¸ " + CLIMATE_SRC_SEASON_MERCURY);
@@ -2118,7 +2118,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         double d = distanceSunSlider.getValue();
         double l = solarLumSlider.getValue();
         double irradiance = 1361.0 * (l / (d * d));
-        irradianceLabel.setText(String.format("%s: %.1f W/mÂ²", I18n.get("planet.param.irradiance"), irradiance));
+        irradianceLabel.setText(String.format("%s: %.1f W/m²", I18n.get("planet.param.irradiance"), irradiance));
 
         // Adjust average surface temperature dynamically based on stellar flux & atmospheric parameters
         if (!isUpdatingFromPreset) {
@@ -2126,7 +2126,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             double atmoP = atmoPressureSlider != null ? atmoPressureSlider.getValue() : 1.0;
             double co2Ppm = co2Slider != null ? co2Slider.getValue() : 420.0;
 
-            // Blackbody equilibrium temperature (K -> Â°C): T_eq = 278.5 * [(L * (1 - albedo)) / d^2]^(1/4) - 273.15
+            // Blackbody equilibrium temperature (K -> °C): T_eq = 278.5 * [(L * (1 - albedo)) / d^2]^(1/4) - 273.15
             double tEquilibriumC = 278.5 * Math.pow((l * (1.0 - alb)) / (d * d), 0.25) - 273.15;
 
             // Greenhouse boost: airless bodies (p < 0.01 atm) have zero greenhouse warming
@@ -2215,17 +2215,17 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (p.customElevBase64() != null) {
             customElevImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customElevBase64());
             cachedElevB64 = p.customElevBase64();
-            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.preset.heightmap", "ðŸ“· Preset Heightmap"));
+            if (elevFileLabel != null) elevFileLabel.setText(I18n.getOrDefault("planet.preset.heightmap", "📷 Preset Heightmap"));
         }
         if (p.customBiomeBase64() != null) {
             customBiomeImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customBiomeBase64());
             cachedBiomeB64 = p.customBiomeBase64();
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "ðŸŒ¿ Preset Biomes"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "🌿 Preset Biomes"));
         }
         if (p.customResourceBase64() != null) {
             customResourceImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customResourceBase64());
             cachedResourceB64 = p.customResourceBase64();
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.preset.resources", "ðŸª¨ Preset Resources"));
+            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.preset.resources", "🪨 Preset Resources"));
         }
         if (p.customClimateBase64() != null) {
             customClimateImage = org.ether.society.data.ImageMapLoader.base64PngToImage(p.customClimateBase64());
@@ -2252,7 +2252,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                     elevSrc = "earth";
                 } else if (lowerName.contains("mars") || lowerName.contains("ares")) {
                     elevSrc = "mars";
-                } else if (lowerName.contains("vÃ©nus") || lowerName.contains("venus") || lowerName.contains("hesperos")) {
+                } else if (lowerName.contains("vénus") || lowerName.contains("venus") || lowerName.contains("hesperos")) {
                     elevSrc = "venus";
                 } else if (lowerName.contains("lune") || lowerName.contains("moon") || lowerName.contains("selene")) {
                     elevSrc = "moon";
@@ -2480,9 +2480,9 @@ public class PlanetGeneratorPanel extends BorderPane {
 
             legendBar.getChildren().add(minLabel);
             if (preset.waterLevel() > -0.4) {
-                addLegendItem("OCEAN", Color.rgb(15, 23, 42), I18n.getOrDefault("planet.legend.depressions", "Abysses / OcÃ©ans"));
+                addLegendItem("OCEAN", Color.rgb(15, 23, 42), I18n.getOrDefault("planet.legend.depressions", "Abysses / Océans"));
             } else {
-                addLegendItem("DEPRESSIONS", getHypsometricColor(0.0), I18n.getOrDefault("planet.legend.depressions", "DÃ©pressions / Abysses"));
+                addLegendItem("DEPRESSIONS", getHypsometricColor(0.0), I18n.getOrDefault("planet.legend.depressions", "Dépressions / Abysses"));
             }
             addLegendItem("LOWLANDS", getHypsometricColor(0.10), I18n.getOrDefault("planet.legend.lowlands", "Basses Terres"));
             addLegendItem("PLAINS", getHypsometricColor(0.35), I18n.getOrDefault("planet.legend.plains", "Plaines & Bassins"));
@@ -2495,10 +2495,10 @@ public class PlanetGeneratorPanel extends BorderPane {
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
             legendBar.getChildren().add(maxLabel);
 
-        } else if (selectedIdx == 1) { // TempÃ©rature
+        } else if (selectedIdx == 1) { // Température
             double minT = preset.averageTempC() - preset.temperatureGradient() - 20.0;
             double maxT = preset.averageTempC() + preset.temperatureGradient();
-            Label minLabel = new Label(String.format("Min: %.1f Â°C", minT));
+            Label minLabel = new Label(String.format("Min: %.1f °C", minT));
             minLabel.getStyleClass().add("control-label");
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
@@ -2508,12 +2508,12 @@ public class PlanetGeneratorPanel extends BorderPane {
             addLegendItem("WARM", Color.rgb(240, 200, 0), I18n.getOrDefault("planet.legend.warm", "Chaud"));
             addLegendItem("HOT", Color.rgb(220, 0, 40), I18n.getOrDefault("planet.legend.hot", "Canicule"));
 
-            Label maxLabel = new Label(String.format("Max: %.1f Â°C", maxT));
+            Label maxLabel = new Label(String.format("Max: %.1f °C", maxT));
             maxLabel.getStyleClass().add("control-label");
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #ef4444;");
             legendBar.getChildren().add(maxLabel);
 
-        } else if (selectedIdx == 2) { // PrÃ©cipitations
+        } else if (selectedIdx == 2) { // Précipitations
             Label minLabel = new Label(I18n.getOrDefault("planet.legend.min_arid", "Min: 0 mm/an (Aride)"));
             minLabel.getStyleClass().add("control-label");
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #eab308;");
@@ -2529,9 +2529,9 @@ public class PlanetGeneratorPanel extends BorderPane {
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #3b82f6;");
             legendBar.getChildren().add(maxLabel);
 
-        } else { // SaisonnalitÃ© / Amplitude Thermique
+        } else { // Saisonnalité / Amplitude Thermique
             double maxAmp = Math.min(60.0, (preset.axialTiltDegrees() / 23.5) * 35.0);
-            Label minLabel = new Label(I18n.getOrDefault("planet.legend.min_stable", "Min: 0.0 Â°C (Stable)"));
+            Label minLabel = new Label(I18n.getOrDefault("planet.legend.min_stable", "Min: 0.0 °C (Stable)"));
             minLabel.getStyleClass().add("control-label");
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
@@ -2541,7 +2541,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             addLegendItem("HIGH", Color.rgb(240, 140, 20), I18n.getOrDefault("planet.legend.high_variance", "High"));
             addLegendItem("EXTREME", Color.rgb(220, 30, 80), I18n.getOrDefault("planet.legend.extreme_amp", "Extreme Amplitude"));
 
-            Label maxLabel = new Label(String.format("%s: %.1f Â°C (%s)", I18n.getOrDefault("planet.short.max", "Max"), maxAmp, I18n.getOrDefault("planet.legend.amplitude", "Amplitude")));
+            Label maxLabel = new Label(String.format("%s: %.1f °C (%s)", I18n.getOrDefault("planet.short.max", "Max"), maxAmp, I18n.getOrDefault("planet.legend.amplitude", "Amplitude")));
             maxLabel.getStyleClass().add("control-label");
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #a855f7;");
             legendBar.getChildren().add(maxLabel);
@@ -2671,7 +2671,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                                 pxColor = getHypsometricColor(norm);
                             }
                         }
-                    } else if (mapMode == 1) { // TempÃ©rature (Â°C)
+                    } else if (mapMode == 1) { // Température (°C)
                         if (radioTempImport != null && radioTempImport.isSelected()) {
                             if (customClimateImage != null && customClimateImage.getPixelReader() != null && customClimateImage.getWidth() > 0) {
                                 PixelReader pr = customClimateImage.getPixelReader();
@@ -2696,7 +2696,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                                 pxColor = blendColors(pxColor, Color.rgb(10, 25, 60), 0.30);
                             }
                         }
-                    } else if (mapMode == 2) { // PrÃ©cipitations (mm/an)
+                    } else if (mapMode == 2) { // Précipitations (mm/an)
                         if (radioPrecipImport != null && radioPrecipImport.isSelected()) {
                             if (customRainfallImage != null && customRainfallImage.getPixelReader() != null && customRainfallImage.getWidth() > 0) {
                                 PixelReader pr = customRainfallImage.getPixelReader();
@@ -2720,7 +2720,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                                 pxColor = blendColors(pxColor, Color.rgb(15, 23, 42), 0.35);
                             }
                         }
-                    } else { // Seasonality / Thermal Amplitude (Â°C)
+                    } else { // Seasonality / Thermal Amplitude (°C)
                         if (radioSeasonImport != null && radioSeasonImport.isSelected()) {
                             if (customSeasonalityImage != null && customSeasonalityImage.getPixelReader() != null && customSeasonalityImage.getWidth() > 0) {
                                 PixelReader pr = customSeasonalityImage.getPixelReader();
@@ -2789,7 +2789,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
             int oceanPct = (int) Math.round((oceanAreaWeight * 100.0) / Math.max(0.0001, totalAreaWeight));
             statsLabel.setText(I18n.get("planet.stats.ocean_land", oceanPct, 100 - oceanPct));
-            astroLabel.setText(String.format("%s: %.0f km | %s: %.1fh | %s: %.1fÂ° | %s: %.0f d | %s: %.2f AU | %s: %.1fÂ°C",
+            astroLabel.setText(String.format("%s: %.0f km | %s: %.1fh | %s: %.1f° | %s: %.0f d | %s: %.2f AU | %s: %.1f°C",
                     preset.isSatellite() ? I18n.getOrDefault("planet.short.moon_radius", "ðŸŒ• Lune Rayon") : I18n.getOrDefault("planet.short.radius", "ðŸ“ Rayon"),
                     preset.radiusKm(),
                     I18n.getOrDefault("planet.short.day", "Jour"),
@@ -2931,7 +2931,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
             if (presetRowLabel != null) presetRowLabel.setText(I18n.get("planet.preset"));
             if (bodyTypeRowLabel != null) bodyTypeRowLabel.setText(I18n.getOrDefault("planet.param.body_type", "Celestial Body Type:"));
-            if (parentMassRowLabel != null) parentMassRowLabel.setText(I18n.getOrDefault("planet.param.parent_mass", "Host planet mass (MâŠ•)"));
+            if (parentMassRowLabel != null) parentMassRowLabel.setText(I18n.getOrDefault("planet.param.parent_mass", "Host planet mass (M⊕)"));
             if (orbitDistanceParentRowLabel != null) orbitDistanceParentRowLabel.setText(I18n.getOrDefault("planet.param.parent_dist", "Host orbital distance (km)"));
 
             if (mapSourceRowLabel != null) mapSourceRowLabel.setText(I18n.get("planet.map.preset_body"));
@@ -2968,23 +2968,23 @@ public class PlanetGeneratorPanel extends BorderPane {
             scaleRowLabel.setText(I18n.get("planet.param.noise_scale"));
             gradRowLabel.setText(I18n.get("planet.param.temp_grad"));
 
-            if (oxygenRowLabel != null) oxygenRowLabel.setText(I18n.getOrDefault("planet.param.oxygen", "Oxygen Level Oâ‚‚ (%)"));
-            if (co2RowLabel != null) co2RowLabel.setText(I18n.getOrDefault("planet.param.co2", "Dioxyde de Carbone COâ‚‚ (ppm)"));
+            if (oxygenRowLabel != null) oxygenRowLabel.setText(I18n.getOrDefault("planet.param.oxygen", "Oxygen Level O₂ (%)"));
+            if (co2RowLabel != null) co2RowLabel.setText(I18n.getOrDefault("planet.param.co2", "Dioxyde de Carbone CO₂ (ppm)"));
             if (albedoRowLabel != null) albedoRowLabel.setText(I18n.getOrDefault("planet.param.albedo", "Planetary Albedo"));
             if (atmoPressureRowLabel != null) atmoPressureRowLabel.setText(I18n.getOrDefault("planet.param.atmo_pressure", "Atmospheric Pressure (atm)"));
 
-            if (radioProc != null) radioProc.setText(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
-            if (radioImport != null) radioImport.setText(I18n.getOrDefault("planet.radio.import", "ðŸ“‚ Import Heightmap Externe (PNG/GeoTIFF)"));
+            if (radioProc != null) radioProc.setText(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
+            if (radioImport != null) radioImport.setText(I18n.getOrDefault("planet.radio.import", "📂 Import Heightmap Externe (PNG/GeoTIFF)"));
 
-            if (radioTempProc != null) radioTempProc.setText(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
-            if (radioTempImport != null) radioTempImport.setText(I18n.getOrDefault("planet.radio.import_wms", "ðŸ“‚ Source Externe (PNG / WMS)"));
-            if (radioPrecipProc != null) radioPrecipProc.setText(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
-            if (radioPrecipImport != null) radioPrecipImport.setText(I18n.getOrDefault("planet.radio.import_wms", "ðŸ“‚ Source Externe (PNG / WMS)"));
-            if (radioSeasonProc != null) radioSeasonProc.setText(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
-            if (radioSeasonImport != null) radioSeasonImport.setText(I18n.getOrDefault("planet.radio.import_wms", "ðŸ“‚ Source Externe (PNG / WMS)"));
+            if (radioTempProc != null) radioTempProc.setText(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
+            if (radioTempImport != null) radioTempImport.setText(I18n.getOrDefault("planet.radio.import_wms", "📂 Source Externe (PNG / WMS)"));
+            if (radioPrecipProc != null) radioPrecipProc.setText(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
+            if (radioPrecipImport != null) radioPrecipImport.setText(I18n.getOrDefault("planet.radio.import_wms", "📂 Source Externe (PNG / WMS)"));
+            if (radioSeasonProc != null) radioSeasonProc.setText(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
+            if (radioSeasonImport != null) radioSeasonImport.setText(I18n.getOrDefault("planet.radio.import_wms", "📂 Source Externe (PNG / WMS)"));
 
-            if (tempSubHeader != null) tempSubHeader.setText(I18n.getOrDefault("planet.climate.temp.header", "ðŸŒ¡  Temperature & Thermal:"));
-            if (precipSubHeader != null) precipSubHeader.setText(I18n.getOrDefault("planet.climate.precip.header", "ðŸŒ§  Precipitation / Humidity:"));
+            if (tempSubHeader != null) tempSubHeader.setText(I18n.getOrDefault("planet.climate.temp.header", "🌡  Temperature & Thermal:"));
+            if (precipSubHeader != null) precipSubHeader.setText(I18n.getOrDefault("planet.climate.precip.header", "🌧  Precipitation / Humidity:"));
             if (seasonSubHeader != null) seasonSubHeader.setText(I18n.getOrDefault("planet.climate.season.header", "ðŸ‚  Seasonality / Thermal Variance:"));
             if (earthPaleoNoticeLabel != null) earthPaleoNoticeLabel.setText(I18n.getOrDefault("planet.climate.earth_paleo_notice", "ðŸŒ Note PalÃ©oclimatique : Pour la Terre, le moteur intÃ¨gre la dynamique temporelle (glaciations, niveau des mers LGM -120m, Sahara Vert). Les cartes ci-contre prÃ©sentent la baseline climatologique actuelle (ERA5 / WorldClim)."));
 
@@ -2996,13 +2996,13 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (precipSourceLabel != null) precipSourceLabel.setText(I18n.getOrDefault("planet.climate.source_label", "Reference source:"));
             if (seasonSourceLabel != null) seasonSourceLabel.setText(I18n.getOrDefault("planet.climate.source_label", "Reference source:"));
 
-            if (tempHintLabel != null) tempHintLabel.setText(I18n.getOrDefault("planet.climate.temp.hint", "â„¹  Thermal map is calculated from equator-pole gradient and random seed bias."));
-            if (precipHintLabel != null) precipHintLabel.setText(I18n.getOrDefault("planet.climate.precip.hint", "â„¹  Precipitation map is generated from latitudinal hygrometric bias and seed."));
-            if (seasonHintLabel != null) seasonHintLabel.setText(I18n.getOrDefault("planet.climate.season.hint", "â„¹  Seasonality is derived from axial tilt and random latitudinal bias."));
+            if (tempHintLabel != null) tempHintLabel.setText(I18n.getOrDefault("planet.climate.temp.hint", "ℹ  Thermal map is calculated from equator-pole gradient and random seed bias."));
+            if (precipHintLabel != null) precipHintLabel.setText(I18n.getOrDefault("planet.climate.precip.hint", "ℹ  Precipitation map is generated from latitudinal hygrometric bias and seed."));
+            if (seasonHintLabel != null) seasonHintLabel.setText(I18n.getOrDefault("planet.climate.season.hint", "ℹ  Seasonality is derived from axial tilt and random latitudinal bias."));
 
-            if (tempFormatHintLabel != null) tempFormatHintLabel.setText(I18n.getOrDefault("planet.climate.temp.format", "PNG niveaux de gris (projection Ã©quirectangulaire 2:1) :\n  Black (0) = âˆ’50Â°C | White (255) = +50Â°C"));
-            if (precipFormatHintLabel != null) precipFormatHintLabel.setText(I18n.getOrDefault("planet.climate.precip.format", "PNG niveaux de gris (projection Ã©quirectangulaire 2:1) :\n  Black (0) = 0 mm/yr | White (255) = 3,000 mm/yr"));
-            if (seasonFormatHintLabel != null) seasonFormatHintLabel.setText(I18n.getOrDefault("planet.climate.season.format", "PNG niveaux de gris (projection Ã©quirectangulaire 2:1) :\n  Black (0) = 0Â°C amplitude | White (255) = 50Â°C annual amplitude"));
+            if (tempFormatHintLabel != null) tempFormatHintLabel.setText(I18n.getOrDefault("planet.climate.temp.format", "PNG niveaux de gris (projection équirectangulaire 2:1) :\n  Black (0) = −50°C | White (255) = +50°C"));
+            if (precipFormatHintLabel != null) precipFormatHintLabel.setText(I18n.getOrDefault("planet.climate.precip.format", "PNG niveaux de gris (projection équirectangulaire 2:1) :\n  Black (0) = 0 mm/yr | White (255) = 3,000 mm/yr"));
+            if (seasonFormatHintLabel != null) seasonFormatHintLabel.setText(I18n.getOrDefault("planet.climate.season.format", "PNG niveaux de gris (projection équirectangulaire 2:1) :\n  Black (0) = 0°C amplitude | White (255) = 50°C annual amplitude"));
 
             if (bodyTypeCombo != null && bodyTypeCombo.getCellFactory() != null) {
                 bodyTypeCombo.setButtonCell(bodyTypeCombo.getCellFactory().call(null));
@@ -3024,9 +3024,9 @@ public class PlanetGeneratorPanel extends BorderPane {
                 int selected = viewModeCombo.getSelectionModel().getSelectedIndex();
                 viewModeCombo.getItems().setAll(
                     I18n.getOrDefault("planet.view.heightmap", "MAP 1. Heightmap & Relief Map"),
-                    I18n.getOrDefault("planet.view.temperature", "MAP 2. Temperature Map (Â°C)"),
+                    I18n.getOrDefault("planet.view.temperature", "MAP 2. Temperature Map (°C)"),
                     I18n.getOrDefault("planet.view.precipitation", "MAP 3. Precipitation Map (mm/yr)"),
-                    I18n.getOrDefault("planet.view.seasonality", "MAP 4. Seasonality / Thermal Amplitude Map (Â°C)")
+                    I18n.getOrDefault("planet.view.seasonality", "MAP 4. Seasonality / Thermal Amplitude Map (°C)")
                 );
                 if (selected >= 0 && selected < viewModeCombo.getItems().size()) {
                     viewModeCombo.getSelectionModel().select(selected);
@@ -3049,7 +3049,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         if (astroLabel == null) return;
         PlanetPreset preset = buildPresetFromUI();
         if (preset == null) return;
-        astroLabel.setText(String.format("%s: %.0f km | %s: %.1fh | %s: %.1fÂ° | %s: %.0f d | %s: %.2f AU | %s: %.1fÂ°C",
+        astroLabel.setText(String.format("%s: %.0f km | %s: %.1fh | %s: %.1f° | %s: %.0f d | %s: %.2f AU | %s: %.1f°C",
                 preset.isSatellite() ? I18n.getOrDefault("planet.short.moon_radius", "ðŸŒ• Lune Rayon") : I18n.getOrDefault("planet.short.radius", "ðŸ“ Rayon"),
                 preset.radiusKm(),
                 I18n.getOrDefault("planet.short.day", "Jour"),
@@ -3175,7 +3175,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 StringBuilder errorMsg = new StringBuilder();
                 // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
                 for (String err : errors) {
-                    errorMsg.append("â€¢ ").append(err).append("\n");
+                    errorMsg.append("• ").append(err).append("\n");
                 }
                 validationWarningLabel.setText(errorMsg.toString().trim());
                 validationWarningBanner.setVisible(true);

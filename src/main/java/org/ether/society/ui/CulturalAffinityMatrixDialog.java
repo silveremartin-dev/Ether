@@ -127,12 +127,14 @@ public class CulturalAffinityMatrixDialog extends Stage {
     // Footer Actions
     private final Button btnExportCsv = new Button();
     private final Button btnExportJson = new Button();
+    private final Button btnCancel = new Button();
     private final Button btnClose = new Button();
 
     private List<CulturalEntity> activeEntities = new ArrayList<>();
     private final java.util.Map<String, Double> customAffinityOverrides = new java.util.HashMap<>();
-    private final StackPane[][] cellPanes = new StackPane[32][32];
-    private final Label[][] cellLabels = new Label[32][32];
+    private final java.util.Map<String, Double> initialAffinityOverridesSnapshot = new java.util.HashMap<>();
+    private StackPane[][] cellPanes = new StackPane[0][0];
+    private Label[][] cellLabels = new Label[0][0];
 
     /* Internal state variable for current epoch (long). */
     private long currentEpoch = -100000L;
@@ -181,19 +183,11 @@ public class CulturalAffinityMatrixDialog extends Stage {
         lblEpoch.getStyleClass().add("control-label");
         lblEpoch.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
 
-        epochSelector.getItems().addAll(-100000L, -50000L, -25000L, -20000L, -10900L, -10000L, -8000L, -6000L, -3000L, -1900L, -1000L, 0L, 1000L, 2026L);
+        epochSelector.getItems().setAll(discoverAllEpochs());
         epochSelector.setValue(closestSupportedEpoch(initialEpoch));
         epochSelector.setCellFactory(lv -> new ListCell<>() {
             @Override
-            /*
-             * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
-             *
-             * @param item the item parameter (Long)
-             * @param empty the empty parameter (boolean)
-             */
             protected void updateItem(Long item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -265,7 +259,11 @@ public class CulturalAffinityMatrixDialog extends Stage {
         matrixGrid.setHgap(4);
         matrixGrid.setVgap(4);
         matrixGrid.setPadding(new Insets(8));
-        matrixScroll.setFitToWidth(true);
+        matrixScroll.setFitToWidth(false);
+        matrixScroll.setFitToHeight(false);
+        matrixScroll.setPannable(true);
+        matrixScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        matrixScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         matrixScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         VBox.setVgrow(matrixScroll, Priority.ALWAYS);
 
@@ -285,8 +283,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         Tab tabEntities = new Tab(I18n.getOrDefault("cultural.matrix.tab_entities", "📜 Registre Culturel & Technocomplexes"), entitiesScroll);
         tabEntities.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.tab_entities", "Entités ethnolinguistiques discrètes avec codage couleur 24-bit, régimes de parenté et technocomplexes lithiques.")));
 
-        tabPane.getTabs().addAll(tabMatrix, tabEntities);
-
         // 3. Footer Actions
         HBox footer = new HBox(10);
         footer.setAlignment(Pos.CENTER_RIGHT);
@@ -301,13 +297,24 @@ public class CulturalAffinityMatrixDialog extends Stage {
         btnExportJson.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export_json", "Exporter le registre culturel complet et la matrice d'affinité sous format JSON.")));
         btnExportJson.setOnAction(e -> exportMatrixJson());
 
+        btnCancel.setText(I18n.getOrDefault("common.btn.cancel", "Annuler"));
+        btnCancel.getStyleClass().add("button-secondary");
+        btnCancel.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.cancel", "Annuler les modifications et restaurer l'état initial des affinités.")));
+        btnCancel.setOnAction(e -> {
+            customAffinityOverrides.clear();
+            customAffinityOverrides.putAll(initialAffinityOverridesSnapshot);
+            close();
+        });
+
         btnClose.setText(I18n.getOrDefault("common.btn.close", "Fermer"));
         btnClose.getStyleClass().add("button-primary");
         btnClose.setStyle("-fx-font-weight: bold;");
-        btnClose.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.close", "Fermer l'inspecteur des affinités culturelles.")));
+        btnClose.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.close", "Valider et fermer l'inspecteur des affinités culturelles.")));
         btnClose.setOnAction(e -> close());
 
-        footer.getChildren().addAll(btnExportCsv, btnExportJson, btnClose);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        footer.getChildren().addAll(btnExportCsv, btnExportJson, spacer, btnCancel, btnClose);
 
         root.getChildren().addAll(titleLabel, subtitleLabel, epochRow, tabPane, footer);
 
@@ -318,11 +325,13 @@ public class CulturalAffinityMatrixDialog extends Stage {
         WindowUtils.applyWindowIcon(this);
 
         loadEpochRegistry(epochSelector.getValue());
+        initialAffinityOverridesSnapshot.clear();
+        initialAffinityOverridesSnapshot.putAll(customAffinityOverrides);
     }
 
     // Helper subroutine: setup quick editor panel - internal state computation & bounds checking
     private void setupQuickEditorPanel() {
-        quickEditorCard.setPadding(new Insets(8, 12, 8, 12));
+        quickEditorCard.setPadding(new Insets(10, 14, 10, 14));
         quickEditorCard.setStyle("-fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 8;");
 
         HBox topRow = new HBox(12);
@@ -334,17 +343,31 @@ public class CulturalAffinityMatrixDialog extends Stage {
         quickEditorPairLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 11.5px; -fx-text-fill: #f8fafc;");
         topRow.getChildren().addAll(quickEditorTitle, quickEditorPairLabel);
 
-        HBox controlsRow = new HBox(12);
-        controlsRow.setAlignment(Pos.CENTER_LEFT);
+        // Line 1: Slider and Precise Numerical Spinner
+        HBox sliderRow = new HBox(10);
+        sliderRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label minLbl = new Label("0%");
+        minLbl.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11px; -fx-font-weight: bold;");
+        minLbl.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.min", "Affinité minimale (0% - Hostilité absolue / Barrière infranchissable)")));
 
         quickAffinitySlider.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(quickAffinitySlider, Priority.ALWAYS);
         quickAffinitySlider.setShowTickMarks(true);
         quickAffinitySlider.setMajorTickUnit(25);
         quickAffinitySlider.setBlockIncrement(5);
+        quickAffinitySlider.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.slider", "Ajuster le coefficient d'affinité symétrique bilatérale (0% à 100%).")));
+
+        Label maxLbl = new Label("100%");
+        maxLbl.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11px; -fx-font-weight: bold;");
+        maxLbl.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.max", "Affinité maximale (100% - Fusion & assimilation culturelle totale)")));
 
         quickAffinitySpinner.setEditable(true);
-        quickAffinitySpinner.setPrefWidth(90);
+        quickAffinitySpinner.setPrefWidth(95);
+        quickAffinitySpinner.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.spinner", "Valeur numérique exacte du pourcentage d'affinité (0.0% à 100.0%).")));
+        if (quickAffinitySpinner.getEditor() != null) {
+            quickAffinitySpinner.getEditor().setStyle("-fx-text-fill: #f8fafc; -fx-background-color: rgba(15, 23, 42, 0.8); -fx-font-weight: bold;");
+        }
 
         quickAffinitySlider.valueProperty().addListener((obs, oldV, newV) -> {
             if (!isUpdatingEditor && newV != null && selectedI >= 0 && selectedJ >= 0) {
@@ -364,22 +387,37 @@ public class CulturalAffinityMatrixDialog extends Stage {
             }
         });
 
-        presetChipsBox.setAlignment(Pos.CENTER_LEFT);
-        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_hostile", "⚔️ 0%"), 0.0);
-        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_refractory", "🛡️ 25%"), 25.0);
-        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_peaceful", "🤝 50%"), 50.0);
-        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_allied", "🏛️ 75%"), 75.0);
-        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_assimilated", "💍 100%"), 100.0);
+        sliderRow.getChildren().addAll(minLbl, quickAffinitySlider, maxLbl, quickAffinitySpinner);
 
-        controlsRow.getChildren().addAll(new Label("0%"), quickAffinitySlider, new Label("100%"), quickAffinitySpinner, presetChipsBox);
-        quickEditorCard.getChildren().addAll(topRow, controlsRow);
+        // Line 2: Presets & Chips Bar on its own line to prevent truncation
+        HBox presetRow = new HBox(10);
+        presetRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label presetsLabel = new Label(I18n.getOrDefault("cultural.matrix.presets_label", "⚡ Préréglages d'assimilation :"));
+        presetsLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
+        presetsLabel.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.presets_bar", "Appliquer instantanément des régimes canoniques d'affinité bilatérale.")));
+
+        presetChipsBox.setAlignment(Pos.CENTER_LEFT);
+        presetChipsBox.getChildren().clear();
+        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_hostile", "⚔️ 0% Hostile"), 0.0, I18n.getOrDefault("cultural.matrix.preset_hostile_tt", "Hostilité irréconciliable (0%) : Conflits armés endémiques, barrières douanières absolues, refus total d'intermariage."));
+        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_refractory", "🛡️ 25% Réfractaire"), 25.0, I18n.getOrDefault("cultural.matrix.preset_refractory_tt", "Réfractaire & Méfiant (25%) : Frottements culturels, frictions frontalières, échanges marginaux."));
+        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_peaceful", "🤝 50% Neutre"), 50.0, I18n.getOrDefault("cultural.matrix.preset_peaceful_tt", "Neutre & Pacifique (50%) : Coexistence stable, commerce régulier sans intégration linguistique."));
+        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_allied", "🏛️ 75% Allié"), 75.0, I18n.getOrDefault("cultural.matrix.preset_allied_tt", "Allié & Partenaire (75%) : Forte proximité culturelle, traités militaires, flux marchands intensifs."));
+        addPresetChip(I18n.getOrDefault("cultural.matrix.preset_assimilated", "💍 100% Assimilé"), 100.0, I18n.getOrDefault("cultural.matrix.preset_assimilated_tt", "Assimilation Totale (100%) : Fusion culturelle, continuité dialectale, intermariages illimités."));
+
+        presetRow.getChildren().addAll(presetsLabel, presetChipsBox);
+
+        quickEditorCard.getChildren().addAll(topRow, sliderRow, presetRow);
     }
 
     // Helper subroutine: add preset chip - internal state computation & bounds checking
-    private void addPresetChip(String label, double val) {
+    private void addPresetChip(String label, double val, String tooltipText) {
         Button btn = new Button(label);
         btn.getStyleClass().add("button-secondary");
-        btn.setStyle("-fx-font-size: 10px; -fx-padding: 3 7;");
+        btn.setStyle("-fx-font-size: 10.5px; -fx-padding: 3 8; -fx-font-weight: bold;");
+        if (tooltipText != null) {
+            btn.setTooltip(new Tooltip(tooltipText));
+        }
         btn.setOnAction(e -> {
             if (selectedI >= 0 && selectedJ >= 0) {
                 isUpdatingEditor = true;
@@ -455,10 +493,38 @@ public class CulturalAffinityMatrixDialog extends Stage {
         Tooltip.install(cell, new Tooltip(tooltipText));
     }
 
+    // Helper subroutine: discover all epochs from disk sorted ascending
+    private static List<Long> discoverAllEpochs() {
+        List<Long> epochs = new ArrayList<>();
+        Path earthDir = Paths.get("data", "maps", "ether", "earth");
+        if (Files.exists(earthDir) && Files.isDirectory(earthDir)) {
+            try (var stream = Files.list(earthDir)) {
+                stream.filter(Files::isDirectory)
+                        .forEach(p -> {
+                            String name = p.getFileName().toString();
+                            try {
+                                long yr = Long.parseLong(name);
+                                epochs.add(yr);
+                            } catch (NumberFormatException ignored) {}
+                        });
+            } catch (Exception ex) {
+                logger.warn("Failed to dynamically list Earth map epochs: {}", ex.getMessage());
+            }
+        }
+        if (epochs.isEmpty()) {
+            long[] defaults = {-100000L, -74000L, -50000L, -25000L, -20000L, -10900L, -10000L, -8000L, -6000L, -3000L, -1900L, -1000L, -500L, 0L, 500L, 1000L, 1500L, 1800L, 1900L, 2026L};
+            for (long d : defaults) epochs.add(d);
+        } else {
+            java.util.Collections.sort(epochs);
+        }
+        return epochs;
+    }
+
     // Helper subroutine: closest supported epoch - internal state computation & bounds checking
     private static long closestSupportedEpoch(long yr) {
-        long[] supported = {-100000L, -50000L, -25000L, -20000L, -10900L, -10000L, -8000L, -6000L, -3000L, -1900L, -1000L, 0L, 1000L, 2026L};
-        long best = supported[0];
+        List<Long> supported = discoverAllEpochs();
+        if (supported.isEmpty()) return -100000L;
+        long best = supported.get(0);
         long minDiff = Math.abs(yr - best);
         for (long s : supported) {
             long d = Math.abs(yr - s);
@@ -473,16 +539,34 @@ public class CulturalAffinityMatrixDialog extends Stage {
     // Helper subroutine: format epoch name - internal state computation & bounds checking
     private static String formatEpochName(long yr) {
         if (yr == -100000L) return I18n.getOrDefault("cultural.epoch.eemian", "–100 000 BP (Sortie d'Afrique / Éémien)");
+        if (yr == -74000L)  return I18n.getOrDefault("cultural.epoch.toba", "–74 000 BP (Goulot d'Étranglement de Toba)");
         if (yr == -50000L)  return I18n.getOrDefault("cultural.epoch.sahul", "–50 000 BP (Peuplement Maritime du Sahul)");
         if (yr == -25000L)  return I18n.getOrDefault("cultural.epoch.beringia", "–25 000 BP (Pause Béringienne & Gravettien)");
         if (yr == -20000L)  return I18n.getOrDefault("cultural.epoch.lgm", "–20 000 BP (Dernier Maximum Glaciaire & Solutréen)");
+        if (yr == -10900L)  return I18n.getOrDefault("cultural.epoch.dryas", "–10 900 BP (Dryas Récent & Proto-Néolithique)");
+        if (yr == -10000L)  return I18n.getOrDefault("cultural.epoch.holocene", "–10 000 BP (Aube de l'Holocène / Göbekli Tepe)");
         if (yr == -8000L)   return I18n.getOrDefault("cultural.epoch.neolithic", "–8 000 BP (Néolithique / Çatalhöyük & Jéricho)");
+        if (yr == -6000L)   return I18n.getOrDefault("cultural.epoch.uruk", "–6 000 BP (Proto-Urbain / Mésopotamie & Yangshao)");
+        if (yr == -3000L)   return I18n.getOrDefault("cultural.epoch.earlybronze", "–3 000 AEC (Premier Âge du Bronze / Dynasties Archaïques)");
         if (yr == -1900L)   return I18n.getOrDefault("cultural.epoch.bronze", "–1 900 AEC (Âge du Bronze Moyen / Babylone & Shang)");
         if (yr == -1000L)   return I18n.getOrDefault("cultural.epoch.iron", "–1 000 AEC (Premier Âge du Fer / Phéniciens & Zhou)");
+        if (yr == -500L)    return I18n.getOrDefault("cultural.epoch.classical", "–500 AEC (Époque Classique / Athènes, Confucius & Magadha)");
         if (yr == 0L)       return "0 CE / AD (Pax Romana & Dynastie Han)";
+        if (yr == 500L)     return "+500 CE (Antiquité Tardive / Justinien & Gupta)";
         if (yr == 1000L)    return "+1 000 CE (Moyen Âge / Song & Califats)";
+        if (yr == 1500L)    return "+1 500 CE (Grandes Découvertes & Renaissance)";
+        if (yr == 1800L)    return "+1 800 CE (Révolution Industrielle)";
+        if (yr == 1900L)    return "+1 900 CE (Ère Moderne / Belle Époque)";
         if (yr == 2026L)    return "+2 026 CE (Anthropocène Contemporain)";
-        return (yr < 0 ? Math.abs(yr) + " BP / AEC" : yr + " CE / AD");
+        if (yr < 0) {
+            long absYr = Math.abs(yr);
+            if (absYr >= 10000) {
+                return String.format("–%,d BP", absYr).replace(',', ' ');
+            } else {
+                return String.format("–%,d AEC", absYr).replace(',', ' ');
+            }
+        }
+        return String.format("+%,d CE", yr).replace(',', ' ');
     }
 
     // Helper subroutine: load epoch registry - internal state computation & bounds checking
@@ -538,6 +622,23 @@ public class CulturalAffinityMatrixDialog extends Stage {
 
         if (activeEntities.isEmpty()) {
             buildProceduralEntitiesFallback(epoch);
+        } else if (activeEntities.size() > 1) {
+            // Check if traits are all identical dummy values (causing flat 100% affinities)
+            boolean uniformTraits = true;
+            double[] t0 = activeEntities.get(0).traits();
+            for (int k = 1; k < activeEntities.size(); k++) {
+                double[] tk = activeEntities.get(k).traits();
+                if (tk == null || t0 == null || tk.length != t0.length) { uniformTraits = false; break; }
+                for (int d = 0; d < t0.length; d++) {
+                    if (Math.abs(tk[d] - t0[d]) > 0.001) {
+                        uniformTraits = false;
+                        break;
+                    }
+                }
+            }
+            if (uniformTraits) {
+                generateDistinctCulturalTraits(activeEntities);
+            }
         }
 
         renderEntitiesTab();
@@ -548,6 +649,24 @@ public class CulturalAffinityMatrixDialog extends Stage {
         } else {
             updateQuickEditor();
         }
+    }
+
+    // Helper subroutine: generate distinct cultural traits for entities with dummy identical vectors
+    private void generateDistinctCulturalTraits(List<CulturalEntity> entities) {
+        if (entities == null || entities.isEmpty()) return;
+        List<CulturalEntity> updated = new ArrayList<>();
+        int n = entities.size();
+        for (int idx = 0; idx < n; idx++) {
+            CulturalEntity orig = entities.get(idx);
+            double[] traits = org.ether.society.data.CliopatriaPolityVectorReader.computePolityTraits(orig.nameEn(), orig.id(), currentEpoch);
+            updated.add(new CulturalEntity(
+                    orig.id(), orig.colorHex(), orig.colorRgb(), traits,
+                    orig.nameEn(), orig.nameFr(), orig.nameDe(), orig.nameEs(), orig.nameZh(),
+                    orig.kinshipType(), orig.lithicTechnocomplex()
+            ));
+        }
+        entities.clear();
+        entities.addAll(updated);
     }
 
     // Helper subroutine: build procedural entities fallback - internal state computation & bounds checking
@@ -661,6 +780,9 @@ public class CulturalAffinityMatrixDialog extends Stage {
         int n = activeEntities.size();
         if (n == 0) return;
 
+        cellPanes = new StackPane[n][n];
+        cellLabels = new Label[n][n];
+
         // Top-Left corner header
         Label corner = new Label(I18n.getOrDefault("cultural.matrix.entities_label", "Entités \\ Entités"));
         corner.getStyleClass().add("control-label");
@@ -722,15 +844,15 @@ public class CulturalAffinityMatrixDialog extends Stage {
 
                 StackPane cell = new StackPane();
                 cell.setPrefSize(115, 36);
+                cell.setMinSize(75, 28);
                 cell.setCursor(javafx.scene.Cursor.HAND);
 
                 Label valLbl = new Label();
+                valLbl.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
                 cell.getChildren().add(valLbl);
 
-                if (i < cellPanes.length && j < cellPanes[0].length) {
-                    cellPanes[i][j] = cell;
-                    cellLabels[i][j] = valLbl;
-                }
+                cellPanes[i][j] = cell;
+                cellLabels[i][j] = valLbl;
 
                 updateCellDisplay(i, j);
 
