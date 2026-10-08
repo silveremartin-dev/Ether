@@ -138,7 +138,7 @@ public class WorldMap {
 
     // H3 configuration
 
-    /* H3 resolution level (8 = ~1 kmÂ², 6 = ~2.2 kmÂ²). */
+    /* H3 resolution level (8 = ~1 km², 6 = ~2.2 km²). */
     @Column(nullable = false)
     private Integer h3Resolution = 8;
 

@@ -61,7 +61,7 @@ public class ManningStricklerHydrodynamicsEngine {
     }
 
     /*
-     * Calculates river discharge Q (mÂ³/s) for a rectangular channel of given width and depth.
+     * Calculates river discharge Q (m³/s) for a rectangular channel of given width and depth.
      */
     public static double calculateDischarge(double widthM, double depthM, double bedSlope) {
         // Phase 1: Invariant state validation and environmental boundary initialization

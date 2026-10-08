@@ -1510,7 +1510,7 @@ public class H3MapCanvas extends Canvas {
     public void pingLocation(double lat, double lng, String title, String type, double magnitude) {
         long now = System.currentTimeMillis();
         manualPings.removeIf(p -> p.isExpired(now));
-        manualPings.add(new BeaconItem(lat, lng, title != null ? title : "ðŸ“ Ã‰vÃ©nement", type != null ? type : "PING", magnitude > 0 ? magnitude : 6.5, now, 8000L));
+        manualPings.add(new BeaconItem(lat, lng, title != null ? title : "ðŸ“ Événement", type != null ? type : "PING", magnitude > 0 ? magnitude : 6.5, now, 8000L));
 
         if (pingAnimationTimer == null) {
             pingAnimationTimer = new javafx.animation.AnimationTimer() {
@@ -3486,7 +3486,7 @@ public class H3MapCanvas extends Canvas {
         double cRightLng = Math.min(180.0, Math.max(-180.0, viewRightLng));
 
         String coordsText = String.format(
-            "ðŸ“ Centre: %.2fÂ°N, %.2fÂ°E | Bornes: [%.2fÂ°N, %.2fÂ°E] â†’ [%.2fÂ°N, %.2fÂ°E] | Zoom: %.1fx",
+            "ðŸ“ Centre: %.2f°N, %.2f°E | Bornes: [%.2f°N, %.2f°E] â†’ [%.2f°N, %.2f°E] | Zoom: %.1fx",
             centerLat, centerLng, cTopLat, cLeftLng, cBotLat, cRightLng, zoomFactor
         );
 

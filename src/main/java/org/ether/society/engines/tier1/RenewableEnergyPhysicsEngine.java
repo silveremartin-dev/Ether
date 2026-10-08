@@ -15,8 +15,8 @@ import java.util.List;
 /**
  * Betz Wind Kinetic Power & Solar Radiance Physics Engine.
  * Replaces abstract solar/wind units with physical power flux equations:
- * 1. <b>Betz Law Wind Kinetic Power Density</b>: P_wind = 0.5 * Ï * A * vÂ³ * Cp (where Cp â‰¤ 0.593 Betz limit).
- * 2. <b>Top-of-Atmosphere Solar Irradiance</b>: Sâ‚€ = 1361 W/mÂ² attenuated by atmospheric optical transmittance (Ï„).
+ * 1. <b>Betz Law Wind Kinetic Power Density</b>: P_wind = 0.5 * Ï * A * v³ * Cp (where Cp â‰¤ 0.593 Betz limit).
+ * 2. <b>Top-of-Atmosphere Solar Irradiance</b>: Sâ‚€ = 1361 W/m² attenuated by atmospheric optical transmittance (Ï„).
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -24,20 +24,20 @@ import java.util.List;
 public class RenewableEnergyPhysicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(RenewableEnergyPhysicsEngine.class);
 
-    /* Solar Constant at TOA in W/mÂ² */
+    /* Solar Constant at TOA in W/m² */
     public static final double SOLAR_CONSTANT_W_PER_M2 = 1361.0;
 
     /* Betz Limit aerodynamic power coefficient */
     public static final double BETZ_LIMIT_CP = 0.593;
 
-    /* Air density at sea level in kg/mÂ³ */
+    /* Air density at sea level in kg/m³ */
     public static final double AIR_DENSITY_KG_PER_M3 = 1.225;
 
     /*
-     * Calculates kinetic wind power density in W/mÂ² based on Betz Law.
+     * Calculates kinetic wind power density in W/m² based on Betz Law.
      *
      * @param windSpeedMetersPerSec Wind speed in m/s
-     * @return Kinetic wind power density in W/mÂ²
+     * @return Kinetic wind power density in W/m²
      */
     public static double calculateBetzWindPowerWattsPerM2(double windSpeedMetersPerSec) {
         // Phase 1: Invariant state validation and environmental boundary initialization

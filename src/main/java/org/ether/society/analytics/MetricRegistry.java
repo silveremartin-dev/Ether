@@ -175,7 +175,7 @@ public class MetricRegistry {
             cells -> cells.stream().mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() * 10.0 : 0.0).average().orElse(0.0)
         ));
 
-        // --- ðŸ›ï¸ 3. SOCIÃ‰TÃ‰ & INSTITUTIONS ---
+        // --- ðŸ›ï¸ 3. SOCIÉTÉ & INSTITUTIONS ---
         register(new MetricDescriptor(
             "asabiyyah", "Cohésion sociale (Asabiyyah %)", MetricDescriptor.Category.SOCIETY_POLITICS, "%",
             "Indice Khaldounien de cohésion sociale, solidarité de groupe et sérénité.",
@@ -265,7 +265,7 @@ public class MetricRegistry {
             cells -> cells.stream().mapToDouble(c -> c.getLinguisticDrift() != null ? c.getLinguisticDrift() : 1.0).average().orElse(1.0)
         ));
 
-        // --- â³ 6. CLIODYNAMIQUE & RISQUES SYSTÃ‰MIQUES ---
+        // --- â³ 6. CLIODYNAMIQUE & RISQUES SYSTÉMIQUES ---
         register(new MetricDescriptor(
             "eliteOverproduction", "Surproduction Élitaire (Turchin)", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
             "Ratio de compétition pour le pouvoir et d'aspiration des élites.",
@@ -280,7 +280,7 @@ public class MetricRegistry {
             cells -> cells.stream().mapToDouble(c -> c.getPollutionLevel() != null ? c.getPollutionLevel() / 10.0 : 0.0).average().orElse(0.0)
         ));
 
-        // --- âš™ï¸ 7. COMPLEXITÃ‰ SYSTÃ‰MIQUE & PALÃ‰OLITHIQUE ---
+        // --- ⚙️ï¸ 7. COMPLEXITÉ SYSTÉMIQUE & PALÉOLITHIQUE ---
         register(new MetricDescriptor(
             "systemInterdependence", "Interdépendance & Complexité Systémique", MetricDescriptor.Category.COMPLEXITY, "%",
             "Indice d'interconnexion et de fragilité des chaînes logistiques.",
@@ -296,14 +296,14 @@ public class MetricRegistry {
         ));
 
         register(new MetricDescriptor(
-            "milankovitchInsolation", "â˜€ï¸ Insolation Milankovitch 65Â°N", MetricDescriptor.Category.CLIODYNAMICS, "W/mÂ²",
+            "milankovitchInsolation", "â˜€ï¸ Insolation Milankovitch 65°N", MetricDescriptor.Category.CLIODYNAMICS, "W/m²",
             "Insolation solaire d'été aux hautes latitudes nordique gouvernant les cycles d'englaciation et le Sahara Vert.",
             cell -> 480.0,
             cells -> 480.0
         ));
 
         register(new MetricDescriptor(
-            "zeroContainmentScore", "ðŸ›¡ï¸ Confinement BiogÃ©ographique", MetricDescriptor.Category.CLIODYNAMICS, "%",
+            "zeroContainmentScore", "ðŸ›¡ï¸ Confinement Biogéographique", MetricDescriptor.Category.CLIODYNAMICS, "%",
             "Respect strict des contraintes d'absence de population humaine dans les amériques (< -25k BP) et le Sahul (< -50k BP).",
             cell -> 100.0,
             cells -> 100.0

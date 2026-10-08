@@ -111,13 +111,12 @@ public class GodModePanel extends VBox {
         new EventTypeItem("ECLSS_FAILURE", "godmode.type.eclss_failure", "godmode.event.eclss_failure", "godmode.event.eclss_failure.desc", 30, 7.5, false),
         new EventTypeItem("AEROSTAT_PUNCTURE", "godmode.type.aerostat_puncture", "godmode.event.aerostat_puncture", "godmode.event.aerostat_puncture.desc", 14, 8.0, false),
         new EventTypeItem("LAVA_TUBE_COLLAPSE", "godmode.type.lava_tube_collapse", "godmode.event.lava_tube_collapse", "godmode.event.lava_tube_collapse.desc", 1, 9.0, false),
-        // Catégorie 3 : Personnages Historiques & Figures d'Impact (7 Archétypes)
+        // Catégorie 3 : Personnages Historiques & Dirigeants d'Impact (6 Archétypes)
         new EventTypeItem("LEADER_MILITARY_CONQUEROR", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror.desc", 7300, 8.0, true),
         new EventTypeItem("LEADER_INFRASTRUCTURE_BUILDER", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder.desc", 10950, 7.5, true),
         new EventTypeItem("LEADER_INSTITUTIONAL_REFORMER", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer.desc", 9125, 7.0, true),
         new EventTypeItem("LEADER_HYDRAULIC_AGRARIAN_INNOVATOR", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator.desc", 12775, 7.5, true),
         new EventTypeItem("LEADER_MORAL_RELIGIOUS_SAGE", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage.desc", 14600, 8.0, true),
-        new EventTypeItem("LEADER_INTELLECTUAL_CHRONICLER", "leader.archetype.intellectual_chronicler", "leader.archetype.intellectual_chronicler", "leader.archetype.intellectual_chronicler.desc", 16425, 3.5, true),
         new EventTypeItem("LEADER_TOTALITARIAN_PURGER", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger.desc", 5475, 8.5, true)
     );
 
@@ -451,7 +450,7 @@ public class GodModePanel extends VBox {
         massExtinctionBtn.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle(I18n.getOrDefault("godmode.dialog.extinction_title", "Confirmation d'Extinction Massive"));
-            alert.setHeaderText(I18n.getOrDefault("godmode.dialog.extinction_header", "âš ï¸ Action Destructive en Mode Dieu"));
+            alert.setHeaderText(I18n.getOrDefault("godmode.dialog.extinction_header", "⚠️ï¸ Action Destructive en Mode Dieu"));
             alert.setContentText(I18n.getOrDefault("godmode.dialog.extinction_desc", "Are you sure you want to eliminate 50% of world population? This action will be logged irreversibly in the audit trail."));
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
@@ -543,7 +542,7 @@ public class GodModePanel extends VBox {
                     case 4 -> {
                         nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) - 10.0);
                         brushType = "COLD_INJECTION";
-                        brushTitle = I18n.getOrDefault("godmode.brush.cold", "â„ï¸ Refroidissement Local (-10,0Â°C)");
+                        brushTitle = I18n.getOrDefault("godmode.brush.cold", "â„ï¸ Refroidissement Local (-10,0°C)");
                         brushDesc = String.format(Locale.ROOT, "Refroidissement local (-10.0°C) à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
                         brushMag = 10.0;
                     }
@@ -931,19 +930,19 @@ public class GodModePanel extends VBox {
         if (nearestCell != null) {
             boolean isOcean = nearestCell.getBiome() == org.ether.society.model.Biome.OCEAN || nearestCell.getBiome() == org.ether.society.model.Biome.DEEP_OCEAN;
             if (isTerrestrialEventType(type) && isOcean) {
-                String warnMsg = String.format(Locale.ROOT, "âš ï¸ IncompatibilitÃ© GÃ©ographique :\nL'Ã©vÃ©nement '%s' (%s) ne peut pas se produire en plein ocÃ©an (Lat: %.2fÂ°, Lng: %.2fÂ°).", name, type, lat, lng);
+                String warnMsg = String.format(Locale.ROOT, "⚠️ï¸ Incompatibilité Géographique :\nL'événement '%s' (%s) ne peut pas se produire en plein océan (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "âš ï¸ Ã‰vÃ©nement incompatible avec le milieu ocÃ©anique"));
+                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ï¸ Événement incompatible avec le milieu océanique"));
                 alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice", "Veuillez sélectionner des coordonnées situées sur la terre ferme."));
                 WindowUtils.applyWindowIcon(alert);
                 alert.showAndWait();
                 return;
             } else if (isOceanicEventType(type) && !isOcean && nearestCell.getElevation() != null && nearestCell.getElevation() > 300) {
-                String warnMsg = String.format(Locale.ROOT, "âš ï¸ IncompatibilitÃ© GÃ©ographique :\nL'Ã©vÃ©nement '%s' (%s) nÃ©cessite une zone maritime ou cÃ´tiÃ¨re (Lat: %.2fÂ°, Lng: %.2fÂ°).", name, type, lat, lng);
+                String warnMsg = String.format(Locale.ROOT, "⚠️ï¸ Incompatibilité Géographique :\nL'événement '%s' (%s) nécessite une zone maritime ou côtière (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "âš ï¸ Ã‰vÃ©nement incompatible avec les hautes terres"));
+                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ï¸ Événement incompatible avec les hautes terres"));
                 alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice_ocean", "Veuillez sélectionner des coordonnées maritimes ou côtières."));
                 WindowUtils.applyWindowIcon(alert);
                 alert.showAndWait();

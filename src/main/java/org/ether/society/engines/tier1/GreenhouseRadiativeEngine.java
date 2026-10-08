@@ -33,13 +33,13 @@ public class GreenhouseRadiativeEngine {
     private static final double BASELINE_CO2_PPM = 280.0;
     /* Internal state variable for baseline ch4 ppb (double). */
     private static final double BASELINE_CH4_PPB = 720.0;
-    private static final double CLIMATE_SENSITIVITY_LAMBDA = 0.8; // Â°C per W/mÂ²
+    private static final double CLIMATE_SENSITIVITY_LAMBDA = 0.8; // °C per W/m²
 
     // Physical constants for Stefan-Boltzmann and Clausius-Clapeyron
-    public static final double STEFAN_BOLTZMANN_SIGMA = 5.670374e-8; // W/(mÂ²Â·Kâ´)
+    public static final double STEFAN_BOLTZMANN_SIGMA = 5.670374e-8; // W/(m²Â·Kâ´)
     /* Internal state variable for emissivity epsilon (double). */
     public static final double EMISSIVITY_EPSILON = 0.98;
-    public static final double SOLAR_CONSTANT_TOA = 1361.0; // W/mÂ²
+    public static final double SOLAR_CONSTANT_TOA = 1361.0; // W/m²
     public static final double LATENT_HEAT_VAPORIZATION_LV = 2.501e6; // J/kg
     public static final double GAS_CONSTANT_VAPOR_RV = 461.5; // J/(kgÂ·K)
     public static final double REFERENCE_VAPOR_PRESSURE_E0 = 611.3; // Pa at 273.15 K
@@ -98,7 +98,7 @@ public class GreenhouseRadiativeEngine {
     }
 
     /*
-     * Calculates radiative forcing in W/mÂ² based on greenhouse gas concentrations
+     * Calculates radiative forcing in W/m² based on greenhouse gas concentrations
      * modulated by technological carbon capture and solar geoengineering mitigation.
      */
     public double computeRadiativeForcingWpm2() {
@@ -114,7 +114,7 @@ public class GreenhouseRadiativeEngine {
     }
 
     /*
-     * Computes the global mean temperature anomaly (Â°C) relative to baseline.
+     * Computes the global mean temperature anomaly (°C) relative to baseline.
      */
     public double computeTemperatureAnomalyC() {
         // Phase 1: Invariant state validation and environmental boundary initialization
@@ -160,7 +160,7 @@ public class GreenhouseRadiativeEngine {
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
         double deltaT = computeTemperatureAnomalyC();
-        return deltaT * 42.5; // ~42.5m rise per Â°C long term
+        return deltaT * 42.5; // ~42.5m rise per °C long term
     }
 
     /*
@@ -182,7 +182,7 @@ public class GreenhouseRadiativeEngine {
         double seaShift = computeSeaLevelDeltaMeters();
         double ghForcing = computeRadiativeForcingWpm2();
 
-        logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{:.2f}Â°C, SeaLevelDelta=+{:.1f}m, Forcing={:.2f} W/mÂ²",
+        logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{:.2f}°C, SeaLevelDelta=+{:.1f}m, Forcing={:.2f} W/m²",
                 currentCo2Ppm, currentCh4Ppb, deltaT, seaShift, ghForcing);
 
         cells.parallelStream().forEach(cell -> {

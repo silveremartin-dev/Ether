@@ -18,10 +18,10 @@ import java.util.List;
  * <p>Models planetary zonal winds and meridional convective circulation cells under Coriolis acceleration:</p>
  * <ul>
  *   <li><b>Coriolis Parameter</b>: $f = 2 \Omega \sin\phi$ with $\Omega = 7.2921159 \times 10^{-5}\text{ rad/s}$.</li>
- *   <li><b>Hadley Convective Cell (0Â° to 30Â°)</b>: Equatorial ascent (ITCZ), poleward upper tropospheric flow,
+ *   <li><b>Hadley Convective Cell (0° to 30°)</b>: Equatorial ascent (ITCZ), poleward upper tropospheric flow,
  *       subtropical descent (Horse Latitudes / Deserts), and surface easterly Trade Winds ($u_z < 0$).</li>
- *   <li><b>Ferrel Mid-Latitude Cell (30Â° to 60Â°)</b>: Geostrophic Westerlies ($u_z > 0$, Roaring Forties).</li>
- *   <li><b>Polar Cell (60Â° to 90Â°)</b>: Cold polar subsidence and Polar Easterlies ($u_z < 0$).</li>
+ *   <li><b>Ferrel Mid-Latitude Cell (30° to 60°)</b>: Geostrophic Westerlies ($u_z > 0$, Roaring Forties).</li>
+ *   <li><b>Polar Cell (60° to 90°)</b>: Cold polar subsidence and Polar Easterlies ($u_z < 0$).</li>
  *   <li><b>Intertropical Convergence Zone (ITCZ)</b>: Seasonal latitudinal shift driven by solar declination $\delta_{sol}$.</li>
  * </ul>
  *
@@ -57,7 +57,7 @@ public class AtmosphericCirculationHadleyEngine {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
-        // ITCZ seasonal shift (Â±5Â° latitude depending on solar zenith)
+        // ITCZ seasonal shift (±5° latitude depending on solar zenith)
         double itczShiftDeg = 5.0 * Math.sin(2.0 * Math.PI * (month - 3) / 12.0);
         double effectiveLat = latDeg - itczShiftDeg;
         double absLat = Math.abs(effectiveLat);
@@ -68,20 +68,20 @@ public class AtmosphericCirculationHadleyEngine {
         String cellType;
 
         if (absLat < 30.0) {
-            // 1. Hadley Cell (0Â° - 30Â°): Trade winds blowing East-to-West (negative zonal speed)
+            // 1. Hadley Cell (0° - 30°): Trade winds blowing East-to-West (negative zonal speed)
             cellType = "HADLEY_TRADE_WINDS";
             double intensity = Math.sin(Math.PI * absLat / 30.0);
             uZonal = -7.0 * intensity; // -7 m/s easterlies
             vMeridional = -signLat * 2.5 * (1.0 - absLat / 30.0); // Equatorward surface return
         } else if (absLat < 60.0) {
-            // 2. Ferrel Cell (30Â° - 60Â°): Dominant Westerlies (positive zonal speed)
+            // 2. Ferrel Cell (30° - 60°): Dominant Westerlies (positive zonal speed)
             cellType = "FERREL_WESTERLIES";
             double relPos = (absLat - 30.0) / 30.0;
             double intensity = Math.sin(Math.PI * relPos);
             uZonal = 12.0 * intensity; // +12 m/s westerlies (Roaring Forties)
             vMeridional = signLat * 2.0 * intensity;
         } else {
-            // 3. Polar Cell (60Â° - 90Â°): Polar Easterlies
+            // 3. Polar Cell (60° - 90°): Polar Easterlies
             cellType = "POLAR_EASTERLIES";
             double relPos = (absLat - 60.0) / 30.0;
             double intensity = Math.sin(Math.PI * relPos);
@@ -108,7 +108,7 @@ public class AtmosphericCirculationHadleyEngine {
             double totalWindSpeed = Math.sqrt(wind.zonalSpeedM_S() * wind.zonalSpeedM_S()
                     + wind.meridionalSpeedM_S() * wind.meridionalSpeedM_S());
 
-            // Betz kinetic wind power density: P = 0.5 * Ï_air * vÂ³ * C_p (Betz limit C_p â‰ˆ 0.40 real-world)
+            // Betz kinetic wind power density: P = 0.5 * Ï_air * v³ * C_p (Betz limit C_p â‰ˆ 0.40 real-world)
             double kineticPowerDensityW_M2 = 0.5 * airDensityKgM3 * Math.pow(Math.max(1.0, totalWindSpeed), 3.0) * 0.40;
             cell.setEnergyWind(kineticPowerDensityW_M2);
         }

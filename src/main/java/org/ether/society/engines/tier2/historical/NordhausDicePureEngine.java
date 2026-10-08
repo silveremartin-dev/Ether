@@ -24,7 +24,7 @@ public class NordhausDicePureEngine {
 
     /* Internal state variable for gdp (double). */
     private double gdp = 100.0;
-    private double temperatureAnomaly = 1.2; // +1.2Â°C above pre-industrial baseline
+    private double temperatureAnomaly = 1.2; // +1.2°C above pre-industrial baseline
 
     /*
      * Process tick.

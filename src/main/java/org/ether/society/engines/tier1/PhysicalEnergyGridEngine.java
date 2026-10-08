@@ -16,7 +16,7 @@ import java.util.List;
  * Physical Energy Grid & Mechanical Work Conversion Engine.
  * Converts raw physical energy sources into usable per-capita mechanical & industrial work (W_available in Watts/capita):
  * 1. <b>Biomass Wood Energy (18.5 MJ/kg) & Coal Energy (24.0 MJ/kg)</b>.
- * 2. <b>Kinetic Wind Power (Betz Law) & Solar Irradiance (1361 W/mÂ²)</b>.
+ * 2. <b>Kinetic Wind Power (Betz Law) & Solar Irradiance (1361 W/m²)</b>.
  * 3. <b>Mechanical Converter Efficiency (Î·_converter)</b>: Scales with technology era (Muscle 10% -> Steam 15% -> Internal Combustion 35% -> Electric 90%).
  *
  * @author Silvere Martin-Michiellot

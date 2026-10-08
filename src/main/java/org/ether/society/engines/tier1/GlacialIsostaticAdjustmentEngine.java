@@ -33,10 +33,10 @@ import java.util.List;
 public class GlacialIsostaticAdjustmentEngine {
     private static final Logger logger = LoggerFactory.getLogger(GlacialIsostaticAdjustmentEngine.class);
 
-    /* Mantle asthenosphere density in kg/mÂ³ */
+    /* Mantle asthenosphere density in kg/m³ */
     public static final double MANTLE_DENSITY_KG_M3 = 3300.0;
 
-    /* Glacial ice density in kg/mÂ³ */
+    /* Glacial ice density in kg/m³ */
     public static final double ICE_DENSITY_KG_M3 = 917.0;
 
     /* Viscoelastic relaxation time constant Ï„ in years (~4,000 yr for upper mantle) */

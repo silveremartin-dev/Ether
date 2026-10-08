@@ -46,7 +46,7 @@ public class AutoEpochScenarioGenerator {
             new EpochMilestone(1000L, "epoch.name.medieval_optimum", "ðŸ‰ Song Dynasty & Medieval (1000 AD)", "epoch.desc.medieval_optimum", "Medieval Climate Anomaly, Song proto-industrialization, trans-Eurasian trade."),
             new EpochMilestone(1347L, "epoch.name.black_death", "â˜ ï¸ Black Death (1347 AD)", "epoch.desc.black_death", "Yersinia pestis pandemic, labor shortages, demographic reset, peasant wage shocks."),
             new EpochMilestone(1492L, "epoch.name.columbian_exchange", "⛵ Columbian Exchange (1492 AD)", "epoch.desc.columbian_exchange", "Global oceanic trade networks, trans-Atlantic crop and pathogen exchange."),
-            new EpochMilestone(1800L, "epoch.name.industrial_rev", "âš™ï¸ Industrial Revolution (1800 AD)", "epoch.desc.industrial_rev", "Steam power, coal extraction, demographic transition, fossil energy regime."),
+            new EpochMilestone(1800L, "epoch.name.industrial_rev", "⚙️ï¸ Industrial Revolution (1800 AD)", "epoch.desc.industrial_rev", "Steam power, coal extraction, demographic transition, fossil energy regime."),
             new EpochMilestone(1950L, "epoch.name.great_acceleration", "🚀 Great Acceleration (1950 AD)", "epoch.desc.great_acceleration", "Global hydrocarbon exploitation, deep aquifer pumping, exponential demographic boom."),
             new EpochMilestone(2026L, "epoch.name.modern_baseline", "ðŸŒ Anthropocene Baseline (2026 AD)", "epoch.desc.modern_baseline", "Present-day empirical satellite baseline, global trade networks, energy transition."),
             new EpochMilestone(2050L, "epoch.name.mid_century", "🤖 Energy & Demographics (2050 AD)", "epoch.desc.mid_century", "Demographic stabilization, post-fossil transition, resource circularity.")
@@ -534,7 +534,7 @@ public class AutoEpochScenarioGenerator {
     // Helper subroutine: generate epoch description - internal state computation & bounds checking
     private static String generateEpochDescription(String planet, long year, String epochLabel) {
         return String.format(Locale.ROOT, """
-            ðŸŒ SCÃ‰NARIO AUTOMATIQUE D'Ã‰POQUE : %s â€” %s
+            ðŸŒ SCÉNARIO AUTOMATIQUE D'ÉPOQUE : %s — %s
             
             [PARAMÉTRAGE SCIENTIFIQUE & GÉOPHYSIQUE (TIER 1)]
             • Planète cible : %s

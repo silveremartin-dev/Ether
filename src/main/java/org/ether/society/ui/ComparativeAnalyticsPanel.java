@@ -620,6 +620,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         metricSelectorCombo = new ComboBox<>();
         metricSelectorCombo.setPrefWidth(280);
         metricSelectorCombo.setOnAction(e -> updateChartAndAnalysis());
+        metricSelectorCombo.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.metric_selector", "Select telemetry variable to plot over time across scenarios.")));
 
         interpolationLabel = new Label();
         interpolationLabel.getStyleClass().add("control-label");
@@ -705,18 +706,21 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         spatialChannelCombo = new ComboBox<>();
         spatialChannelCombo.setPrefWidth(240);
         spatialChannelCombo.setOnAction(e -> update2DSpatialComparison());
+        spatialChannelCombo.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.channel_select", "Select spatial physical/cliodynamic tensor layer to compare between scenarios A and B.")));
 
         scenarioSelectLabelA = new Label(I18n.getOrDefault("analytics.label.select_a", "Baseline (A):"));
         scenarioSelectLabelA.getStyleClass().add("control-label");
         comboScenarioA = new ComboBox<>();
         comboScenarioA.setPrefWidth(210);
         comboScenarioA.setOnAction(e -> update2DSpatialComparison());
+        comboScenarioA.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.scenario_a", "Select baseline scenario (or empirical Ground Truth) for spatial differential tensor mapping.")));
 
         scenarioSelectLabelB = new Label(I18n.getOrDefault("analytics.label.select_b", "Target (B):"));
         scenarioSelectLabelB.getStyleClass().add("control-label");
         comboScenarioB = new ComboBox<>();
         comboScenarioB.setPrefWidth(210);
         comboScenarioB.setOnAction(e -> update2DSpatialComparison());
+        comboScenarioB.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.scenario_b", "Select target scenario to evaluate against baseline A across 2D map fidelity metrics.")));
 
         currentDateLabel = new Label(I18n.getOrDefault("analytics.label.year_ad", "📅 Year: 0 AD"));
         currentDateLabel.getStyleClass().add("value-label");
@@ -932,6 +936,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         Button closeBtn = new Button(I18n.getOrDefault("analytics.preview.close", "Close"));
         closeBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 6 16; -fx-cursor: hand;");
         closeBtn.setOnAction(e -> modal.close());
+        closeBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.close_modal", "Close detailed view dialog.")));
 
         VBox layout = new VBox(12, titleLbl, largeView, closeBtn);
         layout.setAlignment(Pos.CENTER);
@@ -1350,7 +1355,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         batchProgressBar.setProgress(0.0);
         batchProgressBar.setVisible(true);
         batchProgressBar.setManaged(true);
-        etaLabel.setText("⏱️ Calcul...");
+        etaLabel.setText(I18n.getOrDefault("analytics.eta_calculating", "⏱️ Calculating..."));
         etaLabel.setVisible(true);
         etaLabel.setManaged(true);
 
@@ -2206,8 +2211,8 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             } catch (IOException ex) {
                 logger.error("Error writing markdown report to file", ex);
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setTitle("Export Error");
-                errorAlert.setHeaderText("File write failure");
+                errorAlert.setTitle(I18n.getOrDefault("analytics.export.error_title", "Export Error"));
+                errorAlert.setHeaderText(I18n.getOrDefault("analytics.export.error_header", "File write failure"));
                 errorAlert.setContentText(ex.getMessage());
                 errorAlert.showAndWait();
             }

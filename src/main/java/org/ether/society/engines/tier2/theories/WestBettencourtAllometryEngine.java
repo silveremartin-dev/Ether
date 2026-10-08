@@ -67,7 +67,7 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
                [West-Bettencourt Urban Scaling Laws (PNAS 2007)]
                • Super-Linear Output:  Y_i = Y_0 · (N_i / N_ref)^1.15  (GDP, Patents, Wages)
                • Sub-Linear Network:  I_i = I_0 · (N_i / N_ref)^0.85  (Roads, Cables, Energy Grid)
-               â€¢ Metabolic Pace:      v_pace âˆ N_i^0.15 (Pace of urban life & interactions)
+               • Metabolic Pace:      v_pace âˆ N_i^0.15 (Pace of urban life & interactions)
                Units: N [hab], Y [$/an, brevets], I [km réseau, J/hab]
                """;
     }

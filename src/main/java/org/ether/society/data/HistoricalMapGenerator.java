@@ -4789,7 +4789,7 @@ public class HistoricalMapGenerator {
         } else if (year <= -4500L) {
             // -6,000 BP: Ubaid Maritime Gulf Routes, Vinča Copper, European Spondylus & Flint
             drawTradeRoute(g, new double[][]{{45.99, 30.82}, {48.5, 29.5}, {50.5, 26.0}, {56.0, 24.0}}, new Color(240, 190, 50), 3.5); // Ubaid Persian Gulf Maritime – bright gold
-            drawTradeRoute(g, new double[][]{{21.36, 43.20}, {20.62, 44.76}, {16.5, 48.2}, {8.5, 50.0}, {2.5, 49.0}}, new Color(184, 115, 51), 3.0); // VinÄa Copper â€“ copper
+            drawTradeRoute(g, new double[][]{{21.36, 43.20}, {20.62, 44.76}, {16.5, 48.2}, {8.5, 50.0}, {2.5, 49.0}}, new Color(184, 115, 51), 3.0); // VinÄa Copper – copper
             drawTradeRoute(g, new double[][]{{-0.1, 46.4}, {-3.0, 47.6}, {-3.9, 48.7}}, new Color(50, 190, 170), 3.0);                 // Atlantic Megalithic Coastal Exchange – seafoam
             drawTradeRoute(g, new double[][]{{109.06, 34.27}, {111.3, 34.7}, {121.4, 30.0}}, new Color(240, 190, 50), 3.0);            // Yangshao - Hemudu Jade & Pottery – bright gold
             drawTradeRoute(g, new double[][]{{31.37, 26.99}, {33.5, 28.0}, {34.5, 29.0}}, new Color(240, 190, 50), 2.5);              // Badarian Red Sea Shell & Malachite – bright gold

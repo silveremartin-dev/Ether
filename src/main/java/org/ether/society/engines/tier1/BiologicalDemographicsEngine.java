@@ -89,7 +89,7 @@ public class BiologicalDemographicsEngine {
                 hypoxiaHazard = excessElev * 0.08 * altitudeVulnerability;
             }
 
-            // Extreme Cold Hazard (Hypothermia / Frostbite below -10Â°C)
+            // Extreme Cold Hazard (Hypothermia / Frostbite below -10°C)
             double coldHazard = tempC < -10.0 ? Math.min(0.25, (-10.0 - tempC) * 0.012) : 0.0;
 
             // Environmental hazard factor calculation for telemetry and age pyramid updates

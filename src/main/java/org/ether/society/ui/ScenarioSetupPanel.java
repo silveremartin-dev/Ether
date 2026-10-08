@@ -1000,7 +1000,7 @@ public class ScenarioSetupPanel extends BorderPane {
         headerLabel.setAlignment(Pos.CENTER);
         headerLabel.setMaxWidth(Double.MAX_VALUE);
 
-        validationBannerHeaderLabel = new Label(I18n.getOrDefault("scenario.validation.header_errors", "âš ï¸ VALIDATION ERRORS DETECTED â€” PLEASE CORRECT THE FOLLOWING POINTS:"));
+        validationBannerHeaderLabel = new Label(I18n.getOrDefault("scenario.validation.header_errors", "⚠️ï¸ VALIDATION ERRORS DETECTED — PLEASE CORRECT THE FOLLOWING POINTS:"));
         validationBannerHeaderLabel.setStyle("-fx-text-fill: #f87171; -fx-font-weight: bold; -fx-font-size: 13px;");
 
         validationErrorLabel = new Label();
@@ -1656,7 +1656,7 @@ public class ScenarioSetupPanel extends BorderPane {
         customGrid.addRow(0, new Label(I18n.getOrDefault("scenario.label.stock_k0", "ðŸ› ï¸ Kâ‚€ (kg/hab) :")), customCapitalSpinner, new Label(I18n.getOrDefault("scenario.label.stock_e0", "âš¡ Eâ‚€ (MJ/hab) :")), customEnergySpinner);
         customGrid.addRow(1, new Label(I18n.getOrDefault("scenario.label.stock_f0", "🌾 F₀ (mois) :")), customFoodSpinner, new Label(I18n.getOrDefault("scenario.label.stock_i0", "🧠 I₀ (bits/hab) :")), customInfoSpinner);
 
-        Label customTitleLabel = new Label(I18n.getOrDefault("scenario.section.custom_stocks", "âš™ï¸ MANUAL INITIAL PHYSICAL STOCKS SETUP (CUSTOM):"));
+        Label customTitleLabel = new Label(I18n.getOrDefault("scenario.section.custom_stocks", "⚙️ï¸ MANUAL INITIAL PHYSICAL STOCKS SETUP (CUSTOM):"));
         customTitleLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;");
 
         customPhysicalSubPanel = new VBox(6, customTitleLabel, customGrid);
@@ -1684,7 +1684,7 @@ public class ScenarioSetupPanel extends BorderPane {
         proceduralDemoPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
 
         // Import Panel — section labels to match tensor block format
-        Label sourceRefLabel = new Label("ðŸ“ " + I18n.getOrDefault("resource.label.reference_source", "Source de RÃ©fÃ©rence :"));
+        Label sourceRefLabel = new Label("ðŸ“ " + I18n.getOrDefault("resource.label.reference_source", "Source de Référence :"));
         sourceRefLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 10px;");
         demoSourceLabel = sourceRefLabel;
         demoSourceCombo = buildPopulationSourceCombo();
@@ -1713,7 +1713,7 @@ public class ScenarioSetupPanel extends BorderPane {
             loadCustomDensityMap();
         });
 
-        clearDensityMapBtn = new Button("âŒ");
+        clearDensityMapBtn = new Button("❌");
         clearDensityMapBtn.getStyleClass().add("button-secondary");
         clearDensityMapBtn.setStyle("-fx-font-size: 11px;");
         clearDensityMapBtn.setOnAction(e -> {
@@ -1959,7 +1959,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     String timeStr = item.getTimestamp() != null ? item.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
                     String text = String.format("📸 Point de reprise : An %,d (Mois %02d) — %s", item.getYear(), item.getMonth(), timeStr);
                     setText(text);
-                    setTooltip(new Tooltip(String.format("ðŸ“ ID: %s\nðŸ“œ ScÃ©nario: %s\nâ³ AnnÃ©e: %,d (Mois %02d)\nðŸ“… Horodatage: %s\nðŸ’¡ Reprendre ce point restaure l'Ã©tat tout en gardant l'historique de simulation.",
+                    setTooltip(new Tooltip(String.format("ðŸ“ ID: %s\nðŸ“œ Scénario: %s\nâ³ Année: %,d (Mois %02d)\n📅 Horodatage: %s\n💡 Reprendre ce point restaure l'état tout en gardant l'historique de simulation.",
                             item.getId(), item.getScenarioName(), item.getYear(), item.getMonth(), timeStr)));
                 }
             }
@@ -1994,7 +1994,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox snapshotCard = new VBox(6, sheetHeader, detailsList);
         snapshotCard.getStyleClass().add("subcard-section");
 
-        snapshotExplainBtn = new Button(I18n.getOrDefault("scenario.btn.snapshot_explain", "â„¹ï¸ What is a Snapshot? (Explanations & Mechanics)"));
+        snapshotExplainBtn = new Button(I18n.getOrDefault("scenario.btn.snapshot_explain", "ℹ️ï¸ What is a Snapshot? (Explanations & Mechanics)"));
         snapshotExplainBtn.getStyleClass().add("button-secondary");
         snapshotExplainBtn.setMaxWidth(Double.MAX_VALUE);
         snapshotExplainBtn.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
@@ -2372,7 +2372,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     boolean isValid = org.ether.society.security.EtherBundleSigner.verifyBundle(bundle);
                     if (!isValid) {
                         if (validationErrorLabel != null && validationErrorBanner != null) {
-                            validationErrorLabel.setText("âš ï¸ Avertissement d'intÃ©gritÃ© : Le bundle importÃ© a Ã©tÃ© modifiÃ© ou sa signature ne concorde pas.");
+                            validationErrorLabel.setText("⚠️ï¸ Avertissement d'intégrité : Le bundle importé a été modifié ou sa signature ne concorde pas.");
                             validationErrorBanner.setVisible(true);
                             validationErrorBanner.setManaged(true);
                         }
@@ -2446,10 +2446,10 @@ public class ScenarioSetupPanel extends BorderPane {
         for (String item : items) {
             Label lbl = new Label("  • " + item);
             lbl.setWrapText(true);
-            if (item.startsWith("âŒ")) {
+            if (item.startsWith("❌")) {
                 lbl.getStyleClass().add("diagnostic-error");
                 lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
-            } else if (item.startsWith("âš ï¸")) {
+            } else if (item.startsWith("⚠️ï¸")) {
                 lbl.getStyleClass().add("diagnostic-warn");
                 lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #f59e0b;");
             } else {
@@ -2494,23 +2494,23 @@ public class ScenarioSetupPanel extends BorderPane {
             boolean demoIsEarth = demoLower.contains("terre") || demoLower.contains("earth") || demoLower.contains("hyde");
 
             if (planetIsEarth && (demoIsMars || demoIsMoon || demoIsVenus || demoIsMercury)) {
-                geoItems.add("âš ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "IncohÃ©rence planÃ©taire : Source dÃ©mographique Â« %s Â» sÃ©lectionnÃ©e sur un relief terrestre (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique Â« %s Â» sélectionnée sur un relief terrestre (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             } else if (planetKey.contains("mars") && demoIsEarth) {
-                geoItems.add("âš ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "IncohÃ©rence planÃ©taire : Source dÃ©mographique terrestre Â« %s Â» appliquÃ©e sur le relief martien (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre Â« %s Â» appliquée sur le relief martien (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             } else if (planetKey.contains("lune") && demoIsEarth) {
-                geoItems.add("âš ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "IncohÃ©rence planÃ©taire : Source dÃ©mographique terrestre Â« %s Â» appliquÃ©e sur le relief lunaire (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre Â« %s Â» appliquée sur le relief lunaire (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             } else if (planetKey.contains("vénus") && demoIsEarth) {
-                geoItems.add("âš ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "IncohÃ©rence planÃ©taire : Source dÃ©mographique terrestre Â« %s Â» appliquÃ©e sur VÃ©nus (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre Â« %s Â» appliquée sur Vénus (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             } else if (planetKey.contains("mercure") && demoIsEarth) {
-                geoItems.add("âš ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "IncohÃ©rence planÃ©taire : Source dÃ©mographique terrestre Â« %s Â» appliquÃ©e sur Mercure (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre Â« %s Â» appliquée sur Mercure (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             }
@@ -2563,7 +2563,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 double oceanPct = (oceanDensityBrightness * 100.0) / totalDensityBrightness;
                 if (oceanPct > 15.0) {
                     geoItems.add(String.format(java.util.Locale.FRANCE,
-                        I18n.getOrDefault("scenario.warning.ocean_density", "âš ï¸ IncompatibilitÃ© gÃ©ographique : %.1f%% de la densitÃ© dÃ©mographique importÃ©e se trouve en zone ocÃ©anique / sous-marine (%s)."),
+                        I18n.getOrDefault("scenario.warning.ocean_density", "⚠️ï¸ Incompatibilité géographique : %.1f%% de la densité démographique importée se trouve en zone océanique / sous-marine (%s)."),
                         oceanPct, planetName));
                     alertCount++;
                 } else {
@@ -2616,7 +2616,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     double oceanPct = (oceanTB * 100.0) / totalTB;
                     if (oceanPct > 20.0) {
                         geoItems.add(String.format(java.util.Locale.FRANCE,
-                            I18n.getOrDefault("scenario.warning.ocean_culture", "âš ï¸ IncompatibilitÃ© culturelle : %.1f%% de l'intensitÃ© du tenseur Â« %s Â» est situÃ©e sur l'ocÃ©an (%s)."),
+                            I18n.getOrDefault("scenario.warning.ocean_culture", "⚠️ï¸ Incompatibilité culturelle : %.1f%% de l'intensité du tenseur Â« %s Â» est située sur l'océan (%s)."),
                             oceanPct, getCulturalTensorTitle(i), planetName));
                         tensorOceanWarn = true;
                         alertCount++;
@@ -2634,7 +2634,7 @@ public class ScenarioSetupPanel extends BorderPane {
         boolean isSpaceBody = planetKey.contains("lune") || planetKey.contains("moon") || planetKey.contains("mercure") || planetKey.contains("mercury") || planetKey.contains("mars") || planetKey.contains("venus") || planetKey.contains("vénus");
         if (!isSpaceBody && (atmoPres < 0.1 || atmoPres > 5.0 || avgTemp < -50 || avgTemp > 60)) {
             geoItems.add(String.format(java.util.Locale.FRANCE,
-                I18n.getOrDefault("scenario.warning.hostile_environment", "âš ï¸ Environnement hostile (Onglet 1) : Pression (%.2f atm) ou TempÃ©rature (%.1f Â°C) extrÃªme â€” Survie humaine conditionnÃ©e à des habitats scellÃ©s."),
+                I18n.getOrDefault("scenario.warning.hostile_environment", "⚠️ï¸ Environnement hostile (Onglet 1) : Pression (%.2f atm) ou Température (%.1f °C) extrÃªme — Survie humaine conditionnée à des habitats scellés."),
                 atmoPres, avgTemp));
             alertCount++;
         }
@@ -2643,17 +2643,17 @@ public class ScenarioSetupPanel extends BorderPane {
         // 2. ECOLOGICAL VIABILITY & PLANETARY RESOURCES (Tabs 2 & 3)
         // =========================================================================
         if (p.atmospherePressureAtm() < 0.01) {
-            ecoItems.add("âŒ AtmosphÃ¨re absente/tenue (" + String.format("%.3f", p.atmospherePressureAtm()) + " atm) : L'eau liquide bout à la surface. Survie humaine impossible sans dÃ´mes fermÃ©s.");
+            ecoItems.add("❌ Atmosphère absente/tenue (" + String.format("%.3f", p.atmospherePressureAtm()) + " atm) : L'eau liquide bout à la surface. Survie humaine impossible sans dômes fermés.");
             alertCount++;
         } else if (p.oxygenPercentage() < 10.0) {
-            ecoItems.add("âš ï¸ AtmosphÃ¨re hypoxique (O2 = " + String.format("%.1f%%", p.oxygenPercentage()) + ") : Insuffisant pour la respiration des organismes complexes.");
+            ecoItems.add("⚠️ï¸ Atmosphère hypoxique (O2 = " + String.format("%.1f%%", p.oxygenPercentage()) + ") : Insuffisant pour la respiration des organismes complexes.");
             alertCount++;
         } else {
             ecoItems.add("✅ Atmosphère respirable & constante (P = " + String.format("%.2f", p.atmospherePressureAtm()) + " atm, O2 = " + String.format("%.1f%%", p.oxygenPercentage()) + ")");
         }
 
         if (p.waterLevel() < -0.3) {
-            ecoItems.add("âš ï¸ Ressources en Eau LimitÃ©es : Monde trÃ¨s aride. Stress hydrique majeur prÃ©visible.");
+            ecoItems.add("⚠️ï¸ Ressources en Eau Limitées : Monde très aride. Stress hydrique majeur prévisible.");
             alertCount++;
         } else {
             ecoItems.add("✅ Hydrologie équilibrée (Niveau d'eau = " + String.format("%.0f%%", (1.0 + p.waterLevel()) * 50) + ")");
@@ -2662,7 +2662,7 @@ public class ScenarioSetupPanel extends BorderPane {
         double capitalK0 = computeAutoCapitalFromYear(startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000);
         double crustal = eco != null ? eco.crustalMetalOresGt() : 80.0;
         if (capitalK0 >= 8000.0 && crustal < 20.0) {
-            ecoItems.add("âš ï¸ DÃ©ficit en MÃ©taux Industriels : Capital physique " + String.format("%.0f", capitalK0) + " kg/hab configurÃ© mais mÃ©taux crustaux faibles (" + String.format("%.1f Gt", crustal) + "). Risque de pÃ©nurie industrielle.");
+            ecoItems.add("⚠️ï¸ Déficit en Métaux Industriels : Capital physique " + String.format("%.0f", capitalK0) + " kg/hab configuré mais métaux crustaux faibles (" + String.format("%.1f Gt", crustal) + "). Risque de pénurie industrielle.");
             alertCount++;
         } else {
             ecoItems.add("✅ Compatibilité Matériaux / Capital Physique");
@@ -2670,7 +2670,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
         long pop = initialHumanCountSpinner != null ? initialHumanCountSpinner.getValue() : 1_000_000L;
         if (pop > 5_000_000_000L && p.waterLevel() < -0.2) {
-            ecoItems.add("âŒ Surpopulation Majeure : " + String.format("%,d", pop) + " habitants configurÃ©s sur un monde aride.");
+            ecoItems.add("❌ Surpopulation Majeure : " + String.format("%,d", pop) + " habitants configurés sur un monde aride.");
             alertCount++;
         } else {
             ecoItems.add("✅ Densité Démographique Initiale Réaliste (" + String.format("%,d", pop) + " hab)");
@@ -2683,7 +2683,7 @@ public class ScenarioSetupPanel extends BorderPane {
         if (jitReport != null && !jitReport.getEntries().isEmpty()) {
             for (org.ether.society.engines.compiler.EngineConflictReport.ConflictEntry entry : jitReport.getEntries()) {
                 if (entry.getSeverity() == org.ether.society.engines.compiler.EngineConflictReport.ConflictSeverity.INCOMPATIBLE) {
-                    engineItems.add("âŒ INCOMPATIBILITÃ‰ MOTEURS (" + entry.getVariableName() + ") : " + entry.getDescription());
+                    engineItems.add("❌ INCOMPATIBILITÉ MOTEURS (" + entry.getVariableName() + ") : " + entry.getDescription());
                     alertCount++;
                 } else {
                     engineItems.add("✅ Fusion JIT Moteurs (" + entry.getVariableName() + ") : " + entry.getDescription());
@@ -2702,7 +2702,7 @@ public class ScenarioSetupPanel extends BorderPane {
         } else {
             // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
             for (String err : configErrors) {
-                validationItems.add("âŒ " + err);
+                validationItems.add("❌ " + err);
                 alertCount++;
             }
         }
@@ -3084,7 +3084,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "âœ‚ï¸ 4. BORDERS & HISTORICAL SPATIAL CLIPPING"));
+        clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "✂️ï¸ 4. BORDERS & HISTORICAL SPATIAL CLIPPING"));
         clippingHeader.getStyleClass().add("label-section-header");
 
         clippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.clipping.enable", "Enable Partial Simulation (Truncated Zone)"));
@@ -3229,7 +3229,7 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section = new VBox(12);
         section.getStyleClass().add("card-section");
 
-        Label oceanOptHeader = new Label(I18n.getOrDefault("scenario.ocean_opt.header", "âš™ï¸ 5. ENGINE ARCHITECTURE & OPTIMIZATIONS (ETHER CORE & OPTIONAL)"));
+        Label oceanOptHeader = new Label(I18n.getOrDefault("scenario.ocean_opt.header", "⚙️ï¸ 5. ENGINE ARCHITECTURE & OPTIMIZATIONS (ETHER CORE & OPTIONAL)"));
         oceanOptHeader.getStyleClass().add("label-section-header");
 
         Label oceanOptDesc = new Label(I18n.getOrDefault("scenario.ocean_opt.desc", "Definition and configuration of determinism mode, 7 simulation optimizations, and Ether Core and optional procedural engines. Each scenario embeds its optimization setup to guarantee perfect reproducibility."));
@@ -3263,7 +3263,7 @@ public class ScenarioSetupPanel extends BorderPane {
         sparseCellSkippingCheckBox.getStyleClass().add("opt-sub-checkbox");
         sparseCellSkippingCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.sparse_cell_skipping",
             "⚡ BENEFIT: +40% to +60% TPS speedup across global grid.\n" +
-            "âš ï¸ PHYSICAL IMPACT: Bypasses evaluation loops on desert/oceanic cells with no human presence or active event.")));
+            "⚠️ï¸ PHYSICAL IMPACT: Bypasses evaluation loops on desert/oceanic cells with no human presence or active event.")));
         attachDefaultValueHandling(sparseCellSkippingCheckBox, false, () -> sparseCellSkippingCheckBox.setSelected(false));
 
         oceanMacroAggregationCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Abyssal Ocean Macro-Aggregation (Deep Basins z < -200m in Blocks)"));
@@ -3271,7 +3271,7 @@ public class ScenarioSetupPanel extends BorderPane {
         oceanMacroAggregationCheckBox.getStyleClass().add("opt-sub-checkbox");
         oceanMacroAggregationCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.ocean_macro_aggregation",
             "⚡ BENEFIT: +25% to +35% TPS speedup by grouping deep water cells.\n" +
-            "âš ï¸ PHYSICAL IMPACT: Smoothing of abyssal micro-currents without impacting terrestrial civilizations.")));
+            "⚠️ï¸ PHYSICAL IMPACT: Smoothing of abyssal micro-currents without impacting terrestrial civilizations.")));
         attachDefaultValueHandling(oceanMacroAggregationCheckBox, false, () -> oceanMacroAggregationCheckBox.setSelected(false));
 
         coastalNavigationOnlyCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Exclusive Coastal Navigation (Pathfinding Focused on Coasts & Straits)"));
@@ -3279,7 +3279,7 @@ public class ScenarioSetupPanel extends BorderPane {
         coastalNavigationOnlyCheckBox.getStyleClass().add("opt-sub-checkbox");
         coastalNavigationOnlyCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.coastal_nav",
             "⚡ BENEFIT: Major CPU savings on naval and commercial trade pathfinding.\n" +
-            "âš ï¸ PHYSICAL IMPACT: Ships prefer coastal waters; ocean navigation restricted prior to Age of Discovery.")));
+            "⚠️ï¸ PHYSICAL IMPACT: Ships prefer coastal waters; ocean navigation restricted prior to Age of Discovery.")));
         attachDefaultValueHandling(coastalNavigationOnlyCheckBox, false, () -> coastalNavigationOnlyCheckBox.setSelected(false));
 
         oceanMultiRateTickingCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.multi_rate_ticking", "⏱ Oceanic & Multi-Rate Climate Ticking (Updated Every N Ticks)"));
@@ -3287,7 +3287,7 @@ public class ScenarioSetupPanel extends BorderPane {
         oceanMultiRateTickingCheckBox.getStyleClass().add("opt-sub-checkbox");
         oceanMultiRateTickingCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.multi_rate_ticking",
             "⚡ BENEFIT: +30% throughput by executing thermohaline circulation and fluid inertia at sub-frequency.\n" +
-            "âš ï¸ PHYSICAL IMPACT: Potential temporal aliasing during ultra-fast atmospheric events.")));
+            "⚠️ï¸ PHYSICAL IMPACT: Potential temporal aliasing during ultra-fast atmospheric events.")));
         attachDefaultValueHandling(oceanMultiRateTickingCheckBox, false, () -> oceanMultiRateTickingCheckBox.setSelected(false));
 
         climateTickFreqSlider = new Slider(1, 30, 5);
@@ -3314,7 +3314,7 @@ public class ScenarioSetupPanel extends BorderPane {
         parallelExecutionCheckBox.getStyleClass().add("opt-sub-checkbox");
         parallelExecutionCheckBox.setTooltip(new Tooltip("""
             ⚡ BÉNÉFICE : Exploitation intégrale de tous les cœurs CPU du système.
-            âš ï¸ IMPACT PHYSIQUE : L'ordre de sommation flottante peut varier lÃ©gÃ¨rement entre exÃ©cutions (non-associativitÃ© IEEE 754 en multi-threading).
+            ⚠️ï¸ IMPACT PHYSIQUE : L'ordre de sommation flottante peut varier légèrement entre exécutions (non-associativité IEEE 754 en multi-threading).
             """));
         attachDefaultValueHandling(parallelExecutionCheckBox, false, () -> parallelExecutionCheckBox.setSelected(false));
 
@@ -3348,7 +3348,7 @@ public class ScenarioSetupPanel extends BorderPane {
         spatialRangeTruncationCheckBox.getStyleClass().add("opt-sub-checkbox");
         spatialRangeTruncationCheckBox.setTooltip(new Tooltip("""
             ⚡ BÉNÉFICE : Limite le calcul de dispersion atmosphérique aux cellules adjacentes affectées.
-            âš ï¸ IMPACT PHYSIQUE : NÃ©glige les concentrations d'aÃ©rosols et suie ultra-diluÃ©es devenant infÃ©rieures à 10â»â¶ ppm.
+            ⚠️ï¸ IMPACT PHYSIQUE : Néglige les concentrations d'aérosols et suie ultra-diluées devenant inférieures à 10â»â¶ ppm.
             """));
         attachDefaultValueHandling(spatialRangeTruncationCheckBox, false, () -> spatialRangeTruncationCheckBox.setSelected(false));
 
@@ -3436,7 +3436,7 @@ public class ScenarioSetupPanel extends BorderPane {
         exportCoreTemplateBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 4;");
         exportCoreTemplateBtn.setOnAction(e -> exportPhysicalLawEngineTemplate("PhysicalLawEngine"));
 
-        coreExplanationLabel = new Label(I18n.getOrDefault("scenario.info.core_engines", "â„¹ï¸ Why are Ether Core engines permanent? They enforce physical conservation laws (mass & energy, thermodynamics, hydrology, H3 insolation, metabolism) required for basic world survival."));
+        coreExplanationLabel = new Label(I18n.getOrDefault("scenario.info.core_engines", "ℹ️ï¸ Why are Ether Core engines permanent? They enforce physical conservation laws (mass & energy, thermodynamics, hydrology, H3 insolation, metabolism) required for basic world survival."));
         coreExplanationLabel.getStyleClass().add("control-note");
         coreExplanationLabel.setWrapText(true);
         typeABox.getChildren().addAll(exportCoreTemplateBtn, coreExplanationLabel);
@@ -3465,7 +3465,7 @@ public class ScenarioSetupPanel extends BorderPane {
             new String[]{"H3ClimateSystem", "Système Climatique H3 & Saisons",
                 "Moteur climato-saisonnier basé sur la discrétisation hexagonale H3. Calcule la température moyenne de surface, le gradient équateur-pôle, l'insolation selon l'obliquité orbitale et les saisons.",
                 "Ref: Uber H3 Spatial Index (2018); Sellers, W. D. (1969). Energy Balance Climate Models.",
-                "â€¢ Bilan Radiatif Solaire : S(lat, t) = (S_const / 4) Â· [1 + e Â· cos(Ï‰ Â· t)] Â· cos(lat - declinaison)\nâ€¢ Ã‰quilibre Thermique : C_thermique Â· dT/dt = S(1 - AlbÃ©do) - ÎµÂ·ÏƒÂ·Tâ´ + Div(K_transport Â· âˆ‡T)"},
+                "• Bilan Radiatif Solaire : S(lat, t) = (S_const / 4) Â· [1 + e Â· cos(Ï‰ Â· t)] Â· cos(lat - declinaison)\n• Équilibre Thermique : C_thermique Â· dT/dt = S(1 - Albédo) - ÎµÂ·ÏƒÂ·Tâ´ + Div(K_transport Â· âˆ‡T)"},
             new String[]{"PoliticalSimulationEngine", "Moteur Politique & Frontières",
                 "Modélisation des structures politiques et géopolitiques. Gère la délimitation des territoires, la souveraineté des cités-états, les confédérations culturelles et la stabilité des frontières.",
                 "Ref: Tilly, C. (1990). Coercion, Capital, and European States; Mann, M. (1986). Sources of Social Power.",
@@ -3481,7 +3481,7 @@ public class ScenarioSetupPanel extends BorderPane {
             new String[]{"OceanPhysicsEngine", "Dynamo Fluidique & Basculement Océanique",
                 "Dynamo fluidique et inertie thermique des océans. Modélise la capacité calorifique de la masse d'eau marine, la dérive thermique lente et la régulation du climat végétal.",
                 "Ref: Stommel, H. (1961). Thermohaline Convection; Rahmstorf, S. (1995). AMOC Stability. Nature.",
-                "â€¢ ModÃ¨le à Deux Mailles de Stommel : dq/dt = c_T Â· Î”T - c_S Â· Î”S\nâ€¢ Transport de Chaleur Océanique : F_ocean = Ï Â· C_p Â· V_derive Â· (T_equateur - T_pole)"},
+                "• Modèle à Deux Mailles de Stommel : dq/dt = c_T Â· Î”T - c_S Â· Î”S\n• Transport de Chaleur Océanique : F_ocean = Ï Â· C_p Â· V_derive Â· (T_equateur - T_pole)"},
             new String[]{"MalthusianCapacityEngine", "Pression Malthusienne & Capacité Portante",
                 "Capacité portante écologique (K) et pression Malthusienne. Calcule le seuil maximal d'habitants soutenables par cellule avant dégradation irréversible de l'environnement.",
                 "Ref: Malthus, T. R. (1798); Catton, W. R. (1980). Overshoot: Ecological Footprint.",
@@ -3533,7 +3533,7 @@ public class ScenarioSetupPanel extends BorderPane {
             new String[]{"ThermohalineOceanEngine", "Circulation Thermohaline Océanique",
                 "Circulation thermohaline globale (Boucle AMOC). Modélise la plongée des eaux salées froides en Atlantique Nord et la redistribution de la chaleur planétaire.",
                 "Ref: Broecker, W. S. (1991). The Great Ocean Conveyor; Rahmstorf, S. (2002). Ocean Circulation. Nature.",
-                "â€¢ DÃ©bit AMOC Q_amoc = k_thermo Â· (Ï_nord - Ï_equateur)\nâ€¢ Point de Basculement Salin : Si Dilution_Eau_Douce > Seuil_Critique -> Effondrement AMOC (Q -> 0)"},
+                "• Débit AMOC Q_amoc = k_thermo Â· (Ï_nord - Ï_equateur)\n• Point de Basculement Salin : Si Dilution_Eau_Douce > Seuil_Critique -> Effondrement AMOC (Q -> 0)"},
             new String[]{"TrophicEcosystemEngine", "Réseau Trophique & Écosystèmes",
                 "Réseau trophique et dynamique des écosystèmes fauniques. Simule les équations de Lotka-Volterra entre prédateurs, herbivores et producteurs primaires.",
                 "Ref: Lotka, A. J. (1925); Volterra, V. (1926); MacArthur, R. H. & Wilson, E. O. (1967).",
@@ -3554,7 +3554,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
             String desc = I18n.getEngineDescription(eng[0], eng[2]);
             String ref = I18n.getEngineReference(eng[0], eng[3]);
-            String eqText = eng.length > 4 ? I18n.getEngineEquation(eng[0], eng[4]) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Ã‰quation d'Ã‰tat : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
+            String eqText = eng.length > 4 ? I18n.getEngineEquation(eng[0], eng[4]) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Équation d'État : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
             String permPrefix = I18n.getOrDefault("scenario.engine.perm_prefix", "🔒 [MOTEUR PERMANENT]\n");
             Tooltip tooltip = new Tooltip(permPrefix + eng[0] + " — " + title + "\n\n" + desc + "\n\n" + eqText + "\n\n📚 " + ref);
             tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 500px;");
@@ -3565,7 +3565,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 String curTitle = I18n.getEngineTitle(finalEng[0], finalEng[1]);
                 String curDesc = I18n.getEngineDescription(finalEng[0], finalEng[2]);
                 String curRef = I18n.getEngineReference(finalEng[0], finalEng[3]);
-                String curEq = finalEng.length > 4 ? I18n.getEngineEquation(finalEng[0], finalEng[4]) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Ã‰quation d'Ã‰tat : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
+                String curEq = finalEng.length > 4 ? I18n.getEngineEquation(finalEng[0], finalEng[4]) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Équation d'État : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
                 updateEngineInspector(finalEng[0], curTitle, curDesc, curRef, curEq);
             });
 
@@ -3577,7 +3577,7 @@ public class ScenarioSetupPanel extends BorderPane {
         corePane.setExpanded(false);
         corePane.getStyleClass().add("titled-pane-primary");
 
-        // --- âš™ï¸ OPTIONAL & CUSTOM ENGINES SECTION (Optionnels, Extensibles & Dynamic Import/Export) ---
+        // --- ⚙️ï¸ OPTIONAL & CUSTOM ENGINES SECTION (Optionnels, Extensibles & Dynamic Import/Export) ---
         typeBBoxContainer = new VBox(8);
         typeBBoxContainer.getStyleClass().add("custom-module-card");
 
@@ -3605,12 +3605,12 @@ public class ScenarioSetupPanel extends BorderPane {
         // Sorting toolbar for optional engines
         engineSortCombo = new ComboBox<>();
         engineSortCombo.getItems().addAll(
-            org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "âš™ï¸ System Order (By Category)"),
+            org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "⚙️ï¸ System Order (By Category)"),
             org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_asc", "📅 Chronological Sort (Oldest → Newest)"),
             org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_desc", "📅 Reverse Chronological Sort (Newest → Oldest)"),
             org.ether.society.i18n.I18n.getOrDefault("scenario.sort.alpha_asc", "🔤 Alphabetical Sort (A - Z)")
         );
-        engineSortCombo.setValue(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "âš™ï¸ System Order (By Category)"));
+        engineSortCombo.setValue(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "⚙️ï¸ System Order (By Category)"));
         engineSortCombo.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
         engineSortLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.label", "🔀 Engine Sorting:"));
@@ -3621,7 +3621,7 @@ public class ScenarioSetupPanel extends BorderPane {
         typeBBoxContainer.getChildren().add(sortBar);
 
         List<String[]> optionalEngines = List.of(
-            new String[]{"PaleoLanguageDriftEngine", "ðŸ—£ï¸ DÃ©rive PhonÃ©tique & Linguistique PalÃ©olithique (-100 000 BP)",
+            new String[]{"PaleoLanguageDriftEngine", "ðŸ—£ï¸ Dérive Phonétique & Linguistique Paléolithique (-100 000 BP)",
                 "Simule la dérive isoline et la divergence des continuum de paléo-langues entre vallées d'Eurasie et clans paléolithiques isolés.",
                 "Ref: Cavalli-Sforza, L. L. (1994). History and Geography of Human Genes; Swadesh, M. (1952).",
                 "• Dérive Isoglosse : dS_lang/dt = D_lang * ∇²S_lang + σ_drift * η(x,y,t)\n• Seuil de Divergence : Isolement > 500 ans -> Rupture d'intercompréhension inter-tribale"},
@@ -3637,7 +3637,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Développement de raquettes à neige et patins en bois réduisant la friction glaciaire et débloquant la chasse hivernale sub-arctique.",
                 "Ref: Burov, G. M. (1989). Some Mesolithic Wooden Artefacts from the Vis Sites; Forsten, A. (1993).",
                 "• Friction de Neige : Vitesse_brute / (1.0 + 2.0 * Épaisseur_Neige)\n• Effet Raquette / Ski : Annulation de 80% de la pénalité de déplacement sous enneigement persistant"},
-            new String[]{"CanidDomesticationEngine", "ðŸ• Symbiose Trophique & Domestication CanidÃ©s (-15 000 BP)",
+            new String[]{"CanidDomesticationEngine", "ðŸ• Symbiose Trophique & Domestication Canidés (-15 000 BP)",
                 "Couplage trophique mutualiste entre bandes de chasseurs et proto-chiens (Bonn-Oberkassel, Altaï) augmentant le rendement des battues.",
                 "Ref: Germonpré, M. et al. (2009). Fossil dogs of the Upper Paleolithic; Larson, G. et al. (2012).",
                 "• Gain d'Énergie de Chasse : dE/dt = η_chasse * M_proie * (1.0 + β * N_canid / N_humain) - C_maintenance\n• Taux de Rétention Alimentaire : +18% de calories carnées restituées à la bande"},
@@ -3697,7 +3697,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Extraction et tressage de fibres végétales (Ortie, Tilleul, Lin sauvage - Grotte de Dzudzuana) pour liens et sacs de transport.",
                 "Ref: Kvavadze, E. et al. (2009). 30,000-Year-Old Wild Flax Fibers. Science.",
                 "• Transport et Logistique : Augmente la capacité de transport nomade de +40 kg/bande\n• Liens et Filets : Composants essentiels pour pièges et vêtements multicouches"},
-            new String[]{"MegafaunaPitfallTrapEngine", "ðŸ•³ï¸ Fosses-PiÃ¨ges à MÃ©gafaune & Chasse de Fosse (-15 000 BP)",
+            new String[]{"MegafaunaPitfallTrapEngine", "ðŸ•³ï¸ Fosses-Pièges à Mégafaune & Chasse de Fosse (-15 000 BP)",
                 "Creusement collectif de pièges à fosse (Tultepec) pour la capture sans risque de mammouths et bisons des steppes.",
                 "Ref: Washington-Allen, R. A. et al. (2020). Prehistoric Mammoth Pitfall Traps in Central Mexico.",
                 "• Capture de Mégafaune : Abattage de gros gibier sans perte humaine dans la bande\n• Apport Calorique Massif : Stockage de plusieurs tonnes de viande carnée d'un seul coup"},
@@ -3713,7 +3713,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Sculpture d'artefacts anthropomorphes et zoomorphes (Willendorf, Dolní Věstonice) circulant comme symboles d'alliance et de fécondité.",
                 "Ref: Soffer, O. et al. (2000). The Venus Figurines: Textiles, Basketry, Gender, and Status.",
                 "• Marqueur d'Alliance : Transportable d'une vallée à l'autre pour sceller les pactes de mariage\n• Résilience Démographique : Symbolique rituelle stimulant les taux de natalité"},
-            new String[]{"CaveLightingPyrotechnicsEngine", "ðŸ›¢ï¸ Ã‰clairage à la Graisse Animale & Torches de Caverne (-35 000 BP)",
+            new String[]{"CaveLightingPyrotechnicsEngine", "ðŸ›¢ï¸ Éclairage à la Graisse Animale & Torches de Caverne (-35 000 BP)",
                 "Lampes en grès à combustion de graisse animale (Lascaux, Chauvet) permettant l'exploration et l'art dans les galeries obscures.",
                 "Ref: Beaune, S. A. de (1987). Lampes et brûloirs paléolithiques. CNRS Éditions.",
                 "• Exploration Profonde : Débloque l'accès aux sanctuaires endokarstiques situés à plus de 500m des entrées\n• Sécurité Karstique : Élimine les accidents et chûtes dans les gouffres sombres"},
@@ -3729,7 +3729,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Procédés de rouissage et détoxification par lixiviation à l'eau courante pour rendre comestibles les tubercules et nymphes toxiques.",
                 "Ref: Barker, G. et al. (2007). The Niah Cave Project. Human Ecology.",
                 "• Élargissement Alimentaire : Rend consommables des ressources végétales toxiques auparavant mortelles\n• Sécurité Alimentaire Tropicale : Maintient la subsistance dans les forêts équatoriales"},
-            new String[]{"TopographicGameDriveEngine", "ðŸ”ï¸ PiÃ¨ges Topographiques V-Shaped & Desert Kites (-12 000 BP)",
+            new String[]{"TopographicGameDriveEngine", "ðŸ”ï¸ Pièges Topographiques V-Shaped & Desert Kites (-12 000 BP)",
                 "Aménagement de murets en V (Desert Kites) rabattant les troupeaux de gazelles et bisons vers des enclos naturels d'abattage.",
                 "Ref: Holzer, A. et al. (2010). Desert kites in the Levant. J. Arch. Sci.",
                 "• Abattage de Masse : Capture simultanée de troupeaux entiers lors des migrations\n• Accumulation de Capital Carné : Alimente de grands rassemblements sédentaires pré-agricoles"},
@@ -3772,7 +3772,7 @@ public class ScenarioSetupPanel extends BorderPane {
             new String[]{"HomininCompetitiveExclusionEngine", "🦴 Compétition Interspécifique & Exclusion Néandertal/Sapiens (-100 000 BP)",
                 "Modélisation de l'exclusion compétitive de Lotka-Volterra entre Sapiens, Néandertaliens et Dénisoviens.",
                 "Ref: Banks, W. E. et al. (2008). Neanderthal Extinction by Competitive Exclusion. PLoS ONE.",
-                "â€¢ Ã‰quations CouplÃ©es : dNâ‚/dt = râ‚ Nâ‚ (1 - (Nâ‚ + Î±â‚â‚‚ Nâ‚‚)/Kâ‚)\nâ€¢ Avantage Sapiens : LÃ©gÃ¨re supÃ©rioritÃ© d'extraction calorique (Î±â‚â‚‚ < Î±â‚‚â‚)"},
+                "• Équations Couplées : dNâ‚/dt = râ‚ Nâ‚ (1 - (Nâ‚ + Î±â‚â‚‚ Nâ‚‚)/Kâ‚)\n• Avantage Sapiens : Légère supériorité d'extraction calorique (Î±â‚â‚‚ < Î±â‚‚â‚)"},
             new String[]{"ShellMiddenAccumulationEngine", "ðŸš KjÃ¶kkenmÃ¶ddings & Accumulation Littorale (-12 000 BP)",
                 "Accumulation de amas coquilliers littoraux (Ertebølle) stabilisant la sédentarisation pré-agricole côtière.",
                 "Ref: Bailey, G. N. (2007). Shell mounds and coastal archaeology. Quat. Int.",
@@ -3781,7 +3781,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Invention d'hameçons en os et lignes en fibre pour la capture de poissons pélagiques (Thons, Thyrsites) en eau profonde.",
                 "Ref: O'Connor, S. et al. (2011). Pelagic Fishing at 42,000 Years Before the Present in East Timor. Science.",
                 "• Capture Pélagique : Débloque la pêche en haute mer au-delà des récifs littoraux\n• Apport Protéique Massif : +30% d'apport calorique en zone insulaire"},
-            new String[]{"GeophyteDiggingStickEngine", "ðŸ  BÃ¢tons Fouisseurs & Extraction des GÃ©ophytes (USO) (-170 000 BP)",
+            new String[]{"GeophyteDiggingStickEngine", "ðŸ  BÃ¢tons Fouisseurs & Extraction des Géophytes (USO) (-170 000 BP)",
                 "Bâtons fouisseurs durcis au feu pour l'extraction de tubercules et oignons souterrains en zone aride.",
                 "Ref: Wadley, L. et al. (2020). Cooked starchy rhizomes in South Africa 170,000 years ago. Science.",
                 "• Extraction USO : Glucides souterrains accessibles lors des sécheresses\n• Capacité Portante en Aridité : Protège les cohortes contre la disette"},
@@ -3793,19 +3793,19 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Embarcations étanches en peaux de focs et mammifères marins tendues sur ossature pour la chasse polaire.",
                 "Ref: Ames, K. M. (2002). Going by boat: the maritime highway. Am. Antiq.",
                 "• Chasse Marine Arctique : Capture de phoques et baleines le long de la banquise\n• Corridor Côtier : Franchissement des fronts glaciaires marginaux du Pacifique"},
-            new String[]{"SalmonRunHarpoonEngine", "ðŸŸ Harpons BarbelÃ©s & Chasse aux RemontÃ©es de Saumons (-16 000 BP)",
+            new String[]{"SalmonRunHarpoonEngine", "ðŸŸ Harpons Barbelés & Chasse aux Remontées de Saumons (-16 000 BP)",
                 "Harpons détachables en bois de renne pour l'exploitation massive des ruées de saumons au printemps.",
                 "Ref: Costamagno, S. et al. (2018). Salmon fishing in Magdalenian Europe. Quat. Int.",
                 "• Poussée Calorique Saisonnière : Stockage de plusieurs quintaux de saumon séché en quelques semaines\n• Agglomération Saisonnière : Alimente les grands rassemblements magdaléniens"},
-            new String[]{"CaveBearNicheCompetitionEngine", "ðŸ» CompÃ©tition de Caverne avec Ursus Spelaeus (-50 000 BP)",
+            new String[]{"CaveBearNicheCompetitionEngine", "ðŸ» Compétition de Caverne avec Ursus Spelaeus (-50 000 BP)",
                 "Chasse et expulsion de l'ours des cavernes pour la possession des abris karstiques hivernaux.",
                 "Ref: Stiner, M. C. (1998). Mortality analysis of Pleistocene bears and hominids. J. Arch. Sci.",
                 "• Conquête d'Abris : Libération des grottes thermiquement isolées pour la bande\n• Resource Carnée & Fourrure : Fourrures épaisses pour l'isolation hivernale"},
-            new String[]{"OchreMiningQuarryEngine", "â›ï¸ MiniÃ¨re d'Ocre & CarriÃ¨res d'HÃ©matite (-40 000 BP)",
+            new String[]{"OchreMiningQuarryEngine", "â›ï¸ Minière d'Ocre & Carrières d'Hématite (-40 000 BP)",
                 "Exploitation minière souterraine d'hématite et d'ocre rouge (Lion Cave, Eswatini).",
                 "Ref: Barham, L. (2002). Systematic Pigment Use in the Middle Stone Age. Curr. Anthropol.",
                 "• Extraction Industrielle : Tonnage d'ocre pour l'échange symbolique régional\n• Corridors de Troc : L'ocre minière devient la première monnaie symbolique de troc"},
-            new String[]{"WindCuringSteppeCacheEngine", "ðŸŒ¬ï¸ Dessiccation par le Vent dans la Steppe PÃ©riglaciaire (-28 000 BP)",
+            new String[]{"WindCuringSteppeCacheEngine", "ðŸŒ¬ï¸ Dessiccation par le Vent dans la Steppe Périglaciaire (-28 000 BP)",
                 "Séchage des bandes de viande par les vents glacés et secs de la steppe-toundra (Kostenki).",
                 "Ref: Soffer, O. (1985). The Upper Paleolithic of the Central Russian Plain. Academic Press.",
                 "• Cryo-Dessiccation : Conservation de viande séchée sans sel ni fumée pendant 1 an\n• Résilience aux Blizzards : Permet le maintien des camps d'hiver arctiques"},
@@ -3821,7 +3821,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Adaptation génétique et physiologique (EPAS1) permettant la vie sur les plateaux du Tibet et des Andes.",
                 "Ref: Zhang, X. L. et al. (2018). Denisovan DNA and high-altitude adaptation. Science.",
                 "• Colonisation des Sommets : Survie et chasse au-dessus de 3,500 m d'altitude\n• Refuges Montagneux : Protection contre les poussées démographiques des plaines"},
-            new String[]{"MortuaryBurialRegaliaEngine", "âš°ï¸ SÃ©pultures Symboliques OrnÃ©es & Asabiyyah FunÃ©raire (-30 000 BP)",
+            new String[]{"MortuaryBurialRegaliaEngine", "âš°ï¸ Sépultures Symboliques Ornées & Asabiyyah Funéraire (-30 000 BP)",
                 "Inhumations complexes avec des milliers de perles d'ivoire et ocre (Sunghir, Arene Candide).",
                 "Ref: Formicola, V. (2007). From Sunghir to the Gravettian burials. Curr. Anthropol.",
                 "• Solidarité Totémique : Renforce le sentiment d'appartenance et la mémoire des ancêtres\n• Asabiyyah Funéraire : Boost durable de cohésion sociale inter-générationnelle"},
@@ -3837,7 +3837,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Migration côtière rapide le long des forêts de kelp riches en loutres, poissons et coquillages.",
                 "Ref: Erlandson, J. M. et al. (2007). The Kelp Highway Hypothesis. J. Island Coast. Arch.",
                 "• Colonisation Maritime Rapide : Contourne la calotte glaciaire laurentide par la côte Pacifique\n• Abondance Alimentaire : Ressources littorales inépuisables et protégées des houles"},
-            new String[]{"CaveHyenaScavengingEngine", "ðŸº NÃ©crophagie CompÃ©titive avec l'HyÃ¨ne des Cavernes (-45 000 BP)",
+            new String[]{"CaveHyenaScavengingEngine", "ðŸº Nécrophagie Compétitive avec l'Hyène des Cavernes (-45 000 BP)",
                 "Concurrence féroce pour le pillage des carcasses de mégafaune entre bandes humaines et hyènes spelaea.",
                 "Ref: Discamps, E. (2014). Ungulate biomass and hyena-human interaction. Quat. Int.",
                 "• Scavenging Compétitif : Récupération de grandes carcasses tuées par d'autres prédateurs\n• Risque de Morsure : Nécessite l'usage du feu pour repousser les meutes d'hyènes"},
@@ -3853,7 +3853,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Collecte de galets de silex et quartzite déposés par les torrents de fonte sous-glaciaire.",
                 "Ref: Bussell, M. A. et al. (2001). Fluvioglacial Gravels as Raw Material Sources.",
                 "• Silex de Fonte : Approvisionnement lithique sur les bandes d'épandage (Sandur) au pied des glaciers\n• Continuité Outillage : Permet le maintien des bandes au contact immédiat de la calotte"},
-            new String[]{"JomonCeramicBoilingEngine", "ðŸº CÃ©ramiques JÅmon & Bouillissage de Toxines Marine (-16 500 BP)",
+            new String[]{"JomonCeramicBoilingEngine", "ðŸº Céramiques JÅmon & Bouillissage de Toxines Marine (-16 500 BP)",
                 "Poteraie à fond pointu (Jōmon) permettant le bouillissage prolongé des toxines coquillères et glands.",
                 "Ref: Habu, J. (2004). Ancient Jomon of Japan. Cambridge Univ. Press.",
                 "• Bio-Disponibilité Coquillère : +45% d'extraction calorique sur les ressources côtières\n• Conservation Protégée : Stockage des bouillies pendant +3 mois"},
@@ -3869,11 +3869,11 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Percussion de galets pour briser les os longs de mégafaune et extraire la moelle riche en lipides.",
                 "Ref: Semaw, S. et al. (1997). 2.5-million-year-old stone tools from Gona, Ethiopia. Nature.",
                 "• Moelle Carnée : Apport calorique lipidique massif (+2.5 MJ/hab/jour) lors des saisons sèches\n• Scavenging Efficace : Extraction de ressources inaccessibles aux autres carnivores"},
-            new String[]{"TrophicCascadesPredatorEngine", "ðŸ¦ Cascades Trophiques & Extinction des Apex PrÃ©dateurs (-13 000 BP)",
+            new String[]{"TrophicCascadesPredatorEngine", "ðŸ¦ Cascades Trophiques & Extinction des Apex Prédateurs (-13 000 BP)",
                 "La disparition des grands herbivores entraîne l'effondrement des hyènes des cavernes et tigres à dents de sabre.",
                 "Ref: Ripple, W. J. & Van Valkenburgh, B. (2010). Linking Pleistocene megafauna density to apex predators.",
                 "• Réorganisation Trophique : Redirection de la chasse humaine vers le petit gibier\n• Chute des Super-Prédateurs : Suppression du risque de prédation directe sur les camps nomades"},
-            new String[]{"BeringianStandstillIsolationEngine", "ðŸ”ï¸ Isolation GÃ©nÃ©tique en BÃ©ringie & Adaptation au Froid (-22 000 BP)",
+            new String[]{"BeringianStandstillIsolationEngine", "ðŸ”ï¸ Isolation Génétique en Béringie & Adaptation au Froid (-22 000 BP)",
                 "Isolement prolongé des populations en Béringie fixant les haplogroupes amérindiens fondateurs.",
                 "Ref: Tamm, E. et al. (2007). Beringian Standstill and Spread of Native American Founders. PLoS ONE.",
                 "• Fixation Génétique : Émergence du profil métabolique résistant au grand froid arctique\n• Lignée Fondatrice : Infiltration continentale rapide lors de l'ouverture du corridor libre de glace"},
@@ -3885,7 +3885,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Soufflage de pigments autour des mains sur les parois de grottes pour délimiter les territoires de chasse.",
                 "Ref: Aubert, M. et al. (2014). Pleistocene cave art date from Sulawesi, Indonesia. Nature.",
                 "• Marqueur Frontalier : Réduit les conflits territoriaux inter-tribaux de -25%\n• Mémoire Territoriale : Ancrage des droits d'usage sur les zones d'agrégation"},
-            new String[]{"AtlatlBalancingStoneEngine", "ðŸ¹ Pierres de Lestage & RÃ©glage Ballistique du Propulseur (-18 000 BP)",
+            new String[]{"AtlatlBalancingStoneEngine", "ðŸ¹ Pierres de Lestage & Réglage Ballistique du Propulseur (-18 000 BP)",
                 "Fixation de lests en pierre polie sur le fut du propulseur pour ajuster la flexion et la vitesse du dard.",
                 "Ref: Peets, O. H. (1960). Experiments in the use of atlatl weights. Am. Antiq.",
                 "• Vitesse de Dard : Vitesse de tir portée à 40 m/s\n• Portée Pratique : Élargit le rayon de tir mortel sur les bisons à 45 mètres"},
@@ -3909,7 +3909,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Mouchages de torches et repères au charbon permettant l'exploration des réseaux karstiques profonds.",
                 "Ref: Clottes, J. & Courtin, J. (1994). La grotte Cosquer. Seuil.",
                 "• Guidage Souterrain : Permet l'exploration sécurisée des galeries à plus de 1 km des entrées\n• Zéro Perte : Élimine les accidents et désorientations dans le labyrinthe karstique"},
-            new String[]{"PeriglacialLoessDustEngine", "ðŸŒªï¸ PoussiÃ¨res de Loess PÃ©riglaciaires & Stress Respiratoire (-24 000 BP)",
+            new String[]{"PeriglacialLoessDustEngine", "ðŸŒªï¸ Poussières de Loess Périglaciaires & Stress Respiratoire (-24 000 BP)",
                 "Tempêtes de poussières de loess balayant la steppe glaciaire réduisant la santé des cohortes.",
                 "Ref: Antoine, P. et al. (2009). High-resolution record of the Last Glacial loess in Europe. Quat. Sci. Rev.",
                 "• Stress Respiratoire : Pénalité de -10% sur la survie infantile en steppe ouverte\n• Protection Abris : Nécessite l'usage d'abris étanches en os et cuir"},
@@ -3965,7 +3965,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Pliage et couture de récipients en écorce étanchéifiés à la poix pour chauffer l'eau.",
                 "Ref: Burov, G. M. (1996). On the search for heritage of Mesolithic timber crafts. World Arch.",
                 "• Bouillissage Sans Céramique : Cuisson des potages et viandes avec des pierres chauffées\n• Mobilité Légère : Récipients souples et legers incassables pendant les trajets nomades"},
-            new String[]{"SnowTroughRefrigerationEngine", "â„ï¸ TranchÃ©es Frigorifiques dans la Neige & Caches d'Hiver (-25 000 BP)",
+            new String[]{"SnowTroughRefrigerationEngine", "â„ï¸ Tranchées Frigorifiques dans la Neige & Caches d'Hiver (-25 000 BP)",
                 "Stockage de carcasses de grand gibier dans des tranchées de neige recouvertes de sapin.",
                 "Ref: Pitulko, V. V. et al. (2014). Early human presence in the Arctic. Science.",
                 "• Cryo-Conservation Printanière : Maintient la fraîcheur de la viande jusqu'au mois de mai\n• Sécurité de la Cohorte : Évite les famines de fin d'hiver lors du dégel"},
@@ -3977,7 +3977,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Migration le long des rivières sahariennes réactivées et pêche sur le Lac Méga-Tchad.",
                 "Ref: Drake, N. A. et al. (2011). Ancient watercourses suggest a humid Sahara. PNAS.",
                 "• Traversée Trans-Saharienne : Autorise la migration Sapiens sans souffrance hydrique\n• Ressource Lacustre Géante : Exploitation des capitaines et poissons chats géants"},
-            new String[]{"EpipaleolithicStorageHamletEngine", "ðŸ¡ Hameaux SÃ©dentaires Natufiens & Fosses de Stockage (-12 500 BP)",
+            new String[]{"EpipaleolithicStorageHamletEngine", "ðŸ¡ Hameaux Sédentaires Natufiens & Fosses de Stockage (-12 500 BP)",
                 "Construction de maisons semi-enterrées en pierre avec fosses de stockage de graines.",
                 "Ref: Bar-Yosef, O. (1998). The Natufian Culture in the Levant. Evol. Anthropol.",
                 "• Ancrage Territorial : Transition définitive de la cohorte vers le village sédentaire\n• Accumulation de Capital : Fosses de stockage scellées protégeant les réserves de céréales"},
@@ -3988,7 +3988,7 @@ public class ScenarioSetupPanel extends BorderPane {
             new String[]{"FrontierAsabiyyahEngine", "⚔ Asabiyyah de Frontière (Ibn Khaldoun 1377 & Peter Turchin 2003)",
                 "Théorie Khaldounienne de la solidarité de groupe et déclin des dynasties (Badiya vs Hadara). Modélise l'érosion de la cohésion sociale lors du passage de la frontière métastable aux métropoles opulentes.",
                 "Ref: Ibn Khaldun (1377). Muqaddimah; Turchin, P. (2003). Historical Dynamics: Securing the Peace, Princeton Univ. Press.",
-                "â€¢ Variation d'Asabiyyah (CohÃ©sion A) : dA/dt = câ‚Â·F(x)Â·(1 - A) - câ‚‚Â·(K(x)/N(x))Â·A\n  oÃ¹ F(x) est la pression militaire de frontiÃ¨re et K(x)/N(x) le capital par habitant (luxe).\nâ€¢ MÃ©tropole opulente (K > 1000 kg/hab) : DÃ©clin d'Asabiyyah dA/dt = -2.0% par pas de temps.\nâ€¢ Zone de frontiÃ¨re (K â‰¤ 1000 kg/hab) : Forge la cohÃ©sion militaire dA/dt = +2.0% par pas de temps.\nâ€¢ InÃ©galitÃ© & DÃ©clin Dynastique : S_cohesion(t) = A(t) Â· Pop(t) Â· (1 - Gini(t))."},
+                "• Variation d'Asabiyyah (Cohésion A) : dA/dt = câ‚Â·F(x)Â·(1 - A) - câ‚‚Â·(K(x)/N(x))Â·A\n  où F(x) est la pression militaire de frontière et K(x)/N(x) le capital par habitant (luxe).\n• Métropole opulente (K > 1000 kg/hab) : Déclin d'Asabiyyah dA/dt = -2.0% par pas de temps.\n• Zone de frontière (K â‰¤ 1000 kg/hab) : Forge la cohésion militaire dA/dt = +2.0% par pas de temps.\n• Inégalité & Déclin Dynastique : S_cohesion(t) = A(t) Â· Pop(t) Â· (1 - Gini(t))."},
             new String[]{"AiAutonomousRegulationPureEngine", "🤖 Régulation Autonome de l'IA & Gouvernance (2023+)",
                 "Modélisation de la régulation et des risques de l'intelligence artificielle. Évalue les probabilités d'émergence d'infrastructures autonomes et de gestion des risques.",
                 "Ref: Bostrom, N. (2014). Superintelligence; Russell, S. (2019). Human Compatible.",
@@ -4005,7 +4005,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Sensibilité aux conditions initiales et points de basculement. Génère des micro-oscillations chaotiques pouvant déclencher des cascades d'instabilité.",
                 "Ref: Lorenz, E. N. (1963). Deterministic Nonperiodic Flow; May, R. M. (1976).",
                 "• Attracteur de Lorenz / Bifurcation Logistique : x_{t+1} = r · x_t · (1 - x_t)\n• Exposant de Liapounov λ > 0 -> Divergence exponentielle des trajectoires de simulation"},
-            new String[]{"BioMolecularEpidemiologyEngine", "â˜£ï¸ Ã‰pidÃ©miologie Bio-MolÃ©culaire & ImmunitÃ© Pop (-5 000 BP / 1927)",
+            new String[]{"BioMolecularEpidemiologyEngine", "â˜£ï¸ Épidémiologie Bio-Moléculaire & Immunité Pop (-5 000 BP / 1927)",
                 "Simulation avancée de la transmission virale et foyers infectieux. Modélise la transmission SIR/SEIR selon la densité urbaine et le réseau de commerce.",
                 "Ref: Kermack, W. O. & McKendrick, A. G. (1927). SIR Epidemiological Model.",
                 "• Modèle SEIR : dS/dt = -β·S·I/N, dE/dt = β·S·I/N - σ·E, dI/dt = σ·E - γ·I, dR/dt = γ·I\n• Taux de Reproduction de Base R₀ = β / γ · (1 + Variance_Contacts_Densité)"},
@@ -4017,7 +4017,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Évolution des valeurs culturelles et métissage régional. Gère la diffusion des langues, des normes et la dérive culturelle entre mailles voisines.",
                 "Ref: Cavalli-Sforza, L. L. & Feldman, M. W. (1981). Cultural Transmission and Evolution.",
                 "• Matrice de Diffusion Culturelle : dC_i/dt = Σ_j w_{ij} · (C_j - C_i) + Drift_Accidentel\n• Distance Culturelle d(i,j) = || Vector_Langue_i - Vector_Langue_j ||"},
-            new String[]{"DeforestationErosionEngine", "ðŸœï¸ Ã‰rosion ForestiÃ¨re & Ensablement Fluvial (-6 000 BP)",
+            new String[]{"DeforestationErosionEngine", "ðŸœï¸ Érosion Forestière & Ensablement Fluvial (-6 000 BP)",
                 "Dégradation des sols et perte de couverture végétale. Entraîne le ravinement des terres arables et le comblement des lits de rivières lors de coupes rases.",
                 "Ref: Montgomery, D. R. (2007). Dirt: The Erosion of Civilizations. Univ. of California Press.",
                 "• Érosion des Sols : Perte_Sol = k_coupe · (1 - Couverture_Forestiere) · Precipitations³\n• Comblement Fluvial = Σ Perte_Sol_Amont"},
@@ -4025,7 +4025,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Maintien d'un équilibre zéro-croissance et fermeture des frontières. Élimine la dépendance extérieure au détriment du rythme de progrès technologique.",
                 "Ref: Totman, C. (1993). Early Modern Japan; Diamond, J. (2005). Collapse (Tokugawa Forestry).",
                 "• Équilibre Sylvicole & Zéro-Croissance : Extraction_Bois <= Auto_Régénération_Forêt\n• Isolement Commercial : Flux_Externe = 0, Stabilité_Interne = Maximale"},
-            new String[]{"EntropicMetalDissipationEngine", "ðŸ­ Dissipation Entropique des MÃ©taux & Jevons Rebound (1800)",
+            new String[]{"EntropicMetalDissipationEngine", "ðŸ­ Dissipation Entropique des Métaux & Jevons Rebound (1800)",
                 "Dispersion irrémédiable des métaux rares et effets rebond. Calcule la perte irrécupérable de cuivre et de métaux précieux par usure mécanique et oxydation.",
                 "Ref: Georgescu-Roegen, N. (1971). The Entropy Law and the Economic Process.",
                 "• Pertes Entropiques Irrécupérables : dMetal_dissipe/dt = Production · (1 - Taux_Recyclage_Max)\n• Limite d'Usure Recyclage : Max_Recyclage = 85% par contrainte thermodynamique"},
@@ -4056,7 +4056,7 @@ public class ScenarioSetupPanel extends BorderPane {
             new String[]{"KardashevPureEngine", "🌌 Échelle de Kardashev & Capture Énergétique (1964)",
                 "Transition vers le contrôle de l'énergie planétaire intégrale. Évalue le score de Kardashev (Type 0.0 à 1.0) selon la puissance totale captée en watts.",
                 "Ref: Kardashev, N. S. (1964). Transmission of Information by Extraterrestrial Civilizations.",
-                "â€¢ Indice de Kardashev K = (logâ‚â‚€(Puissance_Watts) - 6) / 10\nâ€¢ Type I = 10Â¹â¶ Watts (Ã‰nergie PlanÃ©taire IntÃ©grale)"},
+                "• Indice de Kardashev K = (logâ‚â‚€(Puissance_Watts) - 6) / 10\n• Type I = 10Â¹â¶ Watts (Énergie Planétaire Intégrale)"},
             new String[]{"KinSelectionHamiltonEngine", "🧬 Sélection de Parentèle (Règle de Hamilton -300 000 BP / 1964)",
                 "Évolution de l'altruisme génétique et coopération inter-individus (rB > C). Détermine la cohésion des petites tribus et familles étendues.",
                 "Ref: Hamilton, W. D. (1964). The Genetical Evolution of Social Behaviour. J. Theor. Biol.",
@@ -4081,7 +4081,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Calcul dynamique et adaptatif des routes maritimes globales selon l'évolution technologique (cabotage -> navigation hauturière -> brise-glace) et thermodynamique.",
                 "Ref: Dynamic Graph Routing & Fluid Drag; Bowditch, N. (1802). American Practical Navigator.",
                 "• Invalidation auto selon Niveau Tech & Glace de Mer\n• Portée de Cabotage (Tech < 3.0: 300km, Tech >= 6.0: Trans-Océanique)"},
-            new String[]{"LandReclamationEngine", "ðŸ—ï¸ PoldÃ©risation & Habitats Flottants (1200)",
+            new String[]{"LandReclamationEngine", "ðŸ—ï¸ Poldérisation & Habitats Flottants (1200)",
                 "Transformation de zones côtières en polders agricoles et création de cités flottantes en haute mer selon le niveau technologique et le capital.",
                 "Ref: Dutch Water Boards History; Seasteading Institute (2008).",
                 "• Tech >= 4.0 & K >= 100 -> Poldérisation ; Tech >= 8.5 & K >= 500 -> Habitat Flottant"},
@@ -4105,15 +4105,15 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Préservation du capital intellectuel et régulation démographique par les monastères. Empêche la perte totale de savoir lors de la chute d'un empire.",
                 "Ref: Weber, M. (1905); Kautsky, K. (1889). Thomas More and his Utopia.",
                 "• Plancher de Rétention du Savoir : T_min = Max(T_courant, T_monastique_sauvegardé)"},
-            new String[]{"NordhausDiceHybridEngine", "ðŸŒ¡ï¸ ModÃ¨le DICE Hybride (Nordhaus 1992 - Climat & Ã‰conomie)",
+            new String[]{"NordhausDiceHybridEngine", "ðŸŒ¡ï¸ Modèle DICE Hybride (Nordhaus 1992 - Climat & Économie)",
                 "Couplage économie-climat intégré avec boucle de dommage du carbone. Évalue la perte de PIB causée par l'élévation des températures extrêmes.",
                 "Ref: Nordhaus, W. D. (1992, 2017). Integrated Assessment Models (DICE-2016R).",
-                "â€¢ Fonction de Dommage Nordhaus Î©(T) = 1 / (1 + Ï€â‚Â·T + Ï€â‚‚Â·TÂ²)\nâ€¢ PIB AjustÃ© Climat Y_net = Î©(T) Â· Y_brut"},
-            new String[]{"NordhausDicePureEngine", "ðŸŒ¡ï¸ ModÃ¨le DICE Pur (Taxe Carbone & PIB 1992)",
+                "• Fonction de Dommage Nordhaus Î©(T) = 1 / (1 + Ï€â‚Â·T + Ï€â‚‚Â·T²)\n• PIB Ajusté Climat Y_net = Î©(T) Â· Y_brut"},
+            new String[]{"NordhausDicePureEngine", "ðŸŒ¡ï¸ Modèle DICE Pur (Taxe Carbone & PIB 1992)",
                 "Modélisation analytique du coût du carbone et investissements verts. Calcule le prix social du carbone pour inciter la décarbonation.",
                 "Ref: Nordhaus, W. D. (1992). An Optimal Transition Path for Controlling Greenhouse Gases. Science.",
                 "• Prix Social du Carbone SCC = d(Dommages_Futurs_Actualisés) / d(Émission_CO2)"},
-            new String[]{"NuclearSafetyRadiotoxicityEngine", "âš›ï¸ RadiotoxicitÃ© & Fusion NuclÃ©aire (1950)",
+            new String[]{"NuclearSafetyRadiotoxicityEngine", "âš›ï¸ Radiotoxicité & Fusion Nucléaire (1950)",
                 "Gestion des risques d'accidents atomiques et retombées toxiques. Simule la contamination des terres et les surcoûts de sécurité industrielle.",
                 "Ref: Perrow, C. (1984). Normal Accidents: Living with High-Risk Technologies.",
                 "• Probabilité d'Accident Majeur = 1 - exp(-Taux_Défaillance_Système · Nombre_Reacteurs)"},
@@ -4125,11 +4125,11 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Règles institutionnelles locales pour éviter la tragédie des communs. Maintient la durabilité des pâturages et de la pêche sans privatisation.",
                 "Ref: Ostrom, E. (1990). Governing the Commons: Evolution of Institutions.",
                 "• Maintien des Communs : Taux_Survie_Communs = f(Institution_Locale, Sanctions_Graduées)"},
-            new String[]{"PinkerViolenceDeclinePureEngine", "ðŸ•Šï¸ DÃ©clin Historique de la Violence (Steven Pinker 2011)",
+            new String[]{"PinkerViolenceDeclinePureEngine", "ðŸ•Šï¸ Déclin Historique de la Violence (Steven Pinker 2011)",
                 "Baisse de la mortalité violente par l'État, le commerce et l'alphabétisation. Réduit les homicides et les guerres à mesure que l'État de droit progresse.",
                 "Ref: Pinker, S. (2011). The Better Angels of Our Nature: Why Violence Has Declined.",
                 "• Taux de Mortalité Violente = V₀ · exp(-k_etat · Monopole_Violence - k_commerce · Fret)"},
-            new String[]{"ProtestantWorkEthicEngine", "âœï¸ Ã‰thique du Travail & Accumulation de Capital (Max Weber 1905)",
+            new String[]{"ProtestantWorkEthicEngine", "âœï¸ Éthique du Travail & Accumulation de Capital (Max Weber 1905)",
                 "Impact des valeurs morales sur la formation du capital industriel. Stimule le réinvestissement des bénéfices dans les machines au lieu du luxe.",
                 "Ref: Weber, M. (1905). Die protestantische Ethik und der Geist des Kapitalismus.",
                 "• Taux d'Épargne Réinvestie : S_épargne = S_base · (1 + α_ethique_travail)"},
@@ -4145,15 +4145,15 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Attractivité des céréales taxables et émergence de l'État archaïque. Privilégie le blé/riz stockables pour l'impôt au détriment des tubercules.",
                 "Ref: Scott, J. C. (2017). Against the Grain: A Deep History of the Earliest States.",
                 "• Capacité Taxable : Assiette_Fiscale = Production_Céréales_Stockables - Subsistance_Minimale"},
-            new String[]{"SelfDomesticationEngine", "ðŸ• Auto-Domestication Humaine & RÃ©duction de l'AgressivitÃ© (-300 000 BP)",
+            new String[]{"SelfDomesticationEngine", "ðŸ• Auto-Domestication Humaine & Réduction de l'Agressivité (-300 000 BP)",
                 "Sélection contre l'agressivité réactive dans les fortes densités. Sélectionne les comportements coopératifs indispensables à la vie urbaine.",
                 "Ref: Hare, B. (2017). Survival of the Friendliest; Lahire, B. (2018). Structures Fondamentales.",
                 "• Réduction Agressivité Réactive : dAgressivite/dt = -k_urbain · Densité_Cellule"},
-            new String[]{"SexualSelectionMatingEngine", "ðŸ’ SÃ©lection Sexuelle & MarchÃ© Matrimonial (-300 000 BP)",
+            new String[]{"SexualSelectionMatingEngine", "ðŸ’ Sélection Sexuelle & Marché Matrimonial (-300 000 BP)",
                 "Structures de parenté et polygamie/monogamie selon les ressources. Régule l'accès aux partenaires selon l'inégalité de capital.",
                 "Ref: Buss, D. M. (1989). Sex differences in human mate preferences. BBS.",
                 "• Indice Polygynie = f(Gini_Richesse, Monopole_Ressources_Elites)"},
-            new String[]{"SmilMaterialTransitionsPureEngine", "ðŸ—ï¸ Transitions MatÃ©rielles & Ã‰nergÃ©tiques (Vaclav Smil 2019)",
+            new String[]{"SmilMaterialTransitionsPureEngine", "ðŸ—ï¸ Transitions Matérielles & Énergétiques (Vaclav Smil 2019)",
                 "Inertie physique des transitions vers l'acier, le béton, l'ammoniac et le plastique. Impose des délais de plusieurs décennies pour remplacer un matériau de base.",
                 "Ref: Smil, V. (2019). Material World & Energy Transitions: History, Requirements.",
                 "• Temps de Transition Matérielle T_transition = 40 à 60 ans par inertie du capital fixe"},
@@ -4161,7 +4161,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Hiérarchie des métropoles et loi rang-taille urbaine. Organise le réseau urbain en sous-centres régionaux et métropoles primatiales.",
                 "Ref: Batty, M. (2008). The Size, Scale, and Shape of Cities. Science; Zipf, G. K. (1949).",
                 "• Loi de Zipf Rang-Taille : Pop(Rang r) = Pop_Max / r^α avec α ≈ 1.0"},
-            new String[]{"TasmanianCulturalRegressionEngine", "ðŸï¸ RÃ©gression Culturelle de Tasmanie (Henrich -10 000 BP)",
+            new String[]{"TasmanianCulturalRegressionEngine", "ðŸï¸ Régression Culturelle de Tasmanie (Henrich -10 000 BP)",
                 "Perte de technologies complexes par goulet d'étranglement démographique. Fait régresser l'outillage si la population tombe sous le seuil critique d'apprentissage.",
                 "Ref: Henrich, J. (2004). Demography and Cultural Loss in Tasmania. American Antiquity.",
                 "• Seuil Critique d'Apprentissage : dTech/dt < 0 si Pop_Tribu < N_critique"},
@@ -4169,10 +4169,10 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Accélération exponentielle du progrès scientifique et IA. Franchit le point d'inflexion où les machines auto-améliorent leur propre conception.",
                 "Ref: Good, I. J. (1965); Vinge, V. (1993); Kurzweil, R. (2005). The Singularity Is Near.",
                 "• Boucle de Rétroaction Singularité : d(Capacité_IA)/dt = (Capacité_IA)^1.5"},
-            new String[]{"UrbanThermodynamicsEngine", "ðŸ™ï¸ Thermodynamique Urbaine & MÃ©tropoles (1850)",
+            new String[]{"UrbanThermodynamicsEngine", "ðŸ™ï¸ Thermodynamique Urbaine & Métropoles (1850)",
                 "Îlots de chaleur urbains et densité bâtie hyper-concentrée. Élève la température locale des métropoles et consomme de la puissance de climatisation.",
                 "Ref: Oke, T. R. (1982). The Energetic Basis of the Urban Heat Island. Q. J. R. Meteorol. Soc.",
-                "â€¢ ÃŽlot de Chaleur Urbain Î”T_urbain = a Â· logâ‚â‚€(Immobilier_DensitÃ©) + b"},
+                "• ÃŽlot de Chaleur Urbain Î”T_urbain = a Â· logâ‚â‚€(Immobilier_Densité) + b"},
             new String[]{"World3CouplingEngine", "📉 Modèle Couplé World3 & Limites à la Croissance (1972)",
                 "Rétroactions entre population, pollution et capital (Club de Rome). Connecte le modèle World3 Meadows aux cellules hexagonales H3.",
                 "Ref: Meadows, D. H., Meadows, D. L., Randers, J., & Behrens, W. W. (1972). Limits to Growth.",
@@ -4199,8 +4199,8 @@ public class ScenarioSetupPanel extends BorderPane {
 
             String desc = org.ether.society.i18n.I18n.getEngineDescription(eng[0], eng[2]);
             String ref = org.ether.society.i18n.I18n.getEngineReference(eng[0], eng[3]);
-            String eqText = eng.length > 4 ? org.ether.society.i18n.I18n.getEngineEquation(eng[0], eng[4]) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Ã‰quation d'Ã‰tat : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
-            String optPrefix = I18n.getOrDefault("scenario.engine.opt_prefix", "âš™ï¸ [MOTEUR OPTIONNEL]\n");
+            String eqText = eng.length > 4 ? org.ether.society.i18n.I18n.getEngineEquation(eng[0], eng[4]) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Équation d'État : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
+            String optPrefix = I18n.getOrDefault("scenario.engine.opt_prefix", "⚙️ï¸ [MOTEUR OPTIONNEL]\n");
             Tooltip tooltip = new Tooltip(optPrefix + eng[0] + " — " + engineTitle + "\n\n" + desc + "\n\n" + eqText + "\n\n📚 " + ref);
             tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 500px;");
             cb.setTooltip(tooltip);
@@ -4217,7 +4217,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 String curTitle = I18n.getEngineTitle(finalEng[0], finalEng[1]);
                 String curDesc = I18n.getEngineDescription(finalEng[0], finalEng[2]);
                 String curRef = I18n.getEngineReference(finalEng[0], finalEng[3]);
-                String curEq = finalEng.length > 4 ? I18n.getEngineEquation(finalEng[0], finalEng[4]) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Ã‰quation d'Ã‰tat : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
+                String curEq = finalEng.length > 4 ? I18n.getEngineEquation(finalEng[0], finalEng[4]) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Équation d'État : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
                 updateEngineInspector(finalEng[0], curTitle, curDesc, curRef, curEq);
             });
             cb.setOnMouseEntered(row.getOnMouseEntered());
@@ -4240,7 +4240,7 @@ public class ScenarioSetupPanel extends BorderPane {
             sortOptionalEngines(newV != null ? newV.intValue() : 0, optionalEngines, engineContainers);
         });
 
-        this.typeBPane = new TitledPane(String.format(I18n.getOrDefault("scenario.header.opt_engines_format", "âš™ï¸ MODULES OPTIONNELS (%d MOTEURS EXTENSIBLES & IMPORT/EXPORT)"), optionalEngines.size()), typeBBoxContainer);
+        this.typeBPane = new TitledPane(String.format(I18n.getOrDefault("scenario.header.opt_engines_format", "⚙️ï¸ MODULES OPTIONNELS (%d MOTEURS EXTENSIBLES & IMPORT/EXPORT)"), optionalEngines.size()), typeBBoxContainer);
         this.typeBPane.setExpanded(true);
         this.typeBPane.getStyleClass().add("titled-pane-secondary");
 
@@ -4255,10 +4255,10 @@ public class ScenarioSetupPanel extends BorderPane {
             corePane.setText(I18n.getOrDefault("scenario.header.core_engines", "🔒 ARCHITECTURE CŒUR ETHER (24 MOTEURS PERMANENTS)"));
         }
         if (typeBPane != null) {
-            typeBPane.setText(String.format(I18n.getOrDefault("scenario.header.opt_engines_format", "âš™ï¸ MODULES OPTIONNELS (%d MOTEURS EXTENSIBLES & IMPORT/EXPORT)"), optionalEngineMetas.size()));
+            typeBPane.setText(String.format(I18n.getOrDefault("scenario.header.opt_engines_format", "⚙️ï¸ MODULES OPTIONNELS (%d MOTEURS EXTENSIBLES & IMPORT/EXPORT)"), optionalEngineMetas.size()));
         }
         if (coreExplanationLabel != null) {
-            coreExplanationLabel.setText(I18n.getOrDefault("scenario.info.core_engines", "â„¹ï¸ Why are Ether Core engines permanent? They enforce physical conservation laws (mass & energy, thermodynamics, hydrology, H3 insolation, metabolism) required for basic world survival."));
+            coreExplanationLabel.setText(I18n.getOrDefault("scenario.info.core_engines", "ℹ️ï¸ Why are Ether Core engines permanent? They enforce physical conservation laws (mass & energy, thermodynamics, hydrology, H3 insolation, metabolism) required for basic world survival."));
         }
         if (exportCoreTemplateBtn != null) {
             exportCoreTemplateBtn.setText(I18n.getOrDefault("scenario.btn.export_law_engine", "📤 Export Physical Law Engine (.java)"));
@@ -4290,37 +4290,37 @@ public class ScenarioSetupPanel extends BorderPane {
             sparseCellSkippingCheckBox.setText(I18n.getOrDefault("scenario.opt.sparse_cell_skipping", "ðŸœ Sparse / Uninhabited Cell Skipping (Deserts & Abysses)"));
             sparseCellSkippingCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.sparse_cell_skipping",
                 "⚡ BENEFIT: +40% to +60% TPS speedup across global grid.\n" +
-                "âš ï¸ PHYSICAL IMPACT: Bypasses evaluation loops on desert/oceanic cells with no human presence or active event.")));
+                "⚠️ï¸ PHYSICAL IMPACT: Bypasses evaluation loops on desert/oceanic cells with no human presence or active event.")));
         }
         if (oceanMacroAggregationCheckBox != null) {
             oceanMacroAggregationCheckBox.setText(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Abyssal Ocean Macro-Aggregation (Deep Basins z < -200m in Blocks)"));
             oceanMacroAggregationCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.ocean_macro_aggregation",
                 "⚡ BENEFIT: +25% to +35% TPS speedup by grouping deep water cells.\n" +
-                "âš ï¸ PHYSICAL IMPACT: Smoothing of abyssal micro-currents without impacting terrestrial civilizations.")));
+                "⚠️ï¸ PHYSICAL IMPACT: Smoothing of abyssal micro-currents without impacting terrestrial civilizations.")));
         }
         if (coastalNavigationOnlyCheckBox != null) {
             coastalNavigationOnlyCheckBox.setText(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Exclusive Coastal Navigation (Pathfinding Focused on Coasts & Straits)"));
             coastalNavigationOnlyCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.coastal_nav",
                 "⚡ BENEFIT: Major CPU savings on naval and commercial trade pathfinding.\n" +
-                "âš ï¸ PHYSICAL IMPACT: Ships prefer coastal waters; ocean navigation restricted prior to Age of Discovery.")));
+                "⚠️ï¸ PHYSICAL IMPACT: Ships prefer coastal waters; ocean navigation restricted prior to Age of Discovery.")));
         }
         if (oceanMultiRateTickingCheckBox != null) {
             oceanMultiRateTickingCheckBox.setText(I18n.getOrDefault("scenario.ocean_opt.multi_rate_ticking", "⏱ Oceanic & Multi-Rate Climate Ticking (Updated Every N Ticks)"));
             oceanMultiRateTickingCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.multi_rate_ticking",
                 "⚡ BENEFIT: +30% throughput by executing thermohaline circulation and fluid inertia at sub-frequency.\n" +
-                "âš ï¸ PHYSICAL IMPACT: Potential temporal aliasing during ultra-fast atmospheric events.")));
+                "⚠️ï¸ PHYSICAL IMPACT: Potential temporal aliasing during ultra-fast atmospheric events.")));
         }
         if (parallelExecutionCheckBox != null) {
             parallelExecutionCheckBox.setText(I18n.getOrDefault("scenario.opt.parallel_execution", "🚀 Async Multi-Thread Parallelization (CompletableFuture / AVX)"));
             parallelExecutionCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.parallel_execution",
                 "⚡ BENEFIT: Full exploitation of all available CPU cores.\n" +
-                "âš ï¸ PHYSICAL IMPACT: Floating point order may slightly vary across executions.")));
+                "⚠️ï¸ PHYSICAL IMPACT: Floating point order may slightly vary across executions.")));
         }
         if (spatialRangeTruncationCheckBox != null) {
             spatialRangeTruncationCheckBox.setText(I18n.getOrDefault("scenario.opt.spatial_truncation", "ðŸ’¨ Spatial Range Truncation of Plumes & Diffusions (10â»â¶ Cutoff)"));
             spatialRangeTruncationCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.spatial_truncation",
                 "⚡ BENEFIT: Restricts atmospheric dispersion calculation to affected adjacent cells.\n" +
-                "âš ï¸ PHYSICAL IMPACT: Discards ultra-diluted aerosol and soot concentrations below 10â»â¶ ppm.")));
+                "⚠️ï¸ PHYSICAL IMPACT: Discards ultra-diluted aerosol and soot concentrations below 10â»â¶ ppm.")));
         }
         if (engineInspectorTitle != null && selectedEngineClassName != null) {
             engineInspectorTitle.setText("🔎 " + selectedEngineClassName + " — " + I18n.getEngineTitle(selectedEngineClassName, ""));
@@ -4338,7 +4338,7 @@ public class ScenarioSetupPanel extends BorderPane {
             row.descLabel.setText("— " + title);
             String desc = I18n.getEngineDescription(row.id, row.defaultDesc);
             String ref = I18n.getEngineReference(row.id, row.defaultRef);
-            String eqText = row.defaultEq != null ? I18n.getEngineEquation(row.id, row.defaultEq) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Ã‰quation d'Ã‰tat : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
+            String eqText = row.defaultEq != null ? I18n.getEngineEquation(row.id, row.defaultEq) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Équation d'État : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
             String permPrefix = I18n.getOrDefault("scenario.engine.perm_prefix", "🔒 [MOTEUR PERMANENT]\n");
             Tooltip tooltip = new Tooltip(permPrefix + row.id + " — " + title + "\n\n" + desc + "\n\n" + eqText + "\n\n📚 " + ref);
             tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 500px;");
@@ -4351,8 +4351,8 @@ public class ScenarioSetupPanel extends BorderPane {
             meta.cb.setText(title);
             String desc = I18n.getEngineDescription(meta.id, meta.defaultDesc);
             String ref = I18n.getEngineReference(meta.id, meta.defaultRef);
-            String eqText = meta.defaultEq != null ? I18n.getEngineEquation(meta.id, meta.defaultEq) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Ã‰quation d'Ã‰tat : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
-            String optPrefix = I18n.getOrDefault("scenario.engine.opt_prefix", "âš™ï¸ [MOTEUR OPTIONNEL]\n");
+            String eqText = meta.defaultEq != null ? I18n.getEngineEquation(meta.id, meta.defaultEq) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Équation d'État : dX/dt = f(X, t) + Î£ F_inter-cellulaire");
+            String optPrefix = I18n.getOrDefault("scenario.engine.opt_prefix", "⚙️ï¸ [MOTEUR OPTIONNEL]\n");
             Tooltip tooltip = new Tooltip(optPrefix + meta.id + " — " + title + "\n\n" + desc + "\n\n" + eqText + "\n\n📚 " + ref);
             tooltip.setStyle("-fx-font-size: 11px; -fx-max-width: 500px;");
             meta.cb.setTooltip(tooltip);
@@ -4362,13 +4362,13 @@ public class ScenarioSetupPanel extends BorderPane {
         if (selectedEngineClassName != null) {
             for (CoreEngineRow row : coreEngineRows) {
                 if (row.id.equals(selectedEngineClassName)) {
-                    updateEngineInspector(row.id, I18n.getEngineTitle(row.id, row.defaultTitle), I18n.getEngineDescription(row.id, row.defaultDesc), I18n.getEngineReference(row.id, row.defaultRef), row.defaultEq != null ? I18n.getEngineEquation(row.id, row.defaultEq) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Ã‰quation d'Ã‰tat : dX/dt = f(X, t) + Î£ F_inter-cellulaire"));
+                    updateEngineInspector(row.id, I18n.getEngineTitle(row.id, row.defaultTitle), I18n.getEngineDescription(row.id, row.defaultDesc), I18n.getEngineReference(row.id, row.defaultRef), row.defaultEq != null ? I18n.getEngineEquation(row.id, row.defaultEq) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Équation d'État : dX/dt = f(X, t) + Î£ F_inter-cellulaire"));
                     break;
                 }
             }
             for (OptionalEngineMeta meta : optionalEngineMetas) {
                 if (meta.id.equals(selectedEngineClassName)) {
-                    updateEngineInspector(meta.id, I18n.getEngineTitle(meta.id, meta.defaultTitle), I18n.getEngineDescription(meta.id, meta.defaultDesc), I18n.getEngineReference(meta.id, meta.defaultRef), meta.defaultEq != null ? I18n.getEngineEquation(meta.id, meta.defaultEq) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Ã‰quation d'Ã‰tat : dX/dt = f(X, t) + Î£ F_inter-cellulaire"));
+                    updateEngineInspector(meta.id, I18n.getEngineTitle(meta.id, meta.defaultTitle), I18n.getEngineDescription(meta.id, meta.defaultDesc), I18n.getEngineReference(meta.id, meta.defaultRef), meta.defaultEq != null ? I18n.getEngineEquation(meta.id, meta.defaultEq) : I18n.getOrDefault("scenario.engine.state_eq_default", "ðŸ“ Équation d'État : dX/dt = f(X, t) + Î£ F_inter-cellulaire"));
                     break;
                 }
             }
@@ -4765,7 +4765,7 @@ public class ScenarioSetupPanel extends BorderPane {
         root.setPrefWidth(720);
         root.setPrefHeight(600);
 
-        Label title = new Label("ðŸ—ºï¸ " + I18n.getOrDefault("scenario.layer_formats.title", "Standard des Tenseurs Spatio-Temporels (2048 Ã— 1024, Ã‰quirectangulaire 2:1)"));
+        Label title = new Label("ðŸ—ºï¸ " + I18n.getOrDefault("scenario.layer_formats.title", "Standard des Tenseurs Spatio-Temporels (2048 Ã— 1024, Équirectangulaire 2:1)"));
         title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
         ScrollPane scroll = new ScrollPane();
@@ -4779,7 +4779,7 @@ public class ScenarioSetupPanel extends BorderPane {
         // Section 1: 24-bit RGB Categorical & Spatial Dithering Tensors
         VBox sec1 = new VBox(6);
         sec1.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #3b82f6; -fx-border-radius: 8;");
-        Label lblSec1 = new Label("ðŸ·ï¸ " + I18n.getOrDefault("scenario.layer_formats.rgb_title", "1. Tenseurs CatÃ©goriels Discrets & Dithering Spatial (Encodage RGB 24-bit)"));
+        Label lblSec1 = new Label("ðŸ·ï¸ " + I18n.getOrDefault("scenario.layer_formats.rgb_title", "1. Tenseurs Catégoriels Discrets & Dithering Spatial (Encodage RGB 24-bit)"));
         lblSec1.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #60a5fa;");
         Label descSec1 = new Label(
             "• Tenseur 0 (Isoglosses / Langues) : Couleur RGB pure par famille linguistique (Glottolog 5.0 / WALS) + Dithering stochastique aux zones de contact.\n" +
@@ -4795,7 +4795,7 @@ public class ScenarioSetupPanel extends BorderPane {
         // Section 2: Multi-Modal Network & Connectivity Tensor
         VBox sec2 = new VBox(6);
         sec2.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #06b6d4; -fx-border-radius: 8;");
-        Label lblSec2 = new Label("ðŸŒ " + I18n.getOrDefault("scenario.layer_formats.network_title", "2. Tenseur de RÃ©seau Multi-Modal & Flux (RGB 24-bit)"));
+        Label lblSec2 = new Label("ðŸŒ " + I18n.getOrDefault("scenario.layer_formats.network_title", "2. Tenseur de Réseau Multi-Modal & Flux (RGB 24-bit)"));
         lblSec2.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #22d3ee;");
         Label descSec2 = new Label(
             "• Tenseur 5 (Réseau Commercial & Hydrographie) : Réseau multi-modal interconnecté :\n" +
@@ -4892,7 +4892,7 @@ private String getDefaultTensorName(int index) {
             case 4 -> I18n.getOrDefault("scenario.tensor.title.4", "ðŸº 3.2.5 Tensor 5: Tooling, Materiality & Technologies (Artifacts)");
             case 5 -> I18n.getOrDefault("scenario.tensor.title.5", "ðŸ« 3.2.6 Tensor 6: Trade Corridors & Networks (Economic Routes)");
             case 6 -> I18n.getOrDefault("scenario.tensor.title.6", "⚖ 3.2.7 Tensor 7: Institutional Complexity & Norms (Seshat & Law)");
-            case 7 -> I18n.getOrDefault("scenario.tensor.title.7", "âš ï¸ 3.2.8 Tensor 8: Ecological Footprint & Malthusian Stress (Degradation)");
+            case 7 -> I18n.getOrDefault("scenario.tensor.title.7", "⚠️ï¸ 3.2.8 Tensor 8: Ecological Footprint & Malthusian Stress (Degradation)");
             case 8 -> I18n.getOrDefault("scenario.tensor.title.8", "🧬 3.2.9 Tensor 9: Pathogen Immunity & Health Memory (Epidemiology)");
             default -> I18n.getOrDefault("scenario.tensor.title.ext", "🧬 3.2.{0} Tensor {0}: Extensible Cultural Substrate {0}", (index + 1));
         };
@@ -4962,10 +4962,10 @@ private String getDefaultTensorName(int index) {
             return "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente [Planétaire (Mercure), +2150 AD à Futur]";
         // Earth epochs
         if (startYear < -10000)
-            return "ðŸŒ Terre â€” Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]";
+            return "ðŸŒ Terre — Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]";
         if (startYear >= -3000 && startYear < 1900)
-            return "ðŸŒ Terre â€” CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]";
-        return "ðŸŒ Terre â€” HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]";
+            return "ðŸŒ Terre — CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]";
+        return "ðŸŒ Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]";
     }
 
     /*
@@ -5073,29 +5073,29 @@ private String getDefaultTensorName(int index) {
         // Earth — pick based on epoch
         if (startYear < -10000) {
             return switch (tensorIdx) {
-                case 0 -> "ðŸŒ Terre â€” Automated Phonological Distance Model (ASJP) [Global, -10 000 BC à Actuel (Macro-Familles)]";
-                case 1 -> "ðŸŒ Terre â€” Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC à Actuel (186 Cultures)]";
-                case 2 -> "ðŸŒ Terre â€” Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC à +2000 AD]";
-                case 3 -> "ðŸŒ Terre â€” GADM Administrative Sovereign Centers [Global, 1950 AD à Actuel]";
-                case 4 -> "ðŸŒ Terre â€” Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC à +2000 AD]";
-                case 5 -> "ðŸŒ Terre â€” Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC à +1800 AD]";
-                case 6 -> "ðŸŒ Terre â€” Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC à +1800 AD]";
-                case 7 -> "ðŸŒ Terre â€” Malthusian Carrying Capacity Model [Global, -100 000 BC à +2100 AD]";
-                case 8 -> "ðŸŒ Terre â€” Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC à +2100 AD]";
+                case 0 -> "ðŸŒ Terre — Automated Phonological Distance Model (ASJP) [Global, -10 000 BC à Actuel (Macro-Familles)]";
+                case 1 -> "ðŸŒ Terre — Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC à Actuel (186 Cultures)]";
+                case 2 -> "ðŸŒ Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC à +2000 AD]";
+                case 3 -> "ðŸŒ Terre — GADM Administrative Sovereign Centers [Global, 1950 AD à Actuel]";
+                case 4 -> "ðŸŒ Terre — Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC à +2000 AD]";
+                case 5 -> "ðŸŒ Terre — Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC à +1800 AD]";
+                case 6 -> "ðŸŒ Terre — Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC à +1800 AD]";
+                case 7 -> "ðŸŒ Terre — Malthusian Carrying Capacity Model [Global, -100 000 BC à +2100 AD]";
+                case 8 -> "ðŸŒ Terre — Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC à +2100 AD]";
                 default -> null;
             };
         }
         // Default Earth modern/historical: first real item per tensor
         return switch (tensorIdx) {
-            case 0 -> "ðŸŒ Terre â€” Glottolog 4.8 / WALS Language Families [Global, -10 000 BC à Actuel (8 500+ Langues)]";
-            case 1 -> "ðŸŒ Terre â€” Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC à Actuel (1 267 Sociétés)]";
-            case 2 -> "ðŸŒ Terre â€” Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC à +1900 AD]";
-            case 3 -> "ðŸŒ Terre â€” Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / Amériques, -1000 BC à +2000 AD]";
-            case 4 -> "ðŸŒ Terre â€” ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC à +1850 AD]";
-            case 5 -> "ðŸŒ Terre â€” ORBIS Stanford Geospatial Network (Trade Routes) [Bassin Méditerranéen & Proche-Orient, -300 BC à +500 AD]";
-            case 6 -> "ðŸŒ Terre â€” Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC à +1900 AD]";
-            case 7 -> "ðŸŒ Terre â€” HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC à +2023 AD]";
-            case 8 -> "ðŸŒ Terre â€” GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC à +2023 AD]";
+            case 0 -> "ðŸŒ Terre — Glottolog 4.8 / WALS Language Families [Global, -10 000 BC à Actuel (8 500+ Langues)]";
+            case 1 -> "ðŸŒ Terre — Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC à Actuel (1 267 Sociétés)]";
+            case 2 -> "ðŸŒ Terre — Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC à +1900 AD]";
+            case 3 -> "ðŸŒ Terre — Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / Amériques, -1000 BC à +2000 AD]";
+            case 4 -> "ðŸŒ Terre — ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC à +1850 AD]";
+            case 5 -> "ðŸŒ Terre — ORBIS Stanford Geospatial Network (Trade Routes) [Bassin Méditerranéen & Proche-Orient, -300 BC à +500 AD]";
+            case 6 -> "ðŸŒ Terre — Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC à +1900 AD]";
+            case 7 -> "ðŸŒ Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC à +2023 AD]";
+            case 8 -> "ðŸŒ Terre — GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC à +2023 AD]";
             default -> null;
         };
     }
@@ -5106,9 +5106,9 @@ private String getDefaultTensorName(int index) {
         combo.setMaxWidth(Double.MAX_VALUE);
         combo.getItems().addAll(
             "",
-            "ðŸŒ Terre â€” HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]",
-            "ðŸŒ Terre â€” Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]",
-            "ðŸŒ Terre â€” CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]",
+            "ðŸŒ Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]",
+            "ðŸŒ Terre — Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]",
+            "ðŸŒ Terre — CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]",
             "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation [Planétaire (Mars), +2050 AD à Futur]",
             "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km) [Planétaire (Vénus), +2100 AD à Futur]",
             "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton [Planétaire (Lune), +2040 AD à Futur]",
@@ -5140,89 +5140,89 @@ private String getDefaultTensorName(int index) {
         combo.getItems().add("");
         switch (tensorIdx) {
             case 0 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” Glottolog 4.8 / WALS Language Families [Global, -10 000 BC à Actuel (8 500+ Langues)]",
-                "ðŸŒ Terre â€” Ethnologue World Linguistic Tree [Global, -3000 BC à Actuel (7 100+ Langues)]",
-                "ðŸŒ Terre â€” Automated Phonological Distance Model (ASJP) [Global, -10 000 BC à Actuel (Macro-Familles)]",
+                "ðŸŒ Terre — Glottolog 4.8 / WALS Language Families [Global, -10 000 BC à Actuel (8 500+ Langues)]",
+                "ðŸŒ Terre — Ethnologue World Linguistic Tree [Global, -3000 BC à Actuel (7 100+ Langues)]",
+                "ðŸŒ Terre — Automated Phonological Distance Model (ASJP) [Global, -10 000 BC à Actuel (Macro-Familles)]",
                 "🔴 Mars — Cartographie Linguistique Coloniale Martienne [Planétaire (Mars), +2060 AD à Futur]",
                 "🟡 Vénus — Réseau Isogloss des Cités Aérostatiques [Planétaire (Vénus), +2120 AD à Futur]",
                 "⚪ Lune — Dialectes Sélénites des Stations Cratériques [Planétaire (Lune), +2050 AD à Futur]",
                 "⚪ Mercure — Protocoles Herméens & Terminologie d'Ombre [Planétaire (Mercure), +2160 AD à Futur]"
             );
             case 1 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC à Actuel (1 267 Sociétés)]",
-                "ðŸŒ Terre â€” Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC à Actuel (186 Cultures)]",
-                "ðŸŒ Terre â€” Clan & Lineage Structural Matrix (Seshat) [Global, -4000 BC à +1900 AD]",
+                "ðŸŒ Terre — Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC à Actuel (1 267 Sociétés)]",
+                "ðŸŒ Terre — Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC à Actuel (186 Cultures)]",
+                "ðŸŒ Terre — Clan & Lineage Structural Matrix (Seshat) [Global, -4000 BC à +1900 AD]",
                 "🔴 Mars — Structures de Parenté & Cohortes Pionnières [Planétaire (Mars), +2050 AD à Futur]",
                 "🟡 Vénus — Guildes & Lignages Technologiques Flottants [Planétaire (Vénus), +2100 AD à Futur]",
                 "⚪ Lune — Associations d'Équipages & Clans Sélénites [Planétaire (Lune), +2045 AD à Futur]",
                 "⚪ Mercure — Confréries de Maintenance & Lignages Thermiques [Planétaire (Mercure), +2150 AD à Futur]"
             );
             case 2 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC à +1900 AD]",
-                "ðŸŒ Terre â€” World Religion Database (WRD & Cultes) [Global, -3000 BC à +2020 AD]",
-                "ðŸŒ Terre â€” Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC à +2000 AD]",
+                "ðŸŒ Terre — Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC à +1900 AD]",
+                "ðŸŒ Terre — World Religion Database (WRD & Cultes) [Global, -3000 BC à +2020 AD]",
+                "ðŸŒ Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC à +2000 AD]",
                 "🔴 Mars — Mythologie Martienne & Cultes de la Frontière [Planétaire (Mars), +2060 AD à Futur]",
                 "🟡 Vénus — Rituels Solaires & Cérémonies de Nuages [Planétaire (Vénus), +2120 AD à Futur]",
                 "⚪ Lune — Philosophie Cosmique & Rituels du Clair de Terre [Planétaire (Lune), +2050 AD à Futur]",
                 "⚪ Mercure — Ordres d'Énergie & Croyances de Haute Radiation [Planétaire (Mercure), +2170 AD à Futur]"
             );
             case 3 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / Amériques, -1000 BC à +2000 AD]",
-                "ðŸŒ Terre â€” CShapes 2.0 Historical Polities & Borders [Global, 1886 AD à 2019 AD]",
-                "ðŸŒ Terre â€” GADM Administrative Sovereign Centers [Global, 1950 AD à Actuel]",
+                "ðŸŒ Terre — Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / Amériques, -1000 BC à +2000 AD]",
+                "ðŸŒ Terre — CShapes 2.0 Historical Polities & Borders [Global, 1886 AD à 2019 AD]",
+                "ðŸŒ Terre — GADM Administrative Sovereign Centers [Global, 1950 AD à Actuel]",
                 "🔴 Mars — Juridictions Consulaires & Traités Martiens [Planétaire (Mars), +2060 AD à Futur]",
                 "🟡 Vénus — Fédération des Stations Stratosphériques [Planétaire (Vénus), +2110 AD à Futur]",
                 "⚪ Lune — Secteurs Traité de l'Espace & Bases Nationales [Planétaire (Lune), +2050 AD à Futur]",
                 "⚪ Mercure — Domaines Miniers & Enclaves Polaires [Planétaire (Mercure), +2150 AD à Futur]"
             );
             case 4 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC à +1850 AD]",
-                "ðŸŒ Terre â€” Archaeological Material Culture Database [Global, -50 000 BC à +1500 AD]",
-                "ðŸŒ Terre â€” Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC à +2000 AD]",
+                "ðŸŒ Terre — ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC à +1850 AD]",
+                "ðŸŒ Terre — Archaeological Material Culture Database [Global, -50 000 BC à +1500 AD]",
+                "ðŸŒ Terre — Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC à +2000 AD]",
                 "🔴 Mars — Niveau Technologique Industriel & Robotique ISRU [Planétaire (Mars), +2050 AD à Futur]",
                 "🟡 Vénus — Synthèse Aérostatique & Ingénierie Acide [Planétaire (Vénus), +2100 AD à Futur]",
                 "⚪ Lune — Fonderies Régolithes & Extraction Sélénite [Planétaire (Lune), +2045 AD à Futur]",
                 "⚪ Mercure — Collecteurs Haute Énergie & Fours Directs [Planétaire (Mercure), +2150 AD à Futur]"
             );
             case 5 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” ORBIS Stanford Geospatial Network (Trade Routes) [Bassin Méditerranéen & Proche-Orient, -300 BC à +500 AD]",
-                "ðŸŒ Terre â€” Silk Road & Maritime Monsoon Corridors [Eurasie & Océan Indien, -500 BC à +1700 AD]",
-                "ðŸŒ Terre â€” Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC à +1800 AD]",
+                "ðŸŒ Terre — ORBIS Stanford Geospatial Network (Trade Routes) [Bassin Méditerranéen & Proche-Orient, -300 BC à +500 AD]",
+                "ðŸŒ Terre — Silk Road & Maritime Monsoon Corridors [Eurasie & Océan Indien, -500 BC à +1700 AD]",
+                "ðŸŒ Terre — Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC à +1800 AD]",
                 "🔴 Mars — Réseau Ferroviaire Maglev Sub-Surface [Planétaire (Mars), +2070 AD à Futur]",
                 "🟡 Vénus — Navettes Stratosphériques Inter-Stations [Planétaire (Vénus), +2110 AD à Futur]",
                 "⚪ Lune — Tunnels de Transport Magnétique Sélénite [Planétaire (Lune), +2050 AD à Futur]",
                 "⚪ Mercure — Réseau de Convois Électromagnétiques [Planétaire (Mercure), +2160 AD à Futur]"
             );
             case 6 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC à +1900 AD]",
-                "ðŸŒ Terre â€” Cross-National Time-Series Data (CNTS Bureaucracy) [Global, 1815 AD à 2022 AD]",
-                "ðŸŒ Terre â€” Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC à +1800 AD]",
+                "ðŸŒ Terre — Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC à +1900 AD]",
+                "ðŸŒ Terre — Cross-National Time-Series Data (CNTS Bureaucracy) [Global, 1815 AD à 2022 AD]",
+                "ðŸŒ Terre — Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC à +1800 AD]",
                 "🔴 Mars — Conseil Spatial & Chartes Constitutionnelles [Planétaire (Mars), +2060 AD à Futur]",
                 "🟡 Vénus — Syndicats Flottants & Corporations Aérostats [Planétaire (Vénus), +2110 AD à Futur]",
                 "⚪ Lune — Protocoles Légaux des Habitats Sélénites [Planétaire (Lune), +2050 AD à Futur]",
                 "⚪ Mercure — Administration Thermique & Urgences [Planétaire (Mercure), +2160 AD à Futur]"
             );
             case 7 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC à +2023 AD]",
-                "ðŸŒ Terre â€” Anthromes 2.0 Global Anthropogenic Biomes [Global, -8000 BC à +2000 AD]",
-                "ðŸŒ Terre â€” Malthusian Carrying Capacity Model [Global, -100 000 BC à +2100 AD]",
+                "ðŸŒ Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC à +2023 AD]",
+                "ðŸŒ Terre — Anthromes 2.0 Global Anthropogenic Biomes [Global, -8000 BC à +2000 AD]",
+                "ðŸŒ Terre — Malthusian Carrying Capacity Model [Global, -100 000 BC à +2100 AD]",
                 "🔴 Mars — Bioregenerative Life Support (BLSS) & Dégradation [Planétaire (Mars), +2050 AD à Futur]",
                 "🟡 Vénus — Érosion Chimique & Recyclage Fermé [Planétaire (Vénus), +2100 AD à Futur]",
                 "⚪ Lune — Épuisement des Volatils & Poussière Régolithe [Planétaire (Lune), +2045 AD à Futur]",
                 "⚪ Mercure — Usure Thermique & Contraintes Matérielles [Planétaire (Mercure), +2150 AD à Futur]"
             );
             case 8 -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC à +2023 AD]",
-                "ðŸŒ Terre â€” Global Infectious Disease Vector Database [Zones Tropicales & Tempérées, -1000 BC à +2020 AD]",
-                "ðŸŒ Terre â€” Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC à +2100 AD]",
+                "ðŸŒ Terre — GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC à +2023 AD]",
+                "ðŸŒ Terre — Global Infectious Disease Vector Database [Zones Tropicales & Tempérées, -1000 BC à +2020 AD]",
+                "ðŸŒ Terre — Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC à +2100 AD]",
                 "🔴 Mars — Microbiome Artificiel Confiné & Résistance [Planétaire (Mars), +2050 AD à Futur]",
                 "🟡 Vénus — Immunologie en Atmosphère Confinée [Planétaire (Vénus), +2110 AD à Futur]",
                 "⚪ Lune — Pathogènes d'Isolement & Régime Stérile [Planétaire (Lune), +2045 AD à Futur]",
                 "⚪ Mercure — Filtrage Radiatif & Microbiote Synthétique [Planétaire (Mercure), +2160 AD à Futur]"
             );
             default -> combo.getItems().addAll(
-                "ðŸŒ Terre â€” Seshat / Global Databank Substrate [Global, -5000 BC à +2000 AD]",
-                "ðŸŒ Terre â€” Historical Empirical Baseline [Global, -100 000 BP à Actuel]",
+                "ðŸŒ Terre — Seshat / Global Databank Substrate [Global, -5000 BC à +2000 AD]",
+                "ðŸŒ Terre — Historical Empirical Baseline [Global, -100 000 BP à Actuel]",
                 "🔴 Mars — Modèle Cartographique Martien Dérivé [Planétaire (Mars), +2050 AD à Futur]"
             );
         }
@@ -5341,7 +5341,7 @@ private String getDefaultTensorName(int index) {
         }
 
         if (img == null) {
-            fileLbl.setText(I18n.getOrDefault("scenario.tensor.file.none", "âš ï¸ Aucune carte chargÃ©e â€” Fichier requis en mode import"));
+            fileLbl.setText(I18n.getOrDefault("scenario.tensor.file.none", "⚠️ï¸ Aucune carte chargée — Fichier requis en mode import"));
             fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #f59e0b;");
             if (loadBtn != null) loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
             return;
@@ -5349,7 +5349,7 @@ private String getDefaultTensorName(int index) {
 
         org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
         if (!val.valid()) {
-            fileLbl.setText(String.format(I18n.getOrDefault("scenario.tensor.file.invalid", "âš ï¸ Carte incompatible : %s"), val.message()));
+            fileLbl.setText(String.format(I18n.getOrDefault("scenario.tensor.file.invalid", "⚠️ï¸ Carte incompatible : %s"), val.message()));
             fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
             if (loadBtn != null) loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
         } else {
@@ -5567,8 +5567,8 @@ private String getDefaultTensorName(int index) {
         // Helper subroutine: update cultural tensor sub block texts without full UI reconstruction
     private void updateCulturalTensorSubBlockTexts() {
         if (btnGenerateProceduralTensorsSection != null) {
-            btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "ðŸª„ RÃ©gÃ©nÃ©rer les Tenseurs"));
-            btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.regen_tensors", "Bascule tous les tenseurs en mode procÃ©dural et rÃ©gÃ©nÃ¨re les cartes selon les paramÃ¨tres et la graine stochastique.")));
+            btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "ðŸª„ Régénérer les Tenseurs"));
+            btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.regen_tensors", "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
         }
         int dims = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
         if (layersDynamicContainer == null || layersDynamicContainer.getChildren().size() != dims) {
@@ -5583,13 +5583,13 @@ private String getDefaultTensorName(int index) {
             }
             RadioButton radioProc = tensorProcRadios.get(i);
             if (radioProc != null) {
-                radioProc.setText(I18n.getOrDefault("scenario.mode.procedural_sde", "â–¶ Mode ProcÃ©dural (ParamÃ¨tres adaptatifs & Graine)"));
-                radioProc.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_radio_proc", "GÃ©nÃ¨re procÃ©duralement ce tenseur culturel via des Ã©quations stochastiques et les paramÃ¨tres ci-dessous.")));
+                radioProc.setText(I18n.getOrDefault("scenario.mode.procedural_sde", "▶️ Mode Procédural (Paramètres adaptatifs & Graine)"));
+                radioProc.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_radio_proc", "Génère procéduralement ce tenseur culturel via des équations stochastiques et les paramètres ci-dessous.")));
             }
             RadioButton radioImport = tensorImportRadios.get(i);
             if (radioImport != null) {
                 radioImport.setText(I18n.getOrDefault("scenario.mode.spatial_import", "ðŸ“‚ Importation Carte Spatiale (PNG / GeoJSON)"));
-                radioImport.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_radio_import", "Importe une image matricielle ou une couche SIG externe pour modÃ©liser ce tenseur culturel.")));
+                radioImport.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_radio_import", "Importe une image matricielle ou une couche SIG externe pour modéliser ce tenseur culturel.")));
             }
             Label srcLbl = tensorSourceLabels.get(i);
             if (srcLbl != null) {
@@ -5773,7 +5773,7 @@ private String getDefaultTensorName(int index) {
             btnLoad.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.load_cultural_tensor_map", "Ouvre un sélecteur de fichier pour importer une carte raster externe (PNG/GeoTIFF) pour ce tenseur.")));
             tensorLoadBtns.put(tensorIdx, btnLoad);
 
-            Button btnClear = new Button("âŒ");
+            Button btnClear = new Button("❌");
             btnClear.getStyleClass().add("button-secondary");
             btnClear.setStyle("-fx-font-size: 11px;");
             btnClear.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.clear_cultural_tensor_map", "Efface l'image importée et réinitialise le tenseur au mode procédural par défaut.")));
@@ -5970,7 +5970,7 @@ private String getDefaultTensorName(int index) {
             drawPreview();
         });
 
-        btnReliefOverlay = new ToggleButton(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "â›°ï¸ Relief"));
+        btnReliefOverlay = new ToggleButton(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛏️ï¸ Relief"));
         btnReliefOverlay.setSelected(false);
         btnReliefOverlay.getStyleClass().add("button-secondary");
         btnReliefOverlay.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
@@ -6247,7 +6247,7 @@ private String getDefaultTensorName(int index) {
         items.add(num++ + ". " + I18n.getOrDefault("scenario.preview.mode.energy",    "⚡ Initial Energy Stock E(x) [MJ/capita] (Derived)"));
         items.add(num++ + ". " + I18n.getOrDefault("scenario.preview.mode.food",      "🌾 Food Reserves F(x) [Months] (Derived)"));
         items.add(num++ + ". " + I18n.getOrDefault("scenario.preview.mode.info",      "🧠 Information Capital & Knowledge I(x) [Bits/capita] (Derived)"));
-        items.add(num++ + ". " + I18n.getOrDefault("scenario.preview.mode.footprint", "âš ï¸ Demographic Footprint & Malthusian Tension (Derived)"));
+        items.add(num++ + ". " + I18n.getOrDefault("scenario.preview.mode.footprint", "⚠️ï¸ Demographic Footprint & Malthusian Tension (Derived)"));
         items.add(num   + ". " + I18n.getOrDefault("scenario.preview.mode.friction",  "🧱 Border Friction Gradient σ_friction (Derived)"));
 
         previewModeCombo.getItems().setAll(items);
@@ -6272,7 +6272,7 @@ private String getDefaultTensorName(int index) {
             case 4 -> I18n.getOrDefault("scenario.tensor.5.preview", "ðŸº Tensor 5: Tooling, Materiality & Technologies (Artifacts)");
             case 5 -> I18n.getOrDefault("scenario.tensor.6.preview", "ðŸ« Tensor 6: Corridors & Trade Networks (Economic Routes)");
             case 6 -> I18n.getOrDefault("scenario.tensor.7.preview", "⚖ Tensor 7: Institutional Complexity & Norms (Seshat & Law)");
-            case 7 -> I18n.getOrDefault("scenario.tensor.8.preview", "âš ï¸ Tensor 8: Ecological Footprint & Malthusian Tension (Degradation)");
+            case 7 -> I18n.getOrDefault("scenario.tensor.8.preview", "⚠️ï¸ Tensor 8: Ecological Footprint & Malthusian Tension (Degradation)");
             case 8 -> I18n.getOrDefault("scenario.tensor.9.preview", "🧬 Tensor 9: Pathogen Immunity & Health Memory (Epidemiology)");
             default -> I18n.getOrDefault("scenario.tensor.custom.preview_prefix", "🧬 Tensor ") + (index + 1) + I18n.getOrDefault("scenario.tensor.custom.preview_mid", " : Cultural Substrate ") + (index + 1);
         };
@@ -6345,7 +6345,7 @@ private String getDefaultTensorName(int index) {
                     Color.rgb(56, 189, 248), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(167, 139, 250)
                 };
                 labels = new String[]{
-                    I18n.getOrDefault("setup.legend.kinship.0", "Famille NuclÃ©aire (Câ‚=0)"),
+                    I18n.getOrDefault("setup.legend.kinship.0", "Famille Nucléaire (Câ‚=0)"),
                     I18n.getOrDefault("setup.legend.kinship.1", "Lignée Élargie (0.25)"),
                     I18n.getOrDefault("setup.legend.kinship.2", "Matriarcat Lacustre (0.50)"),
                     I18n.getOrDefault("setup.legend.kinship.3", "Patriarcat Hiérarchique (0.75)"),
@@ -6687,14 +6687,14 @@ private String getDefaultTensorName(int index) {
         if (customDensityImage != null) {
             org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage);
             if (!val.valid()) {
-                demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_invalid", "âš ï¸ Carte dÃ©mographique incompatible : %s"), val.message()));
+                demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_invalid", "⚠️ï¸ Carte démographique incompatible : %s"), val.message()));
                 demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
             } else {
                 demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_loaded", "✅ Map loaded and compatible with selected Tab 1 world (%s)"), planetName));
                 demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
             }
         } else {
-            demoCompatibilityLabel.setText(I18n.getOrDefault("scenario.demo.no_map", "ðŸª No external map loaded â€” Procedural mode active"));
+            demoCompatibilityLabel.setText(I18n.getOrDefault("scenario.demo.no_map", "ðŸª No external map loaded — Procedural mode active"));
             demoCompatibilityLabel.getStyleClass().add("subcard-status-muted");
             demoCompatibilityLabel.setStyle("-fx-font-size: 11px;");
         }
@@ -7211,7 +7211,7 @@ private String getDefaultTensorName(int index) {
             // Text tag
             gc.setFill(Color.rgb(56, 189, 248));
             gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 11));
-            gc.fillText(String.format("âœ‚ï¸ Zone: Lat[%.1fÂ°, %.1fÂ°] Lng[%.1fÂ°, %.1fÂ°]", cMinLat, cMaxLat, cMinLng, cMaxLng), rx + 4, ry - 6);
+            gc.fillText(String.format("✂️ï¸ Zone: Lat[%.1f°, %.1f°] Lng[%.1f°, %.1f°]", cMinLat, cMaxLat, cMinLng, cMaxLng), rx + 4, ry - 6);
         }
         updateMapInfoSummary();
     }
@@ -7309,7 +7309,7 @@ private String getDefaultTensorName(int index) {
             if (count == 0) { minVal = 0.0; maxVal = 1.0; }
 
             previewStatusLabel.setText(String.format(
-                I18n.getOrDefault("scenario.map_info.tensor", "âš™ï¸ Mode : %s  |  📊 Dispersion : μ=%.2f Â± %.2f [min=%.2f, max=%.2f]  |  🌀 Diffusion D=%.3f  |  🎲 Bruit=%.3f"),
+                I18n.getOrDefault("scenario.map_info.tensor", "⚙️ï¸ Mode : %s  |  📊 Dispersion : μ=%.2f ± %.2f [min=%.2f, max=%.2f]  |  🌀 Diffusion D=%.3f  |  🎲 Bruit=%.3f"),
                 modeStr, mean, stdDev, minVal, maxVal, diff, mut
             ));
         } else {
@@ -7930,7 +7930,7 @@ private String getDefaultTensorName(int index) {
 
                 // Apply Geographical Clipping if enabled (78% -> 85%)
                 if (isClippingActive) {
-                    updateProgress(0.80, I18n.getOrDefault("scenario.progress.clipping", "âœ‚ï¸ Applying geographical clipping & boundary conditions (80%)..."));
+                    updateProgress(0.80, I18n.getOrDefault("scenario.progress.clipping", "✂️ï¸ Applying geographical clipping & boundary conditions (80%)..."));
 
                     double marginLat = Math.max(1.0, (cMaxLat - cMinLat) * 0.08);
                     double marginLng = Math.max(1.0, (cMaxLng - cMinLng) * 0.08);
@@ -7998,7 +7998,7 @@ private String getDefaultTensorName(int index) {
                     updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelled", "🛑 Computation cancelled by user."));
                 } else {
                     logger.error("Error during deferred H3 cell calculation", ex);
-                    updateProgress(1.0, String.format(I18n.getOrDefault("scenario.progress.error", "âŒ Error during computation: %s"), ex.getMessage()));
+                    updateProgress(1.0, String.format(I18n.getOrDefault("scenario.progress.error", "❌ Error during computation: %s"), ex.getMessage()));
                 }
                 resetStartButtonState();
             } finally {
@@ -8597,8 +8597,8 @@ private String getDefaultTensorName(int index) {
             updateEngineTexts();
             if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "ðŸŒ EPOCH & SPATIOTEMPORAL DEFINITION"));
             if (cultureHeader != null) cultureHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.culture_section", "🧠 CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
-            if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "âœ‚ï¸ BORDERS & HISTORICAL SPATIAL CLIPPING"));
-            if (oceanOptHeader != null) oceanOptHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.ocean_opt.header", "âš™ï¸ ENGINE ARCHITECTURE & OPTIMIZATIONS (ETHER CORE & OPTIONAL)"));
+            if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ï¸ BORDERS & HISTORICAL SPATIAL CLIPPING"));
+            if (oceanOptHeader != null) oceanOptHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.ocean_opt.header", "⚙️ï¸ ENGINE ARCHITECTURE & OPTIMIZATIONS (ETHER CORE & OPTIONAL)"));
             if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "ðŸŒªï¸ HISTORICAL PLANETARY EVENTS & CLIMATE DRIFTS"));
             if (snapshotHeader != null) snapshotHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 7. RESUME FROM EXISTING SNAPSHOT (PREVIOUS SESSION)"));
             if (radioNewSimulation != null) {
@@ -8610,7 +8610,7 @@ private String getDefaultTensorName(int index) {
                 radioResumeSnapshot.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_snapshot.tooltip", "Load a previously saved physical state or periodic checkpoint directly into memory.")));
             }
             if (snapshotExplainBtn != null) {
-                snapshotExplainBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.snapshot_explain", "â„¹ï¸ What is a Snapshot? (Explanations & Mechanics)"));
+                snapshotExplainBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.snapshot_explain", "ℹ️ï¸ What is a Snapshot? (Explanations & Mechanics)"));
                 snapshotExplainBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.snapshot_explain", "Open detailed technical guide explaining physical state capture, rolling checkpoints, and multiverse branching.")));
             }
             if (snapshotRefreshBtn != null) {
@@ -8688,7 +8688,7 @@ private String getDefaultTensorName(int index) {
                 btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.regen_tensors", "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
             }
             if (btnReliefOverlay != null) {
-                btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "â›°ï¸ Relief"));
+                btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛏️ï¸ Relief"));
                 btnReliefOverlay.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
             }
             updatePreviewModesCombo();
@@ -8753,7 +8753,7 @@ private String getDefaultTensorName(int index) {
             if (engineSortCombo != null) {
                 int selIdx = engineSortCombo.getSelectionModel().getSelectedIndex();
                 engineSortCombo.getItems().setAll(
-                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "âš™ï¸ System Order (By Category)"),
+                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "⚙️ï¸ System Order (By Category)"),
                     org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_asc", "📅 Chronological Sort (Oldest → Newest)"),
                     org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_desc", "📅 Reverse Chronological Sort (Newest → Oldest)"),
                     org.ether.society.i18n.I18n.getOrDefault("scenario.sort.alpha_asc", "🔤 Alphabetical Sort (A - Z)")

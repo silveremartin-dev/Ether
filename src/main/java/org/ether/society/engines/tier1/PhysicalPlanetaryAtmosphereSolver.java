@@ -26,9 +26,9 @@ import org.ether.society.data.WorldClimEmpiricalRasterLoader;
 public class PhysicalPlanetaryAtmosphereSolver {
 
     public record PlanetaryClimateResult(
-        float[][] temperatureGrid,   // Â°C
+        float[][] temperatureGrid,   // °C
         float[][] precipitationGrid, // mm/year
-        float[][] seasonalityGrid,   // Â°C annual range
+        float[][] seasonalityGrid,   // °C annual range
         int[][] biomeGrid           // RGB biome color
     ) {}
 
@@ -75,7 +75,7 @@ public class PhysicalPlanetaryAtmosphereSolver {
                 double insolFrac = Math.pow(Math.cos(Math.toRadians(absLat)), 1.2);
                 double t = basePoleT + (baseEquatorT - basePoleT) * insolFrac;
 
-                // Adiabatic Lapse Rate (-6.5Â°C/km on land)
+                // Adiabatic Lapse Rate (-6.5°C/km on land)
                 if (isLand && elev > 0) {
                     t -= 0.0065 * elev;
                 }
@@ -88,7 +88,7 @@ public class PhysicalPlanetaryAtmosphereSolver {
                 double deltaInsol = Math.abs(insolSummer - insolWinter) * (baseEquatorT - basePoleT) * 0.65;
 
                 if (!isLand && oceanCoverage > 0.05) {
-                    // Ocean thermal inertia dampens seasonal amplitude strongly (2Â°C to 7Â°C)
+                    // Ocean thermal inertia dampens seasonal amplitude strongly (2°C to 7°C)
                     season[y][x] = (float) Math.clamp(2.0 + deltaInsol * 0.15, 1.5, 8.0);
                 } else {
                     // Continental land experiences large seasonal amplitude
@@ -99,7 +99,7 @@ public class PhysicalPlanetaryAtmosphereSolver {
         }
 
         // 2. Wind Vectors & 2D Moisture Advection
-        // Wind field: Trade Winds (0-30Â°: East to West), Westerlies (30-60Â°: West to East), Polar Easterlies (60-90Â°: East to West)
+        // Wind field: Trade Winds (0-30°: East to West), Westerlies (30-60°: West to East), Polar Easterlies (60-90°: East to West)
         double[][] uWind = new double[height][width]; // zonal wind (Eastward > 0)
         double[][] vWind = new double[height][width]; // meridional wind (Northward > 0)
 
@@ -199,10 +199,10 @@ public class PhysicalPlanetaryAtmosphereSolver {
                     // Deep Tropical ITCZ Convection (Hadley cell convergence, Amazon / Congo / SE Asia)
                     double itczConvection = 2200.0 * Math.exp(-(absLat * absLat) / 140.0) * Math.clamp((temp[y][x] - 15.0) / 12.0, 0.0, 1.0);
 
-                    // Mid-latitude storm track frontal precipitation (45Â° to 60Â°)
+                    // Mid-latitude storm track frontal precipitation (45° to 60°)
                     double stormTrack = 750.0 * Math.exp(-Math.pow(absLat - 52.0, 2) / 100.0);
 
-                    // Subtropical Hadley Arid Subsidence Desiccation (20Â° to 32Â°)
+                    // Subtropical Hadley Arid Subsidence Desiccation (20° to 32°)
                     double hadleyDesiccation = Math.exp(-Math.pow(absLat - 25.0, 2) / 60.0);
 
                     if (!isLand) {

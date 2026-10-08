@@ -24,7 +24,6 @@ public class ProceduralLeaderGenerator {
     private static final String[] LEADER_TITLES_HYDRAULIC = {"Maître des Eaux", "Ingénieur Agraire", "Canalisateur", "Pionnier des Moissons"};
     private static final String[] LEADER_TITLES_SAGE = {"Prophète", "Sage Éclairé", "Patriarche", "Guide Spirituel", "Maître Moral"};
     private static final String[] LEADER_TITLES_PURGER = {"Autocrate", "Inquisiteur", "Purificateur", "Dictateur Central", "Commandeur"};
-    private static final String[] LEADER_TITLES_CHRONICLER = {"Philosophe", "Chroniqueur Historique", "Grand Érudit", "Astronome Royal", "Archiviste Suprême"};
 
     /*
      * Set seed.
@@ -87,15 +86,9 @@ public class ProceduralLeaderGenerator {
         // Determine Archetype based on local physical and sociological state
         LeaderArchetype archetype = determineArchetype(originCell);
 
-        // Active executive leaders have high magnitude (5.0 to 9.5); informative chroniclers/sages have moderate cultural magnitude (2.0 to 4.5)
-        double magnitude;
-        if (archetype.isExecutiveLeader()) {
-            double rawMag = 5.5 + (random.nextGaussian() * 1.2) + (random.nextDouble() * 2.0);
-            magnitude = Math.max(4.5, Math.min(10.0, rawMag));
-        } else {
-            double rawMag = 2.5 + (random.nextDouble() * 2.0);
-            magnitude = Math.max(1.5, Math.min(5.0, rawMag));
-        }
+        // Emergent leaders have substantial societal magnitude (5.0 to 9.5) to test the Great Man hypothesis
+        double rawMag = 5.5 + (random.nextGaussian() * 1.2) + (random.nextDouble() * 2.0);
+        double magnitude = Math.max(5.0, Math.min(9.5, rawMag));
 
         int duration = (int) (archetype.getDefaultDurationYears() * (0.7 + (random.nextDouble() * 0.6)));
         double radiusKm = 300.0 + (magnitude * 150.0);
@@ -137,13 +130,12 @@ public class ProceduralLeaderGenerator {
             if (r < 0.70) return LeaderArchetype.MORAL_RELIGIOUS_SAGE;
         }
 
-        // Balanced distribution across all archetypes including intellectual chroniclers
-        if (r < 0.18) return LeaderArchetype.MILITARY_CONQUEROR;
-        if (r < 0.35) return LeaderArchetype.INFRASTRUCTURE_BUILDER;
-        if (r < 0.52) return LeaderArchetype.INSTITUTIONAL_REFORMER;
-        if (r < 0.68) return LeaderArchetype.HYDRAULIC_AGRARIAN_INNOVATOR;
-        if (r < 0.82) return LeaderArchetype.MORAL_RELIGIOUS_SAGE;
-        if (r < 0.92) return LeaderArchetype.INTELLECTUAL_CHRONICLER;
+        // Balanced distribution across the 6 historical governance archetypes
+        if (r < 0.20) return LeaderArchetype.MILITARY_CONQUEROR;
+        if (r < 0.38) return LeaderArchetype.INFRASTRUCTURE_BUILDER;
+        if (r < 0.56) return LeaderArchetype.INSTITUTIONAL_REFORMER;
+        if (r < 0.74) return LeaderArchetype.HYDRAULIC_AGRARIAN_INNOVATOR;
+        if (r < 0.88) return LeaderArchetype.MORAL_RELIGIOUS_SAGE;
         return LeaderArchetype.TOTALITARIAN_PURGER;
     }
 
@@ -158,7 +150,6 @@ public class ProceduralLeaderGenerator {
             case HYDRAULIC_AGRARIAN_INNOVATOR -> LEADER_TITLES_HYDRAULIC[random.nextInt(LEADER_TITLES_HYDRAULIC.length)];
             case MORAL_RELIGIOUS_SAGE -> LEADER_TITLES_SAGE[random.nextInt(LEADER_TITLES_SAGE.length)];
             case TOTALITARIAN_PURGER -> LEADER_TITLES_PURGER[random.nextInt(LEADER_TITLES_PURGER.length)];
-            case INTELLECTUAL_CHRONICLER -> LEADER_TITLES_CHRONICLER[random.nextInt(LEADER_TITLES_CHRONICLER.length)];
         });
     }
 }

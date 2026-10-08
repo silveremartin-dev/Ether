@@ -19,7 +19,7 @@ import java.util.List;
  * 1. <b>Practical Salinity Units (PSU)</b>: Baseline oceanic salinity (35.0 PSU).
  * 2. <b>Polar Ice Melt Dilution</b>: Polar ice cap melting dilutes ocean water density.
  * 3. <b>Thermohaline AMOC Collapse</b>: When polar ocean salinity drops below 32.0 PSU, deep-water convection halts,
- *    causing an 8.0Â°C cooling shock across mid-to-high latitude cells.
+ *    causing an 8.0°C cooling shock across mid-to-high latitude cells.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -55,10 +55,10 @@ public class ThermohalineOceanEngine {
                 continue;
             }
 
-            // AMOC collapse cooling shock on high latitude cells (> 45Â° latitude)
+            // AMOC collapse cooling shock on high latitude cells (> 45° latitude)
             if (amocCollapsed && cell.getLatitude() != null && Math.abs(cell.getLatitude()) > 45.0) {
                 double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 10.0;
-                cell.setTemperature(currentTemp - 8.0); // 8Â°C thermal drop
+                cell.setTemperature(currentTemp - 8.0); // 8°C thermal drop
             }
         }
     }

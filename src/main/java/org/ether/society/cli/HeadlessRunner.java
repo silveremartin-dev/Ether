@@ -674,7 +674,7 @@ public class HeadlessRunner {
         System.out.println("  --simd, --vector                              Force Java 21 Incubator Vector SIMD Engine");
         System.out.println("  --cpu, --cpu-jit                              Force Pure CPU Java JIT Engine");
         System.out.println("  --safe, --fallback                            Force Software Safe Fallback (Single-Thread SW)");
-        System.out.println("\nâš™ï¸ [Tab 4] Threading & Core Allocation Options:");
+        System.out.println("\n⚙️ï¸ [Tab 4] Threading & Core Allocation Options:");
         System.out.println("  --single-core, --monocoeur                    Run in single-threaded / single-core mode");
         System.out.println("  --multi-core, --multicoeur                    Run in parallel multi-core mode (all available CPUs)");
         System.out.println("  --threads=<N>, --cores=<N>                    Explicitly allocate N CPU worker threads");

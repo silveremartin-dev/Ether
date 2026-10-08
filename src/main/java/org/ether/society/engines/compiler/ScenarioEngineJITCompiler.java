@@ -42,12 +42,12 @@ public class ScenarioEngineJITCompiler {
      * Performs static conflict analysis, AST reduction, constant folding, and Kernel Fusion.
      */
     public CompiledEngineKernel compile() {
-        logger.info("âš™ï¸ Starting Scenario Engine JIT Compilation & AST Reduction...");
+        logger.info("⚙️ï¸ Starting Scenario Engine JIT Compilation & AST Reduction...");
 
         // 1. Static Conflict Analysis
         this.conflictReport = EngineConflictAnalyzer.analyze(descriptors);
         if (conflictReport.hasIncompatibilities()) {
-            logger.warn("âš ï¸ Severe model incompatibilities detected during scenario JIT compilation:\n{}", conflictReport.generateSummary());
+            logger.warn("⚠️ï¸ Severe model incompatibilities detected during scenario JIT compilation:\n{}", conflictReport.generateSummary());
         } else {
             logger.info("âœ… Static analysis completed cleanly:\n{}", conflictReport.generateSummary());
         }

@@ -61,7 +61,7 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
     public String getEquationsTooltip() {
         return """
                [W. Brian Arthur Combinatorial Evolution (The Nature of Technology 2009)]
-               â€¢ Combinatorial Space: |Combinations| = C(N_primitives, 2) âˆ N^2
+               • Combinatorial Space: |Combinations| = C(N_primitives, 2) âˆ N^2
                • Emergence Rate:      dTech/dt = μ_comb · (Tech_level)^1.25 · (Capital_R&D / Pop)^0.5
                • Autocatalysis:       Every new invention becomes a candidate building block for future inventions.
                Units: Tech [niveau technologique sans dimension], Capital_R&D [Joules / $]

@@ -64,7 +64,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         logger.info("=========================================================================================");
         int passCount = 0;
         for (BenchmarkResult r : results) {
-            String status = r.passed() ? "âœ… PASSED" : "âŒ FAILED";
+            String status = r.passed() ? "âœ… PASSED" : "❌ FAILED";
             logger.info(String.format("• %-36s | %-16s | Res %d | Δt %3.0fd | r: %6.4f | MAPE: %5.2f%% | ΔR: %5.1f km | %s",
                     r.scenarioName(), r.boundaryMode(), r.spatialResolution(), r.timeStepDays(),
                     r.pearsonCorrelation(), r.coreMAPE() * 100, r.centroidShiftKm(), status));
@@ -998,7 +998,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         for (BenchmarkResult r : results) {
             sb.append(String.format("| %s | %s | %s | %d | %.0fd | **%.4f** | **%.2f%%** | **%.1f km** | **%.2f** | %s |\n",
                     r.scenarioName(), r.benchmarkCategory(), r.boundaryMode(), r.spatialResolution(), r.timeStepDays(),
-                    r.pearsonCorrelation(), r.coreMAPE() * 100, r.centroidShiftKm(), r.boundaryReflectionIndex(), r.passed() ? "âœ… PASSED" : "âŒ FAILED"));
+                    r.pearsonCorrelation(), r.coreMAPE() * 100, r.centroidShiftKm(), r.boundaryReflectionIndex(), r.passed() ? "âœ… PASSED" : "❌ FAILED"));
         }
         sb.append("\n## 2. Comparative Boundary Regime Analysis\n\n");
         sb.append("1. **DYNAMIC_RESERVOIR (Quadratic Sponge Layer)**:\n");

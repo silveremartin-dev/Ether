@@ -41,7 +41,7 @@ public class SimulationReportGenerator {
         var cells = engine != null ? engine.getCells() : null;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("# ðŸŒ Ether - Rapport d'Ã‰valuation Cliodynamique & Thermodynamique\n\n");
+        sb.append("# ðŸŒ Ether - Rapport d'Évaluation Cliodynamique & Thermodynamique\n\n");
         sb.append("**Année de Simulation :** ").append(year).append("\n");
         sb.append("**Nombre de Cellules Actives :** ").append(cells != null ? cells.size() : 0).append("\n\n");
 

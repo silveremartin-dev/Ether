@@ -58,6 +58,7 @@ public class EventSystem {
     private final List<ActiveEvent> activeEvents = new CopyOnWriteArrayList<>();
     private final List<ActiveEvent> recentEventsHistory = new CopyOnWriteArrayList<>();
     private final List<ActiveEvent> chronicleHistory = new CopyOnWriteArrayList<>();
+    private org.ether.society.model.ScenarioTimeline timeline;
 
     /*
      * Event system.
@@ -248,6 +249,38 @@ public class EventSystem {
         while (chronicleHistory.size() > 500) {
             chronicleHistory.remove(0);
         }
+        if (timeline != null) {
+            timeline.addEntry(
+                event.getYear(),
+                event.getType() != null ? event.getType() : "SPATIAL_EVENT",
+                event.getTitle() != null ? event.getTitle() : "Event",
+                event.getTitle() != null ? event.getTitle() : "",
+                false,
+                event.getLatitude(),
+                event.getLongitude(),
+                event.getMagnitude(),
+                Math.max(1, event.getDurationDays())
+            );
+        }
+    }
+
+    /*
+     * Get scenario timeline.
+     *
+     * @return the active scenario timeline reference or null
+     */
+    public org.ether.society.model.ScenarioTimeline getTimeline() {
+        return timeline;
+    }
+
+    /*
+     * Set scenario timeline.
+     * Enforces continuous chronological logging and audit trail persistence.
+     *
+     * @param timeline the active scenario timeline to record simulation events to
+     */
+    public void setTimeline(org.ether.society.model.ScenarioTimeline timeline) {
+        this.timeline = timeline;
     }
 
     /*
@@ -459,7 +492,7 @@ public class EventSystem {
                     H3Cell snapCell = findBestPopulatedOrLandCellNear(cells, hi.getLatitude(), hi.getLongitude());
                     double sLat = snapCell != null ? snapCell.getLatitude() : hi.getLatitude();
                     double sLng = snapCell != null ? snapCell.getLongitude() : hi.getLongitude();
-                    String tagPrefix = hi.getArchetype().isExecutiveLeader() ? "👑 LEADER & DIRIGEANT" : "📜 FIGURE & CHRONIQUE";
+                    String tagPrefix = "👑 LEADER HISTORIQUE";
                     ActiveEvent ae = new ActiveEvent(
                         hi.getId(),
                         tagPrefix + " [Mag. " + String.format(Locale.ROOT, "%.1f", hi.getMagnitude()) + "] : " + hi.getName() + " (" + hi.getArchetype().getDisplayName() + ")",
@@ -477,7 +510,7 @@ public class EventSystem {
             if (procLeader != null && !firedInterventionIds.contains(procLeader.getId())) {
                 activeInterventions.add(procLeader);
                 firedInterventionIds.add(procLeader.getId());
-                String tagPrefix = procLeader.getArchetype().isExecutiveLeader() ? "👑 ÉMERGENCE DIRIGEANT" : "📜 PENSEUR & CHRONIQUE";
+                String tagPrefix = "👑 ÉMERGENCE DIRIGEANT";
                 ActiveEvent ae = new ActiveEvent(
                     procLeader.getId(),
                     tagPrefix + " [Mag. " + String.format(Locale.ROOT, "%.1f", procLeader.getMagnitude()) + "] : " + procLeader.getName() + " (" + procLeader.getArchetype().getDisplayName() + ")",

@@ -15,9 +15,9 @@ import java.util.List;
 /**
  * Wet-Bulb Temperature (T_wb) & Human Hyperthermia Limit Engine.
  * Models:
- * 1. <b>Magnus-Tetens Dew Point (T_d in Â°C)</b>: Dew point calculation from dry-bulb temperature (T) and relative humidity (RH).
- * 2. <b>Stull Wet-Bulb Temperature Formula (T_wb in Â°C)</b>.
- * 3. <b>Thermodynamic Hyperthermia Lethality</b>: T_wb â‰¥ 35.0Â°C causes 100% human mortality due to physical impossibility of evaporative cooling.
+ * 1. <b>Magnus-Tetens Dew Point (T_d in °C)</b>: Dew point calculation from dry-bulb temperature (T) and relative humidity (RH).
+ * 2. <b>Stull Wet-Bulb Temperature Formula (T_wb in °C)</b>.
+ * 3. <b>Thermodynamic Hyperthermia Lethality</b>: T_wb â‰¥ 35.0°C causes 100% human mortality due to physical impossibility of evaporative cooling.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -26,11 +26,11 @@ public class WetBulbTemperatureEngine {
     private static final Logger logger = LoggerFactory.getLogger(WetBulbTemperatureEngine.class);
 
     /*
-     * Calculates Stull Wet-Bulb Temperature (T_wb in Â°C) from Dry-Bulb Temperature T (Â°C) and Relative Humidity RH (%).
+     * Calculates Stull Wet-Bulb Temperature (T_wb in °C) from Dry-Bulb Temperature T (°C) and Relative Humidity RH (%).
      *
-     * @param tempC Dry-bulb temperature in Â°C
+     * @param tempC Dry-bulb temperature in °C
      * @param relativeHumidityPercent Relative humidity (0 to 100)
-     * @return Wet-bulb temperature in Â°C
+     * @return Wet-bulb temperature in °C
      */
     public static double calculateWetBulbTemperatureStull(double tempC, double relativeHumidityPercent) {
         // Phase 1: Invariant state validation and environmental boundary initialization
@@ -64,7 +64,7 @@ public class WetBulbTemperatureEngine {
 
             double wetBulbTempC = calculateWetBulbTemperatureStull(tempC, rh);
 
-            // Hyperthermia lethality limit (T_wb >= 35.0Â°C)
+            // Hyperthermia lethality limit (T_wb >= 35.0°C)
             if (wetBulbTempC >= 35.0 && cell.getPopulation() != null && cell.getPopulation() > 0) {
                 hyperthermiaCasualties++;
                 int pop = cell.getPopulation();
@@ -74,7 +74,7 @@ public class WetBulbTemperatureEngine {
         }
 
         if (hyperthermiaCasualties > 0) {
-            logger.warn("Wet-Bulb Engine: Lethal hyperthermia event (T_wb >= 35Â°C) affecting {} populated cells.", hyperthermiaCasualties);
+            logger.warn("Wet-Bulb Engine: Lethal hyperthermia event (T_wb >= 35°C) affecting {} populated cells.", hyperthermiaCasualties);
         }
     }
 }

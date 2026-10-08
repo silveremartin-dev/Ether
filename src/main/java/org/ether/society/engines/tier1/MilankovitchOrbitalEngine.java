@@ -31,7 +31,7 @@ import java.util.List;
 public class MilankovitchOrbitalEngine {
     private static final Logger logger = LoggerFactory.getLogger(MilankovitchOrbitalEngine.class);
 
-    /* Solar Constant TOA in W/mÂ² */
+    /* Solar Constant TOA in W/m² */
     public static final double SOLAR_CONSTANT_TOA_W_M2 = 1361.0;
 
     /* Mean orbital eccentricity baseline */
@@ -78,12 +78,12 @@ public class MilankovitchOrbitalEngine {
     }
 
     /*
-     * Computes daily average TOA insolation (W/mÂ²) for a given latitude and day of year.
+     * Computes daily average TOA insolation (W/m²) for a given latitude and day of year.
      *
      * @param latDeg Latitude in degrees [-90, +90]
      * @param dayOfYear Day of year [1, 365]
      * @param params MilankovitchParameters
-     * @return Daily average insolation in W/mÂ²
+     * @return Daily average insolation in W/m²
      */
     public static double calculateDailyInsolation(double latDeg, int dayOfYear, MilankovitchParameters params) {
         // Phase 1: Invariant state validation and environmental boundary initialization
@@ -123,12 +123,12 @@ public class MilankovitchOrbitalEngine {
 
         MilankovitchParameters params = computeOrbitalParameters(currentYear);
 
-        // Compute high-latitude summer insolation anomaly (65Â°N at summer solstice day 172)
+        // Compute high-latitude summer insolation anomaly (65°N at summer solstice day 172)
         double refInsolation65N = calculateDailyInsolation(65.0, 172, new MilankovitchParameters(MEAN_ECCENTRICITY, MEAN_OBLIQUITY_DEG, 0.0));
         double curInsolation65N = calculateDailyInsolation(65.0, 172, params);
         double anomalyW_M2 = curInsolation65N - refInsolation65N;
 
-        // Radiative forcing scaling: ~0.08 Â°C per W/mÂ² of 65Â°N summer insolation anomaly
+        // Radiative forcing scaling: ~0.08 °C per W/m² of 65°N summer insolation anomaly
         double globalTempShiftC = anomalyW_M2 * 0.08;
 
         for (H3Cell cell : cells) {

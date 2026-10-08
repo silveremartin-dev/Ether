@@ -31,7 +31,7 @@ import jakarta.persistence.*;
 
 /**
  * Represents density data for a specific resource in an H3 cell.
- * Stores quantities in gigajoules per kmÂ² for energy-based resources.
+ * Stores quantities in gigajoules per km² for energy-based resources.
  *
  * <p>
  * Resource categories:
@@ -91,7 +91,7 @@ public class DensityMap {
     private String resourceType;
 
     /*
-     * Density value in gigajoules per kmÂ² (or count/kmÂ² for population).
+     * Density value in gigajoules per km² (or count/km² for population).
      */
     @Column(nullable = false)
     private Double densityValue;

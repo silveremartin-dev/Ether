@@ -34,22 +34,22 @@ public class GlacialThermodynamicMeltEngine {
     /* Latent heat of ice fusion in J/kg */
     public static final double LATENT_HEAT_OF_FUSION_J_KG = 333550.0;
 
-    /* Density of pure glacial ice in kg/mÂ³ */
+    /* Density of pure glacial ice in kg/m³ */
     public static final double ICE_DENSITY_KG_M3 = 917.0;
 
-    /* Density of liquid water in kg/mÂ³ */
+    /* Density of liquid water in kg/m³ */
     public static final double WATER_DENSITY_KG_M3 = 1000.0;
 
-    /* Total planetary ocean surface area in mÂ² (~3.61 x 10^14 mÂ²) */
+    /* Total planetary ocean surface area in m² (~3.61 x 10^14 m²) */
     public static final double GLOBAL_OCEAN_AREA_M2 = 3.61e14;
 
-    /* PDD thermal exchange factor (W / (mÂ² Â· K)) */
+    /* PDD thermal exchange factor (W / (m² Â· K)) */
     public static final double PDD_HEAT_TRANSFER_COEFF = 9.8;
 
     /*
      * Computes glacial melt depth (in meters of ice) for a given surface temperature and time step.
      *
-     * @param surfaceTempC Surface temperature in Â°C
+     * @param surfaceTempC Surface temperature in °C
      * @param deltaYears Time step in years
      * @return Ice melt depth in meters
      */
@@ -64,10 +64,10 @@ public class GlacialThermodynamicMeltEngine {
         double totalSeconds = deltaYears * 365.25 * 86400.0;
         double netThermalEnergyJoulesPerM2 = PDD_HEAT_TRANSFER_COEFF * surfaceTempC * totalSeconds;
 
-        // Mass melted per mÂ²: kg/mÂ² = J/mÂ² / (J/kg)
+        // Mass melted per m²: kg/m² = J/m² / (J/kg)
         double massMeltedKgPerM2 = netThermalEnergyJoulesPerM2 / LATENT_HEAT_OF_FUSION_J_KG;
 
-        // Ice depth: m = (kg/mÂ²) / (kg/mÂ³)
+        // Ice depth: m = (kg/m²) / (kg/m³)
         return massMeltedKgPerM2 / ICE_DENSITY_KG_M3;
     }
 
@@ -97,7 +97,7 @@ public class GlacialThermodynamicMeltEngine {
                 double meltDepthM = calculateGlacialMeltDepthMeters(tempC, deltaYears);
                 if (meltDepthM > 0.0) {
                     activeGlacialCells++;
-                    // Typical H3 cell area at Res 3 is ~11,000 kmÂ² = 1.1 x 10^10 mÂ²
+                    // Typical H3 cell area at Res 3 is ~11,000 km² = 1.1 x 10^10 m²
                     double cellAreaM2 = 1.1e10;
                     double cellMeltMassKg = meltDepthM * ICE_DENSITY_KG_M3 * cellAreaM2;
                     totalMeltedMassKg += cellMeltMassKg;

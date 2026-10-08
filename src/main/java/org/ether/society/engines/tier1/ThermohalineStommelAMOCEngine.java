@@ -38,7 +38,7 @@ import java.util.List;
 public class ThermohalineStommelAMOCEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermohalineStommelAMOCEngine.class);
 
-    /* Reference seawater density in kg/mÂ³ */
+    /* Reference seawater density in kg/m³ */
     public static final double SEAWATER_REF_DENSITY_KG_M3 = 1025.0;
 
     /* Seawater thermal expansion coefficient (1/K) */
@@ -47,7 +47,7 @@ public class ThermohalineStommelAMOCEngine {
     /* Seawater haline contraction coefficient (1/PSU) */
     public static final double BETA_HALINE = 7.5e-4;
 
-    /* Baseline North Atlantic Overturning strength in Sverdrups (10^6 mÂ³/s) */
+    /* Baseline North Atlantic Overturning strength in Sverdrups (10^6 m³/s) */
     public static final double BASELINE_AMOC_SV = 18.0;
 
     /* Stommel coupling constant */
@@ -56,7 +56,7 @@ public class ThermohalineStommelAMOCEngine {
     public record StommelState(double amocFlowSv, double northAtlanticCoolingShiftC, boolean isCollapsed) {}
 
     /*
-     * Calculates seawater density anomaly (kg/mÂ³) as a function of temperature (Â°C) and practical salinity (PSU).
+     * Calculates seawater density anomaly (kg/m³) as a function of temperature (°C) and practical salinity (PSU).
      */
     public static double calculateSeawaterDensity(double tempC, double salinityPsu) {
         // Phase 1: Invariant state validation and environmental boundary initialization
@@ -70,8 +70,8 @@ public class ThermohalineStommelAMOCEngine {
     /*
      * Calculates Stommel 2-box overturning circulation flux (in Sv) and climatic shift.
      *
-     * @param tempEquatorC Equator surface temperature (~28Â°C)
-     * @param tempPoleC Polar North Atlantic surface temperature (~2Â°C)
+     * @param tempEquatorC Equator surface temperature (~28°C)
+     * @param tempPoleC Polar North Atlantic surface temperature (~2°C)
      * @param salinityEquatorPsu Equator salinity (~36.5 PSU)
      * @param salinityPolePsu Polar salinity (~34.5 PSU baseline, dropping during Heinrich meltwater events)
      * @return StommelState record
@@ -107,7 +107,7 @@ public class ThermohalineStommelAMOCEngine {
         StommelState state = calculateStommelAMOC(28.0, 2.0, 36.5, polarSalinity);
 
         if (state.isCollapsed()) {
-            logger.info("âš ï¸ AMOC Thermohaline Circulation COLLAPSED! Flow = {:.2f} Sv, Cooling = {:.2f}Â°C",
+            logger.info("⚠️ï¸ AMOC Thermohaline Circulation COLLAPSED! Flow = {:.2f} Sv, Cooling = {:.2f}°C",
                     state.amocFlowSv(), state.northAtlanticCoolingShiftC());
         }
 
@@ -116,7 +116,7 @@ public class ThermohalineStommelAMOCEngine {
             double lat = cell.getLatitude();
             double lng = cell.getLongitude();
 
-            // North Atlantic & Europe region: Lat 40Â°N to 75Â°N, Lng -60Â° to +40Â°
+            // North Atlantic & Europe region: Lat 40°N to 75°N, Lng -60° to +40°
             if (lat >= 40.0 && lat <= 75.0 && lng >= -60.0 && lng <= 40.0) {
                 double baseTemp = cell.getTemperature() != null ? cell.getTemperature() : 10.0;
                 double regionalShift = state.northAtlanticCoolingShiftC() * Math.min(1.0, (lat - 35.0) / 25.0);

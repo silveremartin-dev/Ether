@@ -168,15 +168,15 @@ public class Scenario implements Serializable {
     private double axialTiltDegrees; // Inclination
 
     public enum TechPreset {
-        AUTO_FROM_YEAR("â³ Automatique (CalculÃ© selon l'annÃ©e Tâ‚€)", -1, -1, -1, -1),
-        PALEOLITHIC("ðŸ¹ Chasseurs-Cueilleurs / NÃ©olithique", 5.0, 10.0, 2.0, 5.0),
-        NEOLITHIC_BRONZE("ðŸ›¡ï¸ Ã‚ge du Bronze & CitÃ©s-Ã‰tats", 25.0, 30.0, 4.0, 40.0),
-        ANTIQUITY("ðŸ›ï¸ AntiquitÃ© Classique & Empire", 100.0, 60.0, 6.0, 200.0),
+        AUTO_FROM_YEAR("â³ Automatique (Calculé selon l'année Tâ‚€)", -1, -1, -1, -1),
+        PALEOLITHIC("ðŸ¹ Chasseurs-Cueilleurs / Néolithique", 5.0, 10.0, 2.0, 5.0),
+        NEOLITHIC_BRONZE("ðŸ›¡ï¸ Ã‚ge du Bronze & Cités-États", 25.0, 30.0, 4.0, 40.0),
+        ANTIQUITY("ðŸ›ï¸ Antiquité Classique & Empire", 100.0, 60.0, 6.0, 200.0),
         RENAISSANCE("⛵ Renaissance & Imprimerie", 500.0, 300.0, 8.0, 2000.0),
-        INDUSTRIAL("âš™ï¸ RÃ©volution Industrielle & Vapeur", 2500.0, 2500.0, 10.0, 15000.0),
-        CONTEMPORARY("ðŸŒ Contemporain & MÃ©tropole NumÃ©rique", 15000.0, 50000.0, 18.0, 5000000.0),
+        INDUSTRIAL("⚙️ï¸ Révolution Industrielle & Vapeur", 2500.0, 2500.0, 10.0, 15000.0),
+        CONTEMPORARY("ðŸŒ Contemporain & Métropole Numérique", 15000.0, 50000.0, 18.0, 5000000.0),
         SPACE_COLONY_MARS("🚀 Colonie Spatiale / Mars (Faible Pop / Ultra High-Tech)", 50000.0, 200000.0, 24.0, 50000000.0),
-        CUSTOM("âš™ï¸ PersonnalisÃ© (Saisie Libre des 4 Stocks)", -1, -1, -1, -1);
+        CUSTOM("⚙️ï¸ Personnalisé (Saisie Libre des 4 Stocks)", -1, -1, -1, -1);
 
         /* Internal state variable for label (String). */
         private final String label;
@@ -1876,7 +1876,7 @@ public class Scenario implements Serializable {
         s0.setPlanetPreset(PlanetPreset.EARTH_LIG_100000BP);
         s0.setEcologyPreset(EcologyPreset.EARTH_LIG_100000BP);
         s0.setDescription("""
-            ðŸŒ SCÃ‰NARIO PALÃ‰OLITHIQUE : Berceau Africain, TraversÃ©e des Continents & Out of Africa (-100 000 av. J.-C.)
+            ðŸŒ SCÉNARIO PALÉOLITHIQUE : Berceau Africain, Traversée des Continents & Out of Africa (-100 000 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise la dynamique démographique et l'expansion spatiale des premières populations d'Homo Sapiens depuis l'Afrique de l'Est à travers le Moyen-Orient, l'Eurasie, l'Océanie et les Amériques.
@@ -2013,7 +2013,7 @@ public class Scenario implements Serializable {
         sBeringia.setMinLat(45.0); sBeringia.setMaxLat(75.0); sBeringia.setMinLng(140.0); sBeringia.setMaxLng(-120.0);
         sBeringia.setBoundaryMode("DYNAMIC_RESERVOIR");
         sBeringia.setDescription("""
-            ðŸ”ï¸ SCÃ‰NARIO PALÃ‰OLITHIQUE : Le Pont Terrestre de BÃ©ringie & Incursion AmÃ©ricaine (-25 000 av. J.-C.)
+            ðŸ”ï¸ SCÉNARIO PALÉOLITHIQUE : Le Pont Terrestre de Béringie & Incursion Américaine (-25 000 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'isolation des populations paléolithiques sur le pont terrestre de Béringie pendant le Dernier Maximum Glaciaire (LGM), suivie de leur dispersion à travers le corridor libre de glace et la route côtière du Pacifique.
@@ -2055,7 +2055,7 @@ public class Scenario implements Serializable {
         sLGM.setPlanetPreset(PlanetPreset.EARTH_LGM_20000BP);
         sLGM.setEcologyPreset(EcologyPreset.EARTH_LGM_20000BP);
         sLGM.setDescription("""
-            â„ï¸ SCÃ‰NARIO PALÃ‰OLITHIQUE : ApogÃ©e Glaciaire & Refuges SolutrÃ©ens (-20 000 av. J.-C.)
+            â„ï¸ SCÉNARIO PALÉOLITHIQUE : Apogée Glaciaire & Refuges Solutréens (-20 000 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise le paroxysme du Dernier Maximum Glaciaire (LGM) avec un niveau marin abaissé de 120 mètres (exposant le Doggerland, le Sundaland, le Sahul et la Béringie), les inlandsis massifs (Laurentide, Fennoscandie) et l'industrie lithique foliacée solutréenne.
@@ -2095,7 +2095,7 @@ public class Scenario implements Serializable {
         sYoungerDryas.setPlanetPreset(PlanetPreset.EARTH_EH_10000BP);
         sYoungerDryas.setEcologyPreset(EcologyPreset.EARTH_EH_10000BP);
         sYoungerDryas.setDescription("""
-            â„ï¸ SCÃ‰NARIO PALÃ‰OCLIMATIQUE : Le RÃ©cents Dryas & Pression ForagÃ¨re Au Levant (-10 900 av. J.-C.)
+            â„ï¸ SCÉNARIO PALÉOCLIMATIQUE : Le Récents Dryas & Pression Foragère Au Levant (-10 900 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Refroidissement brutal de 5 à 8°C de l'Atlantique Nord déclenché par le déversement d'eau douce du Lac Agassiz. Au Levant, la sécheresse aiguë réduit les céréales sauvages, contraignant les populations Natufiennes à la sédentarisation pré-agricole et au contrôle des graines.
@@ -2257,7 +2257,7 @@ public class Scenario implements Serializable {
         s3.setMinLat(28.0); s3.setMaxLat(40.0); s3.setMinLng(38.0); s3.setMaxLng(52.0);
         s3.setBoundaryMode("DYNAMIC_RESERVOIR");
         s3.setDescription("""
-            ðŸ›ï¸ SCÃ‰NARIO HISTORIQUE : Hydraulique, Salinisation & CitÃ©s-Ã‰tats de l'Ã‚ge du Bronze (-1900 av. J.-C.)
+            ðŸ›ï¸ SCÉNARIO HISTORIQUE : Hydraulique, Salinisation & Cités-États de l'Ã‚ge du Bronze (-1900 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'apogée du Bronze Moyen (Code d'Hammurabi, première dynastie de Babylone, dynastie Shang en Chine, fin de la civilisation de l'Indus) et les vulnérabilités écologiques d'irrigation intensive.
@@ -2383,7 +2383,7 @@ public class Scenario implements Serializable {
         sBronzeCollapse.setPlanetPreset(PlanetPreset.EARTH_BRONZE_1900BP);
         sBronzeCollapse.setEcologyPreset(EcologyPreset.EARTH_BRONZE_1900BP);
         sBronzeCollapse.setDescription("""
-            âš”ï¸ SCÃ‰NARIO HISTORIQUE : La Grande Rupture SystÃ©mique de -1200 & Chute des Palais MycÃ©niens et Hittites
+            âš”ï¸ SCÉNARIO HISTORIQUE : La Grande Rupture Systémique de -1200 & Chute des Palais Mycéniens et Hittites
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'effondrement simultané en cascade des civilisations palatiales de Méditerranée orientale (Mycènes, Ugarit, Empire Hittite, affaiblissement de l'Égypte). Combinaison d'une méga-sécheresse centennale, de ruptures des routes de l'étain et des invasions des Peuples de la Mer.
@@ -2419,7 +2419,7 @@ public class Scenario implements Serializable {
         sIron.setPlanetPreset(PlanetPreset.EARTH_IRON_1000BP);
         sIron.setEcologyPreset(EcologyPreset.EARTH_IRON_1000BP);
         sIron.setDescription("""
-            âš”ï¸ SCÃ‰NARIO HISTORIQUE : Transition Technologique vers la SidÃ©rurgie & RÃ©seaux PhÃ©niciens (-1000 av. J.-C.)
+            âš”ï¸ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.
@@ -2497,7 +2497,7 @@ public class Scenario implements Serializable {
         sMaurya.setMinLat(8.0); sMaurya.setMaxLat(35.0); sMaurya.setMinLng(68.0); sMaurya.setMaxLng(90.0);
         sMaurya.setBoundaryMode("DYNAMIC_RESERVOIR");
         sMaurya.setDescription("""
-            â˜¸ï¸ SCÃ‰NARIO HISTORIQUE : L'Empire Maurya d'Ashoka & La VallÃ©e du Gange (-300 av. J.-C.)
+            â˜¸ï¸ SCÉNARIO HISTORIQUE : L'Empire Maurya d'Ashoka & La Vallée du Gange (-300 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Unification du sous-continent indien sous Chandragupta et Ashoka. Modélise l'agriculture rizicole de la plaine gângétique, les routes commerciales de la Soie et le réseau urbain autour de Pataliputra et Taxila.
@@ -2553,7 +2553,7 @@ public class Scenario implements Serializable {
         sRomanEngines.put("ArthurCombinatorialTechnologyEngine", true);
         sRomanEngines.put("GranovetterThresholdCascadeEngine", true);
         sRoman.setDescription("""
-            ðŸ›ï¸ SCÃ‰NARIO HISTORIQUE : L'Empire Romain Ã  son ApogÃ©e (Pax Romana, An 0)
+            ðŸ›ï¸ SCÉNARIO HISTORIQUE : L'Empire Romain Ã  son Apogée (Pax Romana, An 0)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE - SOURCES BESSES & BENCHMARKS CIA / SESHAT / HYDE]
             Modélise le bassin méditerranéen au moment de la Pax Romana sous Auguste. Intègre les données démographiques historiques (55 millions d'habitants), les réseaux d'infrastructures (viae, aqueducs) et les dynamiques cliodynamiques de Turchin.
@@ -2655,7 +2655,7 @@ public class Scenario implements Serializable {
         s4.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s4.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s4.setDescription("""
-            ðŸ® SCÃ‰NARIO HISTORIQUE : Le SiÃ¨cle d'Or de la Dynastie Song (1000 ap. J.-C.)
+            ðŸ® SCÉNARIO HISTORIQUE : Le Siècle d'Or de la Dynastie Song (1000 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             La Chine des Song a connu la première pré-industrialisation de l'histoire, avec une utilisation massive du charbon de terre pour la fonte du fer et des réseaux de transport fluviaux ultra-efficaces.
@@ -2696,7 +2696,7 @@ public class Scenario implements Serializable {
         sMongol.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sMongol.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sMongol.setDescription("""
-            ðŸ¹ SCÃ‰NARIO HISTORIQUE : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)
+            ðŸ¹ SCÉNARIO HISTORIQUE : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.
@@ -2887,7 +2887,7 @@ public class Scenario implements Serializable {
         sSakoku.setMinLat(30.0); sSakoku.setMaxLat(45.0); sSakoku.setMinLng(128.0); sSakoku.setMaxLng(146.0);
         sSakoku.setBoundaryMode("DYNAMIC_RESERVOIR");
         sSakoku.setDescription("""
-            â›©ï¸ SCÃ‰NARIO HISTORIQUE : L'Ãˆre d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)
+            â›©ï¸ SCÉNARIO HISTORIQUE : L'Ãˆre d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Fermeture des frontières de l'archipel japonais décrétée par le Shogunat Tokugawa. Modélise une économie circulaire hautement autarcique, l'urbanisation géante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extérieurs jusqu'à l'arrivée des bateaux noirs du Commandant Perry en 1853.
@@ -2923,7 +2923,7 @@ public class Scenario implements Serializable {
         sIndustrial1800.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sIndustrial1800.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sIndustrial1800.setDescription("""
-            âš™ï¸ SCÃ‰NARIO HISTORIQUE : La Machine Ã  Vapeur & L'Ã‰mergence du Charbon (1800 ap. J.-C.)
+            ⚙️ï¸ SCÉNARIO HISTORIQUE : La Machine Ã  Vapeur & L'Émergence du Charbon (1800 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Basculement énergétique mondial du régime organique vers le régime minéral fossile (charbon de terre, machine à vapeur de Watt).
@@ -2963,7 +2963,7 @@ public class Scenario implements Serializable {
         sWW.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sWW.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sWW.setDescription("""
-            âš”ï¸ SCÃ‰NARIO HISTORIQUE : Guerre Industrielle Totale, Ruptures IdÃ©ologiques & Bombe Atomique (1914 ap. J.-C.)
+            âš”ï¸ SCÉNARIO HISTORIQUE : Guerre Industrielle Totale, Ruptures Idéologiques & Bombe Atomique (1914 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise la période de crise systémique paroxystique de la modernité industrielle (1914-1945). Mobilisation intégrale de l'exergie fossile et chimique (synthèse Haber-Bosch), ruptures totalitaires (1917, 1933), destruction massive de capital en Europe/Asie, et franchissement du seuil de destruction thermonucléaire (1945).
@@ -3001,7 +3001,7 @@ public class Scenario implements Serializable {
         sModern2000.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sModern2000.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sModern2000.setDescription("""
-            ðŸŒ SCÃ‰NARIO HISTORIQUE : L'Ãˆre NumÃ©rique & La Grande AccÃ©lÃ©ration (2000 ap. J.-C.)
+            ðŸŒ SCÉNARIO HISTORIQUE : L'Ãˆre Numérique & La Grande Accélération (2000 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Consolidation du système économique mondial interconnecté, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.
@@ -3124,7 +3124,7 @@ public class Scenario implements Serializable {
         s7.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s7.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s7.setDescription("""
-            â˜¢ï¸ SCÃ‰NARIO FUTUR : Catastrophe de la Guerre NuclÃ©aire & Hiver StratosphÃ©rique
+            â˜¢ï¸ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique
             
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
             Conflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.
@@ -3216,7 +3216,7 @@ public class Scenario implements Serializable {
         s8.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s8.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s8.setDescription("""
-            â›ï¸ SCÃ‰NARIO FUTUR : Ã‰puisement du Phosphate de Roche (Peak P 2050)
+            â›ï¸ SCÉNARIO FUTUR : Épuisement du Phosphate de Roche (Peak P 2050)
             
             [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
             Épuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.

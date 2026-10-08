@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Permafrost Thaw & Methane (CHâ‚„) Outgassing Engine.
  * Models:
- * 1. Polar & tundra permafrost thaw when temperature exceeds 0Â°C.
+ * 1. Polar & tundra permafrost thaw when temperature exceeds 0°C.
  * 2. Methane gas (CHâ‚„) release into atmosphere, accelerating global greenhouse warming.
  *
  * @author Silvere Martin-Michiellot
@@ -45,7 +45,7 @@ public class PermafrostThawEngine {
             Biome biome = cell.getBiome();
             double temp = cell.getTemperature() != null ? cell.getTemperature() : -10.0;
 
-            // Polar / Tundra permafrost thawing condition (T > 0Â°C)
+            // Polar / Tundra permafrost thawing condition (T > 0°C)
             if ((biome == Biome.SNOW || biome == Biome.TUNDRA) && temp > 0.0) {
                 thawingCells++;
                 double methaneRelease = temp * 0.15; // Methane release proportional to temperature excess

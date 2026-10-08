@@ -78,7 +78,7 @@ public class NuclearWarfareClimateEngine {
         // 2. Apply Nuclear Winter global solar attenuation & temperature anomaly
         if (globalSootOpticalDepth > 0.01) {
             double transmittance = calculateSolarTransmittance(globalSootOpticalDepth);
-            double tempAnomaly = -15.0 * (1.0 - transmittance); // Up to -15Â°C global temperature drop
+            double tempAnomaly = -15.0 * (1.0 - transmittance); // Up to -15°C global temperature drop
 
             // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
@@ -96,7 +96,7 @@ public class NuclearWarfareClimateEngine {
             // Stratospheric soot atmospheric decay per tick (half-life ~ 5-10 years)
             globalSootOpticalDepth *= 0.98;
 
-            logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth Ï„={}. Global temperature anomaly: {}Â°C across cells.",
+            logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth Ï„={}. Global temperature anomaly: {}°C across cells.",
                     String.format("%.2f", globalSootOpticalDepth), String.format("%.1f", tempAnomaly));
         }
 

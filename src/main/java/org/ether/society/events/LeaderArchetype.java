@@ -88,19 +88,6 @@ public enum LeaderArchetype {
             "🔥",
             15,
             8.0
-    ),
-
-    /*
-     * Philosophical formulation, scientific treatise codification, historical documentation, and astronomical/medical innovation.
-     * Purely informative/intellectual contingent figure boosting collective memory and technical knowledge without executive sovereign tyranny.
-     * Examples: Aristotle, Thucydides, Ibn Khaldun, Leonardo da Vinci, Isaac Newton, Sima Qian.
-     */
-    INTELLECTUAL_CHRONICLER(
-            "leader.archetype.intellectual_chronicler",
-            "leader.archetype.intellectual_chronicler.desc",
-            "📜",
-            45,
-            3.5
     );
 
     /* Internal state variable for name key (String). */

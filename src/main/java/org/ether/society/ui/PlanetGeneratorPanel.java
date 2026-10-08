@@ -268,7 +268,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         validationWarningLabel.setWrapText(true);
         validationWarningLabel.setStyle("-fx-text-fill: #f87171; -fx-font-size: 11px;");
         validationWarningBanner = new VBox(4,
-                new Label(I18n.getOrDefault("planet.validation.header", "âš ï¸ ParamÃ¨tres ou cartes requis manquants ou invalides :")),
+                new Label(I18n.getOrDefault("planet.validation.header", "⚠️ï¸ Paramètres ou cartes requis manquants ou invalides :")),
                 validationWarningLabel
         );
         validationWarningBanner.setStyle("-fx-background-color: rgba(239, 68, 68, 0.15); -fx-border-color: #ef4444; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
@@ -698,7 +698,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         loadElevBtn = new Button(I18n.get("planet.map.btn_load"));
         loadElevBtn.getStyleClass().add("button-secondary");
         loadElevBtn.setOnAction(e -> chooseElevMapFile());
-        clearElevBtn = new Button("âŒ");
+        clearElevBtn = new Button("❌");
         clearElevBtn.getStyleClass().add("button-secondary");
         clearElevBtn.setOnAction(e -> {
             customElevImage = null;
@@ -829,7 +829,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         climateFileLabel = new Label("—"); climateFileLabel.getStyleClass().add("value-label");
         loadClimateBtn = new Button(I18n.get("planet.map.btn_load")); loadClimateBtn.getStyleClass().add("button-secondary");
         loadClimateBtn.setOnAction(e -> chooseClimateMapFile());
-        clearClimateBtn = new Button("âŒ"); clearClimateBtn.getStyleClass().add("button-secondary");
+        clearClimateBtn = new Button("❌"); clearClimateBtn.getStyleClass().add("button-secondary");
         clearClimateBtn.setOnAction(e -> {
             customClimateImage = null;
             climateFileLabel.setText("—");
@@ -913,7 +913,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         rainfallFileLabel = new Label("—"); rainfallFileLabel.getStyleClass().add("value-label");
         loadRainfallBtn = new Button(I18n.get("planet.map.btn_load")); loadRainfallBtn.getStyleClass().add("button-secondary");
         loadRainfallBtn.setOnAction(e -> chooseRainfallMapFile());
-        clearRainfallBtn = new Button("âŒ"); clearRainfallBtn.getStyleClass().add("button-secondary");
+        clearRainfallBtn = new Button("❌"); clearRainfallBtn.getStyleClass().add("button-secondary");
         clearRainfallBtn.setOnAction(e -> {
             customRainfallImage = null;
             rainfallFileLabel.setText("—");
@@ -997,7 +997,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         seasonalityFileLabel = new Label("—"); seasonalityFileLabel.getStyleClass().add("value-label");
         loadSeasonalityBtn = new Button(I18n.get("planet.map.btn_load")); loadSeasonalityBtn.getStyleClass().add("button-secondary");
         loadSeasonalityBtn.setOnAction(e -> chooseSeasonalityMapFile());
-        clearSeasonalityBtn = new Button("âŒ"); clearSeasonalityBtn.getStyleClass().add("button-secondary");
+        clearSeasonalityBtn = new Button("❌"); clearSeasonalityBtn.getStyleClass().add("button-secondary");
         clearSeasonalityBtn.setOnAction(e -> {
             customSeasonalityImage = null;
             seasonalityFileLabel.setText("—");
@@ -1041,7 +1041,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         seasonSubBlock.setStyle("-fx-padding: 10 10 10 10; -fx-background-color: rgba(245, 158, 11, 0.08); -fx-background-radius: 6; -fx-border-color: rgba(245, 158, 11, 0.25); -fx-border-radius: 6;");
 
         earthPaleoNoticeLabel = new Label(I18n.getOrDefault("planet.climate.earth_paleo_notice",
-                "ðŸŒ Note PalÃ©oclimatique : Pour la Terre, le moteur intÃ¨gre la dynamique temporelle (glaciations, niveau des mers LGM -120m, Sahara Vert). Les cartes ci-contre prÃ©sentent la baseline climatologique actuelle (ERA5 / WorldClim)."));
+                "ðŸŒ Note Paléoclimatique : Pour la Terre, le moteur intègre la dynamique temporelle (glaciations, niveau des mers LGM -120m, Sahara Vert). Les cartes ci-contre présentent la baseline climatologique actuelle (ERA5 / WorldClim)."));
         earthPaleoNoticeLabel.setWrapText(true);
         earthPaleoNoticeLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-padding: 6 10; -fx-background-color: rgba(56,189,248,0.08); -fx-background-radius: 5; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 5;");
 
@@ -1213,21 +1213,21 @@ public class PlanetGeneratorPanel extends BorderPane {
         updatePreview();
     }
 
-    public static final String CLIMATE_SRC_TEMP_EARTH = "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
+    public static final String CLIMATE_SRC_TEMP_EARTH = "ðŸŒ Terre — WorldClim v2.1 Bio1 & ERA5 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
     public static final String CLIMATE_SRC_TEMP_MARS = "🔴 Mars — MGS TES Thermal Radiometry [Planétaire (Mars), -4.1 Ga à Actuel]";
     public static final String CLIMATE_SRC_TEMP_VENUS = "🟡 Vénus — Magellan SAR & Hypsometric Model [Planétaire (Vénus), -500 Ma à Actuel]";
     public static final String CLIMATE_SRC_TEMP_MOON = "⚪ Lune — LRO Diviner Thermal Radiometer [Planétaire (Lune), -4.5 Ga à Actuel]";
     public static final String CLIMATE_SRC_TEMP_MERCURY = "⚪ Mercure — MESSENGER MLA Extreme Thermal Model [Planétaire (Mercure), -4.0 Ga à Actuel]";
     public static final String CLIMATE_SRC_TEMP_WMS = "ðŸŒ NASA MERRA-2 (WMS Satellite) [Global, 1980 AD Ã  Actuel]";
 
-    public static final String CLIMATE_SRC_PRECIP_EARTH = "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
+    public static final String CLIMATE_SRC_PRECIP_EARTH = "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
     public static final String CLIMATE_SRC_PRECIP_MARS = "🔴 Mars — Frost & Sublimation Model [Planétaire (Mars), -4.1 Ga à Actuel]";
     public static final String CLIMATE_SRC_PRECIP_VENUS = "🟡 Vénus — H2SO4 Virga Cycle Model [Planétaire (Vénus), -500 Ma à Actuel]";
     public static final String CLIMATE_SRC_PRECIP_MOON = "⚪ Lune — LRO LEND Vacuum Exosphere [Planétaire (Lune), -4.5 Ga à Actuel]";
     public static final String CLIMATE_SRC_PRECIP_MERCURY = "⚪ Mercure — MESSENGER Exospheric Vacuum Model [Planétaire (Mercure), -4.0 Ga à Actuel]";
     public static final String CLIMATE_SRC_PRECIP_WMS = "ðŸŒ NASA GPM IMERG (WMS Satellite) [Global, 2000 AD Ã  Actuel]";
 
-    public static final String CLIMATE_SRC_SEASON_EARTH = "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
+    public static final String CLIMATE_SRC_SEASON_EARTH = "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite) [Global, -100 000 BP Ã  +2100 AD]";
     public static final String CLIMATE_SRC_SEASON_MARS = "🔴 Mars — Orbital Eccentricity Insolation Model [Planétaire (Mars), Cycles Milankovitch Martiens]";
     public static final String CLIMATE_SRC_SEASON_VENUS = "🟡 Vénus — Super-Rotation Low Variance Model [Planétaire (Vénus), -500 Ma à Actuel]";
     public static final String CLIMATE_SRC_SEASON_MOON = "⚪ Lune — Diurnal Insolation Amplitude Model [Planétaire (Lune), Cycle Synodique 29.5j]";
@@ -1773,7 +1773,7 @@ public class PlanetGeneratorPanel extends BorderPane {
                 "   • Canal Vert (V) = Précipitations (0 à 3000 mm/an)\n" +
                 "   • Canal Bleu (B) = Saisonnalité / Amplitude (0 à 50°C)\n\n" +
                 "4. TÉLÉCHARGEMENT SATELLITE EN LIGNE (WMS) :\n" +
-                "   â€¢ Le bouton 'ðŸŒ TÃ©lÃ©charger Climat Satellite' permet de rÃ©cupÃ©rer directement les flux officiels MODIS et GPM de la NASA !"
+                "   • Le bouton 'ðŸŒ Télécharger Climat Satellite' permet de récupérer directement les flux officiels MODIS et GPM de la NASA !"
         );
     }
 
@@ -2986,7 +2986,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (tempSubHeader != null) tempSubHeader.setText(I18n.getOrDefault("planet.climate.temp.header", "🌡  Temperature & Thermal:"));
             if (precipSubHeader != null) precipSubHeader.setText(I18n.getOrDefault("planet.climate.precip.header", "🌧  Precipitation / Humidity:"));
             if (seasonSubHeader != null) seasonSubHeader.setText(I18n.getOrDefault("planet.climate.season.header", "ðŸ‚  Seasonality / Thermal Variance:"));
-            if (earthPaleoNoticeLabel != null) earthPaleoNoticeLabel.setText(I18n.getOrDefault("planet.climate.earth_paleo_notice", "ðŸŒ Note PalÃ©oclimatique : Pour la Terre, le moteur intÃ¨gre la dynamique temporelle (glaciations, niveau des mers LGM -120m, Sahara Vert). Les cartes ci-contre prÃ©sentent la baseline climatologique actuelle (ERA5 / WorldClim)."));
+            if (earthPaleoNoticeLabel != null) earthPaleoNoticeLabel.setText(I18n.getOrDefault("planet.climate.earth_paleo_notice", "ðŸŒ Note Paléoclimatique : Pour la Terre, le moteur intègre la dynamique temporelle (glaciations, niveau des mers LGM -120m, Sahara Vert). Les cartes ci-contre présentent la baseline climatologique actuelle (ERA5 / WorldClim)."));
 
             if (tempSeedLabel != null) tempSeedLabel.setText(I18n.getOrDefault("planet.climate.seed_label", "Generation seed:"));
             if (precipSeedLabel != null) precipSeedLabel.setText(I18n.getOrDefault("planet.climate.seed_label", "Generation seed:"));

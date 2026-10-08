@@ -87,7 +87,7 @@ public class BifurcationChaosEngine {
         if (globalLyapunovExponent > 0.45 && globalSystemVariance > 5000.0) {
             if (!tippingPointWarning) {
                 tippingPointWarning = true;
-                logger.warn("âš ï¸ BIFURCATION WARNING: System approaching critical tipping point (Lyapunov={}, Variance={})",
+                logger.warn("⚠️ï¸ BIFURCATION WARNING: System approaching critical tipping point (Lyapunov={}, Variance={})",
                         String.format("%.4f", globalLyapunovExponent), String.format("%.2f", globalSystemVariance));
             }
         } else {

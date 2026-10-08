@@ -103,12 +103,15 @@ public class MainView extends StackPane {
             }
         });
         this.timeline = new org.ether.society.model.ScenarioTimeline();
+        if (engine != null) {
+            engine.setTimeline(this.timeline);
+        }
         this.godModePanel = new GodModePanel(engine, timeline);
 
         initUI();
         updateTabTitles();
 
-        I18n.languageProperty().addListener((obs, old, val) -> updateTabTitles());
+        I18n.languageProperty().addListener((obs, oldVal, newVal) -> updateTabTitles());
     }
 
     // Helper subroutine: init ui - internal state computation & bounds checking

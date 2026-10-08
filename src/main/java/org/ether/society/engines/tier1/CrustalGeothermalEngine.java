@@ -15,8 +15,8 @@ import java.util.List;
 /**
  * Crustal Radiogenic Geothermal Heat Flux & Sub-Surface Mining Gradient Engine.
  * Models:
- * 1. <b>Radiogenic Decay Heat Flux (q_geo in mW/mÂ²)</b>: Primordial + Uranium, Thorium, Potassium radiogenic decay heat.
- * 2. <b>Geothermal Thermal Gradient (Î”T = 30Â°C/km)</b>: Sub-surface temperature increases with depth.
+ * 1. <b>Radiogenic Decay Heat Flux (q_geo in mW/m²)</b>: Primordial + Uranium, Thorium, Potassium radiogenic decay heat.
+ * 2. <b>Geothermal Thermal Gradient (Î”T = 30°C/km)</b>: Sub-surface temperature increases with depth.
  * 3. <b>Deep Mining Depth Cutoff</b>: Limits maximum mineral extraction depth based on cooling technology era.
  *
  * @author Silvere Martin-Michiellot
@@ -25,10 +25,10 @@ import java.util.List;
 public class CrustalGeothermalEngine {
     private static final Logger logger = LoggerFactory.getLogger(CrustalGeothermalEngine.class);
 
-    /* Standard continental crustal geothermal heat flux in mW/mÂ² */
+    /* Standard continental crustal geothermal heat flux in mW/m² */
     public static final double CONTINENTAL_HEAT_FLUX_MW_PER_M2 = 65.0;
 
-    /* Standard geothermal gradient in Â°C per kilometer */
+    /* Standard geothermal gradient in °C per kilometer */
     public static final double GEOTHERMAL_GRADIENT_C_PER_KM = 30.0;
 
     /*
@@ -64,7 +64,7 @@ public class CrustalGeothermalEngine {
             double surfaceTempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
             double miningSubsurfaceTempC = surfaceTempC + (maxDepthMeters / 1000.0) * GEOTHERMAL_GRADIENT_C_PER_KM;
 
-            // Deep mining yields additional metal ores if tech can withstand subsurface heat (> 60Â°C)
+            // Deep mining yields additional metal ores if tech can withstand subsurface heat (> 60°C)
             if (tech >= 5.0 && miningSubsurfaceTempC > 60.0) {
                 double metalOre = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
                 cell.setResourceMetal(metalOre + 50.0);

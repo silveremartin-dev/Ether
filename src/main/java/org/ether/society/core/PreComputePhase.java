@@ -129,7 +129,7 @@ public class PreComputePhase {
             double latFactor = Math.abs(lat) / 90.0;
             double baseTemp = 30.0 - (latFactor * 50.0 * (axialTilt / 23.5));
 
-            // Glacial Maximum LGM cooling (-6Â°C global) & Sea Level Drop (-120m)
+            // Glacial Maximum LGM cooling (-6°C global) & Sea Level Drop (-120m)
             if (isGlacialMax) {
                 baseTemp -= 6.0;
                 cell.setSeaLevelOffsetMeters(-120.0);
@@ -154,7 +154,7 @@ public class PreComputePhase {
                 cell.setIceSheetThicknessMeters(0.0);
             }
 
-            // Younger Dryas abrupt cooling (-5.5Â°C in N. Atlantic)
+            // Younger Dryas abrupt cooling (-5.5°C in N. Atlantic)
             if (isYoungerDryas && lat >= 30.0 && lat <= 65.0 && lng >= -30.0 && lng <= 45.0) {
                 baseTemp -= 5.5;
             }

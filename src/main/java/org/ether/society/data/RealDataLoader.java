@@ -189,7 +189,7 @@ public class RealDataLoader {
 
                 2. **Download SRTM3 Tiles**
                    - Resolution: 90m (3 arc-seconds)
-                   - Coverage: Europe (lat 35-70Â°N, lng 10Â°W-40Â°E)
+                   - Coverage: Europe (lat 35-70°N, lng 10°W-40°E)
                    - Format: GeoTIFF
 
                 3. **Process with GeoTools**

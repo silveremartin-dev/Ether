@@ -34,10 +34,10 @@ import java.util.List;
 public class AiryIsostasyCrustalRootEngine {
     private static final Logger logger = LoggerFactory.getLogger(AiryIsostasyCrustalRootEngine.class);
 
-    /* Continental granitic crust density in kg/mÂ³ */
+    /* Continental granitic crust density in kg/m³ */
     public static final double CRUST_DENSITY_KG_M3 = 2700.0;
 
-    /* Upper mantle peridotite density in kg/mÂ³ */
+    /* Upper mantle peridotite density in kg/m³ */
     public static final double MANTLE_DENSITY_KG_M3 = 3300.0;
 
     /* Baseline sea-level continental crust thickness in meters (35 km) */
@@ -88,7 +88,7 @@ public class AiryIsostasyCrustalRootEngine {
             double crustThicknessKm = calculateTotalCrustThicknessKm(elevation);
 
             // Geothermal heat flow: thicker orogenic crust modulates surface geothermal flux
-            // Baseline 65 mW/mÂ², thick mountain roots attenuate conductive gradient
+            // Baseline 65 mW/m², thick mountain roots attenuate conductive gradient
             double heatFlowMW_M2 = 65.0 * (35.0 / Math.max(20.0, crustThicknessKm));
             cell.setMantleHeatFlow(heatFlowMW_M2);
 

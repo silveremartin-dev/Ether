@@ -19,13 +19,13 @@ import java.util.List;
  *
  * <p>Calculates sediment deposition via <b>Stokes' Law of Sedimentation</b>:</p>
  * <pre>
- *   v_s = (2/9) * (Ï_p - Ï_f) * g * rÂ² / Î¼(T)
+ *   v_s = (2/9) * (Ï_p - Ï_f) * g * r² / Î¼(T)
  * </pre>
  * where:
  * <ul>
- *   <li><b>Ï_p</b>: Quartz/alluvium sediment particle density (~2650 kg/mÂ³).</li>
- *   <li><b>Ï_f</b>: Fluid water density (~1000 kg/mÂ³).</li>
- *   <li><b>g</b>: Gravitational acceleration (9.80665 m/sÂ²).</li>
+ *   <li><b>Ï_p</b>: Quartz/alluvium sediment particle density (~2650 kg/m³).</li>
+ *   <li><b>Ï_f</b>: Fluid water density (~1000 kg/m³).</li>
+ *   <li><b>g</b>: Gravitational acceleration (9.80665 m/s²).</li>
  *   <li><b>r</b>: Grain radius (fine silt $r \approx 20 \times 10^{-6}\text{ m}$).</li>
  *   <li><b>Î¼(T)</b>: Water dynamic viscosity as a function of temperature.</li>
  * </ul>
@@ -36,26 +36,26 @@ import java.util.List;
 public class DynamicHydrographicSiltationEngine {
     private static final Logger logger = LoggerFactory.getLogger(DynamicHydrographicSiltationEngine.class);
 
-    /* Quartz sediment particle density in kg/mÂ³ */
+    /* Quartz sediment particle density in kg/m³ */
     public static final double SEDIMENT_DENSITY_KG_M3 = 2650.0;
 
-    /* Fluid (water) density in kg/mÂ³ */
+    /* Fluid (water) density in kg/m³ */
     public static final double WATER_DENSITY_KG_M3 = 1000.0;
 
-    /* Gravitational acceleration in m/sÂ² */
+    /* Gravitational acceleration in m/s² */
     public static final double GRAVITY_M_S2 = 9.80665;
 
     /* Typical fine silt particle radius in meters (20 Î¼m) */
     public static final double SILT_GRAIN_RADIUS_M = 20.0e-6;
 
-    /* Water dynamic viscosity at 20Â°C in PaÂ·s (NÂ·s/mÂ²) */
+    /* Water dynamic viscosity at 20°C in PaÂ·s (NÂ·s/m²) */
     public static final double WATER_VISCOSITY_PA_S = 1.002e-3;
 
     /*
      * Calculates Stokes settling terminal velocity v_s in m/s.
      *
      * @param grainRadiusMeters Particle radius in meters
-     * @param waterTempC Water temperature in Â°C
+     * @param waterTempC Water temperature in °C
      * @return Settling velocity in m/s
      */
     public static double calculateStokesSettlingVelocity(double grainRadiusMeters, double waterTempC) {
