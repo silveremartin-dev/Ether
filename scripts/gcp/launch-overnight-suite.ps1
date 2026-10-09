@@ -65,10 +65,18 @@ gcloud compute ssh $InstanceName --zone=$Zone --project=$ProjectId --quiet --com
 
 # Step 4: Upload shaded JAR & scripts
 Write-Host "[4/5] Uploading shaded JAR and map presets to $InstanceName..." -ForegroundColor Cyan
+gcloud compute ssh $InstanceName --zone=$Zone --project=$ProjectId --quiet --command="sudo mkdir -p /opt/ether/data/maps && sudo chmod -R 777 /opt/ether/data"
 gcloud compute scp $JarPath "${InstanceName}:/opt/ether/society-simulation.jar" --zone=$Zone --project=$ProjectId --quiet
 gcloud compute scp --recurse data/presets "${InstanceName}:/opt/ether/data/" --zone=$Zone --project=$ProjectId --quiet
-if (Test-Path "data/maps") {
-    gcloud compute scp --recurse data/maps "${InstanceName}:/opt/ether/data/" --zone=$Zone --project=$ProjectId --quiet
+if (Test-Path "data/events") {
+    gcloud compute scp --recurse data/events "${InstanceName}:/opt/ether/data/" --zone=$Zone --project=$ProjectId --quiet
+}
+if (Test-Path "data/history") {
+    gcloud compute scp --recurse data/history "${InstanceName}:/opt/ether/data/" --zone=$Zone --project=$ProjectId --quiet
+}
+if (Test-Path "data/maps/ether") {
+    Write-Host "Uploading raster maps tensors (data/maps/ether)..." -ForegroundColor Cyan
+    gcloud compute scp --recurse "data/maps/ether" "${InstanceName}:/opt/ether/data/maps/" --zone=$Zone --project=$ProjectId --quiet
 }
 gcloud compute scp "scripts/gcp/run-true-27-spatial-scenarios.sh" "${InstanceName}:/opt/ether/run_scenarios.sh" --zone=$Zone --project=$ProjectId --quiet
 

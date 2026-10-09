@@ -1,6 +1,6 @@
 {
   "name" : "Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)",
-  "description" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : La Grande Rupture SystÃ©mique de -1200 & Chute des Palais MycÃ©niens et Hittites\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'effondrement simultané en cascade des civilisations palatiales de Méditerranée orientale (Mycènes, Ugarit, Empire Hittite, affaiblissement de l'Égypte). Combinaison d'une méga-sécheresse centennale, de ruptures des routes de l'étain et des invasions des Peuples de la Mer.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Effondrement en chaîne des réseaux commerciaux interconnectés du bronze.\n• Chute brutale de la complexité institutionnelle (disparition de l'écriture Linéaire B, dépopulation urbaine).\n• Période d'Âges Sombres méditerranéens préparant la transition décentralisée vers le fer.\n",
+  "description" : "âš”ï¸ SCÉNARIO HISTORIQUE : La Grande Rupture Systémique de -1200 & Chute des Palais Mycéniens et Hittites\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'effondrement simultané en cascade des civilisations palatiales de Méditerranée orientale (Mycènes, Ugarit, Empire Hittite, affaiblissement de l'Égypte). Combinaison d'une méga-sécheresse centennale, de ruptures des routes de l'étain et des invasions des Peuples de la Mer.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Effondrement en chaîne des réseaux commerciaux interconnectés du bronze.\n• Chute brutale de la complexité institutionnelle (disparition de l'écriture Linéaire B, dépopulation urbaine).\n• Période d'Âges Sombres méditerranéens préparant la transition décentralisée vers le fer.\n",
   "id" : null,
   "presetKey" : "bronze_age_collapse_1200bc",
   "planetPreset" : {
@@ -38,13 +38,13 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "ðŸŒ Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+    "tempSource" : "ðŸŒ Terre (-1900 BP) — Ã‚ge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre (-1900 BP) â€” PrÃ©cipitations",
+    "precipSource" : "ðŸŒ Terre (-1900 BP) — Précipitations",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
+    "seasonSource" : "ðŸŒ Terre (-1900 BP) — Saisonnalité",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -1900,
@@ -89,13 +89,13 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "ðŸŒ Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+      "tempSource" : "ðŸŒ Terre (-1900 BP) — Ã‚ge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre (-1900 BP) â€” PrÃ©cipitations",
+      "precipSource" : "ðŸŒ Terre (-1900 BP) — Précipitations",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre (-1900 BP) â€” SaisonnalitÃ©",
+      "seasonSource" : "ðŸŒ Terre (-1900 BP) — Saisonnalité",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : -1900,
@@ -194,5 +194,5 @@
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
   "displayName" : "Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)",
-  "displayDescription" : "âš”ï¸ SCÃ‰NARIO HISTORIQUE : La Grande Rupture SystÃ©mique de -1200 & Chute des Palais MycÃ©niens et Hittites\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'effondrement simultané en cascade des civilisations palatiales de Méditerranée orientale (Mycènes, Ugarit, Empire Hittite, affaiblissement de l'Égypte). Combinaison d'une méga-sécheresse centennale, de ruptures des routes de l'étain et des invasions des Peuples de la Mer.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Effondrement en chaîne des réseaux commerciaux interconnectés du bronze.\n• Chute brutale de la complexité institutionnelle (disparition de l'écriture Linéaire B, dépopulation urbaine).\n• Période d'Âges Sombres méditerranéens préparant la transition décentralisée vers le fer.\n"
+  "displayDescription" : "âš”ï¸ SCÉNARIO HISTORIQUE : La Grande Rupture Systémique de -1200 & Chute des Palais Mycéniens et Hittites\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'effondrement simultané en cascade des civilisations palatiales de Méditerranée orientale (Mycènes, Ugarit, Empire Hittite, affaiblissement de l'Égypte). Combinaison d'une méga-sécheresse centennale, de ruptures des routes de l'étain et des invasions des Peuples de la Mer.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Effondrement en chaîne des réseaux commerciaux interconnectés du bronze.\n• Chute brutale de la complexité institutionnelle (disparition de l'écriture Linéaire B, dépopulation urbaine).\n• Période d'Âges Sombres méditerranéens préparant la transition décentralisée vers le fer.\n"
 }

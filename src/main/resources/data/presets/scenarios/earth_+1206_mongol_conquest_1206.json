@@ -1,6 +1,6 @@
 {
   "name" : "L'Empire Mongol & la Grande Rupture Eurasienne (1206)",
-  "description" : "ðŸ¹ SCÃ‰NARIO HISTORIQUE : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).\n• Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.\n• Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.\n",
+  "description" : "ðŸ¹ SCÉNARIO HISTORIQUE : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).\n• Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.\n• Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.\n",
   "id" : null,
   "presetKey" : "mongol_conquest_1206",
   "planetPreset" : {
@@ -38,13 +38,13 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
@@ -89,13 +89,13 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "ðŸŒ Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
@@ -187,5 +187,5 @@
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
   "displayName" : "L'Empire Mongol & la Grande Rupture Eurasienne (1206)",
-  "displayDescription" : "ðŸ¹ SCÃ‰NARIO HISTORIQUE : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).\n• Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.\n• Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.\n"
+  "displayDescription" : "ðŸ¹ SCÉNARIO HISTORIQUE : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).\n• Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.\n• Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.\n"
 }

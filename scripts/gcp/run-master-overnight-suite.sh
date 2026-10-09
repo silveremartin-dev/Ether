@@ -47,10 +47,11 @@ gcloud compute ssh "${INSTANCE_NAME}" --zone="${ZONE}" --project="${PROJECT_ID}"
 echo -e "\n[3/5] Uploading executable shaded JAR to ${INSTANCE_NAME}..."
 gcloud compute scp "${JAR_PATH}" "${INSTANCE_NAME}:/opt/ether/society-simulation.jar" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet
 
-# Step 5: Upload map assets
-if [ -d "data/maps" ]; then
-    echo -e "\n[4/5] Synchronizing planetary map assets to ${INSTANCE_NAME}..."
-    gcloud compute scp --recurse data/maps "${INSTANCE_NAME}:/opt/ether/data/" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet
+# Step 5: Upload map assets (only ready-to-use ether tensors)
+if [ -d "data/maps/ether" ]; then
+    echo -e "\n[4/5] Synchronizing planetary map tensors (data/maps/ether) to ${INSTANCE_NAME}..."
+    gcloud compute ssh "${INSTANCE_NAME}" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet --command="sudo mkdir -p /opt/ether/data/maps && sudo chmod -R 777 /opt/ether/data"
+    gcloud compute scp --recurse data/maps/ether "${INSTANCE_NAME}:/opt/ether/data/maps/" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet
 fi
 
 # Step 6: Launch background batch execution with auto-shutdown

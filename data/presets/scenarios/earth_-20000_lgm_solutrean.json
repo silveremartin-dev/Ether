@@ -1,6 +1,6 @@
 {
   "name" : "Dernier Maximum Glaciaire & Solutréen (-20000)",
-  "description" : "â„ï¸ SCÃ‰NARIO PALÃ‰OLITHIQUE : ApogÃ©e Glaciaire & Refuges SolutrÃ©ens (-20 000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le paroxysme du Dernier Maximum Glaciaire (LGM) avec un niveau marin abaissé de 120 mètres (exposant le Doggerland, le Sundaland, le Sahul et la Béringie), les inlandsis massifs (Laurentide, Fennoscandie) et l'industrie lithique foliacée solutréenne.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Concentration des populations dans les refuges thermiques (péninsule Ibérique, zone franco-cantabrique, Balkans).\n• Maîtrise technologique du froid extrême (vêtements ajustés à l'aiguille à chas, fosses-congélateurs périglaciaires).\n• Réexpansion démographique post-glaciaire rapide lors du réchauffement de Bølling-Allerød.\n",
+  "description" : "â„ï¸ SCÉNARIO PALÉOLITHIQUE : Apogée Glaciaire & Refuges Solutréens (-20 000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le paroxysme du Dernier Maximum Glaciaire (LGM) avec un niveau marin abaissé de 120 mètres (exposant le Doggerland, le Sundaland, le Sahul et la Béringie), les inlandsis massifs (Laurentide, Fennoscandie) et l'industrie lithique foliacée solutréenne.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Concentration des populations dans les refuges thermiques (péninsule Ibérique, zone franco-cantabrique, Balkans).\n• Maîtrise technologique du froid extrême (vêtements ajustés à l'aiguille à chas, fosses-congélateurs périglaciaires).\n• Réexpansion démographique post-glaciaire rapide lors du réchauffement de Bølling-Allerød.\n",
   "id" : null,
   "presetKey" : "lgm_solutrean",
   "planetPreset" : {
@@ -38,13 +38,13 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "ðŸŒ Terre (-20000 BP) â€” Climat Glaciaire LGM & Inlandsis",
+    "tempSource" : "ðŸŒ Terre (-20000 BP) — Climat Glaciaire LGM & Inlandsis",
     "tempSeed" : 12449,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre (-20000 BP) â€” AriditÃ© Glaciaire & Steppe Ã  Mammouths",
+    "precipSource" : "ðŸŒ Terre (-20000 BP) — Aridité Glaciaire & Steppe Ã  Mammouths",
     "precipSeed" : 13349,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre (-20000 BP) â€” Forte SaisonnalitÃ© Glaciaire",
+    "seasonSource" : "ðŸŒ Terre (-20000 BP) — Forte Saisonnalité Glaciaire",
     "seasonSeed" : 14349,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -20000,
@@ -89,13 +89,13 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "ðŸŒ Terre (-20000 BP) â€” Climat Glaciaire LGM & Inlandsis",
+      "tempSource" : "ðŸŒ Terre (-20000 BP) — Climat Glaciaire LGM & Inlandsis",
       "tempSeed" : 12449,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre (-20000 BP) â€” AriditÃ© Glaciaire & Steppe Ã  Mammouths",
+      "precipSource" : "ðŸŒ Terre (-20000 BP) — Aridité Glaciaire & Steppe Ã  Mammouths",
       "precipSeed" : 13349,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre (-20000 BP) â€” Forte SaisonnalitÃ© Glaciaire",
+      "seasonSource" : "ðŸŒ Terre (-20000 BP) — Forte Saisonnalité Glaciaire",
       "seasonSeed" : 14349,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : -20000,
@@ -191,5 +191,5 @@
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
   "displayName" : "Dernier Maximum Glaciaire & Solutréen (-20000)",
-  "displayDescription" : "â„ï¸ SCÃ‰NARIO PALÃ‰OLITHIQUE : ApogÃ©e Glaciaire & Refuges SolutrÃ©ens (-20 000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le paroxysme du Dernier Maximum Glaciaire (LGM) avec un niveau marin abaissé de 120 mètres (exposant le Doggerland, le Sundaland, le Sahul et la Béringie), les inlandsis massifs (Laurentide, Fennoscandie) et l'industrie lithique foliacée solutréenne.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Concentration des populations dans les refuges thermiques (péninsule Ibérique, zone franco-cantabrique, Balkans).\n• Maîtrise technologique du froid extrême (vêtements ajustés à l'aiguille à chas, fosses-congélateurs périglaciaires).\n• Réexpansion démographique post-glaciaire rapide lors du réchauffement de Bølling-Allerød.\n"
+  "displayDescription" : "â„ï¸ SCÉNARIO PALÉOLITHIQUE : Apogée Glaciaire & Refuges Solutréens (-20 000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le paroxysme du Dernier Maximum Glaciaire (LGM) avec un niveau marin abaissé de 120 mètres (exposant le Doggerland, le Sundaland, le Sahul et la Béringie), les inlandsis massifs (Laurentide, Fennoscandie) et l'industrie lithique foliacée solutréenne.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Concentration des populations dans les refuges thermiques (péninsule Ibérique, zone franco-cantabrique, Balkans).\n• Maîtrise technologique du froid extrême (vêtements ajustés à l'aiguille à chas, fosses-congélateurs périglaciaires).\n• Réexpansion démographique post-glaciaire rapide lors du réchauffement de Bølling-Allerød.\n"
 }

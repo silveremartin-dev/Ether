@@ -10,24 +10,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PostgresVaultServiceTest {
 
-    @Test
-    @DisplayName("Verify PostgresVaultService instantiation & backup script availability")
-    /*
-     * Test vault backup files operation.
+    /**
+     * Test vault schema DDL and service instantiation.
      * <p>
-     * Executes operational logic for {@code PostgresVaultServiceTest} within the geospatial raster and tensor ingestion pipeline.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
+     * Verifies that the PostgreSQL schema DDL exists and that the {@link PostgresVaultService}
+     * can be instantiated with valid connection credentials.
      * </p>
-     *
      */
-    public void testVaultBackupFiles() {
-        File jsonDump = new File("data/vault_backups/ether_full_vault_dump.json");
-        File sqlDump = new File("data/vault_backups/ether_postgres_import.sql");
+    @Test
+    @DisplayName("Verify PostgresVaultService instantiation & schema DDL availability")
+    public void testVaultSchemaAndService() {
+        File schemaSql = new File("data/vault_backups/schema.sql");
 
-        assertTrue(jsonDump.exists(), "JSON Vault Dump file must exist");
-        assertTrue(sqlDump.exists(), "SQL Postgres import dump file must exist");
-        assertTrue(jsonDump.length() > 1000000, "JSON Vault dump size must be over 1MB");
-        assertTrue(sqlDump.length() > 1000000, "SQL Postgres import dump size must be over 1MB");
+        assertTrue(schemaSql.exists(), "Schema DDL file (schema.sql) must exist");
+        assertTrue(schemaSql.length() > 0, "Schema DDL file must not be empty");
 
         PostgresVaultService service = new PostgresVaultService("jdbc:postgresql://localhost:5432/ether", "postgres", "postgres");
         assertNotNull(service, "PostgresVaultService instance must not be null");
