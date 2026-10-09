@@ -1308,26 +1308,14 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private void executeMissingScenarios() {
         if (isBatchRunning.get()) return;
 
-        List<ScenarioSelectableItem> initialTargets = scenarioList.stream()
+        List<ScenarioSelectableItem> targetItems = scenarioList.stream()
             .filter(i -> i.isSelected() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
             .toList();
 
-        if (initialTargets.isEmpty()) {
-            initialTargets = scenarioList.stream()
-                .filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
-                .toList();
-        }
-
-        if (initialTargets.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(I18n.getOrDefault("analytics.all_executed_title", "Scénarios Déjà Simulés"));
-            alert.setHeaderText(I18n.getOrDefault("analytics.all_executed_header", "Tous les scénarios ont déjà été exécutés"));
-            alert.setContentText(I18n.getOrDefault("analytics.all_executed_content", "Toutes les trajectoires de simulation sont complètes et indexées en cache. Cochez des scénarios spécifiques dans le tableau si vous souhaitez forcer leur réexécution."));
-            alert.showAndWait();
+        if (targetItems.isEmpty()) {
+            // No scenario selected, do nothing
             return;
         }
-
-        final List<ScenarioSelectableItem> targetItems = initialTargets;
 
         boolean allAlreadyExecuted = targetItems.stream().allMatch(ScenarioSelectableItem::isExecuted);
 
