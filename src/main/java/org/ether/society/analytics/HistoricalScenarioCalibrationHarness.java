@@ -1128,7 +1128,7 @@ public class HistoricalScenarioCalibrationHarness {
                 }
             }
 
-            // 4. Persist Scenario Configuration (scenario.json)
+            // 4. Persist Scenario Configuration (scenario.json) atomically
             org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
             scenario.setName(def.displayName());
             scenario.setDescription(def.historicalRegimeDescription());
@@ -1137,12 +1137,12 @@ public class HistoricalScenarioCalibrationHarness {
             scenario.setInitialHumanCount(Math.round(def.initialWorldPopMillions() * 1_000_000.0));
             scenario.setInitialCapitalPerCapita(def.initialCapitalPerCapita());
             scenario.setPlanetPreset(PlanetPreset.EARTH_LIKE);
-            mapper.writeValue(saveDir.resolve("scenario.json").toFile(), scenario);
+            org.ether.society.persistence.EtherJsonUtil.writePrettyAtomic(saveDir.resolve("scenario.json"), scenario);
 
-            // 5. Persist Historical Telemetry (history.json)
-            mapper.writeValue(saveDir.resolve("history.json").toFile(), snapshots);
+            // 5. Persist Historical Telemetry (history.json) atomically
+            org.ether.society.persistence.EtherJsonUtil.writePrettyAtomic(saveDir.resolve("history.json"), snapshots);
 
-            // 6. Persist Metadata (metadata.json)
+            // 6. Persist Metadata (metadata.json) atomically
             SaveMetadata meta = new SaveMetadata(
                     runId,
                     def.displayName(),
@@ -1150,7 +1150,7 @@ public class HistoricalScenarioCalibrationHarness {
                     1,
                     def.displayName()
             );
-            mapper.writeValue(saveDir.resolve("metadata.json").toFile(), meta);
+            org.ether.society.persistence.EtherJsonUtil.writePrettyAtomic(saveDir.resolve("metadata.json"), meta);
 
             logger.info("✅ Reference calibration run '{}' fully persisted with topology & snapshots in {}", def.scenarioKey(), saveDir);
 

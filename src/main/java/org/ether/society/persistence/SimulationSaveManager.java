@@ -67,10 +67,7 @@ public class SimulationSaveManager {
      */
     public SimulationSaveManager() {
         this.cellRepository = new H3CellRepository(DatabaseConfig.getEntityManagerFactory());
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
-        this.objectMapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.objectMapper.configure(com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        this.objectMapper = EtherJsonUtil.getPrettyMapper();
 
         try {
             Files.createDirectories(getSaveDirectory());
@@ -156,18 +153,17 @@ public class SimulationSaveManager {
                 }
             }
 
-            // 3. Save Scenario Configuration (scenario.json)
+            // 3. Save Scenario Configuration (scenario.json) atomically
             if (engine.getCurrentScenario() != null) {
-                objectMapper.writeValue(savePath.resolve(SCENARIO_FILE).toFile(), engine.getCurrentScenario());
+                EtherJsonUtil.writePrettyAtomic(savePath.resolve(SCENARIO_FILE), engine.getCurrentScenario());
             }
 
-            // 4. Save Historical Telemetry & Analytics (history.json)
+            // 4. Save Historical Telemetry & Analytics (history.json) atomically
             if (engine.getHistoryManager() != null && engine.getHistoryManager().getHistory() != null) {
-                File historyFile = savePath.resolve(HISTORY_FILE).toFile();
-                objectMapper.writeValue(historyFile, engine.getHistoryManager().getHistory().getSnapshots());
+                EtherJsonUtil.writePrettyAtomic(savePath.resolve(HISTORY_FILE), engine.getHistoryManager().getHistory().getSnapshots());
             }
 
-            // 5. Save Metadata (metadata.json)
+            // 5. Save Metadata (metadata.json) atomically
             int h3Res = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getH3Resolution() : 3;
             SaveMetadata metadata = new SaveMetadata(
                     saveId,
@@ -178,7 +174,7 @@ public class SimulationSaveManager {
                     cells.size(),
                     h3Res
             );
-            objectMapper.writeValue(savePath.resolve(METADATA_FILE).toFile(), metadata);
+            EtherJsonUtil.writePrettyAtomic(savePath.resolve(METADATA_FILE), metadata);
 
             // 6. Optional Database persistence
             if (DatabaseConfig.isDatabaseAvailable()) {
@@ -449,7 +445,7 @@ public class SimulationSaveManager {
 
                                 meta = new SaveMetadata(dirName, scName, endYear, 1, scName, cellCount, res);
                                 try {
-                                    objectMapper.writeValue(metaFile.toFile(), meta);
+                                    EtherJsonUtil.writePrettyAtomic(metaFile, meta);
                                     logger.info("Auto-repaired corrupted or missing metadata.json for save: {}", dirName);
                                 } catch (Exception ignored) {}
                             }

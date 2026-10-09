@@ -1,5 +1,7 @@
 package org.ether.society.persistence;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 
 /**
@@ -12,12 +14,14 @@ import java.time.LocalDateTime;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SaveMetadata {
     /* Internal state variable for id (String). */
     private String id;
     /* Internal state variable for name (String). */
     private String name;
-    private LocalDateTime timestamp;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime timestamp = LocalDateTime.now();
     /* Internal state variable for year (long). */
     private long year;
     /* Internal state variable for month (int). */
