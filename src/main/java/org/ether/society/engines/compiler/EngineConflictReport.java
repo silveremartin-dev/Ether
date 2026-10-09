@@ -147,7 +147,7 @@ public class EngineConflictReport {
      */
     public String generateSummary() {
         if (entries.isEmpty()) {
-            return "âœ… No model conflicts or incompatibilities detected. Engines are fully compatible.";
+            return "✅ No model conflicts or incompatibilities detected. Engines are fully compatible.";
         }
         StringBuilder sb = new StringBuilder("⚠️ï¸ Scenario Engine Diagnostic & Compatibility Report:\n");
         for (ConflictEntry entry : entries) {

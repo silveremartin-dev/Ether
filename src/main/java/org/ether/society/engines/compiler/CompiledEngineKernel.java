@@ -125,7 +125,7 @@ public class CompiledEngineKernel {
      * @return the resulting computation or state reference
      */
     public String toString() {
-        StringBuilder sb = new StringBuilder("âš¡ Fused Compiled CPU Kernel Expressions:\n");
+        StringBuilder sb = new StringBuilder("⚡ Fused Compiled CPU Kernel Expressions:\n");
         fusedExpressions.forEach((var, expr) -> sb.append(String.format("  - %s: %s\n", var, expr)));
         return sb.toString();
     }

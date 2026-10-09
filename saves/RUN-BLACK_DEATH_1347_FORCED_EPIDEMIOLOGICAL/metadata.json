@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-BLACK_DEATH_1347_FORCED_EPIDEMIOLOGICAL",
-  "name" : "1347 Black Death Twin B: Forced Yersinia Pestis Rupture (1300 -> 1400 CE)",
-  "timestamp"
+{"id":"RUN-BLACK_DEATH_1347_FORCED_EPIDEMIOLOGICAL","name":"1347 Black Death Twin B: Forced Yersinia Pestis Rupture (1300 -> 1400 CE)","timestamp":[2026,10,9,22,26,53,376281000],"year":1400,"month":1,"scenarioName":"1347 Black Death Twin B: Forced Yersinia Pestis Rupture (1300 -> 1400 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

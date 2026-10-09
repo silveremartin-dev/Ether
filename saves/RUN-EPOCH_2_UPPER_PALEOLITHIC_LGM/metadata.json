@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-EPOCH_2_UPPER_PALEOLITHIC_LGM",
-  "name" : "Epoch 2: Upper Paleolithic & Last Glacial Maximum (-50000 -> -10000 BP)",
-  "timestamp"
+{"id":"RUN-EPOCH_2_UPPER_PALEOLITHIC_LGM","name":"Epoch 2: Upper Paleolithic & Last Glacial Maximum (-50000 -> -10000 BP)","timestamp":[2026,10,9,22,26,53,958637100],"year":-10000,"month":1,"scenarioName":"Epoch 2: Upper Paleolithic & Last Glacial Maximum (-50000 -> -10000 BP)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

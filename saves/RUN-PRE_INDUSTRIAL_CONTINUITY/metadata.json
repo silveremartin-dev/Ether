@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-PRE_INDUSTRIAL_CONTINUITY",
-  "name" : "Early Modern Pre-Industrial Commercial Continuity (1500 CE -> 1750 CE)",
-  "timestamp"
+{"id":"RUN-PRE_INDUSTRIAL_CONTINUITY","name":"Early Modern Pre-Industrial Commercial Continuity (1500 CE -> 1750 CE)","timestamp":[2026,10,9,22,26,55,50683300],"year":1750,"month":1,"scenarioName":"Early Modern Pre-Industrial Commercial Continuity (1500 CE -> 1750 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

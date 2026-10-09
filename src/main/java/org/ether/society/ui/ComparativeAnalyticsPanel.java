@@ -1015,14 +1015,33 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             String scDensity = sc.getPopulationDensityType() != null ? sc.getPopulationDensityType().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
 
             for (SaveMetadata save : allSaves) {
+                String saveId = save.getId() != null ? save.getId().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
                 String saveNorm = save.getName() != null ? save.getName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
                 String saveScNorm = save.getScenarioName() != null ? save.getScenarioName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
                 
-                boolean match = (!scKey.isEmpty() && (saveNorm.contains(scKey) || saveScNorm.contains(scKey)))
-                             || (!scNorm.isEmpty() && (saveNorm.contains(scNorm) || saveScNorm.contains(scNorm)))
-                             || (!scDisp.isEmpty() && (saveNorm.contains(scDisp) || saveScNorm.contains(scDisp)))
-                             || (!scDensity.isEmpty() && (saveNorm.contains(scDensity) || saveScNorm.contains(scDensity)))
-                             || (Math.abs(save.getYear() - sc.getStartDateYear()) <= 150);
+                boolean textMatch = (!scKey.isEmpty() && (saveNorm.contains(scKey) || saveScNorm.contains(scKey) || saveId.contains(scKey)))
+                             || (!scNorm.isEmpty() && (saveNorm.contains(scNorm) || saveScNorm.contains(scNorm) || saveId.contains(scNorm)))
+                             || (!scDisp.isEmpty() && (saveNorm.contains(scDisp) || saveScNorm.contains(scDisp) || saveId.contains(scDisp)))
+                             || (!scDensity.isEmpty() && (saveNorm.contains(scDensity) || saveScNorm.contains(scDensity)));
+
+                boolean epochSemanticMatch = false;
+                if (!textMatch) {
+                    if ((scNorm.contains("afrique") || scNorm.contains("africa") || scNorm.contains("toba")) && (saveId.contains("epoch1") || saveId.contains("paleolithic"))) {
+                        epochSemanticMatch = true;
+                    } else if ((scNorm.contains("bering") || scNorm.contains("solutre") || scNorm.contains("lgm") || scNorm.contains("glaciaire")) && (saveId.contains("epoch2") || saveId.contains("lgm"))) {
+                        epochSemanticMatch = true;
+                    } else if ((scNorm.contains("fertile") || scNorm.contains("crescent") || scNorm.contains("sahara") || scNorm.contains("neolith")) && (saveId.contains("epoch3") || saveId.contains("neolithic"))) {
+                        epochSemanticMatch = true;
+                    } else if ((scNorm.contains("bronze") || scNorm.contains("mesopotam") || scNorm.contains("assyri") || scNorm.contains("harappa") || scNorm.contains("egypt")) && (saveId.contains("epoch4") || saveId.contains("bronze") || saveId.contains("harappa"))) {
+                        epochSemanticMatch = true;
+                    }
+                }
+
+                boolean dateMatch = (Math.abs(save.getYear() - sc.getStartDateYear()) <= 150)
+                                 || (Math.abs(save.getYear() - sc.getEndDateYear()) <= 150)
+                                 || (save.getYear() >= sc.getStartDateYear() && save.getYear() <= sc.getEndDateYear());
+
+                boolean match = textMatch || epochSemanticMatch || (dateMatch && (!saveId.isEmpty() && !saveId.equals("autosaveexit")));
 
                 if (match) {
                     if (matchingSave == null || save.getYear() > matchingSave.getYear()) {
@@ -1289,11 +1308,26 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private void executeMissingScenarios() {
         if (isBatchRunning.get()) return;
 
-        List<ScenarioSelectableItem> targetItems = scenarioList.stream()
+        List<ScenarioSelectableItem> initialTargets = scenarioList.stream()
             .filter(i -> i.isSelected() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
             .toList();
 
-        if (targetItems.isEmpty()) return;
+        if (initialTargets.isEmpty()) {
+            initialTargets = scenarioList.stream()
+                .filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
+                .toList();
+        }
+
+        if (initialTargets.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(I18n.getOrDefault("analytics.all_executed_title", "Scénarios Déjà Simulés"));
+            alert.setHeaderText(I18n.getOrDefault("analytics.all_executed_header", "Tous les scénarios ont déjà été exécutés"));
+            alert.setContentText(I18n.getOrDefault("analytics.all_executed_content", "Toutes les trajectoires de simulation sont complètes et indexées en cache. Cochez des scénarios spécifiques dans le tableau si vous souhaitez forcer leur réexécution."));
+            alert.showAndWait();
+            return;
+        }
+
+        final List<ScenarioSelectableItem> targetItems = initialTargets;
 
         boolean allAlreadyExecuted = targetItems.stream().allMatch(ScenarioSelectableItem::isExecuted);
 

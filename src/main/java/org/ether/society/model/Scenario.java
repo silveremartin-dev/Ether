@@ -168,7 +168,7 @@ public class Scenario implements Serializable {
     private double axialTiltDegrees; // Inclination
 
     public enum TechPreset {
-        AUTO_FROM_YEAR("â³ Automatique (Calculé selon l'année Tâ‚€)", -1, -1, -1, -1),
+        AUTO_FROM_YEAR("⏳ Automatique (Calculé selon l'année Tâ‚€)", -1, -1, -1, -1),
         PALEOLITHIC("ðŸ¹ Chasseurs-Cueilleurs / Néolithique", 5.0, 10.0, 2.0, 5.0),
         NEOLITHIC_BRONZE("ðŸ›¡ï¸ Ã‚ge du Bronze & Cités-États", 25.0, 30.0, 4.0, 40.0),
         ANTIQUITY("ðŸ›ï¸ Antiquité Classique & Empire", 100.0, 60.0, 6.0, 200.0),
@@ -2696,7 +2696,7 @@ public class Scenario implements Serializable {
         sMongol.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sMongol.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sMongol.setDescription("""
-            ðŸ¹ SCÉNARIO HISTORIQUE : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)
+            ðŸ¹ SCÉNARIO HISTORIQUE : Conquête Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.
@@ -2887,7 +2887,7 @@ public class Scenario implements Serializable {
         sSakoku.setMinLat(30.0); sSakoku.setMaxLat(45.0); sSakoku.setMinLng(128.0); sSakoku.setMaxLng(146.0);
         sSakoku.setBoundaryMode("DYNAMIC_RESERVOIR");
         sSakoku.setDescription("""
-            â›©ï¸ SCÉNARIO HISTORIQUE : L'Ãˆre d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)
+            â›©ï¸ SCÉNARIO HISTORIQUE : L'Ère d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Fermeture des frontières de l'archipel japonais décrétée par le Shogunat Tokugawa. Modélise une économie circulaire hautement autarcique, l'urbanisation géante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extérieurs jusqu'à l'arrivée des bateaux noirs du Commandant Perry en 1853.
@@ -3001,7 +3001,7 @@ public class Scenario implements Serializable {
         sModern2000.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sModern2000.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sModern2000.setDescription("""
-            ðŸŒ SCÉNARIO HISTORIQUE : L'Ãˆre Numérique & La Grande Accélération (2000 ap. J.-C.)
+            ðŸŒ SCÉNARIO HISTORIQUE : L'Ère Numérique & La Grande Accélération (2000 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Consolidation du système économique mondial interconnecté, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.

@@ -49,7 +49,7 @@ public class ScenarioEngineJITCompiler {
         if (conflictReport.hasIncompatibilities()) {
             logger.warn("⚠️ï¸ Severe model incompatibilities detected during scenario JIT compilation:\n{}", conflictReport.generateSummary());
         } else {
-            logger.info("âœ… Static analysis completed cleanly:\n{}", conflictReport.generateSummary());
+            logger.info("✅ Static analysis completed cleanly:\n{}", conflictReport.generateSummary());
         }
 
         // 2. AST Reduction & Composition (Constant Folding)
@@ -67,7 +67,7 @@ public class ScenarioEngineJITCompiler {
                 fused = fused.compose(exprList.get(i));
             }
 
-            logger.info("  âš¡ Fused [{}] from {} engine steps -> {}", varName, exprList.size(), fused);
+            logger.info("  ⚡ Fused [{}] from {} engine steps -> {}", varName, exprList.size(), fused);
             compiledKernel.addFusedExpression(varName, fused);
         }
 

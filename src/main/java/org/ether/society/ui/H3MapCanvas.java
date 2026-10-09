@@ -1963,6 +1963,7 @@ public class H3MapCanvas extends Canvas {
         double lngSpan = Math.max(1.0, maxLng - minLng);
         double cellSpacing = (lngSpan / Math.sqrt(Math.max(1, cells.size()))) * scale;
         double cellSize = Math.max(5.0, cellSpacing * 1.45);
+        double radiusY = Math.max(1.0, cellSize / 2.0);
 
         if (smoothMap) {
             double worldX = (minLng - minLng) * scale + offsetX;
@@ -1975,7 +1976,10 @@ public class H3MapCanvas extends Canvas {
                 gc.drawImage(smoothImg, worldX, worldY, worldW, worldH);
             }
 
-            if (showHexGrid) {
+            if (showHexGrid && radiusY >= 3.5) {
+                double strokeAlpha = Math.min(0.35, (radiusY - 3.5) / 3.5 * 0.35);
+                gc.setStroke(Color.rgb(15, 23, 42, strokeAlpha));
+                gc.setLineWidth(0.8);
                 // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (int i = startIndex; i < cells.size(); i++) {
                     H3Cell cell = cells.get(i);
@@ -1988,15 +1992,13 @@ public class H3MapCanvas extends Canvas {
                         continue;
                     }
 
-                    double radiusY = Math.max(1.0, cellSize / 2.0);
+                    double cellRadiusY = Math.max(1.0, cellSize / 2.0);
                     double absLat = Math.abs(cell.getLatitude());
                     double cosLat = Math.cos(Math.toRadians(Math.min(88.0, absLat)));
-                    double radiusX = Math.max(radiusY * 0.45, (cellSize / 2.0) / Math.max(0.12, cosLat));
+                    double radiusX = Math.max(cellRadiusY * 0.45, (cellSize / 2.0) / Math.max(0.12, cosLat));
 
                     if (absLat < 78.0) {
-                        gc.setStroke(Color.rgb(15, 23, 42, 0.35));
-                        gc.setLineWidth(0.8);
-                        strokeHexCell2D(gc, x, y, radiusX, radiusY);
+                        strokeHexCell2D(gc, x, y, radiusX, cellRadiusY);
                     }
                 }
             }
@@ -2027,11 +2029,11 @@ public class H3MapCanvas extends Canvas {
                 );
             }
 
-            double radiusY = Math.max(1.0, cellSize / 2.0);
+            double cellRadiusY = Math.max(1.0, cellSize / 2.0);
             double absLat = Math.abs(cell.getLatitude());
             double cosLat = Math.cos(Math.toRadians(Math.min(88.0, absLat)));
             double radiusX = (cellSize / 2.0) / Math.max(0.12, cosLat);
-            radiusX = Math.max(radiusY * 0.45, radiusX);
+            radiusX = Math.max(cellRadiusY * 0.45, radiusX);
 
             boolean floating = showFloatingLayers && hasThematicOverlay(cell);
             if (floating) {
@@ -2047,27 +2049,28 @@ public class H3MapCanvas extends Canvas {
                     );
                 }
                 gc.setFill(baseBiomeColor);
-                drawHexCell2D(gc, x, y, radiusX, radiusY);
+                drawHexCell2D(gc, x, y, radiusX, cellRadiusY);
 
                 // 2. Soft ambient drop shadow cast by floating layer
                 gc.setFill(Color.rgb(0, 0, 0, 0.32));
-                drawHexCell2D(gc, x + 1.8, y + 1.8, radiusX * 0.94, radiusY * 0.94);
+                drawHexCell2D(gc, x + 1.8, y + 1.8, radiusX * 0.94, cellRadiusY * 0.94);
 
                 // 3. Elevated floating data polygon with luminous edge
                 gc.setFill(color);
-                drawHexCell2D(gc, x - 0.9, y - 0.9, radiusX * 0.96, radiusY * 0.96);
+                drawHexCell2D(gc, x - 0.9, y - 0.9, radiusX * 0.96, cellRadiusY * 0.96);
                 gc.setStroke(Color.rgb(255, 255, 255, 0.35));
                 gc.setLineWidth(0.8);
-                strokeHexCell2D(gc, x - 0.9, y - 0.9, radiusX * 0.96, radiusY * 0.96);
+                strokeHexCell2D(gc, x - 0.9, y - 0.9, radiusX * 0.96, cellRadiusY * 0.96);
             } else {
                 gc.setFill(color);
-                drawHexCell2D(gc, x, y, radiusX, radiusY);
+                drawHexCell2D(gc, x, y, radiusX, cellRadiusY);
             }
 
-            if (showHexGrid && absLat < 78.0 && !floating) {
-                gc.setStroke(Color.rgb(15, 23, 42, 0.35));
+            if (showHexGrid && cellRadiusY >= 3.5 && absLat < 78.0 && !floating) {
+                double strokeAlpha = Math.min(0.35, (cellRadiusY - 3.5) / 3.5 * 0.35);
+                gc.setStroke(Color.rgb(15, 23, 42, strokeAlpha));
                 gc.setLineWidth(0.8);
-                strokeHexCell2D(gc, x, y, radiusX, radiusY);
+                strokeHexCell2D(gc, x, y, radiusX, cellRadiusY);
             }
         }
     }

@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-EPOCH_7_HIGH_LATE_MEDIEVAL",
-  "name" : "Epoch 7: High Medieval & Eurasian Nomad Dynamics (1000 -> 1500 CE)",
-  "timestamp"
+{"id":"RUN-EPOCH_7_HIGH_LATE_MEDIEVAL","name":"Epoch 7: High Medieval & Eurasian Nomad Dynamics (1000 -> 1500 CE)","timestamp":[2026,10,9,22,26,54,488807000],"year":1500,"month":1,"scenarioName":"Epoch 7: High Medieval & Eurasian Nomad Dynamics (1000 -> 1500 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

@@ -406,13 +406,57 @@ public class SimulationSaveManager {
             stream.filter(Files::isDirectory)
                     .forEach(dir -> {
                         Path metaFile = dir.resolve(METADATA_FILE);
+                        SaveMetadata meta = null;
                         if (Files.exists(metaFile)) {
                             try {
-                                SaveMetadata meta = objectMapper.readValue(metaFile.toFile(), SaveMetadata.class);
-                                if (meta != null && meta.getId() != null) {
-                                    list.add(meta);
+                                meta = objectMapper.readValue(metaFile.toFile(), SaveMetadata.class);
+                            } catch (Exception ignored) {
+                                // Metadata file exists but may be truncated or corrupted
+                            }
+                        }
+
+                        if (meta == null || meta.getId() == null) {
+                            // Fallback & Auto-repair: Recover metadata from scenario.json and history.json
+                            Path scenarioFile = dir.resolve(SCENARIO_FILE);
+                            Path historyFile = dir.resolve(HISTORY_FILE);
+                            if (Files.exists(scenarioFile) || Files.exists(historyFile)) {
+                                String dirName = dir.getFileName().toString();
+                                String scName = dirName;
+                                long endYear = 0;
+                                int cellCount = 0;
+                                int res = 3;
+
+                                if (Files.exists(scenarioFile)) {
+                                    try {
+                                        org.ether.society.model.Scenario sc = objectMapper.readValue(scenarioFile.toFile(), org.ether.society.model.Scenario.class);
+                                        if (sc != null) {
+                                            if (sc.getName() != null && !sc.getName().isBlank()) scName = sc.getName();
+                                            endYear = sc.getEndDateYear();
+                                            res = sc.getH3Resolution();
+                                        }
+                                    } catch (Exception ignored) {}
                                 }
-                            } catch (Exception ignored) {}
+
+                                if (Files.exists(historyFile)) {
+                                    try {
+                                        List<org.ether.society.analytics.HistorySnapshot> snaps = objectMapper.readValue(historyFile.toFile(),
+                                                objectMapper.getTypeFactory().constructCollectionType(List.class, org.ether.society.analytics.HistorySnapshot.class));
+                                        if (snaps != null && !snaps.isEmpty()) {
+                                            endYear = snaps.get(snaps.size() - 1).year();
+                                        }
+                                    } catch (Exception ignored) {}
+                                }
+
+                                meta = new SaveMetadata(dirName, scName, endYear, 1, scName, cellCount, res);
+                                try {
+                                    objectMapper.writeValue(metaFile.toFile(), meta);
+                                    logger.info("Auto-repaired corrupted or missing metadata.json for save: {}", dirName);
+                                } catch (Exception ignored) {}
+                            }
+                        }
+
+                        if (meta != null && meta.getId() != null) {
+                            list.add(meta);
                         }
                     });
         } catch (IOException e) {

@@ -60,7 +60,7 @@ public class KardashevPureEngine {
 
         double kScale = calculateKardashevScale(totalGlobalWatts);
         if (kScale >= 1.0) {
-            logger.info("âš¡ Kardashev Engine: Civilization reached Type I Planetary Threshold (K = {})", kScale);
+            logger.info("⚡ Kardashev Engine: Civilization reached Type I Planetary Threshold (K = {})", kScale);
         }
     }
 }

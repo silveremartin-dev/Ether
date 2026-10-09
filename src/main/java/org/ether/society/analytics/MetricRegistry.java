@@ -265,7 +265,7 @@ public class MetricRegistry {
             cells -> cells.stream().mapToDouble(c -> c.getLinguisticDrift() != null ? c.getLinguisticDrift() : 1.0).average().orElse(1.0)
         ));
 
-        // --- â³ 6. CLIODYNAMIQUE & RISQUES SYSTÉMIQUES ---
+        // --- ⏳ 6. CLIODYNAMIQUE & RISQUES SYSTÉMIQUES ---
         register(new MetricDescriptor(
             "eliteOverproduction", "Surproduction Élitaire (Turchin)", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
             "Ratio de compétition pour le pouvoir et d'aspiration des élites.",

@@ -1653,7 +1653,7 @@ public class ScenarioSetupPanel extends BorderPane {
         cgCol4.setPercentWidth(25);
         customGrid.getColumnConstraints().setAll(cgCol1, cgCol2, cgCol3, cgCol4);
 
-        customGrid.addRow(0, new Label(I18n.getOrDefault("scenario.label.stock_k0", "ðŸ› ï¸ Kâ‚€ (kg/hab) :")), customCapitalSpinner, new Label(I18n.getOrDefault("scenario.label.stock_e0", "âš¡ Eâ‚€ (MJ/hab) :")), customEnergySpinner);
+        customGrid.addRow(0, new Label(I18n.getOrDefault("scenario.label.stock_k0", "ðŸ› ï¸ Kâ‚€ (kg/hab) :")), customCapitalSpinner, new Label(I18n.getOrDefault("scenario.label.stock_e0", "⚡ Eâ‚€ (MJ/hab) :")), customEnergySpinner);
         customGrid.addRow(1, new Label(I18n.getOrDefault("scenario.label.stock_f0", "🌾 F₀ (mois) :")), customFoodSpinner, new Label(I18n.getOrDefault("scenario.label.stock_i0", "🧠 I₀ (bits/hab) :")), customInfoSpinner);
 
         Label customTitleLabel = new Label(I18n.getOrDefault("scenario.section.custom_stocks", "⚙️ï¸ MANUAL INITIAL PHYSICAL STOCKS SETUP (CUSTOM):"));
@@ -1959,7 +1959,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     String timeStr = item.getTimestamp() != null ? item.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
                     String text = String.format("📸 Point de reprise : An %,d (Mois %02d) — %s", item.getYear(), item.getMonth(), timeStr);
                     setText(text);
-                    setTooltip(new Tooltip(String.format("ðŸ“ ID: %s\nðŸ“œ Scénario: %s\nâ³ Année: %,d (Mois %02d)\n📅 Horodatage: %s\n💡 Reprendre ce point restaure l'état tout en gardant l'historique de simulation.",
+                    setTooltip(new Tooltip(String.format("ðŸ“ ID: %s\nðŸ“œ Scénario: %s\n⏳ Année: %,d (Mois %02d)\n📅 Horodatage: %s\n💡 Reprendre ce point restaure l'état tout en gardant l'historique de simulation.",
                             item.getId(), item.getScenarioName(), item.getYear(), item.getMonth(), timeStr)));
                 }
             }
@@ -2138,6 +2138,9 @@ public class ScenarioSetupPanel extends BorderPane {
         refreshSnapshotListForScenario(getScenario());
     }
 
+    private List<org.ether.society.persistence.SaveMetadata> cachedSavesList = null;
+    private long lastSavesListFetchTime = 0;
+
     /*
      * Refresh snapshot list for scenario.
      * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
@@ -2146,7 +2149,16 @@ public class ScenarioSetupPanel extends BorderPane {
      */
     public void refreshSnapshotListForScenario(Scenario s) {
         if (snapshotCombo == null) return;
-        List<org.ether.society.persistence.SaveMetadata> allSaves = getSaveManager().listSaves();
+        long now = System.currentTimeMillis();
+        if (cachedSavesList == null || (now - lastSavesListFetchTime > 3000)) {
+            try {
+                cachedSavesList = getSaveManager().listSaves();
+                lastSavesListFetchTime = now;
+            } catch (Exception e) {
+                cachedSavesList = Collections.emptyList();
+            }
+        }
+        List<org.ether.society.persistence.SaveMetadata> allSaves = cachedSavesList != null ? cachedSavesList : Collections.emptyList();
         List<org.ether.society.persistence.SaveMetadata> matchingSaves = new ArrayList<>();
 
         if (s != null && !allSaves.isEmpty()) {
@@ -2494,23 +2506,23 @@ public class ScenarioSetupPanel extends BorderPane {
             boolean demoIsEarth = demoLower.contains("terre") || demoLower.contains("earth") || demoLower.contains("hyde");
 
             if (planetIsEarth && (demoIsMars || demoIsMoon || demoIsVenus || demoIsMercury)) {
-                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique Â« %s Â» sélectionnée sur un relief terrestre (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique « %s » sélectionnée sur un relief terrestre (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             } else if (planetKey.contains("mars") && demoIsEarth) {
-                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre Â« %s Â» appliquée sur le relief martien (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre « %s » appliquée sur le relief martien (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             } else if (planetKey.contains("lune") && demoIsEarth) {
-                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre Â« %s Â» appliquée sur le relief lunaire (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre « %s » appliquée sur le relief lunaire (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             } else if (planetKey.contains("vénus") && demoIsEarth) {
-                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre Â« %s Â» appliquée sur Vénus (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre « %s » appliquée sur Vénus (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             } else if (planetKey.contains("mercure") && demoIsEarth) {
-                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre Â« %s Â» appliquée sur Mercure (Onglet 1)."), demoSrc.trim()));
+                geoItems.add("⚠️ï¸ " + String.format(I18n.getOrDefault("scenario.warning.demo_body_mismatch", "Incohérence planétaire : Source démographique terrestre « %s » appliquée sur Mercure (Onglet 1)."), demoSrc.trim()));
                 bodyMismatch = true;
                 alertCount++;
             }
@@ -2616,7 +2628,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     double oceanPct = (oceanTB * 100.0) / totalTB;
                     if (oceanPct > 20.0) {
                         geoItems.add(String.format(java.util.Locale.FRANCE,
-                            I18n.getOrDefault("scenario.warning.ocean_culture", "⚠️ï¸ Incompatibilité culturelle : %.1f%% de l'intensité du tenseur Â« %s Â» est située sur l'océan (%s)."),
+                            I18n.getOrDefault("scenario.warning.ocean_culture", "⚠️ï¸ Incompatibilité culturelle : %.1f%% de l'intensité du tenseur « %s » est située sur l'océan (%s)."),
                             oceanPct, getCulturalTensorTitle(i), planetName));
                         tensorOceanWarn = true;
                         alertCount++;
@@ -2634,7 +2646,7 @@ public class ScenarioSetupPanel extends BorderPane {
         boolean isSpaceBody = planetKey.contains("lune") || planetKey.contains("moon") || planetKey.contains("mercure") || planetKey.contains("mercury") || planetKey.contains("mars") || planetKey.contains("venus") || planetKey.contains("vénus");
         if (!isSpaceBody && (atmoPres < 0.1 || atmoPres > 5.0 || avgTemp < -50 || avgTemp > 60)) {
             geoItems.add(String.format(java.util.Locale.FRANCE,
-                I18n.getOrDefault("scenario.warning.hostile_environment", "⚠️ï¸ Environnement hostile (Onglet 1) : Pression (%.2f atm) ou Température (%.1f °C) extrÃªme — Survie humaine conditionnée à des habitats scellés."),
+                I18n.getOrDefault("scenario.warning.hostile_environment", "⚠️ï¸ Environnement hostile (Onglet 1) : Pression (%.2f atm) ou Température (%.1f °C) extrême — Survie humaine conditionnée à des habitats scellés."),
                 atmoPres, avgTemp));
             alertCount++;
         }
@@ -3781,7 +3793,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Invention d'hameçons en os et lignes en fibre pour la capture de poissons pélagiques (Thons, Thyrsites) en eau profonde.",
                 "Ref: O'Connor, S. et al. (2011). Pelagic Fishing at 42,000 Years Before the Present in East Timor. Science.",
                 "• Capture Pélagique : Débloque la pêche en haute mer au-delà des récifs littoraux\n• Apport Protéique Massif : +30% d'apport calorique en zone insulaire"},
-            new String[]{"GeophyteDiggingStickEngine", "ðŸ  BÃ¢tons Fouisseurs & Extraction des Géophytes (USO) (-170 000 BP)",
+            new String[]{"GeophyteDiggingStickEngine", "ðŸ  Bâtons Fouisseurs & Extraction des Géophytes (USO) (-170 000 BP)",
                 "Bâtons fouisseurs durcis au feu pour l'extraction de tubercules et oignons souterrains en zone aride.",
                 "Ref: Wadley, L. et al. (2020). Cooked starchy rhizomes in South Africa 170,000 years ago. Science.",
                 "• Extraction USO : Glucides souterrains accessibles lors des sécheresses\n• Capacité Portante en Aridité : Protège les cohortes contre la disette"},
@@ -3933,7 +3945,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 "Capture d'oiseaux migrateurs au filet dans les marais de la mer du Nord asséchée.",
                 "Ref: Coles, B. J. (1998). Doggerland: a cultural review. Proc. Prehist. Soc.",
                 "• Abondance Aviaire : Apport calorique printanier massif pour les bandes mésolithiques\n• Stabilisation Cotière : Maintien de populations élevées avant la submersion marine"},
-            new String[]{"NightTorchSpearfishingEngine", "ðŸŸ PÃªche Nocturne au Flambeau de Pin & Harponnage (-14 000 BP)",
+            new String[]{"NightTorchSpearfishingEngine", "ðŸŸ Pêche Nocturne au Flambeau de Pin & Harponnage (-14 000 BP)",
                 "Éclairage des rivières à la torche de résine attirable les poissons la nuit.",
                 "Ref: Zhilin, M. (2014). Early Mesolithic bone arrows and harpoons from Upper Volga. Quat. Int.",
                 "• Rendement Nocturne : Doubler la capture de brochets et truites dans les cours d'eau\n• Diversification Broad-Spectrum : Sécurise l'alimentation lors des disettes de chasse"},
@@ -4172,7 +4184,7 @@ public class ScenarioSetupPanel extends BorderPane {
             new String[]{"UrbanThermodynamicsEngine", "ðŸ™ï¸ Thermodynamique Urbaine & Métropoles (1850)",
                 "Îlots de chaleur urbains et densité bâtie hyper-concentrée. Élève la température locale des métropoles et consomme de la puissance de climatisation.",
                 "Ref: Oke, T. R. (1982). The Energetic Basis of the Urban Heat Island. Q. J. R. Meteorol. Soc.",
-                "• ÃŽlot de Chaleur Urbain Î”T_urbain = a Â· logâ‚â‚€(Immobilier_Densité) + b"},
+                "• Îlot de Chaleur Urbain Î”T_urbain = a Â· logâ‚â‚€(Immobilier_Densité) + b"},
             new String[]{"World3CouplingEngine", "📉 Modèle Couplé World3 & Limites à la Croissance (1972)",
                 "Rétroactions entre population, pollution et capital (Club de Rome). Connecte le modèle World3 Meadows aux cellules hexagonales H3.",
                 "Ref: Meadows, D. H., Meadows, D. L., Randers, J., & Behrens, W. W. (1972). Limits to Growth.",
@@ -6766,44 +6778,69 @@ private String getDefaultTensorName(int index) {
         );
     }
 
+    private static final java.util.Map<String, List<H3Cell>> previewMeshCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.concurrent.atomic.AtomicLong previewSeq = new java.util.concurrent.atomic.AtomicLong(0);
+
     // Helper subroutine: generate preview - internal state computation & bounds checking
     private void generatePreview() {
         if (previewStatusLabel != null) {
             previewStatusLabel.setText(I18n.getOrDefault("scenario.status.calc_preview", "⚡ Calculating demographic preview in background..."));
         }
         isPreviewGenerating.set(true);
+        final long mySeq = previewSeq.incrementAndGet();
+
         new Thread(() -> {
             try {
                 PlanetPreset cfg = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null);
                 if (cfg == null) cfg = PlanetPreset.EARTH_LIKE;
 
-                // Fast preview generation using Resolution 3 (41,162 cells) instead of blocking Res 4
-                List<H3Cell> previewCells = new ProceduralGenerator().generatePlanet(
-                        new PlanetPreset(
-                                cfg.name(), 3, cfg.radiusKm(), cfg.dayLengthHours(),
-                                cfg.axialTiltDegrees(), cfg.yearLengthDays(), cfg.distanceToSunAU(),
-                                cfg.solarLuminosity(), cfg.minAltitudeMeters(), cfg.maxAltitudeMeters(),
-                                cfg.averageTempC(), cfg.seed(), cfg.noiseFrequency(),
-                                cfg.noiseScale(), cfg.waterLevel(), cfg.temperatureGradient(),
-                                cfg.oxygenPercentage(), cfg.albedo(), cfg.atmospherePressureAtm(),
-                                cfg.isSatellite(), cfg.parentPlanetMassEarthMasses(),
-                                cfg.orbitalDistanceToParentKm(), cfg.co2Ppm(),
-                                cfg.seismicActivityLevel(), cfg.volcanicActivityLevel(),
-                                cfg.customElevBase64(), cfg.customBiomeBase64(), cfg.customResourceBase64(),
-                                cfg.customClimateBase64(), cfg.customRainfallBase64(), cfg.customSeasonalityBase64(),
-                                cfg.elevationUseImport(), cfg.elevationMapSource(),
-                                cfg.tempUseImport(), cfg.tempSource(), cfg.tempSeed(),
-                                cfg.precipUseImport(), cfg.precipSource(), cfg.precipSeed(),
-                                cfg.seasonUseImport(), cfg.seasonSource(), cfg.seasonSeed()
-                        )
-                );
+                String meshKey = cfg.name() + "_res3_" + cfg.seed();
+                List<H3Cell> baseCells = previewMeshCache.get(meshKey);
+                List<H3Cell> previewCells;
 
-                // Map elevation and biome images corresponding to the selected planet preset
-                applyPresetMapToCells(previewCells, cfg);
+                if (baseCells == null) {
+                    baseCells = new ProceduralGenerator().generatePlanet(
+                            new PlanetPreset(
+                                    cfg.name(), 3, cfg.radiusKm(), cfg.dayLengthHours(),
+                                    cfg.axialTiltDegrees(), cfg.yearLengthDays(), cfg.distanceToSunAU(),
+                                    cfg.solarLuminosity(), cfg.minAltitudeMeters(), cfg.maxAltitudeMeters(),
+                                    cfg.averageTempC(), cfg.seed(), cfg.noiseFrequency(),
+                                    cfg.noiseScale(), cfg.waterLevel(), cfg.temperatureGradient(),
+                                    cfg.oxygenPercentage(), cfg.albedo(), cfg.atmospherePressureAtm(),
+                                    cfg.isSatellite(), cfg.parentPlanetMassEarthMasses(),
+                                    cfg.orbitalDistanceToParentKm(), cfg.co2Ppm(),
+                                    cfg.seismicActivityLevel(), cfg.volcanicActivityLevel(),
+                                    cfg.customElevBase64(), cfg.customBiomeBase64(), cfg.customResourceBase64(),
+                                    cfg.customClimateBase64(), cfg.customRainfallBase64(), cfg.customSeasonalityBase64(),
+                                    cfg.elevationUseImport(), cfg.elevationMapSource(),
+                                    cfg.tempUseImport(), cfg.tempSource(), cfg.tempSeed(),
+                                    cfg.precipUseImport(), cfg.precipSource(), cfg.precipSeed(),
+                                    cfg.seasonUseImport(), cfg.seasonSource(), cfg.seasonSeed()
+                            )
+                    );
+                    applyPresetMapToCells(baseCells, cfg);
+                    previewMeshCache.put(meshKey, baseCells);
+                }
+
+                if (mySeq != previewSeq.get()) return;
+
+                // Create working copy of preview cells to distribute population
+                previewCells = new ArrayList<>(baseCells.size());
+                for (H3Cell c : baseCells) {
+                    H3Cell copy = new H3Cell(c.getH3Index(), c.getLatitude(), c.getLongitude());
+                    copy.setElevation(c.getElevation());
+                    copy.setBiome(c.getBiome());
+                    copy.setTemperature(c.getTemperature());
+                    copy.setRainfall(c.getRainfall());
+                    previewCells.add(copy);
+                }
 
                 distributeInitialPopulation(previewCells);
 
+                if (mySeq != previewSeq.get()) return;
+
                 javafx.application.Platform.runLater(() -> {
+                    if (mySeq != previewSeq.get()) return;
                     currentPreviewCells = previewCells;
                     isPreviewGenerating.set(false);
                     drawPreview();
@@ -6814,6 +6851,7 @@ private String getDefaultTensorName(int index) {
             } catch (Exception ex) {
                 logger.error("Failed to generate preview", ex);
                 javafx.application.Platform.runLater(() -> {
+                    if (mySeq != previewSeq.get()) return;
                     isPreviewGenerating.set(false);
                     if (previewStatusLabel != null) {
                         previewStatusLabel.setText(I18n.getOrDefault("scenario.status.preview_error", "Preview error: ") + ex.getMessage());

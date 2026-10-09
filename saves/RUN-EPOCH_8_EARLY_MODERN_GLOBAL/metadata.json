@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-EPOCH_8_EARLY_MODERN_GLOBAL",
-  "name" : "Epoch 8: Early Modern Columbian Exchange & Commercial Networks (1500 -> 1850 CE)",
-  "timestamp"
+{"id":"RUN-EPOCH_8_EARLY_MODERN_GLOBAL","name":"Epoch 8: Early Modern Columbian Exchange & Commercial Networks (1500 -> 1850 CE)","timestamp":[2026,10,9,22,26,54,593302400],"year":1850,"month":1,"scenarioName":"Epoch 8: Early Modern Columbian Exchange & Commercial Networks (1500 -> 1850 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

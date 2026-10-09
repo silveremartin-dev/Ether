@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-POST_WAR_GOLDEN_AGE",
-  "name" : "Post-WWII Green Revolution & Exergy Growth (1950 CE -> 1990 CE)",
-  "timestamp"
+{"id":"RUN-POST_WAR_GOLDEN_AGE","name":"Post-WWII Green Revolution & Exergy Growth (1950 CE -> 1990 CE)","timestamp":[2026,10,9,22,26,55,16530400],"year":1990,"month":1,"scenarioName":"Post-WWII Green Revolution & Exergy Growth (1950 CE -> 1990 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

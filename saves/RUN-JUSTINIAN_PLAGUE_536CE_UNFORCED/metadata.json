@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-JUSTINIAN_PLAGUE_536CE_UNFORCED",
-  "name" : "536 CE Volcanic & Justinian Plague Twin A: Unforced Mediterranean Expansion (530 -> 590 CE)",
-  "timestamp"
+{"id":"RUN-JUSTINIAN_PLAGUE_536CE_UNFORCED","name":"536 CE Volcanic & Justinian Plague Twin A: Unforced Mediterranean Expansion (530 -> 590 CE)","timestamp":[2026,10,9,22,26,54,784422800],"year":590,"month":1,"scenarioName":"536 CE Volcanic & Justinian Plague Twin A: Unforced Mediterranean Expansion (530 -> 590 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

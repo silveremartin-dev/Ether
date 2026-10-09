@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-EPOCH_5_CLASSICAL_ANTIQUITY",
-  "name" : "Epoch 5: Classical Axial Antiquity & Continental Empires (-500 BCE -> 500 CE)",
-  "timestamp"
+{"id":"RUN-EPOCH_5_CLASSICAL_ANTIQUITY","name":"Epoch 5: Classical Axial Antiquity & Continental Empires (-500 BCE -> 500 CE)","timestamp":[2026,10,9,22,26,54,226754600],"year":500,"month":1,"scenarioName":"Epoch 5: Classical Axial Antiquity & Continental Empires (-500 BCE -> 500 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

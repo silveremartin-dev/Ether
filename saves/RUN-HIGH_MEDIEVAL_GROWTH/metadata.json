@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-HIGH_MEDIEVAL_GROWTH",
-  "name" : "High Medieval Expansion & Land Clearance (1000 CE -> 1300 CE)",
-  "timestamp"
+{"id":"RUN-HIGH_MEDIEVAL_GROWTH","name":"High Medieval Expansion & Land Clearance (1000 CE -> 1300 CE)","timestamp":[2026,10,9,22,26,54,703873600],"year":1300,"month":1,"scenarioName":"High Medieval Expansion & Land Clearance (1000 CE -> 1300 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

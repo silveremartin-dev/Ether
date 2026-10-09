@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-EPOCH_4_BRONZE_AGE_URBANIZATION",
-  "name" : "Epoch 4: Bronze Age Metallurgy & Early Hydraulic States (-3000 -> -500 BCE)",
-  "timestamp"
+{"id":"RUN-EPOCH_4_BRONZE_AGE_URBANIZATION","name":"Epoch 4: Bronze Age Metallurgy & Early Hydraulic States (-3000 -> -500 BCE)","timestamp":[2026,10,9,22,26,54,137275800],"year":-500,"month":1,"scenarioName":"Epoch 4: Bronze Age Metallurgy & Early Hydraulic States (-3000 -> -500 BCE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

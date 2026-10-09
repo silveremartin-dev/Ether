@@ -118,7 +118,7 @@ public class CliodynamicAdvisorEngine {
 
         if (NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() > 0.5) {
 
-            alerts.add(new CliodynamicAlert("CRITICAL", I18n.getOrDefault("advisor.alert.nuclear_winter.title", "Ã¢Ââ€žïÂ¸Â NUCLEAR / VOLCANIC WINTER ALERT"),
+            alerts.add(new CliodynamicAlert("CRITICAL", I18n.getOrDefault("advisor.alert.nuclear_winter.title", "âÂâ€žïÂ¸Â NUCLEAR / VOLCANIC WINTER ALERT"),
 
                 I18n.getOrDefault("advisor.alert.nuclear_winter.desc", "Stratospheric aerosol optical depth causing abrupt cooling and photosynthesis reduction.")));
 

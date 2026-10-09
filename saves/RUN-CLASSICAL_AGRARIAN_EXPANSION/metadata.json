@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-CLASSICAL_AGRARIAN_EXPANSION",
-  "name" : "Classical Antiquity Steady Agrarian Consolidation (-500 BCE -> 100 CE)",
-  "timestamp"
+{"id":"RUN-CLASSICAL_AGRARIAN_EXPANSION","name":"Classical Antiquity Steady Agrarian Consolidation (-500 BCE -> 100 CE)","timestamp":[2026,10,9,22,26,53,601348200],"year":100,"month":1,"scenarioName":"Classical Antiquity Steady Agrarian Consolidation (-500 BCE -> 100 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

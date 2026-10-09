@@ -2161,7 +2161,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 if (tickCounter % Math.max(1, 12 / stepDays) == 0) {
 
 
-                    logger.info("ÃƒÂ¢Ã…Â¡Ã¢â€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚Â [Pas {}] An {} M.{} | Pop: {} hab | TPS: {} it/s",
+                    logger.info("ÃƒÂ¢Ã…Â¡ââ€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚Â [Pas {}] An {} M.{} | Pop: {} hab | TPS: {} it/s",
 
 
                             tickCounter, timeManager.getCurrentYear(),
@@ -2299,7 +2299,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                     } else if (type.contains("nuclear") || type.contains("strike")) {
 
 
-                        displayTitle = "ÃƒÂ¢Ã‹Å“Ã‚Â¢ÃƒÂ¯Ã‚Â¸Ã‚Â FRAPPE NUCLÃƒÆ’Ã¢â‚¬°AIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
+                        displayTitle = "ÃƒÂ¢ËÅ“Ã‚Â¢ÃƒÂ¯Ã‚Â¸Ã‚Â FRAPPE NUCLÃƒÆ’ââ‚¬°AIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
 
 
                     } else {
@@ -5407,7 +5407,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // --- Ãƒ°Ã…Â¸Ã…â€™Ã‚Â ÃƒÆ’Ã¢â‚¬°COLOGIE & FRONTIÃƒÆ’Ã‹â€ RES PLANÃƒÆ’Ã¢â‚¬°TAIRES ---
+    // --- Ãƒ°Ã…Â¸Ã…â€™Ã‚Â ÃƒÆ’ââ‚¬°COLOGIE & FRONTIÃƒÆ’Ëâ€ RES PLANÃƒÆ’ââ‚¬°TAIRES ---
 
 
     /*
@@ -5569,7 +5569,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // --- ÃƒÂ¢Ã‚ÂÃ‚³ CLIODYNAMIQUE & RISQUES SYSTÃƒÆ’Ã¢â‚¬°MIQUES ---
+    // --- ÃƒÂ¢Ã‚ÂÃ‚³ CLIODYNAMIQUE & RISQUES SYSTÃƒÆ’ââ‚¬°MIQUES ---
 
 
     /*

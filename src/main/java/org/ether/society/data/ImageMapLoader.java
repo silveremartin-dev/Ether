@@ -417,14 +417,30 @@ public class ImageMapLoader {
         return null;
     }
 
+    private static final int MAX_BASE64_CACHE_SIZE = 120;
+    private static final java.util.Map<String, Image> base64ImageCache = java.util.Collections.synchronizedMap(
+            new java.util.LinkedHashMap<>(64, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(java.util.Map.Entry<String, Image> eldest) {
+                    return size() > MAX_BASE64_CACHE_SIZE;
+                }
+            }
+    );
+
     /*
-     * Convert a Base64 PNG string back into a JavaFX Image.
+     * Convert a Base64 PNG string back into a JavaFX Image with high-performance caching.
      */
     public static Image base64PngToImage(String base64) {
         if (base64 == null || base64.isBlank()) return null;
+        Image cached = base64ImageCache.get(base64);
+        if (cached != null) {
+            return cached;
+        }
         try {
             byte[] bytes = java.util.Base64.getDecoder().decode(base64.trim());
-            return new Image(new java.io.ByteArrayInputStream(bytes));
+            Image img = new Image(new java.io.ByteArrayInputStream(bytes));
+            base64ImageCache.put(base64, img);
+            return img;
         } catch (Exception e) {
             logger.error("Failed to convert Base64 PNG to image", e);
             return null;

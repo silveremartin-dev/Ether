@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-EPOCH_1_PALEOLITHIC_DISPERSAL",
-  "name" : "Epoch 1: Paleolithic Out-of-Africa Dispersal (-100000 -> -50000 BP)",
-  "timestamp"
+{"id":"RUN-EPOCH_1_PALEOLITHIC_DISPERSAL","name":"Epoch 1: Paleolithic Out-of-Africa Dispersal (-100000 -> -50000 BP)","timestamp":[2026,10,9,22,26,53,817370300],"year":-50000,"month":1,"scenarioName":"Epoch 1: Paleolithic Out-of-Africa Dispersal (-100000 -> -50000 BP)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

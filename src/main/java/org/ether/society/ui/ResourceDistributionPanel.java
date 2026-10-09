@@ -2026,7 +2026,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 "   • G (Vert) = Précipitations (0 à 3000 mm/an)\n" +
                 "   • B (Bleu) = Saisonnalité / Amplitude thermique (0 à 50°C)\n\n" +
                 "3. TÉLÉCHARGEMENT SATELLITE WMS :\n" +
-                "   • Le bouton Â« ðŸŒ Télécharger Climat Satellite Â» permet d'obtenir directement les flux officiels NASA MODIS (température) et GPM (pluviométrie)."
+                "   • Le bouton « ðŸŒ Télécharger Climat Satellite » permet d'obtenir directement les flux officiels NASA MODIS (température) et GPM (pluviométrie)."
         );
     }
 
@@ -2080,7 +2080,7 @@ public class ResourceDistributionPanel extends BorderPane {
         if (!isCompatible) {
             String activeDisplayName = activePreset != null ? activePreset.name() : "Standard";
             if (ecoCompatibilityLabel != null) {
-                ecoCompatibilityLabel.setText(String.format(I18n.getOrDefault("resource.status.incompatible_map", "⚠️ï¸ Incompatibilité : Carte Â« %s Â» sur terrain Â« %s Â» (Relief non concordant)"), sourceKey.toUpperCase(), activeDisplayName));
+                ecoCompatibilityLabel.setText(String.format(I18n.getOrDefault("resource.status.incompatible_map", "⚠️ï¸ Incompatibilité : Carte « %s » sur terrain « %s » (Relief non concordant)"), sourceKey.toUpperCase(), activeDisplayName));
                 ecoCompatibilityLabel.getStyleClass().setAll("compatibility-warning");
             }
             return true;

@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-COLUMBIAN_EXCHANGE_1492CE_UNFORCED",
-  "name" : "1492 Columbian Exchange Twin A: Unforced Pre-Columbian Continuity (1490 -> 1600 CE)",
-  "timestamp"
+{"id":"RUN-COLUMBIAN_EXCHANGE_1492CE_UNFORCED","name":"1492 Columbian Exchange Twin A: Unforced Pre-Columbian Continuity (1490 -> 1600 CE)","timestamp":[2026,10,9,22,26,53,768676100],"year":1600,"month":1,"scenarioName":"1492 Columbian Exchange Twin A: Unforced Pre-Columbian Continuity (1490 -> 1600 CE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

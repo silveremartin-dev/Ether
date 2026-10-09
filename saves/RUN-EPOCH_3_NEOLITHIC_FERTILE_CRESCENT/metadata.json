@@ -1,4 +1,1 @@
-{
-  "id" : "RUN-EPOCH_3_NEOLITHIC_FERTILE_CRESCENT",
-  "name" : "Epoch 3: Neolithic Revolution & Agrarian Sedentism (-10000 -> -3000 BCE)",
-  "timestamp"
+{"id":"RUN-EPOCH_3_NEOLITHIC_FERTILE_CRESCENT","name":"Epoch 3: Neolithic Revolution & Agrarian Sedentism (-10000 -> -3000 BCE)","timestamp":[2026,10,9,22,26,54,99556000],"year":-3000,"month":1,"scenarioName":"Epoch 3: Neolithic Revolution & Agrarian Sedentism (-10000 -> -3000 BCE)","cellCount":0,"h3Resolution":3,"version":"1.0.0-beta.2"}

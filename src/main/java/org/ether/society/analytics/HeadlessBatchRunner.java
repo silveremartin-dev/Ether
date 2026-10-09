@@ -145,10 +145,11 @@ public class HeadlessBatchRunner {
         // Compare simulated trajectories against empirical historical ground truth
         if (scenario == null) return null;
 
-        logger.info("⚡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
-            scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
+        try {
+            logger.info("⚡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
+                scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
 
-        String runId = "RUN-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase() + "-" + (System.currentTimeMillis() % 10000);
+            String runId = "RUN-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase() + "-" + (System.currentTimeMillis() % 10000);
 
         Map<String, String> parameterMatrix = new LinkedHashMap<>();
         parameterMatrix.put("Population Initiale", String.format("%,d", scenario.getInitialHumanCount()));
@@ -359,13 +360,17 @@ public class HeadlessBatchRunner {
             }
         }
 
-        engine.shutdown();
+            engine.shutdown();
 
-        SimulationRunRepository.getInstance().registerRun(record);
-        logger.info("✅ Finished Physical Headless execution for scenario: '{}'. Real physics ticks: {}. Generated {} snapshots.", 
-            scenario.getName(), ticksExecuted, record.getTimeSeriesData().size());
+            SimulationRunRepository.getInstance().registerRun(record);
+            logger.info("✅ Finished Physical Headless execution for scenario: '{}'. Real physics ticks: {}. Generated {} snapshots.", 
+                scenario.getName(), ticksExecuted, record.getTimeSeriesData().size());
 
-        return record;
+            return record;
+        } catch (Exception ex) {
+            logger.error("Failed to execute headless scenario '{}': {}", scenario.getName(), ex.getMessage(), ex);
+            return null;
+        }
     }
 
     // Helper subroutine: record current telemetry snapshot - internal state computation & bounds checking
