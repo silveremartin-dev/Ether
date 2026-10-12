@@ -291,18 +291,18 @@ public class Hyde34GridReader {
         String zipName = yearTag + "_pop.zip";
         File zipFile = new File("user_data/maps/hyde34/" + zipName);
         if (!zipFile.exists()) {
-            zipFile = new File("data/maps/hyde34/" + zipName);
+            zipFile = org.ether.society.config.EtherPaths.resolveSourceFile("hyde34/" + zipName);
         }
         if (!zipFile.exists() && year == 0) {
-            zipFile = new File("data/maps/hyde34/0AD_pop.zip");
+            zipFile = org.ether.society.config.EtherPaths.resolveSourceFile("hyde34/0AD_pop.zip");
         }
 
         if (!zipFile.exists() || zipFile.length() < 100000) {
             logger.info("Local HYDE 3.4 archive '{}' missing. Triggering empirical dataset downloader...", zipName);
             DataDownloaderService.downloadHydeGridForYear(year);
-            zipFile = new File("data/maps/hyde34/" + zipName);
+            zipFile = org.ether.society.config.EtherPaths.resolveSourceFile("hyde34/" + zipName);
             if (!zipFile.exists() && year == 0) {
-                zipFile = new File("data/maps/hyde34/0AD_pop.zip");
+                zipFile = org.ether.society.config.EtherPaths.resolveSourceFile("hyde34/0AD_pop.zip");
             }
         }
 
@@ -329,7 +329,7 @@ public class Hyde34GridReader {
         // Direct ASC fallback if available
         if (img == null) {
             String ascName = "popc_" + yearTag + ".asc";
-            File ascFile = new File("data/maps/hyde34/" + ascName);
+            File ascFile = org.ether.society.config.EtherPaths.resolveSourceFile("hyde34/" + ascName);
             if (ascFile.exists()) {
                 try (InputStream is = new FileInputStream(ascFile)) {
                     if (requestedYear < -10000) {

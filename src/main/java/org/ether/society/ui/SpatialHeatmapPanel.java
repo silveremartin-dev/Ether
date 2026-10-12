@@ -155,10 +155,16 @@ public class SpatialHeatmapPanel extends VBox {
 
         // 6. Transport Toolbar
         btnJumpStart = createTransportBtn("⏮", "heatmap.tooltip.jump_start", "Aller au premier instant (ou début de plage)");
-        btnJumpStart.setOnAction(e -> jumpToSnapshotIndex(getEffectiveStartIndex(), true));
+        btnJumpStart.setOnAction(e -> {
+            pauseAnimation();
+            jumpToSnapshotIndex(getEffectiveStartIndex(), true);
+        });
 
         btnStepBack = createTransportBtn("⏴", "heatmap.tooltip.step_back", "Reculer d'un instant");
-        btnStepBack.setOnAction(e -> stepSnapshot(-1));
+        btnStepBack.setOnAction(e -> {
+            pauseAnimation();
+            stepSnapshot(-1);
+        });
 
         playPauseBtn = new Button("▶");
         playPauseBtn.setMinSize(36, 28);
@@ -166,10 +172,16 @@ public class SpatialHeatmapPanel extends VBox {
         playPauseBtn.setOnAction(e -> toggleAnimation());
 
         btnStepForward = createTransportBtn("⏵", "heatmap.tooltip.step_forward", "Avancer d'un instant");
-        btnStepForward.setOnAction(e -> stepSnapshot(1));
+        btnStepForward.setOnAction(e -> {
+            pauseAnimation();
+            stepSnapshot(1);
+        });
 
         btnJumpEnd = createTransportBtn("⏭", "heatmap.tooltip.jump_end", "Aller au dernier instant (ou fin de plage)");
-        btnJumpEnd.setOnAction(e -> jumpToSnapshotIndex(getEffectiveEndIndex(), true));
+        btnJumpEnd.setOnAction(e -> {
+            pauseAnimation();
+            jumpToSnapshotIndex(getEffectiveEndIndex(), true);
+        });
 
         speedCombo = new ComboBox<>();
         speedCombo.getItems().addAll("0.5x", "1.0x", "2.0x", "5.0x", "10.0x");
@@ -911,14 +923,21 @@ public class SpatialHeatmapPanel extends VBox {
         animationTimeline.setCycleCount(Timeline.INDEFINITE);
     }
 
-    // Helper subroutine: toggle animation - internal state computation & bounds checking
-    private void toggleAnimation() {
+    // Helper subroutine: pause animation if running
+    private void pauseAnimation() {
         if (isPlayingAnimation) {
             animationTimeline.pause();
             isPlayingAnimation = false;
             playPauseBtn.setText("▶");
             playPauseBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 6;");
             playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.play", "Lancer la séquence temporelle (2D+1D)")));
+        }
+    }
+
+    // Helper subroutine: toggle animation - internal state computation & bounds checking
+    private void toggleAnimation() {
+        if (isPlayingAnimation) {
+            pauseAnimation();
         } else {
             if (historyManager != null && !historyManager.getWorldSnapshots().isEmpty()) {
                 if (currentSnapshotIndex >= getEffectiveEndIndex()) {

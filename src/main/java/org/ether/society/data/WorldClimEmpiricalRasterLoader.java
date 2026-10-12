@@ -74,9 +74,9 @@ public class WorldClimEmpiricalRasterLoader {
         precipBaseline  = new float[GRID_H][GRID_W];
         seasonBaseline  = new float[GRID_H][GRID_W];
 
-        File tempFile = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_1.tif");
-        File precipFile = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_12.tif");
-        File seasonFile = new File("data/maps/worldclim/bio_10m/wc2.1_10m_bio_4.tif");
+        File tempFile = org.ether.society.config.EtherPaths.resolveSourceFile("worldclim/bio_10m/wc2.1_10m_bio_1.tif");
+        File precipFile = org.ether.society.config.EtherPaths.resolveSourceFile("worldclim/bio_10m/wc2.1_10m_bio_12.tif");
+        File seasonFile = org.ether.society.config.EtherPaths.resolveSourceFile("worldclim/bio_10m/wc2.1_10m_bio_4.tif");
 
         boolean hasWorldClim = tempFile.exists() && precipFile.exists() && seasonFile.exists();
 
@@ -585,7 +585,10 @@ public class WorldClimEmpiricalRasterLoader {
         };
 
         double globalAnom = 0.0;
-        if (year <= climateAnchors[0][0]) {
+        if (year >= 1 && year <= 2000) {
+            // High-fidelity empirical PAGES 2k Consortium (2019) multi-proxy Common Era anomaly
+            globalAnom = Pages2kClimateProvider.getTemperatureAnomaly((int) year);
+        } else if (year <= climateAnchors[0][0]) {
             globalAnom = climateAnchors[0][1];
         } else if (year >= climateAnchors[climateAnchors.length - 1][0]) {
             globalAnom = climateAnchors[climateAnchors.length - 1][1];

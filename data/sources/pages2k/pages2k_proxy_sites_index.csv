@@ -1,0 +1,648 @@
+﻿dataset_id,site_name,region,archive_type,latitude,longitude,elevation_m,lpd_filename
+Afr-ColdAirCave.Sundqvist.2013,Cold Air Cave,Africa,Speleothem,-24.0000,29.1800,1450.0,Afr-ColdAirCave.Sundqvist.2013.lpd
+Afr-LakeMalawi.Powers.2011,Lake Malawi,Africa,LakeSediment,-10.0033,34.2883,477.0,Afr-LakeMalawi.Powers.2011.lpd
+Afr-LakeTanganyika.Tierney.2010,Lake Tanganyika,Africa,LakeSediment,-6.0300,28.5300,905.0,Afr-LakeTanganyika.Tierney.2010.lpd
+Afr-P178-15P.Tierney.2015,P178-15P,Ocean,MarineSediment,11.9550,44.3000,-869.0,Afr-P178-15P.Tierney.2015.lpd
+Ant-BerknerIsland.Mulvaney.2002,Berkner Island (South),Ant,GlacierIce,-79.5700,-45.7200,890.0,Ant-BerknerIsland.Mulvaney.2002.lpd
+Ant-CoastalDML.Thamban.2012,Coastal DML,Ant,GlacierIce,-70.8600,11.5400,500.0,Ant-CoastalDML.Thamban.2012.lpd
+Ant-DomeC.Jouzel.2001,Dome C,Ant,GlacierIce,-75.1000,123.3900,3233.0,Ant-DomeC.Jouzel.2001.lpd
+Ant-DomeC.Stenni.2001,Dome C,Ant,GlacierIce,-75.1000,123.3900,3233.0,Ant-DomeC.Stenni.2001.lpd
+Ant-DomeF1993.Uemura.2014,Dome F 1993,Ant,GlacierIce,-77.3200,39.7000,3810.0,Ant-DomeF1993.Uemura.2014.lpd
+Ant-DomeF2001.Uemura.2008,Dome F 2001,Ant,GlacierIce,-77.3200,39.7000,3810.0,Ant-DomeF2001.Uemura.2008.lpd
+Ant-DSS.DahlJensen.1999,DSS,Ant,Borehole,-66.7700,112.8070,1370.0,Ant-DSS.DahlJensen.1999.lpd
+Ant-DSS.Moy.2012,DSS,Ant,GlacierIce,-66.7700,112.8070,1370.0,Ant-DSS.Moy.2012.lpd
+Ant-Ferrigno.Thomas.2013,Ferrigno,Ant,GlacierIce,-74.5700,-86.9000,1354.0,Ant-Ferrigno.Thomas.2013.lpd
+Ant-JamesRossIsland.Mulvaney.2013,James Ross Island,Ant,GlacierIce,-64.2017,-57.6850,1542.0,Ant-JamesRossIsland.Mulvaney.2013.lpd
+Ant-MES.Rhodes.2012,MES,Ant,GlacierIce,-77.5150,167.6765,1600.0,Ant-MES.Rhodes.2012.lpd
+Ant-PlateauRemote.Mosley-Thompson.2013,Plateau Remote,Ant,GlacierIce,-84.0000,43.0000,3330.0,Ant-PlateauRemote.Mosley-Thompson.2013.lpd
+Ant-SipleStation.Mosley-Thompson.1990,Siple Station,Ant,GlacierIce,-75.9200,-84.2500,1054.0,Ant-SipleStation.Mosley-Thompson.1990.lpd
+Ant-SiteDML05.Graf.2002,Site DML05,Ant,GlacierIce,-75.0000,-0.0100,2892.0,Ant-SiteDML05.Graf.2002.lpd
+Ant-SiteDML07.Graf.2002,Site DML07,Ant,GlacierIce,-75.5800,-3.4300,2680.0,Ant-SiteDML07.Graf.2002.lpd
+Ant-SiteDML17.Graf.2002,Site DML17,Ant,GlacierIce,-75.1700,6.5000,3160.0,Ant-SiteDML17.Graf.2002.lpd
+Ant-TALDICE.Stenni.2010,TALDICE,Ant,GlacierIce,-72.8200,159.1800,2315.0,Ant-TALDICE.Stenni.2010.lpd
+Ant-TalosDome.Stenni.2002,Talos Dome,Ant,GlacierIce,-72.8000,159.0600,2316.0,Ant-TalosDome.Stenni.2002.lpd
+Ant-TaylorDome.Steig.2000,Taylor Dome,Ant,GlacierIce,-77.7800,158.7200,2365.0,Ant-TaylorDome.Steig.2000.lpd
+Ant-US-ITASE-2000-1.Steig.2013,US-ITASE-2000-1,Ant,GlacierIce,-79.3838,-111.2400,1791.0,Ant-US-ITASE-2000-1.Steig.2013.lpd
+Ant-US-ITASE-2002-4.Steig.2013,US-ITASE-2002-4,Ant,GlacierIce,-86.5000,-107.9900,2586.0,Ant-US-ITASE-2002-4.Steig.2013.lpd
+Ant-VLG.Bertler.2011,VLG,Ant,GlacierIce,-77.3302,162.5332,625.0,Ant-VLG.Bertler.2011.lpd
+Ant-Vostok.Ekaykin.2014,Vostok,Ant,GlacierIce,-78.2785,104.8005,3488.0,Ant-Vostok.Ekaykin.2014.lpd
+Ant-WAIS-Divide.Severinghaus.2012,WAIS-Divide,Ant,Borehole,-79.4630,-112.1250,1766.0,Ant-WAIS-Divide.Severinghaus.2012.lpd
+Ant-WDC05A.Steig.2013,WDC05A,Ant,GlacierIce,-79.4600,-112.0900,1806.0,Ant-WDC05A.Steig.2013.lpd
+Ant-WDC06A.Steig.2013,WDC06A,Ant,GlacierIce,-79.4600,-112.0900,1806.0,Ant-WDC06A.Steig.2013.lpd
+Arc-Agassiz.Vinther.2008,Agassiz,Arc,GlacierIce,80.7000,-73.1000,1700.0,Arc-Agassiz.Vinther.2008.lpd
+Arc-AkademiiNaukIceCap.Opel.2013,Akademii Nauk Ice Cap; Severnaya Zemlya (Russian Arctic),Arc,GlacierIce,80.5200,94.8200,750.0,Arc-AkademiiNaukIceCap.Opel.2013.lpd
+Arc-Arjeplog.Bjorklund.2014,Arjeplog,Arc,Wood,66.3000,18.2000,800.0,Arc-Arjeplog.Bjorklund.2014.lpd
+Arc-Armarnaes.Bjorklund.2012,Armarnaes,Arc,Wood,65.9000,16.1000,500.0,Arc-Armarnaes.Bjorklund.2012.lpd
+Arc-Austfonna.Isaksson.2005,Austfonna,Arc,GlacierIce,79.8300,24.0200,750.0,Arc-Austfonna.Isaksson.2005.lpd
+Arc-Avam-Taimyr.Briffa.2008,Avam-Taimyr,Arc,Wood,72.0000,101.0000,250.0,Arc-Avam-Taimyr.Briffa.2008.lpd
+Arc-BigRoundLake.Thomas.2009,Big Round Lake,Arc,LakeSediment,69.8700,-68.8300,180.0,Arc-BigRoundLake.Thomas.2009.lpd
+Arc-BlueLake.Bird.2008,Blue Lake,Arc,LakeSediment,68.0900,-150.4700,1275.0,Arc-BlueLake.Bird.2008.lpd
+Arc-BrayaSoe.D'Andrea.2011,Braya Soe,Arc,LakeSediment,67.0000,-50.7000,170.0,Arc-BrayaSoe.D'Andrea.2011.lpd
+Arc-CampCentury.Fisher.1969,Camp Century,Arc,GlacierIce,77.1700,-61.1300,1880.0,Arc-CampCentury.Fisher.1969.lpd
+Arc-Crete.Vinther.2010,Crete,Arc,GlacierIce,71.1200,-37.3200,3172.0,Arc-Crete.Vinther.2010.lpd
+Arc-DevonIceCap.Fisher.1983,Devon Ice Cap,Arc,GlacierIce,75.3300,-82.5000,1800.0,Arc-DevonIceCap.Fisher.1983.lpd
+Arc-Dye.Vinther.2010,Dye,Arc,GlacierIce,65.1800,-43.8300,2480.0,Arc-Dye.Vinther.2010.lpd
+Arc-Forfjorddalen.McCarroll.2013,Forfjorddalen,Arc,Wood,68.7300,15.7300,200.0,Arc-Forfjorddalen.McCarroll.2013.lpd
+Arc-GISP2.Grootes.1997,GISP2,Arc,GlacierIce,72.1000,-38.0800,3200.0,Arc-GISP2.Grootes.1997.lpd
+Arc-GRIP.Vinther.2010,GRIP,Arc,GlacierIce,72.5800,-37.6400,3238.0,Arc-GRIP.Vinther.2010.lpd
+Arc-GulfofAlaska.Wilson.2014,Gulf of Alaska,Arc,Wood,61.0300,-146.5900,230.0,Arc-GulfofAlaska.Wilson.2014.lpd
+Arc-HalletLake.McKay.2008,Hallet Lake,Arc,LakeSediment,61.5000,-146.2000,1128.0,Arc-HalletLake.McKay.2008.lpd
+Arc-HudsonLake.Clegg.2011,Hudson Lake,Arc,LakeSediment,61.9000,-145.6600,657.0,Arc-HudsonLake.Clegg.2011.lpd
+Arc-Hvitarvatn.Larsen.2011,Hvitarvatn,Arc,LakeSediment,64.6000,-19.8000,422.0,Arc-Hvitarvatn.Larsen.2011.lpd
+Arc-Iceland.Bergthorsson.1969,Iceland,Arc,Documents,64.7700,-18.3700,0.0,Arc-Iceland.Bergthorsson.1969.lpd
+Arc-Indigirka.Hughes.1999,Indigirka,Arc,Wood,69.5000,147.0000,80.0,Arc-Indigirka.Hughes.1999.lpd
+Arc-Jamtland.Wilson.2016,Jamtland; Sweden,Arc,Wood,63.2475,13.3375,650.0,Arc-Jamtland.Wilson.2016.lpd
+Arc-Kittelfjall.Bjorklund.2012,Kittelfjall,Arc,Wood,65.2000,15.5000,550.0,Arc-Kittelfjall.Bjorklund.2012.lpd
+Arc-Kongressvatnet.D'Andrea.2012,Kongressvatnet,Arc,LakeSediment,78.0217,13.9311,94.0,Arc-Kongressvatnet.D'Andrea.2012.lpd
+Arc-Laanila.Lindholm.2013,Laanila,Arc,Wood,68.4917,27.3333,265.0,Arc-Laanila.Lindholm.2013.lpd
+Arc-Lake4.Rolland.2009,Lake 4,Arc,LakeSediment,65.1000,-83.7900,100.0,Arc-Lake4.Rolland.2009.lpd
+Arc-LakeC2.Lamoureux.1996,Lake C2,Arc,LakeSediment,82.8300,-77.9000,1.5,Arc-LakeC2.Lamoureux.1996.lpd
+Arc-LakeDonardBaffinIsland.Moore.2001,Lake Donard Baffin Island,Arc,LakeSediment,66.7300,-61.3500,500.0,Arc-LakeDonardBaffinIsland.Moore.2001.lpd
+Arc-LakeE.D'Andrea.2011,Lake E,Arc,LakeSediment,67.0000,-50.7000,170.0,Arc-LakeE.D'Andrea.2011.lpd
+Arc-LakeHamptraesk.Luoto.2009,Lake Hamptraesk,Arc,LakeSediment,60.2800,25.4200,29.0,Arc-LakeHamptraesk.Luoto.2009.lpd
+Arc-LakeLehmilampi.Haltia-Hovi.2007,Lake Lehmilampi,Arc,LakeSediment,63.6200,29.1000,95.0,Arc-LakeLehmilampi.Haltia-Hovi.2007.lpd
+Arc-LakeNataujaervi.Ojala.2005,Lake Nataujaervi,Arc,LakeSediment,61.8100,24.6800,103.7,Arc-LakeNataujaervi.Ojala.2005.lpd
+Arc-LakePieni-Kauro.Luoto.2010,Lake Pieni-Kauro,Arc,LakeSediment,64.2800,30.1200,188.4,Arc-LakePieni-Kauro.Luoto.2010.lpd
+Arc-LenaRiver.McDonald.1998,Lena River,Arc,Wood,70.6700,125.8700,180.0,Arc-LenaRiver.McDonald.1998.lpd
+Arc-Lomonosovfonna.Divine.2011,Lomonosovfonna ; Svalbard,Arc,GlacierIce,78.8647,17.4250,1250.0,Arc-Lomonosovfonna.Divine.2011.lpd
+Arc-LowerMurrayLake.Cook.2008,Lower Murray Lake,Arc,LakeSediment,81.3500,-69.5300,106.0,Arc-LowerMurrayLake.Cook.2008.lpd
+Arc-MackenzieDelta.Porter.2013,Mackenzie Delta,Arc,Wood,68.6250,-133.8700,5.0,Arc-MackenzieDelta.Porter.2013.lpd
+Arc-MD992275.Jiang.2005,MD992275,Ocean,MarineSediment,66.5500,-17.7000,-470.0,Arc-MD992275.Jiang.2005.lpd
+Arc-MooseLake.Clegg.2010,Moose Lake,Arc,LakeSediment,61.3500,-143.6000,437.0,Arc-MooseLake.Clegg.2010.lpd
+Arc-NGRIP1.Vinther.2006,NGRIP1,Arc,GlacierIce,75.1000,-42.3200,2917.0,Arc-NGRIP1.Vinther.2006.lpd
+Arc-NGTB16.Schwager.1998,NGT B16,Arc,GlacierIce,73.9400,-37.6300,3040.0,Arc-NGTB16.Schwager.1998.lpd
+Arc-NGTB18.Schwager.1998,NGT B18,Arc,GlacierIce,76.6200,-36.4000,2508.0,Arc-NGTB18.Schwager.1998.lpd
+Arc-NGTB21.Schwager.1998,NGT B21,Arc,GlacierIce,80.0000,-41.1400,2185.0,Arc-NGTB21.Schwager.1998.lpd
+Arc-PennyIceCapP96.Fisher.1998,Penny Ice Cap P96,Arc,GlacierIce,67.2500,-66.7500,1810.0,Arc-PennyIceCapP96.Fisher.1998.lpd
+Arc-PennyIceCapP96.Okuyama.2003,Penny Ice Cap P96,Arc,GlacierIce,67.2500,-65.7500,1810.0,Arc-PennyIceCapP96.Okuyama.2003.lpd
+Arc-PolarUrals.Wilson.2015,Polar Urals,Arc,Wood,66.9000,65.6000,250.0,Arc-PolarUrals.Wilson.2015.lpd
+Arc-PrinceOfWales.Kinnard.2011,Prince-of-Wales; Ellesmere Isl.,Arc,GlacierIce,78.4000,-80.4000,2030.0,Arc-PrinceOfWales.Kinnard.2011.lpd
+Arc-Renland.Vinther.2008,Renland,Arc,GlacierIce,71.2700,-26.7300,2350.0,Arc-Renland.Vinther.2008.lpd
+Arc-ScreamingLynxLake.Clegg.2011,Screaming Lynx Lake,Arc,LakeSediment,66.0700,-145.4000,223.0,Arc-ScreamingLynxLake.Clegg.2011.lpd
+Arc-SoperLake.Hughen.2000,Soper Lake; Baffin Island; Canada,Arc,LakeSediment,62.9170,-69.8830,14.0,Arc-SoperLake.Hughen.2000.lpd
+Arc-StoreggaSlide.Sejrup.2011,Storegga Slide,Ocean,MarineSediment,63.7600,5.2600,-875.0,Arc-StoreggaSlide.Sejrup.2011.lpd
+Arc-Tjeggelvas.Bjorklund.2012,Tjeggelvas,Arc,Wood,66.6000,17.6000,520.0,Arc-Tjeggelvas.Bjorklund.2012.lpd
+Arc-Tornetrask.Melvin.2012,Tornetrask,Arc,Wood,68.2600,19.6000,320.0,Arc-Tornetrask.Melvin.2012.lpd
+Arc-VoeringPlateau.Berner.2011,Voering Plateau,Ocean,MarineSediment,66.9700,7.6400,-1048.0,Arc-VoeringPlateau.Berner.2011.lpd
+Arc-WindyDome.Henderson.2011,Windy Dome,Arc,GlacierIce,80.7830,65.6300,509.0,Arc-WindyDome.Henderson.2011.lpd
+Arc-Yamalia.Briffa.2013,Yamalia,Arc,Wood,66.8000,68.0000,30.0,Arc-Yamalia.Briffa.2013.lpd
+Arc-Yukon.D'Arrigo.2006,Yukon,Arc,Wood,67.9000,-140.7000,300.0,Arc-Yukon.D'Arrigo.2006.lpd
+Asi-AltaiAktru.Cook.2005,Altai Mt.; Aktru Valley,Asia,Wood,50.0800,87.7700,2150.0,Asi-AltaiAktru.Cook.2005.lpd
+Asi-AltaiDjasator.Cook.2011,Altai Mt.; Djasator,Asia,Wood,49.6200,88.1000,2100.0,Asi-AltaiDjasator.Cook.2011.lpd
+Asi-AltaiJablonsky.Cook.2000,Altai Mt.; Jablonsky Pass.,Asia,Wood,50.8700,85.2300,1450.0,Asi-AltaiJablonsky.Cook.2000.lpd
+Asi-AltaiKorumdu.Cook.2005,Altai Mt.; Korumdu Valley,Asia,Wood,50.1400,87.7200,2200.0,Asi-AltaiKorumdu.Cook.2005.lpd
+Asi-AltaiKuraisky.Cook.2011,Altai Mt.; Kuraisky Ridge,Asia,Wood,50.3000,87.8300,2000.0,Asi-AltaiKuraisky.Cook.2011.lpd
+Asi-AltaiKuraiskySteppe.Cook.2011,Altai Mt.; Kuraisky Steppe,Asia,Wood,50.2700,87.8300,1650.0,Asi-AltaiKuraiskySteppe.Cook.2011.lpd
+Asi-AltaiSamakhaSteppe.Cook.2011,Altai Mt.; Samakha Steppe,Asia,Wood,49.7200,87.2800,1550.0,Asi-AltaiSamakhaSteppe.Cook.2011.lpd
+Asi-AltaiTjute.Cook.2011,Altai Mt.; Tjute Valley,Asia,Wood,50.1200,87.9200,1700.0,Asi-AltaiTjute.Cook.2011.lpd
+Asi-AltaiUlaganValley.Cook.2011,Altai Mt.; Ulagan Valley,Asia,Wood,50.6800,87.9700,1300.0,Asi-AltaiUlaganValley.Cook.2011.lpd
+Asi-AltaiUstUlaganLake.Cook.2005,Altai Mt.; Ust Ulagan Lake,Asia,Wood,50.4800,87.6700,2150.0,Asi-AltaiUstUlaganLake.Cook.2005.lpd
+Asi-BARELC.PAGES2k.2013,BARELC,Asia,Wood,33.7500,107.8000,2700.0,Asi-BARELC.PAGES2k.2013.lpd
+Asi-BHUTSP.PAGES2k.2013,BHUTSP,Asia,Wood,27.4500,90.0000,1300.0,Asi-BHUTSP.PAGES2k.2013.lpd
+Asi-BHUTTD.PAGES2k.2013,BHUTTD,Asia,Wood,27.6700,90.7200,1650.0,Asi-BHUTTD.PAGES2k.2013.lpd
+Asi-BT001.Cook.2010,BT001,Asia,Wood,27.5800,90.6500,2150.0,Asi-BT001.Cook.2010.lpd
+Asi-BT002.Cook.2010,BT002,Asia,Wood,27.6700,90.7300,2100.0,Asi-BT002.Cook.2010.lpd
+Asi-BT003.Cook.2010,BT003,Asia,Wood,27.7000,90.7700,1450.0,Asi-BT003.Cook.2010.lpd
+Asi-BT004.Cook.2010,BT004,Asia,Wood,27.7000,90.6800,2000.0,Asi-BT004.Cook.2010.lpd
+Asi-BT005.Cook.2010,BT005,Asia,Wood,27.4500,90.1500,2150.0,Asi-BT005.Cook.2010.lpd
+Asi-BT006.Cook.2010,BT006,Asia,Wood,27.6300,90.1300,1550.0,Asi-BT006.Cook.2010.lpd
+Asi-BT008.Cook.2010,BT008,Asia,Wood,27.5800,90.6500,2200.0,Asi-BT008.Cook.2010.lpd
+Asi-BT009.Cook.2010,BT009,Asia,Wood,27.4200,90.9700,1700.0,Asi-BT009.Cook.2010.lpd
+Asi-BT010.Cook.2010,BT010,Asia,Wood,27.2500,89.3800,2150.0,Asi-BT010.Cook.2010.lpd
+Asi-BT011.Cook.2010,BT011,Asia,Wood,27.4500,90.1500,2150.0,Asi-BT011.Cook.2010.lpd
+Asi-BT018.Cook.2010,BT018,Asia,Wood,27.9500,89.7500,2150.0,Asi-BT018.Cook.2010.lpd
+Asi-BURGPW.PAGES2k.2013,BURGPW,Asia,Wood,28.7700,83.7300,2500.0,Asi-BURGPW.PAGES2k.2013.lpd
+Asi-CENTIB.PAGES2k.2013,CENTIB,Asia,Wood,29.3500,92.0000,2900.0,Asi-CENTIB.PAGES2k.2013.lpd
+Asi-CentralChina.Wang.1998,Central China,Asia,Documents,29.0000,113.0000,3000.0,Asi-CentralChina.Wang.1998.lpd
+Asi-CHIN004.Wu.2013,CHIN004,Asia,Wood,34.4800,110.0800,4050.0,Asi-CHIN004.Wu.2013.lpd
+Asi-CHIN005.Sheppard.2013,CHIN005,Asia,Wood,37.0000,98.0800,100.0,Asi-CHIN005.Sheppard.2013.lpd
+Asi-CHIN006.Sheppard.2013,CHIN006,Asia,Wood,36.3000,98.0800,1750.0,Asi-CHIN006.Sheppard.2013.lpd
+Asi-CHIN016.Li.2010,CHIN016,Asia,Wood,31.7800,101.9200,3900.0,Asi-CHIN016.Li.2010.lpd
+Asi-CHIN017.Li.2010,CHIN017,Asia,Wood,28.9000,99.7500,3500.0,Asi-CHIN017.Li.2010.lpd
+Asi-CHIN018.Li.2010,CHIN018,Asia,Wood,29.2800,100.0800,2150.0,Asi-CHIN018.Li.2010.lpd
+Asi-CHIN019.Li.2010,CHIN019,Asia,Wood,29.1500,99.9300,2150.0,Asi-CHIN019.Li.2010.lpd
+Asi-CHIN020.Li.2010,CHIN020,Asia,Wood,30.2300,100.2700,2150.0,Asi-CHIN020.Li.2010.lpd
+Asi-CHIN021.Li.2010,CHIN021,Asia,Wood,28.9800,99.9300,2150.0,Asi-CHIN021.Li.2010.lpd
+Asi-CHIN026.Wright.2010,CHIN026,Asia,Wood,27.6200,99.8000,2900.0,Asi-CHIN026.Wright.2010.lpd
+Asi-CHIN029.Krusic.2010,CHIN029,Asia,Wood,43.8500,93.3000,4150.0,Asi-CHIN029.Krusic.2010.lpd
+Asi-CHIN037.Fan.2013,CHIN037,Asia,Wood,27.5800,99.3500,100.0,Asi-CHIN037.Fan.2013.lpd
+Asi-CHIN038.Fan.2013,CHIN038,Asia,Wood,27.5800,99.2800,4100.0,Asi-CHIN038.Fan.2013.lpd
+Asi-CHIN039.Fan.2013,CHIN039,Asia,Wood,28.0300,99.0200,3400.0,Asi-CHIN039.Fan.2013.lpd
+Asi-CHIN040.Fan.2013,CHIN040,Asia,Wood,28.0300,98.9800,3500.0,Asi-CHIN040.Fan.2013.lpd
+Asi-CHIN041.Fan.2013,CHIN041,Asia,Wood,27.8800,98.4000,2900.0,Asi-CHIN041.Fan.2013.lpd
+Asi-CHIN042.Brauning.2013,CHIN042,Asia,Wood,31.9500,98.8700,3300.0,Asi-CHIN042.Brauning.2013.lpd
+Asi-CHIN043.Brauning.2013,CHIN043,Asia,Wood,29.3000,91.9700,3900.0,Asi-CHIN043.Brauning.2013.lpd
+Asi-CHIN044.Brauning.2013,CHIN044,Asia,Wood,29.0700,93.9500,2400.0,Asi-CHIN044.Brauning.2013.lpd
+Asi-CHIN045.Brauning.2013,CHIN045,Asia,Wood,29.6200,94.6700,2300.0,Asi-CHIN045.Brauning.2013.lpd
+Asi-CHIN046.Brauning.2013,CHIN046,Asia,Wood,31.1200,97.0300,3150.0,Asi-CHIN046.Brauning.2013.lpd
+Asi-CHIN047.Brauning.2013,CHIN047,Asia,Wood,31.1200,97.0300,2500.0,Asi-CHIN047.Brauning.2013.lpd
+Asi-CHIN048.Brauning.2013,CHIN048,Asia,Wood,30.3000,91.5200,700.0,Asi-CHIN048.Brauning.2013.lpd
+Asi-CHIN049.Brauning.2013,CHIN049,Asia,Wood,31.2300,96.4800,3500.0,Asi-CHIN049.Brauning.2013.lpd
+Asi-CHIN050.Shao.2013,CHIN050,Asia,Wood,37.4700,97.2300,6700.0,Asi-CHIN050.Shao.2013.lpd
+Asi-CHIN051.Shao.2013,CHIN051,Asia,Wood,37.4700,97.2200,3000.0,Asi-CHIN051.Shao.2013.lpd
+Asi-CHIN052.Shao.2013,CHIN052,Asia,Wood,37.4500,97.5300,2060.0,Asi-CHIN052.Shao.2013.lpd
+Asi-CHIN053.Shao.2013,CHIN053,Asia,Wood,37.4300,98.0500,4600.0,Asi-CHIN053.Shao.2013.lpd
+Asi-CHIN054.Shao.2013,CHIN054,Asia,Wood,37.4500,97.7800,2810.0,Asi-CHIN054.Shao.2013.lpd
+Asi-CHIN055.Shao.2013,CHIN055,Asia,Wood,37.5200,97.0500,100.0,Asi-CHIN055.Shao.2013.lpd
+Asi-CHIN056.Shao.2013,CHIN056,Asia,Wood,34.4700,110.0800,4900.0,Asi-CHIN056.Shao.2013.lpd
+Asi-CHIN057.Shao.2013,CHIN057,Asia,Wood,34.4700,110.0800,4900.0,Asi-CHIN057.Shao.2013.lpd
+Asi-CHIN058.Shao.2013,CHIN058,Asia,Wood,34.4700,110.0800,3950.0,Asi-CHIN058.Shao.2013.lpd
+Asi-CHIN059.Shao.2013,CHIN059,Asia,Wood,33.8000,96.1300,3400.0,Asi-CHIN059.Shao.2013.lpd
+Asi-CHIN060.Shao.2013,CHIN060,Asia,Wood,37.3200,98.4000,3980.0,Asi-CHIN060.Shao.2013.lpd
+Asi-CHIN061.Shao.2013,CHIN061,Asia,Wood,37.0300,98.6300,2500.0,Asi-CHIN061.Shao.2013.lpd
+Asi-CHIN062.Shao.2013,CHIN062,Asia,Wood,37.0300,98.6700,3700.0,Asi-CHIN062.Shao.2013.lpd
+Asi-CHIN063.Shao.2013,CHIN063,Asia,Wood,36.7500,98.2200,3040.0,Asi-CHIN063.Shao.2013.lpd
+Asi-CHIN064.Shao.2013,CHIN064,Asia,Wood,36.6800,98.4200,3000.0,Asi-CHIN064.Shao.2013.lpd
+Asi-CHIN065.Shao.2013,CHIN065,Asia,Wood,32.6700,95.7200,4500.0,Asi-CHIN065.Shao.2013.lpd
+Asi-CHIN066.Shao.2013,CHIN066,Asia,Wood,33.7200,96.2800,3500.0,Asi-CHIN066.Shao.2013.lpd
+Asi-Dasuopu.Thompson.2000,Dasuopu,Asia,GlacierIce,28.3800,85.7200,7200.0,Asi-Dasuopu.Thompson.2000.lpd
+Asi-DEZQIN.PAGES2k.2013,DEZQIN,Asia,Wood,34.7500,100.8200,1750.0,Asi-DEZQIN.PAGES2k.2013.lpd
+Asi-DQHZHO.PAGES2k.2013,DQHZHO,Asia,Wood,35.0000,100.0700,3400.0,Asi-DQHZHO.PAGES2k.2013.lpd
+Asi-DUSHJP.PAGES2k.2013,DUSHJP,Asia,Wood,36.6500,98.0800,100.0,Asi-DUSHJP.PAGES2k.2013.lpd
+Asi-EastChina.Wang.1990,East China,Asia,Documents,30.0000,117.5000,2600.0,Asi-EastChina.Wang.1990.lpd
+Asi-EastChina.Wang.1998,East China region,Asia,Documents,34.0000,120.0000,3300.0,Asi-EastChina.Wang.1998.lpd
+Asi-ENEPAB.PAGES2k.2013,ENEPAB,Asia,Wood,27.7300,87.2000,3300.0,Asi-ENEPAB.PAGES2k.2013.lpd
+Asi-ESPERG.PAGES2k.2013,ESPERG,Asia,Wood,40.1700,72.5800,2500.0,Asi-ESPERG.PAGES2k.2013.lpd
+Asi-ESPPAK.PAGES2k.2013,ESPPAK,Asia,Wood,35.1700,75.5000,2000.0,Asi-ESPPAK.PAGES2k.2013.lpd
+Asi-Fujian.Wang.1998,Fujian and Taiwan,Asia,Documents,24.0000,121.0000,3700.0,Asi-Fujian.Wang.1998.lpd
+Asi-GANGCD.PAGES2k.2013,GANGCD,Asia,Wood,30.9800,78.9300,100.0,Asi-GANGCD.PAGES2k.2013.lpd
+Asi-GHEGAN.PAGES2k.2013,GHEGAN,Asia,Wood,37.9300,101.5300,1750.0,Asi-GHEGAN.PAGES2k.2013.lpd
+Asi-GOUQIN.PAGES2k.2013,GOUQIN,Asia,Wood,34.7300,100.8000,1750.0,Asi-GOUQIN.PAGES2k.2013.lpd
+Asi-Guangdong.Zheng.1982,Guangdong,Asia,Documents,23.1600,113.2300,3900.0,Asi-Guangdong.Zheng.1982.lpd
+Asi-GuangdongAndGuangxi.Zhang.1980,Guangdong and Guangxi province,Asia,Documents,23.5000,112.5000,2480.0,Asi-GuangdongAndGuangxi.Zhang.1980.lpd
+Asi-Guliya.Thompson.1997,Guliya,Asia,GlacierIce,35.2800,81.4800,6200.0,Asi-Guliya.Thompson.1997.lpd
+Asi-HBHXJP.PAGES2k.2013,HBHXJP,Asia,Wood,34.7800,100.8200,2100.0,Asi-HBHXJP.PAGES2k.2013.lpd
+Asi-HBLXJP.PAGES2k.2013,HBLXJP,Asia,Wood,34.7800,100.8200,4000.0,Asi-HBLXJP.PAGES2k.2013.lpd
+Asi-HBMXJP.PAGES2k.2013,HBMXJP,Asia,Wood,34.7800,100.8200,3300.0,Asi-HBMXJP.PAGES2k.2013.lpd
+Asi-HEBQIN.PAGES2k.2013,HEBQIN,Asia,Wood,34.7300,100.7800,1750.0,Asi-HEBQIN.PAGES2k.2013.lpd
+Asi-HRPCSM.PAGES2k.2013,HRPCSM,Asia,Wood,35.8800,74.8800,3100.0,Asi-HRPCSM.PAGES2k.2013.lpd
+Asi-Hunan-Jiangsu.Zhang.1980,Hunan-Jiangsu,Asia,Documents,28.0000,116.5000,2300.0,Asi-Hunan-Jiangsu.Zhang.1980.lpd
+Asi-Hushre.PAGES2k.2013,Hushre,Asia,Wood,46.7800,101.9500,3700.0,Asi-Hushre.PAGES2k.2013.lpd
+Asi-HXBURU.PAGES2k.2013,HXBURU,Asia,Wood,43.1800,87.1800,3400.0,Asi-HXBURU.PAGES2k.2013.lpd
+Asi-HYGJUP.PAGES2k.2013,HYGJUP,Asia,Wood,38.7000,99.6800,5600.0,Asi-HYGJUP.PAGES2k.2013.lpd
+Asi-INDI015.Borgaonkar.2013,INDI015,Asia,Wood,31.2000,77.2300,3150.0,Asi-INDI015.Borgaonkar.2013.lpd
+Asi-INDI024.Borgaonkar.2013,INDI024,Asia,Wood,31.3700,78.1700,3150.0,Asi-INDI024.Borgaonkar.2013.lpd
+Asi-INDI025.Borgaonkar.2013,INDI025,Asia,Wood,10.1800,76.8700,3200.0,Asi-INDI025.Borgaonkar.2013.lpd
+Asi-INDO005.D'Arrigo.2010,INDO005,Asia,Wood,-5.5000,122.8000,4200.0,Asi-INDO005.D'Arrigo.2010.lpd
+Asi-JAPA012.Yasue.1997,JAPA012,Asia,Wood,44.9500,142.1200,2000.0,Asi-JAPA012.Yasue.1997.lpd
+Asi-JAPA013.Yasue.1997,JAPA013,Asia,Wood,44.3500,142.1800,3700.0,Asi-JAPA013.Yasue.1997.lpd
+Asi-JAPA014.Yasue.2013,JAPA014,Asia,Wood,43.5000,143.2000,2050.0,Asi-JAPA014.Yasue.2013.lpd
+Asi-JAPA015.Yasue.2013,JAPA015,Asia,Wood,43.2200,145.4700,3780.0,Asi-JAPA015.Yasue.2013.lpd
+Asi-JAPA016.Yasue.2013,JAPA016,Asia,Wood,35.7300,138.2200,1950.0,Asi-JAPA016.Yasue.2013.lpd
+Asi-JAPA017.Yasue.2013,JAPA017,Asia,Wood,30.3700,130.5300,3500.0,Asi-JAPA017.Yasue.2013.lpd
+Asi-JAPA019.Sano.2013,JAPA019,Asia,Wood,33.7300,133.1200,3700.0,Asi-JAPA019.Sano.2013.lpd
+Asi-JAPA020.Kimura.2013,JAPA020,Asia,Wood,30.3300,130.5000,3800.0,Asi-JAPA020.Kimura.2013.lpd
+Asi-KAZ001.Solomina.2010,KAZ001,Asia,Wood,43.3500,77.3500,4300.0,Asi-KAZ001.Solomina.2010.lpd
+Asi-KERALA.PAGES2k.2013,KERALA,Asia,Wood,10.0000,76.6700,3100.0,Asi-KERALA.PAGES2k.2013.lpd
+Asi-KunashirIsland.Demezhko.2009,Kunashir Island,Asia,Other,43.9550,145.7250,2400.0,Asi-KunashirIsland.Demezhko.2009.lpd
+Asi-KYRG002.Esper.2007,KYRG002,Asia,Wood,40.1700,72.5800,3720.0,Asi-KYRG002.Esper.2007.lpd
+Asi-KYRG003.Esper.2007,KYRG003,Asia,Wood,40.1700,72.5800,3700.0,Asi-KYRG003.Esper.2007.lpd
+Asi-KYRG004.Esper.2007,KYRG004,Asia,Wood,40.1700,72.5800,4200.0,Asi-KYRG004.Esper.2007.lpd
+Asi-KYRG005.Esper.2007,KYRG005,Asia,Wood,40.1700,72.5800,3950.0,Asi-KYRG005.Esper.2007.lpd
+Asi-KYRG007.Esper.2007,KYRG007,Asia,Wood,40.1700,72.5800,4200.0,Asi-KYRG007.Esper.2007.lpd
+Asi-KYRG008.Shiyatov.2013,KYRG008,Asia,Wood,40.2000,72.5800,4100.0,Asi-KYRG008.Shiyatov.2013.lpd
+Asi-KYRG009.Shiyatov.2013,KYRG009,Asia,Wood,39.9200,71.4700,2900.0,Asi-KYRG009.Shiyatov.2013.lpd
+Asi-KYRG010.Shiyatov.2013,KYRG010,Asia,Wood,40.1700,72.6200,3000.0,Asi-KYRG010.Shiyatov.2013.lpd
+Asi-KYRG011.Shiyatov.2013,KYRG011,Asia,Wood,39.8300,71.5000,4400.0,Asi-KYRG011.Shiyatov.2013.lpd
+Asi-KYRG012.Solomina.2013,KYRG012,Asia,Wood,42.2000,79.0500,4000.0,Asi-KYRG012.Solomina.2013.lpd
+Asi-KYRG013.Solomina.2013,KYRG013,Asia,Wood,42.1500,79.4700,320.0,Asi-KYRG013.Solomina.2013.lpd
+Asi-KYRG014.Solomina.2013,KYRG014,Asia,Wood,42.4200,78.9700,69.0,Asi-KYRG014.Solomina.2013.lpd
+Asi-KYRG015.Solomina.2013,KYRG015,Asia,Wood,42.1500,79.4500,2200.0,Asi-KYRG015.Solomina.2013.lpd
+Asi-LAJQIN.PAGES2k.2013,LAJQIN,Asia,Wood,34.7200,100.7200,1750.0,Asi-LAJQIN.PAGES2k.2013.lpd
+Asi-LowerYangtzeRiver.Zhang.1980,Lower reaches of the Yangtze River,Asia,Documents,32.1000,118.8000,2200.0,Asi-LowerYangtzeRiver.Zhang.1980.lpd
+Asi-MCCHFH.Sano.2008,MCCHFH,Asia,Wood,21.6700,104.1000,3600.0,Asi-MCCHFH.Sano.2008.lpd
+Asi-MiddleYangtzeRiver.Zhang.1980,Middle reaches of the Yangtze River,Asia,Documents,30.5000,114.5000,1900.0,Asi-MiddleYangtzeRiver.Zhang.1980.lpd
+Asi-MONG002.Jacoby.2013,MONG002,Asia,Wood,47.7700,107.0000,5900.0,Asi-MONG002.Jacoby.2013.lpd
+Asi-MONG004.Jacoby.2013,MONG004,Asia,Wood,47.9500,107.4500,3700.0,Asi-MONG004.Jacoby.2013.lpd
+Asi-MONG006.Jacoby.2006,MONG006,Asia,Wood,47.7800,107.5000,3050.0,Asi-MONG006.Jacoby.2006.lpd
+Asi-MONG007.Schweingruber.2013,MONG007,Asia,Wood,49.7000,91.5500,2827.0,Asi-MONG007.Schweingruber.2013.lpd
+Asi-MONG009.Jacoby.2013,MONG009,Asia,Wood,49.9200,91.5700,2800.0,Asi-MONG009.Jacoby.2013.lpd
+Asi-MONG010.Jacoby.2013,MONG010,Asia,Wood,47.2700,100.0300,4100.0,Asi-MONG010.Jacoby.2013.lpd
+Asi-MONG011.Jacoby.2006,MONG011,Asia,Wood,48.1300,100.2700,3700.0,Asi-MONG011.Jacoby.2006.lpd
+Asi-MONG012.Jacoby.2006,MONG012,Asia,Wood,48.9800,103.2200,2950.0,Asi-MONG012.Jacoby.2006.lpd
+Asi-MONG014.Jacoby.2013,MONG014,Asia,Wood,47.4300,100.4200,4100.0,Asi-MONG014.Jacoby.2013.lpd
+Asi-MONG015.Jacoby.2013,MONG015,Asia,Wood,48.1700,99.8700,3200.0,Asi-MONG015.Jacoby.2013.lpd
+Asi-MONG016.Jacoby.2010,MONG016,Asia,Wood,48.6000,88.3700,880.0,Asi-MONG016.Jacoby.2010.lpd
+Asi-MONG017.Jacoby.2010,MONG017,Asia,Wood,49.9700,91.0000,1100.0,Asi-MONG017.Jacoby.2010.lpd
+Asi-MONG018.Jacoby.2010,MONG018,Asia,Wood,49.9700,90.9800,1300.0,Asi-MONG018.Jacoby.2010.lpd
+Asi-MONG019.Jacoby.2010,MONG019,Asia,Wood,47.1000,90.9700,1100.0,Asi-MONG019.Jacoby.2010.lpd
+Asi-MONG020.Jacoby.2010,MONG020,Asia,Wood,48.2700,88.8700,2400.0,Asi-MONG020.Jacoby.2010.lpd
+Asi-MONG021.Jacoby.2010,MONG021,Asia,Wood,48.3500,107.4700,2900.0,Asi-MONG021.Jacoby.2010.lpd
+Asi-MONG024.Jacoby.2010,MONG024,Asia,Wood,48.5000,88.5000,3000.0,Asi-MONG024.Jacoby.2010.lpd
+Asi-MONG025.Jacoby.2010,MONG025,Asia,Wood,48.7000,88.8000,4400.0,Asi-MONG025.Jacoby.2010.lpd
+Asi-MONG026.Jacoby.2010,MONG026,Asia,Wood,46.8200,100.1200,4400.0,Asi-MONG026.Jacoby.2010.lpd
+Asi-MONG027.Jacoby.2010,MONG027,Asia,Wood,46.3200,101.3200,300.0,Asi-MONG027.Jacoby.2010.lpd
+Asi-MONG028.Jacoby.2010,MONG028,Asia,Wood,48.8300,111.6800,1700.0,Asi-MONG028.Jacoby.2010.lpd
+Asi-MONG029.Jacoby.2010,MONG029,Asia,Wood,49.8700,91.4300,1700.0,Asi-MONG029.Jacoby.2010.lpd
+Asi-MONG030.Jacoby.2010,MONG030,Asia,Wood,49.3800,94.8800,4200.0,Asi-MONG030.Jacoby.2010.lpd
+Asi-MONG031.Jacoby.2010,MONG031,Asia,Wood,48.2500,97.4000,3010.0,Asi-MONG031.Jacoby.2010.lpd
+Asi-MONG032.Jacoby.2010,MONG032,Asia,Wood,46.5200,100.9500,3600.0,Asi-MONG032.Jacoby.2010.lpd
+Asi-MONG033.Jacoby.2010,MONG033,Asia,Wood,49.3700,94.8800,2800.0,Asi-MONG033.Jacoby.2010.lpd
+Asi-MQACJP.PAGES2k.2013,MQACJP,Asia,Wood,35.0700,100.3500,2600.0,Asi-MQACJP.PAGES2k.2013.lpd
+Asi-MQAXJP.PAGES2k.2013,MQAXJP,Asia,Wood,35.0700,100.3500,700.0,Asi-MQAXJP.PAGES2k.2013.lpd
+Asi-MQBXJP.PAGES2k.2013,MQBXJP,Asia,Wood,34.7800,99.7800,800.0,Asi-MQBXJP.PAGES2k.2013.lpd
+Asi-MQDXJP.PAGES2k.2013,MQDXJP,Asia,Wood,34.7200,99.6700,500.0,Asi-MQDXJP.PAGES2k.2013.lpd
+Asi-MQFXJP.PAGES2k.2013,MQFXJP,Asia,Wood,34.7500,99.6800,700.0,Asi-MQFXJP.PAGES2k.2013.lpd
+Asi-MQRXJP.PAGES2k.2013,MQRXJP,Asia,Wood,34.7500,99.6800,100.0,Asi-MQRXJP.PAGES2k.2013.lpd
+Asi-MTASMD.Davi.2013,JAPA008,Asia,Wood,43.7700,142.5500,3780.0,Asi-MTASMD.Davi.2013.lpd
+Asi-MTASSP.Davi.2013,JAPA008,Asia,Wood,43.7700,142.5500,3730.0,Asi-MTASSP.Davi.2013.lpd
+Asi-NEPA003.Krusic.2013,NEPA003,Asia,Wood,29.4800,82.0800,3700.0,Asi-NEPA003.Krusic.2013.lpd
+Asi-NEPA010.Krusic.2013,NEPA010,Asia,Wood,27.7000,86.4500,3700.0,Asi-NEPA010.Krusic.2013.lpd
+Asi-NEPA014.Krusic.2013,NEPA014,Asia,Wood,27.7000,86.2800,3400.0,Asi-NEPA014.Krusic.2013.lpd
+Asi-NEPA015.Krusic.2013,NEPA015,Asia,Wood,28.3800,83.7000,3600.0,Asi-NEPA015.Krusic.2013.lpd
+Asi-NEPA018.Krusic.2013,NEPA018,Asia,Wood,27.7300,86.3300,3600.0,Asi-NEPA018.Krusic.2013.lpd
+Asi-NEPA019.Krusic.2013,NEPA019,Asia,Wood,29.4700,82.1200,6400.0,Asi-NEPA019.Krusic.2013.lpd
+Asi-NEPA021.Krusic.2013,NEPA021,Asia,Wood,27.5000,88.0200,3400.0,Asi-NEPA021.Krusic.2013.lpd
+Asi-NEPA025.Krusic.2013,NEPA025,Asia,Wood,29.5200,82.0300,4000.0,Asi-NEPA025.Krusic.2013.lpd
+Asi-NEPA027.Krusic.2013,NEPA027,Asia,Wood,27.5000,87.9800,3300.0,Asi-NEPA027.Krusic.2013.lpd
+Asi-NEPA029.Krusic.2013,NEPA029,Asia,Wood,28.1800,85.4300,4000.0,Asi-NEPA029.Krusic.2013.lpd
+Asi-NEPA030.Krusic.2013,NEPA030,Asia,Wood,27.7800,87.2700,3200.0,Asi-NEPA030.Krusic.2013.lpd
+Asi-NEPA032.Krusic.2013,NEPA032,Asia,Wood,27.6700,87.2000,3300.0,Asi-NEPA032.Krusic.2013.lpd
+Asi-NEPA036.Krusic.2013,NEPA036,Asia,Wood,27.7300,87.2000,2300.0,Asi-NEPA036.Krusic.2013.lpd
+Asi-NEPA042.Krusic.2010,NEPA042,Asia,Wood,27.8300,88.0200,3300.0,Asi-NEPA042.Krusic.2010.lpd
+Asi-NOGSAK.PAGES2k.2013,NOGSAK,Asia,Wood,51.8300,143.1300,3300.0,Asi-NOGSAK.PAGES2k.2013.lpd
+Asi-PAKI001.Esper.2007,PAKI001,Asia,Wood,36.0300,74.5800,3200.0,Asi-PAKI001.Esper.2007.lpd
+Asi-PAKI002.Esper.2007,PAKI002,Asia,Wood,36.0300,74.5800,5000.0,Asi-PAKI002.Esper.2007.lpd
+Asi-PAKI003.Esper.2007,PAKI003,Asia,Wood,36.0300,74.5800,3300.0,Asi-PAKI003.Esper.2007.lpd
+Asi-PAKI004.Esper.2007,PAKI004,Asia,Wood,36.0300,74.5800,3800.0,Asi-PAKI004.Esper.2007.lpd
+Asi-PAKI006.Esper.2007,PAKI006,Asia,Wood,36.3300,74.0300,3500.0,Asi-PAKI006.Esper.2007.lpd
+Asi-PAKI007.Esper.2007,PAKI007,Asia,Wood,36.3300,74.0300,3330.0,Asi-PAKI007.Esper.2007.lpd
+Asi-PAKI009.Esper.2007,PAKI009,Asia,Wood,36.5800,75.0800,1500.0,Asi-PAKI009.Esper.2007.lpd
+Asi-PAKI010.Esper.2007,PAKI010,Asia,Wood,36.5800,75.0800,3740.0,Asi-PAKI010.Esper.2007.lpd
+Asi-PAKI011.Esper.2007,PAKI011,Asia,Wood,36.5800,75.0800,3276.0,Asi-PAKI011.Esper.2007.lpd
+Asi-PAKI012.Esper.2007,PAKI012,Asia,Wood,36.5800,75.0800,3033.0,Asi-PAKI012.Esper.2007.lpd
+Asi-PAKI014.Esper.2007,PAKI014,Asia,Wood,35.1700,75.5000,3100.0,Asi-PAKI014.Esper.2007.lpd
+Asi-PAKI015.Esper.2007,PAKI015,Asia,Wood,35.1700,75.5000,3300.0,Asi-PAKI015.Esper.2007.lpd
+Asi-PAKI016.Esper.2007,PAKI016,Asia,Wood,35.1700,75.5000,3050.0,Asi-PAKI016.Esper.2007.lpd
+Asi-PAKI017.Cook.2013,PAKI017,Asia,Wood,35.3300,74.8000,3300.0,Asi-PAKI017.Cook.2013.lpd
+Asi-PAKI018.Cook.2013,PAKI018,Asia,Wood,35.3300,74.8000,3200.0,Asi-PAKI018.Cook.2013.lpd
+Asi-PAKI020.Cook.2013,PAKI020,Asia,Wood,35.6800,71.6300,3000.0,Asi-PAKI020.Cook.2013.lpd
+Asi-PAKI021.Cook.2013,PAKI021,Asia,Wood,35.6800,71.6300,3450.0,Asi-PAKI021.Cook.2013.lpd
+Asi-PAKI022.Cook.2013,PAKI022,Asia,Wood,35.9000,71.7300,3600.0,Asi-PAKI022.Cook.2013.lpd
+Asi-PAKI023.Cook.2013,PAKI023,Asia,Wood,35.9000,71.7300,3000.0,Asi-PAKI023.Cook.2013.lpd
+Asi-PAKI024.Cook.2013,PAKI024,Asia,Wood,35.0300,74.5800,1830.0,Asi-PAKI024.Cook.2013.lpd
+Asi-PAKI025.Cook.2013,PAKI025,Asia,Wood,35.4500,74.7800,2760.0,Asi-PAKI025.Cook.2013.lpd
+Asi-PAKI027.Cook.2013,PAKI027,Asia,Wood,35.3500,71.9300,2670.0,Asi-PAKI027.Cook.2013.lpd
+Asi-PAKI028.Cook.2013,PAKI028,Asia,Wood,35.4000,74.1200,2880.0,Asi-PAKI028.Cook.2013.lpd
+Asi-PAKI029.Cook.2013,PAKI029,Asia,Wood,35.8300,74.3300,3200.0,Asi-PAKI029.Cook.2013.lpd
+Asi-PAKI030.Cook.2013,PAKI030,Asia,Wood,35.8800,74.1800,3630.0,Asi-PAKI030.Cook.2013.lpd
+Asi-PAKI031.Cook.2013,PAKI031,Asia,Wood,35.5000,74.0800,3600.0,Asi-PAKI031.Cook.2013.lpd
+Asi-PAKI033.Cook.2013,PAKI033,Asia,Wood,35.5000,74.7500,3600.0,Asi-PAKI033.Cook.2013.lpd
+Asi-PAKI035.Cook.2013,PAKI035,Asia,Wood,36.1500,74.1800,3900.0,Asi-PAKI035.Cook.2013.lpd
+Asi-PAKI036.Cook.2013,PAKI036,Asia,Wood,36.1500,74.1800,3900.0,Asi-PAKI036.Cook.2013.lpd
+Asi-PAKI039.Cook.2013,PAKI039,Asia,Wood,35.0000,70.7800,3750.0,Asi-PAKI039.Cook.2013.lpd
+Asi-PAKI040.Cook.2011,PAKI040,Asia,Wood,35.3500,71.8000,3900.0,Asi-PAKI040.Cook.2011.lpd
+Asi-PTCYUN.PAGES2k.2013,PTCYUN,Asia,Wood,27.3700,99.3700,3800.0,Asi-PTCYUN.PAGES2k.2013.lpd
+Asi-Puruogangri.Thompson.2006,Puruogangri,Asia,GlacierIce,33.9167,89.0833,6070.0,Asi-Puruogangri.Thompson.2006.lpd
+Asi-QUMAJP.PAGES2k.2013,QUMAJP,Asia,Wood,33.8000,96.1300,3400.0,Asi-QUMAJP.PAGES2k.2013.lpd
+Asi-RANGCD.PAGES2k.2013,RANGCD,Asia,Wood,33.0800,76.4300,3240.0,Asi-RANGCD.PAGES2k.2013.lpd
+Asi-RUSS219.Jacoby.2010,RUSS219,Asia,Wood,43.8800,145.6000,3920.0,Asi-RUSS219.Jacoby.2010.lpd
+Asi-RUSS236.Sano.2009,RUSS236,Asia,Wood,55.0000,160.5000,1350.0,Asi-RUSS236.Sano.2009.lpd
+Asi-SANGTS.PAGES2k.2013,SANGTS,Asia,Wood,33.6500,107.8000,3750.0,Asi-SANGTS.PAGES2k.2013.lpd
+Asi-SHIESP.PAGES2k.2013,SHIESP,Asia,Wood,39.8300,71.5000,1350.0,Asi-SHIESP.PAGES2k.2013.lpd
+Asi-SHIYAT.PAGES2k.2013,SHIYAT,Asia,Wood,39.8300,71.5000,0.0,Asi-SHIYAT.PAGES2k.2013.lpd
+Asi-SihailongwaLake.Chu.2011,Sihailongwa lake,Asia,LakeSediment,42.1700,126.3600,1000.0,Asi-SihailongwaLake.Chu.2011.lpd
+Asi-SO90-39KG_SO130-275KL.Munz.2015,SO90-39KG/SO130-275KL,Ocean,MarineSediment,24.8333,65.9167,-695.0,Asi-SO90-39KG_SO130-275KL.Munz.2015.lpd
+Asi-SODAPS.PAGES2k.2013,SODAPS,Asia,Wood,48.3000,98.9300,2500.0,Asi-SODAPS.PAGES2k.2013.lpd
+Asi-SourthAndMiddleUrals.Demezhko.2007,Sourth and Middle Urals,Asia,Borehole,55.0000,59.5000,1900.0,Asi-SourthAndMiddleUrals.Demezhko.2007.lpd
+Asi-SouthChina.Wang.1998,South China,Asia,Documents,23.0000,114.0000,2200.0,Asi-SouthChina.Wang.1998.lpd
+Asi-TDAXJP.PAGES2k.2013,TDAXJP,Asia,Wood,34.7800,100.8000,0.0,Asi-TDAXJP.PAGES2k.2013.lpd
+Asi-TDBXJP.PAGES2k.2013,TDBXJP,Asia,Wood,34.7800,100.8200,200.0,Asi-TDBXJP.PAGES2k.2013.lpd
+Asi-TH001.Buckley.2010,TH001,Asia,Wood,19.2800,98.9300,3900.0,Asi-TH001.Buckley.2010.lpd
+Asi-TIANMU.PAGES2k.2013,TIANMU,Asia,Wood,30.3300,119.4300,3539.0,Asi-TIANMU.PAGES2k.2013.lpd
+Asi-TW001.Wright.2010,TW001,Asia,Wood,24.5300,121.3800,3800.0,Asi-TW001.Wright.2010.lpd
+Asi-UKHEWD.Schweingruber.2002,Altai Mt.; Ust Koksa Hill,Asia,Wood,50.1500,85.3700,1750.0,Asi-UKHEWD.Schweingruber.2002.lpd
+Asi-UKHEWW.Schweingruber.2002,Altai Mt.; Ust Koksa Hill,Asia,Wood,50.1500,85.3700,1750.0,Asi-UKHEWW.Schweingruber.2002.lpd
+Asi-UKHLWD.Schweingruber.2002,Altai Mt.; Ust Koksa Hill,Asia,Wood,50.1500,85.3700,1750.0,Asi-UKHLWD.Schweingruber.2002.lpd
+Asi-UKHLWW.Schweingruber.2002,Altai Mt.; Ust Koksa Hill,Asia,Wood,50.1500,85.3700,1750.0,Asi-UKHLWW.Schweingruber.2002.lpd
+Asi-UKHMND.Schweingruber.2002,Altai Mt.; Ust Koksa Hill,Asia,Wood,50.1500,85.3700,1750.0,Asi-UKHMND.Schweingruber.2002.lpd
+Asi-UKHMXD.Schweingruber.2002,Altai Mt.; Ust Koksa Hill,Asia,Wood,50.1500,85.3700,1750.0,Asi-UKHMXD.Schweingruber.2002.lpd
+Asi-UKHTRW.Schweingruber.2002,Altai Mt.; Ust Koksa Hill,Asia,Wood,50.1500,85.3700,1750.0,Asi-UKHTRW.Schweingruber.2002.lpd
+Asi-UULEWD.Schweingruber.2002,Altai Mt.; Ust Ulagan Lake,Asia,Wood,50.4800,87.6500,2150.0,Asi-UULEWD.Schweingruber.2002.lpd
+Asi-UULEWW.Schweingruber.2002,Altai Mt.; Ust Ulagan Lake,Asia,Wood,50.4800,87.6500,2150.0,Asi-UULEWW.Schweingruber.2002.lpd
+Asi-UULLWD.Schweingruber.2002,Altai Mt.; Ust Ulagan Lake,Asia,Wood,50.4800,87.6500,2150.0,Asi-UULLWD.Schweingruber.2002.lpd
+Asi-UULLWW.Schweingruber.2002,Altai Mt.; Ust Ulagan Lake,Asia,Wood,50.4800,87.6500,2150.0,Asi-UULLWW.Schweingruber.2002.lpd
+Asi-UULMND.Schweingruber.2002,Altai Mt.; Ust Ulagan Lake,Asia,Wood,50.4800,87.6500,2150.0,Asi-UULMND.Schweingruber.2002.lpd
+Asi-UULMXD.Schweingruber.2002,Altai Mt.; Ust Ulagan Lake,Asia,Wood,50.4800,87.6500,2150.0,Asi-UULMXD.Schweingruber.2002.lpd
+Asi-UULTRW.Schweingruber.2002,Altai Mt.; Ust Ulagan Lake,Asia,Wood,50.4800,87.6500,2150.0,Asi-UULTRW.Schweingruber.2002.lpd
+Asi-VIET001.Buckley.2010,VIET001,Asia,Wood,12.2200,108.7300,3900.0,Asi-VIET001.Buckley.2010.lpd
+Asi-WEXYUN.Wright.2010,CHIN027,Asia,Wood,27.3300,99.3000,3800.0,Asi-WEXYUN.Wright.2010.lpd
+Asi-WULANJ.PAGES2k.2013,WULANJ,Asia,Wood,37.0300,98.6800,3040.0,Asi-WULANJ.PAGES2k.2013.lpd
+Asi-WXIYUN.Wright.2010,CHIN027,Asia,Wood,27.3300,99.3000,1750.0,Asi-WXIYUN.Wright.2010.lpd
+Asi-YKC.Yasue.2013,JAPA018,Asia,Wood,30.3300,130.4500,3700.0,Asi-YKC.Yasue.2013.lpd
+Asi-YKCOM.Yasue.2013,JAPA018,Asia,Wood,30.3700,130.5300,4060.0,Asi-YKCOM.Yasue.2013.lpd
+Asi-ZHANGX.PAGES2k.2010,ZHANGX,Asia,Wood,34.6300,104.4700,2900.0,Asi-ZHANGX.PAGES2k.2010.lpd
+Asi-ZhejiangAndFujian.Zhang.1980,Zhejiang and Fujian province,Asia,Documents,25.0000,118.0000,2400.0,Asi-ZhejiangAndFujian.Zhang.1980.lpd
+Asi-ZHIDJP.Shao.2003,ZHIDJP,Asia,Wood,33.7200,96.2800,3800.0,Asi-ZHIDJP.Shao.2003.lpd
+Aus-BuckleysChance.Buckley.1997,Buckleys Chance Tasmania (Site ID: BCH),Aus,Wood,-42.2700,145.8700,900.0,Aus-BuckleysChance.Buckley.1997.lpd
+Aus-CTPEastTasmania.Allen.2001,CTP East Tasmania,Aus,Wood,-41.3100,147.7500,750.0,Aus-CTPEastTasmania.Allen.2001.lpd
+Aus-CTPWestTasmania.Allen.2001,CTP West Tasmania,Aus,Wood,-41.6700,145.6500,550.0,Aus-CTPWestTasmania.Allen.2001.lpd
+Aus-DuckholeLake.Saunders.2013,Duckhole Lake,Aus,LakeSediment,-43.3646,146.8749,150.0,Aus-DuckholeLake.Saunders.2013.lpd
+Aus-MtRead.Cook.2006,Mt. Read,Aus,Wood,-41.8300,145.5300,900.0,Aus-MtRead.Cook.2006.lpd
+Aus-Oroko.Cook.2002,Oroko,Aus,Wood,-43.2300,170.2800,110.0,Aus-Oroko.Cook.2002.lpd
+Aus-PinkPine.Duncan.2010,Pink Pine NZ,Aus,Wood,-43.0000,171.0000,640.0,Aus-PinkPine.Duncan.2010.lpd
+Aus-StewartIsland.D'Arrigo.1996,Stewart Island,Aus,Wood,-47.0000,167.8000,450.0,Aus-StewartIsland.D'Arrigo.1996.lpd
+Aus-TakapariCedar.Xiong.2000,Takapari Cedar,Aus,Wood,-40.0700,175.9800,820.0,Aus-TakapariCedar.Xiong.2000.lpd
+Eur-CentralandEasternPyrenees.Pla.2004,Central and Eastern Pyrenees (NE Spain),Eur,LakeSediment,42.5000,0.7500,2280.0,Eur-CentralandEasternPyrenees.Pla.2004.lpd
+Eur-CentralEurope.Dobrovolny.2009,Central Europe,Eur,Documents,49.0000,13.0000,0.0,Eur-CentralEurope.Dobrovolny.2009.lpd
+Eur-CoastofPortugal.Abrantes.2011,Coast of Portugal,Ocean,LakeSediment,41.1000,-8.9000,-80.0,Eur-CoastofPortugal.Abrantes.2011.lpd
+Eur-EasternCarpathianMountains.Popa.2008,Eastern Carpathian Mountains (Romania),Eur,Wood,47.0000,25.3000,1820.0,Eur-EasternCarpathianMountains.Popa.2008.lpd
+Eur-EuropeanAlps.Buentgen.2011,European Alps,Eur,Wood,47.0000,10.7000,2050.0,Eur-EuropeanAlps.Buentgen.2011.lpd
+Eur-FinnishLakelands.Helama.2014,Finnish Lakelands,Eur,Wood,62.0000,28.3250,130.0,Eur-FinnishLakelands.Helama.2014.lpd
+Eur-LakeSilvaplana.Larocque-Tobler.2010,Lake Silvaplana,Eur,LakeSediment,46.5000,9.8000,1791.0,Eur-LakeSilvaplana.Larocque-Tobler.2010.lpd
+Eur-LakeSilvaplana.Trachsel.2010,Lake Silvaplana,Eur,LakeSediment,46.5000,9.8000,1791.0,Eur-LakeSilvaplana.Trachsel.2010.lpd
+Eur-Loetschental.Buentgen.2006,Loetschental,Eur,Wood,46.4000,7.8000,1700.0,Eur-Loetschental.Buentgen.2006.lpd
+Eur-MaritimeFrenchAlps.Buentgen.2012,Maritime French Alps,Eur,Wood,44.0000,7.5000,2100.0,Eur-MaritimeFrenchAlps.Buentgen.2012.lpd
+Eur-NorthernScandinavia.Esper.2012,Northern Scandinavia,Eur,Wood,68.0000,25.0000,300.0,Eur-NorthernScandinavia.Esper.2012.lpd
+Eur-NorthernSpain.Martin-Chivelet.2011,Northern Spain,Eur,Speleothem,42.9000,-3.5000,1250.0,Eur-NorthernSpain.Martin-Chivelet.2011.lpd
+Eur-RAPiD-17-5P.Moffa-Sanchez.2014,RAPiD-17-5P; South Iceland,Ocean,MarineSediment,61.4800,-19.5300,-2303.0,Eur-RAPiD-17-5P.Moffa-Sanchez.2014.lpd
+Eur-Seebergsee.Larocque-Tobler.2012,Seebergsee,Eur,LakeSediment,46.1500,7.5000,1830.0,Eur-Seebergsee.Larocque-Tobler.2012.lpd
+Eur-SpanishPyrenees.Dorado-Linan.2012,Spanish Pyrenees,Eur,Wood,42.5000,1.0000,1200.0,Eur-SpanishPyrenees.Dorado-Linan.2012.lpd
+Eur-SpannagelCave.Mangini.2005,Spannagel Cave;,Eur,Speleothem,47.1000,11.6000,2347.0,Eur-SpannagelCave.Mangini.2005.lpd
+Eur-Stockholm.Leijonhufvud.2009,Stockholm,Eur,Documents,59.3200,18.0600,10.0,Eur-Stockholm.Leijonhufvud.2009.lpd
+Eur-Tallinn.Tarand.2001,Tallinn,Eur,Documents,59.4000,24.7500,10.0,Eur-Tallinn.Tarand.2001.lpd
+Eur-TatraMountains.Buentgen.2013,Tatra Mountains,Eur,Wood,49.0000,20.0000,1000.0,Eur-TatraMountains.Buentgen.2013.lpd
+NAm-AlmondButterLower.D'Arrigo.2005,Almond Butter Lower,NAm,Wood,65.2000,-162.2000,168.0,NAm-AlmondButterLower.D'Arrigo.2005.lpd
+NAm-AlmondButterUpper.D'Arrigo.2005,Almond Butter Upper,NAm,Wood,65.2000,-162.2000,213.0,NAm-AlmondButterUpper.D'Arrigo.2005.lpd
+NAm-Arapahoe.Kienast.1996,Arapahoe,NAm,Wood,40.1000,-105.6000,3320.0,NAm-Arapahoe.Kienast.1996.lpd
+NAm-ArrowsmithMountain.Briffa.1996,Arrowsmith Mountain,NAm,Wood,49.2000,-125.2000,1020.0,NAm-ArrowsmithMountain.Briffa.1996.lpd
+NAm-Athabasca.Schweingruber.1996,Athabasca; historisch,NAm,Wood,51.4000,-117.3000,2000.0,NAm-Athabasca.Schweingruber.1996.lpd
+NAm-AthabascaGlacier2.Luckman.2005,Athabasca Glacier 2,NAm,Wood,52.2000,-117.2000,2000.0,NAm-AthabascaGlacier2.Luckman.2005.lpd
+NAm-BakerLake.Hughes.2005,Baker Lake,NAm,Wood,45.9000,-114.3000,2680.0,NAm-BakerLake.Hughes.2005.lpd
+NAm-BarlowPassamMtHood.Briffa.1996,Barlow Pass   am Mt.Hood,NAm,Wood,45.3000,-121.7000,1300.0,NAm-BarlowPassamMtHood.Briffa.1996.lpd
+NAm-BasinPond.Gajewski.1988,Basin Pond,NAm,LakeSediment,44.5000,-70.1000,124.0,NAm-BasinPond.Gajewski.1988.lpd
+NAm-BellMountain.Schweingruber.1996,Bell Mountain,NAm,Wood,53.3000,-120.7000,1530.0,NAm-BellMountain.Schweingruber.1996.lpd
+NAm-Bennington.Luckman.2001,Bennington,NAm,Wood,52.7000,-118.3000,1850.0,NAm-Bennington.Luckman.2001.lpd
+NAm-Bennington.Luckman.2013,Bennington,NAm,Wood,52.7000,-118.3000,1850.0,NAm-Bennington.Luckman.2013.lpd
+NAm-BigBendLake.Jacoby.2003,Big Bend Lake,NAm,Wood,61.3000,-142.7000,1040.0,NAm-BigBendLake.Jacoby.2003.lpd
+NAm-BigWhite.Parish.2000,Big White,NAm,Wood,49.9000,-118.9000,1700.0,NAm-BigWhite.Parish.2000.lpd
+NAm-BigWhite2.Wilson.2005,Big White 2,NAm,Wood,49.7000,-118.9000,2000.0,NAm-BigWhite2.Wilson.2005.lpd
+NAm-BlanchardRiver.Luckman.2013,Blanchard River,NAm,Wood,59.9000,-136.8000,931.0,NAm-BlanchardRiver.Luckman.2013.lpd
+NAm-Bonif.Schweingruber.1996,Bonif  historisc,NAm,Wood,55.3000,-77.8000,50.0,NAm-Bonif.Schweingruber.1996.lpd
+NAm-BorealPlateau.Graumlich.2005,Boreal Plateau,NAm,Wood,36.3000,-118.3000,3420.0,NAm-BorealPlateau.Graumlich.2005.lpd
+NAm-BowSummit-PeytoLake.Luckman.2005,Bow Summit/Peyto Lake,NAm,Wood,51.7000,-116.5000,2050.0,NAm-BowSummit-PeytoLake.Luckman.2005.lpd
+NAm-BurntOver.D'Arrigo.2005,Burnt Over,NAm,Wood,65.2000,-162.3000,259.0,NAm-BurntOver.D'Arrigo.2005.lpd
+NAm-CameronPass.Bigler.2007,Cameron Pass,NAm,Wood,40.6000,-105.8000,3100.0,NAm-CameronPass.Bigler.2007.lpd
+NAm-CanyonCreek.Lloyd.2002,Canyon Creek,NAm,Wood,63.3000,-147.8000,884.0,NAm-CanyonCreek.Lloyd.2002.lpd
+NAm-CardinalDivide.Luckman.2001,Cardinal Divide,NAm,Wood,52.9000,-117.3000,2050.0,NAm-CardinalDivide.Luckman.2001.lpd
+NAm-CarltonRidge.Kipfmuller.2008,Carlton Ridge,NAm,Wood,46.7000,-114.2000,2614.0,NAm-CarltonRidge.Kipfmuller.2008.lpd
+NAm-CeaderBreaks.Briffa.1996,Ceader Breaks,NAm,Wood,37.6000,-113.9000,3120.0,NAm-CeaderBreaks.Briffa.1996.lpd
+NAm-CienegadeNuestraSenoradeGuadalupe.Fule.2009,Cienega de Nuestra Senora de Guadalupe,NAm,Wood,25.1000,-106.3000,2000.0,NAm-CienegadeNuestraSenoradeGuadalupe.Fule.2009.lpd
+NAm-CirquePeak.Graybill.1995,Cirque Peak,NAm,Wood,36.3000,-118.2000,3505.0,NAm-CirquePeak.Graybill.1995.lpd
+NAm-ClearPond.Gajewski.1988,Clear Pond,NAm,LakeSediment,33.8000,-79.0000,513.0,NAm-ClearPond.Gajewski.1988.lpd
+NAm-ConroyLake.Gajewski.1988,Conroy Lake,NAm,LakeSediment,46.3000,-67.9000,140.0,NAm-ConroyLake.Gajewski.1988.lpd
+NAm-CoppermineRiver.Jacoby.1989,Coppermine River,NAm,Wood,67.2000,-115.9000,213.0,NAm-CoppermineRiver.Jacoby.1989.lpd
+NAm-CornwallHills.Wilson.2005,Cornwall Hills,NAm,Wood,50.7000,-121.5000,1980.0,NAm-CornwallHills.Wilson.2005.lpd
+NAm-CottonwoodPass.Briffa.1996,Cottonwood Pass,NAm,Wood,38.7000,-107.6000,3700.0,NAm-CottonwoodPass.Briffa.1996.lpd
+NAm-CraterLakeNE.Briffa.2002,Crater Lake NE,NAm,Wood,43.0000,-122.2000,2200.0,NAm-CraterLakeNE.Briffa.2002.lpd
+NAm-DanaPlateauInyoNationalForest.King.2000,Dana Plateau Inyo National Forest,NAm,Wood,37.9000,-119.2000,3300.0,NAm-DanaPlateauInyoNationalForest.King.2000.lpd
+NAm-DarkLake.Gajewski.1988,Dark Lake,NAm,LakeSediment,45.3000,-91.5000,334.0,NAm-DarkLake.Gajewski.1988.lpd
+NAm-DeerMountain.Wiles.2011,Deer Mountain,NAm,Wood,55.3000,-131.6000,815.0,NAm-DeerMountain.Wiles.2011.lpd
+NAm-DenaliNationalPark.Schweingruber.1996,Denali National Park,NAm,Wood,63.7000,-149.6000,750.0,NAm-DenaliNationalPark.Schweingruber.1996.lpd
+NAm-DonJekRiverBridge.Schweingruber.1996,Don Jek River Bridge,NAm,Wood,61.7000,-139.7000,750.0,NAm-DonJekRiverBridge.Schweingruber.1996.lpd
+NAm-EagleFecal_PtarmiganMerge.Jacoby.2011,Eagle Fecal/Ptarmigan Merge,NAm,Wood,69.5000,-127.8000,500.0,NAm-EagleFecal_PtarmiganMerge.Jacoby.2011.lpd
+NAm-ElephantMountain.Conkey.1994,Elephant Mountain,NAm,Wood,44.8000,-70.8000,930.0,NAm-ElephantMountain.Conkey.1994.lpd
+NAm-EurekaSummit.Schweingruber.1996,Eureka Summit,NAm,Wood,61.8000,-147.3000,960.0,NAm-EurekaSummit.Schweingruber.1996.lpd
+NAm-FirthRiver.Anchukaitis.2013,Firth River 1236,NAm,Wood,68.7000,-141.6000,790.0,NAm-FirthRiver.Anchukaitis.2013.lpd
+NAm-FishCreekTrail.Biondi.2001,Fish Creek Trail (San Gorgonio),NAm,Wood,34.1000,-116.8000,2890.0,NAm-FishCreekTrail.Biondi.2001.lpd
+NAm-FlintCreekRange.Hughes.2005,Flint Creek Range,NAm,Wood,46.3000,-113.2000,2645.0,NAm-FlintCreekRange.Hughes.2005.lpd
+NAm-FlowerLake.Graybill.1995,Flower Lake,NAm,Wood,36.5000,-118.2000,3291.0,NAm-FlowerLake.Graybill.1995.lpd
+NAm-FoolCreek.Brown.2005,Fool Creek,NAm,Wood,39.9000,-105.9000,3370.0,NAm-FoolCreek.Brown.2005.lpd
+NAm-FortChimo.Fritts.1981,Fort Chimo (Merged),NAm,Wood,58.4000,-68.4000,46.0,NAm-FortChimo.Fritts.1981.lpd
+NAm-FremontGlacier.Hill.0,Fremont Glacier,NAm,Wood,43.0000,-109.6000,3292.0,NAm-FremontGlacier.Hill.0.lpd
+NAm-FrenchGlacier.Colenutt.1995,French Glacier,NAm,Wood,50.8000,-115.3000,2300.0,NAm-FrenchGlacier.Colenutt.1995.lpd
+NAm-GalenaPassSawtooth.Briffa.1996,Galena Pass Sawtooth National Forest,NAm,Wood,43.9000,-114.7000,2580.0,NAm-GalenaPassSawtooth.Briffa.1996.lpd
+NAm-GeraldineLakes.Luckman.2001,Geraldine Lakes,NAm,Wood,52.6000,-117.9000,2000.0,NAm-GeraldineLakes.Luckman.2001.lpd
+NAm-GraniteMountain.Graumlich.2003,Granite Mountain,NAm,Wood,47.3000,-121.3000,1530.0,NAm-GraniteMountain.Graumlich.2003.lpd
+NAm-GranitePassHuntMountain.Briffa.1996,Granite Pass   Hunt Mountain,NAm,Wood,44.8000,-107.9000,2820.0,NAm-GranitePassHuntMountain.Briffa.1996.lpd
+NAm-GreatBasin.Salzer.2013,Great Basin 4500yr Composite Chronology,NAm,Wood,37.0000,-116.5000,700.0,NAm-GreatBasin.Salzer.2013.lpd
+NAm-GreenLake.Menounos.2006,Green Lake,NAm,LakeSediment,50.2000,-122.9000,640.0,NAm-GreenLake.Menounos.2006.lpd
+NAm-HartsPassN2.Peterson.1994,Harts Pass N2,NAm,Wood,48.7000,-120.7000,2000.0,NAm-HartsPassN2.Peterson.1994.lpd
+NAm-HellsKitchenLake.Gajewski.1988,Hell's Kitchen Lake,NAm,LakeSediment,46.2000,-89.7000,488.0,NAm-HellsKitchenLake.Gajewski.1988.lpd
+NAm-HerringAlpine.Fritts.1995,Herring Alpine,NAm,Wood,60.4000,-147.8000,275.0,NAm-HerringAlpine.Fritts.1995.lpd
+NAm-HighlandFireOutlook.Briffa.1996,Highland Fire Outlook,NAm,Wood,45.8000,-112.5000,2730.0,NAm-HighlandFireOutlook.Briffa.1996.lpd
+NAm-HighwoodPass.Luckman.2001,Highwood Pass,NAm,Wood,50.6000,-115.0000,2250.0,NAm-HighwoodPass.Luckman.2001.lpd
+NAm-Hilda.Kavanagh.2000,Hilda,NAm,Wood,52.2000,-117.2000,2200.0,NAm-Hilda.Kavanagh.2000.lpd
+NAm-HohLakeHigh.Peterson.1994,Hoh Lake High,NAm,Wood,47.9000,-123.8000,1465.0,NAm-HohLakeHigh.Peterson.1994.lpd
+NAm-HornbyCabin.Jacoby.1989,Hornby Cabin,NAm,Wood,64.0000,-103.9000,160.0,NAm-HornbyCabin.Jacoby.1989.lpd
+NAm-IttyhaukBay.D'Arrigo.2011,Ittyhauk Bay,NAm,Wood,56.0000,-61.0000,50.0,NAm-IttyhaukBay.D'Arrigo.2011.lpd
+NAm-KobukNoatak.King.2003,Kobuk/Noatak,NAm,Wood,67.1000,-159.6000,100.0,NAm-KobukNoatak.King.2003.lpd
+NAm-LacNoir.Paquette.2013,Lac Noir,NAm,LakeSediment,45.8000,-75.1000,176.0,NAm-LacNoir.Paquette.2013.lpd
+NAm-LacRomanel.Schweingruber.1996,Lac Romanel (Feucht),NAm,Wood,56.2000,-67.7000,1000.0,NAm-LacRomanel.Schweingruber.1996.lpd
+NAm-LakeMina.St.Jacques.2008,Lake Mina,NAm,LakeSediment,45.8900,-95.4780,415.0,NAm-LakeMina.St.Jacques.2008.lpd
+NAm-LakeoftheClouds.Gajewski.1988,Lake of the Clouds,NAm,LakeSediment,48.0000,-91.0000,462.0,NAm-LakeoftheClouds.Gajewski.1988.lpd
+NAm-Landslide.Luckman.2006,Landslide,NAm,Wood,60.2000,-138.5000,800.0,NAm-Landslide.Luckman.2006.lpd
+NAm-LaTasajera.Biondi.2001,La Tasajera (San Pedro Martir),NAm,Wood,31.0000,-115.5000,2400.0,NAm-LaTasajera.Biondi.2001.lpd
+NAm-LittlePineLake.Gajewski.1988,LittlePine Lake,NAm,LakeSediment,45.3000,-91.5000,330.0,NAm-LittlePineLake.Gajewski.1988.lpd
+NAm-Manitoba.D'Arrigo.2006,Manitoba composite,NAm,Wood,58.0000,-94.0000,100.0,NAm-Manitoba.D'Arrigo.2006.lpd
+NAm-McGinnisTrail.Wiles.2013,McGinnis Trail,NAm,Wood,58.4000,-134.6000,757.0,NAm-McGinnisTrail.Wiles.2013.lpd
+NAm-MeadowMountain.Wilson.2005,Meadow Mountain,NAm,Wood,50.2000,-117.1000,2100.0,NAm-MeadowMountain.Wilson.2005.lpd
+NAm-MedicineBowPeak.Briffa.1996,Medicine Bow Peak,NAm,Wood,41.3000,-107.7000,3150.0,NAm-MedicineBowPeak.Briffa.1996.lpd
+NAm-MedusaBay.Buckley.2003,Medusa Bay,NAm,Wood,56.9000,-61.5000,25.0,NAm-MedusaBay.Buckley.2003.lpd
+NAm-MinersWell.Wiles.2000,Miners Well,NAm,Wood,60.0000,-141.7000,650.0,NAm-MinersWell.Wiles.2000.lpd
+NAm-MountAdamsLow.Peterson.1994,Mount Adams Low,NAm,Wood,46.2000,-121.5000,1495.0,NAm-MountAdamsLow.Peterson.1994.lpd
+NAm-MountWashington.Graybill.1994,Mount Washington,NAm,Wood,38.5000,-114.2000,3415.0,NAm-MountWashington.Graybill.1994.lpd
+NAm-MtLemon.Briffa.2002,Mt. Lemon,NAm,Wood,32.5000,-110.8000,2700.0,NAm-MtLemon.Briffa.2002.lpd
+NAm-MtStHelens.Briffa.1996,Mt. St. Helens,NAm,Wood,46.2000,-122.2000,1200.0,NAm-MtStHelens.Briffa.1996.lpd
+NAm-NabesnaMine.Jacoby.2003,Nabesna Mine,NAm,Wood,62.4000,-143.1000,1167.0,NAm-NabesnaMine.Jacoby.2003.lpd
+NAm-Nadahini.Luckman.2013,Nadahini,NAm,Wood,59.8000,-136.6000,915.0,NAm-Nadahini.Luckman.2013.lpd
+NAm-Nakiska.Luckman.2001,Nakiska,NAm,Wood,50.9000,-115.2000,2120.0,NAm-Nakiska.Luckman.2001.lpd
+NAm-NorthernAlaskaComposite.D'Arrigo.2006,Northern Alaska Composite,NAm,Wood,67.0000,-152.0000,200.0,NAm-NorthernAlaskaComposite.D'Arrigo.2006.lpd
+NAm-OregonCaves.Ersek.2012,Oregon Caves National Monument,NAm,Speleothem,42.0830,-123.4160,1200.0,NAm-OregonCaves.Ersek.2012.lpd
+NAm-ParkMountain.Wilson.2005,Park Mountain,NAm,Wood,50.6000,-118.6000,1830.0,NAm-ParkMountain.Wilson.2005.lpd
+NAm-PearlPeak.Graybill.1994,Pearl Peak,NAm,Wood,40.2000,-115.5000,3170.0,NAm-PearlPeak.Graybill.1994.lpd
+NAm-PethaiPeninsula.Schweingruber.1996,Pethai Peninsula,NAm,Wood,62.7000,-111.0000,1400.0,NAm-PethaiPeninsula.Schweingruber.1996.lpd
+NAm-PeytoLake.Schweingruber.1996,Peyto Lake,NAm,Wood,51.8000,-116.2000,2050.0,NAm-PeytoLake.Schweingruber.1996.lpd
+NAm-PikePeaks.Harlan.1996,Pike Peaks,NAm,Wood,39.3000,-105.0000,3600.0,NAm-PikePeaks.Harlan.1996.lpd
+NAm-Pintlers.Littell.2011,Pintlers,NAm,Wood,46.0000,-113.4000,2700.0,NAm-Pintlers.Littell.2011.lpd
+NAm-PintlersTwo.Littell.2011,Pintlers Two,NAm,Wood,46.0000,-113.4000,2750.0,NAm-PintlersTwo.Littell.2011.lpd
+NAm-PowderRiverPass.Briffa.1996,Powder River Pass,NAm,Wood,44.2000,-107.1000,2850.0,NAm-PowderRiverPass.Briffa.1996.lpd
+NAm-PrinceWilliamSound.Barclay.1999,Prince William Sound,NAm,Wood,60.5000,-148.3000,100.0,NAm-PrinceWilliamSound.Barclay.1999.lpd
+NAm-PyramidMountain.Luckman.2001,Pyramid Mountain,NAm,Wood,53.0000,-118.2000,2000.0,NAm-PyramidMountain.Luckman.2001.lpd
+NAm-RedMountainPassSilverton.Graybill.1994,Red Mountain Pass Silverton,NAm,Wood,37.9000,-107.7000,3400.0,NAm-RedMountainPassSilverton.Graybill.1994.lpd
+NAm-RockGlacierYukon.Kenigsberg.2013,Rock Glacier Yukon,NAm,Wood,61.4000,-128.4000,1450.0,NAm-RockGlacierYukon.Kenigsberg.2013.lpd
+NAm-RoweLakes.Colenutt.2011,Rowe Lakes,NAm,Wood,49.0000,-114.0000,2135.0,NAm-RoweLakes.Colenutt.2011.lpd
+NAm-RubyLake.Gajewski.1988,Ruby Lake,NAm,LakeSediment,45.3000,-91.5000,335.0,NAm-RubyLake.Gajewski.1988.lpd
+NAm-SanFrancisoPeaksUpdate.Graybill.2005,San Franciso Peaks Update,NAm,Wood,35.3000,-111.4000,3535.0,NAm-SanFrancisoPeaksUpdate.Graybill.2005.lpd
+NAm-ScatterLake.Graumlich.2003,Scatter Lake,NAm,Wood,48.3000,-120.3000,2100.0,NAm-ScatterLake.Graumlich.2003.lpd
+NAm-SettlementPointAfognakIsland.Harlan.1998,Settlement Point Afognak Island,NAm,Wood,58.1000,-152.7000,10.0,NAm-SettlementPointAfognakIsland.Harlan.1998.lpd
+NAm-SewardComposite.D'Arrigo.2006,Seward Composite,NAm,Wood,65.2000,-162.3000,100.0,NAm-SewardComposite.D'Arrigo.2006.lpd
+NAm-SheepMountain.Graybill.1995,Sheep Mountain,NAm,Wood,37.2000,-118.1000,3475.0,NAm-SheepMountain.Graybill.1995.lpd
+NAm-SheepTrail.Brown.2005,Sheep Trail,NAm,Wood,41.4000,-106.2000,3235.0,NAm-SheepTrail.Brown.2005.lpd
+NAm-ShermanCreekPass.Briffa.1996,Sherman Creek Pass,NAm,Wood,48.7000,-118.3000,1800.0,NAm-ShermanCreekPass.Briffa.1996.lpd
+NAm-SiberianOutpostView.Bunn.2010,Siberian Outpost View,NAm,Wood,36.5000,-118.3000,3500.0,NAm-SiberianOutpostView.Bunn.2010.lpd
+NAm-SignalMountain.Luckman.2001,Signal Mountain,NAm,Wood,52.9000,-118.0000,2050.0,NAm-SignalMountain.Luckman.2001.lpd
+NAm-SleepingDeerRoad.Hughes.2005,Sleeping Deer Road,NAm,Wood,44.6000,-114.5000,2820.0,NAm-SleepingDeerRoad.Hughes.2005.lpd
+NAm-SmallRiver.Luckman.2001,Small River,NAm,Wood,53.2000,-119.5000,1900.0,NAm-SmallRiver.Luckman.2001.lpd
+NAm-SmithersSkiArea.Schweingruber.1996,Smithers Ski Area,NAm,Wood,54.9000,-127.3000,1200.0,NAm-SmithersSkiArea.Schweingruber.1996.lpd
+NAm-SnakeCreek.Kenigsberg.2013,Snake Creek,NAm,Wood,59.6000,-133.4000,1350.0,NAm-SnakeCreek.Kenigsberg.2013.lpd
+NAm-SnowBowlSanFranciscoPeak.Briffa.2002,Snow Bowl San Francisco Peak,NAm,Wood,35.4000,-110.2000,3150.0,NAm-SnowBowlSanFranciscoPeak.Briffa.2002.lpd
+NAm-SouthernAlaskacomposite.D'Arrigo.2006,Southern Alaska composite,NAm,Wood,56.0000,-132.0000,0.0,NAm-SouthernAlaskacomposite.D'Arrigo.2006.lpd
+NAm-SpillwayLakeYosemiteNationalPark.King.2000,Spillway Lake Yosemite National Park,NAm,Wood,37.8000,-119.2000,3300.0,NAm-SpillwayLakeYosemiteNationalPark.King.2000.lpd
+NAm-SpruceCreek.Church.1981,Spruce Creek,NAm,Wood,68.6000,-138.6000,381.0,NAm-SpruceCreek.Church.1981.lpd
+NAm-StarrigawanOldSitka.Kaiser.1996,Starrigawan  Old Sitka,NAm,Wood,57.1000,-135.4000,5.0,NAm-StarrigawanOldSitka.Kaiser.1996.lpd
+NAm-STREC.Gennaretti.2014,L1_CANA458; L12_CANA459; L16_CANA460; L18_CANA461; L20_CANA462; L22_CANA463,NAm,Wood,54.2100,-71.3500,500.0,NAm-STREC.Gennaretti.2014.lpd
+NAm-Sugarloaf.Kenigsberg.2013,Sugarloaf,NAm,Wood,60.1000,-134.4000,1330.0,NAm-Sugarloaf.Kenigsberg.2013.lpd
+NAm-SunshineMeadows.Colenutt.1995,Sunshine Meadows,NAm,Wood,51.1000,-115.8000,2250.0,NAm-SunshineMeadows.Colenutt.1995.lpd
+NAm-SunwaptaPass.Schweingruber.1996,Sunwapta Pass,NAm,Wood,52.3000,-117.0000,2000.0,NAm-SunwaptaPass.Schweingruber.1996.lpd
+NAm-SurpriseValley.Luckman.2001,Surprise Valley,NAm,Wood,52.8000,-117.7000,1800.0,NAm-SurpriseValley.Luckman.2001.lpd
+NAm-SylvanPassbeiCody.Briffa.1996,Sylvan Pass bei Cody,NAm,Wood,44.4000,-110.1000,2580.0,NAm-SylvanPassbeiCody.Briffa.1996.lpd
+NAm-TamarackBowl.Sauchyn.2016,Tamarack Bowl,NAm,Wood,49.3000,-114.4000,1838.0,NAm-TamarackBowl.Sauchyn.2016.lpd
+NAm-TimberGapUpper.Graybill.1995,Timber Gap Upper,NAm,Wood,36.3000,-118.4000,3261.0,NAm-TimberGapUpper.Graybill.1995.lpd
+NAm-TogwateePass.Briffa.1996,Togwatee Pass,NAm,Wood,43.7000,-110.1000,2820.0,NAm-TogwateePass.Briffa.1996.lpd
+NAm-TwistedTreeHeartrotHill.Jacoby.1989,Twisted Tree Heartrot Hill,NAm,Wood,65.0000,-138.3000,915.0,NAm-TwistedTreeHeartrotHill.Jacoby.1989.lpd
+NAm-UpperWrightLakes.Graumlich.2005,Upper Wright Lakes,NAm,Wood,36.4000,-118.2000,3519.0,NAm-UpperWrightLakes.Graumlich.2005.lpd
+NAm-VancouverCyprusProvincialPark.Briffa.1996,Vancouver Cyprus Provincial Park,NAm,Wood,49.4000,-123.1000,1110.0,NAm-VancouverCyprusProvincialPark.Briffa.1996.lpd
+NAm-VicaryMine.Sauchyn.2016,Vicary Mine,NAm,Wood,49.8000,-114.5000,1909.0,NAm-VicaryMine.Sauchyn.2016.lpd
+NAm-wa069.Peterson.1994,Harts Pass N1,NAm,Wood,48.7000,-120.7000,1925.0,NAm-wa069.Peterson.1994.lpd
+NAm-wa071.Peterson.1994,Harts Pass N1,NAm,Wood,48.7000,-120.7000,1925.0,NAm-wa071.Peterson.1994.lpd
+NAm-WindyRidgeAlaska.D'Arrigo.2005,Windy Ridge Alaska,NAm,Wood,65.2000,-162.2000,251.0,NAm-WindyRidgeAlaska.D'Arrigo.2005.lpd
+NAm-WrangellsComposite.D'Arrigo.2006,Wrangells Composite,NAm,Wood,62.0000,-142.0000,200.0,NAm-WrangellsComposite.D'Arrigo.2006.lpd
+NAm-YellowMountainRidge.King.2002,Yellow Mountain Ridge,NAm,Wood,45.3000,-111.3000,2500.0,NAm-YellowMountainRidge.King.2002.lpd
+NAm-Ymir.Wilson.2005,Ymir,NAm,Wood,49.4000,-117.2000,1980.0,NAm-Ymir.Wilson.2005.lpd
+NAm-YosemiteParkEEingang.Briffa.1996,Yosemite Park   E Eingang,NAm,Wood,37.8000,-119.3000,3000.0,NAm-YosemiteParkEEingang.Briffa.1996.lpd
+Ocn-AbrahamReef.Druffel.1999,Abraham Reef,Ocean,Coral,-22.1000,153.0000,-2.5,Ocn-AbrahamReef.Druffel.1999.lpd
+Ocn-AlboranSea384B.Nieto-Moreno.2013,Alboran Sea,Ocean,MarineSediment,35.9860,-4.7496,-1022.0,Ocn-AlboranSea384B.Nieto-Moreno.2013.lpd
+Ocn-AlboranSea436B.Nieto-Moreno.2013,Alboran Sea,Ocean,MarineSediment,36.2053,-4.3133,-1108.0,Ocn-AlboranSea436B.Nieto-Moreno.2013.lpd
+Ocn-AmedeeIsland.DeLong.2012,Amedee Island,Ocean,Coral,-22.4750,166.4667,-3.0,Ocn-AmedeeIsland.DeLong.2012.lpd
+Ocn-AqabaJordanAQ18.Heiss.1999,Aqaba; Jordan,Ocean,Coral,29.4200,34.9700,-1.0,Ocn-AqabaJordanAQ18.Heiss.1999.lpd
+Ocn-AqabaJordanAQ19.Heiss.1999,Aqaba; Jordan,Ocean,Coral,29.4200,34.9700,-1.0,Ocn-AqabaJordanAQ19.Heiss.1999.lpd
+Ocn-ArabianSea.Doose-Rolinski.2001,Arabian Sea,Ocean,MarineSediment,24.8300,65.9200,-695.0,Ocn-ArabianSea.Doose-Rolinski.2001.lpd
+Ocn-Bermuda.DraschbaA.2000,Bermuda,Ocean,Coral,30.0867,-64.5417,-25.0,Ocn-Bermuda.DraschbaA.2000.lpd
+Ocn-Bermuda.DraschbaB.2000,Bermuda,Ocean,Coral,30.0867,-64.5417,-25.0,Ocn-Bermuda.DraschbaB.2000.lpd
+Ocn-BermudaSouthShore.Goodkin.2008,Bermuda south shore,Ocean,Coral,30.6486,-64.9888,-16.0,Ocn-BermudaSouthShore.Goodkin.2008.lpd
+Ocn-BiscayneBay.Swart.1996,Biscayne Bay,Ocean,Coral,25.3800,-80.1700,-10.0,Ocn-BiscayneBay.Swart.1996.lpd
+Ocn-BuccooReefTobagoMontastrea.Moses.2006,Buccoo Reef; Tobago,Ocean,Coral,11.1700,-60.8500,-2.0,Ocn-BuccooReefTobagoMontastrea.Moses.2006.lpd
+Ocn-BuccooReefTobagoSidereastrea.Moses.2006,Buccoo Reef; Tobago,Ocean,Coral,11.1700,-60.8500,-2.0,Ocn-BuccooReefTobagoSidereastrea.Moses.2006.lpd
+Ocn-BunakenIsland.Charles.2003,Bunaken Island,Ocean,Coral,-1.5000,124.8330,-3.0,Ocn-BunakenIsland.Charles.2003.lpd
+Ocn-BundegireefNingaloo.Cooper.2012,Bundegi reef; Ningaloo,Ocean,Coral,-21.8333,114.1833,-6.0,Ocn-BundegireefNingaloo.Cooper.2012.lpd
+Ocn-CapeGhir.Doose-Rolinski.2007,Cape Ghir; NW Africa,Ocean,MarineSediment,30.8500,-10.2685,-900.0,Ocn-CapeGhir.Doose-Rolinski.2007.lpd
+Ocn-CapeGhir.McGregor.2007,Cape Ghir; NW Africa,Ocean,MarineSediment,30.8450,-10.0983,-355.0,Ocn-CapeGhir.McGregor.2007.lpd
+Ocn-CapeHatteras.Cleroux.2008,Cape Hatteras,Ocean,MarineSediment,34.9730,-75.2010,-620.0,Ocn-CapeHatteras.Cleroux.2008.lpd
+Ocn-CariacoBasin.Black.2007,Cariaco Basin,Ocean,MarineSediment,10.7700,-64.7700,-450.0,Ocn-CariacoBasin.Black.2007.lpd
+Ocn-CariacoBasin.Lea.2003,Cariaco Basin/Southern Caribbean Sea,Ocean,MarineSediment,10.7000,-64.9400,-790.0,Ocn-CariacoBasin.Lea.2003.lpd
+Ocn-CH07-98-MC-22.Saenger.2011,CH07-98-MC-22; Carolina Slope; western North Atlantic,Ocean,MarineSediment,32.7840,-76.2760,-1895.0,Ocn-CH07-98-MC-22.Saenger.2011.lpd
+Ocn-ChileanMargin.Lamy.2002,Chilean margin; Southern Ocean (Pacific sector),Ocean,MarineSediment,-41.0000,-74.4500,-852.0,Ocn-ChileanMargin.Lamy.2002.lpd
+Ocn-ClerkeReefRowleyShoals.Cooper.2012,Clerke Reef; Rowley Shoals,Ocean,Coral,-17.2667,119.3667,-6.0,Ocn-ClerkeReefRowleyShoals.Cooper.2012.lpd
+Ocn-Clipperton1b.Wu.2014,Clipperton,Ocean,Coral,10.2773,-109.2131,-13.0,Ocn-Clipperton1b.Wu.2014.lpd
+Ocn-Clipperton2b.Wu.2014,Clipperton,Ocean,Coral,10.2773,-109.2131,-13.0,Ocn-Clipperton2b.Wu.2014.lpd
+Ocn-Clipperton4b.Wu.2014,Clipperton,Ocean,Coral,10.2773,-109.2131,-13.0,Ocn-Clipperton4b.Wu.2014.lpd
+Ocn-Clipperton6a.Wu.2014,Clipperton,Ocean,Coral,10.2773,-109.2131,-13.0,Ocn-Clipperton6a.Wu.2014.lpd
+Ocn-ClippertonAtoll.Linsley.2000,Clipperton Atoll,Ocean,Coral,10.2773,-109.2131,-8.2,Ocn-ClippertonAtoll.Linsley.2000.lpd
+Ocn-CoralBayNingaloo.Cooper.2012,Coral Bay; Ningaloo,Ocean,Coral,-23.0333,113.8167,-6.0,Ocn-CoralBayNingaloo.Cooper.2012.lpd
+Ocn-CoralSea.Calvo.2007,Coral Sea,Ocean,Coral,-17.7300,148.4300,-5.0,Ocn-CoralSea.Calvo.2007.lpd
+Ocn-DoubleReef.Asami.2005,Double Reef,Ocean,Coral,13.5982,144.8359,-7.8,Ocn-DoubleReef.Asami.2005.lpd
+Ocn-DryTortugas.DeLong.2014,Dry Tortugas,Ocean,Coral,24.6000,-82.3000,-4.0,Ocn-DryTortugas.DeLong.2014.lpd
+Ocn-DryTortugas.Lund.2006,Dry Tortugas,Ocean,MarineSediment,24.5900,-83.5800,-530.0,Ocn-DryTortugas.Lund.2006.lpd
+Ocn-DryTortugasA.Lund.2006,Dry Tortugas,Ocean,MarineSediment,24.3300,-83.2600,-547.0,Ocn-DryTortugasA.Lund.2006.lpd
+Ocn-EasternTropicalNorthAtlantic.Kuhnert.2011,Eastern tropical North Atlantic,Ocean,MarineSediment,16.8402,-16.7327,-330.0,Ocn-EasternTropicalNorthAtlantic.Kuhnert.2011.lpd
+Ocn-EmeraldBasin.Keigwin.2003,Emerald Basin;OCE326 MC-29D,Ocean,MarineSediment,45.8900,-62.8000,-250.0,Ocn-EmeraldBasin.Keigwin.2003.lpd
+Ocn-EmeraldBasin.Keigwin.2007,Emerald Basin; Nova Scotia,Ocean,MarineSediment,43.5300,-62.4800,-250.0,Ocn-EmeraldBasin.Keigwin.2007.lpd
+Ocn-FeniDrift.Richter.2009,Feni Drift,Ocean,MarineSediment,55.5000,-13.9000,-2543.0,Ocn-FeniDrift.Richter.2009.lpd
+Ocn-FiskBasin.Richey.2009,Fisk Basin; Gulf of Mexico,Ocean,MarineSediment,27.5500,-93.9300,-817.0,Ocn-FiskBasin.Richey.2009.lpd
+Ocn-FloridaBay.Swart.1996,Florida Bay,Ocean,Coral,24.9300,-80.7500,-3.0,Ocn-FloridaBay.Swart.1996.lpd
+Ocn-GarrisonBasin.Richey.2009,Garrison Basin; Gulf of Mexico,Ocean,MarineSediment,26.6800,-93.9300,-1570.0,Ocn-GarrisonBasin.Richey.2009.lpd
+Ocn-GBR.Wei.2009,GBR,Ocean,Coral,-16.7167,146.0333,0.0,Ocn-GBR.Wei.2009.lpd
+Ocn-GingerbreadsBahamas.Saenger.2009,Gingerbreads Bahamas,Ocean,Coral,25.8400,-78.6200,-4.0,Ocn-GingerbreadsBahamas.Saenger.2009.lpd
+Ocn-GreatBahamaBank.Lund.2006,Great Bahama bank; 125MC,Ocean,MarineSediment,24.7650,-79.2900,-694.0,Ocn-GreatBahamaBank.Lund.2006.lpd
+Ocn-GreatBahamaBank.Richter.2006,Great Bahama Bank,Ocean,MarineSediment,24.5800,-79.2600,-531.0,Ocn-GreatBahamaBank.Richter.2006.lpd
+Ocn-GreatBarrierReef.Hendy.2002,Great Barrier Reef,Ocean,Coral,-18.3150,146.5950,-10.0,Ocn-GreatBarrierReef.Hendy.2002.lpd
+Ocn-Guadeloupe.Steinhilber.2010,Guadeloupe,Ocean,Coral,16.2000,-61.4900,-1.7,Ocn-Guadeloupe.Steinhilber.2010.lpd
+Ocn-GulfofGuinea.Weldeab.2007,Gulf of Guinea,Ocean,MarineSediment,2.5000,9.3800,-1295.0,Ocn-GulfofGuinea.Weldeab.2007.lpd
+Ocn-GulfofMaine.Wanamaker.2007,Gulf of Maine,Ocean,MarineSediment,43.6561,-69.8017,-30.0,Ocn-GulfofMaine.Wanamaker.2007.lpd
+Ocn-HaferaIsland.Wu.2013,Hafera Island,Ocean,Coral,-19.9333,-174.7167,-10.0,Ocn-HaferaIsland.Wu.2013.lpd
+Ocn-HoutmanAbrolhos.Kuhnert.1999,Houtman Abrolhos,Ocean,Coral,-28.4700,113.7700,-5.0,Ocn-HoutmanAbrolhos.Kuhnert.1999.lpd
+Ocn-HoutmanAbrolhosHAB05B.Zinke.2014,Houtman Abrolhos,Ocean,Coral,-28.4609,113.7720,-8.0,Ocn-HoutmanAbrolhosHAB05B.Zinke.2014.lpd
+Ocn-HoutmanAbrolhosHAB10A.Zinke.2014,Houtman Abrolhos,Ocean,Coral,-28.4589,113.7490,-8.0,Ocn-HoutmanAbrolhosHAB10A.Zinke.2014.lpd
+Ocn-HoutmanAbrolhosIslands.Cooper.2012,Houtman Abrolhos Islands,Ocean,Coral,-28.4667,113.7667,-6.0,Ocn-HoutmanAbrolhosIslands.Cooper.2012.lpd
+Ocn-Ifaty1.Zinke.2014,Ifaty,Ocean,Coral,-23.1500,43.5800,-1.1,Ocn-Ifaty1.Zinke.2014.lpd
+Ocn-Ifaty4.Zinke.2004,Ifaty,Ocean,Coral,-23.1500,43.5800,-1.1,Ocn-Ifaty4.Zinke.2004.lpd
+Ocn-IfatyTul3.Zinke.2014,Ifaty,Ocean,Coral,-23.3572,43.6195,-1.1,Ocn-IfatyTul3.Zinke.2014.lpd
+Ocn-ImperieuseRowleyShoals.Cooper.2012,Imperieuse; Rowley Shoals,Ocean,Coral,-17.5167,118.9667,-6.0,Ocn-ImperieuseRowleyShoals.Cooper.2012.lpd
+Ocn-JacafFjord.Sepulveda.2009,Jacaf Fjord,Ocean,MarineSediment,-44.3300,-72.9700,-510.0,Ocn-JacafFjord.Sepulveda.2009.lpd
+Ocn-Kiritimati.Evans.1998,Kiritimati,Ocean,Coral,1.6792,-157.2473,-9.0,Ocn-Kiritimati.Evans.1998.lpd
+Ocn-KNR140‐2‐59GGC.Saenger.2011,KNR140‐2‐59GGC; Carolina Slope; western North Atlantic,Ocean,MarineSediment,32.9770,-76.3160,-1205.0,Ocn-KNR140â€2â€59GGC.Saenger.2011.lpd
+Ocn-KuroshioCurrent.Isono.2009,Kuroshio Current,Ocean,MarineSediment,36.0300,141.7800,-2224.0,Ocn-KuroshioCurrent.Isono.2009.lpd
+Ocn-LaingIslandPapuaNewGuinea.Tudhope.2001,Laing Island; Papua New Guinea,Ocean,Coral,-4.1500,144.8833,-3.0,Ocn-LaingIslandPapuaNewGuinea.Tudhope.2001.lpd
+Ocn-LaurentianFan.Keigwin.2005,Laurentian Fan; western subpolar North Atlantic,Ocean,MarineSediment,43.4800,-54.8700,-3975.0,Ocn-LaurentianFan.Keigwin.2005.lpd
+Ocn-Lombok.Charles.2003,Lombok,Ocean,Coral,-8.2473,115.5757,-3.0,Ocn-Lombok.Charles.2003.lpd
+Ocn-LosRoques.Hetzinger.2008,Los Roques; Venezuela,Ocean,Coral,11.7700,-66.7500,-2.0,Ocn-LosRoques.Hetzinger.2008.lpd
+Ocn-MadangLagoonPapuaNewGuinea.Kuhnert.2001,Madang Lagoon; Papua New Guinea,Ocean,Coral,-5.2167,145.8167,-2.2,Ocn-MadangLagoonPapuaNewGuinea.Kuhnert.2001.lpd
+Ocn-MadangLagoonPapuaNewGuinea.Tudhope.1995,Madang Lagoon; Papua New Guinea,Ocean,Coral,-5.2200,145.8200,-3.0,Ocn-MadangLagoonPapuaNewGuinea.Tudhope.1995.lpd
+Ocn-Mafia.Damassa.2006,Mafia,Ocean,Coral,-8.0167,39.5000,-6.0,Ocn-Mafia.Damassa.2006.lpd
+Ocn-Mahe.Charles.1997,Mahe,Ocean,Coral,-4.6200,55.0000,-7.0,Ocn-Mahe.Charles.1997.lpd
+Ocn-Maiana.Urban.2000,Maiana,Ocean,Coral,1.0000,173.0000,-6.0,Ocn-Maiana.Urban.2000.lpd
+Ocn-MakassarStrait.Linsley.2010,Makassar Strait,Ocean,MarineSediment,-7.4000,115.2000,-594.0,Ocn-MakassarStrait.Linsley.2010.lpd
+Ocn-MakassarStrait.Oppo.2009,Makassar Strait,Ocean,MarineSediment,-3.5300,119.2000,-503.0,Ocn-MakassarStrait.Oppo.2009.lpd
+Ocn-Malindi.Cole.2000,Malindi,Ocean,Coral,-3.2000,40.1000,-6.0,Ocn-Malindi.Cole.2000.lpd
+Ocn-Malindi.Nakamura.2009,Malindi,Ocean,Coral,-3.2000,40.1000,-4.4,Ocn-Malindi.Nakamura.2009.lpd
+Ocn-MaloChannelEspirituSantoIsland.Kilbourne.2004,Malo Channel; Espiritu Santo Island; Vanuatu,Ocean,Coral,-15.7000,167.2000,-1.5,Ocn-MaloChannelEspirituSantoIsland.Kilbourne.2004.lpd
+Ocn-Mayotte.Zinke.2008,Mayotte,Ocean,Coral,-12.6500,45.1000,-3.0,Ocn-Mayotte.Zinke.2008.lpd
+Ocn-MD95-2011.Grimalt.2002,MD95-2011,Ocean,MarineSediment,66.9700,7.6300,-1048.0,Ocn-MD95-2011.Grimalt.2002.lpd
+Ocn-MD98-2160.Newton.2010,Makassar Strait,Ocean,MarineSediment,-5.2012,117.4867,-1185.0,Ocn-MD98-2160.Newton.2010.lpd
+Ocn-MD98-2177.Newton.2010,Makassar Strait,Ocean,MarineSediment,1.4033,119.0780,-968.0,Ocn-MD98-2177.Newton.2010.lpd
+Ocn-MentawaiIslands.Abram.2008,Mentawai Islands,Ocean,Coral,-0.1300,98.5200,-6.0,Ocn-MentawaiIslands.Abram.2008.lpd
+Ocn-MinorcaContourite.Moreno.2012,Minorca contourite,Ocean,MarineSediment,40.5000,4.0300,-2394.0,Ocn-MinorcaContourite.Moreno.2012.lpd
+Ocn-Miyanohama.Felis.2009,Miyanohama,Ocean,Coral,27.1059,142.1941,-5.6,Ocn-Miyanohama.Felis.2009.lpd
+Ocn-MontegoBayJamaica.Haase-Schramm.2003,Montego Bay Jamaica,Ocean,Sclerosponge,18.4667,-77.9500,-20.0,Ocn-MontegoBayJamaica.Haase-Schramm.2003.lpd
+Ocn-Moorea.Boiseau.1998,Moorea,Ocean,Coral,-17.5000,-149.8333,-5.0,Ocn-Moorea.Boiseau.1998.lpd
+Ocn-Nauru.Guilderson.1999,Nauru,Ocean,Coral,-0.5330,166.9283,-14.0,Ocn-Nauru.Guilderson.1999.lpd
+Ocn-NewIrelandPapua.Alibert.2008,New Ireland; Papua,Ocean,Coral,-2.5000,150.5000,-8.0,Ocn-NewIrelandPapua.Alibert.2008.lpd
+Ocn-Ningaloo.Kuhnert.2000,Ningaloo,Ocean,Coral,-21.9050,113.9650,-3.0,Ocn-Ningaloo.Kuhnert.2000.lpd
+Ocn-NorthEastBreakers_Bermuda.Kuhnert.2002,North East Breakers; Bermuda,Ocean,Coral,32.4700,-64.7000,-11.0,Ocn-NorthEastBreakers_Bermuda.Kuhnert.2002.lpd
+Ocn-NorthEastBreakers_Bermuda.Kuhnert.2005,North East Breakers; Bermuda,Ocean,Coral,32.4670,-64.7000,-12.0,Ocn-NorthEastBreakers_Bermuda.Kuhnert.2005.lpd
+Ocn-NorthIceland.Sicre.2011,North Iceland/North Atlantic,Ocean,MarineSediment,66.5500,-17.4200,-470.0,Ocn-NorthIceland.Sicre.2011.lpd
+Ocn-NorthwestPacificOcean.Harada.2004,Northwest Pacific Ocean,Ocean,MarineSediment,46.3200,152.5300,-2793.0,Ocn-NorthwestPacificOcean.Harada.2004.lpd
+Ocn-ODP984.Came.2007,ODP984,Ocean,MarineSediment,61.4300,-24.0850,-1648.0,Ocn-ODP984.Came.2007.lpd
+Ocn-OkinawaTrough.Wu.2012,Okinawa Trough (ODP Hole 195-1202B),Ocean,MarineSediment,24.8000,122.5000,-1274.0,Ocn-OkinawaTrough.Wu.2012.lpd
+Ocn-PalauRockIslands.Osborne.2014,Palau,Ocean,Coral,7.2708,134.3837,-12.0,Ocn-PalauRockIslands.Osborne.2014.lpd
+Ocn-PalauUlongChannel.Osborne.2014,Palau,Ocean,Coral,7.2859,134.2503,-12.0,Ocn-PalauUlongChannel.Osborne.2014.lpd
+Ocn-Palmyra.Cobb.2013,Palmyra,Ocean,Coral,5.8700,-162.1300,-7.0,Ocn-Palmyra.Cobb.2013.lpd
+Ocn-Palmyra.Nurhati.2011,Palmyra,Ocean,Coral,5.8700,-162.1300,-10.0,Ocn-Palmyra.Nurhati.2011.lpd
+Ocn-PedradeLume-CapeVerdeIslands.Moses.2006,Pedra de Lume; Cape Verde Islands,Ocean,Coral,16.7600,-22.8883,-5.0,Ocn-PedradeLume-CapeVerdeIslands.Moses.2006.lpd
+Ocn-PedroBankJamaica.Haase-Schramm.2003,Pedro Bank Jamaica,Ocean,Sclerosponge,17.5333,-78.9500,-125.0,Ocn-PedroBankJamaica.Haase-Schramm.2003.lpd
+Ocn-Philippines.Stott.2007,Philippines,Ocean,MarineSediment,6.3000,125.8200,-2114.0,Ocn-Philippines.Stott.2007.lpd
+Ocn-PigmyBasin.Richey.2015,Pigmy Basin; Gulf of Mexico box core PBBC-1,Ocean,MarineSediment,27.2000,-91.4200,-2259.0,Ocn-PigmyBasin.Richey.2015.lpd
+Ocn-PuntaMaroma.Vasquez-Bedoya.2012,Punta Maroma; Mexico,Ocean,Coral,20.8300,-86.7400,-3.1,Ocn-PuntaMaroma.Vasquez-Bedoya.2012.lpd
+Ocn-Rabaul.Quinn.2006,Rabaul,Ocean,Coral,-4.1916,151.9772,-8.0,Ocn-Rabaul.Quinn.2006.lpd
+Ocn-RAPiD-12-1K.Thornalley.2009,RAPiD-12-1K; South Iceland Rise; northeast North Atlantic,Ocean,MarineSediment,62.0800,-17.8200,-1938.0,Ocn-RAPiD-12-1K.Thornalley.2009.lpd
+Ocn-Rarotonga_d18O2R.Linsley.2006,Rarotonga,Ocean,Coral,-21.2378,-159.8278,-18.3,Ocn-Rarotonga_d18O2R.Linsley.2006.lpd
+Ocn-Rarotonga_d18O3R.Linsley.2006,Rarotonga,Ocean,Coral,-21.2378,-159.8278,-10.0,Ocn-Rarotonga_d18O3R.Linsley.2006.lpd
+Ocn-Rarotonga_d18O99.Linsley.2006,Rarotonga,Ocean,Coral,-21.2378,-159.8278,-18.0,Ocn-Rarotonga_d18O99.Linsley.2006.lpd
+Ocn-RarotongaSrCa2r.Linsley.2006,Rarotonga,Ocean,Coral,-21.2378,-159.8278,-18.3,Ocn-RarotongaSrCa2r.Linsley.2006.lpd
+Ocn-RedSea.Felis.2000,Red Sea,Ocean,Coral,27.8500,34.3200,-6.0,Ocn-RedSea.Felis.2000.lpd
+Ocn-Reunion.Pfeiffer.2004,Reunion,Ocean,Coral,-21.0333,55.2500,-12.3,Ocn-Reunion.Pfeiffer.2004.lpd
+Ocn-SantaBarbaraBasin.Zhao.2000,Santa Barbara Basin (California),Ocean,MarineSediment,34.2300,-120.0200,-590.0,Ocn-SantaBarbaraBasin.Zhao.2000.lpd
+Ocn-SavusavuBay1F.Linsley.2006,Savusavu Bay,Ocean,Coral,-16.8167,179.2333,-10.0,Ocn-SavusavuBay1F.Linsley.2006.lpd
+Ocn-SavusavuBayAB.Linsley.2006,Savusavu Bay,Ocean,Coral,-16.8167,179.2333,-10.0,Ocn-SavusavuBayAB.Linsley.2006.lpd
+Ocn-SavusavuBayFiji.Bagnato.2005,Savusavu Bay; Fiji,Ocean,Coral,-16.8200,179.2300,-2.0,Ocn-SavusavuBayFiji.Bagnato.2005.lpd
+Ocn-SecasIslandPanama.Linsley.1994,Secas Island; Panama,Ocean,Coral,7.9500,-82.0000,-3.0,Ocn-SecasIslandPanama.Linsley.1994.lpd
+Ocn-SinaiPeninsula;RedSea.Moustafa.2000,Sinai Peninsula; Red Sea,Ocean,Coral,27.8483,34.3100,-3.0,Ocn-SinaiPeninsula,RedSea.Moustafa.2000.lpd
+Ocn-SouthAtlanticWestAfrica.Leduc.2010,South Atlantic; West Africa,Ocean,MarineSediment,-29.1400,16.7200,-97.0,Ocn-SouthAtlanticWestAfrica.Leduc.2010.lpd
+Ocn-SouthChinaSea.Zhao.2006,South China Sea,Ocean,MarineSediment,8.7300,109.8690,-1598.0,Ocn-SouthChinaSea.Zhao.2006.lpd
+Ocn-SouthernChileMargin.Mohtadi.2007,Southern Chile Margin,Ocean,MarineSediment,-44.1500,-75.1600,-1169.0,Ocn-SouthernChileMargin.Mohtadi.2007.lpd
+Ocn-SouthIceland.Sicre.2011,South Iceland/North Atlantic,Ocean,MarineSediment,57.4500,-27.9100,-2630.0,Ocn-SouthIceland.Sicre.2011.lpd
+Ocn-SubTropicalEasternNorthAtlantic.deMenocal.2000,subtropical eastern North Atlantic,Ocean,MarineSediment,20.7500,-18.5833,-2263.0,Ocn-SubTropicalEasternNorthAtlantic.deMenocal.2000.lpd
+Ocn-SWCoastOfIndia.Saraswat.2013,SW coast of India; Indian ocean,Ocean,MarineSediment,10.9800,74.9993,-1245.0,Ocn-SWCoastOfIndia.Saraswat.2013.lpd
+Ocn-TagusMudPatch.Abrantes.2005,Tagus mud patch; southern portuguese margin; North Atlantic,Ocean,MarineSediment,38.5560,-9.3498,-96.0,Ocn-TagusMudPatch.Abrantes.2005.lpd
+Ocn-TantabiddiReefNingaloo.Cooper.2012,Tantabiddi reef; Ningaloo,Ocean,Coral,-21.9000,113.9667,-6.0,Ocn-TantabiddiReefNingaloo.Cooper.2012.lpd
+Ocn-Tarawa.Cole.1990,Tarawa,Ocean,Coral,1.0000,172.0000,-3.0,Ocn-Tarawa.Cole.1990.lpd
+Ocn-TongueoftheOcean.Rosenheim.2005,Tongue of the Ocean; Exuma Sound Bahamas,Ocean,Sclerosponge,23.5040,-76.5770,-143.0,Ocn-TongueoftheOcean.Rosenheim.2005.lpd
+Ocn-TongueoftheOceanExuma.Rosenheim.2005,Tongue of the Ocean; Exuma Sound Bahamas,Ocean,Sclerosponge,23.7660,-76.0530,-136.0,Ocn-TongueoftheOceanExuma.Rosenheim.2005.lpd
+Ocn-TurrumoteReefPuertoRico.Kilbourne.2008,Turrumote Reef; Puerto Rico,Ocean,Coral,17.9300,-67.0000,-5.0,Ocn-TurrumoteReefPuertoRico.Kilbourne.2008.lpd
+Ocn-UrvinaBay.Dunbar.1994,Urvina Bay,Ocean,Coral,-0.4000,-91.2300,-1.5,Ocn-UrvinaBay.Dunbar.1994.lpd
+Ocn-Vanuatu.Gorman.2012,Vanuatu,Ocean,Coral,-15.9400,166.0400,-8.0,Ocn-Vanuatu.Gorman.2012.lpd
+Ocn-Vanuatu.Quinn.1996,Vanuatu,Ocean,Coral,-15.0000,166.9900,-1.0,Ocn-Vanuatu.Quinn.1996.lpd
+Ocn-WEqPacific.Stott.2007,WEq Pacific,Ocean,MarineSediment,-5.0000,133.4400,-2382.0,Ocn-WEqPacific.Stott.2007.lpd
+Ocn-WesternAntarcticPeninsula.Shevenell.2011,Western Antarctic Peninsula,Ocean,MarineSediment,-64.8700,-64.2000,-1011.0,Ocn-WesternAntarcticPeninsula.Shevenell.2011.lpd
+Ocn-WesternSvalbard.Spielhagen.2011,Western Svalbard,Ocean,MarineSediment,78.9100,6.7700,-1491.0,Ocn-WesternSvalbard.Spielhagen.2011.lpd
+Ocn-WestSpitzberg.Bonnet.2010,West Spitzberg; Fram Strait,Ocean,MarineSediment,78.9600,5.8850,-1497.0,Ocn-WestSpitzberg.Bonnet.2010.lpd
+Ocn-XishaIslandSouthChinaSea.Sun.2004,Xisha Island; South China Sea,Ocean,Coral,16.8500,112.3300,-20.0,Ocn-XishaIslandSouthChinaSea.Sun.2004.lpd
+SAm-CentralAndes11.PAGES2k.2011,Central Andes composite 11,SAm,Wood,-40.1000,-72.0500,800.0,SAm-CentralAndes11.PAGES2k.2011.lpd
+SAm-CentralAndes15.Neukom.2014,Central Andes composite 15,SAm,Wood,-41.1700,-71.9200,1300.0,SAm-CentralAndes15.Neukom.2014.lpd
+SAm-CentralAndes6.Villalba.2014,Central Andes composite 6,SAm,Wood,-38.5000,-71.5000,1400.0,SAm-CentralAndes6.Villalba.2014.lpd
+SAm-CentralAndes9.Mundo.2014,Central Andes composite 9,SAm,Wood,-39.3300,-71.2500,1100.0,SAm-CentralAndes9.Mundo.2014.lpd
+SAm-LagunaAculeo.vonGunten.2009,Laguna Aculeo,SAm,LakeSediment,-33.8500,-70.9200,355.0,SAm-LagunaAculeo.vonGunten.2009.lpd
+SAm-LagunaChepical.deJong.2013,Laguna Chepical,SAm,LakeSediment,-32.2667,-70.5000,3050.0,SAm-LagunaChepical.deJong.2013.lpd
+SAm-LagunaEscondida.Elbert.2013,Laguna Escondida,SAm,LakeSediment,-45.5167,-71.8167,725.0,SAm-LagunaEscondida.Elbert.2013.lpd
+SAm-QuelccayaIceCap.Thompson.2013,Quelccaya Ice Cap,SAm,GlacierIce,-13.9333,-70.8333,5670.0,SAm-QuelccayaIceCap.Thompson.2013.lpd

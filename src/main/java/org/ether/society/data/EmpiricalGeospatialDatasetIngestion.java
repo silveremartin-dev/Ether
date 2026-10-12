@@ -309,11 +309,11 @@ public class EmpiricalGeospatialDatasetIngestion {
             list.addAll(extractMrdsDeposits("coal", "lignite", "anthracite", "bituminous"));
 
             // 2. GEM Global Coal Mine Tracker
-            File coalMines = new File("data/maps/wep_world_energy/Global Coal Mine Tracker, August 2026.xlsx");
+            File coalMines = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/Global Coal Mine Tracker, August 2026.xlsx");
             list.addAll(readXlsxCoordinates(coalMines));
 
             // 3. GEM Global Coal Plant Tracker
-            File coalPlants = new File("data/maps/wep_world_energy/Global-Coal-Plant-Tracker-July-2026.xlsx");
+            File coalPlants = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/Global-Coal-Plant-Tracker-July-2026.xlsx");
             list.addAll(readXlsxCoordinates(coalPlants, "coal", "anthracite", "lignite", "bituminous"));
 
             logger.info("Total empirical Coal occurrences gathered: {}", list.size());
@@ -330,15 +330,15 @@ public class EmpiricalGeospatialDatasetIngestion {
             if (cachedOilOccurrences != null) return new ArrayList<>(cachedOilOccurrences);
             List<double[]> list = new ArrayList<>();
             // 1. GEM Global Oil and Gas Extraction Tracker (Oil)
-            File oilGasExtraction = new File("data/maps/wep_world_energy/Global-Oil-and-Gas-Extraction-Tracker-March-2026.xlsx");
+            File oilGasExtraction = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/Global-Oil-and-Gas-Extraction-Tracker-March-2026.xlsx");
             list.addAll(readXlsxCoordinates(oilGasExtraction, "oil", "petroleum", "condensate", "crude", "bitumen"));
 
             // 2. GEM Oil Pipelines & Terminals
-            File oilPipelines = new File("data/maps/wep_world_energy/GEM-GOIT-Oil-NGL-Pipelines-2026-06.xlsx");
+            File oilPipelines = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/GEM-GOIT-Oil-NGL-Pipelines-2026-06.xlsx");
             list.addAll(readXlsxCoordinates(oilPipelines));
 
             // 3. USGS World Petroleum Assessment Units
-            File usgsPetroleumShp = new File("data/maps/wep_world_energy/usgs_world_petroleum/au_sumg.shp");
+            File usgsPetroleumShp = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/usgs_world_petroleum/au_sumg.shp");
             list.addAll(readShapefileCoordinates(usgsPetroleumShp, 2.0));
 
             // 4. MRDS Oil Shale & Petroleum
@@ -358,23 +358,23 @@ public class EmpiricalGeospatialDatasetIngestion {
             if (cachedGasOccurrences != null) return new ArrayList<>(cachedGasOccurrences);
             List<double[]> list = new ArrayList<>();
             // 1. GEM Global Oil and Gas Extraction Tracker (Gas)
-            File oilGasExtraction = new File("data/maps/wep_world_energy/Global-Oil-and-Gas-Extraction-Tracker-March-2026.xlsx");
+            File oilGasExtraction = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/Global-Oil-and-Gas-Extraction-Tracker-March-2026.xlsx");
             list.addAll(readXlsxCoordinates(oilGasExtraction, "gas", "methane", "lng", "cbm", "shale gas"));
 
             // 2. GEM Gas Pipelines
-            File gasPipelines = new File("data/maps/wep_world_energy/GEM-GGIT-Gas-Pipelines-2025-11.xlsx");
+            File gasPipelines = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/GEM-GGIT-Gas-Pipelines-2025-11.xlsx");
             list.addAll(readXlsxCoordinates(gasPipelines));
 
             // 3. GEM LNG Terminals
-            File lngTerminals = new File("data/maps/wep_world_energy/GEM-GGIT-LNG-Teminals-2025-09.xlsx");
+            File lngTerminals = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/GEM-GGIT-LNG-Teminals-2025-09.xlsx");
             list.addAll(readXlsxCoordinates(lngTerminals));
 
             // 4. GOGPT Gas Plants
-            File gogpt = new File("data/maps/wep_world_energy/Global Oil and Gas Plant Tracker (GOGPT) - August 2026.xlsx");
+            File gogpt = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/Global Oil and Gas Plant Tracker (GOGPT) - August 2026.xlsx");
             list.addAll(readXlsxCoordinates(gogpt, "gas", "methane", "lng"));
 
             // 5. USGS World Petroleum Gas Assessment Units
-            File usgsPetroleumShp = new File("data/maps/wep_world_energy/usgs_world_petroleum/au_sumg.shp");
+            File usgsPetroleumShp = org.ether.society.config.EtherPaths.resolveSourceFile("wep_world_energy/usgs_world_petroleum/au_sumg.shp");
             list.addAll(readShapefileCoordinates(usgsPetroleumShp, 1.8));
 
             logger.info("Total empirical Natural Gas occurrences gathered: {}", list.size());
@@ -391,22 +391,22 @@ public class EmpiricalGeospatialDatasetIngestion {
             if (cachedAquiferOccurrences != null) return new ArrayList<>(cachedAquiferOccurrences);
             List<double[]> list = new ArrayList<>();
             // 1. WHYMAP Global Groundwater Aquifers Polygons
-            File aquifersShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_GW_aquifers_v1_poly.shp");
+            File aquifersShp = org.ether.society.config.EtherPaths.resolveSourceFile("whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_GW_aquifers_v1_poly.shp");
             if (!aquifersShp.exists()) {
-                aquifersShp = new File("data/maps/whymap_groundwater/whymap_GW_aquifers_v1_poly.shp");
+                aquifersShp = org.ether.society.config.EtherPaths.resolveSourceFile("whymap_groundwater/whymap_GW_aquifers_v1_poly.shp");
             }
             list.addAll(readShapefileCoordinates(aquifersShp, 2.5));
 
             // 2. WHYMAP Groundwater-dependent Cities
-            File citiesShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_cities_dependGW_v1_point.shp");
+            File citiesShp = org.ether.society.config.EtherPaths.resolveSourceFile("whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_cities_dependGW_v1_point.shp");
             list.addAll(readShapefileCoordinates(citiesShp, 2.0));
 
             // 3. WHYMAP Wetlands
-            File wetlandsShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_wetlands__v1_point.shp");
+            File wetlandsShp = org.ether.society.config.EtherPaths.resolveSourceFile("whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_wetlands__v1_point.shp");
             list.addAll(readShapefileCoordinates(wetlandsShp, 1.5));
 
             // 4. WHYMAP Saline Groundwater
-            File salineShp = new File("data/maps/whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_salineGW__v1_poly.shp");
+            File salineShp = org.ether.society.config.EtherPaths.resolveSourceFile("whymap_groundwater/extracted/WHYMAP_GWR/shp/whymap_salineGW__v1_poly.shp");
             list.addAll(readShapefileCoordinates(salineShp, 1.0));
 
             logger.info("Total empirical Aquifers occurrences gathered: {}", list.size());
@@ -437,7 +437,8 @@ public class EmpiricalGeospatialDatasetIngestion {
      */
     public static List<double[]> extractMrdsDeposits(String... keywords) {
         List<double[]> list = new ArrayList<>();
-        Path zipPath = Paths.get("data", "maps", "usgs_mrds", "mrds-csv.zip");
+        File zipFile = org.ether.society.config.EtherPaths.resolveSourceFile("usgs_mrds/mrds-csv.zip");
+        Path zipPath = zipFile.toPath();
         if (!Files.exists(zipPath)) return list;
 
         try (ZipFile zip = new ZipFile(zipPath.toFile(), StandardCharsets.UTF_8)) {

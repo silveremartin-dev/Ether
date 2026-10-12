@@ -910,7 +910,7 @@ public class ExecutionContextPanel extends BorderPane {
                 return;
             }
         } catch (Throwable t) {
-            String msg = String.format(I18n.getOrDefault("exec.topology.db_error_prefix", "🔴 Diagnostic base : %s"), t.getMessage());
+            String msg = I18n.getOrDefault("exec.topology.db_error_prefix", "🔴 Diagnostic base : {0}", t.getMessage());
             dbStatusLabel.setText(msg);
             dbStatusLabel.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
             return;
@@ -1277,17 +1277,30 @@ public class ExecutionContextPanel extends BorderPane {
      * @param mode the mode parameter (RenderingMode)
      */
     public void setRenderingMode(RenderingMode mode) {
-        if (mode == RenderingMode.HEADLESS) {
-            headlessRenderingRadio.setSelected(true);
-            headlessConfigCard.setVisible(true);
-            headlessConfigCard.setManaged(true);
+        Runnable updateUI = () -> {
+            if (mode == RenderingMode.HEADLESS) {
+                if (renderingGroup != null) renderingGroup.selectToggle(headlessRenderingRadio);
+                if (headlessRenderingRadio != null) headlessRenderingRadio.setSelected(true);
+                if (headlessConfigCard != null) {
+                    headlessConfigCard.setVisible(true);
+                    headlessConfigCard.setManaged(true);
+                }
+            } else {
+                if (renderingGroup != null) renderingGroup.selectToggle(guiRenderingRadio);
+                if (guiRenderingRadio != null) guiRenderingRadio.setSelected(true);
+                if (headlessConfigCard != null) {
+                    headlessConfigCard.setVisible(false);
+                    headlessConfigCard.setManaged(false);
+                }
+            }
+            updateRightSummary();
+            notifyLiveRenderingModeChange(mode);
+        };
+        if (javafx.application.Platform.isFxApplicationThread()) {
+            updateUI.run();
         } else {
-            guiRenderingRadio.setSelected(true);
-            headlessConfigCard.setVisible(false);
-            headlessConfigCard.setManaged(false);
+            javafx.application.Platform.runLater(updateUI);
         }
-        updateRightSummary();
-        notifyLiveRenderingModeChange(mode);
     }
 
     /*

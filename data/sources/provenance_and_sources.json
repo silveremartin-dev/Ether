@@ -1,0 +1,47 @@
+{
+  "repository": "Ether Empirical Datasets & Provenance Repository",
+  "category": "sources",
+  "description": "Standardized multi-disciplinary repository of raw, semi-processed, and external empirical datasets used to calibrate, validate, and falsify Ether planetary simulation models.",
+  "version": "1.0.0",
+  "last_updated": "2026-10-10",
+  "catalogs": {
+    "paleoclimate_and_meteorology": {
+      "pages2k": "PAGES 2k Consortium (2017, 2019) Common Era Surface Temperature Multi-Proxy Database (647 records) & Global Ensemble",
+      "worldclim": "WorldClim v2.1 10-arc-minute & 5-arc-minute Global Empirical Bioclimatic Indicators (Bio1, Bio4, Bio12)",
+      "paleoclim": "PaleoClim High-Resolution Paleoclimatic Rasters for the Late Quaternary",
+      "pangea": "PANGAEA Paleoceanographic and Sedimentary Core Repositories"
+    },
+    "geophysics_and_topography": {
+      "gebco": "GEBCO 2023 Grid Global Bathymetric Model (General Bathymetric Chart of the Oceans)",
+      "paleomap": "Scotese PALEOMAP Project Deep-Time Continental Reconstructions",
+      "ihfc_davies2013": "International Heat Flow Commission Global Terrestrial Heat Flow Grid",
+      "nasa_pds": "NASA Planetary Data System Topography (MOLA Mars, LOLA Moon)",
+      "lpi_lunar": "Lunar and Planetary Institute Cratering and Geologic Databases"
+    },
+    "hydro_and_pedology": {
+      "whymap_groundwater": "UNESCO WHYMAP Global Groundwater Resources & Aquifer Transmissivity",
+      "usgs": "USGS Geological Surveys & Soil Stoichiometry Baselines"
+    },
+    "minerals_and_energy": {
+      "usgs_mrds": "USGS Mineral Resources Data System (MRDS) Ore Deposits & Metallic Reserve Grades",
+      "iaea_nfcis": "IAEA Nuclear Fuel Cycle Information System (NFCIS) Uranium/Thorium Reserves",
+      "wep_world_energy": "Global Energy Monitor & USGS World Petroleum Assessment Reserves",
+      "bgr_germany": "German Federal Institute for Geosciences and Natural Resources (BGR) Energy Reserves"
+    },
+    "demography_and_archaeology": {
+      "hyde34": "HYDE 3.4 History Database of the Global Environment (Holocene Population & Land-Use Rasters)",
+      "archaeoglobe": "Archaeoglobe Project Global Land-Use and Agricultural Archaeological Synthesis"
+    },
+    "economy_and_institutions": {
+      "maddison": "Maddison Project Database 2020 Historical Real GDP per Capita and Real Wages",
+      "seshat": "Seshat Global History Databank Historical Social Complexity, Administrative Hierarchy, and Crisis Variables",
+      "cshapes": "CShapes Historical Sovereign State Boundaries and Capital Locations (1886-Present)",
+      "dplace": "D-PLACE Database of Places, Language, Culture and Environment",
+      "naturalearth": "Natural Earth High-Resolution Vector Cultural and Physical GIS Geometries"
+    }
+  },
+  "license_and_governance": {
+    "redistribution_policy": "External source archives and heavy raster/vector binaries are git-ignored and fetched via reproducible download pipelines.",
+    "attribution": "Every subfolder contains independent README and provenance documentation citing original scientific publications and DOIs."
+  }
+}

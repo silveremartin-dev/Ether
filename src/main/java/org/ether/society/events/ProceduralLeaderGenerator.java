@@ -95,8 +95,8 @@ public class ProceduralLeaderGenerator {
 
         String id = "PROC_LEADER_" + year + "_" + Math.abs(random.nextInt(10000));
         String title = generateTitle(archetype);
-        String name = String.format(org.ether.society.i18n.I18n.getOrDefault("leader.proc.name_format", "%s (Year %d)"), title, year);
-        String desc = String.format(org.ether.society.i18n.I18n.getOrDefault("leader.proc.desc_format", "Emergence of a major historical figure (%s) with macro-regional impact."), archetype.getDisplayName());
+        String name = org.ether.society.i18n.I18n.getOrDefault("leader.proc.name_format", "{0} (Year {1})", title, year);
+        String desc = org.ether.society.i18n.I18n.getOrDefault("leader.proc.desc_format", "Emergence of a major historical figure ({1}) in Year {0} with macro-regional impact.", year, archetype.getDisplayName());
 
         HistoricalIntervention intervention = new HistoricalIntervention(
                 id, name, desc, year, duration,

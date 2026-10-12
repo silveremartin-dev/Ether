@@ -268,4 +268,34 @@ public final class EtherPaths {
     public static Path getClusterSnapshotsDir() {
         return savesDir.resolve("cluster_snapshots");
     }
+
+    // ── External Data Sources & Maps Directories ──────────────────────────────
+
+    /**
+     * Retrieves the root directory for external empirical data sources ({@code data/sources/}).
+     *
+     * @return absolute normalized path to the sources directory
+     */
+    public static Path getSourcesDir() {
+        return dataDir.resolve("sources");
+    }
+
+    /**
+     * Retrieves the root directory for standardized planetary map tensors ({@code data/maps/}).
+     *
+     * @return absolute normalized path to the maps directory
+     */
+    public static Path getMapsDir() {
+        return dataDir.resolve("maps");
+    }
+
+    /**
+     * Resolves an empirical source file from the dedicated sources directory ({@code data/sources/<subpath>}).
+     *
+     * @param subpath relative subpath under sources (e.g. "worldclim/bio_10m/wc2.1_10m_bio_1.tif")
+     * @return resolved {@link File} handle targeting the file in data/sources/
+     */
+    public static File resolveSourceFile(String subpath) {
+        return getSourcesDir().resolve(subpath).toFile();
+    }
 }

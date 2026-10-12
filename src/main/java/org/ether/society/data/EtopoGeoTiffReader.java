@@ -37,12 +37,12 @@ public final class EtopoGeoTiffReader {
                 return cached2048x1024Grid;
             }
 
-            File etopoFile = new File("data/maps/usgs/ETOPO_2022_v1_60s_N90W180_bed.tif");
+            File etopoFile = org.ether.society.config.EtherPaths.resolveSourceFile("usgs/ETOPO_2022_v1_60s_N90W180_bed.tif");
             if (!etopoFile.exists()) {
-                etopoFile = new File("data/maps/usgs/ETOPO_2022_v1_60s_N90W180_surface.tif");
+                etopoFile = org.ether.society.config.EtherPaths.resolveSourceFile("usgs/ETOPO_2022_v1_60s_N90W180_surface.tif");
             }
             if (!etopoFile.exists()) {
-                logger.warn("NOAA ETOPO 2022 GeoTIFF file not found in data/maps/usgs/.");
+                logger.warn("NOAA ETOPO 2022 GeoTIFF file not found in data/sources/usgs/ or data/maps/usgs/.");
                 return new float[targetH][targetW];
             }
 

@@ -2299,7 +2299,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                     } else if (type.contains("nuclear") || type.contains("strike")) {
 
 
-                        displayTitle = "ÃƒÂ¢ËÅ“Ã‚Â¢ÃƒÂ¯Ã‚Â¸Ã‚Â FRAPPE NUCLÃƒÆ’ââ‚¬°AIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
+                        displayTitle = "☢️ FRAPPE NUCLÉAIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
 
 
                     } else {

@@ -1,0 +1,77 @@
+{
+  "dataset": "PAGES 2k Consortium Common Era Surface Temperature Reconstructions",
+  "version": "2.2.0 (Phase 2 Multi-Proxy Synthesis & Neukom et al. 2019 Global Ensemble)",
+  "category": "paleoclimate",
+  "domain": "Earth System Modeling & Cliodynamic Falsification",
+  "temporal_coverage": {
+    "start_year_ce": 1,
+    "end_year_ce": 2000,
+    "resolution": "Annual (1-year step)",
+    "calendar": "Common Era (CE)"
+  },
+  "spatial_coverage": {
+    "scope": "Global & Continental Multiplex",
+    "total_proxy_sites": 647,
+    "archive_types": [
+      "Tree ring (width and maximum latewood density)",
+      "Glacier ice (delta-O-18, deuterium, aerosol accumulation)",
+      "Marine coral (Sr/Ca, delta-O-18)",
+      "Lake sediment (varve thickness, biogenic silica)",
+      "Marine sediment (alkenones, Mg/Ca)",
+      "Speleothem (calcite delta-O-18)",
+      "Borehole temperature profiles"
+    ],
+    "regions": ["Antarctica", "Arctic", "Asia", "Australasia", "Europe", "North America", "South America", "Ocean"]
+  },
+  "physical_variables": {
+    "temperature_anomaly": {
+      "unit": "Degrees Celsius (°C)",
+      "baseline": "1961-1990 CE climatological normal",
+      "metric": "Global Mean Surface Temperature (GMST) deviation and regional proxy series",
+      "uncertainty": "95% Bayesian credible interval (2.5th to 97.5th percentiles across 7,000 ensemble members)"
+    }
+  },
+  "files": [
+    {
+      "filename": "Pages2kTemperature2_2_0.zip",
+      "format": "ZIP archive of LiPD (Linked Paleo Data) JSON-LD & CSV records",
+      "description": "Complete database of 647 individual site-level temperature-sensitive proxy records with geographic metadata and raw measurement time-series.",
+      "source_url": "https://github.com/CommonClimate/PAGES2k_phase2"
+    },
+    {
+      "filename": "pages2k_proxy_sites_index.csv",
+      "format": "CSV (UTF-8, comma-delimited)",
+      "description": "Consolidated spatial index of all 647 proxy sites containing dataset_id, site_name, region, archive_type, latitude, longitude, and elevation.",
+      "derived_by": "Ether Paleoclimate Ingestion Tool"
+    },
+    {
+      "filename": "pages2k_global_temperature_reconstruction_1_2000ce.tsv",
+      "format": "TSV (Tab-separated values)",
+      "description": "Annual 2,000-year global mean surface temperature reconstruction (1 to 2000 CE) with median and 95% range (2.5th and 97.5th percentiles) from Neukom et al. (2019).",
+      "source_url": "https://www.ncei.noaa.gov/pub/data/paleo/pages2k/neukom2019temp/recons/Full_ensemble_median_and_95pct_range.txt"
+    }
+  ],
+  "primary_citations": [
+    {
+      "title": "A global multiproxy database for temperature reconstructions of the Common Era",
+      "authors": "PAGES 2k Consortium",
+      "journal": "Scientific Data",
+      "volume": 4,
+      "pages": "170088",
+      "year": 2017,
+      "doi": "10.1038/sdata.2017.88"
+    },
+    {
+      "title": "Consistent multidecadal variability in global temperature reconstructions and simulations over the Common Era",
+      "authors": "Neukom, R., Steiger, N., Gómez-Navarro, J. J., Wang, J., & Werner, J. P.",
+      "journal": "Nature Geoscience",
+      "volume": 12,
+      "issue": 8,
+      "pages": "643-649",
+      "year": 2019,
+      "doi": "10.1038/s41561-019-0400-0"
+    }
+  ],
+  "license": "Creative Commons Attribution 4.0 International (CC BY 4.0) / Public Domain NOAA WDS-Paleo",
+  "integration_role_in_ether": "Empirical Tier-1 boundary condition constraining regional surface temperature anomalies ΔT(x, t) across historical regimes (Roman Warm Period, Late Antique Little Ice Age 536 CE, Medieval Climate Anomaly, Little Ice Age) and benchmark target for cliodynamic crisis falsification (Turchin SDT vs. climatic shock attribution)."
+}

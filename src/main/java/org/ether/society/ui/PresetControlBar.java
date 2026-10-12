@@ -158,7 +158,9 @@ public class PresetControlBar<T> extends VBox {
             if (val != null && !val.isBlank()) {
                 if (!trackingChanges && presetCombo.getValue() != null) {
                     String selectedName = formatPresetItem(presetCombo.getValue());
-                    if (!val.trim().equalsIgnoreCase(selectedName)) {
+                    String cleanVal = cleanScenarioName(val);
+                    String cleanSel = cleanScenarioName(selectedName);
+                    if (!val.trim().equalsIgnoreCase(selectedName) && !cleanVal.equalsIgnoreCase(cleanSel)) {
                         dirty = true;
                     }
                 }
@@ -292,6 +294,7 @@ public class PresetControlBar<T> extends VBox {
                 nameField.setText(formatPresetItem(found));
                 nameField.setStyle("");
                 trackingChanges = false;
+                dirty = false;
                 return;
             }
         }
@@ -299,6 +302,7 @@ public class PresetControlBar<T> extends VBox {
         presetCombo.setValue(null);
         nameField.setText("");
         trackingChanges = false;
+        dirty = false;
     }
 
     /*
@@ -441,6 +445,7 @@ public class PresetControlBar<T> extends VBox {
         if (nameField != null) {
             nameField.setText(name != null ? name : "");
             nameField.setStyle("");
+            dirty = false;
         }
     }
 

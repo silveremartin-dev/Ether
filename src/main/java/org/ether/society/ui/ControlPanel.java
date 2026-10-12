@@ -138,6 +138,12 @@ public class ControlPanel extends VBox {
     private Runnable onTimelapseSeekToEnd;
     private Consumer<Boolean> onStatsToggle;
     private Runnable onFullScreen;
+    private Runnable onRewindStart;
+    private Runnable onFastRewind;
+    private Runnable onStepBack;
+    private Runnable onStepForward;
+    private Runnable onFastForward;
+    private Runnable onSeekToEnd;
 
     /*
      * Control panel.
@@ -173,23 +179,44 @@ public class ControlPanel extends VBox {
         timeTitle = createCardTitle("⏱️ " + I18n.getOrDefault("sim.card.time", "TIME & PLAYBACK CONTROLS"));
 
         rewindBtn = new Button("⏮");
-        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Reset to T=0")));
+        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Reset to T=0 — Pauses simulation")));
         rewindBtn.setOnAction(e -> {
             engine.pause();
             updatePlayPauseVisuals(false);
-            if (onTimelapseSeek != null) {
+            if (onRewindStart != null) {
+                onRewindStart.run();
+            } else if (onTimelapseSeek != null) {
                 int startYear = engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getStartDateYear() : -20000;
                 onTimelapseSeek.accept(startYear);
             }
+            updatePlayPauseVisuals(false);
         });
 
         fastRewindBtn = new Button("⏪");
-        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Step backward 1000 steps [Hold down]")));
-        setupRepeatAction(fastRewindBtn, () -> engine.stepBackward(1000));
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Previous snapshot / Fast rewind — Pauses simulation")));
+        fastRewindBtn.setOnAction(e -> {
+            engine.pause();
+            updatePlayPauseVisuals(false);
+            if (onFastRewind != null) {
+                onFastRewind.run();
+            } else {
+                engine.stepBackward(100);
+            }
+            updatePlayPauseVisuals(false);
+        });
 
         stepBackBtn = new Button("⏴");
-        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Step backward 10 steps [Hold down]")));
-        setupRepeatAction(stepBackBtn, () -> engine.stepBackward(10));
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Step backward / previous snapshot — Pauses simulation")));
+        stepBackBtn.setOnAction(e -> {
+            engine.pause();
+            updatePlayPauseVisuals(false);
+            if (onStepBack != null) {
+                onStepBack.run();
+            } else {
+                engine.stepBackward(10);
+            }
+            updatePlayPauseVisuals(false);
+        });
 
         // Auto Record Checkbox (initialized early for button handlers)
         autoRecordCheck = new CheckBox(I18n.getOrDefault("sim.option.auto_record", "🎬 Auto Sync Video (Start & Pause)"));
@@ -216,23 +243,44 @@ public class ControlPanel extends VBox {
         });
 
         stepForwardBtn = new Button("⏵");
-        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Step forward 10 steps [Hold down]")));
-        setupRepeatAction(stepForwardBtn, () -> engine.stepForward(10));
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Step forward / next snapshot — Pauses simulation")));
+        stepForwardBtn.setOnAction(e -> {
+            engine.pause();
+            updatePlayPauseVisuals(false);
+            if (onStepForward != null) {
+                onStepForward.run();
+            } else {
+                engine.stepForward(10);
+            }
+            updatePlayPauseVisuals(false);
+        });
 
         fastForwardBtn = new Button("⏩");
-        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Step forward 1000 steps [Hold down]")));
-        setupRepeatAction(fastForwardBtn, () -> engine.stepForward(1000));
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Fast forward / Next snapshot — Pauses simulation")));
+        fastForwardBtn.setOnAction(e -> {
+            engine.pause();
+            updatePlayPauseVisuals(false);
+            if (onFastForward != null) {
+                onFastForward.run();
+            } else {
+                engine.stepForward(100);
+            }
+            updatePlayPauseVisuals(false);
+        });
 
         endBtn = new Button("⏭");
-        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Jump to simulation end (Last checkpoint / End)")));
+        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Jump to latest snapshot / End — Pauses simulation")));
         endBtn.setOnAction(e -> {
             engine.pause();
             updatePlayPauseVisuals(false);
-            if (onTimelapseSeekToEnd != null) {
+            if (onSeekToEnd != null) {
+                onSeekToEnd.run();
+            } else if (onTimelapseSeekToEnd != null) {
                 onTimelapseSeekToEnd.run();
             } else {
                 engine.seekToEnd();
             }
+            updatePlayPauseVisuals(false);
         });
 
         Button[] playButtons = { rewindBtn, fastRewindBtn, stepBackBtn, playPauseBtn, stepForwardBtn, fastForwardBtn, endBtn };
@@ -1040,6 +1088,12 @@ public class ControlPanel extends VBox {
      * @param onTimelapseSeekToEnd the on timelapse seek to end argument (Runnable)
      */
     public void setOnTimelapseSeekToEnd(Runnable onTimelapseSeekToEnd) { this.onTimelapseSeekToEnd = onTimelapseSeekToEnd; }
+    public void setOnRewindStart(Runnable onRewindStart) { this.onRewindStart = onRewindStart; }
+    public void setOnFastRewind(Runnable onFastRewind) { this.onFastRewind = onFastRewind; }
+    public void setOnStepBack(Runnable onStepBack) { this.onStepBack = onStepBack; }
+    public void setOnStepForward(Runnable onStepForward) { this.onStepForward = onStepForward; }
+    public void setOnFastForward(Runnable onFastForward) { this.onFastForward = onFastForward; }
+    public void setOnSeekToEnd(Runnable onSeekToEnd) { this.onSeekToEnd = onSeekToEnd; }
     /*
      * Set on stats toggle operation.
      * <p>
@@ -1510,12 +1564,12 @@ public class ControlPanel extends VBox {
 
         rebuildLayerMenuItems();
 
-        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Reset to T=0")));
-        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Step backward 1000 steps [Hold down]")));
-        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Step backward 10 steps [Hold down]")));
-        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Step forward 10 steps [Hold down]")));
-        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Step forward 1000 steps [Hold down]")));
-        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Jump to simulation end (Last checkpoint / End)")));
+        rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Reset to T=0 — Pauses simulation")));
+        fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Previous snapshot / Fast rewind — Pauses simulation")));
+        stepBackBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepback", "Step backward / previous snapshot — Pauses simulation")));
+        stepForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.stepforward", "Step forward / next snapshot — Pauses simulation")));
+        fastForwardBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward", "Fast forward / Next snapshot — Pauses simulation")));
+        endBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastforward_end", "Jump to latest snapshot / End — Pauses simulation")));
         speedMax.setText("MAX 🚀");
         speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Runs iterations at maximum processor capacity")));
         speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "CPU simulation speed (0.1 to 20 steps/sec or MAX)")));

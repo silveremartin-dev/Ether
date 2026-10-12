@@ -74,7 +74,7 @@ public class SeshatDataIntegrator {
 
     // Helper subroutine: load local polities csv - internal state computation & bounds checking
     private static void loadLocalPolitiesCsv() {
-        java.io.File csvFile = new java.io.File("data/maps/seshat/seshat_polities_database.csv");
+        java.io.File csvFile = org.ether.society.config.EtherPaths.resolveSourceFile("seshat/seshat_polities_database.csv");
         if (!csvFile.exists()) return;
 
         try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(csvFile))) {

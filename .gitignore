@@ -82,6 +82,32 @@ dist/
 data/maps/dplace/
 **/extracted/
 
+# Raw external source datasets exclusions (prevent heavy data leakage)
+data/sources/**/*.zip
+data/sources/**/*.lpd
+data/sources/**/*.asc
+data/sources/**/*.geojson
+data/sources/**/*.tif
+data/sources/**/*.tiff
+data/sources/**/*.png
+data/sources/**/*.img
+data/sources/**/*.lbl
+data/sources/**/*.bin
+data/sources/**/*.dat
+data/sources/**/*.nc
+data/sources/**/*.tab
+data/sources/**/*.xlsx
+data/sources/**/*.xls
+data/sources/**/*.shp
+data/sources/**/*.dbf
+data/sources/**/*.shx
+data/sources/**/*.mat
+data/sources/**/extracted/
+data/sources/dplace/
+data/paleoclimate/
+*.zip
+Pages2kTemperature2_2_0.zip
+
 # Track standardized Ether planetary maps and tensors
 !data/maps/ether/
 !data/maps/ether/**

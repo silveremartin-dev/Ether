@@ -135,7 +135,10 @@ public class NaturalEarthVectorIngestor {
             return CACHED_COUNTRIES;
         }
 
-        File file = new File(NATURAL_EARTH_50M_PATH);
+        File file = org.ether.society.config.EtherPaths.resolveSourceFile("naturalearth/ne_50m_admin_0_countries.geojson");
+        if (!file.exists()) {
+            file = new File(NATURAL_EARTH_50M_PATH);
+        }
         if (!file.exists()) {
             logger.warn("Natural Earth 50m GeoJSON not found at: {}", file.getAbsolutePath());
             return Collections.emptyList();

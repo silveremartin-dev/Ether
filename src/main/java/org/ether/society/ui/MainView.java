@@ -395,7 +395,13 @@ public class MainView extends StackPane {
         controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
         controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
         controlPanel.setOnTimelapseSeek(this::seekTimelapse);
-        controlPanel.setOnTimelapseSeekToEnd(this::seekToEnd);
+        controlPanel.setOnTimelapseSeekToEnd(this::seekToEndSafe);
+        controlPanel.setOnRewindStart(this::seekToStartSafe);
+        controlPanel.setOnFastRewind(() -> stepBackwardSafe(true));
+        controlPanel.setOnStepBack(() -> stepBackwardSafe(false));
+        controlPanel.setOnStepForward(() -> stepForwardSafe(false));
+        controlPanel.setOnFastForward(() -> stepForwardSafe(true));
+        controlPanel.setOnSeekToEnd(this::seekToEndSafe);
         controlPanel.setOnFullScreen(this::toggleFullScreen);
 
         if (godModePanel != null) {
@@ -593,39 +599,120 @@ public class MainView extends StackPane {
         }
     }
 
-    // Helper subroutine: seek timelapse - internal state computation & bounds checking
-    private void seekTimelapse(int year) {
-        long startYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getStartDateYear() : -20000;
-        long targetTicks = Math.max(0, (year - startYear) * 12);
-        engine.seekToTick(targetTicks);
-        if (mapCanvas != null) {
-            mapCanvas.setWorldBuffer(engine.getWorldBuffer());
-            mapCanvas.setCells(engine.getCells());
-            mapCanvas.draw();
-        }
-        if (miniMap != null && engine.getCells() != null) {
-            miniMap.setCells(engine.getCells());
-        }
+    /* Atomic flag guarding against overlapping async stepping operations */
+    private final java.util.concurrent.atomic.AtomicBoolean isAsyncStepping = new java.util.concurrent.atomic.AtomicBoolean(false);
+
+    // Helper subroutine: seek to start safe - ensures paused state and jumps to first snapshot / tick 0
+    private void seekToStartSafe() {
+        if (engine == null) return;
+        engine.pause();
         if (controlPanel != null) {
-            controlPanel.updateYear(engine.getTimeManager().getFormattedDate());
+            controlPanel.updatePlayPauseVisuals(false);
         }
-        if (statsPanel != null) {
-            statsPanel.update();
+        var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
+        if (snapshots != null && !snapshots.isEmpty()) {
+            long firstTick = snapshots.firstKey();
+            applySeekToTick(firstTick);
+        } else {
+            applySeekToTick(0);
         }
-        logger.info("Timelapse seek to year: {} (tick {})", year, targetTicks);
+        logger.info("Rewind to start completed");
     }
 
-    // Helper subroutine: seek to end - internal state computation & bounds checking
-    private void seekToEnd() {
+    // Helper subroutine: seek to end safe - ensures paused state and jumps to latest captured snapshot
+    private void seekToEndSafe() {
+        if (engine == null) return;
+        engine.pause();
+        if (controlPanel != null) {
+            controlPanel.updatePlayPauseVisuals(false);
+        }
         var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
         if (snapshots != null && !snapshots.isEmpty()) {
             long lastTick = snapshots.lastKey();
-            engine.seekToTick(lastTick);
+            applySeekToTick(lastTick);
         } else {
             long endYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getEndDateYear() : 2100;
             seekTimelapse((int) endYear);
             return;
         }
+        logger.info("Seek to end completed");
+    }
+
+    // Helper subroutine: step backward safe - jumps to previous snapshot or seeks backward by ticks
+    private void stepBackwardSafe(boolean fast) {
+        if (engine == null) return;
+        engine.pause();
+        if (controlPanel != null) {
+            controlPanel.updatePlayPauseVisuals(false);
+        }
+        long curTick = engine.getTickCounter();
+        var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
+        if (snapshots != null && !snapshots.isEmpty()) {
+            Long lowerTick = snapshots.lowerKey(curTick);
+            if (lowerTick != null) {
+                applySeekToTick(lowerTick);
+                return;
+            }
+        }
+        long stepSize = fast ? 100 : 10;
+        long target = Math.max(0, curTick - stepSize);
+        applySeekToTick(target);
+    }
+
+    // Helper subroutine: step forward safe - jumps to next available snapshot or advances off-EDT
+    private void stepForwardSafe(boolean fast) {
+        if (engine == null) return;
+        engine.pause();
+        if (controlPanel != null) {
+            controlPanel.updatePlayPauseVisuals(false);
+        }
+
+        long curTick = engine.getTickCounter();
+        var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
+        if (snapshots != null && !snapshots.isEmpty()) {
+            Long nextTick = snapshots.higherKey(curTick);
+            if (nextTick != null) {
+                applySeekToTick(nextTick);
+                return;
+            }
+        }
+
+        // If no future snapshot exists, calculate forward asynchronously to never freeze the JavaFX EDT
+        if (!isAsyncStepping.compareAndSet(false, true)) {
+            logger.warn("Step forward already in progress, skipping duplicate request");
+            return;
+        }
+
+        int ticksToRun = fast ? 100 : 10;
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                engine.stepForward(ticksToRun);
+            } catch (Exception ex) {
+                logger.error("Error during asynchronous step forward", ex);
+            } finally {
+                isAsyncStepping.set(false);
+                javafx.application.Platform.runLater(() -> {
+                    engine.pause();
+                    if (controlPanel != null) {
+                        controlPanel.updatePlayPauseVisuals(false);
+                    }
+                    refreshViewsAfterSeek();
+                });
+            }
+        });
+    }
+
+    // Helper subroutine: apply seek to tick and update UI
+    private void applySeekToTick(long tick) {
+        if (engine == null) return;
+        engine.pause();
+        engine.seekToTick(tick);
+        refreshViewsAfterSeek();
+    }
+
+    // Helper subroutine: refresh views after seek
+    private void refreshViewsAfterSeek() {
+        if (engine == null) return;
         if (mapCanvas != null) {
             mapCanvas.setWorldBuffer(engine.getWorldBuffer());
             mapCanvas.setCells(engine.getCells());
@@ -636,11 +723,19 @@ public class MainView extends StackPane {
         }
         if (controlPanel != null) {
             controlPanel.updateYear(engine.getTimeManager().getFormattedDate());
+            controlPanel.updatePlayPauseVisuals(false);
         }
         if (statsPanel != null) {
             statsPanel.update();
         }
-        logger.info("Seek to end completed");
+    }
+
+    // Helper subroutine: seek timelapse - internal state computation & bounds checking
+    private void seekTimelapse(int year) {
+        long startYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getStartDateYear() : -20000;
+        long targetTicks = Math.max(0, (year - startYear) * 12);
+        applySeekToTick(targetTicks);
+        logger.info("Timelapse seek to year: {} (tick {})", year, targetTicks);
     }
 
     // Helper subroutine: on start simulation - internal state computation & bounds checking
@@ -954,7 +1049,7 @@ public class MainView extends StackPane {
                         javafx.application.Platform.runLater(() -> {
                             if (controlPanel != null) controlPanel.updatePlayPauseVisuals(false);
                             if (notificationOverlay != null) {
-                                notificationOverlay.showInfo(String.format(I18n.getOrDefault("headless.target_reached", "🏁 Horizon cible atteint (An %d) — Simulation en pause"), targetYear));
+                                notificationOverlay.showInfo(I18n.getOrDefault("headless.target_reached", "🏁 Horizon cible atteint (An {0}) — Simulation en pause", targetYear));
                             }
                         });
                     }
@@ -1010,9 +1105,9 @@ public class MainView extends StackPane {
                     List<String> events = engine.getEventSystem().flushEvents();
                     if (!events.isEmpty()) {
                         long curPas = engine.getTickCounter();
-                        // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
+                        // Events are rendered spatially on the map canvas beacon layer and logged to audit trail.
+                        // Redundant second notification line at screen bottom is removed.
                         for (String event : events) {
-                            notificationOverlay.showEvent(event);
                             logger.info("📢 [Pas {}] {}", curPas, event);
                         }
                     }
