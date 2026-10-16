@@ -17,6 +17,7 @@ import org.ether.society.engines.compiler.*;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.engines.tier2.historical.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,6 +53,10 @@ public class HistoricalBehaviorsTestSuite {
      *
      */
     public void setUp() {
+        RomanImperialCliodynamicEngine.resetState();
+        EdoJapanIsolationEngine.resetState();
+        AmerindianEcosystemEngine.resetState();
+
         ProceduralEngineRegistry.clearPlugins();
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(613503380827930701L, 35.0, 35.0);
@@ -66,6 +71,13 @@ public class HistoricalBehaviorsTestSuite {
         cell.setBiome(Biome.PLAINS);
 
         testCells.add(cell);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        RomanImperialCliodynamicEngine.resetState();
+        EdoJapanIsolationEngine.resetState();
+        AmerindianEcosystemEngine.resetState();
     }
 
     @Test

@@ -1,6 +1,6 @@
 /* Light Theme - Clean Modern Glassmorphism & High Contrast Text */
 .root {
-    -fx-font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', 'Source Han Sans SC', 'Noto Sans CJK SC', 'Noto Sans SC', 'SimSun', 'Inter', sans-serif;
     -fx-base: #f8fafc;
     -fx-background: #f8fafc;
     -fx-control-inner-background: #ffffff;

@@ -95,9 +95,12 @@ public class ManningStricklerHydrodynamicsEngine {
 
             // Fertile floodplain silt bonus for large lowland rivers (Plains/Beach with high discharge)
             if (dischargeQ > 50.0 && (cell.getBiome() == Biome.PLAINS || cell.getBiome() == Biome.BEACH)) {
-                double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 50.0;
+                int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+                double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
+                        ? cell.getBiomassAgriculture()
+                        : Math.min(2000.0, Math.max(50.0, pop * 2.5));
                 double floodplainFertilityBoost = Math.min(25.0, dischargeQ * 0.05 * deltaYears);
-                cell.setBiomassAgriculture(Math.min(1000.0, currentAgri + floodplainFertilityBoost));
+                cell.setBiomassAgriculture(Math.min(3000.0, currentAgri + floodplainFertilityBoost));
             }
         }
     }

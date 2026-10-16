@@ -1,5 +1,7 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +16,7 @@ import java.util.*;
  * tradenetwork, institutional, ecological, pathogen) while preserving physical layers,
  * and updates cultural_registry.json, provenance_and_sources.json, and README.md for every epoch.
  */
+@Tag("manual")
 public class GenerateEpochMapsTest {
 
     public record EpochMeta(
@@ -30,7 +33,7 @@ public class GenerateEpochMapsTest {
     ) {}
 
     // ---------------------------------------------------------------------------
-    // Epoch registry — sorted ascending by year.
+    // Epoch registry â€” sorted ascending by year.
     // Original 36 entries are kept verbatim; interpolated grid entries fill gaps.
     // ---------------------------------------------------------------------------
     private static final List<EpochMeta> EPOCHS;
@@ -38,7 +41,7 @@ public class GenerateEpochMapsTest {
         List<EpochMeta> _list = new ArrayList<>();
 
         // -----------------------------------------------------------------------
-        // Helper lambdas — linear interpolation utilities defined via anonymous
+        // Helper lambdas â€” linear interpolation utilities defined via anonymous
         // Runnable wrappers so they can reference each other without full classes.
         // -----------------------------------------------------------------------
 
@@ -172,23 +175,23 @@ public class GenerateEpochMapsTest {
 
         // Returns a one-sentence French summary for a given year.
         java.util.function.Function<Long, String> summaryFr = yr -> {
-            if (yr <= -70000) return String.format("Des bandes d'Homo sapiens archaïques se déplacent dans les refuges africains durant le stade glaciaire MIS à %,d BP, avec des dispersions pionnières vers les corridors afro-arabiques.", Math.abs(yr));
-            if (yr <= -40000) return String.format("Les chasseurs-cueilleurs du Paléolithique supérieur s'étendent à travers l'Eurasie à %,d BP, établissant des industries laminaires, l'art pariétal et des traversées maritimes vers le Sahul.", Math.abs(yr));
-            if (yr <= -20000) return String.format("Les conditions du Dernier Maximum Glaciaire prévalent à %,d BP ; des refuges de chasseurs-cueilleurs persistent le long des corridors libres de glace.", Math.abs(yr));
-            if (yr <= -10000) return String.format("Les chasseurs-cueilleurs du Pléistocène terminal à %,d BP récoltent des céréales sauvages au Levant et initient des campements sédentaires précédant la transition néolithique.", Math.abs(yr));
-            if (yr <= -5000) return String.format("Les communautés agropastorales du début de l'Holocène à %,d BP cultivent l'épeautre et l'amidonnier dans le Croissant fertile, tandis que le défrichage forestier s'étend en Europe tempérée.", Math.abs(yr));
-            if (yr <= -3000) return String.format("Les cités proto-urbaines chalcolithiques de %,d av. J.-C. développent la fonte du cuivre, les canaux d'irrigation et la poterie tournée au Proche-Orient et dans les Balkans.", Math.abs(yr));
-            if (yr <= -1000) return String.format("Les États lettrés de l'âge du bronze de %,d av. J.-C. organisent des armées de chars, des économies palaciales et le commerce maritime à longue distance.", Math.abs(yr));
-            if (yr <= -500) return String.format("La métallurgie du fer se répand à %,d av. J.-C., favorisant l'expansion néo-assyrienne, la diffusion de l'alphabet phénicien et la consolidation féodale des Zhou.", Math.abs(yr));
-            if (yr <= 0) return String.format("L'Antiquité classique de %d ap. J.-C. voit l'administration provinciale romaine, la bureaucratie Han et les échanges intercontinentaux sur la Route de la Soie.", yr);
-            if (yr <= 500) return String.format("Les sociétés tardo-antiques de %d ap. J.-C. naviguent entre fragmentation impériale, pandémies et montée des royaumes post-romains.", yr);
-            if (yr <= 1000) return String.format("Médiéval %d ap. J.-C. : expansion agraire, construction de cathédrales, révolution commerciale Song et réseaux diasporiques intercontinentaux.", yr);
-            if (yr <= 1500) return String.format("Les États médiévaux tardifs de %d ap. J.-C. déploient chevalerie montée, réseaux castraux et capitalisme marchand corporatif dans les corridors commerciaux eurasiatiques.", yr);
-            if (yr <= 1800) return String.format("Les États de l'époque moderne de %d ap. J.-C. gouvernent des empires maritimes, des compagnies à charte et des académies scientifiques dans un proto-capitalisme proto-industriel.", yr);
-            if (yr <= 1900) return String.format("L'industrialisation de %d ap. J.-C. voit les usines à vapeur alimentées au charbon, les chemins de fer transcontinentaux et le télégraphe remodeler l'ordre économique mondial.", yr);
-            if (yr <= 1950) return String.format("Le XXe siècle de %d ap. J.-C. est marqué par l'électrification, le moteur à combustion, la synthèse chimique et deux guerres mondiales accélérant le changement technologique.", yr);
-            if (yr <= 2000) return String.format("L'après-guerre de %d ap. J.-C. intègre les transistors, les communications par satellite, la révolution verte et l'échange mondial d'informations par ordinateur.", yr);
-            return String.format("Le futur proche de %d ap. J.-C. : des réseaux d'énergie renouvelable planétaires, des systèmes autonomes et des technologies d'adaptation climatique définissent la civilisation mondiale émergente.", yr);
+            if (yr <= -70000) return String.format("Des bandes d'Homo sapiens archaÃ¯ques se dÃ©placent dans les refuges africains durant le stade glaciaire MIS Ã  %,d BP, avec des dispersions pionniÃ¨res vers les corridors afro-arabiques.", Math.abs(yr));
+            if (yr <= -40000) return String.format("Les chasseurs-cueilleurs du PalÃ©olithique supÃ©rieur s'Ã©tendent Ã  travers l'Eurasie Ã  %,d BP, Ã©tablissant des industries laminaires, l'art pariÃ©tal et des traversÃ©es maritimes vers le Sahul.", Math.abs(yr));
+            if (yr <= -20000) return String.format("Les conditions du Dernier Maximum Glaciaire prÃ©valent Ã  %,d BP ; des refuges de chasseurs-cueilleurs persistent le long des corridors libres de glace.", Math.abs(yr));
+            if (yr <= -10000) return String.format("Les chasseurs-cueilleurs du PlÃ©istocÃ¨ne terminal Ã  %,d BP rÃ©coltent des cÃ©rÃ©ales sauvages au Levant et initient des campements sÃ©dentaires prÃ©cÃ©dant la transition nÃ©olithique.", Math.abs(yr));
+            if (yr <= -5000) return String.format("Les communautÃ©s agropastorales du dÃ©but de l'HolocÃ¨ne Ã  %,d BP cultivent l'Ã©peautre et l'amidonnier dans le Croissant fertile, tandis que le dÃ©frichage forestier s'Ã©tend en Europe tempÃ©rÃ©e.", Math.abs(yr));
+            if (yr <= -3000) return String.format("Les citÃ©s proto-urbaines chalcolithiques de %,d av. J.-C. dÃ©veloppent la fonte du cuivre, les canaux d'irrigation et la poterie tournÃ©e au Proche-Orient et dans les Balkans.", Math.abs(yr));
+            if (yr <= -1000) return String.format("Les Ã‰tats lettrÃ©s de l'Ã¢ge du bronze de %,d av. J.-C. organisent des armÃ©es de chars, des Ã©conomies palaciales et le commerce maritime Ã  longue distance.", Math.abs(yr));
+            if (yr <= -500) return String.format("La mÃ©tallurgie du fer se rÃ©pand Ã  %,d av. J.-C., favorisant l'expansion nÃ©o-assyrienne, la diffusion de l'alphabet phÃ©nicien et la consolidation fÃ©odale des Zhou.", Math.abs(yr));
+            if (yr <= 0) return String.format("L'AntiquitÃ© classique de %d ap. J.-C. voit l'administration provinciale romaine, la bureaucratie Han et les Ã©changes intercontinentaux sur la Route de la Soie.", yr);
+            if (yr <= 500) return String.format("Les sociÃ©tÃ©s tardo-antiques de %d ap. J.-C. naviguent entre fragmentation impÃ©riale, pandÃ©mies et montÃ©e des royaumes post-romains.", yr);
+            if (yr <= 1000) return String.format("MÃ©diÃ©val %d ap. J.-C. : expansion agraire, construction de cathÃ©drales, rÃ©volution commerciale Song et rÃ©seaux diasporiques intercontinentaux.", yr);
+            if (yr <= 1500) return String.format("Les Ã‰tats mÃ©diÃ©vaux tardifs de %d ap. J.-C. dÃ©ploient chevalerie montÃ©e, rÃ©seaux castraux et capitalisme marchand corporatif dans les corridors commerciaux eurasiatiques.", yr);
+            if (yr <= 1800) return String.format("Les Ã‰tats de l'Ã©poque moderne de %d ap. J.-C. gouvernent des empires maritimes, des compagnies Ã  charte et des acadÃ©mies scientifiques dans un proto-capitalisme proto-industriel.", yr);
+            if (yr <= 1900) return String.format("L'industrialisation de %d ap. J.-C. voit les usines Ã  vapeur alimentÃ©es au charbon, les chemins de fer transcontinentaux et le tÃ©lÃ©graphe remodeler l'ordre Ã©conomique mondial.", yr);
+            if (yr <= 1950) return String.format("Le XXe siÃ¨cle de %d ap. J.-C. est marquÃ© par l'Ã©lectrification, le moteur Ã  combustion, la synthÃ¨se chimique et deux guerres mondiales accÃ©lÃ©rant le changement technologique.", yr);
+            if (yr <= 2000) return String.format("L'aprÃ¨s-guerre de %d ap. J.-C. intÃ¨gre les transistors, les communications par satellite, la rÃ©volution verte et l'Ã©change mondial d'informations par ordinateur.", yr);
+            return String.format("Le futur proche de %d ap. J.-C. : des rÃ©seaux d'Ã©nergie renouvelable planÃ©taires, des systÃ¨mes autonomes et des technologies d'adaptation climatique dÃ©finissent la civilisation mondiale Ã©mergente.", yr);
         };
 
         // Collect years already present to avoid duplicates when adding original 36.
@@ -213,27 +216,27 @@ public class GenerateEpochMapsTest {
         };
 
         // -----------------------------------------------------------------------
-        // RANGE 1: -100,000 to -30,000 BP — every 5,000 years
+        // RANGE 1: -100,000 to -30,000 BP â€” every 5,000 years
         // -----------------------------------------------------------------------
         for (long y = -100000L; y <= -30000L; y += 5000L) addInterpolated.accept(y);
 
         // -----------------------------------------------------------------------
-        // RANGE 2: -30,000 to -10,000 BP — every 1,000 years
+        // RANGE 2: -30,000 to -10,000 BP â€” every 1,000 years
         // -----------------------------------------------------------------------
         for (long y = -30000L; y <= -10000L; y += 1000L) addInterpolated.accept(y);
 
         // -----------------------------------------------------------------------
-        // RANGE 3: -10,000 to -100 — every 100 years (year 0 excluded)
+        // RANGE 3: -10,000 to -100 â€” every 100 years (year 0 excluded)
         // -----------------------------------------------------------------------
         for (long y = -10000L; y <= -100L; y += 100L) addInterpolated.accept(y);
 
         // -----------------------------------------------------------------------
-        // RANGE 4: 0 to 2060 — every 20 years
+        // RANGE 4: 0 to 2060 â€” every 20 years
         // -----------------------------------------------------------------------
         for (long y = 0L; y <= 2060L; y += 20L) addInterpolated.accept(y);
 
         // -----------------------------------------------------------------------
-        // ORIGINAL 36 ENTRIES — kept verbatim; duplicates are overridden by
+        // ORIGINAL 36 ENTRIES â€” kept verbatim; duplicates are overridden by
         // marking years seen before adding, then re-adding the rich versions.
         // Strategy: mark all interpolated years as seen above, then for each
         // original entry remove any interpolated placeholder and add the rich one.
@@ -255,182 +258,182 @@ public class GenerateEpochMapsTest {
         // Now add the 36 original EpochMeta entries verbatim:
         _list.add(new EpochMeta(-100000L, "Out of Africa & Middle Stone Age / MIS 5e Interglacial (-100,000 BP)", "ONE_CONTINENT", 0.5, 50_000L,
             "Reconstruction of Middle Stone Age Homo sapiens bands in Africa and early pioneer dispersals into the Levant and Arabia during the Eemian / MIS 5e interglacial.",
-            "Reconstitution des bandes d'Homo sapiens du Middle Stone Age en Afrique et des premières dispersions pionnières vers le Levant et l'Arabie durant l'interglaciaire éémien (MIS 5e).",
+            "Reconstitution des bandes d'Homo sapiens du Middle Stone Age en Afrique et des premiÃ¨res dispersions pionniÃ¨res vers le Levant et l'Arabie durant l'interglaciaire Ã©Ã©mien (MIS 5e).",
             "Middle Stone Age (MSA) Blade & Point Technocomplex, Pigment Use & Marine Foraging", "Egalitarian Forager Multi-Family Band", 2300));
 
         _list.add(new EpochMeta(-74000L, "Toba Super-Eruption & Genetic Bottleneck Horizon (-74,000 BP)", "ONE_CONTINENT", 0.6, 20_000L,
             "Reconstruction of global hominin refugia following the Youngest Toba Tuff super-eruption and rapid volcanic winter onset.",
-            "Reconstitution des refuges d'hominines suite à la super-éruption du Toba et au refroidissement volcanique abrupt.",
+            "Reconstitution des refuges d'hominines suite Ã  la super-Ã©ruption du Toba et au refroidissement volcanique abrupt.",
             "Late Middle Stone Age Microlithic Hearths & Coastal Shellfish Exploitation", "Refugial Forager Kin Networks", 2200));
 
         _list.add(new EpochMeta(-50000L, "Upper Paleolithic Revolution & Sahul Colonization (-50,000 BP)", "SAHUL_MIGRATION", 0.8, 200_000L,
             "Global Upper Paleolithic expansion of behavioral modernity, blade technology, cave art, and maritime colonization of Sahul (Australia/New Guinea).",
-            "Expansion mondiale du Paléolithique supérieur, art pariétal, débitage laminaire et colonisation maritime du Sahul (Australie/Nouvelle-Guinée).",
+            "Expansion mondiale du PalÃ©olithique supÃ©rieur, art pariÃ©tal, dÃ©bitage laminaire et colonisation maritime du Sahul (Australie/Nouvelle-GuinÃ©e).",
             "Early Upper Paleolithic Blade & Bone Tool Industries, Ochre Art & Ocean Crossings", "Exogamous Clan Bands & Subsection Systems", 2400));
 
         _list.add(new EpochMeta(-25000L, "Last Glacial Maximum & Solutrean/Gravettian Mammoth Steppe (-25,000 BP)", "BERINGIA_AMERICAS", 1.0, 500_000L,
             "Peak glacial climate regime with extensive ice sheets, exposed continental shelves, Solutrean pressure flaking, and Gravettian mammoth hunter encampments.",
-            "Régime glaciaire maximal avec calottes polaires étendues, plateaux continentaux émergés, retouche par pression solutréenne et campements gravettiens.",
+            "RÃ©gime glaciaire maximal avec calottes polaires Ã©tendues, plateaux continentaux Ã©mergÃ©s, retouche par pression solutrÃ©enne et campements gravettiens.",
             "Solutrean / Gravettian Pressure-Flaked Lithics, Tailored Fur Clothing & Portable Art", "Aggregation Band Networks & Seasonal Macro-Bands", 2500));
 
         _list.add(new EpochMeta(-20000L, "Last Glacial Maximum Peak & Beringian Standstill (-20,000 BP)", "BERINGIA_AMERICAS", 1.0, 600_000L,
             "Glacial maximum nadir with maritime standstill in Beringia, Epigravettian Mediterranean refugia, and Kebaran bladelet industries in the Levant.",
-            "Nadir du maximum glaciaire avec pause beringienne, refuges épigravettiens méditerranéens et industries kébariennes au Levant.",
+            "Nadir du maximum glaciaire avec pause beringienne, refuges Ã©pigravettiens mÃ©diterranÃ©ens et industries kÃ©bariennes au Levant.",
             "Epigravettian & Kebaran Microlithic Bladelets, Mammoth Bone Dwellings", "Territorial Foraging Bands & Base Camps", 2500));
 
         _list.add(new EpochMeta(-10900L, "Younger Dryas Abrupt Cooling & Proto-Natufian Foragers (-10,900 BP / 8900 BC)", "YOUNGER_DRYAS", 1.2, 2_000_000L,
             "Abrupt hemispheric cooling trigger during Younger Dryas; sedentary Natufian hunter-gatherers, wild cereal harvesting, and stone mortar storage.",
-            "Refroidissement abrupt du Dryas récent ; chasseurs-cueilleurs sédentaires natoufiens, récolte de céréales sauvages et mortiers en pierre.",
+            "Refroidissement abrupt du Dryas rÃ©cent ; chasseurs-cueilleurs sÃ©dentaires natoufiens, rÃ©colte de cÃ©rÃ©ales sauvages et mortiers en pierre.",
             "Natufian Microlithic Sickles, Stone Mortars & Semi-Subterranean Circular Huts", "Sedentary Hamlet Co-Residential Lineages", 2400));
 
         _list.add(new EpochMeta(-10000L, "Early Holocene & Fertile Crescent Pre-Pottery Neolithic (-10,000 BP / 8000 BC)", "NEOLITHIC", 1.5, 5_000_000L,
-            "Transition to agriculture and domestication of emmer, einkorn, barley, goats, and sheep in the Fertile Crescent (Göbekli Tepe, Jericho, Çayönü).",
-            "Transition vers l'agriculture et domestication des céréales et caprinés dans le Croissant fertile (Göbekli Tepe, Jéricho, Çayönü).",
+            "Transition to agriculture and domestication of emmer, einkorn, barley, goats, and sheep in the Fertile Crescent (GÃ¶bekli Tepe, Jericho, Ã‡ayÃ¶nÃ¼).",
+            "Transition vers l'agriculture et domestication des cÃ©rÃ©ales et caprinÃ©s dans le Croissant fertile (GÃ¶bekli Tepe, JÃ©richo, Ã‡ayÃ¶nÃ¼).",
             "Pre-Pottery Neolithic A/B (PPNA/PPNBP) Ground Stone Axes, Mudbrick Architecture & Cult Centers", "Patrilocal Extended Peasant Households & Shrine Sodalities", 2500));
 
         _list.add(new EpochMeta(-8000L, "Neolithic Agricultural Expansion & Green Sahara (-8,000 BP / 6000 BC)", "GREEN_SAHARA", 1.8, 10_000_000L,
             "Cardial and Linear Pottery (LBK) farming expansion across Europe, Yangshao millet farming in China, and pastoral lacustrine cultures across the Green Sahara.",
-            "Expansion agricole rubanée et cardiale en Europe, culture du millet Yangshao en Chine et pastoralisme lacustre au Sahara vert.",
+            "Expansion agricole rubanÃ©e et cardiale en Europe, culture du millet Yangshao en Chine et pastoralisme lacustre au Sahara vert.",
             "Cardial / LBK Pottery, Polished Stone Adzes, Pastoral Cattle Corrals & Longhouses", "Segmentary Peasant Lineages & Village Communes", 2550));
 
-        _list.add(new EpochMeta(-6000L, "Mid-Holocene Climatic Optimum & Vinča / Ubaid Proto-Urbanism (-6,000 BP / 4000 BC)", "EGYPT_NILE", 2.0, 20_000_000L,
-            "Proto-urban tell settlements in Mesopotamia (Ubaid period), Copper metallurgy in Balkans (Vinča, Varna gold), and Majiabang/Hemudu wet-rice farming in the Yangtze.",
-            "Proto-urbanisme mésopotamien (période d'Obeïd), métallurgie du cuivre dans les Balkans (Vinča, Varna) et riziculture de Majiabang/Hemudu.",
+        _list.add(new EpochMeta(-6000L, "Mid-Holocene Climatic Optimum & VinÄa / Ubaid Proto-Urbanism (-6,000 BP / 4000 BC)", "EGYPT_NILE", 2.0, 20_000_000L,
+            "Proto-urban tell settlements in Mesopotamia (Ubaid period), Copper metallurgy in Balkans (VinÄa, Varna gold), and Majiabang/Hemudu wet-rice farming in the Yangtze.",
+            "Proto-urbanisme mÃ©sopotamien (pÃ©riode d'ObeÃ¯d), mÃ©tallurgie du cuivre dans les Balkans (VinÄa, Varna) et riziculture de Majiabang/Hemudu.",
             "Copper Smelting, Wheel-Thrown Pottery, Mudbrick Temples & Irrigation Canals", "Corporate Lineage Estates & Temple Chiefdoms", 2600));
 
         _list.add(new EpochMeta(-3000L, "Early Bronze Age, Uruk Expansion & First Dynastic Egypt (-3000 BC)", "MESOPOTAMIA_ASSYRIA", 2.2, 45_000_000L,
             "Emergence of the state, archaic cuneiform writing, bronze metallurgy, monumental ziggurats and pyramids in Uruk Sumer, Early Dynastic Egypt, and Liangzhu China.",
-            "Émergence de l'État, écriture cunéiforme archaïque, métallurgie du bronze et architecture monumentale à Sumer, en Égypte et à Liangzhu.",
+            "Ã‰mergence de l'Ã‰tat, Ã©criture cunÃ©iforme archaÃ¯que, mÃ©tallurgie du bronze et architecture monumentale Ã  Sumer, en Ã‰gypte et Ã  Liangzhu.",
             "Alloyed Bronze Tools, Cuneiform/Hieroglyphic Administration, Ox-Drawn Plows & Monumental Masonry", "Patriarchal Temple-Palace Dynasties & Redistributive Estates", 2650));
 
         _list.add(new EpochMeta(-1900L, "Middle Bronze Age & Indus Valley Urban Peak / Harappan Epoch (-1900 BC)", "INDIA_MAURYA", 2.4, 70_000_000L,
             "Mature Harappan urbanism with standardized grid planning, hydraulic drainage, Minoan palaces in Crete, Middle Kingdom Egypt, and Xia/Erlitou China.",
-            "Urbanisme harappéen planifié avec drainage hydraulique, palais minoens en Crète, Moyen Empire égyptien et culture d'Erlitou.",
+            "Urbanisme harappÃ©en planifiÃ© avec drainage hydraulique, palais minoens en CrÃ¨te, Moyen Empire Ã©gyptien et culture d'Erlitou.",
             "Standardized Mudbrick Urban Architecture, Bronze Casting & Maritime Trade Docks", "Civic Guilds, Corporate Priesthoods & Extended Joint Families", 2650));
 
         _list.add(new EpochMeta(-1500L, "Late Bronze Age International System & Shang Dynasty (-1500 BC)", "SONG_DYNASTY", 2.5, 90_000_000L,
             "Amarna diplomacy era connecting New Kingdom Egypt, Hittites, Mittani, Mycenae, and Shang Dynasty bronze ritual state in China.",
-            "Système diplomatique international de l'âge du bronze reliant l'Égypte du Nouvel Empire, les Hittites, Mycènes et les Shang en Chine.",
-            "Chariot Warfare, Advanced Bronze Piece-Mold Casting, Oracle Bone Script & International Maritime Trade", "Agnatic Dynastic Lineages, Royal Palace Estates & Corvée Labor", 2700));
+            "SystÃ¨me diplomatique international de l'Ã¢ge du bronze reliant l'Ã‰gypte du Nouvel Empire, les Hittites, MycÃ¨nes et les Shang en Chine.",
+            "Chariot Warfare, Advanced Bronze Piece-Mold Casting, Oracle Bone Script & International Maritime Trade", "Agnatic Dynastic Lineages, Royal Palace Estates & CorvÃ©e Labor", 2700));
 
         _list.add(new EpochMeta(-1200L, "Late Bronze Age Collapse & Sea Peoples Horizon (-1200 BC)", "MESOPOTAMIA_ASSYRIA", 2.5, 80_000_000L,
             "Systemic Eastern Mediterranean collapse, destruction of Mycenaean and Hittite palaces, Sea Peoples incursions, and transition to Iron Age decentralization.",
-            "Effondrement systémique de l'âge du bronze en Méditerranée orientale, fin des palais mycéniens et hittites et transition vers le fer.",
+            "Effondrement systÃ©mique de l'Ã¢ge du bronze en MÃ©diterranÃ©e orientale, fin des palais mycÃ©niens et hittites et transition vers le fer.",
             "Early Wrought Iron Forging, Ashlar Fortifications & Dispersed Agrarian Homesteads", "Segmentary Warrior Kin-Groups & Decentralized Village Enclaves", 2600));
 
         _list.add(new EpochMeta(-1000L, "Early Iron Age & Neo-Assyrian / Zhou Dynasty Emergence (-1000 BC)", "MESOPOTAMIA_ASSYRIA", 2.6, 100_000_000L,
             "Widespread bloomery iron metallurgy, Neo-Assyrian military expansion, Western Zhou feudalism (Fengjian), and Phoenician alphabet diffusion.",
-            "Métallurgie du fer au bas-fourneau, expansion militaire néo-assyrienne, féodalité des Zhou occidentaux et diffusion de l'alphabet phénicien.",
-            "Iron Weapons, Ashlar Fortifications, Phénician Maritime Galleys & Alphabetic Writing", "Patriarchal Aristocratic Lineages & Feudal Estates", 2700));
+            "MÃ©tallurgie du fer au bas-fourneau, expansion militaire nÃ©o-assyrienne, fÃ©odalitÃ© des Zhou occidentaux et diffusion de l'alphabet phÃ©nicien.",
+            "Iron Weapons, Ashlar Fortifications, PhÃ©nician Maritime Galleys & Alphabetic Writing", "Patriarchal Aristocratic Lineages & Feudal Estates", 2700));
 
         _list.add(new EpochMeta(-334L, "Classical Antiquity & Alexander's Hellenistic Expansion (-334 BC)", "ROMAN_EMPIRE", 3.0, 150_000_000L,
             "Alexander the Great's conquest of the Achaemenid Persian Empire, synthesis of Greek and Near Eastern civilizations, and Warring States China.",
-            "Conquête de l'Empire perse par Alexandre le Grand, synthèse hellénistique et période des Royaumes combattants en Chine.",
+            "ConquÃªte de l'Empire perse par Alexandre le Grand, synthÃ¨se hellÃ©nistique et pÃ©riode des Royaumes combattants en Chine.",
             "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage", "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy", 2750));
 
         _list.add(new EpochMeta(-300L, "Hellenistic Kingdoms, Maurya Empire & Warring States (-300 BC)", "INDIA_MAURYA", 3.0, 160_000_000L,
             "Ptolemaic and Seleucid kingdoms, Ashoka's Maurya Empire in India, and late Warring States consolidation under Qin.",
-            "Royaumes ptolémaïque et séleucide, empire Maurya d'Ashoka en Inde et fin des Royaumes combattants en Chine.",
+            "Royaumes ptolÃ©maÃ¯que et sÃ©leucide, empire Maurya d'Ashoka en Inde et fin des Royaumes combattants en Chine.",
             "Iron Agricultural Implements, Hydraulic Canals, Ashokan Edicts & Monometallic Silver Standards", "Joint Family Households, Caste Guilds (Jati) & Imperial Bureaucracy", 2750));
 
         _list.add(new EpochMeta(0L, "Pax Romana, Han Empire & Classical Axial Age (1 AD)", "ROMAN_EMPIRE", 3.2, 250_000_000L,
             "High Classical antiquity: Roman Empire across the Mediterranean basin, Western Han Dynasty in China, Kushan Empire, and Parthia.",
-            "Haute Antiquité classique : Empire romain en Méditerranée, dynastie des Han occidentaux en Chine, Empire kouchan et Parthie.",
+            "Haute AntiquitÃ© classique : Empire romain en MÃ©diterranÃ©e, dynastie des Han occidentaux en Chine, Empire kouchan et Parthie.",
             "Roman Concrete (Opus Caementicium), Aqueducts, Silk Road Caravans, Han Blast Furnaces & Watermills", "Paterfamilias Roman Household & Confucian Patrilineal Clan", 2800));
 
         _list.add(new EpochMeta(536L, "Extreme Climate Event of 536 AD & Late Antique Little Ice Age (536 AD)", "ROMAN_EMPIRE", 3.1, 230_000_000L,
             "Volcanic dust veil event of 536 AD, Justinianic Plague pandemic, Sasanian-Byzantine wars, and Southern/Northern Dynasties China.",
-            "Voile de poussière volcanique de 536, peste de Justinien, guerres perso-byzantines et dynasties du Nord et du Sud en Chine.",
+            "Voile de poussiÃ¨re volcanique de 536, peste de Justinien, guerres perso-byzantines et dynasties du Nord et du Sud en Chine.",
             "Heavy Moldboard Plows, Fortified Castra, Blast-Furnace Cast Iron & Monastic Scriptoria", "Feudal Agrarian Colonate & Patrilineal Aristocratic Clans", 2700));
 
         _list.add(new EpochMeta(632L, "Early Islamic Expansion & Tang Dynasty Consolidation (632 AD)", "FERTILE_CRESCENT", 3.3, 240_000_000L,
             "Founding of the Rashidun Caliphate, rapid Middle Eastern expansion, Tang Dynasty reunification of China, and emergence of Srivijaya.",
-            "Fondation du Califat des Rachidoune, expansion islamique au Moyen-Orient, réunification Tang de la Chine et émergence de Srivijaya.",
+            "Fondation du Califat des Rachidoune, expansion islamique au Moyen-Orient, rÃ©unification Tang de la Chine et Ã©mergence de Srivijaya.",
             "Qanat Irrigation Engineering, Arabian Camel Caravans, Tang Woodblock Printing & Damascene Steel", "Segmentary Arab Patrilineages & Confucian Imperial Meritocracy", 2800));
 
         _list.add(new EpochMeta(1000L, "Medieval Climate Optimum, Song Dynasty & Norse Expansion (1000 AD)", "SONG_DYNASTY", 3.5, 300_000_000L,
             "Medieval Warm Period: Song Dynasty commercial revolution, Fatimid Cairo, Holy Roman Empire, Chola naval supremacy, and Norse Atlantic voyages.",
-            "Optimum climatique médiéval : révolution commerciale Song, Le Caire fatimide, Saint-Empire, suprématie navale Chola et voyages vikings.",
+            "Optimum climatique mÃ©diÃ©val : rÃ©volution commerciale Song, Le Caire fatimide, Saint-Empire, suprÃ©matie navale Chola et voyages vikings.",
             "Movable Type Printing, Magnetic Compass, Gunpowder Formulas, Double-Cropping Champa Rice & Windmills", "Manorial Feudal Serfdom, Stem Households & Lineage Halls", 2850));
 
         _list.add(new EpochMeta(1206L, "Mongol World Empire Formation & High Medieval Crusades (1206 AD)", "SONG_DYNASTY", 3.6, 360_000_000L,
             "Coronation of Genghis Khan, unification of Steppe tribes, Pax Mongolica trans-Eurasian trade routes, and High Medieval cathedrals.",
-            "Couronnement de Gengis Khan, unification des tribus de la steppe, Pax Mongolica et grandes cathédrales médiévales.",
+            "Couronnement de Gengis Khan, unification des tribus de la steppe, Pax Mongolica et grandes cathÃ©drales mÃ©diÃ©vales.",
             "Composite Reflex Bows, Trebuchet Siegecraft, Yam Postal Relay Stations & Paper Money (Jiaochao)", "Nomadic Steppe Clan Federations (Otog) & Feudal Estates", 2850));
 
         _list.add(new EpochMeta(1324L, "Mansa Musa's Pilgrimage & High Middle Ages (1324 AD)", "WEST_AFRICA_MALI", 3.7, 420_000_000L,
             "Height of the Mali Empire, trans-Saharan gold-salt trade, Yuan Dynasty in China, Delhi Sultanate in India, and Italian Renaissance city-states.",
-            "Apogée de l'Empire du Mali, commerce transsaharien de l'or, dynastie Yuan en Chine, sultanat de Delhi et cités-États italiennes.",
+            "ApogÃ©e de l'Empire du Mali, commerce transsaharien de l'or, dynastie Yuan en Chine, sultanat de Delhi et citÃ©s-Ã‰tats italiennes.",
             "Gothic Stone Vaulting, Astrolabes, Blast Furnaces, Trans-Saharan Caravans & Portolan Charts", "Guild Merchant Families, African Segmentary Lineages & Feudal Manors", 2900));
 
         _list.add(new EpochMeta(1347L, "Black Death Pandemic & Fourteenth-Century Crisis (1347 AD)", "SONG_DYNASTY", 3.6, 370_000_000L,
             "Arrival of Yersinia pestis in Mediterranean ports, massive demographic contraction across Eurasia, and subsequent wage labor restructuring.",
-            "Arrivée de la peste noire en Méditerranée, effondrement démographique en Eurasie et restructuration du salariat agricole.",
+            "ArrivÃ©e de la peste noire en MÃ©diterranÃ©e, effondrement dÃ©mographique en Eurasie et restructuration du salariat agricole.",
             "Full-Rigged Carracks, Mechanical Clock Towers, Heavy Trebuchets & Early Cannons", "Agrarian Peasant Households & Wage Labor Restructuring", 2800));
 
         _list.add(new EpochMeta(1491L, "Pre-Columbian Americas & Eurasian Renaissance Eve (1491 AD)", "AMERICAS_1491", 3.8, 500_000_000L,
             "Complex indigenous states in the Americas (Triple Alliance Aztec Empire, Inca Tawantinsuyu, Mississippian centers) on the eve of European contact.",
-            "États indigènes complexes dans les Amériques (Empire aztèque, Tawantinsuyu inca, cités mississippiennes) à la veille du contact européen.",
+            "Ã‰tats indigÃ¨nes complexes dans les AmÃ©riques (Empire aztÃ¨que, Tawantinsuyu inca, citÃ©s mississippiennes) Ã  la veille du contact europÃ©en.",
             "Chinampa Intensive Wetland Farming, Incan Quipu & Road Network, Bronze/Arquebus Arms in Eurasia", "Ayllu Dual Reciprocity, Calpulli Wards & European Manorial Households", 2850));
 
         _list.add(new EpochMeta(1492L, "Columbian Exchange & Age of Discovery (1492 AD)", "EPIDEMIC_CONTACT", 3.8, 500_000_000L,
             "Columbus transatlantic landfall, inception of the global Columbian Exchange of crops, animals, and pathogens, and Ming Dynasty maritime trade.",
-            "Arrivée transatlantique de Colomb, début de l'échange colombien (plantes, animaux, pathogènes) et commerce maritime Ming.",
-            "Oceanic Caravels & Carracks, Navigational Astronomy, Early Cast Iron Artillery & Gutenberg Movable Print", "Iberian Hidalguía, Joint-Stock Proto-Enterprises & Indigenous Moieties", 2850));
+            "ArrivÃ©e transatlantique de Colomb, dÃ©but de l'Ã©change colombien (plantes, animaux, pathogÃ¨nes) et commerce maritime Ming.",
+            "Oceanic Caravels & Carracks, Navigational Astronomy, Early Cast Iron Artillery & Gutenberg Movable Print", "Iberian HidalguÃ­a, Joint-Stock Proto-Enterprises & Indigenous Moieties", 2850));
 
         _list.add(new EpochMeta(1639L, "Sakoku Japan, Thirty Years' War & Ming-Qing Transition (1639 AD)", "SAKOKU_JAPAN", 4.2, 580_000_000L,
             "Tokugawa Shogunate Sakoku edicts, Thirty Years' War in Europe, Ming-Qing transition in China, and Mughal architectural golden age.",
-            "Édits de fermeture Sakoku des Tokugawa, guerre de Trente Ans en Europe, transition Ming-Qing et âge d'or moghol.",
+            "Ã‰dits de fermeture Sakoku des Tokugawa, guerre de Trente Ans en Europe, transition Ming-Qing et Ã¢ge d'or moghol.",
             "Flintlock Muskets, Galleons & Fluyts, Scientific Revolution Telescopes & Early Joint-Stock Companies", "Ie Stem Family System, Western European Nuclear Households & Agnatic Lineages", 2900));
 
         _list.add(new EpochMeta(1800L, "First Industrial Revolution & Global Napoleonic / Imperial Era (1800 AD)", "INDUSTRIAL", 5.0, 1_000_000_000L,
             "Steam engine industrialization, mechanical textile mills, Napoleonic administrative codification, Qing demographic apex, and Atlantic Revolutions.",
-            "Industrialisation à la vapeur, filatures mécaniques, codification napoléonienne, apogée démographique Qing et révolutions atlantiques.",
+            "Industrialisation Ã  la vapeur, filatures mÃ©caniques, codification napolÃ©onienne, apogÃ©e dÃ©mographique Qing et rÃ©volutions atlantiques.",
             "Watt Steam Engines, Puddling Iron Metallurgy, Power Looms, Canals & Semaphoric Telegraphs", "Industrial Wage-Labor Proletariat, Egalitarian Nuclear & Stem Families", 3100));
 
-        _list.add(new EpochMeta(1900L, "Second Industrial Revolution & Belle Époque Imperial System (1900 AD)", "URBAN_CLUSTERS", 6.0, 1_650_000_000L,
+        _list.add(new EpochMeta(1900L, "Second Industrial Revolution & Belle Ã‰poque Imperial System (1900 AD)", "URBAN_CLUSTERS", 6.0, 1_650_000_000L,
             "Electrification, internal combustion engines, Bessemer steel, transcontinental railways, global telegraph cables, and High Imperialism.",
-            "Électrification, moteurs à combustion interne, acier Bessemer, chemins de fer transcontinentaux, câbles télégraphiques et haut impérialisme.",
+            "Ã‰lectrification, moteurs Ã  combustion interne, acier Bessemer, chemins de fer transcontinentaux, cÃ¢bles tÃ©lÃ©graphiques et haut impÃ©rialisme.",
             "Electric Dynamos, Bessemer Steel, Internal Combustion Engines, Submarine Cables & Chemical Synthesis", "Urban Industrial Proletariat & Bourgeois Nuclear Households", 3200));
 
         _list.add(new EpochMeta(1914L, "Outbreak of World War I & End of Nineteenth-Century Order (1914 AD)", "URBAN_CLUSTERS", 6.2, 1_800_000_000L,
             "Total industrial warfare, global alliance systems, dreadnought battleships, Haber-Bosch nitrogen fixation, and breakdown of the Concert of Europe.",
-            "Guerre industrielle totale, systèmes d'alliances mondiaux, cuirassés dreadnought, procédé Haber-Bosch et fin du concert européen.",
+            "Guerre industrielle totale, systÃ¨mes d'alliances mondiaux, cuirassÃ©s dreadnought, procÃ©dÃ© Haber-Bosch et fin du concert europÃ©en.",
             "Haber-Bosch Nitrogen Fixation, Mass Machine Guns, Dreadnoughts, Aircraft & Radio Telephony", "Total Mobilization Nation-States & Industrial Urban Families", 3200));
 
         _list.add(new EpochMeta(1950L, "Post-WWII Global Reconstruction & Great Acceleration (1950 AD)", "URBAN_CLUSTERS", 7.0, 2_500_000_000L,
             "Post-war Bretton Woods economic order, atomic energy, Green Revolution agrochemicals, mass antibiotics, and the start of the Great Acceleration.",
-            "Ordre de Bretton Woods, énergie atomique, révolution verte agrochimique, antibiotiques de masse et début de la Grande Accélération.",
+            "Ordre de Bretton Woods, Ã©nergie atomique, rÃ©volution verte agrochimique, antibiotiques de masse et dÃ©but de la Grande AccÃ©lÃ©ration.",
             "Fission Reactors, Jet Aviation, Transistors, Synthetic Polymers & Industrial Petrochemistry", "Suburban Consumer Nuclear Families & Welfare State Institutions", 3300));
 
         _list.add(new EpochMeta(2000L, "Turn of the Millennium & Digital Information Age (2000 AD)", "URBAN_CLUSTERS", 8.0, 6_100_000_000L,
             "Global internet expansion, microprocessors, fiber optic telecoms, containerized supply chains, and post-Cold War globalization.",
-            "Expansion mondiale d'Internet, microprocesseurs, télécoms à fibre optique, chaînes logistiques conteneurisées et mondialisation.",
+            "Expansion mondiale d'Internet, microprocesseurs, tÃ©lÃ©coms Ã  fibre optique, chaÃ®nes logistiques conteneurisÃ©es et mondialisation.",
             "VLSI Microprocessors, Global Fiber Optics, GPS Constellations, Containerized Intermodal Logistics", "Post-Industrial Nuclear & Single-Person Households", 3350));
 
         _list.add(new EpochMeta(2026L, "Anthropocene Present Day & Global Energy Transition (2026 AD)", "URBAN_CLUSTERS", 8.5, 8_150_000_000L,
             "Planetary computing, deep neural networks, renewable energy grids, geopolitical multipolarity, and active climate transition.",
-            "Informatique planétaire, réseaux de neurones profonds, réseaux d'énergies renouvelables, multipolarité et transition climatique.",
+            "Informatique planÃ©taire, rÃ©seaux de neurones profonds, rÃ©seaux d'Ã©nergies renouvelables, multipolaritÃ© et transition climatique.",
             "GPU Compute Clusters, Advanced Photovoltaics, High-Capacity Lithium-Ion Storage & Satellite Megaconstellations", "Diverse Globalized Urban Households & Digital Network Affiliations", 3400));
 
         _list.add(new EpochMeta(2035L, "Near-Future Demographic Transition & Clean Energy Scaling (2035 AD)", "URBAN_CLUSTERS", 9.0, 8_800_000_000L,
             "Large-scale grid electrification, solid-state batteries, autonomous transport networks, precision fermentation, and demographic stabilization.",
-            "Électrification massive des réseaux, batteries solides, transports autonomes, fermentation de précision et stabilisation démographique.",
+            "Ã‰lectrification massive des rÃ©seaux, batteries solides, transports autonomes, fermentation de prÃ©cision et stabilisation dÃ©mographique.",
             "Solid-State Storage, Fusion Pilot Plants, Autonomous Robotic Freight & Synthetic Biology Bioreactors", "Flexible Urban Eco-Communities & Automated Labor Households", 3400));
 
         _list.add(new EpochMeta(2045L, "Mid-Century Climate Adaptation & Automated Labor Transition (2045 AD)", "URBAN_CLUSTERS", 9.3, 9_300_000_000L,
             "Industrial direct air carbon capture, global desalination pipelines, automated agriculture, and space launch reusability.",
-            "Capture directe du carbone dans l'air, réseaux de dessalement mondiaux, agriculture automatisée et réutilisabilité spatiale.",
+            "Capture directe du carbone dans l'air, rÃ©seaux de dessalement mondiaux, agriculture automatisÃ©e et rÃ©utilisabilitÃ© spatiale.",
             "Gigawatt Direct Air Capture, Commercial Magnetic Fusion, Orbital Space Infrastructure & Closed-Loop Circular Metallurgy", "Universal Basic Infrastructure Communities & Post-Scarcity Nodes", 3450));
 
         _list.add(new EpochMeta(2050L, "Post-Fossil Equilibrium & Global Demographic Peak (2050 AD)", "URBAN_CLUSTERS", 9.5, 9_700_000_000L,
             "Global demographic inflection point, 100% clean primary energy matrix, planetary geoengineering monitoring, and ecological restoration.",
-            "Point d'inflexion démographique mondial, matrice énergétique 100% décarbonée, géo-ingénierie surveillée et restauration écologique.",
+            "Point d'inflexion dÃ©mographique mondial, matrice Ã©nergÃ©tique 100% dÃ©carbonÃ©e, gÃ©o-ingÃ©nierie surveillÃ©e et restauration Ã©cologique.",
             "Planetary Energy Mesh, Deep Geothermal Supercritical Wells, Asteroid Resource Prospecting & Ecosystem Digital Twins", "Regenerative Bioregional Cooperatives & Automated Civil Polities", 3500));
 
         _list.add(new EpochMeta(2060L, "Planetary Ecological Restoration & Space Industrialization Horizon (2060 AD)", "URBAN_CLUSTERS", 9.8, 9_800_000_000L,
             "Large-scale rewilding, lunar industrial infrastructure, closed-cycle industrial ecosystems, and stable planetary boundary stewardship.",
-            "Réensauvagement planétaire, infrastructure industrielle lunaire, cycles industriels fermés et gestion stable des limites planétaires.",
+            "RÃ©ensauvagement planÃ©taire, infrastructure industrielle lunaire, cycles industriels fermÃ©s et gestion stable des limites planÃ©taires.",
             "Lunar Mass Drivers, Orbital Solar Power Refinement, Global Ecological Restoration Systems & Quantum Materials", "Planetary Federation Stewardship Councils & Trans-Bioregional Networks", 3500));
 
         _list.sort(Comparator.comparingLong(EpochMeta::year));
@@ -639,7 +642,7 @@ public class GenerateEpochMapsTest {
 
         double tobaTempDelta = WorldClimEmpiricalRasterLoader.computePaleoTemperatureDelta(indiaLat, indiaLon, 200.0, -74000L);
         double eemianTempDelta = WorldClimEmpiricalRasterLoader.computePaleoTemperatureDelta(indiaLat, indiaLon, 200.0, -100000L);
-        org.junit.jupiter.api.Assertions.assertTrue(tobaTempDelta < -4.0, "Toba volcanic winter must have <= -4.0°C cooling anomaly in South Asia");
+        org.junit.jupiter.api.Assertions.assertTrue(tobaTempDelta < -4.0, "Toba volcanic winter must have <= -4.0Â°C cooling anomaly in South Asia");
         org.junit.jupiter.api.Assertions.assertTrue(eemianTempDelta > 0.5, "Eemian must have positive warming anomaly");
 
         // 3. Validate Dynamic Groundwater Aquifer Recharge
@@ -893,8 +896,8 @@ public class GenerateEpochMapsTest {
                     \"en\": \"East Asian Core (%s)\",
                     \"fr\": \"Foyer Est-Asiatique (%s)\",
                     \"de\": \"Ostasietischer Zivilisationsraum (%s)\",
-                    \"es\": \"Núcleo de Asia Oriental (%s)\",
-                    \"zh\": \"东亚核心区（%s）\"
+                    \"es\": \"NÃºcleo de Asia Oriental (%s)\",
+                    \"zh\": \"ä¸œäºšæ ¸å¿ƒåŒºï¼ˆ%sï¼‰\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -909,8 +912,8 @@ public class GenerateEpochMapsTest {
                     \"en\": \"Western Eurasian Core (%s)\",
                     \"fr\": \"Foyer Ouest-Eurasien (%s)\",
                     \"de\": \"Westeurasischer Zivilisationsraum (%s)\",
-                    \"es\": \"Núcleo Euroasiático Occidental (%s)\",
-                    \"zh\": \"西欧亚核心区（%s）\"
+                    \"es\": \"NÃºcleo EuroasiÃ¡tico Occidental (%s)\",
+                    \"zh\": \"è¥¿æ¬§äºšæ ¸å¿ƒåŒºï¼ˆ%sï¼‰\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -924,9 +927,9 @@ public class GenerateEpochMapsTest {
                   \"name\": {
                     \"en\": \"South Asian Core (%s)\",
                     \"fr\": \"Foyer Sud-Asiatique (%s)\",
-                    \"de\": \"Südasiatischer Zivilisationsraum (%s)\",
-                    \"es\": \"Núcleo de Asia del Sur (%s)\",
-                    \"zh\": \"南亚核心区（%s）\"
+                    \"de\": \"SÃ¼dasiatischer Zivilisationsraum (%s)\",
+                    \"es\": \"NÃºcleo de Asia del Sur (%s)\",
+                    \"zh\": \"å—äºšæ ¸å¿ƒåŒºï¼ˆ%sï¼‰\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -939,10 +942,10 @@ public class GenerateEpochMapsTest {
                   \"traits\": [0.55, 0.75, 0.82, 0.88],
                   \"name\": {
                     \"en\": \"Americas Core (%s)\",
-                    \"fr\": \"Foyer des Amériques (%s)\",
+                    \"fr\": \"Foyer des AmÃ©riques (%s)\",
                     \"de\": \"Amerikanischer Zivilisationsraum (%s)\",
-                    \"es\": \"Núcleo de las Américas (%s)\",
-                    \"zh\": \"美洲核心区（%s）\"
+                    \"es\": \"NÃºcleo de las AmÃ©ricas (%s)\",
+                    \"zh\": \"ç¾Žæ´²æ ¸å¿ƒåŒºï¼ˆ%sï¼‰\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -957,8 +960,8 @@ public class GenerateEpochMapsTest {
                     \"en\": \"African Core (%s)\",
                     \"fr\": \"Foyer Africain (%s)\",
                     \"de\": \"Afrikanischer Zivilisationsraum (%s)\",
-                    \"es\": \"Núcleo Africano (%s)\",
-                    \"zh\": \"非洲核心区（%s）\"
+                    \"es\": \"NÃºcleo Africano (%s)\",
+                    \"zh\": \"éžæ´²æ ¸å¿ƒåŒºï¼ˆ%sï¼‰\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -987,7 +990,7 @@ public class GenerateEpochMapsTest {
           "era": "%s",
           "planet": "earth",
           "resolution": "2048x1024",
-          "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+          "projection": "Equirectangular (Plate CarrÃ©e, EPSG:4326)",
           "overview": {
             "summary_en": "%s",
             "summary_fr": "%s"
@@ -1111,10 +1114,10 @@ public class GenerateEpochMapsTest {
         String md = """
         # Earth Epoch %d: %s
 
-        ## 🌍 Overview
+        ## ðŸŒ Overview
         This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **%d** (%s).
 
-        All raster layers are generated in equirectangular projection (Plate Carrée, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
+        All raster layers are generated in equirectangular projection (Plate CarrÃ©e, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
 
         ### Context & Archaeological/Historical Horizon
         * **Era**: %s
@@ -1122,14 +1125,14 @@ public class GenerateEpochMapsTest {
         * **Social / Family Horizon**: %s
         * **Estimated Caloric Baseline**: %d kcal/capita/day
 
-        ## 🗺️ Standard Cartographic Layers (25 PNG Rasters)
+        ## ðŸ—ºï¸ Standard Cartographic Layers (25 PNG Rasters)
 
         ### Physical & Climate Layers
         * `earth_%d_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry calibrated to epoch sea level.
         * `earth_%d_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Ecology.
-        * `earth_%d_temperature.png`: WorldClim v2.1 Annual Mean Temperature (°C) modulated by epoch paleoclimate anomalies.
+        * `earth_%d_temperature.png`: WorldClim v2.1 Annual Mean Temperature (Â°C) modulated by epoch paleoclimate anomalies.
         * `earth_%d_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year) with ITCZ/monsoonal shifts.
-        * `earth_%d_seasonality.png`: Temperature Seasonality Amplitude (°C range) driven by Milankovitch orbital solutions.
+        * `earth_%d_seasonality.png`: Temperature Seasonality Amplitude (Â°C range) driven by Milankovitch orbital solutions.
 
         ### Cliodynamic & Cultural Tensors
         * `earth_%d_density.png`: HYDE 3.4 / Seshat Human Demographic Density field.
@@ -1155,12 +1158,12 @@ public class GenerateEpochMapsTest {
         * `earth_%d_geothermal.png`: Terrestrial Heat Flow & Geothermal Gradients (IHFC).
         * `earth_%d_aquifers.png`: Deep Regional Groundwater Aquifers (UNESCO WHYMAP).
 
-        ## 🔬 Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
+        ## ðŸ”¬ Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
         In strict accordance with `AGENTS.md` Directives:
         1. **Initial Conditions ($t = t_0$)**: The 25 raster layers define the empirically calibrated spatial state at initialization.
         2. **Dynamical Simulation Engine ($t > t_0$)**: Once launched, the physical engines (Energy Balance Climate Models, Darcy groundwater flow, Lotka metabolic energetics, and Turchin cliodynamics) dynamically evolve population, technology, culture, and sovereign borders without synthetic lock-in.
 
-        ## 📄 Associated Metadata Files
+        ## ðŸ“„ Associated Metadata Files
         * `cultural_registry.json`: Multilingual entity registry (EN, FR, DE, ES, ZH) with trait vectors and kinship metadata.
         * `provenance_and_sources.json`: Exhaustive academic citations, datasets, and physical calibration rationale.
         """.formatted(
@@ -1212,3 +1215,4 @@ public class GenerateEpochMapsTest {
                 .replace("\t", "\\t");
     }
 }
+

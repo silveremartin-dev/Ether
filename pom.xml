@@ -69,6 +69,16 @@
         <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
@@ -259,6 +269,7 @@
                     <forkCount>1</forkCount>
                     <reuseForks>true</reuseForks>
                     <argLine>@{argLine} -Xmx6g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
+                    <excludedGroups>manual</excludedGroups>
                 </configuration>
             </plugin>
 
@@ -271,6 +282,7 @@
                     <mainClass>${mainClass}</mainClass>
                     <options>
                         <option>-Xmx4g</option>
+                        <option>-Dfile.encoding=UTF-8</option>
                         <option>--add-modules</option>
                         <option>jdk.incubator.vector</option>
                         <option>--enable-native-access=ALL-UNNAMED</option>

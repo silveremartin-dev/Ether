@@ -28,43 +28,64 @@ public class MetallurgyEnthalpyEngine {
     public static final double IRON_SMELTING_ENTHALPY_MJ_PER_KG = 24.7;
 
     /*
-     * Executes one chemical ore smelting tick across cells.
+     * Executes one chemical ore smelting tick across cells using default monthly step.
      */
     public static void processOreSmelting(List<H3Cell> cells) {
+        processOreSmelting(cells, 1.0 / 12.0);
+    }
+
+    /*
+     * Executes chemical ore smelting constrained by labor throughput, fuel kinetics, and dtYears.
+     */
+    public static void processOreSmelting(List<H3Cell> cells, double dtYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
+        double dtSafe = Math.max(0.0001, dtYears);
 
         int smeltingHubs = 0;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (pop <= 0) continue;
+
             double rawMetalOre = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
             double woodBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
 
             // Smelting requires raw metal ore and wood/charcoal fuel (Tech >= 2.5)
-            if (tech >= 2.5 && rawMetalOre > 10.0 && woodBiomass > 50.0) {
+            if (tech >= 2.5 && rawMetalOre > 1.0 && woodBiomass > 20.0) {
+                // 1. Labor constraint: fraction of population dedicated to mining & metallurgy
+                double metallurgists = pop * Math.clamp(0.005 * tech, 0.005, 0.05);
+                double annualThroughputKgPerWorker = 100.0 * Math.clamp(Math.pow(tech / 2.5, 2.0), 1.0, 50.0);
+                double maxLaborRefinedKg = metallurgists * annualThroughputKgPerWorker * dtSafe;
+
+                // 2. Fuel harvesting constraint: sustainable logging rate per tick
+                double maxFuelHarvestKg = Math.min(woodBiomass * 0.10 * (dtSafe * 12.0), woodBiomass * 0.40);
+                double availableSmeltingEnergyMJ = maxFuelHarvestKg * 18.5 * 0.15; // 18.5 MJ/kg wood, 15% bloomery furnace efficiency
+                double maxFuelRefinedKg = availableSmeltingEnergyMJ / IRON_SMELTING_ENTHALPY_MJ_PER_KG;
+
+                // 3. Thermodynamic reduction bounded by ore, labor, and fuel
+                double actualRefinedMetal = Math.min(rawMetalOre, Math.min(maxLaborRefinedKg, maxFuelRefinedKg));
+                if (actualRefinedMetal < 0.001) continue;
+
                 smeltingHubs++;
 
-                // Smelting energy capacity (MJ)
-                double availableSmeltingEnergyMJ = woodBiomass * 18.5 * 0.15; // 18.5 MJ/kg wood energy density, 15% furnace efficiency
-                double maxRefinedMetalKg = availableSmeltingEnergyMJ / IRON_SMELTING_ENTHALPY_MJ_PER_KG;
+                // 4. Exact stoichiometric mass conservation
+                double woodConsumedKg = (actualRefinedMetal * IRON_SMELTING_ENTHALPY_MJ_PER_KG) / (18.5 * 0.15);
+                cell.setResourceMetal(Math.max(0.0, rawMetalOre - actualRefinedMetal));
+                cell.setBiomassNatural(Math.max(0.0, woodBiomass - woodConsumedKg));
 
-                double actualRefinedMetal = Math.min(rawMetalOre, maxRefinedMetalKg);
-
-                // Consume raw ore and fuel
-                cell.setResourceMetal(rawMetalOre - actualRefinedMetal);
-                cell.setBiomassNatural(Math.max(0.0, woodBiomass - (actualRefinedMetal * 2.0)));
-
-                // Add refined structural capital
-                cell.setResourceCapital(cell.getResourceCapital() + actualRefinedMetal * 10.0);
+                // 5. Expand cell physical capital (tools, weapons, plows)
+                double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                cell.setResourceCapital(curCap + (actualRefinedMetal * 0.5));
             }
         }
 
         if (smeltingHubs > 0) {
-            logger.info("Metallurgy Engine: Chemical ore smelting active across {} furnace cells.", smeltingHubs);
+            logger.debug("Metallurgy Engine: Chemical ore smelting active across {} furnace cells.", smeltingHubs);
         }
     }
 }

@@ -286,6 +286,24 @@ Ether decouples numerical integration across three discrete physical time scales
   $$R_{\text{response}} = h^2 \cdot S_{\text{selection}}, \quad Y_{\text{crop}}(t+\Delta t) = Y_{\text{crop}}(t) \cdot (1 + R_{\text{response}})$$
 - **Complexity**: $O(1)$ per cell.
 
+#### 31.1 Multi-Trophic Biomass Dynamics & Ecological Degradation (`EcologicalDegradationEngine`)
+- **Governing Equations**:
+  1. **Marine Fishery Biomass Dynamics (Schaefer Logistic & Pelagic Seed Influx)**:
+     $$\frac{d F_{\text{marine}}}{dt} = r_{\text{marine}} \cdot F_{\text{marine}} \cdot \left(1 - \frac{F_{\text{marine}}}{K_{\text{marine}}}\right) - H_{\text{marine}} + S_{\text{pelagic}}$$
+     where $r_{\text{marine}} \approx 0.35/\text{year}$, carrying capacity $K_{\text{marine}} = 1500.0 \cdot \text{areaScale}$, pelagic seed influx $S_{\text{pelagic}} = 5.0 \cdot \text{areaScale} \cdot \Delta t_{\text{years}}$, and Gordon-Schaefer harvest:
+     $$H_{\text{marine}} = \min\left(F_{\text{marine}} \cdot 0.85, \; N_{\text{pop}} \cdot 0.30 \cdot (1.0 + \tanh(T_{\text{level}} - 1.0)) \cdot \Delta t_{\text{years}}\right)$$
+  2. **Terrestrial Game & Wild Forage Biomass (Decoupled Hunting Extraction)**:
+     $$\frac{d B_{\text{nat}}}{dt} = r_{\text{nat}} \cdot B_{\text{nat}} \cdot \left(1 - \frac{B_{\text{nat}}}{K_{\text{nat}}}\right) - H_{\text{game}}$$
+     where $r_{\text{nat}} \approx 0.30/\text{year}$, $K_{\text{nat}} = 3000.0 \cdot \text{areaScale}$, and extraction depends on societal technological mode (foragers rely on wild game, agrarians rely on crops):
+     $$H_{\text{game}} = \min\left(B_{\text{nat}} \cdot 0.60, \; N_{\text{pop}} \cdot 0.45 \cdot \exp(-0.4 \cdot T_{\text{level}}) \cdot \Delta t_{\text{years}}\right)$$
+  3. **Silviculture & Standing Timber (Verhulst Logistic & Perimeter Scaling)**:
+     $$\frac{dW}{dt} = r_{\text{forest}} \cdot W \cdot \left(1 - \frac{W}{K_{\max}}\right) - C_{\text{anthro}}$$
+     where $r_{\text{forest}} \approx 0.08/\text{year}$, foraging perimeter accessibility $\alpha_{\text{access}} = \min\left(1.0, 0.15 + 0.85 \cdot \tanh\left(\frac{N_{\text{pop}}}{1500}\right)\right)$, and timber consumption:
+     $$C_{\text{anthro}} = N_{\text{pop}} \cdot c_{\text{wood}} \cdot \alpha_{\text{access}} \cdot \Delta t_{\text{years}}$$
+  4. **Agricultural Caloric Involution & Biome Photosynthetic Cap**:
+     $$Y_{\text{agri}} = Y_{\max}(\text{biome}) \cdot \frac{N_{\text{pop}} \cdot 4.6}{Y_{\max}(\text{biome}) + N_{\text{pop}} \cdot 4.6} \cdot \eta_{\text{agro-climatic}} \cdot \Delta t_{\text{years}}$$
+- **Complexity**: $O(1)$ per cell.
+
 ---
 
 ### Section E: Energetics, Thermodynamics & Material Infrastructure
@@ -543,9 +561,11 @@ Ether decouples numerical integration across three discrete physical time scales
 
 #### 78. Tasmanian Cultural & Technological Regression (`TasmanianCulturalRegressionEngine`)
 - **Governing Equations**:
-  $$\frac{d T_{\text{complexity}}}{dt} = \alpha N_{\text{isolated}} - \beta T_{\text{complexity}}$$
-  When $N_{\text{isolated}} < N_{\text{crit}}$, complex skills (bone tools, ocean fishing) are lost through stochastic transmission failure.
-- **Complexity**: $O(1)$ per isolated population.
+  Joseph Henrich (2004) cumulative cultural transmission loss on demographically isolated habitats:
+  $$N_{\text{island}} = \sum_{i \in \text{island}} N_i$$
+  $$\frac{d T}{dt} = \begin{cases} -0.04 \cdot \left(1 - \frac{N_{\text{island}}}{N_c}\right) \cdot \Delta t_{\text{years}} & \text{if } N_{\text{island}} < N_c \text{ and } T > T_{\text{floor}} \\ + \mu_{\text{innov}} \cdot \sqrt{\frac{N_{\text{island}}}{N_c}} \cdot \Delta t_{\text{years}} & \text{if } N_{\text{island}} \ge N_c \end{cases}$$
+  where critical transmission threshold $N_c = 5\,000$ and $T_{\text{floor}} = 1.0$. Below $N_c$, stochastic copying error exceeds rare serendipitous innovation, leading to inter-generational skill atrophy (e.g. bone sewing needles, spearthrowers, marine fishing gear).
+- **Complexity**: $O(1)$ per contiguous isolated landmass.
 
 #### 79. Nordhaus DICE Climate-Economy Assessment (`NordhausDiceHybridEngine`, `NordhausDicePureEngine`)
 - **Governing Equations**:
@@ -652,13 +672,23 @@ Ether decouples numerical integration across three discrete physical time scales
 
 #### 97. Tech Tree & Physical Technology Graph Engine (`TechTreeEngine`)
 - **Governing Equations**:
-  $$\text{Unlocked}(T) = \prod_{p \in \text{Prereq}(T)} \mathbb{I}(\text{Completed}(p)) \times \mathbb{I}(\text{CapitalInvested} \ge \text{Cost}(T))$$
-- **Complexity**: $O(1)$ per tech tree evaluation.
+  1. **Cumulative Innovation Dynamics (Henrich & Tomasello)**:
+     $$\Delta T_i = \min\left(T_{\text{target}} - T_i, \; \mu_{\text{innov}} \cdot \frac{k_i}{10.0 + k_i} \cdot \sqrt{\frac{N_i}{1000}} \cdot \Delta t_{\text{years}}\right)$$
+     where $k_i = K_i / N_i$ represents physical capital per capita and $N_i$ is active learner population.
+  2. **Inter-Cell & Maritime Trade Corridor Technology Diffusion**:
+     $$\Delta T_{j \leftarrow i} = \kappa_{\text{trade}} \cdot \frac{T_i - T_j}{\max(1.0, 0.1 \cdot \text{Friction}_{ij})} \cdot \Delta t_{\text{years}} \quad (\forall i, j \text{ with active trade link and } T_i > T_j)$$
+  3. **Discrete Tree Prerequisite Enforcement**:
+     $$\text{Unlocked}(T) = \prod_{p \in \text{Prereq}(T)} \mathbb{I}(\text{Completed}(p)) \times \mathbb{I}(\text{CapitalInvested} \ge \text{Cost}(T))$$
+- **Complexity**: $O(\text{populated cells} + \text{active trade routes})$.
 
-#### 98. Co-Governance Polycentric Trade Agreements (`CoGovernanceTradeEngine`, `TradeNetworkEngine`)
+#### 98. Spatial Trade Networks & Polycentric Trade Agreements (`TradeNetworkEngine`, `CoGovernanceTradeEngine`)
 - **Governing Equations**:
-  $$\Delta \text{Tariff}_{ij} = -\alpha_{\text{cooperation}} \cdot \text{MutualTrust}_{ij} + \beta_{\text{protectionism}} \cdot \text{TradeDeficit}_{ij}$$
-- **Complexity**: $O(\text{treaty links})$ per trade block.
+  1. **Gravity Trade Corridor Formation**:
+     $$\Phi_{ij} = G \cdot \frac{N_i \cdot N_j}{D_{ij}^{\gamma}} \cdot \exp(-\lambda_{\text{frict}} \cdot \text{Friction}_{ij})$$
+     Corridors form between populated coastal or terrestrial nodes across maritime passages (e.g. Irish Sea, Mozambique Channel, English Channel) when $\Phi_{ij} \ge \Phi_{\text{threshold}}$.
+  2. **Polycentric Co-Governance Tariff Adjustments**:
+     $$\Delta \text{Tariff}_{ij} = -\alpha_{\text{cooperation}} \cdot \text{MutualTrust}_{ij} + \beta_{\text{protectionism}} \cdot \text{TradeDeficit}_{ij}$$
+- **Complexity**: $O(\text{candidate links})$ per trade block.
 
 ---
 
@@ -1363,6 +1393,68 @@ where $\mathbf{J}_{\mathbf{\Phi}} = -\mathbf{K}_{\text{Onsager}} \nabla \mathbf{
 3. **`PERIODIC_WRAP` (Toroidal Periodic Boundary)**:
    $$\mathbf{\Phi}(\theta + \Delta \theta, \phi) = \mathbf{\Phi}(\theta, \phi), \quad \mathbf{\Phi}(\theta, \phi + \Delta \phi) = \mathbf{\Phi}(\theta, \phi)$$
    *Preserves global mass but introduces spatial distortion penalties on non-homogeneous real Earth topography.*
+
+---
+
+## 15. Multi-Century Spatiotemporal Invariance, Trophic Biomass Coupling & Archipelagic Trade Physics
+
+### 15.1 Elimination of Ex-Nihilo Caloric Generation & Strict Trophic Energy Coupling
+
+Caloric supply in `EnvironmentalKernel` and `DemographicKernel` is strictly conserved and coupled to physical ecosystem stocks ($B_{\text{agri}}$, $B_{\text{wild}}$, $B_{\text{fish}}$). No uncoupled background caloric injection is permitted.
+
+1. **Edible Trophic Harvest Flux** ($\Phi_{\text{food}}$, in $\text{GJ/tick}$):
+   $$\Phi_{\text{food}}(i, \Delta t) = \Delta t \cdot \left( \eta_{\text{agri}}(T_i) \, B_{\text{agri}}(i) + \eta_{\text{wild}}(T_i) \, B_{\text{wild}}(i) + \eta_{\text{fish}}(T_i) \, H_{\text{MSY}}(B_{\text{fish}}(i)) \right)$$
+   where:
+   - $\eta_{\text{wild}}(T_i) \in [0.015, 0.05]$ is the Lindeman secondary trophic fraction of wild terrestrial biomass (game and edible foraging, distinct from lignocellulosic standing wood $W_{\text{wood}}$).
+   - $H_{\text{MSY}}(B_{\text{fish}})$ is the Gordon-Schaefer sustainable coastal fishery harvest bounded by maximum sustainable yield ($r_{\text{fish}} \approx 0.35\text{ yr}^{-1}$, $K_{\text{fish}} = 2500 \cdot \alpha_{\text{area}}$).
+
+2. **Unified Trophic Carrying Capacity Between DoD Kernels and Tier 1 Biological Engines**:
+   To ensure strict consistency between the Data-Oriented Design (`DemographicKernel`) and Object-Oriented Tier 1 (`BiologicalDemographicsEngine`) passes, human carrying capacity $K_{\text{hum}}(i)$ incorporates Lindeman's $10\%$ trophic law across technological regimes:
+   $$E_{\text{req,eff}}(T_i) = E_{\text{basal}} \cdot \begin{cases} 1.0 & \text{if } T_i < 1.5 \text{ (Foraging / Paleolithic)} \\ \frac{\mu_{\text{Neolithic}}}{\mu_{\text{Forager}}} = 0.25 & \text{if } T_i \ge 1.5 \text{ (Cultivated Cereal / Wet-Rice)} \end{cases}$$
+   $$K_{\text{hum}}(i) = \frac{B_{\text{agri}}(i) + 0.05 \, B_{\text{wild}}(i) + 0.80 \, B_{\text{fish}}(i) + 0.30 \, F_{\text{granary}}(i)}{E_{\text{req,eff}}(T_i)}$$
+   This prevents inland agrarian plateaus (where $B_{\text{fish}} = 0$, such as Madagascar's Imerina and Betsileo highlands) from suffering artificial carrying-capacity starvation relative to coastal fishing cells.
+
+---
+
+### 15.2 Planar H3 Area Scaling & Time-Step ($\Delta t$) Invariance Across All Engines
+
+To guarantee spatial resolution invariance from H3 Resolution 3 ($12,393\text{ km}^2$) through Resolution 4 ($1,770.49\text{ km}^2$) and Resolution 5 ($252.90\text{ km}^2$), and temporal invariance across weekly ($\Delta t = 7\text{ d}$), monthly ($\Delta t = 30.4375\text{ d}$), and annual ($\Delta t = 365.25\text{ d}$) integration steps:
+
+1. **Planar H3 Hexagon Area Normalization**:
+   $$\alpha_{\text{area}}(\text{res}) = \frac{A_{\text{H3}}(\text{res})}{A_{\text{H3}}(4)}, \quad A_{\text{H3}}(5) = 252.90\text{ km}^2 \implies \alpha_{\text{area}}(5) = 0.14284$$
+   All extensive cellular capacities (carrying capacities, baseline soil yields, aquifer volumes, deforestation thresholds, and migration thresholds) scale linearly with $\alpha_{\text{area}}(\text{res})$.
+
+2. **Continuous Exponential Decay and Accumulation Integration**:
+   All Tier 1 and Tier 2 engines (`UrbanKernel`, `ResourceRecyclingEngine`, `SelectiveBreedingEngine`, `TechnologicalSingularityEngine`, `SoilNutrientNPKEngine`, `BoserupAgriculturalIntensificationEngine`, `EcologicalDegradationEngine`, `MegafaunaEcosystemEngine`) integrate rates using exact exponential or linear $\Delta t$ scaling:
+   $$K_{\text{cap}}(t + \Delta t) = K_{\text{cap}}(t) \cdot (1 - \delta_{\text{depr}})^{\Delta t} + I_{\text{gross}}(t) \cdot \Delta t, \quad \delta_{\text{depr}} = 0.05\text{ yr}^{-1}$$
+
+---
+
+### 15.3 Boserupian Hydraulic Intensification & Stoichiometric Soil Conservation
+
+In `SoilNutrientNPKEngine` and `BoserupAgriculturalIntensificationEngine`, agricultural biomass $B_{\text{agri}}$ is governed by coupled Liebig N-P-K stoichiometry and Boserupian labor/capital intensification rather than destructive relaxation toward extensive fallow baselines:
+
+$$\frac{dB_{\text{agri}}}{dt} = \begin{cases} 
+r_{\text{rebound}} \left( Y_{\text{fallow}}(\text{NPK}, W) - B_{\text{agri}} \right) + \Phi_{\text{Boserup}}(\rho, K_{\text{cap}}, T) & \text{if } B_{\text{agri}} < Y_{\text{fallow}} \\
+-\delta_{\text{terrace}} B_{\text{agri}} + \Phi_{\text{Boserup}}(\rho, K_{\text{cap}}, T) & \text{if } B_{\text{agri}} \ge Y_{\text{fallow}}, \, \text{NPK} \ge 0.20, \, f_W \ge 0.25
+\end{cases}$$
+
+where $\delta_{\text{terrace}} = 0.004\text{ yr}^{-1}$ ($0.4\%/\text{yr}$) represents physical hydraulic terrace and canal maintenance depreciation, and $\Phi_{\text{Boserup}}$ is the demographic-pressure-driven intensification flux:
+$$\Phi_{\text{Boserup}} = \kappa_{\text{Boserup}} \cdot P_{\text{dem}}(\rho / K_{\text{hum}}) \cdot \left(1 + 0.35 \ln(1 + K_{\text{cap}} / N)\right) \cdot \alpha_{\text{area}}(\text{res})$$
+
+---
+
+### 15.4 Smil Pre-Industrial Kinetic Power Bounds & Maritime Archipelagic Trade
+
+1. **Pre-Industrial Wind & Watermill Kinetic Ceiling (`PhysicalEnergyGridEngine`)**:
+   Following Vaclav Smil (*Energy and Civilization: A History*, 2017), pre-industrial mechanical prime movers (waterwheels, windmills, sail, draft animals) for societies with $T < 3.0$ are bounded by physical shaft/thermal power availability:
+   $$P_{\text{renewable,max}}(T < 3.0) \le 250\text{ W/capita}$$
+   Furthermore, in `TechTreeEngine`, target endogenous era ceilings ($T_{\text{era}} \in \{1.65\text{ Neolithic}, 2.15\text{ Antiquity}, 2.75\text{ Medieval}, 4.50\text{ Industrial}\}$) prevent pre-industrial maritime wind corridors from prematurely triggering the Industrial Steam & Haber-Bosch transition ($T \ge 3.5$).
+
+2. **Spatial Non-Maximum Suppression & Geodesic Distance-Bounded Migration**:
+   - **Archipelagic Trade Hubs (`TradeNetworkEngine`)**: Trade hub selection enforces spatial non-maximum suppression ($\Delta \theta_{\text{min}} = 1.0^\circ$), guaranteeing that multi-island systems (e.g., NW Madagascar, Comoros, and Swahili/Zanzibar coral hubs; or Great Britain and Ireland) establish independent maritime ports connected by hydrodynamically friction-weighted sea lanes.
+   - **Geodesic Migration Guard (`EcologicalDegradationEngine`)**: Stress-induced overland migration between array-indexed cells is strictly gated by Haversine geodesic distance $d_{\text{geo}}(\mathbf{x}_i, \mathbf{x}_j) \le 150\text{ km}$, eliminating Hilbert-curve array-index teleportation across open ocean basins.
+
 
 
 

@@ -96,8 +96,8 @@ public class PropertyBasedPhysicalVerificationTest {
             // Relative humidity RH in [5.0, 100.0] %
             double rh = 5.0 + rng.nextDouble() * 95.0;
 
-            // Stull (2011) Empirical Wet-Bulb Formulation bounded by dry-bulb temperature
-            double rawTwb = computeStullWetBulb(tDry, rh);
+            // Stull (2011) Empirical Wet-Bulb Formulation via production WetBulbTemperatureEngine
+            double rawTwb = WetBulbTemperatureEngine.calculateWetBulbTemperatureStull(tDry, rh);
             double twb = Math.min(tDry, rawTwb);
 
             // Invariant 1: Wet-bulb temperature can never exceed dry-bulb temperature
@@ -188,15 +188,6 @@ public class PropertyBasedPhysicalVerificationTest {
         var finalSnapshot = guard.captureSnapshot(buffer);
         assertEquals(totalInitialMass, finalSnapshot.totalBiomass(), 0.05, "Multi-step closed transitions must conserve total planetary mass within float machine precision");
         assertEquals(0, guard.getViolationCount(), "Zero violations must be registered by InvariantConservationGuard");
-    }
-
-    // Helper: Stull (2011) Wet-Bulb approximation formula
-    private static double computeStullWetBulb(double t, double rh) {
-        return t * Math.atan(0.151977 * Math.pow(rh + 8.313659, 0.5))
-                + Math.atan(t + rh)
-                - Math.atan(rh - 1.676331)
-                + 0.00391838 * Math.pow(rh, 1.5) * Math.atan(0.023101 * rh)
-                - 4.686035;
     }
 
     // Helper: Lethal wet-bulb mortality curve (exponential growth beyond 35°C hyperthermia limit)

@@ -145,6 +145,7 @@ public class HeadlessBatchRunner {
         // Compare simulated trajectories against empirical historical ground truth
         if (scenario == null) return null;
 
+        org.ether.society.core.SimulationPipeline.resetGlobalSimulationState();
         try {
             logger.info("⚡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
                 scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
@@ -389,14 +390,14 @@ public class HeadlessBatchRunner {
         metricsMap.put("asabiyyah", stability);
         metricsMap.put("populatedCellCount", (double) populatedCells);
 
-        // Extract complete physical & cliodynamic indicators from engine
+        // Extract complete physical & cliodynamic indicators from engine (SI & Standard Cliodynamic Units)
         metricsMap.put("gdp", (double) engine.getCurrentGDP());
-        metricsMap.put("grossWorldProduct", (double) engine.getCurrentGDP());
+        metricsMap.put("grossWorldProduct", (double) engine.getCurrentGDP() / 1e9); // Billion USD 1990
         metricsMap.put("gini", (double) engine.getCurrentGini());
         metricsMap.put("lifeExpectancy", (double) engine.getCurrentLifeExpectancy());
         metricsMap.put("fertilityRate", (double) engine.getCurrentFertility());
-        metricsMap.put("energyCaptured", engine.getEnergyCaptured());
-        metricsMap.put("primaryEnergy", engine.getEnergyCaptured());
+        metricsMap.put("energyCaptured", engine.getEnergyCaptured()); // Instantaneous MW
+        metricsMap.put("primaryEnergy", engine.getEnergyCaptured() * 3.15576e-5); // Exajoules (EJ/year)
         metricsMap.put("energyPerCapita", engine.getEnergyPerCapita());
         metricsMap.put("potableWater", engine.getPotableWaterTotal());
         metricsMap.put("resourceDepletion", engine.getResourceDepletionRate());

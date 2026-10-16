@@ -30,12 +30,11 @@ public class MarkdownViewerPane extends BorderPane {
 
     private final ScrollPane scrollPane;
     private final VBox formattedContainer;
-    private final TextArea rawTextArea;
-    private final ToggleButton toggleRawBtn;
     private final Button copyBtn;
-    private final Label formatHint;
     /* Internal state variable for current markdown (String). */
     private String currentMarkdown = "";
+
+    private final HBox toolBar;
 
     /*
      * Markdown viewer pane.
@@ -46,24 +45,16 @@ public class MarkdownViewerPane extends BorderPane {
         getStyleClass().add("card-section");
 
         // Top Toolbar
-        HBox toolBar = new HBox(8);
+        toolBar = new HBox(8);
         toolBar.setAlignment(Pos.CENTER_RIGHT);
         toolBar.setPadding(new Insets(4, 8, 4, 8));
         toolBar.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 4;");
 
-        formatHint = new Label(I18n.getOrDefault("markdown.preview_title", "✨ Formatted Report Preview"));
-        formatHint.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;");
-        HBox.setHgrow(formatHint, Priority.ALWAYS);
-
-        toggleRawBtn = new ToggleButton(I18n.getOrDefault("markdown.btn.toggle_raw", "📝 Raw Markdown"));
-        toggleRawBtn.setStyle("-fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 3 8;");
-        toggleRawBtn.setOnAction(e -> updateViewMode());
-
         copyBtn = new Button(I18n.getOrDefault("markdown.btn.copy", "📋 Copy"));
-        copyBtn.setStyle("-fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 3 8;");
+        copyBtn.setStyle("-fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 3 8; -fx-background-color: rgba(56, 189, 248, 0.15); -fx-text-fill: #38bdf8; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 4; -fx-background-radius: 4;");
         copyBtn.setOnAction(e -> copyToClipboard());
 
-        toolBar.getChildren().addAll(formatHint, copyBtn, toggleRawBtn);
+        toolBar.getChildren().add(copyBtn);
         setTop(toolBar);
 
         // Formatted Content ScrollPane
@@ -74,12 +65,6 @@ public class MarkdownViewerPane extends BorderPane {
         scrollPane = new ScrollPane(formattedContainer);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
-
-        // Raw Text Area
-        rawTextArea = new TextArea();
-        rawTextArea.setEditable(false);
-        rawTextArea.setWrapText(true);
-        rawTextArea.setStyle("-fx-font-family: 'Consolas', 'Courier New', monospace; -fx-font-size: 12px;");
 
         setCenter(scrollPane);
 
@@ -94,22 +79,24 @@ public class MarkdownViewerPane extends BorderPane {
      */
     public void updateTexts() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (formatHint != null) {
-            formatHint.setText(I18n.getOrDefault("markdown.preview_title", "✨ Formatted Report Preview"));
-        }
-        if (toggleRawBtn != null) {
-            if (toggleRawBtn.isSelected()) {
-                toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_formatted", "👁️ Formatted View"));
-            } else {
-                toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_raw", "📝 Raw Markdown"));
-            }
-            toggleRawBtn.setTooltip(new Tooltip(I18n.getOrDefault("markdown.tooltip.toggle", "Toggle between rich formatted document view and raw editable markdown code.")));
-        }
         if (copyBtn != null) {
             copyBtn.setText(I18n.getOrDefault("markdown.btn.copy", "📋 Copy Report"));
             copyBtn.setTooltip(new Tooltip(I18n.getOrDefault("markdown.tooltip.copy", "Copy full markdown report text content to system clipboard.")));
         }
         renderMarkdown(currentMarkdown);
+    }
+
+    /**
+     * Controls the visibility and layout presence of the top toolbar (containing the copy button).
+     *
+     * @param visible true to show the top toolbar, false to hide and collapse it
+     */
+    public void setTopToolbarVisible(boolean visible) {
+        if (toolBar != null) {
+            toolBar.setVisible(visible);
+            toolBar.setManaged(visible);
+        }
+        setTop(visible ? toolBar : null);
     }
 
     /*
@@ -120,7 +107,6 @@ public class MarkdownViewerPane extends BorderPane {
      */
     public void setMarkdown(String markdown) {
         this.currentMarkdown = markdown != null ? markdown : "";
-        rawTextArea.setText(currentMarkdown);
         renderMarkdown(currentMarkdown);
     }
 
@@ -132,18 +118,6 @@ public class MarkdownViewerPane extends BorderPane {
      */
     public String getMarkdown() {
         return currentMarkdown;
-    }
-
-    // Helper subroutine: update view mode - internal state computation & bounds checking
-    private void updateViewMode() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (toggleRawBtn.isSelected()) {
-            toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_formatted", "👁️ Formatted View"));
-            setCenter(rawTextArea);
-        } else {
-            toggleRawBtn.setText(I18n.getOrDefault("markdown.btn.toggle_raw", "📝 Raw Markdown"));
-            setCenter(scrollPane);
-        }
     }
 
     // Helper subroutine: copy to clipboard - internal state computation & bounds checking
@@ -327,7 +301,16 @@ public class MarkdownViewerPane extends BorderPane {
                 if (end != -1) {
                     String codeContent = processed.substring(i + 1, end);
                     Label codeBadge = new Label(codeContent);
-                    codeBadge.setStyle("-fx-font-family: 'Consolas', monospace; -fx-font-size: 11px; -fx-background-color: rgba(30, 41, 59, 0.9); -fx-text-fill: #38bdf8; -fx-padding: 1 4; -fx-background-radius: 3; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 3;");
+                    String lower = codeContent.toLowerCase();
+                    if (codeContent.contains("🟢") || lower.contains("align") || lower.contains("fidélité") || lower.contains("fidelite") || lower.contains("< 5%") || lower.contains("stable") || lower.contains("parallèle") || lower.contains("parallele") || lower.contains("ok")) {
+                        codeBadge.setStyle("-fx-font-family: 'Segoe UI', system-ui, sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-background-color: rgba(16, 185, 129, 0.22); -fx-text-fill: #10b981; -fx-padding: 2 8; -fx-background-radius: 4; -fx-border-color: rgba(16, 185, 129, 0.55); -fx-border-radius: 4;");
+                    } else if (codeContent.contains("🟡") || lower.contains("modér") || lower.contains("moder") || lower.contains("attention") || lower.contains("5-25%") || lower.contains("progressi") || lower.contains("vigilance")) {
+                        codeBadge.setStyle("-fx-font-family: 'Segoe UI', system-ui, sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-background-color: rgba(245, 158, 11, 0.22); -fx-text-fill: #f59e0b; -fx-padding: 2 8; -fx-background-radius: 4; -fx-border-color: rgba(245, 158, 11, 0.55); -fx-border-radius: 4;");
+                    } else if (codeContent.contains("🔴") || lower.contains("critique") || lower.contains("divergen") || lower.contains("> 25%") || lower.contains("choc") || lower.contains("rupture")) {
+                        codeBadge.setStyle("-fx-font-family: 'Segoe UI', system-ui, sans-serif; -fx-font-size: 11px; -fx-font-weight: bold; -fx-background-color: rgba(239, 68, 68, 0.22); -fx-text-fill: #ef4444; -fx-padding: 2 8; -fx-background-radius: 4; -fx-border-color: rgba(239, 68, 68, 0.55); -fx-border-radius: 4;");
+                    } else {
+                        codeBadge.setStyle("-fx-font-family: 'Consolas', monospace; -fx-font-size: 11px; -fx-background-color: rgba(30, 41, 59, 0.9); -fx-text-fill: #38bdf8; -fx-padding: 1 5; -fx-background-radius: 3; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 3;");
+                    }
                     flow.getChildren().add(codeBadge);
                     i = end + 1;
                     continue;

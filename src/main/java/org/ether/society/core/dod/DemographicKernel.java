@@ -48,6 +48,33 @@ public class DemographicKernel {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DemographicKernel.class);
 
+    /**
+     * Juvenile (ages 1-15) crude death-rate component, in yr<sup>-1</sup>, obtained by integrating the Siler
+     * immature hazard \(a_1 e^{-b_1 x}\) over the forager life table \(l(x)\) for \(x \ge 1\)
+     * (Gurven &amp; Kaplan 2007: \(a_1 = 0.422\), \(b_1 = 1.131\)).
+     */
+    static final float SILER_CRUDE_JUVENILE_RATE = 0.0028f;
+
+    /**
+     * Age-independent (Makeham) background crude death-rate component, in yr<sup>-1</sup>
+     * (Siler \(a_2 = 0.013\): accidents, violence, acute infections), weighted over \(l(x)\), \(x \ge 1\).
+     */
+    static final float SILER_CRUDE_BACKGROUND_RATE = 0.0127f;
+
+    /**
+     * Senescent crude death-rate component, in yr<sup>-1</sup>, obtained by integrating the Gompertz term
+     * \(a_3 e^{b_3 x}\) over the forager life table (\(a_3 = 1.47\times10^{-4}\), \(b_3 = 0.086\)).
+     * Replaces the former Gompertz evaluation at the cohort mean age, which underestimated mortality by
+     * Jensen's inequality.
+     */
+    static final float SILER_CRUDE_SENESCENT_RATE = 0.0095f;
+
+    private float[] cachedCellHumanPop;
+    private float[] cachedCellDemand;
+    private float[] cachedCellSatisfaction;
+    private int[] activeCellIndices;
+    private int activeCellCount = 0;
+
     /*
      * Executes one complete demographic simulation cycle across all active cohorts.
      *
@@ -86,32 +113,62 @@ public class DemographicKernel {
         // Dynamic minimum mass threshold supporting small cohorts (<= 10) down to single individuals without underflow
         float minMassThreshold = Math.max(0.0001f, Math.min(0.05f, targetCohortSize * 0.001f));
 
-        // Precalculate total cell-level metabolic demand and human population to ensure equitable food sharing and correct Malthusian feedback
-        float[] cellHumanPop = new float[world.getCapacity()];
-        float[] cellDemand = new float[world.getCapacity()];
+        // Reusable zero-allocation arrays for cell-level metabolic demand and human population
+        int worldCap = world.getCapacity();
+        if (cachedCellDemand == null || cachedCellDemand.length < worldCap) {
+            cachedCellDemand = new float[worldCap];
+            cachedCellSatisfaction = new float[worldCap];
+            cachedCellHumanPop = new float[worldCap];
+            java.util.Arrays.fill(cachedCellSatisfaction, 1.0f);
+            activeCellIndices = new int[worldCap];
+        }
+        activeCellCount = 0;
+
         for (int i = 0; i < agents.getCapacity(); i++) {
             if (hexIds[i] == -1) continue;
             int hIdx = hexIds[i];
             float m = mass[i];
             if (m < minMassThreshold) continue;
-            cellHumanPop[hIdx] += m;
             float tech = agents.getTechLevel()[i];
             double trophicMultiplier = (tech < 1.5f)
                     ? org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER
                     : org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN;
             float baseMetabolicNeed = (float) (m * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtInYears);
-            cellDemand[hIdx] += (float) (baseMetabolicNeed * (trophicMultiplier / org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER));
+            float addedDemand = (float) (baseMetabolicNeed * (trophicMultiplier / org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER));
+
+            if (cachedCellDemand[hIdx] == 0.0f && cachedCellHumanPop[hIdx] == 0.0f) {
+                activeCellIndices[activeCellCount++] = hIdx;
+            }
+            cachedCellHumanPop[hIdx] += m;
+            cachedCellDemand[hIdx] += addedDemand;
         }
 
-        float[] cellSatisfaction = new float[world.getCapacity()];
-        for (int h = 0; h < world.getCapacity(); h++) {
-            if (cellDemand[h] > 0.0001f) {
-                cellSatisfaction[h] = Math.min(1.0f, food[h] / cellDemand[h]);
-                float consumed = Math.min(food[h], cellDemand[h]);
-                food[h] -= consumed;
+        // Process food consumption only on active populated cells
+        for (int k = 0; k < activeCellCount; k++) {
+            int h = activeCellIndices[k];
+            if (cachedCellDemand[h] > 0.0001f) {
+                float cellTech = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[h] : 1.0f;
+                float edibleAgriFluxAnnual = world.getBiomassAgriculture()[h] * 0.70f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
+                float edibleNaturalFluxAnnual = world.getBiomassNatural()[h] * (cellTech < 1.5f ? 0.008f : 0.005f) * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+                float edibleFishFluxAnnual = (world.getBiomassFish() != null ? world.getBiomassFish()[h] : 0.0f) * 0.25f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
+                float totalAnnualFoodFluxGJ = edibleAgriFluxAnnual + edibleNaturalFluxAnnual + edibleFishFluxAnnual;
+
+                // Food produced during this time step dt
+                float foodHarvestTickGJ = totalAnnualFoodFluxGJ * dtInYears;
+                float totalAvailableFoodGJ = food[h] + foodHarvestTickGJ;
+
+                cachedCellSatisfaction[h] = Math.clamp(totalAvailableFoodGJ / cachedCellDemand[h], 0.0f, 1.0f);
+                float consumed = Math.min(totalAvailableFoodGJ, cachedCellDemand[h]);
+                float surplus = Math.max(0.0f, totalAvailableFoodGJ - consumed);
+
+                // Granary storage capacity: up to 1.5 years of metabolic demand for agrarians (tech >= 1.5),
+                // or 1 month for nomadic foragers (tech < 1.5, mobility & spoilage constraints)
+                float storageYears = (cellTech < 1.5f) ? 0.083f : 1.5f;
+                float maxGranaryCapacity = (float) (cachedCellDemand[h] * (storageYears / dtInYears));
+                food[h] = Math.min(maxGranaryCapacity, surplus);
                 world.getEnergyFoodConsumed()[h] += consumed;
             } else {
-                cellSatisfaction[h] = 1.0f;
+                cachedCellSatisfaction[h] = 1.0f;
             }
         }
 
@@ -125,8 +182,7 @@ public class DemographicKernel {
                 continue;
             }
             
-            // Update Age (tracked in years)
-            age[i] += dtInYears;
+            // Baseline Community Mean Age (Lotka stable age distribution)
             float ageYears = age[i];
             
             // Structure cost (Sigma)
@@ -167,7 +223,7 @@ public class DemographicKernel {
             }
 
             // Calculate food satisfaction ratio (0.0 to 1.0)
-            float foodSatisfaction = cellSatisfaction[hIdx];
+            float foodSatisfaction = cachedCellSatisfaction[hIdx];
             float baseMetabolicNeed = (float) (m * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtInYears);
             float rawBiomassMobilized = (float) (baseMetabolicNeed * (trophicMultiplier / org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER));
             float foodTaken = rawBiomassMobilized * foodSatisfaction;
@@ -207,18 +263,31 @@ public class DemographicKernel {
             float nutritionalFactor = (float) Math.clamp(0.15f + 0.85f * (energy[i] / 75.0f) * foodSatisfaction, 0.05f, 1.25f);
 
             // 3. Cultural fertility modulation (Cultural Tensor dimension 1: Kinship & Pro-Natalist Norms)
-            float culturalFertilityMultiplier = 0.35f + 1.30f * kinshipNatalism; // Yields Total Fertility Rate (TFR) between ~1.5 and 8.5+
+            float culturalFertilityMultiplier = 0.40f + 1.20f * kinshipNatalism; // 1.0 at baseline kinshipNatalism=0.5
 
             // 4. Malthusian density-dependent negative feedback (N_cell / K_cell)
-            float totalCellFoodGJ = Math.max(food[hIdx], world.getBiomassNatural()[hIdx] + world.getBiomassAgriculture()[hIdx] + cellDemand[hIdx]);
-            float carryingCapacity = Math.max(0.05f, totalCellFoodGJ / (float) org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
-            float totalCellPop = Math.max(m, cellHumanPop[hIdx]);
+            // Wild standing forest biomass (wood/lignin) is NOT directly human-edible:
+            // Hunter-gatherers can only forage edible flora/fauna (~0.5-0.8% of standing biomass per year, Binford/Kelly).
+            // Cultivated agricultural biomass yields ~70% net caloric grain/edible food; marine fisheries yield ~25% annual MSY (Schaefer).
+            float edibleNaturalBiomassGJ = world.getBiomassNatural()[hIdx] * (tech < 1.5f ? 0.008f : 0.005f) * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+            float edibleAgriBiomassGJ = world.getBiomassAgriculture()[hIdx] * 0.70f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
+            float edibleFishBiomassGJ = (world.getBiomassFish() != null ? world.getBiomassFish()[hIdx] : 0.0f) * 0.25f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
+            float renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgriBiomassGJ + edibleFishBiomassGJ;
+            float annualCellProductivityGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20f, food[hIdx] * 0.15f);
+            float carryingCapacity = Math.max(1.0f, annualCellProductivityGJ / (float) org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
+            float totalCellPop = Math.max(m, cachedCellHumanPop[hIdx]);
             float malthusianPressure = totalCellPop / carryingCapacity;
             float densityFeedback = (float) (1.0 / (1.0 + Math.pow(malthusianPressure, 2.0)));
 
-            // 5. Effective annual crude birth rate (maximum unconstrained biological fertility ~11.5% for fecund cohort)
-            float maxBiologicalFertility = 0.115f;
-            float birthRate = maxBiologicalFertility * fecundityAgeFactor * nutritionalFactor * culturalFertilityMultiplier * densityFeedback;
+            // 5. Effective annual crude birth rate (Bocquet-Appel 2002, 2011 Neolithic Demographic Transition)
+            // Pre-agricultural (tech < 1.5): nomadic foragers with 3.5-4.5 yrs lactation amenorrhea (CBR ~ 25-28 / 1000)
+            // Neolithic/Agrarian (tech >= 1.5): sedentism & cereal weaning foods allow inter-birth intervals ~ 2 yrs (CBR ~ 38-46 / 1000)
+            float maxBiologicalFertility = (tech < 1.5f)
+                    ? (float) (0.024f + 0.004f * Math.tanh(tech))
+                    : (float) (0.0375f + 0.012f * Math.tanh((tech - 1.5f) / 1.5f));
+            float fertilityModulation = fecundityAgeFactor * Math.min(1.0f, nutritionalFactor) * culturalFertilityMultiplier * densityFeedback;
+
+            float birthRate = maxBiologicalFertility * Math.clamp(fertilityModulation, 0.0f, 1.25f);
             float newBirths = m * birthRate * dtInYears;
             births[i] = newBirths;
 
@@ -232,34 +301,59 @@ public class DemographicKernel {
             float capitalPerCapita = m > 0.001f ? (world.getResourceCapital()[hIdx] / m) : 0.0f;
             float waterSecurity = world.getWaterResource()[hIdx] > 10.0f ? 1.0f : 0.3f;
             float hygieneFactor = (float) Math.exp(-capitalPerCapita / 50.0f); // 1.0 (Paleolithic baseline) -> 0.0 (Modern public sanitation)
-            float infantMortalityRate = Math.clamp(0.015f + 0.25f * hygieneFactor * (1.5f - 0.5f * foodSatisfaction) * (1.5f - 0.5f * waterSecurity), 0.015f, 0.50f);
+            float infantMortalityRate = Math.clamp(0.015f + 0.20f * hygieneFactor * (1.5f - 0.5f * foodSatisfaction) * (1.5f - 0.5f * waterSecurity), 0.015f, 0.50f);
+
+            // Coupling infant mortality to environmental/epidemiological life expectancy
+            float lifespanRatio = 1.0f;
+            if (world.getLifespan() != null && world.getLifespan()[hIdx] > 5.0f) {
+                // Baseline pre-industrial life expectancy reference = 40.0 years
+                lifespanRatio = Math.clamp(40.0f / world.getLifespan()[hIdx], 0.40f, 2.50f);
+                if (lifespanRatio > 1.0f) {
+                    infantMortalityRate = Math.clamp(infantMortalityRate * (0.85f + 0.15f * lifespanRatio), 0.015f, 0.55f);
+                }
+            }
+
             float survivingNewborns = newBirths * (1.0f - infantMortalityRate);
             float nonSurvivingInfants = newBirths - survivingNewborns; // Lost reproductive caloric investment (entropic dissipation)
 
-            // 8. Adult and senescent mortality (Gompertz-Makeham hazard law + acute famine/starvation)
+            // 8. Adult and senescent mortality (Gompertz-Makeham hazard law: cellular senescence beta=0.08 + extrinsic Makeham hazard gamma)
             float gompertzSenescence = (float) (0.0001f * Math.exp(0.08f * ageYears));
             float acuteDeficit = Math.max(0.0f, 1.0f - foodSatisfaction);
             float starvationMortality = (acuteDeficit > 0.3f ? 0.35f * (acuteDeficit - 0.3f) : 0.0f)
                     + (energy[i] < 25.0f ? 0.45f * (1.0f - energy[i] / 25.0f) : 0.0f);
-            float baselineHazard = 0.012f;
-            float adultMortalityRate = Math.clamp(baselineHazard + gompertzSenescence + starvationMortality, 0.01f, 0.98f);
-            float adultDeaths = m * adultMortalityRate * dtInYears;
+            float baselineHazard = 0.010f * lifespanRatio;
+            float adultHazardRate = Math.max(0.008f, baselineHazard + gompertzSenescence + starvationMortality);
+            
+            // Symplectic / Exponential decay scheme: guarantees m(t+dt) > 0 for ANY arbitrary dtInYears
+            float survivalFraction = (float) Math.exp(-adultHazardRate * dtInYears);
+            float adultDeaths = m * (1.0f - survivalFraction);
             float totalDeaths = adultDeaths + nonSurvivingInfants;
             deaths[i] = totalDeaths;
 
-            // 9. Net demographic balance of cohort
-            float newMass = m + survivingNewborns - adultDeaths;
+            // 9. Net demographic balance of cohort (strictly bounded below by 0)
+            float newMass = (m * survivalFraction) + survivingNewborns;
             mass[i] = Math.max(0.0f, newMass);
 
             // 10. Continuous age renewal dynamics and generational succession:
             if (newMass > minMassThreshold) {
-                float survivingMass = Math.max(0.0f, m - adultDeaths);
-                float updatedMeanAge = (ageYears * survivingMass + 0.0f * survivingNewborns) / newMass;
-                if (updatedMeanAge > 58.0f) {
-                    // Generational succession: demographic handover of cohort to younger descendants (20-30 years)
-                    updatedMeanAge = 22.0f + (float) (Math.random() * 8.0f);
-                }
-                age[i] = Math.max(0.0f, updatedMeanAge);
+                // In an aggregate community cohort (Dunbar node), age[i] represents the mean demographic age of the community A.
+                // 1. Existing individuals age by dtInYears: (ageYears + dtInYears) * m
+                // 2. Extrinsic deaths occur across all ages around the community mean age: - ageYears * extrinsicDeaths
+                // 3. Senescent deaths occur predominantly among the elderly (~62 yrs): - 62.0f * senescentDeaths
+                // 4. Surviving newborns enter at age 0.0: + 0.0f * survivingNewborns
+                float senescentDeaths = m * gompertzSenescence * dtInYears;
+                float meanSenescentDeathAge = Math.max(ageYears + 10.0f, 62.0f);
+                float ageSumAfterEvents = (ageYears + dtInYears) * m 
+                        - ageYears * Math.max(0.0f, adultDeaths - senescentDeaths) 
+                        - meanSenescentDeathAge * senescentDeaths;
+                float updatedMeanAge = Math.max(16.0f, ageSumAfterEvents / newMass);
+
+                // Lotka stable population theory (Lotka 1907): Stable age pyramid equilibrium
+                // Pre-industrial baseline A* ~ 24.5 yrs; modern high-tech demographic transition A* ~ 36.0 yrs
+                float targetEquilibriumAge = 24.5f + 12.0f * (float) Math.tanh(tech / 80.0f);
+                float generationalTurnoverRate = Math.min(1.0f, 0.08f * dtInYears);
+                updatedMeanAge += (targetEquilibriumAge - updatedMeanAge) * generationalTurnoverRate;
+                age[i] = Math.clamp(updatedMeanAge, 18.0f, 50.0f);
             }
 
             // Accumulate human biomass into the H3 cell buffer
@@ -269,6 +363,14 @@ public class DemographicKernel {
             if (mass[i] < minMassThreshold) {
                 hexIds[i] = -1;
             }
+        }
+
+        // Reset only the actively populated cells in the cached arrays (O(activeCellCount))
+        for (int k = 0; k < activeCellCount; k++) {
+            int h = activeCellIndices[k];
+            cachedCellDemand[h] = 0.0f;
+            cachedCellHumanPop[h] = 0.0f;
+            cachedCellSatisfaction[h] = 1.0f;
         }
 
         int activeCohorts = 0;
@@ -313,12 +415,15 @@ public class DemographicKernel {
                     agents.getH3Indexes()[newSlot] = agents.getH3Indexes()[i];
                     agents.getTechLevel()[newSlot] = agents.getTechLevel()[i];
                     agents.getGenerationCount()[newSlot] = agents.getGenerationCount()[i] + 1;
-                    agents.getAge()[newSlot] = Math.max(16.0f, (float) (18.0 + Math.random() * 8.0)); // Young adult generation (18-26 yrs)
+                    float ageRnd = (float) org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 403L);
+                    agents.getAge()[newSlot] = Math.max(16.0f, 18.0f + ageRnd * 8.0f); // Young adult generation (18-26 yrs)
                     
                     // Cultural and genetic inheritance with stochastic mutation drift
                     for (int d = 0; d < 4; d++) {
-                        agents.getGenetics()[d][newSlot] = agents.getGenetics()[d][i] + (float)(Math.random() - 0.5) * 0.05f;
-                        agents.getCulture()[d][newSlot] = agents.getCulture()[d][i] + (float)(Math.random() - 0.5) * 0.05f;
+                        float mutG = (float) (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 405L + d) - 0.5) * 0.05f;
+                        float mutC = (float) (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 415L + d) - 0.5) * 0.05f;
+                        agents.getGenetics()[d][newSlot] = agents.getGenetics()[d][i] + mutG;
+                        agents.getCulture()[d][newSlot] = agents.getCulture()[d][i] + mutC;
                     }
                 } else {
                     // Agent buffer saturated; break early to avoid O(N^2) scan overhead

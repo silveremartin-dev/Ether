@@ -18,6 +18,12 @@ public class CultureKernel {
     private float mutationRate = 0.015f;   // Intensité du bruit de Langevin (sigma_Langevin)
     private float forcingRate = 0.05f;    // Ancrage aux tenseurs géoculturels de la carte (lambda_forcing)
 
+    private float[][] cachedHexCultureSum;
+    private int[] cachedHexAgentCount;
+    private float[][] cachedHexCultureMean;
+    private int[] activeHexes;
+    private int activeHexCount = 0;
+
     /*
      * Get diffusion rate.
      * Enforces physical invariants and updates associated state variables within {@code CultureKernel}.
@@ -89,11 +95,12 @@ public class CultureKernel {
     private void langevinDrift(AgentBuffer agents, float dt) {
         float[][] culture = agents.getCulture();
         int[] hexIds = agents.getHexIds();
+        int dims = culture != null ? culture.length : 0;
         
         for (int i = 0; i < agents.getCapacity(); i++) {
             if (hexIds[i] == -1) continue;
             
-            for (int d = 0; d < 4; d++) {
+            for (int d = 0; d < dims; d++) {
                 // Bruit stochastique de Langevin (dw = Normal(0, sqrt(dt)))
                 double gaussianNoise = Math.clamp(java.util.concurrent.ThreadLocalRandom.current().nextGaussian(), -3.0, 3.0);
                 float dw = (float) (gaussianNoise * Math.sqrt(dt));
@@ -116,34 +123,38 @@ public class CultureKernel {
         if (worldCapacity == 0) return;
 
         int[][] neighbors = world.getNeighborIndexes();
+        int dims = culture != null ? culture.length : 0;
+        if (dims == 0) return;
 
-        // 1. Agréger la moyenne culturelle par cellule hexagone : O(N_agents)
-        float[][] hexCultureSum = new float[4][worldCapacity];
-        int[] hexAgentCount = new int[worldCapacity];
+        if (cachedHexAgentCount == null || cachedHexAgentCount.length < worldCapacity || cachedHexCultureSum.length < dims) {
+            cachedHexCultureSum = new float[dims][worldCapacity];
+            cachedHexAgentCount = new int[worldCapacity];
+            cachedHexCultureMean = new float[dims][worldCapacity];
+            activeHexes = new int[worldCapacity];
+        }
+        activeHexCount = 0;
+
         int agentCapacity = agents.getCapacity();
-
         for (int i = 0; i < agentCapacity; i++) {
             int h = hexIds[i];
             if (h >= 0 && h < worldCapacity) {
-                hexAgentCount[h]++;
-                for (int d = 0; d < 4; d++) {
-                    hexCultureSum[d][h] += culture[d][i];
+                if (cachedHexAgentCount[h] == 0) {
+                    activeHexes[activeHexCount++] = h;
+                }
+                cachedHexAgentCount[h]++;
+                for (int d = 0; d < dims; d++) {
+                    cachedHexCultureSum[d][h] += culture[d][i];
                 }
             }
         }
 
-        // Calculer les moyennes par cellule
-        float[][] hexCultureMean = new float[4][worldCapacity];
-        for (int h = 0; h < worldCapacity; h++) {
-            int count = hexAgentCount[h];
+        // Calculer les moyennes par cellule uniquement pour les cellules actives
+        for (int k = 0; k < activeHexCount; k++) {
+            int h = activeHexes[k];
+            int count = cachedHexAgentCount[h];
             if (count > 0) {
-                for (int d = 0; d < 4; d++) {
-                    hexCultureMean[d][h] = hexCultureSum[d][h] / count;
-                }
-            } else {
-                // Ancrage par défaut si aucun agent sur la cellule
-                for (int d = 0; d < 4; d++) {
-                    hexCultureMean[d][h] = getSpatialTensorAnchor(world, h, d);
+                for (int d = 0; d < dims; d++) {
+                    cachedHexCultureMean[d][h] = cachedHexCultureSum[d][h] / count;
                 }
             }
         }
@@ -153,7 +164,7 @@ public class CultureKernel {
             int myHex = hexIds[i];
             if (myHex < 0 || myHex >= worldCapacity) continue;
 
-            for (int d = 0; d < 4; d++) {
+            for (int d = 0; d < dims; d++) {
                 float myVal = culture[d][i];
                 float delta = 0.0f;
 
@@ -161,7 +172,9 @@ public class CultureKernel {
                 for (int j = 0; j < 6; j++) {
                     int nHex = neighbors[myHex][j];
                     if (nHex >= 0 && nHex < worldCapacity) {
-                        float neighborMean = hexCultureMean[d][nHex];
+                        float neighborMean = (cachedHexAgentCount[nHex] > 0)
+                                ? cachedHexCultureMean[d][nHex]
+                                : getSpatialTensorAnchor(world, nHex, d);
                         delta += (neighborMean - myVal) * (diffusionRate / 6.0f) * dt;
                     }
                 }
@@ -174,6 +187,15 @@ public class CultureKernel {
                 culture[d][i] = Math.max(0.0f, Math.min(1.0f, myVal + delta));
             }
         }
+
+        // Réinitialiser uniquement les cellules actives
+        for (int k = 0; k < activeHexCount; k++) {
+            int h = activeHexes[k];
+            cachedHexAgentCount[h] = 0;
+            for (int d = 0; d < dims; d++) {
+                cachedHexCultureSum[d][h] = 0.0f;
+            }
+        }
     }
 
     /*
@@ -182,8 +204,8 @@ public class CultureKernel {
     private float getSpatialTensorAnchor(WorldBuffer world, int hexIdx, int dimension) {
         if (world == null || hexIdx < 0 || hexIdx >= world.getCapacity()) return 0.5f;
         
-        float tech = world.getTechnologyLevel()[hexIdx];
-        float elevation = world.getElevation()[hexIdx];
+        float tech = world.getTechnologyLevel() != null && hexIdx < world.getTechnologyLevel().length ? world.getTechnologyLevel()[hexIdx] : 1.0f;
+        float elevation = world.getElevation() != null && hexIdx < world.getElevation().length ? world.getElevation()[hexIdx] : 0.0f;
         
         switch (dimension) {
             case 0: // Isoglosse (Variabilité linguistique basée sur la rugosité de l'altitude)
@@ -193,8 +215,20 @@ public class CultureKernel {
             case 2: // Rituels & Asabiyyah (Cohésion sacrée)
                 return Math.max(0.0f, Math.min(1.0f, 0.6f + (elevation > 1000 ? 0.2f : 0.0f)));
             case 3: // Souveraineté & Alignement politique
-            default:
                 return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.7f + 0.2f));
+            case 4: // Technologie & Matérialité
+                return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.9f + 0.1f));
+            case 5: // Réseaux commerciaux (Centralité côtière et plaines)
+                return Math.max(0.0f, Math.min(1.0f, elevation < 500 ? 0.7f : 0.3f));
+            case 6: // Complexité institutionnelle (Seshat)
+                return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.8f + 0.1f));
+            case 7: // Empreinte écologique / Stress malthusien
+                return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.5f + 0.2f));
+            case 8: // Mémoire pathogène & Barrière sanitaire
+                return Math.max(0.0f, Math.min(1.0f, 0.5f));
+            default:
+                // Ancrage neutre pour les 10e, 11e ou autres dimensions personnalisées
+                return 0.5f;
         }
     }
 

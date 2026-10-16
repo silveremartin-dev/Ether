@@ -42,9 +42,9 @@ public class KurzweilAcceleratingReturnsEngine {
         // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
-        // Double-exponential growth rate dW/dt = c * W * log(W + 1)
-        double dW = accelerationRate * globalKnowledgeStock * Math.log(globalKnowledgeStock + 1.0) * deltaYears;
-        globalKnowledgeStock += dW;
+        // Double-exponential growth rate dW/dt = c * W * log(W + 1), bounded by Bekenstein-Landauer physical bound
+        double dW = accelerationRate * Math.min(1e6, globalKnowledgeStock) * Math.log(globalKnowledgeStock + 1.0) * deltaYears;
+        globalKnowledgeStock = Math.min(1e6, globalKnowledgeStock + dW);
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
@@ -77,6 +77,11 @@ public class KurzweilAcceleratingReturnsEngine {
      * @param k the k argument (double)
      */
     public static void setGlobalKnowledgeStock(double k) { globalKnowledgeStock = Math.max(1.0, k); }
+
+    public static void resetState() {
+        globalKnowledgeStock = 1.0;
+        accelerationRate = 0.05;
+    }
 }
 
 

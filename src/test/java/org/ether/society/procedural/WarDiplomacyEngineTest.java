@@ -68,14 +68,22 @@ public class WarDiplomacyEngineTest {
      *
      */
     public void testLinguisticDriftAndLinguaFranca() {
-        H3Cell cell1 = new H3Cell(613503380827930703L, 40.0, 5.0);
-        cell1.setPopulation(500);
-        cell1.setMovementFriction(5.0); // Isolated cell
-        cell1.setLinguisticDrift(0.10);
+        // Isolated cell with high friction (mountain/island)
+        H3Cell isolatedCell = new H3Cell(613503380827930703L, 40.0, 5.0);
+        isolatedCell.setPopulation(500);
+        isolatedCell.setMovementFriction(5.0); // Isolated cell
+        isolatedCell.setLinguisticDrift(0.10);
 
-        LanguageLinguisticEngine.processLinguisticDrift(List.of(cell1), null);
+        // Connected cell with low friction (inland trade corridor)
+        H3Cell connectedCell = new H3Cell(613503380827930704L, 40.5, 5.5);
+        connectedCell.setPopulation(500);
+        connectedCell.setMovementFriction(1.0);
+        connectedCell.setLinguisticDrift(0.10);
 
-        assertNotNull(cell1.getLinguisticDrift());
+        LanguageLinguisticEngine.processLinguisticDrift(List.of(isolatedCell, connectedCell), null);
+
+        assertEquals(0.08, isolatedCell.getLinguisticDrift(), 1e-4, "Cultural isolation must dampen linguistic drift");
+        assertTrue(connectedCell.getLinguisticDrift() > 0.10, "Connected cell must experience positive dialect drift");
     }
 
     @Test
@@ -90,12 +98,20 @@ public class WarDiplomacyEngineTest {
     public void testTechTreeDiffusion() {
         H3Cell hub = new H3Cell(613503380827930704L, 48.0, 2.0);
         hub.setPopulation(5000);
-        hub.setResourceCapital(15000.0); // High capital
+        hub.setResourceCapital(150000.0); // High capital (K/N = 30)
         hub.setBiomassNatural(2000.0);
-        hub.setTechnologyLevel(5.0);
+        hub.setTechnologyLevel(1.0); // Starting Neolithic
 
-        TechTreeEngine.processTechnologyDiffusion(List.of(hub), null);
+        H3Cell dest = new H3Cell(613503380827930705L, 48.2, 2.2);
+        dest.setPopulation(3000);
+        dest.setResourceCapital(100.0);
+        dest.setTechnologyLevel(1.0);
 
-        assertNotNull(hub.getTechnologyLevel());
+        TradeNetworkEngine.TradeRoute route = new TradeNetworkEngine.TradeRoute(hub, dest, List.of(hub, dest), 1.0);
+
+        TechTreeEngine.processTechnologyDiffusion(List.of(hub, dest), List.of(route), 1.0);
+
+        assertTrue(hub.getTechnologyLevel() > 1.0, "High power and capital must advance tech level via ratchet effect");
+        assertTrue(dest.getTechnologyLevel() > 1.0, "Active trade route must diffuse technological knowledge to destination");
     }
 }

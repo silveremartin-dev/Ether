@@ -96,15 +96,21 @@ public class CompiledEngineKernel {
     }
 
     /*
-     * Executes Kernel Fusion over object-based H3Cell list.
+     * Executes Kernel Fusion over object-based H3Cell list in a single memory cache pass.
      */
     public void executeFusedKernel(List<H3Cell> cells, double dt) {
         if (cells == null || cells.isEmpty()) return;
 
         SymbolicExpression popExpr = fusedExpressions.get("biomassHuman");
         SymbolicExpression tempExpr = fusedExpressions.get("temperature");
+        SymbolicExpression capExpr = fusedExpressions.get("resourceCapital");
+        SymbolicExpression techExpr = fusedExpressions.get("technologyLevel");
+        SymbolicExpression pollExpr = fusedExpressions.get("pollutionLevel");
+        SymbolicExpression energyExpr = fusedExpressions.get("energyFoodConsumed");
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
+
             if (popExpr != null && cell.getPopulation() != null && cell.getPopulation() > 0) {
                 double newPop = popExpr.evaluate(cell.getPopulation());
                 cell.setPopulation((int) Math.max(0, newPop));
@@ -113,6 +119,26 @@ public class CompiledEngineKernel {
             if (tempExpr != null && cell.getTemperature() != null) {
                 double newTemp = tempExpr.evaluate(cell.getTemperature());
                 cell.setTemperature(newTemp);
+            }
+
+            if (capExpr != null && cell.getResourceCapital() != null) {
+                double newCap = capExpr.evaluate(cell.getResourceCapital());
+                cell.setResourceCapital(Math.max(0.0, newCap));
+            }
+
+            if (techExpr != null && cell.getTechnologyLevel() != null) {
+                double newTech = techExpr.evaluate(cell.getTechnologyLevel());
+                cell.setTechnologyLevel(Math.max(1.0, newTech));
+            }
+
+            if (pollExpr != null && cell.getPollutionLevel() != null) {
+                double newPoll = pollExpr.evaluate(cell.getPollutionLevel());
+                cell.setPollutionLevel(Math.max(0.0, newPoll));
+            }
+
+            if (energyExpr != null && cell.getEnergyFoodConsumed() != null) {
+                double newEnergy = energyExpr.evaluate(cell.getEnergyFoodConsumed());
+                cell.setEnergyFoodConsumed(Math.max(0.0, newEnergy));
             }
         }
     }

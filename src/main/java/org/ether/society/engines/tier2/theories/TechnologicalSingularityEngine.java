@@ -49,14 +49,28 @@ public class TechnologicalSingularityEngine {
      * Executes one technological singularity evaluation and Carnot limit optimization tick across cells.
      */
     public static void processTechnologicalSingularity(List<H3Cell> cells) {
+        processTechnologicalSingularity(cells, 1.0 / 12.0);
+    }
+
+    /*
+     * Executes one technological singularity evaluation and Carnot limit optimization tick across cells scaled by dtYears.
+     */
+    public static void processTechnologicalSingularity(List<H3Cell> cells, double dtYears) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
+        double dtSafe = Math.max(0.0001, dtYears);
 
         int singularityActiveCells = 0;
 
         for (H3Cell cell : cells) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (pop <= 0) continue;
+
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            if (tech < 5.0) continue; // Singularity requires trans-human technological tier (tech >= 5.0 and P_capita >= 50,000 W)
+
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
 
@@ -66,15 +80,15 @@ public class TechnologicalSingularityEngine {
             if (throughputBitsPerSec >= 1e16 && powerPerCapita >= SINGULARITY_POWER_THRESHOLD_WATTS) {
                 singularityActiveCells++;
 
-                // 1. Post-scarcity capital gain from molecular nanotech assembly
-                cell.setResourceCapital(capital + (capital * 0.10));
+                // 1. Post-scarcity capital gain from molecular nanotech assembly scaled by dtYears
+                cell.setResourceCapital(capital + (capital * 0.10 * dtSafe));
 
                 // 2. Pollution elimination via automated molecular remediation
                 double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
-                cell.setPollutionLevel(Math.max(0.0, pollution * 0.50));
+                cell.setPollutionLevel(Math.max(0.0, pollution * Math.pow(0.50, dtSafe)));
 
                 // 3. Trans-human health & lifespan expansion
-                cell.setLifespan(Math.min(150.0, (cell.getLifespan() != null ? cell.getLifespan() : 70.0) + 1.0));
+                cell.setLifespan(Math.min(150.0, (cell.getLifespan() != null ? cell.getLifespan() : 70.0) + 1.0 * dtSafe));
             }
         }
 

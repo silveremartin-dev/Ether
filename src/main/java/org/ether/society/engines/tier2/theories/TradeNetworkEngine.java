@@ -27,6 +27,24 @@ public class TradeNetworkEngine {
 
     private static final List<TradeRoute> latestRoutes = new java.util.concurrent.CopyOnWriteArrayList<>();
 
+    // Physical trade cumulative mass/value counters across ticks
+    private static double cumulativeTradedFood = 0.0;
+    private static double cumulativeTradedCapital = 0.0;
+    private static double cumulativeTradedMetal = 0.0;
+
+    /**
+     * Resets cumulative trade statistics for scenario isolation.
+     */
+    public static void resetCumulativeStats() {
+        cumulativeTradedFood = 0.0;
+        cumulativeTradedCapital = 0.0;
+        cumulativeTradedMetal = 0.0;
+    }
+
+    public static double getCumulativeTradedFood() { return cumulativeTradedFood; }
+    public static double getCumulativeTradedCapital() { return cumulativeTradedCapital; }
+    public static double getCumulativeTradedMetal() { return cumulativeTradedMetal; }
+
     /*
      * Get latest routes.
      * Enforces physical invariants and updates associated state variables within {@code TradeNetworkEngine}.
@@ -37,19 +55,48 @@ public class TradeNetworkEngine {
         return Collections.unmodifiableList(latestRoutes);
     }
 
-    /*
-     * Simulates and computes primary trade routes between high-density population nodes.
-     * Enhances capital stock, labor efficiency, and technological diffusion along trade paths.
+    /**
+     * Backward-compatible delegation defaulting to annual time step (dt = 1.0 year).
      */
     public static List<TradeRoute> generateTradeNetworks(List<H3Cell> cells, double techLevel) {
+        return generateTradeNetworks(cells, techLevel, 1.0);
+    }
+
+    /**
+     * Simulates and computes primary trade routes between high-density population nodes.
+     * Conducts bilateral physical commodity arbitrage (food, metal, capital tools) and diffuses technology.
+     *
+     * @param cells active populated cells
+     * @param techLevel baseline or average technology level
+     * @param dtYears simulation time-step in Julian years
+     * @return list of active trade routes
+     */
+    public static List<TradeRoute> generateTradeNetworks(List<H3Cell> cells, double techLevel, double dtYears) {
         if (cells == null || cells.isEmpty()) return Collections.emptyList();
 
-        // 1. Identify trade hubs (cities / capitals with population > 500)
-        List<H3Cell> hubs = cells.stream()
-                .filter(c -> c.getPopulation() != null && c.getPopulation() >= 200)
+        // 1. Identify geographically distributed trade hubs (spatial non-maximum suppression across islands)
+        List<H3Cell> sortedCells = cells.stream()
+                .filter(c -> c.getPopulation() != null && c.getPopulation() >= 150)
                 .sorted(Comparator.comparingInt(H3Cell::getPopulation).reversed())
-                .limit(20)
                 .toList();
+
+        List<H3Cell> hubs = new ArrayList<>();
+        for (H3Cell c : sortedCells) {
+            boolean tooClose = false;
+            for (H3Cell h : hubs) {
+                if (Math.hypot(c.getLatitude() - h.getLatitude(), c.getLongitude() - h.getLongitude()) < 1.0) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (!tooClose) {
+                hubs.add(c);
+                if (hubs.size() >= 20) break;
+            }
+        }
+        if (hubs.size() < 2) {
+            hubs = sortedCells.stream().limit(10).toList();
+        }
 
         if (hubs.size() < 2) return Collections.emptyList();
 
@@ -63,13 +110,13 @@ public class TradeNetworkEngine {
         // 2. Pair hubs and find minimal friction pathways
         for (int i = 0; i < hubs.size() - 1; i++) {
             H3Cell origin = hubs.get(i);
-            for (int j = i + 1; j < Math.min(i + 4, hubs.size()); j++) {
+            for (int j = i + 1; j < Math.min(i + 5, hubs.size()); j++) {
                 H3Cell destination = hubs.get(j);
 
                 TradeRoute route = computeFrictionPath(origin, destination, cells, techLevel);
                 if (route != null) {
                     activeRoutes.add(route);
-                    applyTradeCorridorEffects(route, techLevel);
+                    applyTradeCorridorEffects(route, techLevel, dtYears);
                 }
             }
         }
@@ -85,9 +132,6 @@ public class TradeNetworkEngine {
      * Computes the lowest-friction route between two cells using cost-distance heuristics.
      */
     private static TradeRoute computeFrictionPath(H3Cell start, H3Cell end, List<H3Cell> cells, double techLevel) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         double distLat = end.getLatitude() - start.getLatitude();
         double distLng = end.getLongitude() - start.getLongitude();
         double directDist = Math.sqrt(distLat * distLat + distLng * distLng);
@@ -105,12 +149,11 @@ public class TradeNetworkEngine {
             H3Cell nextBest = null;
             double bestScore = Double.MAX_VALUE;
 
-            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell neighbor : cells) {
                 if (neighbor == current) continue;
 
                 double stepDist = Math.hypot(neighbor.getLatitude() - current.getLatitude(), neighbor.getLongitude() - current.getLongitude());
-                if (stepDist > 4.0) continue; // Only adjacent neighborhood
+                if (stepDist > 6.0) continue; // Adjacent or archipelagic strait neighborhood
 
                 double remainingDist = Math.hypot(end.getLatitude() - neighbor.getLatitude(), end.getLongitude() - neighbor.getLongitude());
                 double friction = neighbor.calculateMovementFriction(techLevel);
@@ -134,35 +177,131 @@ public class TradeNetworkEngine {
             }
         }
 
+        // Maritime bridge: if open straits separate two island hubs, connect maritime route directly
+        if (!path.contains(end)) {
+            path.add(end);
+            totalCost += directDist * 1.2;
+        }
+
         return new TradeRoute(start, end, path, totalCost);
     }
 
     /*
-     * Boosts capital, technology diffusion, and infrastructure along the trade route corridor.
+     * Conducts bilateral physical commodity arbitrage between trade route origin and destination,
+     * and boosts capital, technology diffusion, and infrastructure along the trade corridor.
      */
-    private static void applyTradeCorridorEffects(TradeRoute route, double techLevel) {
+    private static void applyTradeCorridorEffects(TradeRoute route, double techLevel, double dtYears) {
         if (route == null || route.pathCells().isEmpty()) return;
 
-        double routeValue = 50.0 * (1.0 + techLevel * 0.5) / Math.max(1.0, route.totalFrictionCost() * 0.1);
+        double friction = Math.max(1.0, route.totalFrictionCost() * 0.1);
+        double conductance = Math.min(1.0, 1.0 / friction);
 
-        // Marine & Ocean Acidification Coupling: depleted marine biomass diminishes route value
+        H3Cell orig = route.origin();
+        H3Cell dest = route.destination();
+
+        // 1. Bilateral Physical Commodity Arbitrage between Origin and Destination Hubs
+        if (orig != null && dest != null && orig.getPopulation() > 0 && dest.getPopulation() > 0) {
+            // A. Physical Food Arbitrage (Ricardian Grain/Fish Trade):
+            double origFood = orig.getFoodResource() != null ? orig.getFoodResource() : 0.0;
+            double destFood = dest.getFoodResource() != null ? dest.getFoodResource() : 0.0;
+            double origNeed = orig.getPopulation() * 3.362; // Annual subsistence metabolic baseline in GJ
+            double destNeed = dest.getPopulation() * 3.362;
+
+            double origSurplus = origFood - origNeed;
+            double destSurplus = destFood - destNeed;
+
+            if (origSurplus > 5.0 && destSurplus < -5.0) {
+                // Origin exports food to deficit destination
+                double exportPotential = Math.min(origSurplus * 0.35, -destSurplus * 0.80) * conductance * dtYears;
+                if (exportPotential > 0.0) {
+                    orig.setFoodResource(Math.max(0.0, origFood - exportPotential));
+                    dest.setFoodResource(destFood + exportPotential * 0.95); // 5% maritime transport spoilage
+                    cumulativeTradedFood += exportPotential;
+                }
+            } else if (destSurplus > 5.0 && origSurplus < -5.0) {
+                // Destination exports food to deficit origin
+                double exportPotential = Math.min(destSurplus * 0.35, -origSurplus * 0.80) * conductance * dtYears;
+                if (exportPotential > 0.0) {
+                    dest.setFoodResource(Math.max(0.0, destFood - exportPotential));
+                    orig.setFoodResource(origFood + exportPotential * 0.95);
+                    cumulativeTradedFood += exportPotential;
+                }
+            }
+
+            // B. Physical Metal and Tool Arbitrage:
+            double origMetal = orig.getResourceMetal() != null ? orig.getResourceMetal() : 0.0;
+            double destMetal = dest.getResourceMetal() != null ? dest.getResourceMetal() : 0.0;
+            if (origMetal > destMetal + 10.0) {
+                double metalTrade = Math.min(origMetal * 0.20, (origMetal - destMetal) * 0.25) * conductance * dtYears;
+                if (metalTrade > 0.0) {
+                    orig.setResourceMetal(Math.max(0.0, origMetal - metalTrade));
+                    dest.setResourceMetal(destMetal + metalTrade * 0.98); // 2% oxidation loss
+                    cumulativeTradedMetal += metalTrade;
+                }
+            } else if (destMetal > origMetal + 10.0) {
+                double metalTrade = Math.min(destMetal * 0.20, (destMetal - origMetal) * 0.25) * conductance * dtYears;
+                if (metalTrade > 0.0) {
+                    dest.setResourceMetal(Math.max(0.0, destMetal - metalTrade));
+                    orig.setResourceMetal(origMetal + metalTrade * 0.98);
+                    cumulativeTradedMetal += metalTrade;
+                }
+            }
+
+            // C. Physical Capital Tool Arbitrage (Intensive K/N Rebalancing):
+            double origCap = orig.getResourceCapital() != null ? orig.getResourceCapital() : 0.0;
+            double destCap = dest.getResourceCapital() != null ? dest.getResourceCapital() : 0.0;
+            double origCapPerCap = origCap / Math.max(1.0, orig.getPopulation());
+            double destCapPerCap = destCap / Math.max(1.0, dest.getPopulation());
+            if (origCapPerCap > destCapPerCap * 1.3 && origCap > 50.0) {
+                double capTrade = Math.min(origCap * 0.15, (origCapPerCap - destCapPerCap) * dest.getPopulation() * 0.20) * conductance * dtYears;
+                if (capTrade > 0.0) {
+                    orig.setResourceCapital(Math.max(0.0, origCap - capTrade));
+                    dest.setResourceCapital(destCap + capTrade * 0.98);
+                    cumulativeTradedCapital += capTrade;
+                }
+            } else if (destCapPerCap > origCapPerCap * 1.3 && destCap > 50.0) {
+                double capTrade = Math.min(destCap * 0.15, (destCapPerCap - origCapPerCap) * orig.getPopulation() * 0.20) * conductance * dtYears;
+                if (capTrade > 0.0) {
+                    dest.setResourceCapital(Math.max(0.0, destCap - capTrade));
+                    orig.setResourceCapital(origCap + capTrade * 0.98);
+                    cumulativeTradedCapital += capTrade;
+                }
+            }
+        }
+
+        // 2. Route Corridor Spillovers (Scaled by dtYears and local settlement capacity)
+        double routeValue = 12.0 * (1.0 + techLevel * 0.35) / friction * dtYears;
+
+        // Marine biomass coupling
         double marineFactor = 1.0;
-        if (route.origin() != null && route.origin().getBiomassFish() != null) {
-            marineFactor = Math.clamp(route.origin().getBiomassFish() / 500.0, 0.2, 1.0);
+        if (orig != null && orig.getBiomassFish() != null) {
+            marineFactor = Math.clamp(orig.getBiomassFish() / 500.0, 0.2, 1.0);
         }
         routeValue *= marineFactor;
 
+        int pathLen = Math.max(1, route.pathCells().size());
+        double perCellSpillover = routeValue / Math.sqrt(pathLen);
+
         for (H3Cell cell : route.pathCells()) {
-            // Capital accumulation along trade route
-            cell.setResourceCapital(cell.getResourceCapital() + routeValue * 0.5);
+            int cellPop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (cellPop <= 0) continue;
+
+            // Merchant capital accumulation along trade route bounded by local labor absorption capacity
+            double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double maxMerchantCap = cellPop * 15.0 * Math.max(1.0, techLevel);
+            if (curCap < maxMerchantCap) {
+                cell.setResourceCapital(Math.min(maxMerchantCap, curCap + perCellSpillover * 0.5));
+            }
 
             // Technology diffusion along trade route
-            if (cell.getTechnologyLevel() < techLevel) {
-                cell.setTechnologyLevel(Math.min(techLevel, cell.getTechnologyLevel() + 0.05));
+            double curTech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            if (curTech < techLevel) {
+                cell.setTechnologyLevel(Math.min(techLevel, curTech + 0.03 * dtYears));
             }
 
             // Gini index slightly increases in trading hubs due to merchant wealth accumulation
-            cell.setGiniIndex(Math.clamp(cell.getGiniIndex() + 0.005, 0.15, 0.85));
+            double curGini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.3;
+            cell.setGiniIndex(Math.clamp(curGini + 0.005 * dtYears, 0.15, 0.85));
         }
     }
 }

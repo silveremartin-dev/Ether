@@ -67,10 +67,21 @@ public class BiologicalDemographicsEngine {
 
             double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
             double agBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
-            double totalFoodGJ = Math.max(food, naturalBiomass + agBiomass);
+            double fishBiomass = cell.getBiomassFish() != null ? cell.getBiomassFish() : 0.0;
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double edibleNaturalBiomassGJ = naturalBiomass * (tech < 1.5 ? 0.008 : 0.005) * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+            double edibleAgBiomassGJ = agBiomass * 0.70 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
+            double edibleFishBiomassGJ = fishBiomass * 0.25 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
+            double renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgBiomassGJ + edibleFishBiomassGJ;
+            double totalFoodGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20, food * 0.15);
 
-            // Physical carrying capacity K = food available / annual metabolic requirement (3.362 GJ)
-            double carryingCapacity = Math.max(0.05, totalFoodGJ / org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
+            // Trophic-adjusted annual metabolic requirement matching DemographicKernel (Lindeman primary crop vs foraging trophic chain)
+            double trophicRatio = (tech < 1.5)
+                    ? 1.0
+                    : (org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN
+                       / org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER);
+            double effectiveAnnualMetabolicNeedGJ = org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * trophicRatio;
+            double carryingCapacity = Math.max(0.05, totalFoodGJ / effectiveAnnualMetabolicNeedGJ);
             double stressRatio = (double) pop / carryingCapacity;
 
             // Famine / Nutritional stress factor (acute scaling with caloric deficit)
@@ -91,6 +102,21 @@ public class BiologicalDemographicsEngine {
 
             // Extreme Cold Hazard (Hypothermia / Frostbite below -10°C)
             double coldHazard = tempC < -10.0 ? Math.min(0.25, (-10.0 - tempC) * 0.012) : 0.0;
+
+            // Environmental hazard mortality integration (Gompertz-Makeham extrinsic hazard gamma).
+            // Ownership split (no double counting): Malthusian starvation mortality is owned by
+            // DemographicKernel (core.dod), which already applies it to cohort mass every tick.
+            // This engine therefore applies ONLY the physiological hazards the kernel does not model:
+            //   gamma_env = mu_hypoxia(elevation, EPAS1) + mu_cold(T < -10 C)
+            //   N(t + dt) = N(t) * exp(-gamma_env * dt)   (unconditionally stable exponential integration)
+            // nutritionalStress is retained as a diagnostic only.
+            double environmentalHazard = hypoxiaHazard + coldHazard;
+            if (environmentalHazard > 0.0) {
+                double survivalRate = Math.exp(-environmentalHazard * dt);
+                int survivingPop = (int) Math.round(pop * survivalRate);
+                cell.setPopulation(Math.max(0, survivingPop));
+                pop = cell.getPopulation();
+            }
 
             // Environmental hazard factor calculation for telemetry and age pyramid updates
             if (pop > 0) {

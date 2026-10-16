@@ -34,22 +34,25 @@ public class TasmanianCulturalRegressionEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+        double totalPop = 0.0;
+        for (H3Cell c : cells) {
+            if (c != null && c.getPopulation() != null && c.getPopulation() > 0) {
+                totalPop += c.getPopulation();
+            }
+        }
 
-            double pop = cell.getPopulation();
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-
-            // Henrich loss condition: small isolated populations suffer technology regression
-            if (pop < isolationPopulationThreshold && tech > 1.0) {
-                double lossRate = 0.01 * (1.0 - pop / isolationPopulationThreshold) * deltaYears;
-                cell.setTechnologyLevel(Math.max(1.0, tech - lossRate));
+        // Henrich (2004) loss condition: small isolated populations below critical meta-demographic threshold
+        // suffer technology regression due to finite transmission fidelity and stochastic learner loss
+        if (totalPop < isolationPopulationThreshold) {
+            double lossRate = 0.04 * (1.0 - totalPop / isolationPopulationThreshold) * deltaYears;
+            for (H3Cell cell : cells) {
+                if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+                if (tech > 1.0) {
+                    cell.setTechnologyLevel(Math.max(1.0, tech - lossRate));
+                }
             }
         }
     }

@@ -22,7 +22,7 @@ class SimulationSaveManagerTest {
     @Test
     @DisplayName("Saving simulation with interconnected Cells and Nations does not trigger circular recursion")
     void testSaveSimulationWithNationOwnership(@TempDir Path tempDir) throws Exception {
-        SimulationSaveManager saveManager = new SimulationSaveManager();
+        SimulationSaveManager saveManager = new SimulationSaveManager(tempDir);
         Configuration config = ConfigurationLoader.loadDefault();
         H3SimulationEngine engine = new H3SimulationEngine(config);
 

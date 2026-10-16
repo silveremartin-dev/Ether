@@ -20,7 +20,7 @@ public class SaveMetadata {
     private String id;
     /* Internal state variable for name (String). */
     private String name;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime timestamp = LocalDateTime.now();
     /* Internal state variable for year (long). */
     private long year;

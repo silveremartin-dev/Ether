@@ -30,10 +30,35 @@ public class NuclearSafetyRadiotoxicityEngine {
     /* Power flux threshold for nuclear D-T fusion energy */
     public static final double FUSION_POWER_THRESHOLD = 50000.0;
 
+    /* Baseline annual core meltdown probability per fission cell */
+    private static double accidentProbability = 0.0005;
+
+    /**
+     * Resets mutable static state between scenario executions to guarantee isolation.
+     */
+    public static void resetState() {
+        accidentProbability = 0.0005;
+    }
+
+    public static double getAccidentProbability() {
+        return accidentProbability;
+    }
+
+    public static void setAccidentProbability(double prob) {
+        accidentProbability = Math.max(0.0, Math.min(1.0, prob));
+    }
+
     /*
      * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick.
      */
     public static void processNuclearEnergySafety(List<H3Cell> cells) {
+        processNuclearEnergySafety(cells, 0L);
+    }
+
+    /*
+     * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick with explicit simulation tick.
+     */
+    public static void processNuclearEnergySafety(List<H3Cell> cells, long tick) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
@@ -43,16 +68,23 @@ public class NuclearSafetyRadiotoxicityEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (pop <= 0) continue;
+
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            if (tech < 4.0) continue; // Nuclear fission requires atomic age technology (tech >= 4.0)
+
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
 
             // Fission accident probability under high power flux without fusion
             if (powerPerCapita >= FISSION_POWER_THRESHOLD && powerPerCapita < FUSION_POWER_THRESHOLD) {
-                if (Math.random() < 0.0005) { // Meltdown risk event
+                long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
+                double prng = org.ether.society.util.DeterministicPRNG.nextDouble(42L, tick, cellId, 107L);
+                if (accidentProbability >= 1.0 || prng < accidentProbability) { // Deterministic meltdown risk event
                     meltdownEvents++;
                     // Radiotoxic fallout spike (Bq/m^2 modeled via pollution)
                     cell.setPollutionLevel(pollution + 10000.0);
-                    int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
                     cell.setPopulation((int) (pop * 0.70)); // Evacuation & acute radiation syndrome
                 }
             }

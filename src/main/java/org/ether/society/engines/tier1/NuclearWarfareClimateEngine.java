@@ -57,13 +57,20 @@ public class NuclearWarfareClimateEngine {
 
         // 1. Evaluate conflict triggers & stratospheric soot injection
         for (H3Cell cell : cells) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (pop <= 5000) continue;
+
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            if (tech < 4.0) continue; // Nuclear capability requires atomic age technology
+
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
 
             // Nuclear war trigger: High power capability & extreme population density conflict
-            if (powerPerCapita >= NUCLEAR_CAPABILITY_POWER_WATTS && pop > 5000 && capital > 20000.0) {
-                if (Math.random() < 0.0001) { // Macro war event probability per tick
+            if (powerPerCapita >= NUCLEAR_CAPABILITY_POWER_WATTS && capital > 20000.0) {
+                long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
+                double prng = org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, cellId, 211L);
+                if (prng < 0.0001) { // Deterministic macro war event probability per tick
                     sootInjectionEvents++;
                     globalSootOpticalDepth += 0.50; // Inject stratospheric soot (Tg)
 
@@ -123,6 +130,10 @@ public class NuclearWarfareClimateEngine {
      */
     public static void setGlobalSootOpticalDepth(double depth) {
         globalSootOpticalDepth = Math.max(0.0, depth);
+    }
+
+    public static void resetState() {
+        globalSootOpticalDepth = 0.0;
     }
 }
 

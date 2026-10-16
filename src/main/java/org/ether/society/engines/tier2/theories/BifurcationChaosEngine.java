@@ -139,6 +139,12 @@ public class BifurcationChaosEngine {
     public static boolean isTippingPointWarning() {
         return tippingPointWarning;
     }
+
+    public static void resetState() {
+        globalLyapunovExponent = 0.0;
+        globalSystemVariance = 0.0;
+        tippingPointWarning = false;
+    }
 }
 
 

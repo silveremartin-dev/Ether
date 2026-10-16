@@ -39,10 +39,17 @@ public class AlbedoClimateEngine {
      * Convenience method for updating albedo feedback with baseline parameters.
      */
     public static void processAlbedoFeedback(List<H3Cell> cells) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
-        processAlbedoAndClimateEvents(cells, 0L, 0.0);
+        processAlbedoFeedback(cells, 1.0 / 12.0);
+    }
+
+    /*
+     * Updates albedo feedback scaled by time step in years.
+     *
+     * @param cells List of H3 simulation cells
+     * @param dtYears Time step in years
+     */
+    public static void processAlbedoFeedback(List<H3Cell> cells, double dtYears) {
+        processAlbedoAndClimateEvents(cells, 0L, 0.0, dtYears);
     }
 
     /*
@@ -53,6 +60,18 @@ public class AlbedoClimateEngine {
      * @param volcanicCoolingOffset Active volcanic aerosol cooling in °C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
      */
     public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset) {
+        processAlbedoAndClimateEvents(cells, simulationYear, volcanicCoolingOffset, 1.0 / 12.0);
+    }
+
+    /*
+     * Updates dynamic albedo, orbital precession (Green Sahara), and climate disaster events with time-step invariance.
+     *
+     * @param cells                 List of H3 simulation cells
+     * @param simulationYear        Current simulation year (for Milankovitch orbital cycle calculation)
+     * @param volcanicCoolingOffset Active volcanic aerosol cooling in °C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
+     * @param dtYears               Time step in years
+     */
+    public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset, double dtYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
@@ -63,6 +82,10 @@ public class AlbedoClimateEngine {
 
         int greenSaharaCells = 0;
         int floodDisasterCells = 0;
+
+        // Thermal inertia: mixed-layer ocean/land relaxation time constant tau ~ 2.0 years
+        double dtSafe = Math.max(0.0001, dtYears);
+        double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
 
         for (H3Cell cell : cells) {
             double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
@@ -83,30 +106,32 @@ public class AlbedoClimateEngine {
             if (continuousMonsoonForcing > 0.05 && cell.getBiome() == Biome.DESERT) {
                 greenSaharaCells++;
                 // Continuous monsoon penetration: increase rainfall, aquifers, and soil carbon proportional to solar insolation
-                cell.setRainfall(Math.min(1200.0, cell.getRainfall() + 500.0 * continuousMonsoonForcing));
-                cell.setAccessibleAquifer(Math.min(15000.0, cell.getAccessibleAquifer() + 2000.0 * continuousMonsoonForcing));
-                cell.setWaterResource(Math.min(1000.0, cell.getWaterResource() + 400.0 * continuousMonsoonForcing));
+                cell.setRainfall(Math.min(1200.0, cell.getRainfall() + 500.0 * continuousMonsoonForcing * dtSafe));
+                cell.setAccessibleAquifer(Math.min(15000.0, cell.getAccessibleAquifer() + 2000.0 * continuousMonsoonForcing * dtSafe));
+                cell.setWaterResource(Math.min(1000.0, cell.getWaterResource() + 400.0 * continuousMonsoonForcing * dtSafe));
 
                 // Gradual ecological biome transition based on cumulative forcing
                 if (continuousMonsoonForcing > 0.3) {
                     cell.setBiome(Biome.PLAINS);
                 }
-                cell.setSoilOrganicCarbon(Math.min(60.0, cell.getSoilOrganicCarbon() + 15.0 * continuousMonsoonForcing));
-                cell.setBiomassNatural(Math.min(800.0, cell.getBiomassNatural() + 300.0 * continuousMonsoonForcing));
+                cell.setSoilOrganicCarbon(Math.min(60.0, cell.getSoilOrganicCarbon() + 15.0 * continuousMonsoonForcing * dtSafe));
+                cell.setBiomassNatural(Math.min(800.0, cell.getBiomassNatural() + 300.0 * continuousMonsoonForcing * dtSafe));
             }
 
-            // ── 2. Albedo Radiative Feedback Loop ─────────────────────────────
+            // ── 2. Budyko-Sellers 1-D Energy Balance Radiative Equilibrium ──────
             double albedo = cell.calculateDynamicAlbedo();
             double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
 
-            // Radiative forcing feedback: high albedo reflects heat, low albedo absorbs heat
-            double albedoDelta = (0.30 - albedo) * 2.5;
+            // Radiative forcing equilibrium anomaly (delta T_eq = delta F / lambda, where lambda ~ 1.5 W/m2/K)
+            double equilibriumTempAnomaly = (0.30 - albedo) * 6.0 + volcanicCoolingOffset;
+            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+            double targetTemp = baselineTemp + equilibriumTempAnomaly;
 
-            // ── 3. Apply Volcanic Aerosol Cooling (Catastrophe Climatique) ────
-            double updatedTemp = currentTemp + (albedoDelta * 0.08) + volcanicCoolingOffset;
+            // Continuous thermal relaxation towards Budyko equilibrium
+            double updatedTemp = currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor;
             cell.setTemperature(Math.max(-250.0, Math.min(600.0, updatedTemp)));
 
-            // ── 4. Megastorm / Flood Disaster Impact ──────────────────────────
+            // ── 3. Megastorm / Flood Disaster Impact ──────────────────────────
             if (cell.getRainfall() > 900.0 && elev < 30.0 && cell.getBiome() == Biome.BEACH) {
                 floodDisasterCells++;
                 // Destroy infrastructure & capital

@@ -121,6 +121,12 @@ public class TrophicEcosystemEngine {
      * @param index the index argument (double)
      */
     public static void setGlobalBiodiversityIndex(double index) { globalBiodiversityIndex = Math.max(0.0, Math.min(1.0, index)); }
+
+    public static void resetState() {
+        pleistoceneRewildingActive = false;
+        megafaunaDensityPerKm2 = 0.0;
+        globalBiodiversityIndex = 1.0;
+    }
 }
 
 

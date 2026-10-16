@@ -1137,6 +1137,22 @@ Beyond numerical domain truncation, Ether utilizes comparative full-sphere vs. w
 * **Theoretical Hypothesis (Henrich 2004 vs. Maritime Network Synthesis)**: Small isolated islands suffer technological loss and early carrying capacity saturation ($K_{\text{local}} \approx 1.2\text{ M}$), whereas integration into the Swahili-Austronesian monsoon maritime network injects exogenous exergy, iron tools, and zebu cattle, elevating carrying capacity by $+45\%$ ($K_{\text{global}} \approx 1.74\text{ M}$).
 * **Falsification Protocol**: Standalone `CLOSED_BARRIER` Madagascar window vs. Global Indian Ocean network. Verifies the measurable macro-demographic and technological dividend of maritime commercial interconnectedness.
 
+#### Case Study C: British Isles & Irish Sea Archipelago (1600–1630 CE) — Inter-Island Maritime Trade & Technology Diffusion
+* **Theoretical Hypothesis (Smith 1776, Wrigley 1988 vs. Regional Autarky)**: Maritime straits (such as the Irish Sea separating Great Britain and Ireland) act not merely as physical transport barriers, but as high-capacity maritime corridors facilitating capital exchange and accelerating spatial technology diffusion between core and peripheral insular polities.
+* **Falsification Protocol**: Formalized across a dual-island archipelagic mesh: Great Britain (19 Res-4 cells, initial $T = 3.00$, $K/N = 35.0$) and Ireland (7 Res-4 cells, initial $T = 1.80$, $K/N = 10.0$). Over a 30-year simulation under `TradeNetworkEngine` and `TechTreeEngine`, active maritime gravity routes ($\Phi_{ij} \ge \Phi_{\text{thresh}}$) generate inter-island commodity fluxes. As predicted by trade-mediated diffusion theory, Ireland experiences substantial technological catch-up ($T_{\text{Ireland}}: 1.80 \to 1.942$) and accumulates sustained capital stocks ($K_{\text{Ireland}} > 0$), falsifying the hypothesis of geographic friction enforcing permanent peripheral stagnation.
+
+#### Case Study D: Japanese Archipelago (1650–1700 CE, Tokugawa Regime) — Mountainous Relief, Wet-Rice & Fishery Exergy Subsidies
+* **Theoretical Hypothesis (Totman 1989, Diamond 2005 vs. Malthusian Collapse)**: Rugged island geography with severe agricultural land constraints ($>70\%$ steep mountainous terrain) can achieve demographic homeostasis and avoid ecological catastrophe through a triple equilibrium: (1) labor-intensive wet-rice valley cultivation (`BoserupAgriculturalIntensificationEngine`), (2) strict state-enforced silviculture preventing deforestation, and (3) marine fishery exergy subsidies buffering terrestrial food deficits.
+* **Falsification Protocol**: Evaluates a 37-cell Honshu archipelago mesh at Resolution 4 with realistic altitudinal zoning (mountains, hills, coastal plains). Running 40 years under Tokugawa autarkic conditions demonstrates that demographic stability is sustained ($N > 16\,650$ with zero collapse), forest biomass is preserved ($W > 37\,000$ units, avoiding Easter Island deforestation), and coastal fishery stocks maintain active trophic food contributions ($F > 100$ units), confirming the viability of institutional-ecological co-adaptation.
+
+#### Case Study E: Multi-Trophic Biomass Dynamics & Marine Fishery Regeneration (Schaefer Logistic & Overfishing Feedback)
+* **Theoretical Hypothesis (Gordon 1954, Schaefer 1957 vs. Linear Resource Pools)**: Renewable marine biomass stocks follow non-linear logistic replenishment with a distinct Maximum Sustainable Yield (MSY) tipping point ($\approx K_{\text{marine}}/2$). Over-exploitation depletes stocks toward a minimum viable threshold, where open-ocean pelagic larval influx provides a biophysical extinction buffer preventing irreversible catastrophic collapse.
+* **Falsification Protocol**: Benchmarks coastal and beach biomes at Resolution 4 under active human harvesting over 15 years. Verifies bidirectional synchronization between `WorldBuffer.biomassFish` and `H3Cell.biomassFish`. Under moderate coastal population ($N \approx 800$), stock stabilizes near MSY with a sustainable harvest rate ($\sim 42.6\%$ depletion from virgin stock $K \approx 9\,300$ down to $\sim 5\,340$), while larval seed influx ($S_{\text{pelagic}} = 5.0 \cdot \text{areaScale} \cdot \Delta t$) guarantees demographic non-zero continuity ($F > 50.0$), validating closed-loop trophic feedback without unphysical extinction singularities.
+
+#### Case Study F: Henrich Insular Metapopulation Critical Thresholds ($N < 5\,000$) — Tasmanian Skill Regression vs Connected Archipelagoes
+* **Theoretical Hypothesis (Henrich 2004 vs. Static Repertoire Retention)**: Cumulative cultural evolution requires an effective learner metapopulation exceeding a critical threshold $N_c \approx 5\,000$. When an insular population is truncated below $N_c$ through post-glacial sea level rise (e.g. Flinders Island, Tasmania after the inundation of Bass Strait $\sim 12\,000\text{ BP}$), stochastic copying errors and transmission fidelity losses exceed rare serendipitous discoveries ($\frac{dC}{dt} < 0$), causing generational loss of complex technologies (bone tools, spearthrowers, ocean-going watercraft, tailored garments).
+* **Falsification Protocol**: Benchmarks an isolated 1-cell islet ($N = 250 \ll 5\,000$) over a 40-year horizon in a controlled A/B ablation test. Under `TasmanianCulturalRegressionEngine` active (Condition A), technology monotonically regresses from $T = 2.50 \to 2.348$ ($\Delta T = -0.152$), directly reproducing the archaeological trajectory of Holocene Tasmania. In contrast, under the static control (Condition B), technology erroneously expands ($T \to 4.003$), falsifying static cognitive retention in sub-threshold isolated demographies.
+
 ---
 
 ## 6. References & Empirical Datasets
@@ -1172,11 +1188,14 @@ Beyond numerical domain truncation, Ether utilizes comparative full-sphere vs. w
 22. **Acemoglu, D., & Robinson, J. A. (2012)**. *Why Nations Fail: The Origins of Power, Prosperity, and Poverty*. New York: Crown Business.
 23. **Acemoglu, D., Johnson, S., & Robinson, J. A. (2002)**. "Reversal of Fortune: Geography and Institutions in the Making of the Modern World Income Distribution." *Quarterly Journal of Economics*, 117(4), 1231–1294.
 24. **Diamond, J. (1997)**. *Guns, Germs, and Steel: The Fates of Human Societies*. New York: W. W. Norton.
-25. **Hardin, G. (1968)**. "The Tragedy of the Commons." *Science*, 162(3859), 1243–1248.
-26. **Olson, M. (1993)**. "Dictatorship, Democracy, and Development." *American Political Science Review*, 87(3), 567–576.
-27. **Ostrom, E. (1990)**. *Governing the Commons: The Evolution of Institutions for Collective Action*. Cambridge: Cambridge University Press.
-28. **Sachs, J. D. (2001)**. "Tropical Underdevelopment." *NBER Working Paper Series*, No. 8119.
-29. **Tainter, J. A. (1988)**. *The Collapse of Complex Societies*. Cambridge: Cambridge University Press.
+25. **Gordon, H. S. (1954)**. "The Economic Theory of a Common-Property Resource: The Fishery." *Journal of Political Economy*, 62(2), 124–142.
+26. **Hardin, G. (1968)**. "The Tragedy of the Commons." *Science*, 162(3859), 1243–1248.
+27. **Olson, M. (1993)**. "Dictatorship, Democracy, and Development." *American Political Science Review*, 87(3), 567–576.
+28. **Ostrom, E. (1990)**. *Governing the Commons: The Evolution of Institutions for Collective Action*. Cambridge: Cambridge University Press.
+29. **Sachs, J. D. (2001)**. "Tropical Underdevelopment." *NBER Working Paper Series*, No. 8119.
+30. **Schaefer, M. B. (1957)**. "A Study of the Dynamics of the Fishery for Yellowfin Tuna in the Eastern Tropical Pacific Ocean." *Inter-American Tropical Tuna Commission Bulletin*, 2(6), 245–285.
+31. **Tainter, J. A. (1988)**. *The Collapse of Complex Societies*. Cambridge: Cambridge University Press.
+32. **Totman, C. (1989)**. *The Green Archipelago: Forestry in Pre-Industrial Japan*. Berkeley: University of California Press.
 
 ### 5. Anthropological History & Cultural Evolution
 30. **Henrich, J. (2004)**. "Demography and Cultural Evolution: How Adaptive Cultural Processes Can Produce Maladaptive Losses—The Tasmanian Effect." *American Antiquity*, 69(2), 197–214.

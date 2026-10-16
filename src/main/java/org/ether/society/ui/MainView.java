@@ -648,9 +648,18 @@ public class MainView extends StackPane {
         long curTick = engine.getTickCounter();
         var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
         if (snapshots != null && !snapshots.isEmpty()) {
-            Long lowerTick = snapshots.lowerKey(curTick);
-            if (lowerTick != null) {
-                applySeekToTick(lowerTick);
+            int jumps = fast ? 5 : 1;
+            Long targetTick = curTick;
+            for (int i = 0; i < jumps; i++) {
+                Long lower = snapshots.lowerKey(targetTick);
+                if (lower != null) {
+                    targetTick = lower;
+                } else {
+                    break;
+                }
+            }
+            if (targetTick != null && !targetTick.equals(curTick)) {
+                applySeekToTick(targetTick);
                 return;
             }
         }
@@ -670,9 +679,18 @@ public class MainView extends StackPane {
         long curTick = engine.getTickCounter();
         var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
         if (snapshots != null && !snapshots.isEmpty()) {
-            Long nextTick = snapshots.higherKey(curTick);
-            if (nextTick != null) {
-                applySeekToTick(nextTick);
+            int jumps = fast ? 5 : 1;
+            Long targetTick = curTick;
+            for (int i = 0; i < jumps; i++) {
+                Long higher = snapshots.higherKey(targetTick);
+                if (higher != null) {
+                    targetTick = higher;
+                } else {
+                    break;
+                }
+            }
+            if (targetTick != null && !targetTick.equals(curTick)) {
+                applySeekToTick(targetTick);
                 return;
             }
         }

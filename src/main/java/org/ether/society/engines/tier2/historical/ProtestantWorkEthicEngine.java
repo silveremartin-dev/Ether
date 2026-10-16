@@ -58,10 +58,9 @@ public class ProtestantWorkEthicEngine {
             double techGain = (0.01 * techAccelerationMultiplier) * deltaYears;
             cell.setTechnologyLevel(tech + techGain);
 
-            // Frugality & literacy reduce birth rate slightly (demographic transition effect)
-            if (pop > 1000) {
-                cell.setPopulation((int) (pop * (1.0 + 0.001 * deltaYears))); // Controlled demographic growth
-            }
+            // Population is NOT modified here: the former "+0.1%/yr" multiplication created people without
+            // births or food (and contradicted its own comment about reduced fertility). Demographic effects
+            // must act through the Tier 1 DemographicKernel to preserve demographic mass conservation.
         }
     }
 

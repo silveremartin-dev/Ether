@@ -8430,8 +8430,22 @@ private String getDefaultTensorName(int index) {
 
     // Helper subroutine: load earth historical events - internal state computation & bounds checking
     private void loadEarthHistoricalEvents() {
-        int startYear = startYearSpinner != null ? startYearSpinner.getValue() : -8000;
-        loadEarthBiophysicalEvents(startYear, false);
+        boolean wasUpdating = isUpdatingFromPreset;
+        isUpdatingFromPreset = true;
+        try {
+            int startYear = startYearSpinner != null ? startYearSpinner.getValue() : -8000;
+            loadEarthBiophysicalEvents(startYear, false);
+        } finally {
+            isUpdatingFromPreset = wasUpdating;
+            if (scenarioPresetBar != null) {
+                Scenario current = scenarioPresetBar.getPresetCombo() != null ? scenarioPresetBar.getPresetCombo().getValue() : null;
+                if (current != null) {
+                    scenarioPresetBar.markClean(current);
+                } else {
+                    scenarioPresetBar.markClean();
+                }
+            }
+        }
     }
 
     // Helper subroutine: prompt event load confirmation dialog
@@ -8482,7 +8496,14 @@ private String getDefaultTensorName(int index) {
             }
         }
         logger.info("Loaded {} biophysical historical events posterior to start year {}.", eventsList.size(), startYear);
-        notifyParamChange();
+        if (promptConfirmation) {
+            notifyParamChange();
+        } else {
+            updateLiveDiagnosticBlock();
+            updateDefaultValueIndicators();
+            updateStartButtonLabel();
+            validateScenarioSetup();
+        }
     }
 
     // Helper subroutine: load earth historical leaders events
@@ -8511,7 +8532,14 @@ private String getDefaultTensorName(int index) {
             }
         }
         logger.info("Loaded {} historical leader events posterior to start year {}.", eventsList.size(), startYear);
-        notifyParamChange();
+        if (promptConfirmation) {
+            notifyParamChange();
+        } else {
+            updateLiveDiagnosticBlock();
+            updateDefaultValueIndicators();
+            updateStartButtonLabel();
+            validateScenarioSetup();
+        }
     }
 
     /*

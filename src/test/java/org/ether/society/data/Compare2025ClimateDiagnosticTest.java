@@ -1,11 +1,14 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Test;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+@Tag("manual")
 public class Compare2025ClimateDiagnosticTest {
 
     @Test
@@ -68,3 +71,4 @@ public class Compare2025ClimateDiagnosticTest {
         System.out.println("Diagnostic maps successfully rendered into target/diagnostic-2025/");
     }
 }
+

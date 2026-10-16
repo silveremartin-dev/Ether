@@ -430,9 +430,8 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
+        SimulationPipeline.resetGlobalSimulationState();
         this.currentScenario = scenario;
-
-
         this.performanceConfig = scenario != null ? scenario.toPerformanceConfig() : new org.ether.society.config.SimulationPerformanceConfig(true);
 
 
@@ -547,7 +546,9 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
 
 
-        this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1000, estimatedAgents * 2));
+        int cDims = currentScenario != null ? currentScenario.getCultureVectorDimensions() : 9;
+        int agentCapacity = Math.min(10_000_000, Math.max(8192, Math.max(cells.size() * 24, estimatedAgents * 8)));
+        this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(agentCapacity, cDims);
 
 
         org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
@@ -778,15 +779,10 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-            if (Math.random() < 0.1 && basePop > 0) {
-
-
+            long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
+            if (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, cellId, 503L) < 0.1 && basePop > 0) {
                 cell.setPopulation(basePop);
-
-
                 populatedCells++;
-
-
             }
 
 
@@ -857,20 +853,15 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public void pause() {
-
-
         if (!running.getAndSet(false)) return;
-
-
         if (executorService != null) {
-
-
             executorService.shutdownNow();
-
-
+            try {
+                executorService.awaitTermination(200, java.util.concurrent.TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
-
-
     }
 
 
@@ -896,11 +887,8 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public void reset() {
-
-
         pause();
-
-
+        SimulationPipeline.resetGlobalSimulationState();
         firedScenarioEventKeys.clear();
 
 
@@ -1339,7 +1327,9 @@ public class H3SimulationEngine implements ISimulationEngine {
             this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
 
 
-            this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(Math.max(1000, estimatedAgents * 2));
+            int cDims = currentScenario != null ? currentScenario.getCultureVectorDimensions() : 9;
+            int agentCapacity = Math.min(10_000_000, Math.max(8192, Math.max(cells.size() * 24, estimatedAgents * 8)));
+            this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(agentCapacity, cDims);
 
 
             org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
@@ -1385,20 +1375,16 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public void saveSimulation(String saveName) {
+        saveSimulation(null, saveName);
+    }
 
-
+    public void saveSimulation(String saveId, String saveName) {
         boolean wasRunning = running.get();
-
-
         if (wasRunning) pause();
 
-
-        simulationSaveManager.saveSimulation(this, saveName);
-
+        simulationSaveManager.saveSimulation(this, saveId, saveName);
 
         if (wasRunning) start();
-
-
     }
 
 
@@ -1996,12 +1982,11 @@ public class H3SimulationEngine implements ISimulationEngine {
             // 2. SLOW SCALE PHYSICALIST DYNAMICS
 
 
-            // Triggered every tick if stepDays >= 30, or every (30 / stepDays) ticks if stepDays < 30
-
-
-            int slowModulo = Math.max(1, 30 / stepDays);
-
-
+            // Triggered every tick when strictDeterminism is true or multi-frequency climate ticks are disabled
+            boolean multiFreq = performanceConfig != null
+                    && performanceConfig.isEnableMultiFreqClimateTicks()
+                    && !performanceConfig.isStrictDeterminism();
+            int slowModulo = multiFreq ? Math.max(1, 30 / stepDays) : 1;
             boolean runSlowScale = (stepDays >= 30) || (tickCounter % slowModulo == 0);
 
 
@@ -2011,12 +1996,16 @@ public class H3SimulationEngine implements ISimulationEngine {
             if (runSlowScale) {
 
 
-                if (currentScenario != null && timeManager.getCurrentYear() >= currentScenario.getEndDateYear()) {
+                if (currentScenario != null && timeManager.getCurrentYear() > currentScenario.getEndDateYear()) {
 
 
                     logger.info("Ãƒ°Ã…Â¸Ã‚ÂÃ‚Â Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
 
 
+                    if (historyManager != null) {
+                        historyManager.captureSnapshot(this);
+                        historyManager.captureWorldSnapshot(this);
+                    }
                     pause();
 
 
@@ -2029,23 +2018,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 int month = timeManager.getCurrentMonth();
 
 
-                float dtSlow = Math.max(DT_TICK, 30.0f * 86400f);
-
-
-
-
-
-                profiler.beginPhase("2_ClimateAndEnvironment");
-
-
-                environmentalKernel.tick(worldBuffer, month, dtSlow);
-
-
-                profiler.endPhase("2_ClimateAndEnvironment");
-
-
-
-
+                float dtSlow = multiFreq ? Math.max(DT_TICK, slowModulo * DT_TICK) : DT_TICK;
 
                 simulationPipeline.executeTick(
 
@@ -2383,132 +2356,103 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-        for (H3Cell cell : cells) {
-
-
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell cell = cells.get(i);
             double cLat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
-
-
             double cLng = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
-
-
             double distDeg = Math.hypot(cLat - evtLat, cLng - evtLng);
 
-
-
-
-
             double impactRadius = Math.max(5.0, mag * 3.0);
-
-
             if (distDeg <= impactRadius) {
-
-
                 double attenuation = 1.0 - (distDeg / impactRadius);
-
-
                 String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
-
-
-
-
+                int lost = 0;
 
                 if (type.contains("nuclear") || type.contains("strike")) {
-
-
                     NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() + mag * 0.15);
-
-
                     double cooling = -0.6 * mag * attenuation;
-
-
                     cell.setTemperature(Math.max(-50.0, (cell.getTemperature() != null ? cell.getTemperature() : 15.0) + cooling));
-
-
                     if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-
-
-                        int lost = (int) (cell.getPopulation() * (0.85 * attenuation));
-
-
+                        lost = (int) (cell.getPopulation() * (0.85 * attenuation));
                         cell.setPopulation(Math.max(0, cell.getPopulation() - lost));
-
-
                     }
-
-
                     if (cell.getResourceCapital() != null) {
-
-
                         cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * (1.0 - 0.70 * attenuation)));
-
-
                     }
-
-
                     if (cell.getFoodResource() != null) {
-
-
                         cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.80 * attenuation)));
-
-
                     }
-
-
                     cell.setPollutionLevel(Math.min(1.0, (cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0) + 0.8 * attenuation));
-
-
                 } else if (type.contains("volcano") || type.contains("ice")) {
-
-
                     double cooling = -0.5 * mag * attenuation;
-
-
                     cell.setTemperature(Math.max(-50.0, (cell.getTemperature() != null ? cell.getTemperature() : 15.0) + cooling));
-
-
-                } else if (type.contains("earthquake") || type.contains("tsunami") || type.contains("meteor")) {
-
-
+                } else if (type.contains("cyclone") || type.contains("hurricane") || type.contains("storm") || type.contains("flood")) {
                     if (cell.getResourceCapital() != null) {
-
-
-                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * (1.0 - 0.08 * mag * attenuation)));
-
-
+                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * (1.0 - 0.15 * mag * attenuation)));
                     }
-
-
-                    if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-
-
-                        int lost = (int) (cell.getPopulation() * (0.05 * mag * attenuation));
-
-
-                        cell.setPopulation(Math.max(0, cell.getPopulation() - lost));
-
-
-                    }
-
-
-                } else if (type.contains("famine") || type.contains("drought")) {
-
-
                     if (cell.getFoodResource() != null) {
-
-
-                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.10 * mag * attenuation)));
-
-
+                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.25 * mag * attenuation)));
                     }
-
-
+                    if (cell.getPopulation() != null && cell.getPopulation() > 0) {
+                        lost = (int) (cell.getPopulation() * (0.04 * mag * attenuation));
+                        cell.setPopulation(Math.max(0, cell.getPopulation() - lost));
+                    }
+                } else if (type.contains("epidemic") || type.contains("pandemic") || type.contains("plague")) {
+                    if (cell.getPopulation() != null && cell.getPopulation() > 0) {
+                        lost = (int) (cell.getPopulation() * (0.15 * mag * attenuation));
+                        cell.setPopulation(Math.max(0, cell.getPopulation() - lost));
+                    }
+                    if (cell.getResourceCapital() != null) {
+                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * (1.0 - 0.05 * mag * attenuation)));
+                    }
+                } else if (type.contains("earthquake") || type.contains("tsunami") || type.contains("meteor")) {
+                    if (cell.getResourceCapital() != null) {
+                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * (1.0 - 0.08 * mag * attenuation)));
+                    }
+                    if (cell.getPopulation() != null && cell.getPopulation() > 0) {
+                        lost = (int) (cell.getPopulation() * (0.05 * mag * attenuation));
+                        cell.setPopulation(Math.max(0, cell.getPopulation() - lost));
+                    }
+                } else if (type.contains("famine") || type.contains("drought")) {
+                    if (cell.getFoodResource() != null) {
+                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.10 * mag * attenuation)));
+                    }
                 }
 
+                // Synchronize changes to DOD buffers so downstream kernels and syncBufferToCells persist impacts
+                if (worldBuffer != null && i < worldBuffer.getCapacity()) {
+                    if (cell.getTemperature() != null) {
+                        worldBuffer.getTemperature()[i] = cell.getTemperature().floatValue();
+                    }
+                    if (cell.getResourceCapital() != null) {
+                        worldBuffer.getResourceCapital()[i] = cell.getResourceCapital().floatValue();
+                    }
+                    if (cell.getFoodResource() != null) {
+                        worldBuffer.getFoodResource()[i] = cell.getFoodResource().floatValue();
+                    }
+                    if (cell.getPopulation() != null) {
+                        worldBuffer.getBiomassHuman()[i] = cell.getPopulation().floatValue();
+                    }
+                }
 
+                if (agentBuffer != null && lost > 0) {
+                    int originalPop = cell.getPopulation() != null ? (cell.getPopulation() + lost) : lost;
+                    float mortalityFraction = Math.clamp((float) lost / Math.max(1.0f, (float) originalPop), 0.0f, 1.0f);
+                    float survivalFraction = 1.0f - mortalityFraction;
+                    int cap = agentBuffer.getCapacity();
+                    int[] hexIds = agentBuffer.getHexIds();
+                    float[] mass = agentBuffer.getMass();
+                    float[] deaths = agentBuffer.getDeaths();
+                    for (int a = 0; a < cap; a++) {
+                        if (hexIds[a] == i && mass[a] > 0.0f) {
+                            float oldM = mass[a];
+                            float newM = oldM * survivalFraction;
+                            mass[a] = newM;
+                            deaths[a] += (oldM - newM);
+                        }
+                    }
+                }
             }
-
-
         }
 
 
@@ -2540,35 +2484,18 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public void stepForward(int ticks) {
-
-
         pause();
-
-
         for (int i = 0; i < Math.max(1, ticks); i++) {
-
-
             boolean wasRunning = running.getAndSet(true);
-
-
             try {
-
-
                 tick();
-
-
             } finally {
-
-
                 running.set(wasRunning);
-
-
             }
-
-
         }
-
-
+        if (historyManager != null) {
+            historyManager.captureWorldSnapshot(this);
+        }
     }
 
 
@@ -3034,7 +2961,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             H3Cell cell = cells.get(i);
 
 
-            int p = (int) Math.max(0, pop[i]);
+            int p = Math.max(0, Math.round(pop[i]));
 
 
             cell.setPopulation(p);
@@ -3059,7 +2986,11 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
             if (capital != null) cell.setResourceCapital((double) capital[i]);
-
+            if (worldBuffer.getMetalResource() != null) cell.setResourceMetal((double) worldBuffer.getMetalResource()[i]);
+            if (worldBuffer.getClayResource() != null) cell.setResourceClay((double) worldBuffer.getClayResource()[i]);
+            if (worldBuffer.getBiomassAgriculture() != null) cell.setBiomassAgriculture((double) worldBuffer.getBiomassAgriculture()[i]);
+            if (worldBuffer.getBiomassNatural() != null) cell.setBiomassNatural((double) worldBuffer.getBiomassNatural()[i]);
+            if (worldBuffer.getBiomassFish() != null) cell.setBiomassFish((double) worldBuffer.getBiomassFish()[i]);
 
 
 
@@ -3083,17 +3014,105 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
             if (p > 0) {
-
-
                 cell.updateAgePyramidFromTotal(cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : 1.0);
-
-
             }
+        }
+    }
 
+    /**
+     * Synchronizes domain states from individual H3Cell objects back into the high-performance WorldBuffer DOD arrays.
+     * Enforces continuous state coherence between object-oriented tier 1/2 engines and vectorized DOD kernels.
+     */
+    public void syncCellsToBuffer() {
+        if (worldBuffer == null || cells == null) return;
 
+        float[] pop = worldBuffer.getBiomassHuman();
+        float[] food = worldBuffer.getFoodResource();
+        float[] tech = worldBuffer.getTechnologyLevel();
+        float[] water = worldBuffer.getWaterResource();
+        float[] wood = worldBuffer.getWoodResource();
+        float[] metal = worldBuffer.getMetalResource();
+        float[] clay = worldBuffer.getClayResource();
+        float[] gini = worldBuffer.getGiniIndex();
+        float[] capital = worldBuffer.getResourceCapital();
+        float[] lifespan = worldBuffer.getLifespan();
+        float[] fertility = worldBuffer.getFertility();
+        float[] biomassAgri = worldBuffer.getBiomassAgriculture();
+        float[] biomassNat = worldBuffer.getBiomassNatural();
+        float[] biomassFish = worldBuffer.getBiomassFish();
+        byte[] biomes = worldBuffer.getBiomes();
+
+        int limit = Math.min(cells.size(), worldBuffer.getCapacity());
+        boolean popModified = false;
+        boolean[] cellPopModified = new boolean[limit];
+        for (int i = 0; i < limit; i++) {
+            H3Cell cell = cells.get(i);
+            if (pop != null && cell.getPopulation() != null) {
+                int cellIntPop = cell.getPopulation();
+                int bufferRoundedPop = Math.max(0, Math.round(pop[i]));
+                if (cellIntPop != bufferRoundedPop) {
+                    int delta = cellIntPop - bufferRoundedPop;
+                    pop[i] = Math.max(0.0f, pop[i] + delta);
+                    cellPopModified[i] = true;
+                    popModified = true;
+                }
+            }
+            if (food != null && cell.getFoodResource() != null) food[i] = cell.getFoodResource().floatValue();
+            if (tech != null && cell.getTechnologyLevel() != null) tech[i] = cell.getTechnologyLevel().floatValue();
+            if (water != null && cell.getWaterResource() != null) water[i] = cell.getWaterResource().floatValue();
+            if (wood != null && cell.getWoodResource() != null) wood[i] = cell.getWoodResource().floatValue();
+            if (metal != null && cell.getResourceMetal() != null) metal[i] = cell.getResourceMetal().floatValue();
+            if (clay != null && cell.getResourceClay() != null) clay[i] = cell.getResourceClay().floatValue();
+            if (gini != null && cell.getGiniIndex() != null) gini[i] = cell.getGiniIndex().floatValue();
+            if (capital != null && cell.getResourceCapital() != null) capital[i] = cell.getResourceCapital().floatValue();
+            if (lifespan != null && cell.getLifespan() != null) lifespan[i] = cell.getLifespan().floatValue();
+            if (fertility != null && cell.getFertility() != null) fertility[i] = cell.getFertility().floatValue();
+            if (biomassAgri != null && cell.getBiomassAgriculture() != null) biomassAgri[i] = cell.getBiomassAgriculture().floatValue();
+            if (biomassNat != null && cell.getBiomassNatural() != null) biomassNat[i] = cell.getBiomassNatural().floatValue();
+            if (biomassFish != null && cell.getBiomassFish() != null) biomassFish[i] = cell.getBiomassFish().floatValue();
+            if (biomes != null && cell.getBiome() != null) biomes[i] = (byte) cell.getBiome().ordinal();
         }
 
+        // Propagate cell-level population and technology updates to AgentBuffer cohorts so DemographicKernel
+        // preserves procedural engine mortality/growth and technological era transitions on the next tick.
+        if (agentBuffer != null && pop != null) {
+            int agentCap = agentBuffer.getCapacity();
+            int[] hexIds = agentBuffer.getHexIds();
+            float[] mass = agentBuffer.getMass();
+            float[] agentTech = agentBuffer.getTechLevel();
 
+            if (popModified) {
+                float[] currentCohortSum = new float[limit];
+                for (int a = 0; a < agentCap; a++) {
+                    int h = hexIds[a];
+                    if (h >= 0 && h < limit && mass[a] > 0.0f) {
+                        currentCohortSum[h] += mass[a];
+                    }
+                }
+                for (int a = 0; a < agentCap; a++) {
+                    int h = hexIds[a];
+                    if (h >= 0 && h < limit) {
+                        if (tech != null) {
+                            agentTech[a] = tech[h];
+                        }
+                        if (cellPopModified[h]) {
+                            float sum = currentCohortSum[h];
+                            if (sum > 0.001f && Math.abs(pop[h] - sum) > 0.01f) {
+                                float ratio = Math.max(0.0f, pop[h] / sum);
+                                mass[a] *= ratio;
+                            }
+                        }
+                    }
+                }
+            } else if (tech != null) {
+                for (int a = 0; a < agentCap; a++) {
+                    int h = hexIds[a];
+                    if (h >= 0 && h < limit) {
+                        agentTech[a] = tech[h];
+                    }
+                }
+            }
+        }
     }
 
 
@@ -3283,7 +3302,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                         String name = "Realm of Hex " + Long.toHexString(c.getH3Index()).toUpperCase();
 
 
-                        javafx.scene.paint.Color color = javafx.scene.paint.Color.hsb(Math.random() * 360, 0.8, 0.9);
+                        javafx.scene.paint.Color color = javafx.scene.paint.Color.hsb(org.ether.society.util.DeterministicPRNG.nextDouble(c.getH3Index(), 777) * 360.0, 0.8, 0.9);
 
 
                         org.ether.society.model.Nation nation = new org.ether.society.model.Nation(name, color, c);

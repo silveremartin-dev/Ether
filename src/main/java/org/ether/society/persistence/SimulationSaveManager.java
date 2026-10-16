@@ -49,6 +49,7 @@ public class SimulationSaveManager {
 
     private final H3CellRepository cellRepository;
     private final ObjectMapper objectMapper;
+    private final Path customSaveDir;
 
     /*
      * Get save directory.
@@ -56,7 +57,11 @@ public class SimulationSaveManager {
      *
      * @return the resulting computation or state reference
      */
-    public static Path getSaveDirectory() {
+    public Path getSaveDirectory() {
+        return customSaveDir != null ? customSaveDir : org.ether.society.config.EtherPaths.getSavesDir();
+    }
+
+    public static Path getDefaultSaveDirectory() {
         return org.ether.society.config.EtherPaths.getSavesDir();
     }
 
@@ -66,6 +71,11 @@ public class SimulationSaveManager {
      *
      */
     public SimulationSaveManager() {
+        this(null);
+    }
+
+    public SimulationSaveManager(Path customSaveDir) {
+        this.customSaveDir = customSaveDir;
         this.cellRepository = new H3CellRepository(DatabaseConfig.getEntityManagerFactory());
         this.objectMapper = EtherJsonUtil.getPrettyMapper();
 
@@ -87,6 +97,17 @@ public class SimulationSaveManager {
      * Saves full simulation state, topology, and all intermediate snapshots to disk with a specified save ID.
      */
     public void saveSimulation(H3SimulationEngine engine, String saveId, String saveName) {
+        if (engine == null) {
+            logger.warn("Cannot save simulation: engine is null.");
+            return;
+        }
+
+        List<H3Cell> cells = engine.getCells();
+        if (cells == null || cells.isEmpty()) {
+            logger.warn("Cannot save simulation with empty cells.");
+            return;
+        }
+
         if (saveId == null || saveId.isBlank()) {
             saveId = UUID.randomUUID().toString();
         }
@@ -101,12 +122,6 @@ public class SimulationSaveManager {
             Files.createDirectories(savePath);
             Path snapshotsDir = savePath.resolve(SNAPSHOTS_DIR);
             Files.createDirectories(snapshotsDir);
-
-            List<H3Cell> cells = engine.getCells();
-            if (cells == null || cells.isEmpty()) {
-                logger.warn("Cannot save simulation with empty cells.");
-                return;
-            }
 
             // 1. Save Static Spatial Topology (topology.bin.gz)
             Path topologyPath = savePath.resolve(TOPOLOGY_FILE);
@@ -214,7 +229,29 @@ public class SimulationSaveManager {
                 if (Files.exists(directPath)) {
                     savePath = directPath;
                 } else {
-                    throw new FileNotFoundException("Save directory not found: " + savePath);
+                    // Fallback: search save directories where directory name or metadata id matches
+                    Path resolvedFallback = null;
+                    try (Stream<Path> s = Files.list(getSaveDirectory())) {
+                        var found = s.filter(Files::isDirectory).filter(d -> {
+                            if (d.getFileName().toString().equalsIgnoreCase(saveId)) return true;
+                            Path m = d.resolve(METADATA_FILE);
+                            if (Files.exists(m)) {
+                                try {
+                                    SaveMetadata sm = objectMapper.readValue(m.toFile(), SaveMetadata.class);
+                                    return sm != null && saveId.equalsIgnoreCase(sm.getId());
+                                } catch (Exception ignored) {}
+                            }
+                            return false;
+                        }).findFirst();
+                        if (found.isPresent()) {
+                            resolvedFallback = found.get();
+                        }
+                    } catch (IOException ignored) {}
+                    if (resolvedFallback != null) {
+                        savePath = resolvedFallback;
+                    } else {
+                        throw new FileNotFoundException("Save directory not found: " + savePath);
+                    }
                 }
             }
 
@@ -406,8 +443,8 @@ public class SimulationSaveManager {
                         if (Files.exists(metaFile)) {
                             try {
                                 meta = objectMapper.readValue(metaFile.toFile(), SaveMetadata.class);
-                            } catch (Exception ignored) {
-                                // Metadata file exists but may be truncated or corrupted
+                            } catch (Exception ex) {
+                                logger.debug("Could not deserialize metadata.json in {}: {}", dir.getFileName(), ex.getMessage());
                             }
                         }
 
@@ -451,7 +488,9 @@ public class SimulationSaveManager {
                             }
                         }
 
-                        if (meta != null && meta.getId() != null) {
+                        if (meta != null) {
+                            // Directory name on disk is the authoritative filesystem identifier
+                            meta.setId(dir.getFileName().toString());
                             list.add(meta);
                         }
                     });

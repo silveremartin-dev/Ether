@@ -17,6 +17,7 @@ import org.ether.society.engines.compiler.*;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.ScenarioTimeline;
 import org.ether.society.util.CliodynamicChronicleEngine;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +46,10 @@ public class AdvancedSociologyAndLawsTest {
      *
      */
     public void setUp() {
+        PhysicalLawEngine.resetState();
+        CulturalSociologyEngine.resetState();
+        CoGovernanceTradeEngine.resetState();
+
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(613503380827930701L, 45.0, 10.0);
         cell.setPopulation(5000);
@@ -52,6 +57,13 @@ public class AdvancedSociologyAndLawsTest {
         cell.setSoilOrganicCarbon(40.0);
         cell.setPollutionLevel(300.0);
         testCells.add(cell);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        PhysicalLawEngine.resetState();
+        CulturalSociologyEngine.resetState();
+        CoGovernanceTradeEngine.resetState();
     }
 
     @Test

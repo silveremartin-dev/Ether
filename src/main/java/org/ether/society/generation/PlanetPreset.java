@@ -969,7 +969,7 @@ public record PlanetPreset(
      */
 
     public PlanetPreset withResolution(int newResolution) {
-        newResolution = Math.max(4, newResolution);
+        newResolution = Math.max(1, Math.min(8, newResolution));
 
         return new PlanetPreset(name, newResolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays,
 

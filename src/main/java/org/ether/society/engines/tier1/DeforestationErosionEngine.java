@@ -26,33 +26,50 @@ import java.util.List;
 public class DeforestationErosionEngine {
     private static final Logger logger = LoggerFactory.getLogger(DeforestationErosionEngine.class);
 
+    public static void processDeforestationErosion(List<H3Cell> cells) {
+        processDeforestationErosion(cells, 1.0 / 12.0);
+    }
+
     /*
      * Executes one deforestation soil erosion tick across cells.
      */
-    public static void processDeforestationErosion(List<H3Cell> cells) {
+    public static void processDeforestationErosion(List<H3Cell> cells, double dtYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
+        double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 
         int erodedCells = 0;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 500.0;
+            double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
+            double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : (500.0 * areaScale);
+            double woodBiomass = cell.getWoodResource() != null ? cell.getWoodResource() : naturalBiomass;
+            double effectiveCanopy = Math.max(naturalBiomass, woodBiomass);
             double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;
             double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
-            // Severe deforestation (biomass < 100.0) on sloped terrain with high rainfall causes erosion
-            if (naturalBiomass < 100.0 && elev > 200.0 && rain > 400.0) {
+            // Severe deforestation (effectiveCanopy < 100.0 * areaScale) on sloped terrain with high rainfall causes erosion
+            if (effectiveCanopy < (100.0 * areaScale) && elev > 200.0 && rain > 400.0) {
                 erodedCells++;
-                double socLoss = (rain / 1000.0) * 0.5;
+                double socLoss = (rain / 1000.0) * 0.5 * dtMonthlyRatio;
                 cell.setSoilOrganicCarbon(Math.max(2.0, soc - socLoss));
 
-                // Soil degradation converts hills to arid desert if SOC < 5.0
-                if (cell.getSoilOrganicCarbon() < 5.0 && cell.getBiome() == Biome.HILLS) {
-                    cell.setBiome(Biome.DESERT);
+                // Soil degradation converts deforested terrain to arid desert if SOC < 5.0
+                if (cell.getSoilOrganicCarbon() < 5.0) {
+                    Biome currentBiome = cell.getBiome();
+                    if (currentBiome == Biome.HILLS || currentBiome == Biome.FOREST || currentBiome == Biome.JUNGLE
+                            || currentBiome == Biome.PLAINS || currentBiome == Biome.SAVANNAH) {
+                        cell.setBiome(Biome.DESERT);
+                    }
+                } else if (effectiveCanopy < (50.0 * areaScale)) {
+                    // Tree cover lost but soil intact: converts dense forest/jungle to open grassland/hills
+                    if (cell.getBiome() == Biome.FOREST || cell.getBiome() == Biome.JUNGLE) {
+                        cell.setBiome(elev > 500.0 ? Biome.HILLS : Biome.PLAINS);
+                    }
                 }
             }
         }

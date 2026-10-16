@@ -54,8 +54,20 @@ public class HistoricalValidationKernel {
         }
     }
 
+    public record BenchmarkVariableMeta(
+        String key,
+        String name,
+        String unit,
+        String window,
+        String description,
+        String source,
+        int minYear,
+        int maxYear
+    ) {}
+
     /* Multi-Metric Historical Benchmark Time Series (Map of Metric Name -> Time Series Data) */
     private static final Map<String, Map<Integer, Double>> BENCHMARK_DATASETS = new HashMap<>();
+    private static final Map<String, BenchmarkVariableMeta> BENCHMARK_METADATA = new LinkedHashMap<>();
 
     static {
         loadJsonBenchmarksResource();
@@ -87,6 +99,15 @@ public class HistoricalValidationKernel {
                             }
                         }
                         BENCHMARK_DATASETS.put(varKey, Collections.unmodifiableMap(timeSeries));
+
+                        String name = entry.getValue().path("name").asText(varKey);
+                        String unit = entry.getValue().path("unit").asText("");
+                        String window = entry.getValue().path("window").asText("");
+                        String desc = entry.getValue().path("description").asText("");
+                        String source = entry.getValue().path("source").asText("");
+                        int minYear = timeSeries.isEmpty() ? 0 : ((TreeMap<Integer, Double>) timeSeries).firstKey();
+                        int maxYear = timeSeries.isEmpty() ? 2026 : ((TreeMap<Integer, Double>) timeSeries).lastKey();
+                        BENCHMARK_METADATA.put(varKey, new BenchmarkVariableMeta(varKey, name, unit, window, desc, source, minYear, maxYear));
                     }
                     logger.info("✅ Successfully loaded Historical Benchmarks ({} variables) from JSON resource.", BENCHMARK_DATASETS.size());
                 }
@@ -305,15 +326,84 @@ public class HistoricalValidationKernel {
         return report;
     }
 
-    /*
-     * Get benchmark dataset.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
+    /**
+     * Resolves metric key or UI alias into standard canonical benchmark dataset key.
      *
-     * @param key the key parameter (String)
-     * @return the resulting computation or state reference
+     * @param key variable or alias key
+     * @return canonical key, or original key if already canonical
+     */
+    public static String resolveCanonicalKey(String key) {
+        if (key == null) return null;
+        if (BENCHMARK_DATASETS.containsKey(key)) return key;
+        String lower = key.toLowerCase();
+        if (lower.contains("populat")) return "worldPopulation";
+        if (lower.contains("gdp") || lower.contains("product") || lower.contains("richesse")) return "grossWorldProduct";
+        if (lower.contains("energy") || lower.contains("energie") || lower.contains("puissance")) return "primaryEnergy";
+        if (lower.contains("urban")) return "urbanizationRate";
+        if (lower.contains("co2") || lower.contains("carbon")) return "co2Concentration";
+        if (lower.contains("literacy") || lower.contains("alphabet")) return "literacyRate";
+        if (lower.contains("currency") || lower.contains("debase") || lower.contains("monnaie")) return "currencyDebasement";
+        if (lower.contains("elite")) return "eliteOverproductionIndex";
+        if (lower.contains("wage") || lower.contains("salaire")) return "realUnskilledWage";
+        if (lower.contains("stress") || lower.contains("psi")) return "politicalStressIndex";
+        if (lower.contains("asabiyyah") || lower.contains("cohesion")) return "asabiyyahSocialCohesion";
+        if (lower.contains("instabil") || lower.contains("conflict") || lower.contains("conflit")) return "sociopoliticalInstability";
+        if (lower.contains("gini") || lower.contains("inegal")) return "giniInequality";
+        if (lower.contains("debt") || lower.contains("dette")) return "sovereignDebtBurden";
+        if (lower.contains("trade") || lower.contains("commerce")) return "globalTradeVolume";
+        if (lower.contains("temp")) return "temperatureAnomaly";
+        if (lower.contains("erosion")) return "soilErosionRate";
+        if (lower.contains("eroei") || lower.contains("eroi") || lower.contains("food")) return "agriculturalEroei";
+        if (lower.contains("forest") || lower.contains("deforest")) return "deforestationRate";
+        if (lower.contains("speed") || lower.contains("vitesse")) return "informationSpeed";
+        if (lower.contains("megafauna")) return "megafaunaIndex";
+        if (lower.contains("milankovitch") || lower.contains("insolation")) return "milankovitchInsolation";
+        if (lower.contains("containment") || lower.contains("isole")) return "zeroContainmentScore";
+        if (lower.contains("life") || lower.contains("esperance") || lower.contains("vie")) return "lifeExpectancyAtBirth";
+        if (lower.contains("metal") || lower.contains("smelt")) return "metalSmeltingPerCapita";
+        if (lower.contains("fossil")) return "fossilSharePrimaryEnergy";
+        if (lower.contains("freight") || lower.contains("shipping")) return "shippingFreightCostIndex";
+        return key;
+    }
+
+    /**
+     * Gets raw benchmark time-series dataset for a metric key (or resolved alias).
+     *
+     * @param key the metric key parameter (String)
+     * @return the benchmark dataset map (Year -> Value)
      */
     public static Map<Integer, Double> getBenchmarkDataset(String key) {
-        return BENCHMARK_DATASETS.getOrDefault(key, Collections.emptyMap());
+        String canon = resolveCanonicalKey(key);
+        return BENCHMARK_DATASETS.getOrDefault(canon != null ? canon : key, Collections.emptyMap());
+    }
+
+    /**
+     * Gets all canonical benchmark dataset keys.
+     *
+     * @return set of 27 benchmark variable keys
+     */
+    public static Set<String> getAllBenchmarkKeys() {
+        return Collections.unmodifiableSet(BENCHMARK_DATASETS.keySet());
+    }
+
+    /**
+     * Gets complete metadata map for all 27 benchmark variables.
+     *
+     * @return unmodifiable map of metadata objects
+     */
+    public static Map<String, BenchmarkVariableMeta> getAllBenchmarkMetadata() {
+        return Collections.unmodifiableMap(BENCHMARK_METADATA);
+    }
+
+    /**
+     * Gets metadata for a specific benchmark key or alias.
+     *
+     * @param key variable key or alias
+     * @return metadata object or null
+     */
+    public static BenchmarkVariableMeta getBenchmarkMetadata(String key) {
+        String canon = resolveCanonicalKey(key);
+        return BENCHMARK_METADATA.get(canon != null ? canon : key);
     }
 
     public enum InterpolationMethod {
@@ -322,36 +412,50 @@ public class HistoricalValidationKernel {
         LINEAR
     }
 
-    /*
+    /**
      * Retrieves the C1 continuous and differentiable interpolated historical benchmark value for a given metric key and year.
      * Uses Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) by default to guarantee monotonicity preservation
      * and smooth derivative continuity without non-physical oscillations.
+     *
+     * @param key variable key
+     * @param year chronological year (negative for BCE/BP)
+     * @return interpolated value, or Double.NaN if outside the valid historical epoch domain
      */
     public static double getInterpolatedBenchmarkValue(String key, double year) {
         return getInterpolatedBenchmarkValue(key, year, InterpolationMethod.PCHIP_MONOTONE_CUBIC);
     }
 
-    /*
-     * Get interpolated benchmark value.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
+    /**
+     * Retrieves interpolated benchmark value using specified mathematical interpolation method.
+     * Returns Double.NaN when queried before the earliest historical observation point
+     * (e.g. GDP before 1 CE, Roman silver debasement before -200 BCE, sovereign debt before 1500 CE).
      *
      * @param key the key parameter (String)
      * @param year the year parameter (double)
      * @param method the method parameter (InterpolationMethod)
-     * @return the resulting computation or state reference
+     * @return the resulting computation or Double.NaN if not historically applicable
      */
     public static double getInterpolatedBenchmarkValue(String key, double year, InterpolationMethod method) {
         Map<Integer, Double> dataset = getBenchmarkDataset(key);
-        if (dataset == null || dataset.isEmpty()) return 0.0;
+        if (dataset == null || dataset.isEmpty()) return Double.NaN;
 
         List<Integer> years = new ArrayList<>(dataset.keySet());
         Collections.sort(years);
 
         int n = years.size();
-        if (n == 0) return 0.0;
+        if (n == 0) return Double.NaN;
         if (n == 1) return dataset.get(years.get(0));
-        if (year <= years.get(0)) return dataset.get(years.get(0));
-        if (year >= years.get(n - 1)) return dataset.get(years.get(n - 1));
+
+        int firstYear = years.get(0);
+        int lastYear = years.get(n - 1);
+
+        // Outside historical definition range: return Double.NaN so it prints as N/A instead of fake clamping
+        if (year < firstYear) {
+            return Double.NaN;
+        }
+        if (year > lastYear) {
+            return dataset.get(lastYear);
+        }
 
         if (method == InterpolationMethod.LINEAR) {
             return linearInterpolate(dataset, years, year);

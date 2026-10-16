@@ -19,27 +19,28 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ClusterDistributedExecutionTestSuite {
 
-    private static final int TEST_PORT = 9988;
     private static final String SECRET = "TestClusterToken2026";
 
     private ClusterManager master;
     private ClusterManager worker;
 
+    private static int findFreePort() {
+        try (java.net.ServerSocket socket = new java.net.ServerSocket(0)) {
+            socket.setReuseAddress(true);
+            return socket.getLocalPort();
+        } catch (IOException e) {
+            return 9988;
+        }
+    }
+
     @BeforeEach
-    /*
-     * Setup operation.
-     * <p>
-     * Executes operational logic for {@code ClusterDistributedExecutionTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void setup() throws IOException, InterruptedException {
-        master = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", TEST_PORT, SECRET);
+        int testPort = findFreePort();
+        master = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", testPort, SECRET);
         master.setTotalGridCellCount(200);
         master.start();
 
-        worker = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, SECRET);
+        worker = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", testPort, SECRET);
         worker.start();
 
         // Dynamically wait up to 3 seconds for worker registration

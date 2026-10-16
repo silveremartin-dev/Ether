@@ -85,4 +85,45 @@ class DemographicKernelTest {
         boolean noSplitInDunbarMode = agentBuffer.getHexIds()[1] == -1;
         assertTrue(noSplitInDunbarMode, "In Dunbar cohort regime (targetCohortSize=150.0), mass of 100 individuals does not split prematurely.");
     }
+
+    /**
+     * Paired counterfactual: two identical cohorts, one with abundant food, one with zero food and
+     * depleted energy reserves. The kernel's Gompertz-Makeham starvation term
+     * ({@code mu_starv = 0.35 (deficit - 0.3) + 0.45 (1 - E/25)}) must make the starved cohort
+     * strictly smaller than the fed one after one simulated year.
+     */
+    @Test
+    @DisplayName("Starvation hazard reduces cohort mass relative to a fed counterfactual")
+    void testStarvationReducesCohortMass() {
+        WorldBuffer fedWorld = new WorldBuffer(10);
+        AgentBuffer fedAgents = new AgentBuffer(10);
+        WorldBuffer starvedWorld = new WorldBuffer(10);
+        AgentBuffer starvedAgents = new AgentBuffer(10);
+
+        for (AgentBuffer a : new AgentBuffer[]{fedAgents, starvedAgents}) {
+            a.getHexIds()[0] = 0;
+            a.getMass()[0] = 100.0f;
+            a.getAge()[0] = 30.0f;
+        }
+        fedAgents.getEnergy()[0] = 1000.0f;
+        starvedAgents.getEnergy()[0] = 1.0f;
+        fedWorld.getFoodResource()[0] = 500000.0f;
+        starvedWorld.getFoodResource()[0] = 0.0f;
+
+        DemographicKernel fedKernel = new DemographicKernel();
+        DemographicKernel starvedKernel = new DemographicKernel();
+        for (int t = 0; t < 12; t++) {
+            fedKernel.tick(fedWorld, fedAgents, 30.0f);
+            starvedKernel.tick(starvedWorld, starvedAgents, 30.0f);
+        }
+
+        float fedMass = 0f, starvedMass = 0f;
+        for (int i = 0; i < 10; i++) {
+            if (fedAgents.getHexIds()[i] == 0) fedMass += fedAgents.getMass()[i];
+            if (starvedAgents.getHexIds()[i] == 0) starvedMass += starvedAgents.getMass()[i];
+        }
+        assertTrue(starvedMass < fedMass,
+                "Starved cohort (" + starvedMass + ") must be smaller than fed cohort (" + fedMass + ")");
+        assertTrue(starvedMass >= 0.0f, "Exponential integration must keep cohort mass non-negative");
+    }
 }

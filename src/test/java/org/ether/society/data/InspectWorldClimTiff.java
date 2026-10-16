@@ -1,11 +1,14 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+@Tag("manual")
 public class InspectWorldClimTiff {
     @Test
     /*
@@ -45,3 +48,4 @@ public class InspectWorldClimTiff {
         }
     }
 }
+

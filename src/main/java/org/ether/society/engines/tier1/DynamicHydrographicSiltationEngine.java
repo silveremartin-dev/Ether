@@ -82,35 +82,51 @@ public class DynamicHydrographicSiltationEngine {
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
+        List<H3Cell> upstreamCells = new java.util.ArrayList<>();
+        List<H3Cell> estuaryCells = new java.util.ArrayList<>();
+
         for (H3Cell cell : cells) {
             if (cell.getElevation() == null) continue;
+            if (cell.getElevation() >= -10.0 && cell.getElevation() <= 25.0
+                    && (cell.getBiome() == Biome.BEACH || cell.getBiome() == Biome.PLAINS)) {
+                estuaryCells.add(cell);
+            } else if (cell.getElevation() > 100.0 || cell.getBiome() == Biome.HILLS || cell.getBiome() == Biome.MOUNTAINS) {
+                upstreamCells.add(cell);
+            }
+        }
 
-            // Coastal / Estuary cells (elevation near sea level: -10m to +25m)
-            boolean isEstuaryOrCoast = cell.getElevation() >= -10.0 && cell.getElevation() <= 25.0
-                    && (cell.getBiome() == Biome.BEACH || cell.getBiome() == Biome.PLAINS);
+        double totalSiltDepositedM = 0.0;
 
-            if (isEstuaryOrCoast) {
-                double tempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
-                double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
-                double naturalVeg = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 500.0;
+        for (H3Cell cell : estuaryCells) {
+            double tempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+            double naturalVeg = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 500.0;
 
-                // Erosion index based on rainfall and canopy/vegetation cover
-                double erosionIndex = Math.max(0.1, (rainfall / 1000.0) * (1.0 - Math.clamp(naturalVeg / 1000.0, 0.0, 1.0)));
+            // Erosion index based on rainfall and canopy/vegetation cover
+            double erosionIndex = Math.max(0.1, (rainfall / 1000.0) * (1.0 - Math.clamp(naturalVeg / 1000.0, 0.0, 1.0)));
 
-                // Stokes settling velocity (m/s)
-                double settlingVelocity = calculateStokesSettlingVelocity(SILT_GRAIN_RADIUS_M, tempC);
+            // Stokes settling velocity (m/s)
+            double settlingVelocity = calculateStokesSettlingVelocity(SILT_GRAIN_RADIUS_M, tempC);
 
-                // Annual silt deposition depth (m/year) scaled by Stokes settling kinetics and erosion index
-                // settlingVelocity â‰ˆ 0.00072 m/s -> scaled to geological river basin sediment budget
-                double siltationIncrement = erosionIndex * (settlingVelocity * 100.0) * deltaYears;
-                cell.setElevation(cell.getElevation() + siltationIncrement);
+            // Annual silt deposition depth (m/year) scaled by Stokes settling kinetics and erosion index
+            // Settling velocity ~ 0.00072 m/s -> scaled to realistic geological deltaic accretion rate (~1-3 mm/year)
+            double siltationIncrement = erosionIndex * (settlingVelocity * 2.0) * deltaYears;
+            cell.setElevation(cell.getElevation() + siltationIncrement);
+            totalSiltDepositedM += siltationIncrement;
 
-                // Movement friction penalty: Harbor siltation increases maritime navigation cost
-                double currentFriction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
-                if (siltationIncrement > 0.005) {
-                    double newFriction = Math.min(15.0, currentFriction + (siltationIncrement * 3.0));
-                    cell.setMovementFriction(newFriction);
-                }
+            // Movement friction penalty: Harbor siltation increases maritime navigation cost
+            double currentFriction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+            if (siltationIncrement > 0.0005) {
+                double newFriction = Math.min(15.0, currentFriction + (siltationIncrement * 10.0));
+                cell.setMovementFriction(newFriction);
+            }
+        }
+
+        // Strictly conserve geological solid volume: deduct total deposited silt depth from upstream catchment cells
+        if (!upstreamCells.isEmpty() && totalSiltDepositedM > 0.0) {
+            double upstreamErosionPerCell = totalSiltDepositedM / upstreamCells.size();
+            for (H3Cell upCell : upstreamCells) {
+                upCell.setElevation(Math.max(0.0, upCell.getElevation() - upstreamErosionPerCell));
             }
         }
     }

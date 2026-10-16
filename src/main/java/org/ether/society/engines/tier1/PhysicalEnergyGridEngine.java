@@ -41,39 +41,111 @@ public class PhysicalEnergyGridEngine {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
-        if (cell == null) return 100.0;
+        if (cell == null) return 0.0;
 
-        int pop = cell.getPopulation() != null ? cell.getPopulation() : 1;
-        if (pop <= 0) pop = 1;
+        int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+        if (pop <= 0) return 0.0;
 
         double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-        double converterEfficiency = 0.10 + Math.min(0.80, tech * 0.08); // 10% muscle to 90% electric
+        double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+        double capitalPerCapita = capital / pop;
+        double converterEfficiency = 0.15 + Math.min(0.75, tech * 0.08 + Math.min(0.15, capitalPerCapita * 0.02)); // 15% muscle to 90% electric
 
+        // Maximum harnessable per-capita power physically bounded by technological era (Smil 2017 / Lotka)
+        // Tech < 2.0 (Paleolithic/Neolithic): 100-450 W
+        // Tech 2.0-3.0 (Antiquity/Medieval organic economy: draft animals, watermills, windmills): 450-1,600 W
+        // Tech 3.0-4.0 (Industrial Coal/Steam/ICE): 2,000-10,000 W
+        // Tech 4.0-5.0 (Electrical & Nuclear Grid): 10,000-35,000 W
+        // Tech >= 5.0 (Advanced Fusion / Trans-Human): >50,000 W
+        double maxHarnessableWatts = 150.0 + Math.pow(Math.min(5.0, tech), 2.2) * 1800.0;
+
+        // 1. Direct metabolic human mechanical labor (~50 W continuous per capita)
+        double humanLaborWatts = 50.0;
+
+        // 2. Firewood & kiln thermal work (heating, kilns, smelting, cooking)
         double woodBiomassKg = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
-        double solarEnergyW = cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0;
-        double windEnergyW = cell.getEnergyWind() != null ? cell.getEnergyWind() : 0.0;
+        double firewoodThermalWatts = (woodBiomassKg > 10.0)
+                ? (450.0 + Math.min(350.0, capitalPerCapita * 15.0))
+                : 150.0;
+        double thermalWorkWatts = firewoodThermalWatts * converterEfficiency;
 
-        // Total thermal & kinetic energy pool (Joules/sec = Watts)
-        double totalThermalPowerWatts = (woodBiomassKg * WOOD_ENERGY_DENSITY_MJ_PER_KG * 1e6 / 86400.0) + solarEnergyW + windEnergyW;
+        // 3. Draft animal traction (oxen, horses; unlocked by Neolithic tech >= 1.0)
+        double animalTractionWatts = (tech >= 1.0)
+                ? (120.0 * Math.min(2.5, Math.max(0.5, tech - 0.5) + Math.min(1.0, capitalPerCapita * 0.05)))
+                : 0.0;
 
-        double usableMechanicalPowerWatts = totalThermalPowerWatts * converterEfficiency;
+        double mechanicalPowerWatts = humanLaborWatts + thermalWorkWatts + animalTractionWatts;
 
-        return Math.max(100.0, usableMechanicalPowerWatts / pop);
+        // 4. Hydro / Wind / Watermill kinetic contribution (Antiquity/Medieval engineering tech >= 2.0)
+        if (tech >= 2.0) {
+            double windEnergyW = cell.getEnergyWind() != null ? cell.getEnergyWind() : 0.0;
+            double millFactor = Math.min(3.0, Math.max(0.5, tech - 1.5) + Math.min(1.0, capitalPerCapita * 0.05));
+            double kineticHarness = (windEnergyW * 0.05 + 400.0 * millFactor) * (tech >= 4.5 ? 5.0 : 1.0);
+            double maxPerCapitaWindHydro = (tech < 3.0) ? 250.0 : ((tech < 4.0) ? 1200.0 : 2500.0);
+            mechanicalPowerWatts += 120.0 * millFactor + Math.min(maxPerCapitaWindHydro, kineticHarness / Math.max(1.0, pop));
+        }
+
+        // 5. Industrial Fossil Power (Coal, Hydrocarbons, Steam/ICE grid; requires Industrial tech >= 3.0)
+        if (tech >= 3.0) {
+            double industrialFactor = Math.min(3.0, tech - 2.0);
+            double coalWatts = 3000.0 * industrialFactor; // ~3.0 - 9.0 kW primary power
+            mechanicalPowerWatts += coalWatts * converterEfficiency;
+        }
+
+        // 6. Modern Electrical & Nuclear Power Grid (tech >= 4.0)
+        if (tech >= 4.0) {
+            double modernFactor = Math.min(2.5, tech - 3.5);
+            // Advanced electro-nuclear power flux: scales into 15-30 kW per capita range
+            double gridPowerWatts = 35000.0 * modernFactor;
+            mechanicalPowerWatts += gridPowerWatts * converterEfficiency;
+        }
+
+        // 7. Advanced High-Flux Energy & D-T Fusion / Trans-Human Grid (tech >= 5.0)
+        if (tech >= 5.0) {
+            double postScarcityFactor = Math.min(5.0, tech - 4.0);
+            // Ultra-dense fusion & space solar power flux: scales into 50-70 kW per capita range
+            double advancedPowerWatts = 100000.0 * postScarcityFactor;
+            mechanicalPowerWatts += advancedPowerWatts * converterEfficiency;
+        }
+
+        return Math.min(maxHarnessableWatts, Math.max(50.0, mechanicalPowerWatts));
     }
 
     /*
-     * Executes one physical energy grid tick across cells.
+     * Executes one physical energy grid tick across cells using default monthly step.
      */
     public static void processPhysicalEnergyGrid(List<H3Cell> cells) {
+        processPhysicalEnergyGrid(cells, 1.0 / 12.0);
+    }
+
+    /*
+     * Executes physical energy grid tick scaling capital formation by population and dtYears.
+     */
+    public static void processPhysicalEnergyGrid(List<H3Cell> cells, double dtYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
+        double dtSafe = Math.max(0.0001, dtYears);
 
         for (H3Cell cell : cells) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (pop <= 0) continue;
             double powerPerCapitaW = calculatePerCapitaMechanicalPowerWatts(cell);
-            // Expand cell resource capital based on per-capita mechanical power output
-            cell.setResourceCapital(cell.getResourceCapital() + (powerPerCapitaW / 10.0));
+            double tech = cell.getTechnologyLevel() != null ? Math.max(0.5, cell.getTechnologyLevel()) : 1.0;
+
+            // Solow-Swan physical capital formation from mechanical work:
+            // Gross investment scales with mechanical power flux, while depreciation scales with existing stock
+            // and intensive capital density (K/N) to prevent unphysical infinite accumulation in pre-industrial eras.
+            double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double capPerCapita = curCap / pop;
+            double equilibriumCapPerCapita = 8.0 * Math.pow(tech, 1.5) * (powerPerCapitaW / 250.0);
+            double saturationFactor = Math.max(0.0, 1.0 - (capPerCapita / Math.max(10.0, equilibriumCapPerCapita)));
+
+            double capitalFormation = pop * (powerPerCapitaW / 400.0) * saturationFactor * dtSafe;
+            double capitalDepreciation = curCap * 0.02 * dtSafe;
+
+            cell.setResourceCapital(Math.max(0.0, curCap + capitalFormation - capitalDepreciation));
         }
     }
 }

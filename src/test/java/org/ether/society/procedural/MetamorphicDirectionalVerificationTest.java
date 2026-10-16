@@ -55,9 +55,8 @@ public class MetamorphicDirectionalVerificationTest {
         double previousTeq = Double.MAX_VALUE;
 
         for (double albedo : albedos) {
-            // Energy Balance Equation: S_0 * (1 - albedo) / 4 = epsilon * sigma * T_eq^4
-            double absorbedRadiation = (solarInsolation * (1.0 - albedo)) / 4.0;
-            double tEqKelvin = Math.pow(absorbedRadiation / (emissivity * sigma), 0.25);
+            // Stefan-Boltzmann Equilibrium via production GreenhouseRadiativeEngine
+            double tEqKelvin = GreenhouseRadiativeEngine.calculateStefanBoltzmannEquilibriumTempK(albedo, 0.0);
             double tEqCelsius = tEqKelvin - 273.15;
 
             logger.info("  Albedo: {} -> T_eq: {} °C ({} K)", albedo, String.format("%.2f", tEqCelsius), String.format("%.2f", tEqKelvin));

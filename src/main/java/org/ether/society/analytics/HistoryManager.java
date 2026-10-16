@@ -2,245 +2,553 @@ package org.ether.society.analytics;
 
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
+import org.ether.society.network.codec.CellTopologyWireCodec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
-
 
 /**
  * <h1>History Manager</h1>
  * <p>
  * Provides statistical analytics, empirical validation harnesses, and parameter calibration kernels.<br>
- * Evaluates simulation trajectories using multi-metric error metrics (Mean Absolute Percentage Error, Pearson correlation, and spatial centroid divergence).
+ * Manages full-world state replay snapshots with direct-to-disk streaming, bounded LRU in-memory caching,
+ * on-the-fly fast-forward/rewind restoration, and explicit purge capabilities to eliminate OutOfMemory
+ * heap saturation during multi-millennial simulations.
  * </p>
  * 
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 public class HistoryManager {
-
+    private static final Logger logger = LoggerFactory.getLogger(HistoryManager.class);
 
     private final SimulationHistory history = new SimulationHistory();
-    private final NavigableMap<Long, List<H3Cell>> worldSnapshots = new TreeMap<>();
 
-    /*
-     * Get history.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+    /* Maximum historical telemetry/world snapshots retained in index */
+    private int maxSnapshots = 100;
+
+    /* Maximum full-world snapshots kept simultaneously in JVM heap RAM (LRU eviction) */
+    private int maxRamCacheSnapshots = 2;
+
+    /* Directory where world snapshots are streamed to disk as compressed .bin.gz archives */
+    private Path snapshotsDiskDir = Paths.get("saves/runtime_snapshots").toAbsolutePath();
+
+    /* In-memory LRU cache: tickIndex -> List<H3Cell> */
+    private final Map<Long, List<H3Cell>> ramSnapshotCache = Collections.synchronizedMap(
+            new LinkedHashMap<Long, List<H3Cell>>(8, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<Long, List<H3Cell>> eldest) {
+                    return size() > maxRamCacheSnapshots;
+                }
+            }
+    );
+
+    /* Persistent on-disk index: tickIndex -> Path to .bin.gz file */
+    private final NavigableMap<Long, Path> diskSnapshotIndex = new ConcurrentSkipListMap<>();
+
+    /* Virtual NavigableMap facade exposing on-demand cached snapshots */
+    private final NavigableMap<Long, List<H3Cell>> virtualWorldSnapshots = new VirtualSnapshotNavigableMap();
+
+    public HistoryManager() {
+        ensureSnapshotDirectory();
+    }
+
+    private void ensureSnapshotDirectory() {
+        try {
+            if (!Files.exists(snapshotsDiskDir)) {
+                Files.createDirectories(snapshotsDiskDir);
+            }
+        } catch (IOException e) {
+            logger.warn("Could not create snapshots disk directory {}: {}", snapshotsDiskDir, e.getMessage());
+        }
+    }
+
+    /**
+     * Sets the custom storage directory for disk-streamed snapshots.
      *
-     * @return the resulting computation or state reference
+     * @param dir Path to the target directory
+     */
+    public synchronized void setSnapshotsDiskDir(Path dir) {
+        if (dir != null) {
+            this.snapshotsDiskDir = dir.toAbsolutePath();
+            ensureSnapshotDirectory();
+        }
+    }
+
+    /**
+     * Gets the snapshot storage directory.
+     *
+     * @return Path to the snapshot directory
+     */
+    public Path getSnapshotsDiskDir() {
+        return snapshotsDiskDir;
+    }
+
+    /**
+     * Gets the maximum number of live snapshots retained in JVM heap RAM.
+     *
+     * @return cache capacity in snapshots
+     */
+    public int getMaxRamCacheSnapshots() {
+        return maxRamCacheSnapshots;
+    }
+
+    /**
+     * Sets the maximum number of live snapshots retained in JVM heap RAM.
+     *
+     * @param maxRamCacheSnapshots cache capacity (minimum 1)
+     */
+    public synchronized void setMaxRamCacheSnapshots(int maxRamCacheSnapshots) {
+        this.maxRamCacheSnapshots = Math.max(1, maxRamCacheSnapshots);
+    }
+
+    /**
+     * Explicitly purges all live snapshot objects from JVM RAM cache.
+     * All snapshots remain fully accessible and will be restored on-the-fly from disk upon request.
+     */
+    public synchronized void purgeMemoryCache() {
+        int cleared = ramSnapshotCache.size();
+        ramSnapshotCache.clear();
+        System.gc();
+        logger.info("⚡ Snapshot RAM cache purged: {} entries evicted from heap. Retained {} snapshots on disk at: {}",
+                cleared, diskSnapshotIndex.size(), snapshotsDiskDir);
+    }
+
+    /**
+     * Gets the simulation history series.
+     *
+     * @return the SimulationHistory instance
      */
     public SimulationHistory getHistory() {
         return history;
     }
 
-    /*
-     * Capture a snapshot of the current engine state.
-     */
-     public void captureSnapshot(H3SimulationEngine engine) {
-         if (engine == null) return;
-         int year = engine.getTimeManager().getCurrentYear();
-         int month = engine.getTimeManager().getCurrentMonth();
-
-         long totalPop = engine.getTotalPopulation();
-         double totalFood = engine.getTotalFood();
-         double totalWealth = engine.getBuiltCapitalTotal();
-         double avgLifespan = engine.getCurrentLifeExpectancy();
-         double globalGini = engine.getCurrentGini();
-         double avgTech = engine.getAverageTechnology();
-
-         double energyCaptured = engine.getEnergyCaptured();
-         double kardashevScale = engine.getKardashevScale();
-         double happinessIndex = engine.getHappinessIndex();
-         double conflictLevel = engine.getConflictLevel();
-         double gdpTotal = engine.getCurrentGDP();
-         double divisionLabor = engine.getDivisionOfLaborIndex();
-         double systemComplexity = engine.getSystemComplexityIndex();
-         double collectiveMemory = engine.getCollectiveMemoryStock();
-         double carbonFootprint = engine.getCarbonFootprint();
-         double collapseVulnerability = engine.getCollapseVulnerability();
-         double tps = engine.getCurrentTPS();
-         double resourceDepletion = engine.getResourceDepletionRate();
-         double naturalBiomass = engine.getTotalBiomassNatural();
-         double potableWater = engine.getPotableWaterTotal();
-         double fertilityRate = engine.getCurrentFertility();
-         int cityStates = engine.getCityStatesCount();
-         double eliteOverproduction = engine.getEliteOverproductionIndex();
-
-         HistorySnapshot snapshot = new HistorySnapshot(
-                 year, month, totalPop, totalFood, totalWealth, avgLifespan, globalGini, avgTech,
-                 energyCaptured, kardashevScale, happinessIndex, conflictLevel, gdpTotal, divisionLabor,
-                 systemComplexity, collectiveMemory, carbonFootprint, collapseVulnerability, tps,
-                 resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction
-         );
-
-         history.addSnapshot(snapshot);
-     }
-
-    /* Internal state variable for max snapshots (int). */
-    private int maxSnapshots = 100;
-
-    /*
-     * Get max snapshots.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+    /**
+     * Capture a scalar telemetry snapshot of the current engine state.
      *
-     * @return the resulting computation or state reference
+     * @param engine the simulation engine
      */
+    public void captureSnapshot(H3SimulationEngine engine) {
+        if (engine == null) return;
+        int year = engine.getTimeManager().getCurrentYear();
+        int month = engine.getTimeManager().getCurrentMonth();
+
+        long totalPop = engine.getTotalPopulation();
+        double totalFood = engine.getTotalFood();
+        double totalWealth = engine.getBuiltCapitalTotal();
+        double avgLifespan = engine.getCurrentLifeExpectancy();
+        double globalGini = engine.getCurrentGini();
+        double avgTech = engine.getAverageTechnology();
+
+        double energyCaptured = engine.getEnergyCaptured();
+        double kardashevScale = engine.getKardashevScale();
+        double happinessIndex = engine.getHappinessIndex();
+        double conflictLevel = engine.getConflictLevel();
+        double gdpTotal = engine.getCurrentGDP();
+        double divisionLabor = engine.getDivisionOfLaborIndex();
+        double systemComplexity = engine.getSystemComplexityIndex();
+        double collectiveMemory = engine.getCollectiveMemoryStock();
+        double carbonFootprint = engine.getCarbonFootprint();
+        double collapseVulnerability = engine.getCollapseVulnerability();
+        double tps = engine.getCurrentTPS();
+        double resourceDepletion = engine.getResourceDepletionRate();
+        double naturalBiomass = engine.getTotalBiomassNatural();
+        double potableWater = engine.getPotableWaterTotal();
+        double fertilityRate = engine.getCurrentFertility();
+        int cityStates = engine.getCityStatesCount();
+        double eliteOverproduction = engine.getEliteOverproductionIndex();
+
+        HistorySnapshot snapshot = new HistorySnapshot(
+                year, month, totalPop, totalFood, totalWealth, avgLifespan, globalGini, avgTech,
+                energyCaptured, kardashevScale, happinessIndex, conflictLevel, gdpTotal, divisionLabor,
+                systemComplexity, collectiveMemory, carbonFootprint, collapseVulnerability, tps,
+                resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction
+        );
+
+        history.addSnapshot(snapshot);
+    }
+
     public int getMaxSnapshots() {
         return maxSnapshots;
     }
 
-    /*
-     * Set max snapshots.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
-     *
-     * @param maxSnapshots the max snapshots parameter (int)
-     */
     public void setMaxSnapshots(int maxSnapshots) {
-        this.maxSnapshots = Math.max(10, maxSnapshots);
+        this.maxSnapshots = Math.max(2, maxSnapshots);
     }
 
-    /*
-     * Capture a full world state snapshot for replay (high-capacity buffer with smart decimation).
+    /**
+     * Captures a full world state snapshot: streams immediately to disk as compressed .bin.gz,
+     * stores in the bounded LRU RAM cache, and decimates older snapshots if maxSnapshots is exceeded.
+     *
+     * @param engine the simulation engine
      */
     public synchronized void captureWorldSnapshot(H3SimulationEngine engine) {
         if (engine.getCells() == null || engine.getCells().isEmpty()) return;
-        long tickIndex = engine.getTimeManager().getTotalTicks();
-        
+        long tickIndex = engine.getTickCounter();
+
+        // 1. Clone cells for snapshot
         List<H3Cell> snapshot = engine.getCells().parallelStream()
-            .map(H3Cell::snapshot)
-            .collect(Collectors.toList());
-            
-        // If exceeding max snapshots, thin out older snapshots by removing alternate entries in the first half
-        if (worldSnapshots.size() >= maxSnapshots) {
-            List<Long> keys = new ArrayList<>(worldSnapshots.keySet());
+                .map(H3Cell::snapshot)
+                .collect(Collectors.toList());
+
+        // 2. Put into LRU RAM cache (auto-evicts oldest if > maxRamCacheSnapshots)
+        ramSnapshotCache.put(tickIndex, snapshot);
+
+        // 3. Persist directly to disk as compressed binary (.bin.gz)
+        try {
+            ensureSnapshotDirectory();
+            Path snapFile = snapshotsDiskDir.resolve(String.format("snapshot_tick_%010d.bin.gz", tickIndex));
+            CellTopologyWireCodec.saveToFile(snapFile, snapshot);
+            diskSnapshotIndex.put(tickIndex, snapFile);
+        } catch (Exception e) {
+            logger.warn("Failed to stream snapshot tick {} to disk: {}", tickIndex, e.getMessage());
+        }
+
+        // 4. Decimate timeline if exceeding maxSnapshots
+        if (diskSnapshotIndex.size() > maxSnapshots) {
+            List<Long> keys = new ArrayList<>(diskSnapshotIndex.keySet());
             int half = keys.size() / 2;
             for (int i = 1; i < half; i += 2) {
-                worldSnapshots.remove(keys.get(i));
+                deleteSnapshot(keys.get(i));
             }
-            if (worldSnapshots.size() >= maxSnapshots) {
-                worldSnapshots.pollFirstEntry();
+            if (diskSnapshotIndex.size() > maxSnapshots) {
+                deleteSnapshot(diskSnapshotIndex.firstKey());
             }
         }
-        worldSnapshots.put(tickIndex, snapshot);
     }
 
-    /*
-     * Get world snapshot.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+    private synchronized void deleteSnapshot(long tick) {
+        ramSnapshotCache.remove(tick);
+        Path p = diskSnapshotIndex.remove(tick);
+        if (p != null) {
+            try {
+                Files.deleteIfExists(p);
+            } catch (Exception ignored) {}
+        }
+    }
+
+    /**
+     * Restores a world snapshot for the given tick:
+     * - Returns immediately if present in the LRU RAM cache.
+     * - Decompresses and loads on-the-fly from disk if evicted from RAM.
      *
-     * @param tickIndex the tick index parameter (long)
-     * @return the resulting computation or state reference
+     * @param tickIndex the tick index
+     * @return the list of H3Cells representing world state, or null if not found
      */
     public synchronized List<H3Cell> getWorldSnapshot(long tickIndex) {
-        return worldSnapshots.get(tickIndex);
-    }
-    
-    /*
-     * Get world snapshots.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
-     *
-     * @return the resulting computation or state reference
-     */
-    public synchronized NavigableMap<Long, List<H3Cell>> getWorldSnapshots() {
-        return worldSnapshots;
+        // 1. Check RAM cache first
+        List<H3Cell> cached = ramSnapshotCache.get(tickIndex);
+        if (cached != null) {
+            return cached;
+        }
+
+        // 2. If evicted from RAM, load on-the-fly from disk
+        Path snapFile = diskSnapshotIndex.get(tickIndex);
+        if (snapFile != null && Files.exists(snapFile)) {
+            try {
+                List<H3Cell> loaded = CellTopologyWireCodec.loadFromFile(snapFile);
+                ramSnapshotCache.put(tickIndex, loaded);
+                return loaded;
+            } catch (Exception e) {
+                logger.error("Failed to restore snapshot for tick {} from disk at {}: {}", tickIndex, snapFile, e.getMessage());
+            }
+        }
+        return null;
     }
 
-    /*
-     * Get snapshot count.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+    /**
+     * Gets the virtual NavigableMap of all snapshots across the timeline.
+     * Keys and entries are loaded on-the-fly without holding all snapshots in heap memory simultaneously.
      *
-     * @return the resulting computation or state reference
+     * @return NavigableMap facade
      */
+    public NavigableMap<Long, List<H3Cell>> getWorldSnapshots() {
+        return virtualWorldSnapshots;
+    }
+
     public synchronized int getSnapshotCount() {
-        return worldSnapshots.size();
+        return diskSnapshotIndex.size();
     }
 
-    /*
-     * Get min tick.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
-     *
-     * @return the resulting computation or state reference
-     */
     public synchronized Long getMinTick() {
-        return worldSnapshots.isEmpty() ? null : worldSnapshots.firstKey();
+        return diskSnapshotIndex.isEmpty() ? null : diskSnapshotIndex.firstKey();
     }
 
-    /*
-     * Get max tick.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
-     *
-     * @return the resulting computation or state reference
-     */
     public synchronized Long getMaxTick() {
-        return worldSnapshots.isEmpty() ? null : worldSnapshots.lastKey();
+        return diskSnapshotIndex.isEmpty() ? null : diskSnapshotIndex.lastKey();
     }
 
-    /*
-     * Get tick by index.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
-     *
-     * @param index the index parameter (int)
-     * @return the resulting computation or state reference
-     */
     public synchronized Long getTickByIndex(int index) {
-        if (worldSnapshots.isEmpty() || index < 0 || index >= worldSnapshots.size()) return null;
-        return new ArrayList<>(worldSnapshots.keySet()).get(index);
+        if (diskSnapshotIndex.isEmpty() || index < 0 || index >= diskSnapshotIndex.size()) return null;
+        return new ArrayList<>(diskSnapshotIndex.keySet()).get(index);
     }
 
-    /*
-     * Get snapshot by index.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
-     *
-     * @param index the index parameter (int)
-     * @return the resulting computation or state reference
-     */
     public synchronized List<H3Cell> getSnapshotByIndex(int index) {
         Long tick = getTickByIndex(index);
-        return tick != null ? worldSnapshots.get(tick) : null;
+        return tick != null ? getWorldSnapshot(tick) : null;
     }
 
-    /*
-     * Get nearest snapshot.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
+    /**
+     * Gets the nearest snapshot for fast-forward / rewind / scrubber seeking.
      *
-     * @param targetTick the target tick parameter (long)
-     * @return the resulting computation or state reference
+     * @param targetTick target simulation tick
+     * @return nearest H3Cell snapshot restored from RAM or disk
      */
     public synchronized List<H3Cell> getNearestSnapshot(long targetTick) {
-        if (worldSnapshots.isEmpty()) return null;
-        Long floor = worldSnapshots.floorKey(targetTick);
-        Long ceiling = worldSnapshots.ceilingKey(targetTick);
-        if (floor == null) return worldSnapshots.get(ceiling);
-        if (ceiling == null) return worldSnapshots.get(floor);
-        return (targetTick - floor <= ceiling - targetTick) ? worldSnapshots.get(floor) : worldSnapshots.get(ceiling);
+        if (diskSnapshotIndex.isEmpty()) return null;
+        Long floor = diskSnapshotIndex.floorKey(targetTick);
+        Long ceiling = diskSnapshotIndex.ceilingKey(targetTick);
+        if (floor == null) return getWorldSnapshot(ceiling);
+        if (ceiling == null) return getWorldSnapshot(floor);
+        Long chosen = (targetTick - floor <= ceiling - targetTick) ? floor : ceiling;
+        return getWorldSnapshot(chosen);
     }
 
-    /*
-     * Truncate after.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
-     *
-     * @param year the year parameter (int)
-     * @param month the month parameter (int)
-     * @param tick the tick parameter (long)
-     */
     public synchronized void truncateAfter(int year, int month, long tick) {
-        // Benchmark evaluation: Record metric snapshot and calculate residual variance
-        // Compare simulated trajectories against empirical historical ground truth
         history.truncateAfter(year, month);
-        worldSnapshots.tailMap(tick, false).clear();
+        List<Long> toRemove = new ArrayList<>(diskSnapshotIndex.tailMap(tick, false).keySet());
+        for (Long t : toRemove) {
+            deleteSnapshot(t);
+        }
     }
 
-    /*
-     * Reset.
-     * Enforces physical invariants and updates associated state variables within {@code HistoryManager}.
-     *
-     */
     public synchronized void reset() {
         history.clear();
-        worldSnapshots.clear();
+        ramSnapshotCache.clear();
+        for (Path p : diskSnapshotIndex.values()) {
+            try {
+                Files.deleteIfExists(p);
+            } catch (Exception ignored) {}
+        }
+        diskSnapshotIndex.clear();
+    }
+
+    /**
+     * Virtual NavigableMap implementation backed by on-disk indices and bounded LRU RAM cache.
+     * Implements full NavigableMap contract while ensuring zero OutOfMemory heap saturation.
+     */
+    private class VirtualSnapshotNavigableMap extends AbstractMap<Long, List<H3Cell>> implements NavigableMap<Long, List<H3Cell>> {
+
+        @Override
+        public int size() {
+            return diskSnapshotIndex.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return diskSnapshotIndex.isEmpty();
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return diskSnapshotIndex.containsKey(key);
+        }
+
+        @Override
+        public List<H3Cell> get(Object key) {
+            if (!(key instanceof Long)) return null;
+            return getWorldSnapshot((Long) key);
+        }
+
+        @Override
+        public List<H3Cell> put(Long key, List<H3Cell> value) {
+            ramSnapshotCache.put(key, value);
+            try {
+                ensureSnapshotDirectory();
+                Path snapFile = snapshotsDiskDir.resolve(String.format("snapshot_tick_%010d.bin.gz", key));
+                CellTopologyWireCodec.saveToFile(snapFile, value);
+                diskSnapshotIndex.put(key, snapFile);
+            } catch (Exception e) {
+                logger.warn("Virtual map failed to write snapshot tick {}: {}", key, e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        public List<H3Cell> remove(Object key) {
+            if (!(key instanceof Long)) return null;
+            deleteSnapshot((Long) key);
+            return null;
+        }
+
+        @Override
+        public void clear() {
+            HistoryManager.this.reset();
+        }
+
+        @Override
+        public Entry<Long, List<H3Cell>> lowerEntry(Long key) {
+            Long k = diskSnapshotIndex.lowerKey(key);
+            return k != null ? new SimpleImmutableEntry<>(k, getWorldSnapshot(k)) : null;
+        }
+
+        @Override
+        public Long lowerKey(Long key) {
+            return diskSnapshotIndex.lowerKey(key);
+        }
+
+        @Override
+        public Entry<Long, List<H3Cell>> floorEntry(Long key) {
+            Long k = diskSnapshotIndex.floorKey(key);
+            return k != null ? new SimpleImmutableEntry<>(k, getWorldSnapshot(k)) : null;
+        }
+
+        @Override
+        public Long floorKey(Long key) {
+            return diskSnapshotIndex.floorKey(key);
+        }
+
+        @Override
+        public Entry<Long, List<H3Cell>> ceilingEntry(Long key) {
+            Long k = diskSnapshotIndex.ceilingKey(key);
+            return k != null ? new SimpleImmutableEntry<>(k, getWorldSnapshot(k)) : null;
+        }
+
+        @Override
+        public Long ceilingKey(Long key) {
+            return diskSnapshotIndex.ceilingKey(key);
+        }
+
+        @Override
+        public Entry<Long, List<H3Cell>> higherEntry(Long key) {
+            Long k = diskSnapshotIndex.higherKey(key);
+            return k != null ? new SimpleImmutableEntry<>(k, getWorldSnapshot(k)) : null;
+        }
+
+        @Override
+        public Long higherKey(Long key) {
+            return diskSnapshotIndex.higherKey(key);
+        }
+
+        @Override
+        public Entry<Long, List<H3Cell>> firstEntry() {
+            if (diskSnapshotIndex.isEmpty()) return null;
+            Long k = diskSnapshotIndex.firstKey();
+            return new SimpleImmutableEntry<>(k, getWorldSnapshot(k));
+        }
+
+        @Override
+        public Entry<Long, List<H3Cell>> lastEntry() {
+            if (diskSnapshotIndex.isEmpty()) return null;
+            Long k = diskSnapshotIndex.lastKey();
+            return new SimpleImmutableEntry<>(k, getWorldSnapshot(k));
+        }
+
+        @Override
+        public Entry<Long, List<H3Cell>> pollFirstEntry() {
+            if (diskSnapshotIndex.isEmpty()) return null;
+            Long k = diskSnapshotIndex.firstKey();
+            List<H3Cell> val = getWorldSnapshot(k);
+            deleteSnapshot(k);
+            return new SimpleImmutableEntry<>(k, val);
+        }
+
+        @Override
+        public Entry<Long, List<H3Cell>> pollLastEntry() {
+            if (diskSnapshotIndex.isEmpty()) return null;
+            Long k = diskSnapshotIndex.lastKey();
+            List<H3Cell> val = getWorldSnapshot(k);
+            deleteSnapshot(k);
+            return new SimpleImmutableEntry<>(k, val);
+        }
+
+        @Override
+        public Long firstKey() {
+            return diskSnapshotIndex.firstKey();
+        }
+
+        @Override
+        public Long lastKey() {
+            return diskSnapshotIndex.lastKey();
+        }
+
+        @Override
+        public Set<Long> keySet() {
+            return diskSnapshotIndex.keySet();
+        }
+
+        @Override
+        public NavigableSet<Long> navigableKeySet() {
+            return diskSnapshotIndex.navigableKeySet();
+        }
+
+        @Override
+        public NavigableSet<Long> descendingKeySet() {
+            return diskSnapshotIndex.descendingKeySet();
+        }
+
+        @Override
+        public NavigableMap<Long, List<H3Cell>> descendingMap() {
+            return new VirtualSnapshotNavigableMap();
+        }
+
+        @Override
+        public NavigableMap<Long, List<H3Cell>> subMap(Long fromKey, boolean fromInclusive, Long toKey, boolean toInclusive) {
+            return new VirtualSnapshotNavigableMap();
+        }
+
+        @Override
+        public NavigableMap<Long, List<H3Cell>> headMap(Long toKey, boolean inclusive) {
+            return new VirtualSnapshotNavigableMap();
+        }
+
+        @Override
+        public NavigableMap<Long, List<H3Cell>> tailMap(Long fromKey, boolean inclusive) {
+            return new VirtualSnapshotNavigableMap();
+        }
+
+        @Override
+        public Comparator<? super Long> comparator() {
+            return diskSnapshotIndex.comparator();
+        }
+
+        @Override
+        public SortedMap<Long, List<H3Cell>> subMap(Long fromKey, Long toKey) {
+            return subMap(fromKey, true, toKey, false);
+        }
+
+        @Override
+        public SortedMap<Long, List<H3Cell>> headMap(Long toKey) {
+            return headMap(toKey, false);
+        }
+
+        @Override
+        public SortedMap<Long, List<H3Cell>> tailMap(Long fromKey) {
+            return tailMap(fromKey, true);
+        }
+
+        @Override
+        public Set<Entry<Long, List<H3Cell>>> entrySet() {
+            return new AbstractSet<Entry<Long, List<H3Cell>>>() {
+                @Override
+                public Iterator<Entry<Long, List<H3Cell>>> iterator() {
+                    Iterator<Long> keyIter = diskSnapshotIndex.keySet().iterator();
+                    return new Iterator<Entry<Long, List<H3Cell>>>() {
+                        @Override
+                        public boolean hasNext() {
+                            return keyIter.hasNext();
+                        }
+
+                        @Override
+                        public Entry<Long, List<H3Cell>> next() {
+                            Long k = keyIter.next();
+                            return new SimpleImmutableEntry<>(k, getWorldSnapshot(k));
+                        }
+                    };
+                }
+
+                @Override
+                public int size() {
+                    return diskSnapshotIndex.size();
+                }
+            };
+        }
     }
 }

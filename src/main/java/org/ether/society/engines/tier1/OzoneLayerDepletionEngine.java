@@ -44,7 +44,9 @@ public class OzoneLayerDepletionEngine {
                 ozoneDepletionEvents++;
                 // UV-B damage to crop DNA
                 double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
-                cell.setBiomassAgriculture(Math.max(10.0, currentAgri * 0.92));
+                if (currentAgri > 0.0) {
+                    cell.setBiomassAgriculture(Math.max(1.0, currentAgri * 0.92));
+                }
             }
         }
 

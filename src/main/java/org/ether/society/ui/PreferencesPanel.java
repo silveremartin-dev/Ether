@@ -39,6 +39,8 @@ public class PreferencesPanel extends BorderPane {
     private ToggleGroup themeToggleGroup;
     private VBox langSection;
     private VBox themeSection;
+    private Label aboutHeaderLabel;
+    private Label engineDesc;
 
     /*
      * Preferences panel.
@@ -105,13 +107,13 @@ public class PreferencesPanel extends BorderPane {
         themeSection = createCardSectionWithHeader(themeHeaderLabel, new VBox(10, themeOptions));
 
         // 3. About & Version Section
-        Label aboutHeaderLabel = new Label("ℹ️ " + I18n.getOrDefault("pref.about.title", "About Ether & System Information"));
+        aboutHeaderLabel = new Label();
         aboutHeaderLabel.getStyleClass().add("label-section-header");
         
         Label versionBadge = new Label(org.ether.society.config.AppVersion.getReleaseTitle() + " (" + org.ether.society.config.AppVersion.getRawVersion() + ")");
         versionBadge.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-background-color: rgba(56, 189, 248, 0.15); -fx-padding: 4 10; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6;");
 
-        Label engineDesc = new Label(I18n.getOrDefault("pref.about.desc", "Physical-based Cliodynamic & Historical Planetary Simulation Engine"));
+        engineDesc = new Label();
         engineDesc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 12px;");
 
         Label javaRuntime = new Label(String.format("Java %s (%s) — %s", System.getProperty("java.version"), System.getProperty("os.arch"), System.getProperty("os.name")));
@@ -156,10 +158,28 @@ public class PreferencesPanel extends BorderPane {
         if (titleHeader != null) titleHeader.setText(I18n.get("pref.title"));
         if (langHeaderLabel != null) langHeaderLabel.setText("🌐 " + I18n.get("pref.language"));
         if (themeHeaderLabel != null) themeHeaderLabel.setText("🎨 " + I18n.get("pref.theme"));
-        if (darkThemeRadio != null) darkThemeRadio.setText(I18n.get("pref.theme.dark"));
-        if (lightThemeRadio != null) lightThemeRadio.setText(I18n.get("pref.theme.light"));
-        if (presentationThemeRadio != null) presentationThemeRadio.setText(I18n.get("pref.theme.presentation"));
-        if (languageCombo != null) languageCombo.setValue(I18n.getCurrentLanguage());
+        if (darkThemeRadio != null) {
+            darkThemeRadio.setText(I18n.get("pref.theme.dark"));
+            darkThemeRadio.setTooltip(new Tooltip(I18n.getOrDefault("pref.tooltip.theme.dark", "High-contrast dark visual theme for night/low-light laboratory operations.")));
+        }
+        if (lightThemeRadio != null) {
+            lightThemeRadio.setText(I18n.get("pref.theme.light"));
+            lightThemeRadio.setTooltip(new Tooltip(I18n.getOrDefault("pref.tooltip.theme.light", "High-contrast light visual theme optimized for daylight readability.")));
+        }
+        if (presentationThemeRadio != null) {
+            presentationThemeRadio.setText(I18n.get("pref.theme.presentation"));
+            presentationThemeRadio.setTooltip(new Tooltip(I18n.getOrDefault("pref.tooltip.theme.presentation", "High-contrast high-luminance presentation theme for lectures and screen capture.")));
+        }
+        if (languageCombo != null) {
+            languageCombo.setValue(I18n.getCurrentLanguage());
+            languageCombo.setTooltip(new Tooltip(I18n.getOrDefault("pref.tooltip.language", "Select user interface and documentation language (English, French, German, Spanish, Chinese).")));
+        }
+        if (aboutHeaderLabel != null) {
+            aboutHeaderLabel.setText("ℹ️ " + I18n.getOrDefault("pref.about.title", "About Ether & System Information"));
+        }
+        if (engineDesc != null) {
+            engineDesc.setText(I18n.getOrDefault("pref.about.desc", "Physical-based Cliodynamic & Historical Planetary Simulation Engine"));
+        }
     }
 }
 

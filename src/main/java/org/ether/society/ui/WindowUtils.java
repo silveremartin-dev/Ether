@@ -208,6 +208,205 @@ public class WindowUtils {
         });
     }
 
+    /**
+     * Computes an optimal, human-friendly tick unit for a {@link javafx.scene.chart.NumberAxis} given a numeric span.
+     * <p>
+     * Generates approximately 8 to 12 major divisions based on 1-2-5-10 multiples of powers of 10:
+     * \[\text{unit} = c \times 10^{\lfloor \log_{10}(\text{raw}) \rfloor}, \quad c \in \{1, 2, 5, 10\}\]
+     * Guarantees that major tick mark allocations remain well below the JavaFX internal limit of 2,000 marks,
+     * preventing UI thread lockups and "Warning we tried to create more than 2000 major tick marks" warnings.
+     * </p>
+     *
+     * @param range the span between lower and upper bounds of the axis (in years, units, etc.)
+     * @return a clean, optimal tick unit greater than or equal to 1.0
+     */
+    public static double computeNiceTickUnit(double range) {
+        if (range <= 0.0 || Double.isNaN(range) || Double.isInfinite(range)) {
+            return 10.0;
+        }
+        double raw = range / 10.0;
+        double exponent = Math.floor(Math.log10(raw));
+        double fraction = raw / Math.pow(10.0, exponent);
+        double niceFraction;
+        if (fraction <= 1.5) {
+            niceFraction = 1.0;
+        } else if (fraction <= 3.0) {
+            niceFraction = 2.0;
+        } else if (fraction <= 7.0) {
+            niceFraction = 5.0;
+        } else {
+            niceFraction = 10.0;
+        }
+        return Math.max(1.0, niceFraction * Math.pow(10.0, exponent));
+    }
+
+    /**
+     * Safely prompts the user for a destination file path using JavaFX {@link javafx.stage.FileChooser},
+     * with graceful, fail-safe degradation to {@link javax.swing.JFileChooser} or local default directory
+     * in the event of a {@link NoClassDefFoundError}, {@link LinkageError}, or headless environment error.
+     *
+     * @param parentWindow the parent JavaFX window
+     * @param dialogTitle dialog window title
+     * @param defaultFileName suggested filename
+     * @param extensionDescription description of the extension filter (e.g. "Markdown (*.md)")
+     * @param extensionFilter filter extension pattern (e.g. "*.md")
+     * @return the selected destination file, or a fallback output file, or {@code null} if cancelled by user
+     */
+    public static java.io.File showSaveFileDialog(
+            javafx.stage.Window parentWindow,
+            String dialogTitle,
+            String defaultFileName,
+            String extensionDescription,
+            String extensionFilter) {
+        // Step 1: Attempt native JavaFX FileChooser
+        try {
+            javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
+            if (dialogTitle != null && !dialogTitle.isBlank()) {
+                chooser.setTitle(dialogTitle);
+            }
+            if (defaultFileName != null && !defaultFileName.isBlank()) {
+                chooser.setInitialFileName(defaultFileName);
+            }
+            if (extensionFilter != null && !extensionFilter.isBlank()) {
+                String desc = (extensionDescription != null && !extensionDescription.isBlank())
+                        ? extensionDescription : extensionFilter;
+                chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter(desc, extensionFilter));
+            }
+            return chooser.showSaveDialog(parentWindow);
+        } catch (Throwable t) {
+            logger.warn("JavaFX FileChooser invocation failed ({}); initiating Swing JFileChooser fallback", t.toString());
+        }
+
+        // Step 2: Fallback to Swing JFileChooser on EDT if display environment exists
+        if (!java.awt.GraphicsEnvironment.isHeadless()) {
+            try {
+                final java.io.File[] result = new java.io.File[1];
+                final boolean[] approved = new boolean[1];
+                Runnable showDialog = () -> {
+                    javax.swing.JFileChooser jfc = new javax.swing.JFileChooser();
+                    if (dialogTitle != null && !dialogTitle.isBlank()) {
+                        jfc.setDialogTitle(dialogTitle);
+                    }
+                    if (defaultFileName != null && !defaultFileName.isBlank()) {
+                        jfc.setSelectedFile(new java.io.File(defaultFileName));
+                    }
+                    if (extensionFilter != null && extensionFilter.contains("*.")) {
+                        String ext = extensionFilter.substring(extensionFilter.indexOf("*.") + 2).replace("*", "").trim();
+                        if (!ext.isBlank()) {
+                            String desc = (extensionDescription != null && !extensionDescription.isBlank())
+                                    ? extensionDescription : ext;
+                            jfc.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(desc, ext));
+                        }
+                    }
+                    int ret = jfc.showSaveDialog(null);
+                    if (ret == javax.swing.JFileChooser.APPROVE_OPTION) {
+                        result[0] = jfc.getSelectedFile();
+                        approved[0] = true;
+                    }
+                };
+
+                if (java.awt.EventQueue.isDispatchThread()) {
+                    showDialog.run();
+                } else {
+                    java.awt.EventQueue.invokeAndWait(showDialog);
+                }
+                if (approved[0]) {
+                    return result[0];
+                } else {
+                    return null; // Explicitly cancelled by user
+                }
+            } catch (Throwable t2) {
+                logger.warn("Swing JFileChooser fallback encountered an error ({}); resolving to local default export", t2.toString());
+            }
+        }
+
+        // Step 3: Emergency fallback to ./exports/
+        java.io.File exportDir = new java.io.File("exports");
+        if (!exportDir.exists()) {
+            exportDir.mkdirs();
+        }
+        String safeName = (defaultFileName != null && !defaultFileName.isBlank())
+                ? defaultFileName
+                : "export_" + System.currentTimeMillis() + (extensionFilter != null && extensionFilter.contains(".") ? extensionFilter.substring(extensionFilter.lastIndexOf('.')) : ".txt");
+        return new java.io.File(exportDir, safeName);
+    }
+
+    /**
+     * Safely prompts the user to select an existing file using JavaFX {@link javafx.stage.FileChooser},
+     * with graceful, fail-safe degradation to {@link javax.swing.JFileChooser} in the event of a
+     * {@link NoClassDefFoundError}, {@link LinkageError}, or headless environment error.
+     *
+     * @param parentWindow the parent JavaFX window
+     * @param dialogTitle dialog window title
+     * @param extensionDescription description of the extension filter
+     * @param extensionFilters array of filter extension patterns (e.g. "*.json", "*.ether")
+     * @return the selected file, or {@code null} if cancelled
+     */
+    public static java.io.File showOpenFileDialog(
+            javafx.stage.Window parentWindow,
+            String dialogTitle,
+            String extensionDescription,
+            String... extensionFilters) {
+        // Step 1: Attempt native JavaFX FileChooser
+        try {
+            javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
+            if (dialogTitle != null && !dialogTitle.isBlank()) {
+                chooser.setTitle(dialogTitle);
+            }
+            if (extensionFilters != null && extensionFilters.length > 0) {
+                String desc = (extensionDescription != null && !extensionDescription.isBlank())
+                        ? extensionDescription : "Files";
+                chooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter(desc, extensionFilters));
+            }
+            return chooser.showOpenDialog(parentWindow);
+        } catch (Throwable t) {
+            logger.warn("JavaFX FileChooser open dialog failed ({}); falling back to Swing JFileChooser", t.toString());
+        }
+
+        // Step 2: Fallback to Swing JFileChooser on EDT if display environment exists
+        if (!java.awt.GraphicsEnvironment.isHeadless()) {
+            try {
+                final java.io.File[] result = new java.io.File[1];
+                final boolean[] approved = new boolean[1];
+                Runnable showDialog = () -> {
+                    javax.swing.JFileChooser jfc = new javax.swing.JFileChooser();
+                    if (dialogTitle != null && !dialogTitle.isBlank()) {
+                        jfc.setDialogTitle(dialogTitle);
+                    }
+                    if (extensionFilters != null && extensionFilters.length > 0) {
+                        List<String> rawExts = new ArrayList<>();
+                        for (String f : extensionFilters) {
+                            if (f != null && f.contains("*.")) {
+                                rawExts.add(f.substring(f.indexOf("*.") + 2).replace("*", "").trim());
+                            }
+                        }
+                        if (!rawExts.isEmpty()) {
+                            String desc = (extensionDescription != null && !extensionDescription.isBlank())
+                                    ? extensionDescription : "Allowed Files";
+                            jfc.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(desc, rawExts.toArray(new String[0])));
+                        }
+                    }
+                    int ret = jfc.showOpenDialog(null);
+                    if (ret == javax.swing.JFileChooser.APPROVE_OPTION) {
+                        result[0] = jfc.getSelectedFile();
+                        approved[0] = true;
+                    }
+                };
+
+                if (java.awt.EventQueue.isDispatchThread()) {
+                    showDialog.run();
+                } else {
+                    java.awt.EventQueue.invokeAndWait(showDialog);
+                }
+                return approved[0] ? result[0] : null;
+            } catch (Throwable t2) {
+                logger.warn("Swing JFileChooser open dialog fallback failed ({})", t2.toString());
+                return null;
+            }
+        }
+        return null;
+    }
+
     /*
      * Prompts the user to save a JavaFX Image to a raster file (PNG or JPEG) and writes it out.
      *
@@ -218,14 +417,7 @@ public class WindowUtils {
      */
     public static void exportImageWithChooser(javafx.stage.Window parentWindow, Image image, String defaultFileName, String dialogTitle) {
         if (image == null) return;
-        javafx.stage.FileChooser chooser = new javafx.stage.FileChooser();
-        chooser.setTitle(dialogTitle);
-        chooser.getExtensionFilters().addAll(
-                new javafx.stage.FileChooser.ExtensionFilter("Portable Network Graphics (*.png)", "*.png"),
-                new javafx.stage.FileChooser.ExtensionFilter("JPEG Image (*.jpg, *.jpeg)", "*.jpg", "*.jpeg")
-        );
-        chooser.setInitialFileName(defaultFileName);
-        java.io.File file = chooser.showSaveDialog(parentWindow);
+        java.io.File file = showSaveFileDialog(parentWindow, dialogTitle, defaultFileName, "Portable Network Graphics (*.png)", "*.png");
         if (file != null) {
             try {
                 int w = (int) image.getWidth();

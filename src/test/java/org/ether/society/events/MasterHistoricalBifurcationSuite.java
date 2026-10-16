@@ -77,6 +77,7 @@ public class MasterHistoricalBifurcationSuite {
     }
 
     // =========================================================================
+    // =========================================================================
     // SECTION 1: CANONICAL HISTORICAL RUPTURE BENCHMARKS (ALL 7 SCENARIOS)
     // =========================================================================
 
@@ -84,6 +85,18 @@ public class MasterHistoricalBifurcationSuite {
     @Order(1)
     @DisplayName("Scenario 1: Toba Supervolcano (-74 000 BP) - Class I Geophysical Shock")
     public void testScenario1_TobaCataclysm74k() {
+        EventSystem eventSystem = new EventSystem();
+        ActiveEvent tobaEvent = new ActiveEvent(
+                "TOBA_-74K",
+                "🌋 CATASTROPHE : Supervolcan Toba - Hiver volcanique global",
+                "VOLCANO",
+                2.58, 98.83, -74000, 1, 120, 5000.0, 9.8
+        );
+        eventSystem.recordSpatialEvent(tobaEvent);
+
+        assertFalse(eventSystem.getActiveEvents().isEmpty(), "Toba cataclysm must be recorded in active spatial events.");
+        assertEquals("VOLCANO", eventSystem.getActiveEvents().get(0).getType());
+
         // Empirical ground truth: Human bottleneck ~10,000 to 15,000 individuals globally
         double groundTruthBottleneck = 15000.0;
         double unforcedCarryingCapacity = 100000.0;
@@ -111,23 +124,34 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(2)
     @DisplayName("Scenario 2: Late Bronze Age Collapse (-1200 BC) - Class III Systemic Supply Chain Rupture")
-    /*
-     * Test scenario2 bronze age collapse1200bc operation.
-     * <p>
-     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testScenario2_BronzeAgeCollapse1200BC() {
+        EventSystem eventSystem = new EventSystem();
+        List<H3Cell> cells = new ArrayList<>();
+        H3Cell palaceCenter = new H3Cell();
+        palaceCenter.setLatitude(35.0);
+        palaceCenter.setLongitude(33.0);
+        palaceCenter.setMovementFriction(1.0);
+        palaceCenter.setResourceCapital(100.0);
+        cells.add(palaceCenter);
+
         // Ground truth: 80% destruction of major palace centers, Tin trade severance (Cassiterite flow -> 0)
         double initialPalaceUrbanDensity = 100.0; // Index
         double groundTruthPostCollapseDensity = 25.0;
 
+        // Forced model: Sea Peoples invasion + Tin trade breakdown (Tin coefficient drops from 1.0 to 0.05)
+        HistoricalIntervention systemicCollapse = new HistoricalIntervention(
+                "BRONZE_COLLAPSE", "Late Bronze Age Collapse", "Trade breakdown",
+                -1200, 30, 35.0, 33.0, 1500.0, LeaderArchetype.MILITARY_CONQUEROR, 8.5
+        );
+        systemicCollapse.setMovementFrictionMultiplier(0.20);
+        eventSystem.injectCustomIntervention(systemicCollapse);
+        eventSystem.checkEvents(-1200, 1, 100_000L, 50_000.0, cells);
+
+        assertTrue(eventSystem.getActiveInterventions().stream().anyMatch(i -> i.getId().equals("BRONZE_COLLAPSE")),
+                "Systemic collapse intervention must be registered in EventSystem.");
+
         // Unforced model continues linear bronze metallurgy growth
         double unforcedDensity = 120.0;
-        
-        // Forced model: Sea Peoples invasion + Tin trade breakdown (Tin coefficient drops from 1.0 to 0.05)
         double tinAvailability = 0.05;
         double systemicCollapseFactor = 0.24;
         double forcedDensity = initialPalaceUrbanDensity * (systemicCollapseFactor + tinAvailability * 0.20); // = 25.0
@@ -144,15 +168,22 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(3)
     @DisplayName("Scenario 3: Alexander Hellenistic Surge (-334 BC) - Class III Catalytic Activation Energy")
-    /*
-     * Test scenario3 alexander hellenistic334bc operation.
-     * <p>
-     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testScenario3_AlexanderHellenistic334BC() {
+        EventSystem eventSystem = new EventSystem();
+        List<H3Cell> cells = new ArrayList<>();
+        H3Cell macedon = new H3Cell();
+        macedon.setLatitude(40.64);
+        macedon.setLongitude(22.94);
+        macedon.setMovementFriction(1.0);
+        cells.add(macedon);
+
+        // Check events at year -334 BC (Alexander the Great in HistoricalInterventionCatalog)
+        eventSystem.checkEvents(-334, 1, 1_000_000L, 500_000.0, cells);
+
+        boolean alexanderFired = eventSystem.getActiveInterventions().stream()
+                .anyMatch(hi -> hi.getName().contains("Alexandre") || hi.getName().contains("Alexander"));
+        assertTrue(alexanderFired, "Alexander the Great intervention must be triggered at -334 BC via EventSystem.");
+
         // Potential barrier to Persian Empire conquest E_barrier = 100,000 GJ
         double eBarrier = 100000.0;
         double unforcedMacedonianKineticEnergy = 25000.0; // Standard peacetime projection
@@ -172,20 +203,20 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(4)
     @DisplayName("Scenario 4: Early Islamic Expansion (632 CE) - Class III Transcontinental Trade & Network Reorganization")
-    /*
-     * Test scenario4 islamic expansion632ce operation.
-     * <p>
-     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testScenario4_IslamicExpansion632CE() {
+        EventSystem eventSystem = new EventSystem();
+        ActiveEvent expansionEvent = new ActiveEvent(
+                "ISLAMIC_632", "👑 LEADER : Early Islamic Caliphate Expansion",
+                "LEADER", 21.42, 39.82, 632, 1, 360, 3000.0, 9.2
+        );
+        eventSystem.recordSpatialEvent(expansionEvent);
+        assertEquals(1, eventSystem.getActiveEvents().size(), "Expansion event must be registered in EventSystem.");
+
         // Ground truth: Unification of Arabian peninsula and conquest of Sasanian empire within 20 years
         double groundTruthTradeConnectivity = 0.85;
         double unforcedFragmentedConnectivity = 0.20;
 
-        // Forced model: Ideological coherence + Sasanian/Byzantine exhaustion exhaustion factor (0.90)
+        // Forced model: Ideological coherence + Sasanian/Byzantine exhaustion factor (0.90)
         double ideologicalCoherence = 0.88;
         double forcedTradeConnectivity = ideologicalCoherence * 0.95;
 
@@ -201,15 +232,25 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(5)
     @DisplayName("Scenario 5: Mongol Eurasian Rupture (1206 CE) - Class III Nomadic Velocity & Steppe Teleconnection")
-    /*
-     * Test scenario5 mongol conquest1206ce operation.
-     * <p>
-     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testScenario5_MongolConquest1206CE() {
+        EventSystem eventSystem = new EventSystem();
+        List<H3Cell> cells = new ArrayList<>();
+        H3Cell steppeCell = new H3Cell();
+        steppeCell.setLatitude(47.92);
+        steppeCell.setLongitude(106.92);
+        steppeCell.setMovementFriction(1.0);
+        cells.add(steppeCell);
+
+        HistoricalIntervention mongolShock = new HistoricalIntervention(
+                "GENGHIS_1206", "Genghis Khan", "Steppe Unification & Cavalry Mobility",
+                1206, 25, 47.92, 106.92, 4000.0, LeaderArchetype.MILITARY_CONQUEROR, 9.5
+        );
+        mongolShock.setMovementFrictionMultiplier(0.35);
+        eventSystem.injectCustomIntervention(mongolShock);
+        eventSystem.checkEvents(1206, 1, 2_000_000L, 1_000_000.0, cells);
+
+        assertTrue(steppeCell.getMovementFriction() < 1.0, "Mongol cavalry mobilization must reduce terrain movement friction.");
+
         // Ground truth: Eurasian land trade network integration across 24M km²
         double groundTruthTerritoryMillionKm2 = 24.0;
         double unforcedSteppeTerritory = 3.5;
@@ -230,15 +271,22 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(6)
     @DisplayName("Scenario 6: Black Death (1347 CE) - Class II Pathological Shock & Real Wage Inversion")
-    /*
-     * Test scenario6 black death1347ce operation.
-     * <p>
-     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testScenario6_BlackDeath1347CE() {
+        EventSystem eventSystem = new EventSystem();
+        List<H3Cell> cells = new ArrayList<>();
+        H3Cell messina = new H3Cell();
+        messina.setLatitude(38.19);
+        messina.setLongitude(15.55);
+        messina.setPopulation(10000);
+        cells.add(messina);
+
+        // Check events at year 1347 (Pre-registered historical event "Black Death Arrives")
+        eventSystem.checkEvents(1347, 1, 80_000_000L, 50_000_000.0, cells);
+
+        boolean blackDeathFired = eventSystem.getChronicleHistory().stream()
+                .anyMatch(ae -> ae.getTitle().contains("Black Death") || ae.getFullMessage().contains("Black Death"));
+        assertTrue(blackDeathFired, "Black Death milestone event must trigger at 1347 CE via EventSystem.");
+
         // Ground truth (Postan/Maddison/Pamuk): 40% European mortality, Real wage index doubles from 100 to 195
         double initialLabor = 1000.0;
         double initialCapital = 1000.0;
@@ -266,15 +314,21 @@ public class MasterHistoricalBifurcationSuite {
     @Test
     @Order(7)
     @DisplayName("Scenario 7: Totalitarian Crisis (1914-1945 CE) - Class III Socio-Political Rupture & Capital Destruction")
-    /*
-     * Test scenario7 world wars totalitarian1914ce operation.
-     * <p>
-     * Executes operational logic for {@code MasterHistoricalBifurcationSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testScenario7_WorldWarsTotalitarian1914CE() {
+        EventSystem eventSystem = new EventSystem();
+        List<H3Cell> cells = new ArrayList<>();
+        H3Cell hiroshima = new H3Cell();
+        hiroshima.setLatitude(34.38);
+        hiroshima.setLongitude(132.45);
+        cells.add(hiroshima);
+
+        // Check events at year 1945 (Pre-registered historical event "Nuclear Age")
+        eventSystem.checkEvents(1945, 1, 2_000_000_000L, 1_000_000_000.0, cells);
+
+        boolean nuclearAgeFired = eventSystem.getChronicleHistory().stream()
+                .anyMatch(ae -> ae.getTitle().contains("Nuclear Age") || ae.getFullMessage().contains("Nuclear Age"));
+        assertTrue(nuclearAgeFired, "Nuclear Age milestone event must trigger at 1945 CE via EventSystem.");
+
         // Ground truth (Piketty/Maddison): European capital/income ratio collapses by 40%, ~80M war casualties
         double groundTruth1945Capital = 1300000.0;
         double unforced1945Capital = 2000000.0;
@@ -301,13 +355,19 @@ public class MasterHistoricalBifurcationSuite {
     public void testTheorem1_IdentityInvariance() {
         H3Cell cellA = new H3Cell();
         cellA.setH3Index(1L);
+        cellA.setLatitude(0.0);
+        cellA.setLongitude(0.0);
         cellA.setPopulation(10000);
         cellA.setResourceCapital(5000.0);
+        cellA.setMovementFriction(1.0);
 
         H3Cell cellB = new H3Cell();
         cellB.setH3Index(2L);
+        cellB.setLatitude(0.0);
+        cellB.setLongitude(0.0);
         cellB.setPopulation(10000);
         cellB.setResourceCapital(5000.0);
+        cellB.setMovementFriction(1.0);
 
         // Arm A: Historic name "Alexander the Great"
         HistoricalIntervention leaderA = new HistoricalIntervention(
@@ -321,8 +381,18 @@ public class MasterHistoricalBifurcationSuite {
                 15, 0.0, 0.0, 500.0, LeaderArchetype.MILITARY_CONQUEROR, 8.0
         );
 
+        EventSystem eventSystemA = new EventSystem();
+        eventSystemA.injectCustomIntervention(leaderA);
+        eventSystemA.checkEvents(-334, 1, 10000L, 5000.0, List.of(cellA));
+
+        EventSystem eventSystemB = new EventSystem();
+        eventSystemB.injectCustomIntervention(leaderB);
+        eventSystemB.checkEvents(-334, 1, 10000L, 5000.0, List.of(cellB));
+
+        // Physical outcomes must be 100% bit-identical regardless of the leader's human-readable name
         assertEquals(cellA.getPopulation(), cellB.getPopulation(), "Identity invariance violated: Population differs by name.");
         assertEquals(cellA.getResourceCapital(), cellB.getResourceCapital(), 1e-9, "Identity invariance violated: Capital differs by name.");
+        assertEquals(cellA.getMovementFriction(), cellB.getMovementFriction(), 1e-9, "Identity invariance violated: Friction differs by name.");
         assertEquals(leaderA.getMovementFrictionMultiplier(), leaderB.getMovementFrictionMultiplier(), 1e-9);
 
         recordBenchmark("Theorem 1: Identity Invariance", "Formal Math", 0.0, 0.0, "PASSED (Bit-Identical)");

@@ -101,6 +101,10 @@ public class SoilWaterRetentionEngine {
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            double agriBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
+            if (agriBiomass <= 0.0 && pop <= 0) continue;
+
             double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
             // Slope gradient approximated by biome / elevation
             double slope = (cell.getBiome() == Biome.MOUNTAINS) ? 0.35 : (cell.getBiome() == Biome.HILLS ? 0.15 : 0.03);
@@ -108,9 +112,16 @@ public class SoilWaterRetentionEngine {
             double awcIndex = calculatePlantAvailableWaterIndex(rainfall, slope);
 
             // Modulate agricultural biomass based on van Genuchten plant available water
-            double agriBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 100.0;
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double potentialBiomass = Math.min(3000.0, Math.max(50.0, pop * (3.0 + tech * 0.5)));
+            if (agriBiomass <= 0.0) {
+                agriBiomass = potentialBiomass;
+            }
             double waterStressFactor = 0.2 + 0.8 * awcIndex;
-            cell.setBiomassAgriculture(Math.max(10.0, agriBiomass * waterStressFactor));
+            double targetYield = potentialBiomass * waterStressFactor;
+
+            double updated = agriBiomass + 0.25 * (targetYield - agriBiomass);
+            cell.setBiomassAgriculture(Math.max(10.0, updated));
         }
     }
 }

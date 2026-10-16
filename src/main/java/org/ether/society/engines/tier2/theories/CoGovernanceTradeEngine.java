@@ -28,6 +28,14 @@ public class CoGovernanceTradeEngine {
     /* Internal state variable for international resource trade volume (double). */
     private static double internationalResourceTradeVolume = 1.0;
 
+    /**
+     * Resets mutable static state between scenario executions to guarantee isolation.
+     */
+    public static void resetState() {
+        globalCarbonQuotaTreatyActive = false;
+        internationalResourceTradeVolume = 1.0;
+    }
+
     /*
      * Process trade and governance.
      * Enforces physical invariants and updates associated state variables within {@code CoGovernanceTradeEngine}.

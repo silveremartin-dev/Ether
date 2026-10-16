@@ -96,6 +96,10 @@ public class World3CouplingEngine {
      * @param stock the stock argument (double)
      */
     public static void setInitialGlobalResourceStock(double stock) { initialGlobalResourceStock = Math.max(1.0, stock); }
+
+    public static void resetState() {
+        initialGlobalResourceStock = 1000.0;
+    }
 }
 
 

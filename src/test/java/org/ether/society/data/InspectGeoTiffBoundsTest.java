@@ -1,10 +1,13 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+@Tag("manual")
 public class InspectGeoTiffBoundsTest {
     @Test
     /*
@@ -397,3 +400,4 @@ public class InspectGeoTiffBoundsTest {
         }
     }
 }
+

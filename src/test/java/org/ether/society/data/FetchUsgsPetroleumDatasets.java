@@ -4,6 +4,8 @@
  */
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Tag("manual")
 public class FetchUsgsPetroleumDatasets {
     private static final Logger logger = LoggerFactory.getLogger(FetchUsgsPetroleumDatasets.class);
 
@@ -153,3 +156,4 @@ public class FetchUsgsPetroleumDatasets {
         }
     }
 }
+

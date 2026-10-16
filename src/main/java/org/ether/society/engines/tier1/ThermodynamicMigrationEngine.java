@@ -66,6 +66,17 @@ public class ThermodynamicMigrationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicMigrationEngine.class);
 
+    // Cached spatial grid avoiding 288k cell re-hashing and allocations every tick
+    private static volatile java.util.Map<Long, java.util.List<H3Cell>> cachedSpatialGrid = null;
+    private static volatile int cachedGridCellCount = 0;
+    private static volatile Object cachedCellsIdentity = null;
+
+    public static void clearSpatialCache() {
+        cachedSpatialGrid = null;
+        cachedGridCellCount = 0;
+        cachedCellsIdentity = null;
+    }
+
 
 
     /*
@@ -127,16 +138,25 @@ public class ThermodynamicMigrationEngine {
      */
 
     public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config, double planetRadiusKm) {
+        processThermodynamicMigration(cells, config, planetRadiusKm, null, null);
+    }
 
+    public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config,
+                                                     org.ether.society.core.dod.WorldBuffer worldBuffer,
+                                                     org.ether.society.core.dod.AgentBuffer agentBuffer) {
+        processThermodynamicMigration(cells, config, 6371.0, worldBuffer, agentBuffer);
+    }
+
+    /*
+     * Process thermodynamic migration across spatial cells and synchronizes cohorts into DOD buffers.
+     */
+    public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config, double planetRadiusKm,
+                                                     org.ether.society.core.dod.WorldBuffer worldBuffer,
+                                                     org.ether.society.core.dod.AgentBuffer agentBuffer) {
         // Phase 1: Invariant state validation and environmental boundary initialization
-
         // Phase 2: Numerical evaluation of differential conservation equations
-
         // Phase 3: Spatial coupling and local thermodynamic state update
-
         if (cells == null || cells.isEmpty()) return;
-
-
 
         int migrationEvents = 0;
 
@@ -152,22 +172,19 @@ public class ThermodynamicMigrationEngine {
 
 
 
-        // Build O(N) 2D Spatial Hash Grid (2.0 degree buckets ~220km envelope)
-
         final double binSizeDeg = 2.0;
-
-        java.util.Map<Long, java.util.List<H3Cell>> spatialGrid = new java.util.HashMap<>(Math.min(65536, n / 4 + 16));
-
-        for (H3Cell c : cells) {
-
-            int bLat = (int) Math.floor((c.getLatitude() + 90.0) / binSizeDeg);
-
-            int bLon = (int) Math.floor((c.getLongitude() + 180.0) / binSizeDeg);
-
-            long key = (((long) bLat) << 32) | (bLon & 0xFFFFFFFFL);
-
-            spatialGrid.computeIfAbsent(key, k -> new java.util.ArrayList<>(8)).add(c);
-
+        java.util.Map<Long, java.util.List<H3Cell>> spatialGrid = cachedSpatialGrid;
+        if (spatialGrid == null || cachedGridCellCount != n || cachedCellsIdentity != cells) {
+            spatialGrid = new java.util.HashMap<>(Math.min(65536, n / 4 + 16));
+            for (H3Cell c : cells) {
+                int bLat = (int) Math.floor((c.getLatitude() + 90.0) / binSizeDeg);
+                int bLon = (int) Math.floor((c.getLongitude() + 180.0) / binSizeDeg);
+                long key = (((long) bLat) << 32) | (bLon & 0xFFFFFFFFL);
+                spatialGrid.computeIfAbsent(key, k -> new java.util.ArrayList<>(8)).add(c);
+            }
+            cachedSpatialGrid = spatialGrid;
+            cachedGridCellCount = n;
+            cachedCellsIdentity = cells;
         }
 
 
@@ -291,21 +308,74 @@ public class ThermodynamicMigrationEngine {
 
 
                 origin.setPopulation(popOrigin - migrants);
+                origin.setBiomassHuman((double) (popOrigin - migrants));
+                int destPop = (bestDestination.getPopulation() != null ? bestDestination.getPopulation() : 0) + migrants;
+                bestDestination.setPopulation(destPop);
+                bestDestination.setBiomassHuman((double) destPop);
 
-                bestDestination.setPopulation((bestDestination.getPopulation() != null ? bestDestination.getPopulation() : 0) + migrants);
-
+                // Transfer cohort mass in AgentBuffer and WorldBuffer to prevent split-brain rollback
+                if (agentBuffer != null && worldBuffer != null) {
+                    int originIdx = i; // cell i is origin
+                    int destIdx = cells.indexOf(bestDestination);
+                    if (originIdx >= 0 && destIdx >= 0) {
+                        transferAgentBufferMass(agentBuffer, worldBuffer, originIdx, destIdx, migrants);
+                    }
+                }
             }
-
         }
-
-
 
         if (migrationEvents > 0) {
-
             logger.debug("Migration Engine: Spatial Onsager demographic vector shifts evaluated across {} spatial neighbor pairs.", migrationEvents);
+        }
+    }
 
+    private static void transferAgentBufferMass(org.ether.society.core.dod.AgentBuffer agents,
+                                                org.ether.society.core.dod.WorldBuffer world,
+                                                int originIdx, int destIdx, float migrants) {
+        float[] mass = agents.getMass();
+        int[] hexIds = agents.getHexIds();
+        float remainingToTransfer = migrants;
+
+        for (int i = 0; i < agents.getCapacity() && remainingToTransfer > 0.001f; i++) {
+            if (hexIds[i] == originIdx) {
+                float deduct = Math.min(mass[i] * 0.5f, remainingToTransfer);
+                if (deduct > 0.001f) {
+                    mass[i] -= deduct;
+                    remainingToTransfer -= deduct;
+                }
+            }
+        }
+        float actuallyTransferred = migrants - remainingToTransfer;
+        if (actuallyTransferred <= 0.001f) return;
+
+        boolean added = false;
+        for (int i = 0; i < agents.getCapacity(); i++) {
+            if (hexIds[i] == destIdx) {
+                mass[i] += actuallyTransferred;
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            for (int i = 0; i < agents.getCapacity(); i++) {
+                if (hexIds[i] == -1) {
+                    hexIds[i] = destIdx;
+                    mass[i] = actuallyTransferred;
+                    agents.getEnergy()[i] = 80.0f;
+                    agents.getAge()[i] = 25.0f;
+                    float[] techs = world.getTechnologyLevel();
+                    agents.getTechLevel()[i] = (techs != null && techs.length > destIdx) ? techs[destIdx] : 1.0f;
+                    added = true;
+                    break;
+                }
+            }
         }
 
+        float[] biomassHuman = world.getBiomassHuman();
+        if (biomassHuman != null && originIdx < biomassHuman.length && destIdx < biomassHuman.length) {
+            biomassHuman[originIdx] = Math.max(0.0f, biomassHuman[originIdx] - actuallyTransferred);
+            biomassHuman[destIdx] += actuallyTransferred;
+        }
     }
 
 

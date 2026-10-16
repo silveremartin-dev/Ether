@@ -69,17 +69,20 @@ public class AquiferDepletionEngine {
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
 
             double naturalRecharge = (rain * 0.15) * dt;
-            double irrigationExtraction = (pop * 0.8) * dt;
+            // Humid rainfed regions (rain >= 800 mm/yr) rely primarily on surface precipitation;
+            // arid/semi-arid regions require intensive groundwater pumping per inhabitant.
+            double perCapitaGroundwaterDemand = (rain >= 800.0) ? 0.05 : (rain >= 400.0 ? 0.35 : 0.80);
+            double irrigationExtraction = (pop * perCapitaGroundwaterDemand) * dt;
 
             double netAquiferChange = naturalRecharge - irrigationExtraction;
-            double newAquifer = Math.max(0.0, aquifer + netAquiferChange);
+            double newAquifer = Math.clamp(aquifer + netAquiferChange, 0.0, 2000.0);
             cell.setAccessibleAquifer(newAquifer);
 
             if (newAquifer < 100.0 && pop > 300) {
                 depletedAquifers++;
                 // Irrigation failure degrades agricultural yield
                 double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
-                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * 0.70));
+                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * (1.0 - 0.30 * dt)));
             }
         }
 

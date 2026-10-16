@@ -68,6 +68,7 @@ public class Tier1AdvancedPhysicsTest {
 
         MilankovitchOrbitalEngine.applyMilankovitchForcing(cells, -20000.0); // LGM ~20,000 BP
         assertNotNull(cell.getTemperature());
+        assertNotEquals(10.0, cell.getTemperature(), 1e-4, "Milankovitch orbital forcing must shift temperature");
     }
 
     @Test
@@ -121,15 +122,17 @@ public class Tier1AdvancedPhysicsTest {
         double deflection = GlacialIsostaticAdjustmentEngine.calculateEquilibriumDeflectionMeters(1000.0);
         assertTrue(deflection < -250.0 && deflection > -300.0, "1000m ice must deflect mantle by ~-278m");
 
-        // Rebound relaxation over 1,000 years after ice deglaciation
+        // Ice loading depression over 1,000 years with 1000m ice sheet
         List<H3Cell> cells = new ArrayList<>();
         H3Cell scandinavia = new H3Cell();
         scandinavia.setElevation(100.0);
-        scandinavia.setIceSheetThicknessMeters(0.0); // Deglaciated
+        scandinavia.setIceSheetThicknessMeters(1000.0); // 1000m ice sheet loading
         cells.add(scandinavia);
 
         GlacialIsostaticAdjustmentEngine.processGlacialIsostasy(cells, 1000.0);
-        assertNotNull(scandinavia.getElevation());
+        assertTrue(scandinavia.getElevation() < 100.0, "Ice loading must cause viscoelastic crustal depression");
+        assertEquals(100.0 + deflection * (1.0 - Math.exp(-1000.0 / 4000.0)), scandinavia.getElevation(), 1.0,
+                "Mantle deflection must match analytical viscoelastic decay equation");
     }
 
     @Test

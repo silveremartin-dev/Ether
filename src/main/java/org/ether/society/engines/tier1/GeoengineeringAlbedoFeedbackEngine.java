@@ -99,6 +99,11 @@ public class GeoengineeringAlbedoFeedbackEngine {
     public static double getGlobalCoolingEffectCelsius() {
         return globalCoolingEffectCelsius;
     }
+
+    public static void resetState() {
+        globalSaiAerosolLoadingTg = 0.0;
+        globalCoolingEffectCelsius = 0.0;
+    }
 }
 
 

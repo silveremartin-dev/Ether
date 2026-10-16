@@ -70,7 +70,7 @@ public class HeadlessRunner {
         System.out.println("================================================================================");
 
         int ticksToRun = 300;
-        int cellCount = 3000;
+        int cellCount = 0; // 0 = FULL GRID by default (no subsampling unless explicitly requested via --cells)
         int h3Resolution = -1;
         int threadCount = Runtime.getRuntime().availableProcessors();
         boolean isSingleCore = false;
@@ -99,7 +99,7 @@ public class HeadlessRunner {
         boolean snapshotsEnabled = false;
         int snapshotIntervalTicks = 0;
         String snapshotDir = "saves/cluster_snapshots";
-        int maxSnapshots = 5;
+        int maxSnapshots = 12;
 
         // Tab 3: Performance & Scenario Optimizations Tracking
         Boolean cliStrictDeterminism = null;
@@ -132,6 +132,9 @@ public class HeadlessRunner {
 
             if (a.equals("--help") || a.equals("-help") || a.equals("-?") || a.equals("-h")) {
                 printHelp();
+                return;
+            } else if (a.equals("--benchmark") || a.equals("-b") || a.equals("--bench")) {
+                org.ether.society.benchmark.EmpiricalEngineBenchmarkRunner.runBenchmarks();
                 return;
             }
 
@@ -403,6 +406,7 @@ public class HeadlessRunner {
             }
 
             // MASTER / STANDALONE SIMULATION INITIALIZATION
+            org.ether.society.core.SimulationPipeline.resetGlobalSimulationState();
             Configuration config = ConfigurationLoader.loadDefault();
             H3SimulationEngine engine = new H3SimulationEngine(config);
 
@@ -582,12 +586,38 @@ public class HeadlessRunner {
 
             List<H3Cell> cells;
             if (h3Resolution >= 0) {
-                logger.info("Generating planetary Earth grid at H3 Resolution {}...", h3Resolution);
-                org.ether.society.generation.PlanetPreset planetPreset = org.ether.society.generation.PlanetPreset.EARTH_LIKE.withResolution(h3Resolution);
+                org.ether.society.generation.PlanetPreset basePreset = scenario.getPlanetPreset() != null
+                        ? scenario.getPlanetPreset()
+                        : org.ether.society.generation.PlanetPreset.EARTH_LIKE;
+                org.ether.society.generation.PlanetPreset planetPreset = basePreset.withResolution(h3Resolution);
+                logger.info("Generating planetary grid for {} at H3 Resolution {}...", planetPreset.name(), h3Resolution);
                 List<H3Cell> generated = org.ether.society.generation.ProceduralGenerator.getInstance().generatePlanet(planetPreset);
-                cells = (cellCount > 0 && cellCount < generated.size())
-                        ? new ArrayList<>(generated.subList(0, cellCount))
-                        : generated;
+
+                if (scenario.isClippingEnabled()) {
+                    double minLat = scenario.getMinLat();
+                    double maxLat = scenario.getMaxLat();
+                    double minLng = scenario.getMinLng();
+                    double maxLng = scenario.getMaxLng();
+                    logger.info("Applying scenario spatial window clipping: Lat [{}, {}], Lng [{}, {}]", minLat, maxLat, minLng, maxLng);
+                    generated = generated.stream()
+                            .filter(c -> c.getLatitude() >= minLat && c.getLatitude() <= maxLat && c.getLongitude() >= minLng && c.getLongitude() <= maxLng)
+                            .collect(java.util.stream.Collectors.toList());
+                    logger.info("Regional windowed cells count: {} hexagons", generated.size());
+                }
+
+                if (cellCount > 0 && cellCount < generated.size()) {
+                    logger.warn("EXPLICIT SUBSAMPLING: Subsampling grid from {} down to {} cells (stride: {})",
+                            generated.size(), cellCount, Math.max(1, generated.size() / cellCount));
+                    int stride = Math.max(1, generated.size() / cellCount);
+                    List<H3Cell> sampled = new ArrayList<>(cellCount);
+                    for (int i = 0; i < generated.size() && sampled.size() < cellCount; i += stride) {
+                        sampled.add(generated.get(i));
+                    }
+                    cells = sampled;
+                } else {
+                    logger.info("FULL GRID MODE: Retaining all {} hexagons without subsampling.", generated.size());
+                    cells = generated;
+                }
             } else {
                 List<H3Cell> allCells = SampleDataGenerator.generateEuropeSample();
                 cells = (cellCount > 0 && cellCount < allCells.size())
@@ -604,6 +634,9 @@ public class HeadlessRunner {
             System.out.printf("Initializing grid with %,d cells (H3 Res: %s)...\n", cells.size(), h3Resolution >= 0 ? String.valueOf(h3Resolution) : "Default");
             engine.initializeFromScenario(scenario, cells);
             engine.setPerformanceConfig(effectivePerfConfig);
+            if (engine.getHistoryManager() != null) {
+                engine.getHistoryManager().setMaxSnapshots(maxSnapshots);
+            }
 
             SimulationProfiler profiler = engine.getProfiler();
             profiler.reset();

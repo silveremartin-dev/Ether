@@ -63,6 +63,14 @@ public class ScenarioAutomatedTestSuite {
         c0.setTemperature(24.0);
         c0.setWaterResource(800.0);
 
+        // 1b. East African Rift Corridor Stepping Stone (~78 km neighbor)
+        H3Cell c0b = new H3Cell(10011L, 1.2, 36.9);
+        c0b.setElevation(800.0);
+        c0b.setBiome(Biome.PLAINS);
+        c0b.setTemperature(25.0);
+        c0b.setWaterResource(850.0);
+        c0b.setFoodResource(1500.0);
+
         // 2. Nile Valley / Gateway to Levant
         H3Cell c1 = new H3Cell(1002L, 25.0, 32.5);
         c1.setElevation(100.0);
@@ -92,6 +100,7 @@ public class ScenarioAutomatedTestSuite {
         c4.setWaterResource(850.0);
 
         mockCells.add(c0);
+        mockCells.add(c0b);
         mockCells.add(c1);
         mockCells.add(c2);
         mockCells.add(c3);
@@ -143,7 +152,7 @@ public class ScenarioAutomatedTestSuite {
                 .filter(c -> c.getH3Index() != 1001L)
                 .mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0)
                 .sum();
-        assertTrue(nonOriginPop >= 0, "Out-of-Africa migration tracking verified");
+        assertTrue(nonOriginPop > 0, "Out-of-Africa demographic wave must migrate to neighboring cells");
     }
 
     @Test

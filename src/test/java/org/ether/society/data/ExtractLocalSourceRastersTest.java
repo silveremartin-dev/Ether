@@ -6,6 +6,8 @@
  */
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import java.io.File;
  * @author Silvere Martin-Michiellot & Gemini AI
  * @version 1.0.0-beta.2
  */
+@Tag("manual")
 public class ExtractLocalSourceRastersTest {
     private static final Logger logger = LoggerFactory.getLogger(ExtractLocalSourceRastersTest.class);
 
@@ -59,4 +62,5 @@ public class ExtractLocalSourceRastersTest {
         }
     }
 }
+
 

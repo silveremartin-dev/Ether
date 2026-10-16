@@ -39,20 +39,34 @@ public class SelectiveBreedingEngine {
     }
 
     /*
-     * Executes one selective breeding tick across cells.
+     * Executes one selective breeding tick across cells using default monthly step.
      */
     public static void processSelectiveBreeding(List<H3Cell> cells) {
+        processSelectiveBreeding(cells, 1.0 / 12.0);
+    }
+
+    /*
+     * Executes one selective breeding tick across cells scaled by dtYears and cell surface area.
+     */
+    public static void processSelectiveBreeding(List<H3Cell> cells, double dtYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
+        double dtSafe = Math.max(0.0001, dtYears);
 
         for (H3Cell cell : cells) {
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-            if (tech >= 1.0) {
+            if (tech >= 1.5) {
+                int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+                double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
                 double breedingFactor = calculateSelectiveBreedingYieldFactor(tech);
-                double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
-                cell.setBiomassAgriculture(currentAgri * (1.0 + (breedingFactor - 1.0) * 0.02));
+                double techLandCeiling = (360.0 + 550.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale;
+                double maxBreedableBiomass = Math.min(4000.0 * areaScale, techLandCeiling * Math.min(1.5, breedingFactor * 0.85));
+                double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
+                        ? cell.getBiomassAgriculture()
+                        : Math.min(maxBreedableBiomass, Math.max(25.0 * areaScale, pop * 0.5));
+                cell.setBiomassAgriculture(Math.min(maxBreedableBiomass, currentAgri * (1.0 + (breedingFactor - 1.0) * 0.005 * dtSafe)));
             }
         }
     }

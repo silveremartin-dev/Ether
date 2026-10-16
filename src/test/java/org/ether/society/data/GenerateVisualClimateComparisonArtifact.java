@@ -6,6 +6,8 @@
  */
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.ether.society.engines.tier1.PhysicalPlanetaryAtmosphereSolver;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +26,7 @@ import java.util.Base64;
  * Generates comprehensive side-by-side comparison rasters and builds the interactive
  * Generative UI HTML dashboard 'climate_visual_comparison.html'.
  */
+@Tag("manual")
 public class GenerateVisualClimateComparisonArtifact {
 
     private static final String ARTIFACT_DIR = "C:/Users/silve/.gemini/antigravity/brain/32078e09-a5c4-4806-a0a7-96efa9ac3c26";
@@ -73,20 +76,20 @@ public class GenerateVisualClimateComparisonArtifact {
 
         // 4. Create Direct Side-by-Side Stitched Images for Instant Chat Inspection
         createSideBySideComposite(
-            realBio12Precip, "RÉFÉRENCE OFFICIELLE RÉELLE (WorldClim Bio12)",
-            synthPrecip,     "MODÈLE SYNTHÉTIQUE (Solveur Physique 2.5D)",
+            realBio12Precip, "RÃ‰FÃ‰RENCE OFFICIELLE RÃ‰ELLE (WorldClim Bio12)",
+            synthPrecip,     "MODÃˆLE SYNTHÃ‰TIQUE (Solveur Physique 2.5D)",
             new File(ARTIFACT_DIR, "precipitation_side_by_side.png"),
             new File(outDir, "precipitation_side_by_side.png")
         );
         createSideBySideComposite(
-            realBio1Temp, "RÉFÉRENCE OFFICIELLE RÉELLE (WorldClim Bio1)",
-            synthTemp,    "MODÈLE SYNTHÉTIQUE (Bilan Radiatif 2.5D)",
+            realBio1Temp, "RÃ‰FÃ‰RENCE OFFICIELLE RÃ‰ELLE (WorldClim Bio1)",
+            synthTemp,    "MODÃˆLE SYNTHÃ‰TIQUE (Bilan Radiatif 2.5D)",
             new File(ARTIFACT_DIR, "temperature_side_by_side.png"),
             new File(outDir, "temperature_side_by_side.png")
         );
         createSideBySideComposite(
-            realBiomes,  "RÉFÉRENCE OFFICIELLE RÉELLE (ESA / WorldClim Biomes)",
-            synthBiomes, "MODÈLE SYNTHÉTIQUE (Classification Holdridge 2.5D)",
+            realBiomes,  "RÃ‰FÃ‰RENCE OFFICIELLE RÃ‰ELLE (ESA / WorldClim Biomes)",
+            synthBiomes, "MODÃˆLE SYNTHÃ‰TIQUE (Classification Holdridge 2.5D)",
             new File(ARTIFACT_DIR, "biomes_side_by_side.png"),
             new File(outDir, "biomes_side_by_side.png")
         );
@@ -216,7 +219,7 @@ public class GenerateVisualClimateComparisonArtifact {
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n");
         sb.append("  <meta charset=\"UTF-8\">\n");
-        sb.append("  <title>Ether - Comparatif Côte-à-Côte Référence Réelle vs. Modèle Synthétique</title>\n");
+        sb.append("  <title>Ether - Comparatif CÃ´te-Ã -CÃ´te RÃ©fÃ©rence RÃ©elle vs. ModÃ¨le SynthÃ©tique</title>\n");
         sb.append("  <script src=\"https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js\"></script>\n");
         sb.append("</head>\n");
         sb.append("<body class=\"bg-[var(--background)] text-[var(--foreground)] antialiased p-6 font-sans\">\n");
@@ -226,8 +229,8 @@ public class GenerateVisualClimateComparisonArtifact {
         sb.append("    <header class=\"bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm\">\n");
         sb.append("      <div class=\"flex flex-col md:flex-row items-start md:items-center justify-between gap-4\">\n");
         sb.append("        <div>\n");
-        sb.append("          <h1 class=\"text-2xl font-bold tracking-tight text-[var(--foreground)]\">ðŸŒ Ether Climate Laboratory - Comparatif CÃ´te-Ã -CÃ´te Direct</h1>\n");
-        sb.append("          <p class=\"text-sm text-[var(--muted-foreground)] mt-1\">Confrontation directe : Référence Empirique Réelle (WorldClim v2.1) vs Modèle Synthétique / Solveur Physique 2.5D & Paléoclimat</p>\n");
+        sb.append("          <h1 class=\"text-2xl font-bold tracking-tight text-[var(--foreground)]\">Ã°Å¸Å’Â Ether Climate Laboratory - Comparatif CÃƒÂ´te-ÃƒÂ -CÃƒÂ´te Direct</h1>\n");
+        sb.append("          <p class=\"text-sm text-[var(--muted-foreground)] mt-1\">Confrontation directe : RÃ©fÃ©rence Empirique RÃ©elle (WorldClim v2.1) vs ModÃ¨le SynthÃ©tique / Solveur Physique 2.5D & PalÃ©oclimat</p>\n");
         sb.append("        </div>\n");
         sb.append("        <span class=\"px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shadow-sm\">Option 3 : Hybride Empirique + Delta</span>\n");
         sb.append("      </div>\n");
@@ -236,7 +239,7 @@ public class GenerateVisualClimateComparisonArtifact {
         // Section 1: Direct Side-by-Side Precipitation Comparison
         sb.append("    <section class=\"bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4\">\n");
         sb.append("      <div class=\"border-b border-[var(--border)] pb-3\">\n");
-        sb.append("        <h2 class=\"text-lg font-bold text-[var(--foreground)] flex items-center gap-2\">ðŸŒ§ï¸ 1. PrÃ©cipitations (An 2025) : RÃ©fÃ©rence RÃ©elle (Gauche) vs. ModÃ¨le SynthÃ©tique (Droite)</h2>\n");
+        sb.append("        <h2 class=\"text-lg font-bold text-[var(--foreground)] flex items-center gap-2\">Ã°Å¸Å’Â§Ã¯Â¸Â 1. PrÃƒÂ©cipitations (An 2025) : RÃƒÂ©fÃƒÂ©rence RÃƒÂ©elle (Gauche) vs. ModÃƒÂ¨le SynthÃƒÂ©tique (Droite)</h2>\n");
         sb.append("      </div>\n");
         sb.append("      <div class=\"border border-[var(--border)] rounded-xl p-3 bg-[var(--background)]\">\n");
         sb.append("        <img src=\"").append(b64CompRain).append("\" class=\"w-full rounded-lg shadow-md\" alt=\"Precipitation Side-by-Side\" />\n");
@@ -246,7 +249,7 @@ public class GenerateVisualClimateComparisonArtifact {
         // Section 2: Direct Side-by-Side Temperature Comparison
         sb.append("    <section class=\"bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4\">\n");
         sb.append("      <div class=\"border-b border-[var(--border)] pb-3\">\n");
-        sb.append("        <h2 class=\"text-lg font-bold text-[var(--foreground)] flex items-center gap-2\">ðŸŒ¡ï¸ 2. TempÃ©rature (An 2025) : RÃ©fÃ©rence RÃ©elle (Gauche) vs. ModÃ¨le SynthÃ©tique (Droite)</h2>\n");
+        sb.append("        <h2 class=\"text-lg font-bold text-[var(--foreground)] flex items-center gap-2\">Ã°Å¸Å’Â¡Ã¯Â¸Â 2. TempÃƒÂ©rature (An 2025) : RÃƒÂ©fÃƒÂ©rence RÃƒÂ©elle (Gauche) vs. ModÃƒÂ¨le SynthÃƒÂ©tique (Droite)</h2>\n");
         sb.append("      </div>\n");
         sb.append("      <div class=\"border border-[var(--border)] rounded-xl p-3 bg-[var(--background)]\">\n");
         sb.append("        <img src=\"").append(b64CompTemp).append("\" class=\"w-full rounded-lg shadow-md\" alt=\"Temperature Side-by-Side\" />\n");
@@ -256,7 +259,7 @@ public class GenerateVisualClimateComparisonArtifact {
         // Section 3: Direct Side-by-Side Biomes Comparison
         sb.append("    <section class=\"bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4\">\n");
         sb.append("      <div class=\"border-b border-[var(--border)] pb-3\">\n");
-        sb.append("        <h2 class=\"text-lg font-bold text-[var(--foreground)] flex items-center gap-2\">🌿 3. Biomes (An 2025) : Référence Réelle (Gauche) vs. Modèle Synthétique (Droite)</h2>\n");
+        sb.append("        <h2 class=\"text-lg font-bold text-[var(--foreground)] flex items-center gap-2\">ðŸŒ¿ 3. Biomes (An 2025) : RÃ©fÃ©rence RÃ©elle (Gauche) vs. ModÃ¨le SynthÃ©tique (Droite)</h2>\n");
         sb.append("      </div>\n");
         sb.append("      <div class=\"border border-[var(--border)] rounded-xl p-3 bg-[var(--background)]\">\n");
         sb.append("        <img src=\"").append(b64CompBiomes).append("\" class=\"w-full rounded-lg shadow-md\" alt=\"Biomes Side-by-Side\" />\n");
@@ -266,8 +269,8 @@ public class GenerateVisualClimateComparisonArtifact {
         // Section 4: Historical Epochs Gallery (-100k, -50k, -20k, -8k)
         sb.append("    <section class=\"bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4\">\n");
         sb.append("      <div class=\"border-b border-[var(--border)] pb-3\">\n");
-        sb.append("        <h2 class=\"text-lg font-bold text-[var(--foreground)]\">â³ 4. Ã‰volution des Ã‰poques Historiques (-100 000 BP Ã  -8 000 BP)</h2>\n");
-        sb.append("        <p class=\"text-xs text-[var(--muted-foreground)] mt-1\">Régénération complète de tous les calques cartographiques (continuité polaire et dérive paléoclimatique 2D sans bandes)</p>\n");
+        sb.append("        <h2 class=\"text-lg font-bold text-[var(--foreground)]\">Ã¢ÂÂ³ 4. Ãƒâ€°volution des Ãƒâ€°poques Historiques (-100 000 BP ÃƒÂ  -8 000 BP)</h2>\n");
+        sb.append("        <p class=\"text-xs text-[var(--muted-foreground)] mt-1\">RÃ©gÃ©nÃ©ration complÃ¨te de tous les calques cartographiques (continuitÃ© polaire et dÃ©rive palÃ©oclimatique 2D sans bandes)</p>\n");
         sb.append("      </div>\n");
         sb.append("      <div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4\">\n");
 
@@ -336,4 +339,5 @@ public class GenerateVisualClimateComparisonArtifact {
         }
     }
 }
+
 

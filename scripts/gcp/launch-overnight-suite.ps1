@@ -7,7 +7,8 @@ param (
     [string]$ProjectId = "ether-509812",
     [string]$Zone = "europe-west1-b",
     [string]$InstanceName = "ether-master",
-    [string]$JarPath = "target/society-simulation-1.0.0-beta.2-executable.jar"
+    [string]$JarPath = "target/society-simulation-1.0.0-beta.2-executable.jar",
+    [switch]$ForceRegenerate = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -82,7 +83,8 @@ gcloud compute scp "scripts/gcp/run-true-27-spatial-scenarios.sh" "${InstanceNam
 
 # Step 5: Launch detached background execution
 Write-Host "[5/5] Launching background execution with Auto-Shutdown Guard..." -ForegroundColor Green
-$remoteLaunch = "chmod +x /opt/ether/run_scenarios.sh && nohup /opt/ether/run_scenarios.sh > /opt/ether/logs/gcp_batch/overnight.log 2>&1 &"
+$envPrefix = if ($ForceRegenerate) { "export FORCE_REGENERATE=1 && " } else { "" }
+$remoteLaunch = "chmod +x /opt/ether/run_scenarios.sh && nohup bash -c '${envPrefix}/opt/ether/run_scenarios.sh' > /opt/ether/logs/gcp_batch/overnight.log 2>&1 &"
 gcloud compute ssh $InstanceName --zone=$Zone --project=$ProjectId --quiet --command="$remoteLaunch"
 
 Write-Host "================================================================================" -ForegroundColor Green

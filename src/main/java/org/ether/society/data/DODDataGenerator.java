@@ -3,6 +3,7 @@ package org.ether.society.data;
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
+import org.ether.society.util.DeterministicPRNG;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +62,7 @@ public class DODDataGenerator {
             buffer.getFertility()[i] = cell.getFertility().floatValue();
             buffer.getGiniIndex()[i] = cell.getGiniIndex().floatValue();
             buffer.getTechnologyLevel()[i] = cell.getTechnologyLevel().floatValue();
+            buffer.getResourceCapital()[i] = cell.getResourceCapital() != null ? cell.getResourceCapital().floatValue() : 0.0f;
         }
         
         // Populate neighbors in parallel for instant initialization
@@ -121,20 +123,21 @@ public class DODDataGenerator {
                 agents.getMass()[agentIndex] = cohortMass;
                 agents.getEnergy()[agentIndex] = 100.0f; // Baseline energy
                 agents.getSigmaCost()[agentIndex] = 0.1f; // Initial structure cost
-                // Realistic demographic age distribution (empirical preindustrial pyramid: mean ~26 yrs)
-                float initialAge;
-                if (numCohorts == 1) {
-                    initialAge = 22.0f + (float) (Math.random() * 8.0); // 22-30 yrs prime cohort
-                } else {
-                    float u = (float) (c + Math.random() * 0.9) / (float) numCohorts;
-                    initialAge = (float) (Math.pow(u, 1.25) * 68.0); // Natural demographic pyramid
-                }
+                agents.getTechLevel()[agentIndex] = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[i] : 1.0f;
+                // Realistic community cohort mean age distribution (Lotka 1907 pre-industrial stable mean: 22-28 yrs)
+                long seedH3 = world.getH3Indexes()[i] + (c * 31L);
+                float ageRnd = (float) DeterministicPRNG.nextDouble(seedH3, 101);
+                float initialAge = 22.0f + ageRnd * 6.0f; // Stable community mean age (22-28 yrs)
                 agents.getAge()[agentIndex] = initialAge;
                 
-                // Initialize identity tensors with some baseline/noise
-                for (int d = 0; d < 4; d++) {
-                    agents.getGenetics()[d][agentIndex] = (float) Math.random();
-                    agents.getCulture()[d][agentIndex] = (float) Math.random();
+                // Initialize identity tensors with baseline/noise across all dynamic dimensions
+                int genDims = agents.getGenetics() != null ? agents.getGenetics().length : 4;
+                for (int d = 0; d < genDims; d++) {
+                    agents.getGenetics()[d][agentIndex] = (float) DeterministicPRNG.nextDouble(seedH3, 200 + d);
+                }
+                int cultDims = agents.getCulture() != null ? agents.getCulture().length : 4;
+                for (int d = 0; d < cultDims; d++) {
+                    agents.getCulture()[d][agentIndex] = (float) DeterministicPRNG.nextDouble(seedH3, 300 + d);
                 }
                 
                 agentIndex++;

@@ -36,6 +36,9 @@ public class PhysicalLawEngine {
      */
     public static void applyPhysicalLaws(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
+        if (photosyntheticEfficiencyMultiplier == 1.0 && !roomTemperatureSuperconductivity && entropyGenerationScale == 1.0) {
+            return;
+        }
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
@@ -108,6 +111,12 @@ public class PhysicalLawEngine {
      * @param scale the scale argument (double)
      */
     public static void setEntropyGenerationScale(double scale) { entropyGenerationScale = Math.max(0.01, scale); }
+
+    public static void resetState() {
+        photosyntheticEfficiencyMultiplier = 1.0;
+        roomTemperatureSuperconductivity = false;
+        entropyGenerationScale = 1.0;
+    }
 }
 
 

@@ -36,6 +36,17 @@ public class AgentBuffer {
      * @param capacity the capacity parameter (int)
      */
     public AgentBuffer(int capacity) {
+        this(capacity, 9);
+    }
+
+    /*
+     * Agent buffer with customizable cultural tensor dimensions.
+     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
+     *
+     * @param capacity the capacity parameter (int)
+     * @param cultureDimensions the number of cultural tensor dimensions (clamped between 4 and 32)
+     */
+    public AgentBuffer(int capacity, int cultureDimensions) {
         this.capacity = capacity;
         this.hexIds = new int[capacity];
         this.h3Indexes = new long[capacity];
@@ -50,7 +61,8 @@ public class AgentBuffer {
         this.generationCount = new int[capacity];
         
         this.genetics = new float[4][capacity];
-        this.culture = new float[4][capacity];
+        int cDims = Math.max(4, Math.min(32, cultureDimensions));
+        this.culture = new float[cDims][capacity];
         
         // Initialize with -1 to indicate empty slot
         for (int i = 0; i < capacity; i++) {

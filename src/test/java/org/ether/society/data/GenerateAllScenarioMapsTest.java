@@ -1,5 +1,7 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Tag("manual")
 public class GenerateAllScenarioMapsTest {
     private static final Logger logger = LoggerFactory.getLogger(GenerateAllScenarioMapsTest.class);
 
@@ -148,4 +151,5 @@ public class GenerateAllScenarioMapsTest {
         logger.info("Successfully verified all {} scenarios with full tensor maps in data/maps/Earth/<year>/", scenarios.size());
     }
 }
+
 

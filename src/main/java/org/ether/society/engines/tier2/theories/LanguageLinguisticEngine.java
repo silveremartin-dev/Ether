@@ -75,7 +75,8 @@ public class LanguageLinguisticEngine {
                 if (capital.getLanguageGroup() != null && !capital.getLanguageGroup().equals(cell.getLanguageGroup())) {
                     // Isolated cells resist foreign assimilation (lower chance)
                     double assimilationChance = isIslandOrIsolated ? 0.03 : 0.15;
-                    if (Math.random() < assimilationChance) {
+                    long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
+                    if (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, cellId, 311L) < assimilationChance) {
                         cell.setLanguageGroup(capital.getLanguageGroup());
                         cell.setLinguisticDrift(0.1);
                     }
@@ -92,7 +93,8 @@ public class LanguageLinguisticEngine {
                     boolean isIsolated = routeCell.getBiome() == Biome.BEACH || routeCell.getMovementFriction() > 3.5;
                     double diffusionChance = isIsolated ? 0.05 : 0.25;
 
-                    if (Math.random() < diffusionChance) {
+                    long routeCellId = routeCell.getH3Index() != null ? routeCell.getH3Index() : 0L;
+                    if (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, routeCellId, 313L) < diffusionChance) {
                         routeCell.setLanguageGroup(hubLang);
                         routeCell.setLinguisticDrift(Math.max(0.0, routeCell.getLinguisticDrift() - 0.2));
                     }

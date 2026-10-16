@@ -68,6 +68,6 @@ class ComparativeAnalyticsIntegrationTest {
         assertNotNull(result.getPrimaryRootCauseExplanation(), "Explanation should not be null");
 
         String md = ComparativeReportGenerator.generateMarkdownReport(result);
-        assertTrue(md.contains("Rapport d'Analyse Comparative"), "Report should contain title header");
+        assertTrue(md.contains("Rapport d'Analyse Comparative") || md.contains("Comparative Analysis"), "Report should contain title header");
     }
 }

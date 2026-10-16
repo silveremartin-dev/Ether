@@ -1,5 +1,7 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -7,6 +9,7 @@ import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
+@Tag("manual")
 public class InspectMapsTest {
     @Test
     /*
@@ -321,3 +324,4 @@ public class InspectMapsTest {
         }
     }
 }
+

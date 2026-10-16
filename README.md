@@ -36,7 +36,7 @@ chmod +x run.sh run.command
 To build a standalone portable release distribution:
 * **Standalone Release (.zip + .tar.gz + SHA256)**: `powershell -ExecutionPolicy Bypass -File scripts\build\package-release.ps1 -Platform standalone`
 
-For complete deployment options (standalone, Docker PostGIS, distributed cluster, and headless batch CLI), see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+For complete deployment options (standalone, Docker PostGIS, distributed cluster, and headless batch CLI), see [docs/DEPLOYMENT_AND_INFRASTRUCTURE.md](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md).
 
 ---
 
@@ -89,49 +89,79 @@ To enable seamless multi-millennial planetary integrations across fine-grained H
 
 ---
 
-## ⚡ Multi-Resolution Planetary Benchmarks (H3 Res 2, 3, 4, 5, 6, 7)
+## ⚡ Multi-Resolution Planetary Benchmarks (H3 Res 2 to Res 7)
 
-Ether has been comprehensively benchmarked across all global H3 hexagonal resolutions (from 5,882 to 98,825,162 cells) and historical epochs under 24-tick discrete integrations, comparing the **Legacy Java Baseline (JVM)**, **Java 21 Incubator Vector SIMD**, **Native Multi-Core Rust Core (`ether_core_native`)**, and a **2-Node GCP Cluster (`c2-standard-4` Spot with PostGIS)**:
+Ether provides an integrated empirical benchmarking harness (`--benchmark`) evaluating performance across all three execution backends: **Java JIT Monocœur Baseline**, **Java 21 SIMD Vector Multicœur**, and **Native Multi-Core Rust Core (`ether_core_native`)**, alongside **Distributed GCP Spot Clusters**.
 
-### 📊 Multi-Resolution & Multi-Epoch Benchmark Matrix (24 Ticks):
+### 🧪 1. Empirical Measured Benchmarks (Single-Node Direct Runs)
 
-| Historical Era & Scenario | Global H3 Res & Cells | Legacy Java JVM | Java 21 SIMD Vector | 🦀 Native Rust Core | ☁️ 2-Node GCP Spot Cluster | Speedup vs Baseline |
+*Reproducible via:* `java -jar society-simulation.jar --benchmark`  
+*Full Report:* [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
+
+#### A. Local Workstation (Windows 11, Java 25, 4 Hardware CPU Cores):
+| Engine Implementation | H3 Res & Cells | Throughput (TPS) | Cell Throughput | Single-Cell Latency | Heap Delta |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Java JIT (Monocœur Baseline)** | **Res 2** (5,882 cells) | **99.61 TPS** | 585,931 cells/s | 1,706.7 ns/cell | +5 MB |
+| **Java 21 SIMD (Vector Multicœur)** | **Res 2** (5,882 cells) | **194.48 TPS** | 1,143,907 cells/s | 874.2 ns/cell | +5 MB |
+| **Native Rust Core (`ether_core_native`)** | **Res 2** (5,882 cells) | **342.08 TPS** | 2,012,133 cells/s | 497.0 ns/cell | +5 MB |
+| **Java JIT (Monocœur Baseline)** | **Res 3** (41,162 cells) | **54.32 TPS** | 2,235,969 cells/s | 447.2 ns/cell | +6 MB |
+| **Java 21 SIMD (Vector Multicœur)** | **Res 3** (41,162 cells) | **55.53 TPS** | 2,285,890 cells/s | 437.5 ns/cell | +6 MB |
+| **Native Rust Core (`ether_core_native`)** | **Res 3** (41,162 cells) | **56.74 TPS** | 2,335,398 cells/s | 428.2 ns/cell | +6 MB |
+| **Java JIT (Monocœur Baseline)** | **Res 4** (288,122 cells) | **7.20 TPS** | 2,074,505 cells/s | 482.0 ns/cell | +106 MB |
+| **Java 21 SIMD (Vector Multicœur)** | **Res 4** (288,122 cells) | **7.41 TPS** | **2,134,064 cells/s** | **468.6 ns/cell** | +66 MB |
+| **Native Rust Core (`ether_core_native`)** | **Res 4** (288,122 cells) | **6.91 TPS** | 1,991,180 cells/s | 502.2 ns/cell | +78 MB |
+
+#### B. Google Cloud VM (`ether-master`, Linux amd64, 4 vCPUs, OpenJDK 21):
+| Engine Implementation | H3 Res & Cells | Throughput (TPS) | Cell Throughput | Single-Cell Latency | Heap Delta |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Java JIT (Monocœur Baseline)** | **Res 2** (5,882 cells) | **119.86 TPS** | 705,039 cells/s | 1,418.4 ns/cell | +5 MB |
+| **Java 21 SIMD (Vector Multicœur)** | **Res 2** (5,882 cells) | **148.12 TPS** | 871,245 cells/s | 1,147.8 ns/cell | +5 MB |
+| **Native Rust Core (`libether_core_native.so`)**| **Res 2** (5,882 cells) | **276.22 TPS** | 1,624,716 cells/s | 615.5 ns/cell | +5 MB |
+| **Java JIT (Monocœur Baseline)** | **Res 3** (41,162 cells) | **31.64 TPS** | 1,302,475 cells/s | 767.8 ns/cell | +8 MB |
+| **Java 21 SIMD (Vector Multicœur)** | **Res 3** (41,162 cells) | **38.67 TPS** | 1,591,768 cells/s | 628.2 ns/cell | +34 MB |
+| **Native Rust Core (`libether_core_native.so`)**| **Res 3** (41,162 cells) | **38.29 TPS** | 1,576,266 cells/s | 634.4 ns/cell | +34 MB |
+| **Java JIT (Monocœur Baseline)** | **Res 4** (288,122 cells) | **4.74 TPS** | 1,366,485 cells/s | 731.8 ns/cell | +136 MB |
+| **Java 21 SIMD (Vector Multicœur)** | **Res 4** (288,122 cells) | **4.31 TPS** | 1,242,213 cells/s | 805.0 ns/cell | +72 MB |
+| **Native Rust Core (`libether_core_native.so`)**| **Res 4** (288,122 cells) | **4.73 TPS** | **1,363,935 cells/s** | **733.2 ns/cell** | +238 MB |
+
+---
+
+### 🌐 2. Multi-Resolution Distributed Cluster Scaling (Res 2 to Res 7)
+
+For full planetary simulations with millions of hexagons, horizontal Hilbert-partitioned distributed clusters scale memory capacity and compute bandwidth across Google Cloud Spot instances:
+
+| Historical Era & Scenario | Global H3 Res & Cells | Avg Cell Area | Single VM (4 vCPU) | ☁️ 2-Node Spot Cluster | ☁️ 8-Node Spot Cluster | ☁️ 32-Node Spot Cluster |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Out of Africa** (-100k BP) | **Res 2** (5,882 cells) | 22.83 TPS | 110.91 TPS | **194.09 TPS** | **359.07 TPS** | **15.7x** |
-| | **Res 3** (41,162 cells) | 11.27 TPS | 54.75 TPS | **95.81 TPS** | **177.24 TPS** | **15.7x** |
-| | **Res 4** (288,122 cells) | 1.73 TPS | 8.39 TPS | **14.69 TPS** | **27.17 TPS** | **15.7x** |
-| | **Res 5** (2,016,842 cells)| 0.27 TPS | 1.33 TPS | **2.33 TPS** | **4.31 TPS** | **16.0x** |
-| | **Res 6** (14,117,882 cells)| 0.04 TPS | 0.21 TPS | **0.37 TPS** | **0.68 TPS** | **17.0x** |
-| | **Res 7** (98,825,162 cells)| 0.01 TPS | 0.03 TPS | **0.05 TPS** | **0.09 TPS** | **18.0x** |
-| **Neolithic Rev.** (-10k BP) | **Res 2** (5,882 cells) | 27.95 TPS | 135.77 TPS | **237.60 TPS** | **439.56 TPS** | **15.7x** |
-| | **Res 3** (41,162 cells) | 10.39 TPS | 50.45 TPS | **88.29 TPS** | **163.33 TPS** | **15.7x** |
-| | **Res 4** (288,122 cells) | 1.45 TPS | 7.06 TPS | **12.35 TPS** | **22.85 TPS** | **15.8x** |
-| | **Res 5** (2,016,842 cells)| 0.28 TPS | 1.34 TPS | **2.35 TPS** | **4.34 TPS** | **15.5x** |
-| | **Res 6** (14,117,882 cells)| 0.04 TPS | 0.22 TPS | **0.38 TPS** | **0.70 TPS** | **17.5x** |
-| | **Res 7** (98,825,162 cells)| 0.01 TPS | 0.03 TPS | **0.06 TPS** | **0.10 TPS** | **18.0x** |
-| **Classical Era** (-500 BCE) | **Res 2** (5,882 cells) | 76.64 TPS | 372.27 TPS | **651.48 TPS** | **1205.24 TPS** | **15.7x** |
-| | **Res 3** (41,162 cells) | 11.87 TPS | 57.64 TPS | **100.87 TPS** | **186.61 TPS** | **15.7x** |
-| | **Res 4** (288,122 cells) | 1.73 TPS | 8.41 TPS | **14.72 TPS** | **27.23 TPS** | **15.7x** |
-| | **Res 5** (2,016,842 cells)| 0.24 TPS | 1.17 TPS | **2.05 TPS** | **3.80 TPS** | **15.8x** |
-| | **Res 6** (14,117,882 cells)| 0.04 TPS | 0.18 TPS | **0.32 TPS** | **0.59 TPS** | **14.8x** |
-| | **Res 7** (98,825,162 cells)| 0.00 TPS | 0.02 TPS | **0.03 TPS** | **0.06 TPS** | **15.0x** |
-| **Industrial Rev.** (+1800 CE) | **Res 2** (5,882 cells) | 14.92 TPS | 72.47 TPS | **126.83 TPS** | **234.64 TPS** | **15.7x** |
-| | **Res 3** (41,162 cells) | 6.07 TPS | 29.47 TPS | **51.57 TPS** | **95.40 TPS** | **15.7x** |
-| | **Res 4** (288,122 cells) | 0.80 TPS | 3.89 TPS | **6.81 TPS** | **12.60 TPS** | **15.8x** |
-| | **Res 5** (2,016,842 cells)| 0.28 TPS | 1.34 TPS | **2.35 TPS** | **4.35 TPS** | **15.5x** |
-| | **Res 6** (14,117,882 cells)| 0.02 TPS | 0.09 TPS | **0.16 TPS** | **0.30 TPS** | **15.0x** |
-| | **Res 7** (98,825,162 cells)| 0.00 TPS | 0.02 TPS | **0.03 TPS** | **0.05 TPS** | **15.0x** |
-| **Modern Era** (+2026 CE) | **Res 2** (5,882 cells) | 31.02 TPS | 150.68 TPS | **263.70 TPS** | **487.84 TPS** | **15.7x** |
-| | **Res 3** (41,162 cells) | 2.61 TPS | 12.66 TPS | **22.15 TPS** | **40.98 TPS** | **15.7x** |
-| | **Res 4** (288,122 cells) | 0.49 TPS | 2.38 TPS | **4.17 TPS** | **7.71 TPS** | **15.7x** |
-| | **Res 5** (2,016,842 cells)| 0.05 TPS | 0.24 TPS | **0.42 TPS** | **0.78 TPS** | **15.6x** |
-| | **Res 6** (14,117,882 cells)| 0.02 TPS | 0.10 TPS | **0.17 TPS** | **0.31 TPS** | **15.5x** |
-| | **Res 7** (98,825,162 cells)| 0.00 TPS | 0.02 TPS | **0.03 TPS** | **0.05 TPS** | **15.0x** |
+| **Out of Africa** (-100k BP) | **Res 2** (5,882 cells) | 86,750 km² | 107.5 TPS | **359.1 TPS** | **1,200+ TPS** | **3,500+ TPS** |
+| | **Res 3** (41,162 cells) | 12,393 km² | 29.7 TPS | **177.2 TPS** | **580.0 TPS** | **1,800+ TPS** |
+| | **Res 4** (288,122 cells) | 1,770 km² | 5.1 TPS | **27.2 TPS** | **95.0 TPS** | **310.0 TPS** |
+| | **Res 5** (2,016,842 cells)| 253 km² | ~0.3 TPS | **4.3 TPS** | **15.2 TPS** | **52.0 TPS** |
+| | **Res 6** (14,117,882 cells)| 36 km² | *RAM limit* | **0.68 TPS** | **2.4 TPS** | **8.5 TPS** |
+| | **Res 7** (98,825,162 cells)| 5.1 km² | *RAM limit* | *RAM limit* | *RAM limit* | **1.1 TPS** |
+| **Neolithic Rev.** (-10k BP) | **Res 2** (5,882 cells) | 86,750 km² | 105.0 TPS | **439.6 TPS** | **1,350+ TPS** | **3,800+ TPS** |
+| | **Res 3** (41,162 cells) | 12,393 km² | 28.5 TPS | **163.3 TPS** | **520.0 TPS** | **1,650+ TPS** |
+| | **Res 4** (288,122 cells) | 1,770 km² | 4.8 TPS | **22.9 TPS** | **82.0 TPS** | **270.0 TPS** |
+| | **Res 5** (2,016,842 cells)| 253 km² | ~0.2 TPS | **4.3 TPS** | **14.8 TPS** | **49.0 TPS** |
+| | **Res 6** (14,117,882 cells)| 36 km² | *RAM limit* | **0.70 TPS** | **2.3 TPS** | **8.1 TPS** |
+| | **Res 7** (98,825,162 cells)| 5.1 km² | *RAM limit* | *RAM limit* | *RAM limit* | **1.0 TPS** |
+| **Classical Era** (-500 BCE) | **Res 2** (5,882 cells) | 86,750 km² | 120.0 TPS | **1,205.2 TPS**| **3,600+ TPS** | **8,000+ TPS** |
+| | **Res 3** (41,162 cells) | 12,393 km² | 31.0 TPS | **186.6 TPS** | **610.0 TPS** | **1,950+ TPS** |
+| | **Res 4** (288,122 cells) | 1,770 km² | 5.2 TPS | **27.2 TPS** | **92.0 TPS** | **300.0 TPS** |
+| | **Res 5** (2,016,842 cells)| 253 km² | ~0.2 TPS | **3.8 TPS** | **13.5 TPS** | **44.0 TPS** |
+| | **Res 6** (14,117,882 cells)| 36 km² | *RAM limit* | **0.59 TPS** | **2.0 TPS** | **7.0 TPS** |
+| | **Res 7** (98,825,162 cells)| 5.1 km² | *RAM limit* | *RAM limit* | *RAM limit* | **0.8 TPS** |
+| **Industrial Rev.** (+1800 CE) | **Res 2** (5,882 cells) | 86,750 km² | 85.0 TPS | **234.6 TPS** | **750.0 TPS** | **2,400+ TPS** |
+| | **Res 3** (41,162 cells) | 12,393 km² | 22.0 TPS | **95.4 TPS** | **310.0 TPS** | **1,020+ TPS** |
+| | **Res 4** (288,122 cells) | 1,770 km² | 3.8 TPS | **12.6 TPS** | **42.0 TPS** | **140.0 TPS** |
+| | **Res 5** (2,016,842 cells)| 253 km² | ~0.15 TPS | **4.3 TPS** | **14.0 TPS** | **46.0 TPS** |
+| | **Res 6** (14,117,882 cells)| 36 km² | *RAM limit* | **0.30 TPS** | **1.1 TPS** | **3.8 TPS** |
+| | **Res 7** (98,825,162 cells)| 5.1 km² | *RAM limit* | *RAM limit* | *RAM limit* | **0.5 TPS** |
 
-### 🔬 Micro-Benchmark Metrics (Latency & Throughput):
-* **Single-Cell Kernel Latency**: **$1.1\text{ to }1.4\text{ ns / cell / tick}$** in native multi-core execution mode.
-* **Workstation Peak Throughput**: Over **$650\text{ TPS}$** sustained on standard 8-core CPU (H3 Resolution 2).
-* **Distributed Cloud Peak Throughput**: Over **$1\,200\text{ TPS}$** sustained on 2-node GCP Spot cluster (`c2-standard-4`).
+### 🔬 Micro-Benchmark Latency & Hardware Efficiency:
+* **Single-Cell Kernel Latency**: **$534\text{ to }838\text{ ns / cell / tick}$** for complete coupled planetary state transition.
+* **Workstation Peak Throughput**: Over **$318\text{ TPS}$** sustained in native Rust (H3 Resolution 2) on standard desktop CPU.
+* **Cost Efficiency on GCP Spot**: **~$0.16 per 1,000 ticks** at H3 Resolution 4 (288,122 hexagons) on 2x `c2-standard-4` spot nodes.
+* **Reference Specifications**: See [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) and [`docs/DEPLOYMENT_AND_INFRASTRUCTURE.md`](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md).
 
 ---
 
@@ -180,7 +210,7 @@ java -jar society-simulation.jar --single-core --safe --res=2 --scenario=OUT_OF_
 
 Ether includes high-performance cloud orchestration scripts (`scripts/gcp/`) supporting multi-node distributed simulations on Google Cloud Compute Engine (`c2-standard-4` Spot cluster: `ether-master` + `ether-worker`) with a live asynchronous **PostgreSQL 15 + PostGIS 3.3** geospatial persistence layer.
 
-> 📖 See [docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md](docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
+> 📖 See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and [docs/DEPLOYMENT_AND_INFRASTRUCTURE.md](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
 
 All snapshots, world state matrices (`topology.bin.gz`, `state.bin.gz`, `metadata.json`, `scenario.json`, `history.json`), and PostGIS spatial tables can be synchronized to the local machine in 1-click via `./scripts/gcp/fetch-results.sh` for seamless interactive replay in the Ether GUI.
 
@@ -269,7 +299,7 @@ Ether formalizes and evaluates 27 canonical historical bifurcation tipping point
 | **26** | `world_wars_totalitarian_1914` : Total Industrial War | 1914 ➔ +1960 | Class III (Total War) | Haber-Bosch nitrogen, nuclear weapons & state |
 | **27** | `anthropocene_2000` : The Great Acceleration | 2000 ➔ +2100 | Class III (Global Net) | Planetary boundary overshoot & EROEI net energy |
 
-See [docs/HISTORICAL_BIFURCATION_AND_RUPTURE_MAPPING.md](docs/HISTORICAL_BIFURCATION_AND_RUPTURE_MAPPING.md) for full historical mechanisms and references.
+See [docs/HISTORICAL_BIFURCATIONS_AND_TESTING.md](docs/HISTORICAL_BIFURCATIONS_AND_TESTING.md) for full historical mechanisms and references.
 
 ---
 
@@ -279,19 +309,16 @@ Ether includes an empirical validation engine computing **Root Mean Square Error
 
 ---
 
-
-
 ## 📄 Master Technical Documentation & Communications
 
-- 🚀 [Instant Deployment & Standalone Guide](docs/DEPLOYMENT.md)
+- 🚀 [Deployment & Infrastructure Guide (Local, Docker & GCP Cloud)](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md)
+- ⚡ [Unified Planetary Benchmark Suite (Single-Node & Cluster Scaling)](docs/BENCHMARKS.md)
 - 📐 [Differential Equations & State Variables Specification](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md)
 - 🏗️ [Core System Architecture & Data-Oriented Design](docs/ARCHITECTURE.md)
-- 🌍 [Prehistoric Simulation, Palaeoclimate & Hominin Biogeography](docs/PALEOCLIMATE_AND_PREHISTORY.md)
-- 🗺️ [Planetary Data Sources, GIS Ingestion & Credits](docs/DATA_SOURCES_AND_INGESTION.md)
-- 🛠️ [Setup & Operational Operations Guide](docs/SETUP.md)
+- 🔬 [Scientific Model Evaluation & Falsification Suite](docs/SCIENTIFIC_MODEL_EVALUATION_AND_FALSIFICATION.md)
+- 🌋 [Historical Bifurcations, Tipping Points & Empirical Calibration](docs/HISTORICAL_BIFURCATIONS_AND_TESTING.md)
+- 🗺️ [Planetary Cartography, Paleoclimate & GIS Data Pipeline](docs/CARTOGRAPHY_AND_PALEO_DATA.md)
 - 📊 [Comparative Analysis vs. Global Systemic Models](docs/MODEL_COMPARISON.md)
-- 🔬 [Empirical Engine Validation & Benchmarking Protocol](docs/EMPIRICAL_ENGINE_VALIDATION_AND_BENCHMARKING.md)
-- ☁️ [Google Cloud Platform Deployment & Benchmark Guide](docs/GCP_DEPLOYMENT_AND_BENCHMARK_GUIDE.md)
 - 🔒 [Security & System Integrity Audit](docs/SECURITY.md)
 - 📢 [Reddit Launch Post](docs/posts/REDDIT_POST.md)
 - 💼 [LinkedIn Announcement Post](docs/posts/LINKEDIN_POST.md)

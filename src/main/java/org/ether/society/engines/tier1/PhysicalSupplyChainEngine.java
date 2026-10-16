@@ -28,6 +28,15 @@ public class PhysicalSupplyChainEngine {
     private static double seaTransportFrictionCoeff = 0.001; // Hydrodynamic friction coeff
     private static double landTransportFrictionCoeff = 0.05;  // Overland friction coeff
 
+    /**
+     * Resets mutable static state between scenario executions to guarantee isolation.
+     */
+    public static void resetState() {
+        maritimeChokepointBlockadeActive = false;
+        seaTransportFrictionCoeff = 0.001;
+        landTransportFrictionCoeff = 0.05;
+    }
+
     /*
      * Process supply chains.
      * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.

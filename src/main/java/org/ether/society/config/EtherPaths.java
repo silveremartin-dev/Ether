@@ -298,4 +298,20 @@ public final class EtherPaths {
     public static File resolveSourceFile(String subpath) {
         return getSourcesDir().resolve(subpath).toFile();
     }
+
+    /**
+     * Retrieves the root directory for comparative analysis exports (reports, CSV telemetry, cartography ZIPs).
+     * Automatically creates the directory if it does not yet exist.
+     *
+     * @return normalized path to the exports directory
+     */
+    public static Path getExportsDir() {
+        Path p = Paths.get("exports");
+        try {
+            if (!Files.exists(p)) {
+                Files.createDirectories(p);
+            }
+        } catch (IOException ignored) {}
+        return p;
+    }
 }

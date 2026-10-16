@@ -267,8 +267,10 @@ public class EtherApp extends Application {
         }
         if (h3Engine != null) {
             try {
-                logger.info("Auto-saving active simulation state on exit...");
-                h3Engine.saveSimulation("Autosave_Exit");
+                if (h3Engine.getTickCounter() > 0 && h3Engine.getCells() != null && !h3Engine.getCells().isEmpty()) {
+                    logger.info("Auto-saving active simulation state on exit to AUTOSAVE_EXIT...");
+                    h3Engine.saveSimulation("AUTOSAVE_EXIT", "Autosave_Exit");
+                }
             } catch (Exception ex) {
                 logger.warn("Could not auto-save on exit: {}", ex.getMessage());
             }

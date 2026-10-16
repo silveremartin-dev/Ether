@@ -29,6 +29,14 @@ public class RomanImperialCliodynamicEngine {
     private static double imperialRadiusKm = 1500.0; // 1500 km Roman Empire expansion radius
     private static double eliteOverproductionFactor = 0.15; // 15% elite tax diversion
 
+    /**
+     * Resets mutable static state between scenario executions to guarantee isolation.
+     */
+    public static void resetState() {
+        imperialRadiusKm = 1500.0;
+        eliteOverproductionFactor = 0.15;
+    }
+
     /*
      * Process hybrid.
      * Enforces physical invariants and updates associated state variables within {@code RomanImperialCliodynamicEngine}.

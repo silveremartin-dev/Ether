@@ -168,15 +168,15 @@ public class Scenario implements Serializable {
     private double axialTiltDegrees; // Inclination
 
     public enum TechPreset {
-        AUTO_FROM_YEAR("⏳ Automatique (Calculé selon l'année Tâ‚€)", -1, -1, -1, -1),
-        PALEOLITHIC("ðŸ¹ Chasseurs-Cueilleurs / Néolithique", 5.0, 10.0, 2.0, 5.0),
-        NEOLITHIC_BRONZE("ðŸ›¡ï¸ Ã‚ge du Bronze & Cités-États", 25.0, 30.0, 4.0, 40.0),
-        ANTIQUITY("ðŸ›ï¸ Antiquité Classique & Empire", 100.0, 60.0, 6.0, 200.0),
-        RENAISSANCE("⛵ Renaissance & Imprimerie", 500.0, 300.0, 8.0, 2000.0),
-        INDUSTRIAL("⚙️ï¸ Révolution Industrielle & Vapeur", 2500.0, 2500.0, 10.0, 15000.0),
-        CONTEMPORARY("ðŸŒ Contemporain & Métropole Numérique", 15000.0, 50000.0, 18.0, 5000000.0),
-        SPACE_COLONY_MARS("🚀 Colonie Spatiale / Mars (Faible Pop / Ultra High-Tech)", 50000.0, 200000.0, 24.0, 50000000.0),
-        CUSTOM("⚙️ï¸ Personnalisé (Saisie Libre des 4 Stocks)", -1, -1, -1, -1);
+        AUTO_FROM_YEAR("Auto (Calculated from T0 Year)", -1, -1, -1, -1),
+        PALEOLITHIC("Hunter-Gatherers / Paleolithic", 5.0, 10.0, 2.0, 5.0),
+        NEOLITHIC_BRONZE("Bronze Age and City-States", 25.0, 30.0, 4.0, 40.0),
+        ANTIQUITY("Classical Antiquity and Empire", 100.0, 60.0, 6.0, 200.0),
+        RENAISSANCE("Renaissance and Printing Press", 500.0, 300.0, 8.0, 2000.0),
+        INDUSTRIAL("Industrial Revolution and Steam", 2500.0, 2500.0, 10.0, 15000.0),
+        CONTEMPORARY("Contemporary and Digital Metropolis", 15000.0, 50000.0, 18.0, 5000000.0),
+        SPACE_COLONY_MARS("Space Colony / Mars (Low Pop / Ultra High-Tech)", 50000.0, 200000.0, 24.0, 50000000.0),
+        CUSTOM("Custom (Manual Stock Inputs)", -1, -1, -1, -1);
 
         /* Internal state variable for label (String). */
         private final String label;

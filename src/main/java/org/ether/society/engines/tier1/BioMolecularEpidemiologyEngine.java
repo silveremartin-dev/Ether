@@ -26,13 +26,21 @@ public class BioMolecularEpidemiologyEngine {
     private static final Logger logger = LoggerFactory.getLogger(BioMolecularEpidemiologyEngine.class);
 
     /*
-     * Executes one bio-molecular immune response and pathogen tick across cells.
+     * Executes one bio-molecular immune response and pathogen tick across cells using default monthly step.
      */
     public static void processBioMolecularImmunity(List<H3Cell> cells) {
+        processBioMolecularImmunity(cells, 1.0 / 12.0);
+    }
+
+    /*
+     * Executes bio-molecular immune response and pathogen tick across cells scaled by dtYears.
+     */
+    public static void processBioMolecularImmunity(List<H3Cell> cells, double dtYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
+        double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 
         int immuneCollapseCells = 0;
 
@@ -41,25 +49,38 @@ public class BioMolecularEpidemiologyEngine {
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 
-            double foodAvailable = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
-            double foodRequired = pop * 1.0; // 1.0 unit per capita
+            // Monthly metabolic food requirement scaled by tick duration dt
+            double foodRequired = pop * 1.0 * dtMonthlyRatio;
+
+            // Available caloric resources: granary store + standing crop harvest + foraging
+            double grainFood = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+            double agriHarvest = cell.getBiomassAgriculture() != null ? (cell.getBiomassAgriculture() * 0.70 * dtYears) : 0.0;
+            double wildHarvest = cell.getBiomassNatural() != null ? (cell.getBiomassNatural() * 0.05 * dtYears) : 0.0;
+            double totalFoodAvailable = grainFood + agriHarvest + wildHarvest;
 
             // Energy deficiency ratio
-            double energyRatio = foodAvailable / Math.max(1.0, foodRequired);
+            double energyRatio = totalFoodAvailable / Math.max(0.1, foodRequired);
 
-            // Immunoglobulin synthesis capacity (0.0 to 1.0)
-            double immunoglobulinSynthesisRate = Math.min(1.0, Math.max(0.05, energyRatio));
+            // Immunoglobulin synthesis capacity (0.05 to 1.0)
+            double immunoglobulinSynthesisRate = Math.clamp(energyRatio, 0.05, 1.0);
+
+            double curLife = cell.getLifespan() != null ? cell.getLifespan() : 40.0;
+            double targetBaselineLife = (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() >= 1.5) ? 48.0 : 38.0;
 
             // Malnutrition-induced immune collapse
             if (immunoglobulinSynthesisRate < 0.40) {
                 immuneCollapseCells++;
-                // Lifespan degradation from bio-molecular vulnerability
-                cell.setLifespan(Math.max(12.0, cell.getLifespan() - 1.5 * (0.40 - immunoglobulinSynthesisRate)));
+                double penalty = 1.5 * (0.40 - immunoglobulinSynthesisRate) * dtMonthlyRatio;
+                cell.setLifespan(Math.max(15.0, curLife - penalty));
+            } else if (immunoglobulinSynthesisRate >= 0.80 && curLife < targetBaselineLife) {
+                // Immune recovery and longevity restoration under adequate nutrition
+                double recovery = 0.5 * dtMonthlyRatio;
+                cell.setLifespan(Math.min(targetBaselineLife, curLife + recovery));
             }
         }
 
         if (immuneCollapseCells > 0) {
-            logger.info("Epidemiology Engine: Malnutrition-induced immunoglobulin synthesis collapse in {} cells.", immuneCollapseCells);
+            logger.debug("Epidemiology Engine: Malnutrition-induced immunoglobulin synthesis collapse in {} cells.", immuneCollapseCells);
         }
     }
 }

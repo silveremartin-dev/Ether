@@ -349,19 +349,22 @@ public class MapComparisonMetrics {
                 if (Math.abs(valA) < 5.0 && Math.abs(valB) < 5.0) {
                     // Ocean / Empty Cell: Dark Slate
                     rgba = 0xFF0F172A;
+                } else if (Math.abs(delta) <= 4.0) {
+                    // Exact or near-zero discrepancy (A == B): Neutral baseline Slate Gray (no divergence)
+                    rgba = 0xFF1E293B;
                 } else if (Math.abs(delta) <= 12.0) {
-                    // Near perfect match: Emerald Green
-                    rgba = 0xFF10B981;
+                    // Subtle alignment: Soft muted slate-emerald
+                    rgba = 0xFF064E3B;
                 } else if (delta > 0) {
                     // A is greater than B (Overestimation): Amber to Red gradient
-                    double norm = Math.min(1.0, delta / 180.0);
+                    double norm = Math.min(1.0, (delta - 12.0) / 168.0);
                     int r = (int) (245 + norm * 10);
                     int g = (int) (158 - norm * 110);
                     int b = (int) (11 - norm * 11);
                     rgba = (0xFF << 24) | (Math.min(255, r) << 16) | (Math.max(0, g) << 8) | Math.max(0, b);
                 } else {
                     // A is less than B (Underestimation): Cyan to Royal Blue gradient
-                    double norm = Math.min(1.0, -delta / 180.0);
+                    double norm = Math.min(1.0, (-delta - 12.0) / 168.0);
                     int r = (int) (56 - norm * 40);
                     int g = (int) (189 - norm * 120);
                     int b = (int) (248 + norm * 7);

@@ -536,6 +536,7 @@ public class StatsPanel extends VBox {
         windowBox.setAlignment(Pos.CENTER_LEFT);
 
         xAxis = new NumberAxis();
+        xAxis.setMinorTickVisible(false);
         xAxis.setTickLabelFill(Color.GRAY);
         xAxis.setAutoRanging(true);
         xAxis.setForceZeroInRange(false);
@@ -574,6 +575,7 @@ public class StatsPanel extends VBox {
         });
 
         yAxis = new NumberAxis();
+        yAxis.setMinorTickVisible(false);
         yAxis.setTickLabelFill(Color.GRAY);
         yAxis.setAutoRanging(true);
         yAxis.setForceZeroInRange(false);
@@ -621,6 +623,7 @@ public class StatsPanel extends VBox {
             if (newLower < minYear) newLower = minYear;
             xAxis.setLowerBound(newLower);
             xAxis.setUpperBound(newUpper);
+            xAxis.setTickUnit(WindowUtils.computeNiceTickUnit(newUpper - newLower));
         });
         lineChart.setOnScroll(e -> {
             e.consume();
@@ -662,6 +665,7 @@ public class StatsPanel extends VBox {
 
             xAxis.setLowerBound(newLower);
             xAxis.setUpperBound(newUpper);
+            xAxis.setTickUnit(WindowUtils.computeNiceTickUnit(newUpper - newLower));
         });
         lineChart.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2 || (e.isControlDown() && e.getButton() == javafx.scene.input.MouseButton.SECONDARY)) {
@@ -1179,7 +1183,9 @@ public class StatsPanel extends VBox {
         if (currentWindowYears > 0) {
             xAxis.setAutoRanging(false);
             xAxis.setLowerBound(minTime);
-            xAxis.setUpperBound(Math.max(minTime + 1.0, currentTime));
+            double maxTime = Math.max(minTime + 1.0, currentTime);
+            xAxis.setUpperBound(maxTime);
+            xAxis.setTickUnit(WindowUtils.computeNiceTickUnit(maxTime - minTime));
         } else {
             xAxis.setAutoRanging(true);
         }
@@ -1387,7 +1393,9 @@ public class StatsPanel extends VBox {
                         chartSeries.getData().removeIf(data -> data.getXValue().doubleValue() < minTime - 0.0001);
                         xAxis.setAutoRanging(false);
                         xAxis.setLowerBound(minTime);
-                        xAxis.setUpperBound(Math.max(minTime + 1.0, currentTime));
+                        double maxTime = Math.max(minTime + 1.0, currentTime);
+                        xAxis.setUpperBound(maxTime);
+                        xAxis.setTickUnit(WindowUtils.computeNiceTickUnit(maxTime - minTime));
                     }
 
                     // Update Age Pyramid Bar Chart (7 Cohorts)

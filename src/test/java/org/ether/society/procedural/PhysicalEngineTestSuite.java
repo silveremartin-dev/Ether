@@ -16,6 +16,7 @@ import org.ether.society.engines.compiler.*;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,14 +34,6 @@ public class PhysicalEngineTestSuite {
     private List<H3Cell> testCells;
 
     @BeforeEach
-    /*
-     * Set up operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void setUp() {
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(0x8828308281fffffL, 48.8566, 2.3522);
@@ -54,6 +47,12 @@ public class PhysicalEngineTestSuite {
         cell.setSoilOrganicCarbon(20.0);
         cell.setPollutionLevel(50.0);
         testCells.add(cell);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        NuclearWarfareClimateEngine.resetState();
+        NuclearSafetyRadiotoxicityEngine.resetState();
     }
 
     @Test
@@ -99,8 +98,16 @@ public class PhysicalEngineTestSuite {
      *
      */
     public void testNuclearSafetyRadiotoxicityEngine() {
+        H3Cell cell = testCells.get(0);
+        cell.setTechnologyLevel(4.6); // Modern atomic era (fission power flux regime)
+        double initialPollution = cell.getPollutionLevel();
+        int initialPop = cell.getPopulation();
+
+        NuclearSafetyRadiotoxicityEngine.setAccidentProbability(1.0); // Deterministic test accident
         NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(testCells);
-        assertTrue(testCells.get(0).getPopulation() >= 0);
+
+        assertTrue(cell.getPollutionLevel() > initialPollution + 5000.0, "Core meltdown must cause massive radiotoxic pollution spike");
+        assertEquals((int) (initialPop * 0.70), cell.getPopulation(), "Radiation casualties & evacuation must reduce population by 30%");
     }
 
     @Test
@@ -130,6 +137,8 @@ public class PhysicalEngineTestSuite {
      */
     public void testNuclearWarfareClimateEngine() {
         NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.2);
+        double transmittance = NuclearWarfareClimateEngine.calculateSolarTransmittance(1.2);
+        assertTrue(transmittance < 0.35, "Soot optical depth tau=1.2 must attenuate solar irradiance by >65%");
         NuclearWarfareClimateEngine.processNuclearWarfareClimate(testCells);
         assertTrue(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() > 0.0);
     }
@@ -145,7 +154,16 @@ public class PhysicalEngineTestSuite {
      *
      */
     public void testTechnologicalSingularityEngine() {
+        H3Cell cell = testCells.get(0);
+        cell.setTechnologyLevel(5.0);
+        cell.setResourceCapital(5000.0);
+        cell.setPollutionLevel(50.0);
+        cell.setLifespan(70.0);
+
         TechnologicalSingularityEngine.processTechnologicalSingularity(testCells);
-        assertNotNull(testCells.get(0).getResourceCapital());
+
+        assertTrue(cell.getResourceCapital() > 5000.0, "Singularity nanotech assembly must boost capital stock");
+        assertTrue(cell.getPollutionLevel() < 50.0, "Singularity automated remediation must reduce pollution");
+        assertTrue(cell.getLifespan() > 70.0, "Trans-human health expansion must increase lifespan");
     }
 }

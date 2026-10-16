@@ -113,17 +113,13 @@ public class JavaRustParityAndFalsificationSuiteTest {
 
     @Test
     @DisplayName("3. Native Rust Bridge availability check")
-    /*
-     * Test native rust bridge detection operation.
-     * <p>
-     * Executes operational logic for {@code JavaRustParityAndFalsificationSuiteTest} within the Data-Oriented Design memory buffer subsystem.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testNativeRustBridgeDetection() {
-        // Must report detection status smoothly without throwing exceptions
         boolean available = NativeRustBridge.isNativeAvailable();
-        assertTrue(available || !available, "Native bridge detection must return clean boolean");
+        if (available) {
+            assertNotNull(NativeRustBridge.getLoadedBinaryPath(), "When native library is available, loaded path must not be null");
+            assertTrue(java.nio.file.Files.exists(NativeRustBridge.getLoadedBinaryPath()), "Native binary path must exist on filesystem");
+        } else {
+            assertNull(NativeRustBridge.getLoadedBinaryPath(), "When native bridge is unavailable, path must be null");
+        }
     }
 }

@@ -25,10 +25,11 @@ public class TerraformingEngine {
     private static final Logger logger = LoggerFactory.getLogger(TerraformingEngine.class);
 
     // Global Terraforming State Variables
+    private static boolean terraformingActive = false;
     /* Internal state variable for atmospheric pressure atm (double). */
     private static double atmosphericPressureAtm = 1.0;
     /* Internal state variable for co2ppm (double). */
-    private static double co2Ppm = 420.0;
+    private static double co2Ppm = 280.0;
     private static double solarMirrorInsolationMultiplier = 1.0; // Multiplier from orbital mirrors
     /* Internal state variable for asteroid mining flux tonnes per year (double). */
     private static double asteroidMiningFluxTonnesPerYear = 0.0;
@@ -46,6 +47,9 @@ public class TerraformingEngine {
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
+        if (!terraformingActive && asteroidMiningFluxTonnesPerYear <= 0.0 && solarMirrorInsolationMultiplier == 1.0) {
+            return;
+        }
 
         // Apply orbital mirror solar forcing & greenhouse atmospheric warming
         double radiativeForcingWm2 = 5.35 * Math.log(co2Ppm / 280.0) + (solarMirrorInsolationMultiplier - 1.0) * 1361.0;
@@ -68,6 +72,9 @@ public class TerraformingEngine {
     }
 
     // Getters and Setters
+    public static boolean isTerraformingActive() { return terraformingActive; }
+    public static void setTerraformingActive(boolean active) { terraformingActive = active; }
+
     /*
      * Get atmospheric pressure atm.
      * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
@@ -157,6 +164,15 @@ public class TerraformingEngine {
      * @param eroei the eroei argument (double)
      */
     public static void setOffWorldEroeiRatio(double eroei) { offWorldEroeiRatio = Math.max(0.1, eroei); }
+
+    public static void resetState() {
+        terraformingActive = false;
+        atmosphericPressureAtm = 1.0;
+        co2Ppm = 280.0;
+        solarMirrorInsolationMultiplier = 1.0;
+        asteroidMiningFluxTonnesPerYear = 0.0;
+        offWorldEroeiRatio = 15.0;
+    }
 }
 
 

@@ -93,6 +93,11 @@ public class CulturalSociologyEngine {
      * @param stw the stw argument (double)
      */
     public static void setGlobalEnvironmentalStewardship(double stw) { globalEnvironmentalStewardship = Math.max(0.0, Math.min(1.0, stw)); }
+
+    public static void resetState() {
+        globalCollectivismIndex = 0.5;
+        globalEnvironmentalStewardship = 0.5;
+    }
 }
 
 

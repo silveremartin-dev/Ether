@@ -53,6 +53,8 @@ public class GreenhouseRadiativeEngine {
 
     /* Internal state variable for technological mitigation efficiency (double). */
     private double technologicalMitigationEfficiency = 0.0;
+    private double previousAppliedDeltaT = 0.0;
+    private double previousAppliedSeaShift = 0.0;
 
     /*
      * Greenhouse radiative engine.
@@ -173,7 +175,7 @@ public class GreenhouseRadiativeEngine {
     }
 
     /*
-     * Applies temperature anomaly, Stefan-Boltzmann equilibrium, and sea level shift to the H3 grid.
+     * Applies temperature anomaly, Stefan-Boltzmann equilibrium, and sea level shift incrementally to the H3 grid.
      */
     public void applyToGrid(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
@@ -182,15 +184,23 @@ public class GreenhouseRadiativeEngine {
         double seaShift = computeSeaLevelDeltaMeters();
         double ghForcing = computeRadiativeForcingWpm2();
 
+        double incrementalDeltaT = deltaT - previousAppliedDeltaT;
+        double incrementalSeaShift = seaShift - previousAppliedSeaShift;
+
+        this.previousAppliedDeltaT = deltaT;
+        this.previousAppliedSeaShift = seaShift;
+
+        if (Math.abs(incrementalDeltaT) < 1.0e-5 && Math.abs(incrementalSeaShift) < 1.0e-5) return;
+
         logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{:.2f}°C, SeaLevelDelta=+{:.1f}m, Forcing={:.2f} W/m²",
                 currentCo2Ppm, currentCh4Ppb, deltaT, seaShift, ghForcing);
 
         cells.parallelStream().forEach(cell -> {
             if (cell.getTemperature() != null) {
-                cell.setTemperature(cell.getTemperature() + deltaT);
+                cell.setTemperature(cell.getTemperature() + incrementalDeltaT);
             }
             if (cell.getElevation() != null && cell.getElevation() > 0) {
-                cell.setElevation(Math.max(-100.0, cell.getElevation() - seaShift));
+                cell.setElevation(Math.max(-100.0, cell.getElevation() - incrementalSeaShift));
             }
         });
     }

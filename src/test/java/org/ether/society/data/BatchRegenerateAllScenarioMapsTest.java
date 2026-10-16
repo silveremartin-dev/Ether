@@ -1,5 +1,7 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Regenerates all 25 cartographic rasters (2048x1024), cultural_registry.json,
  * provenance_and_sources.json, and README.md across all historical epochs (-100,000 to 2060).
  */
+@Tag("manual")
 public class BatchRegenerateAllScenarioMapsTest {
     private static final Logger logger = LoggerFactory.getLogger(BatchRegenerateAllScenarioMapsTest.class);
 
@@ -129,10 +132,10 @@ public class BatchRegenerateAllScenarioMapsTest {
           "era": "%s",
           "planet": "earth",
           "resolution": "2048x1024",
-          "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+          "projection": "Equirectangular (Plate CarrÃ©e, EPSG:4326)",
           "overview": {
             "summary_en": "Global cartographic and tensor reconstruction of Earth for epoch %d (%s). Includes empirical physical climate baselines (WorldClim v2.1 Bio1, Bio4, Bio12), ETOPO 2022 relief, HYDE 3.4 demographic grids, Seshat cultural dynamics, and USGS/BGS geological resource tensors.",
-            "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'époque %d (%s). Intègre les références empiriques WorldClim v2.1, le relief ETOPO 2022, les grilles HYDE 3.4, la dynamique Seshat et les ressources géologiques USGS/BGS."
+            "summary_fr": "Reconstitution cartographique et tensorielle globale de la Terre pour l'Ã©poque %d (%s). IntÃ¨gre les rÃ©fÃ©rences empiriques WorldClim v2.1, le relief ETOPO 2022, les grilles HYDE 3.4, la dynamique Seshat et les ressources gÃ©ologiques USGS/BGS."
           },
           "layers": {
             "elevation": {
@@ -268,8 +271,8 @@ public class BatchRegenerateAllScenarioMapsTest {
                 "en": "East Asian Civilizational Core (%s)",
                 "fr": "Foyer Civilisationnel Est-Asiatique (%s)",
                 "de": "Ostasietischer Zivilisationsraum (%s)",
-                "es": "Núcleo Civilizatorio de Asia Oriental (%s)",
-                "zh": "东亚文明核心区（%s）"
+                "es": "NÃºcleo Civilizatorio de Asia Oriental (%s)",
+                "zh": "ä¸œäºšæ–‡æ˜Žæ ¸å¿ƒåŒºï¼ˆ%sï¼‰"
               },
               "kinshipType": "Patrilineal Lineage & Dynastic Administration",
               "lithicTechnocomplex": "Intensive Agrarian & Bureaucratic State Complex",
@@ -284,8 +287,8 @@ public class BatchRegenerateAllScenarioMapsTest {
                 "en": "Western Eurasian Civilizational Core (%s)",
                 "fr": "Foyer Civilisationnel Ouest-Eurasien (%s)",
                 "de": "Westeurasischer Zivilisationsraum (%s)",
-                "es": "Núcleo Civilizatorio Euroasiático Occidental (%s)",
-                "zh": "西欧亚文明核心区（%s）"
+                "es": "NÃºcleo Civilizatorio EuroasiÃ¡tico Occidental (%s)",
+                "zh": "è¥¿æ¬§äºšæ–‡æ˜Žæ ¸å¿ƒåŒºï¼ˆ%sï¼‰"
               },
               "kinshipType": "Segmentary & Institutional Governance",
               "lithicTechnocomplex": "Metallurgy, Urban Commerce & Maritime Networks",
@@ -299,9 +302,9 @@ public class BatchRegenerateAllScenarioMapsTest {
               "name": {
                 "en": "South Asian Civilizational Core (%s)",
                 "fr": "Foyer Civilisationnel Sud-Asiatique (%s)",
-                "de": "Südasiatischer Zivilisationsraum (%s)",
-                "es": "Núcleo Civilizatorio de Asia del Sur (%s)",
-                "zh": "南亚文明核心区（%s）"
+                "de": "SÃ¼dasiatischer Zivilisationsraum (%s)",
+                "es": "NÃºcleo Civilizatorio de Asia del Sur (%s)",
+                "zh": "å—äºšæ–‡æ˜Žæ ¸å¿ƒåŒºï¼ˆ%sï¼‰"
               },
               "kinshipType": "Endogamous Social Stratification & Village Republics",
               "lithicTechnocomplex": "Wet-Rice Agriculture & Monsoonal Hydraulic Engineering",
@@ -314,10 +317,10 @@ public class BatchRegenerateAllScenarioMapsTest {
               "traits": [0.55, 0.75, 0.82, 0.88],
               "name": {
                 "en": "Americas Civilizational Core (%s)",
-                "fr": "Foyer Civilisationnel des Amériques (%s)",
+                "fr": "Foyer Civilisationnel des AmÃ©riques (%s)",
                 "de": "Amerikanischer Zivilisationsraum (%s)",
-                "es": "Núcleo Civilizatorio de las Américas (%s)",
-                "zh": "美洲文明核心区（%s）"
+                "es": "NÃºcleo Civilizatorio de las AmÃ©ricas (%s)",
+                "zh": "ç¾Žæ´²æ–‡æ˜Žæ ¸å¿ƒåŒºï¼ˆ%sï¼‰"
               },
               "kinshipType": "Corporate Lineage & Theocratic Chiefdoms/States",
               "lithicTechnocomplex": "Maize/Potato Terracing & Monumental Architecture",
@@ -337,19 +340,19 @@ public class BatchRegenerateAllScenarioMapsTest {
         String md = """
         # Earth Epoch %d: %s
 
-        ## 🌍 Overview
+        ## ðŸŒ Overview
         This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **%d BP** (%s).
 
-        All raster layers are generated in equirectangular projection (Plate Carrée, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
+        All raster layers are generated in equirectangular projection (Plate CarrÃ©e, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
 
-        ## 🗺️ Standard Cartographic Layers (25 PNG Rasters)
+        ## ðŸ—ºï¸ Standard Cartographic Layers (25 PNG Rasters)
 
         ### Physical & Climate Layers
         * `earth_%d_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry.
         * `earth_%d_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Ecology.
-        * `earth_%d_temperature.png`: WorldClim v2.1 Annual Mean Temperature (°C).
+        * `earth_%d_temperature.png`: WorldClim v2.1 Annual Mean Temperature (Â°C).
         * `earth_%d_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year).
-        * `earth_%d_seasonality.png`: Temperature Seasonality Amplitude (°C range).
+        * `earth_%d_seasonality.png`: Temperature Seasonality Amplitude (Â°C range).
 
         ### Cliodynamic & Cultural Tensors
         * `earth_%d_density.png`: HYDE 3.4 / Seshat Human Demographic Density.
@@ -375,7 +378,7 @@ public class BatchRegenerateAllScenarioMapsTest {
         * `earth_%d_geothermal.png`: Terrestrial Heat Flow & Geothermal Gradients (IHFC).
         * `earth_%d_aquifers.png`: Deep Regional Groundwater Aquifers (UNESCO WHYMAP).
 
-        ## 📄 Associated Data Files
+        ## ðŸ“„ Associated Data Files
         * `cultural_registry.json`: Multilingual metadata for all polities and ethnocultural entities.
         * `provenance_and_sources.json`: Exhaustive academic citations, datasets, and physical calibration rationale.
         """.formatted(
@@ -390,3 +393,4 @@ public class BatchRegenerateAllScenarioMapsTest {
         }
     }
 }
+

@@ -141,7 +141,7 @@
   "temporalResolutionDays" : 30.0,
   "climateHarshness" : 0.5,
   "startDateYear" : 1347,
-  "endDateYear" : 1450,
+  "endDateYear" : 1492,
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,

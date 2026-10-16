@@ -47,13 +47,27 @@ public class SpatialCityFractalEngine {
         if (sortedCells.isEmpty()) return;
 
         double topCityPop = sortedCells.get(0).getPopulation();
+        // Zipf-Mori spatial power law target shape: Pop_target(rank) proportional to 1 / rank^1.05,
+        // renormalized so that the redistribution conserves total population (migration, not creation).
+        long totalPop = 0L;
+        double shapeSum = 0.0;
+        for (int rank = 1; rank <= sortedCells.size(); rank++) {
+            totalPop += sortedCells.get(rank - 1).getPopulation();
+            shapeSum += 1.0 / Math.pow(rank, 1.05);
+        }
+        if (totalPop <= 0L || shapeSum <= 0.0 || topCityPop <= 0.0) return;
+        double relax = Math.min(1.0, 0.01 * deltaYears);
+        long assigned = 0L;
         for (int rank = 1; rank <= sortedCells.size(); rank++) {
             H3Cell cell = sortedCells.get(rank - 1);
-            // Zipf-Mori spatial power law target: Pop_target = Pop_top / rank^1.05
-            double targetPop = topCityPop / Math.pow(rank, 1.05);
+            double targetPop = totalPop * (1.0 / Math.pow(rank, 1.05)) / shapeSum;
             double currentPop = cell.getPopulation();
-            // Smoothly gravitate population toward fractal power law equilibrium
-            cell.setPopulation((int) (currentPop + (targetPop - currentPop) * 0.01 * deltaYears));
+            int newPop = (int) Math.round(currentPop + (targetPop - currentPop) * relax);
+            if (rank == sortedCells.size()) {
+                newPop = (int) Math.max(0L, totalPop - assigned); // absorb rounding residue to conserve the total
+            }
+            cell.setPopulation(Math.max(0, newPop));
+            assigned += cell.getPopulation();
         }
     }
 }

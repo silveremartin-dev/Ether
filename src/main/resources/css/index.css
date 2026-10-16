@@ -1,6 +1,6 @@
 /* Global Reset & Fonts */
 .root {
-    -fx-font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'Inter', sans-serif;
+    -fx-font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', 'Source Han Sans SC', 'Noto Sans CJK SC', 'Noto Sans SC', 'SimSun', 'Inter', sans-serif;
     -fx-base: #1e1e2e;
     -fx-background: #1e1e2e;
     -fx-control-inner-background: #252538;
@@ -92,7 +92,7 @@
 }
 
 .label-section-header {
-    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', system-ui, sans-serif;
+    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC', system-ui, sans-serif;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-text-fill: #38bdf8;
@@ -243,7 +243,7 @@
 
 .tab-pane .tab .tab-label {
     -fx-text-fill: #94a3b8;
-    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', system-ui, sans-serif;
+    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC', system-ui, sans-serif;
     -fx-font-weight: bold;
     -fx-font-size: 13px;
     -fx-alignment: center;
@@ -261,7 +261,7 @@
 
 .tab-pane .tab:selected .tab-label {
     -fx-text-fill: #ffffff;
-    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', system-ui, sans-serif;
+    -fx-font-family: 'Segoe UI', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC', system-ui, sans-serif;
     -fx-font-weight: bold;
     -fx-font-size: 13px;
 }

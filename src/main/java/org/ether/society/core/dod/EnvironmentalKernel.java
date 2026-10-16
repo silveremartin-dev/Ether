@@ -146,12 +146,23 @@ public class EnvironmentalKernel {
         int[] landIndices = world.getLandIndices();
         float baselineCO2 = 280.0f;
 
+        // Extract H3 resolution from the first valid H3 index to scale macro-cell production rates by actual cell surface area
+        float areaScale = 1.0f;
+        long[] h3Indexes = world.getH3Indexes();
+        if (h3Indexes != null && h3Indexes.length > 0 && h3Indexes[0] != 0L) {
+            int res = (int) ((h3Indexes[0] >>> 52) & 0x0FL);
+            if (res >= 0 && res <= 15) {
+                double cellAreaKm2 = org.ether.society.database.H3Cell.getAvgHexagonAreaKm2(res);
+                areaScale = (float) Math.clamp(cellAreaKm2 / 1770.49, 0.01, 20.0);
+            }
+        }
+
         for (int idx = 0; idx < landIndices.length; idx++) {
             int i = landIndices[idx];
             Biome biome = Biome.values()[biomes[i]];
             
-            // Primary production based on biome, Farquhar bioenergetics, and irrigation/moisture availability
-            float baseProd = getBiomeProductionRate(biome);
+            // Primary production based on biome, Farquhar bioenergetics, irrigation/moisture availability, and cell surface area
+            float baseProd = getBiomeProductionRate(biome) * areaScale;
             float fvcbFactor = evaluateFarquharYield(temp[i], baselineCO2);
             float pet = calculatePriestleyTaylorPET(temp[i]);
             float waterAvail = world.getWaterResource() != null ? world.getWaterResource()[i] : 0.0f;
@@ -170,16 +181,28 @@ public class EnvironmentalKernel {
             
             float agroClimaticFactor = Math.clamp(fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost, 0.40f, 2.0f);
             float humanPop = world.getBiomassHuman() != null ? world.getBiomassHuman()[i] : 0.0f;
-            float agProd = (humanPop > 0.0f) ? (humanPop * 4.6f * agroClimaticFactor * dtInYears) : 0.0f;
+            
+            // Biophysical agricultural ceiling (Boserup-Geertz involution on finite arable land scaled by areaScale):
+            // Diminishing returns Michaelis-Menten response bounds total agricultural caloric output per cell
+            float maxAgPotential = getBiomeAgriculturalPotential(biome) * areaScale * agroClimaticFactor * (1.0f + 0.05f * Math.min(100.0f, tech));
+            float agDemandPotential = humanPop * 4.6f;
+            float agProd = (humanPop > 0.0f)
+                    ? (maxAgPotential * (agDemandPotential / (maxAgPotential + agDemandPotential)) * dtInYears)
+                    : 0.0f;
             float naturalProd = baseProd * agroClimaticFactor * dtInYears;
 
             float growth = naturalProd + agProd;
             float decay = (float) (food[i] * 0.03 * dtInYears);
             
-            food[i] = Math.max(0.0f, Math.min(2000000.0f, food[i] + growth - decay));
+            food[i] = Math.max(0.0f, Math.min(2000000.0f * areaScale, food[i] + growth - decay));
             
-            // Natural biomass regeneration
-            world.getBiomassNatural()[i] = Math.min(10000.0f, world.getBiomassNatural()[i] + naturalProd * 0.5f);
+            // Biomass regeneration coupled to Primary Productivity (bounded by area-scaled ecological carrying capacity)
+            if (world.getBiomassNatural() != null) {
+                world.getBiomassNatural()[i] = Math.min(10000.0f * areaScale, world.getBiomassNatural()[i] + naturalProd * 0.5f);
+            }
+            if (world.getBiomassAgriculture() != null && agProd > 0.0f && tech >= 1.5f && world.getBiomassAgriculture()[i] <= 0.0f) {
+                world.getBiomassAgriculture()[i] = Math.min(250.0f * areaScale, humanPop * 0.6f);
+            }
         }
     }
 
@@ -200,6 +223,25 @@ public class EnvironmentalKernel {
             case TUNDRA -> 600.0f;
             case DESERT -> 150.0f;
             default -> 300.0f;
+        };
+    }
+
+    /*
+     * Maximum annual agricultural caloric potential per macro-cell in Gigajoules per year (GJ/yr).
+     * Represents arable soil carrying capacity and photosynthetic limits for preindustrial/early agrarian regimes.
+     */
+    private float getBiomeAgriculturalPotential(Biome biome) {
+        return switch (biome) {
+            case PLAINS -> 150000.0f;
+            case SAVANNAH -> 120000.0f;
+            case FOREST -> 80000.0f;
+            case JUNGLE -> 70000.0f;
+            case HILLS -> 40000.0f;
+            case BEACH, LAKE -> 25000.0f;
+            case MOUNTAINS -> 15000.0f;
+            case TUNDRA -> 5000.0f;
+            case DESERT -> 2000.0f;
+            default -> 1000.0f;
         };
     }
 }

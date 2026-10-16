@@ -14,14 +14,18 @@ import org.ether.society.engines.tier1.*;
 import org.ether.society.engines.tier2.theories.*;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
+import org.ether.society.model.Biome;
+import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * High-Performance Declarative Simulation Pipeline.
- * Orchestrates deterministic phase transitions for physical, demographic, and cliodynamic sub-systems.
+ * Orchestrates deterministic phase transitions for physical, demographic, and cliodynamic sub-systems
+ * using a Fused 3-Pass Architecture and JIT-compiled Type B scenario kernels.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -35,6 +39,10 @@ public class SimulationPipeline {
     private final EnvironmentalKernel environmentalKernel;
     private final StatisticsKernel statisticsKernel;
 
+    private Scenario configuredScenario;
+    private CompiledEngineKernel compiledKernel;
+    private final GreenhouseRadiativeEngine greenhouseRadiativeEngine = new GreenhouseRadiativeEngine();
+
     public SimulationPipeline(DemographicKernel demographicKernel,
                               UrbanKernel urbanKernel,
                               CultureKernel cultureKernel,
@@ -47,7 +55,96 @@ public class SimulationPipeline {
         this.statisticsKernel = statisticsKernel != null ? statisticsKernel : new StatisticsKernel();
     }
 
-    /*
+    /**
+     * Resets all mutable static simulation states, caches, and registers to guarantee strict inter-scenario isolation.
+     */
+    public static void resetGlobalSimulationState() {
+        KurzweilAcceleratingReturnsEngine.resetState();
+        NuclearWarfareClimateEngine.resetState();
+        BifurcationChaosEngine.resetState();
+        TrophicEcosystemEngine.resetState();
+        GeoengineeringAlbedoFeedbackEngine.resetState();
+        TerraformingEngine.resetState();
+        PhysicalLawEngine.resetState();
+        World3CouplingEngine.resetState();
+        CulturalSociologyEngine.resetState();
+        ThermodynamicMigrationEngine.clearSpatialCache();
+        DynamicMaritimeRoutingGraph.clearCache();
+        PhysicalSupplyChainEngine.resetState();
+        AmerindianEcosystemEngine.resetState();
+        EdoJapanIsolationEngine.resetState();
+        CoGovernanceTradeEngine.resetState();
+        RomanImperialCliodynamicEngine.resetState();
+        ProceduralEngineRegistry.clearPlugins();
+    }
+
+    /**
+     * Configures and JIT-compiles active Type B scenario theories into a single fused execution kernel.
+     *
+     * @param scenario the active simulation scenario
+     */
+    public void configureScenario(Scenario scenario) {
+        this.configuredScenario = scenario;
+        if (scenario == null || scenario.getTypeBEngineStates() == null || scenario.getTypeBEngineStates().isEmpty()) {
+            this.compiledKernel = null;
+            return;
+        }
+
+        Map<String, Boolean> states = scenario.getTypeBEngineStates();
+        ScenarioEngineJITCompiler compiler = new ScenarioEngineJITCompiler();
+        int registeredEngines = 0;
+
+        if (Boolean.TRUE.equals(states.get("SmilMaterialTransitionsPureEngine"))) {
+            compiler.registerEngineStep("SmilMaterialTransitionsPureEngine", "resourceCapital",
+                    new SymbolicExpression("resourceCapital", 0.999, 0.0), 0.0);
+            registeredEngines++;
+        }
+        if (Boolean.TRUE.equals(states.get("JevonsParadoxEngine"))) {
+            compiler.registerEngineStep("JevonsParadoxEngine", "energyFoodConsumed",
+                    new SymbolicExpression("energyFoodConsumed", 1.005, 0.0), 0.0);
+            registeredEngines++;
+        }
+        if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
+            compiler.registerEngineStep("TasmanianCulturalRegressionEngine", "technologyLevel",
+                    new SymbolicExpression("technologyLevel", 0.999, 0.0), 1.0);
+            registeredEngines++;
+        }
+        if (Boolean.TRUE.equals(states.get("CoGovernanceTradeEngine"))) {
+            compiler.registerEngineStep("CoGovernanceTradeEngine", "pollutionLevel",
+                    new SymbolicExpression("pollutionLevel", 0.98, 0.0), 200.0);
+            registeredEngines++;
+        }
+        if (Boolean.TRUE.equals(states.get("KurzweilAcceleratingReturnsEngine"))) {
+            compiler.registerEngineStep("KurzweilAcceleratingReturnsEngine", "technologyLevel",
+                    new SymbolicExpression("technologyLevel", 1.002, 0.0), 10.0);
+            registeredEngines++;
+        }
+        if (Boolean.TRUE.equals(states.get("World3CouplingEngine"))) {
+            compiler.registerEngineStep("World3CouplingEngine", "resourceCapital",
+                    new SymbolicExpression("resourceCapital", 0.998, 0.0), 0.0);
+            registeredEngines++;
+        }
+        if (Boolean.TRUE.equals(states.get("RomanImperialCliodynamicEngine"))) {
+            compiler.registerEngineStep("RomanImperialCliodynamicEngine", "resourceCapital",
+                    new SymbolicExpression("resourceCapital", 0.995, 0.0), 0.0);
+            registeredEngines++;
+        }
+
+        if (registeredEngines > 0) {
+            try {
+                this.compiledKernel = compiler.compile();
+                logger.info("⚡ Scenario JIT Kernel Compiled successfully for '{}' with {} fused Type B theories.",
+                        scenario.getName(), registeredEngines);
+            } catch (Exception e) {
+                logger.warn("Could not compile scenario JIT kernel: {}", e.getMessage());
+                this.compiledKernel = null;
+            }
+        } else {
+            this.compiledKernel = null;
+        }
+    }
+
+    /**
      * Executes the complete deterministic cliodynamic pipeline for a single monthly simulation tick.
      */
     public void executeTick(H3SimulationEngine engine,
@@ -59,6 +156,11 @@ public class SimulationPipeline {
                             long dtSlow,
                             double avgTech) {
         if (cells == null || cells.isEmpty()) return;
+
+        Scenario activeScenario = engine != null ? engine.getCurrentScenario() : null;
+        if (activeScenario != configuredScenario) {
+            configureScenario(activeScenario);
+        }
 
         double dtYears = (double) dtSlow / 31_557_600.0;
         double dtMonthly = dtYears;
@@ -74,80 +176,201 @@ public class SimulationPipeline {
         }
         profiler.endPhase("3_DemographicsAndCulture");
 
-        // --- Phase 2: Core Physicalist & Cliodynamic Sub-Systems ---
+        // --- Phase 2: Core Physicalist & Cliodynamic Sub-Systems (Fused 3-Pass Architecture) ---
         profiler.beginPhase("4_ProceduralEngines");
-        executeCorePhysicsPhase(cells, dtYears, avgTech, perfConfig);
-        executeAdvancedCliodynamicsPhase(cells, dtMonthly);
 
-        // --- Phase 3: Dynamic Procedural Engine Plugins ---
-        ProceduralEngineRegistry.processPlugins(cells, dtMonthly);
+        // Physical Domain Partitioning (100% Deterministic: avoids useless evaluations on ocean & uninhabited cells)
+        int totalCellCount = cells.size();
+        List<H3Cell> landCells = new java.util.ArrayList<>(totalCellCount / 3);
+        List<H3Cell> populatedCells = new java.util.ArrayList<>(Math.min(10000, totalCellCount));
+
+        for (int i = 0; i < totalCellCount; i++) {
+            H3Cell c = cells.get(i);
+            Double elev = c.getElevation();
+            Biome b = c.getBiome();
+            if (elev == null || elev >= 0 || (b != null && b != Biome.OCEAN)) {
+                landCells.add(c);
+            }
+            Integer pop = c.getPopulation();
+            if (pop != null && pop > 0) {
+                populatedCells.add(c);
+            }
+        }
+
+        // Pass 1: Planetary & Atmospheric Fused Pass
+        executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, avgTech);
+
+        // Pass 2: Terrestrial Soil, Water & Ecosystem Fused Pass
+        if (!landCells.isEmpty()) {
+            executeFusedTerrestrialPass(landCells, dtYears, dtMonthly, avgTech);
+        }
+
+        // Pass 3: Anthropogenic Inhabited Cliodynamics & JIT-Compiled Scenario Theories Fused Pass
+        if (!populatedCells.isEmpty()) {
+            executeFusedAnthropogenicPass(populatedCells, dtYears, dtMonthly, activeScenario);
+            // Dynamic Procedural Engine Plugins
+            ProceduralEngineRegistry.processPlugins(populatedCells, dtMonthly);
+        }
+
+        if (engine != null) {
+            engine.syncCellsToBuffer();
+        }
+
         profiler.endPhase("4_ProceduralEngines");
     }
 
-    // Helper subroutine: execute core physics phase - internal state computation & bounds checking
-    private void executeCorePhysicsPhase(List<H3Cell> cells, double dtYears, double avgTech, SimulationPerformanceConfig perfConfig) {
-        // Step 1: Atmosphere, Radiation & Climate Feedbacks
-        RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(cells);
-        AtmosphericOxygenEngine.processAtmosphericOxygen(cells, 0.21, 1.0);
-        WetBulbTemperatureEngine.processWetBulbHyperthermia(cells);
-        AlbedoClimateEngine.processAlbedoFeedback(cells);
+    /**
+     * Pass 1: Atmosphere, Radiation, Energy & Climate Feedbacks (Planetary Grid Domain).
+     */
+    private void executeFusedAtmosphericPass(List<H3Cell> allCells,
+                                             WorldBuffer worldBuffer,
+                                             AgentBuffer agentBuffer,
+                                             double dtYears, double dtMonthly,
+                                             SimulationPerformanceConfig perfConfig,
+                                             double avgTech) {
+        RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(allCells);
+        AtmosphericOxygenEngine.processAtmosphericOxygen(allCells, 0.21, 1.0);
+        AlbedoClimateEngine.processAlbedoFeedback(allCells, dtYears);
 
-        // Step 2: Soil Nutrients, Hydrology & Ecosystem
-        SoilNutrientNPKEngine.processSoilNutrients(cells);
-        DeforestationErosionEngine.processDeforestationErosion(cells);
-        AquiferDepletionEngine.processAquiferDepletion(cells);
-        EcologicalDegradationEngine.processEcologicalDegradation(cells, avgTech);
+        greenhouseRadiativeEngine.applyTechnologicalMitigation(avgTech);
+        greenhouseRadiativeEngine.applyToGrid(allCells);
 
-        // Step 3: Demographics & Molecular Epidemiology
-        BiologicalDemographicsEngine.processBiologicalDemographics(cells, dtYears);
-        BioMolecularEpidemiologyEngine.processBioMolecularImmunity(cells);
-        EcotoxicologyFertilityEngine.processEcotoxicologyFertility(cells);
+        TerraformingEngine.processTerraforming(allCells, dtMonthly);
+        PhysicalLawEngine.applyPhysicalLaws(allCells, dtMonthly);
+        GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(allCells, dtMonthly);
 
-        // Step 4: Energy Grid, Metallurgy & Nuclear Dynamics
-        PhysicalEnergyGridEngine.processPhysicalEnergyGrid(cells);
-        NetEnergyEROEIEngine.processNetEnergyEROEI(cells);
-        MetallurgyEnthalpyEngine.processOreSmelting(cells);
-        ResourceRecyclingEngine.processResourceRecycling(cells);
-        NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(cells);
-        OzoneLayerDepletionEngine.processOzoneLayerDepletion(cells);
-
-        // Step 5: Warfare, Infrastructure & Migration
-        PhysicsTransportEngine.processPhysicsTransport(cells);
-        ThermodynamicWarfareEngine.processKineticWarfare(cells, dtYears);
-        NuclearWarfareClimateEngine.processNuclearWarfareClimate(cells);
-        InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
-        ThermodynamicMigrationEngine.processThermodynamicMigration(cells, perfConfig);
-
-        // Step 5b: Extraterrestrial Pressurized Habitats & ECLSS Protection
-        PressurizedHabitatEngine.processPressurizedHabitats(cells, null, dtYears);
-
-        // Step 6: Tech Tree & Information Entropy
-        InformationEntropyEngine.processInformationEntropy(cells);
-        MegafaunaEcosystemEngine.processMegafaunaEcosystem(cells);
-        SelectiveBreedingEngine.processSelectiveBreeding(cells);
-        TechnologicalSingularityEngine.processTechnologicalSingularity(cells);
-        TechTreeEngine.processTechnologyDiffusion(cells, null);
+        ThermodynamicMigrationEngine.processThermodynamicMigration(allCells, perfConfig, worldBuffer, agentBuffer);
     }
 
-    // Helper subroutine: execute advanced cliodynamics phase - internal state computation & bounds checking
-    private void executeAdvancedCliodynamicsPhase(List<H3Cell> cells, double dtMonthly) {
-        TerraformingEngine.processTerraforming(cells, dtMonthly);
-        IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(cells, null, dtMonthly);
-        TrophicEcosystemEngine.processTrophicEcosystem(cells, dtMonthly);
-        PhysicalSupplyChainEngine.processSupplyChains(cells, dtMonthly);
-        UrbanThermodynamicsEngine.processUrbanThermodynamics(cells, dtMonthly);
-        PhysicalLawEngine.applyPhysicalLaws(cells, dtMonthly);
-        CulturalSociologyEngine.processCulturalSociology(cells, dtMonthly);
-        CoGovernanceTradeEngine.processTradeAndGovernance(cells, dtMonthly);
-        OreGradeThermodynamicsEngine.processOreDepletion(cells, dtMonthly);
-        InfrastructureInertiaEngine.processInfrastructureInertia(cells, dtMonthly);
-        EntropicMetalDissipationEngine.processEntropicDissipation(cells, dtMonthly);
-        JevonsParadoxEngine.processJevonsRebound(cells, dtMonthly);
-        World3CouplingEngine.processWorld3System(cells, dtMonthly);
-        KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(cells, dtMonthly);
-        BifurcationChaosEngine.processBifurcationAnalysis(cells, dtMonthly);
-        DynamicHydrographicSiltationEngine.processHydrographicSiltation(cells, dtMonthly);
-        PhysicalLeontiefInputOutputEngine.processLeontiefInputOutput(cells, dtMonthly);
-        GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(cells, dtMonthly);
+    /**
+     * Pass 2: Soil Nutrients, Hydrology, Erosion & Terrestrial Ecosystems (Land Domain).
+     */
+    private void executeFusedTerrestrialPass(List<H3Cell> landCells, double dtYears, double dtMonthly, double avgTech) {
+        SoilNutrientNPKEngine.processSoilNutrients(landCells, dtYears);
+        DeforestationErosionEngine.processDeforestationErosion(landCells, dtYears);
+        AquiferDepletionEngine.processAquiferDepletion(landCells, dtYears);
+        EcologicalDegradationEngine.processEcologicalDegradation(landCells, avgTech, dtYears);
+        MegafaunaEcosystemEngine.processMegafaunaEcosystem(landCells, dtYears);
+
+        TrophicEcosystemEngine.processTrophicEcosystem(landCells, dtMonthly);
+        DynamicHydrographicSiltationEngine.processHydrographicSiltation(landCells, dtMonthly);
+    }
+
+    /**
+     * Pass 3: Human Demographics, Power Grid, Metallurgy, Technology & Active Cliodynamic Theories (Populated Domain).
+     */
+    private void executeFusedAnthropogenicPass(List<H3Cell> populatedCells, double dtYears, double dtMonthly, Scenario scenario) {
+        // Step 3.1: Physiological & Bioclimatic Survival
+        WetBulbTemperatureEngine.processWetBulbHyperthermia(populatedCells);
+        PressurizedHabitatEngine.processPressurizedHabitats(populatedCells, null, dtYears);
+        BiologicalDemographicsEngine.processBiologicalDemographics(populatedCells, dtYears);
+        BioMolecularEpidemiologyEngine.processBioMolecularImmunity(populatedCells, dtYears);
+        EcotoxicologyFertilityEngine.processEcotoxicologyFertility(populatedCells);
+
+        // Step 3.2: Energy Grid, Metallurgy & Physical Industry
+        PhysicalEnergyGridEngine.processPhysicalEnergyGrid(populatedCells, dtYears);
+        NetEnergyEROEIEngine.processNetEnergyEROEI(populatedCells, dtYears);
+        MetallurgyEnthalpyEngine.processOreSmelting(populatedCells, dtYears);
+        ResourceRecyclingEngine.processResourceRecycling(populatedCells, dtYears);
+        NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(populatedCells);
+
+        // Step 3.3: Transport, Kinetic Warfare & Infrastructure
+        PhysicsTransportEngine.processPhysicsTransport(populatedCells, dtYears);
+        ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears);
+        NuclearWarfareClimateEngine.processNuclearWarfareClimate(populatedCells);
+        InfrastructureEnergyEngine.processInfrastructureEnergy(populatedCells);
+
+        // Step 3.4: Recombinant Technology, Information Entropy & Ozone
+        SelectiveBreedingEngine.processSelectiveBreeding(populatedCells, dtYears);
+        TechnologicalSingularityEngine.processTechnologicalSingularity(populatedCells, dtYears);
+        InformationEntropyEngine.processInformationEntropy(populatedCells);
+
+        List<TradeNetworkEngine.TradeRoute> tradeRoutes = null;
+        if (scenario != null && scenario.getTypeBEngineStates() != null
+                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("TradeNetworkEngine"))) {
+            double meanTech = populatedCells.stream()
+                    .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0)
+                    .average()
+                    .orElse(2.0);
+            tradeRoutes = TradeNetworkEngine.generateTradeNetworks(populatedCells, meanTech, dtYears);
+        }
+        TechTreeEngine.processTechnologyDiffusion(populatedCells, tradeRoutes, dtYears);
+        OzoneLayerDepletionEngine.processOzoneLayerDepletion(populatedCells);
+
+        // Step 3.5: Invariant Tier 1 Industrial Physics & Thermodynamics
+        OreGradeThermodynamicsEngine.processOreDepletion(populatedCells, dtMonthly);
+        InfrastructureInertiaEngine.processInfrastructureInertia(populatedCells, dtMonthly);
+        EntropicMetalDissipationEngine.processEntropicDissipation(populatedCells, dtMonthly);
+
+        // Step 3.6: JIT-Compiled Kernel Fusion for Active Type B Theories
+        if (compiledKernel != null) {
+            compiledKernel.executeFusedKernel(populatedCells, dtMonthly);
+        }
+
+        // Step 3.7: Active Type B Cliodynamic Theories & Historical Scenario Engines
+        if (scenario != null && scenario.getTypeBEngineStates() != null) {
+            Map<String, Boolean> states = scenario.getTypeBEngineStates();
+            
+            // Macroeconomic & Sociological Type B Theories
+            if (Boolean.TRUE.equals(states.get("UrbanThermodynamicsEngine"))) {
+                UrbanThermodynamicsEngine.processUrbanThermodynamics(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("CulturalSociologyEngine"))) {
+                CulturalSociologyEngine.processCulturalSociology(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("PhysicalLeontiefInputOutputEngine"))) {
+                PhysicalLeontiefInputOutputEngine.processLeontiefInputOutput(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("BifurcationChaosEngine"))) {
+                BifurcationChaosEngine.processBifurcationAnalysis(populatedCells, dtMonthly);
+            }
+
+            // Historical & Specialized Type B Engines
+            if (Boolean.TRUE.equals(states.get("AmerindianEcosystemEngine"))) {
+                AmerindianEcosystemEngine.processHybrid(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("EdoJapanIsolationEngine"))) {
+                EdoJapanIsolationEngine.processHybrid(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("FertileCrescentSalinizationEngine"))) {
+                FertileCrescentSalinizationEngine.processHybrid(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("RomanImperialCliodynamicEngine"))) {
+                RomanImperialCliodynamicEngine.processHybrid(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("PhysicalSupplyChainEngine"))) {
+                PhysicalSupplyChainEngine.processSupplyChains(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("CoGovernanceTradeEngine"))) {
+                CoGovernanceTradeEngine.processTradeAndGovernance(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("IsruAutarkyAndSpaceColonizationEngine"))) {
+                IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(populatedCells, null, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("World3CouplingEngine"))) {
+                World3CouplingEngine.processWorld3System(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("ArthurCombinatorialTechnologyEngine"))) {
+                new ArthurCombinatorialTechnologyEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
+                TasmanianCulturalRegressionEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("JevonsParadoxEngine"))) {
+                JevonsParadoxEngine.processJevonsRebound(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("KurzweilAcceleratingReturnsEngine"))) {
+                KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("BoserupAgriculturalIntensificationEngine"))) {
+                new BoserupAgriculturalIntensificationEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("TurchinGoldstoneSDTEngine"))) {
+                new TurchinGoldstoneSDTEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("OstromCommonsPureEngine"))) {
+                OstromCommonsPureEngine.processHybrid(populatedCells, dtMonthly);
+            }
+        }
     }
 }

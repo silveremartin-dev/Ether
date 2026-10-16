@@ -1,5 +1,7 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Tag("manual")
 public class RegenerateAndVerifyHoloceneBatchTest {
 
     @Test
@@ -75,3 +78,4 @@ public class RegenerateAndVerifyHoloceneBatchTest {
         }
     }
 }
+

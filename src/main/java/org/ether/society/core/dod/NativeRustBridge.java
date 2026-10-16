@@ -48,7 +48,8 @@ public class NativeRustBridge {
                 candidatePaths.add(Paths.get("native/ether-core-native/target/aarch64-apple-darwin/release/libether_core_native.dylib").toAbsolutePath());
                 candidatePaths.add(Paths.get("native/ether-core-native/target/x86_64-apple-darwin/release/libether_core_native.dylib").toAbsolutePath());
             } else {
-                // Linux / Unix
+                candidatePaths.add(Paths.get("/opt/ether/libether_core_native.so").toAbsolutePath());
+                candidatePaths.add(Paths.get("libether_core_native.so").toAbsolutePath());
                 if (isArm) {
                     candidatePaths.add(Paths.get("native/ether-core-native/target/aarch64-unknown-linux-gnu/release/libether_core_native.so").toAbsolutePath());
                 } else {

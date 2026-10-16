@@ -4,6 +4,8 @@
  */
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@Tag("manual")
 public class PlanetaryRasterSampler {
     private static final Logger logger = LoggerFactory.getLogger(PlanetaryRasterSampler.class);
 
@@ -470,7 +473,7 @@ public class PlanetaryRasterSampler {
         }
         saveMapImage(imgElev, "earth_elevation.png", "earth", epoch);
 
-        // 2. Temperature (-50°C to +50°C -> [0..255]) sourced from PaleoClim/CHELSA with globally continuous ocean model
+        // 2. Temperature (-50Â°C to +50Â°C -> [0..255]) sourced from PaleoClim/CHELSA with globally continuous ocean model
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         File tempFile = getPaleoClimFile(epoch, "bio_1.tif");
         BufferedImage srcTemp = null;
@@ -487,7 +490,7 @@ public class PlanetaryRasterSampler {
                 double norm = gridNorm[y][x];
                 boolean isLand = (norm >= 0.478);
 
-                // Continuous global oceanic temperature model (-24°C at poles to +28.5°C at equator)
+                // Continuous global oceanic temperature model (-24Â°C at poles to +28.5Â°C at equator)
                 double absLat = Math.abs(lat);
                 double oceanTemp = -1.8 + 30.3 * Math.pow(Math.cos(Math.toRadians(Math.min(90.0, absLat))), 1.4)
                         - Math.max(0.0, (absLat - 68.0) / 22.0) * 22.0;
@@ -890,7 +893,7 @@ public class PlanetaryRasterSampler {
         rasterizeTieredDensity(imgIronCopper, feCuSpots, 8.0);
         saveMapImage(imgIronCopper, "earth_iron_copper.png", "earth", epoch);
 
-        // 7. Precious Metals (Gold, Silver, Platinum, Las Médulas, Rio Tinto, Laurion, Dacia, Nubia, Witwatersrand)
+        // 7. Precious Metals (Gold, Silver, Platinum, Las MÃ©dulas, Rio Tinto, Laurion, Dacia, Nubia, Witwatersrand)
         BufferedImage imgPrecious = HistoricalMapGenerator.rasterizePreciousMetalsMap("EARTH", null);
         if (imgPrecious != null) {
             saveMapImage(imgPrecious, "earth_precious_metals.png", "earth", epoch);
@@ -1004,7 +1007,7 @@ public class PlanetaryRasterSampler {
         saveMapImage(zeroMap, "moon_gas.png", "moon");
         saveMapImage(zeroMap, "moon_precipitation.png", "moon");
 
-        // 9. Seasonality (0 on Moon due to 1.54° tilt)
+        // 9. Seasonality (0 on Moon due to 1.54Â° tilt)
         saveMapImage(zeroMap, "moon_seasonality.png", "moon");
 
         // 10. Temperature in Grayscale [0..255]
@@ -1188,9 +1191,9 @@ public class PlanetaryRasterSampler {
             for (int x = 0; x < WIDTH; x++) {
                 // Continuous harmonic function across the entire sphere with smooth southern perihelion variance:
                 // deltaT(lat) = 18.0 + 26.0 * sin(|lat|) - 6.0 * sin(lat)
-                // At lat = +90 (North): deltaT = 18 + 26 - 6 = 38°C
-                // At lat = 0 (Equator): deltaT = 18°C (smooth C0 & C1 continuity!)
-                // At lat = -90 (South): deltaT = 18 + 26 + 6 = 50°C
+                // At lat = +90 (North): deltaT = 18 + 26 - 6 = 38Â°C
+                // At lat = 0 (Equator): deltaT = 18Â°C (smooth C0 & C1 continuity!)
+                // At lat = -90 (South): deltaT = 18 + 26 + 6 = 50Â°C
                 double baseVariance = 18.0 + 26.0 * Math.sin(Math.toRadians(Math.abs(lat))) - 6.0 * Math.sin(Math.toRadians(lat));
                 int gray = (int) Math.clamp((baseVariance / 50.0) * 255.0, 0, 255);
                 imgSeason.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
@@ -1288,7 +1291,7 @@ public class PlanetaryRasterSampler {
         }
         saveMapImage(imgElev, "venus_elevation.png", "venus");
 
-        // 2. Temperature in Grayscale [0..255] (~465°C)
+        // 2. Temperature in Grayscale [0..255] (~465Â°C)
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         int vTempGray = (int) (Math.clamp((465.0 - 400.0) / 100.0, 0.0, 1.0) * 255.0);
         for (int y = 0; y < HEIGHT; y++) {
@@ -1349,7 +1352,7 @@ public class PlanetaryRasterSampler {
         saveMapImage(imgPrecip, "venus_precipitation.png", "venus");
 
         BufferedImage imgSeason = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        int vSeasonGray = 8; // Uniform ~1-2°C seasonal variance
+        int vSeasonGray = 8; // Uniform ~1-2Â°C seasonal variance
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
                 imgSeason.setRGB(x, y, (vSeasonGray << 16) | (vSeasonGray << 8) | vSeasonGray);
@@ -1478,4 +1481,5 @@ public class PlanetaryRasterSampler {
         saveMapImage(zeroMap, "mercury_precipitation.png", "mercury");
     }
 }
+
 

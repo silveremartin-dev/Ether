@@ -99,23 +99,48 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 
-            // Approximate cell area ~1000 km²
-            double density = pop / 1000.0;
-            double agriBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 50.0;
+            // Calculate genuine geographic density in hab/km² based on planar H3 resolution area
+            int h3Res = (cell.getH3Index() != null && cell.getH3Index() != 0L)
+                    ? (int) ((cell.getH3Index() >>> 52) & 0xFL)
+                    : 3;
+            double cellArea = Math.max(10.0, H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3));
+            double areaScale = Math.max(0.05, cellArea / 1770.49);
+            double density = pop / cellArea;
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            if (tech < 1.5 && density < 2.0) {
+                // Stage 1 Foraging (D < 2 hab/km², tech < 1.5): no crop cultivation
+                continue;
+            }
+            org.ether.society.model.Biome biome = cell.getBiome() != null ? cell.getBiome() : org.ether.society.model.Biome.PLAINS;
+            double arableBiomeFactor = switch (biome) {
+                case MOUNTAINS -> 0.35;
+                case HILLS, BEACH -> 0.55;
+                case TUNDRA, DESERT, SNOW -> 0.15;
+                default -> 1.0;
+            };
+            double agriBiomass = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
+                    ? cell.getBiomassAgriculture()
+                    : Math.min(2000.0 * areaScale * arableBiomeFactor, Math.max(50.0 * areaScale * arableBiomeFactor, pop * 2.5));
+
+            double techLandCeiling = (360.0 + 550.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor;
 
             if (density > 50.0) {
                 // High density forces multi-cropping / terrace irrigation (Stage 4)
-                cell.setBiomassAgriculture(agriBiomass + (agriBiomass * 0.04 * deltaYears));
-                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+                cell.setBiomassAgriculture(Math.min(techLandCeiling * 1.35, agriBiomass + (agriBiomass * 0.04 * deltaYears)));
                 cell.setTechnologyLevel(Math.min(10.0, tech + 0.005 * deltaYears));
                 // High labor demand absorbs work capacity
                 double work = cell.getResourceWork() != null ? cell.getResourceWork() : 50.0;
                 cell.setResourceWork(Math.max(10.0, work * 0.98));
             } else if (density > 10.0) {
                 // Moderate density: Annual cropping / draft animals (Stage 3)
-                cell.setBiomassAgriculture(agriBiomass + (agriBiomass * 0.02 * deltaYears));
-                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+                cell.setBiomassAgriculture(Math.min(techLandCeiling * 1.20, agriBiomass + (agriBiomass * 0.025 * deltaYears)));
                 cell.setTechnologyLevel(Math.min(10.0, tech + 0.002 * deltaYears));
+            } else if (density > 0.20 && tech >= 1.5) {
+                // Early agrarian expansion: Forest-Fallow to Bush-Fallow & hydraulic paddy intensification (Stage 2)
+                cell.setBiomassAgriculture(Math.min(techLandCeiling, agriBiomass + (agriBiomass * 0.018 * deltaYears)));
+                cell.setTechnologyLevel(Math.min(3.5, tech + 0.0010 * deltaYears));
+            } else if (tech >= 1.5 && (cell.getBiomassAgriculture() == null || cell.getBiomassAgriculture() <= 0.0)) {
+                cell.setBiomassAgriculture(agriBiomass);
             }
         }
     }

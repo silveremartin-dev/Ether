@@ -1,5 +1,7 @@
 package org.ether.society;
 
+import org.junit.jupiter.api.Tag;
+
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -12,6 +14,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
+@Tag("manual")
 public class ReferenceMapRasterizer {
 
     @Test
@@ -58,7 +61,7 @@ public class ReferenceMapRasterizer {
                 for (int x = 0; x < width; x++) {
                     int srcX = (int) Math.min(((x + 0.5) / width) * srcW, srcW - 1);
 
-                    // Temperature (°C, -50..+50)
+                    // Temperature (Â°C, -50..+50)
                     float tv = tRaster.getSampleFloat(srcX, srcY, 0);
                     int tGray;
                     if (tv < -100 || tv > 100) {
@@ -85,7 +88,7 @@ public class ReferenceMapRasterizer {
                     }
                     outPrecip.setRGB(x, y, new Color(pGray, pGray, pGray).getRGB());
 
-                    // Seasonality (std dev * 100, 0..50°C)
+                    // Seasonality (std dev * 100, 0..50Â°C)
                     float sv = sRaster.getSampleFloat(srcX, srcY, 0);
                     int sGray;
                     if (sv < 0 || sv > 50000) {
@@ -135,7 +138,7 @@ public class ReferenceMapRasterizer {
                     int gLon = (int) Math.floor(lon / 2.0) * 2;
 
                     Double q = heatGrid.get(gLon + ":" + gLat);
-                    double val = q != null ? q : 65.0; // Baseline continental crust heat flow: 65 mW/m²
+                    double val = q != null ? q : 65.0; // Baseline continental crust heat flow: 65 mW/mÂ²
                     double norm = Math.clamp((val - 20.0) / (250.0 - 20.0), 0.0, 1.0);
                     int gray = (int) (norm * 255.0);
                     outHeat.setRGB(x, y, new Color(gray, gray, gray).getRGB());
@@ -182,3 +185,4 @@ public class ReferenceMapRasterizer {
         System.out.println("  Saved " + filename + " -> " + f1.getAbsolutePath() + " (" + f1.length() + " bytes)");
     }
 }
+

@@ -58,22 +58,45 @@ public class PhysicsTransportEngine {
     }
 
     /*
-     * Executes one transport work evaluation step across trade networks.
+     * Executes one transport work evaluation step across cells using default monthly step.
      */
     public static void processPhysicsTransport(List<H3Cell> cells) {
+        processPhysicsTransport(cells, 1.0 / 12.0);
+    }
+
+    /*
+     * Executes transport work evaluation step across cells scaling cargo by dtYears and deducting energy.
+     */
+    public static void processPhysicsTransport(List<H3Cell> cells, double dtYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
+        double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 
         double totalWorkExpendedJoules = 0.0;
+        int activeTransportCells = 0;
 
         for (H3Cell cell : cells) {
-            if (cell.getPopulation() != null && cell.getPopulation() > 0) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (pop > 0) {
                 double workPerKgKm = calculateTransportWorkJoules(cell);
-                double cargoMassKg = cell.getPopulation() * 2.0; // 2kg cargo per person per tick
-                totalWorkExpendedJoules += workPerKgKm * cargoMassKg;
+                // 2 kg cargo per person per month scaled by dt
+                double cargoMassKg = pop * 2.0 * dtMonthlyRatio;
+                double cellWorkJoules = workPerKgKm * cargoMassKg;
+                totalWorkExpendedJoules += cellWorkJoules;
+                activeTransportCells++;
+
+                // Deduct mechanical transport work in GJ from cell energetic labor capacity
+                double cellWorkGJ = cellWorkJoules / 1.0e9;
+                double curWork = cell.getResourceWork() != null ? cell.getResourceWork() : 0.0;
+                cell.setResourceWork(Math.max(0.0, curWork - cellWorkGJ));
             }
+        }
+
+        if (activeTransportCells > 0) {
+            logger.debug("Physics Transport: Expended {:.3f} GJ of mechanical freight work across {} cells.",
+                    totalWorkExpendedJoules / 1.0e9, activeTransportCells);
         }
     }
 }

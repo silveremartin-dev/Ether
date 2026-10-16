@@ -54,6 +54,17 @@ public final class DeterministicPRNG {
     }
 
     /*
+     * Generates a uniformly distributed double in [0.0, 1.0) deterministically from a seed and stream/channel index.
+     *
+     * @param seed the seed or coordinate parameter (long)
+     * @param streamId the stream or channel index (long)
+     * @return pseudo-random double in [0.0, 1.0)
+     */
+    public static double nextDouble(long seed, long streamId) {
+        return nextDouble(seed, 0L, 0L, streamId);
+    }
+
+    /*
      * Next double.
      * Enforces physical invariants and updates associated state variables within {@code DeterministicPRNG}.
      *

@@ -1547,6 +1547,24 @@ public class H3Cell {
         this.popElderly = pop65to79 + pop80Plus;
     }
 
+    /**
+     * Gets the 7-segment demographic age pyramid cohorts as an array:
+     * [0..4, 5..14, 15..24, 25..49, 50..64, 65..79, 80+].
+     *
+     * @return 7-element array containing population counts for each age cohort
+     */
+    public int[] getAgePyramid() {
+        return new int[] {
+            pop0to4 != null ? pop0to4 : 0,
+            pop5to14 != null ? pop5to14 : 0,
+            pop15to24 != null ? pop15to24 : 0,
+            pop25to49 != null ? pop25to49 : 0,
+            pop50to64 != null ? pop50to64 : 0,
+            pop65to79 != null ? pop65to79 : 0,
+            pop80Plus != null ? pop80Plus : 0
+        };
+    }
+
     /*
      * Get ice sheet thickness meters operation.
      * <p>

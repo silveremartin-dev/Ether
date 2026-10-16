@@ -29,6 +29,14 @@ public class AmerindianEcosystemEngine {
     private static boolean oldWorldContactTriggered = false;
     private static double epidemicMortalityRate = 0.90; // 90% virgin soil epidemic mortality upon contact
 
+    /**
+     * Resets mutable static state between scenario executions to guarantee isolation.
+     */
+    public static void resetState() {
+        oldWorldContactTriggered = false;
+        epidemicMortalityRate = 0.90;
+    }
+
     /*
      * Process hybrid.
      * Enforces physical invariants and updates associated state variables within {@code AmerindianEcosystemEngine}.

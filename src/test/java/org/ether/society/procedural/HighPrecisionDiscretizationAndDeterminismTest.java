@@ -14,6 +14,8 @@ import org.ether.society.engines.tier2.theories.*;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
 
+import org.ether.society.core.dod.AgentBuffer;
+import org.ether.society.core.dod.DemographicKernel;
 import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -118,31 +120,33 @@ public class HighPrecisionDiscretizationAndDeterminismTest {
         return p + (dt / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4);
     }
 
-    // Helper: Runs a deterministic simulation and computes SHA-256 of all raw float arrays
+    // Helper: Runs a deterministic simulation with production DemographicKernel and computes SHA-256 of all raw float arrays
     private static String executeDeterministicRunAndHash(long seed, int capacity, int ticks) throws NoSuchAlgorithmException {
         Random rng = new Random(seed);
         WorldBuffer buffer = new WorldBuffer(capacity);
+        AgentBuffer agents = new AgentBuffer(capacity);
+        DemographicKernel kernel = new DemographicKernel();
 
         // Populate initial deterministic state
         for (int i = 0; i < capacity; i++) {
             buffer.getH3Indexes()[i] = 0x882681a33900000L + i;
-            buffer.getBiomassHuman()[i] = 100.0f + (float) rng.nextDouble() * 50.0f;
+            float initPop = 100.0f + (float) rng.nextDouble() * 50.0f;
+            buffer.getBiomassHuman()[i] = initPop;
+            buffer.getBiomassAgriculture()[i] = 200.0f;
+            buffer.getBiomassNatural()[i] = 500.0f;
             buffer.getFoodResource()[i] = 500.0f + (float) rng.nextDouble() * 200.0f;
             buffer.getTechnologyLevel()[i] = 1.0f + (float) rng.nextDouble() * 0.5f;
             buffer.getGiniIndex()[i] = 0.25f + (float) rng.nextDouble() * 0.2f;
+
+            agents.getHexIds()[i] = i;
+            agents.getMass()[i] = initPop;
+            agents.getEnergy()[i] = 100.0f;
+            agents.getTechLevel()[i] = buffer.getTechnologyLevel()[i];
         }
 
-        // Run multi-tick updates
+        // Run multi-tick updates using production DemographicKernel
         for (int t = 0; t < ticks; t++) {
-            for (int i = 0; i < capacity; i++) {
-                float pop = buffer.getBiomassHuman()[i];
-                float food = buffer.getFoodResource()[i];
-                float tech = buffer.getTechnologyLevel()[i];
-
-                float foodProd = pop * 1.2f * tech;
-                buffer.getFoodResource()[i] += foodProd * 0.05f;
-                buffer.getBiomassHuman()[i] += (food > pop ? 0.02f : -0.01f) * pop;
-            }
+            kernel.tick(buffer, agents, 30.0f);
         }
 
         // Hash entire memory buffer using SHA-256

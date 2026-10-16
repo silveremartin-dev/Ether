@@ -16,17 +16,67 @@ import java.util.List;
  */
 public class SimulationHistory {
     private final List<HistorySnapshot> snapshots = new ArrayList<>();
+    private int maxCapacity = 10000;
 
-    /*
-     * Add snapshot.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationHistory}.
+    /**
+     * Default maximum snapshot capacity before uniform decimation.
+     */
+    public static final int DEFAULT_MAX_CAPACITY = 10000;
+
+    /**
+     * Constructs a SimulationHistory buffer with standard capacity.
+     */
+    public SimulationHistory() {
+        this(DEFAULT_MAX_CAPACITY);
+    }
+
+    /**
+     * Constructs a SimulationHistory buffer with custom capacity.
      *
-     * @param snapshot the snapshot parameter (HistorySnapshot)
+     * @param maxCapacity maximum allowed snapshots before smart decimation
+     */
+    public SimulationHistory(int maxCapacity) {
+        this.maxCapacity = Math.max(100, maxCapacity);
+    }
+
+    /**
+     * Gets maximum snapshot capacity.
+     *
+     * @return current capacity limit
+     */
+    public int getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    /**
+     * Sets maximum snapshot capacity.
+     *
+     * @param maxCapacity new capacity limit (minimum 100)
+     */
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = Math.max(100, maxCapacity);
+    }
+
+    /**
+     * Adds a snapshot with guaranteed preservation of the initial state ($t_0$).
+     * <p>
+     * When capacity is exceeded, an equidistant thinning algorithm removes every second
+     * intermediate snapshot between index 1 and $N-2$, halving the historical density
+     * while preserving the original starting state (index 0), the most recent states,
+     * and a strictly bounded memory footprint.
+     * </p>
+     *
+     * @param snapshot the history snapshot to record
      */
     public void addSnapshot(HistorySnapshot snapshot) {
+        if (snapshot == null) return;
         synchronized (snapshots) {
-            if (snapshots.size() >= 10000) {
-                snapshots.remove(0);
+            if (snapshots.size() >= maxCapacity) {
+                // Pin the very first snapshot (index 0, scenario startup step): NEVER REMOVE INDEX 0
+                // Thin out alternate intermediate snapshots from end to 1
+                for (int i = snapshots.size() - 2; i >= 1; i -= 2) {
+                    snapshots.remove(i);
+                }
             }
             snapshots.add(snapshot);
         }

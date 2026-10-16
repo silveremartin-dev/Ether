@@ -26,7 +26,7 @@ if %ERRORLEVEL% NEQ 0 (
 :: Priority A: Standalone release distribution (bin\ether.jar)
 if exist "bin\ether.jar" (
     echo [INFO] Launching Ether standalone package...
-    java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar bin\ether.jar %*
+    java -Dfile.encoding=UTF-8 --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar bin\ether.jar %*
 ) else if exist "pom.xml" (
     :: Priority B: Development workspace -> Check Maven
     where mvn >nul 2>&1
@@ -35,7 +35,14 @@ if exist "bin\ether.jar" (
             echo [INFO] Rebuilding executable JAR...
             call mvn clean package -DskipTests
             for %%F in (target\*executable.jar) do (
-                java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "%%F" %*
+                java -Dfile.encoding=UTF-8 --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "%%F" %*
+                goto :done
+            )
+        ) else if "%~1"=="--rebuild" (
+            echo [INFO] Rebuilding executable JAR...
+            call mvn clean package -DskipTests
+            for %%F in (target\*executable.jar) do (
+                java -Dfile.encoding=UTF-8 --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "%%F" %*
                 goto :done
             )
         ) else (
@@ -48,7 +55,7 @@ if exist "bin\ether.jar" (
         for %%F in (target\*executable.jar) do set "FOUND_JAR=%%F"
         if defined FOUND_JAR (
             echo [INFO] Launching existing build: !FOUND_JAR!
-            java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "!FOUND_JAR!" %*
+            java -Dfile.encoding=UTF-8 --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "!FOUND_JAR!" %*
         ) else (
             echo [ERROR] Maven not found and no executable JAR in target\.
             echo Please install Apache Maven or build the project.
@@ -60,7 +67,7 @@ if exist "bin\ether.jar" (
     set "FOUND_JAR="
     for %%F in (target\*executable.jar) do set "FOUND_JAR=%%F"
     if defined FOUND_JAR (
-        java --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "!FOUND_JAR!" %*
+        java -Dfile.encoding=UTF-8 --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -Xmx4g -jar "!FOUND_JAR!" %*
     ) else (
         echo [ERROR] No runnable artifact found.
         pause
