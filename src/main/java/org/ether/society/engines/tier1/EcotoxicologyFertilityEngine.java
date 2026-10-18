@@ -54,6 +54,7 @@ public class EcotoxicologyFertilityEngine {
         int toxicStressCells = 0;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
             if (pollution > 1000.0) {
                 toxicStressCells++;

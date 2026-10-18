@@ -141,8 +141,8 @@ public class WarDiplomacyEngine {
                 conqueredCell.setPop15to24(Math.max(0, curPop15to24 - casualties));
                 conqueredCell.setPopulation(Math.max(0, curPop - casualties));
 
-                logger.info("War Resolution: Nation '{}' conquered cell {} from Nation '{}' (Boundary Friction: {:.2f}). Military casualties: {}.",
-                        aggressor.getName(), conqueredCell.getH3Index(), defender.getName(), safeFriction, casualties);
+                logger.info("War Resolution: Nation '{}' conquered cell {} from Nation '{}' (Boundary Friction: {}). Military casualties: {}.",
+                        aggressor.getName(), conqueredCell.getH3Index(), defender.getName(), String.format(java.util.Locale.ROOT, "%.2f", safeFriction), casualties);
             }
         }
     }

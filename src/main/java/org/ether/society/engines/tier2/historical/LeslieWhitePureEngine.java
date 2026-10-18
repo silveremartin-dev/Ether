@@ -51,7 +51,7 @@ public class LeslieWhitePureEngine {
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double energy = cell.getEnergyFoodConsumed() != null ? cell.getEnergyFoodConsumed() : 1.0;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;

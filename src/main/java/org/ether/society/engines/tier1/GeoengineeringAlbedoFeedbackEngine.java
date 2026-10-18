@@ -45,7 +45,8 @@ public class GeoengineeringAlbedoFeedbackEngine {
         double totalTech5Plus = 0;
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() >= 5.0 && cell.getPopulation() > 1000) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() >= 5.0 && pop > 1000) {
                 totalTech5Plus += (cell.getTechnologyLevel() - 4.0);
             }
         }

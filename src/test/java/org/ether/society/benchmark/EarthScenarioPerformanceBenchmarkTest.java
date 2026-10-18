@@ -20,13 +20,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * High-Fidelity Earth Scenario Performance Benchmark.
- * Simulates 50 Million humans across a multi-cell H3 Earth grid over 10 full simulation cycles
- * with active Type B physicalist & cliodynamic plugins.
+ * <b>[LEGACY 500-CELL BENCHMARK]</b>
+ * Early micro-benchmark on a 500-cell sample grid.
  *
+ * @deprecated Superseded by {@link ComprehensiveRealEngineBenchmarkTest} for real planetary engine benchmarks.
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@Deprecated
 public class EarthScenarioPerformanceBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(EarthScenarioPerformanceBenchmarkTest.class);
 

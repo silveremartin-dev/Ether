@@ -55,7 +55,7 @@ public class CoGovernanceTradeEngine {
             for (H3Cell cell : cells) {
                 if (cell == null || cell.getPollutionLevel() == null) continue;
                 if (cell.getPollutionLevel() > 200.0) {
-                    cell.setPollutionLevel(cell.getPollutionLevel() * 0.98);
+                    cell.setPollutionLevel(cell.getPollutionLevel() * Math.exp(-0.02 * deltaYears));
                 }
             }
         }

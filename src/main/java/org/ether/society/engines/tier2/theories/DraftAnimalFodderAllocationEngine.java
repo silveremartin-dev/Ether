@@ -117,7 +117,7 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
                 // Mechanical labor boosts capital creation
                 double productivityBoost = 0.02 * animalRatio * deltaYears;
 
-                cell.setFoodResource(food * (1.0 - (fodderCostFraction * deltaYears * 0.1)));
+                cell.setFoodResource(Math.max(0.0, food * Math.exp(-fodderCostFraction * deltaYears * 0.1)));
                 cell.setResourceCapital(capital + (capital * productivityBoost));
             } else if (tech >= 4.5) {
                 // Mechanization transition: combustion engines replace horses, reclaiming fodder land

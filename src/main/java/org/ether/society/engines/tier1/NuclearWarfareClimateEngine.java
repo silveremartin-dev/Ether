@@ -103,7 +103,7 @@ public class NuclearWarfareClimateEngine {
             // Stratospheric soot atmospheric decay per tick (half-life ~ 5-10 years)
             globalSootOpticalDepth *= 0.98;
 
-            logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth Ï„={}. Global temperature anomaly: {}°C across cells.",
+            logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth tau={}. Global temperature anomaly: {}°C across cells.",
                     String.format("%.2f", globalSootOpticalDepth), String.format("%.1f", tempAnomaly));
         }
 

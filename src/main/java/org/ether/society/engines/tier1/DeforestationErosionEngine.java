@@ -47,14 +47,14 @@ public class DeforestationErosionEngine {
                 : 3;
         double planarCellAreaKm2 = H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3);
         double areaScale = Math.max(0.05, planarCellAreaKm2 / 1770.49);
-        double canopyThreshold = 100.0 * areaScale;
-        double treeLossThreshold = 50.0 * areaScale;
+        double canopyThreshold = 100.0;
+        double treeLossThreshold = 50.0;
 
         java.util.concurrent.atomic.AtomicInteger erodedCounter = new java.util.concurrent.atomic.AtomicInteger(0);
 
         java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
-            double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : (500.0 * areaScale);
-            double woodBiomass = cell.getWoodResource() != null ? cell.getWoodResource() : naturalBiomass;
+            double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 500.0;
+            double woodBiomass = cell.getWoodResource() != null ? (cell.getWoodResource() / Math.max(0.01, areaScale)) : naturalBiomass;
             double effectiveCanopy = Math.max(naturalBiomass, woodBiomass);
             double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;
             double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;

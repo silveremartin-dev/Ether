@@ -2,8 +2,8 @@
 # ==============================================================================
 # ETHER MASTER 45 PLANETARY & HISTORICAL SCENARIOS RUNNER (RES 5, ZERO-CHEAT)
 # ==============================================================================
-# Grid Resolution : Uber H3 Resolution 5 (2,016,842 hexagons)
-# Snapshot Limit  : Max 12 snapshots per run (Option A storage conservation)
+# Grid Resolution : Uber H3 Resolution 4 (288,122 hexagons)
+# Snapshot Limit  : Max 24 snapshots per run
 # Adaptive dt     :
 #   - Paleolithic (< -10,000 BP)          : 365.25 days (1.0 yr)
 #   - Neolithic & Bronze (-10,000 to -1000): 60.0 days (bimestriel)
@@ -14,8 +14,44 @@
 # ==============================================================================
 set -euo pipefail
 
-mkdir -p /opt/ether/logs/spatial_runs /opt/ether/saves /opt/ether/data
+mkdir -p /opt/ether/logs/spatial_runs /opt/ether/logs/calibration /opt/ether/saves /opt/ether/data
 cd /opt/ether
+
+echo "================================================================================"
+echo " 🚀 ETHER FULL CLOUD TEST & CALIBRATION CAMPAIGN (H3 RES 4, 24 SNAPSHOTS)"
+echo "================================================================================"
+echo "Timestamp: $(date -u)"
+echo "Host Machine: $(uname -a)"
+echo "Available Cores: $(nproc)"
+echo "================================================================================"
+
+# ==============================================================================
+# PHASE 1: ACADEMIC CALIBRATION & HISTORICAL FALSIFICATION SUITE
+# ==============================================================================
+echo "--------------------------------------------------------------------------------"
+echo " 🔬 PHASE 1: Launching Academic Calibration & Falsification Suite..."
+echo "    - 9 Master Historical Epoch Blocks (-100,000 BP -> 2026 CE)"
+echo "    - 27 Counterfactual Falsification Twins (Great Men & Critical Bifurcations)"
+echo "    - 3 Archaeological Detective Scenarios (Harappa, Rome 3rd c., Maya)"
+echo "    - Multi-Scale Sensitivity Matrix (Spatial Res 2-6, Temporal dt 1-1825d)"
+echo "--------------------------------------------------------------------------------"
+
+java -Xms4g -Xmx24g \
+     --add-modules=jdk.incubator.vector \
+     -cp /opt/ether/society-simulation.jar \
+     org.ether.society.analytics.HistoricalScenarioCalibrationHarness \
+     2>&1 | tee /opt/ether/logs/calibration/academic_calibration.log || {
+         echo "  [!] Warning on Phase 1 Calibration Suite. Continuing to Phase 2..."
+     }
+
+echo "  ✔ Phase 1 Calibration & Falsification Suite Completed!"
+
+# ==============================================================================
+# PHASE 2: 45 PLANETARY & HISTORICAL SPATIAL SCENARIOS
+# ==============================================================================
+echo "================================================================================"
+echo " 🌐 PHASE 2: STARTING MASTER 45 PLANETARY & HISTORICAL SUITE"
+echo "================================================================================"
 
 # Format: SCENARIO_FILE:START:END:DT:RUN_ID
 SCENARIOS=(
@@ -79,13 +115,9 @@ SCENARIOS=(
     "archipelago_+2055_seasteading_2055:2055:2150:14.0:RUN-PLANET-ARCHIPEL_SEASTEADING_+2055"
 )
 
-echo "================================================================================"
-echo " 🌐 STARTING MASTER 45 PLANETARY & HISTORICAL SUITE (H3 RES 5, 12 SNAPSHOTS MAX)"
-echo "================================================================================"
-echo "Timestamp: $(date -u)"
-echo "Host Machine: $(uname -a)"
-echo "Available Cores: $(nproc)"
 echo "Total Scenarios to Execute: ${#SCENARIOS[@]}"
+echo "Spatial Grid Resolution   : Uber H3 Resolution 4 (288,122 cells)"
+echo "Snapshots Cap per Run     : 24 snapshots max"
 echo "================================================================================"
 
 COMPLETED_COUNT=0
@@ -118,7 +150,7 @@ for ITEM in "${SCENARIOS[@]}"; do
     echo "    Time Step     : dt = ${DT} days"
     echo "    Total Ticks   : ${TICKS} ticks"
     echo "    Spatial Grid  : Uber H3 Resolution 4 (288,122 cells)"
-    echo "    Snapshots Cap : 24 snapshots max (Option Res 4)"
+    echo "    Snapshots Cap : 24 snapshots max"
     echo "--------------------------------------------------------------------------------"
     
     java -Xms4g -Xmx12g \
@@ -147,12 +179,12 @@ done
 echo "================================================================================"
 echo " 🏁 ALL 45 SCENARIOS FINISHED! (${COMPLETED_COUNT} executed, ${SKIPPED_COUNT} skipped)"
 echo "================================================================================"
-echo "Packaging spatial archives..."
-tar -czf /opt/ether/logs/spatial_runs/master_45_scenarios_res5_archive.tar.gz \
+echo "Packaging complete campaign archive..."
+tar -czf /opt/ether/logs/master_campaign_res4_archive.tar.gz \
     /opt/ether/saves/ \
-    /opt/ether/logs/spatial_runs/
+    /opt/ether/logs/
 
-echo "Archive created: /opt/ether/logs/spatial_runs/master_45_scenarios_res5_archive.tar.gz"
+echo "Archive created: /opt/ether/logs/master_campaign_res4_archive.tar.gz"
 echo "Completed at: $(date -u)"
 
 # Auto-shutdown guard if requested
@@ -160,3 +192,4 @@ if [ "${AUTO_SHUTDOWN:-1}" = "1" ]; then
     echo "Triggering Auto-Shutdown Guard..."
     sudo shutdown -h now
 fi
+

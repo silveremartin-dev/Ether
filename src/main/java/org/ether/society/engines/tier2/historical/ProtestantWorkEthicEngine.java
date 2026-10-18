@@ -43,7 +43,7 @@ public class ProtestantWorkEthicEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             // Apply Protestant Ethic effects to cells with active cultural/religious transformation
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 100.0;
@@ -117,6 +117,15 @@ public class ProtestantWorkEthicEngine {
      * @param v the v argument (double)
      */
     public static void setLiteracyRateMultiplier(double v) { literacyRateMultiplier = Math.max(1.0, v); }
+
+    /**
+     * Resets Protestant ethic multipliers for scenario isolation.
+     */
+    public static void resetState() {
+        capitalSavingsMultiplier = 1.35;
+        techAccelerationMultiplier = 1.25;
+        literacyRateMultiplier = 1.40;
+    }
 }
 
 

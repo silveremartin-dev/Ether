@@ -64,6 +64,15 @@ public class TasmanianCulturalRegressionEngine {
      * @return the resulting computation or state reference
      */
     public static double getIsolationPopulationThreshold() { return isolationPopulationThreshold; }
+
+    public static void setIsolationPopulationThreshold(double threshold) { isolationPopulationThreshold = Math.max(100.0, threshold); }
+
+    /**
+     * Resets isolation population threshold for scenario isolation.
+     */
+    public static void resetState() {
+        isolationPopulationThreshold = 5000.0;
+    }
 }
 
 

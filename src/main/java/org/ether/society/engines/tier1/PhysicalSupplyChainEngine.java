@@ -54,11 +54,20 @@ public class PhysicalSupplyChainEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            // Energy spent on logistics reduces available labor/work output
+            // Energy spent on logistics reduces available labor/work output.
+            // Rather than an arbitrary 0.02 magic constant, logistics friction is derived from
+            // mechanical transport work: W_transport = m * g * (mu_rolling + sin(theta)),
+            // attenuated by paved roads/rail infrastructure capital and modern propulsion efficiency.
             double work = cell.getResourceWork() != null ? cell.getResourceWork() : 0.0;
-            double logisticsLossFactor = 0.02 * globalFrictionMultiplier * deltaYears;
+            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 1;
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double capPerCap = capital / Math.max(1.0, pop);
+            double infraFrictionDamping = Math.clamp(1.0 / (1.0 + 0.1 * capPerCap + 0.2 * tech), 0.15, 1.0);
+            double baseFriction = (landTransportFrictionCoeff * infraFrictionDamping);
+            double logisticsLossFactor = Math.clamp(baseFriction * globalFrictionMultiplier * deltaYears, 0.0, 0.95);
 
             cell.setResourceWork(Math.max(0.0, work * (1.0 - logisticsLossFactor)));
         }

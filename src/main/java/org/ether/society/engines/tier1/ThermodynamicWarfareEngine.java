@@ -39,6 +39,7 @@ public class ThermodynamicWarfareEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 

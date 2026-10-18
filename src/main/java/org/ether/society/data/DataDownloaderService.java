@@ -209,17 +209,31 @@ public class DataDownloaderService {
             targetDir.mkdirs();
         }
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
+            String canonicalTargetDirPath = targetDir.getCanonicalPath();
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 File outFile = new File(targetDir, entry.getName());
-                try (FileOutputStream fos = new FileOutputStream(outFile)) {
-                    byte[] buf = new byte[16384];
-                    int r;
-                    while ((r = zis.read(buf)) != -1) {
-                        fos.write(buf, 0, r);
-                    }
+                String canonicalOutPath = outFile.getCanonicalPath();
+                if (!canonicalOutPath.startsWith(canonicalTargetDirPath + File.separator) && !canonicalOutPath.equals(canonicalTargetDirPath)) {
+                    throw new SecurityException("Zip Slip path traversal blocked for archive entry: " + entry.getName());
                 }
-                logger.info("Extracted raster dataset file: {} ({} MB)", outFile.getName(), String.format("%.2f", outFile.length() / 1024.0 / 1024.0));
+
+                if (entry.isDirectory()) {
+                    outFile.mkdirs();
+                } else {
+                    File parent = outFile.getParentFile();
+                    if (parent != null && !parent.exists()) {
+                        parent.mkdirs();
+                    }
+                    try (FileOutputStream fos = new FileOutputStream(outFile)) {
+                        byte[] buf = new byte[16384];
+                        int r;
+                        while ((r = zis.read(buf)) != -1) {
+                            fos.write(buf, 0, r);
+                        }
+                    }
+                    logger.info("Extracted raster dataset file: {} ({} MB)", outFile.getName(), String.format("%.2f", outFile.length() / 1024.0 / 1024.0));
+                }
             }
         } catch (Exception e) {
             logger.error("Failed to extract ZIP archive '{}': {}", zipFile.getAbsolutePath(), e.getMessage());

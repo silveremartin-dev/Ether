@@ -52,8 +52,9 @@ public class MegafaunaEcosystemEngine {
         java.util.concurrent.atomic.AtomicInteger megafaunaCollapseCounter = new java.util.concurrent.atomic.AtomicInteger(0);
 
         java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
+            if (cell == null) return;
             Biome biome = cell.getBiome();
-            double tech = cell.getTechnologyLevel();
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
             boolean isCryosphericSteppe = (biome == Biome.SNOW || biome == Biome.TUNDRA);
             boolean isPaleolithicPlains = (biome == Biome.PLAINS && tech < 1.5);
 
@@ -71,10 +72,12 @@ public class MegafaunaEcosystemEngine {
                     double annualDepletionRate = Math.min(0.20, huntingPressureRatio * 0.02);
                     double stepDepletion = Math.min(0.20, annualDepletionRate * safeDt);
                     cell.setBiomassNatural(Math.max(10.0, naturalBiomass * (1.0 - stepDepletion)));
-                    cell.setSoilOrganicCarbon(Math.max(2.0, cell.getSoilOrganicCarbon() - (stepDepletion * 0.5)));
+                    double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 15.0;
+                    double updatedSoc = Math.max(2.0, soc - (stepDepletion * 0.5));
+                    cell.setSoilOrganicCarbon(updatedSoc);
 
                     // Shrub encroachment converts Paleolithic open steppe plains to forest under low SOC
-                    if (isPaleolithicPlains && cell.getSoilOrganicCarbon() < 8.0) {
+                    if (isPaleolithicPlains && updatedSoc < 8.0) {
                         cell.setBiome(Biome.FOREST);
                     }
                 }

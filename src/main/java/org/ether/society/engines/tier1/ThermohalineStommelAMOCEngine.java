@@ -114,6 +114,7 @@ public class ThermohalineStommelAMOCEngine {
 
         // Apply high-latitude North Atlantic / European cooling anomaly
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double lat = cell.getLatitude();
             double lng = cell.getLongitude();
 

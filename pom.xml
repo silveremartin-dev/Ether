@@ -270,6 +270,12 @@
                     <reuseForks>true</reuseForks>
                     <argLine>@{argLine} -Xmx6g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
                     <excludedGroups>manual</excludedGroups>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*TestCase.java</include>
+                        <include>**/*Suite.java</include>
+                        <include>**/*TestSuite.java</include>
+                    </includes>
                 </configuration>
             </plugin>
 

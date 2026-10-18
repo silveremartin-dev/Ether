@@ -110,6 +110,10 @@ public class TemporalMapTensorManager {
     public static String normalizePlanet(String planet) {
         if (planet == null || planet.isBlank()) return "earth";
         String p = planet.trim().toLowerCase();
+        // Prevent path traversal by stripping directory characters and keeping only safe identifiers
+        p = p.replaceAll("[^a-z0-9_-]", "");
+        if (p.isBlank()) return "earth";
+
         return switch (p) {
             case "terre", "earth", "terra", "gaia" -> "earth";
             case "lune", "moon", "luna", "selene" -> "moon";

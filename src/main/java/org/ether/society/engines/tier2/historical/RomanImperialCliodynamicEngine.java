@@ -52,7 +52,7 @@ public class RomanImperialCliodynamicEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             boolean isRomanRegion = (cell.getLatitude() >= 25.0 && cell.getLatitude() <= 55.0) &&
                                     (cell.getLongitude() >= -10.0 && cell.getLongitude() <= 45.0);

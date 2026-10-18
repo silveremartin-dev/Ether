@@ -69,6 +69,13 @@ public class JevonsParadoxEngine {
      * @param coeff the coeff argument (double)
      */
     public static void setReboundCoefficient(double coeff) { reboundCoefficient = Math.max(0.0, Math.min(2.0, coeff)); }
+
+    /**
+     * Resets rebound coefficient for scenario isolation.
+     */
+    public static void resetState() {
+        reboundCoefficient = 0.80;
+    }
 }
 
 

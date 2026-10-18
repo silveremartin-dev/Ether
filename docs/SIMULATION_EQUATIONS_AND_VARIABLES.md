@@ -1455,6 +1455,59 @@ $$\Phi_{\text{Boserup}} = \kappa_{\text{Boserup}} \cdot P_{\text{dem}}(\rho / K_
    - **Archipelagic Trade Hubs (`TradeNetworkEngine`)**: Trade hub selection enforces spatial non-maximum suppression ($\Delta \theta_{\text{min}} = 1.0^\circ$), guaranteeing that multi-island systems (e.g., NW Madagascar, Comoros, and Swahili/Zanzibar coral hubs; or Great Britain and Ireland) establish independent maritime ports connected by hydrodynamically friction-weighted sea lanes.
    - **Geodesic Migration Guard (`EcologicalDegradationEngine`)**: Stress-induced overland migration between array-indexed cells is strictly gated by Haversine geodesic distance $d_{\text{geo}}(\mathbf{x}_i, \mathbf{x}_j) \le 150\text{ km}$, eliminating Hilbert-curve array-index teleportation across open ocean basins.
 
+---
+
+### 15.5 Closed-Loop Geological Exhaustion & Continuous Wear Mechanics
+
+#### 1. Finite Fossil and Fissile Fuel Conservation (`PhysicalEnergyGridEngine`)
+Primary energy conversion from fossil and fissile deposits is bounded by local subsoil reserves ($\text{Coal}$, $\text{Oil}$, $\text{Gas}$, $\text{Uranium}$ on `H3Cell`):
+$$W_{\text{coal}} = 3000.0 \cdot \min(3.0, T - 2.0) \cdot \min\left(1.0, \frac{\text{Coal} + 1.5 \cdot \text{Oil} + 1.2 \cdot \text{Gas}}{\max(10.0, 0.05 \cdot N)}\right) \cdot \eta_{\text{conv}}$$
+$$W_{\text{nuclear}} = 35000.0 \cdot \min(2.5, T - 3.5) \cdot \min\left(1.0, \frac{\text{Uranium}}{\max(1.0, 0.001 \cdot N)}\right) \cdot \eta_{\text{conv}}$$
+
+Each tick of power generation depletes the subsoil mass at exact stoichiometric enthalpy rates:
+$$\frac{d(\text{Coal})}{dt} = -N \cdot (0.4 \cdot W_{\text{mech}}) \cdot \frac{1.3 \times 10^{-6}\text{ t}}{\text{W}\cdot\text{yr}}$$
+$$\frac{d(\text{Uranium})}{dt} = -N \cdot (0.3 \cdot W_{\text{mech}}) \cdot \frac{1.0 \times 10^{-11}\text{ t}}{\text{W}\cdot\text{yr}}$$
+
+#### 2. Physical Tooling Capital & Material Wear Depreciation (`MetallurgyEnthalpyEngine`)
+Replaces heuristic $0.5$ conversion factors with continuous tooling accumulation and alloy-dependent mechanical wear:
+$$\frac{dK}{dt} = \dot{M}_{\text{refined}} \cdot Q_{\text{alloy}}(T) - \delta_{\text{wear}}(T) \cdot K$$
+$$Q_{\text{alloy}}(T) = \operatorname{clamp}\left(0.4 + 0.2 \cdot (T - 2.5), 0.4, 1.2\right)$$
+$$\delta_{\text{wear}}(T) = \max\left(0.01, \frac{0.05}{\max(0.5, 0.4 \cdot T)}\right) \cdot \Delta t$$
+
+#### 3. Infrastructure-Damped Transport Work (`PhysicalSupplyChainEngine`)
+Replaces static $2\%$ logistics loss with mechanical friction work attenuated by per-capita infrastructure capital:
+$$f_{\text{logistics}} = \mu_{\text{land}} \cdot \left(\frac{1}{1 + 0.1 \cdot (K/N) + 0.2 \cdot T}\right) \cdot \Pi_{\text{choke}} \cdot \Delta t$$
+where $\Pi_{\text{choke}} = 2.5$ if strategic maritime straits are blockaded.
+
+---
+
+### 15.6 Precious Bullion Flows, Critical Minerals, and the Universal 4-Flux Metabolic Architecture
+
+#### 1. Precious Metal Extraction & Cupellation (`MetallurgyEnthalpyEngine`)
+Precious ore reserves (`resourcePreciousMetal`, kg/km²) are mined via placer panning ($T \ge 1.2$) or deep-vein shaft mining and cupellation ($T \ge 1.8$):
+$$\dot{M}_{\text{precious}} = \min\left(\text{Ore}_{\text{precious}}, N_{\text{miners}} \cdot Y_{\text{worker}}(T) \cdot \Delta t, \frac{E_{\text{cupel}}}{12.0\text{ MJ/kg}}\right)$$
+$$\frac{d(\text{resourcePreciousMetal})}{dt} = -\dot{M}_{\text{precious}}$$
+Extracted bullion increases local durable and liquid monetary capital stock:
+$$\Delta K_{\text{monetary}} = \dot{M}_{\text{precious}} \cdot \operatorname{clamp}(2.5 - 0.2 \cdot (T - 1.2), 1.0, 3.0)$$
+
+#### 2. Bullion Arbitrage, Critical Minerals & Monetary Lubrication (`TradeNetworkEngine`)
+- **Monetary Conductance Lubrication**: The circulation of specie/bullion between trading hubs mitigates primitive barter double-coincidence friction, boosting effective network conductance:
+  $$\sigma_{\text{trade}} = \min\left(1.0, \frac{1}{\mu_{\text{route}}} \cdot \left(1.0 + \min(1.5, 0.25 \ln(1 + \text{Precious}_{\text{orig}} + \text{Precious}_{\text{dest}}))\right)\right)$$
+- **High-Density Specie Arbitrage**: When $T \ge 1.5$, precious metals are traded along maritime and caravan corridors with negligible physical transit attrition ($0.1\%$).
+- **Modern Critical Materials ($T \ge 4.0$)**: Natural gas (`resourceGas`) and rare earth elements (`resourceRareEarths`) are arbitrated across trade networks and depleted by high-tech semiconductor and electro-nuclear power grids.
+- **Physical Transit Retention**: Static spoliation rates are replaced by continuous technological retention:
+  $$\eta_{\text{food}} = \operatorname{clamp}(0.78 + 0.05 \cdot T, 0.78, 0.995)$$
+  $$\eta_{\text{bulk}} = \operatorname{clamp}(0.95 + 0.01 \cdot T, 0.95, 0.999)$$
+
+#### 3. The Universal 4-Flux Metabolic Architecture Invariant across History
+Rather than forcing brittle $25 \times 25$ or $100 \times 100$ Leontief matrices that explode combinatorially across historical epochs or rely on rigid ad-hoc archetypes, Ether represents all civilizational economies through **4 Universal Invariant Thermodynamic Fluxes**:
+1. **Exergy Flux ($\Phi_E$, GJ/yr)**: Primary energy harvest from ambient gradients (wood biomass, muscle, draft livestock, wind/water kinetic, fossil hydrocarbons, fissile nuclei, fusion).
+2. **Structural Mass Flux ($\Phi_M$, t/yr)**: Bulk matter extracted, refined, and shaped to maintain physical civilizational boundaries (stone, alluvial clay, bronze, iron, steel, cement, polymers, rare earth elements).
+3. **Productive Capital Stock Flux ($\Phi_K$, t or tool-units)**: Durable artifacts that amplify human physical and mental work (hand-axes, plows, looms, blast furnaces, machine tools, computer chips), continuously subjected to entropic wear and corrosion ($\delta_{\text{wear}}$).
+4. **Biological Metabolic Flux ($\Phi_S$, kcal or GJ/yr)**: Caloric and freshwater sustenance required to maintain human working biomass ($N \cdot 3.362\text{ GJ/yr}$).
+
+Every technology level $T$ is mathematically formalized as an invariant set of transformation efficiencies $(\eta_E, \eta_M, \eta_K, \delta_K)$ coupling these 4 fluxes, maintaining $O(1)$ computation per cell while preserving strict mass-energy conservation across 100,000 years of historical evolution.
+
 
 
 

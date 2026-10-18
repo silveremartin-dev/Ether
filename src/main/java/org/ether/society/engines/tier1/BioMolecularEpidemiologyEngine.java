@@ -56,6 +56,7 @@ public class BioMolecularEpidemiologyEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 
@@ -99,9 +100,11 @@ public class BioMolecularEpidemiologyEngine {
                 int currentInfected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
 
                 // Deterministic pseudo-random seed based on H3 index, lifespan, and food state
+                double curLifespan = cell.getLifespan() != null ? cell.getLifespan() : 40.0;
+                double curFood = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
                 long seed = (cell.getH3Index() * 6364136223846793005L
-                        + (long)(cell.getLifespan() * 1000.0) * 1442695040888963407L
-                        + (long)(cell.getFoodResource() * 10.0));
+                        + (long)(curLifespan * 1000.0) * 1442695040888963407L
+                        + (long)(curFood * 10.0));
                 double pseudoRand = ((seed >>> 33) & 0x7FFFFFFF) / (double) 0x7FFFFFFF;
 
                 if (currentInfected == 0 && pSpillover > 0.005 && (pSpillover > 0.10 || pseudoRand < pSpillover)) {
@@ -138,7 +141,8 @@ public class BioMolecularEpidemiologyEngine {
 
                 // Acute epidemiological lifespan depression
                 double epidemicLifespanPenalty = 3.0 * ((double) infected / pop) * dtMonthlyRatio;
-                cell.setLifespan(Math.max(15.0, cell.getLifespan() - epidemicLifespanPenalty));
+                double activeLifespan = cell.getLifespan() != null ? cell.getLifespan() : 40.0;
+                cell.setLifespan(Math.max(15.0, activeLifespan - epidemicLifespanPenalty));
 
                 if (remainingInfected == 0) {
                     cell.setActivePathogenName(null);

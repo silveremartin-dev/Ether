@@ -47,15 +47,18 @@ public class PhysicalLeontiefInputOutputEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double solar = cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0;
             double wind = cell.getEnergyWind() != null ? cell.getEnergyWind() : 0.0;
             double fire = cell.getEnergyFire() != null ? cell.getEnergyFire() : 0.0;
-            double currentEnergy = (solar + wind + fire) * 0.1;
+            double coal = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
+            double oil = cell.getResourceOil() != null ? cell.getResourceOil() : 0.0;
+            double currentEnergy = (solar + wind + fire + coal * 0.05 + oil * 0.08) * 0.1;
             double currentCapital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
             double currentMetal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
             double currentWood = cell.getWoodResource() != null ? cell.getWoodResource() : 0.0;
+            double currentClay = cell.getResourceClay() != null ? cell.getResourceClay() : 0.0;
 
             // Target capital expansion based on population and technology level
             double techLevel = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
@@ -64,17 +67,22 @@ public class PhysicalLeontiefInputOutputEngine {
             // Calculate required inputs via Leontief matrix coefficients
             double requiredMetal = targetCapitalOutput * A_CAPITAL_METAL;
             double requiredEnergy = targetCapitalOutput * A_CAPITAL_ENERGY;
+            double requiredEarthenClay = targetCapitalOutput * 0.20; // Construction ceramics, bricks, cement
 
-            // Bottleneck determination (Leontief minimum function)
-            double metalFeasibility = requiredMetal > 0 ? Math.min(1.0, (currentMetal + currentWood * 0.5) / requiredMetal) : 1.0;
+            // Bottleneck determination (Leontief minimum function / Liebig law)
+            double structuralMaterialStock = currentMetal + currentWood * 0.5 + currentClay * 0.3;
+            double metalFeasibility = requiredMetal > 0 ? Math.min(1.0, structuralMaterialStock / requiredMetal) : 1.0;
             double energyFeasibility = requiredEnergy > 0 ? Math.min(1.0, (currentEnergy + 1.0) / requiredEnergy) : 1.0;
+            double clayFeasibility = requiredEarthenClay > 0 ? Math.min(1.0, (currentClay + currentWood * 0.4 + 1.0) / requiredEarthenClay) : 1.0;
 
-            double actualOutputRatio = Math.min(metalFeasibility, energyFeasibility);
+            double actualOutputRatio = Math.min(metalFeasibility, Math.min(energyFeasibility, clayFeasibility));
             double actualCapitalProduced = targetCapitalOutput * actualOutputRatio;
 
-            // Consume inputs based on actual realized output
-            double consumedMetal = actualCapitalProduced * A_CAPITAL_METAL;
+            // Consume inputs based on actual realized output with closed mass conservation
+            double consumedMetal = actualCapitalProduced * A_CAPITAL_METAL * 0.7;
+            double consumedClay = actualCapitalProduced * 0.15;
             cell.setResourceMetal(Math.max(0.0, currentMetal - consumedMetal));
+            cell.setResourceClay(Math.max(0.0, currentClay - consumedClay));
             cell.setResourceCapital(currentCapital + actualCapitalProduced);
         }
     }

@@ -41,7 +41,7 @@ public class LanguageLinguisticEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
             Biome biome = cell.getBiome();

@@ -71,6 +71,13 @@ public class InfrastructureInertiaEngine {
      * @param years the years argument (double)
      */
     public static void setCapitalTurnoverHalfLifeYears(double years) { baseCapitalTurnoverHalfLifeYears = Math.max(1.0, years); }
+
+    /**
+     * Resets infrastructure turnover benchmark for scenario isolation.
+     */
+    public static void resetState() {
+        baseCapitalTurnoverHalfLifeYears = 35.0;
+    }
 }
 
 

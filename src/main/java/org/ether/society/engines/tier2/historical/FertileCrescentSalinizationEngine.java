@@ -54,8 +54,8 @@ public class FertileCrescentSalinizationEngine {
 
             // Early agrarian irrigation (Tech level 1.0 to 3.0) in arid/plains biomes
             if (tech >= 1.0 && tech <= 3.5) {
-                // Progressive salinization degrades food output over time
-                double salinizationFactor = Math.max(0.20, 1.0 - (salinizationRatePerCentury * (deltaYears / 100.0)));
+                // Progressive salinization degrades food output over time (continuous exponential decay)
+                double salinizationFactor = Math.max(0.20, Math.exp(-salinizationRatePerCentury * (deltaYears / 100.0)));
                 cell.setFoodResource(food * salinizationFactor);
             }
         }
@@ -78,6 +78,13 @@ public class FertileCrescentSalinizationEngine {
      * @param rate the rate argument (double)
      */
     public static void setSalinizationRatePerCentury(double rate) { salinizationRatePerCentury = Math.max(0.0, rate); }
+
+    /**
+     * Resets salinization rate per century for scenario isolation.
+     */
+    public static void resetState() {
+        salinizationRatePerCentury = 0.05;
+    }
 }
 
 

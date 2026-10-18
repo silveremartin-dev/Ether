@@ -17,13 +17,19 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Multi-Resolution & Multi-Scenario Benchmark Suite.
- * Evaluates performance across H3 Resolutions 2, 3, 4, 5 (from 5,882 to 2,016,842 cells)
- * and across 5 major historical epochs (Out of Africa, Neolithic, Classical Antiquity, Industrial, Modern).
+ * <b>[LEGACY / SYNTHETIC DOD PROTOTYPE]</b>
+ * Evaluated memory streaming on isolated 100k float buffers with theoretical multipliers.
+ * <p>
+ * <b>NOTE:</b> Superseded by {@link ComprehensiveRealEngineBenchmarkTest} and
+ * {@link RealPlanetaryEngineBenchmarkRunner}, which perform 100% genuine empirical wall-clock
+ * measurements across the full coupled {@code H3SimulationEngine} pipeline and all 5 scientific axes.
+ * </p>
  *
+ * @deprecated Use {@link ComprehensiveRealEngineBenchmarkTest} for official empirical benchmarks.
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@Deprecated
 public class MultiResolutionScenarioBenchmarkHarnessTest {
     private static final Logger logger = LoggerFactory.getLogger(MultiResolutionScenarioBenchmarkHarnessTest.class);
 
@@ -142,8 +148,8 @@ public class MultiResolutionScenarioBenchmarkHarnessTest {
                 );
                 results.add(resObj);
 
-                logger.info("  -> Res {} ({,d} cells): Baseline = {:.2f} TPS | Java SIMD = {:.2f} TPS | Rust Native = {:.2f} TPS | 2-Node GCP Cluster = {:.2f} TPS (Speedup: {:.1f}x)",
-                        res, targetCells, javaBaselineTPS, javaVectorSimdTPS, rustNativeTPS, clusterGcpTPS, speedup);
+                logger.info(String.format(java.util.Locale.ROOT, "  -> Res %d (%,d cells): Baseline = %.2f TPS | Java SIMD = %.2f TPS | Rust Native = %.2f TPS | 2-Node GCP Cluster = %.2f TPS (Speedup: %.1fx)",
+                        res, targetCells, javaBaselineTPS, javaVectorSimdTPS, rustNativeTPS, clusterGcpTPS, speedup));
             }
         }
 

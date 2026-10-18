@@ -86,7 +86,7 @@ public class DynamicHydrographicSiltationEngine {
         List<H3Cell> estuaryCells = new java.util.ArrayList<>();
 
         for (H3Cell cell : cells) {
-            if (cell.getElevation() == null) continue;
+            if (cell == null || cell.getElevation() == null) continue;
             if (cell.getElevation() >= -10.0 && cell.getElevation() <= 25.0
                     && (cell.getBiome() == Biome.BEACH || cell.getBiome() == Biome.PLAINS)) {
                 estuaryCells.add(cell);

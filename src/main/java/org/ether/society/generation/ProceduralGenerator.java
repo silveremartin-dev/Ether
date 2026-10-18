@@ -523,8 +523,34 @@ public class ProceduralGenerator {
                 cell.setFoodResource(150.0 * tidalBiomassUpwelling);
                 cell.setBiomassFish(300.0 * tidalBiomassUpwelling);
             }
-            case DESERT -> cell.setResourceMetal(200.0);
+            case DESERT -> {
+                cell.setResourceMetal(200.0);
+                cell.setResourceOil(1500.0);
+                cell.setResourceGas(1200.0);
+            }
             default -> { }
+        }
+
+        // Initialize fossil, nuclear, and mineral deposits from tectonic & sedimentary indicators
+        double crustMetal = p.metalDensity();
+        if (b != Biome.OCEAN && b != Biome.DEEP_OCEAN) {
+            // Earthen clay deposits from fluvial sedimentation and rock weathering
+            cell.setResourceClay(500.0 * (1.0 + p.riverFlow() * 1.5));
+        }
+        if (b == Biome.FOREST || b == Biome.JUNGLE || b == Biome.PLAINS) {
+            cell.setResourceCoal(2500.0 * (0.5 + 0.5 * crustMetal));
+            // Alluvial placer gold in river gravels
+            cell.setResourcePreciousMetal(5.0 * (0.1 + 0.9 * p.riverFlow()));
+        }
+        if (b == Biome.PLAINS || b == Biome.BEACH || b == Biome.DESERT) {
+            cell.setResourceOil(Math.max(cell.getResourceOil() != null ? cell.getResourceOil() : 0.0, 1800.0 * crustMetal));
+            cell.setResourceGas(Math.max(cell.getResourceGas() != null ? cell.getResourceGas() : 0.0, 1500.0 * crustMetal));
+        }
+        if (b == Biome.MOUNTAINS || b == Biome.HILLS) {
+            cell.setResourceUranium(150.0 * (0.4 + 0.8 * crustMetal));
+            cell.setResourceRareEarths(120.0 * (0.3 + 0.7 * crustMetal));
+            // Epithermal vein and orogenic gold/silver deposits
+            cell.setResourcePreciousMetal(25.0 * (0.3 + 0.7 * crustMetal));
         }
     }
 

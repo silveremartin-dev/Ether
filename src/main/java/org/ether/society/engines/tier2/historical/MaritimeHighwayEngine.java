@@ -50,12 +50,12 @@ public class MaritimeHighwayEngine {
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
-            if (cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             // Universal physical check: coastal cell, polder, floating infrastructure, or water biome
-            boolean isMaritimeBasin = cell.getIsCoastal()
-                    || cell.getIsPolder()
-                    || cell.getHasFloatingInfrastructure()
+            boolean isMaritimeBasin = Boolean.TRUE.equals(cell.getIsCoastal())
+                    || Boolean.TRUE.equals(cell.getIsPolder())
+                    || Boolean.TRUE.equals(cell.getHasFloatingInfrastructure())
                     || cell.getBiome() == Biome.OCEAN
                     || cell.getBiome() == Biome.DEEP_OCEAN
                     || (cell.getElevation() != null && cell.getElevation() <= 0);
@@ -64,15 +64,15 @@ public class MaritimeHighwayEngine {
 
             if (isMaritimeBasin && tempC > 0.0) {
                 // Coastal & maritime trade acceleration: buoyancy eliminates solid dry friction
-                double currentCap = cell.getResourceCapital();
+                double currentCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
                 cell.setResourceCapital(currentCap * (1.0 + capitalBoostRate));
 
                 // Hydrodynamic friction reduction over open ice-free water
-                double friction = cell.getMovementFriction();
+                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
                 cell.setMovementFriction(Math.max(0.1, friction * frictionMultiplier));
             } else if (isMaritimeBasin && tempC <= 0.0) {
                 // Sub-zero sea ice increases friction for maritime navigation
-                double friction = cell.getMovementFriction();
+                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
                 cell.setMovementFriction(Math.min(20.0, friction * 1.50));
             }
         }

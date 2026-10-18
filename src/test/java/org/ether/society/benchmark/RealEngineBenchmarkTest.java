@@ -25,16 +25,16 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * <h1>Real Engine End-to-End Multi-Resolution Benchmark Suite</h1>
+ * <h1>[INITIAL PROTOTYPE] Real Engine Multi-Resolution Benchmark Suite</h1>
  * <p>
- * Measures genuine, non-extrapolated wall-clock performance of the complete
- * {@link H3SimulationEngine} simulation pipeline across real H3 grids (Res 3, Res 4, Res 5 Windowed).
- * Runs full physical tier 1/2 engines, history capture, statistics, and events.
+ * Early prototype measuring Res 3, Res 4, Res 5 Windowed.
  * </p>
  *
+ * @deprecated Superseded by {@link ComprehensiveRealEngineBenchmarkTest} covering all 5 scientific axes.
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@Deprecated
 public class RealEngineBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(RealEngineBenchmarkTest.class);
 

@@ -128,10 +128,13 @@ public class AlbedoClimateEngine {
             cell.setTemperature(Math.max(-250.0, Math.min(600.0, updatedTemp)));
 
             // ── 3. Megastorm / Flood Disaster Impact ──────────────────────────
-            if (cell.getRainfall() > 900.0 && elev < 30.0 && cell.getBiome() == Biome.BEACH) {
+            double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+            if (rain > 900.0 && elev < 30.0 && cell.getBiome() == Biome.BEACH) {
                 floodDisasterCounter.incrementAndGet();
-                cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * 0.70));
-                cell.setWaterResource(Math.max(50.0, cell.getWaterResource() * 0.50));
+                double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                cell.setResourceCapital(curCap * 0.70);
+                double curWater = cell.getWaterResource() != null ? cell.getWaterResource() : 100.0;
+                cell.setWaterResource(Math.max(50.0, curWater * 0.50));
             }
         };
 

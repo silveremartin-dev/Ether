@@ -57,6 +57,15 @@ public class SmilMaterialTransitionsPureEngine {
      * @return the resulting computation or state reference
      */
     public static double getTransitionInertiaYears() { return transitionInertiaYears; }
+
+    public static void setTransitionInertiaYears(double years) { transitionInertiaYears = Math.max(1.0, years); }
+
+    /**
+     * Resets transition inertia years for scenario isolation.
+     */
+    public static void resetState() {
+        transitionInertiaYears = 60.0;
+    }
 }
 
 

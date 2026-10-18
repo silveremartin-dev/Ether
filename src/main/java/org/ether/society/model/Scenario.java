@@ -363,6 +363,36 @@ public class Scenario implements Serializable {
         return new Scenario();
     }
 
+    /**
+     * Creates the official reference Benchmark Standard Scenario (playable full-screen and windowed,
+     * supporting multi-resolution, multi-frequency temporal steps, and multi-backend engine architectures).
+     *
+     * @return standardized benchmark scenario instance
+     */
+    public static Scenario createBenchmarkStandardScenario() {
+        Scenario s = new Scenario();
+        s.setPresetKey("benchmark_standard");
+        s.setName("Benchmark Standard Planetary Scenario");
+        s.setDescription("Official Ether standardized benchmark scenario for empirical throughput, latency, and scaling validation across spatial resolutions (Res 2-7), temporal steps (1d-365d), and compute backends.");
+        s.setStartDateYear(-10000);
+        s.setEndDateYear(-5000);
+        s.setH3Resolution(3);
+        s.setTemporalResolutionDays(30.0);
+        s.setInitialHumanCount(100_000);
+        s.setInitialCapitalPerCapita(10.0);
+        s.setInitialEnergyPerCapita(20.0);
+        s.setInitialFoodReserveMonths(6.0);
+        s.setInitialInformationPerCapita(5.0);
+        s.setPopulationDensityType("GLOBAL_EXPONENTIAL");
+        s.setTargetCohortSize(150);
+        s.setStrictDeterminism(true);
+        s.setParallelExecutionEnabled(true);
+        s.setParallelThreadCount(Runtime.getRuntime().availableProcessors());
+        s.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(3));
+        s.setEcologyPreset(EcologyPreset.EARTH_EH_10000BP);
+        return s;
+    }
+
     /*
      * Copy.
      * Enforces physical invariants and updates associated state variables within {@code Scenario}.
@@ -1438,7 +1468,28 @@ public class Scenario implements Serializable {
         config.setEnableParallelExecution(!strictDeterminism && parallelExecutionEnabled);
         config.setParallelThreadCount(parallelExecutionEnabled ? parallelThreadCount : 1);
         config.setEnableSpatialRangeTruncation(!strictDeterminism && spatialRangeTruncationEnabled);
+        config.setEnableTier2Cliodynamics(tier2CliodynamicsEnabled);
         return config;
+    }
+
+    private boolean tier2CliodynamicsEnabled = true;
+
+    /**
+     * Checks whether Tier 2 cliodynamics are enabled for this scenario.
+     *
+     * @return true if Tier 2 enabled, false for Tier 1 physics only
+     */
+    public boolean isTier2CliodynamicsEnabled() {
+        return tier2CliodynamicsEnabled;
+    }
+
+    /**
+     * Sets whether Tier 2 cliodynamics are enabled for this scenario.
+     *
+     * @param tier2CliodynamicsEnabled true for Tier 2 enabled, false for Tier 1 physics only
+     */
+    public void setTier2CliodynamicsEnabled(boolean tier2CliodynamicsEnabled) {
+        this.tier2CliodynamicsEnabled = tier2CliodynamicsEnabled;
     }
 
     /*
@@ -1863,6 +1914,9 @@ public class Scenario implements Serializable {
     public static java.util.List<Scenario> getBuiltInScenarios() {
         java.util.List<Scenario> list = new java.util.ArrayList<>();
 
+        // --- BENCHMARK REFERENCE SCENARIO ---
+        list.add(createBenchmarkStandardScenario());
+
         // --- SCÉNARIOS DU PASSÉ ---
         Scenario s0 = new Scenario();
         s0.setPresetKey("out_of_africa");
@@ -2266,7 +2320,7 @@ public class Scenario implements Serializable {
         s3.setMinLat(28.0); s3.setMaxLat(40.0); s3.setMinLng(38.0); s3.setMaxLng(52.0);
         s3.setBoundaryMode("DYNAMIC_RESERVOIR");
         s3.setDescription("""
-            ðŸ›ï¸ SCÉNARIO HISTORIQUE : Hydraulique, Salinisation & Cités-États de l'Ã‚ge du Bronze (-1900 av. J.-C.)
+            SCÉNARIO HISTORIQUE : Hydraulique, Salinisation & Cités-États de l'Âge du Bronze (-1900 av. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Modélise l'apogée du Bronze Moyen (Code d'Hammurabi, première dynastie de Babylone, dynastie Shang en Chine, fin de la civilisation de l'Indus) et les vulnérabilités écologiques d'irrigation intensive.
@@ -2565,7 +2619,7 @@ public class Scenario implements Serializable {
         sRomanEngines.put("ArthurCombinatorialTechnologyEngine", true);
         sRomanEngines.put("GranovetterThresholdCascadeEngine", true);
         sRoman.setDescription("""
-            ðŸ›ï¸ SCÉNARIO HISTORIQUE : L'Empire Romain Ã  son Apogée (Pax Romana, An 0)
+            SCÉNARIO HISTORIQUE : L'Empire Romain à son Apogée (Pax Romana, An 0)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE - SOURCES BESSES & BENCHMARKS CIA / SESHAT / HYDE]
             Modélise le bassin méditerranéen au moment de la Pax Romana sous Auguste. Intègre les données démographiques historiques (55 millions d'habitants), les réseaux d'infrastructures (viae, aqueducs) et les dynamiques cliodynamiques de Turchin.
@@ -2938,7 +2992,7 @@ public class Scenario implements Serializable {
         sIndustrial1800.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sIndustrial1800.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sIndustrial1800.setDescription("""
-            ⚙️ï¸ SCÉNARIO HISTORIQUE : La Machine Ã  Vapeur & L'Émergence du Charbon (1800 ap. J.-C.)
+            SCÉNARIO HISTORIQUE : La Machine à Vapeur & L'Émergence du Charbon (1800 ap. J.-C.)
             
             [CONTEXTE HISTORIQUE & PHYSIQUE]
             Basculement énergétique mondial du régime organique vers le régime minéral fossile (charbon de terre, machine à vapeur de Watt).

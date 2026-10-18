@@ -38,7 +38,7 @@ public class SelfDomesticationEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double popDensity = cell.getPopulation() / 1000.0;
             // High social density accelerates self-domestication, reducing internal violence

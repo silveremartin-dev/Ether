@@ -93,13 +93,31 @@ public class MarineSubmersionEngine {
 
                 // 2. Locate Safe Neighbor Cells (Elevation > seaLevelOffset)
                 List<H3Cell> safeNeighbors = new ArrayList<>();
-                // Iterate over spatial cell domains and apply localized cellular state transformations
-                for (H3Cell candidate : cells) {
-                    if (candidate.getH3Index() != cell.getH3Index() 
-                            && (candidate.getElevation() != null && candidate.getElevation() > seaLevelOffset)
-                            && candidate.getBiome() != Biome.OCEAN && candidate.getBiome() != Biome.DEEP_OCEAN) {
-                        safeNeighbors.add(candidate);
-                        if (safeNeighbors.size() >= 6) break; // Limit search radius
+                List<Long> neighborIndices = null;
+                if (cell.getH3Index() != 0L) {
+                    try {
+                        neighborIndices = org.ether.society.h3.H3Service.getInstance().getNeighbors(cell.getH3Index());
+                    } catch (Exception ignored) {}
+                }
+                if (neighborIndices != null && !neighborIndices.isEmpty()) {
+                    for (Long nIdx : neighborIndices) {
+                        H3Cell candidate = cellMap.get(nIdx);
+                        if (candidate != null && candidate.getH3Index() != cell.getH3Index()
+                                && (candidate.getElevation() != null && candidate.getElevation() > seaLevelOffset)
+                                && candidate.getBiome() != Biome.OCEAN && candidate.getBiome() != Biome.DEEP_OCEAN) {
+                            safeNeighbors.add(candidate);
+                        }
+                    }
+                }
+                // Fallback for non-indexed synthetic test cells or archipelagic refugee jumps
+                if (safeNeighbors.isEmpty()) {
+                    for (H3Cell candidate : cells) {
+                        if (candidate.getH3Index() != cell.getH3Index() 
+                                && (candidate.getElevation() != null && candidate.getElevation() > seaLevelOffset)
+                                && candidate.getBiome() != Biome.OCEAN && candidate.getBiome() != Biome.DEEP_OCEAN) {
+                            safeNeighbors.add(candidate);
+                            if (safeNeighbors.size() >= 6) break;
+                        }
                     }
                 }
 

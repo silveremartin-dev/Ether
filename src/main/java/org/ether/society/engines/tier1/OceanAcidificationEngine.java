@@ -83,6 +83,7 @@ public class OceanAcidificationEngine {
         int impactedCells = 0;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             Biome biome = cell.getBiome();
             if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH) {
                 impactedCells++;

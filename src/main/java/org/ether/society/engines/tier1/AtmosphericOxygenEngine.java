@@ -62,9 +62,11 @@ public class AtmosphericOxygenEngine {
         int hyperCombustionEvents = 0;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             // Apply VO2max capacity limit to human physical labor output
             if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-                cell.setMovementFriction(Math.max(0.2, cell.getMovementFriction() / vo2maxFactor));
+                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+                cell.setMovementFriction(Math.max(0.2, friction / vo2maxFactor));
             }
 
             // Wildfire hyper-combustion under elevated O2 (> 0.25 atm)

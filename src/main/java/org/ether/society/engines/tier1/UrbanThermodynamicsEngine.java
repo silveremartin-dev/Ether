@@ -38,7 +38,7 @@ public class UrbanThermodynamicsEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() < 5000) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() < 5000) continue;
 
             long pop = cell.getPopulation();
             // Urban Heat Island (T_uhi) formula: deltaT = 0.5 * log10(pop / 1000)

@@ -230,7 +230,7 @@ public record PlanetPreset(
 
             true, "earth",
 
-            true, "ðŸŒ Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)", 12445L,
+            true, "Terre (-1900 BP) — Âge du Bronze Moyen", 12445L,
 
             true, "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)", 13345L,
 
@@ -254,7 +254,7 @@ public record PlanetPreset(
 
             true, "earth",
 
-            true, "ðŸŒ Terre (-1000 BP) — Ã‚ge du Fer Ancien", 12444L,
+            true, "Terre (-1000 BP) — Âge du Fer Ancien", 12444L,
 
             true, "ðŸŒ Terre (-1000 BP) — Précipitations", 13344L,
 
@@ -272,7 +272,7 @@ public record PlanetPreset(
 
             true, "earth",
 
-            true, "ðŸŒ Terre (-1900 BP) — Ã‚ge du Bronze Moyen", 12445L,
+            true, "Terre (-1900 BP) — Âge du Bronze Moyen", 12445L,
 
             true, "ðŸŒ Terre (-1900 BP) — Précipitations", 13345L,
 
@@ -346,7 +346,7 @@ public record PlanetPreset(
 
             true, "ðŸŒ Terre (-20000 BP) — Climat Glaciaire LGM & Inlandsis", 12449L,
 
-            true, "ðŸŒ Terre (-20000 BP) — Aridité Glaciaire & Steppe Ã  Mammouths", 13349L,
+            true, "Terre (-20000 BP) — Aridité Glaciaire & Steppe à Mammouths", 13349L,
 
             true, "ðŸŒ Terre (-20000 BP) — Forte Saisonnalité Glaciaire", 14349L);
 

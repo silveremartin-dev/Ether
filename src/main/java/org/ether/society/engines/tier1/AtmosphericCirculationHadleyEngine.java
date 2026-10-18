@@ -104,6 +104,7 @@ public class AtmosphericCirculationHadleyEngine {
         final double airDensityKgM3 = 1.225;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             WindVector wind = calculateAtmosphericWind(cell.getLatitude(), month);
             double totalWindSpeed = Math.sqrt(wind.zonalSpeedM_S() * wind.zonalSpeedM_S()
                     + wind.meridionalSpeedM_S() * wind.meridionalSpeedM_S());

@@ -195,6 +195,21 @@ public class H3Cell {
     /* Soil salinity / electrical conductivity EC_e in deciSiemens per meter (dS/m). */
     @Column(nullable = false)
     private Double soilSalinity = 0.0;
+    /* Subsoil extractable coal reserves in Gigatonnes or metric tonnes (t). */
+    @Column(nullable = false)
+    private Double resourceCoal = 0.0;
+    /* Subsoil extractable crude oil reserves in barrels-equivalent or metric tonnes (t). */
+    @Column(nullable = false)
+    private Double resourceOil = 0.0;
+    /* Subsoil extractable natural gas reserves in cubic meters or energy equivalent (t). */
+    @Column(nullable = false)
+    private Double resourceGas = 0.0;
+    /* Subsoil fissile uranium / thorium ore deposits in metric tonnes (t). */
+    @Column(nullable = false)
+    private Double resourceUranium = 0.0;
+    /* Subsoil rare earth elements (REE), lithium, and critical mineral deposits in metric tonnes (t). */
+    @Column(nullable = false)
+    private Double resourceRareEarths = 0.0;
     /* Geothermal heat flow & tectonic baseline in milliwatts per square meter (mW/m²). */
     @Column(nullable = false)
     private Double mantleHeatFlow = 87.0;
@@ -913,6 +928,106 @@ public class H3Cell {
      */
     public void setSoilSalinity(Double val) {
         this.soilSalinity = val != null ? val : 0.0;
+    }
+
+    /*
+     * Get resource coal.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @return extractable coal reserve in metric tonnes
+     */
+    public Double getResourceCoal() {
+        return resourceCoal != null ? resourceCoal : 0.0;
+    }
+
+    /*
+     * Set resource coal.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @param val extractable coal reserve in metric tonnes
+     */
+    public void setResourceCoal(Double val) {
+        this.resourceCoal = val != null ? Math.max(0.0, val) : 0.0;
+    }
+
+    /*
+     * Get resource crude oil.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @return extractable oil reserve in metric tonnes
+     */
+    public Double getResourceOil() {
+        return resourceOil != null ? resourceOil : 0.0;
+    }
+
+    /*
+     * Set resource crude oil.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @param val extractable oil reserve in metric tonnes
+     */
+    public void setResourceOil(Double val) {
+        this.resourceOil = val != null ? Math.max(0.0, val) : 0.0;
+    }
+
+    /*
+     * Get resource natural gas.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @return extractable natural gas reserve in energy equivalent tonnes
+     */
+    public Double getResourceGas() {
+        return resourceGas != null ? resourceGas : 0.0;
+    }
+
+    /*
+     * Set resource natural gas.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @param val extractable natural gas reserve in energy equivalent tonnes
+     */
+    public void setResourceGas(Double val) {
+        this.resourceGas = val != null ? Math.max(0.0, val) : 0.0;
+    }
+
+    /*
+     * Get resource fissile uranium.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @return extractable fissile ore reserve in metric tonnes
+     */
+    public Double getResourceUranium() {
+        return resourceUranium != null ? resourceUranium : 0.0;
+    }
+
+    /*
+     * Set resource fissile uranium.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @param val extractable fissile ore reserve in metric tonnes
+     */
+    public void setResourceUranium(Double val) {
+        this.resourceUranium = val != null ? Math.max(0.0, val) : 0.0;
+    }
+
+    /*
+     * Get resource rare earth elements and lithium.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @return extractable critical mineral reserve in metric tonnes
+     */
+    public Double getResourceRareEarths() {
+        return resourceRareEarths != null ? resourceRareEarths : 0.0;
+    }
+
+    /*
+     * Set resource rare earth elements and lithium.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @param val extractable critical mineral reserve in metric tonnes
+     */
+    public void setResourceRareEarths(Double val) {
+        this.resourceRareEarths = val != null ? Math.max(0.0, val) : 0.0;
     }
 
     /*

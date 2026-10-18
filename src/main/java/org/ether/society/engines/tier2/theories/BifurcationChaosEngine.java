@@ -76,8 +76,9 @@ public class BifurcationChaosEngine {
         double divergenceRate = 0.0;
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-                double stressRatio = cell.getFoodResource() > 0 ? (cell.getPopulation() / (cell.getFoodResource() + 1.0)) : 10.0;
+            if (cell != null && cell.getPopulation() != null && cell.getPopulation() > 0) {
+                double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+                double stressRatio = food > 0 ? (cell.getPopulation() / (food + 1.0)) : 10.0;
                 divergenceRate += Math.log(Math.max(0.001, Math.abs(stressRatio - 1.0)));
             }
         }
@@ -87,7 +88,7 @@ public class BifurcationChaosEngine {
         if (globalLyapunovExponent > 0.45 && globalSystemVariance > 5000.0) {
             if (!tippingPointWarning) {
                 tippingPointWarning = true;
-                logger.warn("⚠️ï¸ BIFURCATION WARNING: System approaching critical tipping point (Lyapunov={}, Variance={})",
+                logger.warn("[WARNING] BIFURCATION: System approaching critical tipping point (Lyapunov={}, Variance={})",
                         String.format("%.4f", globalLyapunovExponent), String.format("%.2f", globalSystemVariance));
             }
         } else {

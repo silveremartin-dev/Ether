@@ -86,18 +86,28 @@ public class PhysicalEnergyGridEngine {
         }
 
         // 5. Industrial Fossil Power (Coal, Hydrocarbons, Steam/ICE grid; requires Industrial tech >= 3.0)
+        double coalWatts = 0.0;
+        double hydrocarbonWatts = 0.0;
         if (tech >= 3.0) {
             double industrialFactor = Math.min(3.0, tech - 2.0);
-            double coalWatts = 3000.0 * industrialFactor; // ~3.0 - 9.0 kW primary power
-            mechanicalPowerWatts += coalWatts * converterEfficiency;
+            double coalStock = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
+            double oilStock = cell.getResourceOil() != null ? cell.getResourceOil() : 0.0;
+            double gasStock = cell.getResourceGas() != null ? cell.getResourceGas() : 0.0;
+            double fossilAvailability = Math.min(1.0, (coalStock + oilStock * 1.5 + gasStock * 1.2) / Math.max(10.0, pop * 0.05));
+            coalWatts = 3000.0 * industrialFactor * fossilAvailability; // Primary thermal coal
+            hydrocarbonWatts = (tech >= 3.5) ? 4000.0 * Math.min(2.0, tech - 3.0) * Math.min(1.0, (oilStock + gasStock) / Math.max(5.0, pop * 0.02)) : 0.0;
+            mechanicalPowerWatts += (coalWatts + hydrocarbonWatts) * converterEfficiency;
         }
 
         // 6. Modern Electrical & Nuclear Power Grid (tech >= 4.0)
+        double nuclearWatts = 0.0;
         if (tech >= 4.0) {
             double modernFactor = Math.min(2.5, tech - 3.5);
-            // Advanced electro-nuclear power flux: scales into 15-30 kW per capita range
-            double gridPowerWatts = 35000.0 * modernFactor;
-            mechanicalPowerWatts += gridPowerWatts * converterEfficiency;
+            double uraniumStock = cell.getResourceUranium() != null ? cell.getResourceUranium() : 0.0;
+            double fissileAvailability = Math.min(1.0, uraniumStock / Math.max(1.0, pop * 0.001));
+            // Electro-nuclear power flux: scales into 15-30 kW per capita range, strictly bounded by fissile reserves
+            nuclearWatts = 35000.0 * modernFactor * fissileAvailability;
+            mechanicalPowerWatts += nuclearWatts * converterEfficiency;
         }
 
         // 7. Advanced High-Flux Energy & D-T Fusion / Trans-Human Grid (tech >= 5.0)
@@ -119,7 +129,8 @@ public class PhysicalEnergyGridEngine {
     }
 
     /*
-     * Executes physical energy grid tick scaling capital formation by population and dtYears.
+     * Executes physical energy grid tick scaling capital formation by population and dtYears,
+     * and strictly consumes finite fossil and nuclear fuels to preserve thermodynamic conservation.
      */
     public static void processPhysicalEnergyGrid(List<H3Cell> cells, double dtYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
@@ -133,6 +144,34 @@ public class PhysicalEnergyGridEngine {
             if (pop <= 0) continue;
             double powerPerCapitaW = calculatePerCapitaMechanicalPowerWatts(cell);
             double tech = cell.getTechnologyLevel() != null ? Math.max(0.5, cell.getTechnologyLevel()) : 1.0;
+
+            // Set active productive labor capacity (person-years equivalent, ~60% working-age labor participation)
+            cell.setResourceWork(pop * 0.60);
+
+            // Deplete consumed geological fuels (Coal, Oil, Gas, Uranium, Rare Earths) according to power generation
+            if (tech >= 3.0) {
+                double coalStock = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
+                double oilStock = cell.getResourceOil() != null ? cell.getResourceOil() : 0.0;
+                double gasStock = cell.getResourceGas() != null ? cell.getResourceGas() : 0.0;
+                // Specific energy consumption: 1 W-year = 3.1536e7 J ~ 1.3 kg Coal (at 24 MJ/kg)
+                double coalBurnTons = (pop * (powerPerCapitaW * 0.4) * 0.0013 * dtSafe) / 1000.0;
+                double oilBurnTons = (tech >= 3.5) ? (pop * (powerPerCapitaW * 0.3) * 0.0008 * dtSafe) / 1000.0 : 0.0;
+                double gasBurnTons = (tech >= 3.5) ? (pop * (powerPerCapitaW * 0.2) * 0.0006 * dtSafe) / 1000.0 : 0.0;
+                cell.setResourceCoal(Math.max(0.0, coalStock - coalBurnTons));
+                cell.setResourceOil(Math.max(0.0, oilStock - oilBurnTons));
+                cell.setResourceGas(Math.max(0.0, gasStock - gasBurnTons));
+            }
+            if (tech >= 4.0) {
+                double uStock = cell.getResourceUranium() != null ? cell.getResourceUranium() : 0.0;
+                // 1 kg U-235 provides ~8e13 J (fission), minimal mass burn rate
+                double uBurnTons = (pop * (powerPerCapitaW * 0.3) * 1e-8 * dtSafe) / 1000.0;
+                cell.setResourceUranium(Math.max(0.0, uStock - uBurnTons));
+
+                // Advanced electro-nuclear grid, wind turbines, and semiconductors consume critical rare earth elements
+                double reeStock = cell.getResourceRareEarths() != null ? cell.getResourceRareEarths() : 0.0;
+                double reeBurnTons = (pop * (powerPerCapitaW * 0.1) * 2e-7 * dtSafe) / 1000.0;
+                cell.setResourceRareEarths(Math.max(0.0, reeStock - reeBurnTons));
+            }
 
             // Solow-Swan physical capital formation from mechanical work:
             // Gross investment scales with mechanical power flux, while depreciation scales with existing stock

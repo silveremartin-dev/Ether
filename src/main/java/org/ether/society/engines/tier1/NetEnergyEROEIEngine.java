@@ -80,6 +80,7 @@ public class NetEnergyEROEIEngine {
         int collapseCells = 0;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double eroei = calculateEROEI(cell);
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
 

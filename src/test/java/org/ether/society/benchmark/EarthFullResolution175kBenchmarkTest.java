@@ -23,13 +23,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Benchmark of Full Earth Simulation at 175,000 H3 Cells & 50 Million Humans.
- * Evaluates execution ticks/second (pas par seconde) and cell-update throughput
- * under full physical, thermodynamic, and cliodynamic simulation models over max 10 seconds.
+ * <b>[LEGACY 175K RECTANGULAR GRID BENCHMARK]</b>
+ * Evaluated 9 procedural plugins over a synthetic rectangular grid rather than genuine H3 planetary topology.
  *
+ * @deprecated Superseded by {@link ComprehensiveRealEngineBenchmarkTest} for real H3 planetary engine benchmarks.
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@Deprecated
 public class EarthFullResolution175kBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(EarthFullResolution175kBenchmarkTest.class);
 

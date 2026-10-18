@@ -42,12 +42,13 @@ public class EntropicMetalDissipationEngine {
             if (cell == null || cell.getResourceMetal() == null) continue;
 
             double metal = cell.getResourceMetal();
-            // Irreversible entropic loss
-            double dissipated = metal * annualDissipationRate * deltaYears;
-            cell.setResourceMetal(Math.max(0.0, metal - dissipated));
+            // Irreversible entropic loss (continuous exponential decay)
+            double remainingMetal = Math.max(0.0, metal * Math.exp(-annualDissipationRate * deltaYears));
+            double dissipated = metal - remainingMetal;
+            cell.setResourceMetal(remainingMetal);
 
             // Dissipated metals add to micro-pollution level
-            if (cell.getPollutionLevel() != null) {
+            if (cell.getPollutionLevel() != null && dissipated > 0.0) {
                 cell.setPollutionLevel(cell.getPollutionLevel() + dissipated * 0.1);
             }
         }
@@ -70,6 +71,13 @@ public class EntropicMetalDissipationEngine {
      * @param rate the rate argument (double)
      */
     public static void setAnnualDissipationRate(double rate) { annualDissipationRate = Math.max(0.0, Math.min(0.20, rate)); }
+    
+    /**
+     * Resets thermodynamic metal dissipation rate for scenario isolation.
+     */
+    public static void resetState() {
+        annualDissipationRate = 0.015;
+    }
 }
 
 

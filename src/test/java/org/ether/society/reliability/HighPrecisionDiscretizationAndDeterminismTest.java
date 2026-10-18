@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -109,6 +111,36 @@ public class HighPrecisionDiscretizationAndDeterminismTest {
         // Different seed must produce different hash
         String hashDifferentSeed = executeDeterministicRunAndHash(fixedSeed + 1, capacity, ticks);
         assertNotEquals(hashRun1, hashDifferentSeed, "Different random seed must produce divergent hash.");
+    }
+
+    @Test
+    @DisplayName("Multithreading: Concurrent Parallel Runs Guarantee Bit-Identical SHA-256 Hash")
+    void testConcurrentMultiThreadedDeterminismBitExactness() throws Exception {
+        long fixedSeed = 0x1234_5678_9ABC_DEF0L;
+        int capacity = 500;
+        int ticks = 500;
+        int threadCount = 8;
+
+        java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(threadCount);
+        List<java.util.concurrent.Future<String>> futures = new ArrayList<>();
+
+        for (int i = 0; i < threadCount; i++) {
+            futures.add(executor.submit(() -> executeDeterministicRunAndHash(fixedSeed, capacity, ticks)));
+        }
+
+        List<String> hashes = new ArrayList<>();
+        for (java.util.concurrent.Future<String> f : futures) {
+            hashes.add(f.get(30, java.util.concurrent.TimeUnit.SECONDS));
+        }
+        executor.shutdown();
+
+        String referenceHash = hashes.get(0);
+        logger.info("  Multithreaded Concurrent Reference SHA-256: {}", referenceHash);
+
+        for (int i = 1; i < hashes.size(); i++) {
+            assertEquals(referenceHash, hashes.get(i), 
+                    "Thread " + i + " output diverged from thread 0 under concurrent multithreading!");
+        }
     }
 
     // Helper: 4th-order Runge-Kutta numerical step

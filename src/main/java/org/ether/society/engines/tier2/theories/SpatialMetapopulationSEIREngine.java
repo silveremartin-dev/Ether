@@ -121,13 +121,24 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
 
             double beta = 0.35; // Transmission rate
             int susceptible = Math.max(0, pop - infected);
-            int newExposed = (int) (beta * susceptible * ((double) infected / pop) * (dt / 10.0));
-            newExposed = Math.min(susceptible, Math.max(0, newExposed));
-            int newInfectious = (int) (SIGMA_LATENCY_RATE * Math.min(newExposed, pop) * dt);
-            int recoveries = (int) (GAMMA_RECOVERY_RATE * infected * dt);
-            int deaths = (int) (VIRULENCE_FATALITY * infected * dt);
+            double lambda = beta * ((double) infected / pop);
+            double probExposure = 1.0 - Math.exp(-lambda * (dt / 10.0));
+            int newExposed = (int) Math.round(susceptible * probExposure);
+            newExposed = Math.clamp(newExposed, 0, susceptible);
 
-            int netInfected = Math.clamp(infected + newInfectious - recoveries - deaths, 0, pop);
+            double probInfectious = 1.0 - Math.exp(-SIGMA_LATENCY_RATE * dt);
+            int newInfectious = (int) Math.round(newExposed * probInfectious);
+            newInfectious = Math.clamp(newInfectious, 0, newExposed);
+
+            double totalRemovalRate = GAMMA_RECOVERY_RATE + VIRULENCE_FATALITY;
+            double probRemoval = 1.0 - Math.exp(-totalRemovalRate * dt);
+            int totalRemovals = (int) Math.round(infected * probRemoval);
+            totalRemovals = Math.clamp(totalRemovals, 0, infected);
+
+            int recoveries = (int) Math.round(totalRemovals * (GAMMA_RECOVERY_RATE / totalRemovalRate));
+            int deaths = totalRemovals - recoveries;
+
+            int netInfected = Math.clamp(infected + newInfectious - totalRemovals, 0, pop);
             cell.setEpidemicInfected(netInfected);
             cell.setPopulation(Math.max(0, pop - deaths));
 

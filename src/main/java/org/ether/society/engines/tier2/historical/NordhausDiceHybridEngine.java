@@ -44,7 +44,7 @@ public class NordhausDiceHybridEngine {
             double damageFraction = Math.min(0.50, 0.00236 * Math.pow(tempAnomaly, 2.0));
 
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            cell.setResourceCapital(capital * (1.0 - damageFraction * deltaYears));
+            cell.setResourceCapital(Math.max(0.0, capital * Math.exp(-damageFraction * deltaYears)));
         }
     }
 }

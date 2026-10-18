@@ -110,6 +110,8 @@ public class HeadlessRunner {
         Integer cliClimateTickFrequency = null;
         Boolean cliParallelExecution = null;
         Boolean cliSpatialRangeTruncation = null;
+        Boolean cliTier2Cliodynamics = null;
+        Boolean cliWindowed = null;
 
         // Scenario & Spatial Overrides
         String scenarioName = "OUT_OF_AFRICA";
@@ -276,6 +278,14 @@ public class HeadlessRunner {
                 cliSpatialRangeTruncation = !a.endsWith("=false");
             } else if (a.equals("--no-spatial-truncation")) {
                 cliSpatialRangeTruncation = false;
+            } else if (a.equals("--windowed") || a.equals("--clipped") || a.startsWith("--windowed=")) {
+                cliWindowed = !a.endsWith("=false");
+            } else if (a.equals("--fullscreen") || a.equals("--global") || a.equals("--no-windowed")) {
+                cliWindowed = false;
+            } else if (a.equals("--tier1") || a.equals("--tier1-only")) {
+                cliTier2Cliodynamics = false;
+            } else if (a.equals("--tier2") || a.equals("--all-tiers")) {
+                cliTier2Cliodynamics = true;
             }
 
             // Scenario, Spatiotemporal & Historical Presets
@@ -532,10 +542,25 @@ public class HeadlessRunner {
             if (cliSpatialRangeTruncation != null) {
                 scenario.setSpatialRangeTruncationEnabled(cliSpatialRangeTruncation);
             }
+            if (cliWindowed != null) {
+                scenario.setClippingEnabled(cliWindowed);
+                if (cliWindowed && scenario.getMinLat() == -90.0 && scenario.getMaxLat() == 90.0) {
+                    scenario.setMinLat(25.0);
+                    scenario.setMaxLat(45.0);
+                    scenario.setMinLng(-10.0);
+                    scenario.setMaxLng(45.0);
+                }
+            }
+            if (cliTier2Cliodynamics != null) {
+                scenario.setTier2CliodynamicsEnabled(cliTier2Cliodynamics);
+            }
 
             // Convert scenario to effective runtime performance configuration
             SimulationPerformanceConfig effectivePerfConfig = scenario.toPerformanceConfig();
             effectivePerfConfig.setParallelThreadCount(threadCount);
+            if (cliTier2Cliodynamics != null) {
+                effectivePerfConfig.setEnableTier2Cliodynamics(cliTier2Cliodynamics);
+            }
 
             if (!ticksExplicitlySet) {
                 ticksToRun = scenario.calculateScenarioTicks();

@@ -54,7 +54,7 @@ public class EcologicalDegradationEngine {
         // ── Phase 1: Local Environmental, Deforestation, Overfishing & Famine ──
         for (H3Cell cell : cells) {
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-            double effectiveTech = cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : techLevel;
+            double effectiveTech = (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0) ? cell.getTechnologyLevel() : techLevel;
             Biome biome = cell.getBiome();
 
             // 1. Pollution Generation & Natural Biogeochemical Attenuation
@@ -117,13 +117,16 @@ public class EcologicalDegradationEngine {
                 }
             }
 
-            if (cell.getElevation() <= 0) continue;
+            if (cell.getElevation() == null || cell.getElevation() <= 0) continue;
 
             if (pop <= 0) {
                 // Natural recovery when unoccupied
-                cell.setSoilOrganicCarbon(Math.min(100.0, cell.getSoilOrganicCarbon() + 0.5 * dtMonthlyRatio));
-                cell.setBiomassNatural(Math.min(1000.0, cell.getBiomassNatural() + 2.0 * dtMonthlyRatio));
-                cell.setWaterResource(Math.min(1000.0, cell.getWaterResource() + 5.0 * dtMonthlyRatio));
+                double curSoc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;
+                double curNat = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 500.0;
+                double curWater = cell.getWaterResource() != null ? cell.getWaterResource() : 100.0;
+                cell.setSoilOrganicCarbon(Math.min(100.0, curSoc + 0.5 * dtMonthlyRatio));
+                cell.setBiomassNatural(Math.min(1000.0, curNat + 2.0 * dtMonthlyRatio));
+                cell.setWaterResource(Math.min(1000.0, curWater + 5.0 * dtMonthlyRatio));
                 continue;
             }
 
@@ -284,22 +287,24 @@ public class EcologicalDegradationEngine {
 
         for (int i = 0; i < count; i++) {
             H3Cell src = cells.get(i);
+            if (src == null) continue;
             double srcPollution = src.getPollutionLevel() != null ? src.getPollutionLevel() : 0.0;
 
             if (srcPollution > 20.0) {
                 // Diffuse 12% of pollution to nearby regional cells (wind & river transport)
-                double overflow = srcPollution * 0.12;
-                pollutionDeltas[i] -= overflow;
-
                 int range = Math.min(count, 15);
                 int start = Math.max(0, i - range / 2);
                 int end = Math.min(count - 1, i + range / 2);
-                int targetCount = Math.max(1, (end - start));
+                int targetCount = end - start;
 
-                double share = overflow / targetCount;
-                for (int j = start; j <= end; j++) {
-                    if (j != i) {
-                        pollutionDeltas[j] += share;
+                if (targetCount > 0) {
+                    double overflow = srcPollution * 0.12;
+                    pollutionDeltas[i] -= overflow;
+                    double share = overflow / targetCount;
+                    for (int j = start; j <= end; j++) {
+                        if (j != i && cells.get(j) != null) {
+                            pollutionDeltas[j] += share;
+                        }
                     }
                 }
             }
@@ -308,7 +313,9 @@ public class EcologicalDegradationEngine {
         // Apply pollution deltas to all cells (including unpopulated / remote wilderness)
         for (int i = 0; i < count; i++) {
             H3Cell c = cells.get(i);
-            double newPollution = Math.min(1000.0, Math.max(0.0, c.getPollutionLevel() + pollutionDeltas[i]));
+            if (c == null) continue;
+            double curPol = c.getPollutionLevel() != null ? c.getPollutionLevel() : 0.0;
+            double newPollution = Math.min(1000.0, Math.max(0.0, curPol + pollutionDeltas[i]));
             c.setPollutionLevel(newPollution);
         }
     }
@@ -420,9 +427,12 @@ public class EcologicalDegradationEngine {
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cell == null) return 100.0;
 
-        double soilFactor = cell.getSoilOrganicCarbon() > 0 ? (cell.getSoilOrganicCarbon() / 50.0) : 1.0;
-        double rainFactor = Math.min(2.0, Math.max(0.1, cell.getRainfall() / 500.0));
-        double waterFactor = cell.getWaterResource() > 0 ? 1.2 : 0.8;
+        double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;
+        double soilFactor = soc > 0 ? (soc / 50.0) : 1.0;
+        double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+        double rainFactor = Math.min(2.0, Math.max(0.1, rain / 500.0));
+        double water = cell.getWaterResource() != null ? cell.getWaterResource() : 100.0;
+        double waterFactor = water > 0 ? 1.2 : 0.8;
 
         int h3Res = (cell.getH3Index() != null && cell.getH3Index() != 0L)
                 ? (int) ((cell.getH3Index() >>> 52) & 0xFL)

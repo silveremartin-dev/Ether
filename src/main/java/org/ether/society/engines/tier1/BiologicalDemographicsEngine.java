@@ -57,6 +57,7 @@ public class BiologicalDemographicsEngine {
         double dt = Math.max(0.001, deltaYears);
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 

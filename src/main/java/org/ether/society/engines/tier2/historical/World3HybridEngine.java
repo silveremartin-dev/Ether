@@ -38,7 +38,7 @@ public class World3HybridEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;

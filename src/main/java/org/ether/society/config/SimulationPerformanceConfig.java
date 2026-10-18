@@ -46,6 +46,9 @@ public class SimulationPerformanceConfig implements Serializable {
     /* Enable downwind spatial range truncation in dust storm & pollution dispersion */
     private boolean enableSpatialRangeTruncation = false;
 
+    /* Enable Tier 2 sociological & macroeconomic cliodynamics (SDT, Tainter, World3, Institutions, Trade). When false, executes Tier 1 physical conservation PDEs only. */
+    private boolean enableTier2Cliodynamics = true;
+
     /*
      * Simulation performance config.
      * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
@@ -280,6 +283,24 @@ public class SimulationPerformanceConfig implements Serializable {
      */
     public void setParallelThreadCount(int parallelThreadCount) {
         this.parallelThreadCount = Math.max(0, parallelThreadCount);
+    }
+
+    /**
+     * Checks if Tier 2 sociological & macroeconomic cliodynamics are enabled.
+     *
+     * @return true if Tier 2 theories are enabled, false if Tier 1 physics only
+     */
+    public boolean isEnableTier2Cliodynamics() {
+        return enableTier2Cliodynamics;
+    }
+
+    /**
+     * Configures whether Tier 2 sociological & macroeconomic cliodynamics are enabled.
+     *
+     * @param enableTier2Cliodynamics true to enable Tier 2, false to restrict to Tier 1 physics
+     */
+    public void setEnableTier2Cliodynamics(boolean enableTier2Cliodynamics) {
+        this.enableTier2Cliodynamics = enableTier2Cliodynamics;
     }
 }
 

@@ -31,6 +31,7 @@ public class TradeNetworkEngine {
     private static double cumulativeTradedFood = 0.0;
     private static double cumulativeTradedCapital = 0.0;
     private static double cumulativeTradedMetal = 0.0;
+    private static final Set<Long> previouslyScoredChokeCells = new HashSet<>();
 
     /**
      * Resets cumulative trade statistics for scenario isolation.
@@ -39,6 +40,8 @@ public class TradeNetworkEngine {
         cumulativeTradedFood = 0.0;
         cumulativeTradedCapital = 0.0;
         cumulativeTradedMetal = 0.0;
+        latestRoutes.clear();
+        previouslyScoredChokeCells.clear();
     }
 
     public static double getCumulativeTradedFood() { return cumulativeTradedFood; }
@@ -113,7 +116,7 @@ public class TradeNetworkEngine {
             for (int j = i + 1; j < Math.min(i + 5, hubs.size()); j++) {
                 H3Cell destination = hubs.get(j);
 
-                TradeRoute route = computeFrictionPath(origin, destination, cells, techLevel);
+                TradeRoute route = computeFrictionPath(origin, destination, cells, cellMap, techLevel);
                 if (route != null) {
                     activeRoutes.add(route);
                     applyTradeCorridorEffects(route, techLevel, dtYears);
@@ -124,7 +127,7 @@ public class TradeNetworkEngine {
         latestRoutes.clear();
         latestRoutes.addAll(activeRoutes);
 
-        evaluateStrategicChokePoints(cells, activeRoutes, dtYears);
+        evaluateStrategicChokePoints(cellMap, activeRoutes, dtYears);
 
         logger.info("Generated {} active trade corridors across {} population hubs.", activeRoutes.size(), hubs.size());
         return activeRoutes;
@@ -133,7 +136,7 @@ public class TradeNetworkEngine {
     /*
      * Computes the lowest-friction route between two cells using cost-distance heuristics.
      */
-    private static TradeRoute computeFrictionPath(H3Cell start, H3Cell end, List<H3Cell> cells, double techLevel) {
+    private static TradeRoute computeFrictionPath(H3Cell start, H3Cell end, List<H3Cell> cells, Map<Long, H3Cell> cellMap, double techLevel) {
         double distLat = end.getLatitude() - start.getLatitude();
         double distLng = end.getLongitude() - start.getLongitude();
         double directDist = Math.sqrt(distLat * distLat + distLng * distLng);
@@ -141,7 +144,9 @@ public class TradeNetworkEngine {
         if (directDist > 60.0) return null; // Too distant for direct trade route
 
         List<H3Cell> path = new ArrayList<>();
+        Set<H3Cell> visited = new HashSet<>();
         path.add(start);
+        visited.add(start);
 
         H3Cell current = start;
         double totalCost = 0.0;
@@ -151,17 +156,40 @@ public class TradeNetworkEngine {
             H3Cell nextBest = null;
             double bestScore = Double.MAX_VALUE;
 
-            for (H3Cell neighbor : cells) {
-                if (neighbor == current) continue;
+            List<H3Cell> candidates = new ArrayList<>();
+            if (cellMap != null && current.getH3Index() != 0L) {
+                try {
+                    List<Long> neighborIndices = org.ether.society.h3.H3Service.getInstance().getNeighbors(current.getH3Index());
+                    if (neighborIndices != null) {
+                        for (Long nIdx : neighborIndices) {
+                            H3Cell nCell = cellMap.get(nIdx);
+                            if (nCell != null && nCell != current) {
+                                candidates.add(nCell);
+                            }
+                        }
+                    }
+                } catch (Exception ignored) {}
+            }
 
-                double stepDist = Math.hypot(neighbor.getLatitude() - current.getLatitude(), neighbor.getLongitude() - current.getLongitude());
-                if (stepDist > 6.0) continue; // Adjacent or archipelagic strait neighborhood
+            // Fallback for non-indexed synthetic test cells or archipelagic strait jumps
+            if (candidates.isEmpty()) {
+                for (H3Cell neighbor : cells) {
+                    if (neighbor == current) continue;
+                    double stepDist = Math.hypot(neighbor.getLatitude() - current.getLatitude(), neighbor.getLongitude() - current.getLongitude());
+                    if (stepDist <= 6.0) {
+                        candidates.add(neighbor);
+                    }
+                }
+            }
+
+            for (H3Cell neighbor : candidates) {
+                if (visited.contains(neighbor)) continue;
 
                 double remainingDist = Math.hypot(end.getLatitude() - neighbor.getLatitude(), end.getLongitude() - neighbor.getLongitude());
                 double friction = neighbor.calculateMovementFriction(techLevel);
 
                 double costScore = (friction * 2.0) + remainingDist;
-                if (costScore < bestScore && !path.contains(neighbor)) {
+                if (costScore < bestScore) {
                     bestScore = costScore;
                     nextBest = neighbor;
                 }
@@ -170,6 +198,7 @@ public class TradeNetworkEngine {
             if (nextBest == null) break;
             current = nextBest;
             path.add(current);
+            visited.add(current);
             totalCost += current.getMovementFriction();
             steps++;
 
@@ -180,7 +209,7 @@ public class TradeNetworkEngine {
         }
 
         // Maritime bridge: if open straits separate two island hubs, connect maritime route directly
-        if (!path.contains(end)) {
+        if (!visited.contains(end)) {
             path.add(end);
             totalCost += directDist * 1.2;
         }
@@ -196,10 +225,21 @@ public class TradeNetworkEngine {
         if (route == null || route.pathCells().isEmpty()) return;
 
         double friction = Math.max(1.0, route.totalFrictionCost() * 0.1);
-        double conductance = Math.min(1.0, 1.0 / friction);
 
         H3Cell orig = route.origin();
         H3Cell dest = route.destination();
+
+        // Physical transport retention derived from technology:
+        // Food spoilage drops from ~20% (ancient caravans) to <0.5% (modern refrigerated intermodal)
+        double foodRetention = Math.clamp(0.78 + 0.05 * techLevel, 0.78, 0.995);
+        // Bulk material attrition drops from 4% to 0.1%
+        double bulkRetention = Math.clamp(0.95 + 0.01 * techLevel, 0.95, 0.999);
+
+        // Monetary lubrication: circulating bullion/specie reduces barter friction and enhances conductance
+        double origPrecious = orig != null && orig.getResourcePreciousMetal() != null ? orig.getResourcePreciousMetal() : 0.0;
+        double destPrecious = dest != null && dest.getResourcePreciousMetal() != null ? dest.getResourcePreciousMetal() : 0.0;
+        double monetaryLubrication = 1.0 + Math.min(1.5, Math.log1p(origPrecious + destPrecious) * 0.25);
+        double conductance = Math.min(1.0, (1.0 / friction) * monetaryLubrication);
 
         // 1. Bilateral Physical Commodity Arbitrage between Origin and Destination Hubs
         int origPop = orig != null && orig.getPopulation() != null ? orig.getPopulation() : 0;
@@ -219,7 +259,7 @@ public class TradeNetworkEngine {
                 double exportPotential = Math.min(origSurplus * 0.35, -destSurplus * 0.80) * conductance * dtYears;
                 if (exportPotential > 0.0) {
                     orig.setFoodResource(Math.max(0.0, origFood - exportPotential));
-                    dest.setFoodResource(destFood + exportPotential * 0.95); // 5% maritime transport spoilage
+                    dest.setFoodResource(destFood + exportPotential * foodRetention);
                     cumulativeTradedFood += exportPotential;
                 }
             } else if (destSurplus > 5.0 && origSurplus < -5.0) {
@@ -227,7 +267,7 @@ public class TradeNetworkEngine {
                 double exportPotential = Math.min(destSurplus * 0.35, -origSurplus * 0.80) * conductance * dtYears;
                 if (exportPotential > 0.0) {
                     dest.setFoodResource(Math.max(0.0, destFood - exportPotential));
-                    orig.setFoodResource(origFood + exportPotential * 0.95);
+                    orig.setFoodResource(origFood + exportPotential * foodRetention);
                     cumulativeTradedFood += exportPotential;
                 }
             }
@@ -239,15 +279,87 @@ public class TradeNetworkEngine {
                 double metalTrade = Math.min(origMetal * 0.20, (origMetal - destMetal) * 0.25) * conductance * dtYears;
                 if (metalTrade > 0.0) {
                     orig.setResourceMetal(Math.max(0.0, origMetal - metalTrade));
-                    dest.setResourceMetal(destMetal + metalTrade * 0.98); // 2% oxidation loss
+                    dest.setResourceMetal(destMetal + metalTrade * bulkRetention);
                     cumulativeTradedMetal += metalTrade;
                 }
             } else if (destMetal > origMetal + 10.0) {
                 double metalTrade = Math.min(destMetal * 0.20, (destMetal - origMetal) * 0.25) * conductance * dtYears;
                 if (metalTrade > 0.0) {
                     dest.setResourceMetal(Math.max(0.0, destMetal - metalTrade));
-                    orig.setResourceMetal(origMetal + metalTrade * 0.98);
+                    orig.setResourceMetal(origMetal + metalTrade * bulkRetention);
                     cumulativeTradedMetal += metalTrade;
+                }
+            }
+
+            // B2. Physical Fossil Energy Arbitrage (Coal, Hydrocarbons, Natural Gas)
+            if (techLevel >= 2.8) {
+                double origCoal = orig.getResourceCoal() != null ? orig.getResourceCoal() : 0.0;
+                double destCoal = dest.getResourceCoal() != null ? dest.getResourceCoal() : 0.0;
+                if (origCoal > destCoal + 50.0) {
+                    double coalTrade = Math.min(origCoal * 0.15, (origCoal - destCoal) * 0.20) * conductance * dtYears;
+                    orig.setResourceCoal(Math.max(0.0, origCoal - coalTrade));
+                    dest.setResourceCoal(destCoal + coalTrade * bulkRetention);
+                } else if (destCoal > origCoal + 50.0) {
+                    double coalTrade = Math.min(destCoal * 0.15, (destCoal - origCoal) * 0.20) * conductance * dtYears;
+                    dest.setResourceCoal(Math.max(0.0, destCoal - coalTrade));
+                    orig.setResourceCoal(origCoal + coalTrade * bulkRetention);
+                }
+
+                double origOil = orig.getResourceOil() != null ? orig.getResourceOil() : 0.0;
+                double destOil = dest.getResourceOil() != null ? dest.getResourceOil() : 0.0;
+                if (origOil > destOil + 30.0) {
+                    double oilTrade = Math.min(origOil * 0.20, (origOil - destOil) * 0.25) * conductance * dtYears;
+                    orig.setResourceOil(Math.max(0.0, origOil - oilTrade));
+                    dest.setResourceOil(destOil + oilTrade * bulkRetention);
+                } else if (destOil > origOil + 30.0) {
+                    double oilTrade = Math.min(destOil * 0.20, (destOil - origOil) * 0.25) * conductance * dtYears;
+                    dest.setResourceOil(Math.max(0.0, destOil - oilTrade));
+                    orig.setResourceOil(origOil + oilTrade * bulkRetention);
+                }
+
+                double origGas = orig.getResourceGas() != null ? orig.getResourceGas() : 0.0;
+                double destGas = dest.getResourceGas() != null ? dest.getResourceGas() : 0.0;
+                if (origGas > destGas + 25.0) {
+                    double gasTrade = Math.min(origGas * 0.15, (origGas - destGas) * 0.20) * conductance * dtYears;
+                    orig.setResourceGas(Math.max(0.0, origGas - gasTrade));
+                    dest.setResourceGas(destGas + gasTrade * bulkRetention);
+                } else if (destGas > origGas + 25.0) {
+                    double gasTrade = Math.min(destGas * 0.15, (destGas - origGas) * 0.20) * conductance * dtYears;
+                    dest.setResourceGas(Math.max(0.0, destGas - gasTrade));
+                    orig.setResourceGas(origGas + gasTrade * bulkRetention);
+                }
+            }
+
+            // B3. Physical Precious Metal / Specie Arbitrage (Gold, Silver, Bullion; tech >= 1.5)
+            // Long-distance high-value settlement with minimal physical transport attrition
+            if (techLevel >= 1.5) {
+                if (origPrecious > destPrecious + 0.2) {
+                    double preciousTrade = Math.min(origPrecious * 0.25, (origPrecious - destPrecious) * 0.30) * conductance * dtYears;
+                    if (preciousTrade > 0.0) {
+                        orig.setResourcePreciousMetal(Math.max(0.0, origPrecious - preciousTrade));
+                        dest.setResourcePreciousMetal(destPrecious + preciousTrade * 0.999);
+                    }
+                } else if (destPrecious > origPrecious + 0.2) {
+                    double preciousTrade = Math.min(destPrecious * 0.25, (destPrecious - origPrecious) * 0.30) * conductance * dtYears;
+                    if (preciousTrade > 0.0) {
+                        dest.setResourcePreciousMetal(Math.max(0.0, destPrecious - preciousTrade));
+                        orig.setResourcePreciousMetal(origPrecious + preciousTrade * 0.999);
+                    }
+                }
+            }
+
+            // B4. Modern Critical Minerals & Rare Earth Elements Arbitrage (tech >= 4.0)
+            if (techLevel >= 4.0) {
+                double origRee = orig.getResourceRareEarths() != null ? orig.getResourceRareEarths() : 0.0;
+                double destRee = dest.getResourceRareEarths() != null ? dest.getResourceRareEarths() : 0.0;
+                if (origRee > destRee + 1.0) {
+                    double reeTrade = Math.min(origRee * 0.20, (origRee - destRee) * 0.25) * conductance * dtYears;
+                    orig.setResourceRareEarths(Math.max(0.0, origRee - reeTrade));
+                    dest.setResourceRareEarths(destRee + reeTrade * bulkRetention);
+                } else if (destRee > origRee + 1.0) {
+                    double reeTrade = Math.min(destRee * 0.20, (destRee - origRee) * 0.25) * conductance * dtYears;
+                    dest.setResourceRareEarths(Math.max(0.0, destRee - reeTrade));
+                    orig.setResourceRareEarths(origRee + reeTrade * bulkRetention);
                 }
             }
 
@@ -260,14 +372,14 @@ public class TradeNetworkEngine {
                 double capTrade = Math.min(origCap * 0.15, (origCapPerCap - destCapPerCap) * destPop * 0.20) * conductance * dtYears;
                 if (capTrade > 0.0) {
                     orig.setResourceCapital(Math.max(0.0, origCap - capTrade));
-                    dest.setResourceCapital(destCap + capTrade * 0.98);
+                    dest.setResourceCapital(destCap + capTrade * bulkRetention);
                     cumulativeTradedCapital += capTrade;
                 }
             } else if (destCapPerCap > origCapPerCap * 1.3 && destCap > 50.0) {
                 double capTrade = Math.min(destCap * 0.15, (destCapPerCap - origCapPerCap) * origPop * 0.20) * conductance * dtYears;
                 if (capTrade > 0.0) {
                     dest.setResourceCapital(Math.max(0.0, destCap - capTrade));
-                    orig.setResourceCapital(origCap + capTrade * 0.98);
+                    orig.setResourceCapital(origCap + capTrade * bulkRetention);
                     cumulativeTradedCapital += capTrade;
                 }
             }
@@ -313,8 +425,8 @@ public class TradeNetworkEngine {
      * Evaluates topological transit frequencies across trade routes and identifies strategic choke points
      * (straits, mountain passes, isthmuses, and bottleneck transit cells), allocating transit toll rent.
      */
-    private static void evaluateStrategicChokePoints(List<H3Cell> cells, List<TradeRoute> routes, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
+    private static void evaluateStrategicChokePoints(Map<Long, H3Cell> cellMap, List<TradeRoute> routes, double dtYears) {
+        if (cellMap == null || cellMap.isEmpty()) return;
 
         Map<Long, Integer> transitFrequency = new HashMap<>();
         if (routes != null && !routes.isEmpty()) {
@@ -331,8 +443,15 @@ public class TradeNetworkEngine {
         int totalRoutes = (routes != null) ? routes.size() : 0;
         int chokePointCount = 0;
 
-        for (H3Cell cell : cells) {
-            int frequency = transitFrequency.getOrDefault(cell.getH3Index(), 0);
+        Set<Long> candidateIds = new HashSet<>(transitFrequency.keySet());
+        candidateIds.addAll(previouslyScoredChokeCells);
+        previouslyScoredChokeCells.clear();
+
+        for (Long cellId : candidateIds) {
+            H3Cell cell = cellMap.get(cellId);
+            if (cell == null) continue;
+
+            int frequency = transitFrequency.getOrDefault(cellId, 0);
             if (frequency > 0 && totalRoutes > 0) {
                 // Funnel ratio: fraction of total active planetary/regional trade passing through this single cell
                 double funnelRatio = (double) frequency / (double) totalRoutes;
@@ -344,6 +463,9 @@ public class TradeNetworkEngine {
 
                 double rawScore = Math.min(1.0, funnelRatio * constrictionBonus * 2.0);
                 cell.setChokePointScore(rawScore);
+                if (rawScore > 0.01) {
+                    previouslyScoredChokeCells.add(cellId);
+                }
 
                 if (rawScore >= 0.25) {
                     chokePointCount++;
@@ -362,7 +484,13 @@ public class TradeNetworkEngine {
                 // Graceful decay of choke point score when trade routes shift elsewhere
                 double currentScore = cell.getChokePointScore() != null ? cell.getChokePointScore() : 0.0;
                 if (currentScore > 0.0) {
-                    cell.setChokePointScore(Math.max(0.0, currentScore * 0.90));
+                    double decayed = currentScore * 0.90;
+                    if (decayed > 0.01) {
+                        cell.setChokePointScore(decayed);
+                        previouslyScoredChokeCells.add(cellId);
+                    } else {
+                        cell.setChokePointScore(0.0);
+                    }
                 }
             }
         }

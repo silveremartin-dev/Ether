@@ -40,7 +40,7 @@ public class MonasticDemographicBufferEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
             double pop = cell.getPopulation();
@@ -49,7 +49,7 @@ public class MonasticDemographicBufferEngine {
             if ((food / pop) < 0.10) {
                 double celibateCount = pop * monasticFraction;
                 // Reduce net birth rate by dampening fertile population fraction
-                cell.setPopulation((int) (pop - celibateCount * 0.02 * deltaYears));
+                cell.setPopulation((int) Math.max(1, pop - celibateCount * 0.02 * deltaYears));
             }
         }
     }
@@ -71,6 +71,13 @@ public class MonasticDemographicBufferEngine {
      * @param fraction the fraction argument (double)
      */
     public static void setMonasticFraction(double fraction) { monasticFraction = Math.max(0.0, Math.min(0.20, fraction)); }
+
+    /**
+     * Resets monastic fraction for scenario isolation.
+     */
+    public static void resetState() {
+        monasticFraction = 0.04;
+    }
 }
 
 

@@ -3784,8 +3784,8 @@ public class ScenarioSetupPanel extends BorderPane {
             new String[]{"HomininCompetitiveExclusionEngine", "🦴 Compétition Interspécifique & Exclusion Néandertal/Sapiens (-100 000 BP)",
                 "Modélisation de l'exclusion compétitive de Lotka-Volterra entre Sapiens, Néandertaliens et Dénisoviens.",
                 "Ref: Banks, W. E. et al. (2008). Neanderthal Extinction by Competitive Exclusion. PLoS ONE.",
-                "• Équations Couplées : dNâ‚/dt = râ‚ Nâ‚ (1 - (Nâ‚ + Î±â‚â‚‚ Nâ‚‚)/Kâ‚)\n• Avantage Sapiens : Légère supériorité d'extraction calorique (Î±â‚â‚‚ < Î±â‚‚â‚)"},
-            new String[]{"ShellMiddenAccumulationEngine", "ðŸš KjÃ¶kkenmÃ¶ddings & Accumulation Littorale (-12 000 BP)",
+                "• Équations Couplées : dN₁/dt = r₁ N₁ (1 - (N₁ + α₁₂ N₂)/K₁)\n• Avantage Sapiens : Légère supériorité d'extraction calorique (α₁₂ < α₂₁)"},
+            new String[]{"ShellMiddenAccumulationEngine", "🐚 Kjökkenmöddings & Accumulation Littorale (-12 000 BP)",
                 "Accumulation de amas coquilliers littoraux (Ertebølle) stabilisant la sédentarisation pré-agricole côtière.",
                 "Ref: Bailey, G. N. (2007). Shell mounds and coastal archaeology. Quat. Int.",
                 "• Accumulation Malacologique : Maintient la densité de bande constante même en hiver\n• Sédentarité Cotière : Débloque les premiers habitats semi-permanents littoraux"},
@@ -4777,7 +4777,7 @@ public class ScenarioSetupPanel extends BorderPane {
         root.setPrefWidth(720);
         root.setPrefHeight(600);
 
-        Label title = new Label("ðŸ—ºï¸ " + I18n.getOrDefault("scenario.layer_formats.title", "Standard des Tenseurs Spatio-Temporels (2048 Ã— 1024, Équirectangulaire 2:1)"));
+        Label title = new Label(I18n.getOrDefault("scenario.layer_formats.title", "Standard des Tenseurs Spatio-Temporels (2048 x 1024, Équirectangulaire 2:1)"));
         title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
         ScrollPane scroll = new ScrollPane();
@@ -8299,7 +8299,7 @@ private String getDefaultTensorName(int index) {
 
         eventsTable.getColumns().clear();
         eventsTable.getColumns().addAll(colType, colName, colYear, colLat, colLon, colDepth, colMag);
-        eventsTable.setUserData(new TableColumn[]{colType, colName, colYear, colLat, colLon, colDepth, colMag});
+        eventsTable.setUserData(new TableColumn<?, ?>[]{colType, colName, colYear, colLat, colLon, colDepth, colMag});
         eventsTable.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.events_table", "📋 Tableau des Événements : Double-cliquez sur une cellule pour modifier son type, nom, année, coordonnées ou magnitude.")));
 
         addEventBtn = new Button();
@@ -8802,13 +8802,14 @@ private String getDefaultTensorName(int index) {
 
             updatePreviewModesCombo();
 
-            if (eventsTable != null && eventsTable.getUserData() instanceof TableColumn[] cols && cols.length == 6) {
-                cols[0].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.name", "Nom / Description"));
-                cols[1].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.year", "Year"));
-                cols[2].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lat", "Latitude"));
-                cols[3].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lon", "Longitude"));
-                cols[4].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.depth", "Profondeur (km)"));
-                cols[5].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.magnitude", "Magnitude"));
+            if (eventsTable != null && eventsTable.getUserData() instanceof TableColumn<?, ?>[] cols && cols.length == 7) {
+                cols[0].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.type", "Type"));
+                cols[1].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.name", "Nom / Description"));
+                cols[2].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.year", "Year"));
+                cols[3].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lat", "Latitude"));
+                cols[4].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lon", "Longitude"));
+                cols[5].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.depth", "Profondeur (km)"));
+                cols[6].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.magnitude", "Magnitude"));
             }
             if (popHeader != null) {
                 popHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD"));

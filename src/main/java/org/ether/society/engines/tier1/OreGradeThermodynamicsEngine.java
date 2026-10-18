@@ -41,7 +41,7 @@ public class OreGradeThermodynamicsEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double currentMetalStock = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
             if (currentMetalStock > 0) {
@@ -76,6 +76,14 @@ public class OreGradeThermodynamicsEngine {
      * @param conc the conc argument (double)
      */
     public static void setReferenceOreConcentration(double conc) { referenceOreConcentration = Math.max(0.001, conc); }
+
+    /**
+     * Resets reference ore concentration parameters for scenario isolation.
+     */
+    public static void resetState() {
+        referenceOreConcentration = 0.05;
+        minOreConcentrationFloor = 0.001;
+    }
 }
 
 

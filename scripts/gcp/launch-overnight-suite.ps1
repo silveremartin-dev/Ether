@@ -79,7 +79,7 @@ if (Test-Path "data/maps/ether") {
     Write-Host "Uploading raster maps tensors (data/maps/ether)..." -ForegroundColor Cyan
     gcloud compute scp --recurse "data/maps/ether" "${InstanceName}:/opt/ether/data/maps/" --zone=$Zone --project=$ProjectId --quiet
 }
-gcloud compute scp "scripts/gcp/run-true-27-spatial-scenarios.sh" "${InstanceName}:/opt/ether/run_scenarios.sh" --zone=$Zone --project=$ProjectId --quiet
+gcloud compute scp "scripts/gcp/run-all-45-scenarios.sh" "${InstanceName}:/opt/ether/run_scenarios.sh" --zone=$Zone --project=$ProjectId --quiet
 
 # Step 5: Launch detached background execution
 Write-Host "[5/5] Launching background execution with Auto-Shutdown Guard..." -ForegroundColor Green

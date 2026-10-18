@@ -2005,7 +2005,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 if (currentScenario != null && timeManager.getCurrentYear() > currentScenario.getEndDateYear()) {
 
 
-                    logger.info("Ãƒ°Ã…Â¸Ã‚ÂÃ‚Â Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
+                    logger.info("Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
 
 
                     if (historyManager != null) {
@@ -2104,7 +2104,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 if (pauseAtNextEvent.get() && eventCountAfter > eventCountBefore) {
 
 
-                    logger.info("ÃƒÂ¢Ã‚ÂÃ‚Â¸ÃƒÂ¯Ã‚Â¸Ã‚Â [Pas {}] Pause automatique de la simulation sur ÃƒÆ’Ã‚Â©vÃƒÆ’Ã‚Â©nement (pauseAtNextEvent=true)", tickCounter);
+                    logger.info("[Step {}] Automatic simulation pause on event (pauseAtNextEvent=true)", tickCounter);
 
 
                     pause();
@@ -2131,7 +2131,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 if (tickCounter % Math.max(1, 12 / stepDays) == 0) {
 
 
-                    logger.info("ÃƒÂ¢Ã…Â¡ââ€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚Â [Pas {}] An {} M.{} | Pop: {} hab | TPS: {} it/s",
+                    logger.info("[Step {}] Year {} Month {} | Pop: {} | TPS: {} it/s",
 
 
                             tickCounter, timeManager.getCurrentYear(),
@@ -5357,7 +5357,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // --- Ãƒ°Ã…Â¸Ã…â€™Ã‚Â ÃƒÆ’ââ‚¬°COLOGIE & FRONTIÃƒÆ’Ëâ€ RES PLANÃƒÆ’ââ‚¬°TAIRES ---
+    // --- ECOLOGY & PLANETARY BOUNDARIES ---
 
 
     /*
@@ -5519,7 +5519,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // --- ÃƒÂ¢Ã‚ÂÃ‚³ CLIODYNAMIQUE & RISQUES SYSTÃƒÆ’ââ‚¬°MIQUES ---
+    // --- CLIODYNAMICS & SYSTEMIC RISKS ---
 
 
     /*

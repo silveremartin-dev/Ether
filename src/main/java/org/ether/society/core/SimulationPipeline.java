@@ -79,6 +79,17 @@ public class SimulationPipeline {
         EdoJapanIsolationEngine.resetState();
         CoGovernanceTradeEngine.resetState();
         RomanImperialCliodynamicEngine.resetState();
+        TradeNetworkEngine.resetCumulativeStats();
+        InfrastructureInertiaEngine.resetState();
+        EntropicMetalDissipationEngine.resetState();
+        NuclearSafetyRadiotoxicityEngine.resetState();
+        OreGradeThermodynamicsEngine.resetState();
+        FertileCrescentSalinizationEngine.resetState();
+        MonasticDemographicBufferEngine.resetState();
+        ProtestantWorkEthicEngine.resetState();
+        SmilMaterialTransitionsPureEngine.resetState();
+        TasmanianCulturalRegressionEngine.resetState();
+        JevonsParadoxEngine.resetState();
         ProceduralEngineRegistry.clearPlugins();
     }
 
@@ -232,7 +243,8 @@ public class SimulationPipeline {
         }
 
         // Pass 3: Anthropogenic Inhabited Cliodynamics & JIT-Compiled Scenario Theories Fused Pass
-        if (!populatedCells.isEmpty()) {
+        boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
+        if (runTier2 && !populatedCells.isEmpty()) {
             executeFusedAnthropogenicPass(populatedCells, dtYears, dtMonthly, activeScenario);
             // Dynamic Procedural Engine Plugins
             ProceduralEngineRegistry.processPlugins(populatedCells, dtMonthly);

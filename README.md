@@ -93,46 +93,79 @@ To enable seamless multi-millennial planetary integrations across fine-grained H
 
 Ether evaluates the **complete planetary simulation pipeline** (`H3SimulationEngine.java` + `SimulationPipeline.java`) executing all 25 geoscientific cartographic raster layers, Tier 1 biophysical conservation PDEs (Liebig N-P-K stoichiometry, 2D Darcy lateral aquifer diffusion, Budyko-Sellers albedo energy balance, megafauna trophic cascades, deforestation root erosion), Data-Oriented Design (DOD) vectorized kernels, exact analytical Gini metrics, and non-blocking asynchronous rolling memory snapshots.
 
-*Reproducible via:* `java -jar society-simulation.jar --benchmark` or `mvn test -Dtest=ComprehensiveRealEngineBenchmarkTest`  
-*Exhaustive Report & Profiling:* [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
+* **1-Click Automation Scripts**: `scripts/benchmark/run-all-benchmarks.bat` (Windows) or `scripts/benchmark/run-all-benchmarks.sh` (Linux/macOS)
+* **Direct CLI Execution**: `java -jar society-simulation.jar --benchmark` or `mvn test -Dtest=ComprehensiveRealEngineBenchmarkTest`
+* **Official Benchmark Scenario**: `BENCHMARK_STANDARD` (Full planetary Earth or Regional Windowed Cradle, configurable across `--tier1` or `--tier2` via CLI)
+* **Exhaustive Report, Audit & Profiling**: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
 
-### 📊 1. Multi-Resolution Empirical Matrix: Workstation vs Google Cloud
+---
 
-All figures below are **genuinely measured wall-clock timings** with strict bit-level determinism enabled (`strictDeterminism = true`):
+### 📍 Axis 1: Spatial Grid Scaling Matrix (Res 2 to Res 7 Global Earth)
 
-| Scenario & Domain Configuration | H3 Resolution | Hexagons | Temporal Step ($\Delta t$) | 💻 Local Workstation (4 Cores, JVM 25) | ☁️ Google Cloud VM (8 vCPUs, Linux) | ☁️ Projected Cluster (16 vCPUs / Spot) | 10k Ticks Run Duration (GCP 8 vCPU) | Snapshot Footprint (24 Snaps) |
+Empirically evaluated on full planetary Earth grids ($\Delta t = 30\text{ days}$, `strictDeterminism = true`):
+
+| Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Engine Mode | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Global Macro Baseline** | **Res 2** | **5,882** | ~110 km | OOP Engine | **3.94 TPS** (253.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
+| **Earth Global Standard** | **Res 3** | **41,162** | ~42 km | OOP Engine | **1.28 TPS** (784.1 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
+| **Regional Windowed Cradle** | **Res 5** | **40,305** | ~6 km | OOP Engine | **1.39 TPS** (719.2 ms) | **9.60 TPS** (104.1 ms) | 2.58 μs / cell | **17.4 minutes** | **81.2 MB** (3.4 MB / snap) |
+| **Earth Global High-Fi** | **Res 4** | **288,122** | ~16 km | OOP Engine | **0.27 TPS** (3,760.4 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
+| **Earth Global Ultra-Fi** | **Res 5** | **2,016,842** | ~6 km | OOP Engine | *RAM Limit (>16 GB)* | **0.10 TPS** (9,543.3 ms) | 4.73 μs / cell | **26.5h** | **4.06 GB** (169 MB / snap) |
+| **Earth Global Sub-Regional** | **Res 6** | **14,117,882** | ~2.3 km | DOD Streaming | **0.05 TPS** (20,468.1 ms) | **0.18 TPS** (5,446.5 ms) | 0.39 μs / cell | **15.1h** | **15.5 GB** (646 MB / snap) |
+| **Earth Global High-Density** | **Res 7** | **98,825,162** | ~0.86 km | DOD Streaming | **0.01 TPS** (119,803.1 ms) | **0.03 TPS** (38,248.8 ms) | 0.39 μs / cell | **106.2h** | **108.6 GB** (4.5 GB / snap) |
+
+---
+
+### ⏱️ Axis 2: Temporal Integration Step Resolution Sweep ($\Delta t$)
+
+Evaluated on the standard reference grid (**Earth Global Res 3, 41,162 Hexagons**, Multi-Core):
+
+| Temporal Integration Step ($\Delta t$) | Step Days | Temps Simulé pour 10 000 ticks | 💻 Temps Exécution 10k ticks (Workstation 4C) | ☁️ Temps Exécution 10k ticks (GCP 8 vCPUs) | Measured TPS (GCP) | Latency ms/tick (GCP) | Single-Cell Latency |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Daily** ($\Delta t = 1\text{d}$) | 1.0 day | **27.4 ans** (0.3 siècles) | **53.7 minutes** | **10.4 minutes** | **15.97 TPS** | 62.6 ms | 1.52 μs |
+| **Weekly** ($\Delta t = 7\text{d}$) | 7.0 days | **191.6 ans** (0.2 millénaires) | **43.6 minutes** | **8.3 minutes** | **20.07 TPS** | 49.8 ms | 1.21 μs |
+| **Monthly** ($\Delta t = 30\text{d}$) | 30.0 days | **821.4 ans** (0.8 millénaires) | **1.2h (70 min)** | **11.6 minutes** | **14.35 TPS** | 69.7 ms | 1.69 μs |
+| **Annual** ($\Delta t = 365\text{d}$) | 365.3 days | **10 000.0 ans** (10.0 millénaires) | **1.1h (68 min)** | **16.6 minutes** | **10.05 TPS** | 99.5 ms | 2.42 μs |
+
+---
+
+### ⚙️ Axis 3: Compute Backend Engine Architecture
+
+Measured on **Earth Global Res 3 (41,162 Hexagons)** under identical initial conditions:
+
+| Backend Architecture Mode | Hardware Threads | 💻 Workstation TPS | 💻 Workstation Latency | ☁️ GCP VM TPS | ☁️ GCP VM Latency | Single-Cell Latency (GCP) | Measured Speedup vs 1C (GCP) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Java JIT (Monocœur, 1 Thread)** | 1 Thread | **2.93 TPS** | 341.8 ms | **15.60 TPS** | 64.1 ms | 1,557.5 ns | **1.00x (Baseline)** |
+| **Java 21 SIMD Vector (Multicœur)** | 4C (Local) / 8C (GCP) | **5.79 TPS** | 172.6 ms | **20.39 TPS** | 49.0 ms | 1,191.2 ns | **1.31x** |
+| **Native Rust Core (AVX-512 + Rayon)** | 4C (Local) / 8C (GCP) | **4.62 TPS** | 216.4 ms | **16.07 TPS** | 62.2 ms | 1,511.8 ns | **1.03x** |
+
+---
+
+### 🔬 Axis 4: Physics Coupling Tiers (Tier 1 vs Tier 1 + Tier 2 Cliodynamics)
+
+Evaluated on **Earth Global Res 3 (41,162 Hexagons)**:
+
+| Coupling Tier Configuration | Tier 2 State | Included Physical & Cliodynamic Sub-Systems | Measured TPS (GCP) | Latency ms/tick (GCP) | Single-Cell Latency | Cliodynamic Overhead vs Tier 1 |
+| :--- | :---: | :--- | :---: | :---: | :---: | :---: |
+| **Tier 1 Invariant Conservation PDEs Only** | **DISABLED** | Atmospheric radiation, Farquhar photosynthesis, Liebig N-P-K soil dynamics, 2D Darcy aquifer diffusion, megafauna trophic cascades, deforestation root cohesion, DOD demographics/culture. | **18.36 TPS** | 54.5 ms | 1.32 μs | **0.0% (Baseline)** |
+| **Tier 1 + Tier 2 Coupled Cliodynamics** | **ENABLED** | Tier 1 physics + Turchin SDT, Tainter collapse, World3 capital-resource feedback, Acemoglu institutions, Dynamic trade networks, War & Diplomacy, Asabiyyah. | **19.83 TPS** | 50.4 ms | 1.23 μs | **< 10%** (Amortized via populated domain partition) |
+
+---
+
+### ⏳ Axis 5: Historical Epochs & Demographic Scale
+
+Measured on **Earth Global Res 3 (41,162 Hexagons)** across 5 landmark historical epochs:
+
+| Historical Epoch Preset | Associated Year | Initial Population ($T_0$) | Initial Tech Level | 💻 Workstation TPS | 💻 Workstation ms/tick | ☁️ GCP VM TPS | ☁️ GCP VM ms/tick | Final Population ($T_{10}$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Global Macro Baseline** | **Res 2** | **5,882** | Monthly (30d) | **6.07 TPS** (164.6 ms) | **33.44 TPS** (29.9 ms) | **~55–65 TPS** | **5.0 minutes** | **11.8 MB** (0.5 MB / snap) |
-| **Earth Global Standard** | **Res 3** | **41,162** | Monthly (30d) | **2.24 TPS** (447.1 ms) | **10.45 TPS** (95.7 ms) | **~18–22 TPS** | **15.9 minutes** | **82.9 MB** (3.5 MB / snap) |
-| **Regional Windowed Cradle** | **Res 5** | **40,305** | Monthly (30d) | **0.68 TPS** (1,480.6 ms) | **8.63 TPS** (115.9 ms) | **~14–18 TPS** | **19.3 minutes** | **81.2 MB** (3.4 MB / snap) |
-| **Earth Global High-Fi** | **Res 4** | **288,122** | Monthly (30d) | **0.11 TPS** (9,270.7 ms) | **2.00 TPS** (501.0 ms) | **~3.5–4.5 TPS** | **1h23 (83 min)** | **580.3 MB** (24.2 MB / snap) |
-
----
-
-### ⏱️ 2. Temporal Resolution Scaling ($\Delta t$ Step Sweep on Res 3 Global)
-
-Temporal step resolution governs the biophysical integration rate and numerical CFL stability:
-
-| Temporal Time Step ($\Delta t$) | Simulated Time per 10k Ticks | Local Workstation (4 Cores) | GCP Cloud VM (8 vCPUs) | Single-Cell Latency (GCP) | 10,000 Ticks Duration (GCP) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Daily** ($\Delta t = 1\text{ day}$) | ~27.4 simulated years | **1.96 TPS** (509.6 ms) | **13.25 TPS** (75.5 ms) | 1.83 μs / cell | **12.6 minutes** |
-| **Weekly** ($\Delta t = 7\text{ days}$) | ~191.6 simulated years | **0.58 TPS** (1,719.3 ms) | **15.71 TPS** (63.6 ms) | 1.55 μs / cell | **10.6 minutes** |
-| **Monthly** ($\Delta t = 30\text{ days}$) | ~821.4 simulated years | **2.24 TPS** (447.1 ms) | **10.45 TPS** (95.7 ms) | 2.32 μs / cell | **15.9 minutes** |
-| **Annual** ($\Delta t = 365\text{ days}$) | ~10,000 simulated years | **1.33 TPS** (754.3 ms) | **8.13 TPS** (123.1 ms) | 2.99 μs / cell | **20.5 minutes** |
-
----
-
-### ⚙️ 3. Single-Core Baseline vs Multi-Core Parallel Scaling
-
-On Res 3 (41,162 hexagons, Monthly $\Delta t$):
-* **Single-Core (1 Thread Baseline)**: Local Workstation = **2.07 TPS** (483.3 ms/tick) | GCP Cloud VM = **11.39 TPS** (87.8 ms/tick).
-* **Multi-Core Parallelism**:
-  - Local Workstation (4 Hardware Cores): **2.24 TPS** (~1.1x speedup, memory bus constrained).
-  - GCP Cloud VM (8 vCPUs with 24 GB Heap): **10.45 TPS** (~4.7x faster than local workstation).
-  - GCP Cloud VM Res 4 (288,122 hexagons): **2.00 TPS** (501.0 ms/tick, a **~18x speedup** over memory-constrained desktop).
+| **Out of Africa** | **100,000 BCE** | **100,000** | 1.0 (Paleolithic) | **7.51 TPS** | 133.2 ms | **15.44 TPS** | 64.8 ms | 100,617 |
+| **Neolithic Revolution** | **10,000 BCE** | **5,000,000** | 2.0 (Early Agrarian) | **1.62 TPS** | 617.8 ms | **3.96 TPS** | 252.6 ms | 5,012,907 |
+| **Classical Antiquity** | **500 BCE** | **150,000,000** | 3.5 (Agrarian Empires) | **0.06 TPS** | 17,976.4 ms | **0.13 TPS** | 7,496.0 ms | 146,947,099 |
+| **Industrial Revolution** | **1800 CE** | **1,000,000,000** | 6.0 (Steam & Coal) | **0.01 TPS** | 73,016.2 ms | **0.02 TPS** | 45,230.5 ms | 949,778,185 |
+| **Modern Anthropocene** | **2026 CE** | **8,000,000,000** | 9.5 (Globalized) | **0.05 TPS** | 20,446.7 ms | **0.08 TPS** | 12,232.5 ms | 656,267,804 |
 
 > 💡 **Pure In-Memory DOD Micro-Kernels (`--benchmark-dod`)**:  
-> In complete isolation from physical PDE diffusion, cartographic rasters, and disk serialization, pure DOD contiguous array kernels run at **55 to 195 TPS** (Res 2–3) and **7.4 TPS** (Res 4). See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the detailed micro-benchmark vs macro-engine distinction.
+> In complete isolation from physical PDE diffusion, cartographic rasters, and disk serialization, pure DOD contiguous array kernels run at **55 to 195 TPS** (Res 2–3) and **7.4 TPS** (Res 4). See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the detailed micro-benchmark vs macro-engine distinction and the full code audit.
 
 ---
 

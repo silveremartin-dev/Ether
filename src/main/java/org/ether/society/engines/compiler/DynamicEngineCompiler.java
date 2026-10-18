@@ -47,17 +47,29 @@ public class DynamicEngineCompiler {
             "System.load",
             "System.loadLibrary",
             "System.setSecurityManager",
+            "System.getenv",
+            "System.getProperty",
+            "System.setProperty",
             "sun.misc.Unsafe",
             "jdk.internal",
             "java.lang.reflect",
-            "java.lang.invoke.MethodHandles",
-            "java.net.Socket",
-            "java.net.ServerSocket",
-            "java.net.URLClassLoader",
+            "Class.forName",
+            "MethodHandles",
+            "java.net.",
+            "javax.net.",
+            "Socket",
+            "ServerSocket",
+            "URLClassLoader",
             "ClassLoader",
-            "javax.tools.JavaCompiler",
+            "javax.tools.",
+            "java.io.File",
+            "java.io.FileInputStream",
+            "java.io.FileOutputStream",
+            "java.io.RandomAccessFile",
+            "java.nio.file.",
             "Native",
-            "JNI"
+            "JNI",
+            "ScriptEngine"
     );
 
     private static URLClassLoader persistentClassLoader;
@@ -140,13 +152,14 @@ public class DynamicEngineCompiler {
                         I18n.getOrDefault("dynamic_engine.error.javac_failed", "Javac compilation error for: ") + fileName, null);
             }
 
-            // 2. Load class using persistent ClassLoader (avoiding premature closure)
+            // 2. Load class using clean URLClassLoader (closing previous to prevent Metaspace leaks)
             URL[] urls = new URL[]{outputDir.toUri().toURL()};
-            if (persistentClassLoader == null) {
-                persistentClassLoader = new URLClassLoader(urls, DynamicEngineCompiler.class.getClassLoader());
-            } else {
-                persistentClassLoader = new URLClassLoader(urls, persistentClassLoader);
+            if (persistentClassLoader != null) {
+                try {
+                    persistentClassLoader.close();
+                } catch (Exception ignored) {}
             }
+            persistentClassLoader = new URLClassLoader(urls, DynamicEngineCompiler.class.getClassLoader());
 
             Class<?> loadedClass = persistentClassLoader.loadClass(fullClassName);
             

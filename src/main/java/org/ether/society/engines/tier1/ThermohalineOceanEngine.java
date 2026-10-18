@@ -50,6 +50,7 @@ public class ThermohalineOceanEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             if (cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) {
                 // Ocean thermal buffer
                 continue;

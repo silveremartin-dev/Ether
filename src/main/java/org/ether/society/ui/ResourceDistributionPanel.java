@@ -3575,6 +3575,22 @@ public class ResourceDistributionPanel extends BorderPane {
                     cell.setBiomassNatural(totalBiomass * cellScale * 0.5);
                 }
             }
+
+            // Distribute 10 physical geological and energy tensors (Coal, Oil, Gas, Uranium, REE, etc.)
+            PlanetPreset plPreset = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
+            double latVal = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+            double lonVal = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
+            double coalDensity = sampleProceduralGeologyTensor(0, lonVal, latVal, plPreset);
+            double oilDensity = sampleProceduralGeologyTensor(1, lonVal, latVal, plPreset);
+            double gasDensity = sampleProceduralGeologyTensor(2, lonVal, latVal, plPreset);
+            double uraniumDensity = sampleProceduralGeologyTensor(3, lonVal, latVal, plPreset);
+            double reeDensity = sampleProceduralGeologyTensor(7, lonVal, latVal, plPreset);
+
+            cell.setResourceCoal(coalDensity * 10000.0);
+            cell.setResourceOil(oilDensity * 8000.0);
+            cell.setResourceGas(gasDensity * 6000.0);
+            cell.setResourceUranium(uraniumDensity * 500.0);
+            cell.setResourceRareEarths(reeDensity * 300.0);
         });
 
         // Apply custom map images ONLY if import modes are selected
@@ -4098,77 +4114,77 @@ public class ResourceDistributionPanel extends BorderPane {
         combo.getItems().add("");
         switch (index) {
             case 0 -> combo.getItems().addAll(
-                "ðŸŒ Terre — USGS MRDS & BGR Coal Basins [Global, -360 Ma (Carbonifère) Ã  Actuel]",
+                "ðŸŒ Terre — USGS MRDS & BGR Coal Basins [Global, -360 Ma (Carbonifère) à Actuel]",
                 "🔴 Mars — Regolith & Abiotic Crust [Planétaire (Mars), -4.1 Ga à Actuel (Abiotique / Stérile)]",
                 "🟡 Vénus — Pyrolyzed Carbon Crust [Planétaire (Vénus), -500 Ma à Actuel (Pyrolyse / Stérile)]",
                 "⚪ Lune — Regolith & Vacuum Crust [Planétaire (Lune), -4.5 Ga à Actuel (Abiotique / Stérile)]",
                 "⚪ Mercure — Silicate Crust [Planétaire (Mercure), -4.0 Ga à Actuel (Abiotique / Stérile)]"
             );
             case 1 -> combo.getItems().addAll(
-                "ðŸŒ Terre — USGS WPA & BGR Oil Assessment [Global, -250 Ma (Mésozoïque) Ã  Actuel]",
+                "ðŸŒ Terre — USGS WPA & BGR Oil Assessment [Global, -250 Ma (Mésozoïque) à Actuel]",
                 "🔴 Mars — Lacustrine Bedrocks [Planétaire (Mars), -4.1 Ga à Actuel (Traces Paléo-Lacustres)]",
                 "🟡 Vénus — Supercritical CO₂ Crust [Planétaire (Vénus), -500 Ma à Actuel (Pyrolyse / Stérile)]",
                 "⚪ Lune — Sterile Regolith [Planétaire (Lune), -4.5 Ga à Actuel (Stérile / Vide)]",
                 "⚪ Mercure — Airless Crust [Planétaire (Mercure), -4.0 Ga à Actuel (Stérile / Vide)]"
             );
             case 2 -> combo.getItems().addAll(
-                "ðŸŒ Terre — USGS & WEP/BGR Natural Gas Fields [Global, -300 Ma Ã  Actuel]",
+                "ðŸŒ Terre — USGS & WEP/BGR Natural Gas Fields [Global, -300 Ma à Actuel]",
                 "🔴 Mars — Subsurface Methane & Clathrates [Planétaire (Mars), -4.1 Ga à Actuel (Traces Méthanogènes)]",
                 "🟡 Vénus — Supercritical Atmosphere & Crustal Gas Traps [Planétaire (Vénus), -500 Ma à Actuel (Pièges Crustaux)]",
                 "⚪ Lune — Solar Wind Entrapped Gases [Planétaire (Lune), -4.5 Ga à Actuel (Pièges Vent Solaire)]",
                 "⚪ Mercure — Exospheric Outgassing [Planétaire (Mercure), -4.0 Ga à Actuel (Traces Exosphériques)]"
             );
             case 3 -> combo.getItems().addAll(
-                "ðŸŒ Terre — IAEA UDEPO & NEA Red Book Uranium [Global, -2.5 Ga (Protérozoïque) Ã  Actuel]",
+                "ðŸŒ Terre — IAEA UDEPO & NEA Red Book Uranium [Global, -2.5 Ga (Protérozoïque) à Actuel]",
                 "🔴 Mars — Mars Odyssey GRS Thorium & Uranium [Planétaire (Mars), -4.1 Ga à Actuel (Spectrométrie Gamma)]",
                 "🟡 Vénus — Venera 8/9/10 Gamma-Ray Spectrometry [Planétaire (Vénus), -500 Ma à Actuel (Sondes Venera)]",
                 "⚪ Lune — Lunar Prospector KREEP GRS Thorium [Planétaire (Lune), -4.5 Ga à Actuel (Terrains KREEP)]",
                 "⚪ Mercure — MESSENGER GRS/XRS Thorium & Uranium [Planétaire (Mercure), -4.0 Ga à Actuel (Spectrométrie X/GRS)]"
             );
             case 4 -> combo.getItems().addAll(
-                "ðŸŒ Terre — Atmosphere Shielded Crust [Global, -4.5 Ga Ã  Actuel (Traces Négligeables / Bouclier Magnétique)]",
+                "ðŸŒ Terre — Atmosphere Shielded Crust [Global, -4.5 Ga à Actuel (Traces Négligeables / Bouclier Magnétique)]",
                 "🔴 Mars — Low-Magnetism Regolith Infiltration [Planétaire (Mars), -4.1 Ga à Actuel (Infiltration Régolithe)]",
                 "🟡 Vénus — Upper Ionosphere Solar Traps [Planétaire (Vénus), -500 Ma à Actuel (Haute Atmosphère)]",
                 "⚪ Lune — LRO LOLA & Lunar Prospector Ilmenite [Planétaire (Lune), -4.5 Ga à Actuel (Régolithe Titane/Ilménite)]",
                 "⚪ Mercure — MESSENGER Magnetosphere Solar Wind Trap [Planétaire (Mercure), -4.0 Ga à Actuel (Pièges Magnétiques)]"
             );
             case 5 -> combo.getItems().addAll(
-                "ðŸŒ Terre — USGS MRDS & Banded Iron Formations Atlas [Global, -3.8 Ga (Archéen) Ã  Actuel]",
+                "ðŸŒ Terre — USGS MRDS & Banded Iron Formations Atlas [Global, -3.8 Ga (Archéen) à Actuel]",
                 "🔴 Mars — Mars Express OMEGA & CRISM Hematite [Planétaire (Mars), -4.1 Ga à Actuel (Hématite / Oxydes de Fer)]",
                 "🟡 Vénus — Magellan SAR Basaltic Volcanism & Pyrite [Planétaire (Vénus), -500 Ma à Actuel (Sulfures & Pyrites)]",
                 "⚪ Lune — Clementine & Lunar Prospector FeO Basalts [Planétaire (Lune), -4.5 Ga à Actuel (Basaltes des Mers)]",
                 "⚪ Mercure — MESSENGER High-Iron Crust & Regolith [Planétaire (Mercure), -4.0 Ga à Actuel (Noyau Géant Ferrique)]"
             );
             case 6 -> combo.getItems().addAll(
-                "ðŸŒ Terre — USGS MRDS Precious Metals Au/Ag/PGM [Global, -3.8 Ga Ã  Actuel (Gisements Orogéniques & Alluvionnaires)]",
+                "ðŸŒ Terre — USGS MRDS Precious Metals Au/Ag/PGM [Global, -3.8 Ga à Actuel (Gisements Orogéniques & Alluvionnaires)]",
                 "🔴 Mars — Hydrothermal Quartz & Native Gold Model [Planétaire (Mars), -4.1 Ga à Actuel (Paléo-Hydrothermalisme)]",
                 "🟡 Vénus — Heavy Metallic Pyrite & Telluride Frosts [Planétaire (Vénus), -500 Ma à Actuel (Gels Métalliques Sommitaux)]",
                 "⚪ Lune — Impact Siderophile & Native Platinum Traces [Planétaire (Lune), -4.5 Ga à Actuel (Éjectas Sidérophiles)]",
                 "⚪ Mercure — Core-Mantle Precious Metals & Sulfides [Planétaire (Mercure), -4.0 Ga à Actuel (Différenciation Manteau/Noyau)]"
             );
             case 7 -> combo.getItems().addAll(
-                "ðŸŒ Terre — USGS Rare Earth Elements & Salars [Global, -2.5 Ga Ã  Actuel (Pegmatites, Carbonatites & Salars)]",
+                "ðŸŒ Terre — USGS Rare Earth Elements & Salars [Global, -2.5 Ga à Actuel (Pegmatites, Carbonatites & Salars)]",
                 "🔴 Mars — Acid Fog & Hydrothermal REE Model [Planétaire (Mars), -4.1 Ga à Actuel (Altération Hydrothermale Acide)]",
                 "🟡 Vénus — Alkaline Carbonatites & REE Model [Planétaire (Vénus), -500 Ma à Actuel (Carbonatites Alcalines)]",
                 "⚪ Lune — KREEP Basalts & Rare Earth Elements [Planétaire (Lune), -4.5 Ga à Actuel (Complexes Magmatiques KREEP)]",
                 "⚪ Mercure — Magmatic Sulfide & REE Model [Planétaire (Mercure), -4.0 Ga à Actuel (Sulfures Magmatiques)]"
             );
             case 8 -> combo.getItems().addAll(
-                "ðŸŒ Terre — IHFC / Davies Global Crustal Heat Flow [Global, -4.5 Ga Ã  Actuel (Flux 40 Ã  120 mW/m²)]",
+                "ðŸŒ Terre — IHFC / Davies Global Crustal Heat Flow [Global, -4.5 Ga à Actuel (Flux 40 à 120 mW/m²)]",
                 "🔴 Mars — InSight Crustal Heat Flow & Volcanic Plumes [Planétaire (Mars), -4.1 Ga à Actuel (Panaches Résiduels Tharsis/Elysium)]",
                 "🟡 Vénus — Magellan Coronae & Mantle Plumes [Planétaire (Vénus), -500 Ma à Actuel (Points Chauds & Coronae)]",
                 "⚪ Lune — Apollo 15/17 Lunar Heat Flow Experiment [Planétaire (Lune), -4.5 Ga à Actuel (Flux Résiduel 15-20 mW/m²)]",
                 "⚪ Mercure — MESSENGER Core Conduction & Residual Heat [Planétaire (Mercure), -4.0 Ga à Actuel (Conduction Thermique du Noyau)]"
             );
             case 9 -> combo.getItems().addAll(
-                "ðŸŒ Terre — UNESCO / WHYMAP Global Groundwater Aquifers [Global, -10 000 BP Ã  Actuel (Holocène & Aquifères Fossiles)]",
+                "ðŸŒ Terre — UNESCO / WHYMAP Global Groundwater Aquifers [Global, -10 000 BP à Actuel (Holocène & Aquifères Fossiles)]",
                 "🔴 Mars — Mars Express MARSIS Subsurface Ice [Planétaire (Mars), -4.1 Ga à Actuel (Calottes & Glace Enfouie)]",
                 "🟡 Vénus — Atmospheric Supercritical Vapor [Planétaire (Vénus), -500 Ma à Actuel (Croûte Desséchée)]",
                 "⚪ Lune — LRO / LCROSS Polar Cold Trap Ice [Planétaire (Lune), -4.5 Ga à Actuel (Pièges Froids Polaires)]",
                 "⚪ Mercure — MESSENGER Polar Crater Water Ice [Planétaire (Mercure), -4.0 Ga à Actuel (Cratères d'Ombre)]"
             );
             default -> combo.getItems().addAll(
-                "ðŸŒ Terre — USGS Scientific Dataset [Global, -4.5 Ga Ã  Actuel]",
+                "ðŸŒ Terre — USGS Scientific Dataset [Global, -4.5 Ga à Actuel]",
                 "Global Planetary Survey [Planétaire, -4.5 Ga à Actuel]"
             );
         }

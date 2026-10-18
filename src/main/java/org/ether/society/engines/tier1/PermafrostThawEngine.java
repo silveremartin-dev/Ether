@@ -42,6 +42,7 @@ public class PermafrostThawEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             Biome biome = cell.getBiome();
             double temp = cell.getTemperature() != null ? cell.getTemperature() : -10.0;
 
@@ -52,7 +53,8 @@ public class PermafrostThawEngine {
                 totalMethaneOutgassing += methaneRelease;
 
                 // Ground thaw converts tundra to wetland / taiga, boosting soil organic carbon loss
-                cell.setSoilOrganicCarbon(Math.max(5.0, cell.getSoilOrganicCarbon() - 0.2));
+                double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;
+                cell.setSoilOrganicCarbon(Math.max(5.0, soc - 0.2));
             }
         }
 

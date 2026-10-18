@@ -123,8 +123,8 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
         double meanGini = totalGiniSum / activeCellsCount;
         double meanTemp = avgTemp / activeCellsCount;
 
-        logger.debug("Sovereign AI Governor Tick [Mode: {}] - Pop: {}, Mean Pollution: {:.2f}, Mean Gini: {:.3f}",
-                mode, (long) totalPop, meanPollution, meanGini);
+        logger.debug("Sovereign AI Governor Tick [Mode: {}] - Pop: {}, Mean Pollution: {}, Mean Gini: {}",
+                mode, (long) totalPop, String.format(java.util.Locale.ROOT, "%.2f", meanPollution), String.format(java.util.Locale.ROOT, "%.3f", meanGini));
 
         // 2. Action & Policy Intervention Phase based on Governance Mode
         switch (mode) {

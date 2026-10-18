@@ -26,6 +26,8 @@ public class MetallurgyEnthalpyEngine {
 
     /* Specific smelting enthalpy for Iron Oxide reduction in MJ/kg */
     public static final double IRON_SMELTING_ENTHALPY_MJ_PER_KG = 24.7;
+    /* Specific thermal cupellation and refining enthalpy for precious bullion ore in MJ/kg */
+    public static final double PRECIOUS_CUPELLATION_ENTHALPY_MJ_PER_KG = 12.0;
 
     /*
      * Executes one chemical ore smelting tick across cells using default monthly step.
@@ -79,8 +81,40 @@ public class MetallurgyEnthalpyEngine {
                 cell.setBiomassNatural(Math.max(0.0, woodBiomass - woodConsumedKg));
 
                 // 5. Expand cell physical capital (tools, weapons, plows)
+                // Metal is converted directly into physical durable tooling/infrastructure (1 kg refined metal -> 1 kg durable tool stock)
+                // modulated by metallurgical alloy quality (carbon steel, bronze) without arbitrary magic fractions.
                 double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-                cell.setResourceCapital(curCap + (actualRefinedMetal * 0.5));
+                double alloyQuality = Math.clamp(0.4 + 0.2 * (tech - 2.5), 0.4, 1.2);
+                double durableToolInvestment = actualRefinedMetal * alloyQuality;
+                // Physical capital depreciation from mechanical wear and rust/corrosion
+                double materialWearRate = Math.max(0.01, 0.05 / Math.max(0.5, tech * 0.4)) * dtSafe;
+                double newCapital = Math.max(0.0, (curCap + durableToolInvestment) * (1.0 - materialWearRate));
+                cell.setResourceCapital(newCapital);
+            }
+
+            // 6. Precious Metal Extraction & Cupellation (Gold, Silver, Electrum)
+            // Placer gold panning at tech >= 1.2; deep vein shaft mining and cupellation at tech >= 1.8.
+            double rawPreciousOre = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0.0;
+            if (tech >= 1.2 && rawPreciousOre > 0.05) {
+                double preciousMiners = pop * Math.clamp(0.001 * tech, 0.0005, 0.015);
+                double extractionRateKgPerWorker = 2.0 * Math.clamp(tech / 1.5, 0.5, 8.0);
+                double maxLaborPreciousKg = preciousMiners * extractionRateKgPerWorker * dtSafe;
+
+                double actualExtractedPreciousKg = Math.min(rawPreciousOre, maxLaborPreciousKg);
+                if (actualExtractedPreciousKg > 0.0001) {
+                    // Thermal cupellation energy (wood fuel) required at tech >= 1.8
+                    if (tech >= 1.8 && woodBiomass > 5.0) {
+                        double cupelFuelKg = (actualExtractedPreciousKg * PRECIOUS_CUPELLATION_ENTHALPY_MJ_PER_KG) / (18.5 * 0.20);
+                        double woodDeduction = Math.min(woodBiomass * 0.05, cupelFuelKg);
+                        cell.setBiomassNatural(Math.max(0.0, woodBiomass - woodDeduction));
+                    }
+                    cell.setResourcePreciousMetal(Math.max(0.0, rawPreciousOre - actualExtractedPreciousKg));
+
+                    // Refined precious bullion increases durable liquid capital stock and lowers transaction friction
+                    double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                    double bullionValueFactor = Math.clamp(2.5 - 0.2 * (tech - 1.2), 1.0, 3.0);
+                    cell.setResourceCapital(curCap + actualExtractedPreciousKg * bullionValueFactor);
+                }
             }
         }
 
