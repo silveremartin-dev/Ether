@@ -52,7 +52,8 @@ public class TerraformingEngine {
         }
 
         // Apply orbital mirror solar forcing & greenhouse atmospheric warming
-        double radiativeForcingWm2 = 5.35 * Math.log(co2Ppm / 280.0) + (solarMirrorInsolationMultiplier - 1.0) * 1361.0;
+        double safeCo2 = Math.max(1.0, co2Ppm);
+        double radiativeForcingWm2 = 5.35 * Math.log(safeCo2 / 280.0) + (solarMirrorInsolationMultiplier - 1.0) * 1361.0;
         double globalTempDelta = radiativeForcingWm2 * 0.8 * deltaYears;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
@@ -64,7 +65,8 @@ public class TerraformingEngine {
             cell.setTemperature(currentTemp + globalTempDelta);
 
             // Asteroid mining influx boosts local metal/mineral density
-            if (asteroidMiningFluxTonnesPerYear > 0 && cell.getPopulation() > 1000) {
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            if (asteroidMiningFluxTonnesPerYear > 0 && pop > 1000) {
                 double mineralBoost = (asteroidMiningFluxTonnesPerYear / cells.size()) * 0.0001;
                 cell.setResourceMetal((cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0) + mineralBoost);
             }

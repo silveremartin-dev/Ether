@@ -118,8 +118,10 @@ public class GlacialThermodynamicMeltEngine {
         double eustaticRiseMeters = totalMeltedMassKg / (WATER_DENSITY_KG_M3 * GLOBAL_OCEAN_AREA_M2);
 
         if (activeGlacialCells > 0) {
-            logger.debug("Glacial Thermodynamic Melt: {} active cells, total melt = {:.2e} kg, eustatic rise = {:.4f} mm",
-                    activeGlacialCells, totalMeltedMassKg, eustaticRiseMeters * 1000.0);
+            logger.debug("Glacial Thermodynamic Melt: {} active cells, total melt = {} kg, eustatic rise = {} mm",
+                    activeGlacialCells,
+                    String.format(java.util.Locale.ROOT, "%.2e", totalMeltedMassKg),
+                    String.format(java.util.Locale.ROOT, "%.4f", eustaticRiseMeters * 1000.0));
         }
 
         return eustaticRiseMeters;

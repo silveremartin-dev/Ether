@@ -323,12 +323,12 @@ public class PluggableStatEngine {
                 case "wealth":
                 case "gdp":
                 case "capital":
-                    return buffer.getBiomassHuman(); // Approximate human biomass/wealth in buffer
+                    return buffer.getResourceCapital() != null ? buffer.getResourceCapital() : buffer.getBiomassHuman();
                 case "population":
                 case "pop":
                     return buffer.getBiomassHuman();
                 case "food":
-                    return buffer.getBiomassNatural();
+                    return buffer.getFoodResource() != null ? buffer.getFoodResource() : buffer.getBiomassNatural();
                 case "water":
                 case "rainfall":
                 case "rain":

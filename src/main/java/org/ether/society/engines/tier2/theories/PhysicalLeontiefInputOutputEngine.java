@@ -49,10 +49,13 @@ public class PhysicalLeontiefInputOutputEngine {
         for (H3Cell cell : cells) {
             if (cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
+            double solar = cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0;
+            double wind = cell.getEnergyWind() != null ? cell.getEnergyWind() : 0.0;
+            double fire = cell.getEnergyFire() != null ? cell.getEnergyFire() : 0.0;
+            double currentEnergy = (solar + wind + fire) * 0.1;
             double currentCapital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
             double currentMetal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
             double currentWood = cell.getWoodResource() != null ? cell.getWoodResource() : 0.0;
-            double currentEnergy = (cell.getEnergySolar() + cell.getEnergyWind() + cell.getEnergyFire()) * 0.1;
 
             // Target capital expansion based on population and technology level
             double techLevel = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;

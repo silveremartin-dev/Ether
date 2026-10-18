@@ -88,7 +88,7 @@ public class GlacialIsostaticAdjustmentEngine {
         }
 
         if (adjustingCells > 0) {
-            logger.debug("Glacial Isostatic Adjustment: Relaxed {} cells over {:.1f} years", adjustingCells, deltaYears);
+            logger.debug("Glacial Isostatic Adjustment: Relaxed {} cells over {} years", adjustingCells, String.format(java.util.Locale.ROOT, "%.1f", deltaYears));
         }
     }
 }

@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.zip.GZIPOutputStream;
 
@@ -1120,10 +1121,23 @@ public class HistoricalScenarioCalibrationHarness {
                     long snapTick = entry.getKey();
                     String snapFileName = String.format("snapshot_tick_%010d.bin.gz", snapTick);
                     Path snapPath = snapshotsDir.resolve(snapFileName);
-                    try (OutputStream fos = Files.newOutputStream(snapPath);
-                         GZIPOutputStream gzos = new GZIPOutputStream(fos)) {
-                        gzos.write(entry.getValue());
-                        gzos.finish();
+                    Path tmpSnapPath = snapshotsDir.resolve(snapFileName + ".tmp." + UUID.randomUUID());
+                    try {
+                        try (OutputStream fos = Files.newOutputStream(tmpSnapPath);
+                             GZIPOutputStream gzos = new GZIPOutputStream(fos)) {
+                            gzos.write(entry.getValue());
+                            gzos.finish();
+                        }
+                        try {
+                            Files.move(tmpSnapPath, snapPath, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                        } catch (Exception moveEx) {
+                            Files.move(tmpSnapPath, snapPath, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    } catch (Exception snapEx) {
+                        try {
+                            Files.deleteIfExists(tmpSnapPath);
+                        } catch (Exception ignored) {}
+                        logger.warn("Could not write snapshot tick {} to {}: {}", snapTick, snapPath, snapEx.getMessage());
                     }
                 }
             }
@@ -1732,8 +1746,9 @@ public class HistoricalScenarioCalibrationHarness {
 
         long totalDurationMs = System.currentTimeMillis() - startTime;
         logger.info("===============================================================================");
-        logger.info("🏁 FULL 4-AXIS CALIBRATION & FALSIFICATION CAMPAIGN COMPLETED IN {} ms ({:.2f} s)",
-                totalDurationMs, totalDurationMs / 1000.0);
+        logger.info(String.format(Locale.ROOT,
+                "🏁 FULL 4-AXIS CALIBRATION & FALSIFICATION CAMPAIGN COMPLETED IN %d ms (%.2f s)",
+                totalDurationMs, totalDurationMs / 1000.0));
         logger.info("===============================================================================");
     }
 }

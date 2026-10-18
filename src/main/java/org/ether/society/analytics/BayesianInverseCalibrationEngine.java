@@ -211,8 +211,9 @@ public class BayesianInverseCalibrationEngine {
         double r2 = calculateRSquared(optimalTrajectory, observedTrajectory);
         double rmse = calculateRMSE(optimalTrajectory, observedTrajectory);
 
-        logger.info("✅ ABC Calibration Complete: Acceptance Rate={:.2f}%, Final ε={:.4f}, Optimal R^2={:.4f}, RMSE={:.2f}",
-                acceptanceRate * 100.0, minDistance, r2, rmse);
+        logger.info(String.format(Locale.ROOT,
+                "✅ ABC Calibration Complete: Acceptance Rate=%.2f%%, Final ε=%.4f, Optimal R^2=%.4f, RMSE=%.2f",
+                acceptanceRate * 100.0, minDistance, r2, rmse));
 
         return new CalibrationReport(minDistance, acceptanceRate, r2, rmse, posteriorMap, optimalTrajectory, covMatrix, corrMatrix);
     }

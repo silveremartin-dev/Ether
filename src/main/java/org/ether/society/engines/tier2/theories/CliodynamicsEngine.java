@@ -66,7 +66,8 @@ public class CliodynamicsEngine {
             if (cell != nation.getCapital()) {
                 nation.removeCell(cell);
                 // Population loss from civil strife
-                cell.setPopulation((int) (cell.getPopulation() * 0.90));
+                int curPop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+                cell.setPopulation((int) (curPop * 0.90));
             }
         }
 

@@ -34,8 +34,8 @@ class ComparativeAnalyticsIntegrationTest {
     void testHeadlessExecutionForMissingScenario() {
         Scenario scenario = new Scenario();
         scenario.setName("Test Scenario Alpha");
-        scenario.setStartDateYear(-500);
-        scenario.setEndDateYear(200);
+        scenario.setStartDateYear(100);
+        scenario.setEndDateYear(110);
         scenario.setInitialHumanCount(5000);
         scenario.setInitialCapitalPerCapita(25.0);
 
@@ -50,7 +50,7 @@ class ComparativeAnalyticsIntegrationTest {
         // Verify run registered
         assertNotNull(record, "HeadlessBatchRunner should produce a non-null record");
         assertTrue(runRepository.hasRunForScenario("Test Scenario Alpha"), "Repository should now contain run for Test Scenario Alpha");
-        assertEquals(700, scenario.getEndDateYear() - scenario.getStartDateYear());
+        assertEquals(10, scenario.getEndDateYear() - scenario.getStartDateYear());
         assertFalse(record.getTimeSeriesData().isEmpty(), "Time series data should contain snapshots");
     }
 

@@ -89,79 +89,50 @@ To enable seamless multi-millennial planetary integrations across fine-grained H
 
 ---
 
-## ⚡ Multi-Resolution Planetary Benchmarks (H3 Res 2 to Res 7)
+## ⚡ Empirical Planetary Simulation Engine Benchmarks (Ground Truth)
 
-Ether provides an integrated empirical benchmarking harness (`--benchmark`) evaluating performance across all three execution backends: **Java JIT Monocœur Baseline**, **Java 21 SIMD Vector Multicœur**, and **Native Multi-Core Rust Core (`ether_core_native`)**, alongside **Distributed GCP Spot Clusters**.
+Ether evaluates the **complete planetary simulation pipeline** (`H3SimulationEngine.java` + `SimulationPipeline.java`) executing all 25 geoscientific cartographic raster layers, Tier 1 biophysical conservation PDEs (Liebig N-P-K stoichiometry, 2D Darcy lateral aquifer diffusion, Budyko-Sellers albedo energy balance, megafauna trophic cascades, deforestation root erosion), Data-Oriented Design (DOD) vectorized kernels, exact analytical Gini metrics, and non-blocking asynchronous rolling memory snapshots.
 
-### 🧪 1. Empirical Measured Benchmarks (Single-Node Direct Runs)
+*Reproducible via:* `java -jar society-simulation.jar --benchmark` or `mvn test -Dtest=ComprehensiveRealEngineBenchmarkTest`  
+*Exhaustive Report & Profiling:* [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
 
-*Reproducible via:* `java -jar society-simulation.jar --benchmark`  
-*Full Report:* [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
+### 📊 1. Multi-Resolution Empirical Matrix: Workstation vs Google Cloud
 
-#### A. Local Workstation (Windows 11, Java 25, 4 Hardware CPU Cores):
-| Engine Implementation | H3 Res & Cells | Throughput (TPS) | Cell Throughput | Single-Cell Latency | Heap Delta |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Java JIT (Monocœur Baseline)** | **Res 2** (5,882 cells) | **99.61 TPS** | 585,931 cells/s | 1,706.7 ns/cell | +5 MB |
-| **Java 21 SIMD (Vector Multicœur)** | **Res 2** (5,882 cells) | **194.48 TPS** | 1,143,907 cells/s | 874.2 ns/cell | +5 MB |
-| **Native Rust Core (`ether_core_native`)** | **Res 2** (5,882 cells) | **342.08 TPS** | 2,012,133 cells/s | 497.0 ns/cell | +5 MB |
-| **Java JIT (Monocœur Baseline)** | **Res 3** (41,162 cells) | **54.32 TPS** | 2,235,969 cells/s | 447.2 ns/cell | +6 MB |
-| **Java 21 SIMD (Vector Multicœur)** | **Res 3** (41,162 cells) | **55.53 TPS** | 2,285,890 cells/s | 437.5 ns/cell | +6 MB |
-| **Native Rust Core (`ether_core_native`)** | **Res 3** (41,162 cells) | **56.74 TPS** | 2,335,398 cells/s | 428.2 ns/cell | +6 MB |
-| **Java JIT (Monocœur Baseline)** | **Res 4** (288,122 cells) | **7.20 TPS** | 2,074,505 cells/s | 482.0 ns/cell | +106 MB |
-| **Java 21 SIMD (Vector Multicœur)** | **Res 4** (288,122 cells) | **7.41 TPS** | **2,134,064 cells/s** | **468.6 ns/cell** | +66 MB |
-| **Native Rust Core (`ether_core_native`)** | **Res 4** (288,122 cells) | **6.91 TPS** | 1,991,180 cells/s | 502.2 ns/cell | +78 MB |
+All figures below are **genuinely measured wall-clock timings** with strict bit-level determinism enabled (`strictDeterminism = true`):
 
-#### B. Google Cloud VM (`ether-master`, Linux amd64, 4 vCPUs, OpenJDK 21):
-| Engine Implementation | H3 Res & Cells | Throughput (TPS) | Cell Throughput | Single-Cell Latency | Heap Delta |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Java JIT (Monocœur Baseline)** | **Res 2** (5,882 cells) | **119.86 TPS** | 705,039 cells/s | 1,418.4 ns/cell | +5 MB |
-| **Java 21 SIMD (Vector Multicœur)** | **Res 2** (5,882 cells) | **148.12 TPS** | 871,245 cells/s | 1,147.8 ns/cell | +5 MB |
-| **Native Rust Core (`libether_core_native.so`)**| **Res 2** (5,882 cells) | **276.22 TPS** | 1,624,716 cells/s | 615.5 ns/cell | +5 MB |
-| **Java JIT (Monocœur Baseline)** | **Res 3** (41,162 cells) | **31.64 TPS** | 1,302,475 cells/s | 767.8 ns/cell | +8 MB |
-| **Java 21 SIMD (Vector Multicœur)** | **Res 3** (41,162 cells) | **38.67 TPS** | 1,591,768 cells/s | 628.2 ns/cell | +34 MB |
-| **Native Rust Core (`libether_core_native.so`)**| **Res 3** (41,162 cells) | **38.29 TPS** | 1,576,266 cells/s | 634.4 ns/cell | +34 MB |
-| **Java JIT (Monocœur Baseline)** | **Res 4** (288,122 cells) | **4.74 TPS** | 1,366,485 cells/s | 731.8 ns/cell | +136 MB |
-| **Java 21 SIMD (Vector Multicœur)** | **Res 4** (288,122 cells) | **4.31 TPS** | 1,242,213 cells/s | 805.0 ns/cell | +72 MB |
-| **Native Rust Core (`libether_core_native.so`)**| **Res 4** (288,122 cells) | **4.73 TPS** | **1,363,935 cells/s** | **733.2 ns/cell** | +238 MB |
+| Scenario & Domain Configuration | H3 Resolution | Hexagons | Temporal Step ($\Delta t$) | 💻 Local Workstation (4 Cores, JVM 25) | ☁️ Google Cloud VM (8 vCPUs, Linux) | ☁️ Projected Cluster (16 vCPUs / Spot) | 10k Ticks Run Duration (GCP 8 vCPU) | Snapshot Footprint (24 Snaps) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Global Macro Baseline** | **Res 2** | **5,882** | Monthly (30d) | **6.07 TPS** (164.6 ms) | **33.44 TPS** (29.9 ms) | **~55–65 TPS** | **5.0 minutes** | **11.8 MB** (0.5 MB / snap) |
+| **Earth Global Standard** | **Res 3** | **41,162** | Monthly (30d) | **2.24 TPS** (447.1 ms) | **10.45 TPS** (95.7 ms) | **~18–22 TPS** | **15.9 minutes** | **82.9 MB** (3.5 MB / snap) |
+| **Regional Windowed Cradle** | **Res 5** | **40,305** | Monthly (30d) | **0.68 TPS** (1,480.6 ms) | **8.63 TPS** (115.9 ms) | **~14–18 TPS** | **19.3 minutes** | **81.2 MB** (3.4 MB / snap) |
+| **Earth Global High-Fi** | **Res 4** | **288,122** | Monthly (30d) | **0.11 TPS** (9,270.7 ms) | **2.00 TPS** (501.0 ms) | **~3.5–4.5 TPS** | **1h23 (83 min)** | **580.3 MB** (24.2 MB / snap) |
 
 ---
 
-### 🌐 2. Multi-Resolution Distributed Cluster Scaling (Res 2 to Res 7)
+### ⏱️ 2. Temporal Resolution Scaling ($\Delta t$ Step Sweep on Res 3 Global)
 
-For full planetary simulations with millions of hexagons, horizontal Hilbert-partitioned distributed clusters scale memory capacity and compute bandwidth across Google Cloud Spot instances:
+Temporal step resolution governs the biophysical integration rate and numerical CFL stability:
 
-| Historical Era & Scenario | Global H3 Res & Cells | Avg Cell Area | Single VM (4 vCPU) | ☁️ 2-Node Spot Cluster | ☁️ 8-Node Spot Cluster | ☁️ 32-Node Spot Cluster |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Out of Africa** (-100k BP) | **Res 2** (5,882 cells) | 86,750 km² | 107.5 TPS | **359.1 TPS** | **1,200+ TPS** | **3,500+ TPS** |
-| | **Res 3** (41,162 cells) | 12,393 km² | 29.7 TPS | **177.2 TPS** | **580.0 TPS** | **1,800+ TPS** |
-| | **Res 4** (288,122 cells) | 1,770 km² | 5.1 TPS | **27.2 TPS** | **95.0 TPS** | **310.0 TPS** |
-| | **Res 5** (2,016,842 cells)| 253 km² | ~0.3 TPS | **4.3 TPS** | **15.2 TPS** | **52.0 TPS** |
-| | **Res 6** (14,117,882 cells)| 36 km² | *RAM limit* | **0.68 TPS** | **2.4 TPS** | **8.5 TPS** |
-| | **Res 7** (98,825,162 cells)| 5.1 km² | *RAM limit* | *RAM limit* | *RAM limit* | **1.1 TPS** |
-| **Neolithic Rev.** (-10k BP) | **Res 2** (5,882 cells) | 86,750 km² | 105.0 TPS | **439.6 TPS** | **1,350+ TPS** | **3,800+ TPS** |
-| | **Res 3** (41,162 cells) | 12,393 km² | 28.5 TPS | **163.3 TPS** | **520.0 TPS** | **1,650+ TPS** |
-| | **Res 4** (288,122 cells) | 1,770 km² | 4.8 TPS | **22.9 TPS** | **82.0 TPS** | **270.0 TPS** |
-| | **Res 5** (2,016,842 cells)| 253 km² | ~0.2 TPS | **4.3 TPS** | **14.8 TPS** | **49.0 TPS** |
-| | **Res 6** (14,117,882 cells)| 36 km² | *RAM limit* | **0.70 TPS** | **2.3 TPS** | **8.1 TPS** |
-| | **Res 7** (98,825,162 cells)| 5.1 km² | *RAM limit* | *RAM limit* | *RAM limit* | **1.0 TPS** |
-| **Classical Era** (-500 BCE) | **Res 2** (5,882 cells) | 86,750 km² | 120.0 TPS | **1,205.2 TPS**| **3,600+ TPS** | **8,000+ TPS** |
-| | **Res 3** (41,162 cells) | 12,393 km² | 31.0 TPS | **186.6 TPS** | **610.0 TPS** | **1,950+ TPS** |
-| | **Res 4** (288,122 cells) | 1,770 km² | 5.2 TPS | **27.2 TPS** | **92.0 TPS** | **300.0 TPS** |
-| | **Res 5** (2,016,842 cells)| 253 km² | ~0.2 TPS | **3.8 TPS** | **13.5 TPS** | **44.0 TPS** |
-| | **Res 6** (14,117,882 cells)| 36 km² | *RAM limit* | **0.59 TPS** | **2.0 TPS** | **7.0 TPS** |
-| | **Res 7** (98,825,162 cells)| 5.1 km² | *RAM limit* | *RAM limit* | *RAM limit* | **0.8 TPS** |
-| **Industrial Rev.** (+1800 CE) | **Res 2** (5,882 cells) | 86,750 km² | 85.0 TPS | **234.6 TPS** | **750.0 TPS** | **2,400+ TPS** |
-| | **Res 3** (41,162 cells) | 12,393 km² | 22.0 TPS | **95.4 TPS** | **310.0 TPS** | **1,020+ TPS** |
-| | **Res 4** (288,122 cells) | 1,770 km² | 3.8 TPS | **12.6 TPS** | **42.0 TPS** | **140.0 TPS** |
-| | **Res 5** (2,016,842 cells)| 253 km² | ~0.15 TPS | **4.3 TPS** | **14.0 TPS** | **46.0 TPS** |
-| | **Res 6** (14,117,882 cells)| 36 km² | *RAM limit* | **0.30 TPS** | **1.1 TPS** | **3.8 TPS** |
-| | **Res 7** (98,825,162 cells)| 5.1 km² | *RAM limit* | *RAM limit* | *RAM limit* | **0.5 TPS** |
+| Temporal Time Step ($\Delta t$) | Simulated Time per 10k Ticks | Local Workstation (4 Cores) | GCP Cloud VM (8 vCPUs) | Single-Cell Latency (GCP) | 10,000 Ticks Duration (GCP) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Daily** ($\Delta t = 1\text{ day}$) | ~27.4 simulated years | **1.96 TPS** (509.6 ms) | **13.25 TPS** (75.5 ms) | 1.83 μs / cell | **12.6 minutes** |
+| **Weekly** ($\Delta t = 7\text{ days}$) | ~191.6 simulated years | **0.58 TPS** (1,719.3 ms) | **15.71 TPS** (63.6 ms) | 1.55 μs / cell | **10.6 minutes** |
+| **Monthly** ($\Delta t = 30\text{ days}$) | ~821.4 simulated years | **2.24 TPS** (447.1 ms) | **10.45 TPS** (95.7 ms) | 2.32 μs / cell | **15.9 minutes** |
+| **Annual** ($\Delta t = 365\text{ days}$) | ~10,000 simulated years | **1.33 TPS** (754.3 ms) | **8.13 TPS** (123.1 ms) | 2.99 μs / cell | **20.5 minutes** |
 
-### 🔬 Micro-Benchmark Latency & Hardware Efficiency:
-* **Single-Cell Kernel Latency**: **$534\text{ to }838\text{ ns / cell / tick}$** for complete coupled planetary state transition.
-* **Workstation Peak Throughput**: Over **$318\text{ TPS}$** sustained in native Rust (H3 Resolution 2) on standard desktop CPU.
-* **Cost Efficiency on GCP Spot**: **~$0.16 per 1,000 ticks** at H3 Resolution 4 (288,122 hexagons) on 2x `c2-standard-4` spot nodes.
-* **Reference Specifications**: See [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) and [`docs/DEPLOYMENT_AND_INFRASTRUCTURE.md`](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md).
+---
+
+### ⚙️ 3. Single-Core Baseline vs Multi-Core Parallel Scaling
+
+On Res 3 (41,162 hexagons, Monthly $\Delta t$):
+* **Single-Core (1 Thread Baseline)**: Local Workstation = **2.07 TPS** (483.3 ms/tick) | GCP Cloud VM = **11.39 TPS** (87.8 ms/tick).
+* **Multi-Core Parallelism**:
+  - Local Workstation (4 Hardware Cores): **2.24 TPS** (~1.1x speedup, memory bus constrained).
+  - GCP Cloud VM (8 vCPUs with 24 GB Heap): **10.45 TPS** (~4.7x faster than local workstation).
+  - GCP Cloud VM Res 4 (288,122 hexagons): **2.00 TPS** (501.0 ms/tick, a **~18x speedup** over memory-constrained desktop).
+
+> 💡 **Pure In-Memory DOD Micro-Kernels (`--benchmark-dod`)**:  
+> In complete isolation from physical PDE diffusion, cartographic rasters, and disk serialization, pure DOD contiguous array kernels run at **55 to 195 TPS** (Res 2–3) and **7.4 TPS** (Res 4). See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the detailed micro-benchmark vs macro-engine distinction.
 
 ---
 
@@ -204,21 +175,6 @@ java -jar society-simulation.jar --single-core --safe --res=2 --scenario=OUT_OF_
 | `--ticks=<N>` | `-t <N>` | Target simulation tick count |
 | `--headless` | `-h` | Run in headless CLI batch mode without JavaFX display overhead |
 
----
-
-## ⚡ Real Planetary Simulation Engine Benchmarks (End-to-End Ground Truth)
-
-Ether evaluates the **complete planetary simulation pipeline** (`H3SimulationEngine.java` + `SimulationPipeline.java`) executing all 25 geoscientific map rasters, Tier 1 biophysical PDEs (Liebig N-P-K, 2D Darcy lateral aquifers, Budyko-Sellers energy balance, megafauna extinctions, erosion), DOD vectorized kernels, exact analytical Gini calculations, and asynchronous rolling memory snapshots:
-
-### 🖥️ Measured Wall-Clock Benchmarks (Single-Node Desktop vs Cloud Compute Sizing)
-
-| Domain Configuration | Spatial Res (H3) | Hexagons | Step ($\Delta t$) | Measured TPS (Local) | Projected TPS (`c2-standard-16`) | 10k Ticks Run Duration | Snapshots Footprint (24 snaps) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Regional Windowed** | **Res 5** | **40,305** | Monthly | **2.84 TPS** | **3.80 TPS** | **~45 to 55 minutes** | **~84 MB** (3.5 MB / snap) |
-| **Earth Global Macro** | **Res 3** | **41,162** | Monthly | **2.35 TPS** | **3.10 TPS** | **~50 to 65 minutes** | **~86 MB** (3.6 MB / snap) |
-| **Earth Global High-Fi** | **Res 4** | **288,122** | Monthly | **0.34 TPS** | **1.45 TPS** | **~1h45 to 2h15** | **~600 MB** (25.0 MB / snap) |
-
-> 📖 See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for full phase profiling distributions, multi-core scaling curves, and the distinct isolated DOD micro-kernel comparisons.
 
 ---
 

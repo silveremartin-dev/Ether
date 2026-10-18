@@ -263,7 +263,7 @@ public class Scenario implements Serializable {
     private double temporalResolutionDays = 30.0; // Temporal resolution time step Δt in days (default: 30.0 days = 1 month)
     private double climateHarshness; // 0.0 to 1.0 (storms, droughts)
     private long startDateYear; // e.g. -100000
-    private long endDateYear = 100; // e.g. 100
+    private long endDateYear = 2100; // e.g. 2100 default forward horizon
     private long seed = 12345L; // Demographic density seed
     private long culturalSeed = 54321L; // Cultural tensor suite seed
     /* Internal state variable for random events enabled (boolean). */
@@ -956,6 +956,9 @@ public class Scenario implements Serializable {
      */
     public void setStartDateYear(long startDateYear) {
         this.startDateYear = startDateYear;
+        if (this.endDateYear <= startDateYear) {
+            this.endDateYear = startDateYear + 50;
+        }
     }
 
     /*
@@ -1965,6 +1968,7 @@ public class Scenario implements Serializable {
         sSahul.setPlanetPreset(PlanetPreset.EARTH_MIS3_50000BP);
         sSahul.setEcologyPreset(EcologyPreset.EARTH_MIS3_50000BP);
         sSahul.setClippingEnabled(true);
+        sSahul.setH3Resolution(5);
         sSahul.setMinLat(-42.0); sSahul.setMaxLat(-10.0); sSahul.setMinLng(112.0); sSahul.setMaxLng(155.0);
         sSahul.setBoundaryMode("DYNAMIC_RESERVOIR");
         sSahul.setDescription("""
@@ -2010,6 +2014,7 @@ public class Scenario implements Serializable {
         sBeringia.setPlanetPreset(PlanetPreset.EARTH_LGM_ONSET_25000BP);
         sBeringia.setEcologyPreset(EcologyPreset.EARTH_LGM_ONSET_25000BP);
         sBeringia.setClippingEnabled(true);
+        sBeringia.setH3Resolution(5);
         sBeringia.setMinLat(45.0); sBeringia.setMaxLat(75.0); sBeringia.setMinLng(140.0); sBeringia.setMaxLng(-120.0);
         sBeringia.setBoundaryMode("DYNAMIC_RESERVOIR");
         sBeringia.setDescription("""
@@ -2134,6 +2139,7 @@ public class Scenario implements Serializable {
         s1.setPlanetPreset(PlanetPreset.EARTH_EH_10000BP);
         s1.setEcologyPreset(EcologyPreset.EARTH_EH_10000BP);
         s1.setClippingEnabled(true);
+        s1.setH3Resolution(5);
         s1.setMinLat(25.0); s1.setMaxLat(42.0); s1.setMinLng(25.0); s1.setMaxLng(55.0);
         s1.setBoundaryMode("DYNAMIC_RESERVOIR");
         s1.setDescription("""
@@ -2174,6 +2180,7 @@ public class Scenario implements Serializable {
         sGreenSahara.setPlanetPreset(PlanetPreset.EARTH_MH_6000BP);
         sGreenSahara.setEcologyPreset(EcologyPreset.EARTH_MH_6000BP);
         sGreenSahara.setClippingEnabled(true);
+        sGreenSahara.setH3Resolution(5);
         sGreenSahara.setMinLat(0.0); sGreenSahara.setMaxLat(42.0); sGreenSahara.setMinLng(-20.0); sGreenSahara.setMaxLng(45.0);
         sGreenSahara.setBoundaryMode("DYNAMIC_RESERVOIR");
         sGreenSahara.setDescription("""
@@ -2212,6 +2219,7 @@ public class Scenario implements Serializable {
         sEgypt.setPlanetPreset(PlanetPreset.EARTH_LH_3000BP);
         sEgypt.setEcologyPreset(EcologyPreset.EARTH_LH_3000BP);
         sEgypt.setClippingEnabled(true);
+        sEgypt.setH3Resolution(5);
         sEgypt.setMinLat(21.0); sEgypt.setMaxLat(32.0); sEgypt.setMinLng(24.0); sEgypt.setMaxLng(36.0);
         sEgypt.setBoundaryMode("DYNAMIC_RESERVOIR");
         sEgypt.setDescription("""
@@ -2254,6 +2262,7 @@ public class Scenario implements Serializable {
         s3.setPlanetPreset(PlanetPreset.EARTH_BRONZE_1900BP);
         s3.setEcologyPreset(EcologyPreset.EARTH_BRONZE_1900BP);
         s3.setClippingEnabled(true);
+        s3.setH3Resolution(5);
         s3.setMinLat(28.0); s3.setMaxLat(40.0); s3.setMinLng(38.0); s3.setMaxLng(52.0);
         s3.setBoundaryMode("DYNAMIC_RESERVOIR");
         s3.setDescription("""
@@ -2295,6 +2304,7 @@ public class Scenario implements Serializable {
         sMeso.setPlanetPreset(PlanetPreset.EARTH_BRONZE_1900BP);
         sMeso.setEcologyPreset(EcologyPreset.EARTH_BRONZE_1900BP);
         sMeso.setClippingEnabled(true);
+        sMeso.setH3Resolution(5);
         sMeso.setMinLat(12.0); sMeso.setMaxLat(24.0); sMeso.setMinLng(-105.0); sMeso.setMaxLng(-85.0);
         sMeso.setBoundaryMode("DYNAMIC_RESERVOIR");
         sMeso.setDescription("""
@@ -2494,6 +2504,7 @@ public class Scenario implements Serializable {
         sMaurya.setPlanetPreset(PlanetPreset.EARTH_IRON_1000BP);
         sMaurya.setEcologyPreset(EcologyPreset.EARTH_IRON_1000BP);
         sMaurya.setClippingEnabled(true);
+        sMaurya.setH3Resolution(5);
         sMaurya.setMinLat(8.0); sMaurya.setMaxLat(35.0); sMaurya.setMinLng(68.0); sMaurya.setMaxLng(90.0);
         sMaurya.setBoundaryMode("DYNAMIC_RESERVOIR");
         sMaurya.setDescription("""
@@ -2535,6 +2546,7 @@ public class Scenario implements Serializable {
         sRoman.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sRoman.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sRoman.setClippingEnabled(true);
+        sRoman.setH3Resolution(5);
         sRoman.setMinLat(25.0); sRoman.setMaxLat(55.0); sRoman.setMinLng(-10.0); sRoman.setMaxLng(45.0);
         sRoman.setBoundaryMode("DYNAMIC_RESERVOIR");
         java.util.Map<String, Boolean> sRomanEngines = sRoman.getTypeBEngineStates();
@@ -2732,6 +2744,7 @@ public class Scenario implements Serializable {
         sMali.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sMali.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sMali.setClippingEnabled(true);
+        sMali.setH3Resolution(5);
         sMali.setMinLat(5.0); sMali.setMaxLat(25.0); sMali.setMinLng(-18.0); sMali.setMaxLng(15.0);
         sMali.setBoundaryMode("DYNAMIC_RESERVOIR");
         sMali.setDescription("""
@@ -2808,6 +2821,7 @@ public class Scenario implements Serializable {
         sAmericas1491.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sAmericas1491.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sAmericas1491.setClippingEnabled(true);
+        sAmericas1491.setH3Resolution(5);
         sAmericas1491.setMinLat(-45.0); sAmericas1491.setMaxLat(30.0); sAmericas1491.setMinLng(-110.0); sAmericas1491.setMaxLng(-35.0);
         sAmericas1491.setBoundaryMode("DYNAMIC_RESERVOIR");
         sAmericas1491.setDescription("""
@@ -2884,6 +2898,7 @@ public class Scenario implements Serializable {
         sSakoku.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         sSakoku.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         sSakoku.setClippingEnabled(true);
+        sSakoku.setH3Resolution(5);
         sSakoku.setMinLat(30.0); sSakoku.setMaxLat(45.0); sSakoku.setMinLng(128.0); sSakoku.setMaxLng(146.0);
         sSakoku.setBoundaryMode("DYNAMIC_RESERVOIR");
         sSakoku.setDescription("""

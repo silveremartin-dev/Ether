@@ -124,6 +124,8 @@ public class TradeNetworkEngine {
         latestRoutes.clear();
         latestRoutes.addAll(activeRoutes);
 
+        evaluateStrategicChokePoints(cells, activeRoutes, dtYears);
+
         logger.info("Generated {} active trade corridors across {} population hubs.", activeRoutes.size(), hubs.size());
         return activeRoutes;
     }
@@ -200,12 +202,14 @@ public class TradeNetworkEngine {
         H3Cell dest = route.destination();
 
         // 1. Bilateral Physical Commodity Arbitrage between Origin and Destination Hubs
-        if (orig != null && dest != null && orig.getPopulation() > 0 && dest.getPopulation() > 0) {
+        int origPop = orig != null && orig.getPopulation() != null ? orig.getPopulation() : 0;
+        int destPop = dest != null && dest.getPopulation() != null ? dest.getPopulation() : 0;
+        if (orig != null && dest != null && origPop > 0 && destPop > 0) {
             // A. Physical Food Arbitrage (Ricardian Grain/Fish Trade):
             double origFood = orig.getFoodResource() != null ? orig.getFoodResource() : 0.0;
             double destFood = dest.getFoodResource() != null ? dest.getFoodResource() : 0.0;
-            double origNeed = orig.getPopulation() * 3.362; // Annual subsistence metabolic baseline in GJ
-            double destNeed = dest.getPopulation() * 3.362;
+            double origNeed = origPop * 3.362; // Annual subsistence metabolic baseline in GJ
+            double destNeed = destPop * 3.362;
 
             double origSurplus = origFood - origNeed;
             double destSurplus = destFood - destNeed;
@@ -250,17 +254,17 @@ public class TradeNetworkEngine {
             // C. Physical Capital Tool Arbitrage (Intensive K/N Rebalancing):
             double origCap = orig.getResourceCapital() != null ? orig.getResourceCapital() : 0.0;
             double destCap = dest.getResourceCapital() != null ? dest.getResourceCapital() : 0.0;
-            double origCapPerCap = origCap / Math.max(1.0, orig.getPopulation());
-            double destCapPerCap = destCap / Math.max(1.0, dest.getPopulation());
+            double origCapPerCap = origCap / Math.max(1.0, origPop);
+            double destCapPerCap = destCap / Math.max(1.0, destPop);
             if (origCapPerCap > destCapPerCap * 1.3 && origCap > 50.0) {
-                double capTrade = Math.min(origCap * 0.15, (origCapPerCap - destCapPerCap) * dest.getPopulation() * 0.20) * conductance * dtYears;
+                double capTrade = Math.min(origCap * 0.15, (origCapPerCap - destCapPerCap) * destPop * 0.20) * conductance * dtYears;
                 if (capTrade > 0.0) {
                     orig.setResourceCapital(Math.max(0.0, origCap - capTrade));
                     dest.setResourceCapital(destCap + capTrade * 0.98);
                     cumulativeTradedCapital += capTrade;
                 }
             } else if (destCapPerCap > origCapPerCap * 1.3 && destCap > 50.0) {
-                double capTrade = Math.min(destCap * 0.15, (destCapPerCap - origCapPerCap) * orig.getPopulation() * 0.20) * conductance * dtYears;
+                double capTrade = Math.min(destCap * 0.15, (destCapPerCap - origCapPerCap) * origPop * 0.20) * conductance * dtYears;
                 if (capTrade > 0.0) {
                     dest.setResourceCapital(Math.max(0.0, destCap - capTrade));
                     orig.setResourceCapital(origCap + capTrade * 0.98);
@@ -302,6 +306,69 @@ public class TradeNetworkEngine {
             // Gini index slightly increases in trading hubs due to merchant wealth accumulation
             double curGini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.3;
             cell.setGiniIndex(Math.clamp(curGini + 0.005 * dtYears, 0.15, 0.85));
+        }
+    }
+
+    /*
+     * Evaluates topological transit frequencies across trade routes and identifies strategic choke points
+     * (straits, mountain passes, isthmuses, and bottleneck transit cells), allocating transit toll rent.
+     */
+    private static void evaluateStrategicChokePoints(List<H3Cell> cells, List<TradeRoute> routes, double dtYears) {
+        if (cells == null || cells.isEmpty()) return;
+
+        Map<Long, Integer> transitFrequency = new HashMap<>();
+        if (routes != null && !routes.isEmpty()) {
+            for (TradeRoute r : routes) {
+                if (r == null || r.pathCells() == null) continue;
+                for (H3Cell c : r.pathCells()) {
+                    if (c != null && c.getH3Index() != 0L) {
+                        transitFrequency.merge(c.getH3Index(), 1, Integer::sum);
+                    }
+                }
+            }
+        }
+
+        int totalRoutes = (routes != null) ? routes.size() : 0;
+        int chokePointCount = 0;
+
+        for (H3Cell cell : cells) {
+            int frequency = transitFrequency.getOrDefault(cell.getH3Index(), 0);
+            if (frequency > 0 && totalRoutes > 0) {
+                // Funnel ratio: fraction of total active planetary/regional trade passing through this single cell
+                double funnelRatio = (double) frequency / (double) totalRoutes;
+
+                // Constriction multiplier: physical straits, isthmuses or rugged passes increase strategic leverage
+                boolean isStraitOrCoast = Boolean.TRUE.equals(cell.getIsCoastal()) || (cell.getElevation() != null && cell.getElevation() < 50.0);
+                boolean isMountainPass = (cell.getElevation() != null && cell.getElevation() > 800.0);
+                double constrictionBonus = (isStraitOrCoast || isMountainPass) ? 1.35 : 1.0;
+
+                double rawScore = Math.min(1.0, funnelRatio * constrictionBonus * 2.0);
+                cell.setChokePointScore(rawScore);
+
+                if (rawScore >= 0.25) {
+                    chokePointCount++;
+                    // Economic transit toll rent collected by the choke point
+                    double tollRatePerTransit = 1.5 * Math.max(0.5, 1.0 + (cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() * 0.1 : 0.0));
+                    double transitToll = rawScore * frequency * tollRatePerTransit * dtYears;
+
+                    double currentTollRev = cell.getTransitTollRevenue() != null ? cell.getTransitTollRevenue() : 0.0;
+                    cell.setTransitTollRevenue(currentTollRev + transitToll);
+
+                    // Transit toll accrues directly into productive capital of the controlling cell
+                    double currentCapital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                    cell.setResourceCapital(currentCapital + transitToll);
+                }
+            } else {
+                // Graceful decay of choke point score when trade routes shift elsewhere
+                double currentScore = cell.getChokePointScore() != null ? cell.getChokePointScore() : 0.0;
+                if (currentScore > 0.0) {
+                    cell.setChokePointScore(Math.max(0.0, currentScore * 0.90));
+                }
+            }
+        }
+
+        if (chokePointCount > 0) {
+            logger.debug("Trade Network Engine: Identified {} strategic trade choke points across active corridors.", chokePointCount);
         }
     }
 }

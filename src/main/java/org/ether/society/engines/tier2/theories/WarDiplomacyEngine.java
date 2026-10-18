@@ -119,7 +119,8 @@ public class WarDiplomacyEngine {
         if (aggressorForce <= 0 || defenderForce <= 0) return;
 
         // Force ratio weighted by State Capacity and penalized by boundary friction
-        double aggressorPower = (aggressorForce * (0.5 + aggressor.getStateCapacity())) / borderFriction;
+        double safeFriction = Math.max(0.1, borderFriction);
+        double aggressorPower = (aggressorForce * (0.5 + aggressor.getStateCapacity())) / safeFriction;
         double defenderPower = defenderForce * (0.5 + defender.getStateCapacity());
 
         if (aggressorPower > defenderPower * 1.25) {
@@ -133,13 +134,15 @@ public class WarDiplomacyEngine {
                 aggressor.addCell(conqueredCell);
 
                 // War casualties in 15-24 military cohort scale with boundary friction resistance
-                double casualtyRate = Math.clamp(0.15 * Math.sqrt(borderFriction), 0.10, 0.45);
-                int casualties = (int) (conqueredCell.getPop15to24() * casualtyRate);
-                conqueredCell.setPop15to24(Math.max(0, conqueredCell.getPop15to24() - casualties));
-                conqueredCell.setPopulation(Math.max(0, conqueredCell.getPopulation() - casualties));
+                double casualtyRate = Math.clamp(0.15 * Math.sqrt(safeFriction), 0.10, 0.45);
+                int curPop15to24 = conqueredCell.getPop15to24() != null ? conqueredCell.getPop15to24() : 0;
+                int curPop = conqueredCell.getPopulation() != null ? conqueredCell.getPopulation() : 0;
+                int casualties = (int) (curPop15to24 * casualtyRate);
+                conqueredCell.setPop15to24(Math.max(0, curPop15to24 - casualties));
+                conqueredCell.setPopulation(Math.max(0, curPop - casualties));
 
                 logger.info("War Resolution: Nation '{}' conquered cell {} from Nation '{}' (Boundary Friction: {:.2f}). Military casualties: {}.",
-                        aggressor.getName(), conqueredCell.getH3Index(), defender.getName(), borderFriction, casualties);
+                        aggressor.getName(), conqueredCell.getH3Index(), defender.getName(), safeFriction, casualties);
             }
         }
     }

@@ -4,7 +4,7 @@
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.reliability;
 
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;

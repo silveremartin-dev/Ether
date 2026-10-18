@@ -63,14 +63,14 @@ public class MarineSubmersionEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
-            double seaLevelOffset = cell.getSeaLevelOffsetMeters();
+            double seaLevelOffset = cell.getSeaLevelOffsetMeters() != null ? cell.getSeaLevelOffsetMeters() : 0.0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-            int pop = cell.getPopulation();
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
 
             // Determine if polder/coastal cell is flooded (elevation below sea level or dike failure)
             boolean isSubmerged = (elevation < seaLevelOffset);
-            if (cell.getIsPolder() && seaLevelOffset > 0.0) {
+            if (Boolean.TRUE.equals(cell.getIsPolder()) && seaLevelOffset > 0.0) {
                 // Polders require capital investment to pump water and maintain dikes
                 double requiredMaint = dikeMaintenanceCapital * (1.0 + 0.1 * seaLevelOffset);
                 if (capital < requiredMaint) {
@@ -105,17 +105,20 @@ public class MarineSubmersionEngine {
 
                 if (!safeNeighbors.isEmpty() && evacuatedPop > 0) {
                     int popPerNeighbor = evacuatedPop / safeNeighbors.size();
-                    double capitalToTransfer = (cell.getResourceCapital() * 0.50) / safeNeighbors.size();
+                    double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                    double capitalToTransfer = (curCap * 0.50) / safeNeighbors.size();
 
                     // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell target : safeNeighbors) {
-                        target.setPopulation(target.getPopulation() + popPerNeighbor);
-                        target.setResourceCapital(target.getResourceCapital() + capitalToTransfer);
+                        int targetPop = target.getPopulation() != null ? target.getPopulation() : 0;
+                        double targetCap = target.getResourceCapital() != null ? target.getResourceCapital() : 0.0;
+                        target.setPopulation(targetPop + popPerNeighbor);
+                        target.setResourceCapital(targetCap + capitalToTransfer);
                     }
 
                     // Update flooded cell population and capital after evacuation
                     cell.setPopulation(remainingPop);
-                    cell.setResourceCapital(cell.getResourceCapital() * 0.50); // 50% fixed capital submerged
+                    cell.setResourceCapital(curCap * 0.50); // 50% fixed capital submerged
 
                     logger.info("🌊 Marine Submersion Evacuation: Cell {} evacuated {} humans ({}) to {} safe neighbor cells.",
                             cell.getH3Index(), evacuatedPop, String.format("%.1f%%", evacuationRatio * 100), safeNeighbors.size());

@@ -143,7 +143,7 @@ public class MapComparisonMetrics {
          * @return the resulting computation or state reference
          */
         public String getFormattedReport() {
-            return String.format(
+            return String.format(java.util.Locale.US,
                 "🗺️ SPATIAL TENSOR & CARTOGRAPHIC COMPARISON REPORT:\n" +
                 "  - RMSE (Spatial Grid Error): %.4f\n" +
                 "  - Pearson Correlation (r): %.4f\n" +

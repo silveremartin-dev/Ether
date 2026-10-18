@@ -22,7 +22,9 @@ public class DPlaceIngestionService {
     private static final Logger logger = LoggerFactory.getLogger(DPlaceIngestionService.class);
 
     /* Internal state variable for dplace base path (String). */
-    public static final String DPLACE_BASE_PATH = "data/maps/dplace";
+    public static final String DPLACE_BASE_PATH = new File("data/sources/dplace").exists() 
+            ? "data/sources/dplace" 
+            : (new File("data/maps/dplace").exists() ? "data/maps/dplace" : "data/sources/dplace");
 
     public record DPlaceSociety(
             String id,

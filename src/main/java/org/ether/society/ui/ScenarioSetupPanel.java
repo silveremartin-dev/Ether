@@ -9100,10 +9100,10 @@ private String getDefaultTensorName(int index) {
             java.io.File file = fileChooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
             if (file != null) {
                 String template = """
-                    package org.ether.society.procedural;
+                    package org.ether.society.engines.tier1;
 
                     import org.ether.society.core.H3SimulationEngine;
-                    import org.ether.society.model.H3Cell;
+                    import org.ether.society.database.H3Cell;
 
                     /*
                      * Loi Physique Cœur Ether : %s

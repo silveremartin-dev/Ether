@@ -68,11 +68,13 @@ public class ThermodynamicMigrationEngine {
 
     // Cached spatial grid avoiding 288k cell re-hashing and allocations every tick
     private static volatile java.util.Map<Long, java.util.List<H3Cell>> cachedSpatialGrid = null;
+    private static volatile java.util.Map<H3Cell, Integer> cachedCellIndexMap = null;
     private static volatile int cachedGridCellCount = 0;
     private static volatile Object cachedCellsIdentity = null;
 
     public static void clearSpatialCache() {
         cachedSpatialGrid = null;
+        cachedCellIndexMap = null;
         cachedGridCellCount = 0;
         cachedCellsIdentity = null;
     }
@@ -174,15 +176,20 @@ public class ThermodynamicMigrationEngine {
 
         final double binSizeDeg = 2.0;
         java.util.Map<Long, java.util.List<H3Cell>> spatialGrid = cachedSpatialGrid;
-        if (spatialGrid == null || cachedGridCellCount != n || cachedCellsIdentity != cells) {
+        java.util.Map<H3Cell, Integer> cellIndexMap = cachedCellIndexMap;
+        if (spatialGrid == null || cachedGridCellCount != n || cachedCellsIdentity != cells || cellIndexMap == null) {
             spatialGrid = new java.util.HashMap<>(Math.min(65536, n / 4 + 16));
-            for (H3Cell c : cells) {
+            cellIndexMap = new java.util.IdentityHashMap<>(n);
+            for (int idx = 0; idx < n; idx++) {
+                H3Cell c = cells.get(idx);
+                cellIndexMap.put(c, idx);
                 int bLat = (int) Math.floor((c.getLatitude() + 90.0) / binSizeDeg);
                 int bLon = (int) Math.floor((c.getLongitude() + 180.0) / binSizeDeg);
                 long key = (((long) bLat) << 32) | (bLon & 0xFFFFFFFFL);
                 spatialGrid.computeIfAbsent(key, k -> new java.util.ArrayList<>(8)).add(c);
             }
             cachedSpatialGrid = spatialGrid;
+            cachedCellIndexMap = cellIndexMap;
             cachedGridCellCount = n;
             cachedCellsIdentity = cells;
         }
@@ -288,7 +295,7 @@ public class ThermodynamicMigrationEngine {
                 // Transfer cohort mass in AgentBuffer and WorldBuffer to prevent split-brain rollback
                 if (agentBuffer != null && worldBuffer != null) {
                     int originIdx = i; // cell i is origin
-                    int destIdx = cells.indexOf(bestDestination);
+                    int destIdx = cellIndexMap != null ? cellIndexMap.getOrDefault(bestDestination, -1) : cells.indexOf(bestDestination);
                     if (originIdx >= 0 && destIdx >= 0) {
                         transferAgentBufferMass(agentBuffer, worldBuffer, originIdx, destIdx, migrants);
                     }

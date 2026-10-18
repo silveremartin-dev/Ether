@@ -2,7 +2,7 @@
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.engines.tier1;
 
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;

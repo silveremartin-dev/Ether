@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class DataIngestionFidelityTest {
 
-    private static final String MAPS_BASE_PATH = "data/maps";
+    private static final String MAPS_BASE_PATH = new File("data/sources").exists() ? "data/sources" : "data/maps";
 
     private static final String[] EXPECTED_ACTIVE_PROVIDERS = {
             "usgs",

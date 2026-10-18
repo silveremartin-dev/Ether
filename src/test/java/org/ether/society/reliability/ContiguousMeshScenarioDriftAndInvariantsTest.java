@@ -3,7 +3,7 @@
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.reliability;
 
 import com.uber.h3core.H3Core;
 import com.uber.h3core.util.LatLng;
@@ -310,5 +310,68 @@ public class ContiguousMeshScenarioDriftAndInvariantsTest {
         assertTrue(foodPoleB >= 0.0f, "Food at Pole B must remain non-negative");
         assertTrue(metalPoleA >= 0.0f, "Metal at Pole A must remain non-negative");
         assertTrue(capPoleA > 0.0f, "Pole A capital must remain active");
+    }
+
+    @Test
+    @DisplayName("Test 5: Symplectic mass and energy bounds on closed isolated contiguous island (no unphysical creation ex-nihilo)")
+    public void testClosedIslandSymplecticMassAndEnergyConservation() {
+        // Isolated contiguous island with 19 cells
+        List<H3Cell> island = createContiguousDisk(-18.7, 46.8, 4, 2);
+        assertEquals(19, island.size());
+
+        for (H3Cell c : island) {
+            c.setPopulation(500);
+            c.setFoodResource(5000.0);
+            c.setWaterResource(2000.0);
+            c.setWoodResource(1000.0);
+            c.setResourceCapital(100.0);
+            c.setResourceMetal(500.0);
+        }
+
+        H3SimulationEngine engine = new H3SimulationEngine(config);
+        Scenario scenario = new Scenario();
+        scenario.setName("Conservation Closed Island");
+        scenario.setStartDateYear(1000);
+        scenario.setEndDateYear(1020);
+        scenario.setInitialHumanCount(9500L);
+
+        engine.initializeFromScenario(scenario, island);
+        WorldBuffer buffer = engine.getWorldBuffer();
+
+        // Integrate 20 ticks and track total biological mass (Human + Food + Wood)
+        for (int t = 1; t <= 20; t++) {
+            engine.stepForward(1);
+
+            double totalBiomassMassUnits = 0.0;
+            double totalMetalStock = 0.0;
+
+            for (int i = 0; i < buffer.getCapacity(); i++) {
+                if (buffer.getH3Indexes()[i] == 0) continue;
+
+                float pop = buffer.getBiomassHuman()[i];
+                float food = buffer.getFoodResource()[i];
+                float wood = buffer.getWoodResource()[i];
+                float metal = buffer.getMetalResource()[i];
+
+                assertFalse(Float.isNaN(pop), "Pop must not be NaN at tick " + t);
+                assertFalse(Float.isNaN(food), "Food must not be NaN at tick " + t);
+                assertFalse(Float.isNaN(metal), "Metal must not be NaN at tick " + t);
+
+                assertTrue(pop >= 0.0f, "Pop must remain non-negative");
+                assertTrue(food >= 0.0f, "Food must remain non-negative");
+                assertTrue(metal >= 0.0f, "Metal must remain non-negative");
+
+                totalBiomassMassUnits += (pop * 0.07) + (food * 0.001) + wood;
+                totalMetalStock += metal;
+            }
+
+            // Invariant: Non-renewable mineral crustal stock cannot increase ex-nihilo on a closed island without asteroid impacts
+            assertTrue(totalMetalStock <= 19 * 500.0 * 1.001,
+                    "Total crustal metal stock on closed island cannot exceed initial endowment ex-nihilo at tick " + t);
+
+            // Invariant: Total biological mass must remain finite and bounded by carrying capacity ceiling
+            assertTrue(totalBiomassMassUnits < 1.0e8,
+                    "Total biological mass must remain physically bounded by thermodynamic solar influx at tick " + t);
+        }
     }
 }

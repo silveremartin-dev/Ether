@@ -95,8 +95,8 @@ public class PhysicsTransportEngine {
         }
 
         if (activeTransportCells > 0) {
-            logger.debug("Physics Transport: Expended {:.3f} GJ of mechanical freight work across {} cells.",
-                    totalWorkExpendedJoules / 1.0e9, activeTransportCells);
+            logger.debug("Physics Transport: Expended {} GJ of mechanical freight work across {} cells.",
+                    String.format(java.util.Locale.ROOT, "%.3f", totalWorkExpendedJoules / 1.0e9), activeTransportCells);
         }
     }
 }

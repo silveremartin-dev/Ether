@@ -192,8 +192,11 @@ public class GreenhouseRadiativeEngine {
 
         if (Math.abs(incrementalDeltaT) < 1.0e-5 && Math.abs(incrementalSeaShift) < 1.0e-5) return;
 
-        logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{:.2f}°C, SeaLevelDelta=+{:.1f}m, Forcing={:.2f} W/m²",
-                currentCo2Ppm, currentCh4Ppb, deltaT, seaShift, ghForcing);
+        logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{}°C, SeaLevelDelta=+{}m, Forcing={} W/m²",
+                currentCo2Ppm, currentCh4Ppb,
+                String.format(java.util.Locale.ROOT, "%.2f", deltaT),
+                String.format(java.util.Locale.ROOT, "%.1f", seaShift),
+                String.format(java.util.Locale.ROOT, "%.2f", ghForcing));
 
         cells.parallelStream().forEach(cell -> {
             if (cell.getTemperature() != null) {

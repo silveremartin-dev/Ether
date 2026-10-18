@@ -7,7 +7,11 @@
 package org.ether.society.events;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.model.Biome;
 import org.ether.society.model.Scenario;
+import org.ether.society.engines.tier1.*;
+import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.engines.tier2.historical.*;
 import org.junit.jupiter.api.*;
 
 import java.util.*;

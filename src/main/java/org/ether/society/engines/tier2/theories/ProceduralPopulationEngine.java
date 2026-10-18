@@ -244,7 +244,8 @@ public class ProceduralPopulationEngine {
             double envSuit = calculateBiomeAndElevSuitability(cell, techLevel);
 
             // 2. Temperature comfort suitability
-            double tempSuit = calculateTemperatureSuitability(cell.getTemperature(), techLevel);
+            double cellTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double tempSuit = calculateTemperatureSuitability(cellTemp, techLevel);
 
             // 3. Freshwater & River proximity constraint (Tech dependent!)
             double waterSuit = calculateWaterAndRiverSuitability(cell, techLevel);
@@ -284,10 +285,10 @@ public class ProceduralPopulationEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cell.getIsPolder()) {
+        if (Boolean.TRUE.equals(cell.getIsPolder())) {
             return 1.5; // Reclaimed rich alluvial land
         }
-        if (cell.getHasFloatingInfrastructure()) {
+        if (Boolean.TRUE.equals(cell.getHasFloatingInfrastructure())) {
             return 0.8 + Math.min(1.0, techLevel * 0.1); // Seasteading floating habitat
         }
 
@@ -295,6 +296,7 @@ public class ProceduralPopulationEngine {
         double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
         // Biome base score
+        if (b == null) return 0.1;
         double biomeScore = switch (b) {
             case PLAINS -> 1.0;
             case FOREST -> 0.85;
@@ -449,8 +451,10 @@ public class ProceduralPopulationEngine {
         double accessibleAquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
         Biome b = cell.getBiome();
 
-        boolean isCoastal = (b == Biome.BEACH || b == Biome.PLAINS || cell.getElevation() < 50);
-        boolean isRiverValley = (b == Biome.PLAINS && cell.getRainfall() > 0.4) || water > 400.0;
+        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+        double rain = cell.getRainfall() != null ? cell.getRainfall() : 0.0;
+        boolean isCoastal = (b == Biome.BEACH || b == Biome.PLAINS || elev < 50.0);
+        boolean isRiverValley = (b == Biome.PLAINS && rain > 0.4) || water > 400.0;
 
         // Base water score combining surface water, coastal access, AND accessible groundwater table (nappe phréatique accessible)
         double aquiferScore = Math.min(1.0, accessibleAquifer / 10000.0);
@@ -611,7 +615,8 @@ public class ProceduralPopulationEngine {
                     .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
                     .max(Comparator.comparingInt(H3Cell::getPopulation))
                     .orElse(landCells.get(0));
-            long newTopPop = Math.clamp((long) topCell.getPopulation() + diff, 0L, (long) Integer.MAX_VALUE);
+            long curTopPop = topCell.getPopulation() != null ? topCell.getPopulation() : 0L;
+            long newTopPop = Math.clamp(curTopPop + diff, 0L, (long) Integer.MAX_VALUE);
             topCell.setPopulation((int) newTopPop);
             topCell.setBiomassHuman((double) newTopPop);
             if (newTopPop > maxCellPop) maxCellPop = newTopPop;
@@ -620,8 +625,8 @@ public class ProceduralPopulationEngine {
         // Second pass: Spatialization of Physical Capital K(x), Food Reserves F(x), Energy E(x), and Info I(x)
         double baseCapital = capitalPerCapita;
         for (H3Cell cell : landCells) {
-            int pop = cell.getPopulation();
-            double normDensity = (double) pop / (double) maxCellPop; // 0.0 to 1.0
+            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            double normDensity = maxCellPop > 0 ? ((double) pop / (double) maxCellPop) : 0.0; // 0.0 to 1.0
 
             // 1. Spatial Physical Capital K(x) [kg/capita]
             double envSuit = calculateBiomeAndElevSuitability(cell, derivedTech);

@@ -133,7 +133,10 @@ public class HeadlessRunner {
             if (a.equals("--help") || a.equals("-help") || a.equals("-?") || a.equals("-h")) {
                 printHelp();
                 return;
-            } else if (a.equals("--benchmark") || a.equals("-b") || a.equals("--bench")) {
+            } else if (a.equals("--benchmark") || a.equals("-b") || a.equals("--bench") || a.equals("--benchmark-real")) {
+                org.ether.society.benchmark.RealPlanetaryEngineBenchmarkRunner.runBenchmarks();
+                return;
+            } else if (a.equals("--benchmark-dod") || a.equals("--benchmark-micro")) {
                 org.ether.society.benchmark.EmpiricalEngineBenchmarkRunner.runBenchmarks();
                 return;
             }
@@ -445,17 +448,10 @@ public class HeadlessRunner {
                     if ((builtIn.getPresetKey() != null && builtIn.getPresetKey().equalsIgnoreCase(scenarioName))
                             || (builtIn.getName() != null && builtIn.getName().equalsIgnoreCase(scenarioName))
                             || (builtIn.getPresetKey() != null && scenarioName.toLowerCase().contains(builtIn.getPresetKey().toLowerCase()))) {
-                        scenario.setStartDateYear(builtIn.getStartDateYear());
-                        scenario.setEndDateYear(builtIn.getEndDateYear());
-                        scenario.setInitialHumanCount(builtIn.getInitialHumanCount());
-                        scenario.setInitialCapitalPerCapita(builtIn.getInitialCapitalPerCapita());
-                        scenario.setInitialEnergyPerCapita(builtIn.getInitialEnergyPerCapita());
-                        scenario.setInitialTechLevel(builtIn.getInitialTechLevel());
-                        scenario.setTemporalResolutionDays(builtIn.getTemporalResolutionDays());
-                        scenario.setName(builtIn.getName());
-                        scenario.setDescription(builtIn.getDescription());
-                        logger.info("Matched Built-In Scenario: '{}' (Years {} -> {}, Initial Pop: {})",
-                                builtIn.getName(), builtIn.getStartDateYear(), builtIn.getEndDateYear(), builtIn.getInitialHumanCount());
+                        scenario = builtIn.copy();
+                        logger.info("Matched Built-In Scenario: '{}' (Years {} -> {}, Initial Pop: {}, H3 Res: {}, Clipping: {})",
+                                builtIn.getName(), builtIn.getStartDateYear(), builtIn.getEndDateYear(), builtIn.getInitialHumanCount(),
+                                builtIn.getH3Resolution(), builtIn.isClippingEnabled());
                         matched = true;
                         break;
                     }
@@ -468,19 +464,10 @@ public class HeadlessRunner {
                     if ((jsonPreset.getPresetKey() != null && jsonPreset.getPresetKey().equalsIgnoreCase(scenarioName))
                             || (jsonPreset.getName() != null && jsonPreset.getName().equalsIgnoreCase(scenarioName))
                             || (jsonPreset.getPresetKey() != null && scenarioName.toLowerCase().contains(jsonPreset.getPresetKey().toLowerCase()))) {
-                        scenario.setStartDateYear(jsonPreset.getStartDateYear());
-                        scenario.setEndDateYear(jsonPreset.getEndDateYear());
-                        scenario.setInitialHumanCount(jsonPreset.getInitialHumanCount());
-                        scenario.setInitialCapitalPerCapita(jsonPreset.getInitialCapitalPerCapita());
-                        scenario.setInitialEnergyPerCapita(jsonPreset.getInitialEnergyPerCapita());
-                        scenario.setInitialTechLevel(jsonPreset.getInitialTechLevel());
-                        scenario.setTemporalResolutionDays(jsonPreset.getTemporalResolutionDays());
-                        scenario.setName(jsonPreset.getName());
-                        scenario.setDescription(jsonPreset.getDescription());
-                        scenario.setPlanetPreset(jsonPreset.getPlanetPreset());
-                        scenario.setPresetKey(jsonPreset.getPresetKey());
-                        logger.info("Matched JSON Scenario Preset: '{}' (Years {} -> {}, Initial Pop: {})",
-                                jsonPreset.getName(), jsonPreset.getStartDateYear(), jsonPreset.getEndDateYear(), jsonPreset.getInitialHumanCount());
+                        scenario = jsonPreset.copy();
+                        logger.info("Matched JSON Scenario Preset: '{}' (Years {} -> {}, Initial Pop: {}, H3 Res: {}, Clipping: {})",
+                                jsonPreset.getName(), jsonPreset.getStartDateYear(), jsonPreset.getEndDateYear(), jsonPreset.getInitialHumanCount(),
+                                jsonPreset.getH3Resolution(), jsonPreset.isClippingEnabled());
                         matched = true;
                         break;
                     }
@@ -580,17 +567,23 @@ public class HeadlessRunner {
             System.out.printf("   • Multi-Rate Climate  : %s (Every %d Ticks)\n", effectivePerfConfig.isEnableMultiFreqClimateTicks() ? "ENABLED" : "DISABLED", effectivePerfConfig.getClimateTickFrequency());
             System.out.printf("   • Async Parallelism   : %s (%d Threads)\n", effectivePerfConfig.isEnableParallelExecution() ? "ENABLED" : "DISABLED", threadCount);
             System.out.printf("   • Spatial Truncation  : %s (10^-6 Cutoff)\n", effectivePerfConfig.isEnableSpatialRangeTruncation() ? "ENABLED" : "DISABLED");
+            int effectiveRes = h3Resolution >= 0 ? h3Resolution : (scenario.getH3Resolution() > 0 ? scenario.getH3Resolution() : 4);
+            if (scenario.isClippingEnabled() && scenario.getH3Resolution() >= 5) {
+                // Clipped regional scenarios run at high spatial fidelity (Res 5)
+                effectiveRes = scenario.getH3Resolution();
+            }
+
             System.out.printf("   • Scenario Epoch      : %s (Start: %d, End: %d, H3 Res: %s)\n",
-                    scenarioName, scenario.getStartDateYear(), scenario.getEndDateYear(), h3Resolution >= 0 ? "Res " + h3Resolution : "Default");
+                    scenarioName, scenario.getStartDateYear(), scenario.getEndDateYear(), "Res " + effectiveRes);
             System.out.println("--------------------------------------------------------------------------------");
 
             List<H3Cell> cells;
-            if (h3Resolution >= 0) {
+            if (effectiveRes >= 0) {
                 org.ether.society.generation.PlanetPreset basePreset = scenario.getPlanetPreset() != null
                         ? scenario.getPlanetPreset()
                         : org.ether.society.generation.PlanetPreset.EARTH_LIKE;
-                org.ether.society.generation.PlanetPreset planetPreset = basePreset.withResolution(h3Resolution);
-                logger.info("Generating planetary grid for {} at H3 Resolution {}...", planetPreset.name(), h3Resolution);
+                org.ether.society.generation.PlanetPreset planetPreset = basePreset.withResolution(effectiveRes);
+                logger.info("Generating planetary grid for {} at H3 Resolution {}...", planetPreset.name(), effectiveRes);
                 List<H3Cell> generated = org.ether.society.generation.ProceduralGenerator.getInstance().generatePlanet(planetPreset);
 
                 if (scenario.isClippingEnabled()) {
@@ -631,11 +624,11 @@ public class HeadlessRunner {
                 engine.setClusterManager(clusterManager);
             }
 
-            System.out.printf("Initializing grid with %,d cells (H3 Res: %s)...\n", cells.size(), h3Resolution >= 0 ? String.valueOf(h3Resolution) : "Default");
+            System.out.printf("Initializing grid with %,d cells (H3 Res: %d)...\n", cells.size(), effectiveRes);
             engine.initializeFromScenario(scenario, cells);
             engine.setPerformanceConfig(effectivePerfConfig);
             if (engine.getHistoryManager() != null) {
-                engine.getHistoryManager().setMaxSnapshots(maxSnapshots);
+                engine.getHistoryManager().configureTargetCadence(ticksToRun, maxSnapshots);
             }
 
             SimulationProfiler profiler = engine.getProfiler();

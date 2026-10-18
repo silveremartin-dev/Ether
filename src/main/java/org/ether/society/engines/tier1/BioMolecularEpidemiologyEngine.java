@@ -14,16 +14,24 @@ import java.util.List;
 
 /**
  * Bio-Molecular Epidemiology & Immunoglobulin Synthesis Engine.
- * Replaces abstract health scores with bio-molecular energy allocation:
- * 1. <b>Metabolic Energy Deficiency & Immune Arrest</b>: When ingested caloric energy (E_ingested) falls below basal metabolic requirements,
- *    protein immunoglobulin synthesis is shut down to preserve neuronal metabolism.
- * 2. <b>Bio-Molecular Pathogen Vulnerability</b>: Immunological collapse increases pathogen viral load (virions/mL) and mortality.
+ * Replaces abstract health scores with bio-molecular energy allocation and endogenous pathogen dynamics:
+ * 1. <b>Metabolic Energy Deficiency & Immune Arrest</b>: When ingested caloric energy falls below basal requirements,
+ *    protein immunoglobulin synthesis is suppressed to preserve vital organ metabolism.
+ * 2. <b>Endogenous Zoonotic Spillover</b>: Spontaneous pathogen emergence coupling domestic livestock biomass density,
+ *    human urban density, and host nutritional immunocompetence:
+ *    <pre>
+ *      P_spillover = 1.0 - exp( -κ · (ρ_domestic · ρ_urban) / (1.0 + NutritionRatio) · Δt )
+ *    </pre>
+ * 3. <b>Metapopulation Pathogen Progression</b>: Local transmission, case fatality, and recovery coupled with nutritional state.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 public class BioMolecularEpidemiologyEngine {
     private static final Logger logger = LoggerFactory.getLogger(BioMolecularEpidemiologyEngine.class);
+
+    /** Zoonotic cross-species transmission coefficient. */
+    public static final double ZOONOTIC_KAPPA = 1.5e-6;
 
     /*
      * Executes one bio-molecular immune response and pathogen tick across cells using default monthly step.
@@ -43,6 +51,8 @@ public class BioMolecularEpidemiologyEngine {
         double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 
         int immuneCollapseCells = 0;
+        int activeEpidemicCells = 0;
+        int newSpilloverOutbreaks = 0;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
@@ -58,7 +68,7 @@ public class BioMolecularEpidemiologyEngine {
             double wildHarvest = cell.getBiomassNatural() != null ? (cell.getBiomassNatural() * 0.05 * dtYears) : 0.0;
             double totalFoodAvailable = grainFood + agriHarvest + wildHarvest;
 
-            // Energy deficiency ratio
+            // Energy deficiency ratio (NutritionRatio)
             double energyRatio = totalFoodAvailable / Math.max(0.1, foodRequired);
 
             // Immunoglobulin synthesis capacity (0.05 to 1.0)
@@ -77,10 +87,68 @@ public class BioMolecularEpidemiologyEngine {
                 double recovery = 0.5 * dtMonthlyRatio;
                 cell.setLifespan(Math.min(targetBaselineLife, curLife + recovery));
             }
+
+            // --- Improvement 1: Endogenous Zoonotic Spillover ---
+            double livestock = cell.getBiomassLivestock() != null ? cell.getBiomassLivestock() : 0.0;
+            if (livestock > 10.0 && pop >= 50) {
+                double exposureProduct = livestock * pop;
+                double immuneProtection = 1.0 + immunoglobulinSynthesisRate;
+                double exponent = -ZOONOTIC_KAPPA * (exposureProduct / immuneProtection) * dtYears;
+                double pSpillover = 1.0 - Math.exp(Math.max(-10.0, exponent));
+
+                int currentInfected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
+
+                // Deterministic pseudo-random seed based on H3 index, lifespan, and food state
+                long seed = (cell.getH3Index() * 6364136223846793005L
+                        + (long)(cell.getLifespan() * 1000.0) * 1442695040888963407L
+                        + (long)(cell.getFoodResource() * 10.0));
+                double pseudoRand = ((seed >>> 33) & 0x7FFFFFFF) / (double) 0x7FFFFFFF;
+
+                if (currentInfected == 0 && pSpillover > 0.005 && (pSpillover > 0.10 || pseudoRand < pSpillover)) {
+                    int initialOutbreak = Math.max(5, (int) Math.round(pop * Math.min(0.20, pSpillover * 3.0)));
+                    cell.setEpidemicInfected(initialOutbreak);
+                    cell.setActivePathogenName("Zoonotic Pathogen (Spillover)");
+                    newSpilloverOutbreaks++;
+                }
+            }
+
+            // Pathogen Progression & Mortality within infected populations
+            int infected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
+            if (infected > 0) {
+                activeEpidemicCells++;
+                infected = Math.min(pop, infected);
+
+                // Case fatality elevated by malnutrition / low immunoglobulin synthesis
+                double caseFatalityRate = Math.clamp(0.04 * (1.5 - immunoglobulinSynthesisRate), 0.01, 0.25);
+                int deaths = Math.min(infected, (int) Math.round(infected * caseFatalityRate * dtMonthlyRatio));
+
+                // Recovery rate
+                double recoveryRate = 0.15 * dtMonthlyRatio;
+                int recovered = Math.min(infected - deaths, (int) Math.round(infected * recoveryRate));
+
+                int totalRecovered = (cell.getEpidemicRecovered() != null ? cell.getEpidemicRecovered() : 0) + recovered;
+                cell.setEpidemicRecovered(totalRecovered);
+
+                int remainingInfected = Math.max(0, infected - recovered - deaths);
+                cell.setEpidemicInfected(remainingInfected);
+
+                if (deaths > 0) {
+                    cell.setPopulation(Math.max(1, pop - deaths));
+                }
+
+                // Acute epidemiological lifespan depression
+                double epidemicLifespanPenalty = 3.0 * ((double) infected / pop) * dtMonthlyRatio;
+                cell.setLifespan(Math.max(15.0, cell.getLifespan() - epidemicLifespanPenalty));
+
+                if (remainingInfected == 0) {
+                    cell.setActivePathogenName(null);
+                }
+            }
         }
 
-        if (immuneCollapseCells > 0) {
-            logger.debug("Epidemiology Engine: Malnutrition-induced immunoglobulin synthesis collapse in {} cells.", immuneCollapseCells);
+        if (newSpilloverOutbreaks > 0 || activeEpidemicCells > 0 || immuneCollapseCells > 0) {
+            logger.debug("Epidemiology Engine: {} new spillovers, {} active epidemic cells, {} immune collapse cells.",
+                    newSpilloverOutbreaks, activeEpidemicCells, immuneCollapseCells);
         }
     }
 }

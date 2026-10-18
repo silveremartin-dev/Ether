@@ -45,7 +45,7 @@ public class World3CouplingEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double pop = cell.getPopulation();
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;

@@ -40,6 +40,9 @@ public class RealHistoricalHighResolutionSimulationRunTest {
         }
         assertNotNull(ramessesScenario, "Ramesses II scenario must exist in built-in scenarios");
 
+        // Bound scenario duration to 1 year (12 monthly ticks) for regression test speed
+        ramessesScenario.setEndDateYear(-1278);
+
         // Execute headless real physics run
         SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(ramessesScenario);
         assertNotNull(record, "Execution record must not be null");
@@ -64,6 +67,12 @@ public class RealHistoricalHighResolutionSimulationRunTest {
             }
         }
         assertNotNull(earthBAUScenario, "Earth 2025 BAU scenario must exist in built-in scenarios");
+
+        // Bound planetary scenario duration to 1 year (12 monthly ticks) for regression test speed
+        earthBAUScenario.setEndDateYear(2026);
+        // Optimize resolution and cohort granularity for regression test performance
+        earthBAUScenario.setH3Resolution(2);
+        earthBAUScenario.setTargetCohortSize(50000);
 
         // Execute headless real physics run
         SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(earthBAUScenario);

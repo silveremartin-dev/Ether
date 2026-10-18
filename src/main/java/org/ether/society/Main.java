@@ -38,7 +38,8 @@ public class Main {
                         || a.equals("--mode=cluster") || a.equals("--cluster")
                         || a.startsWith("--role=") || a.equals("--master") || a.equals("--worker")
                         || a.equals("--server") || a.equals("--node")
-                        || a.equals("--benchmark") || a.equals("--help") || a.equals("-help") || a.equals("-?")) {
+                        || a.equals("--benchmark") || a.equals("--benchmark-real") || a.equals("--benchmark-dod")
+                        || a.equals("--benchmark-micro") || a.equals("--help") || a.equals("-help") || a.equals("-?")) {
                     headless = true;
                 } else if (a.equals("--rust") || a.equals("--native") || a.equals("--engine=rust")) {
                     execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.NATIVE_RUST.name());

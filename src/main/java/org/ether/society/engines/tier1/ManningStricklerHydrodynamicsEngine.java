@@ -77,19 +77,40 @@ public class ManningStricklerHydrodynamicsEngine {
 
     /*
      * Processes river hydrodynamics and floodplain agricultural fertilization across H3 cells.
+     * Incorporates upstream regional watershed catchment accumulation: downstream river cells receive
+     * accumulated surface runoff from elevated upstream cells within their catchment basin.
      */
     public static void processRiverHydrodynamics(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
+
+        // 1. Calculate upstream catchment runoff accumulation
+        // Estimate average runoff per cell based on precipitation
+        double totalCatchmentRunoff = 0.0;
+        int upstreamCellCount = 0;
+        for (H3Cell cell : cells) {
+            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            if (elev > 100.0 || cell.getBiome() == Biome.MOUNTAINS || cell.getBiome() == Biome.HILLS) {
+                double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+                totalCatchmentRunoff += rain * 0.40; // 40% surface runoff coefficient
+                upstreamCellCount++;
+            }
+        }
+
+        double catchmentRunoffPerEstuary = upstreamCellCount > 0 ? (totalCatchmentRunoff / Math.max(1, cells.size() - upstreamCellCount)) : 0.0;
 
         for (H3Cell cell : cells) {
             double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+
+            // In lowlands / floodplains, effective water flow accumulates from upstream catchment runoff
+            double effectiveFlowRainfall = (elev < 100.0 && (cell.getBiome() == Biome.PLAINS || cell.getBiome() == Biome.BEACH))
+                    ? rainfall + catchmentRunoffPerEstuary
+                    : rainfall;
+
             // Slope estimated by terrain
             double slope = (cell.getBiome() == Biome.MOUNTAINS) ? 0.02 : (cell.getBiome() == Biome.HILLS ? 0.005 : 0.0005);
-            double estimatedDepth = Math.max(0.5, (rainfall / 1000.0) * 3.0);
-            double estimatedWidth = Math.max(10.0, Math.sqrt(rainfall) * 2.5);
+            double estimatedDepth = Math.max(0.5, (effectiveFlowRainfall / 1000.0) * 3.0);
+            double estimatedWidth = Math.max(10.0, Math.sqrt(effectiveFlowRainfall) * 2.5);
 
             double dischargeQ = calculateDischarge(estimatedWidth, estimatedDepth, slope);
 

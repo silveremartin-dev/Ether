@@ -4,7 +4,7 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
@@ -130,10 +130,19 @@ public class Tier2CliodynamicPluginsTestSuite {
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("dS_i/dt"));
 
+        int initialPop = sampleCells.get(0).getPopulation();
         sampleCells.get(0).setEpidemicInfected(200);
-        engine.process(sampleCells, 1.0 / 365.25); // 1 day step
+        
+        // 10 day epidemic progression
+        engine.process(sampleCells, 10.0 / 365.25);
 
-        assertTrue(sampleCells.get(0).getEpidemicInfected() >= 0);
+        int infectedAfter = sampleCells.get(0).getEpidemicInfected();
+        int popAfter = sampleCells.get(0).getPopulation();
+
+        // Under 10 days of active infection with recovery (gamma=0.10) and mortality (virulence=0.05),
+        // deaths must have occurred and infected cohort must have transitioned
+        assertTrue(popAfter < initialPop, "Epidemic mortality must reduce host cell population");
+        assertTrue(infectedAfter < 200, "Recovery and mortality over 10 days must reduce primary active infected cohort");
     }
 
     @Test

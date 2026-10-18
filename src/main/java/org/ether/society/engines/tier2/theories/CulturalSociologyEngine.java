@@ -41,7 +41,7 @@ public class CulturalSociologyEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             // Environmental stewardship allocates labor to Soil Organic Carbon (SOC) preservation
             if (globalEnvironmentalStewardship > 0.6) {

@@ -107,8 +107,9 @@ public class ThermohalineStommelAMOCEngine {
         StommelState state = calculateStommelAMOC(28.0, 2.0, 36.5, polarSalinity);
 
         if (state.isCollapsed()) {
-            logger.info("⚠️ï¸ AMOC Thermohaline Circulation COLLAPSED! Flow = {:.2f} Sv, Cooling = {:.2f}°C",
-                    state.amocFlowSv(), state.northAtlanticCoolingShiftC());
+            logger.info("⚠️ï¸ AMOC Thermohaline Circulation COLLAPSED! Flow = {} Sv, Cooling = {}°C",
+                    String.format(java.util.Locale.ROOT, "%.2f", state.amocFlowSv()),
+                    String.format(java.util.Locale.ROOT, "%.2f", state.northAtlanticCoolingShiftC()));
         }
 
         // Apply high-latitude North Atlantic / European cooling anomaly

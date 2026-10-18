@@ -4,7 +4,7 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.engines.tier1;
 
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
@@ -66,9 +66,16 @@ public class PhysicalEngineTestSuite {
      *
      */
     public void testSoilNutrientNPKEngine() {
+        H3Cell cell = testCells.get(0);
+        double initialBiomass = cell.getBiomassAgriculture(); // 200.0
         SoilNutrientNPKEngine.processSoilNutrients(testCells);
-        assertNotNull(testCells.get(0).getBiomassAgriculture());
-        assertTrue(testCells.get(0).getBiomassAgriculture() > 0.0);
+        assertNotNull(cell.getBiomassAgriculture(), "Agricultural biomass must not be null");
+        assertFalse(Double.isNaN(cell.getBiomassAgriculture()), "Agricultural biomass must not be NaN");
+        assertTrue(cell.getBiomassAgriculture() > 0.0, "Agricultural biomass must remain positive");
+        // On a high-resolution Level 8 cell (~0.74 km2), maximum physical land biomass is scaled down by areaScale (~0.05 min bound).
+        // Since initial biomass was 200.0 (above the cell's physical carrying ceiling), the engine applies terrace maintenance depreciation.
+        assertTrue(cell.getBiomassAgriculture() <= initialBiomass,
+                "Biomass above physical land ceiling must undergo physical maintenance depreciation towards equilibrium");
     }
 
     @Test
@@ -121,8 +128,18 @@ public class PhysicalEngineTestSuite {
      *
      */
     public void testOzoneLayerDepletionEngine() {
+        H3Cell cell = testCells.get(0);
+        // Case 1: Pollution <= 5000: no CFC stratospheric damage
+        cell.setPollutionLevel(100.0);
+        cell.setBiomassAgriculture(200.0);
         OzoneLayerDepletionEngine.processOzoneLayerDepletion(testCells);
-        assertTrue(testCells.get(0).getBiomassAgriculture() >= 0.0);
+        assertEquals(200.0, cell.getBiomassAgriculture(), 1e-6, "No ozone depletion when pollution is below threshold");
+
+        // Case 2: Extreme chemical pollution > 5000 triggers CFC photolysis and 8% UV-B crop loss
+        cell.setPollutionLevel(6000.0);
+        OzoneLayerDepletionEngine.processOzoneLayerDepletion(testCells);
+        assertEquals(200.0 * 0.92, cell.getBiomassAgriculture(), 1e-4,
+                "Stratospheric ozone depletion must degrade agricultural biomass by exactly 8% due to UV-B DNA damage");
     }
 
     @Test

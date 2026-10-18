@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
@@ -142,5 +142,41 @@ public class ProceduralPopulationEngineTest {
 
         long sumPop = mockCells.stream().mapToLong(H3Cell::getPopulation).sum();
         assertEquals(totalPop, sumPop, "Earth preset population distribution must sum to total population");
+    }
+
+    @Test
+    public void testAdversarialEdgeCasesNullAndZeroPopulation() {
+        Scenario s = new Scenario();
+
+        // Null cells list
+        assertDoesNotThrow(() -> {
+            ProceduralPopulationEngine.distributePopulation(null, s, 1000L, 1.0, "POLYCENTRIC", false, 0);
+        });
+
+        // Cell with null biome and null elevation
+        H3Cell weirdCell = new H3Cell(999L, 0.0, 0.0);
+        weirdCell.setBiome(null);
+        weirdCell.setElevation(null);
+        weirdCell.setIsPolder(null);
+        weirdCell.setHasFloatingInfrastructure(null);
+        weirdCell.setPopulation(null);
+
+        List<H3Cell> list = new ArrayList<>(List.of(weirdCell));
+
+        assertDoesNotThrow(() -> {
+            ProceduralPopulationEngine.distributePopulation(list, s, 0L, 1.0, "POLYCENTRIC", false, 0);
+        }, "Distribution with zero population and null fields must not throw an exception");
+
+        // Cell with polder and floating infrastructure
+        H3Cell polderCell = new H3Cell(998L, 10.0, 10.0);
+        polderCell.setBiome(Biome.PLAINS);
+        polderCell.setIsPolder(true);
+        polderCell.setHasFloatingInfrastructure(true);
+
+        List<H3Cell> list2 = new ArrayList<>(List.of(polderCell));
+        assertDoesNotThrow(() -> {
+            ProceduralPopulationEngine.distributePopulation(list2, s, 5000L, 1.0, "POLYCENTRIC", false, 0);
+        });
+        assertEquals(5000L, polderCell.getPopulation().longValue());
     }
 }

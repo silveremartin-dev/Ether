@@ -55,13 +55,19 @@ public class Tier1UntestedEnginesComprehensiveTest {
     @DisplayName("AquiferDepletionEngine: verifies Darcy piezometric flow and replenishment")
     void testAquiferDepletionEngine() {
         List<H3Cell> cells = new ArrayList<>();
+        // Arid cell with high population -> heavy pumping
         H3Cell cellA = createMockCell(0x851f1d4bffffffL, Biome.PLAINS, 100.0, 22.0, 5000);
-        cellA.setAccessibleAquifer(500.0);
+        cellA.setRainfall(100.0); // Arid: per-capita demand = 0.80 -> 4000 units/year extraction
+        cellA.setAccessibleAquifer(1500.0);
         cells.add(cellA);
 
-        AquiferDepletionEngine.processAquiferDepletion(cells, 1.0);
-        assertNotNull(cellA.getAccessibleAquifer(), "Accessible aquifer must remain initialized");
-        assertTrue(cellA.getAccessibleAquifer() >= 0.0, "Accessible aquifer volume cannot be negative");
+        AquiferDepletionEngine.processAquiferDepletion(cells, 0.1); // 0.1 year
+        // naturalRecharge = (100 * 0.15) * 0.1 = 1.5
+        // irrigationExtraction = (5000 * 0.80) * 0.1 = 400
+        // expected net change = -398.5
+        double remaining = cellA.getAccessibleAquifer();
+        assertEquals(1500.0 - 398.5, remaining, 1.0, "Aquifer extraction must match net Darcy/recharge balance");
+        assertTrue(remaining < 1500.0, "Over-extracted aquifer must deplete");
     }
 
     @Test
@@ -70,11 +76,13 @@ public class Tier1UntestedEnginesComprehensiveTest {
         List<H3Cell> cells = new ArrayList<>();
         H3Cell saharaCell = createMockCell(0x851f1d4bffffff1L, Biome.DESERT, 200.0, 32.0, 100);
         saharaCell.setLatitude(20.0); // Sub-tropical band
+        saharaCell.setRainfall(50.0);
         cells.add(saharaCell);
 
-        // Under high precession year (e.g. -7000 BP), insolation triggers Green Sahara transition
-        AlbedoClimateEngine.processAlbedoAndClimateEvents(cells, -7000L, 0.0, 1.0);
-        assertNotNull(saharaCell.getBiome(), "Biome must remain valid");
+        // Under peak precession year (5,250 = 21,000 / 4, sin(pi/2) = 1.0), insolation triggers Green Sahara transition
+        AlbedoClimateEngine.processAlbedoAndClimateEvents(cells, 5250L, 0.0, 1.0);
+        assertTrue(saharaCell.getRainfall() > 50.0, 
+                "Milankovitch orbital precession peak must intensify sub-tropical monsoons and rainfall");
     }
 
     @Test

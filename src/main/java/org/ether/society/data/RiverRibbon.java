@@ -48,15 +48,19 @@ public class RiverRibbon {
      * @return the resulting computation or state reference
      */
     public double distanceToPoint(double px, double py) {
-        double dlat = lat1 - lat2;
-        double dlng = (lng1 - lng2) * Math.cos(Math.toRadians((lat1 + lat2) * 0.5));
-        double l2 = dlng * dlng + dlat * dlat;
+        double midLat = (lat1 + lat2) * 0.5;
+        double cosLat = Math.cos(Math.toRadians(midLat));
+        double vx = (lng2 - lng1) * cosLat;
+        double vy = lat2 - lat1;
+        double l2 = vx * vx + vy * vy;
         if (l2 == 0) {
             double dlatP = lat1 - py;
             double dlngP = (lng1 - px) * Math.cos(Math.toRadians((lat1 + py) * 0.5));
             return Math.sqrt(dlngP * dlngP + dlatP * dlatP);
         }
-        double t = Math.max(0, Math.min(1, ((px - lng1) * (lng2 - lng1) + (py - lat1) * (lat2 - lat1)) / l2));
+        double dx = (px - lng1) * cosLat;
+        double dy = py - lat1;
+        double t = Math.max(0.0, Math.min(1.0, (dx * vx + dy * vy) / l2));
         double projX = lng1 + t * (lng2 - lng1);
         double projY = lat1 + t * (lat2 - lat1);
         double dlatP = projY - py;

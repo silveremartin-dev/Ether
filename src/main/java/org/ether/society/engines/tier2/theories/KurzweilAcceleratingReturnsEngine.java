@@ -48,7 +48,7 @@ public class KurzweilAcceleratingReturnsEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double currentTech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
             // S-Curve Paradigm Shift Envelope: P(t) = K / (1 + exp(-beta * t))

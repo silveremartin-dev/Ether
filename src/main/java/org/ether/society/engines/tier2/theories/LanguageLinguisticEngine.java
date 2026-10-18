@@ -45,14 +45,16 @@ public class LanguageLinguisticEngine {
 
             double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
             Biome biome = cell.getBiome();
+            double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double curDrift = cell.getLinguisticDrift() != null ? cell.getLinguisticDrift() : 0.0;
 
             // 1. Isolat Culturel (Cultural Isolation): Island / Coastal / Mountainous isolation
-            boolean isIslandOrIsolated = (biome == Biome.BEACH || friction > 3.5 || cell.getElevation() > 1200);
+            boolean isIslandOrIsolated = (biome == Biome.BEACH || friction > 3.5 || elevation > 1200);
 
             if (isIslandOrIsolated) {
                 isolatedCount++;
                 // Resistance to external linguistic drift (preserve indigenous language)
-                double drift = Math.max(0.0, cell.getLinguisticDrift() - 0.02);
+                double drift = Math.max(0.0, curDrift - 0.02);
                 cell.setLinguisticDrift(drift);
 
                 // Boost social cohesion / Asabiyyah in isolated nation territories
@@ -61,11 +63,13 @@ public class LanguageLinguisticEngine {
                 }
             } else {
                 // Inland connected cells experience standard linguistic drift
-                double drift = cell.getLinguisticDrift() + (friction * 0.01);
+                double drift = curDrift + (friction * 0.01);
                 cell.setLinguisticDrift(drift);
 
-                if (drift > 1.0 && cell.getLanguageGroup().equals("Proto-Human")) {
-                    cell.setLanguageGroup("Dialect-" + Math.abs(cell.getH3Index() % 1000));
+                String langGroup = cell.getLanguageGroup() != null ? cell.getLanguageGroup() : "Proto-Human";
+                if (drift > 1.0 && "Proto-Human".equals(langGroup)) {
+                    long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
+                    cell.setLanguageGroup("Dialect-" + Math.abs(cellId % 1000));
                 }
             }
 
@@ -87,16 +91,22 @@ public class LanguageLinguisticEngine {
         // 3. Trade Route Convergence (Lingua Franca Diffusion)
         if (activeRoutes != null) {
             for (TradeNetworkEngine.TradeRoute route : activeRoutes) {
+                if (route == null || route.origin() == null) continue;
                 String hubLang = route.origin().getLanguageGroup();
+                if (hubLang == null || route.pathCells() == null) continue;
+
                 // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell routeCell : route.pathCells()) {
-                    boolean isIsolated = routeCell.getBiome() == Biome.BEACH || routeCell.getMovementFriction() > 3.5;
+                    if (routeCell == null) continue;
+                    double rFriction = routeCell.getMovementFriction() != null ? routeCell.getMovementFriction() : 1.0;
+                    boolean isIsolated = routeCell.getBiome() == Biome.BEACH || rFriction > 3.5;
                     double diffusionChance = isIsolated ? 0.05 : 0.25;
 
                     long routeCellId = routeCell.getH3Index() != null ? routeCell.getH3Index() : 0L;
                     if (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, routeCellId, 313L) < diffusionChance) {
                         routeCell.setLanguageGroup(hubLang);
-                        routeCell.setLinguisticDrift(Math.max(0.0, routeCell.getLinguisticDrift() - 0.2));
+                        double routeDrift = routeCell.getLinguisticDrift() != null ? routeCell.getLinguisticDrift() : 0.0;
+                        routeCell.setLinguisticDrift(Math.max(0.0, routeDrift - 0.2));
                     }
                 }
             }

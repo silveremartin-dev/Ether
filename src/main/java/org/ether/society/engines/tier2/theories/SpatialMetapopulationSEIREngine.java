@@ -117,27 +117,35 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
 
             int infected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
             if (infected <= 0) continue;
+            infected = Math.min(pop, infected);
 
             double beta = 0.35; // Transmission rate
-            int newExposed = (int) (beta * (pop - infected) * ((double) infected / pop) * (dt / 10.0));
+            int susceptible = Math.max(0, pop - infected);
+            int newExposed = (int) (beta * susceptible * ((double) infected / pop) * (dt / 10.0));
+            newExposed = Math.min(susceptible, Math.max(0, newExposed));
             int newInfectious = (int) (SIGMA_LATENCY_RATE * Math.min(newExposed, pop) * dt);
             int recoveries = (int) (GAMMA_RECOVERY_RATE * infected * dt);
             int deaths = (int) (VIRULENCE_FATALITY * infected * dt);
 
-            int netInfected = Math.max(0, infected + newInfectious - recoveries - deaths);
+            int netInfected = Math.clamp(infected + newInfectious - recoveries - deaths, 0, pop);
             cell.setEpidemicInfected(netInfected);
             cell.setPopulation(Math.max(0, pop - deaths));
 
             // Spatial propagation to immediate H3 neighbors
             if (netInfected > 50) {
                 List<Long> neighborIndexes = h3Service.getNeighbors(cell.getH3Index());
-                int outboundSpread = (int) (netInfected * 0.02); // 2% cross-border leak
-                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-                for (Long nIdx : neighborIndexes) {
-                    H3Cell neighbor = lookup.get(nIdx);
-                    if (neighbor != null && neighbor.getPopulation() != null && neighbor.getPopulation() > 0) {
-                        int nInfected = neighbor.getEpidemicInfected() != null ? neighbor.getEpidemicInfected() : 0;
-                        neighbor.setEpidemicInfected(nInfected + (outboundSpread / neighborIndexes.size()));
+                if (neighborIndexes != null && !neighborIndexes.isEmpty()) {
+                    int outboundSpread = (int) (netInfected * 0.02); // 2% cross-border leak
+                    int perNeighborSpread = outboundSpread / neighborIndexes.size();
+                    if (perNeighborSpread > 0) {
+                        // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
+                        for (Long nIdx : neighborIndexes) {
+                            H3Cell neighbor = lookup.get(nIdx);
+                            if (neighbor != null && neighbor.getPopulation() != null && neighbor.getPopulation() > 0) {
+                                int nInfected = neighbor.getEpidemicInfected() != null ? neighbor.getEpidemicInfected() : 0;
+                                neighbor.setEpidemicInfected(Math.min(neighbor.getPopulation(), nInfected + perNeighborSpread));
+                            }
+                        }
                     }
                 }
             }

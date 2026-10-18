@@ -602,16 +602,43 @@ public class EventSystem {
      */
     public void checkCellEvents(int year, int month, List<H3Cell> cells) {
         if (!enableRandomEvents || cells == null || cells.isEmpty()) return;
+        // Evaluate cell ecological dynamics on annual cadence (month 0) to avoid redundant monthly O(N) heap allocations
+        if (month != 0) return;
 
-        List<H3Cell> forestList = cells.stream().filter(c -> c.getBiome() == Biome.FOREST || c.getBiome() == Biome.JUNGLE).toList();
-        List<H3Cell> desertList = cells.stream().filter(c -> c.getBiome() == Biome.DESERT).toList();
-        long totalLandCells = cells.stream().filter(c -> c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN).count();
+        int forestCount = 0;
+        int desertCount = 0;
+        int totalLandCells = 0;
+        H3Cell sampleForest = null;
+        H3Cell sampleDesert = null;
+        H3Cell sampleStarving = null;
+        int starvingCount = 0;
+        double monthlyNeedPerCapita = org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ / 12.0;
+
+        for (H3Cell c : cells) {
+            Biome b = c.getBiome();
+            if (b != Biome.OCEAN && b != Biome.DEEP_OCEAN) {
+                totalLandCells++;
+                if (b == Biome.FOREST || b == Biome.JUNGLE) {
+                    forestCount++;
+                    if (sampleForest == null || random.nextDouble() < 0.05) sampleForest = c;
+                } else if (b == Biome.DESERT) {
+                    desertCount++;
+                    if (sampleDesert == null || random.nextDouble() < 0.05) sampleDesert = c;
+                }
+            }
+            Integer pop = c.getPopulation();
+            Double food = c.getFoodResource();
+            if (pop != null && pop > 10 && food != null && food < pop * monthlyNeedPerCapita) {
+                starvingCount++;
+                if (sampleStarving == null || random.nextDouble() < 0.05) sampleStarving = c;
+            }
+        }
 
         // Deforestation warning
         if (totalLandCells > 0) {
-            double forestRatio = (double) forestList.size() / totalLandCells;
+            double forestRatio = (double) forestCount / totalLandCells;
             if (forestRatio < 0.1 && random.nextDouble() < 0.01) {
-                H3Cell target = !forestList.isEmpty() ? forestList.get(random.nextInt(forestList.size())) : getRandomLandCell(cells);
+                H3Cell target = sampleForest != null ? sampleForest : getRandomLandCell(cells);
                 if (target != null) {
                     recordSpatialEvent(new ActiveEvent(
                         "ECO_DEFOR_" + System.currentTimeMillis(),
@@ -624,9 +651,9 @@ public class EventSystem {
 
         // Desertification warning
         if (totalLandCells > 0) {
-            double desertRatio = (double) desertList.size() / totalLandCells;
+            double desertRatio = (double) desertCount / totalLandCells;
             if (desertRatio > 0.4 && random.nextDouble() < 0.01) {
-                H3Cell target = !desertList.isEmpty() ? desertList.get(random.nextInt(desertList.size())) : getRandomLandCell(cells);
+                H3Cell target = sampleDesert != null ? sampleDesert : getRandomLandCell(cells);
                 if (target != null) {
                     recordSpatialEvent(new ActiveEvent(
                         "ECO_DESERT_" + System.currentTimeMillis(),
@@ -637,19 +664,16 @@ public class EventSystem {
             }
         }
 
-        // Regional famine detection (< 1 month reserve per habitant: 3.362 / 12 = 0.28017 GJ/hab)
-        double monthlyNeedPerCapita = org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ / 12.0;
-        List<H3Cell> starvingList = cells.stream()
-                .filter(c -> c.getPopulation() != null && c.getPopulation() > 10 && c.getFoodResource() != null && c.getFoodResource() < c.getPopulation() * monthlyNeedPerCapita)
-                .toList();
-
-        if (starvingList.size() > cells.size() * 0.2 && random.nextDouble() < 0.05) {
-            H3Cell target = starvingList.get(random.nextInt(starvingList.size()));
-            recordSpatialEvent(new ActiveEvent(
-                "FAMINE_REG_" + System.currentTimeMillis(),
-                "🍂 FAMINE RÉGIONALE : Pénurie alimentaire grave affectant " + starvingList.size() + " mailles!",
-                "FAMINE", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0, 6.0
-            ));
+        // Regional famine detection
+        if (starvingCount > cells.size() * 0.2 && random.nextDouble() < 0.05) {
+            H3Cell target = sampleStarving != null ? sampleStarving : getRandomLandCell(cells);
+            if (target != null) {
+                recordSpatialEvent(new ActiveEvent(
+                    "FAMINE_REG_" + System.currentTimeMillis(),
+                    "🍂 FAMINE RÉGIONALE : Pénurie alimentaire grave affectant " + starvingCount + " mailles!",
+                    "FAMINE", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0, 6.0
+                ));
+            }
         }
     }
 

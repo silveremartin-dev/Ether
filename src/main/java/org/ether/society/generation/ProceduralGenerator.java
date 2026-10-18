@@ -557,7 +557,7 @@ public class ProceduralGenerator {
             if ((cancelSupplier != null && (step++ % 20 == 0) && cancelSupplier.getAsBoolean()) || Thread.currentThread().isInterrupted()) {
                 throw new java.util.concurrent.CancellationException("Hydrography flow calculation cancelled by user");
             }
-            double curElev = c.getElevation();
+            double curElev = c.getElevation() != null ? c.getElevation() : 0.0;
             double curFlow = flowAccum.getOrDefault(c.getH3Index(), 0.2);
 
             H3Cell lowestNeighbor = null;

@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-@DisplayName("🔬 Empirical Engine Counterfactual & Multi-Metric Benchmarking Suite")
+@DisplayName("ðŸ”¬ Empirical Engine Counterfactual & Multi-Metric Benchmarking Suite")
 public class EmpiricalEngineCounterfactualValidationSuite {
     private static final Logger logger = LoggerFactory.getLogger(EmpiricalEngineCounterfactualValidationSuite.class);
 
@@ -211,8 +211,11 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             double meanControl = Arrays.stream(controlCapitals).average().orElse(0.0);
             double meanTreatment = Arrays.stream(treatmentCapitals).average().orElse(0.0);
 
-            logger.info("West-Bettencourt Scaling Results: Mean Control = {:.2f}, Mean Treatment = {:.2f}, Cohen's d = {:.3f}, KS D = {:.3f}",
-                    meanControl, meanTreatment, d, ks);
+            logger.info("West-Bettencourt Scaling Results: Mean Control = {}, Mean Treatment = {}, Cohen's d = {}, KS D = {}",
+                    String.format(Locale.ROOT, "%.2f", meanControl),
+                    String.format(Locale.ROOT, "%.2f", meanTreatment),
+                    String.format(Locale.ROOT, "%.3f", d),
+                    String.format(Locale.ROOT, "%.3f", ks));
 
             assertTrue(meanTreatment > meanControl, "Superlinear allometry must produce higher capital concentration in metropolitan hubs");
             assertTrue(Math.abs(d) > 0.8, "Effect size must be large (|Cohen's d| > 0.8) to validate macroeconomic urban scaling");
@@ -270,8 +273,10 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             double meanControl = Arrays.stream(controlCapitalTerminal).average().orElse(0.0);
             double meanTreatment = Arrays.stream(treatmentCapitalTerminal).average().orElse(0.0);
 
-            logger.info("Tainter Collapse Results: Mean Control = {:.2f}, Mean Treatment = {:.2f}, Cohen's d = {:.3f}",
-                    meanControl, meanTreatment, d);
+            logger.info("Tainter Collapse Results: Mean Control = {}, Mean Treatment = {}, Cohen's d = {}",
+                    String.format(Locale.ROOT, "%.2f", meanControl),
+                    String.format(Locale.ROOT, "%.2f", meanTreatment),
+                    String.format(Locale.ROOT, "%.3f", d));
 
             assertTrue(meanTreatment < meanControl, "Tainter complexity maintenance must erode bloated capital reserves faster than linear decay");
             assertTrue(Math.abs(d) > 1.2, "Effect size must be very large (Cohen's d > 1.2) representing imperial simplification collapse");
@@ -299,7 +304,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 long seed = MONTE_CARLO_SEEDS[s];
                 List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
                 Scenario sc = new Scenario();
-                sc.setName("Révolution Industrielle & Machine à Vapeur (1800)");
+                sc.setName("RÃ©volution Industrielle & Machine Ã  Vapeur (1800)");
                 sc.setInitialHumanCount(50_000_000L);
                 sc.setInitialCapitalPerCapita(150.0 + (s * 10.0));
                 sc.setPopulationDensityType("INDUSTRIAL_1800");
@@ -392,8 +397,10 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             double meanGiniControl = Arrays.stream(giniControl).average().orElse(0.0);
             double meanGiniTreatment = Arrays.stream(giniTreatment).average().orElse(0.0);
 
-            logger.info("Krugman Agglomeration Results: Gini Control = {:.4f}, Gini Treatment = {:.4f}, Cohen's d = {:.3f}",
-                    meanGiniControl, meanGiniTreatment, d);
+            logger.info("Krugman Agglomeration Results: Gini Control = {}, Gini Treatment = {}, Cohen's d = {}",
+                    String.format(Locale.ROOT, "%.4f", meanGiniControl),
+                    String.format(Locale.ROOT, "%.4f", meanGiniTreatment),
+                    String.format(Locale.ROOT, "%.3f", d));
 
             assertTrue(meanGiniTreatment >= meanGiniControl, "Krugman core-periphery forces must increase spatial wealth concentration (Gini)");
         }
@@ -469,10 +476,10 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             }
 
             double d = calculateCohensD(controlMortality, treatmentMortality);
-            logger.info("Spatial SEIR Results: Baseline Pop = {:.0f}, Dynamic SEIR Pop = {:.0f}, Cohen's d = {:.3f}",
-                    Arrays.stream(controlMortality).average().orElse(0.0),
-                    Arrays.stream(treatmentMortality).average().orElse(0.0),
-                    d);
+            logger.info("Spatial SEIR Results: Baseline Pop = {}, Dynamic SEIR Pop = {}, Cohen's d = {}",
+                    String.format(Locale.ROOT, "%.0f", Arrays.stream(controlMortality).average().orElse(0.0)),
+                    String.format(Locale.ROOT, "%.0f", Arrays.stream(treatmentMortality).average().orElse(0.0)),
+                    String.format(Locale.ROOT, "%.3f", d));
 
             assertTrue(Arrays.stream(treatmentMortality).average().orElse(0.0) <= Arrays.stream(controlMortality).average().orElse(0.0),
                     "Metapopulation disease transmission must capture excess epidemiological mortality");
@@ -529,8 +536,10 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             double meanControl = Arrays.stream(controlFoodTerminal).average().orElse(0.0);
             double meanTreatment = Arrays.stream(treatmentFoodTerminal).average().orElse(0.0);
 
-            logger.info("Soil Salinization Results: Control Food = {:.1f}, Salinized Food = {:.1f}, Cohen's d = {:.3f}",
-                    meanControl, meanTreatment, d);
+            logger.info("Soil Salinization Results: Control Food = {}, Salinized Food = {}, Cohen's d = {}",
+                    String.format(Locale.ROOT, "%.1f", meanControl),
+                    String.format(Locale.ROOT, "%.1f", meanTreatment),
+                    String.format(Locale.ROOT, "%.3f", d));
 
             assertTrue(meanTreatment < meanControl, "Irrigation without modern drainage in arid zones must degrade agricultural food yields");
             assertTrue(Math.abs(d) > 1.0, "Salinization effect size must be large (Cohen's d > 1.0)");
@@ -585,8 +594,10 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             double meanControl = Arrays.stream(capitalControl).average().orElse(0.0);
             double meanTreatment = Arrays.stream(capitalTreatment).average().orElse(0.0);
 
-            logger.info("Draft Animal Traction Results: Control Capital = {:.1f}, Animal Traction Capital = {:.1f}, Cohen's d = {:.3f}",
-                    meanControl, meanTreatment, d);
+            logger.info("Draft Animal Traction Results: Control Capital = {}, Animal Traction Capital = {}, Cohen's d = {}",
+                    String.format(Locale.ROOT, "%.1f", meanControl),
+                    String.format(Locale.ROOT, "%.1f", meanTreatment),
+                    String.format(Locale.ROOT, "%.3f", d));
 
             assertTrue(meanTreatment > meanControl, "Draft animal mechanical traction must amplify agrarian capital output");
             assertTrue(Math.abs(d) > 0.8, "Traction effect size must exceed 0.8");
@@ -640,8 +651,10 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             double meanControl = Arrays.stream(controlMetalTerminal).average().orElse(0.0);
             double meanTreatment = Arrays.stream(treatmentMetalTerminal).average().orElse(0.0);
 
-            logger.info("Hotelling Depletion Results: Control Metal = {:.1f}, Depleted Metal = {:.1f}, Cohen's d = {:.3f}",
-                    meanControl, meanTreatment, d);
+            logger.info("Hotelling Depletion Results: Control Metal = {}, Depleted Metal = {}, Cohen's d = {}",
+                    String.format(Locale.ROOT, "%.1f", meanControl),
+                    String.format(Locale.ROOT, "%.1f", meanTreatment),
+                    String.format(Locale.ROOT, "%.3f", d));
 
             assertTrue(meanTreatment < meanControl, "Hotelling extraction must deplete accessible ore reserves over time");
             assertTrue(Math.abs(d) > 1.0, "Depletion effect size must be large (Cohen's d > 1.0)");
@@ -722,7 +735,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
         void testStommelAMOCCriticalBifurcation() {
             logger.info("=== Executing Stommel AMOC Bifurcation Benchmark ===");
 
-            // Baseline warm Holocene conditions: Equator 28°C / 36.5 PSU, North Atlantic 4°C / 34.8 PSU
+            // Baseline warm Holocene conditions: Equator 28Â°C / 36.5 PSU, North Atlantic 4Â°C / 34.8 PSU
             ThermohalineStommelAMOCEngine.StommelState baselineState =
                     ThermohalineStommelAMOCEngine.calculateStommelAMOC(28.0, 4.0, 36.5, 34.8);
 
@@ -734,7 +747,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                     ThermohalineStommelAMOCEngine.calculateStommelAMOC(28.0, 2.0, 36.5, 31.0);
 
             assertTrue(pulseState.isCollapsed(), "Massive polar freshening must trigger non-linear AMOC collapse");
-            assertTrue(pulseState.northAtlanticCoolingShiftC() <= -5.0, "AMOC collapse must induce severe high-latitude cooling (<= -5°C)");
+            assertTrue(pulseState.northAtlanticCoolingShiftC() <= -5.0, "AMOC collapse must induce severe high-latitude cooling (<= -5Â°C)");
         }
     }
 
@@ -826,61 +839,25 @@ public class EmpiricalEngineCounterfactualValidationSuite {
     // 15. MULTI-METRIC MACRO-HISTORICAL TRAJECTORY BENCHMARK (HYDE 3.4 & MADDISON)
     // =========================================================================
     @Nested
-    @DisplayName("15. 20-Variable Historical Telemetry Calibration vs Empirical Benchmarks")
+    @DisplayName("15. Multi-Metric Historical Telemetry Calibration vs Empirical Benchmarks")
     class MultiMetricHistoricalBenchmark {
 
         @Test
-        @DisplayName("Validate composite R^2 >= 0.85 and RMSE minimization across Roman to Modern Epoch (-3000 to 2026)")
+        @DisplayName("Validate composite R^2 >= 0.85 and RMSE minimization across canonical historical epochs")
         void testMultiMetricBenchmarkFit() {
-            logger.info("=== Executing 20-Variable Multi-Metric Macro-Historical Validation ===");
+            logger.info("=== Executing Multi-Metric Macro-Historical Validation using HistoricalScenarioCalibrationHarness ===");
 
-            MultiMetricTrajectory trajectory = new MultiMetricTrajectory();
+            var scenario = org.ether.society.analytics.HistoricalScenarioCalibrationHarness.CALIBRATION_SCENARIOS.get(3); // SECOND_INDUSTRIAL_ACCELERATION (1850 -> 1910)
+            var result = org.ether.society.analytics.HistoricalScenarioCalibrationHarness.runScenarioCalibration(scenario);
 
-            Map<Integer, Double> benchmarkPop = HistoricalValidationKernel.getBenchmarkDataset("worldPopulation");
-            Map<Integer, Double> benchmarkGwp = HistoricalValidationKernel.getBenchmarkDataset("grossWorldProduct");
-            Map<Integer, Double> benchmarkEnergy = HistoricalValidationKernel.getBenchmarkDataset("primaryEnergy");
-            Map<Integer, Double> benchmarkUrban = HistoricalValidationKernel.getBenchmarkDataset("urbanizationRate");
-            Map<Integer, Double> benchmarkCo2 = HistoricalValidationKernel.getBenchmarkDataset("co2Concentration");
+            assertNotNull(result, "Scenario calibration result must not be null");
+            logger.info("Scenario '{}': Composite R^2 = {}, RMSE = {}, Mean MAPE = {}%",
+                    result.scenario.displayName(), result.compositeRSquared, result.compositeRmse, result.meanMape);
 
-            assertFalse(benchmarkPop.isEmpty(), "World population benchmark must be non-empty");
-            assertFalse(benchmarkGwp.isEmpty(), "Gross World Product benchmark must be non-empty");
-
-            for (Map.Entry<Integer, Double> entry : benchmarkPop.entrySet()) {
-                int yr = entry.getKey();
-                double val = entry.getValue();
-                trajectory.recordValue("worldPopulation", yr, val * (1.0 + 0.02 * Math.sin(yr / 100.0)));
-            }
-
-            for (Map.Entry<Integer, Double> entry : benchmarkGwp.entrySet()) {
-                int yr = entry.getKey();
-                double val = entry.getValue();
-                trajectory.recordValue("grossWorldProduct", yr, val * (1.0 + 0.03 * Math.cos(yr / 50.0)));
-            }
-
-            for (Map.Entry<Integer, Double> entry : benchmarkEnergy.entrySet()) {
-                int yr = entry.getKey();
-                double val = entry.getValue();
-                trajectory.recordValue("primaryEnergy", yr, val * (1.0 + 0.025 * Math.sin(yr / 70.0)));
-            }
-
-            for (Map.Entry<Integer, Double> entry : benchmarkUrban.entrySet()) {
-                int yr = entry.getKey();
-                double val = entry.getValue();
-                trajectory.recordValue("urbanizationRate", yr, val * (1.0 + 0.015 * Math.cos(yr / 80.0)));
-            }
-
-            for (Map.Entry<Integer, Double> entry : benchmarkCo2.entrySet()) {
-                int yr = entry.getKey();
-                double val = entry.getValue();
-                trajectory.recordValue("co2Concentration", yr, val * (1.0 + 0.005 * Math.sin(yr / 150.0)));
-            }
-
-            MultiMetricValidationReport report = HistoricalValidationKernel.evaluateWindowedFit(trajectory, EpochWindow.DEEP_HORIZON);
-            logger.info("{}", report.getSummary());
-
-            assertTrue(report.compositeRSquared >= 0.85, "Composite R^2 across empirical series must exceed 0.85 (Got: " + report.compositeRSquared + ")");
-            assertTrue(report.metricFits.containsKey("worldPopulation"), "World population metric must be validated");
-            assertTrue(report.metricFits.get("worldPopulation").rSquared() >= 0.95, "World population R^2 must exceed 0.95 vs HYDE 3.4");
+            assertTrue(result.compositeRSquared >= 0.85, "Composite R^2 across empirical series must exceed 0.85 (Got: " + result.compositeRSquared + ")");
+            assertFalse(result.simulatedPopulationTrajectory.isEmpty(), "Trajectory must contain simulated points");
+            assertTrue(result.meanMape < 15.0, "Mean MAPE must remain < 15% across historical metrics (Got: " + result.meanMape + "%)");
+            assertTrue(result.compositeRmse < 2000.0, "Composite multi-metric RMSE must be bounded (Got: " + result.compositeRmse + ")");
         }
     }
 }

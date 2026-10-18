@@ -4,7 +4,7 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
@@ -81,8 +81,14 @@ public class NewImprovementsEngineTestSuite {
      *
      */
     public void testBifurcationChaosEngine() {
-        assertDoesNotThrow(() -> BifurcationChaosEngine.processBifurcationAnalysis(testCells, 1.0));
-        assertTrue(BifurcationChaosEngine.getGlobalSystemVariance() >= 0.0);
+        // testCells has cell1 (pop 5000) and cell2 (pop 2000).
+        // meanPop = 3500. diffs = +1500, -1500. diff^2 = 2.25e6.
+        // variance = (2.25e6 + 2.25e6) / 2 = 2,250,000.0.
+        BifurcationChaosEngine.processBifurcationAnalysis(testCells, 1.0);
+        assertEquals(2_250_000.0, BifurcationChaosEngine.getGlobalSystemVariance(), 1e-1,
+                "Analytical variance for {5000, 2000} must equal exactly 2.25e6");
+        assertFalse(Double.isNaN(BifurcationChaosEngine.getGlobalLyapunovExponent()),
+                "Lyapunov exponent must not be NaN");
     }
 
     @Test
@@ -118,16 +124,36 @@ public class NewImprovementsEngineTestSuite {
     }
 
     @Test
-    /*
-     * Test geoengineering albedo feedback engine operation.
-     * <p>
-     * Executes operational logic for {@code NewImprovementsEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testGeoengineeringAlbedoFeedbackEngine() {
+        GeoengineeringAlbedoFeedbackEngine.resetState();
+        H3Cell cell = testCells.get(0);
+        double initialTemp = cell.getTemperature(); // 20.0 C
+
+        // Case 1: Initial state without massive tech cluster, cooling effect should be 0.0
         GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(testCells, 1.0);
-        assertTrue(GeoengineeringAlbedoFeedbackEngine.getGlobalCoolingEffectCelsius() >= 0.0);
+        assertEquals(0.0, GeoengineeringAlbedoFeedbackEngine.getGlobalCoolingEffectCelsius(), 1e-4,
+                "Baseline without active SAI deployment should have zero artificial cooling");
+        assertEquals(initialTemp, cell.getTemperature(), 1e-4, "Temperature should remain unchanged without SAI");
+
+        // Case 2: Deploy planetary SAI with active high-tech industrial civilizations (totalTech5Plus > 50)
+        List<H3Cell> industrialCluster = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            H3Cell hiTech = new H3Cell(0x882830828100000L + i, 45.0, 5.0);
+            hiTech.setTechnologyLevel(6.0); // tech - 4.0 = 2.0 contribution per cell -> 60.0 total
+            hiTech.setPopulation(10000);
+            hiTech.setTemperature(20.0);
+            hiTech.setRainfall(1000.0);
+            industrialCluster.add(hiTech);
+        }
+
+        GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(industrialCluster, 1.0);
+        // totalTech5Plus = 60.0 -> globalSaiAerosolLoadingTg = min(20.0, 60.0 * 0.1) = 6.0 Tg SO2
+        // globalCoolingEffectCelsius = 6.0 * 0.10 = 0.60 °C cooling
+        assertEquals(6.0, GeoengineeringAlbedoFeedbackEngine.getGlobalSaiAerosolLoadingTg(), 1e-3,
+                "SAI aerosol loading must equal exactly 6.0 Tg SO2 for 30 high-tech nodes");
+        assertEquals(0.60, GeoengineeringAlbedoFeedbackEngine.getGlobalCoolingEffectCelsius(), 1e-3,
+                "Stratospheric cooling effect must equal exactly 0.60 °C");
+        assertEquals(19.40, industrialCluster.get(0).getTemperature(), 1e-3,
+                "Cell temperature must reflect the exact 0.60 °C aerosol cooling offset");
     }
 }

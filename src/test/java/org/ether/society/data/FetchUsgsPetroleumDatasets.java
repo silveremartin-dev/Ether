@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Tag("manual")
+@org.junit.jupiter.api.Disabled("Manual USGS network data fetch script - disabled in CI to guarantee hermetic offline tests")
 public class FetchUsgsPetroleumDatasets {
     private static final Logger logger = LoggerFactory.getLogger(FetchUsgsPetroleumDatasets.class);
 

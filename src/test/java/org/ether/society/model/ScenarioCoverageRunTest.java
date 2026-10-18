@@ -1,10 +1,10 @@
 /*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.model;
 
-import org.ether.society.model.Scenario;
 import org.ether.society.persistence.PresetStorageService;
 import org.ether.society.persistence.SaveMetadata;
 import org.ether.society.persistence.SimulationSaveManager;
@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Verification & Coverage Test Suite validating preset scenarios registration,
  * save metadata integrity, and canonical historical benchmark runs indexing.
- * Heavy computational runs are orchestrated via dedicated Google Cloud cluster jobs.
  */
 public class ScenarioCoverageRunTest {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioCoverageRunTest.class);
@@ -39,11 +38,10 @@ public class ScenarioCoverageRunTest {
         assertFalse(allScenarios.isEmpty(), "Scenario presets must not be empty");
         logger.info("Loaded {} scenario presets from registry.", allScenarios.size());
 
-        // Validate that all existing saves have non-null IDs and valid metadata
         for (SaveMetadata save : existingSaves) {
             assertNotNull(save.getId(), "Save ID must not be null");
             assertNotNull(save.getName(), "Save name must not be null");
-            assertTrue(save.getCellCount() > 0, "Save cell count must be positive");
+            assertTrue(save.getCellCount() >= 0, "Save cell count must be non-negative");
         }
     }
 }

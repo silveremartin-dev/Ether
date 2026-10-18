@@ -3,7 +3,7 @@
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.procedural;
+package org.ether.society.scenarios;
 
 import com.uber.h3core.H3Core;
 import com.uber.h3core.util.LatLng;
@@ -248,6 +248,7 @@ public class IslandMultiScaleCliodynamicValidationSuite {
         Scenario sA = new Scenario();
         sA.setName("dt=60d");
         sA.setStartDateYear(1500);
+        sA.setEndDateYear(1520);
         sA.setTemporalResolutionDays(60.0);
         engineA.initializeFromScenario(sA, islandA);
         engineA.stepForward((int) (YEARS * (365.25 / 60.0)));
@@ -258,6 +259,7 @@ public class IslandMultiScaleCliodynamicValidationSuite {
         Scenario sB = new Scenario();
         sB.setName("dt=365d");
         sB.setStartDateYear(1500);
+        sB.setEndDateYear(1520);
         sB.setTemporalResolutionDays(365.25);
         engineB.initializeFromScenario(sB, islandB);
         engineB.stepForward((int) YEARS);

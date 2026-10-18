@@ -1,4 +1,4 @@
-package org.ether.society.procedural;
+package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
@@ -100,7 +100,7 @@ public class WarDiplomacyEngineTest {
         hub.setPopulation(5000);
         hub.setResourceCapital(150000.0); // High capital (K/N = 30)
         hub.setBiomassNatural(2000.0);
-        hub.setTechnologyLevel(1.0); // Starting Neolithic
+        hub.setTechnologyLevel(2.0); // Advanced Antiquity hub
 
         H3Cell dest = new H3Cell(613503380827930705L, 48.2, 2.2);
         dest.setPopulation(3000);
@@ -113,5 +113,35 @@ public class WarDiplomacyEngineTest {
 
         assertTrue(hub.getTechnologyLevel() > 1.0, "High power and capital must advance tech level via ratchet effect");
         assertTrue(dest.getTechnologyLevel() > 1.0, "Active trade route must diffuse technological knowledge to destination");
+    }
+
+    @Test
+    public void testWarResolutionEdgeCases() {
+        // Edge case: Cells with null pop15to24 and population should not throw NPE
+        H3Cell aggCell = new H3Cell(613503380827930720L, 50.0, 10.0);
+        aggCell.setPopulation(5000);
+        aggCell.setPop15to24(1000);
+
+        H3Cell defCap = new H3Cell(613503380827930721L, 50.1, 10.1);
+        defCap.setPopulation(1000);
+        defCap.setPop15to24(200);
+
+        H3Cell defBorder = new H3Cell(613503380827930722L, 50.2, 10.2);
+        defBorder.setPopulation(null); // Null population
+        defBorder.setPop15to24(null); // Null pop15to24
+
+        Nation agg = new Nation("Aggressor", Color.RED, aggCell);
+        agg.setAsabiyyah(0.99);
+        agg.setStateCapacity(0.95);
+
+        Nation def = new Nation("Defender", Color.BLUE, defCap);
+        def.addCell(defBorder);
+        def.setAsabiyyah(0.05);
+        def.setPoliticalInstability(0.95);
+        def.setStateCapacity(0.10);
+
+        assertDoesNotThrow(() -> {
+            WarDiplomacyEngine.processGeopoliticalConflicts(List.of(agg, def), List.of(aggCell, defCap, defBorder));
+        }, "War resolution must cleanly handle null demographic cohorts without NPE");
     }
 }

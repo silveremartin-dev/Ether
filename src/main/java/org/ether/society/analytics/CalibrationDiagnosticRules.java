@@ -138,7 +138,7 @@ public class CalibrationDiagnosticRules {
             sb.append("   - *").append(I18n.getOrDefault("analytics.tuning.diag_label", "Diagnostic")).append("* : ")
               .append(I18n.getOrDefault("analytics.tuning.general_diag", "Mild secondary drifts dispersed across subsidiary indicators.")).append("\n");
             sb.append("   - *").append(I18n.getOrDefault("analytics.tuning.action_label", "Recommended Actions")).append("* : ")
-              .append(I18n.getOrDefault("analytics.tuning.general_action", "Run auto-calibrator `HistoricalAutoCalibrator.evaluateAndAutoCalibrate()` to refine Type B module selection.")).append("\n\n");
+              .append(I18n.getOrDefault("analytics.tuning.general_action", "Run scenario calibrator `HistoricalScenarioCalibrationHarness.runAllScenarioCalibrations()` to refine baseline engine calibration.")).append("\n\n");
         }
 
         return sb.toString();
