@@ -54,16 +54,21 @@ public class MegafaunaEcosystemEngine {
         java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
             if (cell == null) return;
             Biome biome = cell.getBiome();
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
             boolean isCryosphericSteppe = (biome == Biome.SNOW || biome == Biome.TUNDRA);
-            boolean isPaleolithicPlains = (biome == Biome.PLAINS && tech < 1.5);
+            boolean isOpenGrassland = (biome == Biome.PLAINS);
 
-            if (isCryosphericSteppe || isPaleolithicPlains) {
+            if (isCryosphericSteppe || isOpenGrassland) {
                 int humanPop = cell.getPopulation() != null ? cell.getPopulation() : 0;
                 double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 1.0;
+                double domesticLivestock = cell.getBiomassLivestock() != null ? cell.getBiomassLivestock() : 0.0;
 
-                // Continuous hunting pressure ratio = Population / Natural Biomass Stock
-                double huntingPressureRatio = humanPop / Math.max(10.0, naturalBiomass);
+                // Universal substitution: pastoral/agricultural societies with high domestic livestock
+                // rely less on wild megafauna hunting, whereas societies without livestock exert full hunting pressure
+                // regardless of technological epoch (e.g., Pleistocene mammoth hunters or 19th-century bison hunters).
+                double wildGameReliance = 1.0 / (1.0 + (domesticLivestock / Math.max(1.0, humanPop * 0.5)));
+
+                // Continuous hunting pressure ratio = Effective Hunting Population / Natural Biomass Stock
+                double huntingPressureRatio = (humanPop * wildGameReliance) / Math.max(10.0, naturalBiomass);
 
                 if (huntingPressureRatio > 0.10) {
                     megafaunaCollapseCounter.incrementAndGet();
@@ -76,8 +81,8 @@ public class MegafaunaEcosystemEngine {
                     double updatedSoc = Math.max(2.0, soc - (stepDepletion * 0.5));
                     cell.setSoilOrganicCarbon(updatedSoc);
 
-                    // Shrub encroachment converts Paleolithic open steppe plains to forest under low SOC
-                    if (isPaleolithicPlains && updatedSoc < 8.0) {
+                    // Shrub/woodland encroachment converts open steppe plains to forest when grazers & SOC collapse
+                    if (isOpenGrassland && updatedSoc < 8.0) {
                         cell.setBiome(Biome.FOREST);
                     }
                 }

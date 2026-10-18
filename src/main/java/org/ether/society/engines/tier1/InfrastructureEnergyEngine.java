@@ -37,6 +37,7 @@ public class InfrastructureEnergyEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
 

@@ -98,16 +98,20 @@ public class DynamicMaritimeRoutingGraph {
         routingGraph.clear();
 
         List<H3Cell> maritimeNodes = cells.stream()
-                .filter(c -> c.getIsCoastal() || c.getIsPolder() || c.getHasFloatingInfrastructure()
+                .filter(java.util.Objects::nonNull)
+                .filter(c -> Boolean.TRUE.equals(c.getIsCoastal()) || Boolean.TRUE.equals(c.getIsPolder())
+                        || Boolean.TRUE.equals(c.getHasFloatingInfrastructure())
                         || c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN)
                 .toList();
 
         for (H3Cell source : maritimeNodes) {
+            if (source == null || source.getH3Index() == null) continue;
             Map<Long, Double> neighborCosts = new HashMap<>();
 
             // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell target : maritimeNodes) {
-                if (source.getH3Index() == target.getH3Index()) continue;
+                if (target == null || target.getH3Index() == null) continue;
+                if (source.getH3Index().equals(target.getH3Index())) continue;
 
                 double distKm = calculateGreatCircleDistance(
                         source.getLatitude(), source.getLongitude(),
@@ -117,9 +121,14 @@ public class DynamicMaritimeRoutingGraph {
                 // Physical Ocean Hydrodynamic Model:
                 // Calculate significant wave height (Hs) along route from bathymetry & atmospheric storm turbulence,
                 // and compare with vessel fleet physical hull wave clearance tolerance derived from capital density (K) & tech.
-                double midElevation = (source.getElevation() + target.getElevation()) / 2.0;
+                double sElev = source.getElevation() != null ? source.getElevation() : 0.0;
+                double tElev = target.getElevation() != null ? target.getElevation() : 0.0;
+                double midElevation = (sElev + tElev) / 2.0;
                 double midLatitude = (source.getLatitude() + target.getLatitude()) / 2.0;
-                double avgCapital = (source.getResourceCapital() + target.getResourceCapital()) / 2.0;
+
+                double sCap = source.getResourceCapital() != null ? source.getResourceCapital() : 0.0;
+                double tCap = target.getResourceCapital() != null ? target.getResourceCapital() : 0.0;
+                double avgCapital = (sCap + tCap) / 2.0;
 
                 double significantWaveHeightMeters = calculateSignificantWaveHeight(midElevation, midLatitude);
                 double fleetWaveClearanceMeters = calculateFleetWaveClearance(avgCapital, cachedAvgTech);
@@ -225,15 +234,16 @@ public class DynamicMaritimeRoutingGraph {
      */
     private static void applyRoutingGraphEffects(List<H3Cell> cells, double timeStepDays) {
         for (H3Cell cell : cells) {
+            if (cell == null || cell.getH3Index() == null) continue;
             Map<Long, Double> routes = routingGraph.get(cell.getH3Index());
             if (routes != null && !routes.isEmpty()) {
                 // Capital boost scales with connectivity degree and route efficiency
                 double connectivityFactor = Math.min(2.0, 1.0 + 0.05 * routes.size());
-                double currentCap = cell.getResourceCapital();
+                double currentCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
                 cell.setResourceCapital(currentCap * (1.0 + 0.02 * connectivityFactor * (timeStepDays / 30.0)));
 
                 // Hydrodynamic friction reduction over active sea lanes
-                double friction = cell.getMovementFriction();
+                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
                 cell.setMovementFriction(Math.max(0.1, friction * 0.30));
             }
         }

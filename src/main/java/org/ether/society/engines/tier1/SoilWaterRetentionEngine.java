@@ -101,6 +101,7 @@ public class SoilWaterRetentionEngine {
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             double agriBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
             if (agriBiomass <= 0.0 && pop <= 0) continue;

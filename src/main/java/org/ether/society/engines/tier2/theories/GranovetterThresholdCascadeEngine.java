@@ -100,6 +100,7 @@ public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.35;
             double food = cell.getFoodResource() != null ? cell.getFoodResource() : 500.0;
 

@@ -54,8 +54,10 @@ public class TrophicEcosystemEngine {
             double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
 
             // Rewilding effect: Megafauna trampling snow increases winter soil cooling,
-            // preserving permafrost and sequestering Soil Organic Carbon (SOC).
-            if (pleistoceneRewildingActive && cell.getLatitude() > 50.0) {
+            // preserving permafrost and sequestering Soil Organic Carbon (SOC) in cold/periglacial biomes.
+            double temp = cell.getTemperature() != null ? cell.getTemperature() : 10.0;
+            double absLat = cell.getLatitude() != null ? Math.abs(cell.getLatitude()) : 0.0;
+            if (pleistoceneRewildingActive && (temp <= 4.0 || absLat > 45.0)) {
                 double SOC = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 0.0;
                 cell.setSoilOrganicCarbon(SOC + megafaunaDensityPerKm2 * 0.05 * deltaYears);
 

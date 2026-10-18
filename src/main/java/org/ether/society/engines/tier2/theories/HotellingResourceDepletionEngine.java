@@ -101,6 +101,7 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double metalDeposit = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
             if (metalDeposit <= 5.0) continue;
 

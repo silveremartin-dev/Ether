@@ -11,20 +11,16 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Represents a political entity (Tribe, Nation, Empire) that controls
- * territory.
- */
-@JsonIgnoreProperties(ignoreUnknown = true)
-/**
  * <h1>Nation</h1>
  * <p>
- * Core operational component for the Ether civilizational and planetary simulation framework.<br>
+ * Represents a political entity (Tribe, Nation, Empire) that controls territory.
  * Integrates cellular dynamics, data structures, and deterministic state transitions.
  * </p>
- * 
+ *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Nation {
     /* Internal state variable for id (String). */
     private final String id;
@@ -42,6 +38,8 @@ public class Nation {
     private double eliteOverproduction = 0.15;  // Intra-elite competition & inequality pressure (0.0 to 1.0)
     private double stateCapacity = 0.50;        // Institutional extraction & governance efficiency (0.0 to 1.0)
     private double politicalInstability = 0.10; // Instability & civil rebellion risk index (0.0 to 1.0)
+    private double treasuryBullion = 0.0;       // Sovereign precious metal bullion treasury (kg of Au/Ag specie)
+    private double monetaryInflation = 0.0;     // Bullion-driven inflation / Dutch Disease index (0.0 to 1.0)
 
     /*
      * Nation.
@@ -266,28 +264,78 @@ public class Nation {
         this.politicalInstability = Math.clamp(politicalInstability, 0.0, 1.0);
     }
 
+    /**
+     * Gets the sovereign precious metal bullion treasury (in kg of gold/silver equivalent).
+     *
+     * @return accumulated bullion stock in the national treasury
+     */
+    public double getTreasuryBullion() {
+        return treasuryBullion;
+    }
+
+    /**
+     * Sets the sovereign precious metal bullion treasury.
+     *
+     * @param treasuryBullion bullion stock in kg
+     */
+    public void setTreasuryBullion(double treasuryBullion) {
+        this.treasuryBullion = Math.max(0.0, treasuryBullion);
+    }
+
+    /**
+     * Gets the monetary inflation / Dutch Disease index (0.0 to 1.0) caused by excess bullion relative to real goods.
+     *
+     * @return monetary inflation index
+     */
+    public double getMonetaryInflation() {
+        return monetaryInflation;
+    }
+
+    /**
+     * Sets the monetary inflation index.
+     *
+     * @param monetaryInflation inflation index in [0.0, 1.0]
+     */
+    public void setMonetaryInflation(double monetaryInflation) {
+        this.monetaryInflation = Math.clamp(monetaryInflation, 0.0, 1.0);
+    }
+
     /*
      * Updates Peter Turchin's Secular Cycle indices (Asabiyyah, Elite Overproduction, Political Instability)
-     * based on territorial size, average Gini coefficient and population density.
+     * and Fisher Monetary Exchange balance (M*V = P*Y) based on territorial size, Gini coefficient,
+     * population density, and sovereign bullion reserves.
      */
     public void updateCliodynamicsCycle() {
         if (territory.isEmpty()) return;
 
         double avgGini = territory.stream().mapToDouble(H3Cell::getGiniIndex).average().orElse(0.35);
         long totalPop = getTotalPopulation();
+        double totalRealCapital = territory.stream()
+                .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0)
+                .sum();
+        double totalFoodOutput = territory.stream()
+                .mapToDouble(c -> c.getFoodResource() != null ? c.getFoodResource() : 0.0)
+                .sum();
+
+        // 0. Fisher Equation of Exchange & Dutch Disease (Potosi / 3rd-Century Rome Bullion Inflation):
+        // Moderate bullion lubricates fiscal extraction, but excessive bullion relative to real physical output (K + 0.5 * Food)
+        // triggers monetary inflation, eroding productive capacity and spiking elite overproduction.
+        double bullionToRealOutputRatio = treasuryBullion / Math.max(10.0, totalRealCapital + totalFoodOutput * 0.5);
+        this.monetaryInflation = Math.clamp(Math.max(0.0, bullionToRealOutputRatio - 0.35) * 0.50, 0.0, 1.0);
+        double fiscalMonetizationBonus = Math.min(0.15, Math.log1p(treasuryBullion) * 0.02) * (1.0 - monetaryInflation);
 
         // 1. Asabiyyah decays with large imperial size and high inequality, but grows during existential hardship
         double sizePenalty = Math.log10(Math.max(1, territory.size())) * 0.02;
         double inequalityPenalty = avgGini * 0.05;
         this.asabiyyah = Math.clamp(this.asabiyyah - sizePenalty - inequalityPenalty + 0.01, 0.05, 1.0);
 
-        // 2. Elite Overproduction increases with total wealth and high Gini inequality
-        this.eliteOverproduction = Math.clamp(avgGini * 1.2 + (totalPop > 1_000_000 ? 0.2 : 0.0), 0.0, 1.0);
+        // 2. Elite Overproduction increases with total wealth, high Gini inequality, and bullion inflation
+        this.eliteOverproduction = Math.clamp(avgGini * 1.2 + (totalPop > 1_000_000 ? 0.2 : 0.0) + monetaryInflation * 0.25, 0.0, 1.0);
 
-        // 3. State Capacity scales with administrative stability and Asabiyyah
-        this.stateCapacity = Math.clamp((0.4 * asabiyyah) + (0.6 * (1.0 - eliteOverproduction)), 0.1, 1.0);
+        // 3. State Capacity scales with administrative stability, Asabiyyah, and monetized tax collection (minus inflation erosion)
+        this.stateCapacity = Math.clamp((0.4 * asabiyyah) + (0.6 * (1.0 - eliteOverproduction)) + fiscalMonetizationBonus - (monetaryInflation * 0.20), 0.1, 1.0);
 
         // 4. Political Instability Index (PSI) formulation: PSI = (1 - Asabiyyah) * EliteOverproduction * (1 + Gini)
-        this.politicalInstability = Math.clamp((1.0 - asabiyyah) * (0.5 + eliteOverproduction) * (1.0 + avgGini), 0.0, 1.0);
+        this.politicalInstability = Math.clamp((1.0 - asabiyyah) * (0.5 + eliteOverproduction) * (1.0 + avgGini + monetaryInflation * 0.5), 0.0, 1.0);
     }
 }

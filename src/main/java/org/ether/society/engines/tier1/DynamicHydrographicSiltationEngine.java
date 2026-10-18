@@ -111,7 +111,8 @@ public class DynamicHydrographicSiltationEngine {
             // Annual silt deposition depth (m/year) scaled by Stokes settling kinetics and erosion index
             // Settling velocity ~ 0.00072 m/s -> scaled to realistic geological deltaic accretion rate (~1-3 mm/year)
             double siltationIncrement = erosionIndex * (settlingVelocity * 2.0) * deltaYears;
-            cell.setElevation(cell.getElevation() + siltationIncrement);
+            double curElev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            cell.setElevation(curElev + siltationIncrement);
             totalSiltDepositedM += siltationIncrement;
 
             // Movement friction penalty: Harbor siltation increases maritime navigation cost
@@ -126,7 +127,8 @@ public class DynamicHydrographicSiltationEngine {
         if (!upstreamCells.isEmpty() && totalSiltDepositedM > 0.0) {
             double upstreamErosionPerCell = totalSiltDepositedM / upstreamCells.size();
             for (H3Cell upCell : upstreamCells) {
-                upCell.setElevation(Math.max(0.0, upCell.getElevation() - upstreamErosionPerCell));
+                double upElev = upCell.getElevation() != null ? upCell.getElevation() : 0.0;
+                upCell.setElevation(Math.max(0.0, upElev - upstreamErosionPerCell));
             }
         }
     }

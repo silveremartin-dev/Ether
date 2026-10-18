@@ -107,6 +107,7 @@ public class PhysicalEngineTestSuite {
     public void testNuclearSafetyRadiotoxicityEngine() {
         H3Cell cell = testCells.get(0);
         cell.setTechnologyLevel(4.6); // Modern atomic era (fission power flux regime)
+        cell.setResourceUranium(100.0); // Fissile uranium stock for active nuclear reactor
         double initialPollution = cell.getPollutionLevel();
         int initialPop = cell.getPopulation();
 

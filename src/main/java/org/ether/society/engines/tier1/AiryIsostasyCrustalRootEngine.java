@@ -82,6 +82,7 @@ public class AiryIsostasyCrustalRootEngine {
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
             if (elevation <= 0.0) continue;
 

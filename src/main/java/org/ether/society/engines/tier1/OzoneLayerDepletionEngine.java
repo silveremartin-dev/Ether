@@ -37,6 +37,7 @@ public class OzoneLayerDepletionEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
 
             // High industrial chemical pollution releases CFCs destroying O3

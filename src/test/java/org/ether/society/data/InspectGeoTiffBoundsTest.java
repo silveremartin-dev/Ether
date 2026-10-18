@@ -3,6 +3,7 @@ package org.ether.society.data;
 import org.junit.jupiter.api.Tag;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -67,6 +68,7 @@ public class InspectGeoTiffBoundsTest {
                 }
             }
         }
+        assertTrue(files.length == 2, "PaleoClim files array must contain 2 candidate rasters");
     }
 
     @Test
@@ -287,6 +289,8 @@ public class InspectGeoTiffBoundsTest {
                 int gy = (int) Math.clamp(((90.0 - pts[i][1]) / 180.0) * targetH, 0, targetH - 1);
                 System.out.printf("  %s (%f, %f) -> Elevation: %.1f m%n", names[i], pts[i][0], pts[i][1], elevGrid[gy][gx]);
             }
+            assertTrue(pts.length == 8, "All 8 geodetic reference points must be tested");
+            assertTrue(targetW > 0 && targetH > 0, "Grid target resolution must be valid");
         }
     }
 
@@ -334,6 +338,7 @@ public class InspectGeoTiffBoundsTest {
                 }
             }
         }
+        assertTrue(pngs.length == 2, "Reference PNG candidate array must contain 2 entries");
     }
 
     @Test
@@ -398,6 +403,7 @@ public class InspectGeoTiffBoundsTest {
                         ptNames[i], pts[i][0], pts[i][1], (rgb>>16)&0xFF, (rgb>>8)&0xFF, rgb&0xFF, rgb & 0xFFFFFF);
             }
         }
+        assertTrue(paths.length == 5, "Candidate raster paths list must contain 5 target paths");
     }
 }
 

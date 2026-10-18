@@ -560,7 +560,7 @@ public class ProceduralGenerator {
 
         double waterLvl = preset.waterLevel();
         List<H3Cell> landCells = cells.stream()
-                .filter(c -> c.getElevation() != null && c.getElevation() > waterLvl)
+                .filter(c -> c != null && c.getH3Index() != null && c.getElevation() != null && c.getElevation() > waterLvl)
                 .sorted((c1, c2) -> Double.compare(c2.getElevation(), c1.getElevation()))
                 .toList();
 
@@ -568,11 +568,14 @@ public class ProceduralGenerator {
 
         Map<Long, H3Cell> cellMap = new java.util.HashMap<>(cells.size());
         for (H3Cell c : cells) {
-            cellMap.put(c.getH3Index(), c);
+            if (c != null && c.getH3Index() != null) {
+                cellMap.put(c.getH3Index(), c);
+            }
         }
 
         Map<Long, Double> flowAccum = new java.util.concurrent.ConcurrentHashMap<>();
         for (H3Cell c : landCells) {
+            if (c == null || c.getH3Index() == null) continue;
             flowAccum.put(c.getH3Index(), c.getRainfall() != null ? c.getRainfall() : 0.2);
         }
 
@@ -580,6 +583,7 @@ public class ProceduralGenerator {
 
         int step = 0;
         for (H3Cell c : landCells) {
+            if (c == null || c.getH3Index() == null) continue;
             if ((cancelSupplier != null && (step++ % 20 == 0) && cancelSupplier.getAsBoolean()) || Thread.currentThread().isInterrupted()) {
                 throw new java.util.concurrent.CancellationException("Hydrography flow calculation cancelled by user");
             }
@@ -599,13 +603,14 @@ public class ProceduralGenerator {
                 }
             }
 
-            if (lowestNeighbor != null && lowestNeighbor.getElevation() > waterLvl) {
+            if (lowestNeighbor != null && lowestNeighbor.getH3Index() != null && lowestNeighbor.getElevation() > waterLvl) {
                 long nIdx = lowestNeighbor.getH3Index();
                 flowAccum.put(nIdx, flowAccum.getOrDefault(nIdx, 0.2) + curFlow * 0.85);
             }
         }
 
         for (H3Cell c : landCells) {
+            if (c == null || c.getH3Index() == null) continue;
             double rawFlow = flowAccum.getOrDefault(c.getH3Index(), 0.0);
             double normalizedRiver = Math.min(1.0, Math.max(0.0, Math.log1p(rawFlow) / 3.5));
             c.setWaterResource(normalizedRiver * 1000.0);

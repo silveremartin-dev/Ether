@@ -88,6 +88,7 @@ public class GlacialThermodynamicMeltEngine {
         int activeGlacialCells = 0;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             Biome biome = cell.getBiome();
             boolean isGlacial = (biome == Biome.GLACIER || biome == Biome.SNOW || biome == Biome.TUNDRA
                     || (cell.getElevation() != null && cell.getElevation() > 2500.0));

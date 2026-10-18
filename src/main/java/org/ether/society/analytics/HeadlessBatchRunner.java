@@ -407,7 +407,7 @@ public class HeadlessBatchRunner {
         metricsMap.put("eliteOverproduction", engine.getEliteOverproductionIndex());
         metricsMap.put("collapseRisk", engine.getCollapseVulnerability());
         metricsMap.put("systemInterdependence", engine.getSystemInterdependenceIndex());
-        metricsMap.put("urbanizationRate", Math.min(100.0, populatedCells > 0 ? (pop / (double) (populatedCells * 1000.0)) * 10.0 : 5.0));
+        metricsMap.put("urbanizationRate", Math.min(100.0, populatedCells > 0 ? (pop / (populatedCells * 1000.0)) * 10.0 : 5.0));
         metricsMap.put("literacyRate", Math.min(100.0, avgTech * 0.9));
         metricsMap.put("currencyDebasement", Math.max(0.0, (100.0 - stability) * 0.5));
         metricsMap.put("co2Concentration", Math.max(280.0, 280.0 + (avgTech > 50.0 ? (avgTech - 50.0) * 4.0 : 0.0)));

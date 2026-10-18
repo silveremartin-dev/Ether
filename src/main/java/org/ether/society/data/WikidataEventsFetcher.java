@@ -456,7 +456,7 @@ public class WikidataEventsFetcher {
         list.add(new ClimateEvent("milestone_technology", "Première Vaccination Antivariolique par Edward Jenner", 1796, 51.72, -2.46, 0.0, 8.0));
 
         // =========================================================================
-        // 8. ÈRE INDUSTRIELLE & XIXe SIÈCLE (1800 à 1900 CE)
+        // 8. INDUSTRIAL ERA & 19th CENTURY (1800 to 1900 CE)
         // =========================================================================
         list.add(new ClimateEvent("milestone_technology", "Première Locomotive à Vapeur sur Rails de Trevithick", 1804, 51.74, -3.37, 0.0, 8.5));
         list.add(new ClimateEvent("disaster_volcano", "Éruption Cataclysmique du Tambora (Année sans été)", 1815, -8.25, 117.98, 0.0, 7.0));
@@ -472,7 +472,7 @@ public class WikidataEventsFetcher {
         list.add(new ClimateEvent("milestone_polity", "Bataille d'Adoua : Préservation de l'Indépendance Éthiopienne", 1896, 14.16, 38.89, 0.0, 6.5));
 
         // =========================================================================
-        // 9. XXe SIÈCLE & TEMPS PRÉSENTS (1900 à 2025 CE)
+        // 9. 20th CENTURY & PRESENT DAY (1900 to 2025 CE)
         // =========================================================================
         list.add(new ClimateEvent("disaster_volcano", "Éruption de la Montagne Pelée & Nuée Ardente (Martinique)", 1902, 14.81, -61.16, 0.0, 6.0));
         list.add(new ClimateEvent("milestone_technology", "Premier Vol Motorisé Contrôlé des Frères Wright", 1903, 36.01, -75.67, 0.0, 8.0));

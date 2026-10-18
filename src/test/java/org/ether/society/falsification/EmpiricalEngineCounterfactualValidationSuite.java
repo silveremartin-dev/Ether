@@ -244,7 +244,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 long seed = MONTE_CARLO_SEEDS[s];
                 List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
                 for (H3Cell c : initialCells) {
-                    c.setPopulation(2_000 + (int)(s * 100));
+                    c.setPopulation(2_000 + s * 100);
                     c.setResourceCapital(15_000.0);
                 }
 

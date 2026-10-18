@@ -100,6 +100,7 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
         double refPop = 1000.0;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop < 100) continue;
 

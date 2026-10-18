@@ -57,6 +57,7 @@ public class NuclearWarfareClimateEngine {
 
         // 1. Evaluate conflict triggers & stratospheric soot injection
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 5000) continue;
 
@@ -89,6 +90,7 @@ public class NuclearWarfareClimateEngine {
 
             // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
+                if (cell == null) continue;
                 // Surface temperature drop anomaly
                 double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
                 cell.setTemperature(currentTemp + tempAnomaly);

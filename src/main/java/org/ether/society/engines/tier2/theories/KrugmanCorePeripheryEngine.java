@@ -104,10 +104,12 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
         if (cells == null || cells.isEmpty()) return;
 
         double meanCapital = cells.stream()
+                .filter(java.util.Objects::nonNull)
                 .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0)
                 .average().orElse(10.0);
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 

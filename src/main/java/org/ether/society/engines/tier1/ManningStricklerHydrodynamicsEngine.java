@@ -88,6 +88,7 @@ public class ManningStricklerHydrodynamicsEngine {
         double totalCatchmentRunoff = 0.0;
         int upstreamCellCount = 0;
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
             if (elev > 100.0 || cell.getBiome() == Biome.MOUNTAINS || cell.getBiome() == Biome.HILLS) {
                 double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
@@ -99,6 +100,7 @@ public class ManningStricklerHydrodynamicsEngine {
         double catchmentRunoffPerEstuary = upstreamCellCount > 0 ? (totalCatchmentRunoff / Math.max(1, cells.size() - upstreamCellCount)) : 0.0;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 

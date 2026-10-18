@@ -1228,7 +1228,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 radioProcClimate, climateProcBox, radioImportClimate, climateImportBox
         ));
 
-        // --- DOMAINE 4 : GÉOLOGIE, TECTONIQUE & MINERAIS ---
+        // --- DOMAIN 4: GEOLOGY, TECTONICS & MINERALS ---
         ToggleGroup geologyGroup = new ToggleGroup();
         radioProcGeology = new RadioButton(I18n.getOrDefault("resource.mode.procedural_geology", "▶ Procedural Geology"));
         radioImportGeology = new RadioButton(I18n.getOrDefault("resource.mode.import_geology", "📂 Geological Map (PNG)"));
@@ -3576,7 +3576,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 }
             }
 
-            // Distribute 10 physical geological and energy tensors (Coal, Oil, Gas, Uranium, REE, etc.)
+            // Distribute 10 physical geological and energy tensors (Coal, Oil, Gas, Uranium, Iron/Copper, Precious, REE, Geothermal, Aquifer, Clay)
             PlanetPreset plPreset = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
             double latVal = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
             double lonVal = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
@@ -3584,13 +3584,29 @@ public class ResourceDistributionPanel extends BorderPane {
             double oilDensity = sampleProceduralGeologyTensor(1, lonVal, latVal, plPreset);
             double gasDensity = sampleProceduralGeologyTensor(2, lonVal, latVal, plPreset);
             double uraniumDensity = sampleProceduralGeologyTensor(3, lonVal, latVal, plPreset);
+            double ironCopperDensity = sampleProceduralGeologyTensor(5, lonVal, latVal, plPreset);
+            double preciousDensity = sampleProceduralGeologyTensor(6, lonVal, latVal, plPreset);
             double reeDensity = sampleProceduralGeologyTensor(7, lonVal, latVal, plPreset);
+            double mantleHotspot = sampleProceduralGeologyTensor(8, lonVal, latVal, plPreset);
+            double aquiferSpot = sampleProceduralGeologyTensor(9, lonVal, latVal, plPreset);
 
             cell.setResourceCoal(coalDensity * 10000.0);
             cell.setResourceOil(oilDensity * 8000.0);
             cell.setResourceGas(gasDensity * 6000.0);
             cell.setResourceUranium(uraniumDensity * 500.0);
             cell.setResourceRareEarths(reeDensity * 300.0);
+
+            // Augment base metal, precious metal, mantle heat, aquifer, and sedimentary clay reserves from geological hotspots
+            double curMetal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
+            double curPrecious = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0.0;
+            cell.setResourceMetal(curMetal + ironCopperDensity * 6000.0);
+            cell.setResourcePreciousMetal(curPrecious + preciousDensity * 450.0);
+            cell.setMantleHeatFlow(heatFlow * (0.7 + 0.9 * mantleHotspot));
+            cell.setFreshwaterAquifer(baseAquifer * (0.5 + 1.2 * aquiferSpot));
+            if (b != Biome.OCEAN && b != Biome.DEEP_OCEAN) {
+                double clayDeposit = (500.0 + (cell.getRainfall() != null ? cell.getRainfall() : 500.0) * 1.5) * (0.4 + 0.6 * aquiferSpot);
+                cell.setResourceClay(clayDeposit);
+            }
         });
 
         // Apply custom map images ONLY if import modes are selected

@@ -109,9 +109,14 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
         double dt = Math.max(0.01, deltaYears * 365.25); // Step in days
         H3Service h3Service = H3Service.getInstance();
         Map<Long, H3Cell> lookup = new HashMap<>();
-        for (H3Cell c : cells) lookup.put(c.getH3Index(), c);
+        for (H3Cell c : cells) {
+            if (c != null && c.getH3Index() != null) {
+                lookup.put(c.getH3Index(), c);
+            }
+        }
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 
@@ -143,7 +148,7 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
             cell.setPopulation(Math.max(0, pop - deaths));
 
             // Spatial propagation to immediate H3 neighbors
-            if (netInfected > 50) {
+            if (netInfected > 50 && cell.getH3Index() != null) {
                 List<Long> neighborIndexes = h3Service.getNeighbors(cell.getH3Index());
                 if (neighborIndexes != null && !neighborIndexes.isEmpty()) {
                     int outboundSpread = (int) (netInfected * 0.02); // 2% cross-border leak

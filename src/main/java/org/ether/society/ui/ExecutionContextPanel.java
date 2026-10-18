@@ -681,7 +681,7 @@ public class ExecutionContextPanel extends BorderPane {
         colChunks.setCellValueFactory(new PropertyValueFactory<>("chunks"));
         colChunks.setPrefWidth(120);
 
-        nodeTable.getColumns().addAll(colId, colHost, colRole, colStatus, colCap, colChunks);
+        nodeTable.getColumns().addAll(java.util.List.of(colId, colHost, colRole, colStatus, colCap, colChunks));
         populateInitialClusterNodes();
 
         partitionStrategyCombo = new ComboBox<>();

@@ -52,19 +52,23 @@ public class AmerindianEcosystemEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() <= 0) continue;
+            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            boolean isAmericas = (cell.getLongitude() >= -170.0 && cell.getLongitude() <= -30.0);
-            if (!isAmericas) continue;
-
+            // Universal Draft Megafauna Absence & Zoonotic Naivety Law (no hardcoded GPS longitude box):
+            // Applies to any society lacking domesticated draft livestock (biomassLivestock < 1.0)
+            // before industrial mechanization (tech < 3.0).
+            double livestock = cell.getBiomassLivestock() != null ? cell.getBiomassLivestock() : 0.0;
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
             double pop = cell.getPopulation();
 
-            // Draft animal constraint: Mechanical work density capped without horses/cattle
-            double work = cell.getResourceWork() != null ? cell.getResourceWork() : 20.0;
-            cell.setResourceWork(Math.min(work, 40.0)); // Cap work output from lack of draft animals
+            if (livestock < 1.0 && tech < 3.0) {
+                // Draft animal constraint: Mechanical work density capped when relying purely on human muscle
+                double work = cell.getResourceWork() != null ? cell.getResourceWork() : 20.0;
+                cell.setResourceWork(Math.min(work, 40.0));
+            }
 
-            // Virgin Soil Epidemic Shock upon European/Old World contact
-            if (oldWorldContactTriggered) {
+            // Virgin-Soil Zoonotic Epidemic Shock upon contact with high-pathogen-load populations
+            if (oldWorldContactTriggered && livestock < 5.0) {
                 double newPop = pop * (1.0 - epidemicMortalityRate * Math.min(1.0, 0.10 * deltaYears));
                 cell.setPopulation((int) Math.max(10, newPop));
             }

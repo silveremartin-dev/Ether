@@ -3,6 +3,7 @@ package org.ether.society.data;
 import org.junit.jupiter.api.Tag;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -51,6 +52,9 @@ public class DiagnoseLgmClimateTest {
         // Compare -100000 temp vs -20000 temp
         BufferedImage imgTemp100k = ImageIO.read(new File("data/maps/ether/earth/-100000/earth_-100000_temperature.png"));
         System.out.println("-100k temp size: " + imgTemp100k.getWidth() + "x" + imgTemp100k.getHeight());
+        assertTrue(pts.length == 5, "All 5 reference test points must be diagnosed");
+        assertNotNull(imgTemp100k, "Epoch -100000 temperature map must not be null");
+        assertTrue(imgTemp100k.getWidth() > 0 && imgTemp100k.getHeight() > 0, "Epoch -100000 temperature map dimensions must be positive");
     }
 }
 

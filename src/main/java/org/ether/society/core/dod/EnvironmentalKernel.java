@@ -144,7 +144,9 @@ public class EnvironmentalKernel {
         byte[] biomes = world.getBiomes();
         
         int[] landIndices = world.getLandIndices();
+        if (landIndices == null) return;
         float baselineCO2 = 280.0f;
+        Biome[] biomeValues = Biome.values();
 
         // Extract H3 resolution from the first valid H3 index to scale macro-cell production rates by actual cell surface area
         float areaScale = 1.0f;
@@ -157,9 +159,16 @@ public class EnvironmentalKernel {
             }
         }
 
+        float dtInYears = (float) Math.max(0.0001, dt > 1000.0f
+                ? (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
+                : (dt / 365.25));
+        float foodRetentionFactor = (float) Math.exp(-0.03 * dtInYears);
+
         for (int idx = 0; idx < landIndices.length; idx++) {
             int i = landIndices[idx];
-            Biome biome = Biome.values()[biomes[i]];
+            if (i < 0 || i >= world.getCapacity()) continue;
+            int bOrd = Math.clamp(biomes[i], 0, biomeValues.length - 1);
+            Biome biome = biomeValues[bOrd];
             
             // Primary production based on biome, Farquhar bioenergetics, irrigation/moisture availability, and cell surface area
             float baseProd = getBiomeProductionRate(biome) * areaScale;
@@ -168,10 +177,6 @@ public class EnvironmentalKernel {
             float waterAvail = world.getWaterResource() != null ? world.getWaterResource()[i] : 0.0f;
             float effectiveMoisture = Math.max(rain[i], Math.min(1500.0f, rain[i] + waterAvail * 0.8f));
             float moistureAridityRatio = Math.clamp(effectiveMoisture / Math.max(100.0f, pet), 0.40f, 1.25f);
-            
-            float dtInYears = (float) Math.max(0.0001, dt > 1000.0f
-                    ? (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
-                    : (dt / 365.25));
             
             float tech = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[i] : 0.0f;
             float fodderFactor = (tech >= 4.0f && tech < 50.0f)
@@ -192,9 +197,9 @@ public class EnvironmentalKernel {
             float naturalProd = baseProd * agroClimaticFactor * dtInYears;
 
             float growth = naturalProd + agProd;
-            float decay = (float) (food[i] * 0.03 * dtInYears);
+            float retainedFood = food[i] * foodRetentionFactor;
             
-            food[i] = Math.max(0.0f, Math.min(2000000.0f * areaScale, food[i] + growth - decay));
+            food[i] = Math.max(0.0f, Math.min(2000000.0f * areaScale, retainedFood + growth));
             
             // Biomass regeneration coupled to Primary Productivity (bounded by area-scaled ecological carrying capacity)
             if (world.getBiomassNatural() != null) {

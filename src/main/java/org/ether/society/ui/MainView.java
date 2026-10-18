@@ -1140,15 +1140,15 @@ public class MainView extends StackPane {
                     }
 
                     if (controlPanel != null) {
-                        float avgTech = ((org.ether.society.core.H3SimulationEngine)engine).getAverageTechnology();
+                        float avgTech = engine.getAverageTechnology();
                         String currentAge = getAgeName(avgTech);
                         controlPanel.updateAge(currentAge);
 
                         controlPanel.updateStats(
-                            ((org.ether.society.core.H3SimulationEngine)engine).getTotalPopulation(),
-                            ((org.ether.society.core.H3SimulationEngine)engine).getTotalFood(),
-                            ((org.ether.society.core.H3SimulationEngine)engine).getPopulatedCellCount(),
-                            ((org.ether.society.core.H3SimulationEngine)engine).getCurrentTPS()
+                            engine.getTotalPopulation(),
+                            engine.getTotalFood(),
+                            engine.getPopulatedCellCount(),
+                            engine.getCurrentTPS()
                         );
 
                         if (statsPanel != null && statsPanel.isVisible()) {

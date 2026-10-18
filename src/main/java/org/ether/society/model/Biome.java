@@ -76,7 +76,23 @@ public enum Biome {
     SAVANNAH,
 
     /* Inland lake / enclosed water basin */
-    LAKE
+    LAKE;
+
+    /**
+     * Pre-cached immutable reference to all biome enum constants to avoid per-tick/per-frame
+     * heap allocations from {@link #values()} inside high-frequency simulation and rendering loops.
+     */
+    public static final Biome[] VALUES = values();
+
+    /**
+     * Zero-allocation, bounds-safe lookup of a {@link Biome} from its byte/integer ordinal.
+     *
+     * @param ordinal biome ordinal index
+     * @return corresponding {@link Biome}, or {@link #PLAINS} if out of bounds
+     */
+    public static Biome fromOrdinal(int ordinal) {
+        return (ordinal >= 0 && ordinal < VALUES.length) ? VALUES[ordinal] : PLAINS;
+    }
 }
 
 

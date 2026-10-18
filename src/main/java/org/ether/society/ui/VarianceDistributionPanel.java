@@ -258,15 +258,15 @@ public class VarianceDistributionPanel extends VBox {
         minMaxKpiBox = createMiniKpi(kpiMinMaxTitle, lblMinMax);
         cvKpiBox = createMiniKpi(kpiCvTitle, lblCv);
 
-        // Row 0: Moyenne & Variance
+        // Row 0: Mean & Variance
         kpiGrid.add(meanKpiBox, 0, 0);
         kpiGrid.add(varKpiBox, 1, 0);
 
-        // Row 1: Écart-Type & Gini
+        // Row 1: StdDev & Gini
         kpiGrid.add(stdKpiBox, 0, 1);
         kpiGrid.add(giniKpiBox, 1, 1);
 
-        // Row 2: Min/Max & Coeff de Variation
+        // Row 2: Min/Max & Coefficient of Variation
         kpiGrid.add(minMaxKpiBox, 0, 2);
         kpiGrid.add(cvKpiBox, 1, 2);
 
@@ -317,14 +317,14 @@ public class VarianceDistributionPanel extends VBox {
 
         variableCombo.getItems().clear();
 
-        // 1. Économie & Société
+        // 1. Economy & Society
         variableCombo.getItems().add(VariableEntry.header("─── 💎 " + I18n.getOrDefault("variance.cat.economy", "ÉCONOMIE, CAPITAL & SOCIÉTÉ") + " ───"));
         variableCombo.getItems().add(new VariableEntry("wealth", I18n.getOrDefault("variance.var.wealth", "💎 Richesse & Capital Bâti"), "economy"));
         variableCombo.getItems().add(new VariableEntry("tech", I18n.getOrDefault("variance.var.tech", "⚙️ Niveau Technologique"), "economy"));
         variableCombo.getItems().add(new VariableEntry("giniindex", I18n.getOrDefault("variance.var.gini", "⚖️ Indice d'Inégalité (Gini)"), "economy"));
         variableCombo.getItems().add(new VariableEntry("asabiyyah", I18n.getOrDefault("variance.var.asabiyyah", "⚔️ Cohésion Asabiyyah"), "economy"));
 
-        // 2. Démographie, Santé & Cohortes d'Âge
+        // 2. Demography, Health & Age Cohorts
         variableCombo.getItems().add(VariableEntry.header("─── 👥 " + I18n.getOrDefault("variance.cat.demography", "DÉMOGRAPHIE, SANTÉ & COHORTES") + " ───"));
         variableCombo.getItems().add(new VariableEntry("population", I18n.getOrDefault("variance.var.population", "👥 Densité de Population"), "demography"));
         variableCombo.getItems().add(new VariableEntry("lifespan", I18n.getOrDefault("variance.var.lifespan", "🏥 Espérance de Vie (ans)"), "demography"));
@@ -333,7 +333,7 @@ public class VarianceDistributionPanel extends VBox {
         variableCombo.getItems().add(new VariableEntry("popadult", I18n.getOrDefault("variance.var.popadult", "🧑 Cohorte Adultes Actifs (15-64 ans)"), "demography"));
         variableCombo.getItems().add(new VariableEntry("popelderly", I18n.getOrDefault("variance.var.popelderly", "👴 Cohorte Aînés (65+ ans)"), "demography"));
 
-        // 3. Écologie, Alimentation & Ressources
+        // 3. Ecology, Food & Resources
         variableCombo.getItems().add(VariableEntry.header("─── 🌾 " + I18n.getOrDefault("variance.cat.resources", "ÉCOLOGIE, SOLS & RESSOURCES") + " ───"));
         variableCombo.getItems().add(new VariableEntry("food", I18n.getOrDefault("variance.var.food", "🍞 Stocks Alimentaires"), "resources"));
         variableCombo.getItems().add(new VariableEntry("food_per_capita", I18n.getOrDefault("variance.var.food_per_capita", "🍞 Nourriture / Habitant"), "resources"));
@@ -344,7 +344,7 @@ public class VarianceDistributionPanel extends VBox {
         variableCombo.getItems().add(new VariableEntry("biomassnatural", I18n.getOrDefault("variance.var.biomassnatural", "🌿 Biomasse Sauvage"), "resources"));
         variableCombo.getItems().add(new VariableEntry("biomasslivestock", I18n.getOrDefault("variance.var.biomasslivestock", "🐄 Biomasse Bétail Domestique"), "resources"));
 
-        // 4. Physique & Climat
+        // 4. Physics & Climate
         variableCombo.getItems().add(VariableEntry.header("─── 🌍 " + I18n.getOrDefault("variance.cat.physical", "PHYSIQUE, CLIMAT & ENVIRONNEMENT") + " ───"));
         variableCombo.getItems().add(new VariableEntry("temperature", I18n.getOrDefault("variance.var.temperature", "🌡️ Température de Surface"), "physical"));
         variableCombo.getItems().add(new VariableEntry("rainfall", I18n.getOrDefault("variance.var.rainfall", "🌧️ Précipitations Annuelles"), "physical"));
@@ -352,7 +352,7 @@ public class VarianceDistributionPanel extends VBox {
         variableCombo.getItems().add(new VariableEntry("pollution", I18n.getOrDefault("variance.var.pollution", "☣️ Entropie & Pollution"), "physical"));
         variableCombo.getItems().add(new VariableEntry("friction", I18n.getOrDefault("variance.var.friction", "🧗 Friction de Déplacement"), "physical"));
 
-        // 5. Énergie & Métabolisme
+        // 5. Energy & Metabolism
         variableCombo.getItems().add(VariableEntry.header("─── ⚡ " + I18n.getOrDefault("variance.cat.energy", "ÉNERGIE & MÉTABOLISME") + " ───"));
         variableCombo.getItems().add(new VariableEntry("energysolar", I18n.getOrDefault("variance.var.energysolar", "☀️ Énergie Solaire Captée"), "energy"));
         variableCombo.getItems().add(new VariableEntry("energywind", I18n.getOrDefault("variance.var.energywind", "💨 Énergie Éolienne"), "energy"));

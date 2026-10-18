@@ -50,6 +50,11 @@ public class GenerateAllScenarioMapsTest {
         long t4 = System.currentTimeMillis();
         var heat = HistoricalMapGenerator.rasterizeMantleHeatMap("URBAN_CLUSTERS", null);
         logger.info("Mantle Heat generated in {}ms", System.currentTimeMillis() - t4);
+        assertNotNull(coal, "Coal dataset must not be null");
+        assertNotNull(oil, "Oil dataset must not be null");
+        assertNotNull(gas, "Gas dataset must not be null");
+        assertNotNull(aqu, "Aquifer dataset must not be null");
+        assertNotNull(heat, "Mantle heat map must not be null");
     }
 
     @Test

@@ -145,7 +145,7 @@ public class CellTooltip extends VBox {
         // Biome
         Biome biome = cell != null ? cell.getBiome() : null;
         if (biome == null && world != null && bufferIndex != null && bufferIndex >= 0 && bufferIndex < world.getCapacity()) {
-            biome = Biome.values()[world.getBiomes()[bufferIndex]];
+            biome = Biome.fromOrdinal(world.getBiomes()[bufferIndex] & 0xFF);
         }
         if (biome == null) biome = Biome.PLAINS;
         biomeLabel.setText(String.format("%-14s %s %s", I18n.getOrDefault("ui.tooltip.biome", "Biomes :"),

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Tag;
 
 import org.ether.society.engines.tier1.PhysicalPlanetaryAtmosphereSolver;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -120,6 +121,9 @@ public class GenerateVisualClimateComparisonArtifact {
         // 6. Build rich interactive Generative UI dashboard
         buildGenerativeUIHtml(outDir);
         System.out.println("Enhanced Visual Climate Comparison Dashboard successfully created!");
+        assertNotNull(outDir, "Output directory must not be null");
+        assertNotNull(realBiomes, "Real biomes map must be generated");
+        assertTrue(realBiomes.getWidth() > 0 && realBiomes.getHeight() > 0, "Real biomes dimensions must be positive");
     }
 
     // Helper subroutine: create side by side composite - internal state computation & bounds checking

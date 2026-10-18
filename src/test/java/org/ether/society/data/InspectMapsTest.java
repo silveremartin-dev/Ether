@@ -3,6 +3,7 @@ package org.ether.society.data;
 import org.junit.jupiter.api.Tag;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -27,6 +28,8 @@ public class InspectMapsTest {
             "density", "isogloss", "sovereignty", "kinship", "rituals",
             "technology", "institutional", "ecological", "pathogen", "tradenetwork"
         };
+        assertTrue(years.length > 0, "Years list must not be empty");
+        assertTrue(layers.length == 15, "Standard cartographic layers list must have 15 elements");
         for (String yr : years) {
             System.out.println("=== YEAR " + yr + " ===");
             File dir = new File("data/maps/ether/earth/" + yr);
@@ -97,6 +100,8 @@ public class InspectMapsTest {
             int cSov = sov.getRGB(x, y) & 0xFFFFFF;
             System.out.printf("%-25s | Iso: #%06X | Kin: #%06X | Sov: #%06X%n", l.name, cIso, cKin, cSov);
         }
+        assertTrue(locs.length == 19, "All 19 reference cities must be sampled");
+        assertTrue(iso.getWidth() > 0 && iso.getHeight() > 0, "Map dimensions must be positive");
     }
 
     @Test
@@ -170,6 +175,9 @@ public class InspectMapsTest {
             System.out.printf("%-26s | Sov: #%06X | Iso: #%06X | Kin: #%06X | Rit: #%06X | Inst:%3d | Tech:%3d | Eco:%3d | Path:%3d%n",
                     l.name, cSov, cIso, cKin, cRit, cInst, cTech, cEco, cPath);
         }
+        assertTrue(locs.length == 23, "All 23 reference locations must be sampled");
+        assertNotNull(iso, "2026 isogloss map must not be null");
+        assertTrue(iso.getWidth() > 0 && iso.getHeight() > 0, "2026 map dimensions must be positive");
     }
 
     @Test
@@ -221,6 +229,9 @@ public class InspectMapsTest {
             int cPath = path.getRGB(x, y) & 0xFF;
             System.out.printf("%-38s | Sov: #%06X | Pathogen R0:%3d%n", l.name, cSov, cPath);
         }
+        assertTrue(locs.length == 14, "All 14 reference 1914 locations must be sampled");
+        assertNotNull(sov, "1914 sovereignty map must not be null");
+        assertTrue(sov.getWidth() > 0 && sov.getHeight() > 0, "1914 sovereignty map dimensions must be positive");
     }
 
     @Test
@@ -267,6 +278,9 @@ public class InspectMapsTest {
             int cPath = path.getRGB(x, y) & 0xFF;
             System.out.printf("%-40s | Sov: #%06X | Pathogen R0:%3d%n", l.name, cSov, cPath);
         }
+        assertTrue(locs.length == 9, "All 9 reference -1000 BC locations must be sampled");
+        assertNotNull(sov, "Year -1000 sovereignty map must not be null");
+        assertTrue(sov.getWidth() > 0 && sov.getHeight() > 0, "Year -1000 map dimensions must be positive");
     }
 
     @Test
@@ -322,6 +336,9 @@ public class InspectMapsTest {
             int cPath = path.getRGB(x, y) & 0xFF;
             System.out.printf("%-35s | Iso: #%06X | Kin: #%06X | Sov: #%06X | Pathogen: %3d%n", l.name, cIso, cKin, cSov, cPath);
         }
+        assertTrue(locs.length == 13, "All 13 reference Year 0 locations must be sampled");
+        assertNotNull(iso, "Year 0 isogloss map must not be null");
+        assertTrue(iso.getWidth() > 0 && iso.getHeight() > 0, "Year 0 map dimensions must be positive");
     }
 }
 

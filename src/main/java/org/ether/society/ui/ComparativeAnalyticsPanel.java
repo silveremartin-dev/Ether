@@ -706,7 +706,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
         });
 
-        scenarioTable.getColumns().addAll(selectCol, nameCol, planetCol, clippingCol, yearsCol, progressCol, estDurationCol, statusCol);
+        scenarioTable.getColumns().addAll(List.of(selectCol, nameCol, planetCol, clippingCol, yearsCol, progressCol, estDurationCol, statusCol));
 
         selectCol.setComparator(Boolean::compare);
         nameCol.setComparator(String.CASE_INSENSITIVE_ORDER);
@@ -830,7 +830,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             public String toString(Number object) {
                 if (object == null) return "";
                 double val = object.doubleValue();
-                long y = (long) Math.round(val);
+                long y = Math.round(val);
                 long absY = Math.abs(y);
                 boolean isFr = I18n.getCurrentLanguage() == org.ether.society.i18n.Language.FRENCH;
                 if (y < 0) {
@@ -1620,7 +1620,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
                     // Base anomaly from empirical paleoclimate benchmarks (PAGES 2k, EPICA, Marcott 2013)
                     double baseAnomaly = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
-                        "temperatureAnomaly", (int) snap.year(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                        "temperatureAnomaly", snap.year(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
 
                     // Scenario-specific physically grounded forcings
                     double shockForcing = 0.0;

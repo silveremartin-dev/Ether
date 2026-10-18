@@ -66,6 +66,7 @@ public class AquiferDepletionEngine {
         java.util.concurrent.atomic.AtomicInteger depletedCounter = new java.util.concurrent.atomic.AtomicInteger(0);
 
         java.util.function.Consumer<H3Cell> rechargeProcessor = cell -> {
+            if (cell == null) return;
             double aquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 1000.0;
             double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -81,7 +82,7 @@ public class AquiferDepletionEngine {
             if (newAquifer < 100.0 && pop > 300) {
                 depletedCounter.incrementAndGet();
                 double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
-                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * (1.0 - 0.30 * dt)));
+                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * Math.exp(-0.30 * dt)));
             }
         };
 
@@ -92,6 +93,7 @@ public class AquiferDepletionEngine {
                 rechargeProcessor.accept(cells.get(i));
             }
         }
+        depletedAquifers = depletedCounter.get();
 
         // 2. 2D Darcy Lateral Groundwater Filtration Flux (Spatial Neighbor Approximation)
         int n = cells.size();
@@ -104,6 +106,7 @@ public class AquiferDepletionEngine {
 
             for (int i = 0; i < n; i++) {
                 H3Cell c = cells.get(i);
+                if (c == null) continue;
                 double elev = c.getElevation() != null ? c.getElevation() : 0.0;
                 double aq = c.getAccessibleAquifer() != null ? c.getAccessibleAquifer() : 1000.0;
                 aqArray[i] = aq;
@@ -113,12 +116,14 @@ public class AquiferDepletionEngine {
             }
 
             for (int i = 0; i < n; i++) {
+                if (cells.get(i) == null) continue;
                 double headA = headArray[i];
                 double latA = latArray[i];
                 double lonA = lonArray[i];
                 double cosLatA = Math.cos(Math.toRadians(latA));
 
                 for (int j = i + 1; j < Math.min(n, i + 7); j++) {
+                    if (cells.get(j) == null) continue;
                     double dLatDeg = latArray[j] - latA;
                     double dLonDeg = (lonArray[j] - lonA) * cosLatA;
                     double dy = dLatDeg * 111.0;
@@ -147,7 +152,9 @@ public class AquiferDepletionEngine {
             for (int i = 0; i < n; i++) {
                 if (deltaAquifer[i] != 0.0) {
                     H3Cell c = cells.get(i);
-                    c.setAccessibleAquifer(Math.max(0.0, aqArray[i] + deltaAquifer[i]));
+                    if (c != null) {
+                        c.setAccessibleAquifer(Math.max(0.0, aqArray[i] + deltaAquifer[i]));
+                    }
                 }
             }
         }

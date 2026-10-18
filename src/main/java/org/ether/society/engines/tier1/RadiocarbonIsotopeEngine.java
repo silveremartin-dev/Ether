@@ -97,6 +97,7 @@ public class RadiocarbonIsotopeEngine {
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 50.0;
             // Decay of organic carbon pool
             double decayedSOC = soc * Math.exp(-LAMBDA_14 * deltaYears);

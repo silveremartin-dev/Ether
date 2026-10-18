@@ -44,18 +44,17 @@ public class CellTopologyWireCodec {
             return new byte[0];
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(cells.size() * 80);
+        List<H3Cell> validCells = cells.stream().filter(java.util.Objects::nonNull).toList();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(validCells.size() * 80);
         DataOutputStream dos = new DataOutputStream(baos);
 
         try {
             dos.writeInt(MAGIC_HEADER);
             dos.writeByte(PROTOCOL_VERSION);
-            dos.writeInt(cells.size());
-
-            Biome[] biomeValues = Biome.values();
+            dos.writeInt(validCells.size());
 
             // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (H3Cell cell : cells) {
+            for (H3Cell cell : validCells) {
                 dos.writeLong(cell.getH3Index() != null ? cell.getH3Index() : 0L);
                 dos.writeDouble(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
                 dos.writeDouble(cell.getLongitude() != null ? cell.getLongitude() : 0.0);

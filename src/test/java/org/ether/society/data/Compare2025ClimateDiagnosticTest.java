@@ -1,8 +1,8 @@
 package org.ether.society.data;
 
 import org.junit.jupiter.api.Tag;
-
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -34,6 +34,14 @@ public class Compare2025ClimateDiagnosticTest {
         ImageIO.write(procTemp, "PNG", new File(outDir, "procedural_2025_temperature.png"));
         ImageIO.write(procPrecip, "PNG", new File(outDir, "procedural_2025_precipitation.png"));
         ImageIO.write(procSeas, "PNG", new File(outDir, "procedural_2025_seasonality.png"));
+
+        assertNotNull(procBiomes, "Procedural biomes map must not be null");
+        assertNotNull(procTemp, "Procedural temperature map must not be null");
+        assertNotNull(procPrecip, "Procedural precipitation map must not be null");
+        assertNotNull(procSeas, "Procedural seasonality map must not be null");
+        assertTrue(procBiomes.getWidth() > 0 && procBiomes.getHeight() > 0, "Image dimensions must be positive");
+        assertTrue(new File(outDir, "procedural_2025_biomes.png").exists(), "Exported biomes file must exist");
+        assertTrue(new File(outDir, "procedural_2025_temperature.png").exists(), "Exported temperature file must exist");
 
         // 2. Load Reference Earth Biomes if available
         File refBiomesFile = new File("data/maps/reference_earth_biomes.png");

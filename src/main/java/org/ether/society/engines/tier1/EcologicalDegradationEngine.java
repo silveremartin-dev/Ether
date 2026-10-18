@@ -16,13 +16,13 @@ import java.util.List;
 /**
  * Ecological Degradation, Climate Stress, Pollution & Overfishing Engine.
  * Models:
- * 1. <b>Déforestation (Deforestation & Canopy Loss)</b>: Timber extraction and agricultural land clearing,
+ * 1. <b>Deforestation & Canopy Loss</b>: Timber extraction and agricultural land clearing,
  *    reducing natural biomass, increasing albedo, and disrupting regional evapotranspiration.
- * 2. <b>Pollution & Dispersion aux Sites Inaccessibles</b>: Industrial/mining waste generation in populated cells
+ * 2. <b>Pollution & Remote Atmospheric Dispersion</b>: Industrial/mining waste generation in populated cells
  *    and atmospheric/river dispersion diffusing toxic contaminants even into unpopulated, high-altitude or remote sites.
- * 3. <b>Surpêche (Marine Resource Overfishing)</b>: Logistic fish stock harvesting ($r \cdot K_{fish}$). Over-harvesting
+ * 3. <b>Marine Resource Overfishing</b>: Logistic fish stock harvesting ($r \cdot K_{fish}$). Over-harvesting
  *    leads to fishery collapse and coastal food crises.
- * 4. <b>Sécheresses, Famines & Migrations Démographiques</b>.
+ * 4. <b>Droughts, Famines & Demographic Migrations</b>.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -53,9 +53,10 @@ public class EcologicalDegradationEngine {
 
         // ── Phase 1: Local Environmental, Deforestation, Overfishing & Famine ──
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             double effectiveTech = (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0) ? cell.getTechnologyLevel() : techLevel;
-            Biome biome = cell.getBiome();
+            Biome biome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
 
             // 1. Pollution Generation & Natural Biogeochemical Attenuation
             double currPollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
@@ -77,12 +78,15 @@ public class EcologicalDegradationEngine {
             // Pollution impact on health, lifespan, and natural biomass (scaled by dtMonthlyRatio)
             double pLevel = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
             if (pLevel > 100.0) {
-                cell.setLifespan(Math.max(15.0, cell.getLifespan() - (pLevel / 200.0) * dtMonthlyRatio));
-                cell.setFertility(Math.max(0.5, cell.getFertility() - (pLevel / 400.0) * dtMonthlyRatio));
-                cell.setBiomassNatural(Math.max(0.0, cell.getBiomassNatural() - (pLevel * 0.1 * dtMonthlyRatio)));
+                double curLifespan = cell.getLifespan() != null ? cell.getLifespan() : 30.0;
+                double curFertility = cell.getFertility() != null ? cell.getFertility() : 2.5;
+                double curBioNat = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
+                cell.setLifespan(Math.max(15.0, curLifespan - (pLevel / 200.0) * dtMonthlyRatio));
+                cell.setFertility(Math.max(0.5, curFertility - (pLevel / 400.0) * dtMonthlyRatio));
+                cell.setBiomassNatural(Math.max(0.0, curBioNat - (pLevel * 0.1 * dtMonthlyRatio)));
             }
 
-            // 2. Surpêche & Exploitation Halieutique (Overfishing & Marine Harvest Dynamics in Ocean & Coastal Biomes)
+            // 2. Overfishing & Marine Harvest Dynamics in Ocean & Coastal Biomes
             if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH) {
                 double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
                 double maxStockCapacity = (biome == Biome.BEACH ? 1500.0 : 1000.0) * areaScale;
@@ -130,9 +134,10 @@ public class EcologicalDegradationEngine {
                 continue;
             }
 
-            // 3. Drought Simulation (Sécheresse)
+            // 3. Drought Simulation
             double rain = cell.getRainfall() != null ? cell.getRainfall() : 0.0;
             double temp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double curWaterRes = cell.getWaterResource() != null ? cell.getWaterResource() : 100.0;
 
             double hydroStress = 0.0;
             if (rain < 300.0 || temp > 35.0) {
@@ -140,27 +145,31 @@ public class EcologicalDegradationEngine {
                 droughtEvents++;
 
                 double aquiferDepletion = hydroStress * 200.0 * dtMonthlyRatio;
-                cell.setAccessibleAquifer(Math.max(0.0, cell.getAccessibleAquifer() - aquiferDepletion));
-                cell.setWaterResource(Math.max(0.0, cell.getWaterResource() - hydroStress * 150.0 * dtMonthlyRatio));
-                cell.setBiomassAgriculture(Math.max(0.0, cell.getBiomassAgriculture() * (1.0 - 0.4 * hydroStress * dtMonthlyRatio)));
+                double curAquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
+                double curAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
+                cell.setAccessibleAquifer(Math.max(0.0, curAquifer - aquiferDepletion));
+                cell.setWaterResource(Math.max(0.0, curWaterRes - hydroStress * 150.0 * dtMonthlyRatio));
+                cell.setBiomassAgriculture(Math.max(0.0, curAgri * Math.exp(-0.4 * hydroStress * dtMonthlyRatio)));
             } else {
-                cell.setWaterResource(Math.min(1000.0, cell.getWaterResource() + (rain / 100.0) * 10.0 * dtMonthlyRatio));
+                cell.setWaterResource(Math.min(1000.0, curWaterRes + (rain / 100.0) * 10.0 * dtMonthlyRatio));
             }
 
-            // 4. Famine Simulation (Famine)
+            // 4. Famine Simulation
             double totalFood = (cell.getFoodResource() != null ? cell.getFoodResource() : 0.0)
                     + (cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() * 0.70 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG : 0.0)
                     + (cell.getBiomassFish() != null ? cell.getBiomassFish() * 0.80 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG : 0.0)
                     + (cell.getBiomassNatural() != null ? cell.getBiomassNatural() * 0.05 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG : 0.0);
 
             double foodRequired = pop * (CALORIC_REQUIREMENT_PER_CAPITA * 0.082 * dtMonthlyRatio);
+            double curLife = cell.getLifespan() != null ? cell.getLifespan() : 30.0;
+            double curFert = cell.getFertility() != null ? cell.getFertility() : 2.5;
 
             if (totalFood < foodRequired) {
                 famineEvents++;
                 double foodDeficitRatio = Math.min(1.0, (foodRequired - totalFood) / foodRequired);
 
-                cell.setLifespan(Math.max(15.0, cell.getLifespan() - 1.0 * foodDeficitRatio * dtMonthlyRatio));
-                cell.setFertility(Math.max(0.5, cell.getFertility() - 0.5 * foodDeficitRatio * dtMonthlyRatio));
+                cell.setLifespan(Math.max(15.0, curLife - 1.0 * foodDeficitRatio * dtMonthlyRatio));
+                cell.setFertility(Math.max(0.5, curFert - 0.5 * foodDeficitRatio * dtMonthlyRatio));
 
                 int mortality = (int) Math.ceil(pop * 0.03 * foodDeficitRatio * dtMonthlyRatio);
                 cell.setPopulation(Math.max(0, pop - mortality));
@@ -169,11 +178,11 @@ public class EcologicalDegradationEngine {
 
                 cell.updateAgePyramidFromTotal(effectiveTech);
             } else {
-                cell.setLifespan(Math.min(85.0, cell.getLifespan() + 0.02 * dtMonthlyRatio));
-                cell.setFertility(Math.min(7.0, cell.getFertility() + 0.01 * dtMonthlyRatio));
+                cell.setLifespan(Math.min(85.0, curLife + 0.02 * dtMonthlyRatio));
+                cell.setFertility(Math.min(7.0, curFert + 0.01 * dtMonthlyRatio));
             }
 
-            // 5. Déforestation & Impact sur le Biome (flux normalisé par dt et par surface planaire H3 de cellule)
+            // 5. Deforestation & Biome Impact (flux normalized by dt and planar H3 cell surface area)
             int h3Res = (cell.getH3Index() != null && cell.getH3Index() != 0L)
                     ? (int) ((cell.getH3Index() >>> 52) & 0xFL)
                     : 3;
@@ -235,11 +244,12 @@ public class EcologicalDegradationEngine {
 
             // Severe deforestation & ecological depletion degrades soil organic carbon and rainfall
             if (nextWood < (100.0 * areaScale) && nextNat < (100.0 * areaScale) && (biome == Biome.FOREST || biome == Biome.JUNGLE)) {
-                cell.setSoilOrganicCarbon(Math.max(5.0, cell.getSoilOrganicCarbon() - 0.5 * dtMonthlyRatio));
-                cell.setRainfall(Math.max(100.0, cell.getRainfall() * Math.pow(0.98, dtMonthlyRatio))); // Evapotranspiration loss
+                double curSoc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;
+                cell.setSoilOrganicCarbon(Math.max(5.0, curSoc - 0.5 * dtMonthlyRatio));
+                cell.setRainfall(Math.max(100.0, rain * Math.pow(0.98, dtMonthlyRatio))); // Evapotranspiration loss
             }
 
-            // 6. Pression Démographique & Intensification Agricole (Demographic Density Strain)
+            // 6. Demographic Density Strain & Agricultural Intensification
             double carryingCap = calculateCarryingCapacity(cell, effectiveTech);
             double demoPressure = pop / Math.max(1.0, carryingCap);
 
@@ -260,10 +270,10 @@ public class EcologicalDegradationEngine {
             cell.calculateMovementFriction(effectiveTech);
         }
 
-        // ── Phase 2: Pollution Atmospheric & River Dispersion (Sites Inaccessibles) ─
+        // ── Phase 2: Pollution Atmospheric & River Dispersion (Remote Sites) ─
         processPollutionDispersion(cells);
 
-        // ── Phase 3: Demographic Migration Flux (Migrations) ───────────────────
+        // ── Phase 3: Demographic Migration Flux ───────────────────
         totalMigrants = processMigrationFlux(cells, techLevel, deltaYears);
 
         if (droughtEvents > 0 || famineEvents > 0 || totalMigrants > 0) {
@@ -333,7 +343,7 @@ public class EcologicalDegradationEngine {
 
         for (int i = 0; i < count; i++) {
             H3Cell c = cells.get(i);
-            if (c.getElevation() <= 0 || c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) {
+            if (c == null || c.getElevation() == null || c.getElevation() <= 0 || c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) {
                 habitability[i] = -1.0;
                 continue;
             }
@@ -363,7 +373,7 @@ public class EcologicalDegradationEngine {
 
         for (int i = 0; i < count; i++) {
             H3Cell source = cells.get(i);
-            if (habitability[i] < 0 || source.getPopulation() <= 0) continue;
+            if (source == null || habitability[i] < 0 || source.getPopulation() == null || source.getPopulation() <= 0) continue;
 
             double srcScore = habitability[i];
             int pop = source.getPopulation();
@@ -382,6 +392,7 @@ public class EcologicalDegradationEngine {
                 for (int j = startIdx; j <= endIdx; j++) {
                     if (j == i || habitability[j] < 0) continue;
                     H3Cell candidate = cells.get(j);
+                    if (candidate == null) continue;
                     if (source.getLatitude() != null && source.getLongitude() != null
                             && candidate.getLatitude() != null && candidate.getLongitude() != null) {
                         double dLat = candidate.getLatitude() - source.getLatitude();
@@ -397,15 +408,18 @@ public class EcologicalDegradationEngine {
 
                 if (bestTargetIdx != -1) {
                     H3Cell target = cells.get(bestTargetIdx);
+                    if (target != null) {
+                        int srcPop = source.getPopulation() != null ? source.getPopulation() : 0;
+                        int tgtPop = target.getPopulation() != null ? target.getPopulation() : 0;
+                        source.setPopulation(Math.max(0, srcPop - migrants));
+                        target.setPopulation(tgtPop + migrants);
 
-                    source.setPopulation(Math.max(0, source.getPopulation() - migrants));
-                    target.setPopulation(target.getPopulation() + migrants);
+                        double tech = (source.getTechnologyLevel() != null && source.getTechnologyLevel() > 0) ? source.getTechnologyLevel() : defaultTech;
+                        source.updateAgePyramidFromTotal(tech);
+                        target.updateAgePyramidFromTotal(tech);
 
-                    double tech = source.getTechnologyLevel() > 0 ? source.getTechnologyLevel() : defaultTech;
-                    source.updateAgePyramidFromTotal(tech);
-                    target.updateAgePyramidFromTotal(tech);
-
-                    totalMigrated += migrants;
+                        totalMigrated += migrants;
+                    }
                 }
             }
         }

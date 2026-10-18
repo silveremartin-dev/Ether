@@ -258,6 +258,29 @@ public class ImageMapLoader {
                 elevImg != null, biomeImg != null, resourceImg != null, climateImg != null, rainfallImg != null, seasonalityImg != null, cells.size());
     }
 
+    private static final Color[] BIOME_TARGET_COLORS = new Color[Biome.VALUES.length];
+
+    static {
+        for (Biome b : Biome.VALUES) {
+            BIOME_TARGET_COLORS[b.ordinal()] = switch (b) {
+                case DEEP_OCEAN -> Color.rgb(0, 0, 40);
+                case OCEAN -> Color.rgb(0, 50, 200);
+                case BEACH -> Color.rgb(240, 220, 150);
+                case PLAINS -> Color.rgb(100, 200, 50);
+                case FOREST -> Color.rgb(20, 120, 20);
+                case JUNGLE -> Color.rgb(0, 80, 0);
+                case DESERT -> Color.rgb(255, 200, 50);
+                case HILLS -> Color.rgb(150, 150, 100);
+                case MOUNTAINS -> Color.rgb(100, 100, 100);
+                case SAVANNAH -> Color.rgb(180, 200, 70);
+                case GLACIER -> Color.rgb(220, 240, 255);
+                case TUNDRA -> Color.rgb(150, 200, 220);
+                case SNOW -> Color.rgb(255, 255, 255);
+                case LAKE -> Color.rgb(30, 120, 220);
+            };
+        }
+    }
+
     /*
      * Match pixel color to nearest Biome.
      */
@@ -269,8 +292,8 @@ public class ImageMapLoader {
         Biome best = Biome.OCEAN;
         double minDist = Double.MAX_VALUE;
 
-        for (Biome b : Biome.values()) {
-            Color bc = getBiomeTargetColor(b);
+        for (Biome b : Biome.VALUES) {
+            Color bc = BIOME_TARGET_COLORS[b.ordinal()];
             double dist = colorDistance(c, bc);
             if (dist < minDist) {
                 minDist = dist;
@@ -282,31 +305,17 @@ public class ImageMapLoader {
 
     // Helper subroutine: color distance - internal state computation & bounds checking
     private double colorDistance(Color c1, Color c2) {
-        return Math.pow(c1.getRed() - c2.getRed(), 2) +
-                Math.pow(c1.getGreen() - c2.getGreen(), 2) +
-                Math.pow(c1.getBlue() - c2.getBlue(), 2);
+        double dr = c1.getRed() - c2.getRed();
+        double dg = c1.getGreen() - c2.getGreen();
+        double db = c1.getBlue() - c2.getBlue();
+        return dr * dr + dg * dg + db * db;
     }
 
     /*
      * Define expected colors for biomes in the input map.
      */
     public Color getBiomeTargetColor(Biome b) {
-        return switch (b) {
-            case DEEP_OCEAN -> Color.rgb(0, 0, 40);
-            case OCEAN -> Color.rgb(0, 50, 200);
-            case BEACH -> Color.rgb(240, 220, 150);
-            case PLAINS -> Color.rgb(100, 200, 50);
-            case FOREST -> Color.rgb(20, 120, 20);
-            case JUNGLE -> Color.rgb(0, 80, 0);
-            case DESERT -> Color.rgb(255, 200, 50);
-            case HILLS -> Color.rgb(150, 150, 100);
-            case MOUNTAINS -> Color.rgb(100, 100, 100);
-            case SAVANNAH -> Color.rgb(180, 200, 70);
-            case GLACIER -> Color.rgb(220, 240, 255);
-            case TUNDRA -> Color.rgb(150, 200, 220);
-            case SNOW -> Color.rgb(255, 255, 255);
-            case LAKE -> Color.rgb(30, 120, 220);
-        };
+        return b != null ? BIOME_TARGET_COLORS[b.ordinal()] : BIOME_TARGET_COLORS[Biome.OCEAN.ordinal()];
     }
 
     /*

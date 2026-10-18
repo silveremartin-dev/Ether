@@ -672,7 +672,7 @@ public class HeadlessRunner {
             System.out.printf("Headless Execution Completed in %.3f seconds!\n", totalSec);
             System.out.printf("Throughput      : %.2f TPS (Ticks Per Second)\n", actualTPS);
             System.out.printf("Cell Throughput : %,d cell-updates/sec\n", (long) (actualTPS * cells.size()));
-            System.out.printf("Final Pop       : %,d humans (Year %d)\n", (long) engine.getTotalPopulation(), engine.getTimeManager().getCurrentYear());
+            System.out.printf("Final Pop       : %,d humans (Year %d)\n", engine.getTotalPopulation(), engine.getTimeManager().getCurrentYear());
             System.out.println("--------------------------------------------------------------------------------\n");
 
             if (showProfile) {

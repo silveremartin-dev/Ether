@@ -15,7 +15,7 @@ package org.ether.society.ui;
  */
 public enum DisplayMode {
 
-    // --- 🌍 1. PHYSIQUE & CLIMAT ---
+    // --- 🌍 1. PHYSICS & CLIMATE ---
     BIOME("🗺️ Biomes & Relief Topographique", Category.PHYSICAL,
         "Cartographie des biomes écologiques (Forêts, Tundras, Déserts, Océans) et de l'altitude du relief H3."),
     TEMPERATURE("🌡️ Température & Climat", Category.PHYSICAL,
@@ -41,7 +41,7 @@ public enum DisplayMode {
     PERMAFROST("🧊 Pergélisol & Déstabilisation Méthane", Category.PHYSICAL,
         "Vulnérabilité et dégel du pergélisol boréal avec potentiel de dégazage de méthane."),
 
-    // --- 👥 2. DÉMOGRAPHIE & SANTÉ ---
+    // --- 👥 2. DEMOGRAPHICS & HEALTH ---
     POPULATION("👥 Densité de Population Active", Category.DEMOGRAPHICS,
         "Nombre d'habitants actifs résidant dans la maille hexagonale H3."),
     MIGRATION("🚶 Flux & Pression Migratoire", Category.DEMOGRAPHICS,
@@ -55,7 +55,7 @@ public enum DisplayMode {
     EDUCATION_LEVEL("🎓 Niveau d'Instruction & Éducation", Category.DEMOGRAPHICS,
         "Part de la population maîtrisant les compétences techniques, l'écriture et le capital d'instruction."),
 
-    // --- 🌱 3. ÉCOLOGIE & PRESSION MALTHUSIENNE ---
+    // --- 🌱 3. ECOLOGY & MALTHUSIAN PRESSURE ---
     MALTHUSIAN_PRESSURE("🌱 Empreinte Écologique & Stress Malthusien (Pop/K)", Category.ECOLOGY,
         "Ratio démographique rapporté à la capacité portante écologique localement disponible (Population / K)."),
     CAPACITY("🌾 Capacité Portante Max (K)", Category.ECOLOGY,
@@ -65,13 +65,13 @@ public enum DisplayMode {
     WOOD("🌲 Ressources Forestières & Bois", Category.ECOLOGY,
         "Stock de biomasse lignocellulosique forestière exploitable pour le chauffage, la construction et l'outillage."),
 
-    // --- ⛏️ 4. RESSOURCES MINÉRALES & EXPLOITATION ---
+    // --- ⛏️ 4. MINERAL RESOURCES & MINING ---
     MINERAL_RESOURCES("💎 Gisements Miniers & Minerais", Category.MINING,
         "Richesse et concentration en gisements métalliques, minerais de fer, cuivre et combustibles fossiles sous-jacents."),
     MINING_EXPLOITATION("⛏️ Exploitation Minière & Mines Actives", Category.MINING,
         "Intensité de l'activité d'extraction minière et vitesse d'épuisement des filons minéraux crustaux."),
 
-    // --- 🏛️ 5. ÉCONOMIE, SOCIÉTÉ & CLIODYNAMIQUE ---
+    // --- 🏛️ 5. ECONOMY, SOCIETY & CLIODYNAMICS ---
     TECHNOLOGY("⚙️ Niveau Technologique & Capital", Category.SOCIETY_POLITICS,
         "Indice de niveau technologique (Niveau Tech 0.0 à 10.0+) et stock de machines/capital bâti par habitant."),
     CULTURE("🎭 Vecteur d'Identité Culturelle", Category.SOCIETY_POLITICS,

@@ -327,7 +327,7 @@ public class RealPlanetaryEngineBenchmarkRunner {
             }
         }
         if (estimatedSnapBytes == 0) {
-            estimatedSnapBytes = (long) (cells.size() * 88L);
+            estimatedSnapBytes = cells.size() * 88L;
         }
 
         System.out.printf("    Measured: %6.2f s | %6.2f TPS | %7.1f ms/tick | Pop: %,d\n",
@@ -401,7 +401,7 @@ public class RealPlanetaryEngineBenchmarkRunner {
         double msPerTick = extrapolatedTickSec * 1000.0;
         double latencyUsPerCell = (msPerTick * 1000.0) / targetCells;
         double extrapolated10kMin = (msPerTick * 10_000.0) / (1000.0 * 60.0);
-        long estimatedSnapBytes = (long) (targetCells * 48L);
+        long estimatedSnapBytes = targetCells * 48L;
 
         System.out.printf("    Measured DOD Kernel: %7.1f ms/tick | %6.2f TPS | Latency: %6.2f μs/cell\n",
                 msPerTick, tps, latencyUsPerCell);

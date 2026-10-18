@@ -182,9 +182,12 @@ public class ThermodynamicMigrationEngine {
             cellIndexMap = new java.util.IdentityHashMap<>(n);
             for (int idx = 0; idx < n; idx++) {
                 H3Cell c = cells.get(idx);
+                if (c == null) continue;
                 cellIndexMap.put(c, idx);
-                int bLat = (int) Math.floor((c.getLatitude() + 90.0) / binSizeDeg);
-                int bLon = (int) Math.floor((c.getLongitude() + 180.0) / binSizeDeg);
+                double cLat = c.getLatitude() != null ? c.getLatitude() : 0.0;
+                double cLon = c.getLongitude() != null ? c.getLongitude() : 0.0;
+                int bLat = (int) Math.floor((cLat + 90.0) / binSizeDeg);
+                int bLon = (int) Math.floor((cLon + 180.0) / binSizeDeg);
                 long key = (((long) bLat) << 32) | (bLon & 0xFFFFFFFFL);
                 spatialGrid.computeIfAbsent(key, k -> new java.util.ArrayList<>(8)).add(c);
             }
@@ -203,6 +206,7 @@ public class ThermodynamicMigrationEngine {
         for (int i = 0; i < n; i++) {
             if (popBuffer != null && popBuffer[i] < 10.0f) continue;
             H3Cell origin = cells.get(i);
+            if (origin == null) continue;
             int popOrigin = origin.getPopulation() != null ? origin.getPopulation() : 0;
             if (popOrigin < 10) continue;
 
@@ -282,7 +286,7 @@ public class ThermodynamicMigrationEngine {
 
                 double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi, 0.01, 0.20);
 
-                int migrants = (int) Math.clamp((long) (popOrigin * fluxFraction), 1, popOrigin / 2);
+                int migrants = Math.clamp((int) (popOrigin * fluxFraction), 1, popOrigin / 2);
 
 
 

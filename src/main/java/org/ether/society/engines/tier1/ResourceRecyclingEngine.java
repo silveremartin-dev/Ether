@@ -58,6 +58,7 @@ public class ResourceRecyclingEngine {
         double dtSafe = Math.max(0.0001, dtYears);
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 

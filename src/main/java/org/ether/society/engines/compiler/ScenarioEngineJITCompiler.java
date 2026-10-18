@@ -27,8 +27,8 @@ public class ScenarioEngineJITCompiler {
     private CompiledEngineKernel compiledKernel;
     private EngineConflictReport conflictReport;
 
-    /*
-     * Registers a engine transformation step for a specific target state variable.
+    /**
+     * Registers an engine transformation step for a specific target state variable.
      */
     public void registerEngineStep(String engineName, String targetVariable, SymbolicExpression expression, double targetEquilibrium) {
         pipelineExpressions.computeIfAbsent(targetVariable, k -> new ArrayList<>()).add(expression);
@@ -37,17 +37,17 @@ public class ScenarioEngineJITCompiler {
         ));
     }
 
-    /*
+    /**
      * Compiles the registered scenario engine pipeline.
      * Performs static conflict analysis, AST reduction, constant folding, and Kernel Fusion.
      */
     public CompiledEngineKernel compile() {
-        logger.info("⚙️ï¸ Starting Scenario Engine JIT Compilation & AST Reduction...");
+        logger.info("⚙️ Starting Scenario Engine JIT Compilation & AST Reduction...");
 
         // 1. Static Conflict Analysis
         this.conflictReport = EngineConflictAnalyzer.analyze(descriptors);
         if (conflictReport.hasIncompatibilities()) {
-            logger.warn("⚠️ï¸ Severe model incompatibilities detected during scenario JIT compilation:\n{}", conflictReport.generateSummary());
+            logger.warn("⚠️ Severe model incompatibilities detected during scenario JIT compilation:\n{}", conflictReport.generateSummary());
         } else {
             logger.info("✅ Static analysis completed cleanly:\n{}", conflictReport.generateSummary());
         }
@@ -74,7 +74,7 @@ public class ScenarioEngineJITCompiler {
         return compiledKernel;
     }
 
-    /*
+    /**
      * Get conflict report.
      * Enforces physical invariants and updates associated state variables within {@code ScenarioEngineJITCompiler}.
      *
@@ -84,7 +84,7 @@ public class ScenarioEngineJITCompiler {
         return conflictReport;
     }
 
-    /*
+    /**
      * Get compiled kernel.
      * Enforces physical invariants and updates associated state variables within {@code ScenarioEngineJITCompiler}.
      *
@@ -94,7 +94,7 @@ public class ScenarioEngineJITCompiler {
         return compiledKernel;
     }
 
-    /*
+    /**
      * Executes the compiled fused kernel over a WorldBuffer.
      */
     public void execute(WorldBuffer worldBuffer, float dt) {
@@ -104,7 +104,7 @@ public class ScenarioEngineJITCompiler {
         compiledKernel.executeFusedKernel(worldBuffer, dt);
     }
 
-    /*
+    /**
      * Executes the compiled fused kernel over a list of H3Cells.
      */
     public void execute(List<H3Cell> cells, double dt) {
@@ -114,4 +114,3 @@ public class ScenarioEngineJITCompiler {
         compiledKernel.executeFusedKernel(cells, dt);
     }
 }
-

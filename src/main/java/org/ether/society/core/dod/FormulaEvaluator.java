@@ -411,10 +411,10 @@ public class FormulaEvaluator {
                         eat(')');
                         String fn = name.toLowerCase(Locale.ROOT);
                         x = switch (fn) {
-                            case "sqrt" -> Math.sqrt(x);
+                            case "sqrt" -> Math.sqrt(Math.max(0.0, x));
                             case "abs" -> Math.abs(x);
-                            case "log" -> Math.log(x);
-                            case "exp" -> Math.exp(x);
+                            case "log" -> Math.log(Math.max(1e-12, x));
+                            case "exp" -> Math.exp(Math.clamp(x, -700.0, 700.0));
                             case "round" -> Math.round(x);
                             case "floor" -> Math.floor(x);
                             case "ceil" -> Math.ceil(x);

@@ -49,6 +49,7 @@ public class InformationEntropyEngine {
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
             double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
 
@@ -60,7 +61,8 @@ public class InformationEntropyEngine {
 
             // High information capacity suppresses linguistic drift
             if (channelCapacityBitsPerSec > 100.0) {
-                cell.setLinguisticDrift(Math.max(0.0, cell.getLinguisticDrift() - 0.01));
+                double drift = cell.getLinguisticDrift() != null ? cell.getLinguisticDrift() : 0.0;
+                cell.setLinguisticDrift(Math.max(0.0, drift - 0.01));
             }
         }
     }

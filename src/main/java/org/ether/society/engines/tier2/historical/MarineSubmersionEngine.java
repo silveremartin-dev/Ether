@@ -57,11 +57,14 @@ public class MarineSubmersionEngine {
         Map<Long, H3Cell> cellMap = new HashMap<>();
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell c : cells) {
-            cellMap.put(c.getH3Index(), c);
+            if (c != null && c.getH3Index() != null) {
+                cellMap.put(c.getH3Index(), c);
+            }
         }
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
             double seaLevelOffset = cell.getSeaLevelOffsetMeters() != null ? cell.getSeaLevelOffsetMeters() : 0.0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
@@ -94,7 +97,7 @@ public class MarineSubmersionEngine {
                 // 2. Locate Safe Neighbor Cells (Elevation > seaLevelOffset)
                 List<H3Cell> safeNeighbors = new ArrayList<>();
                 List<Long> neighborIndices = null;
-                if (cell.getH3Index() != 0L) {
+                if (cell.getH3Index() != null && cell.getH3Index() != 0L) {
                     try {
                         neighborIndices = org.ether.society.h3.H3Service.getInstance().getNeighbors(cell.getH3Index());
                     } catch (Exception ignored) {}
@@ -102,7 +105,7 @@ public class MarineSubmersionEngine {
                 if (neighborIndices != null && !neighborIndices.isEmpty()) {
                     for (Long nIdx : neighborIndices) {
                         H3Cell candidate = cellMap.get(nIdx);
-                        if (candidate != null && candidate.getH3Index() != cell.getH3Index()
+                        if (candidate != null && !java.util.Objects.equals(candidate.getH3Index(), cell.getH3Index())
                                 && (candidate.getElevation() != null && candidate.getElevation() > seaLevelOffset)
                                 && candidate.getBiome() != Biome.OCEAN && candidate.getBiome() != Biome.DEEP_OCEAN) {
                             safeNeighbors.add(candidate);
@@ -112,7 +115,7 @@ public class MarineSubmersionEngine {
                 // Fallback for non-indexed synthetic test cells or archipelagic refugee jumps
                 if (safeNeighbors.isEmpty()) {
                     for (H3Cell candidate : cells) {
-                        if (candidate.getH3Index() != cell.getH3Index() 
+                        if (candidate != null && !java.util.Objects.equals(candidate.getH3Index(), cell.getH3Index()) 
                                 && (candidate.getElevation() != null && candidate.getElevation() > seaLevelOffset)
                                 && candidate.getBiome() != Biome.OCEAN && candidate.getBiome() != Biome.DEEP_OCEAN) {
                             safeNeighbors.add(candidate);
@@ -128,6 +131,7 @@ public class MarineSubmersionEngine {
 
                     // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell target : safeNeighbors) {
+                        if (target == null) continue;
                         int targetPop = target.getPopulation() != null ? target.getPopulation() : 0;
                         double targetCap = target.getResourceCapital() != null ? target.getResourceCapital() : 0.0;
                         target.setPopulation(targetPop + popPerNeighbor);

@@ -45,6 +45,7 @@ public class GeoengineeringAlbedoFeedbackEngine {
         double totalTech5Plus = 0;
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() >= 5.0 && pop > 1000) {
                 totalTech5Plus += (cell.getTechnologyLevel() - 4.0);
@@ -63,7 +64,7 @@ public class GeoengineeringAlbedoFeedbackEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell.getTemperature() == null) continue;
+            if (cell == null || cell.getTemperature() == null) continue;
 
             // Apply global aerosol cooling offset
             if (globalCoolingEffectCelsius > 0.0) {
@@ -71,7 +72,7 @@ public class GeoengineeringAlbedoFeedbackEngine {
 
                 // Side effect of SAI: Disruption of monsoon precipitation (-2% to -8% rainfall)
                 if (cell.getRainfall() != null) {
-                    double rainfallDisruption = 1.0 - (globalSaiAerosolLoadingTg * 0.003);
+                    double rainfallDisruption = Math.max(0.1, 1.0 - (globalSaiAerosolLoadingTg * 0.003));
                     cell.setRainfall(Math.max(50.0, cell.getRainfall() * rainfallDisruption));
                 }
             }

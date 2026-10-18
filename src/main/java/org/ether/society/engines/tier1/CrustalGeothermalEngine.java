@@ -57,6 +57,7 @@ public class CrustalGeothermalEngine {
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
             double maxDepthMeters = calculateMaxMiningDepthMeters(tech);
 

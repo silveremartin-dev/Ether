@@ -99,6 +99,7 @@ public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugi
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.35;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;

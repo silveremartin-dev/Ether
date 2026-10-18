@@ -78,8 +78,8 @@ public class OrographicGlottologPropagator {
 
         for (int i = 0; i < seeds.size(); i++) {
             CulturalSeed s = seeds.get(i);
-            int sx = (int) Math.clamp(Math.round(((s.lon() + 180.0) / 360.0) * (gridW - 1)), 0, gridW - 1);
-            int sy = (int) Math.clamp(Math.round(((90.0 - s.lat()) / 180.0) * (gridH - 1)), 0, gridH - 1);
+            int sx = Math.clamp((int) Math.round(((s.lon() + 180.0) / 360.0) * (gridW - 1)), 0, gridW - 1);
+            int sy = Math.clamp((int) Math.round(((90.0 - s.lat()) / 180.0) * (gridH - 1)), 0, gridH - 1);
 
             float initCost = 0.0f;
             minCost[sy][sx] = initCost;

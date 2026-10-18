@@ -10,24 +10,17 @@ import org.ether.society.database.H3Cell;
 import java.util.List;
 
 /**
+ * <h1>Procedural Engine Plugin</h1>
+ * <p>
  * Functional Interface for custom pluggable procedural engines in Ether.
  * Users can implement this interface to inject custom physical, biological,
  * or socio-economic cliodynamic simulation logic into the H3 tick loop.
+ * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 @FunctionalInterface
-/**
- * <h1>Procedural Engine Plugin</h1>
- * <p>
- * Core operational component for the Ether civilizational and planetary simulation framework.<br>
- * Integrates cellular dynamics, data structures, and deterministic state transitions.
- * </p>
- * 
- * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
- */
 public interface ProceduralEnginePlugin {
 
     /*

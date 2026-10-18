@@ -101,6 +101,7 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop < 50) continue;
 

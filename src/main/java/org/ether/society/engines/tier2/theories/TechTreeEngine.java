@@ -56,6 +56,7 @@ public class TechTreeEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
             if (pop <= 0) continue;
 
@@ -63,30 +64,38 @@ public class TechTreeEngine {
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
             double capitalPerCapita = pop > 0 ? (capital / pop) : 0.0;
             double currentTech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.5;
-            double targetEraTech;
 
-            // Physical era transition based on per-capita power flux and intensive capital intensity (K/N)
-            if (powerPerCapita >= INDUSTRIAL.minPowerWattsPerCapita() && capitalPerCapita >= 25.0 && currentTech >= 2.8) {
-                targetEraTech = 4.5;
-            } else if (powerPerCapita >= MEDIEVAL.minPowerWattsPerCapita() && capitalPerCapita >= 15.0) {
-                targetEraTech = 2.75;
-            } else if (powerPerCapita >= ANTIQUITY.minPowerWattsPerCapita() && capitalPerCapita >= 5.0) {
-                targetEraTech = 2.15;
+            // 1. Continuous Physical Power & Material Envelope Ceiling (replaces circular step-function deadlock)
+            double targetEraTech;
+            if (powerPerCapita >= INDUSTRIAL.minPowerWattsPerCapita() && capitalPerCapita >= 25.0) {
+                targetEraTech = 5.0;
+            } else if (powerPerCapita >= MEDIEVAL.minPowerWattsPerCapita() && capitalPerCapita >= 12.0) {
+                targetEraTech = 3.4;
+            } else if (powerPerCapita >= ANTIQUITY.minPowerWattsPerCapita() && capitalPerCapita >= 4.0) {
+                targetEraTech = 2.6;
             } else if (powerPerCapita >= NEOLITHIC.minPowerWattsPerCapita() && capitalPerCapita >= 0.5) {
-                targetEraTech = 1.65;
+                targetEraTech = 1.9;
             } else {
-                targetEraTech = 0.5;
+                targetEraTech = Math.max(0.5, currentTech);
             }
 
-            // Cumulative culture ratchet effect (Tomasello 1999, Henrich 2004) scaled by dtYears:
-            // Technological knowledge advances when physical power & capital thresholds are achieved,
-            // but does not artificially regress to the Stone Age during temporary biomass fluctuations.
+            // 2. Cumulative Culture Ratchet (Tomasello 1999, Henrich 2004):
+            // Driven by demographic network size sqrt(N) and intensive physical capital (K/N)
+            double advance = 0.0;
             if (targetEraTech > currentTech) {
                 double capitalIntensityFactor = capitalPerCapita / (20.0 + capitalPerCapita);
                 double popScaleFactor = Math.min(2.0, Math.sqrt(pop / 1000.0));
                 double annualMaxAdvance = 0.005 * capitalIntensityFactor * popScaleFactor;
-                double advance = Math.min(targetEraTech - currentTech, annualMaxAdvance * dt);
-                cell.setTechnologyLevel(currentTech + advance);
+                advance += Math.min(targetEraTech - currentTech, annualMaxAdvance * dt);
+            }
+
+            // 3. Universal Bottleneck-Induced Directed Technical Change (Boserup 1965, Allen 2009, Acemoglu 2002):
+            // Whenever a cell faces scarcity on its currently active resource tier while holding latent
+            // higher-enthalpy resources (e.g., clay/arable land under foraging stress, iron ore under tin scarcity,
+            // coal under timber scarcity, oil/uranium under industrial energy stress), substitution accelerates dT/dt.
+            double inducedAdvance = calculateBottleneckInducedSubstitution(cell, dt);
+            if (advance + inducedAdvance > 0.0) {
+                cell.setTechnologyLevel(currentTech + advance + inducedAdvance);
                 eraUpgrades++;
             }
         }
@@ -114,5 +123,65 @@ public class TechTreeEngine {
         if (eraUpgrades > 0) {
             logger.debug("Physical Tech Engine: {} cells evaluated along physical power & material strength vectors.", eraUpgrades);
         }
+    }
+
+    /**
+     * Evaluates universal Boserup-Allen-Acemoglu Directed Technical Change driven by physical resource
+     * bottlenecks ($\Sigma_{\text{stress}}$) coupled with latent higher-enthalpy geological/ecological stocks ($\Psi_{\text{latent}}$).
+     *
+     * <p>This single invariant law operates identically across all historical epochs and locations without
+     * era-specific or geographic hardcoding:</p>
+     * <ul>
+     *   <li><b>Biomass/Foraging Scarcity + Soil/Clay</b>: Accelerates transition toward ceramics &amp; agriculture.</li>
+     *   <li><b>Alloying Tin/Trade Scarcity + Iron Oxide</b>: Accelerates transition toward high-temperature bloomery smelting.</li>
+     *   <li><b>Forest Timber Scarcity + Carboniferous Coal</b>: Accelerates transition toward mineral coke &amp; steam dewatering.</li>
+     *   <li><b>Coal/Thermal Scarcity + Hydrocarbons/Fissile Uranium</b>: Accelerates transition toward internal combustion &amp; nuclear grids.</li>
+     * </ul>
+     *
+     * @param cell    the H3 cell under evaluation
+     * @param dtYears time step in years
+     * @return endogenous technological increment $\Delta T \ge 0$
+     */
+    public static double calculateBottleneckInducedSubstitution(H3Cell cell, double dtYears) {
+        if (cell == null) return 0.0;
+        int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+        if (pop <= 0) return 0.0;
+
+        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.5;
+        double wood = Math.max(
+                cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0,
+                cell.getWoodResource() != null ? cell.getWoodResource() : 0.0);
+        double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
+        double coal = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
+        double oilGas = (cell.getResourceOil() != null ? cell.getResourceOil() : 0.0)
+                + (cell.getResourceGas() != null ? cell.getResourceGas() : 0.0);
+        double uranium = cell.getResourceUranium() != null ? cell.getResourceUranium() : 0.0;
+
+        // 1. Primary organic fuel & biomass scarcity stress relative to population and pyrometallurgical demand
+        double organicDemand = pop * 0.15 * Math.max(0.5, tech);
+        double organicScarcityStress = Math.clamp(1.0 - (wood / Math.max(1.0, organicDemand)), 0.0, 1.0);
+
+        // 2. Latent higher-order resource potential available to resolve the bottleneck at current furnace/energy tier
+        double latentSubstitutePotential = 0.0;
+        if (tech < 1.8 && metal > 5.0) {
+            // Lithic/Biomass bottleneck with accessible metallic ores
+            latentSubstitutePotential = Math.min(1.0, Math.log1p(metal) / 5.0);
+        } else if (tech >= 1.8 && tech < 2.5 && metal > 10.0) {
+            // Alloying/Tin bottleneck with abundant crustal iron oxide
+            double reeTin = cell.getResourceRareEarths() != null ? cell.getResourceRareEarths() : 0.0;
+            double tinScarcity = Math.clamp(1.0 - (reeTin / 2.0), 0.0, 1.0);
+            organicScarcityStress = Math.max(organicScarcityStress, tinScarcity);
+            latentSubstitutePotential = Math.min(1.0, Math.log1p(metal) / 5.0);
+        } else if (tech >= 2.5 && tech < 3.4 && coal > 5.0) {
+            // Timber/Charcoal bottleneck with subsurface mineral coal seams
+            latentSubstitutePotential = Math.min(1.0, Math.log1p(coal) / 5.0);
+        } else if (tech >= 3.4 && (oilGas > 5.0 || uranium > 1.0)) {
+            // Coal/Mechanical bottleneck with hydrocarbons or fissile uranium
+            double coalScarcity = Math.clamp(1.0 - (coal / Math.max(10.0, pop * 0.05)), 0.0, 1.0);
+            organicScarcityStress = Math.max(organicScarcityStress, coalScarcity);
+            latentSubstitutePotential = Math.min(1.0, Math.log1p(oilGas + uranium * 10.0) / 5.0);
+        }
+
+        return 0.12 * organicScarcityStress * latentSubstitutePotential * Math.max(0.0001, dtYears);
     }
 }

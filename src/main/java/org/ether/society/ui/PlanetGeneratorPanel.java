@@ -531,7 +531,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         altRangeLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 2 0 4 0;");
         updateAltRangeDisplay();
 
-        // Dedicated Sea Level / Niveau de la Mer Control (Exact to the meter)
+        // Dedicated Sea Level Control (Exact to the meter)
         seaLevelMetersLabel.getStyleClass().add("control-label");
         seaLevelMetersSpinner = new Spinner<>(-20000.0, 30000.0, 0.0, 1.0);
         seaLevelMetersSpinner.setEditable(true);
@@ -2495,7 +2495,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
             legendBar.getChildren().add(maxLabel);
 
-        } else if (selectedIdx == 1) { // Température
+        } else if (selectedIdx == 1) { // Temperature
             double minT = preset.averageTempC() - preset.temperatureGradient() - 20.0;
             double maxT = preset.averageTempC() + preset.temperatureGradient();
             Label minLabel = new Label(String.format("Min: %.1f °C", minT));
@@ -2513,7 +2513,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #ef4444;");
             legendBar.getChildren().add(maxLabel);
 
-        } else if (selectedIdx == 2) { // Précipitations
+        } else if (selectedIdx == 2) { // Precipitation
             Label minLabel = new Label(I18n.getOrDefault("planet.legend.min_arid", "Min: 0 mm/an (Aride)"));
             minLabel.getStyleClass().add("control-label");
             minLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #eab308;");
@@ -2529,7 +2529,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             maxLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #3b82f6;");
             legendBar.getChildren().add(maxLabel);
 
-        } else { // Saisonnalité / Amplitude Thermique
+        } else { // Seasonality / Thermal Amplitude
             double maxAmp = Math.min(60.0, (preset.axialTiltDegrees() / 23.5) * 35.0);
             Label minLabel = new Label(I18n.getOrDefault("planet.legend.min_stable", "Min: 0.0 °C (Stable)"));
             minLabel.getStyleClass().add("control-label");

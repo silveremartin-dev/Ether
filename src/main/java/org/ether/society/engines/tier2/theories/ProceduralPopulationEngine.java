@@ -56,12 +56,14 @@ public class ProceduralPopulationEngine {
 
         // Reset populations and human biomass first
         for (H3Cell c : cells) {
+            if (c == null) continue;
             c.setPopulation(0);
             c.setBiomassHuman(0.0);
         }
 
         // Filter habitable cells (including land, coastal shelves, reclaimed polders, seasteading floating habitats, and high-tech oceanic settlements)
         List<H3Cell> landCells = cells.stream()
+                .filter(java.util.Objects::nonNull)
                 .filter(c -> (c.getBiome() != null && c.getBiome() != Biome.DEEP_OCEAN)
                         || (c.getElevation() != null && c.getElevation() > -200.0)
                         || Boolean.TRUE.equals(c.getIsCoastal())
@@ -70,7 +72,7 @@ public class ProceduralPopulationEngine {
                         || techLevel >= 8.5)
                 .toList();
 
-        if (landCells.isEmpty()) landCells = cells;
+        if (landCells.isEmpty()) landCells = cells.stream().filter(java.util.Objects::nonNull).toList();
 
         double capitalPerCapita = scenario != null ? scenario.getInitialCapitalPerCapita() : Math.pow(10, (techLevel - 0.2) / 2.2);
         long seedVal = scenario != null ? scenario.getSeed() : 12345L;
@@ -82,6 +84,7 @@ public class ProceduralPopulationEngine {
         if (org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(preset)) {
             // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : landCells) {
+                if (cell == null) continue;
                 if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                     org.ether.society.engines.tier1.PressurizedHabitatEngine.initializePioneerOutpost(cell, preset, cell.getPopulation());
                 }

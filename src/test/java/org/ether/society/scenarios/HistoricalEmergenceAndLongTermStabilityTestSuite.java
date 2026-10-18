@@ -360,6 +360,9 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
             }
         }
         logger.info("=== HISTORICAL TELEMETRY CHRONICLE REPORT END ===");
+        long finalPop = globalCells.stream().mapToLong(H3Cell::getPopulation).sum();
+        assertTrue(finalPop > 0, "Global population must remain non-zero across 20 chronicle ticks");
+        assertFalse(globalCells.isEmpty(), "Global cells must not be empty");
     }
 }
 

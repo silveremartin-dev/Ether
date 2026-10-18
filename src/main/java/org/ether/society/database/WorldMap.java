@@ -45,21 +45,11 @@ import java.time.LocalDateTime;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2-beta.1
+ * @version 1.0.0-beta.2
  * @since 1.0.0
  */
 @Entity
 @Table(name = "world_maps")
-/**
- * <h1>World Map</h1>
- * <p>
- * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
- * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
- * </p>
- * 
- * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
- */
 public class WorldMap {
 
     @Id

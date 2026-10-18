@@ -33,16 +33,15 @@ import org.ether.society.model.Biome;
 import jakarta.persistence.*;
 
 /**
- * JPA Entity representing an H3 Level 8 hexagon cell (~1 km² area).
- * Stores terrain and climate data for a single hexagonal cell on Earth.
- *
+ * <h1>H3Cell</h1>
  * <p>
- * This entity is designed for GPU-parallel processing: each cell can be
- * updated independently on the GPU using TornadoVM.
+ * JPA Entity representing an H3 hexagonal cell.
+ * Stores terrain, climate, ecological, demographic, and socio-economic tensor data for a single hexagonal cell.
+ * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2-beta.1
+ * @version 1.0.0-beta.2
  * @since 1.0.0
  */
 @Entity
@@ -52,16 +51,6 @@ import jakarta.persistence.*;
         @Index(name = "idx_lat_lng", columnList = "latitude, longitude"),
         @Index(name = "idx_biome", columnList = "biome")
 })
-/**
- * <h1>H3Cell</h1>
- * <p>
- * Geospatial data ingestion, raster sampling, and tensor map management pipeline.<br>
- * Ingests global planetary datasets (NOAA ETOPO, WorldClim, UNESCO WHYMAP, Natural Earth, Seshat, D-PLACE) into standardized H3 hexagonal rasters.
- * </p>
- * 
- * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
- */
 public class H3Cell {
 
     @Id
@@ -232,6 +221,9 @@ public class H3Cell {
     private Double giniIndex = 0.0;
     @Column(nullable = false)
     private Double technologyLevel = 0.0;
+    /* Hominin species clade: 1 = Homo Sapiens (default), 2 = Homo Neanderthalensis, 3 = Denisovan / Archaic. */
+    @Column(nullable = false)
+    private Integer homininSpecies = 1;
 
     // --- Movement & Terrain Friction Matrix ---
     @Column(nullable = false)
@@ -1209,6 +1201,24 @@ public class H3Cell {
     public void setTechnologyLevel(Double val) {
         this.technologyLevel = val;
     }
+
+    /**
+     * Gets the hominin species clade: 1 = Homo Sapiens, 2 = Neanderthal, 3 = Denisovan/Archaic.
+     *
+     * @return hominin species code
+     */
+    public Integer getHomininSpecies() {
+        return homininSpecies != null ? homininSpecies : 1;
+    }
+
+    /**
+     * Sets the hominin species clade.
+     *
+     * @param val hominin species code
+     */
+    public void setHomininSpecies(Integer val) {
+        this.homininSpecies = val != null ? val : 1;
+    }
     /*
      * Get accessible aquifer.
      * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
@@ -1769,6 +1779,69 @@ public class H3Cell {
         };
     }
 
+    /**
+     * Calculates the total annual metabolic subsistence energy required by the cell's population (in GJ/year),
+     * rigorously taking into account:
+     * 1. Fine-grained 7-cohort age pyramid (infants, children, young adults, prime labor, mature adults, seniors, elderly).
+     * 2. Physical Activity Level (PAL) modulated by manual agricultural/mining labor vs industrial mechanization (K/N).
+     * 3. Hominin species metabolic differences (e.g., Neanderthals requiring ~40% more calories due to lean muscle mass and cold adaptation).
+     *
+     * @return annual caloric requirement in Gigajoules (GJ)
+     */
+    public double calculateAnnualMetabolicNeedGJ() {
+        int totalPop = population != null ? population : 0;
+        if (totalPop <= 0) return 0.0;
+
+        // 1. Age-structured baseline consumption (FAO/WHO human dietary reference standards)
+        int[] cohorts = getAgePyramid();
+        // Annual GJ per capita by cohort for standard baseline sedentary human:
+        // [0..4: 1.60 GJ (47%), 5..14: 2.50 GJ (74%), 15..24: 3.80 GJ (113%),
+        //  25..49: 3.50 GJ (104%), 50..64: 3.20 GJ (95%), 65..79: 2.70 GJ (80%), 80+: 2.20 GJ (65%)]
+        double cohortMetabolicSum = (cohorts[0] * 1.60)
+                                  + (cohorts[1] * 2.50)
+                                  + (cohorts[2] * 3.80)
+                                  + (cohorts[3] * 3.50)
+                                  + (cohorts[4] * 3.20)
+                                  + (cohorts[5] * 2.70)
+                                  + (cohorts[6] * 2.20);
+
+        // Base average per capita metabolic intake
+        double basePerCapitaGJ = cohortMetabolicSum / totalPop;
+
+        // 2. Physical Activity Level (PAL) & Work Intensity:
+        // Pre-industrial agrarian & manual societies require intense muscle power (PAL 1.8 - 2.1).
+        // Industrial capital (K/N) and mechanization substitute fossil/electric work for muscle, lowering PAL to 1.4 - 1.5.
+        // Heavy mineral extraction (ore/coal mining) adds metabolic strain.
+        double cap = resourceCapital != null ? resourceCapital : 0.0;
+        double capPerCapita = cap / totalPop;
+        double tech = technologyLevel != null ? technologyLevel : 1.0;
+        double mechanizationFactor = Math.clamp(capPerCapita / 40.0 + (tech >= 3.0 ? (tech - 3.0) * 0.2 : 0.0), 0.0, 1.0);
+
+        // Labor intensity multiplier: 1.25 (heavy manual agrarian/pre-industrial) down to 0.95 (mechanized/sedentary)
+        double laborMultiplier = 1.25 - (0.30 * mechanizationFactor);
+
+        // Mining & metallurgical heavy labor surcharge:
+        double metalStock = resourceMetal != null ? resourceMetal : 0.0;
+        double coalStock = resourceCoal != null ? resourceCoal : 0.0;
+        if (metalStock > 10.0 || coalStock > 50.0) {
+            laborMultiplier += 0.08; // Heavy mining labor expenditure
+        }
+
+        // 3. Species / Hominin Clade Multiplier (Kleiber's Law, muscle density, and cold thermoregulation):
+        // 1 = Homo Sapiens (1.0x baseline)
+        // 2 = Homo Neanderthalensis (1.40x: 4,000-5,000 kcal/day, robust morphology, cold adaptation - Churchill 2006, Sorensen 2011)
+        // 3 = Denisovan / Archaic (1.20x: robust archaic morphology & high altitude adaptation)
+        double speciesMultiplier = 1.0;
+        int species = getHomininSpecies();
+        if (species == 2) {
+            speciesMultiplier = 1.40;
+        } else if (species == 3) {
+            speciesMultiplier = 1.20;
+        }
+
+        return totalPop * basePerCapitaGJ * laborMultiplier * speciesMultiplier;
+    }
+
     /*
      * Get ice sheet thickness meters operation.
      * <p>
@@ -1968,6 +2041,7 @@ public class H3Cell {
         copy.setFertility(this.fertility);
         copy.setGiniIndex(this.giniIndex);
         copy.setTechnologyLevel(this.technologyLevel);
+        copy.setHomininSpecies(this.homininSpecies);
         copy.setOwner(this.owner); // Shared reference for now
         copy.setFluxPressure(this.fluxPressure);
         copy.setBoundaryCell(this.boundaryCell);

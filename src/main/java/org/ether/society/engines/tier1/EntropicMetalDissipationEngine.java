@@ -24,20 +24,23 @@ public class EntropicMetalDissipationEngine {
 
     private static double annualDissipationRate = 0.015; // 1.5% annual thermodynamic loss rate
 
-    /*
-     * Process entropic dissipation.
-     * Enforces physical invariants and updates associated state variables within {@code EntropicMetalDissipationEngine}.
+    /**
+     * Integrates irreversible entropic metal dissipation over elapsed temporal intervals.
+     * <p>
+     * Implements continuous exponential decay based on Philippe Bihouix's physical dissipation limits:
+     * \[
+     * M(t + \Delta t) = M(t) \cdot e^{-\lambda_{\text{diss}} \cdot \Delta t}
+     * \]
+     * where \(\lambda_{\text{diss}}\) is the annual dissipation rate (\(\text{yr}^{-1}\)).
+     * Lost metallic mass is converted into persistent particulate pollution \(\Delta P = 0.1 \cdot \Delta M\).
+     * </p>
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param cells target planetary hex cells containing metallic capital reserves
+     * @param deltaYears time step interval in terrestrial decimal years (\(\Delta t > 0\))
      */
     public static void processEntropicDissipation(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getResourceMetal() == null) continue;
 
@@ -54,21 +57,17 @@ public class EntropicMetalDissipationEngine {
         }
     }
 
-    /*
-     * Get annual dissipation rate.
-     * Enforces physical invariants and updates associated state variables within {@code EntropicMetalDissipationEngine}.
+    /**
+     * Gets current annual thermodynamic dissipation rate \(\lambda_{\text{diss}}\).
      *
-     * @return the resulting computation or state reference
+     * @return annual dissipation fraction in \(\text{yr}^{-1}\)
      */
     public static double getAnnualDissipationRate() { return annualDissipationRate; }
-    /*
-     * Set annual dissipation rate operation.
-     * <p>
-     * Executes operational logic for {@code EntropicMetalDissipationEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
+
+    /**
+     * Sets annual thermodynamic dissipation rate with physical clamping in \([0.0, 0.20]\).
      *
-     * @param rate the rate argument (double)
+     * @param rate dissipation fraction in \(\text{yr}^{-1}\)
      */
     public static void setAnnualDissipationRate(double rate) { annualDissipationRate = Math.max(0.0, Math.min(0.20, rate)); }
     

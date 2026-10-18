@@ -2461,7 +2461,7 @@ public class H3MapCanvas extends Canvas {
             double dy = (rInt - py) / radius;
             double dy2 = dy * dy;
             if (dy2 >= 1.0) continue;
-            double dxMax = Math.sqrt(1.0 - dy2);
+            double dxMax = Math.sqrt(Math.max(0.0, 1.0 - dy2));
             int minPx = Math.max(0, (int) Math.floor(rInt - dxMax * radius));
             int maxPx = Math.min(diam - 1, (int) Math.ceil(rInt + dxMax * radius));
 
@@ -2470,7 +2470,7 @@ public class H3MapCanvas extends Canvas {
                 double r2 = dx * dx + dy2;
                 if (r2 >= 1.0) continue;
 
-                double zr = Math.sqrt(1.0 - r2);
+                double zr = Math.sqrt(Math.max(0.0, 1.0 - r2));
 
                 // Un-tilt and un-rotate view ray to spherical planetary coords
                 double yrt = dy * cosT - zr * sinT;
@@ -2685,10 +2685,10 @@ public class H3MapCanvas extends Canvas {
             case MINERAL_RESOURCES -> getMineralResourcesColor(cell);
             case MINING_EXPLOITATION -> getMiningExploitationColor(cell);
             case BIOME -> getBiomeColor(cell.getBiome());
-            case POPULATION -> getPopulationColor(cell != null && cell.getPopulation() != null ? cell.getPopulation() : 0, isWater);
-            case FOOD -> getFoodColor(cell.getFoodResource());
-            case TEMPERATURE -> getTemperatureColor(cell.getTemperature());
-            case PRECIPITATION -> getPrecipitationColor(cell != null && cell.getRainfall() != null ? cell.getRainfall() : 0.0);
+            case POPULATION -> getPopulationColor(cell.getPopulation() != null ? cell.getPopulation() : 0, isWater);
+            case FOOD -> getFoodColor(cell.getFoodResource() != null ? cell.getFoodResource() : 0.0);
+            case TEMPERATURE -> getTemperatureColor(cell.getTemperature() != null ? cell.getTemperature() : 15.0);
+            case PRECIPITATION -> getPrecipitationColor(cell.getRainfall() != null ? cell.getRainfall() : 0.0);
             case TECHNOLOGY -> getTechColor(cell.getTechnologyLevel());
             case WATER -> getWaterColor(cell.getWaterResource());
             case WOOD -> getWoodColor(cell.getWoodResource());
@@ -2732,7 +2732,7 @@ public class H3MapCanvas extends Canvas {
         if (integrity >= 0.80) {
             return Color.rgb(16, 185, 129); // Nominal (Emerald green)
         } else if (integrity >= 0.40) {
-            return Color.rgb(245, 158, 11); // Aging / Vétuste (Amber)
+            return Color.rgb(245, 158, 11); // Aging / Degraded (Amber)
         } else {
             return Color.rgb(239, 68, 68);  // Critical Breach (Red)
         }
@@ -2747,10 +2747,10 @@ public class H3MapCanvas extends Canvas {
     private Color getOceanPhColor(H3Cell cell) {
         if (cell == null) return Color.rgb(20, 30, 60);
         if (cell.getBiome() != Biome.OCEAN && cell.getBiome() != Biome.DEEP_OCEAN && cell.getBiome() != Biome.BEACH) {
-            return Color.rgb(40, 45, 55); // Terres grisées
+            return Color.rgb(40, 45, 55); // Grayed-out land cells
         }
         double temp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
-        // pH gradient: 8.2 (bleu océan sain) -> 7.6 (jaune/orange) -> 7.2 (rouge acide critique)
+        // pH gradient: 8.2 (healthy ocean blue) -> 7.6 (yellow/orange) -> 7.2 (critical acidic red)
         double ph = org.ether.society.engines.tier1.OceanAcidificationEngine.calculateHenrySolubility(temp);
         double norm = Math.clamp((ph - 0.03) / 0.05, 0.0, 1.0);
         int r = (int) (30 + norm * 200);
@@ -2763,11 +2763,11 @@ public class H3MapCanvas extends Canvas {
     private Color getPermafrostColor(H3Cell cell) {
         if (cell == null) return Color.rgb(30, 40, 50);
         double lat = Math.abs(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
-        if (lat < 50.0) return Color.rgb(50, 60, 70); // Hors zone boréale
+        if (lat < 50.0) return Color.rgb(50, 60, 70); // Outside boreal zone
         double temp = cell.getTemperature() != null ? cell.getTemperature() : -5.0;
-        if (temp < -2.0) return Color.rgb(180, 220, 255); // Pergélisol stable (cyan glacé)
-        if (temp < 3.0) return Color.rgb(240, 180, 60); // Dégel actif (ambre/orange)
-        return Color.rgb(220, 50, 50); // Effondrement thermique & dégazage méthane (rouge vif)
+        if (temp < -2.0) return Color.rgb(180, 220, 255); // Stable permafrost (icy cyan)
+        if (temp < 3.0) return Color.rgb(240, 180, 60); // Active thaw (amber/orange)
+        return Color.rgb(220, 50, 50); // Thermal collapse & methane outgassing (bright red)
     }
 
     // Helper subroutine: get malthusian pressure color - internal state computation & bounds checking
@@ -2779,16 +2779,16 @@ public class H3MapCanvas extends Canvas {
         double capK = computeCarryingCapacity(cell);
         double ratio = capK > 0 ? (double) pop / capK : 2.0;
 
-        if (ratio < 0.5) return Color.rgb(16, 185, 129); // Vert / Abondance (< 50%)
-        else if (ratio < 1.0) return Color.rgb(234, 179, 8);  // Jaune / Équilibré (50%-100%)
-        else if (ratio < 1.5) return Color.rgb(249, 115, 22); // Orange / Tension Malthusienne (100%-150%)
-        else return Color.rgb(239, 68, 68);  // Rouge / Surpopulation Critique (> 150%)
+        if (ratio < 0.5) return Color.rgb(16, 185, 129); // Green / Abundance (< 50%)
+        else if (ratio < 1.0) return Color.rgb(234, 179, 8);  // Yellow / Balanced (50%-100%)
+        else if (ratio < 1.5) return Color.rgb(249, 115, 22); // Orange / Malthusian Strain (100%-150%)
+        else return Color.rgb(239, 68, 68);  // Red / Critical Overpopulation (> 150%)
     }
 
     // Helper subroutine: compute carrying capacity - internal state computation & bounds checking
     private double computeCarryingCapacity(H3Cell c) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (c == null || c.getElevation() <= 0) return 0.0;
+        if (c == null || c.getElevation() == null || c.getElevation() <= 0) return 0.0;
         double baseCap = 250.0;
         Biome b = c.getBiome();
         if (b == Biome.DESERT || b == Biome.TUNDRA || b == Biome.SNOW) baseCap *= 0.1;
@@ -2808,7 +2808,7 @@ public class H3MapCanvas extends Canvas {
 
     // Helper subroutine: get mineral resources color - internal state computation & bounds checking
     private Color getMineralResourcesColor(H3Cell cell) {
-        if (cell == null || cell.getElevation() <= 0) return Color.rgb(15, 30, 70);
+        if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 30, 70);
         double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
         double precious = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0.0;
         double clay = cell.getResourceClay() != null ? cell.getResourceClay() : 0.0;
@@ -2830,7 +2830,7 @@ public class H3MapCanvas extends Canvas {
 
     // Helper subroutine: get mining exploitation color - internal state computation & bounds checking
     private Color getMiningExploitationColor(H3Cell cell) {
-        if (cell == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
+        if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
         double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
 
@@ -3004,7 +3004,7 @@ public class H3MapCanvas extends Canvas {
         boolean isWater;
         if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
             int index = idx;
-            cellBiome = org.ether.society.model.Biome.values()[worldBuffer.getBiomes()[index]];
+            cellBiome = Biome.fromOrdinal(worldBuffer.getBiomes()[index] & 0xFF);
             isWater = (cellBiome == Biome.OCEAN || cellBiome == Biome.DEEP_OCEAN || worldBuffer.getElevation()[index] <= 0);
         } else {
             cellBiome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
@@ -3106,7 +3106,7 @@ public class H3MapCanvas extends Canvas {
             return Color.GRAY;
 
         if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TURBO && scientificColorMap != ScientificColorMap.TERRAIN) {
-            double norm = (double) biome.ordinal() / Math.max(1.0, Biome.values().length - 1);
+            double norm = (double) biome.ordinal() / Math.max(1.0, Biome.VALUES.length - 1);
             return scientificColorMap.getColor(norm);
         }
 
@@ -3380,8 +3380,8 @@ public class H3MapCanvas extends Canvas {
         // Real implementation should expose pressure.
         // For now, visualize Food / Consumption ratio.
 
-        double food = cell.getFoodResource();
-        double consumption = cell.getPopulation() * 2.0; // approx
+        double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+        double consumption = (cell.getPopulation() != null ? cell.getPopulation() : 0) * 2.0; // approx
 
         if (consumption == 0)
             return Color.GREEN; // Surplus potential
@@ -3489,7 +3489,7 @@ public class H3MapCanvas extends Canvas {
         double cRightLng = Math.min(180.0, Math.max(-180.0, viewRightLng));
 
         String coordsText = String.format(
-            "ðŸ“ Centre: %.2f°N, %.2f°E | Bornes: [%.2f°N, %.2f°E] â†’ [%.2f°N, %.2f°E] | Zoom: %.1fx",
+            "📍 Center: %.2f°N, %.2f°E | Bounds: [%.2f°N, %.2f°E] → [%.2f°N, %.2f°E] | Zoom: %.1fx",
             centerLat, centerLng, cTopLat, cLeftLng, cBotLat, cRightLng, zoomFactor
         );
 
@@ -3513,6 +3513,7 @@ public class H3MapCanvas extends Canvas {
         
         double maxElev = 0;
         for (H3Cell c : cells) {
+            if (c == null) continue;
             double e = c.getElevation() != null ? c.getElevation() : 0;
             if (e > maxElev) maxElev = e;
         }
@@ -3522,9 +3523,10 @@ public class H3MapCanvas extends Canvas {
         
         // Optimize: Iterate only visible cells if possible, but O(N) is fast enough for N<100k
         for (H3Cell cell : cells) {
+            if (cell == null || cell.getH3Index() == null) continue;
             // Culling for 2D
              if (viewMode == ViewMode.VIEW_2D) {
-                 double lat = cell.getLatitude();
+                 double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
                  double top = maxLat - (0 - offsetY) / scale;
                  double bottom = maxLat - (getHeight() - offsetY) / scale;
                  if (lat > top + 10 || lat < bottom - 10) continue;
@@ -3597,6 +3599,7 @@ public class H3MapCanvas extends Canvas {
         double arrowLength = Math.max(8.0, 14.0 * zoomFactor);
 
         for (H3Cell cell : cells) {
+            if (cell == null || cell.getH3Index() == null) continue;
             double flux = cell.getFluxPressure();
             if (flux <= 0.001) continue;
 
@@ -3616,18 +3619,20 @@ public class H3MapCanvas extends Canvas {
                 }
             }
 
+            double cellLat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+            double cellLng = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
             double angle;
-            if (targetNeighbor != null) {
-                double dLat = targetNeighbor.getLatitude() - cell.getLatitude();
-                double dLng = targetNeighbor.getLongitude() - cell.getLongitude();
+            if (targetNeighbor != null && targetNeighbor.getLatitude() != null && targetNeighbor.getLongitude() != null) {
+                double dLat = targetNeighbor.getLatitude() - cellLat;
+                double dLng = targetNeighbor.getLongitude() - cellLng;
                 angle = Math.atan2(-dLat, dLng);
             } else {
                 angle = Math.toRadians((cell.getH3Index() % 360));
             }
 
             if (viewMode == ViewMode.VIEW_2D) {
-                double lat = cell.getLatitude();
-                double lng = cell.getLongitude();
+                double lat = cellLat;
+                double lng = cellLng;
 
                 double cx = (lng - minLng) * scale + offsetX;
                 double cy = (maxLat - lat) * scale + offsetY;
@@ -3650,7 +3655,7 @@ public class H3MapCanvas extends Canvas {
                 double radRotationY = Math.toRadians(-centerLng);
                 double radTilt = Math.toRadians(centerLat);
 
-                ProjectedPoint pt = project3D(cell.getLatitude(), cell.getLongitude(), cell.getElevation() != null ? cell.getElevation() : 0, radRotationY, radTilt, radius, screenCx, screenCy);
+                ProjectedPoint pt = project3D(cellLat, cellLng, cell.getElevation() != null ? cell.getElevation() : 0, radRotationY, radTilt, radius, screenCx, screenCy);
                 if (pt != null) {
                     double endX = pt.screenX + arrowLength * Math.cos(angle);
                     double endY = pt.screenY + arrowLength * Math.sin(angle);
@@ -3668,6 +3673,7 @@ public class H3MapCanvas extends Canvas {
 
         for (int i = 0; i < cells.size(); i++) {
             H3Cell cell = cells.get(i);
+            if (cell == null) continue;
             double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0;
             double precious = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0;
@@ -3686,8 +3692,8 @@ public class H3MapCanvas extends Canvas {
             boolean visible = false;
 
             if (viewMode == ViewMode.VIEW_2D) {
-                double lat = cell.getLatitude();
-                double lng = cell.getLongitude();
+                double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+                double lng = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
                 cx = (lng - minLng) * scale + offsetX;
                 cy = (maxLat - lat) * scale + offsetY;
                 if (cx >= -20 && cx <= getWidth() + 20 && cy >= -20 && cy <= getHeight() + 20) {

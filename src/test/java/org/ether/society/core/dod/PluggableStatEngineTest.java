@@ -79,7 +79,7 @@ public class PluggableStatEngineTest {
         List<H3Cell> cells = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             H3Cell c = new H3Cell(100L + i, 45.0 + i, 10.0);
-            c.setPopulation((int) (1000 * (i + 1)));
+            c.setPopulation(1000 * (i + 1));
             c.setTemperature(10.0 + (i * 2.0)); // 10, 12, 14, 16, 18 -> Avg = 14.0
             c.setFoodResource(2000.0);
             cells.add(c);

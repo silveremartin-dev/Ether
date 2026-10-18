@@ -222,7 +222,7 @@ public final class DataSourceMetadataRegistry {
     private static String buildStructuredDescription(String raw, String lower) {
         StringBuilder sb = new StringBuilder();
 
-        // --- TAB 1 & 2 : TOPOGRAPHIE ---
+        // --- TAB 1 & 2 : TOPOGRAPHY ---
         if (lower.equals("earth") || lower.contains("etopo") || lower.contains("gmted") || (lower.contains("terre") && lower.contains("satellit"))) {
             sb.append("📡 SOURCE : NOAA ETOPO2022 Global Relief & USGS GMTED2010\n");
             sb.append("🏛️ ORGANISATION : National Oceanic and Atmospheric Administration (NOAA) & USGS\n");
@@ -232,7 +232,7 @@ public final class DataSourceMetadataRegistry {
             return sb.toString();
         }
 
-        // --- TAB 3 : DÉMOGRAPHIE ---
+        // --- TAB 3 : DEMOGRAPHICS ---
         if (lower.contains("hyde 3.4") || (lower.contains("terre") && lower.contains("anthropocène"))) {
             sb.append("📡 SOURCE : History Database of the Global Environment (HYDE 3.4)\n");
             sb.append("🏛️ ORGANISATION : PBL Netherlands Environmental Assessment Agency & Université d'Utrecht\n");
@@ -259,7 +259,7 @@ public final class DataSourceMetadataRegistry {
             return sb.toString();
         }
 
-        // --- TAB 3 : TENSEURS CULTURELS (0-8) ---
+        // --- TAB 3 : CULTURAL TENSORS (0-8) ---
         if (lower.contains("glottolog") || lower.contains("wals") || lower.contains("linguistique") || lower.contains("language")) {
             sb.append("📡 SOURCE : Glottolog 4.8 & World Atlas of Language Structures (WALS)\n");
             sb.append("🏛️ ORGANISATION : Max Planck Institute for Evolutionary Anthropology (Leipzig)\n");
@@ -329,7 +329,7 @@ public final class DataSourceMetadataRegistry {
             return sb.toString();
         }
 
-        // --- TAB 2 : DOMAINE GÉOLOGIQUE & MINERAIS (0-9) ---
+        // --- TAB 2 : GEOLOGICAL DOMAIN & MINERALS (0-9) ---
         if (lower.contains("coal") || lower.contains("charbon") || (lower.contains("usgs") && lower.contains("mrds") && lower.contains("bgr"))) {
             sb.append("📡 SOURCE : USGS Mineral Resources Data System (MRDS) & BGR Global Coal Basins\n");
             sb.append("🏛️ ORGANISATION : United States Geological Survey & German Federal Institute for Geosciences (BGR)\n");

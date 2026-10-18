@@ -14,10 +14,13 @@ import java.util.Arrays;
  */
 public class StatisticsKernel {
 
-    /*
-     * Calcule le coefficient de Gini pour une ressource donnée (ex: richesse ou population).
-     * G = (2 * sum(i * x_i) / (n * sum(x_i))) - (n + 1) / n
-     * 100% mathematically exact analytical formulation with O(m log m) positive-element sparse sort.
+    /**
+     * Computes the Gini inequality coefficient for a given resource or demographic distribution:
+     * $$G = \frac{2 \sum_{i=1}^{n} i \cdot x_i}{n \sum_{i=1}^{n} x_i} - \frac{n + 1}{n}$$
+     * Uses an $O(m \log m)$ positive-element sparse sort when positive entries are sparse.
+     *
+     * @param values array of resource or wealth values across cells
+     * @return Gini coefficient bounded in $[0.0, 1.0]$
      */
     public float calculateGini(float[] values) {
         if (values == null || values.length == 0) return 0.0f;
@@ -85,23 +88,31 @@ public class StatisticsKernel {
         return Math.clamp(gini, 0.0f, 1.0f);
     }
 
-    /*
-     * Calcule la distribution de densité (histogramme).
+    /**
+     * Computes the density distribution (histogram) over $[0, \text{maxVal}]$.
+     *
+     * @param values input data array
+     * @param bins number of histogram bins
+     * @param maxVal upper bound of the histogram
+     * @return bin count array of length {@code bins}
      */
     public int[] calculateDistribution(float[] values, int bins, float maxVal) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         return calculateDistribution(values, bins, 0.0f, maxVal);
     }
 
-    /*
-     * Calcule la distribution de densité (histogramme) entre un min et un max.
+    /**
+     * Computes the density distribution (histogram) between {@code minVal} and {@code maxVal}.
+     *
+     * @param values input data array
+     * @param bins number of histogram bins
+     * @param minVal lower bound of the histogram
+     * @param maxVal upper bound of the histogram
+     * @return bin count array of length {@code bins}
      */
     public int[] calculateDistribution(float[] values, int bins, float minVal, float maxVal) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
+        if (bins <= 0) return new int[0];
         int[] histogram = new int[bins];
-        if (values == null || values.length == 0 || bins <= 0) return histogram;
+        if (values == null || values.length == 0) return histogram;
 
         float range = maxVal - minVal;
         if (range <= 0) {
@@ -110,6 +121,7 @@ public class StatisticsKernel {
         }
 
         for (float val : values) {
+            if (Float.isNaN(val)) continue;
             int bin = (int) ((val - minVal) / range * bins);
             if (bin >= bins) bin = bins - 1;
             if (bin < 0) bin = 0;
@@ -118,12 +130,13 @@ public class StatisticsKernel {
         return histogram;
     }
 
-    /*
-     * Calcule la médiane d'un ensemble de valeurs.
+    /**
+     * Computes the exact median of an array of values.
+     *
+     * @param values input data array
+     * @return median value, or {@code 0.0f} if empty
      */
     public float calculateMedian(float[] values) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         if (values == null || values.length == 0) return 0.0f;
         float[] copy = values.clone();
         Arrays.sort(copy);
@@ -135,88 +148,103 @@ public class StatisticsKernel {
         }
     }
 
-    /*
-     * Calcule la moyenne, le min, le max et l'écart-type.
+    /**
+     * Computes the mean, minimum, maximum, and standard deviation of an array in a single pass.
+     *
+     * @param values input data array
+     * @return 4-element array {@code [mean, min, max, stdDev]}
      */
     public float[] calculateAggregates(float[] values) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
-        if (values.length == 0) return new float[4];
-        
+        if (values == null || values.length == 0) return new float[4];
+
         float min = Float.MAX_VALUE;
-        float max = Float.MIN_VALUE;
+        float max = -Float.MAX_VALUE;
         double sum = 0;
         double sumSq = 0;
+        int validCount = 0;
 
         for (float val : values) {
+            if (Float.isNaN(val) || Float.isInfinite(val)) continue;
             if (val < min) min = val;
             if (val > max) max = val;
             sum += val;
-            sumSq += (double)val * val;
+            sumSq += (double) val * val;
+            validCount++;
         }
 
-        float avg = (float) (sum / values.length);
-        float variance = (float) (sumSq / values.length - (double)avg * avg);
-        float stdDev = (float) Math.sqrt(Math.max(0, variance));
+        if (validCount == 0) return new float[4];
+
+        float avg = (float) (sum / validCount);
+        float variance = (float) (sumSq / validCount - (double) avg * avg);
+        float stdDev = (float) Math.sqrt(Math.max(0.0, variance));
 
         return new float[]{avg, min, max, stdDev};
     }
 
-    /*
-     * Calcule le PIB (Somme du capital ressource).
+    /**
+     * Computes aggregate Gross Domestic Product (sum of resource capital across cells).
+     *
+     * @param capital array of cellular resource capital
+     * @return total planetary GDP
      */
     public float calculateGDP(float[] capital) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
+        if (capital == null || capital.length == 0) return 0.0f;
         double sum = 0;
-        for (float val : capital) sum += val;
+        for (float val : capital) {
+            if (!Float.isNaN(val) && !Float.isInfinite(val)) {
+                sum += val;
+            }
+        }
         return (float) sum;
     }
 
-    /*
-     * Calcule l'espérance de vie à la naissance (modèle démographique Gompertz-Makeham et cliodynamique).
+    /**
+     * Computes life expectancy at birth using default technological and nutritional baselines.
+     *
+     * @param ages array of cohort ages
+     * @param hexIds array of cell indices
+     * @return life expectancy in years
      */
     public float calculateLifeExpectancy(float[] ages, int[] hexIds) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         return calculateLifeExpectancy(ages, hexIds, 0.5f, 1.0f);
     }
 
-    /*
-     * Calculate life expectancy.
-     * Enforces physical invariants and updates associated state variables within {@code StatisticsKernel}.
+    /**
+     * Computes life expectancy at birth (Gompertz-Makeham and cliodynamic demographic model).
      *
-     * @param ages the ages parameter (float[])
-     * @param hexIds the hex ids parameter (int[])
-     * @param avgTech the avg tech parameter (float)
-     * @param foodSatisfaction the food satisfaction parameter (float)
-     * @return the resulting computation or state reference
+     * @param ages array of cohort ages
+     * @param hexIds array of cell indices
+     * @param avgTech average technological index
+     * @param foodSatisfaction nutritional satisfaction ratio in $[0, 1]$
+     * @return life expectancy at birth in years, bounded in $[15.0, 85.0]$
      */
     public float calculateLifeExpectancy(float[] ages, int[] hexIds, float avgTech, float foodSatisfaction) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         // Base Paleolithic life expectancy ~ 28-32 years, scaling with tech and food security
         float base = 28.0f + Math.min(52.0f, Math.max(0.0f, avgTech) * 0.55f);
         float foodMod = Math.max(0.35f, Math.min(1.0f, foodSatisfaction));
         return Math.max(15.0f, Math.min(85.0f, base * foodMod));
     }
 
-    /*
-     * Calcule le taux de fécondité synthétique TFR (nombre moyen d'enfants par femme).
+    /**
+     * Computes the synthetic Total Fertility Rate (TFR, average children per woman).
+     *
+     * @param births array of annual births per cohort/cell
+     * @param mass array of total population mass per cohort/cell
+     * @return synthetic TFR bounded in $[1.1, 7.5]$
      */
     public float calculateFertilityRate(float[] births, float[] mass) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
+        if (births == null || mass == null) return 4.5f;
+        int len = Math.min(births.length, mass.length);
         double totalBirths = 0;
         double totalMass = 0;
-        for (int i = 0; i < mass.length; i++) {
+        for (int i = 0; i < len; i++) {
             totalBirths += births[i];
             totalMass += mass[i];
         }
-        if (totalMass <= 0) return 4.5f; // Baseline paléolithique/naturelle
-        // Taux brut de natalité b = births / mass
+        if (totalMass <= 0) return 4.5f; // Natural Paleolithic baseline
+        // Crude birth rate b = births / mass
         double birthRateAnnual = totalBirths / totalMass;
-        // TFR = b * durée de vie reproductive (~25 ans) / proportion de femmes (~0.5) = b * 50
+        // TFR = b * reproductive lifespan (~27.5 yrs) / female ratio (~0.5) = b * 55
         double tfr = birthRateAnnual * 55.0;
         return (float) Math.max(1.1, Math.min(7.5, (tfr > 0.1 ? tfr : 4.8)));
     }

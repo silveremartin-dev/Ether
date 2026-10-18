@@ -20,8 +20,10 @@ import java.util.*;
  * @version 1.0.0-beta.2
  */
 public class ScenarioBranchingTree implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     public static class SimulationBranch implements Serializable {
+        private static final long serialVersionUID = 1L;
         /* Internal state variable for id (String). */
         private final String id;
         /* Internal state variable for name (String). */
@@ -29,9 +31,9 @@ public class ScenarioBranchingTree implements Serializable {
         /* Internal state variable for parent branch year (long). */
         private final long parentBranchYear;
         /* Internal state variable for snapshot cells (List&lt;H3Cell&gt;). */
-        private final List<H3Cell> snapshotCells;
-        private final Map<Long, Double> yearToTotalPopulation = new LinkedHashMap<>();
-        private final Map<Long, Double> yearToAverageTemperature = new LinkedHashMap<>();
+        private final transient List<H3Cell> snapshotCells;
+        private final LinkedHashMap<Long, Double> yearToTotalPopulation = new LinkedHashMap<>();
+        private final LinkedHashMap<Long, Double> yearToAverageTemperature = new LinkedHashMap<>();
 
         /*
          * Simulation branch.
@@ -107,7 +109,7 @@ public class ScenarioBranchingTree implements Serializable {
         public Map<Long, Double> getYearToAverageTemperature() { return yearToAverageTemperature; }
     }
 
-    private final Map<String, SimulationBranch> branches = new LinkedHashMap<>();
+    private final LinkedHashMap<String, SimulationBranch> branches = new LinkedHashMap<>();
     /* Internal state variable for active branch id (String). */
     private String activeBranchId = "main";
 

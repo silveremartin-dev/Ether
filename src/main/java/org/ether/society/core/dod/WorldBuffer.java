@@ -362,9 +362,11 @@ public class WorldBuffer {
      */
     public synchronized int[] getLandIndices() {
         if (landIndices == null) {
+            Biome[] biomeValues = Biome.values();
             int landCount = 0;
             for (int i = 0; i < capacity; i++) {
-                Biome b = Biome.values()[biomes[i]];
+                int ord = biomes[i] & 0xFF;
+                Biome b = (ord < biomeValues.length) ? biomeValues[ord] : Biome.PLAINS;
                 if (b != Biome.OCEAN && b != Biome.DEEP_OCEAN) {
                     landCount++;
                 }
@@ -373,7 +375,8 @@ public class WorldBuffer {
             oceanIndices = new int[capacity - landCount];
             int lIdx = 0, oIdx = 0;
             for (int i = 0; i < capacity; i++) {
-                Biome b = Biome.values()[biomes[i]];
+                int ord = biomes[i] & 0xFF;
+                Biome b = (ord < biomeValues.length) ? biomeValues[ord] : Biome.PLAINS;
                 if (b != Biome.OCEAN && b != Biome.DEEP_OCEAN) {
                     landIndices[lIdx++] = i;
                 } else {

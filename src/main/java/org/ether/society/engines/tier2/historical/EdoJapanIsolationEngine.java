@@ -67,11 +67,11 @@ public class EdoJapanIsolationEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+            if (!sakokuIsolationActive) continue;
 
-            // Apply Sakoku isolation only to Japan geographic region
-            boolean isJapanRegion = (cell.getLatitude() >= 30.0 && cell.getLatitude() <= 45.0) &&
-                                    (cell.getLongitude() >= 128.0 && cell.getLongitude() <= 146.0);
-            if (!sakokuIsolationActive || !isJapanRegion) continue;
+            // Universal Type-B Institutional Policy (Stationary-State Autarky / Sakoku & Tomeyama Silviculture):
+            // Applies to any circumscribed agrarian/early-modern society when this institutional policy is enabled,
+            // without any hardcoded geographic GPS bounding box.
 
             // 1. Tomeyama silviculture: logistic plantation regrowth toward the pre-intervention stock W0
             double wood = cell.getWoodResource() != null ? cell.getWoodResource() : 0.0;
@@ -86,11 +86,20 @@ public class EdoJapanIsolationEngine {
             // 2. Night-soil recycling: density-proportional organic carbon return with saturation
             double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 15.0;
             double areaKm2 = Math.max(1.0, cell.getEffectiveSurfaceAreaKm2());
-            double density = cell.getPopulation() / areaKm2;
+            int pop = cell.getPopulation();
+            double density = pop / areaKm2;
             double socGain = NIGHT_SOIL_SOC_COEFF * density * Math.max(0.0, 1.0 - soc / SOC_SATURATION) * dt;
             cell.setSoilOrganicCarbon(soc + socGain);
 
-            // 3. Zero pollution accumulation due to organic waste recycling
+            // 3. Preventive stationary-state demographic homeostasis (late marriage, monastic/institutional checks
+            // when population exceeds local stationary carrying capacity cap, Hanley & Yamamura 1977)
+            double cellEquilibriumCap = sustainableEquilibriumCap * 1000.0;
+            if (pop > cellEquilibriumCap) {
+                double damping = (pop - cellEquilibriumCap) * Math.min(0.5, 0.10 * dt);
+                cell.setPopulation((int) Math.max(cellEquilibriumCap, pop - damping));
+            }
+
+            // 4. Zero pollution accumulation due to closed-loop organic waste recycling
             cell.setPollutionLevel(Math.max(0.0, (cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0) - 1.0 * dt));
         }
     }

@@ -7,6 +7,7 @@ package org.ether.society.data;
 import org.junit.jupiter.api.Tag;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +92,8 @@ public class FetchUsgsPetroleumDatasets {
                 logger.error("Error fetching ScienceBase item {}: {}", id, e.getMessage());
             }
         }
+        assertTrue(itemIds.length == 4, "Must target exactly 4 USGS ScienceBase petroleum catalog items");
+        assertNotNull(targetDir, "Petroleum target directory path must be valid");
     }
 
     // Helper subroutine: download and extract - internal state computation & bounds checking

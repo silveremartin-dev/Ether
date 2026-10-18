@@ -196,7 +196,7 @@ public class DataDownloaderService {
                 futures.add(CompletableFuture.supplyAsync(() -> downloadHydeGridForYear(year), executor));
             }
 
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).join();
             logger.info("Multi-Source Scenario Pre-Caching Complete. All empirical rasters active on disk cache.");
         }, executor);
     }

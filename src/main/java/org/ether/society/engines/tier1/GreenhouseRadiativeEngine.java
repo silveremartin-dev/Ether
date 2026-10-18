@@ -199,6 +199,7 @@ public class GreenhouseRadiativeEngine {
                 String.format(java.util.Locale.ROOT, "%.2f", ghForcing));
 
         cells.parallelStream().forEach(cell -> {
+            if (cell == null) return;
             if (cell.getTemperature() != null) {
                 cell.setTemperature(cell.getTemperature() + incrementalDeltaT);
             }

@@ -7,6 +7,7 @@ package org.ether.society.data;
 import org.junit.jupiter.api.Tag;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -405,6 +406,7 @@ public class PlanetaryRasterSampler {
         logger.info(">>> Generating Targeted Earth Cartographic Tensors for Epoch -100000 (Out of Africa Baseline) <<<");
         generateEarthMapsForEpoch(-100000L);
         generateEarthResourcesForEpoch(-100000L);
+        assertTrue(WIDTH == 2048 && HEIGHT == 1024, "Default raster resolution must be 2048x1024");
     }
 
     /**
@@ -434,6 +436,7 @@ public class PlanetaryRasterSampler {
         generateMercuryMaps();
 
         logger.info("--- ALL PLANETARY CARTOGRAPHIC DATED TENSORS SUCCESSFULLY GENERATED ---");
+        assertTrue(TemporalMapTensorManager.STANDARD_EARTH_EPOCHS.length > 0, "Standard Earth epochs array must not be empty");
     }
 
     private void generateAllEarthEpochs() {

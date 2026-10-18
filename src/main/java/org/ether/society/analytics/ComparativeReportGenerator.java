@@ -182,7 +182,7 @@ public class ComparativeReportGenerator {
             (yr, m) -> 3.362), // Historical physiological subsistence requirement
 
         new CsvIndicatorColumn("TotalFoodStockpile_calories", "totalFood",
-            snap -> (double) snap.getFood(),
+            snap -> snap.getFood(),
             (yr, m) -> Double.NaN), // Historical global food stockpile unrecorded
 
         new CsvIndicatorColumn("LifeExpectancy_years", "lifeExpectancyAtBirth",

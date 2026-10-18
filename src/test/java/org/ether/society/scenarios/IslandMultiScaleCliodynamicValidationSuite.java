@@ -1303,7 +1303,7 @@ public class IslandMultiScaleCliodynamicValidationSuite {
         engine.initializeFromScenario(scenario, archMesh);
 
         final int YEARS = 25;
-        final int TICKS = (int) (YEARS * 12);
+        final int TICKS = YEARS * 12;
         for (int t = 0; t < TICKS; t++) {
             engine.stepForward(1);
         }

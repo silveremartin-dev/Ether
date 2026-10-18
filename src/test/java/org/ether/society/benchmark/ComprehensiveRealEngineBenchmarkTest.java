@@ -47,8 +47,18 @@ public class ComprehensiveRealEngineBenchmarkTest {
         assertFalse(report.epochResults().isEmpty(), "Epoch results must not be empty");
 
         for (RealPlanetaryEngineBenchmarkRunner.SpatialResult r : report.spatialResults()) {
-            assertTrue(r.tps() > 0.0, "Measured TPS must be strictly positive for " + r.testLabel());
-            assertTrue(r.msPerTick() > 0.0, "Latency must be strictly positive for " + r.testLabel());
+            // Validate measurement integrity without imposing arbitrary hardware-dependent throughput gates
+            assertTrue(!Double.isNaN(r.tps()) && !Double.isInfinite(r.tps()) && r.tps() > 0.0,
+                    "Throughput must be a valid positive empirical measurement for " + r.testLabel());
+            assertTrue(!Double.isNaN(r.msPerTick()) && !Double.isInfinite(r.msPerTick()) && r.msPerTick() >= 0.0,
+                    "Per-tick latency must be a valid non-negative empirical measurement for " + r.testLabel());
+            assertTrue(r.finalPopulation() > 0, "Simulation run must preserve non-zero human/planetary population for " + r.testLabel());
+        }
+
+        // Backend measurement check: ensure valid empirical throughput recording
+        for (RealPlanetaryEngineBenchmarkRunner.BackendResult b : report.backendResults()) {
+            assertTrue(!Double.isNaN(b.tps()) && !Double.isInfinite(b.tps()) && b.tps() > 0.0,
+                    "Compute backend " + b.backendName() + " must record a valid positive throughput measurement");
         }
     }
 

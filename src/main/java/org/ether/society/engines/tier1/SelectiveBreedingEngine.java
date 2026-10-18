@@ -56,6 +56,7 @@ public class SelectiveBreedingEngine {
         double dtSafe = Math.max(0.0001, dtYears);
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
             if (tech >= 1.5) {
                 int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;

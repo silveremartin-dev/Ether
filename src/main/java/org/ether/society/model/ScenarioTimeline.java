@@ -49,7 +49,7 @@ public class ScenarioTimeline implements Serializable {
         }
     }
 
-    private final List<TimelineEntry> entries = new ArrayList<>();
+    private final ArrayList<TimelineEntry> entries = new ArrayList<>();
 
     /*
      * Scenario timeline.

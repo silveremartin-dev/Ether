@@ -16,7 +16,7 @@ import java.util.Random;
  * Used in sandbox/procedural worlds and open-ended simulations when deterministic Earth history is disabled.
  */
 public class ProceduralLeaderGenerator {
-    private final Random random = new Random();
+    private final Random random = new Random(42L);
 
     private static final String[] LEADER_TITLES_CONQUEROR = {"Général", "Seigneur de Guerre", "Khan", "Stratège", "Conquérant", "Hégémon"};
     private static final String[] LEADER_TITLES_BUILDER = {"Grand Architecte", "Bâtisseur", "Consul", "Empereur des Travaux", "Penseur Urbain"};
@@ -55,7 +55,7 @@ public class ProceduralLeaderGenerator {
 
         // Filter candidate cells to populated land cells, sorted descending by population density
         List<H3Cell> populated = cells.stream()
-                .filter(c -> (c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                .filter(c -> c != null && (c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
                         && c.getPopulation() != null && c.getPopulation() > 0)
                 .sorted((a, b) -> Integer.compare(b.getPopulation(), a.getPopulation()))
                 .toList();

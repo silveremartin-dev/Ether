@@ -91,14 +91,15 @@ public class PreComputePhase {
         boolean isYoungerDryas = (year >= -10900 && year <= -9700) || "YOUNGER_DRYAS".equals(scenario.getPopulationDensityType());
         boolean isGreenSahara = (year >= -8000 && year <= -5000) || "GREEN_SAHARA".equals(scenario.getPopulationDensityType());
 
-        boolean hasExistingClimate = cells.stream().anyMatch(c -> c.getTemperature() != null && c.getRainfall() != null);
+        boolean hasExistingClimate = cells.stream().anyMatch(c -> c != null && c.getTemperature() != null && c.getRainfall() != null);
         if (hasExistingClimate) {
             logger.info("Preserving existing climate & temperature data from configuration/raster maps");
             if (isGreenSahara || isYoungerDryas || isGlacialMax) {
                 // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell cell : cells) {
-                    double lat = cell.getLatitude();
-                    double lng = cell.getLongitude();
+                    if (cell == null) continue;
+                    double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+                    double lng = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
                     if (isGreenSahara && lat >= 12.0 && lat <= 30.0 && lng >= -15.0 && lng <= 35.0) {
                         cell.setRainfall(Math.max(cell.getRainfall() != null ? cell.getRainfall() : 0.0, 1200.0));
                         if (cell.getBiome() == Biome.DESERT) cell.setBiome(Biome.SAVANNAH);
@@ -121,8 +122,9 @@ public class PreComputePhase {
         double axialTilt = scenario.getAxialTiltDegrees();
 
         for (H3Cell cell : cells) {
-            double lat = cell.getLatitude();
-            double lng = cell.getLongitude();
+            if (cell == null) continue;
+            double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+            double lng = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
             // Base temperature from latitude
@@ -205,6 +207,7 @@ public class PreComputePhase {
     private void initializeResources(List<H3Cell> cells) {
         // Always identify coastal cells & marine resources across the planetary grid
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             Biome biome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
             boolean coastal = biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() > 0 && cell.getElevation() < 150.0);
             cell.setIsCoastal(coastal);
@@ -222,13 +225,14 @@ public class PreComputePhase {
             }
         }
 
-        boolean hasExistingResources = cells.stream().anyMatch(c -> (c.getFoodResource() != null && c.getFoodResource() > 0)
-                || (c.getWaterResource() != null && c.getWaterResource() > 0));
+        boolean hasExistingResources = cells.stream().anyMatch(c -> c != null && ((c.getFoodResource() != null && c.getFoodResource() > 0)
+                || (c.getWaterResource() != null && c.getWaterResource() > 0)));
 
         if (hasExistingResources) {
             logger.info("Preserving existing resource distributions (Food, Water, Wood, Minerals) from configuration/raster maps");
             // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
+                if (cell == null) continue;
                 if (cell.getBiomassNatural() == null && cell.getFoodResource() != null) {
                     cell.setBiomassNatural(cell.getFoodResource());
                 }
@@ -249,6 +253,7 @@ public class PreComputePhase {
         logger.info("Initializing fallback resources & coastal marine biomes...");
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             Biome biome = cell.getBiome();
             if (biome == null)
                 biome = Biome.PLAINS;
@@ -442,6 +447,7 @@ public class PreComputePhase {
         double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
 
         for (H3Cell c : cells) {
+            if (c == null) continue;
             long pop = c.getPopulation() != null ? c.getPopulation() : 0;
             double cellCapital = pop * capitalK0;
             if (c.getResourceCapital() == null || c.getResourceCapital() <= 0.0) {

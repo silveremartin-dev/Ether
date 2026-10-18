@@ -70,8 +70,8 @@ public class SimulationTelemetryAndHistorySanityTest {
 
         // 4. Chronological order must be strictly monotonically increasing
         for (int i = 1; i < snapshots.size(); i++) {
-            long prevTime = ((long) snapshots.get(i - 1).year() * 12) + snapshots.get(i - 1).month();
-            long currTime = ((long) snapshots.get(i).year() * 12) + snapshots.get(i).month();
+            long prevTime = (snapshots.get(i - 1).year() * 12) + snapshots.get(i - 1).month();
+            long currTime = (snapshots.get(i).year() * 12) + snapshots.get(i).month();
             assertTrue(currTime > prevTime, "Snapshots must be strictly monotonically ordered");
         }
     }

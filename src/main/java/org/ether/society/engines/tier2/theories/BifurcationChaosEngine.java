@@ -50,9 +50,10 @@ public class BifurcationChaosEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                 sumPop += cell.getPopulation();
-                sumFood += cell.getFoodResource();
+                sumFood += cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
                 count++;
             }
         }
@@ -64,6 +65,7 @@ public class BifurcationChaosEngine {
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                 double diff = cell.getPopulation() - meanPop;
                 varianceSum += diff * diff;
@@ -76,7 +78,8 @@ public class BifurcationChaosEngine {
         double divergenceRate = 0.0;
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell != null && cell.getPopulation() != null && cell.getPopulation() > 0) {
+            if (cell == null) continue;
+            if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                 double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
                 double stressRatio = food > 0 ? (cell.getPopulation() / (food + 1.0)) : 10.0;
                 divergenceRate += Math.log(Math.max(0.001, Math.abs(stressRatio - 1.0)));
@@ -99,6 +102,7 @@ public class BifurcationChaosEngine {
         if (tippingPointWarning) {
             // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
+                if (cell == null) continue;
                 if (cell.getPopulation() != null && cell.getPopulation() > 100) {
                     double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.3;
                     if (gini > 0.6) {

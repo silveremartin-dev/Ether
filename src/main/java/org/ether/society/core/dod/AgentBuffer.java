@@ -13,7 +13,7 @@ public class AgentBuffer {
     /* Internal state variable for h3indexes (long[]). */
     private final long[] h3Indexes;
     
-    // Core Démographie
+    // Core Demography
     private final float[] mass;         // Population density
     private final float[] energy;       // Internal energy stock
     private final float[] sigmaCost;    // Entropy/Structure cost
@@ -23,10 +23,10 @@ public class AgentBuffer {
     private final float[] deaths;       // Number of deaths since last cycle
     private final int[] generationCount;
     
-    // Tenseur Génétique (4 dimensions)
+    // Genetic Tensor (4 dimensions)
     private final float[][] genetics;
     
-    // Tenseur Culturel (4 dimensions)
+    // Cultural Tensor (configurable dimensions)
     private final float[][] culture;
 
     /*

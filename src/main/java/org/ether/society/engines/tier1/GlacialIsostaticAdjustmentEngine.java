@@ -71,6 +71,7 @@ public class GlacialIsostaticAdjustmentEngine {
         int adjustingCells = 0;
 
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             Double elevation = cell.getElevation();
             if (elevation == null) continue;
 

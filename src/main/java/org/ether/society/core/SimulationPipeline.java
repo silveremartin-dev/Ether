@@ -100,6 +100,9 @@ public class SimulationPipeline {
      */
     public void configureScenario(Scenario scenario) {
         this.configuredScenario = scenario;
+        if (this.cultureKernel != null) {
+            this.cultureKernel.resetState();
+        }
         if (scenario == null || scenario.getTypeBEngineStates() == null || scenario.getTypeBEngineStates().isEmpty()) {
             this.compiledKernel = null;
             return;
@@ -200,6 +203,7 @@ public class SimulationPipeline {
             cachedLandCells = new java.util.ArrayList<>(totalCellCount / 3);
             for (int i = 0; i < totalCellCount; i++) {
                 H3Cell c = cells.get(i);
+                if (c == null) continue;
                 Double elev = c.getElevation();
                 Biome b = c.getBiome();
                 if (elev == null || elev >= 0 || (b != null && b != Biome.OCEAN)) {
@@ -219,14 +223,19 @@ public class SimulationPipeline {
 
         float[] popArray = worldBuffer != null ? worldBuffer.getBiomassHuman() : null;
         if (popArray != null) {
-            for (int i = 0; i < totalCellCount; i++) {
+            int limit = Math.min(totalCellCount, popArray.length);
+            for (int i = 0; i < limit; i++) {
                 if (popArray[i] > 0.0f) {
-                    populatedCells.add(cells.get(i));
+                    H3Cell c = cells.get(i);
+                    if (c != null) {
+                        populatedCells.add(c);
+                    }
                 }
             }
         } else {
             for (int i = 0; i < totalCellCount; i++) {
                 H3Cell c = cells.get(i);
+                if (c == null) continue;
                 Integer pop = c.getPopulation();
                 if (pop != null && pop > 0) {
                     populatedCells.add(c);
@@ -293,6 +302,23 @@ public class SimulationPipeline {
         TrophicEcosystemEngine.processTrophicEcosystem(landCells, dtMonthly);
         DynamicHydrographicSiltationEngine.processHydrographicSiltation(landCells, dtMonthly);
     }
+
+    private final AcemogluRobinsonInstitutionsEngine acemogluRobinsonInstitutionsEngine = new AcemogluRobinsonInstitutionsEngine();
+    private final ArthurCombinatorialTechnologyEngine arthurCombinatorialTechnologyEngine = new ArthurCombinatorialTechnologyEngine();
+    private final BoserupAgriculturalIntensificationEngine boserupAgriculturalIntensificationEngine = new BoserupAgriculturalIntensificationEngine();
+    private final DraftAnimalFodderAllocationEngine draftAnimalFodderAllocationEngine = new DraftAnimalFodderAllocationEngine();
+    private final GranovetterThresholdCascadeEngine granovetterThresholdCascadeEngine = new GranovetterThresholdCascadeEngine();
+    private final HotellingResourceDepletionEngine hotellingResourceDepletionEngine = new HotellingResourceDepletionEngine();
+    private final KrugmanCorePeripheryEngine krugmanCorePeripheryEngine = new KrugmanCorePeripheryEngine();
+    private final KummelAyresExergyEngine kummelAyresExergyEngine = new KummelAyresExergyEngine();
+    private final PriceMultilevelSelectionEngine priceMultilevelSelectionEngine = new PriceMultilevelSelectionEngine();
+    private final SchellingAxelrodSegregationEngine schellingAxelrodSegregationEngine = new SchellingAxelrodSegregationEngine();
+    private final SoilSalinizationHydrologyEngine soilSalinizationHydrologyEngine = new SoilSalinizationHydrologyEngine();
+    private final SpatialMetapopulationSEIREngine spatialMetapopulationSEIREngine = new SpatialMetapopulationSEIREngine();
+    private final StructuralDemographicBifurcationEngine structuralDemographicBifurcationEngine = new StructuralDemographicBifurcationEngine();
+    private final TainterComplexityCollapseEngine tainterComplexityCollapseEngine = new TainterComplexityCollapseEngine();
+    private final TurchinGoldstoneSDTEngine turchinGoldstoneSDTEngine = new TurchinGoldstoneSDTEngine();
+    private final WestBettencourtAllometryEngine westBettencourtAllometryEngine = new WestBettencourtAllometryEngine();
 
     /**
      * Pass 3: Human Demographics, Power Grid, Metallurgy, Technology & Active Cliodynamic Theories (Populated Domain).
@@ -363,58 +389,58 @@ public class SimulationPipeline {
                 BifurcationChaosEngine.processBifurcationAnalysis(populatedCells, dtMonthly);
             }
             if (Boolean.TRUE.equals(states.get("AcemogluRobinsonInstitutionsEngine"))) {
-                new AcemogluRobinsonInstitutionsEngine().process(populatedCells, dtYears);
+                acemogluRobinsonInstitutionsEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("ArthurCombinatorialTechnologyEngine"))) {
-                new ArthurCombinatorialTechnologyEngine().process(populatedCells, dtYears);
+                arthurCombinatorialTechnologyEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("BoserupAgriculturalIntensificationEngine"))) {
-                new BoserupAgriculturalIntensificationEngine().process(populatedCells, dtYears);
+                boserupAgriculturalIntensificationEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("DraftAnimalFodderAllocationEngine"))) {
-                new DraftAnimalFodderAllocationEngine().process(populatedCells, dtYears);
+                draftAnimalFodderAllocationEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("GranovetterThresholdCascadeEngine"))) {
-                new GranovetterThresholdCascadeEngine().process(populatedCells, dtYears);
+                granovetterThresholdCascadeEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("HotellingResourceDepletionEngine"))) {
-                new HotellingResourceDepletionEngine().process(populatedCells, dtYears);
+                hotellingResourceDepletionEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("JevonsParadoxEngine"))) {
                 JevonsParadoxEngine.processJevonsRebound(populatedCells, dtMonthly);
             }
             if (Boolean.TRUE.equals(states.get("KrugmanCorePeripheryEngine"))) {
-                new KrugmanCorePeripheryEngine().process(populatedCells, dtYears);
+                krugmanCorePeripheryEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("KummelAyresExergyEngine"))) {
-                new KummelAyresExergyEngine().process(populatedCells, dtYears);
+                kummelAyresExergyEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("KurzweilAcceleratingReturnsEngine"))) {
                 KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(populatedCells, dtMonthly);
             }
             if (Boolean.TRUE.equals(states.get("PriceMultilevelSelectionEngine"))) {
-                new PriceMultilevelSelectionEngine().process(populatedCells, dtYears);
+                priceMultilevelSelectionEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("SchellingAxelrodSegregationEngine"))) {
-                new SchellingAxelrodSegregationEngine().process(populatedCells, dtYears);
+                schellingAxelrodSegregationEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("SoilSalinizationHydrologyEngine"))) {
-                new SoilSalinizationHydrologyEngine().process(populatedCells, dtYears);
+                soilSalinizationHydrologyEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("SpatialMetapopulationSEIREngine"))) {
-                new SpatialMetapopulationSEIREngine().process(populatedCells, dtYears);
+                spatialMetapopulationSEIREngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("StructuralDemographicBifurcationEngine"))) {
-                new StructuralDemographicBifurcationEngine().process(populatedCells, dtYears);
+                structuralDemographicBifurcationEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("TainterComplexityCollapseEngine"))) {
-                new TainterComplexityCollapseEngine().process(populatedCells, dtYears);
+                tainterComplexityCollapseEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("TurchinGoldstoneSDTEngine"))) {
-                new TurchinGoldstoneSDTEngine().process(populatedCells, dtYears);
+                turchinGoldstoneSDTEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("WestBettencourtAllometryEngine"))) {
-                new WestBettencourtAllometryEngine().process(populatedCells, dtYears);
+                westBettencourtAllometryEngine.process(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("World3CouplingEngine"))) {
                 World3CouplingEngine.processWorld3System(populatedCells, dtMonthly);

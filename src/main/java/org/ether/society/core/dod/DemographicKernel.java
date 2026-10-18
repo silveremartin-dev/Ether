@@ -125,8 +125,8 @@ public class DemographicKernel {
         activeCellCount = 0;
 
         for (int i = 0; i < agents.getCapacity(); i++) {
-            if (hexIds[i] == -1) continue;
             int hIdx = hexIds[i];
+            if (hIdx < 0 || hIdx >= worldCap) continue;
             float m = mass[i];
             if (m < minMassThreshold) continue;
             float tech = agents.getTechLevel()[i];
@@ -164,7 +164,7 @@ public class DemographicKernel {
                 // Granary storage capacity: up to 1.5 years of metabolic demand for agrarians (tech >= 1.5),
                 // or 1 month for nomadic foragers (tech < 1.5, mobility & spoilage constraints)
                 float storageYears = (cellTech < 1.5f) ? 0.083f : 1.5f;
-                float maxGranaryCapacity = (float) (cachedCellDemand[h] * (storageYears / dtInYears));
+                float maxGranaryCapacity = cachedCellDemand[h] * (storageYears / dtInYears);
                 food[h] = Math.min(maxGranaryCapacity, surplus);
                 world.getEnergyFoodConsumed()[h] += consumed;
             } else {
@@ -173,9 +173,8 @@ public class DemographicKernel {
         }
 
         for (int i = 0; i < agents.getCapacity(); i++) {
-            if (hexIds[i] == -1) continue;
-            
             int hIdx = hexIds[i];
+            if (hIdx < 0 || hIdx >= worldCap) continue;
             float m = mass[i];
             if (m < minMassThreshold) {
                 hexIds[i] = -1;
@@ -260,7 +259,7 @@ public class DemographicKernel {
             }
 
             // 2. Bio-energetic & nutritional status factor (ovulatory function & physiological reserves)
-            float nutritionalFactor = (float) Math.clamp(0.15f + 0.85f * (energy[i] / 75.0f) * foodSatisfaction, 0.05f, 1.25f);
+            float nutritionalFactor = Math.clamp(0.15f + 0.85f * (energy[i] / 75.0f) * foodSatisfaction, 0.05f, 1.25f);
 
             // 3. Cultural fertility modulation (Cultural Tensor dimension 1: Kinship & Pro-Natalist Norms)
             float culturalFertilityMultiplier = 0.40f + 1.20f * kinshipNatalism; // 1.0 at baseline kinshipNatalism=0.5
@@ -341,7 +340,7 @@ public class DemographicKernel {
                 // 2. Extrinsic deaths occur across all ages around the community mean age: - ageYears * extrinsicDeaths
                 // 3. Senescent deaths occur predominantly among the elderly (~62 yrs): - 62.0f * senescentDeaths
                 // 4. Surviving newborns enter at age 0.0: + 0.0f * survivingNewborns
-                float senescentDeaths = m * gompertzSenescence * dtInYears;
+                float senescentDeaths = Math.min(adultDeaths, m * gompertzSenescence * dtInYears);
                 float meanSenescentDeathAge = Math.max(ageYears + 10.0f, 62.0f);
                 float ageSumAfterEvents = (ageYears + dtInYears) * m 
                         - ageYears * Math.max(0.0f, adultDeaths - senescentDeaths) 
@@ -373,16 +372,18 @@ public class DemographicKernel {
             cachedCellSatisfaction[h] = 1.0f;
         }
 
-        int activeCohorts = 0;
-        float totalMassVal = 0.0f;
-        for (int i = 0; i < agents.getCapacity(); i++) {
-            if (hexIds[i] != -1) {
-                activeCohorts++;
-                totalMassVal += mass[i];
+        if (logger.isDebugEnabled()) {
+            int activeCohorts = 0;
+            float totalMassVal = 0.0f;
+            for (int i = 0; i < agents.getCapacity(); i++) {
+                if (hexIds[i] != -1) {
+                    activeCohorts++;
+                    totalMassVal += mass[i];
+                }
             }
-        }
-        if (activeCohorts < 100 || activeCohorts % 1000 == 0) {
-            logger.info("DemographicKernel: Active cohorts: {}, Total mass: {}", activeCohorts, (long) totalMassVal);
+            if (activeCohorts < 100 || activeCohorts % 1000 == 0) {
+                logger.debug("DemographicKernel: Active cohorts: {}, Total mass: {}", activeCohorts, (long) totalMassVal);
+            }
         }
     }
 
@@ -418,12 +419,12 @@ public class DemographicKernel {
                     float ageRnd = (float) org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 403L);
                     agents.getAge()[newSlot] = Math.max(16.0f, 18.0f + ageRnd * 8.0f); // Young adult generation (18-26 yrs)
                     
-                    // Cultural and genetic inheritance with stochastic mutation drift
+                    // Cultural and genetic inheritance with stochastic mutation drift bounded to [0.0, 1.0]
                     for (int d = 0; d < 4; d++) {
                         float mutG = (float) (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 405L + d) - 0.5) * 0.05f;
                         float mutC = (float) (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 415L + d) - 0.5) * 0.05f;
-                        agents.getGenetics()[d][newSlot] = agents.getGenetics()[d][i] + mutG;
-                        agents.getCulture()[d][newSlot] = agents.getCulture()[d][i] + mutC;
+                        agents.getGenetics()[d][newSlot] = Math.clamp(agents.getGenetics()[d][i] + mutG, 0.0f, 1.0f);
+                        agents.getCulture()[d][newSlot] = Math.clamp(agents.getCulture()[d][i] + mutC, 0.0f, 1.0f);
                     }
                 } else {
                     // Agent buffer saturated; break early to avoid O(N^2) scan overhead

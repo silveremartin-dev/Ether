@@ -54,10 +54,7 @@ public class RomanImperialCliodynamicEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            boolean isRomanRegion = (cell.getLatitude() >= 25.0 && cell.getLatitude() <= 55.0) &&
-                                    (cell.getLongitude() >= -10.0 && cell.getLongitude() <= 45.0);
-            if (!isRomanRegion) continue;
-
+            // Universal Imperial Overstretch & Pre-Industrial Urban Mortality Law (no hardcoded GPS bounding box):
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 500.0;
             double pop = cell.getPopulation();
 
@@ -69,7 +66,7 @@ public class RomanImperialCliodynamicEngine {
             netCapital *= (1.0 - eliteOverproductionFactor);
             cell.setResourceCapital(Math.max(10.0, netCapital));
 
-            // Urban mortality sink (lead pipes + crowding) dampens urban population density growth
+            // Pre-modern urban mortality sink (crowding + sanitation/water contamination) dampens urban lifespan
             if (pop > 20000) {
                 cell.setLifespan(Math.max(25.0, (cell.getLifespan() != null ? cell.getLifespan() : 35.0) - 0.2 * deltaYears));
             }

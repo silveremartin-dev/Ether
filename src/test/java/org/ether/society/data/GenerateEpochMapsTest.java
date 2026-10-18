@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Tag;
 
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -491,6 +492,8 @@ public class GenerateEpochMapsTest {
         readmeFile.setLastModified(System.currentTimeMillis());
 
         System.out.printf("  [SUCCESS] Epoch %d generated!%n", yr);
+        assertNotNull(em, "Epoch metadata for -100000 must exist");
+        assertEquals(-100000L, yr, "Target year must be -100000");
     }
 
     @Test
@@ -549,6 +552,7 @@ public class GenerateEpochMapsTest {
         }
 
         System.out.printf("All %d canonical landmark epochs successfully regenerated and documented.%n", canonicalList.size());
+        assertTrue(canonicalList.size() == 36, "Must process all 36 canonical epochs");
     }
 
     @Test
@@ -587,6 +591,7 @@ public class GenerateEpochMapsTest {
         }
 
         System.out.printf("Successfully regenerated calibrated physical density maps for all %d prehistoric epochs.%n", prehistoricEpochs.size());
+        assertTrue(prehistoricEpochs.size() > 0, "Prehistoric epochs list must not be empty");
     }
 
     @Test
@@ -714,6 +719,7 @@ public class GenerateEpochMapsTest {
                 String.format("%,d", targetPop));
         }
         System.out.println("==========================================================================");
+        assertTrue(landmarkYears.length == 14, "Must evaluate all 14 landmark years");
     }
 
     @Test
@@ -787,6 +793,7 @@ public class GenerateEpochMapsTest {
         });
 
         System.out.printf("All %d epochs successfully regenerated and documented with 25 rasters each.%n", EPOCHS.size());
+        assertTrue(EPOCHS.size() >= 36, "Must contain at least all 36 canonical epochs");
     }
 
     // Helper subroutine: write epoch cultural registry - internal state computation & bounds checking

@@ -19,6 +19,7 @@ import java.io.Serializable;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@SuppressWarnings("serial")
 public class Scenario implements Serializable {
     private static final long serialVersionUID = 1L;
 

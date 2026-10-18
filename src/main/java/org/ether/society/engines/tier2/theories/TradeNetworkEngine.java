@@ -79,7 +79,7 @@ public class TradeNetworkEngine {
 
         // 1. Identify geographically distributed trade hubs (spatial non-maximum suppression across islands)
         List<H3Cell> sortedCells = cells.stream()
-                .filter(c -> c.getPopulation() != null && c.getPopulation() >= 150)
+                .filter(c -> c != null && c.getPopulation() != null && c.getPopulation() >= 150)
                 .sorted(Comparator.comparingInt(H3Cell::getPopulation).reversed())
                 .toList();
 
@@ -105,7 +105,9 @@ public class TradeNetworkEngine {
 
         Map<Long, H3Cell> cellMap = new HashMap<>();
         for (H3Cell c : cells) {
-            cellMap.put(c.getH3Index(), c);
+            if (c != null && c.getH3Index() != null) {
+                cellMap.put(c.getH3Index(), c);
+            }
         }
 
         List<TradeRoute> activeRoutes = new ArrayList<>();
@@ -248,8 +250,9 @@ public class TradeNetworkEngine {
             // A. Physical Food Arbitrage (Ricardian Grain/Fish Trade):
             double origFood = orig.getFoodResource() != null ? orig.getFoodResource() : 0.0;
             double destFood = dest.getFoodResource() != null ? dest.getFoodResource() : 0.0;
-            double origNeed = origPop * 3.362; // Annual subsistence metabolic baseline in GJ
-            double destNeed = destPop * 3.362;
+            // Annual subsistence metabolic baseline in GJ (age pyramid, labor intensity & hominin species)
+            double origNeed = orig.calculateAnnualMetabolicNeedGJ();
+            double destNeed = dest.calculateAnnualMetabolicNeedGJ();
 
             double origSurplus = origFood - origNeed;
             double destSurplus = destFood - destNeed;

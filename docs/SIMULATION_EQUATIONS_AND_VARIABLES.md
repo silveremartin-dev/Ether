@@ -1500,15 +1500,149 @@ $$\Delta K_{\text{monetary}} = \dot{M}_{\text{precious}} \cdot \operatorname{cla
   $$\eta_{\text{bulk}} = \operatorname{clamp}(0.95 + 0.01 \cdot T, 0.95, 0.999)$$
 
 #### 3. The Universal 4-Flux Metabolic Architecture Invariant across History
-Rather than forcing brittle $25 \times 25$ or $100 \times 100$ Leontief matrices that explode combinatorially across historical epochs or rely on rigid ad-hoc archetypes, Ether represents all civilizational economies through **4 Universal Invariant Thermodynamic Fluxes**:
-1. **Exergy Flux ($\Phi_E$, GJ/yr)**: Primary energy harvest from ambient gradients (wood biomass, muscle, draft livestock, wind/water kinetic, fossil hydrocarbons, fissile nuclei, fusion).
-2. **Structural Mass Flux ($\Phi_M$, t/yr)**: Bulk matter extracted, refined, and shaped to maintain physical civilizational boundaries (stone, alluvial clay, bronze, iron, steel, cement, polymers, rare earth elements).
-3. **Productive Capital Stock Flux ($\Phi_K$, t or tool-units)**: Durable artifacts that amplify human physical and mental work (hand-axes, plows, looms, blast furnaces, machine tools, computer chips), continuously subjected to entropic wear and corrosion ($\delta_{\text{wear}}$).
-4. **Biological Metabolic Flux ($\Phi_S$, kcal or GJ/yr)**: Caloric and freshwater sustenance required to maintain human working biomass ($N \cdot 3.362\text{ GJ/yr}$).
+Rather than forcing brittle $25 \times 25$ or $100 \times 100$ Leontief matrices that explode combinatorially across historical epochs or rely on rigid ad-hoc societal archetypes (which fail to capture horticulturalists, hunter-gatherers, coastal fishers, or nomadic pastoralists), Ether formalizes civilizational biophysical metabolism through **4 Universal Invariant Thermodynamic Fluxes**:
 
-Every technology level $T$ is mathematically formalized as an invariant set of transformation efficiencies $(\eta_E, \eta_M, \eta_K, \delta_K)$ coupling these 4 fluxes, maintaining $O(1)$ computation per cell while preserving strict mass-energy conservation across 100,000 years of historical evolution.
+```mermaid
+flowchart TD
+    subgraph Environment["Planetary Environment"]
+        GE["Primary Exergy Gradients<br>(Solar, Biomass, Wind, Hydro, Fossil, Fissile)"]
+        GM["Crustal Mass Stocks<br>(Lithic, Clay, Base & Precious Ores, Earths)"]
+    end
 
+    subgraph CellMetabolism["Cellular Thermodynamic Engine O(1)"]
+        PhiE["Flux 1: Active Exergy Flow Φ_E<br>(Mechanical Work, Process Heat, Electricity)"]
+        PhiM["Flux 2: Structural Mass Flow Φ_M<br>(Formed, Smelted, Assembled Matter)"]
+        PhiK["Flux 3: Productive Capital Stock Φ_K<br>(Tools, Furnaces, Transport Assets, Machinery)"]
+        PhiS["Flux 4: Biological Metabolic Subsistence Φ_S<br>(Demographic Caloric & Hydric Maintenance)"]
+    end
 
+    GE -->|Harvest Efficiency η_E| PhiE
+    GM -->|Extraction & Reduction η_M| PhiM
+    PhiE & PhiM -->|Coupled Assembly K| PhiK
+    PhiK -->|Mechanical Wear & Rust δ_K| Entropie["Entropic Decay"]
+    PhiS -->|Physiological Maintenance| Labor["Active Human Labor Pool L"]
+    Labor -->|Allocated Work Effort| PhiE & PhiM & PhiK
+```
 
+1. **Exergy Flux ($\Phi_E$, GJ/yr)**: Harvesting ambient physical work gradients into usable mechanical, thermal, or electrical work.
+   - *Paleolithic*: Human muscle ($100\text{ W}$) + biomass combustion ($18.5\text{ MJ/kg}$).
+   - *Agrarian / Medieval*: Draft animals ($500\text{ W}$) + hydraulic and wind mills ($\le 250\text{ W/capita}$).
+   - *Industrial*: Steam and internal combustion engines converting coal, petroleum, and gas ($3\text{--}7\text{ kW/capita}$).
+   - *Modern / Post-Industrial*: Electro-nuclear, renewable grid, and semiconductor microelectronics ($15\text{--}35\text{ kW/capita}$).
 
+2. **Structural Mass Flux ($\Phi_M$, t/yr)**: Matter extracted, refined, and shaped against entropy to maintain civilization's physical envelope:
+   - *Lithic & Earthen*: Silex, alluvial clay (`resourceClay`), sun-dried adobe, timber (`woodResource`).
+   - *Pyrometallurgical*: Copper, bronze, bloomery iron, blast-furnace steel (`resourceMetal`).
+   - *Precious & Catalytic*: Gold/silver bullion (`resourcePreciousMetal`), platinum group, and critical rare earths (`resourceRareEarths`).
+
+3. **Productive Capital Stock Flux ($\Phi_K$, durable units)**: Durable tools, infrastructure, and prime movers that amplify human labor, governed by continuous accumulation and alloy wear:
+   $$\frac{dK}{dt} = \min\left(\Phi_E \cdot \eta_{\text{conv}}, \Phi_M \cdot Q_{\text{mat}}(T)\right) - \delta_K(T) \cdot K$$
+   where $\delta_K(T) = \max\left(0.01, \frac{0.05}{0.4 \cdot T}\right)$ models material fatigue, mechanical wear, and atmospheric oxidation.
+
+4. **Biological Metabolic Subsistence Flux ($\Phi_S$, GJ/yr)**: The caloric and hydric energy required to keep the biological work engines alive, reproducing, and healthy.
+
+---
+
+#### 4. Fine-Grained Demographic Age Pyramid, Work Intensity & Hominin Metabolic Scaling
+
+The biological sustenance requirement $\Phi_S$ is not a static scalar ($N \times 3.362\text{ GJ}$), but a dynamic physiological coupling evaluated per cell:
+
+$$\Phi_S = \left(\sum_{c=1}^{7} N_c \cdot \varepsilon_c\right) \cdot \lambda_{\text{work}}(K/N, T, \text{mining}) \cdot M_{\text{species}}$$
+
+##### A. 7-Cohort Age Pyramid Weighting ($\varepsilon_c$, FAO/WHO Standards)
+Basal Metabolic Rate (BMR) and growth needs vary dramatically across human life stages:
+* **Infants ($0\text{--}4\text{ yr}$)**: $\varepsilon_1 = 1.60\text{ GJ/yr}$ ($\sim 1\,050\text{ kcal/day}$, $47\%$ of adult base). Rapid somatic/brain growth, small body mass.
+* **Children ($5\text{--}14\text{ yr}$)**: $\varepsilon_2 = 2.50\text{ GJ/yr}$ ($\sim 1\,650\text{ kcal/day}$, $74\%$ of adult base). Active play and skeletal development.
+* **Youth & Young Adults ($15\text{--}24\text{ yr}$)**: $\varepsilon_3 = 3.80\text{ GJ/yr}$ ($\sim 2\,500\text{ kcal/day}$, $113\%$ of adult base). Pubertal growth completion and peak physical activity.
+* **Prime Labor Adults ($25\text{--}49\text{ yr}$)**: $\varepsilon_4 = 3.50\text{ GJ/yr}$ ($\sim 2\,300\text{ kcal/day}$, $104\%$ of adult base). Reproductive and productive prime.
+* **Mature Adults ($50\text{--}64\text{ yr}$)**: $\varepsilon_5 = 3.20\text{ GJ/yr}$ ($\sim 2\,100\text{ kcal/day}$, $95\%$ of adult base). Early sarcopenia and metabolic decline.
+* **Seniors ($65\text{--}79\text{ yr}$)**: $\varepsilon_6 = 2.70\text{ GJ/yr}$ ($\sim 1\,770\text{ kcal/day}$, $80\%$ of adult base). Reduced physical mobility and muscle mass.
+* **Vulnerable Elderly ($80+\text{ yr}$)**: $\varepsilon_7 = 2.20\text{ GJ/yr}$ ($\sim 1\,450\text{ kcal/day}$, $65\%$ of adult base). Low physical activity.
+
+##### B. Physical Activity Level (PAL) & Mechanization Multiplier ($\lambda_{\text{work}}$)
+* **Pre-Industrial Manual Agrarian Labor**: In societies with low capital per capita ($K/N < 10$), manual field tilling, sowing, timber harvesting, and carrying water push the labor multiplier to $\lambda_{\text{work}} \approx 1.25$ ($\text{PAL} \approx 1.85\text{--}2.10$).
+* **Heavy Mining & Metallurgical Labor**: Heavy shaft extraction, quarrying, and blacksmithing impose intense physical strain:
+  $$\Delta \lambda_{\text{mining}} = +0.08 \quad \text{if } \text{Metal} > 10\text{ t} \text{ or } \text{Coal} > 50\text{ t}$$
+* **Industrial Mechanization & Automation**: Capital tools ($K/N$) and steam/combustion/electric prime movers substitute machine work for human muscle:
+  $$\lambda_{\text{work}} = 1.25 - 0.30 \cdot \operatorname{clamp}\left(\frac{K/N}{40.0} + 0.20 \cdot \max(0.0, T - 3.0), 0.0, 1.0\right) + \Delta \lambda_{\text{mining}}$$
+  In modern mechanized economies, $\lambda_{\text{work}}$ drops to $0.95$ ($\text{PAL} \approx 1.4\text{--}1.5$, sedentary/office work).
+
+##### C. Hominin Species Physiological Scaling ($M_{\text{species}}$)
+Paleoanthropological energetics (Churchill 2006, Snodgrass & Leonard 2009, Sorensen 2011) demonstrate substantial species divergence in BMR:
+* **Homo Sapiens ($M_{\text{species}} = 1.00$)**: Gracile morphology, endurance running adaptation, high encephalization efficiency.
+* **Homo Neanderthalensis ($M_{\text{species}} = 1.40$)**: Robust hyper-muscular physique ($+20\text{--}30\%$ lean body mass), broad barrel chest, and high thermoregulatory expenditure in Pleistocene periglacial environments require **$4\,000\text{--}5\,000\text{ kcal/day}$** ($\sim 5.5\text{--}7.5\text{ GJ/capita-yr}$). This structural metabolic vulnerability explains their susceptibility to demographic collapse during cold Heinrich events and megafauna depletion.
+* **Denisovans & Archaic Hominins ($M_{\text{species}} = 1.20$)**: Robust Pleistocene morphology adapted to high-altitude Tibetan plateau hypoxia and cold stress.
+
+---
+
+#### 5. Pyrometallurgical Thermal Activation Continuum ($T_{\text{seuil}}$) & Late Bronze Age Collapse Bottleneck
+
+Rather than relying on discrete, scripted historical era names, `MetallurgyEnthalpyEngine` governs material phase transitions via continuous **Furnace Thermal Activation Thresholds ($T_{\text{seuil}}$)** and **Chemical Reduction Enthalpies ($\Delta H_{\text{smelt}}$)**:
+
+| Metallurgical Phase | Tech Band ($T$) | Furnace $T_{\text{seuil}}$ | Enthalpy $\Delta H_{\text{smelt}}$ | Alloy Yield & Hardness ($Q_{\text{alloy}}$) | Critical Physical Bottleneck |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Lithic & Ceramic** | $T < 1.5$ | $600\text{--}900^\circ\text{C}$ | N/A (Kiln baking) | $0.08\text{--}0.12$ | Local `resourceClay`, silex, and `woodResource` |
+| **Chalcolithic (Copper)** | $1.5 \le T < 1.8$ | $1085^\circ\text{C}$ | $5.2\text{ MJ/kg}$ | $0.25$ (Soft unalloyed Cu) | Charcoal (`woodResource`) + surface malachite |
+| **Bronze Age ($\text{Cu} + 10\%\text{ Sn}$)** | $1.8 \le T < 2.5$ | $950^\circ\text{C}$ | $8.5\text{ MJ/kg}$ | **$0.65$** (With Tin/Trade)<br>**$0.18$** (Tin-starved collapse) | **Long-distance Tin (`Sn`) trade** (`resourceRareEarths` proxy + low border friction) |
+| **Iron Age (Bloomery)** | $2.5 \le T < 3.2$ | $1250\text{--}1538^\circ\text{C}$ | $24.7\text{ MJ/kg}$ | $0.75$ (Wrought iron/steel) | High charcoal enthalpy demand ($3\times$ Bronze energy) |
+| **Industrial Coke Blast Furnace** | $3.2 \le T < 3.8$ | $> 1600^\circ\text{C}$ | $19.5\text{ MJ/kg}$ | $0.90$ (Bessemer steel) | Mineral coal (`resourceCoal`) substituting forest charcoal |
+| **Modern High-Tech Superalloys** | $T \ge 3.8$ | $> 2000^\circ\text{C}$ (Arc) | $16.0\text{ MJ/kg}$ | $0.96 \cdot \Phi_{\text{REE}}$ | **Liebig Bottleneck**: `resourceRareEarths` + industrial `resourcePreciousMetal` |
+
+##### A. Late Bronze Age Systemic Collapse Mechanism (~1177 BCE)
+During the Bronze Age ($1.8 \le T < 2.5$), civilization achieves high tool and weapon durability ($Q_{\text{alloy}} = 0.65$) at moderate thermal enthalpy ($8.5\text{ MJ/kg}$) only by alloying abundant Copper ($90\%$) with geologically scarce Tin ($10\%$, modeled via local `resourceRareEarths` or open trade corridors $\sigma_{\text{friction}} \le 2.5$).
+If geopolitical war or migration severs long-distance trade routes ($\Phi_{\text{Sn}} \to 0$) before societies master the high-temperature bellows required to smelt ubiquitous iron oxide ($24.7\text{ MJ/kg}$ at $T \ge 2.5$), metallurgy forcibly reverts to soft unalloyed copper ($Q_{\text{alloy}} = 0.18$). Because tool wear $\delta_K$ then exceeds new capital formation, agricultural and military capital $K$ collapses endogenously.
+
+##### B. Universal Boserup-Allen-Acemoglu Directed Technical Change & Hydrostatic Mine-Dewatering Physics
+Rather than encoding ad-hoc rules for specific historical transitions (such as an "18th-century England coal rule"), `TechTreeEngine.calculateBottleneckInducedSubstitution(H3Cell, double)` implements a **single universal physical law of scarcity-induced substitution**:
+$$\Delta T_{\text{substitution}} = \alpha_{\text{sub}} \cdot \Sigma_{\text{stress}}(\text{incumbent}) \cdot \Psi_{\text{latent}}(\text{substitute}) \cdot \Delta t$$
+Whenever an incumbent resource in technology band $n$ hits an extraction or depletion bottleneck ($\Sigma_{\text{stress}} \in [0, 1]$) while a cell possesses a latent geological or ecological substitute ($\Psi_{\text{latent}} \in [0, 1]$), selective pressure endogenously accelerates technological innovation toward the activation threshold of band $n+1$:
+1. **Wild Foraging Depletion $\to$ Agrarian & Ceramic Domestication ($T < 1.6$)**: High foraging pressure ($N / B_{\text{natural}}$) in cells with arable topsoil (`soilOrganicCarbon`) and potter's clay (`resourceClay`).
+2. **Chalcolithic/Bronze Tin Bottleneck $\to$ Iron Bloomery ($1.6 \le T < 2.6$)**: Scarcity of tin/rare-earth alloying elements ($\Sigma_{\text{Sn}}$) in cells with abundant iron/base metal ore (`resourceMetal`) and thermal fuel.
+3. **Forest Charcoal Depletion $\to$ Mineral Coke & Steam ($2.4 \le T < 3.4$)**: When wood charcoal energy $E_{\text{wood}}$ falls short of metallurgical demand $E_{\text{req}}$ in cells containing geological coal seams (`resourceCoal`), emerging naturally in 11th-century Song China or 18th-century Britain without any geographic or calendar hardcoding.
+4. **Coal-Steam Saturation $\to$ Hydrocarbons, Electrification & Fission ($T \ge 3.0$)**: High industrial energy demand per capita in cells with `resourceOil`, `resourceUranium`, or `resourceRareEarths`.
+
+Simultaneously, all deep subsurface mining in `MetallurgyEnthalpyEngine` obeys the **Universal Hydrostatic Mine-Dewatering Law**:
+$$\eta_{\text{drainage}} = \operatorname{clamp}\left(0.20 + 0.80 \cdot \min\left(1.0, \frac{K \cdot \max(0.1, T - 1.5)}{0.01 \cdot W_{\text{aquifer}}}\right), 0.20, 1.0\right)$$
+Subsurface shafts flood proportionally to groundwater head (`freshwaterAquifer`), restricting extraction to shallow surface outcrops ($20\%$) unless mechanical pumping capital $K$ (Roman waterwheels, Newcomen atmospheric steam pumps, or electric pumps) overcomes the hydrostatic head.
+
+---
+
+#### 6. Dual-Regime Precious Metals: Sovereign Bullion, Fisher Inflation (Dutch Disease) & High-Tech Catalysis
+
+Precious metals (`resourcePreciousMetal`: Gold, Silver, Platinum) obey two distinct physical regimes across history:
+
+1. **Pre-Industrial Monetary & Bullion Regime ($T < 3.8$)**:
+   - Gold and silver possess high malleability ($\text{Mohs } 2.5\text{--}3.0$) and cannot fabricate agricultural plows or structural machinery.
+   - Instead, refined bullion accumulates into the **Sovereign Bullion Treasury (`Nation.treasuryBullion`)**, lubricating long-distance market conductance ($\sigma_{\text{trade}}$) and paying professional standing armies (`WarDiplomacyEngine`).
+   - **Fisher Equation of Exchange ($M \cdot V = P \cdot Y$) & Dutch Disease (Maladie Hollandaise / Révolution des Prix)**:
+     When a nation extracts or imports massive bullion ($M = \text{treasuryBullion}$) without proportionate real physical capital and agricultural output ($Y = K + \text{Food}$), the bullion-to-real-output ratio surges:
+     $$\mathcal{I}_{\text{bullion}} = \frac{M_{\text{bullion}}}{10.0 + K + 0.5 \cdot \text{Food}}$$
+     When $\mathcal{I}_{\text{bullion}} > 0.35$, monetary inflation (`Nation.monetaryInflation`) triggers domestic manufacturing hollow-out ($\Delta K < 0$), elevates wealth inequality (`giniIndex`), and amplifies elite overproduction instability (modeling 16th-century Imperial Spain after Potosí and Mansa Musa's gold shock).
+
+2. **Modern High-Tech Industrial & Catalytic Regime ($T \ge 3.8$)**:
+   - Gold, silver, and platinum-group metals become **irreplaceable physical inputs** (non-corroding microelectronic interconnects, photovoltaic silver paste, chemical and hydrogen catalysts).
+   - Alongside `resourceRareEarths`, they act as a strict **Liebig bottleneck factor** ($\Phi_{\text{crit}} \in [0.35, 1.0]$) on high-tech capital formation in both `MetallurgyEnthalpyEngine` and `PhysicalLeontiefInputOutputEngine`.
+
+---
+
+#### 7. Eco-Material Niche Envelope, Material Entropy Spectrum ($\Omega_{\text{mat}}$) & Military Armament Coupling
+
+1. **Eco-Material Niche Envelope (`PhysicalLeontiefInputOutputEngine`)**:
+   - Civilizations are not constrained to a single cereal-iron archetype. Local structural capital formation integrates the **Eco-Material Niche Envelope**:
+     $$S_{\text{niche}} = M_{\text{metal}} + 0.5 \cdot M_{\text{wood}} + 0.3 \cdot M_{\text{clay}} + 0.15 \cdot B_{\text{fish}} + 0.20 \cdot B_{\text{livestock}}$$
+     allowing maritime/fishing cultures (`biomassFish` + `woodResource`), tropical horticulturalists (`resourceClay` + `biomassNatural`), and steppe pastoralists (`biomassLivestock`) to accumulate functional niche capital while remaining subject to physical mass conservation.
+2. **Material Entropy Spectrum ($\Omega_{\text{mat}}(T)$)**:
+   - Evaluates the diversity of distinct material channels ($1$ to $7$: clay, timber, biogenic fauna, base metals, coal, hydrocarbons, rare earths/precious/uranium) actively integrated by a cell, scaling production complexity by $1 + 0.08 \cdot \Omega_{\text{mat}}$ while multiplying supply-chain bottleneck exposure.
+3. **Physical Armament Capital & Bullion War Chests (`WarDiplomacyEngine`)**:
+   - Military combat power is no longer purely demographic (`pop15to24`), but coupled to physical armament capital per soldier ($K / N_{15\text{--}24}$), cavalry/motorized logistics (`biomassLivestock` + `resourceOil`), and sovereign bullion pay (`Nation.treasuryBullion`):
+     $$P_{\text{combat}} = \frac{N_{15\text{--}24} \cdot (0.5 + C_{\text{state}}) \cdot \Phi_{\text{armament}}(K/N) \cdot \Phi_{\text{logistics}}(\text{Livestock}, \text{Oil}) \cdot \Phi_{\text{bullion}}(M_{\text{bullion}})}{\sigma_{\text{friction}}}$$
+   - Every battle consumes both sovereign bullion ($5\text{--}8\%$ campaign expenditure) and physical armament capital ($3\text{--}4\%$ weapon/armor attrition plus battlefield collateral destruction).
+
+---
+
+#### 8. Epistemological Universality Principle: Zero Geographic Bounding Boxes & Tier 1 vs. Tier 2 (Type B) Bifurcations
+
+All simulation engines strictly adhere to **spatial, temporal, and planetary universality** (no hardcoded GPS latitude/longitude bounding boxes or calendar-date triggers):
+* **Tier 1 (Type A — Universal Invariant Physics)**: Executes unconditionally across every cell on any planet (`MetallurgyEnthalpyEngine`, `OreGradeThermodynamicsEngine`, `EntropicMetalDissipationEngine`, `SoilNutrientNPKEngine`, `DarcyGroundwaterEngine`, `MegafaunaEcosystemEngine`, `TrophicEcosystemEngine`).
+* **Tier 2 (Type B — Pluggable Institutional & Sociological Bifurcations)**: Represents contingent political, institutional, or cultural responses to physical constraints (`EdoJapanIsolationEngine`, `RomanImperialCliodynamicEngine`, `AmerindianEcosystemEngine`, `FertileCrescentSalinizationEngine`, `ProtestantWorkEthicEngine`, `MonasticClergyDemographicEngine`). When enabled, these engines operate solely on **local physical, ecological, and institutional state variables** (such as border trade friction, draft livestock density, or evapotranspiration-to-precipitation balance) rather than geographic coordinates.
 

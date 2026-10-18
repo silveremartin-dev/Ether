@@ -44,19 +44,25 @@ public class FertileCrescentSalinizationEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
-            boolean isFertileCrescent = (cell.getLatitude() >= 28.0 && cell.getLatitude() <= 38.0) &&
-                                        (cell.getLongitude() >= 34.0 && cell.getLongitude() <= 48.0);
-
-            if (!isFertileCrescent) continue;
+            // Universal hydro-climatic condition (no hardcoded GPS bounding box):
+            // Salinization occurs in any warm/arid or intensively canal-irrigated alluvial plain
+            // where evapotranspiration exceeds precipitation leaching (rainfall < 600 mm, elevation < 1000 m).
+            double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 300.0;
+            double temp = cell.getTemperature() != null ? cell.getTemperature() : 22.0;
+            double elev = cell.getElevation() != null ? cell.getElevation() : 100.0;
+            if (rainfall >= 650.0 || temp < 12.0 || elev > 1200.0) continue;
 
             double food = cell.getFoodResource() != null ? cell.getFoodResource() : 1000.0;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
 
-            // Early agrarian irrigation (Tech level 1.0 to 3.0) in arid/plains biomes
+            // Pre-modern canal irrigation without subsurface tile drainage (Tech level 1.0 to 3.5)
             if (tech >= 1.0 && tech <= 3.5) {
-                // Progressive salinization degrades food output over time (continuous exponential decay)
-                double salinizationFactor = Math.max(0.20, Math.exp(-salinizationRatePerCentury * (deltaYears / 100.0)));
+                double aridityMultiplier = Math.clamp((650.0 - rainfall) / 400.0, 0.25, 1.5);
+                double effectiveRate = salinizationRatePerCentury * aridityMultiplier;
+                double salinizationFactor = Math.max(0.20, Math.exp(-effectiveRate * (deltaYears / 100.0)));
                 cell.setFoodResource(food * salinizationFactor);
+                double curSalinity = cell.getSoilSalinity() != null ? cell.getSoilSalinity() : 0.0;
+                cell.setSoilSalinity(Math.min(20.0, curSalinity + effectiveRate * (deltaYears / 10.0)));
             }
         }
     }

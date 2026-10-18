@@ -55,7 +55,7 @@ public class PsychohistoryPureEngine {
 
         double totalPop = 0.0;
         for (H3Cell cell : cells) {
-            if (cell != null) totalPop += cell.getPopulation();
+            if (cell != null && cell.getPopulation() != null) totalPop += cell.getPopulation();
         }
 
         double crisisProb = calculateSeldonCrisisProbability(totalPop, 0.45);

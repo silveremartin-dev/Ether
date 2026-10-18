@@ -3,14 +3,24 @@ package org.ether.society.core.dod;
 import org.ether.society.model.PhysicalConstants;
 
 /**
- * Kernel gérant l'émergence urbaine, l'accumulation de capital et l'entropie institutionnelle.
- * Les agglomérations émergent aux points de concentration de flux sous contrainte
- * de maintenance thermodynamique de Tainter (rendements marginaux décroissants).
+ * Data-Oriented Urban Agglomeration, Capital Accumulation & Institutional Entropy Kernel.
+ * <p>
+ * Models urban emergence at resource flux concentration nodes subject to Tainter's
+ * thermodynamic maintenance constraints (diminishing marginal returns on complexity)
+ * and West-Bettencourt allometric scaling.
+ * </p>
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
  */
 public class UrbanKernel {
 
-    /*
-     * Met à jour le capital et l'urbanisation du monde sous conservation thermodynamique.
+    /**
+     * Updates global infrastructure capital, technological spillover, and institutional complexity
+     * across all active cells under thermodynamic conservation laws.
+     *
+     * @param world contiguous world state buffer
+     * @param dt integration time step (years if &le; 20, days if &le; 1000, seconds if &gt; 1000)
      */
     public void tick(WorldBuffer world, float dt) {
         // High-performance contiguous memory pass: Cache-aligned array streaming

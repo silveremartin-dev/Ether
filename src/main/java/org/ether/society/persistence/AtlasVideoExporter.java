@@ -180,6 +180,7 @@ public class AtlasVideoExporter {
                 double minLat = 90, maxLat = -90, minLng = 180, maxLng = -180;
                 // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell c : cells) {
+                    if (c == null) continue;
                     if (c.getLatitude() != null) {
                         minLat = Math.min(minLat, c.getLatitude());
                         maxLat = Math.max(maxLat, c.getLatitude());
@@ -205,7 +206,7 @@ public class AtlasVideoExporter {
 
                 // 2. Base Biomes Background
                 for (H3Cell c : cells) {
-                    if (c.getLatitude() == null || c.getLongitude() == null) continue;
+                    if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
                     double x = ((c.getLongitude() - minLng) / lngRange) * (mapWidth - 16) + mapLeft + 8;
                     double y = (1.0 - ((c.getLatitude() - minLat) / latRange)) * (mapHeight - 16) + mapTop + 8;
 
@@ -226,6 +227,7 @@ public class AtlasVideoExporter {
                     double maxVal = -Double.MAX_VALUE;
                     // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : cells) {
+                        if (c == null) continue;
                         double val = getCellValue(c, mode);
                         minVal = Math.min(minVal, val);
                         maxVal = Math.max(maxVal, val);
@@ -234,7 +236,7 @@ public class AtlasVideoExporter {
 
                     // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell c : cells) {
-                        if (c.getLatitude() == null || c.getLongitude() == null) continue;
+                        if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
                         double val = getCellValue(c, mode);
                         if (val <= 0 && isSparseZeroSkipped(mode)) continue;
 
@@ -254,18 +256,20 @@ public class AtlasVideoExporter {
             // 4. Top Header HUD
             g2.setColor(new Color(56, 189, 248)); // Cyan Accent
             g2.setFont(new Font("SansSerif", Font.BOLD, 14));
-            g2.drawString("🗺️ ETHER — ATLAS DYNAMIQUE DES TERRITOIRES", mapLeft, 26);
+            g2.drawString(org.ether.society.i18n.I18n.getOrDefault("atlas.hud.title", "🗺️ ETHER — DYNAMIC TERRITORIAL ATLAS"), mapLeft, 26);
 
             g2.setColor(new Color(148, 163, 184)); // Muted Slate
             g2.setFont(new Font("SansSerif", Font.BOLD, 12));
-            String stepStr = String.format(Locale.ROOT, "Pas : %,d  |  Instantané %d / %d", stepNumber, snapshotIndex, totalSnapshots);
+            String stepLabel = org.ether.society.i18n.I18n.getOrDefault("atlas.hud.step", "Step");
+            String snapLabel = org.ether.society.i18n.I18n.getOrDefault("atlas.hud.snapshot", "Snapshot");
+            String stepStr = String.format(Locale.ROOT, "%s : %,d  |  %s %d / %d", stepLabel, stepNumber, snapLabel, snapshotIndex, totalSnapshots);
             g2.drawString(stepStr, width - mapLeft - g2.getFontMetrics().stringWidth(stepStr), 26);
 
             // 5. Bottom Footer HUD (Active Layers & Autocorrelation)
             g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
             g2.setColor(new Color(203, 213, 225));
 
-            StringBuilder layersStr = new StringBuilder("Couches Actives : ");
+            StringBuilder layersStr = new StringBuilder(org.ether.society.i18n.I18n.getOrDefault("atlas.hud.active_layers", "Active Layers") + " : ");
             int lCount = 0;
             for (DisplayMode mode : activeLayers) {
                 if (lCount > 0) layersStr.append(" • ");
@@ -280,8 +284,12 @@ public class AtlasVideoExporter {
 
             if (cells != null && !cells.isEmpty()) {
                 double moranI = computeMoranI(cells, activeLayers);
-                String moranStr = String.format(Locale.US, "Moran's I : %.3f (%s)", moranI,
-                        moranI > 0.3 ? "Clusters" : (moranI < -0.1 ? "Dispersé" : "Aléatoire"));
+                String moranRegime = moranI > 0.3
+                        ? org.ether.society.i18n.I18n.getOrDefault("atlas.hud.clustered", "Clustered")
+                        : (moranI < -0.1
+                            ? org.ether.society.i18n.I18n.getOrDefault("atlas.hud.dispersed", "Dispersed")
+                            : org.ether.society.i18n.I18n.getOrDefault("atlas.hud.random", "Random"));
+                String moranStr = String.format(Locale.US, "Moran's I : %.3f (%s)", moranI, moranRegime);
                 g2.setColor(new Color(255, 215, 0)); // Gold
                 g2.setFont(new Font("SansSerif", Font.BOLD, 11));
                 g2.drawString(moranStr, width - mapLeft - g2.getFontMetrics().stringWidth(moranStr), height - 12);
@@ -374,7 +382,7 @@ public class AtlasVideoExporter {
             case ENTROPY_POLLUTION -> c.getPollutionLevel() != null ? c.getPollutionLevel() : 0.0;
             case SOIL_QUALITY -> c.getSoilOrganicCarbon() != null ? c.getSoilOrganicCarbon() : (c.getFoodResource() != null ? c.getFoodResource() / 50.0 : 50.0);
             case BIODIVERSITY -> c.getBiomassNatural() != null ? c.getBiomassNatural() : 50.0;
-            case OCEAN_PH -> 8.1;
+            case OCEAN_PH -> c.getTemperature() != null ? 8.1 - Math.max(0.0, (c.getTemperature() - 15.0) * 0.02) : 8.1;
             case PERMAFROST -> c.getIceSheetThicknessMeters() != null ? c.getIceSheetThicknessMeters() : 0.0;
             case POPULATION -> c.getPopulation() != null ? c.getPopulation().doubleValue() : 0.0;
             case MIGRATION -> c.getFluxPressure();
@@ -396,9 +404,9 @@ public class AtlasVideoExporter {
             case CULTURE -> c.getOwner() != null ? Math.abs(c.getOwner().hashCode() % 100) : 1.0;
             case POLITICAL -> c.getOwner() != null ? 100.0 : 0.0;
             case INEQUALITY -> c.getGiniIndex() != null ? c.getGiniIndex() : 0.35;
-            case ASABIYYAH -> 0.70;
+            case ASABIYYAH -> c.getOwner() != null ? c.getOwner().getAsabiyyah() : 0.70;
             case FLUX -> c.getFluxPressure();
-            case HAPPINESS -> 65.0;
+            case HAPPINESS -> c.getLifespan() != null ? Math.clamp(c.getLifespan(), 10.0, 100.0) : 65.0;
             case CONFLICT -> c.getOwner() != null ? 75.0 : 5.0;
             case INSTITUTIONAL_MATURITY -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() * 10.0 : 5.0;
             case GDP_WEALTH -> {
@@ -406,7 +414,7 @@ public class AtlasVideoExporter {
                 double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
                 yield pop * tech * 15.0;
             }
-            case ELITE_DENSITY -> 2.5;
+            case ELITE_DENSITY -> c.getOwner() != null ? c.getOwner().getEliteOverproduction() * 100.0 : (c.getGiniIndex() != null ? c.getGiniIndex() * 10.0 : 2.5);
             case COLLECTIVE_MEMORY -> c.getTechnologyLevel() != null ? Math.pow(c.getTechnologyLevel(), 2.0) * 100.0 : 10.0;
             case COLLAPSE_RISK -> {
                 double pop = c.getPopulation() != null ? c.getPopulation() : 0.0;
@@ -430,7 +438,10 @@ public class AtlasVideoExporter {
         if (scalarMode == null || cells.size() < 4) return 0.0;
 
         double sum = 0;
-        for (H3Cell c : cells) sum += getCellValue(c, scalarMode);
+        for (H3Cell c : cells) {
+            if (c == null) continue;
+            sum += getCellValue(c, scalarMode);
+        }
         double mean = sum / cells.size();
 
         double num = 0, denom = 0;

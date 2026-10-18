@@ -26,20 +26,24 @@ public class OreGradeThermodynamicsEngine {
     private static double referenceOreConcentration = 0.05; // 5% reference metal concentration
     private static double minOreConcentrationFloor = 0.001; // 0.1% physical limit floor
 
-    /*
-     * Process ore depletion.
-     * Enforces physical invariants and updates associated state variables within {@code OreGradeThermodynamicsEngine}.
+    /**
+     * Models the non-linear thermodynamic energy escalation required for metal ore extraction.
+     * <p>
+     * Implements the Bihouix ore grade exhaustion relation:
+     * \[
+     * E_{\text{extract}} = E_0 \cdot \left(\frac{C_{\text{ref}}}{C_{\text{ore}}}\right)^{1.5}
+     * \]
+     * where \(C_{\text{ore}}\) is the local ore grade mass fraction clamped above \(C_{\text{floor}} = 0.001\) (0.1%),
+     * and \(E_0\) is baseline comminution and smelting work in Joules per kilogram (\(\text{J}\cdot\text{kg}^{-1}\Default).
+     * Depletes cellular available mechanical work \(W_{\text{avail}}\) accordingly.
+     * </p>
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param cells planetary hex cells undergoing mineral extraction
+     * @param deltaYears time step duration in terrestrial decimal years (\(\Delta t > 0\))
      */
     public static void processOreDepletion(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
@@ -59,21 +63,17 @@ public class OreGradeThermodynamicsEngine {
         }
     }
 
-    /*
-     * Get reference ore concentration.
-     * Enforces physical invariants and updates associated state variables within {@code OreGradeThermodynamicsEngine}.
+    /**
+     * Gets pristine reference ore concentration \(C_{\text{ref}}\).
      *
-     * @return the resulting computation or state reference
+     * @return dimensionless mass fraction (default 0.05 = 5%)
      */
     public static double getReferenceOreConcentration() { return referenceOreConcentration; }
-    /*
-     * Set reference ore concentration operation.
-     * <p>
-     * Executes operational logic for {@code OreGradeThermodynamicsEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
+
+    /**
+     * Sets reference ore concentration clamped above 0.001.
      *
-     * @param conc the conc argument (double)
+     * @param conc dimensionless mass fraction
      */
     public static void setReferenceOreConcentration(double conc) { referenceOreConcentration = Math.max(0.001, conc); }
 

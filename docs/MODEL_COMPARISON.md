@@ -300,21 +300,23 @@ In accordance with Ether's core philosophy (AGENTS.md Directives 1 & 7), the eng
     $$W_{\text{transport}} = \mu_{\text{rolling}} \cdot \frac{1}{1 + 0.1 \cdot (K/N) + 0.2 \cdot \text{tech}} \cdot \Delta t$$
     Paved roads, canals, and rail infrastructure capital ($K/N$) naturally damp physical supply chain friction, capturing the historical transition from pack animal transport to containerized intermodal shipping without heuristic thresholds.
 
-#### 4. Precious Bullion Flows, Monetary Lubrication & Critical Minerals
-* **Extraction & Cupellation (`MetallurgyEnthalpyEngine`)**:
-  - Precious metal ore (`resourcePreciousMetal`) is mined via placer panning ($T \ge 1.2$) or deep-vein shaft mining and thermal cupellation ($T \ge 1.8$ at $12.0\text{ MJ/kg}$).
-  - Extracted bullion monetizes local capital stock ($K$), transitioning economies from barter to liquid market circulation.
-* **Long-Distance Trade Arbitrage & Monetary Lubrication (`TradeNetworkEngine`)**:
-  - Circulating bullion between trading hubs actively lubricates trade conductance ($\sigma_{\text{trade}} \propto 1 + \min(1.5, 0.25 \ln(1 + \text{Precious}))$, eliminating the barter double-coincidence problem.
-  - High-value bullion is arbitrated across corridors with minimal physical attrition ($0.1\%$).
-  - In modern eras ($T \ge 4.0$), critical minerals (`resourceRareEarths`) and natural gas (`resourceGas`) are actively arbitrated and consumed by high-tech semiconductor and electro-nuclear power grids.
+#### 4. Dual-Regime Precious Bullion, Fisher Dutch Disease & Late Bronze Age Tin Bottleneck
+* **Thermal Activation Continuum & Late Bronze Age Collapse (`MetallurgyEnthalpyEngine`)**:
+  - Material transitions obey continuous furnace enthalpy thresholds: Lithic/Ceramic ($T < 1.5$), Chalcolithic Copper ($1.5 \le T < 1.8$, $\Delta H = 5.2\text{ MJ/kg}$, $Q_{\text{alloy}} = 0.25$), Bronze Age ($1.8 \le T < 2.5$, $\Delta H = 8.5\text{ MJ/kg}$, $Q_{\text{alloy}} = 0.65$), Bloomery Iron ($2.5 \le T < 3.2$, $\Delta H = 24.7\text{ MJ/kg}$), Coke Blast Furnace Steel ($3.2 \le T < 3.8$ consuming `resourceCoal`), and High-Tech Superalloys ($T \ge 3.8$).
+  - **Late Bronze Age Bottleneck**: During $1.8 \le T < 2.5$, bronze hardness ($Q_{\text{alloy}} = 0.65$) requires Tin/Trade access (`resourceRareEarths` proxy or low border friction). If trade networks collapse before the $1538^\circ\text{C}$ Iron smelting threshold is reached, metallurgy reverts to soft unalloyed copper ($Q_{\text{alloy}} = 0.18$), collapsing tool and weapon capital $K$.
+* **Dual-Regime Precious Metals (`MetallurgyEnthalpyEngine`, `Nation`, `TradeNetworkEngine`)**:
+  - **Pre-Industrial Monetary Regime ($T < 3.8$)**: Refined gold and silver accumulate into `Nation.treasuryBullion`, lubricating long-distance trade conductance ($\sigma_{\text{trade}}$) and financing standing armies (`WarDiplomacyEngine`). However, if bullion extraction outstrips real physical output ($K + \text{Food}$), Fisher's Equation of Exchange ($M \cdot V = P \cdot Y$) triggers **Dutch Disease / Bullion Inflation** (`Nation.monetaryInflation`), eroding domestic capital $K$ and increasing `giniIndex`.
+  - **Modern Industrial & Catalytic Regime ($T \ge 3.8$)**: Gold, silver, platinum, and `resourceRareEarths` act as strict **Liebig bottlenecks** for microelectronics, photovoltaics, and chemical catalysis.
 
-#### 5. Universal 4-Flux Metabolic Framework vs Combinatorial Leontief Explosion
+#### 5. Universal 4-Flux Metabolic Framework, Eco-Material Niche Envelope & Military Armament Coupling
 * Rather than maintaining giant, brittle $25 \times 25$ or $100 \times 100$ static input-output matrices that explode combinatorially across eras and fail to represent non-standard societies (horticulturalists, coastal fishermen, pastoral nomads), Ether formalizes societal metabolism into **4 Universal Invariant Flows**:
   1. **Primary Exergy Flux ($\Phi_E$)**: Ambient energetic gradients (biomass, muscle, draft, wind/hydro, fossil, nuclear).
-  2. **Structural Mass Flux ($\Phi_M$)**: Lithic, earthen clay, timber, metallurgical, and synthetic matter.
-  3. **Productive Capital Stock ($\Phi_K$)**: Tools and infrastructure subjected to continuous entropic wear ($\delta_K$).
+  2. **Structural Mass Flux ($\Phi_M$)**: Lithic, earthen clay, timber, metallurgical, and synthetic matter, governed by the **Eco-Material Niche Envelope** (allowing maritime fishers via `biomassFish` + `woodResource`, horticulturalists via `resourceClay` + `biomassNatural`, and pastoralists via `biomassLivestock` to form functional capital) and the **Material Entropy Spectrum ($\Omega_{\text{mat}}(T)$)**.
+  3. **Productive & Military Capital Stock ($\Phi_K$)**: Tools, infrastructure, and military armaments (`WarDiplomacyEngine` combat power scales with armament capital $K/N$, cavalry/fuel mobility, and sovereign bullion war chests, with post-battle physical attrition) subjected to continuous entropic wear ($\delta_K$).
   4. **Metabolic Subsistence ($\Phi_S$)**: Biological food calories and water sustaining the human work pool ($N$).
+     - **7-Cohort Age Pyramid Weighting**: Rather than a static scalar, caloric demand tracks the demographic pyramid (infants consume $\sim 47\%$, children $\sim 74\%$, seniors $\sim 80\%$ of the adult prime baseline $\varepsilon_4 = 3.50\text{ GJ/yr}$).
+     - **Physical Activity Level (PAL) & Mechanization**: Pre-industrial manual farming and heavy mining push the work multiplier up to $\lambda_{\text{work}} \approx 1.25\text{--}1.33$, whereas industrial mechanization ($K/N$) and electric prime movers drop human physical exertion to $\lambda_{\text{work}} \approx 0.95$ (sedentary baseline).
+     - **Hominin Clade Divergence**: Neanderthals (`homininSpecies = 2`), possessing $+25\%$ higher lean muscle mass and hyper-polar thermoregulation, demand **$4\,000\text{--}5\,000\text{ kcal/day}$** ($1.40\times$ Sapiens baseline), formalizing their Pleistocene starvation vulnerability during abrupt Dansgaard-Oeschger cooling events.
 * Any civilizational stage is uniquely determined by continuous transformation efficiencies $(\eta_E, \eta_M, \eta_K, \delta_K)$ between these 4 fluxes, preserving $O(1)$ cellular complexity and full physical determinism across all human epochs.
 
 ---

@@ -106,8 +106,8 @@ public class ScenarioSetupPanel extends BorderPane {
 
     /*
      * Attaches default value handling to a JavaFX control:
-     * 1. Appends "[VALEUR PAR DÉFAUT : X]" to the tooltip.
-     * 2. Adds a right-click Context Menu ("🔄 Réinitialiser à la valeur par défaut (X)").
+     * 1. Appends "[DEFAULT VALUE: X]" to the tooltip.
+     * 2. Adds a right-click Context Menu ("Reset to default value (X)").
      */
     private <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
         if (control == null) return;
@@ -6955,15 +6955,15 @@ private String getDefaultTensorName(int index) {
         // Population Density Heat Overlay (aligned with UI Legend Bar)
         Color heatCol;
         if (pop <= 0) {
-            heatCol = Color.rgb(30, 95, 165);  // Inhabité (0 hab/km²) - Navy Blue (Legend matching)
+            heatCol = Color.rgb(30, 95, 165);  // Uninhabited (0 hab/km²) - Navy Blue (Legend matching)
         } else if (pop < 50) {
-            heatCol = Color.rgb(16, 185, 129); // Faible (1 - 50 hab/km²) - Green
+            heatCol = Color.rgb(16, 185, 129); // Low (1 - 50 hab/km²) - Green
         } else if (pop < 500) {
-            heatCol = Color.rgb(234, 179, 8);  // Moyenne (50 - 500 hab/km²) - Yellow
+            heatCol = Color.rgb(234, 179, 8);  // Medium (50 - 500 hab/km²) - Yellow
         } else if (pop < 2500) {
-            heatCol = Color.rgb(249, 115, 22); // Élevée / Cité (500 - 2500 hab/km²) - Orange
+            heatCol = Color.rgb(249, 115, 22); // High / City (500 - 2500 hab/km²) - Orange
         } else {
-            heatCol = Color.rgb(239, 68, 68);  // Métropole (> 2500 hab/km²) - Red
+            heatCol = Color.rgb(239, 68, 68);  // Metropolis (> 2500 hab/km²) - Red
         }
 
         return heatCol;
@@ -7014,11 +7014,11 @@ private String getDefaultTensorName(int index) {
                         double brightness = (customCol.getRed() + customCol.getGreen() + customCol.getBlue()) / 3.0;
                         if (Math.abs(customCol.getRed() - customCol.getGreen()) < 0.02 && Math.abs(customCol.getGreen() - customCol.getBlue()) < 0.02) {
                             Color heatCol;
-                            if (brightness <= 0.02) heatCol = Color.rgb(30, 95, 165);       // Inhabité
-                            else if (brightness < 0.20) heatCol = Color.rgb(16, 185, 129);  // Faible
-                            else if (brightness < 0.45) heatCol = Color.rgb(234, 179, 8);   // Moyenne
-                            else if (brightness < 0.75) heatCol = Color.rgb(249, 115, 22);  // Élevée
-                            else heatCol = Color.rgb(239, 68, 68);                          // Métropole
+                            if (brightness <= 0.02) heatCol = Color.rgb(30, 95, 165);       // Uninhabited
+                            else if (brightness < 0.20) heatCol = Color.rgb(16, 185, 129);  // Low
+                            else if (brightness < 0.45) heatCol = Color.rgb(234, 179, 8);   // Medium
+                            else if (brightness < 0.75) heatCol = Color.rgb(249, 115, 22);  // High
+                            else heatCol = Color.rgb(239, 68, 68);                          // Metropolis
                             return blendColors(getReliefAndDensityColor(c), heatCol, Math.max(0.65, brightness));
                         }
                         return customCol;

@@ -57,30 +57,34 @@ public class LandReclamationEngine {
                                     double seasteadingTechThreshold, double seasteadingCapitalThreshold) {
         if (cells == null || cells.isEmpty()) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
+            if (cell == null) continue;
             double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
             double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            boolean isCoastal = cell.getIsCoastal();
+            boolean isCoastal = Boolean.TRUE.equals(cell.getIsCoastal());
+            boolean isPolder = Boolean.TRUE.equals(cell.getIsPolder());
+            boolean hasFloating = Boolean.TRUE.equals(cell.getHasFloatingInfrastructure());
             Biome biome = cell.getBiome();
 
             // 1. Poldérisation check (Coastal water / shallow elevation reclamation)
-            if (!cell.getIsPolder() && (isCoastal || biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() <= 0))) {
+            if (!isPolder && (isCoastal || biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() <= 0))) {
                 if (tech >= polderTechThreshold && capital >= polderCapitalThreshold) {
                     cell.setIsPolder(true);
                     if (biome == Biome.OCEAN || biome == Biome.BEACH) {
                         cell.setBiome(Biome.PLAINS);
                     }
-                    cell.setSoilOrganicCarbon(Math.max(100.0, cell.getSoilOrganicCarbon() + 20.0 * timeStepDays));
+                    double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 0.0;
+                    cell.setSoilOrganicCarbon(Math.max(100.0, soc + 20.0 * timeStepDays));
                 }
             }
 
             // 2. Deep-sea Seasteading / Floating Infrastructure check
-            if (!cell.getHasFloatingInfrastructure() && (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN)) {
+            if (!hasFloating && (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN)) {
                 if (tech >= seasteadingTechThreshold && capital >= seasteadingCapitalThreshold) {
                     cell.setHasFloatingInfrastructure(true);
                     // Floating energy & water collection bonus
-                    cell.setEnergySolar(cell.getEnergySolar() + 50.0 * timeStepDays);
+                    double solar = cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0;
+                    cell.setEnergySolar(solar + 50.0 * timeStepDays);
                 }
             }
         }

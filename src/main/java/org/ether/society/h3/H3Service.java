@@ -196,13 +196,34 @@ public class H3Service {
     }
 
     /*
+     * Thread-safe bounded cache of immutable ring-1 H3 topological neighbor lists.
+     * H3 ring-1 adjacency is strictly static for any given h3Index, so caching eliminates
+     * hundreds of thousands of JNI crossings and ArrayList/Long boxing allocations per tick.
+     */
+    private final java.util.concurrent.ConcurrentHashMap<Long, List<Long>> neighborCache = new java.util.concurrent.ConcurrentHashMap<>(65536);
+
+    /*
      * Get immediate neighbors of a cell (ring 1).
      */
     public List<Long> getNeighbors(long h3Index) {
+        List<Long> cached = neighborCache.get(h3Index);
+        if (cached != null) {
+            return cached;
+        }
         // gridDisk returns center + neighbors, so we filter out the center
-        List<Long> disk = new ArrayList<>(h3.gridDisk(h3Index, 1));
-        disk.remove(Long.valueOf(h3Index));
-        return disk;
+        List<Long> rawDisk = h3.gridDisk(h3Index, 1);
+        List<Long> neighbors = new ArrayList<>(rawDisk.size());
+        for (int i = 0; i < rawDisk.size(); i++) {
+            Long idx = rawDisk.get(i);
+            if (idx != null && idx.longValue() != h3Index) {
+                neighbors.add(idx);
+            }
+        }
+        List<Long> immutableNeighbors = java.util.Collections.unmodifiableList(neighbors);
+        if (neighborCache.size() < 400_000) {
+            neighborCache.put(h3Index, immutableNeighbors);
+        }
+        return immutableNeighbors;
     }
 
     /*
