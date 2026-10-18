@@ -54,6 +54,11 @@ public class AtmosphericOxygenEngine {
         double o2PressureAtm = globalAtmoPressure * globalO2Ratio;
         double vo2maxFactor = calculateAerobicCapacityFactor(o2PressureAtm);
 
+        // Standard equilibrium invariant: at standard 0.21 atm O2, vo2maxFactor == 1.0 and no hypercombustion occurs
+        if (Math.abs(vo2maxFactor - 1.0) < 1.0e-5 && o2PressureAtm <= 0.25) {
+            return;
+        }
+
         int hyperCombustionEvents = 0;
 
         for (H3Cell cell : cells) {

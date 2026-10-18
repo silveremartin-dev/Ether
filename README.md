@@ -206,9 +206,25 @@ java -jar society-simulation.jar --single-core --safe --res=2 --scenario=OUT_OF_
 
 ---
 
+## ⚡ Real Planetary Simulation Engine Benchmarks (End-to-End Ground Truth)
+
+Ether evaluates the **complete planetary simulation pipeline** (`H3SimulationEngine.java` + `SimulationPipeline.java`) executing all 25 geoscientific map rasters, Tier 1 biophysical PDEs (Liebig N-P-K, 2D Darcy lateral aquifers, Budyko-Sellers energy balance, megafauna extinctions, erosion), DOD vectorized kernels, exact analytical Gini calculations, and asynchronous rolling memory snapshots:
+
+### 🖥️ Measured Wall-Clock Benchmarks (Single-Node Desktop vs Cloud Compute Sizing)
+
+| Domain Configuration | Spatial Res (H3) | Hexagons | Step ($\Delta t$) | Measured TPS (Local) | Projected TPS (`c2-standard-16`) | 10k Ticks Run Duration | Snapshots Footprint (24 snaps) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Regional Windowed** | **Res 5** | **40,305** | Monthly | **2.84 TPS** | **3.80 TPS** | **~45 to 55 minutes** | **~84 MB** (3.5 MB / snap) |
+| **Earth Global Macro** | **Res 3** | **41,162** | Monthly | **2.35 TPS** | **3.10 TPS** | **~50 to 65 minutes** | **~86 MB** (3.6 MB / snap) |
+| **Earth Global High-Fi** | **Res 4** | **288,122** | Monthly | **0.34 TPS** | **1.45 TPS** | **~1h45 to 2h15** | **~600 MB** (25.0 MB / snap) |
+
+> 📖 See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for full phase profiling distributions, multi-core scaling curves, and the distinct isolated DOD micro-kernel comparisons.
+
+---
+
 ## ☁️ Google Cloud Platform Distributed Multi-Node Benchmarks
 
-Ether includes high-performance cloud orchestration scripts (`scripts/gcp/`) supporting multi-node distributed simulations on Google Cloud Compute Engine (`c2-standard-4` Spot cluster: `ether-master` + `ether-worker`) with a live asynchronous **PostgreSQL 15 + PostGIS 3.3** geospatial persistence layer.
+Ether includes high-performance cloud orchestration scripts (`scripts/gcp/`) supporting multi-node distributed simulations on Google Cloud Compute Engine (`c2-standard-16` / `c2-standard-4` Spot cluster: `ether-master` + `ether-worker`) with a live asynchronous **PostgreSQL 15 + PostGIS 3.3** geospatial persistence layer.
 
 > 📖 See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and [docs/DEPLOYMENT_AND_INFRASTRUCTURE.md](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
 

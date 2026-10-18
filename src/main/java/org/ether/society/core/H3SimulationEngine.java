@@ -207,6 +207,15 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     private int[] densityDistribution = new int[20]; // 20 bins
 
+    // High-performance single-pass global aggregate cache (invalidated per tick)
+    private long cachedTotalPopulation = -1;
+    private double cachedTotalFood = -1;
+    private double cachedPotableWater = -1;
+    private float cachedBiomassNatural = -1;
+    private float cachedAverageTechnology = -1;
+    private double cachedResourceCapital = -1;
+    private long lastCacheTick = -1;
+
 
 
 
@@ -1967,12 +1976,9 @@ public class H3SimulationEngine implements ISimulationEngine {
             // 1. FAST SCALE DYNAMICS (Scaled to stepDays)
 
 
-            profiler.beginPhase("1_FastScaleFlux");
-
-
+            int yearBeforeTick = timeManager.getCurrentYear();
             timeManager.advanceDays(stepDays);
-
-
+            boolean yearChanged = (timeManager.getCurrentYear() != yearBeforeTick);
             profiler.endPhase("1_FastScaleFlux");
 
 
@@ -2039,6 +2045,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
                 profiler.beginPhase("5_StatisticsAndHistory");
+                updateGlobalAggregatesCache();
 
 
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
@@ -2068,15 +2075,8 @@ public class H3SimulationEngine implements ISimulationEngine {
                 historyManager.captureSnapshot(this);
 
 
-                // Bounded snapshot of full 3D spatial map once per year (Month 0) or at launch to prevent excessive RAM allocation
-
-
-                if (timeManager.getCurrentMonth() == 0 || tickCounter == 0) {
-
-
+                if (historyManager != null && historyManager.shouldCaptureWorldSnapshot(tickCounter, false, yearChanged)) {
                     historyManager.captureWorldSnapshot(this);
-
-
                 }
 
 
@@ -2120,11 +2120,8 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
                 profiler.beginPhase("6_BufferSync");
-
-
-                syncBufferToCells();
-
-
+                // Cells are already synchronized with WorldBuffer from Phase 2 (syncCellsToBuffer).
+                // Phase 6 is preserved as a lightweight boundary phase avoiding redundant O(N) object traversals.
                 profiler.endPhase("6_BufferSync");
 
 
@@ -2495,6 +2492,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
         if (historyManager != null) {
             historyManager.captureWorldSnapshot(this);
+            historyManager.flushSnapshots();
         }
     }
 
@@ -2917,104 +2915,67 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public void syncBufferToCells() {
-
-
         if (worldBuffer == null || cells == null) return;
-
-
         float[] pop = worldBuffer.getBiomassHuman();
-
-
         float[] food = worldBuffer.getFoodResource();
-
-
         float[] tech = worldBuffer.getTechnologyLevel();
-
-
         float[] water = worldBuffer.getWaterResource();
-
-
         float[] wood = worldBuffer.getWoodResource();
-
-
         float[] gini = worldBuffer.getGiniIndex();
-
-
         float[] capital = worldBuffer.getResourceCapital();
-
-
         byte[] biomes = worldBuffer.getBiomes();
 
-
-
-
-
         org.ether.society.model.Biome[] biomeValues = org.ether.society.model.Biome.values();
+        int limit = Math.min(cells.size(), worldBuffer.getCapacity());
 
+        boolean parallel = limit >= 10000 && performanceConfig != null && (performanceConfig.isEnableParallelExecution() || performanceConfig.getParallelThreadCount() > 1);
+        if (parallel) {
+            java.util.stream.IntStream.range(0, limit).parallel().forEach(i -> {
+                H3Cell cell = cells.get(i);
+                int p = Math.max(0, Math.round(pop[i]));
+                cell.setPopulation(p);
+                cell.setBiomassHuman((double) pop[i]);
+                cell.setFoodResource((double) food[i]);
+                cell.setTechnologyLevel((double) tech[i]);
+                cell.setWaterResource((double) water[i]);
+                cell.setWoodResource((double) wood[i]);
+                cell.setGiniIndex((double) gini[i]);
+                if (capital != null) cell.setResourceCapital((double) capital[i]);
+                if (worldBuffer.getMetalResource() != null) cell.setResourceMetal((double) worldBuffer.getMetalResource()[i]);
+                if (worldBuffer.getClayResource() != null) cell.setResourceClay((double) worldBuffer.getClayResource()[i]);
+                if (worldBuffer.getBiomassAgriculture() != null) cell.setBiomassAgriculture((double) worldBuffer.getBiomassAgriculture()[i]);
+                if (worldBuffer.getBiomassNatural() != null) cell.setBiomassNatural((double) worldBuffer.getBiomassNatural()[i]);
+                if (worldBuffer.getBiomassFish() != null) cell.setBiomassFish((double) worldBuffer.getBiomassFish()[i]);
 
+                if (cell.getBiome() != null) {
+                    biomes[i] = (byte) cell.getBiome().ordinal();
+                } else if (biomes[i] >= 0 && biomes[i] < biomeValues.length) {
+                    cell.setBiome(biomeValues[biomes[i]]);
+                }
+            });
+        } else {
+            for (int i = 0; i < limit; i++) {
+                H3Cell cell = cells.get(i);
+                int p = Math.max(0, Math.round(pop[i]));
+                cell.setPopulation(p);
+                cell.setBiomassHuman((double) pop[i]);
+                cell.setFoodResource((double) food[i]);
+                cell.setTechnologyLevel((double) tech[i]);
+                cell.setWaterResource((double) water[i]);
+                cell.setWoodResource((double) wood[i]);
+                cell.setGiniIndex((double) gini[i]);
+                if (capital != null) cell.setResourceCapital((double) capital[i]);
+                if (worldBuffer.getMetalResource() != null) cell.setResourceMetal((double) worldBuffer.getMetalResource()[i]);
+                if (worldBuffer.getClayResource() != null) cell.setResourceClay((double) worldBuffer.getClayResource()[i]);
+                if (worldBuffer.getBiomassAgriculture() != null) cell.setBiomassAgriculture((double) worldBuffer.getBiomassAgriculture()[i]);
+                if (worldBuffer.getBiomassNatural() != null) cell.setBiomassNatural((double) worldBuffer.getBiomassNatural()[i]);
+                if (worldBuffer.getBiomassFish() != null) cell.setBiomassFish((double) worldBuffer.getBiomassFish()[i]);
 
-
-
-        for (int i = 0; i < cells.size() && i < worldBuffer.getCapacity(); i++) {
-
-
-            H3Cell cell = cells.get(i);
-
-
-            int p = Math.max(0, Math.round(pop[i]));
-
-
-            cell.setPopulation(p);
-
-
-            cell.setBiomassHuman((double) pop[i]);
-
-
-            cell.setFoodResource((double) food[i]);
-
-
-            cell.setTechnologyLevel((double) tech[i]);
-
-
-            cell.setWaterResource((double) water[i]);
-
-
-            cell.setWoodResource((double) wood[i]);
-
-
-            cell.setGiniIndex((double) gini[i]);
-
-
-            if (capital != null) cell.setResourceCapital((double) capital[i]);
-            if (worldBuffer.getMetalResource() != null) cell.setResourceMetal((double) worldBuffer.getMetalResource()[i]);
-            if (worldBuffer.getClayResource() != null) cell.setResourceClay((double) worldBuffer.getClayResource()[i]);
-            if (worldBuffer.getBiomassAgriculture() != null) cell.setBiomassAgriculture((double) worldBuffer.getBiomassAgriculture()[i]);
-            if (worldBuffer.getBiomassNatural() != null) cell.setBiomassNatural((double) worldBuffer.getBiomassNatural()[i]);
-            if (worldBuffer.getBiomassFish() != null) cell.setBiomassFish((double) worldBuffer.getBiomassFish()[i]);
-
-
-
-
-            // Sync biomes bidirectionally
-
-
-            if (cell.getBiome() != null) {
-
-
-                biomes[i] = (byte) cell.getBiome().ordinal();
-
-
-            } else if (biomes[i] >= 0 && biomes[i] < biomeValues.length) {
-
-
-                cell.setBiome(biomeValues[biomes[i]]);
-
-
-            }
-
-
-            if (p > 0) {
-                cell.updateAgePyramidFromTotal(cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : 1.0);
+                if (cell.getBiome() != null) {
+                    biomes[i] = (byte) cell.getBiome().ordinal();
+                } else if (biomes[i] >= 0 && biomes[i] < biomeValues.length) {
+                    cell.setBiome(biomeValues[biomes[i]]);
+                }
             }
         }
     }
@@ -3045,32 +3006,69 @@ public class H3SimulationEngine implements ISimulationEngine {
         int limit = Math.min(cells.size(), worldBuffer.getCapacity());
         boolean popModified = false;
         boolean[] cellPopModified = new boolean[limit];
-        for (int i = 0; i < limit; i++) {
-            H3Cell cell = cells.get(i);
-            if (pop != null && cell.getPopulation() != null) {
-                int cellIntPop = cell.getPopulation();
-                int bufferRoundedPop = Math.max(0, Math.round(pop[i]));
-                if (cellIntPop != bufferRoundedPop) {
-                    int delta = cellIntPop - bufferRoundedPop;
-                    pop[i] = Math.max(0.0f, pop[i] + delta);
-                    cellPopModified[i] = true;
+
+        boolean parallel = limit >= 10000 && performanceConfig != null && (performanceConfig.isEnableParallelExecution() || performanceConfig.getParallelThreadCount() > 1);
+        if (parallel) {
+            java.util.stream.IntStream.range(0, limit).parallel().forEach(i -> {
+                H3Cell cell = cells.get(i);
+                if (pop != null && cell.getPopulation() != null) {
+                    int cellIntPop = cell.getPopulation();
+                    int bufferRoundedPop = Math.max(0, Math.round(pop[i]));
+                    if (cellIntPop != bufferRoundedPop) {
+                        int delta = cellIntPop - bufferRoundedPop;
+                        pop[i] = Math.max(0.0f, pop[i] + delta);
+                        cellPopModified[i] = true;
+                    }
+                }
+                if (food != null && cell.getFoodResource() != null) food[i] = cell.getFoodResource().floatValue();
+                if (tech != null && cell.getTechnologyLevel() != null) tech[i] = cell.getTechnologyLevel().floatValue();
+                if (water != null && cell.getWaterResource() != null) water[i] = cell.getWaterResource().floatValue();
+                if (wood != null && cell.getWoodResource() != null) wood[i] = cell.getWoodResource().floatValue();
+                if (metal != null && cell.getResourceMetal() != null) metal[i] = cell.getResourceMetal().floatValue();
+                if (clay != null && cell.getResourceClay() != null) clay[i] = cell.getResourceClay().floatValue();
+                if (gini != null && cell.getGiniIndex() != null) gini[i] = cell.getGiniIndex().floatValue();
+                if (capital != null && cell.getResourceCapital() != null) capital[i] = cell.getResourceCapital().floatValue();
+                if (lifespan != null && cell.getLifespan() != null) lifespan[i] = cell.getLifespan().floatValue();
+                if (fertility != null && cell.getFertility() != null) fertility[i] = cell.getFertility().floatValue();
+                if (biomassAgri != null && cell.getBiomassAgriculture() != null) biomassAgri[i] = cell.getBiomassAgriculture().floatValue();
+                if (biomassNat != null && cell.getBiomassNatural() != null) biomassNat[i] = cell.getBiomassNatural().floatValue();
+                if (biomassFish != null && cell.getBiomassFish() != null) biomassFish[i] = cell.getBiomassFish().floatValue();
+                if (biomes != null && cell.getBiome() != null) biomes[i] = (byte) cell.getBiome().ordinal();
+            });
+            for (int i = 0; i < limit; i++) {
+                if (cellPopModified[i]) {
                     popModified = true;
+                    break;
                 }
             }
-            if (food != null && cell.getFoodResource() != null) food[i] = cell.getFoodResource().floatValue();
-            if (tech != null && cell.getTechnologyLevel() != null) tech[i] = cell.getTechnologyLevel().floatValue();
-            if (water != null && cell.getWaterResource() != null) water[i] = cell.getWaterResource().floatValue();
-            if (wood != null && cell.getWoodResource() != null) wood[i] = cell.getWoodResource().floatValue();
-            if (metal != null && cell.getResourceMetal() != null) metal[i] = cell.getResourceMetal().floatValue();
-            if (clay != null && cell.getResourceClay() != null) clay[i] = cell.getResourceClay().floatValue();
-            if (gini != null && cell.getGiniIndex() != null) gini[i] = cell.getGiniIndex().floatValue();
-            if (capital != null && cell.getResourceCapital() != null) capital[i] = cell.getResourceCapital().floatValue();
-            if (lifespan != null && cell.getLifespan() != null) lifespan[i] = cell.getLifespan().floatValue();
-            if (fertility != null && cell.getFertility() != null) fertility[i] = cell.getFertility().floatValue();
-            if (biomassAgri != null && cell.getBiomassAgriculture() != null) biomassAgri[i] = cell.getBiomassAgriculture().floatValue();
-            if (biomassNat != null && cell.getBiomassNatural() != null) biomassNat[i] = cell.getBiomassNatural().floatValue();
-            if (biomassFish != null && cell.getBiomassFish() != null) biomassFish[i] = cell.getBiomassFish().floatValue();
-            if (biomes != null && cell.getBiome() != null) biomes[i] = (byte) cell.getBiome().ordinal();
+        } else {
+            for (int i = 0; i < limit; i++) {
+                H3Cell cell = cells.get(i);
+                if (pop != null && cell.getPopulation() != null) {
+                    int cellIntPop = cell.getPopulation();
+                    int bufferRoundedPop = Math.max(0, Math.round(pop[i]));
+                    if (cellIntPop != bufferRoundedPop) {
+                        int delta = cellIntPop - bufferRoundedPop;
+                        pop[i] = Math.max(0.0f, pop[i] + delta);
+                        cellPopModified[i] = true;
+                        popModified = true;
+                    }
+                }
+                if (food != null && cell.getFoodResource() != null) food[i] = cell.getFoodResource().floatValue();
+                if (tech != null && cell.getTechnologyLevel() != null) tech[i] = cell.getTechnologyLevel().floatValue();
+                if (water != null && cell.getWaterResource() != null) water[i] = cell.getWaterResource().floatValue();
+                if (wood != null && cell.getWoodResource() != null) wood[i] = cell.getWoodResource().floatValue();
+                if (metal != null && cell.getResourceMetal() != null) metal[i] = cell.getResourceMetal().floatValue();
+                if (clay != null && cell.getResourceClay() != null) clay[i] = cell.getResourceClay().floatValue();
+                if (gini != null && cell.getGiniIndex() != null) gini[i] = cell.getGiniIndex().floatValue();
+                if (capital != null && cell.getResourceCapital() != null) capital[i] = cell.getResourceCapital().floatValue();
+                if (lifespan != null && cell.getLifespan() != null) lifespan[i] = cell.getLifespan().floatValue();
+                if (fertility != null && cell.getFertility() != null) fertility[i] = cell.getFertility().floatValue();
+                if (biomassAgri != null && cell.getBiomassAgriculture() != null) biomassAgri[i] = cell.getBiomassAgriculture().floatValue();
+                if (biomassNat != null && cell.getBiomassNatural() != null) biomassNat[i] = cell.getBiomassNatural().floatValue();
+                if (biomassFish != null && cell.getBiomassFish() != null) biomassFish[i] = cell.getBiomassFish().floatValue();
+                if (biomes != null && cell.getBiome() != null) biomes[i] = (byte) cell.getBiome().ordinal();
+            }
         }
 
         // Propagate cell-level population and technology updates to AgentBuffer cohorts so DemographicKernel
@@ -3137,78 +3135,69 @@ public class H3SimulationEngine implements ISimulationEngine {
      */
 
 
-    public long getTotalPopulation() {
-
-
-        if (worldBuffer == null) return 0;
-
-
-        long total = 0;
-
-
+    /**
+     * Updates cached scalar aggregates in a single fused O(N) cache-aligned pass over WorldBuffer.
+     * Prevents dozens of redundant array traversals per simulation tick across statistics and history managers.
+     */
+    public void updateGlobalAggregatesCache() {
+        if (worldBuffer == null) return;
+        int cap = worldBuffer.getCapacity();
         float[] pop = worldBuffer.getBiomassHuman();
+        float[] food = worldBuffer.getFoodResource();
+        float[] water = worldBuffer.getWaterResource();
+        float[] bio = worldBuffer.getBiomassNatural();
+        float[] tech = worldBuffer.getTechnologyLevel();
+        float[] res = worldBuffer.getResourceCapital();
 
+        long sumPop = 0;
+        double sumFood = 0;
+        double sumWater = 0;
+        float sumBio = 0;
+        float sumTech = 0;
+        double sumRes = 0;
 
-        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
-
-
-            total += (long)pop[i];
-
-
+        for (int i = 0; i < cap; i++) {
+            if (pop != null) sumPop += (long) pop[i];
+            if (food != null) sumFood += food[i];
+            if (water != null) sumWater += water[i];
+            if (bio != null) sumBio += bio[i];
+            if (tech != null) sumTech += tech[i];
+            if (res != null) sumRes += res[i];
         }
 
-
-        return total;
-
-
+        this.cachedTotalPopulation = sumPop;
+        this.cachedTotalFood = sumFood;
+        this.cachedPotableWater = sumWater;
+        this.cachedBiomassNatural = sumBio;
+        this.cachedAverageTechnology = cap > 0 ? (sumTech / cap) : 0.0f;
+        this.cachedResourceCapital = sumRes;
+        this.lastCacheTick = tickCounter;
     }
 
-
-
-
-
-    /*
-
-
-     * Get total food.
-
-
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
-
-
-     *
-
-
-     * @return the resulting computation or state reference
-
-
-     */
-
+    public long getTotalPopulation() {
+        if (lastCacheTick == tickCounter && cachedTotalPopulation >= 0) {
+            return cachedTotalPopulation;
+        }
+        if (worldBuffer == null) return 0;
+        long total = 0;
+        float[] pop = worldBuffer.getBiomassHuman();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
+            total += (long) pop[i];
+        }
+        return total;
+    }
 
     public double getTotalFood() {
-
-
-        if (worldBuffer == null) return 0;
-
-
-        double total = 0;
-
-
-        float[] food = worldBuffer.getFoodResource();
-
-
-        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
-
-
-            total += food[i];
-
-
+        if (lastCacheTick == tickCounter && cachedTotalFood >= 0) {
+            return cachedTotalFood;
         }
-
-
+        if (worldBuffer == null) return 0;
+        double total = 0;
+        float[] food = worldBuffer.getFoodResource();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
+            total += food[i];
+        }
         return total;
-
-
     }
 
 
@@ -3402,65 +3391,25 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public float getTotalBiomassNatural() {
-
-
+        if (lastCacheTick == tickCounter && cachedBiomassNatural >= 0) {
+            return cachedBiomassNatural;
+        }
         if (worldBuffer == null) return 0;
-
-
         float total = 0;
-
-
         float[] bio = worldBuffer.getBiomassNatural();
-
-
         for (int i = 0; i < worldBuffer.getCapacity(); i++) total += bio[i];
-
-
         return total;
-
-
     }
 
-
-
-
-
-    /*
-
-
-     * Get average technology.
-
-
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
-
-
-     *
-
-
-     * @return the resulting computation or state reference
-
-
-     */
-
-
     public float getAverageTechnology() {
-
-
+        if (lastCacheTick == tickCounter && cachedAverageTechnology >= 0) {
+            return cachedAverageTechnology;
+        }
         if (worldBuffer == null) return 0;
-
-
         float total = 0;
-
-
         float[] tech = worldBuffer.getTechnologyLevel();
-
-
         for (int i = 0; i < worldBuffer.getCapacity(); i++) total += tech[i];
-
-
         return total / worldBuffer.getCapacity();
-
-
     }
 
 
@@ -3672,26 +3621,17 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public double getResourceDepletionRate() {
-
-
         if (worldBuffer == null || worldBuffer.getCapacity() == 0) return 0;
-
-
         double maxRes = worldBuffer.getCapacity() * 1000.0;
-
-
-        double currentRes = 0;
-
-
-        float[] res = worldBuffer.getResourceCapital();
-
-
-        for (int i = 0; i < worldBuffer.getCapacity(); i++) currentRes += res[i];
-
-
+        double currentRes;
+        if (lastCacheTick == tickCounter && cachedResourceCapital >= 0) {
+            currentRes = cachedResourceCapital;
+        } else {
+            currentRes = 0;
+            float[] res = worldBuffer.getResourceCapital();
+            for (int i = 0; i < worldBuffer.getCapacity(); i++) currentRes += res[i];
+        }
         return Math.max(0, Math.min(100.0, (1.0 - currentRes / Math.max(1, maxRes)) * 100.0));
-
-
     }
 
 
@@ -3813,23 +3753,14 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public double getPotableWaterTotal() {
-
-
+        if (lastCacheTick == tickCounter && cachedPotableWater >= 0) {
+            return cachedPotableWater;
+        }
         if (worldBuffer == null) return 0;
-
-
         double water = 0;
-
-
         float[] w = worldBuffer.getWaterResource();
-
-
         for (int i = 0; i < worldBuffer.getCapacity(); i++) water += w[i];
-
-
         return water;
-
-
     }
 
 

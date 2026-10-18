@@ -189,81 +189,53 @@ public class ThermodynamicMigrationEngine {
 
 
 
+        float[] popBuffer = worldBuffer != null ? worldBuffer.getBiomassHuman() : null;
+        double degToKmLat = (Math.PI / 180.0) * radius;
+        double maxRadiusSq = maxMigrationRadiusKm * maxMigrationRadiusKm;
+
         for (int i = 0; i < n; i++) {
-
+            if (popBuffer != null && popBuffer[i] < 10.0f) continue;
             H3Cell origin = cells.get(i);
-
             int popOrigin = origin.getPopulation() != null ? origin.getPopulation() : 0;
-
             if (popOrigin < 10) continue;
 
-
-
             double foodOrigin = origin.getFoodResource() != null ? origin.getFoodResource() : 0.0;
-
             double waterOrigin = origin.getWaterResource() != null ? origin.getWaterResource() : 0.0;
-
             double phiOrigin = (foodOrigin + waterOrigin) / (popOrigin + 1.0);
 
-
-
             H3Cell bestDestination = null;
-
             double maxDeltaPhi = 0.05; // Minimum potential gradient threshold
 
+            double latOrigin = origin.getLatitude() != null ? origin.getLatitude() : 0.0;
+            double lonOrigin = origin.getLongitude() != null ? origin.getLongitude() : 0.0;
+            double degToKmLon = degToKmLat * Math.cos(Math.toRadians(latOrigin));
 
-
-            int bLat = (int) Math.floor((origin.getLatitude() + 90.0) / binSizeDeg);
-
-            int bLon = (int) Math.floor((origin.getLongitude() + 180.0) / binSizeDeg);
-
-
+            int bLat = (int) Math.floor((latOrigin + 90.0) / binSizeDeg);
+            int bLon = (int) Math.floor((lonOrigin + 180.0) / binSizeDeg);
 
             // Search ONLY adjacent 9 spatial buckets (O(1) candidates)
-
             for (int dLat = -1; dLat <= 1; dLat++) {
-
                 for (int dLon = -1; dLon <= 1; dLon++) {
-
                     long key = (((long) (bLat + dLat)) << 32) | ((bLon + dLon) & 0xFFFFFFFFL);
-
                     java.util.List<H3Cell> bucket = spatialGrid.get(key);
-
                     if (bucket == null) continue;
 
-
-
                     // Iterate over spatial cell domains and apply localized cellular state transformations
-
                     for (H3Cell destination : bucket) {
-
                         if (destination == origin) continue;
 
-
-
-                        double latDiff = Math.abs(origin.getLatitude() - destination.getLatitude());
-
+                        double destLat = destination.getLatitude() != null ? destination.getLatitude() : 0.0;
+                        double destLon = destination.getLongitude() != null ? destination.getLongitude() : 0.0;
+                        double latDiff = Math.abs(latOrigin - destLat);
                         if (latDiff > 1.5) continue;
-
-                        double lonDiff = Math.abs(origin.getLongitude() - destination.getLongitude());
-
+                        double lonDiff = Math.abs(lonOrigin - destLon);
                         if (lonDiff > 2.0) continue;
 
-
-
-                        double distKm = calculateHaversineDistance(
-
-                                origin.getLatitude(), origin.getLongitude(),
-
-                                destination.getLatitude(), destination.getLongitude(),
-
-                                radius
-
-                        );
-
-
-
-                        if (distKm > maxMigrationRadiusKm) continue;
+                        double dLatKm = (destLat - latOrigin) * degToKmLat;
+                        double dLonKm = (destLon - lonOrigin) * degToKmLon;
+                        double distSq = dLatKm * dLatKm + dLonKm * dLonKm;
+                        if (distSq > maxRadiusSq) continue;
+                        double distKm = Math.sqrt(distSq);
 
 
 

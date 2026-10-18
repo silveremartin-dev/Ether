@@ -377,10 +377,10 @@ public class EcologicalDegradationEngine {
                     H3Cell candidate = cells.get(j);
                     if (source.getLatitude() != null && source.getLongitude() != null
                             && candidate.getLatitude() != null && candidate.getLongitude() != null) {
-                        double distKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
-                                source.getLatitude(), source.getLongitude(),
-                                candidate.getLatitude(), candidate.getLongitude());
-                        if (distKm > 150.0) continue; // Cannot migrate across open ocean beyond 150 km radius
+                        double dLat = candidate.getLatitude() - source.getLatitude();
+                        double dLon = (candidate.getLongitude() - source.getLongitude()) * Math.cos(Math.toRadians(source.getLatitude()));
+                        double distKmSq = (dLat * 111.0) * (dLat * 111.0) + (dLon * 111.0) * (dLon * 111.0);
+                        if (distKmSq > 22500.0) continue; // Cannot migrate beyond 150 km radius (150^2 = 22500)
                     }
                     if (habitability[j] > bestTargetScore) {
                         bestTargetScore = habitability[j];

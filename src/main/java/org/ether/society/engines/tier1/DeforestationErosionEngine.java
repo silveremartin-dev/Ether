@@ -40,11 +40,19 @@ public class DeforestationErosionEngine {
         if (cells == null || cells.isEmpty()) return;
         double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 
-        int erodedCells = 0;
+        int size = cells.size();
+        H3Cell sample = cells.get(0);
+        int h3Res = (sample.getH3Index() != null && sample.getH3Index() != 0L)
+                ? (int) ((sample.getH3Index() >>> 52) & 0xFL)
+                : 3;
+        double planarCellAreaKm2 = H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3);
+        double areaScale = Math.max(0.05, planarCellAreaKm2 / 1770.49);
+        double canopyThreshold = 100.0 * areaScale;
+        double treeLossThreshold = 50.0 * areaScale;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
+        java.util.concurrent.atomic.AtomicInteger erodedCounter = new java.util.concurrent.atomic.AtomicInteger(0);
+
+        java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
             double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : (500.0 * areaScale);
             double woodBiomass = cell.getWoodResource() != null ? cell.getWoodResource() : naturalBiomass;
             double effectiveCanopy = Math.max(naturalBiomass, woodBiomass);
@@ -52,30 +60,40 @@ public class DeforestationErosionEngine {
             double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
-            // Severe deforestation (effectiveCanopy < 100.0 * areaScale) on sloped terrain with high rainfall causes erosion
-            if (effectiveCanopy < (100.0 * areaScale) && elev > 200.0 && rain > 400.0) {
-                erodedCells++;
+            // Severe deforestation on sloped terrain with high rainfall causes erosion
+            if (effectiveCanopy < canopyThreshold && elev > 200.0 && rain > 400.0) {
+                erodedCounter.incrementAndGet();
                 double socLoss = (rain / 1000.0) * 0.5 * dtMonthlyRatio;
-                cell.setSoilOrganicCarbon(Math.max(2.0, soc - socLoss));
+                double newSoc = Math.max(2.0, soc - socLoss);
+                cell.setSoilOrganicCarbon(newSoc);
 
                 // Soil degradation converts deforested terrain to arid desert if SOC < 5.0
-                if (cell.getSoilOrganicCarbon() < 5.0) {
+                if (newSoc < 5.0) {
                     Biome currentBiome = cell.getBiome();
                     if (currentBiome == Biome.HILLS || currentBiome == Biome.FOREST || currentBiome == Biome.JUNGLE
                             || currentBiome == Biome.PLAINS || currentBiome == Biome.SAVANNAH) {
                         cell.setBiome(Biome.DESERT);
                     }
-                } else if (effectiveCanopy < (50.0 * areaScale)) {
+                } else if (effectiveCanopy < treeLossThreshold) {
                     // Tree cover lost but soil intact: converts dense forest/jungle to open grassland/hills
                     if (cell.getBiome() == Biome.FOREST || cell.getBiome() == Biome.JUNGLE) {
                         cell.setBiome(elev > 500.0 ? Biome.HILLS : Biome.PLAINS);
                     }
                 }
             }
+        };
+
+        if (size >= 10000) {
+            cells.parallelStream().forEach(cellProcessor);
+        } else {
+            for (int i = 0; i < size; i++) {
+                cellProcessor.accept(cells.get(i));
+            }
         }
 
+        int erodedCells = erodedCounter.get();
         if (erodedCells > 0) {
-            logger.info("Deforestation Erosion Engine: Soil carbon runoff active across {} deforested sloped cells.", erodedCells);
+            logger.debug("Deforestation Erosion Engine: Soil carbon runoff active across {} deforested sloped cells.", erodedCells);
         }
     }
 }

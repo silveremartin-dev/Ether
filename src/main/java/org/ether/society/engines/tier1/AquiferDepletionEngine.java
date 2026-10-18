@@ -62,15 +62,15 @@ public class AquiferDepletionEngine {
         int depletedAquifers = 0;
         double dt = Math.max(0.001, deltaYears);
 
-        // 1. Vertical Recharge and Anthropogenic Extraction
-        for (H3Cell cell : cells) {
+        int size = cells.size();
+        java.util.concurrent.atomic.AtomicInteger depletedCounter = new java.util.concurrent.atomic.AtomicInteger(0);
+
+        java.util.function.Consumer<H3Cell> rechargeProcessor = cell -> {
             double aquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 1000.0;
             double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
             int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
 
             double naturalRecharge = (rain * 0.15) * dt;
-            // Humid rainfed regions (rain >= 800 mm/yr) rely primarily on surface precipitation;
-            // arid/semi-arid regions require intensive groundwater pumping per inhabitant.
             double perCapitaGroundwaterDemand = (rain >= 800.0) ? 0.05 : (rain >= 400.0 ? 0.35 : 0.80);
             double irrigationExtraction = (pop * perCapitaGroundwaterDemand) * dt;
 
@@ -79,10 +79,17 @@ public class AquiferDepletionEngine {
             cell.setAccessibleAquifer(newAquifer);
 
             if (newAquifer < 100.0 && pop > 300) {
-                depletedAquifers++;
-                // Irrigation failure degrades agricultural yield
+                depletedCounter.incrementAndGet();
                 double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
                 cell.setBiomassAgriculture(Math.max(50.0, currentAgri * (1.0 - 0.30 * dt)));
+            }
+        };
+
+        if (size >= 10000) {
+            cells.parallelStream().forEach(rechargeProcessor);
+        } else {
+            for (int i = 0; i < size; i++) {
+                rechargeProcessor.accept(cells.get(i));
             }
         }
 
@@ -90,27 +97,47 @@ public class AquiferDepletionEngine {
         int n = cells.size();
         if (n > 1) {
             double[] deltaAquifer = new double[n];
+            double[] headArray = new double[n];
+            double[] latArray = new double[n];
+            double[] lonArray = new double[n];
+            double[] aqArray = new double[n];
+
             for (int i = 0; i < n; i++) {
-                H3Cell a = cells.get(i);
-                double elevA = a.getElevation() != null ? a.getElevation() : 0.0;
-                double aqA = a.getAccessibleAquifer() != null ? a.getAccessibleAquifer() : 1000.0;
-                double headA = elevA + (aqA / (SPECIFIC_YIELD_SY * 1000.0));
+                H3Cell c = cells.get(i);
+                double elev = c.getElevation() != null ? c.getElevation() : 0.0;
+                double aq = c.getAccessibleAquifer() != null ? c.getAccessibleAquifer() : 1000.0;
+                aqArray[i] = aq;
+                headArray[i] = elev + (aq / (SPECIFIC_YIELD_SY * 1000.0));
+                latArray[i] = c.getLatitude() != null ? c.getLatitude() : 0.0;
+                lonArray[i] = c.getLongitude() != null ? c.getLongitude() : 0.0;
+            }
 
-                // Sample spatial neighbors within coordinate threshold
+            for (int i = 0; i < n; i++) {
+                double headA = headArray[i];
+                double latA = latArray[i];
+                double lonA = lonArray[i];
+                double cosLatA = Math.cos(Math.toRadians(latA));
+
                 for (int j = i + 1; j < Math.min(n, i + 7); j++) {
-                    H3Cell b = cells.get(j);
-                    double elevB = b.getElevation() != null ? b.getElevation() : 0.0;
-                    double aqB = b.getAccessibleAquifer() != null ? b.getAccessibleAquifer() : 1000.0;
-                    double headB = elevB + (aqB / (SPECIFIC_YIELD_SY * 1000.0));
+                    double dLatDeg = latArray[j] - latA;
+                    double dLonDeg = (lonArray[j] - lonA) * cosLatA;
+                    double dy = dLatDeg * 111.0;
+                    double dx = dLonDeg * 111.0;
+                    double distKmSq = dx * dx + dy * dy;
 
-                    double gradient = headB - headA;
-                    double darcyFlux = gradient * 0.02 * dt; // Darcy lateral filtration flux
+                    // Strictly gate lateral Darcy aquifer exchange to adjacent local hydrological basin cells (dist <= 150 km)
+                    if (distKmSq > 22500.0 || distKmSq < 0.01) continue;
+                    double distKm = Math.sqrt(distKmSq);
+
+                    double headB = headArray[j];
+                    double gradient = (headB - headA) / distKm;
+                    double darcyFlux = gradient * 0.5 * dt;
 
                     // Conservation check
-                    if (darcyFlux > 0 && aqB > darcyFlux) {
+                    if (darcyFlux > 0 && aqArray[j] > darcyFlux) {
                         deltaAquifer[i] += darcyFlux;
                         deltaAquifer[j] -= darcyFlux;
-                    } else if (darcyFlux < 0 && aqA > -darcyFlux) {
+                    } else if (darcyFlux < 0 && aqArray[i] > -darcyFlux) {
                         deltaAquifer[i] += darcyFlux;
                         deltaAquifer[j] -= darcyFlux;
                     }
@@ -120,8 +147,7 @@ public class AquiferDepletionEngine {
             for (int i = 0; i < n; i++) {
                 if (deltaAquifer[i] != 0.0) {
                     H3Cell c = cells.get(i);
-                    double currentAq = c.getAccessibleAquifer() != null ? c.getAccessibleAquifer() : 1000.0;
-                    c.setAccessibleAquifer(Math.max(0.0, currentAq + deltaAquifer[i]));
+                    c.setAccessibleAquifer(Math.max(0.0, aqArray[i] + deltaAquifer[i]));
                 }
             }
         }

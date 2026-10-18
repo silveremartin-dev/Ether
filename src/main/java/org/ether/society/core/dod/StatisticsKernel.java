@@ -17,13 +17,55 @@ public class StatisticsKernel {
     /*
      * Calcule le coefficient de Gini pour une ressource donnée (ex: richesse ou population).
      * G = (2 * sum(i * x_i) / (n * sum(x_i))) - (n + 1) / n
+     * 100% mathematically exact analytical formulation with O(m log m) positive-element sparse sort.
      */
     public float calculateGini(float[] values) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         if (values == null || values.length == 0) return 0.0f;
         int n = values.length;
 
+        // Step 1: Count non-zero positive elements in single contiguous scan
+        int positiveCount = 0;
+        for (int i = 0; i < n; i++) {
+            float v = values[i];
+            if (!Float.isNaN(v) && !Float.isInfinite(v) && v > 0.0f) {
+                positiveCount++;
+            }
+        }
+
+        if (positiveCount == 0) return 0.0f;
+
+        // Step 2: If positive count is small compared to n (typical in geographical grids),
+        // only sort the m positive numbers. All n - m zeros trivially sort to the front (indices 0..n-m-1)
+        // and contribute 0 to sum and 0 to weightedSum.
+        if (positiveCount < n / 2) {
+            float[] positives = new float[positiveCount];
+            int idx = 0;
+            for (int i = 0; i < n; i++) {
+                float v = values[i];
+                if (!Float.isNaN(v) && !Float.isInfinite(v) && v > 0.0f) {
+                    positives[idx++] = v;
+                }
+            }
+            Arrays.sort(positives);
+
+            double sum = 0.0;
+            double weightedSum = 0.0;
+            long zeroOffset = (long) (n - positiveCount); // 0-indexed positions before positives
+            for (int j = 0; j < positiveCount; j++) {
+                float v = positives[j];
+                sum += v;
+                // 1-based index in the fully sorted array of length n is (zeroOffset + j + 1)
+                weightedSum += (zeroOffset + j + 1) * (double) v;
+            }
+
+            if (sum <= 0.0) return 0.0f;
+
+            float gini = (float) ((2.0 * weightedSum) / (n * sum) - (n + 1.0) / n);
+            if (Float.isNaN(gini) || Float.isInfinite(gini)) return 0.0f;
+            return Math.clamp(gini, 0.0f, 1.0f);
+        }
+
+        // Fallback for dense arrays: sort full array
         float[] sorted = values.clone();
         Arrays.sort(sorted);
 
@@ -33,7 +75,7 @@ public class StatisticsKernel {
             float v = sorted[i];
             if (Float.isNaN(v) || Float.isInfinite(v) || v < 0) v = 0;
             sum += v;
-            weightedSum += (i + 1) * v;
+            weightedSum += (i + 1) * (double) v;
         }
 
         if (sum <= 0.0) return 0.0f;

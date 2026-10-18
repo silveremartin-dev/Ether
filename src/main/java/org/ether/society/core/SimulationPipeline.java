@@ -43,6 +43,10 @@ public class SimulationPipeline {
     private CompiledEngineKernel compiledKernel;
     private final GreenhouseRadiativeEngine greenhouseRadiativeEngine = new GreenhouseRadiativeEngine();
 
+    private List<H3Cell> cachedLandCells = null;
+    private int cachedLandCellsCount = -1;
+    private List<H3Cell> reusablePopulatedCells = null;
+
     public SimulationPipeline(DemographicKernel demographicKernel,
                               UrbanKernel urbanKernel,
                               CultureKernel cultureKernel,
@@ -181,19 +185,41 @@ public class SimulationPipeline {
 
         // Physical Domain Partitioning (100% Deterministic: avoids useless evaluations on ocean & uninhabited cells)
         int totalCellCount = cells.size();
-        List<H3Cell> landCells = new java.util.ArrayList<>(totalCellCount / 3);
-        List<H3Cell> populatedCells = new java.util.ArrayList<>(Math.min(10000, totalCellCount));
-
-        for (int i = 0; i < totalCellCount; i++) {
-            H3Cell c = cells.get(i);
-            Double elev = c.getElevation();
-            Biome b = c.getBiome();
-            if (elev == null || elev >= 0 || (b != null && b != Biome.OCEAN)) {
-                landCells.add(c);
+        if (cachedLandCells == null || cachedLandCellsCount != totalCellCount) {
+            cachedLandCells = new java.util.ArrayList<>(totalCellCount / 3);
+            for (int i = 0; i < totalCellCount; i++) {
+                H3Cell c = cells.get(i);
+                Double elev = c.getElevation();
+                Biome b = c.getBiome();
+                if (elev == null || elev >= 0 || (b != null && b != Biome.OCEAN)) {
+                    cachedLandCells.add(c);
+                }
             }
-            Integer pop = c.getPopulation();
-            if (pop != null && pop > 0) {
-                populatedCells.add(c);
+            cachedLandCellsCount = totalCellCount;
+        }
+        List<H3Cell> landCells = cachedLandCells;
+
+        if (reusablePopulatedCells == null) {
+            reusablePopulatedCells = new java.util.ArrayList<>(Math.min(10000, totalCellCount));
+        } else {
+            reusablePopulatedCells.clear();
+        }
+        List<H3Cell> populatedCells = reusablePopulatedCells;
+
+        float[] popArray = worldBuffer != null ? worldBuffer.getBiomassHuman() : null;
+        if (popArray != null) {
+            for (int i = 0; i < totalCellCount; i++) {
+                if (popArray[i] > 0.0f) {
+                    populatedCells.add(cells.get(i));
+                }
+            }
+        } else {
+            for (int i = 0; i < totalCellCount; i++) {
+                H3Cell c = cells.get(i);
+                Integer pop = c.getPopulation();
+                if (pop != null && pop > 0) {
+                    populatedCells.add(c);
+                }
             }
         }
 
@@ -324,10 +350,76 @@ public class SimulationPipeline {
             if (Boolean.TRUE.equals(states.get("BifurcationChaosEngine"))) {
                 BifurcationChaosEngine.processBifurcationAnalysis(populatedCells, dtMonthly);
             }
+            if (Boolean.TRUE.equals(states.get("AcemogluRobinsonInstitutionsEngine"))) {
+                new AcemogluRobinsonInstitutionsEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("ArthurCombinatorialTechnologyEngine"))) {
+                new ArthurCombinatorialTechnologyEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("BoserupAgriculturalIntensificationEngine"))) {
+                new BoserupAgriculturalIntensificationEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("DraftAnimalFodderAllocationEngine"))) {
+                new DraftAnimalFodderAllocationEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("GranovetterThresholdCascadeEngine"))) {
+                new GranovetterThresholdCascadeEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("HotellingResourceDepletionEngine"))) {
+                new HotellingResourceDepletionEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("JevonsParadoxEngine"))) {
+                JevonsParadoxEngine.processJevonsRebound(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("KrugmanCorePeripheryEngine"))) {
+                new KrugmanCorePeripheryEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("KummelAyresExergyEngine"))) {
+                new KummelAyresExergyEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("KurzweilAcceleratingReturnsEngine"))) {
+                KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("PriceMultilevelSelectionEngine"))) {
+                new PriceMultilevelSelectionEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("SchellingAxelrodSegregationEngine"))) {
+                new SchellingAxelrodSegregationEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("SoilSalinizationHydrologyEngine"))) {
+                new SoilSalinizationHydrologyEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("SpatialMetapopulationSEIREngine"))) {
+                new SpatialMetapopulationSEIREngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("StructuralDemographicBifurcationEngine"))) {
+                new StructuralDemographicBifurcationEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("TainterComplexityCollapseEngine"))) {
+                new TainterComplexityCollapseEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("TurchinGoldstoneSDTEngine"))) {
+                new TurchinGoldstoneSDTEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("WestBettencourtAllometryEngine"))) {
+                new WestBettencourtAllometryEngine().process(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("World3CouplingEngine"))) {
+                World3CouplingEngine.processWorld3System(populatedCells, dtMonthly);
+            }
 
             // Historical & Specialized Type B Engines
             if (Boolean.TRUE.equals(states.get("AmerindianEcosystemEngine"))) {
                 AmerindianEcosystemEngine.processHybrid(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("AsymmetricColonialTradeEngine"))) {
+                AsymmetricColonialTradeEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("CoGovernanceTradeEngine"))) {
+                CoGovernanceTradeEngine.processTradeAndGovernance(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("DynamicMaritimeRoutingGraph"))) {
+                DynamicMaritimeRoutingGraph.processHybrid(populatedCells, dtMonthly * 365.25);
             }
             if (Boolean.TRUE.equals(states.get("EdoJapanIsolationEngine"))) {
                 EdoJapanIsolationEngine.processHybrid(populatedCells, dtMonthly);
@@ -335,41 +427,68 @@ public class SimulationPipeline {
             if (Boolean.TRUE.equals(states.get("FertileCrescentSalinizationEngine"))) {
                 FertileCrescentSalinizationEngine.processHybrid(populatedCells, dtMonthly);
             }
-            if (Boolean.TRUE.equals(states.get("RomanImperialCliodynamicEngine"))) {
-                RomanImperialCliodynamicEngine.processHybrid(populatedCells, dtMonthly);
+            if (Boolean.TRUE.equals(states.get("FrontierAsabiyyahEngine"))) {
+                FrontierAsabiyyahEngine.processHybrid(populatedCells, dtYears);
             }
-            if (Boolean.TRUE.equals(states.get("PhysicalSupplyChainEngine"))) {
-                PhysicalSupplyChainEngine.processSupplyChains(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("CoGovernanceTradeEngine"))) {
-                CoGovernanceTradeEngine.processTradeAndGovernance(populatedCells, dtMonthly);
+            if (Boolean.TRUE.equals(states.get("HydrologicalEngineeringEngine"))) {
+                HydrologicalEngineeringEngine.processHybrid(populatedCells, dtMonthly * 365.25);
             }
             if (Boolean.TRUE.equals(states.get("IsruAutarkyAndSpaceColonizationEngine"))) {
                 IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(populatedCells, null, dtMonthly);
             }
-            if (Boolean.TRUE.equals(states.get("World3CouplingEngine"))) {
-                World3CouplingEngine.processWorld3System(populatedCells, dtMonthly);
+            if (Boolean.TRUE.equals(states.get("KinSelectionHamiltonEngine"))) {
+                KinSelectionHamiltonEngine.processHybrid(populatedCells, dtYears);
             }
-            if (Boolean.TRUE.equals(states.get("ArthurCombinatorialTechnologyEngine"))) {
-                new ArthurCombinatorialTechnologyEngine().process(populatedCells, dtYears);
+            if (Boolean.TRUE.equals(states.get("LandReclamationEngine"))) {
+                LandReclamationEngine.processHybrid(populatedCells, dtMonthly * 365.25);
             }
-            if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
-                TasmanianCulturalRegressionEngine.processHybrid(populatedCells, dtYears);
+            if (Boolean.TRUE.equals(states.get("LenskiPureEngine"))) {
+                LenskiPureEngine.processHybrid(populatedCells, dtYears);
             }
-            if (Boolean.TRUE.equals(states.get("JevonsParadoxEngine"))) {
-                JevonsParadoxEngine.processJevonsRebound(populatedCells, dtMonthly);
+            if (Boolean.TRUE.equals(states.get("MarineSubmersionEngine"))) {
+                MarineSubmersionEngine.processHybrid(populatedCells, dtMonthly * 365.25);
             }
-            if (Boolean.TRUE.equals(states.get("KurzweilAcceleratingReturnsEngine"))) {
-                KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(populatedCells, dtMonthly);
+            if (Boolean.TRUE.equals(states.get("MaritimeHighwayEngine"))) {
+                MaritimeHighwayEngine.processHybrid(populatedCells, dtMonthly * 365.25);
             }
-            if (Boolean.TRUE.equals(states.get("BoserupAgriculturalIntensificationEngine"))) {
-                new BoserupAgriculturalIntensificationEngine().process(populatedCells, dtYears);
+            if (Boolean.TRUE.equals(states.get("MonasticDemographicBufferEngine"))) {
+                MonasticDemographicBufferEngine.processHybrid(populatedCells, dtYears);
             }
-            if (Boolean.TRUE.equals(states.get("TurchinGoldstoneSDTEngine"))) {
-                new TurchinGoldstoneSDTEngine().process(populatedCells, dtYears);
+            if (Boolean.TRUE.equals(states.get("NordhausDiceHybridEngine")) || Boolean.TRUE.equals(states.get("NordhausDICE"))) {
+                NordhausDiceHybridEngine.processPlugin(populatedCells, dtYears);
             }
             if (Boolean.TRUE.equals(states.get("OstromCommonsPureEngine"))) {
                 OstromCommonsPureEngine.processHybrid(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("PhysicalSupplyChainEngine"))) {
+                PhysicalSupplyChainEngine.processSupplyChains(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("PinkerViolenceDeclinePureEngine")) || Boolean.TRUE.equals(states.get("Pinker"))) {
+                PinkerViolenceDeclinePureEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("ProtestantWorkEthicEngine"))) {
+                ProtestantWorkEthicEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("RomanImperialCliodynamicEngine"))) {
+                RomanImperialCliodynamicEngine.processHybrid(populatedCells, dtMonthly);
+            }
+            if (Boolean.TRUE.equals(states.get("ScottAgainstTheGrainPureEngine"))) {
+                ScottAgainstTheGrainPureEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("SelfDomesticationEngine"))) {
+                SelfDomesticationEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("SexualSelectionMatingEngine"))) {
+                SexualSelectionMatingEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("SmilMaterialTransitionsPureEngine"))) {
+                SmilMaterialTransitionsPureEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("SpatialCityFractalEngine"))) {
+                SpatialCityFractalEngine.processHybrid(populatedCells, dtYears);
+            }
+            if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
+                TasmanianCulturalRegressionEngine.processHybrid(populatedCells, dtYears);
             }
         }
     }

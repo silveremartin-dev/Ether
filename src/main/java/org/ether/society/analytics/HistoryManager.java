@@ -56,6 +56,19 @@ public class HistoryManager {
     /* Virtual NavigableMap facade exposing on-demand cached snapshots */
     private final NavigableMap<Long, List<H3Cell>> virtualWorldSnapshots = new VirtualSnapshotNavigableMap();
 
+    /* Planned total ticks for the active simulation run (0 = unbounded / interactive UI) */
+    private long plannedTotalTicks = 0;
+
+    /* Custom snapshot interval in ticks (0 = calculate from plannedTotalTicks / maxSnapshots) */
+    private long snapshotIntervalTicks = 0;
+
+    /* Background worker thread pool for non-blocking asynchronous disk serialization */
+    private final java.util.concurrent.ExecutorService asyncDiskWriter = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "Ether-Snapshot-Writer");
+        t.setDaemon(true);
+        return t;
+    });
+
     public HistoryManager() {
         ensureSnapshotDirectory();
     }
@@ -68,6 +81,45 @@ public class HistoryManager {
         } catch (IOException e) {
             logger.warn("Could not create snapshots disk directory {}: {}", snapshotsDiskDir, e.getMessage());
         }
+    }
+
+    /**
+     * Configures target snapshot cadence based on planned duration and desired snapshot count.
+     *
+     * @param totalTicks planned total ticks
+     * @param targetSnapshots maximum snapshots to produce
+     */
+    public synchronized void configureTargetCadence(long totalTicks, int targetSnapshots) {
+        if (targetSnapshots > 0) {
+            this.maxSnapshots = Math.max(2, targetSnapshots);
+        }
+        this.plannedTotalTicks = Math.max(0, totalTicks);
+        if (plannedTotalTicks > 0) {
+            this.snapshotIntervalTicks = Math.max(1, plannedTotalTicks / this.maxSnapshots);
+        } else {
+            this.snapshotIntervalTicks = 0;
+        }
+        logger.info("Snapshot Cadence Configured: interval = {} ticks (planned ticks = {}, max snapshots = {})",
+                this.snapshotIntervalTicks, this.plannedTotalTicks, this.maxSnapshots);
+    }
+
+    /**
+     * Determines whether a world snapshot should be captured at the given tick.
+     *
+     * @param tickIndex current tick
+     * @param isFinal whether this is the final tick of the simulation
+     * @param yearChanged whether the simulation calendar crossed a new year during this tick
+     * @return true if snapshot should be captured
+     */
+    public boolean shouldCaptureWorldSnapshot(long tickIndex, boolean isFinal, boolean yearChanged) {
+        if (tickIndex == 0 || isFinal) {
+            return true;
+        }
+        if (snapshotIntervalTicks > 0) {
+            return (tickIndex % snapshotIntervalTicks == 0);
+        }
+        // Fallback for unbounded interactive mode: capture on each discrete calendar year crossing
+        return yearChanged;
     }
 
     /**
@@ -181,46 +233,77 @@ public class HistoryManager {
 
     public void setMaxSnapshots(int maxSnapshots) {
         this.maxSnapshots = Math.max(2, maxSnapshots);
+        if (this.plannedTotalTicks > 0) {
+            this.snapshotIntervalTicks = Math.max(1, this.plannedTotalTicks / this.maxSnapshots);
+        }
     }
 
     /**
-     * Captures a full world state snapshot: streams immediately to disk as compressed .bin.gz,
-     * stores in the bounded LRU RAM cache, and decimates older snapshots if maxSnapshots is exceeded.
+     * Captures a world state snapshot:
+     * - Immediate non-blocking RAM clone into bounded LRU rolling buffer.
+     * - In planned batch runs or on disk intervals: offloads compression to background worker.
+     * - In unbounded interactive mode: holds rolling buffer in memory and only persists to disk
+     *   periodically or upon flush/shutdown, preventing unnecessary synchronous I/O churn.
      *
      * @param engine the simulation engine
      */
-    public synchronized void captureWorldSnapshot(H3SimulationEngine engine) {
+    public void captureWorldSnapshot(H3SimulationEngine engine) {
         if (engine.getCells() == null || engine.getCells().isEmpty()) return;
         long tickIndex = engine.getTickCounter();
 
-        // 1. Clone cells for snapshot
+        // 1. Non-blocking in-memory snapshot clone
         List<H3Cell> snapshot = engine.getCells().parallelStream()
                 .map(H3Cell::snapshot)
                 .collect(Collectors.toList());
 
-        // 2. Put into LRU RAM cache (auto-evicts oldest if > maxRamCacheSnapshots)
+        // 2. Put into LRU RAM cache (instantaneous, zero disk I/O)
         ramSnapshotCache.put(tickIndex, snapshot);
 
-        // 3. Persist directly to disk as compressed binary (.bin.gz)
-        try {
-            ensureSnapshotDirectory();
-            Path snapFile = snapshotsDiskDir.resolve(String.format("snapshot_tick_%010d.bin.gz", tickIndex));
-            CellTopologyWireCodec.saveToFile(snapFile, snapshot);
-            diskSnapshotIndex.put(tickIndex, snapFile);
-        } catch (Exception e) {
-            logger.warn("Failed to stream snapshot tick {} to disk: {}", tickIndex, e.getMessage());
-        }
+        // 3. Determine if this snapshot should be persisted to disk
+        // In planned cadence mode: persist all planned snapshots.
+        // In unbounded interactive mode: persist initial, final, or every 20 years to avoid thrashing.
+        boolean shouldPersistToDisk = (plannedTotalTicks > 0)
+                || (tickIndex == 0)
+                || (snapshotIntervalTicks > 0 && tickIndex % snapshotIntervalTicks == 0)
+                || (tickIndex % 240 == 0); // ~20 years in monthly ticks
 
-        // 4. Decimate timeline if exceeding maxSnapshots
-        if (diskSnapshotIndex.size() > maxSnapshots) {
-            List<Long> keys = new ArrayList<>(diskSnapshotIndex.keySet());
-            int half = keys.size() / 2;
-            for (int i = 1; i < half; i += 2) {
-                deleteSnapshot(keys.get(i));
-            }
-            if (diskSnapshotIndex.size() > maxSnapshots) {
-                deleteSnapshot(diskSnapshotIndex.firstKey());
-            }
+        if (shouldPersistToDisk) {
+            asyncDiskWriter.submit(() -> {
+                try {
+                    ensureSnapshotDirectory();
+                    Path snapFile = snapshotsDiskDir.resolve(String.format("snapshot_tick_%010d.bin.gz", tickIndex));
+                    CellTopologyWireCodec.saveToFile(snapFile, snapshot);
+                    diskSnapshotIndex.put(tickIndex, snapFile);
+
+                    // Decimate timeline if exceeding maxSnapshots
+                    synchronized (this) {
+                        if (diskSnapshotIndex.size() > maxSnapshots) {
+                            List<Long> keys = new ArrayList<>(diskSnapshotIndex.keySet());
+                            int half = keys.size() / 2;
+                            for (int i = 1; i < half; i += 2) {
+                                deleteSnapshot(keys.get(i));
+                            }
+                            if (diskSnapshotIndex.size() > maxSnapshots) {
+                                deleteSnapshot(diskSnapshotIndex.firstKey());
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to stream snapshot tick {} to disk asynchronously: {}", tickIndex, e.getMessage());
+                }
+            });
+        }
+    }
+
+    /**
+     * Flushes all pending asynchronous snapshot writes and waits for completion.
+     */
+    public void flushSnapshots() {
+        try {
+            java.util.concurrent.Future<?> barrier = asyncDiskWriter.submit(() -> {});
+            barrier.get(15, java.util.concurrent.TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.warn("Flush snapshots wait interrupted or timed out: {}", e.getMessage());
         }
     }
 

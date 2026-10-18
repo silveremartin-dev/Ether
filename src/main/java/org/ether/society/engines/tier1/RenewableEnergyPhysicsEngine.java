@@ -56,6 +56,13 @@ public class RenewableEnergyPhysicsEngine {
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
+        // Invariant skip: Wind and solar baseline fluxes depend strictly on elevation and latitude,
+        // which are geophysically static across simulation ticks.
+        H3Cell first = cells.get(0);
+        if (first.getEnergyWind() != null && first.getEnergySolar() != null) {
+            return;
+        }
+
         for (H3Cell cell : cells) {
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 

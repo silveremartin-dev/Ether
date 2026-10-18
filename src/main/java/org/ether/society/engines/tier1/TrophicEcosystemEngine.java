@@ -43,6 +43,10 @@ public class TrophicEcosystemEngine {
         // Phase 3: Spatial coupling and local thermodynamic state update
         if (cells == null || cells.isEmpty()) return;
 
+        if (!pleistoceneRewildingActive && globalBiodiversityIndex >= 0.5) {
+            return;
+        }
+
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;

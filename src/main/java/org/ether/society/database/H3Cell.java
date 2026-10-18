@@ -192,6 +192,9 @@ public class H3Cell {
     /* Soil organic carbon fertility in metric tonnes of Carbon per square kilometer (tC/km²). */
     @Column(nullable = false)
     private Double soilOrganicCarbon = 0.0;
+    /* Soil salinity / electrical conductivity EC_e in deciSiemens per meter (dS/m). */
+    @Column(nullable = false)
+    private Double soilSalinity = 0.0;
     /* Geothermal heat flow & tectonic baseline in milliwatts per square meter (mW/m²). */
     @Column(nullable = false)
     private Double mantleHeatFlow = 87.0;
@@ -218,6 +221,12 @@ public class H3Cell {
     // --- Movement & Terrain Friction Matrix ---
     @Column(nullable = false)
     private Double movementFriction = 1.0; // 1.0 = ideal flat plain, 10.0+ = high resistance mountain/swamp/desert
+    /* Topological trade corridor centrality and bottleneck funneling score (0.0 to 1.0). */
+    @Column(nullable = false)
+    private Double chokePointScore = 0.0;
+    /* Cumulative economic transit toll and tariff revenue collected in capital units. */
+    @Column(nullable = false)
+    private Double transitTollRevenue = 0.0;
 
     // --- Dynamic Climate & Surface Physics ---
     @Column(nullable = false)
@@ -510,8 +519,15 @@ public class H3Cell {
      * @param population the population parameter (Integer)
      */
     public void setPopulation(Integer population) {
-        this.population = population != null ? population : 0;
-        this.biomassHuman = this.population.doubleValue();
+        int newPop = population != null ? population : 0;
+        if (this.population == null || this.population != newPop) {
+            this.popYouth = null;
+            this.popAdult = null;
+            this.popElderly = null;
+            this.pop0to4 = null;
+        }
+        this.population = newPop;
+        this.biomassHuman = (double) newPop;
     }
 
     /*
@@ -880,6 +896,26 @@ public class H3Cell {
     }
 
     /*
+     * Get soil salinity.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @return the soil salinity / electrical conductivity EC_e in dS/m
+     */
+    public Double getSoilSalinity() {
+        return soilSalinity != null ? soilSalinity : 0.0;
+    }
+
+    /*
+     * Set soil salinity.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @param val the soil salinity in dS/m
+     */
+    public void setSoilSalinity(Double val) {
+        this.soilSalinity = val != null ? val : 0.0;
+    }
+
+    /*
      * Get mantle heat flow.
      * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
@@ -1139,12 +1175,55 @@ public class H3Cell {
     }
 
     /*
+     * Get choke point score.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @return topological trade bottleneck funneling score (0.0 to 1.0)
+     */
+    public Double getChokePointScore() {
+        return chokePointScore != null ? chokePointScore : 0.0;
+    }
+
+    /*
+     * Set choke point score.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @param chokePointScore the choke point score (0.0 to 1.0)
+     */
+    public void setChokePointScore(Double chokePointScore) {
+        this.chokePointScore = chokePointScore != null ? Math.clamp(chokePointScore, 0.0, 1.0) : 0.0;
+    }
+
+    /*
+     * Get transit toll revenue.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @return cumulative economic transit tariff rent collected in capital units
+     */
+    public Double getTransitTollRevenue() {
+        return transitTollRevenue != null ? transitTollRevenue : 0.0;
+    }
+
+    /*
+     * Set transit toll revenue.
+     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
+     *
+     * @param transitTollRevenue the transit toll revenue
+     */
+    public void setTransitTollRevenue(Double transitTollRevenue) {
+        this.transitTollRevenue = transitTollRevenue != null ? Math.max(0.0, transitTollRevenue) : 0.0;
+    }
+
+    /*
      * Get pop youth.
      * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getPopYouth() {
+        if (popYouth == null && population != null && population > 0) {
+            updateAgePyramidFromTotal(technologyLevel != null && technologyLevel > 0 ? technologyLevel : 1.0);
+        }
         return popYouth;
     }
 
@@ -1165,6 +1244,9 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPopAdult() {
+        if (popAdult == null && population != null && population > 0) {
+            updateAgePyramidFromTotal(technologyLevel != null && technologyLevel > 0 ? technologyLevel : 1.0);
+        }
         return popAdult;
     }
 
@@ -1185,6 +1267,9 @@ public class H3Cell {
      * @return the resulting computation or state reference
      */
     public Integer getPopElderly() {
+        if (popElderly == null && population != null && population > 0) {
+            updateAgePyramidFromTotal(technologyLevel != null && technologyLevel > 0 ? technologyLevel : 1.0);
+        }
         return popElderly;
     }
 
@@ -1210,10 +1295,11 @@ public class H3Cell {
         double baseFriction = 1.0;
 
         // Elevation / Ruggedness penalty
-        if (elevation > 3000) baseFriction += 8.0;
-        else if (elevation > 1500) baseFriction += 4.0;
-        else if (elevation > 500) baseFriction += 1.5;
-        else if (elevation < 0) {
+        double elev = elevation != null ? elevation : 0.0;
+        if (elev > 3000) baseFriction += 8.0;
+        else if (elev > 1500) baseFriction += 4.0;
+        else if (elev > 500) baseFriction += 1.5;
+        else if (elev < 0) {
             // Marine navigation: requires maritime technology
             return techLevel >= 3.0 ? Math.max(0.5, 3.0 - (techLevel * 0.25)) : 25.0; // High friction for ancient land dwellers
         }
@@ -1554,6 +1640,9 @@ public class H3Cell {
      * @return 7-element array containing population counts for each age cohort
      */
     public int[] getAgePyramid() {
+        if (pop0to4 == null && population != null && population > 0) {
+            updateAgePyramidFromTotal(technologyLevel != null && technologyLevel > 0 ? technologyLevel : 1.0);
+        }
         return new int[] {
             pop0to4 != null ? pop0to4 : 0,
             pop5to14 != null ? pop5to14 : 0,
@@ -1752,6 +1841,7 @@ public class H3Cell {
         copy.setResourceMetal(this.resourceMetal);
         copy.setResourcePreciousMetal(this.resourcePreciousMetal);
         copy.setSoilOrganicCarbon(this.soilOrganicCarbon);
+        copy.setSoilSalinity(this.soilSalinity);
         copy.setMantleHeatFlow(this.mantleHeatFlow);
         copy.setFreshwaterAquifer(this.freshwaterAquifer);
         copy.setAccessibleAquifer(this.accessibleAquifer);
@@ -1767,9 +1857,11 @@ public class H3Cell {
         copy.setFluxPressure(this.fluxPressure);
         copy.setBoundaryCell(this.boundaryCell);
         copy.setMovementFriction(this.movementFriction);
-        copy.setPopYouth(this.popYouth);
-        copy.setPopAdult(this.popAdult);
-        copy.setPopElderly(this.popElderly);
+        copy.setChokePointScore(this.chokePointScore);
+        copy.setTransitTollRevenue(this.transitTollRevenue);
+        copy.setPopYouth(this.getPopYouth());
+        copy.setPopAdult(this.getPopAdult());
+        copy.setPopElderly(this.getPopElderly());
         copy.setIsCoastal(this.isCoastal);
         copy.setCoastalMarineResource(this.coastalMarineResource);
         copy.setIsPolder(this.isPolder);

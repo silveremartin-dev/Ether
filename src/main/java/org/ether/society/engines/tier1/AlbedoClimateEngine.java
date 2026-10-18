@@ -80,37 +80,35 @@ public class AlbedoClimateEngine {
         // 1. Calculate Orbital Precession Phase (21,000-year Milankovitch cycle)
         double precessionPhase = Math.sin((simulationYear % 21000L) / 21000.0 * 2.0 * Math.PI);
 
-        int greenSaharaCells = 0;
-        int floodDisasterCells = 0;
+        int size = cells.size();
+        java.util.concurrent.atomic.AtomicInteger greenSaharaCounter = new java.util.concurrent.atomic.AtomicInteger(0);
+        java.util.concurrent.atomic.AtomicInteger floodDisasterCounter = new java.util.concurrent.atomic.AtomicInteger(0);
 
         // Thermal inertia: mixed-layer ocean/land relaxation time constant tau ~ 2.0 years
         double dtSafe = Math.max(0.0001, dtYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
 
-        for (H3Cell cell : cells) {
+        java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
             double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
             double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
 
             if (elev <= 0 || cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) {
                 cell.setDynamicAlbedo(0.06);
-                continue;
+                return;
             }
 
             // ── 1. Orbital Precession / Continuous Subtropical Monsoon Forcing ─
-            // Continuous physical insolation curve across subtropical latitudes (5°N to 35°N)
             double latitudinalMonsoonWeight = (lat >= 5.0 && lat <= 35.0) 
                     ? Math.sin(Math.toRadians((lat - 5.0) / 30.0 * 180.0)) 
                     : 0.0;
             double continuousMonsoonForcing = latitudinalMonsoonWeight * Math.max(0.0, precessionPhase);
 
             if (continuousMonsoonForcing > 0.05 && cell.getBiome() == Biome.DESERT) {
-                greenSaharaCells++;
-                // Continuous monsoon penetration: increase rainfall, aquifers, and soil carbon proportional to solar insolation
+                greenSaharaCounter.incrementAndGet();
                 cell.setRainfall(Math.min(1200.0, cell.getRainfall() + 500.0 * continuousMonsoonForcing * dtSafe));
                 cell.setAccessibleAquifer(Math.min(15000.0, cell.getAccessibleAquifer() + 2000.0 * continuousMonsoonForcing * dtSafe));
                 cell.setWaterResource(Math.min(1000.0, cell.getWaterResource() + 400.0 * continuousMonsoonForcing * dtSafe));
 
-                // Gradual ecological biome transition based on cumulative forcing
                 if (continuousMonsoonForcing > 0.3) {
                     cell.setBiome(Biome.PLAINS);
                 }
@@ -122,27 +120,34 @@ public class AlbedoClimateEngine {
             double albedo = cell.calculateDynamicAlbedo();
             double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
 
-            // Radiative forcing equilibrium anomaly (delta T_eq = delta F / lambda, where lambda ~ 1.5 W/m2/K)
             double equilibriumTempAnomaly = (0.30 - albedo) * 6.0 + volcanicCoolingOffset;
             double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
             double targetTemp = baselineTemp + equilibriumTempAnomaly;
 
-            // Continuous thermal relaxation towards Budyko equilibrium
             double updatedTemp = currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor;
             cell.setTemperature(Math.max(-250.0, Math.min(600.0, updatedTemp)));
 
             // ── 3. Megastorm / Flood Disaster Impact ──────────────────────────
             if (cell.getRainfall() > 900.0 && elev < 30.0 && cell.getBiome() == Biome.BEACH) {
-                floodDisasterCells++;
-                // Destroy infrastructure & capital
+                floodDisasterCounter.incrementAndGet();
                 cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * 0.70));
-                // Contaminate water temporarily
                 cell.setWaterResource(Math.max(50.0, cell.getWaterResource() * 0.50));
+            }
+        };
+
+        if (size >= 10000) {
+            cells.parallelStream().forEach(cellProcessor);
+        } else {
+            for (int i = 0; i < size; i++) {
+                cellProcessor.accept(cells.get(i));
             }
         }
 
+        int greenSaharaCells = greenSaharaCounter.get();
+        int floodDisasterCells = floodDisasterCounter.get();
+
         if (greenSaharaCells > 0 || floodDisasterCells > 0 || volcanicCoolingOffset < -0.5) {
-            logger.info("Climate Engine: Green Sahara active across {} cells, {} flood disaster cells, Volcanic cooling offset: {}°C",
+            logger.debug("Climate Engine: Green Sahara active across {} cells, {} flood disaster cells, Volcanic cooling offset: {}°C",
                     greenSaharaCells, floodDisasterCells, String.format("%.2f", volcanicCoolingOffset));
         }
     }

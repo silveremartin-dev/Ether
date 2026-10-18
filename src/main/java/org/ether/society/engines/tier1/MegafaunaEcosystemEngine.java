@@ -48,9 +48,10 @@ public class MegafaunaEcosystemEngine {
         if (cells == null || cells.isEmpty()) return;
 
         double safeDt = Math.max(1e-4, dtYears);
-        int megafaunaCollapseEvents = 0;
+        int size = cells.size();
+        java.util.concurrent.atomic.AtomicInteger megafaunaCollapseCounter = new java.util.concurrent.atomic.AtomicInteger(0);
 
-        for (H3Cell cell : cells) {
+        java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
             Biome biome = cell.getBiome();
             double tech = cell.getTechnologyLevel();
             boolean isCryosphericSteppe = (biome == Biome.SNOW || biome == Biome.TUNDRA);
@@ -64,7 +65,7 @@ public class MegafaunaEcosystemEngine {
                 double huntingPressureRatio = humanPop / Math.max(10.0, naturalBiomass);
 
                 if (huntingPressureRatio > 0.10) {
-                    megafaunaCollapseEvents++;
+                    megafaunaCollapseCounter.incrementAndGet();
 
                     // Time-scaled continuous exponential decay of wild megafauna biomass and soil carbon
                     double annualDepletionRate = Math.min(0.20, huntingPressureRatio * 0.02);
@@ -78,8 +79,17 @@ public class MegafaunaEcosystemEngine {
                     }
                 }
             }
+        };
+
+        if (size >= 10000) {
+            cells.parallelStream().forEach(cellProcessor);
+        } else {
+            for (int i = 0; i < size; i++) {
+                cellProcessor.accept(cells.get(i));
+            }
         }
 
+        int megafaunaCollapseEvents = megafaunaCollapseCounter.get();
         if (megafaunaCollapseEvents > 0) {
             logger.debug("Megafauna Engine: Continuous trophic hunting pressure active across {} cells.", megafaunaCollapseEvents);
         }
