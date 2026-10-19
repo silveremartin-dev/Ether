@@ -45,13 +45,16 @@ public class WarDiplomacyEngine {
         double elev2 = c2.getElevationOr(0.0);
         double elevDiff = Math.abs(elev1 - elev2) / 500.0;
 
+        // Physical terrain friction (1.0 on flat lowlands, 4.0-8.0+ in high mountain crests)
+        double physicalFriction = 1.0 + (avgTerrainFriction - 1.0) + (elevDiff * 0.4);
+
         // Sovereignty mask transition penalty
         double sovereigntyGradient = 0.0;
         if (c1.getOwner() != c2.getOwner()) {
-            sovereigntyGradient = 1.5; // High friction across geopolitical borders
+            sovereigntyGradient = 0.5; // Administrative border checkpoint friction
         }
 
-        double sigmaFriction = 1.0 + (avgTerrainFriction * 0.4) + (elevDiff * 0.3) + sovereigntyGradient;
+        double sigmaFriction = physicalFriction + sovereigntyGradient;
         return Math.clamp(sigmaFriction, 1.0, 20.0);
     }
 
@@ -79,8 +82,9 @@ public class WarDiplomacyEngine {
                 // Check territorial adjacency & compute average boundary friction
                 double avgBorderFriction = getAverageBorderFriction(aggressor, defender);
                 if (avgBorderFriction > 0) {
-                    // War trigger condition: High aggressor Asabiyyah + Weak defender State Capacity / High Instability, modulated by boundary friction
-                    double baseWarDesire = (aggressor.getAsabiyyah() * 0.6) + (defender.getPoliticalInstability() * 0.4) - (defender.getStateCapacity() * 0.3);
+                    // War trigger condition: High aggressor Asabiyyah + Imperial State Capacity force projection + Weak defender State Capacity / High Instability
+                    double imperialProjection = Math.max(0.0, aggressor.getStateCapacity() - 0.5) * 0.4;
+                    double baseWarDesire = (aggressor.getAsabiyyah() * 0.6) + imperialProjection + (defender.getPoliticalInstability() * 0.4) - (defender.getStateCapacity() * 0.3);
 
                     // Cliodynamic Cultural Affinity Matrix Modulation:
                     // High bilateral affinity (e.g. 80-100%) acts as strong pacification factor.
@@ -92,9 +96,11 @@ public class WarDiplomacyEngine {
                         affinityMultiplier = Math.clamp(1.5 - (affinity / 100.0) * 1.3, 0.1, 2.0);
                     }
 
-                    double warDesire = (baseWarDesire * affinityMultiplier) / Math.sqrt(avgBorderFriction);
+                    // Topographic friction dampens opportunistic border skirmishes, raising the required war threshold
+                    double frictionDamping = 1.0 + 0.25 * Math.max(0.0, avgBorderFriction - 1.0);
+                    double warDesire = (baseWarDesire * affinityMultiplier) / frictionDamping;
 
-                    if (warDesire > 0.65) {
+                    if (warDesire > 0.45) {
                         resolveBorderBattle(aggressor, defender, avgBorderFriction);
                     }
                 }
@@ -164,14 +170,23 @@ public class WarDiplomacyEngine {
         double aggBullionFactor = 1.0 + Math.min(0.6, Math.log1p(aggressor.getTreasuryBullion() / 50.0) * 0.15);
         double defBullionFactor = 1.0 + Math.min(0.6, Math.log1p(defender.getTreasuryBullion() / 50.0) * 0.15);
 
-        // Force ratio weighted by State Capacity, Armament Capital, Logistics, Bullion, and penalized by boundary friction
-        double safeFriction = Math.max(0.1, borderFriction);
-        double aggressorPower = (aggressorForce * (0.5 + aggressor.getStateCapacity()) * aggArmamentFactor * aggLogisticsFactor * aggBullionFactor) / safeFriction;
-        double defenderPower = defenderForce * (0.5 + defender.getStateCapacity()) * defArmamentFactor * defLogisticsFactor * defBullionFactor;
+        // Force ratio weighted by State Capacity, Armament Capital, Logistics, Bullion, and penalized by physical terrain friction.
+        // Defenders in steep orographic terrain (mountain passes, chokepoints, friction >= 3.2) benefit from tactical crest defense bonus sqrt(friction) (e.g. Roncevaux, Thermopylae).
+        double physicalFriction = Math.max(1.0, borderFriction - 1.5);
+        double crestDefenseBonus = borderFriction >= 3.2 ? Math.sqrt(borderFriction) : 1.0;
+        double aggressorPower = (aggressorForce * (0.5 + aggressor.getStateCapacity()) * aggArmamentFactor * aggLogisticsFactor * aggBullionFactor) / physicalFriction;
+        double defenderPower = defenderForce * (0.5 + defender.getStateCapacity()) * defArmamentFactor * defLogisticsFactor * defBullionFactor * crestDefenseBonus;
 
         // Step 3: Deduct military campaign bullion expenditure and physical weapon attrition for both belligerents
-        aggressor.setTreasuryBullion(aggressor.getTreasuryBullion() * 0.92);
-        defender.setTreasuryBullion(defender.getTreasuryBullion() * 0.95);
+        // Dynamic operational campaign cost in bullion (logistics, pack animals, supply lines, mercenary wages):
+        // Aggressor cost scales with boundary friction (mountain passes require heavy supply trains) and mobilized force size
+        double aggCostFraction = Math.clamp(0.04 + (0.04 * (borderFriction / 4.0)) + (0.02 * Math.log1p(aggressorForce / 2000.0)), 0.04, 0.35);
+        // Defender fighting on interior lines incurs lower baseline logistical drag
+        double defCostFraction = Math.clamp(0.03 + (0.02 * (defenderForce / Math.max(1.0, aggressorForce + defenderForce))), 0.02, 0.20);
+
+        aggressor.setTreasuryBullion(Math.max(0.0, aggressor.getTreasuryBullion() * (1.0 - aggCostFraction)));
+        defender.setTreasuryBullion(Math.max(0.0, defender.getTreasuryBullion() * (1.0 - defCostFraction)));
+
         for (H3Cell c : aggressor.getTerritory()) {
             if (c != null && c.getResourceCapital() != null) {
                 c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.97));
@@ -182,6 +197,11 @@ public class WarDiplomacyEngine {
                 c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.96));
             }
         }
+        logger.info("Battle Resolution: '{}' (power {}) vs '{}' (power {} * 1.25 = {}) -> victory: {}",
+                aggressor.getName(), String.format(java.util.Locale.ROOT, "%.1f", aggressorPower),
+                defender.getName(), String.format(java.util.Locale.ROOT, "%.1f", defenderPower),
+                String.format(java.util.Locale.ROOT, "%.1f", defenderPower * 1.25),
+                aggressorPower > defenderPower * 1.25);
 
         if (aggressorPower > defenderPower * 1.25) {
             // Aggressor conquers one border cell of defender
@@ -192,9 +212,10 @@ public class WarDiplomacyEngine {
             if (conqueredCell != null) {
                 defender.removeCell(conqueredCell);
                 aggressor.addCell(conqueredCell);
+                conqueredCell.setBoundaryCell(true);
 
                 // War casualties in 15-24 military cohort scale with boundary friction resistance
-                double casualtyRate = Math.clamp(0.15 * Math.sqrt(safeFriction), 0.10, 0.45);
+                double casualtyRate = Math.clamp(0.15 * Math.sqrt(physicalFriction), 0.10, 0.45);
                 int curPop15to24 = conqueredCell.getPop15to24Or(0);
                 int curPop = conqueredCell.getPopulationOr(0);
                 int casualties = (int) (curPop15to24 * casualtyRate);
@@ -206,7 +227,7 @@ public class WarDiplomacyEngine {
                 conqueredCell.setResourceCapital(Math.max(0.0, cellCap * (1.0 - 0.25 * casualtyRate)));
 
                 logger.info("War Resolution: Nation '{}' conquered cell {} from Nation '{}' (Boundary Friction: {}). Military casualties: {}.",
-                        aggressor.getName(), conqueredCell.getH3Index(), defender.getName(), String.format(java.util.Locale.ROOT, "%.2f", safeFriction), casualties);
+                        aggressor.getName(), conqueredCell.getH3Index(), defender.getName(), String.format(java.util.Locale.ROOT, "%.2f", physicalFriction), casualties);
             }
         }
     }

@@ -4270,75 +4270,19 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
     private void exportGisMultiFormat() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(I18n.getOrDefault("resource.title.export_gis_dialog", "Export Geological Layers in GIS Format"));
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("GeoJSON Vector File (*.geojson)", "*.geojson"),
-            new FileChooser.ExtensionFilter("GeoTIFF Multi-Band Raster Metadata (*.json)", "*.json"),
-            new FileChooser.ExtensionFilter("NetCDF-4 Spatiotemporal Cube (*.nc.json)", "*.nc.json")
+        org.ether.society.ui.export.ResourceDistributionRasterExporter.exportGisMultiFormat(
+                getScene() != null ? getScene().getWindow() : null,
+                activePlanetPreset
         );
-        File targetFile = fileChooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (targetFile != null) {
-            try {
-                Map<String, Object> gisData = new java.util.LinkedHashMap<>();
-                gisData.put("type", "FeatureCollection");
-                gisData.put("crs", Map.of("type", "name", "properties", Map.of("name", "urn:ogc:def:crs:OGC:1.3:CRS84")));
-                gisData.put("domain", "Geology & Mineral Resources");
-                gisData.put("geologyTensorsCount", 10);
-                gisData.put("planetPreset", activePlanetPreset != null ? activePlanetPreset.name() : "EARTH_LIKE");
-                gisData.put("exportTimestamp", java.time.Instant.now().toString());
-
-                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                mapper.writeValue(targetFile, gisData);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(I18n.getOrDefault("resource.title.gis_success", "GIS Export Successful"));
-                alert.setHeaderText(I18n.getOrDefault("resource.header.gis_success", "GIS File Successfully Generated"));
-                alert.setContentText(String.format(I18n.getOrDefault("resource.desc.gis_success", "Geological dataset successfully exported to QGIS/ArcGIS format: %s"), targetFile.getName()));
-                alert.showAndWait();
-            } catch (Exception ex) {
-                logger.error("Error during GIS geology export: {}", ex.getMessage(), ex);
-            }
-        }
     }
 
     private void exportProvenanceManifest() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(I18n.getOrDefault("resource.title.export_provenance_dialog", "Generate & Export SHA-256 Provenance Manifest"));
-        fileChooser.setInitialFileName("geology_provenance.json");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Manifest (*.json)", "*.json"));
-        File targetFile = fileChooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (targetFile != null) {
-            try {
-                Map<String, Object> manifest = new java.util.LinkedHashMap<>();
-                manifest.put("manifestVersion", "1.0.0");
-                manifest.put("engineVersion", "Ether 1.0.0-beta.2");
-                manifest.put("domain", "Geology & Planetary Resources");
-                manifest.put("exportTimestamp", java.time.Instant.now().toString());
-                manifest.put("prngSeed", geologySeedInput != null ? geologySeedInput.getText() : "45678");
-                manifest.put("deterministicReplayGuaranteed", true);
-
-                Map<String, String> hashes = new java.util.LinkedHashMap<>();
-                hashes.put("usgs_mrds_baseline", "c8e2b10498fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-                hashes.put("iaea_udepo_baseline", "f987a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e");
-                hashes.put("unesco_whymap_baseline", "771b9f67a2139e801b7a2cf6c41b8a9d15e982136e64c2970b13dc4086ad3b0a");
-                manifest.put("sha256Signatures", hashes);
-
-                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                mapper.writeValue(targetFile, manifest);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(I18n.getOrDefault("resource.title.provenance_success", "Provenance Manifest Generated"));
-                alert.setHeaderText(I18n.getOrDefault("resource.header.provenance_success", "SHA-256 Manifest Saved"));
-                alert.setContentText(String.format(I18n.getOrDefault("resource.desc.provenance_success", "Cryptographic manifest saved to: %s"), targetFile.getName()));
-                alert.showAndWait();
-            } catch (Exception ex) {
-                logger.error("Error during provenance manifest export: {}", ex.getMessage(), ex);
-            }
-        }
+        org.ether.society.ui.export.ResourceDistributionRasterExporter.exportProvenanceManifest(
+                getScene() != null ? getScene().getWindow() : null,
+                geologySeedInput != null ? geologySeedInput.getText() : "45678"
+        );
     }
+
 
     private void generateProceduralGeologyTensors() {
         if (geologyProcRadios != null) {
@@ -4844,18 +4788,7 @@ public class ResourceDistributionPanel extends BorderPane {
     }
 
     private java.awt.Color getGeologyTensorAwtColor(int layerIdx) {
-        return switch (layerIdx) {
-            case 0 -> new java.awt.Color(245, 158, 11);  // Coal
-            case 1 -> new java.awt.Color(239, 68, 68);   // Oil
-            case 2 -> new java.awt.Color(56, 189, 248);  // Gas
-            case 3 -> new java.awt.Color(34, 197, 94);   // Uranium
-            case 4 -> new java.awt.Color(168, 85, 247);  // Helium-3
-            case 5 -> new java.awt.Color(217, 119, 6);   // Iron & Copper
-            case 6 -> new java.awt.Color(234, 179, 8);   // Precious Metals (Gold)
-            case 7 -> new java.awt.Color(20, 184, 166);  // Rare Earths & Lithium (Teal)
-            case 8 -> new java.awt.Color(225, 29, 72);   // Mantle Heat Flow (Red-Pink)
-            default -> new java.awt.Color(14, 165, 233); // Aquifers
-        };
+        return org.ether.society.ui.export.ResourceDistributionRasterExporter.getGeologyTensorAwtColor(layerIdx);
     }
 
     /**

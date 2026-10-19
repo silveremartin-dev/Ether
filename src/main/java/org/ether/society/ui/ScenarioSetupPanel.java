@@ -6742,121 +6742,20 @@ private String getDefaultTensorName(int index) {
                 && "earth".equalsIgnoreCase(activePlanetPreset.elevationMapSource());
         long startYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000;
 
-        if (customDensityImage != null) {
-            // Custom PNG density map sampling
-            List<H3Cell> landCells = cells.stream()
-                    .filter(c -> c.getElevation() > 0 && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
-                    .toList();
-            if (landCells.isEmpty()) return;
-
-            double popPerCell = (double) totalPop / landCells.size();
-            // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (H3Cell c : landCells) {
-                double normLat = (c.getLatitude() + 90.0) / 180.0;
-                double normLon = (c.getLongitude() + 180.0) / 360.0;
-                int px = (int) Math.min(customDensityImage.getWidth() - 1, Math.max(0, normLon * customDensityImage.getWidth()));
-                int py = (int) Math.min(customDensityImage.getHeight() - 1, Math.max(0, (1.0 - normLat) * customDensityImage.getHeight()));
-                Color imgCol = customDensityImage.getPixelReader().getColor(px, py);
-                double factor = imgCol.getBrightness() * 5.0;
-                c.setPopulation((int) (popPerCell * factor));
-            }
-        } else {
-            // Standard procedural density calculation via ProceduralPopulationEngine
-            double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
-            ProceduralPopulationEngine.distributePopulation(cells, getScenario(), totalPop, techLevel, pattern, isEarthPreset, startYear);
-        }
+        org.ether.society.ui.util.ScenarioCellPopulationDistributor.distributeInitialPopulation(
+                cells, totalPop, capitalK0, pattern, isEarthPreset, startYear, customDensityImage, getScenario()
+        );
     }
 
     private Color getReliefAndDensityColor(H3Cell c) {
-        if (c == null) return Color.rgb(15, 23, 42);
-
-        double elev = c.getElevation() != null ? c.getElevation() : 0.0;
-        Biome b = c.getBiome();
-
-        Color baseTerrainCol;
-        if (elev <= 0) {
-            // Sea / Ocean Bathymetry (Deep navy to coastal cyan-blue)
-            double depthRatio = Math.clamp(Math.abs(elev) / 4000.0, 0.0, 1.0);
-            int r = (int) (30 - depthRatio * 20);
-            int g = (int) (95 - depthRatio * 75);
-            int bCol = (int) (165 - depthRatio * 115);
-            baseTerrainCol = Color.rgb(Math.clamp(r, 0, 255), Math.clamp(g, 0, 255), Math.clamp(bCol, 0, 255));
-        } else {
-            // Land Topography (hypsometric tinting + biome colors)
-            double altRatio = Math.clamp(elev / 4500.0, 0.0, 1.0);
-            int r, g, bCol;
-            if (b == Biome.SNOW || elev > 3800) {
-                r = 235; g = 245; bCol = 255; // Ice / Snow peaks
-            } else if (b == Biome.TUNDRA) {
-                r = 135; g = 155; bCol = 135;
-            } else if (b == Biome.DESERT) {
-                r = 215; g = 185; bCol = 125;
-            } else if (b == Biome.JUNGLE) {
-                r = 25; g = 100; bCol = 45;
-            } else if (b == Biome.FOREST) {
-                r = 35; g = 115; bCol = 50;
-            } else if (b == Biome.HILLS || (elev > 1200 && elev <= 2800)) {
-                r = 130 + (int)(altRatio * 40);
-                g = 120 - (int)(altRatio * 20);
-                bCol = 80;
-            } else if (b == Biome.MOUNTAINS || elev > 2800) {
-                r = 160 + (int)(altRatio * 50);
-                g = 155 + (int)(altRatio * 45);
-                bCol = 150 + (int)(altRatio * 45);
-            } else { // PLAINS / BEACH / Default land
-                r = 65; g = 135; bCol = 55;
-            }
-
-            // Modulate by elevation (high land is slightly lighter/paler)
-            r = Math.clamp((int)(r * (0.85 + altRatio * 0.35)), 0, 255);
-            g = Math.clamp((int)(g * (0.85 + altRatio * 0.35)), 0, 255);
-            bCol = Math.clamp((int)(bCol * (0.85 + altRatio * 0.35)), 0, 255);
-            baseTerrainCol = Color.rgb(r, g, bCol);
-        }
-
-        if (elev <= 0) {
-            return baseTerrainCol;
-        }
-
-        long pop = c.getPopulation() != null ? c.getPopulation() : 0;
-
-        // Population Density Heat Overlay (aligned with UI Legend Bar)
-        Color heatCol;
-        if (pop <= 0) {
-            heatCol = Color.rgb(30, 95, 165);  // Uninhabited (0 hab/km²) - Navy Blue (Legend matching)
-        } else if (pop < 50) {
-            heatCol = Color.rgb(16, 185, 129); // Low (1 - 50 hab/km²) - Green
-        } else if (pop < 500) {
-            heatCol = Color.rgb(234, 179, 8);  // Medium (50 - 500 hab/km²) - Yellow
-        } else if (pop < 2500) {
-            heatCol = Color.rgb(249, 115, 22); // High / City (500 - 2500 hab/km²) - Orange
-        } else {
-            heatCol = Color.rgb(239, 68, 68);  // Metropolis (> 2500 hab/km²) - Red
-        }
-
-        return heatCol;
+        return org.ether.society.ui.util.ScenarioCellPopulationDistributor.getReliefAndDensityColor(c);
     }
 
     private double computeCellCarryingCapacity(H3Cell c) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (c == null || c.getElevation() <= 0) return 0.0;
-        double baseCap = 250.0;
-        Biome b = c.getBiome();
-        if (b == Biome.DESERT || b == Biome.TUNDRA || b == Biome.SNOW) baseCap *= 0.1;
-        else if (b == Biome.PLAINS || b == Biome.FOREST) baseCap *= 1.5;
-        else if (b == Biome.JUNGLE) baseCap *= 0.8;
-
-        if (c.getWaterResource() != null && c.getWaterResource() > 0.1) {
-            baseCap *= (1.0 + 3.0 * (c.getWaterResource() / 1000.0));
-        }
-        if (c.getFreshwaterAquifer() != null && c.getFreshwaterAquifer() > 0.1) {
-            baseCap *= (1.0 + 1.5 * (c.getFreshwaterAquifer() / 1000.0));
-        }
-
         double capK0 = computeAutoCapitalFromYear(startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000);
-        baseCap *= Math.max(0.5, (capK0 / 1000.0) * 0.8);
-        return Math.max(10.0, baseCap);
+        return org.ether.society.ui.util.ScenarioCellPopulationDistributor.computeCellCarryingCapacity(c, capK0);
     }
+
 
     private Color getPreviewColorForCell(H3Cell c) {
         if (c == null) return Color.BLACK;

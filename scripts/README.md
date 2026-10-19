@@ -31,8 +31,11 @@ All scripts are categorized into modular subdirectories:
 | **`build/`** | `generate-javadoc.bat` / `.sh` | Host Machine | N/A \| HTML Docs \| No | **API Documentation**: Compiles full HTML Javadoc to `target/site/apidocs`. |
 | **`build/`** | `build-native-all.bat` / `.sh` | Cargo / Rust | N/A \| Native DLL/SO \| No | **Native Core Compiler**: Builds Rust SIMD core library (`ether-core-native`). |
 | **`test/`** | `test-all-in-one.bat` / `.sh` | CI / Dev Host | N/A \| Test Harness \| No | **All-in-One Test Suite**: Unit tests, bifurcation benchmarks, and leader tests. |
+| **`test/`** | `run-scientific-falsification.bat` / `.sh` | CI / Dev Host | N/A \| Falsification \| No | **Epistemic Falsification**: Runs all 24 scientific debate benchmarks (HYDE, EPICA, Seshat). |
 | **`test/`** | `run_historical_bifurcation_benchmarks.bat` / `.sh` | CI / Dev Host | N/A \| Falsification \| No | **Bifurcation Suite**: Runs Turchin SDT, Malthus, Boserup, and Scott state tests. |
-| **`test/`** | `run_cloud_calibration_campaign.sh` | Cloud / HPC | N/A \| HPC Harness \| No | **Calibration Campaign**: Executes parameter sweeps against empirical datasets. |
+| **`test/`** | `run_cloud_calibration_campaign.bat` / `.sh` | Cloud / HPC | N/A \| HPC Harness \| No | **Calibration Campaign**: Executes parameter sweeps against empirical datasets. |
+| **`benchmark/`** | `run-all-benchmarks.bat` / `.sh` | Dev Host / Cloud | N/A \| Benchmark Harness \| No | **5-Axis Master Benchmark**: Evaluates spatial, temporal, SIMD, coupling, and epoch scaling. |
+| **`root`** | `clean_workspace.bat` / `.ps1` / `.sh` | Local Host / CI | N/A \| Maintenance \| No | **Workspace Cleaner**: Safely purges orphan UUID test saves, old logs, and build churn. |
 
 ---
 
