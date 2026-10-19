@@ -34,7 +34,7 @@ public class ConfigurationLoader {
      * @return Configured ObjectMapper instance
      */
     private static ObjectMapper createObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         return mapper;

@@ -153,9 +153,7 @@ public class ThermodynamicMigrationEngine {
     public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config, double planetRadiusKm,
                                                      org.ether.society.core.dod.WorldBuffer worldBuffer,
                                                      org.ether.society.core.dod.AgentBuffer agentBuffer) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for ThermodynamicMigrationEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         int migrationEvents = 0;

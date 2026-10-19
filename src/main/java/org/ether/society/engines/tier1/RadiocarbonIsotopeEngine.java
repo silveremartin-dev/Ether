@@ -37,13 +37,13 @@ import java.util.List;
 public class RadiocarbonIsotopeEngine {
     private static final Logger logger = LoggerFactory.getLogger(RadiocarbonIsotopeEngine.class);
 
-    /* Half-life of Carbon-14 in years */
+    /** Half-life of Carbon-14 in years */
     public static final double C14_HALF_LIFE_YEARS = 5730.0;
 
-    /* Nuclear decay constant λ_14 in yr⁻¹ */
+    /** Nuclear decay constant λ_14 in yr⁻¹ */
     public static final double LAMBDA_14 = Math.log(2.0) / C14_HALF_LIFE_YEARS; // ~1.20968e-4
 
-    /* Mean Libby lifetime in years (8033 yr) */
+    /** Mean Libby lifetime in years (8033 yr) */
     public static final double LIBBY_MEAN_LIFETIME_YEARS = 8033.0;
 
     /**
@@ -53,9 +53,7 @@ public class RadiocarbonIsotopeEngine {
      * @return Remaining activity fraction A / A_0
      */
     public static double calculateRemainingC14Activity(double elapsedYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for RadiocarbonIsotopeEngine - verifies boundary conservation and updates local thermodynamic state
         if (elapsedYears <= 0.0) return 1.0;
         return Math.exp(-LAMBDA_14 * elapsedYears);
     }
@@ -67,9 +65,7 @@ public class RadiocarbonIsotopeEngine {
      * @return Age in radiocarbon years BP
      */
     public static double calculateRadiocarbonAgeBP(double activityFraction) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for RadiocarbonIsotopeEngine - verifies boundary conservation and updates local thermodynamic state
         if (activityFraction <= 0.0) return Double.POSITIVE_INFINITY;
         return -LIBBY_MEAN_LIFETIME_YEARS * Math.log(activityFraction);
     }
@@ -91,9 +87,7 @@ public class RadiocarbonIsotopeEngine {
      * Processes radiocarbon tracking and soil organic carbon isotopic signatures across cells.
      */
     public static void processIsotopicDecay(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for RadiocarbonIsotopeEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

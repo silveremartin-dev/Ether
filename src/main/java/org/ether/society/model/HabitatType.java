@@ -13,19 +13,19 @@ package org.ether.society.model;
  * @version 1.0.0-beta.2
  */
 public enum HabitatType {
-    /* No artificial pressurized habitat (open-air biosphere). */
+    /** No artificial pressurized habitat (open-air biosphere). */
     NONE("habitat.type.none", 0.0, 0.0, 0.0, 0.0),
 
-    /* Surface Geodesic Glass/Polymer Pressurized Dome (Mars, Moon, Titan). */
+    /** Surface Geodesic Glass/Polymer Pressurized Dome (Mars, Moon, Titan). */
     SURFACE_DOME("habitat.type.surface_dome", 0.035, 0.70, 1.20, 500.0),
 
-    /* 3D Sintered Regolith Vault & Cut-and-Cover Bunker (Moon, Mars, Mercury). */
+    /** 3D Sintered Regolith Vault & Cut-and-Cover Bunker (Moon, Mars, Mercury). */
     SINTERED_3D_VAULT("habitat.type.sintered_vault", 0.015, 0.90, 1.00, 350.0),
 
-    /* Subsurface Basaltic Lava Tube / Sealed Natural Cavity (Moon, Mars). */
+    /** Subsurface Basaltic Lava Tube / Sealed Natural Cavity (Moon, Mars). */
     LAVA_TUBE("habitat.type.lava_tube", 0.005, 0.98, 0.80, 200.0),
 
-    /* High-Altitude Aerostat Floating Cloud Habitat (Venus 50-55km, Titan). */
+    /** High-Altitude Aerostat Floating Cloud Habitat (Venus 50-55km, Titan). */
     VENUS_AEROSTAT("habitat.type.venus_aerostat", 0.025, 0.60, 1.50, 600.0);
 
     /** Internal state: i18n key (String). */

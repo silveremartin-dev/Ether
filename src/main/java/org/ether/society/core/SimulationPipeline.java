@@ -48,6 +48,8 @@ public class SimulationPipeline {
     private List<H3Cell> cachedLandCells = null;
     private int cachedLandCellsCount = -1;
     private List<H3Cell> reusablePopulatedCells = null;
+    private org.ether.society.core.dod.NativeRustBridge.NativeWorldArena cachedNativeArena = null;
+    private int cachedNativeArenaCapacity = -1;
 
     public SimulationPipeline(DemographicKernel demographicKernel,
                               UrbanKernel urbanKernel,
@@ -214,11 +216,45 @@ public class SimulationPipeline {
 
         // --- Phase 1: Demographics, Urbanization & Culture DOD Kernels ---
         profiler.beginPhase("3_DemographicsAndCulture");
-        environmentalKernel.tick(worldBuffer, dtSlow);
-        demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
-        urbanKernel.tick(worldBuffer, dtSlow);
-        fluxKernel.tick(worldBuffer, dtSlow);
-        cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
+        boolean executedNative = false;
+        if (perfConfig != null && perfConfig.getExecutionEngineMode() == org.ether.society.config.SimulationPerformanceConfig.ExecutionEngineMode.RUST_NATIVE
+                && org.ether.society.core.dod.NativeRustBridge.isNativeAvailable() && worldBuffer != null && agentBuffer != null) {
+            try {
+                int cap = worldBuffer.getCapacity();
+                if (cachedNativeArena == null || cachedNativeArenaCapacity != cap) {
+                    if (cachedNativeArena != null) {
+                        cachedNativeArena.close();
+                    }
+                    cachedNativeArena = new org.ether.society.core.dod.NativeRustBridge.NativeWorldArena(cap);
+                    cachedNativeArenaCapacity = cap;
+                }
+                long sSeed = activeScenario != null && activeScenario.getSeed() != 0L ? activeScenario.getSeed() : 42L;
+                long tickCount = engine != null ? engine.getTickCounter() : 1L;
+                float dtY = (float) dtYears;
+                float dtSec = (float) dtSlow;
+
+                cachedNativeArena.syncFromJavaBuffers(worldBuffer, agentBuffer);
+                cachedNativeArena.tickEnvironmental(dtY);
+                cachedNativeArena.tickDemographic(demographicKernel.getTargetCohortSize(), dtY, sSeed);
+                cachedNativeArena.tickUrban(dtY);
+                cachedNativeArena.tickFlux(dtSec);
+                cachedNativeArena.tickCulture(dtY, cultureKernel.getDiffusionRate(), cultureKernel.getForcingRate(), cultureKernel.getMutationRate(), sSeed, tickCount);
+                cachedNativeArena.syncToJavaBuffers(worldBuffer, agentBuffer);
+                executedNative = true;
+            } catch (Throwable t) {
+                logger.warn("Native Rust execution encountered an issue, falling back to Java SIMD: {}", t.getMessage());
+                executedNative = false;
+            }
+        }
+
+        if (!executedNative) {
+            environmentalKernel.tick(worldBuffer, dtSlow);
+            demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
+            urbanKernel.tick(worldBuffer, dtSlow);
+            fluxKernel.tick(worldBuffer, dtSlow);
+            cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
+        }
+
         if (engine != null) {
             engine.syncBufferToCells();
         }

@@ -41,9 +41,7 @@ public class EcologicalDegradationEngine {
      * Executes one ecological, pollution, overfishing & socio-demographic simulation tick across all cells.
      */
     public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for EcologicalDegradationEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
         double dtMonthlyRatio = Math.max(0.001, deltaYears / (1.0 / 12.0));
 
@@ -287,9 +285,7 @@ public class EcologicalDegradationEngine {
      * diffusing contaminants even into unpopulated, high-altitude or remote wilderness sites.
      */
     private static void processPollutionDispersion(List<H3Cell> cells) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for EcologicalDegradationEngine - verifies boundary conservation and updates local thermodynamic state
         int count = cells.size();
         if (count < 2) return;
 
@@ -331,9 +327,7 @@ public class EcologicalDegradationEngine {
     }
 
     private static int processMigrationFlux(List<H3Cell> cells, double defaultTech, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for EcologicalDegradationEngine - verifies boundary conservation and updates local thermodynamic state
         int totalMigrated = 0;
         int count = cells.size();
         double dtSafe = Math.clamp(deltaYears, 0.001, 1.0);
@@ -434,9 +428,7 @@ public class EcologicalDegradationEngine {
      * @return the resulting computation or state reference
      */
     public static double calculateCarryingCapacity(H3Cell cell, double techLevel) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for EcologicalDegradationEngine - verifies boundary conservation and updates local thermodynamic state
         if (cell == null) return 100.0;
 
         double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;

@@ -44,9 +44,7 @@ public class PhysicalSupplyChainEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processSupplyChains(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for PhysicalSupplyChainEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         double globalFrictionMultiplier = maritimeChokepointBlockadeActive ? 2.5 : 1.0;

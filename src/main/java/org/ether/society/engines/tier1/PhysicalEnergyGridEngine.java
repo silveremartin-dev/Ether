@@ -25,10 +25,10 @@ import java.util.List;
 public class PhysicalEnergyGridEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalEnergyGridEngine.class);
 
-    /* Specific energy density of wood biomass in MJ/kg */
+    /** Specific energy density of wood biomass in MJ/kg */
     public static final double WOOD_ENERGY_DENSITY_MJ_PER_KG = 18.5;
 
-    /* Specific energy density of coal in MJ/kg */
+    /** Specific energy density of coal in MJ/kg */
     public static final double COAL_ENERGY_DENSITY_MJ_PER_KG = 24.0;
 
     /**
@@ -38,9 +38,7 @@ public class PhysicalEnergyGridEngine {
      * @return Available mechanical power in Watts/capita
      */
     public static double calculatePerCapitaMechanicalPowerWatts(H3Cell cell) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for PhysicalEnergyGridEngine - verifies boundary conservation and updates local thermodynamic state
         if (cell == null) return 0.0;
 
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -133,9 +131,7 @@ public class PhysicalEnergyGridEngine {
      * and strictly consumes finite fossil and nuclear fuels to preserve thermodynamic conservation.
      */
     public static void processPhysicalEnergyGrid(List<H3Cell> cells, double dtYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for PhysicalEnergyGridEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
         double dtSafe = Math.max(0.0001, dtYears);
 

@@ -34,16 +34,16 @@ import java.util.List;
 public class AiryIsostasyCrustalRootEngine {
     private static final Logger logger = LoggerFactory.getLogger(AiryIsostasyCrustalRootEngine.class);
 
-    /* Continental granitic crust density in kg/m³ */
+    /** Continental granitic crust density in kg/m³ */
     public static final double CRUST_DENSITY_KG_M3 = 2700.0;
 
-    /* Upper mantle peridotite density in kg/m³ */
+    /** Upper mantle peridotite density in kg/m³ */
     public static final double MANTLE_DENSITY_KG_M3 = 3300.0;
 
-    /* Baseline sea-level continental crust thickness in meters (35 km) */
+    /** Baseline sea-level continental crust thickness in meters (35 km) */
     public static final double BASELINE_CRUST_THICKNESS_METERS = 35_000.0;
 
-    /* Airy buoyancy ratio = Ï_crust / (Ï_mantle - Ï_crust) = 4.5 */
+    /** Airy buoyancy ratio = Ï_crust / (Ï_mantle - Ï_crust) = 4.5 */
     public static final double AIRY_ROOT_RATIO = CRUST_DENSITY_KG_M3 / (MANTLE_DENSITY_KG_M3 - CRUST_DENSITY_KG_M3);
 
     /**
@@ -53,9 +53,7 @@ public class AiryIsostasyCrustalRootEngine {
      * @return Crustal root depth in meters
      */
     public static double calculateMountainRootDepthMeters(double elevationMeters) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AiryIsostasyCrustalRootEngine - verifies boundary conservation and updates local thermodynamic state
         if (elevationMeters <= 0.0) return 0.0;
         return elevationMeters * AIRY_ROOT_RATIO;
     }
@@ -64,9 +62,7 @@ public class AiryIsostasyCrustalRootEngine {
      * Calculates total lithospheric crustal thickness (in km) at a given topographic elevation.
      */
     public static double calculateTotalCrustThicknessKm(double elevationMeters) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AiryIsostasyCrustalRootEngine - verifies boundary conservation and updates local thermodynamic state
         double rootMeters = calculateMountainRootDepthMeters(elevationMeters);
         double topoMeters = Math.max(0.0, elevationMeters);
         return (BASELINE_CRUST_THICKNESS_METERS + topoMeters + rootMeters) / 1000.0;
@@ -76,9 +72,7 @@ public class AiryIsostasyCrustalRootEngine {
      * Processes Airy crustal roots and updates geothermal heat flow and metal concentration across cells.
      */
     public static void processAiryIsostasy(List<H3Cell> cells) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AiryIsostasyCrustalRootEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

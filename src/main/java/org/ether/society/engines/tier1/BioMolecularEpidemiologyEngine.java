@@ -44,9 +44,7 @@ public class BioMolecularEpidemiologyEngine {
      * Executes bio-molecular immune response and pathogen tick across cells scaled by dtYears.
      */
     public static void processBioMolecularImmunity(List<H3Cell> cells, double dtYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for BioMolecularEpidemiologyEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
         double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 

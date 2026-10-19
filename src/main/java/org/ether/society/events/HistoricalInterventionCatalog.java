@@ -29,7 +29,7 @@ public class HistoricalInterventionCatalog {
     private static final HistoricalInterventionCatalog INSTANCE = new HistoricalInterventionCatalog();
 
     private final List<HistoricalIntervention> interventions = new CopyOnWriteArrayList<>();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
 
     /**
      * Get instance.

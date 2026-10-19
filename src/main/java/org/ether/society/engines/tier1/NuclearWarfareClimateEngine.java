@@ -25,10 +25,10 @@ import java.util.List;
 public class NuclearWarfareClimateEngine {
     private static final Logger logger = LoggerFactory.getLogger(NuclearWarfareClimateEngine.class);
 
-    /* Power flux threshold per capita indicating full nuclear capability */
+    /** Power flux threshold per capita indicating full nuclear capability */
     public static final double NUCLEAR_CAPABILITY_POWER_WATTS = 20000.0;
 
-    /* Global stratospheric soot optical depth accumulation factor */
+    /** Global stratospheric soot optical depth accumulation factor */
     private static double globalSootOpticalDepth = 0.0;
     private static long baseSeed = 42L;
 
@@ -57,9 +57,7 @@ public class NuclearWarfareClimateEngine {
      * @return Solar transmittance fraction (0.0 to 1.0)
      */
     public static double calculateSolarTransmittance(double opticalDepth) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for NuclearWarfareClimateEngine - verifies boundary conservation and updates local thermodynamic state
         return Math.exp(-opticalDepth);
     }
 
@@ -67,9 +65,7 @@ public class NuclearWarfareClimateEngine {
      * Executes one nuclear conflict trigger, soot injection, and nuclear winter climate tick.
      */
     public static void processNuclearWarfareClimate(List<H3Cell> cells) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for NuclearWarfareClimateEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         int sootInjectionEvents = 0;

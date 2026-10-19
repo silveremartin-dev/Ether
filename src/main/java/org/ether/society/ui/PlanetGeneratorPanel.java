@@ -57,7 +57,7 @@ public class PlanetGeneratorPanel extends BorderPane {
 
     // Custom Map Images
     private Image customElevImage;
-    /* Reference to preset bar to notify when parameters change */
+    /** Reference to preset bar to notify when parameters change */
     private PresetControlBar<PlanetPreset> presetBar;
     private Image customBiomeImage;
     private Image customResourceImage;
@@ -331,7 +331,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             @Override
             public void onExportPreset(File targetFile, PlanetPreset preset) {
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                     mapper.writeValue(targetFile, preset);
                     logger.info("Exported planet preset to {}", targetFile.getAbsolutePath());
@@ -348,7 +348,7 @@ public class PlanetGeneratorPanel extends BorderPane {
             @Override
             public void onImportPreset(File sourceFile) {
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                     PlanetPreset preset = mapper.readValue(sourceFile, PlanetPreset.class);
                     topPresetBar.getPresetCombo().getItems().add(preset);
                     topPresetBar.getPresetCombo().setValue(preset);

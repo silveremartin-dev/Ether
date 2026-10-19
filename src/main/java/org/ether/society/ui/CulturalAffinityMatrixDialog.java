@@ -40,7 +40,7 @@ import java.util.Random;
  */
 public class CulturalAffinityMatrixDialog extends Stage {
     private static final Logger logger = LoggerFactory.getLogger(CulturalAffinityMatrixDialog.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = org.ether.society.persistence.EtherJsonUtil.getMapper();
 
     public record CulturalEntity(
             String id,

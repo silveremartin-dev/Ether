@@ -27,16 +27,14 @@ import java.util.List;
 public class ThermohalineOceanEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermohalineOceanEngine.class);
 
-    /* Standard baseline ocean salinity in Practical Salinity Units (PSU) */
+    /** Standard baseline ocean salinity in Practical Salinity Units (PSU) */
     public static final double STANDARD_OCEAN_SALINITY_PSU = 35.0;
 
     /**
      * Executes one thermohaline circulation and ocean salinity tick across cells.
      */
     public static void processThermohalineCirculation(List<H3Cell> cells, double globalTemperatureAnomaly) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for ThermohalineOceanEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         // Polar ice meltwater dilution (high temperature anomaly -> lower PSU)

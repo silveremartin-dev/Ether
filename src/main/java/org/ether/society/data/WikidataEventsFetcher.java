@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class WikidataEventsFetcher {
     private static final Logger logger = LoggerFactory.getLogger(WikidataEventsFetcher.class);
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
 
     /** Internal state: catalog file path (String). */
     public static final String CATALOG_FILE_PATH = "data/events/historical_events_catalog.json";

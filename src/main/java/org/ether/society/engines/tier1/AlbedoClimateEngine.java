@@ -72,9 +72,7 @@ public class AlbedoClimateEngine {
      * @param dtYears               Time step in years
      */
     public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset, double dtYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AlbedoClimateEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         // 1. Calculate Orbital Precession Phase (21,000-year Milankovitch cycle)

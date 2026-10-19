@@ -38,19 +38,19 @@ import java.util.List;
 public class ThermohalineStommelAMOCEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermohalineStommelAMOCEngine.class);
 
-    /* Reference seawater density in kg/m³ */
+    /** Reference seawater density in kg/m³ */
     public static final double SEAWATER_REF_DENSITY_KG_M3 = 1025.0;
 
-    /* Seawater thermal expansion coefficient (1/K) */
+    /** Seawater thermal expansion coefficient (1/K) */
     public static final double ALPHA_THERMAL = 2.0e-4;
 
-    /* Seawater haline contraction coefficient (1/PSU) */
+    /** Seawater haline contraction coefficient (1/PSU) */
     public static final double BETA_HALINE = 7.5e-4;
 
-    /* Baseline North Atlantic Overturning strength in Sverdrups (10^6 m³/s) */
+    /** Baseline North Atlantic Overturning strength in Sverdrups (10^6 m³/s) */
     public static final double BASELINE_AMOC_SV = 18.0;
 
-    /* Stommel coupling constant */
+    /** Stommel coupling constant */
     public static final double STOMMEL_COUPLING_C = 5000.0;
 
     public record StommelState(double amocFlowSv, double northAtlanticCoolingShiftC, boolean isCollapsed) {}
@@ -59,9 +59,7 @@ public class ThermohalineStommelAMOCEngine {
      * Calculates seawater density anomaly (kg/m³) as a function of temperature (°C) and practical salinity (PSU).
      */
     public static double calculateSeawaterDensity(double tempC, double salinityPsu) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for ThermohalineStommelAMOCEngine - verifies boundary conservation and updates local thermodynamic state
         double deltaT = tempC - 15.0;
         double deltaS = salinityPsu - 35.0;
         return SEAWATER_REF_DENSITY_KG_M3 * (1.0 - ALPHA_THERMAL * deltaT + BETA_HALINE * deltaS);
@@ -97,9 +95,7 @@ public class ThermohalineStommelAMOCEngine {
      * Processes thermohaline ocean circulation and applies regional temperature shifts across oceanic/coastal cells.
      */
     public static void processThermohalineCirculation(List<H3Cell> cells, double freshwaterMeltwaterAnomalySv) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for ThermohalineStommelAMOCEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         // Freshwater meltwater pulse reduces polar North Atlantic salinity

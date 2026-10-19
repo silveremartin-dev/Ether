@@ -389,7 +389,7 @@ public class Scenario implements Serializable {
      */
     public Scenario copy() {
         try {
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
             String json = mapper.writeValueAsString(this);
             return mapper.readValue(json, Scenario.class);
         } catch (Exception e) {

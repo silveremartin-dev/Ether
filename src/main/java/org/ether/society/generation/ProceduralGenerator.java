@@ -39,9 +39,9 @@ public class ProceduralGenerator {
         return INSTANCE;
     }
 
-    /* Pre-industrial Earth reference CO2 partial pressure (1.0 atm * 280 ppm = 0.00028 atm). */
+    /** Pre-industrial Earth reference CO2 partial pressure (1.0 atm * 280 ppm = 0.00028 atm). */
     private static final double CO2_REF_PARTIAL_PRESSURE_ATM = 0.00028;
-    /* Radiative sensitivity: +3.0 °C per doubling of CO2 partial pressure. */
+    /** Radiative sensitivity: +3.0 °C per doubling of CO2 partial pressure. */
     private static final double CLIMATE_SENSITIVITY_K = 3.0;
 
     // -------------------------------------------------------------------------

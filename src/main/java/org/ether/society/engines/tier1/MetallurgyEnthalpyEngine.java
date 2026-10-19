@@ -24,13 +24,13 @@ import java.util.List;
 public class MetallurgyEnthalpyEngine {
     private static final Logger logger = LoggerFactory.getLogger(MetallurgyEnthalpyEngine.class);
 
-    /* Specific smelting enthalpy for Native/Oxide Copper reduction (T >= 1085 C) in MJ/kg */
+    /** Specific smelting enthalpy for Native/Oxide Copper reduction (T >= 1085 C) in MJ/kg */
     public static final double COPPER_SMELTING_ENTHALPY_MJ_PER_KG = 5.2;
-    /* Specific smelting enthalpy for Tin-Bronze alloying & reduction (T >= 1085 C) in MJ/kg */
+    /** Specific smelting enthalpy for Tin-Bronze alloying & reduction (T >= 1085 C) in MJ/kg */
     public static final double BRONZE_SMELTING_ENTHALPY_MJ_PER_KG = 8.5;
-    /* Specific smelting enthalpy for Iron Oxide reduction (T >= 1538 C) in MJ/kg */
+    /** Specific smelting enthalpy for Iron Oxide reduction (T >= 1538 C) in MJ/kg */
     public static final double IRON_SMELTING_ENTHALPY_MJ_PER_KG = 24.7;
-    /* Specific thermal cupellation and refining enthalpy for precious bullion ore in MJ/kg */
+    /** Specific thermal cupellation and refining enthalpy for precious bullion ore in MJ/kg */
     public static final double PRECIOUS_CUPELLATION_ENTHALPY_MJ_PER_KG = 12.0;
 
     /**

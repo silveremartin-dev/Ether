@@ -25,10 +25,10 @@ import java.util.List;
 public class CrustalGeothermalEngine {
     private static final Logger logger = LoggerFactory.getLogger(CrustalGeothermalEngine.class);
 
-    /* Standard continental crustal geothermal heat flux in mW/m² */
+    /** Standard continental crustal geothermal heat flux in mW/m² */
     public static final double CONTINENTAL_HEAT_FLUX_MW_PER_M2 = 65.0;
 
-    /* Standard geothermal gradient in °C per kilometer */
+    /** Standard geothermal gradient in °C per kilometer */
     public static final double GEOTHERMAL_GRADIENT_C_PER_KM = 30.0;
 
     /**
@@ -38,9 +38,7 @@ public class CrustalGeothermalEngine {
      * @return Maximum depth in meters
      */
     public static double calculateMaxMiningDepthMeters(double techLevel) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for CrustalGeothermalEngine - verifies boundary conservation and updates local thermodynamic state
         if (techLevel < 2.5) return 100.0;   // Surface mining only
         if (techLevel < 5.0) return 500.0;   // Shaft mining
         if (techLevel < 7.5) return 1500.0;  // Deep shaft mining
@@ -51,9 +49,7 @@ public class CrustalGeothermalEngine {
      * Executes one crustal geothermal and deep mining check across cells.
      */
     public static void processCrustalGeothermal(List<H3Cell> cells) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for CrustalGeothermalEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {

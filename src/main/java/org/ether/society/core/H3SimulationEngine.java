@@ -426,6 +426,17 @@ public class H3SimulationEngine implements ISimulationEngine {
         SimulationPipeline.resetGlobalSimulationState();
         this.currentScenario = scenario;
         this.performanceConfig = scenario != null ? scenario.toPerformanceConfig() : new org.ether.society.config.SimulationPerformanceConfig(true);
+        try {
+            String hwPref = java.util.prefs.Preferences.userNodeForPackage(org.ether.society.ui.ExecutionContextPanel.class)
+                    .get("ether_hardware_mode", "JAVA_VECTOR_SIMD");
+            if ("NATIVE_RUST".equalsIgnoreCase(hwPref) && org.ether.society.core.dod.NativeRustBridge.isNativeAvailable()) {
+                this.performanceConfig.setExecutionEngineMode(org.ether.society.config.SimulationPerformanceConfig.ExecutionEngineMode.RUST_NATIVE);
+            } else if ("CPU_JIT".equalsIgnoreCase(hwPref) || "GPU_OFF".equalsIgnoreCase(hwPref)) {
+                this.performanceConfig.setExecutionEngineMode(org.ether.society.config.SimulationPerformanceConfig.ExecutionEngineMode.JAVA_STANDARD);
+            } else {
+                this.performanceConfig.setExecutionEngineMode(org.ether.society.config.SimulationPerformanceConfig.ExecutionEngineMode.JAVA_VECTOR_SIMD);
+            }
+        } catch (Throwable ignored) {}
 
 
         this.cells = cells;

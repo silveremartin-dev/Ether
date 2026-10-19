@@ -25,7 +25,7 @@ package org.ether.society.core.dod;
  */
 public class DemographicKernel {
 
-    /* Target individual population threshold per cohort (Dunbar pivot). */
+    /** Target individual population threshold per cohort (Dunbar pivot). */
     private float targetCohortSize = 150.0f;
 
     /**
@@ -463,7 +463,7 @@ public class DemographicKernel {
         }
     }
 
-    /* Cached pointer hint for next free agent slot to achieve O(1) amortized allocation. */
+    /** Cached pointer hint for next free agent slot to achieve O(1) amortized allocation. */
     private int nextFreeSlotHint = 0;
 
     /**

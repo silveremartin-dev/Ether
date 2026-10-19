@@ -1574,7 +1574,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                     java.nio.file.Path m = d.resolve("metadata.json");
                     if (java.nio.file.Files.exists(m)) {
                         try {
-                            com.fasterxml.jackson.databind.JsonNode node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(m.toFile());
+                            com.fasterxml.jackson.databind.JsonNode node = org.ether.society.persistence.EtherJsonUtil.getMapper().readTree(m.toFile());
                             if (node.has("id") && saveId.equalsIgnoreCase(node.get("id").asText())) return true;
                             if (scenarioName != null && node.has("scenarioName") && scenarioName.equalsIgnoreCase(node.get("scenarioName").asText())) return true;
                         } catch (Exception ignored) {}
@@ -1589,7 +1589,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (!java.nio.file.Files.exists(histPath)) return;
 
         try {
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
             mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             List<org.ether.society.analytics.HistorySnapshot> snaps = mapper.readValue(histPath.toFile(),
                 new com.fasterxml.jackson.core.type.TypeReference<List<org.ether.society.analytics.HistorySnapshot>>() {});

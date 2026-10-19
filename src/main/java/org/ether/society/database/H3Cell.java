@@ -129,86 +129,86 @@ public class H3Cell {
     private Double woodResource = 0.0;
 
     // --- Detailed Tracking (Biomass in metric tonnes [t]) ---
-    /* Human biomass in metric tonnes (t). */
+    /** Human biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassHuman = 0.0;
-    /* Livestock biomass in metric tonnes (t). */
+    /** Livestock biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassLivestock = 0.0;
-    /* Marine & freshwater aquatic biomass in metric tonnes (t). */
+    /** Marine & freshwater aquatic biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassFish = 0.0;
-    /* Cultivated agricultural crop biomass in metric tonnes (t). */
+    /** Cultivated agricultural crop biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassAgriculture = 0.0;
-    /* Natural terrestrial wild flora and fauna biomass in metric tonnes (t). */
+    /** Natural terrestrial wild flora and fauna biomass in metric tonnes (t). */
     @Column(nullable = false)
     private Double biomassNatural = 0.0;
 
     // --- Detailed Tracking (Energy in Gigajoules [GJ]) ---
-    /* Harvested wind energy flow in Gigajoules (GJ). */
+    /** Harvested wind energy flow in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energyWind = 0.0;
-    /* Harvested direct solar energy flow in Gigajoules (GJ). */
+    /** Harvested direct solar energy flow in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energySolar = 0.0;
-    /* Fire / thermal combustion energy in Gigajoules (GJ). */
+    /** Fire / thermal combustion energy in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energyFire = 0.0;
-    /* Human physical labor treated as energetic work in Gigajoules (GJ). */
+    /** Human physical labor treated as energetic work in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energySlaves = 0.0;
-    /* Total food consumed for metabolism in Gigajoules (GJ). */
+    /** Total food consumed for metabolism in Gigajoules (GJ). */
     @Column(nullable = false)
     private Double energyFoodConsumed = 0.0;
 
     // --- Detailed Tracking (Resources) ---
-    /* Extractable base metal resources in metric tonnes (t). */
+    /** Extractable base metal resources in metric tonnes (t). */
     @Column(nullable = false)
     private Double resourceMetal = 0.0;
-    /* Precious ore deposits in kilograms per square kilometer (kg/km²). */
+    /** Precious ore deposits in kilograms per square kilometer (kg/km²). */
     @Column(nullable = false)
     private Double resourcePreciousMetal = 0.0;
-    /* Clay and construction earthen material in metric tonnes (t). */
+    /** Clay and construction earthen material in metric tonnes (t). */
     @Column(nullable = false)
     private Double resourceClay = 0.0;
-    /* Available labor force (person-years equivalent). */
+    /** Available labor force (person-years equivalent). */
     @Column(nullable = false)
     private Double resourceWork = 0.0;
-    /* Accumulated infrastructure and productive capital stock. */
+    /** Accumulated infrastructure and productive capital stock. */
     @Column(nullable = false)
     private Double resourceCapital = 0.0;
-    /* Soil organic carbon fertility in metric tonnes of Carbon per square kilometer (tC/km²). */
+    /** Soil organic carbon fertility in metric tonnes of Carbon per square kilometer (tC/km²). */
     @Column(nullable = false)
     private Double soilOrganicCarbon = 0.0;
-    /* Soil salinity / electrical conductivity EC_e in deciSiemens per meter (dS/m). */
+    /** Soil salinity / electrical conductivity EC_e in deciSiemens per meter (dS/m). */
     @Column(nullable = false)
     private Double soilSalinity = 0.0;
-    /* Subsoil extractable coal reserves in Gigatonnes or metric tonnes (t). */
+    /** Subsoil extractable coal reserves in Gigatonnes or metric tonnes (t). */
     @Column(nullable = false)
     private Double resourceCoal = 0.0;
-    /* Subsoil extractable crude oil reserves in barrels-equivalent or metric tonnes (t). */
+    /** Subsoil extractable crude oil reserves in barrels-equivalent or metric tonnes (t). */
     @Column(nullable = false)
     private Double resourceOil = 0.0;
-    /* Subsoil extractable natural gas reserves in cubic meters or energy equivalent (t). */
+    /** Subsoil extractable natural gas reserves in cubic meters or energy equivalent (t). */
     @Column(nullable = false)
     private Double resourceGas = 0.0;
-    /* Subsoil fissile uranium / thorium ore deposits in metric tonnes (t). */
+    /** Subsoil fissile uranium / thorium ore deposits in metric tonnes (t). */
     @Column(nullable = false)
     private Double resourceUranium = 0.0;
-    /* Subsoil rare earth elements (REE), lithium, and critical mineral deposits in metric tonnes (t). */
+    /** Subsoil rare earth elements (REE), lithium, and critical mineral deposits in metric tonnes (t). */
     @Column(nullable = false)
     private Double resourceRareEarths = 0.0;
-    /* Geothermal heat flow & tectonic baseline in milliwatts per square meter (mW/m²). */
+    /** Geothermal heat flow & tectonic baseline in milliwatts per square meter (mW/m²). */
     @Column(nullable = false)
     private Double mantleHeatFlow = 87.0;
-    /* Total groundwater table volume in cubic meters per square kilometer (m³/km²). */
+    /** Total groundwater table volume in cubic meters per square kilometer (m³/km²). */
     @Column(nullable = false)
     private Double freshwaterAquifer = 0.0;
-    /* Accessible shallow aquifer / springs volume in cubic meters per square kilometer (m³/km²). */
+    /** Accessible shallow aquifer / springs volume in cubic meters per square kilometer (m³/km²). */
     @Column(nullable = false)
     private Double accessibleAquifer = 0.0;
-    /* Environmental pollution index (0.0 clean to 1000.0 toxic contamination). */
+    /** Environmental pollution index (0.0 clean to 1000.0 toxic contamination). */
     @Column(nullable = false)
     private Double pollutionLevel = 0.0;
 
@@ -221,17 +221,17 @@ public class H3Cell {
     private Double giniIndex = 0.0;
     @Column(nullable = false)
     private Double technologyLevel = 0.0;
-    /* Hominin species clade: 1 = Homo Sapiens (default), 2 = Homo Neanderthalensis, 3 = Denisovan / Archaic. */
+    /** Hominin species clade: 1 = Homo Sapiens (default), 2 = Homo Neanderthalensis, 3 = Denisovan / Archaic. */
     @Column(nullable = false)
     private Integer homininSpecies = 1;
 
     // --- Movement & Terrain Friction Matrix ---
     @Column(nullable = false)
     private Double movementFriction = 1.0; // 1.0 = ideal flat plain, 10.0+ = high resistance mountain/swamp/desert
-    /* Topological trade corridor centrality and bottleneck funneling score (0.0 to 1.0). */
+    /** Topological trade corridor centrality and bottleneck funneling score (0.0 to 1.0). */
     @Column(nullable = false)
     private Double chokePointScore = 0.0;
-    /* Cumulative economic transit toll and tariff revenue collected in capital units. */
+    /** Cumulative economic transit toll and tariff revenue collected in capital units. */
     @Column(nullable = false)
     private Double transitTollRevenue = 0.0;
 
@@ -2100,5 +2100,594 @@ public class H3Cell {
     public void setHabitatAgeYears(Double habitatAgeYears) {
         this.habitatAgeYears = habitatAgeYears != null ? Math.max(0.0, habitatAgeYears) : 0.0;
     }
-}
 
+    /**
+     * Primitive-safe latitude getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if latitude is null
+     * @return current value of latitude as primitive double
+     */
+    public double getLatitudeOr(double defaultValue) {
+        return this.latitude != null ? this.latitude : defaultValue;
+    }
+
+    /**
+     * Primitive-safe longitude getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if longitude is null
+     * @return current value of longitude as primitive double
+     */
+    public double getLongitudeOr(double defaultValue) {
+        return this.longitude != null ? this.longitude : defaultValue;
+    }
+
+    /**
+     * Primitive-safe woodResource getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if woodResource is null
+     * @return current value of woodResource as primitive double
+     */
+    public double getWoodResourceOr(double defaultValue) {
+        return this.woodResource != null ? this.woodResource : defaultValue;
+    }
+
+    /**
+     * Primitive-safe biomassHuman getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if biomassHuman is null
+     * @return current value of biomassHuman as primitive double
+     */
+    public double getBiomassHumanOr(double defaultValue) {
+        return this.biomassHuman != null ? this.biomassHuman : defaultValue;
+    }
+
+    /**
+     * Primitive-safe biomassLivestock getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if biomassLivestock is null
+     * @return current value of biomassLivestock as primitive double
+     */
+    public double getBiomassLivestockOr(double defaultValue) {
+        return this.biomassLivestock != null ? this.biomassLivestock : defaultValue;
+    }
+
+    /**
+     * Primitive-safe biomassFish getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if biomassFish is null
+     * @return current value of biomassFish as primitive double
+     */
+    public double getBiomassFishOr(double defaultValue) {
+        return this.biomassFish != null ? this.biomassFish : defaultValue;
+    }
+
+    /**
+     * Primitive-safe biomassAgriculture getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if biomassAgriculture is null
+     * @return current value of biomassAgriculture as primitive double
+     */
+    public double getBiomassAgricultureOr(double defaultValue) {
+        return this.biomassAgriculture != null ? this.biomassAgriculture : defaultValue;
+    }
+
+    /**
+     * Primitive-safe biomassNatural getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if biomassNatural is null
+     * @return current value of biomassNatural as primitive double
+     */
+    public double getBiomassNaturalOr(double defaultValue) {
+        return this.biomassNatural != null ? this.biomassNatural : defaultValue;
+    }
+
+    /**
+     * Primitive-safe energyWind getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if energyWind is null
+     * @return current value of energyWind as primitive double
+     */
+    public double getEnergyWindOr(double defaultValue) {
+        return this.energyWind != null ? this.energyWind : defaultValue;
+    }
+
+    /**
+     * Primitive-safe energySolar getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if energySolar is null
+     * @return current value of energySolar as primitive double
+     */
+    public double getEnergySolarOr(double defaultValue) {
+        return this.energySolar != null ? this.energySolar : defaultValue;
+    }
+
+    /**
+     * Primitive-safe energyFire getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if energyFire is null
+     * @return current value of energyFire as primitive double
+     */
+    public double getEnergyFireOr(double defaultValue) {
+        return this.energyFire != null ? this.energyFire : defaultValue;
+    }
+
+    /**
+     * Primitive-safe energySlaves getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if energySlaves is null
+     * @return current value of energySlaves as primitive double
+     */
+    public double getEnergySlavesOr(double defaultValue) {
+        return this.energySlaves != null ? this.energySlaves : defaultValue;
+    }
+
+    /**
+     * Primitive-safe energyFoodConsumed getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if energyFoodConsumed is null
+     * @return current value of energyFoodConsumed as primitive double
+     */
+    public double getEnergyFoodConsumedOr(double defaultValue) {
+        return this.energyFoodConsumed != null ? this.energyFoodConsumed : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceMetal getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceMetal is null
+     * @return current value of resourceMetal as primitive double
+     */
+    public double getResourceMetalOr(double defaultValue) {
+        return this.resourceMetal != null ? this.resourceMetal : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourcePreciousMetal getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourcePreciousMetal is null
+     * @return current value of resourcePreciousMetal as primitive double
+     */
+    public double getResourcePreciousMetalOr(double defaultValue) {
+        return this.resourcePreciousMetal != null ? this.resourcePreciousMetal : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceClay getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceClay is null
+     * @return current value of resourceClay as primitive double
+     */
+    public double getResourceClayOr(double defaultValue) {
+        return this.resourceClay != null ? this.resourceClay : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceWork getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceWork is null
+     * @return current value of resourceWork as primitive double
+     */
+    public double getResourceWorkOr(double defaultValue) {
+        return this.resourceWork != null ? this.resourceWork : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceCapital getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceCapital is null
+     * @return current value of resourceCapital as primitive double
+     */
+    public double getResourceCapitalOr(double defaultValue) {
+        return this.resourceCapital != null ? this.resourceCapital : defaultValue;
+    }
+
+    /**
+     * Primitive-safe soilOrganicCarbon getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if soilOrganicCarbon is null
+     * @return current value of soilOrganicCarbon as primitive double
+     */
+    public double getSoilOrganicCarbonOr(double defaultValue) {
+        return this.soilOrganicCarbon != null ? this.soilOrganicCarbon : defaultValue;
+    }
+
+    /**
+     * Primitive-safe soilSalinity getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if soilSalinity is null
+     * @return current value of soilSalinity as primitive double
+     */
+    public double getSoilSalinityOr(double defaultValue) {
+        return this.soilSalinity != null ? this.soilSalinity : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceCoal getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceCoal is null
+     * @return current value of resourceCoal as primitive double
+     */
+    public double getResourceCoalOr(double defaultValue) {
+        return this.resourceCoal != null ? this.resourceCoal : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceOil getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceOil is null
+     * @return current value of resourceOil as primitive double
+     */
+    public double getResourceOilOr(double defaultValue) {
+        return this.resourceOil != null ? this.resourceOil : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceGas getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceGas is null
+     * @return current value of resourceGas as primitive double
+     */
+    public double getResourceGasOr(double defaultValue) {
+        return this.resourceGas != null ? this.resourceGas : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceUranium getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceUranium is null
+     * @return current value of resourceUranium as primitive double
+     */
+    public double getResourceUraniumOr(double defaultValue) {
+        return this.resourceUranium != null ? this.resourceUranium : defaultValue;
+    }
+
+    /**
+     * Primitive-safe resourceRareEarths getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if resourceRareEarths is null
+     * @return current value of resourceRareEarths as primitive double
+     */
+    public double getResourceRareEarthsOr(double defaultValue) {
+        return this.resourceRareEarths != null ? this.resourceRareEarths : defaultValue;
+    }
+
+    /**
+     * Primitive-safe mantleHeatFlow getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if mantleHeatFlow is null
+     * @return current value of mantleHeatFlow as primitive double
+     */
+    public double getMantleHeatFlowOr(double defaultValue) {
+        return this.mantleHeatFlow != null ? this.mantleHeatFlow : defaultValue;
+    }
+
+    /**
+     * Primitive-safe freshwaterAquifer getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if freshwaterAquifer is null
+     * @return current value of freshwaterAquifer as primitive double
+     */
+    public double getFreshwaterAquiferOr(double defaultValue) {
+        return this.freshwaterAquifer != null ? this.freshwaterAquifer : defaultValue;
+    }
+
+    /**
+     * Primitive-safe accessibleAquifer getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if accessibleAquifer is null
+     * @return current value of accessibleAquifer as primitive double
+     */
+    public double getAccessibleAquiferOr(double defaultValue) {
+        return this.accessibleAquifer != null ? this.accessibleAquifer : defaultValue;
+    }
+
+    /**
+     * Primitive-safe pollutionLevel getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if pollutionLevel is null
+     * @return current value of pollutionLevel as primitive double
+     */
+    public double getPollutionLevelOr(double defaultValue) {
+        return this.pollutionLevel != null ? this.pollutionLevel : defaultValue;
+    }
+
+    /**
+     * Primitive-safe lifespan getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if lifespan is null
+     * @return current value of lifespan as primitive double
+     */
+    public double getLifespanOr(double defaultValue) {
+        return this.lifespan != null ? this.lifespan : defaultValue;
+    }
+
+    /**
+     * Primitive-safe fertility getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if fertility is null
+     * @return current value of fertility as primitive double
+     */
+    public double getFertilityOr(double defaultValue) {
+        return this.fertility != null ? this.fertility : defaultValue;
+    }
+
+    /**
+     * Primitive-safe giniIndex getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if giniIndex is null
+     * @return current value of giniIndex as primitive double
+     */
+    public double getGiniIndexOr(double defaultValue) {
+        return this.giniIndex != null ? this.giniIndex : defaultValue;
+    }
+
+    /**
+     * Primitive-safe technologyLevel getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if technologyLevel is null
+     * @return current value of technologyLevel as primitive double
+     */
+    public double getTechnologyLevelOr(double defaultValue) {
+        return this.technologyLevel != null ? this.technologyLevel : defaultValue;
+    }
+
+    /**
+     * Primitive-safe movementFriction getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if movementFriction is null
+     * @return current value of movementFriction as primitive double
+     */
+    public double getMovementFrictionOr(double defaultValue) {
+        return this.movementFriction != null ? this.movementFriction : defaultValue;
+    }
+
+    /**
+     * Primitive-safe chokePointScore getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if chokePointScore is null
+     * @return current value of chokePointScore as primitive double
+     */
+    public double getChokePointScoreOr(double defaultValue) {
+        return this.chokePointScore != null ? this.chokePointScore : defaultValue;
+    }
+
+    /**
+     * Primitive-safe transitTollRevenue getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if transitTollRevenue is null
+     * @return current value of transitTollRevenue as primitive double
+     */
+    public double getTransitTollRevenueOr(double defaultValue) {
+        return this.transitTollRevenue != null ? this.transitTollRevenue : defaultValue;
+    }
+
+    /**
+     * Primitive-safe dynamicAlbedo getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if dynamicAlbedo is null
+     * @return current value of dynamicAlbedo as primitive double
+     */
+    public double getDynamicAlbedoOr(double defaultValue) {
+        return this.dynamicAlbedo != null ? this.dynamicAlbedo : defaultValue;
+    }
+
+    /**
+     * Primitive-safe iceSheetThicknessMeters getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if iceSheetThicknessMeters is null
+     * @return current value of iceSheetThicknessMeters as primitive double
+     */
+    public double getIceSheetThicknessMetersOr(double defaultValue) {
+        return this.iceSheetThicknessMeters != null ? this.iceSheetThicknessMeters : defaultValue;
+    }
+
+    /**
+     * Primitive-safe seaLevelOffsetMeters getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if seaLevelOffsetMeters is null
+     * @return current value of seaLevelOffsetMeters as primitive double
+     */
+    public double getSeaLevelOffsetMetersOr(double defaultValue) {
+        return this.seaLevelOffsetMeters != null ? this.seaLevelOffsetMeters : defaultValue;
+    }
+
+    /**
+     * Primitive-safe coastalMarineResource getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if coastalMarineResource is null
+     * @return current value of coastalMarineResource as primitive double
+     */
+    public double getCoastalMarineResourceOr(double defaultValue) {
+        return this.coastalMarineResource != null ? this.coastalMarineResource : defaultValue;
+    }
+
+    /**
+     * Primitive-safe habitatCapacity getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if habitatCapacity is null
+     * @return current value of habitatCapacity as primitive double
+     */
+    public double getHabitatCapacityOr(double defaultValue) {
+        return this.habitatCapacity != null ? this.habitatCapacity : defaultValue;
+    }
+
+    /**
+     * Primitive-safe habitatIntegrity getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if habitatIntegrity is null
+     * @return current value of habitatIntegrity as primitive double
+     */
+    public double getHabitatIntegrityOr(double defaultValue) {
+        return this.habitatIntegrity != null ? this.habitatIntegrity : defaultValue;
+    }
+
+    /**
+     * Primitive-safe habitatEnergyKw getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if habitatEnergyKw is null
+     * @return current value of habitatEnergyKw as primitive double
+     */
+    public double getHabitatEnergyKwOr(double defaultValue) {
+        return this.habitatEnergyKw != null ? this.habitatEnergyKw : defaultValue;
+    }
+
+    /**
+     * Primitive-safe habitatAgeYears getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if habitatAgeYears is null
+     * @return current value of habitatAgeYears as primitive double
+     */
+    public double getHabitatAgeYearsOr(double defaultValue) {
+        return this.habitatAgeYears != null ? this.habitatAgeYears : defaultValue;
+    }
+
+    /**
+     * Primitive-safe linguisticDrift getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if linguisticDrift is null
+     * @return current value of linguisticDrift as primitive double
+     */
+    public double getLinguisticDriftOr(double defaultValue) {
+        return this.linguisticDrift != null ? this.linguisticDrift : defaultValue;
+    }
+
+    /**
+     * Primitive-safe homininSpecies getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if homininSpecies is null
+     * @return current value of homininSpecies as primitive int
+     */
+    public int getHomininSpeciesOr(int defaultValue) {
+        return this.homininSpecies != null ? this.homininSpecies : defaultValue;
+    }
+
+    /**
+     * Primitive-safe habitatTier getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if habitatTier is null
+     * @return current value of habitatTier as primitive int
+     */
+    public int getHabitatTierOr(int defaultValue) {
+        return this.habitatTier != null ? this.habitatTier : defaultValue;
+    }
+
+    /**
+     * Primitive-safe pop0to4 getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if pop0to4 is null
+     * @return current value of pop0to4 as primitive int
+     */
+    public int getPop0to4Or(int defaultValue) {
+        return this.pop0to4 != null ? this.pop0to4 : defaultValue;
+    }
+
+    /**
+     * Primitive-safe pop5to14 getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if pop5to14 is null
+     * @return current value of pop5to14 as primitive int
+     */
+    public int getPop5to14Or(int defaultValue) {
+        return this.pop5to14 != null ? this.pop5to14 : defaultValue;
+    }
+
+    /**
+     * Primitive-safe pop15to24 getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if pop15to24 is null
+     * @return current value of pop15to24 as primitive int
+     */
+    public int getPop15to24Or(int defaultValue) {
+        return this.pop15to24 != null ? this.pop15to24 : defaultValue;
+    }
+
+    /**
+     * Primitive-safe pop25to49 getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if pop25to49 is null
+     * @return current value of pop25to49 as primitive int
+     */
+    public int getPop25to49Or(int defaultValue) {
+        return this.pop25to49 != null ? this.pop25to49 : defaultValue;
+    }
+
+    /**
+     * Primitive-safe pop50to64 getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if pop50to64 is null
+     * @return current value of pop50to64 as primitive int
+     */
+    public int getPop50to64Or(int defaultValue) {
+        return this.pop50to64 != null ? this.pop50to64 : defaultValue;
+    }
+
+    /**
+     * Primitive-safe pop65to79 getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if pop65to79 is null
+     * @return current value of pop65to79 as primitive int
+     */
+    public int getPop65to79Or(int defaultValue) {
+        return this.pop65to79 != null ? this.pop65to79 : defaultValue;
+    }
+
+    /**
+     * Primitive-safe pop80Plus getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if pop80Plus is null
+     * @return current value of pop80Plus as primitive int
+     */
+    public int getPop80PlusOr(int defaultValue) {
+        return this.pop80Plus != null ? this.pop80Plus : defaultValue;
+    }
+
+    /**
+     * Primitive-safe popYouth getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if popYouth is null
+     * @return current value of popYouth as primitive int
+     */
+    public int getPopYouthOr(int defaultValue) {
+        return this.popYouth != null ? this.popYouth : defaultValue;
+    }
+
+    /**
+     * Primitive-safe popAdult getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if popAdult is null
+     * @return current value of popAdult as primitive int
+     */
+    public int getPopAdultOr(int defaultValue) {
+        return this.popAdult != null ? this.popAdult : defaultValue;
+    }
+
+    /**
+     * Primitive-safe popElderly getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if popElderly is null
+     * @return current value of popElderly as primitive int
+     */
+    public int getPopElderlyOr(int defaultValue) {
+        return this.popElderly != null ? this.popElderly : defaultValue;
+    }
+
+    /**
+     * Primitive-safe epidemicInfected getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if epidemicInfected is null
+     * @return current value of epidemicInfected as primitive int
+     */
+    public int getEpidemicInfectedOr(int defaultValue) {
+        return this.epidemicInfected != null ? this.epidemicInfected : defaultValue;
+    }
+
+    /**
+     * Primitive-safe epidemicRecovered getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if epidemicRecovered is null
+     * @return current value of epidemicRecovered as primitive int
+     */
+    public int getEpidemicRecoveredOr(int defaultValue) {
+        return this.epidemicRecovered != null ? this.epidemicRecovered : defaultValue;
+    }
+}

@@ -119,47 +119,47 @@ public class DensityMap {
     // Enums
 
     public enum ResourceCategory {
-        /* Human population density. */
+        /** Human population density. */
         POPULATION,
 
-        /* Edible resources (fish, game, crops). */
+        /** Edible resources (fish, game, crops). */
         FOOD,
 
-        /* Mineral resources (metals, ores). */
+        /** Mineral resources (metals, ores). */
         MINERALS,
 
-        /* Living biomass (wood, vegetation). */
+        /** Living biomass (wood, vegetation). */
         BIOMASS,
 
-        /* Water resources. */
+        /** Water resources. */
         WATER
     }
 
     public enum DensityUnit {
-        /* Gigajoules per square kilometer. */
+        /** Gigajoules per square kilometer. */
         GJ_PER_KM2,
 
-        /* Count per square kilometer (population). */
+        /** Count per square kilometer (population). */
         COUNT_PER_KM2,
 
-        /* Kilograms per square kilometer. */
+        /** Kilograms per square kilometer. */
         KG_PER_KM2,
 
-        /* Cubic meters per square kilometer (water). */
+        /** Cubic meters per square kilometer (water). */
         M3_PER_KM2
     }
 
     public enum DistributionPattern {
-        /* Evenly distributed. */
+        /** Evenly distributed. */
         UNIFORM,
 
-        /* Fractal/self-similar (realistic for cities, resources). */
+        /** Fractal/self-similar (realistic for cities, resources). */
         FRACTAL,
 
-        /* Strongly clustered (ore veins, oases). */
+        /** Strongly clustered (ore veins, oases). */
         CLUSTERED,
 
-        /* Random distribution. */
+        /** Random distribution. */
         RANDOM
     }
 

@@ -64,7 +64,7 @@ public class HistoricalValidationKernel {
         int maxYear
     ) {}
 
-    /* Multi-Metric Historical Benchmark Time Series (Map of Metric Name -> Time Series Data) */
+    /** Multi-Metric Historical Benchmark Time Series (Map of Metric Name -> Time Series Data) */
     private static final Map<String, Map<Integer, Double>> BENCHMARK_DATASETS = new HashMap<>();
     private static final Map<String, BenchmarkVariableMeta> BENCHMARK_METADATA = new LinkedHashMap<>();
 
@@ -140,7 +140,7 @@ public class HistoricalValidationKernel {
         }
     }
 
-    /* 20-Variable Simulation Trajectory Container */
+    /** 20-Variable Simulation Trajectory Container */
     public static class MultiMetricTrajectory {
         public Map<String, Map<Integer, Double>> seriesMap = new HashMap<>();
 

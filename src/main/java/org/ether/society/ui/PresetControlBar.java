@@ -41,7 +41,7 @@ import java.util.Optional;
 public class PresetControlBar<T> extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(PresetControlBar.class);
 
-    /* Prefix category used for export file naming (e.g. "planetgenerator", "ecology", "scenario") */
+    /** Prefix category used for export file naming (e.g. "planetgenerator", "ecology", "scenario") */
     private String exportCategory = "preset";
 
     /** Internal state: label key (String). */
@@ -65,19 +65,19 @@ public class PresetControlBar<T> extends VBox {
     private final Button exportBtn;
     private final Button importBtn;
 
-    /* When true, parameter changes should clear the name field. */
+    /** When true, parameter changes should clear the name field. */
     private boolean trackingChanges = false;
     /** Internal state: dirty (boolean). */
     private boolean dirty = false;
 
-    /* Floating toast notification shown inside the control bar */
+    /** Floating toast notification shown inside the control bar */
     private Label toastLabel;
 
     private PresetActionsListener<T> listener;
 
     public interface PresetActionsListener<T> {
         void onPresetSelected(T preset);
-        /* Called when user saves with the given name (new or renamed). */
+        /** Called when user saves with the given name (new or renamed). */
         void onSavePreset(String name);
         void onDeletePreset(T preset);
         void onExportPreset(File targetFile, T preset);
@@ -259,7 +259,7 @@ public class PresetControlBar<T> extends VBox {
     // Public API
     // -------------------------------------------------------------------------
 
-    /* Set the export category used for file name prefix. */
+    /** Set the export category used for file name prefix. */
     public void setExportCategory(String category) {
         this.exportCategory = category;
     }
@@ -452,7 +452,7 @@ public class PresetControlBar<T> extends VBox {
         return presetCombo;
     }
 
-    /* Returns the current name typed in the name field. */
+    /** Returns the current name typed in the name field. */
     public String getCurrentName() {
         return nameField.getText().trim();
     }

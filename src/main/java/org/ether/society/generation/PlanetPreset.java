@@ -180,7 +180,7 @@ public record PlanetPreset(
 
 
 
-    /* Compact constructor for Jackson deserialization normalization */
+    /** Compact constructor for Jackson deserialization normalization */
 
     public PlanetPreset {
 
@@ -220,7 +220,7 @@ public record PlanetPreset(
 
 
 
-    /* Modern Earth (2026 baseline) */
+    /** Modern Earth (2026 baseline) */
 
     public static final PlanetPreset EARTH_MODERN = new PlanetPreset(
 
@@ -238,13 +238,13 @@ public record PlanetPreset(
 
 
 
-    /* Default Terran / Earth-like settings (alias for modern) */
+    /** Default Terran / Earth-like settings (alias for modern) */
 
     public static final PlanetPreset EARTH_LIKE = EARTH_MODERN;
 
 
 
-    /* -1 000 ans : Début Âge du Fer */
+    /** -1 000 ans : Début Âge du Fer */
 
     public static final PlanetPreset EARTH_IRON_1000BP = new PlanetPreset(
 
@@ -262,7 +262,7 @@ public record PlanetPreset(
 
 
 
-    /* -1 900 ans : Âge du Bronze Moyen */
+    /** -1 900 ans : Âge du Bronze Moyen */
 
     public static final PlanetPreset EARTH_BRONZE_1900BP = new PlanetPreset(
 
@@ -280,7 +280,7 @@ public record PlanetPreset(
 
 
 
-    /* -3 000 ans (LH) : Holocène tardif */
+    /** -3 000 ans (LH) : Holocène tardif */
 
     public static final PlanetPreset EARTH_LH_3000BP = new PlanetPreset(
 
@@ -298,7 +298,7 @@ public record PlanetPreset(
 
 
 
-    /* -6 000 ans (MH) : Holocène moyen avec le Sahara Vert et le lac Méga-Tchad */
+    /** -6 000 ans (MH) : Holocène moyen avec le Sahara Vert et le lac Méga-Tchad */
 
     public static final PlanetPreset EARTH_MH_6000BP = new PlanetPreset(
 
@@ -316,7 +316,7 @@ public record PlanetPreset(
 
 
 
-    /* -10 000 ans (EH) : Holocène précoce (-35m niveau de la mer déglaciation) */
+    /** -10 000 ans (EH) : Holocène précoce (-35m niveau de la mer déglaciation) */
 
     public static final PlanetPreset EARTH_EH_10000BP = new PlanetPreset(
 
@@ -334,7 +334,7 @@ public record PlanetPreset(
 
 
 
-    /* -20 000 ans (LGM) : Dernier Maximum Glaciaire (-125m niveau marin eustatique bas) */
+    /** -20 000 ans (LGM) : Dernier Maximum Glaciaire (-125m niveau marin eustatique bas) */
 
     public static final PlanetPreset EARTH_LGM_20000BP = new PlanetPreset(
 
@@ -352,7 +352,7 @@ public record PlanetPreset(
 
 
 
-    /* -25 000 ans : Début LGM & Béringie (-100m niveau marin) */
+    /** -25 000 ans : Début LGM & Béringie (-100m niveau marin) */
 
     public static final PlanetPreset EARTH_LGM_ONSET_25000BP = new PlanetPreset(
 
@@ -370,7 +370,7 @@ public record PlanetPreset(
 
 
 
-    /* -50 000 ans : Stade Isotopique 3 & Sahul (-60m niveau marin) */
+    /** -50 000 ans : Stade Isotopique 3 & Sahul (-60m niveau marin) */
 
     public static final PlanetPreset EARTH_MIS3_50000BP = new PlanetPreset(
 
@@ -388,7 +388,7 @@ public record PlanetPreset(
 
 
 
-    /* -100 000 ans (LIG) : Dernier Interglaciaire / Eémien (0m datum datum / +6m stand) */
+    /** -100 000 ans (LIG) : Dernier Interglaciaire / Eémien (0m datum datum / +6m stand) */
 
     public static final PlanetPreset EARTH_LIG_100000BP = new PlanetPreset(
 
@@ -406,7 +406,7 @@ public record PlanetPreset(
 
 
 
-    /* Mars-like settings */
+    /** Mars-like settings */
 
     public static final PlanetPreset MARS_LIKE = new PlanetPreset(
 
@@ -428,7 +428,7 @@ public record PlanetPreset(
 
 
 
-    /* Venusian settings */
+    /** Venusian settings */
 
     public static final PlanetPreset VENUS_LIKE = new PlanetPreset(
 
@@ -446,7 +446,7 @@ public record PlanetPreset(
 
 
 
-    /* Moon-like satellite settings */
+    /** Moon-like satellite settings */
 
     public static final PlanetPreset MOON_LIKE = new PlanetPreset(
 
@@ -464,7 +464,7 @@ public record PlanetPreset(
 
 
 
-    /* Mercury settings */
+    /** Mercury settings */
 
     public static final PlanetPreset MERCURY_LIKE = new PlanetPreset(
 
@@ -482,7 +482,7 @@ public record PlanetPreset(
 
 
 
-    /* Titan-like moon settings */
+    /** Titan-like moon settings */
 
     public static final PlanetPreset TITAN_LIKE = new PlanetPreset(
 
@@ -500,7 +500,7 @@ public record PlanetPreset(
 
 
 
-    /* Super-Earth settings */
+    /** Super-Earth settings */
 
     public static final PlanetPreset SUPER_EARTH = new PlanetPreset(
 
@@ -518,7 +518,7 @@ public record PlanetPreset(
 
 
 
-    /* Tidally locked Eyeball world */
+    /** Tidally locked Eyeball world */
 
     public static final PlanetPreset EYEBALL_WORLD = new PlanetPreset(
 
@@ -536,7 +536,7 @@ public record PlanetPreset(
 
 
 
-    /* Water world settings */
+    /** Water world settings */
 
     public static final PlanetPreset WATER_WORLD = new PlanetPreset(
 
@@ -554,7 +554,7 @@ public record PlanetPreset(
 
 
 
-    /* Ice world settings */
+    /** Ice world settings */
 
     public static final PlanetPreset ICE_WORLD = new PlanetPreset(
 

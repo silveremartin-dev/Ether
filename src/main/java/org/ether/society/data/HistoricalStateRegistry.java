@@ -54,10 +54,10 @@ public class HistoricalStateRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(HistoricalStateRegistry.class);
 
-    /* Primary path relative to the working directory (Maven project root). */
+    /** Primary path relative to the working directory (Maven project root). */
     private static final String PRIMARY_PATH = "data/history/treaties_and_transitions.json";
 
-    /* Fallback for classpath resources during unit tests. */
+    /** Fallback for classpath resources during unit tests. */
     private static final String CLASSPATH_RESOURCE = "/treaties_and_transitions.json";
 
     // -------------------------------------------------------------------------
@@ -203,7 +203,7 @@ public class HistoricalStateRegistry {
     }
 
     private static List<HistoricalEpoch> loadRegistry() {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
         JsonNode root = null;
 
         // 1. Try filesystem path (runtime / Maven execution)

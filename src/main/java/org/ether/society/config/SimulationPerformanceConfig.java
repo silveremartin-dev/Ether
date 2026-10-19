@@ -23,31 +23,46 @@ import java.io.Serializable;
 public class SimulationPerformanceConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /* Enforce strict bit-identical determinism (disables all approximations) */
+    /** Enforce strict bit-identical determinism (disables all approximations) */
     private boolean strictDeterminism = true;
 
-    /* Enable sparse cell skipping (skip updates for empty deep ocean/desert cells without events) */
+    /** Enable sparse cell skipping (skip updates for empty deep ocean/desert cells without events) */
     private boolean enableSparseCellSkipping = false;
 
-    /* Enable ocean macro aggregation (group deep abyssal cells z < -200m) */
+    /** Enable ocean macro aggregation (group deep abyssal cells z < -200m) */
     private boolean enableOceanMacroAggregation = false;
 
-    /* Enable exclusive coastal navigation (pathfinding focused on coasts & straits) */
+    /** Enable exclusive coastal navigation (pathfinding focused on coasts & straits) */
     private boolean enableCoastalNavigationOnly = false;
 
-    /* Enable multi-frequency climate ticks (e.g. run climate diffusion every N ticks instead of every tick) */
+    /** Enable multi-frequency climate ticks (e.g. run climate diffusion every N ticks instead of every tick) */
     private boolean enableMultiFreqClimateTicks = false;
     /** Internal state: climate tick frequency (int). */
     private int climateTickFrequency = 5;
 
-    /* Enable parallel stream execution (may introduce non-deterministic floating-point summation order) */
+    /** Enable parallel stream execution (may introduce non-deterministic floating-point summation order) */
     private boolean enableParallelExecution = false;
 
-    /* Enable downwind spatial range truncation in dust storm & pollution dispersion */
+    /** Enable downwind spatial range truncation in dust storm & pollution dispersion */
     private boolean enableSpatialRangeTruncation = false;
 
-    /* Enable Tier 2 sociological & macroeconomic cliodynamics (SDT, Tainter, World3, Institutions, Trade). When false, executes Tier 1 physical conservation PDEs only. */
+    /** Enable Tier 2 sociological & macroeconomic cliodynamics (SDT, Tainter, World3, Institutions, Trade). When false, executes Tier 1 physical conservation PDEs only. */
     private boolean enableTier2Cliodynamics = true;
+
+    /**
+     * Compute and Execution Engine backend selection.
+     */
+    public enum ExecutionEngineMode {
+        /** Standard JVM HotSpot JIT multi-threaded scalar execution. */
+        JAVA_STANDARD,
+        /** Direct CPU hardware vector registers via jdk.incubator.vector. */
+        JAVA_VECTOR_SIMD,
+        /** Compiled Native Rust multi-core library (AVX-512/AVX2 + Rayon). */
+        RUST_NATIVE
+    }
+
+    /** Execution engine backend mode (default: JAVA_VECTOR_SIMD) */
+    private ExecutionEngineMode executionEngineMode = ExecutionEngineMode.JAVA_VECTOR_SIMD;
 
     /**
      * Simulation performance config.
@@ -222,7 +237,7 @@ public class SimulationPerformanceConfig implements Serializable {
         }
     }
 
-    /* Number of parallel execution threads (0 = auto-detect all available CPU cores, 1 = single-threaded deterministic) */
+    /** Number of parallel execution threads (0 = auto-detect all available CPU cores, 1 = single-threaded deterministic) */
     private int parallelThreadCount = 0;
 
     /**
@@ -280,6 +295,24 @@ public class SimulationPerformanceConfig implements Serializable {
      */
     public void setEnableTier2Cliodynamics(boolean enableTier2Cliodynamics) {
         this.enableTier2Cliodynamics = enableTier2Cliodynamics;
+    }
+
+    /**
+     * Gets the configured execution engine backend.
+     *
+     * @return active execution engine mode
+     */
+    public ExecutionEngineMode getExecutionEngineMode() {
+        return executionEngineMode;
+    }
+
+    /**
+     * Sets the execution engine backend (Java Standard, Java SIMD, or Native Rust).
+     *
+     * @param executionEngineMode target engine mode
+     */
+    public void setExecutionEngineMode(ExecutionEngineMode executionEngineMode) {
+        this.executionEngineMode = executionEngineMode != null ? executionEngineMode : ExecutionEngineMode.JAVA_VECTOR_SIMD;
     }
 }
 

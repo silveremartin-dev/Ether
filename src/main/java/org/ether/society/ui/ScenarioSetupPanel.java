@@ -645,7 +645,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
 
-    /* Internal model for a scheduled planetary event */
+    /** Internal model for a scheduled planetary event */
     public static class ClimateEvent {
         private final StringProperty type;
         private final StringProperty name;
@@ -1037,7 +1037,7 @@ public class ScenarioSetupPanel extends BorderPane {
             @Override
             public void onExportPreset(File targetFile, Scenario scenario) {
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                     mapper.writeValue(targetFile, scenario);
                     logger.info("Exported scenario preset to {}", targetFile.getAbsolutePath());
@@ -1054,7 +1054,7 @@ public class ScenarioSetupPanel extends BorderPane {
             @Override
             public void onImportPreset(File sourceFile) {
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                     Scenario scenario = mapper.readValue(sourceFile, Scenario.class);
                     scenarioPresetBar.getPresetCombo().getItems().add(scenario);
                     scenarioPresetBar.getPresetCombo().setValue(scenario);
@@ -2272,7 +2272,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 org.ether.society.model.EtherScenarioBundle bundle = 
                         org.ether.society.security.EtherBundleSigner.signBundle(rawBundle, "Ether Lead Planner");
 
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                 mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(file, bundle);
@@ -2299,7 +2299,7 @@ public class ScenarioSetupPanel extends BorderPane {
         File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
         if (file != null) {
             try {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                 mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
                 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -4616,7 +4616,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 gisData.put("culturalTensorsCount", cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9);
                 gisData.put("exportTimestamp", java.time.Instant.now().toString());
 
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(targetFile, gisData);
 
@@ -4653,7 +4653,7 @@ public class ScenarioSetupPanel extends BorderPane {
                 hashes.put("chelsa_trace21k_paleoclimate", "3b7b4d32f7e77a1122ab9123456789abcdef0123456789abcdef0123456789ab");
                 manifest.put("datasetHashesSHA256", hashes);
 
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(targetFile, manifest);
 

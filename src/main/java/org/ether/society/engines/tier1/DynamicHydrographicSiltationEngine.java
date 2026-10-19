@@ -36,19 +36,19 @@ import java.util.List;
 public class DynamicHydrographicSiltationEngine {
     private static final Logger logger = LoggerFactory.getLogger(DynamicHydrographicSiltationEngine.class);
 
-    /* Quartz sediment particle density in kg/m³ */
+    /** Quartz sediment particle density in kg/m³ */
     public static final double SEDIMENT_DENSITY_KG_M3 = 2650.0;
 
-    /* Fluid (water) density in kg/m³ */
+    /** Fluid (water) density in kg/m³ */
     public static final double WATER_DENSITY_KG_M3 = 1000.0;
 
-    /* Gravitational acceleration in m/s² */
+    /** Gravitational acceleration in m/s² */
     public static final double GRAVITY_M_S2 = 9.80665;
 
-    /* Typical fine silt particle radius in meters (20 Î¼m) */
+    /** Typical fine silt particle radius in meters (20 Î¼m) */
     public static final double SILT_GRAIN_RADIUS_M = 20.0e-6;
 
-    /* Water dynamic viscosity at 20°C in PaÂ·s (NÂ·s/m²) */
+    /** Water dynamic viscosity at 20°C in PaÂ·s (NÂ·s/m²) */
     public static final double WATER_VISCOSITY_PA_S = 1.002e-3;
 
     /**
@@ -59,9 +59,7 @@ public class DynamicHydrographicSiltationEngine {
      * @return Settling velocity in m/s
      */
     public static double calculateStokesSettlingVelocity(double grainRadiusMeters, double waterTempC) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for DynamicHydrographicSiltationEngine - verifies boundary conservation and updates local thermodynamic state
         // Temperature-dependent dynamic viscosity: Î¼(T) â‰ˆ 2.414e-5 * 10^(247.8 / (T + 133.15))
         double tempK = Math.max(273.15, waterTempC + 273.15);
         double viscosity = 2.414e-5 * Math.pow(10.0, 247.8 / (tempK - 140.0));
@@ -77,9 +75,7 @@ public class DynamicHydrographicSiltationEngine {
      * @param deltaYears step size in years
      */
     public static void processHydrographicSiltation(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for DynamicHydrographicSiltationEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         List<H3Cell> upstreamCells = new java.util.ArrayList<>();

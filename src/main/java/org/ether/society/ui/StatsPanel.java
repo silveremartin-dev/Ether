@@ -244,7 +244,7 @@ public class StatsPanel extends VBox {
         }
     }
 
-    /* Class to hold UI elements for a single metric card */
+    /** Class to hold UI elements for a single metric card */
     private static class MetricCard extends HBox {
         /** Internal state: key (String). */
         private final String key;

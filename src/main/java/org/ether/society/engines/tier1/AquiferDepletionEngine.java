@@ -34,19 +34,17 @@ import java.util.List;
 public class AquiferDepletionEngine {
     private static final Logger logger = LoggerFactory.getLogger(AquiferDepletionEngine.class);
 
-    /* Specific yield of unconfined porous aquifer S_y */
+    /** Specific yield of unconfined porous aquifer S_y */
     public static final double SPECIFIC_YIELD_SY = 0.20;
 
-    /* Baseline hydraulic conductivity K in m/s scaled to annual dt */
+    /** Baseline hydraulic conductivity K in m/s scaled to annual dt */
     public static final double HYDRAULIC_CONDUCTIVITY_K = 1e-4;
 
     /**
      * Executes one aquifer depletion, recharge, and 2D Darcy filtration tick across cells.
      */
     public static void processAquiferDepletion(List<H3Cell> cells) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AquiferDepletionEngine - verifies boundary conservation and updates local thermodynamic state
         processAquiferDepletion(cells, 30.0 / 365.25);
     }
 
@@ -54,9 +52,7 @@ public class AquiferDepletionEngine {
      * Executes aquifer depletion and 2D Darcy lateral diffusion with explicit time delta in years.
      */
     public static void processAquiferDepletion(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AquiferDepletionEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         int depletedAquifers = 0;

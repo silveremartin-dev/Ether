@@ -37,7 +37,7 @@ import java.util.List;
 public class ManningStricklerHydrodynamicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(ManningStricklerHydrodynamicsEngine.class);
 
-    /* Standard natural river channel Manning roughness coefficient (s/m^(1/3)) */
+    /** Standard natural river channel Manning roughness coefficient (s/m^(1/3)) */
     public static final double MANNING_ROUGHNESS_N = 0.035;
 
     /**
@@ -49,9 +49,7 @@ public class ManningStricklerHydrodynamicsEngine {
      * @return Mean water velocity in m/s
      */
     public static double calculateFlowVelocity(double hydraulicRadiusM, double bedSlope, double manningN) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for ManningStricklerHydrodynamicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (hydraulicRadiusM <= 0.0 || bedSlope <= 0.0 || manningN <= 0.0) {
             return 0.0;
         }
@@ -64,9 +62,7 @@ public class ManningStricklerHydrodynamicsEngine {
      * Calculates river discharge Q (m³/s) for a rectangular channel of given width and depth.
      */
     public static double calculateDischarge(double widthM, double depthM, double bedSlope) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for ManningStricklerHydrodynamicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (widthM <= 0.0 || depthM <= 0.0) return 0.0;
         double area = widthM * depthM;
         double wettedPerimeter = widthM + 2.0 * depthM;

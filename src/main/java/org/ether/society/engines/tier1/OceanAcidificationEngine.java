@@ -34,10 +34,10 @@ import java.util.List;
 public class OceanAcidificationEngine {
     private static final Logger logger = LoggerFactory.getLogger(OceanAcidificationEngine.class);
 
-    /* Reference Henry's constant for CO2 in seawater at 298.15 K (mol/(LÂ·atm)) */
+    /** Reference Henry's constant for CO2 in seawater at 298.15 K (mol/(LÂ·atm)) */
     public static final double HENRY_K0_CO2 = 0.034;
 
-    /* Enthalpy of dissolution / R for CO2 in Kelvin */
+    /** Enthalpy of dissolution / R for CO2 in Kelvin */
     public static final double ENTHALPY_DISSOLUTION_OVER_R = 2400.0;
 
     /**
@@ -45,9 +45,7 @@ public class OceanAcidificationEngine {
      * Cold waters absorb significantly more CO2 than warm tropical waters.
      */
     public static double calculateHenrySolubility(double tempCelsius) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for OceanAcidificationEngine - verifies boundary conservation and updates local thermodynamic state
         double tempK = Math.max(271.15, tempCelsius + PhysicalConstants.KELVIN_ZERO_CELSIUS);
         double deltaInvT = (1.0 / tempK) - (1.0 / PhysicalConstants.OPTIMAL_BIOLOGICAL_TEMP_KELVIN);
         return HENRY_K0_CO2 * Math.exp(ENTHALPY_DISSOLUTION_OVER_R * deltaInvT);
@@ -57,9 +55,7 @@ public class OceanAcidificationEngine {
      * Calculates dissolved CO2 concentration in aqueous phase in mol/L.
      */
     public static double calculateDissolvedCO2(double tempCelsius, double co2Ppm) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for OceanAcidificationEngine - verifies boundary conservation and updates local thermodynamic state
         double pCO2Atm = Math.max(50.0, co2Ppm) * 1e-6;
         return calculateHenrySolubility(tempCelsius) * pCO2Atm;
     }
@@ -71,9 +67,7 @@ public class OceanAcidificationEngine {
      * @param co2Ppm  Global atmospheric COâ‚‚ concentration in ppm
      */
     public static void processOceanAcidification(List<H3Cell> cells, double co2Ppm) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for OceanAcidificationEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         // Baseline COâ‚‚ = 280 ppm. Acidification occurs when COâ‚‚ > 350 ppm

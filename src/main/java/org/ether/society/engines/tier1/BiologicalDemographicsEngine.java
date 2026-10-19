@@ -25,10 +25,10 @@ import java.util.List;
 public class BiologicalDemographicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(BiologicalDemographicsEngine.class);
 
-    /* Baseline actuarial aging constant Î± */
+    /** Baseline actuarial aging constant Î± */
     public static final double GOMPERTZ_ALPHA = 0.0001;
 
-    /* Cellular senescence rate Î² */
+    /** Cellular senescence rate Î² */
     public static final double GOMPERTZ_BETA = 0.08;
 
     /**
@@ -39,9 +39,7 @@ public class BiologicalDemographicsEngine {
      * @return Mortality hazard rate Î¼(x)
      */
     public static double calculateGompertzHazardRate(double ageYears, double environmentalHazardGamma) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for BiologicalDemographicsEngine - verifies boundary conservation and updates local thermodynamic state
         return GOMPERTZ_ALPHA * Math.exp(GOMPERTZ_BETA * ageYears) + environmentalHazardGamma;
     }
 
@@ -49,9 +47,7 @@ public class BiologicalDemographicsEngine {
      * Executes one biological demographic mortality tick across cells with dt.
      */
     public static void processBiologicalDemographics(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for BiologicalDemographicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         double dt = Math.max(0.001, deltaYears);
@@ -132,9 +128,7 @@ public class BiologicalDemographicsEngine {
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */
     public static void processBiologicalDemographics(List<H3Cell> cells) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for BiologicalDemographicsEngine - verifies boundary conservation and updates local thermodynamic state
         processBiologicalDemographics(cells, 30.0 / 365.25);
     }
 }

@@ -23,9 +23,9 @@ import java.util.UUID;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Polity {
-    /* Unique identifier for the polity entity. */
+    /** Unique identifier for the polity entity. */
     private final String id;
-    /* Name of the sovereign polity. */
+    /** Name of the sovereign polity. */
     private String name;
     @JsonIgnore
     private Color color;

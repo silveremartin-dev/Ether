@@ -62,7 +62,7 @@ public class ClusterSnapshotManager {
     public ClusterSnapshotManager(Path snapshotDir, int maxRetainedSnapshots) {
         this.snapshotDir = snapshotDir;
         this.maxRetainedSnapshots = Math.max(1, maxRetainedSnapshots);
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.objectMapper.configure(com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

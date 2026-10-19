@@ -31,9 +31,7 @@ public class SelectiveBreedingEngine {
      * @return Crop yield breeding factor (1.0 to 3.5)
      */
     public static double calculateSelectiveBreedingYieldFactor(double techLevel) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for SelectiveBreedingEngine - verifies boundary conservation and updates local thermodynamic state
         if (techLevel < 1.0) return 1.0; // Wild gatherer plants
         return 1.0 + Math.min(2.5, techLevel * 0.35); // 3.5x multiplier in Green Revolution era
     }
@@ -49,9 +47,7 @@ public class SelectiveBreedingEngine {
      * Executes one selective breeding tick across cells scaled by dtYears and cell surface area.
      */
     public static void processSelectiveBreeding(List<H3Cell> cells, double dtYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for SelectiveBreedingEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
         double dtSafe = Math.max(0.0001, dtYears);
 

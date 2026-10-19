@@ -143,36 +143,36 @@ public class Simulation {
     // Enums
 
     public enum TimeStep {
-        /* One month per tick. */
+        /** One month per tick. */
         MONTH,
 
-        /* Three months per tick. */
+        /** Three months per tick. */
         SEASON,
 
-        /* One year per tick. */
+        /** One year per tick. */
         YEAR,
 
-        /* Ten years per tick. */
+        /** Ten years per tick. */
         DECADE,
 
-        /* One hundred years per tick. */
+        /** One hundred years per tick. */
         CENTURY
     }
 
     public enum SimulationState {
-        /* Simulation created but not yet started. */
+        /** Simulation created but not yet started. */
         CREATED,
 
-        /* Simulation is actively running. */
+        /** Simulation is actively running. */
         RUNNING,
 
-        /* Simulation is paused. */
+        /** Simulation is paused. */
         PAUSED,
 
-        /* Simulation has reached end year. */
+        /** Simulation has reached end year. */
         COMPLETED,
 
-        /* Simulation encountered an error. */
+        /** Simulation encountered an error. */
         ERROR
     }
 

@@ -634,7 +634,7 @@ public class ResourceDistributionPanel extends BorderPane {
             @Override
             public void onExportPreset(File targetFile, EcologyPreset preset) {
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                     mapper.writeValue(targetFile, preset);
                     logger.info("Exported ecology preset to {}", targetFile.getAbsolutePath());
@@ -651,7 +651,7 @@ public class ResourceDistributionPanel extends BorderPane {
             @Override
             public void onImportPreset(File sourceFile) {
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                     EcologyPreset preset = mapper.readValue(sourceFile, EcologyPreset.class);
                     ecologyPresetBar.getPresetCombo().getItems().add(preset);
                     ecologyPresetBar.getPresetCombo().setValue(preset);
@@ -4288,7 +4288,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 gisData.put("planetPreset", activePlanetPreset != null ? activePlanetPreset.name() : "EARTH_LIKE");
                 gisData.put("exportTimestamp", java.time.Instant.now().toString());
 
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(targetFile, gisData);
 
@@ -4325,7 +4325,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 hashes.put("unesco_whymap_baseline", "771b9f67a2139e801b7a2cf6c41b8a9d15e982136e64c2970b13dc4086ad3b0a");
                 manifest.put("sha256Signatures", hashes);
 
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(targetFile, manifest);
 

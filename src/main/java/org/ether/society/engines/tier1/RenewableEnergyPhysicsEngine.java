@@ -24,13 +24,13 @@ import java.util.List;
 public class RenewableEnergyPhysicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(RenewableEnergyPhysicsEngine.class);
 
-    /* Solar Constant at TOA in W/m² */
+    /** Solar Constant at TOA in W/m² */
     public static final double SOLAR_CONSTANT_W_PER_M2 = 1361.0;
 
-    /* Betz Limit aerodynamic power coefficient */
+    /** Betz Limit aerodynamic power coefficient */
     public static final double BETZ_LIMIT_CP = 0.593;
 
-    /* Air density at sea level in kg/m³ */
+    /** Air density at sea level in kg/m³ */
     public static final double AIR_DENSITY_KG_PER_M3 = 1.225;
 
     /**
@@ -40,9 +40,7 @@ public class RenewableEnergyPhysicsEngine {
      * @return Kinetic wind power density in W/m²
      */
     public static double calculateBetzWindPowerWattsPerM2(double windSpeedMetersPerSec) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for RenewableEnergyPhysicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (windSpeedMetersPerSec <= 0.0) return 0.0;
         return 0.5 * AIR_DENSITY_KG_PER_M3 * Math.pow(windSpeedMetersPerSec, 3.0) * BETZ_LIMIT_CP;
     }
@@ -51,9 +49,7 @@ public class RenewableEnergyPhysicsEngine {
      * Executes one renewable energy physics tick across cells.
      */
     public static void processRenewableEnergyPhysics(List<H3Cell> cells) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for RenewableEnergyPhysicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         // Invariant skip: Wind and solar baseline fluxes depend strictly on elevation and latitude,

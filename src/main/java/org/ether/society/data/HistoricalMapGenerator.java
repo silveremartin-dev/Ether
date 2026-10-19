@@ -3004,7 +3004,7 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(targetYear, type));
     }
 
-    /* Cached elevation mask (1=land, 0=ocean) derived from earth_elevation.png at elevation cut 0m. */
+    /** Cached elevation mask (1=land, 0=ocean) derived from earth_elevation.png at elevation cut 0m. */
     private static volatile BufferedImage cachedElevationMask = null;
     private static final Object ELEV_LOCK = new Object();
 

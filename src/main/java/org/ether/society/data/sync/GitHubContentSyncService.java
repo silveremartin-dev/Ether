@@ -67,7 +67,7 @@ public final class GitHubContentSyncService {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
-    private static final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+    private static final ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper().enable(SerializationFeature.INDENT_OUTPUT);
     private static final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "Ether-GitHubContentSyncThread");
         t.setDaemon(true);

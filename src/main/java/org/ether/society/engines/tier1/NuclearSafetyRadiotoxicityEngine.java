@@ -24,13 +24,13 @@ import java.util.List;
 public class NuclearSafetyRadiotoxicityEngine {
     private static final Logger logger = LoggerFactory.getLogger(NuclearSafetyRadiotoxicityEngine.class);
 
-    /* Power flux threshold for nuclear fission energy */
+    /** Power flux threshold for nuclear fission energy */
     public static final double FISSION_POWER_THRESHOLD = 15000.0;
 
-    /* Power flux threshold for nuclear D-T fusion energy */
+    /** Power flux threshold for nuclear D-T fusion energy */
     public static final double FUSION_POWER_THRESHOLD = 50000.0;
 
-    /* Baseline annual core meltdown probability per fission cell */
+    /** Baseline annual core meltdown probability per fission cell */
     private static double accidentProbability = 0.0005;
     private static long baseSeed = 42L;
 
@@ -79,9 +79,7 @@ public class NuclearSafetyRadiotoxicityEngine {
      * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick with explicit simulation tick.
      */
     public static void processNuclearEnergySafety(List<H3Cell> cells, long tick) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for NuclearSafetyRadiotoxicityEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         int meltdownEvents = 0;

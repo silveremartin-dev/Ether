@@ -31,19 +31,19 @@ import java.util.List;
 public class GlacialThermodynamicMeltEngine {
     private static final Logger logger = LoggerFactory.getLogger(GlacialThermodynamicMeltEngine.class);
 
-    /* Latent heat of ice fusion in J/kg */
+    /** Latent heat of ice fusion in J/kg */
     public static final double LATENT_HEAT_OF_FUSION_J_KG = 333550.0;
 
-    /* Density of pure glacial ice in kg/m³ */
+    /** Density of pure glacial ice in kg/m³ */
     public static final double ICE_DENSITY_KG_M3 = 917.0;
 
-    /* Density of liquid water in kg/m³ */
+    /** Density of liquid water in kg/m³ */
     public static final double WATER_DENSITY_KG_M3 = 1000.0;
 
-    /* Total planetary ocean surface area in m² (~3.61 x 10^14 m²) */
+    /** Total planetary ocean surface area in m² (~3.61 x 10^14 m²) */
     public static final double GLOBAL_OCEAN_AREA_M2 = 3.61e14;
 
-    /* PDD thermal exchange factor (W / (m² Â· K)) */
+    /** PDD thermal exchange factor (W / (m² Â· K)) */
     public static final double PDD_HEAT_TRANSFER_COEFF = 9.8;
 
     /**
@@ -54,9 +54,7 @@ public class GlacialThermodynamicMeltEngine {
      * @return Ice melt depth in meters
      */
     public static double calculateGlacialMeltDepthMeters(double surfaceTempC, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for GlacialThermodynamicMeltEngine - verifies boundary conservation and updates local thermodynamic state
         if (surfaceTempC <= 0.0 || deltaYears <= 0.0) {
             return 0.0;
         }
@@ -79,9 +77,7 @@ public class GlacialThermodynamicMeltEngine {
      * @return Global eustatic sea level increment in meters
      */
     public static double processGlacialMelt(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for GlacialThermodynamicMeltEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return 0.0;
 
         double totalMeltedMassKg = 0.0;

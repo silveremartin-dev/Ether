@@ -48,7 +48,7 @@ public class SeshatDataIntegrator {
         // Load embedded cliodynamic benchmarks JSON
         try (InputStream is = SeshatDataIntegrator.class.getResourceAsStream("/historical_cliodynamic_benchmarks.json")) {
             if (is != null) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
                 cliodynamicBenchmarkJson = mapper.readTree(is);
                 logger.info("Loaded 20-Variable Cliodynamic Benchmark Suite from historical_cliodynamic_benchmarks.json");
             }

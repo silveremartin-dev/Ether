@@ -31,16 +31,16 @@ public class HistoryManager {
 
     private final SimulationHistory history = new SimulationHistory();
 
-    /* Maximum historical telemetry/world snapshots retained in index */
+    /** Maximum historical telemetry/world snapshots retained in index */
     private int maxSnapshots = 100;
 
-    /* Maximum full-world snapshots kept simultaneously in JVM heap RAM (LRU eviction) */
+    /** Maximum full-world snapshots kept simultaneously in JVM heap RAM (LRU eviction) */
     private int maxRamCacheSnapshots = 2;
 
-    /* Directory where world snapshots are streamed to disk as compressed .bin.gz archives */
+    /** Directory where world snapshots are streamed to disk as compressed .bin.gz archives */
     private Path snapshotsDiskDir = Paths.get("saves/runtime_snapshots").toAbsolutePath();
 
-    /* In-memory LRU cache: tickIndex -> List<H3Cell> */
+    /** In-memory LRU cache: tickIndex -> List<H3Cell> */
     private final Map<Long, List<H3Cell>> ramSnapshotCache = Collections.synchronizedMap(
             new LinkedHashMap<Long, List<H3Cell>>(8, 0.75f, true) {
                 @Override
@@ -50,19 +50,19 @@ public class HistoryManager {
             }
     );
 
-    /* Persistent on-disk index: tickIndex -> Path to .bin.gz file */
+    /** Persistent on-disk index: tickIndex -> Path to .bin.gz file */
     private final NavigableMap<Long, Path> diskSnapshotIndex = new ConcurrentSkipListMap<>();
 
-    /* Virtual NavigableMap facade exposing on-demand cached snapshots */
+    /** Virtual NavigableMap facade exposing on-demand cached snapshots */
     private final NavigableMap<Long, List<H3Cell>> virtualWorldSnapshots = new VirtualSnapshotNavigableMap();
 
-    /* Planned total ticks for the active simulation run (0 = unbounded / interactive UI) */
+    /** Planned total ticks for the active simulation run (0 = unbounded / interactive UI) */
     private long plannedTotalTicks = 0;
 
-    /* Custom snapshot interval in ticks (0 = calculate from plannedTotalTicks / maxSnapshots) */
+    /** Custom snapshot interval in ticks (0 = calculate from plannedTotalTicks / maxSnapshots) */
     private long snapshotIntervalTicks = 0;
 
-    /* Background worker thread pool for non-blocking asynchronous disk serialization */
+    /** Background worker thread pool for non-blocking asynchronous disk serialization */
     private final java.util.concurrent.ExecutorService asyncDiskWriter = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "Ether-Snapshot-Writer");
         t.setDaemon(true);

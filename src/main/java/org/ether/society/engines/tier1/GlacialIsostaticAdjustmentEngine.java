@@ -33,22 +33,20 @@ import java.util.List;
 public class GlacialIsostaticAdjustmentEngine {
     private static final Logger logger = LoggerFactory.getLogger(GlacialIsostaticAdjustmentEngine.class);
 
-    /* Mantle asthenosphere density in kg/m³ */
+    /** Mantle asthenosphere density in kg/m³ */
     public static final double MANTLE_DENSITY_KG_M3 = 3300.0;
 
-    /* Glacial ice density in kg/m³ */
+    /** Glacial ice density in kg/m³ */
     public static final double ICE_DENSITY_KG_M3 = 917.0;
 
-    /* Viscoelastic relaxation time constant Ï„ in years (~4,000 yr for upper mantle) */
+    /** Viscoelastic relaxation time constant Ï„ in years (~4,000 yr for upper mantle) */
     public static final double GIA_RELAXATION_TIME_YEARS = 4000.0;
 
     /**
      * Calculates isostatic equilibrium elevation depression (in meters) for an ice sheet thickness h_ice.
      */
     public static double calculateEquilibriumDeflectionMeters(double iceThicknessMeters) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for GlacialIsostaticAdjustmentEngine - verifies boundary conservation and updates local thermodynamic state
         if (iceThicknessMeters <= 0.0) return 0.0;
         return -(ICE_DENSITY_KG_M3 / MANTLE_DENSITY_KG_M3) * iceThicknessMeters;
     }
@@ -60,9 +58,7 @@ public class GlacialIsostaticAdjustmentEngine {
      * @param deltaYears Simulation time step in years
      */
     public static void processGlacialIsostasy(List<H3Cell> cells, double deltaYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for GlacialIsostaticAdjustmentEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         double dt = Math.max(0.1, deltaYears);

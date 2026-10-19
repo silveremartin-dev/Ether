@@ -77,57 +77,57 @@ public class WorldMap {
 
     // Geographic bounds
 
-    /* Minimum latitude (south edge). */
+    /** Minimum latitude (south edge). */
     @Column(nullable = false)
     private Double minLatitude = -90.0;
 
-    /* Maximum latitude (north edge). */
+    /** Maximum latitude (north edge). */
     @Column(nullable = false)
     private Double maxLatitude = 90.0;
 
-    /* Minimum longitude (west edge). */
+    /** Minimum longitude (west edge). */
     @Column(nullable = false)
     private Double minLongitude = -180.0;
 
-    /* Maximum longitude (east edge). */
+    /** Maximum longitude (east edge). */
     @Column(nullable = false)
     private Double maxLongitude = 180.0;
 
     // Data sources
 
-    /* Path to map preview image. */
+    /** Path to map preview image. */
     @Column(length = 500)
     private String mapImagePath;
 
-    /* Elevation data source (e.g., "SRTM_90m", "PROCEDURAL"). */
+    /** Elevation data source (e.g., "SRTM_90m", "PROCEDURAL"). */
     @Column(length = 200)
     private String elevationSource;
 
-    /* Biome data source (e.g., "MODIS_MCD12Q1", "PROCEDURAL"). */
+    /** Biome data source (e.g., "MODIS_MCD12Q1", "PROCEDURAL"). */
     @Column(length = 200)
     private String biomeSource;
 
     // Planet properties (for procedural generation)
 
-    /* Planet radius in km (Earth = 6371). */
+    /** Planet radius in km (Earth = 6371). */
     @Column
     private Double planetRadiusKm = 6371.0;
 
-    /* Planet mass relative to Earth (1.0 = Earth mass). */
+    /** Planet mass relative to Earth (1.0 = Earth mass). */
     @Column
     private Double planetMass = 1.0;
 
-    /* Procedural generation seed. */
+    /** Procedural generation seed. */
     @Column
     private Long proceduralSeed;
 
     // H3 configuration
 
-    /* H3 resolution level (8 = ~1 km², 6 = ~2.2 km²). */
+    /** H3 resolution level (8 = ~1 km², 6 = ~2.2 km²). */
     @Column(nullable = false)
     private Integer h3Resolution = 8;
 
-    /* Total number of H3 cells for this map. */
+    /** Total number of H3 cells for this map. */
     @Column
     private Long totalCells;
 
@@ -142,13 +142,13 @@ public class WorldMap {
     // Enum for map type
 
     public enum MapType {
-        /* Real Earth with SRTM/MODIS data. */
+        /** Real Earth with SRTM/MODIS data. */
         EARTH,
 
-        /* Procedurally generated planet. */
+        /** Procedurally generated planet. */
         PROCEDURAL,
 
-        /* Custom user-defined map. */
+        /** Custom user-defined map. */
         CUSTOM
     }
 

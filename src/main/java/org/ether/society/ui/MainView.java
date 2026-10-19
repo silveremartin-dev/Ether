@@ -188,6 +188,13 @@ public class MainView extends StackPane {
         executionContextPanel = new ExecutionContextPanel(this::launchSimulationFromContext);
         executionContextPanel.setOnLiveConfigChangedCallback(mode -> {
             logger.info("Live execution context hardware mode changed: {}", mode);
+            if (engine != null && engine.getPerformanceConfig() != null) {
+                switch (mode) {
+                    case NATIVE_RUST -> engine.getPerformanceConfig().setExecutionEngineMode(org.ether.society.config.SimulationPerformanceConfig.ExecutionEngineMode.RUST_NATIVE);
+                    case JAVA_VECTOR_SIMD -> engine.getPerformanceConfig().setExecutionEngineMode(org.ether.society.config.SimulationPerformanceConfig.ExecutionEngineMode.JAVA_VECTOR_SIMD);
+                    case CPU_JIT, GPU_OFF, GPU_SHADERS -> engine.getPerformanceConfig().setExecutionEngineMode(org.ether.society.config.SimulationPerformanceConfig.ExecutionEngineMode.JAVA_STANDARD);
+                }
+            }
             if (comparativeAnalyticsPanel != null) {
                 comparativeAnalyticsPanel.recalculateAllEstimates();
             }
@@ -587,7 +594,7 @@ public class MainView extends StackPane {
         }
     }
 
-    /* Atomic flag guarding against overlapping async stepping operations */
+    /** Atomic flag guarding against overlapping async stepping operations */
     private final java.util.concurrent.atomic.AtomicBoolean isAsyncStepping = new java.util.concurrent.atomic.AtomicBoolean(false);
 
     private void seekToStartSafe() {

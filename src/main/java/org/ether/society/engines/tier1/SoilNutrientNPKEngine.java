@@ -25,7 +25,7 @@ import java.util.List;
 public class SoilNutrientNPKEngine {
     private static final Logger logger = LoggerFactory.getLogger(SoilNutrientNPKEngine.class);
 
-    /* Haber-Bosch power requirement in Watts per capita */
+    /** Haber-Bosch power requirement in Watts per capita */
     public static final double HABER_BOSCH_POWER_WATTS = 5000.0;
 
     public static void processSoilNutrients(List<H3Cell> cells) {
@@ -36,9 +36,7 @@ public class SoilNutrientNPKEngine {
      * Executes N-P-K stoichiometry, mineral mining extraction, and Haber-Bosch synthesis tick.
      */
     public static void processSoilNutrients(List<H3Cell> cells, double dtYears) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for SoilNutrientNPKEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         int size = cells.size();

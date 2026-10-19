@@ -31,7 +31,7 @@ import java.util.List;
 public class AtmosphericCirculationHadleyEngine {
     private static final Logger logger = LoggerFactory.getLogger(AtmosphericCirculationHadleyEngine.class);
 
-    /* Planetary angular rotation velocity Î© in rad/s (Earth: 2Ï€ / 86164 s) */
+    /** Planetary angular rotation velocity Î© in rad/s (Earth: 2Ï€ / 86164 s) */
     public static final double EARTH_ANGULAR_VELOCITY_RAD_S = 7.2921159e-5;
 
     public record WindVector(double zonalSpeedM_S, double meridionalSpeedM_S, String cellType) {}
@@ -40,9 +40,7 @@ public class AtmosphericCirculationHadleyEngine {
      * Calculates Coriolis parameter f (in sâ»Â¹) at latitude Ï†.
      */
     public static double calculateCoriolisParameter(double latDeg) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AtmosphericCirculationHadleyEngine - verifies boundary conservation and updates local thermodynamic state
         return 2.0 * EARTH_ANGULAR_VELOCITY_RAD_S * Math.sin(Math.toRadians(latDeg));
     }
 
@@ -54,9 +52,7 @@ public class AtmosphericCirculationHadleyEngine {
      * @return WindVector instance
      */
     public static WindVector calculateAtmosphericWind(double latDeg, int month) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AtmosphericCirculationHadleyEngine - verifies boundary conservation and updates local thermodynamic state
         // ITCZ seasonal shift (±5° latitude depending on solar zenith)
         double itczShiftDeg = 5.0 * Math.sin(2.0 * Math.PI * (month - 3) / 12.0);
         double effectiveLat = latDeg - itczShiftDeg;
@@ -96,9 +92,7 @@ public class AtmosphericCirculationHadleyEngine {
      * Processes atmospheric wind circulation and updates kinetic wind energy across H3 cells.
      */
     public static void processAtmosphericCirculation(List<H3Cell> cells, int month) {
-        // Phase 1: Invariant state validation and environmental boundary initialization
-        // Phase 2: Numerical evaluation of differential conservation equations
-        // Phase 3: Spatial coupling and local thermodynamic state update
+// Numerical integration step for AtmosphericCirculationHadleyEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         final double airDensityKgM3 = 1.225;

@@ -27,7 +27,7 @@ import java.util.List;
 public class TechnologicalSingularityEngine {
     private static final Logger logger = LoggerFactory.getLogger(TechnologicalSingularityEngine.class);
 
-    /* Power flux threshold per capita indicating singularity threshold (50,000 W/capita) */
+    /** Power flux threshold per capita indicating singularity threshold (50,000 W/capita) */
     public static final double SINGULARITY_POWER_THRESHOLD_WATTS = 50000.0;
 
     /**
