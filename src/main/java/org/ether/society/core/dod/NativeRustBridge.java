@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -49,6 +49,7 @@ public class NativeRustBridge {
     private static MethodHandle urbanTickHandle = null;
     private static MethodHandle fluxTickHandle = null;
     private static MethodHandle demogTickHandle = null;
+    private static MethodHandle demogTickFullHandle = null;
     private static MethodHandle cultureTickHandle = null;
     private static MethodHandle cultureTickFullHandle = null;
 
@@ -114,6 +115,11 @@ public class NativeRustBridge {
                 lookup.find("ether_demographic_tick").ifPresent(addr -> {
                     demogTickHandle = linker.downcallHandle(addr, FunctionDescriptor.ofVoid(
                             ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT));
+                });
+
+                lookup.find("ether_demographic_tick_full").ifPresent(addr -> {
+                    demogTickFullHandle = linker.downcallHandle(addr, FunctionDescriptor.ofVoid(
+                            ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG));
                 });
 
                 // 5. ether_culture_tick(world_ptr: *mut, agents_ptr: *mut, dt_years: float, diff: float, force: float)
@@ -469,6 +475,21 @@ public class NativeRustBridge {
          * Executes demographic metabolic cohorts tick via native Rust library.
          */
         public void tickDemographic(float targetCohortSize, float dtYears) {
+            tickDemographic(targetCohortSize, dtYears, 42L);
+        }
+
+        /**
+         * Executes demographic metabolic cohorts tick with explicit scenario seed via native Rust library.
+         */
+        public void tickDemographic(float targetCohortSize, float dtYears, long seed) {
+            if (demogTickFullHandle != null) {
+                try {
+                    demogTickFullHandle.invokeExact(worldStructSeg, agentStructSeg, targetCohortSize, dtYears, seed);
+                    return;
+                } catch (Throwable t) {
+                    throw new RuntimeException("Failed native full demographic tick", t);
+                }
+            }
             if (demogTickHandle == null) return;
             try {
                 demogTickHandle.invokeExact(worldStructSeg, agentStructSeg, targetCohortSize, dtYears);
@@ -509,14 +530,21 @@ public class NativeRustBridge {
          * Executes the complete unified 5-kernel simulation cycle in native Rust with 0 GC overhead.
          */
         public void stepUnifiedCycle(float dtDays) {
+            stepUnifiedCycle(dtDays, 42L, 1L);
+        }
+
+        /**
+         * Executes the complete unified 5-kernel simulation cycle in native Rust with explicit scenario seed.
+         */
+        public void stepUnifiedCycle(float dtDays, long seed, long tickCounter) {
             float dtYears = dtDays / 365.25f;
             float dtSeconds = dtDays * 86400.0f;
 
             tickEnvironmental(dtYears);
-            tickDemographic(500.0f, dtYears);
+            tickDemographic(500.0f, dtYears, seed);
             tickUrban(dtYears);
             tickFlux(dtSeconds);
-            tickCulture(dtYears, 0.05f, 0.02f);
+            tickCulture(dtYears, 0.05f, 0.02f, 0.015f, seed, tickCounter);
         }
 
         @Override

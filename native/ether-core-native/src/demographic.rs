@@ -1,13 +1,23 @@
 use crate::buffers::{AgentBufferRaw, WorldBufferRaw};
 use crate::constants::*;
 
-/// Executes one complete demographic simulation cycle across all active cohorts.
-/// Mathematically and algorithmically identical to DemographicKernel.java.
+/// Executes one complete demographic simulation cycle across all active cohorts with default seed 42.
 pub unsafe fn process_demographics(
     world: &mut WorldBufferRaw,
     agents: &mut AgentBufferRaw,
     target_cohort_size: f32,
     dt_years: f32,
+) {
+    process_demographics_full(world, agents, target_cohort_size, dt_years, 42);
+}
+
+/// Executes one complete demographic simulation cycle across all active cohorts with explicit scenario seed.
+pub unsafe fn process_demographics_full(
+    world: &mut WorldBufferRaw,
+    agents: &mut AgentBufferRaw,
+    target_cohort_size: f32,
+    dt_years: f32,
+    seed: i64,
 ) {
     let a_cap = agents.capacity;
     let w_cap = world.capacity;
@@ -252,7 +262,7 @@ pub unsafe fn process_demographics(
     }
 
     // Step 4: Dunbar Mitosis
-    process_mitosis(agents, a_cap, target_cohort_size);
+    process_mitosis(agents, a_cap, target_cohort_size, seed);
 }
 
 fn find_free_slot(hex_ids: &[i32], capacity: usize, hint: &mut usize) -> Option<usize> {
@@ -271,7 +281,7 @@ fn find_free_slot(hex_ids: &[i32], capacity: usize, hint: &mut usize) -> Option<
     None
 }
 
-unsafe fn process_mitosis(agents: &mut AgentBufferRaw, capacity: usize, target_cohort_size: f32) {
+unsafe fn process_mitosis(agents: &mut AgentBufferRaw, capacity: usize, target_cohort_size: f32, seed: i64) {
     let mass = std::slice::from_raw_parts_mut(agents.mass, capacity);
     let energy = std::slice::from_raw_parts_mut(agents.energy, capacity);
     let hex_ids = std::slice::from_raw_parts_mut(agents.hex_ids, capacity);
@@ -297,12 +307,12 @@ unsafe fn process_mitosis(agents: &mut AgentBufferRaw, capacity: usize, target_c
                 tech[new_slot] = tech[i];
                 gen[new_slot] = gen[i] + 1;
 
-                let age_rnd = crate::prng::next_double(42, 0, new_slot as i64, 403) as f32;
+                let age_rnd = crate::prng::next_double(seed, 0, new_slot as i64, 403) as f32;
                 age[new_slot] = (18.0 + age_rnd * 8.0).max(16.0);
 
                 for d in 0..4 {
-                    let mut_g = ((crate::prng::next_double(42, 0, new_slot as i64, 405 + d as i64) - 0.5) as f32) * 0.05_f32;
-                    let mut_c = ((crate::prng::next_double(42, 0, new_slot as i64, 415 + d as i64) - 0.5) as f32) * 0.05_f32;
+                    let mut_g = ((crate::prng::next_double(seed, 0, new_slot as i64, 405 + d as i64) - 0.5) as f32) * 0.05_f32;
+                    let mut_c = ((crate::prng::next_double(seed, 0, new_slot as i64, 415 + d as i64) - 0.5) as f32) * 0.05_f32;
                     genetics[d * capacity + new_slot] = (genetics[d * capacity + i] + mut_g).clamp(0.0, 1.0);
                     culture[d * capacity + new_slot] = (culture[d * capacity + i] + mut_c).clamp(0.0, 1.0);
                 }

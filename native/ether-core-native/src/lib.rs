@@ -22,6 +22,19 @@ pub unsafe extern "C" fn ether_demographic_tick(
     demographic::process_demographics(&mut *world_ptr, &mut *agents_ptr, target_cohort_size, dt_years);
 }
 
+/// Complete FFI Export: Advances the full demographic & metabolic cycle in Rust with explicit scenario seed.
+#[no_mangle]
+pub unsafe extern "C" fn ether_demographic_tick_full(
+    world_ptr: *mut WorldBufferRaw,
+    agents_ptr: *mut AgentBufferRaw,
+    target_cohort_size: c_float,
+    dt_years: c_float,
+    seed: i64,
+) {
+    if world_ptr.is_null() || agents_ptr.is_null() { return; }
+    demographic::process_demographics_full(&mut *world_ptr, &mut *agents_ptr, target_cohort_size, dt_years, seed);
+}
+
 /// Complete FFI Export: Advances the Photosynthetic Farquhar FvCB & Biomass simulation.
 #[no_mangle]
 pub unsafe extern "C" fn ether_environmental_tick(world_ptr: *mut WorldBufferRaw, dt_years: c_float) {

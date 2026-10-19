@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -926,6 +926,7 @@ public class HistoricalScenarioCalibrationHarness {
         }
 
         DemographicKernel demog = new DemographicKernel();
+        demog.setBaseSeed(42L + def.startYear());
         EnvironmentalKernel env = new EnvironmentalKernel();
         UrbanKernel urban = new UrbanKernel();
 

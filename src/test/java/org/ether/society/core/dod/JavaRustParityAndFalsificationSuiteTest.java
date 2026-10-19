@@ -268,7 +268,7 @@ public class JavaRustParityAndFalsificationSuiteTest {
         // 3. Advance Native Rust Core
         try (NativeRustBridge.NativeWorldArena arena = new NativeRustBridge.NativeWorldArena(capacity)) {
             arena.syncFromJavaBuffers(rustWorld, rustAgents);
-            arena.tickDemographic(150.0f, dtYears);
+            arena.tickDemographic(150.0f, dtYears, 42L);
             arena.syncToJavaBuffers(rustWorld, rustAgents);
         }
 

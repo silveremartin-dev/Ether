@@ -1,4 +1,4 @@
-ackage org.ether.society.data;
+package org.ether.society.data;
 
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.WorldBuffer;
@@ -103,7 +103,19 @@ public class DODDataGenerator {
      * @param targetCohortSize the target cohort size parameter (int)
      */
     public static void initializeAgentBuffer(WorldBuffer world, AgentBuffer agents, int targetCohortSize) {
-        logger.info("Initializing AgentBuffer from population density (target cohort size: {})...", targetCohortSize);
+        initializeAgentBuffer(world, agents, targetCohortSize, 0L);
+    }
+
+    /**
+     * Initializes the AgentBuffer based on the population density in the WorldBuffer and scenario seed.
+     *
+     * @param world the world parameter (WorldBuffer)
+     * @param agents the agents parameter (AgentBuffer)
+     * @param targetCohortSize the target cohort size parameter (int)
+     * @param seed the scenario seed parameter (long)
+     */
+    public static void initializeAgentBuffer(WorldBuffer world, AgentBuffer agents, int targetCohortSize, long seed) {
+        logger.info("Initializing AgentBuffer from population density (target cohort size: {}, seed: {})...", targetCohortSize, seed);
         int agentIndex = 0;
         int effectiveTarget = Math.max(1, targetCohortSize);
         
@@ -124,7 +136,7 @@ public class DODDataGenerator {
                 agents.getSigmaCost()[agentIndex] = 0.1f; // Initial structure cost
                 agents.getTechLevel()[agentIndex] = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[i] : 1.0f;
                 // Realistic community cohort mean age distribution (Lotka 1907 pre-industrial stable mean: 22-28 yrs)
-                long seedH3 = world.getH3Indexes()[i] + (c * 31L);
+                long seedH3 = (seed != 0L ? (seed ^ world.getH3Indexes()[i]) : world.getH3Indexes()[i]) + (c * 31L);
                 float ageRnd = (float) DeterministicPRNG.nextDouble(seedH3, 101);
                 float initialAge = 22.0f + ageRnd * 6.0f; // Stable community mean age (22-28 yrs)
                 agents.getAge()[agentIndex] = initialAge;

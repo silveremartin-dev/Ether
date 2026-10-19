@@ -1,6 +1,4 @@
-*
-
-
+/*
  * MIT License
 
 
@@ -560,7 +558,8 @@ public class H3SimulationEngine implements ISimulationEngine {
         org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
 
 
-        org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize);
+        long sSeed = currentScenario != null ? currentScenario.getSeed() : 42L;
+        org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize, sSeed);
 
 
 
@@ -1312,7 +1311,8 @@ public class H3SimulationEngine implements ISimulationEngine {
             org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
 
 
-            org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize);
+            long sSeed = currentScenario != null ? currentScenario.getSeed() : 42L;
+            org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize, sSeed);
 
 
         } else {
