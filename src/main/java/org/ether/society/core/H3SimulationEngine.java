@@ -517,8 +517,12 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-        int populatedCount = (int) cells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
-
+        int populatedCount = 0;
+        for (H3Cell c : cells) {
+            if (c != null && c.getPopulation() != null && c.getPopulation() > 0) {
+                populatedCount++;
+            }
+        }
 
         initializePoliticalSeeding(populatedCount);
 
@@ -705,21 +709,16 @@ public class H3SimulationEngine implements ISimulationEngine {
     private void initializePopulation() {
 
 
-        boolean hasExistingPop = cells.stream().anyMatch(c -> c.getPopulation() > 0);
+        int existingCount = 0;
+        for (H3Cell c : cells) {
+            if (c != null && c.getPopulation() != null && c.getPopulation() > 0) {
+                existingCount++;
+            }
+        }
 
-
-        if (hasExistingPop) {
-
-
-            int count = (int) cells.stream().filter(c -> c.getPopulation() > 0).count();
-
-
-            initializePoliticalSeeding(count);
-
-
+        if (existingCount > 0) {
+            initializePoliticalSeeding(existingCount);
             return;
-
-
         }
 
 

@@ -317,10 +317,15 @@ public class PreComputePhase {
      */
     private void distributeInitialPopulation(List<H3Cell> cells) {
         // 1. If cells already have population (from Tab 3 UI setup or loaded scenario), preserve it!
-        boolean hasExistingPop = cells.stream().anyMatch(c -> c.getPopulation() != null && c.getPopulation() > 0);
-        if (hasExistingPop) {
-            long totalAssigned = cells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
-            long populatedCells = cells.stream().filter(c -> c.getPopulation() != null && c.getPopulation() > 0).count();
+        long totalAssigned = 0;
+        long populatedCells = 0;
+        for (H3Cell c : cells) {
+            if (c != null && c.getPopulation() != null && c.getPopulation() > 0) {
+                totalAssigned += c.getPopulation();
+                populatedCells++;
+            }
+        }
+        if (populatedCells > 0) {
             logger.info("Preserving existing population distribution: {} humans across {} cells", totalAssigned, populatedCells);
             return;
         }

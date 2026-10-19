@@ -255,7 +255,8 @@ public class DemographicKernel {
             if (ageYears < primiparityAge - 1.5f) {
                 fecundityAgeFactor = 0.0f; // Biological infecundity prior to sexual maturity
             } else {
-                fecundityAgeFactor = (float) Math.exp(-Math.pow(ageYears - peakFertilityAge, 2) / (2.0f * Math.pow(13.0f, 2)));
+                float ageDiff = ageYears - peakFertilityAge;
+                fecundityAgeFactor = (float) Math.exp(-(ageDiff * ageDiff) / 338.0f);
             }
 
             // 2. Bio-energetic & nutritional status factor (ovulatory function & physiological reserves)
@@ -276,7 +277,7 @@ public class DemographicKernel {
             float carryingCapacity = Math.max(1.0f, annualCellProductivityGJ / (float) org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
             float totalCellPop = Math.max(m, cachedCellHumanPop[hIdx]);
             float malthusianPressure = totalCellPop / carryingCapacity;
-            float densityFeedback = (float) (1.0 / (1.0 + Math.pow(malthusianPressure, 2.0)));
+            float densityFeedback = 1.0f / (1.0f + malthusianPressure * malthusianPressure);
 
             // 5. Effective annual crude birth rate (Bocquet-Appel 2002, 2011 Neolithic Demographic Transition)
             // Pre-agricultural (tech < 1.5): nomadic foragers with 3.5-4.5 yrs lactation amenorrhea (CBR ~ 25-28 / 1000)
@@ -446,10 +447,15 @@ public class DemographicKernel {
     private int findFreeSlot(AgentBuffer agents) {
         int[] hexIds = agents.getHexIds();
         int cap = agents.getCapacity();
-        for (int k = 0; k < cap; k++) {
-            int idx = (nextFreeSlotHint + k) % cap;
+        for (int idx = nextFreeSlotHint; idx < cap; idx++) {
             if (hexIds[idx] == -1) {
-                nextFreeSlotHint = (idx + 1) % cap;
+                nextFreeSlotHint = (idx + 1 < cap) ? idx + 1 : 0;
+                return idx;
+            }
+        }
+        for (int idx = 0; idx < nextFreeSlotHint; idx++) {
+            if (hexIds[idx] == -1) {
+                nextFreeSlotHint = (idx + 1 < cap) ? idx + 1 : 0;
                 return idx;
             }
         }

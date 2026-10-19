@@ -157,7 +157,6 @@ public class EnvironmentalKernel {
         int[] landIndices = world.getLandIndices();
         if (landIndices == null) return;
         float baselineCO2 = 280.0f;
-        Biome[] biomeValues = Biome.values();
 
         // Extract H3 resolution from the first valid H3 index to scale macro-cell production rates by actual cell surface area
         float areaScale = 1.0f;
@@ -178,8 +177,7 @@ public class EnvironmentalKernel {
         for (int idx = 0; idx < landIndices.length; idx++) {
             int i = landIndices[idx];
             if (i < 0 || i >= world.getCapacity()) continue;
-            int bOrd = Math.clamp(biomes[i], 0, biomeValues.length - 1);
-            Biome biome = biomeValues[bOrd];
+            Biome biome = Biome.fromOrdinal(biomes[i] & 0xFF);
             
             // Primary production based on biome, Farquhar bioenergetics, irrigation/moisture availability, and cell surface area
             float baseProd = getBiomeProductionRate(biome) * areaScale;
