@@ -342,6 +342,9 @@ public class ExecutionContextPanel extends BorderPane {
     private Label javaVectorSimdDescLabel;
     private Label cpuJitDescLabel;
     private Label gpuOffDescLabel;
+    private VBox determinismDisclaimerCard;
+    private Label determinismDisclaimerTitle;
+    private Label determinismDisclaimerText;
 
     // 2. Execution Topology Controls
     private Label topologySectionHeader;
@@ -567,7 +570,16 @@ public class ExecutionContextPanel extends BorderPane {
         VBox gpuOffCard = new VBox(6, gpuOffRadio, gpuOffDescLabel);
         gpuOffCard.getStyleClass().add("card-section");
 
-        VBox hardwareSection = createCardSection(hardwareSectionHeader, new VBox(10, rustNativeCard, gpuShadersCard, javaVectorSimdCard, cpuJitCard, gpuOffCard));
+        // Determinism notice subcard (multi-engine floating-point convergence)
+        determinismDisclaimerTitle = new Label();
+        determinismDisclaimerTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-font-size: 12px;");
+        determinismDisclaimerText = new Label();
+        determinismDisclaimerText.setWrapText(true);
+        determinismDisclaimerText.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-line-spacing: 2px;");
+        determinismDisclaimerCard = new VBox(6, determinismDisclaimerTitle, determinismDisclaimerText);
+        determinismDisclaimerCard.setStyle("-fx-background-color: rgba(30, 41, 59, 0.7); -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10 14;");
+
+        VBox hardwareSection = createCardSection(hardwareSectionHeader, new VBox(10, rustNativeCard, gpuShadersCard, javaVectorSimdCard, cpuJitCard, gpuOffCard, determinismDisclaimerCard));
 
         // --- SECTION 2: Execution Topology & Persistence ---
         topologySectionHeader = createSectionHeader("");
@@ -1376,6 +1388,14 @@ public class ExecutionContextPanel extends BorderPane {
         gpuOffRadio.setText(I18n.getOrDefault("exec.hardware.off", "🛡️ Software Safe Fallback (Single-Thread SW Rendering)"));
         gpuOffRadio.setTooltip(new Tooltip(I18n.getOrDefault("exec.hardware.off.tooltip", "Safe mode isolating execution from GPU drivers and hardware acceleration layers.")));
         gpuOffDescLabel.setText(I18n.getOrDefault("exec.hardware.off.desc", "Pure single-threaded software fallback mode with no GPU/SIMD dependencies for debugging or resource-constrained hosts."));
+
+        // Determinism notice
+        if (determinismDisclaimerTitle != null) {
+            determinismDisclaimerTitle.setText(I18n.getOrDefault("exec.hardware.determinism_disclaimer.title", "ℹ️ Cross-Engine Determinism & Floating-Point Convergence Notice"));
+        }
+        if (determinismDisclaimerText != null) {
+            determinismDisclaimerText.setText(I18n.getOrDefault("exec.hardware.determinism_disclaimer", "Each engine operates in 100% deterministic mode from the scenario PRNG seed. However, due to low-level differences in mathematical transcendental libraries (JVM FDLIBM vs LLVM/libm), FMA contractions, and SIMD reduction ordering, trajectories between Java Standard, Java SIMD, and Native Rust are analytically convergent but exhibit minor floating-point mantissa variances (~10⁻⁵ to 10⁻²). Run identical engines for exact bit-for-bit repeatability."));
+        }
 
         // Section 2: Topology
         localTopologyRadio.setText(I18n.getOrDefault("exec.topology.local", "🏢 Local Standalone Mode (Host Machine Cores & Memory)"));
