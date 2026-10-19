@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
@@ -76,7 +76,6 @@ public class ScenarioEngineJITCompiler {
 
     /**
      * Get conflict report.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioEngineJITCompiler}.
      *
      * @return the resulting computation or state reference
      */
@@ -86,7 +85,6 @@ public class ScenarioEngineJITCompiler {
 
     /**
      * Get compiled kernel.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioEngineJITCompiler}.
      *
      * @return the resulting computation or state reference
      */

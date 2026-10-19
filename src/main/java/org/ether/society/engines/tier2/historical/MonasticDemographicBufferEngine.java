@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -25,9 +25,8 @@ public class MonasticDemographicBufferEngine {
 
     private static double monasticFraction = 0.04; // 4% default monastic buffer fraction
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code MonasticDemographicBufferEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -54,14 +53,13 @@ public class MonasticDemographicBufferEngine {
         }
     }
 
-    /*
+    /**
      * Get monastic fraction.
-     * Enforces physical invariants and updates associated state variables within {@code MonasticDemographicBufferEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getMonasticFraction() { return monasticFraction; }
-    /*
+    /**
      * Set monastic fraction operation.
      * <p>
      * Executes operational logic for {@code MonasticDemographicBufferEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

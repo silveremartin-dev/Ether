@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -37,7 +37,7 @@ public class SimulationPerformanceConfig implements Serializable {
 
     /* Enable multi-frequency climate ticks (e.g. run climate diffusion every N ticks instead of every tick) */
     private boolean enableMultiFreqClimateTicks = false;
-    /* Internal state variable for climate tick frequency (int). */
+    /** Internal state: climate tick frequency (int). */
     private int climateTickFrequency = 5;
 
     /* Enable parallel stream execution (may introduce non-deterministic floating-point summation order) */
@@ -49,16 +49,14 @@ public class SimulationPerformanceConfig implements Serializable {
     /* Enable Tier 2 sociological & macroeconomic cliodynamics (SDT, Tainter, World3, Institutions, Trade). When false, executes Tier 1 physical conservation PDEs only. */
     private boolean enableTier2Cliodynamics = true;
 
-    /*
+    /**
      * Simulation performance config.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      */
     public SimulationPerformanceConfig() {}
 
-    /*
+    /**
      * Simulation performance config.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param strictDeterminism the strict determinism parameter (boolean)
      */
@@ -66,9 +64,8 @@ public class SimulationPerformanceConfig implements Serializable {
         setStrictDeterminism(strictDeterminism);
     }
 
-    /*
+    /**
      * Is strict determinism.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -76,9 +73,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return strictDeterminism;
     }
 
-    /*
+    /**
      * Set strict determinism.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param strictDeterminism the strict determinism parameter (boolean)
      */
@@ -94,9 +90,8 @@ public class SimulationPerformanceConfig implements Serializable {
         }
     }
 
-    /*
+    /**
      * Is enable sparse cell skipping.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -104,9 +99,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return enableSparseCellSkipping;
     }
 
-    /*
+    /**
      * Is sparse cell skipping.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -114,9 +108,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return enableSparseCellSkipping;
     }
 
-    /*
+    /**
      * Set enable sparse cell skipping.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param enableSparseCellSkipping the enable sparse cell skipping parameter (boolean)
      */
@@ -127,9 +120,8 @@ public class SimulationPerformanceConfig implements Serializable {
         }
     }
 
-    /*
+    /**
      * Is enable ocean macro aggregation.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -137,9 +129,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return enableOceanMacroAggregation;
     }
 
-    /*
+    /**
      * Set enable ocean macro aggregation.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param enableOceanMacroAggregation the enable ocean macro aggregation parameter (boolean)
      */
@@ -150,9 +141,8 @@ public class SimulationPerformanceConfig implements Serializable {
         }
     }
 
-    /*
+    /**
      * Is enable coastal navigation only.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -160,9 +150,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return enableCoastalNavigationOnly;
     }
 
-    /*
+    /**
      * Set enable coastal navigation only.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param enableCoastalNavigationOnly the enable coastal navigation only parameter (boolean)
      */
@@ -173,9 +162,8 @@ public class SimulationPerformanceConfig implements Serializable {
         }
     }
 
-    /*
+    /**
      * Is enable multi freq climate ticks.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -183,9 +171,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return enableMultiFreqClimateTicks;
     }
 
-    /*
+    /**
      * Set enable multi freq climate ticks.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param enableMultiFreqClimateTicks the enable multi freq climate ticks parameter (boolean)
      */
@@ -196,9 +183,8 @@ public class SimulationPerformanceConfig implements Serializable {
         }
     }
 
-    /*
+    /**
      * Get climate tick frequency.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -206,9 +192,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return climateTickFrequency;
     }
 
-    /*
+    /**
      * Set climate tick frequency.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param climateTickFrequency the climate tick frequency parameter (int)
      */
@@ -216,9 +201,8 @@ public class SimulationPerformanceConfig implements Serializable {
         this.climateTickFrequency = Math.max(1, climateTickFrequency);
     }
 
-    /*
+    /**
      * Is enable parallel execution.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -226,9 +210,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return enableParallelExecution;
     }
 
-    /*
+    /**
      * Set enable parallel execution.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param enableParallelExecution the enable parallel execution parameter (boolean)
      */
@@ -242,9 +225,8 @@ public class SimulationPerformanceConfig implements Serializable {
     /* Number of parallel execution threads (0 = auto-detect all available CPU cores, 1 = single-threaded deterministic) */
     private int parallelThreadCount = 0;
 
-    /*
+    /**
      * Is enable spatial range truncation.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -252,9 +234,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return enableSpatialRangeTruncation;
     }
 
-    /*
+    /**
      * Set enable spatial range truncation.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param enableSpatialRangeTruncation the enable spatial range truncation parameter (boolean)
      */
@@ -265,9 +246,8 @@ public class SimulationPerformanceConfig implements Serializable {
         }
     }
 
-    /*
+    /**
      * Get parallel thread count.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @return the resulting computation or state reference
      */
@@ -275,9 +255,8 @@ public class SimulationPerformanceConfig implements Serializable {
         return parallelThreadCount;
     }
 
-    /*
+    /**
      * Set parallel thread count.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationPerformanceConfig}.
      *
      * @param parallelThreadCount the parallel thread count parameter (int)
      */

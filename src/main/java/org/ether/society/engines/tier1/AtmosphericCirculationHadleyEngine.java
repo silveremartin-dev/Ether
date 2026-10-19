@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -36,7 +36,7 @@ public class AtmosphericCirculationHadleyEngine {
 
     public record WindVector(double zonalSpeedM_S, double meridionalSpeedM_S, String cellType) {}
 
-    /*
+    /**
      * Calculates Coriolis parameter f (in sâ»Â¹) at latitude Ï†.
      */
     public static double calculateCoriolisParameter(double latDeg) {
@@ -46,7 +46,7 @@ public class AtmosphericCirculationHadleyEngine {
         return 2.0 * EARTH_ANGULAR_VELOCITY_RAD_S * Math.sin(Math.toRadians(latDeg));
     }
 
-    /*
+    /**
      * Calculates analytical zonal wind speed (m/s) and atmospheric cell regime at latitude Ï† and seasonal month.
      *
      * @param latDeg Latitude in degrees [-90, +90]
@@ -92,7 +92,7 @@ public class AtmosphericCirculationHadleyEngine {
         return new WindVector(uZonal, vMeridional, cellType);
     }
 
-    /*
+    /**
      * Processes atmospheric wind circulation and updates kinetic wind energy across H3 cells.
      */
     public static void processAtmosphericCirculation(List<H3Cell> cells, int month) {

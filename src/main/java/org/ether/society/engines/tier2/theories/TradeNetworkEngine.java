@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -48,9 +48,8 @@ public class TradeNetworkEngine {
     public static double getCumulativeTradedCapital() { return cumulativeTradedCapital; }
     public static double getCumulativeTradedMetal() { return cumulativeTradedMetal; }
 
-    /*
+    /**
      * Get latest routes.
-     * Enforces physical invariants and updates associated state variables within {@code TradeNetworkEngine}.
      *
      * @return the resulting computation or state reference
      */
@@ -135,7 +134,7 @@ public class TradeNetworkEngine {
         return activeRoutes;
     }
 
-    /*
+    /**
      * Computes the lowest-friction route between two cells using cost-distance heuristics.
      */
     private static TradeRoute computeFrictionPath(H3Cell start, H3Cell end, List<H3Cell> cells, Map<Long, H3Cell> cellMap, double techLevel) {
@@ -219,7 +218,7 @@ public class TradeNetworkEngine {
         return new TradeRoute(start, end, path, totalCost);
     }
 
-    /*
+    /**
      * Conducts bilateral physical commodity arbitrage between trade route origin and destination,
      * and boosts capital, technology diffusion, and infrastructure along the trade corridor.
      */
@@ -424,7 +423,7 @@ public class TradeNetworkEngine {
         }
     }
 
-    /*
+    /**
      * Evaluates topological transit frequencies across trade routes and identifies strategic choke points
      * (straits, mountain passes, isthmuses, and bottleneck transit cells), allocating transit toll rent.
      */

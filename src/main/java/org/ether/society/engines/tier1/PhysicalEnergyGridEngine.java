@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -31,7 +31,7 @@ public class PhysicalEnergyGridEngine {
     /* Specific energy density of coal in MJ/kg */
     public static final double COAL_ENERGY_DENSITY_MJ_PER_KG = 24.0;
 
-    /*
+    /**
      * Calculates available per-capita mechanical work output (Watts/person).
      *
      * @param cell H3 terrain cell
@@ -121,14 +121,14 @@ public class PhysicalEnergyGridEngine {
         return Math.min(maxHarnessableWatts, Math.max(50.0, mechanicalPowerWatts));
     }
 
-    /*
+    /**
      * Executes one physical energy grid tick across cells using default monthly step.
      */
     public static void processPhysicalEnergyGrid(List<H3Cell> cells) {
         processPhysicalEnergyGrid(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes physical energy grid tick scaling capital formation by population and dtYears,
      * and strictly consumes finite fossil and nuclear fuels to preserve thermodynamic conservation.
      */

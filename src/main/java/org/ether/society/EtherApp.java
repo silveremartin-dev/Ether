@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -48,18 +48,17 @@ public class EtherApp extends Application {
     private MainView mainView;
 
     private AnimationTimer timer;
-    /* Internal state variable for last fps update (long). */
+    /** Internal state: last fps update (long). */
     private long lastFpsUpdate = 0;
-    /* Internal state variable for frame count (int). */
+    /** Internal state: frame count (int). */
     private int frameCount = 0;
-    /* Internal state variable for current fps (double). */
+    /** Internal state: current fps (double). */
     private double currentFps = 0.0;
-    /* Internal state variable for last map redraw (long). */
+    /** Internal state: last map redraw (long). */
     private long lastMapRedraw = 0;
 
-    /*
+    /**
      * Main.
-     * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
      *
      * @param args the args parameter (String[])
      */
@@ -67,13 +66,12 @@ public class EtherApp extends Application {
         launch(args);
     }
 
-    @Override
-    /*
+    /**
      * Start.
-     * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
      *
      * @param primaryStage the primary stage parameter (Stage)
      */
+    @Override
     public void start(Stage primaryStage) throws Exception {
         try {
             this.primaryStage = primaryStage;
@@ -84,13 +82,12 @@ public class EtherApp extends Application {
             splash.show();
 
             javafx.concurrent.Task<Void> initTask = new javafx.concurrent.Task<>() {
-                @Override
-                /*
+                /**
                  * Call.
-                 * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
                  *
                  * @return the resulting computation or state reference
                  */
+                @Override
                 protected Void call() throws Exception {
                     splash.updateProgress(0.15,
                             I18n.getOrDefault("splash.step.config.status", "Loading system configuration..."),
@@ -181,16 +178,14 @@ public class EtherApp extends Application {
         }
     }
 
-    // Helper subroutine: start animation timer - internal state computation & bounds checking
     private void startAnimationTimer() {
         timer = new AnimationTimer() {
-            @Override
-            /*
+            /**
              * Handle.
-             * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
              *
              * @param now the now parameter (long)
              */
+            @Override
             public void handle(long now) {
                 frameCount++;
                 if (now - lastFpsUpdate >= 1_000_000_000L) {
@@ -254,12 +249,11 @@ public class EtherApp extends Application {
         timer.start();
     }
 
-    @Override
-    /*
+    /**
      * Stop.
-     * Enforces physical invariants and updates associated state variables within {@code EtherApp}.
      *
      */
+    @Override
     public void stop() {
         logger.info("Stopping Ether Application...");
         if (timer != null) {
@@ -280,7 +274,6 @@ public class EtherApp extends Application {
         System.exit(0);
     }
 
-    // Helper subroutine: update texts - internal state computation & bounds checking
     private void updateTexts() {
         primaryStage.setTitle(I18n.get("app.title") + " — " + org.ether.society.config.AppVersion.getFullDisplayVersion());
     }

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -30,9 +30,8 @@ public class PlanetaryBoundariesEngine {
         double chemicalPollutionRisk
     ) {}
 
-    /*
+    /**
      * Assess boundaries.
-     * Enforces physical invariants and updates associated state variables within {@code PlanetaryBoundariesEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @return the resulting computation or state reference

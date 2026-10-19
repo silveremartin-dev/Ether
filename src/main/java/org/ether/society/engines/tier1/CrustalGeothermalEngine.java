@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -31,7 +31,7 @@ public class CrustalGeothermalEngine {
     /* Standard geothermal gradient in °C per kilometer */
     public static final double GEOTHERMAL_GRADIENT_C_PER_KM = 30.0;
 
-    /*
+    /**
      * Calculates max accessible deep mining depth (meters) based on cooling tech.
      *
      * @param techLevel Technology era level
@@ -47,7 +47,7 @@ public class CrustalGeothermalEngine {
         return 4000.0;                       // Ultra-deep air-conditioned mining
     }
 
-    /*
+    /**
      * Executes one crustal geothermal and deep mining check across cells.
      */
     public static void processCrustalGeothermal(List<H3Cell> cells) {

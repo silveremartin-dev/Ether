@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -35,7 +35,7 @@ public class OrographicGlottologPropagator {
         String name
     ) {}
 
-    /*
+    /**
      * Propagates cultural seeds over a digital elevation mask to produce an anisotropic isogloss / kinship raster.
      *
      * @param seeds List of initial cultural/linguistic hearths
@@ -202,7 +202,6 @@ public class OrographicGlottologPropagator {
         return img;
     }
 
-    // Helper subroutine: is river corridor - internal state computation & bounds checking
     private static boolean isRiverCorridor(double lon, double lat) {
         // Nile
         if (lon >= 29.0 && lon <= 33.0 && lat >= 0.0 && lat <= 31.5) return true;

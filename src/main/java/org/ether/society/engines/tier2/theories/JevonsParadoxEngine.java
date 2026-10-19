@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -24,9 +24,8 @@ public class JevonsParadoxEngine {
 
     private static double reboundCoefficient = 0.80; // 80% rebound effect
 
-    /*
+    /**
      * Process jevons rebound.
-     * Enforces physical invariants and updates associated state variables within {@code JevonsParadoxEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -52,14 +51,13 @@ public class JevonsParadoxEngine {
         }
     }
 
-    /*
+    /**
      * Get rebound coefficient.
-     * Enforces physical invariants and updates associated state variables within {@code JevonsParadoxEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getReboundCoefficient() { return reboundCoefficient; }
-    /*
+    /**
      * Set rebound coefficient operation.
      * <p>
      * Executes operational logic for {@code JevonsParadoxEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

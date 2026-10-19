@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -15,14 +15,13 @@ package org.ether.society.util;
  */
 public final class DeterministicPRNG {
 
-    /* Internal state variable for gamma (long). */
+    /** Internal state: gamma (long). */
     private static final long GAMMA = 0x9E3779B97F4A7C15L;
     private static final double DOUBLE_UNIT = 0x1.0p-53; // 1.0 / (1L << 53)
 
-    // Helper subroutine: deterministic prng - internal state computation & bounds checking
     private DeterministicPRNG() {}
 
-    /*
+    /**
      * Computes a 64-bit pseudo-random hash from coordinates (seed, tick, cellIndex, streamId).
      */
     public static long splitMix64(long seed, long tick, long cellIndex, long streamId) {
@@ -32,9 +31,8 @@ public final class DeterministicPRNG {
         return z ^ (z >>> 31);
     }
 
-    /*
+    /**
      * Split mix64.
-     * Enforces physical invariants and updates associated state variables within {@code DeterministicPRNG}.
      *
      * @param seed the seed parameter (long)
      * @param tick the tick parameter (long)
@@ -45,7 +43,7 @@ public final class DeterministicPRNG {
         return splitMix64(seed, tick, cellIndex, 0L);
     }
 
-    /*
+    /**
      * Generates a uniformly distributed double in [0.0, 1.0) deterministically.
      */
     public static double nextDouble(long seed, long tick, long cellIndex, long streamId) {
@@ -53,7 +51,7 @@ public final class DeterministicPRNG {
         return bits * DOUBLE_UNIT;
     }
 
-    /*
+    /**
      * Generates a uniformly distributed double in [0.0, 1.0) deterministically from a seed and stream/channel index.
      *
      * @param seed the seed or coordinate parameter (long)
@@ -64,9 +62,8 @@ public final class DeterministicPRNG {
         return nextDouble(seed, 0L, 0L, streamId);
     }
 
-    /*
+    /**
      * Next double.
-     * Enforces physical invariants and updates associated state variables within {@code DeterministicPRNG}.
      *
      * @param seed the seed parameter (long)
      * @param tick the tick parameter (long)
@@ -77,7 +74,7 @@ public final class DeterministicPRNG {
         return nextDouble(seed, tick, cellIndex, 0L);
     }
 
-    /*
+    /**
      * Generates a uniformly distributed integer in [0, bound) deterministically.
      */
     public static int nextInt(long seed, long tick, long cellIndex, int bound) {
@@ -86,7 +83,7 @@ public final class DeterministicPRNG {
         return (int) (d * bound);
     }
 
-    /*
+    /**
      * Generates a boolean outcome based on a given probability [0.0, 1.0].
      */
     public static boolean nextBoolean(long seed, long tick, long cellIndex, double probability) {
@@ -95,7 +92,7 @@ public final class DeterministicPRNG {
         return nextDouble(seed, tick, cellIndex) < probability;
     }
 
-    /*
+    /**
      * Generates a normally distributed standard Gaussian value N(0, 1) using Box-Muller transform.
      */
     public static double nextGaussian(long seed, long tick, long cellIndex) {

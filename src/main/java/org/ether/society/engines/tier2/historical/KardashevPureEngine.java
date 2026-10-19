@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -23,9 +23,8 @@ import java.util.List;
 public class KardashevPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(KardashevPureEngine.class);
 
-    /*
+    /**
      * Calculate kardashev scale.
-     * Enforces physical invariants and updates associated state variables within {@code KardashevPureEngine}.
      *
      * @param totalPowerWatts the total power watts parameter (double)
      * @return the resulting computation or state reference
@@ -38,9 +37,8 @@ public class KardashevPureEngine {
         return (Math.log10(totalPowerWatts) - 6.0) / 10.0;
     }
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code KardashevPureEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)

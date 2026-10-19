@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -32,12 +32,12 @@ import java.util.HashMap;
 public class MarineSubmersionEngine {
     private static final Logger logger = LoggerFactory.getLogger(MarineSubmersionEngine.class);
 
-    /* Internal state variable for default dike maintenance base capital (double). */
+    /** Internal state: default dike maintenance base capital (double). */
     public static final double DEFAULT_DIKE_MAINTENANCE_BASE_CAPITAL = 50.0;
-    /* Internal state variable for default evacuation tech efficiency (double). */
+    /** Internal state: default evacuation tech efficiency (double). */
     public static final double DEFAULT_EVACUATION_TECH_EFFICIENCY = 0.40;
 
-    /*
+    /**
      * Executes marine submersion and evacuation using default parameters.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
@@ -47,7 +47,7 @@ public class MarineSubmersionEngine {
         processHybrid(cells, timeStepDays, DEFAULT_DIKE_MAINTENANCE_BASE_CAPITAL, DEFAULT_EVACUATION_TECH_EFFICIENCY);
     }
 
-    /*
+    /**
      * Executes marine submersion and evacuation with parameterizable physical thresholds.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays, 

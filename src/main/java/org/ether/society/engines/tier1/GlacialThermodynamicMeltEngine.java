@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -46,7 +46,7 @@ public class GlacialThermodynamicMeltEngine {
     /* PDD thermal exchange factor (W / (m² Â· K)) */
     public static final double PDD_HEAT_TRANSFER_COEFF = 9.8;
 
-    /*
+    /**
      * Computes glacial melt depth (in meters of ice) for a given surface temperature and time step.
      *
      * @param surfaceTempC Surface temperature in °C
@@ -71,7 +71,7 @@ public class GlacialThermodynamicMeltEngine {
         return massMeltedKgPerM2 / ICE_DENSITY_KG_M3;
     }
 
-    /*
+    /**
      * Processes cryospheric ablation across all glacial and tundra cells and computes global sea level rise.
      *
      * @param cells List of H3 cells

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -40,7 +40,7 @@ public class AquiferDepletionEngine {
     /* Baseline hydraulic conductivity K in m/s scaled to annual dt */
     public static final double HYDRAULIC_CONDUCTIVITY_K = 1e-4;
 
-    /*
+    /**
      * Executes one aquifer depletion, recharge, and 2D Darcy filtration tick across cells.
      */
     public static void processAquiferDepletion(List<H3Cell> cells) {
@@ -50,7 +50,7 @@ public class AquiferDepletionEngine {
         processAquiferDepletion(cells, 30.0 / 365.25);
     }
 
-    /*
+    /**
      * Executes aquifer depletion and 2D Darcy lateral diffusion with explicit time delta in years.
      */
     public static void processAquiferDepletion(List<H3Cell> cells, double deltaYears) {

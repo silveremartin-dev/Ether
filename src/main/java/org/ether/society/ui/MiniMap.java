@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -21,28 +21,27 @@ import java.util.List;
  */
 public class MiniMap extends Canvas {
 
-    /* Internal state variable for cells (List&lt;H3Cell&gt;). */
+    /** Internal state: cells (List&lt;H3Cell&gt;). */
     private List<H3Cell> cells;
     private H3MapCanvas mainCanvas;
 
     // Map bounds (computed from cells)
-    /* Internal state variable for min lat (double). */
+    /** Internal state: min lat (double). */
     private double minLat, maxLat, minLng, maxLng;
 
     // Viewport state
-    /* Internal state variable for viewport center lat (double). */
+    /** Internal state: viewport center lat (double). */
     private double viewportCenterLat, viewportCenterLng;
-    /* Internal state variable for viewport zoom (double). */
+    /** Internal state: viewport zoom (double). */
     private double viewportZoom;
 
-    /* Internal state variable for width (double). */
+    /** Internal state: width (double). */
     private static final double WIDTH = 200;
-    /* Internal state variable for height (double). */
+    /** Internal state: height (double). */
     private static final double HEIGHT = 150;
 
-    /*
+    /**
      * Mini map.
-     * Enforces physical invariants and updates associated state variables within {@code MiniMap}.
      *
      */
     public MiniMap() {
@@ -59,7 +58,7 @@ public class MiniMap extends Canvas {
         setOnMouseExited(e -> setCursor(javafx.scene.Cursor.DEFAULT));
     }
 
-    /*
+    /**
      * Set the cells to display and compute bounds.
      */
     public void setCells(List<H3Cell> cells) {
@@ -68,14 +67,14 @@ public class MiniMap extends Canvas {
         renderOverview();
     }
 
-    /*
+    /**
      * Set reference to main canvas for synchronization.
      */
     public void setMainCanvas(H3MapCanvas mainCanvas) {
         this.mainCanvas = mainCanvas;
     }
 
-    /*
+    /**
      * Update viewport indicator when main canvas changes.
      */
     public void updateViewport(double zoom, double centerLat, double centerLng) {
@@ -86,7 +85,7 @@ public class MiniMap extends Canvas {
         renderOverview(); // Re-render with updated viewport
     }
 
-    /*
+    /**
      * Compute lat/lng bounds from all cells.
      */
     private void computeBounds() {
@@ -102,7 +101,7 @@ public class MiniMap extends Canvas {
         maxLng = cells.stream().mapToDouble(H3Cell::getLongitude).max().orElse(0);
     }
 
-    /*
+    /**
      * Render the overview map with all cells and viewport indicator.
      */
     private void renderOverview() {
@@ -123,7 +122,7 @@ public class MiniMap extends Canvas {
         drawViewportIndicator(gc);
     }
 
-    /*
+    /**
      * Draw all cells as colored dots.
      */
     private void drawCells(GraphicsContext gc) {
@@ -145,7 +144,7 @@ public class MiniMap extends Canvas {
         }
     }
 
-    /*
+    /**
      * Draw viewport indicator rectangle.
      */
     private void drawViewportIndicator(GraphicsContext gc) {
@@ -177,7 +176,7 @@ public class MiniMap extends Canvas {
         gc.strokeRect(x1, y1, x2 - x1, y2 - y1);
     }
 
-    /*
+    /**
      * Handle click to navigate.
      */
     private void handleClick(MouseEvent event) {
@@ -198,7 +197,7 @@ public class MiniMap extends Canvas {
         mainCanvas.setCenterView(lat, lng);
     }
 
-    /*
+    /**
      * Get simplified biome color.
      */
     private Color getBiomeColor(Biome biome) {

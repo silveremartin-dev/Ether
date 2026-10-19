@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -22,54 +22,53 @@ import org.ether.society.database.H3Cell;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HistoricalIntervention {
-    /* Internal state variable for id (String). */
+    /** Internal state: id (String). */
     private String id;
-    /* Internal state variable for name (String). */
+    /** Internal state: name (String). */
     private String name;
-    /* Internal state variable for description (String). */
+    /** Internal state: description (String). */
     private String description;
-    /* Internal state variable for year start (int). */
+    /** Internal state: year start (int). */
     private int yearStart;
-    /* Internal state variable for duration years (int). */
+    /** Internal state: duration years (int). */
     private int durationYears = 25;
-    /* Internal state variable for latitude (double). */
+    /** Internal state: latitude (double). */
     private double latitude;
-    /* Internal state variable for longitude (double). */
+    /** Internal state: longitude (double). */
     private double longitude;
-    /* Internal state variable for radius km (double). */
+    /** Internal state: radius km (double). */
     private double radiusKm = 1000.0;
     private LeaderArchetype archetype = LeaderArchetype.INSTITUTIONAL_REFORMER;
     private double magnitude = 6.0; // Scale 1.0 to 10.0
 
     // Physical & Socio-Economic Modifiers
-    /* Internal state variable for movement friction multiplier (double). */
+    /** Internal state: movement friction multiplier (double). */
     private double movementFrictionMultiplier = 1.0;
-    /* Internal state variable for state capacity delta (double). */
+    /** Internal state: state capacity delta (double). */
     private double stateCapacityDelta = 0.0;
-    /* Internal state variable for asabiyyah delta (double). */
+    /** Internal state: asabiyyah delta (double). */
     private double asabiyyahDelta = 0.0;
-    /* Internal state variable for elite overproduction delta (double). */
+    /** Internal state: elite overproduction delta (double). */
     private double eliteOverproductionDelta = 0.0;
-    /* Internal state variable for political instability delta (double). */
+    /** Internal state: political instability delta (double). */
     private double politicalInstabilityDelta = 0.0;
-    /* Internal state variable for capital bonus gj (double). */
+    /** Internal state: capital bonus gj (double). */
     private double capitalBonusGJ = 0.0;
-    /* Internal state variable for carrying capacity multiplier (double). */
+    /** Internal state: carrying capacity multiplier (double). */
     private double carryingCapacityMultiplier = 1.0;
-    /* Internal state variable for conquest speed multiplier (double). */
+    /** Internal state: conquest speed multiplier (double). */
     private double conquestSpeedMultiplier = 1.0;
-    /* Internal state variable for trigger succession crisis at end (boolean). */
+    /** Internal state: trigger succession crisis at end (boolean). */
     private boolean triggerSuccessionCrisisAtEnd = false;
 
     // Runtime state tracking
-    /* Internal state variable for activated (boolean). */
+    /** Internal state: activated (boolean). */
     private boolean activated = false;
-    /* Internal state variable for completed (boolean). */
+    /** Internal state: completed (boolean). */
     private boolean completed = false;
 
-    /*
+    /**
      * Historical intervention.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      */
     public HistoricalIntervention() {
@@ -91,7 +90,7 @@ public class HistoricalIntervention {
         initDefaultModifiersByArchetype();
     }
 
-    /*
+    /**
      * Initializes typical modifier intensities scaled by magnitude.
      */
     public void initDefaultModifiersByArchetype() {
@@ -129,9 +128,8 @@ public class HistoricalIntervention {
         }
     }
 
-    /*
+    /**
      * Is active.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @param currentYear the current year parameter (int)
      * @return the resulting computation or state reference
@@ -140,9 +138,8 @@ public class HistoricalIntervention {
         return currentYear >= yearStart && currentYear < (yearStart + durationYears);
     }
 
-    /*
+    /**
      * Is expired.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @param currentYear the current year parameter (int)
      * @return the resulting computation or state reference
@@ -151,9 +148,8 @@ public class HistoricalIntervention {
         return currentYear >= (yearStart + durationYears);
     }
 
-    /*
+    /**
      * Get distance km.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @param cellLat the cell lat parameter (double)
      * @param cellLng the cell lng parameter (double)
@@ -169,9 +165,8 @@ public class HistoricalIntervention {
         return 6371.0 * c;
     }
 
-    /*
+    /**
      * Is inside radius.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @param cellLat the cell lat parameter (double)
      * @param cellLng the cell lng parameter (double)
@@ -181,9 +176,8 @@ public class HistoricalIntervention {
         return getDistanceKm(cellLat, cellLng) <= radiusKm;
     }
 
-    /*
+    /**
      * Get spatial attenuation weight.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @param cellLat the cell lat parameter (double)
      * @param cellLng the cell lng parameter (double)
@@ -196,7 +190,7 @@ public class HistoricalIntervention {
         return Math.exp(-0.5 * (distKm * distKm) / (sigma * sigma));
     }
 
-    /*
+    /**
      * Computes the anisotropic spatial attenuation weight coupled with the Cultural Isogloss
      * tensor (Tensor 0) and Hydrographic Drainage Basin topology.
      *
@@ -251,14 +245,13 @@ public class HistoricalIntervention {
     }
 
     // Getters and Setters
-    /*
+    /**
      * Get id.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public String getId() { return id; }
-    /*
+    /**
      * Set id operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -269,9 +262,8 @@ public class HistoricalIntervention {
      */
     public void setId(String id) { this.id = id; }
 
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
@@ -282,7 +274,7 @@ public class HistoricalIntervention {
         }
         return name;
     }
-    /*
+    /**
      * Set name operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -293,9 +285,8 @@ public class HistoricalIntervention {
      */
     public void setName(String name) { this.name = name; }
 
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
@@ -306,7 +297,7 @@ public class HistoricalIntervention {
         }
         return description;
     }
-    /*
+    /**
      * Set description operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -317,14 +308,13 @@ public class HistoricalIntervention {
      */
     public void setDescription(String description) { this.description = description; }
 
-    /*
+    /**
      * Get year start.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public int getYearStart() { return yearStart; }
-    /*
+    /**
      * Set year start operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -335,14 +325,13 @@ public class HistoricalIntervention {
      */
     public void setYearStart(int yearStart) { this.yearStart = yearStart; }
 
-    /*
+    /**
      * Get duration years.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public int getDurationYears() { return durationYears; }
-    /*
+    /**
      * Set duration years operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -353,14 +342,13 @@ public class HistoricalIntervention {
      */
     public void setDurationYears(int durationYears) { this.durationYears = durationYears; }
 
-    /*
+    /**
      * Get latitude.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getLatitude() { return latitude; }
-    /*
+    /**
      * Set latitude operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -371,14 +359,13 @@ public class HistoricalIntervention {
      */
     public void setLatitude(double latitude) { this.latitude = latitude; }
 
-    /*
+    /**
      * Get longitude.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getLongitude() { return longitude; }
-    /*
+    /**
      * Set longitude operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -389,14 +376,13 @@ public class HistoricalIntervention {
      */
     public void setLongitude(double longitude) { this.longitude = longitude; }
 
-    /*
+    /**
      * Get radius km.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getRadiusKm() { return radiusKm; }
-    /*
+    /**
      * Set radius km operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -407,14 +393,13 @@ public class HistoricalIntervention {
      */
     public void setRadiusKm(double radiusKm) { this.radiusKm = radiusKm; }
 
-    /*
+    /**
      * Get archetype.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public LeaderArchetype getArchetype() { return archetype; }
-    /*
+    /**
      * Set archetype operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -425,14 +410,13 @@ public class HistoricalIntervention {
      */
     public void setArchetype(LeaderArchetype archetype) { this.archetype = archetype; }
 
-    /*
+    /**
      * Get magnitude.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getMagnitude() { return magnitude; }
-    /*
+    /**
      * Set magnitude operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -443,14 +427,13 @@ public class HistoricalIntervention {
      */
     public void setMagnitude(double magnitude) { this.magnitude = magnitude; }
 
-    /*
+    /**
      * Get movement friction multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getMovementFrictionMultiplier() { return movementFrictionMultiplier; }
-    /*
+    /**
      * Set movement friction multiplier operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -461,14 +444,13 @@ public class HistoricalIntervention {
      */
     public void setMovementFrictionMultiplier(double movementFrictionMultiplier) { this.movementFrictionMultiplier = movementFrictionMultiplier; }
 
-    /*
+    /**
      * Get state capacity delta.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getStateCapacityDelta() { return stateCapacityDelta; }
-    /*
+    /**
      * Set state capacity delta operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -479,14 +461,13 @@ public class HistoricalIntervention {
      */
     public void setStateCapacityDelta(double stateCapacityDelta) { this.stateCapacityDelta = stateCapacityDelta; }
 
-    /*
+    /**
      * Get asabiyyah delta.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getAsabiyyahDelta() { return asabiyyahDelta; }
-    /*
+    /**
      * Set asabiyyah delta operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -497,14 +478,13 @@ public class HistoricalIntervention {
      */
     public void setAsabiyyahDelta(double asabiyyahDelta) { this.asabiyyahDelta = asabiyyahDelta; }
 
-    /*
+    /**
      * Get elite overproduction delta.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getEliteOverproductionDelta() { return eliteOverproductionDelta; }
-    /*
+    /**
      * Set elite overproduction delta operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -515,14 +495,13 @@ public class HistoricalIntervention {
      */
     public void setEliteOverproductionDelta(double eliteOverproductionDelta) { this.eliteOverproductionDelta = eliteOverproductionDelta; }
 
-    /*
+    /**
      * Get political instability delta.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getPoliticalInstabilityDelta() { return politicalInstabilityDelta; }
-    /*
+    /**
      * Set political instability delta operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -533,14 +512,13 @@ public class HistoricalIntervention {
      */
     public void setPoliticalInstabilityDelta(double politicalInstabilityDelta) { this.politicalInstabilityDelta = politicalInstabilityDelta; }
 
-    /*
+    /**
      * Get capital bonus gj.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getCapitalBonusGJ() { return capitalBonusGJ; }
-    /*
+    /**
      * Set capital bonus gj operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -551,14 +529,13 @@ public class HistoricalIntervention {
      */
     public void setCapitalBonusGJ(double capitalBonusGJ) { this.capitalBonusGJ = capitalBonusGJ; }
 
-    /*
+    /**
      * Get carrying capacity multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getCarryingCapacityMultiplier() { return carryingCapacityMultiplier; }
-    /*
+    /**
      * Set carrying capacity multiplier operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -569,14 +546,13 @@ public class HistoricalIntervention {
      */
     public void setCarryingCapacityMultiplier(double carryingCapacityMultiplier) { this.carryingCapacityMultiplier = carryingCapacityMultiplier; }
 
-    /*
+    /**
      * Get conquest speed multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public double getConquestSpeedMultiplier() { return conquestSpeedMultiplier; }
-    /*
+    /**
      * Set conquest speed multiplier operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -587,14 +563,13 @@ public class HistoricalIntervention {
      */
     public void setConquestSpeedMultiplier(double conquestSpeedMultiplier) { this.conquestSpeedMultiplier = conquestSpeedMultiplier; }
 
-    /*
+    /**
      * Is trigger succession crisis at end.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public boolean isTriggerSuccessionCrisisAtEnd() { return triggerSuccessionCrisisAtEnd; }
-    /*
+    /**
      * Set trigger succession crisis at end operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -605,14 +580,13 @@ public class HistoricalIntervention {
      */
     public void setTriggerSuccessionCrisisAtEnd(boolean triggerSuccessionCrisisAtEnd) { this.triggerSuccessionCrisisAtEnd = triggerSuccessionCrisisAtEnd; }
 
-    /*
+    /**
      * Is activated.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public boolean isActivated() { return activated; }
-    /*
+    /**
      * Set activated operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
@@ -623,14 +597,13 @@ public class HistoricalIntervention {
      */
     public void setActivated(boolean activated) { this.activated = activated; }
 
-    /*
+    /**
      * Is completed.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalIntervention}.
      *
      * @return the resulting computation or state reference
      */
     public boolean isCompleted() { return completed; }
-    /*
+    /**
      * Set completed operation.
      * <p>
      * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.

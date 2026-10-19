@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -30,16 +30,15 @@ import java.util.zip.ZipInputStream;
 public class Hyde34GridReader {
     private static final Logger logger = LoggerFactory.getLogger(Hyde34GridReader.class);
 
-    /* Internal state variable for ether width (int). */
+    /** Internal state: ether width (int). */
     public static final int ETHER_WIDTH = 2048;
-    /* Internal state variable for ether height (int). */
+    /** Internal state: ether height (int). */
     public static final int ETHER_HEIGHT = 1024;
 
     private static final java.util.Map<Long, BufferedImage> GRID_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
-    /*
+    /**
      * Clear cache.
-     * Enforces physical invariants and updates associated state variables within {@code Hyde34GridReader}.
      *
      */
     public static void clearCache() {
@@ -55,16 +54,15 @@ public class Hyde34GridReader {
         public double nodataValue = -9999;
     }
 
-    /*
+    /**
      * Reads an Esri ASCII Grid file (.asc) and samples it into a 1024x512 BufferedImage density map.
      */
     public static BufferedImage readAsciiGridToImage(InputStream inputStream) {
         return readAsciiGridToImage(inputStream, 0L);
     }
 
-    /*
+    /**
      * Read ascii grid to image.
-     * Enforces physical invariants and updates associated state variables within {@code Hyde34GridReader}.
      *
      * @param inputStream the input stream parameter (InputStream)
      * @param targetYear the target year parameter (long)
@@ -200,7 +198,7 @@ public class Hyde34GridReader {
         }
     }
 
-    /*
+    /**
      * Maps HYDE population density (inh/km2) or grid cell count to the official Copernicus / Utrecht University HYDE color palette.
      */
     public static int getHydeColor(float density, boolean isLand) {
@@ -233,9 +231,8 @@ public class Hyde34GridReader {
         1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2024
     };
 
-    /*
+    /**
      * Find nearest hyde year.
-     * Enforces physical invariants and updates associated state variables within {@code Hyde34GridReader}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -255,7 +252,7 @@ public class Hyde34GridReader {
         return closest;
     }
 
-    /*
+    /**
      * Reads a local HYDE 3.4 ASCII grid file for a specific scenario year.
      */
     public static BufferedImage loadForYear(long year) {
@@ -284,7 +281,6 @@ public class Hyde34GridReader {
         throw new IllegalStateException("ZERO FALLBACK VIOLATION: Failed to stream empirical HYDE 3.4 raster grid for year " + requestedYear);
     }
 
-    // Helper subroutine: try load grid for year - internal state computation & bounds checking
     private static BufferedImage tryLoadGridForYear(long year, long requestedYear) {
         BufferedImage img = null;
         String yearTag = DataDownloaderService.getHydeYearTag(year);

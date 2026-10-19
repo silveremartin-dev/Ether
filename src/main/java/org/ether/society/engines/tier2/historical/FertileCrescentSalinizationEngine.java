@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -27,9 +27,8 @@ public class FertileCrescentSalinizationEngine {
 
     private static double salinizationRatePerCentury = 0.05; // 5% soil sodium buildup per century of irrigation
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code FertileCrescentSalinizationEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -67,14 +66,13 @@ public class FertileCrescentSalinizationEngine {
         }
     }
 
-    /*
+    /**
      * Get salinization rate per century.
-     * Enforces physical invariants and updates associated state variables within {@code FertileCrescentSalinizationEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getSalinizationRatePerCentury() { return salinizationRatePerCentury; }
-    /*
+    /**
      * Set salinization rate per century operation.
      * <p>
      * Executes operational logic for {@code FertileCrescentSalinizationEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

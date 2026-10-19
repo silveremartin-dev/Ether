@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -69,7 +69,7 @@ public class FutureScenarioRegistry {
             "SOVEREIGN_AI_MULTIPOLAR", "Multipolar Sovereign AI Cold War",
             "Geopolitical multi-agent competition among regional autonomous sovereign AI networks for energy and resources.", 2042.0);
 
-    /*
+    /**
      * Applies physical initial forcing parameters to cells for a given future scenario preset.
      */
     public static void applyScenarioForcing(PhysicalScenarioPreset preset, List<H3Cell> cells) {
@@ -107,7 +107,7 @@ public class FutureScenarioRegistry {
         }
     }
 
-    /*
+    /**
      * Finds matching PhysicalScenarioPreset for a given Scenario based on name or description.
      */
     public static PhysicalScenarioPreset findPresetForScenario(Scenario scenario) {

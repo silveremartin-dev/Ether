@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -55,7 +55,7 @@ public class ThermohalineStommelAMOCEngine {
 
     public record StommelState(double amocFlowSv, double northAtlanticCoolingShiftC, boolean isCollapsed) {}
 
-    /*
+    /**
      * Calculates seawater density anomaly (kg/m³) as a function of temperature (°C) and practical salinity (PSU).
      */
     public static double calculateSeawaterDensity(double tempC, double salinityPsu) {
@@ -67,7 +67,7 @@ public class ThermohalineStommelAMOCEngine {
         return SEAWATER_REF_DENSITY_KG_M3 * (1.0 - ALPHA_THERMAL * deltaT + BETA_HALINE * deltaS);
     }
 
-    /*
+    /**
      * Calculates Stommel 2-box overturning circulation flux (in Sv) and climatic shift.
      *
      * @param tempEquatorC Equator surface temperature (~28°C)
@@ -93,7 +93,7 @@ public class ThermohalineStommelAMOCEngine {
         return new StommelState(amocFlowSv, coolingShift, isCollapsed);
     }
 
-    /*
+    /**
      * Processes thermohaline ocean circulation and applies regional temperature shifts across oceanic/coastal cells.
      */
     public static void processThermohalineCirculation(List<H3Cell> cells, double freshwaterMeltwaterAnomalySv) {

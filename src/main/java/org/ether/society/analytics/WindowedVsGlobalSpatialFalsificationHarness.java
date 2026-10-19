@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -46,9 +46,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
             String diagnostics
     ) {}
 
-    /*
+    /**
      * Main.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param args the args parameter (String[])
      */
@@ -89,9 +88,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         }
     }
 
-    /*
+    /**
      * Run full validation campaign.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -137,9 +135,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
 
     public record BoundingBox(double minLat, double maxLat, double minLng, double maxLng) {}
 
-    /*
+    /**
      * Find dense land bounding box.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param s the s parameter (Scenario)
      * @param spanLat the span lat parameter (double)
@@ -185,9 +182,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         );
     }
 
-    /*
+    /**
      * Find isolated island bounding box.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param s the s parameter (Scenario)
      * @param spanLat the span lat parameter (double)
@@ -238,9 +234,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // BENCHMARK 1: BOUNDARY MODE COMPARISON TRIAD
     // =========================================================================
 
-    /*
+    /**
      * Run boundary mode triad benchmark.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -331,9 +326,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // BENCHMARK 2: SPATIAL RESOLUTION SWEEP (H3 Res 1 to Res 7)
     // =========================================================================
 
-    /*
+    /**
      * Run spatial resolution sweep benchmark.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -426,9 +420,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // BENCHMARK 3: TEMPORAL STEP SWEEP (1d, 7d, 30d, 90d, 365d)
     // =========================================================================
 
-    /*
+    /**
      * Run temporal step sweep benchmark.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -487,9 +480,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // BENCHMARK 4: PRE-COLUMBIAN AMERICAS (1000 AD - 1491 AD)
     // =========================================================================
 
-    /*
+    /**
      * Run americas1491isolation benchmark.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -547,9 +539,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // BENCHMARK 5: MADAGASCAR ISLAND (500 AD - 1000 AD)
     // =========================================================================
 
-    /*
+    /**
      * Run madagascar island benchmark.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -607,9 +598,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // BENCHMARK 6: TASMANIA ISLAND (-10,000 BP - 1800 AD)
     // =========================================================================
 
-    /*
+    /**
      * Run tasmania isolation benchmark.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -664,9 +654,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // BENCHMARK 7: EASTER ISLAND / RAPA NUI (1200 AD - 1722 AD)
     // =========================================================================
 
-    /*
+    /**
      * Run easter island benchmark.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -721,9 +710,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // BENCHMARK 8: MEDIEVAL ICELAND (874 AD - 1400 AD)
     // =========================================================================
 
-    /*
+    /**
      * Run iceland benchmark.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @return the resulting computation or state reference
      */
@@ -778,9 +766,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // SPATIAL MATHEMATICS & STATISTICAL METRICS
     // =========================================================================
 
-    /*
+    /**
      * Extract pop density map.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param minLat the min lat parameter (double)
@@ -803,9 +790,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return result;
     }
 
-    /*
+    /**
      * Compute spatial pearson correlation.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param mapA the map a parameter (Double&gt;)
      * @param mapB the map b parameter (Double&gt;)
@@ -833,9 +819,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return (denom > 1e-9) ? (num / denom) : 1.0;
     }
 
-    /*
+    /**
      * Compute core mape.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param mapGlobal the map global parameter (Double&gt;)
      * @param mapWindow the map window parameter (Double&gt;)
@@ -856,9 +841,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return totalRelativeError / commonKeys.size();
     }
 
-    /*
+    /**
      * Compute centroid shift km.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param mapGlobal the map global parameter (Double&gt;)
      * @param mapWindow the map window parameter (Double&gt;)
@@ -899,9 +883,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return calculateHaversineDistance(latG, lonG, latW, lonW, 6371.0);
     }
 
-    /*
+    /**
      * Compute boundary reflection index.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param mapGlobal the map global parameter (Double&gt;)
      * @param mapWindow the map window parameter (Double&gt;)
@@ -935,9 +918,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return ratioW / Math.max(1e-6, ratioG);
     }
 
-    /*
+    /**
      * Calculate haversine distance.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param lat1 the lat1 parameter (double)
      * @param lon1 the lon1 parameter (double)
@@ -958,9 +940,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return radiusKm * c;
     }
 
-    /*
+    /**
      * Clone scenario.
-     * Enforces physical invariants and updates associated state variables within {@code WindowedVsGlobalSpatialFalsificationHarness}.
      *
      * @param s the s parameter (Scenario)
      * @return the resulting computation or state reference
@@ -986,7 +967,6 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return copy;
     }
 
-    // Helper subroutine: generate academic markdown report - internal state computation & bounds checking
     private static String generateAcademicMarkdownReport(List<BenchmarkResult> results) {
         StringBuilder sb = new StringBuilder();
         sb.append("# Academic Falsification Report: Windowed Sub-Grids vs. Full Planetary Sphere\n\n");

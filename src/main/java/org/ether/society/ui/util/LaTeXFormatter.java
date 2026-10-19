@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
@@ -10,7 +10,7 @@ package org.ether.society.ui.util;
  */
 public class LaTeXFormatter {
 
-    /*
+    /**
      * Converts LaTeX syntax into elegant Unicode math characters.
      * Example: "\\frac{dA}{dt} = \\alpha \\cdot \\exp(\\beta \\cdot x)"
      * becomes: "dA/dt = α · exp(β · x)"

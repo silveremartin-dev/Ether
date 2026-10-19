@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -46,7 +46,7 @@ public class RadiocarbonIsotopeEngine {
     /* Mean Libby lifetime in years (8033 yr) */
     public static final double LIBBY_MEAN_LIFETIME_YEARS = 8033.0;
 
-    /*
+    /**
      * Calculates remaining fraction of Carbon-14 activity after elapsed years.
      *
      * @param elapsedYears Time elapsed in years
@@ -60,7 +60,7 @@ public class RadiocarbonIsotopeEngine {
         return Math.exp(-LAMBDA_14 * elapsedYears);
     }
 
-    /*
+    /**
      * Calculates conventional radiocarbon age before present (BP) from measured activity fraction A / A_0.
      *
      * @param activityFraction Ratio A / A_0 in ]0, 1]
@@ -74,7 +74,7 @@ public class RadiocarbonIsotopeEngine {
         return -LIBBY_MEAN_LIFETIME_YEARS * Math.log(activityFraction);
     }
 
-    /*
+    /**
      * Determines characteristic $\delta^{13}\text{C}$ isotopic signature (in ‰ vs VPDB) based on biome and flora.
      */
     public static double determineIsotopicSignatureDelta13C(Biome biome) {
@@ -87,7 +87,7 @@ public class RadiocarbonIsotopeEngine {
         };
     }
 
-    /*
+    /**
      * Processes radiocarbon tracking and soil organic carbon isotopic signatures across cells.
      */
     public static void processIsotopicDecay(List<H3Cell> cells, double deltaYears) {

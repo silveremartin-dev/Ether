@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -34,11 +34,11 @@ import java.util.*;
 public class NaturalEarthVectorIngestor {
     private static final Logger logger = LoggerFactory.getLogger(NaturalEarthVectorIngestor.class);
 
-    /* Internal state variable for natural earth 50m path (String). */
+    /** Internal state: natural earth 50m path (String). */
     public static final String NATURAL_EARTH_50M_PATH = "data/maps/naturalearth/ne_50m_admin_0_countries.geojson";
-    /* Internal state variable for default width (int). */
+    /** Internal state: default width (int). */
     public static final int DEFAULT_WIDTH = 2048;
-    /* Internal state variable for default height (int). */
+    /** Internal state: default height (int). */
     public static final int DEFAULT_HEIGHT = 1024;
 
     public static class CountryFeature {
@@ -66,9 +66,8 @@ public class NaturalEarthVectorIngestor {
         public Color color;
         public Path2D geometry;
 
-        /*
+        /**
          * Vector feature.
-         * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
          *
          * @param id the id parameter (String)
          * @param name the name parameter (String)
@@ -86,9 +85,8 @@ public class NaturalEarthVectorIngestor {
         }
     }
 
-    /*
+    /**
      * Rasterize vector features.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param features the features parameter (List&lt;VectorFeature&gt;)
      * @param layerFilter the layer filter parameter (String)
@@ -124,10 +122,10 @@ public class NaturalEarthVectorIngestor {
         return img;
     }
 
-    /* Internal state variable for cached countries (List&lt;CountryFeature&gt;). */
+    /** Internal state: cached countries (List&lt;CountryFeature&gt;). */
     private static List<CountryFeature> CACHED_COUNTRIES = null;
 
-    /*
+    /**
      * Loads all country features from Natural Earth GeoJSON with full attribute mapping.
      */
     public static synchronized List<CountryFeature> getCountries(int imgW, int imgH) {
@@ -173,7 +171,6 @@ public class NaturalEarthVectorIngestor {
         return list;
     }
 
-    // Helper subroutine: parse country feature - internal state computation & bounds checking
     private static CountryFeature parseCountryFeature(JsonParser parser, int imgW, int imgH) throws Exception {
         String name = null;
         String admin = null;
@@ -247,7 +244,6 @@ public class NaturalEarthVectorIngestor {
         return cf;
     }
 
-    // Helper subroutine: parse coordinates to paths - internal state computation & bounds checking
     private static void parseCoordinatesToPaths(JsonParser parser, String geomType, int imgW, int imgH, List<Path2D> paths) throws Exception {
         if ("Polygon".equalsIgnoreCase(geomType)) {
             while (parser.nextToken() != JsonToken.END_ARRAY) {
@@ -266,7 +262,6 @@ public class NaturalEarthVectorIngestor {
         }
     }
 
-    // Helper subroutine: parse linear ring - internal state computation & bounds checking
     private static Path2D parseLinearRing(JsonParser parser, int imgW, int imgH) throws Exception {
         if (parser.currentToken() != JsonToken.START_ARRAY) return null;
 
@@ -302,9 +297,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 1. SOVEREIGNTY TENSOR RASTERIZATION (Every Nation has its Authentic Vector)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern sovereignty map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -350,9 +344,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 2. ISOGLOSS TENSOR RASTERIZATION (Glottolog & Linguistic Phyla Mosaic)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern isogloss map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -430,9 +423,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 3. KINSHIP TENSOR RASTERIZATION (Emmanuel Todd & Murdock EA Typology)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern kinship map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -477,9 +469,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 4. RITUALS / RELIGIONS TENSOR RASTERIZATION (Confessional Mosaic)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern rituals map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -525,9 +516,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 5. INSTITUTIONAL COMPLEXITY TENSOR RASTERIZATION (State Capacity & Rule of Law)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern institutional map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -560,9 +550,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 6. TECHNOLOGY TENSOR RASTERIZATION (Capital Intensity & Innovation Index)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern technology map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -595,9 +584,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 7. TRADE NETWORK TENSOR RASTERIZATION (Maritime Chokepoints & Global Supply Corridors)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern trade network map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -707,9 +695,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 8. ECOLOGICAL FOOTPRINT TENSOR RASTERIZATION (Industrial Exergy & Land Use)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern ecological map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -742,9 +729,8 @@ public class NaturalEarthVectorIngestor {
     // =========================================================================
     // 9. PATHOGEN STRESS TENSOR RASTERIZATION (Analytical R0 Epidemiology)
     // =========================================================================
-    /*
+    /**
      * Rasterize modern pathogen map.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param year the year parameter (long)
      * @param width the width parameter (int)
@@ -760,9 +746,8 @@ public class NaturalEarthVectorIngestor {
     // HELPER METHODS: Attribute Computations based on ISO-3166 Codes & Typologies
     // =========================================================================
 
-    /*
+    /**
      * Compute sovereign color for year.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param c the c parameter (CountryFeature)
      * @param year the year parameter (long)
@@ -843,7 +828,6 @@ public class NaturalEarthVectorIngestor {
         return c.sovereignColor != null ? c.sovereignColor : computeSovereignColor(c.isoA3, c.name);
     }
 
-    // Helper subroutine: compute sovereign color - internal state computation & bounds checking
     private static Color computeSovereignColor(String iso, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -903,7 +887,6 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
-    // Helper subroutine: compute isogloss color - internal state computation & bounds checking
     private static Color computeIsoglossColor(String iso, String name, String subregion, String continent) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -969,7 +952,6 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
-    // Helper subroutine: compute kinship color - internal state computation & bounds checking
     private static Color computeKinshipColor(String iso, String name, String subregion, String continent) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1006,7 +988,6 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
-    // Helper subroutine: compute ritual color - internal state computation & bounds checking
     private static Color computeRitualColor(String iso, String name, String subregion, String continent) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1047,7 +1028,6 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
-    // Helper subroutine: compute institutional level - internal state computation & bounds checking
     private static int computeInstitutionalLevel(String iso, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1061,7 +1041,6 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
-    // Helper subroutine: compute technology level - internal state computation & bounds checking
     private static int computeTechnologyLevel(String iso, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1075,7 +1054,6 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
-    // Helper subroutine: compute ecological footprint - internal state computation & bounds checking
     private static int computeEcologicalFootprint(String iso, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1088,7 +1066,6 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
-    // Helper subroutine: compute pathogen stress - internal state computation & bounds checking
     private static int computePathogenStress(String iso, String name, String continent) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index
@@ -1103,7 +1080,6 @@ public class NaturalEarthVectorIngestor {
         };
     }
 
-    // Helper subroutine: apply subnational centers - internal state computation & bounds checking
     private static void applySubnationalCenters(BufferedImage img, double[][] centers, int width, int height, BufferedImage elevationMask) {
         for (int y = 0; y < height; y++) {
             double lat = 90.0 - (y + 0.5) / height * 180.0;
@@ -1134,9 +1110,8 @@ public class NaturalEarthVectorIngestor {
         }
     }
 
-    /*
+    /**
      * Apply elevation mask.
-     * Enforces physical invariants and updates associated state variables within {@code NaturalEarthVectorIngestor}.
      *
      * @param img the img parameter (BufferedImage)
      * @param elevationMask the elevation mask parameter (BufferedImage)
@@ -1163,7 +1138,7 @@ public class NaturalEarthVectorIngestor {
         return img;
     }
 
-    /*
+    /**
      * Attempts to load Natural Earth 1:10m vector map for a scenario.
      */
     public static SvgMapIngestor.SvgIngestionResult loadNaturalEarthMap(String scenarioType) {

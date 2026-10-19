@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -71,22 +71,21 @@ public class H3Globe3DSubScene {
     private final PointLight sunLight;
     private final AmbientLight ambientLight;
 
-    /* Internal state variable for globe radius (double). */
+    /** Internal state: globe radius (double). */
     private double globeRadius = 300.0;
-    /* Internal state variable for relief scale (double). */
+    /** Internal state: relief scale (double). */
     private double reliefScale = 1.0;
-    /* Internal state variable for last mouse x (double). */
+    /** Internal state: last mouse x (double). */
     private double lastMouseX, lastMouseY;
     private AnimationTimer flyTimer;
     private AnimationTimer autoRotateTimer;
-    /* Internal state variable for auto rotating (boolean). */
+    /** Internal state: auto rotating (boolean). */
     private boolean autoRotating = false;
-    /* Internal state variable for default camera z (double). */
+    /** Internal state: default camera z (double). */
     private static final double DEFAULT_CAMERA_Z = -850.0;
 
-    /*
+    /**
      * H3globe3dsub scene.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      * @param width the width parameter (double)
      * @param height the height parameter (double)
@@ -147,9 +146,8 @@ public class H3Globe3DSubScene {
         setupInteractionHandlers();
     }
 
-    /*
+    /**
      * Get sub scene.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      * @return the resulting computation or state reference
      */
@@ -157,9 +155,8 @@ public class H3Globe3DSubScene {
         return subScene;
     }
 
-    /*
+    /**
      * Reset camera.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      */
     public void resetCamera() {
@@ -168,9 +165,8 @@ public class H3Globe3DSubScene {
         rotateY.setAngle(0);
     }
 
-    /*
+    /**
      * Is auto rotating.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      * @return the resulting computation or state reference
      */
@@ -178,9 +174,8 @@ public class H3Globe3DSubScene {
         return autoRotating;
     }
 
-    /*
+    /**
      * Set auto rotating.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      * @param autoRotating the auto rotating parameter (boolean)
      */
@@ -189,13 +184,12 @@ public class H3Globe3DSubScene {
         if (autoRotating) {
             if (autoRotateTimer == null) {
                 autoRotateTimer = new AnimationTimer() {
-                    @Override
-                    /*
+                    /**
                      * Handle.
-                     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
                      *
                      * @param now the now parameter (long)
                      */
+                    @Override
                     public void handle(long now) {
                         rotateY.setAngle((rotateY.getAngle() + 0.3) % 360.0);
                     }
@@ -209,9 +203,8 @@ public class H3Globe3DSubScene {
         }
     }
 
-    /*
+    /**
      * Set relief scale.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      * @param scale the scale parameter (double)
      */
@@ -219,9 +212,8 @@ public class H3Globe3DSubScene {
         this.reliefScale = scale;
     }
 
-    /*
+    /**
      * Get relief scale.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      * @return the resulting computation or state reference
      */
@@ -229,7 +221,6 @@ public class H3Globe3DSubScene {
         return reliefScale;
     }
 
-    // Helper subroutine: setup interaction handlers - internal state computation & bounds checking
     private void setupInteractionHandlers() {
         subScene.setOnMousePressed(e -> {
             lastMouseX = e.getSceneX();
@@ -254,9 +245,8 @@ public class H3Globe3DSubScene {
         });
     }
 
-    /*
+    /**
      * Fly to.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      * @param targetLat the target lat parameter (double)
      * @param targetLng the target lng parameter (double)
@@ -279,13 +269,12 @@ public class H3Globe3DSubScene {
         final long durationNs = 1_000_000_000L;
 
         flyTimer = new AnimationTimer() {
-            @Override
-            /*
+            /**
              * Handle.
-             * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
              *
              * @param now the now parameter (long)
              */
+            @Override
             public void handle(long now) {
                 double elapsed = (now - startNs) / (double) durationNs;
                 if (elapsed >= 1.0) {
@@ -303,7 +292,7 @@ public class H3Globe3DSubScene {
         flyTimer.start();
     }
 
-    /*
+    /**
      * Builds or updates the hardware 3D mesh representation of the H3 cell terrain.
      */
     public void updateTerrainMesh(List<H3Cell> cells) {
@@ -414,7 +403,6 @@ public class H3Globe3DSubScene {
         logger.info("Updated JavaFX 3D Hardware Globe texture map ({}x{}) from {} cells", texWidth, texHeight, cellCount);
     }
 
-    // Helper subroutine: get biome color - internal state computation & bounds checking
     private Color getBiomeColor(H3Cell cell) {
         if (cell.getElevation() != null && cell.getElevation() < 0) {
             return Color.rgb(14, 55, 115);
@@ -436,9 +424,8 @@ public class H3Globe3DSubScene {
         };
     }
 
-    /*
+    /**
      * Update dimensions.
-     * Enforces physical invariants and updates associated state variables within {@code H3Globe3DSubScene}.
      *
      * @param width the width parameter (double)
      * @param height the height parameter (double)

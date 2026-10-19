@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -24,9 +24,8 @@ import java.util.function.Function;
  */
 public class ComparativeReportGenerator {
 
-    /*
+    /**
      * Generate markdown report.
-     * Enforces physical invariants and updates associated state variables within {@code ComparativeReportGenerator}.
      *
      * @param result the result parameter (RootCauseAnalyzer.ComparisonResult)
      * @return the resulting computation or state reference

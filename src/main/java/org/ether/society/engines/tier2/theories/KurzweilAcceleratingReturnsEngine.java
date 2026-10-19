@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -24,14 +24,13 @@ import java.util.List;
 public class KurzweilAcceleratingReturnsEngine {
     private static final Logger logger = LoggerFactory.getLogger(KurzweilAcceleratingReturnsEngine.class);
 
-    /* Internal state variable for global knowledge stock (double). */
+    /** Internal state: global knowledge stock (double). */
     private static double globalKnowledgeStock = 1.0;
-    /* Internal state variable for acceleration rate (double). */
+    /** Internal state: acceleration rate (double). */
     private static double accelerationRate = 0.05;
 
-    /*
+    /**
      * Process accelerating returns.
-     * Enforces physical invariants and updates associated state variables within {@code KurzweilAcceleratingReturnsEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -60,14 +59,13 @@ public class KurzweilAcceleratingReturnsEngine {
         }
     }
 
-    /*
+    /**
      * Get global knowledge stock.
-     * Enforces physical invariants and updates associated state variables within {@code KurzweilAcceleratingReturnsEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getGlobalKnowledgeStock() { return globalKnowledgeStock; }
-    /*
+    /**
      * Set global knowledge stock operation.
      * <p>
      * Executes operational logic for {@code KurzweilAcceleratingReturnsEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

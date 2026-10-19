@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2026 Silvere Martin-Michiellot & Antigravity AI
@@ -50,16 +50,15 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     }
 
     private GovernanceMode mode;
-    /* Internal state variable for aggressive optimization factor (double). */
+    /** Internal state: aggressive optimization factor (double). */
     private double aggressiveOptimizationFactor;
-    /* Internal state variable for target pollution ceiling (double). */
+    /** Internal state: target pollution ceiling (double). */
     private double targetPollutionCeiling;
-    /* Internal state variable for target gini ceiling (double). */
+    /** Internal state: target gini ceiling (double). */
     private double targetGiniCeiling;
 
     /*
      * Sovereign aigovernance engine.
-     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
      *
      */
     public SovereignAIGovernanceEngine() {
@@ -68,7 +67,6 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
 
     /*
      * Sovereign aigovernance engine.
-     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
      *
      * @param mode the mode parameter (GovernanceMode)
      * @param aggressiveOptimizationFactor the aggressive optimization factor parameter (double)
@@ -85,7 +83,6 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     @Override
     /*
      * Process.
-     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -233,7 +230,6 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     // Getters & Setters
     /*
      * Get mode.
-     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
      *
      * @return the resulting computation or state reference
      */
@@ -250,7 +246,6 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     public void setMode(GovernanceMode mode) { this.mode = mode; }
     /*
      * Get aggressive optimization factor.
-     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
      *
      * @return the resulting computation or state reference
      */
@@ -267,7 +262,6 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     public void setAggressiveOptimizationFactor(double factor) { this.aggressiveOptimizationFactor = factor; }
     /*
      * Get target pollution ceiling.
-     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
      *
      * @return the resulting computation or state reference
      */
@@ -284,7 +278,6 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
     public void setTargetPollutionCeiling(double ceiling) { this.targetPollutionCeiling = ceiling; }
     /*
      * Get target gini ceiling.
-     * Enforces physical invariants and updates associated state variables within {@code SovereignAIGovernanceEngine}.
      *
      * @return the resulting computation or state reference
      */

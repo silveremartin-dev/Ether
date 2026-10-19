@@ -1,4 +1,4 @@
-/*
+*
 
  * MIT License
 
@@ -127,7 +127,6 @@ public class ThermodynamicMigrationEngine {
 
      * Process thermodynamic migration.
 
-     * Enforces physical invariants and updates associated state variables within {@code ThermodynamicMigrationEngine}.
 
      *
 
@@ -149,7 +148,7 @@ public class ThermodynamicMigrationEngine {
         processThermodynamicMigration(cells, config, 6371.0, worldBuffer, agentBuffer);
     }
 
-    /*
+    /**
      * Process thermodynamic migration across spatial cells and synchronizes cohorts into DOD buffers.
      */
     public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config, double planetRadiusKm,
@@ -367,7 +366,6 @@ public class ThermodynamicMigrationEngine {
 
      * Calculate haversine distance.
 
-     * Enforces physical invariants and updates associated state variables within {@code ThermodynamicMigrationEngine}.
 
      *
 
@@ -401,7 +399,6 @@ public class ThermodynamicMigrationEngine {
 
      * Calculate haversine distance.
 
-     * Enforces physical invariants and updates associated state variables within {@code ThermodynamicMigrationEngine}.
 
      *
 

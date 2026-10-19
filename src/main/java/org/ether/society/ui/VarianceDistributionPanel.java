@@ -1,4 +1,4 @@
-package org.ether.society.ui;
+ackage org.ether.society.ui;
 
 import org.ether.society.core.dod.PluggableStatEngine;
 import org.ether.society.core.dod.StatisticsKernel;
@@ -28,18 +28,17 @@ import java.util.*;
 public class VarianceDistributionPanel extends VBox {
 
     public static class VariableEntry {
-        /* Internal state variable for key (String). */
+        /** Internal state: key (String). */
         private final String key;
-        /* Internal state variable for display name (String). */
+        /** Internal state: display name (String). */
         private final String displayName;
-        /* Internal state variable for category (String). */
+        /** Internal state: category (String). */
         private final String category;
-        /* Internal state variable for is header (boolean). */
+        /** Internal state: is header (boolean). */
         private final boolean isHeader;
 
-        /*
+        /**
          * Variable entry.
-         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
          *
          * @param key the key parameter (String)
          * @param displayName the display name parameter (String)
@@ -53,7 +52,6 @@ public class VarianceDistributionPanel extends VBox {
             this.isHeader = false;
         }
 
-        // Helper subroutine: variable entry - internal state computation & bounds checking
         private VariableEntry(String headerTitle) {
             this.key = null;
             this.displayName = headerTitle;
@@ -61,9 +59,8 @@ public class VarianceDistributionPanel extends VBox {
             this.isHeader = true;
         }
 
-        /*
+        /**
          * Header.
-         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
          *
          * @param headerTitle the header title parameter (String)
          * @return the resulting computation or state reference
@@ -72,42 +69,37 @@ public class VarianceDistributionPanel extends VBox {
             return new VariableEntry(headerTitle);
         }
 
-        /*
+        /**
          * Get key.
-         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getKey() { return key; }
-        /*
+        /**
          * Get display name.
-         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getDisplayName() { return displayName; }
-        /*
+        /**
          * Get category.
-         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getCategory() { return category; }
-        /*
+        /**
          * Is header.
-         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
          *
          * @return the resulting computation or state reference
          */
         public boolean isHeader() { return isHeader; }
 
-        @Override
-        /*
+        /**
          * To string.
-         * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
          *
          * @return the resulting computation or state reference
          */
+        @Override
         public String toString() {
             return displayName;
         }
@@ -148,12 +140,11 @@ public class VarianceDistributionPanel extends VBox {
     private final BarChart<String, Number> histogramChart;
     private final XYChart.Series<String, Number> histogramSeries = new XYChart.Series<>();
 
-    /* Internal state variable for current cells (List&lt;H3Cell&gt;). */
+    /** Internal state: current cells (List&lt;H3Cell&gt;). */
     private List<H3Cell> currentCells;
 
-    /*
+    /**
      * Variance distribution panel.
-     * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
      *
      * @param pluggableStatEngine the pluggable stat engine parameter (PluggableStatEngine)
      */
@@ -183,14 +174,13 @@ public class VarianceDistributionPanel extends VBox {
         variableCombo = new ComboBox<>();
         variableCombo.setMaxWidth(Double.MAX_VALUE);
         variableCombo.setCellFactory(lv -> new ListCell<VariableEntry>() {
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
              *
              * @param item the item parameter (VariableEntry)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(VariableEntry item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
@@ -210,14 +200,13 @@ public class VarianceDistributionPanel extends VBox {
         });
 
         variableCombo.setButtonCell(new ListCell<VariableEntry>() {
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
              *
              * @param item the item parameter (VariableEntry)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(VariableEntry item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
@@ -293,9 +282,8 @@ public class VarianceDistributionPanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
-    /*
+    /**
      * Update texts.
-     * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
      *
      */
     public void updateTexts() {
@@ -401,7 +389,6 @@ public class VarianceDistributionPanel extends VBox {
         }
     }
 
-    // Helper subroutine: create mini kpi - internal state computation & bounds checking
     private HBox createMiniKpi(Label titleLabel, Label valLabel) {
         HBox box = new HBox(4);
         box.setAlignment(Pos.CENTER_LEFT);
@@ -421,9 +408,8 @@ public class VarianceDistributionPanel extends VBox {
         return box;
     }
 
-    /*
+    /**
      * Update data.
-     * Enforces physical invariants and updates associated state variables within {@code VarianceDistributionPanel}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */
@@ -497,7 +483,6 @@ public class VarianceDistributionPanel extends VBox {
         }
     }
 
-    // Helper subroutine: format adaptive - internal state computation & bounds checking
     private String formatAdaptive(double val) {
         if (Double.isNaN(val) || Double.isInfinite(val)) return "--";
         double abs = Math.abs(val);

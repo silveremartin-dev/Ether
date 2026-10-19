@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -34,35 +34,32 @@ import java.util.List;
 public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(DraftAnimalFodderAllocationEngine.class);
 
-    @Override
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getName() {
         return "Draft Animal Traction & Fodder Allocation";
     }
 
-    @Override
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getDescription() {
         return "Models the energetic trade-off between draft animal mechanical work multiplier and fodder land competition.";
     }
 
-    @Override
-    /*
+    /**
      * Get equations tooltip.
-     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getEquationsTooltip() {
         return """
                [Draft Animal Energetics & Fodder Trade-Off (Smil 2017, Wrigley 2010)]
@@ -75,25 +72,23 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
                """;
     }
 
-    @Override
-    /*
+    /**
      * Get category.
-     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getCategory() {
         return "Tier 2: Agrarian Energetics";
     }
 
-    @Override
-    /*
+    /**
      * Process.
-     * Enforces physical invariants and updates associated state variables within {@code DraftAnimalFodderAllocationEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
      */
+    @Override
     public void process(List<H3Cell> cells, double deltaYears) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions

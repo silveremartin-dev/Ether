@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
@@ -9,33 +9,32 @@ package org.ether.society.events;
  * temporal resolution timestamp (Year/Month/Day), and visual beacon metadata.
  */
 public class ActiveEvent {
-    /* Internal state variable for id (String). */
+    /** Internal state: id (String). */
     private final String id;
-    /* Internal state variable for title (String). */
+    /** Internal state: title (String). */
     private final String title;
     private final String type; // FLOOD, VOLCANO, FAMINE, PANDEMIC, HEATWAVE, METEOR, EARTHQUAKE, ECOLOGICAL, HISTORICAL, HISTORICAL_LEADER, GOD_MODE, etc.
-    /* Internal state variable for latitude (double). */
+    /** Internal state: latitude (double). */
     private final double latitude;
-    /* Internal state variable for longitude (double). */
+    /** Internal state: longitude (double). */
     private final double longitude;
-    /* Internal state variable for year (int). */
+    /** Internal state: year (int). */
     private final int year;
     private final int month; // 0-11
     private final int day;   // 1-30
-    /* Internal state variable for created at ms (long). */
+    /** Internal state: created at ms (long). */
     private final long createdAtMs;
-    /* Internal state variable for duration seconds (double). */
+    /** Internal state: duration seconds (double). */
     private final double durationSeconds;
-    /* Internal state variable for magnitude (double). */
+    /** Internal state: magnitude (double). */
     private final double magnitude;
-    /* Internal state variable for duration days (int). */
+    /** Internal state: duration days (int). */
     private final int durationDays;
     private LeaderArchetype leaderArchetype;
     private HistoricalIntervention intervention;
 
-    /*
+    /**
      * Active event.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @param id the id parameter (String)
      * @param title the title parameter (String)
@@ -64,9 +63,8 @@ public class ActiveEvent {
         this.durationDays = durationDays > 0 ? durationDays : 30;
     }
 
-    /*
+    /**
      * Active event.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @param id the id parameter (String)
      * @param title the title parameter (String)
@@ -83,9 +81,8 @@ public class ActiveEvent {
         this(id, title, type, latitude, longitude, year, month, day, durationSeconds, magnitude, 30);
     }
 
-    /*
+    /**
      * Active event.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @param id the id parameter (String)
      * @param title the title parameter (String)
@@ -101,9 +98,8 @@ public class ActiveEvent {
         this(id, title, type, latitude, longitude, year, month, day, durationSeconds, 5.0, 30);
     }
 
-    /*
+    /**
      * Active event.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @param intervention the intervention parameter (HistoricalIntervention)
      * @param year the year parameter (int)
@@ -128,99 +124,86 @@ public class ActiveEvent {
         this.intervention = intervention;
     }
 
-    /*
+    /**
      * Get id.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public String getId() { return id; }
-    /*
+    /**
      * Get title.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public String getTitle() { return title; }
-    /*
+    /**
      * Get type.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public String getType() { return type; }
-    /*
+    /**
      * Get latitude.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public double getLatitude() { return latitude; }
-    /*
+    /**
      * Get longitude.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public double getLongitude() { return longitude; }
-    /*
+    /**
      * Get year.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public int getYear() { return year; }
-    /*
+    /**
      * Get month.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public int getMonth() { return month; }
-    /*
+    /**
      * Get day.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public int getDay() { return day; }
-    /*
+    /**
      * Get created at ms.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public long getCreatedAtMs() { return createdAtMs; }
-    /*
+    /**
      * Get duration seconds.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public double getDurationSeconds() { return durationSeconds; }
-    /*
+    /**
      * Get magnitude.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public double getMagnitude() { return magnitude; }
-    /*
+    /**
      * Get duration days.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public int getDurationDays() { return durationDays; }
 
-    /*
+    /**
      * Get leader archetype.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public LeaderArchetype getLeaderArchetype() { return leaderArchetype; }
-    /*
+    /**
      * Set leader archetype operation.
      * <p>
      * Executes operational logic for {@code ActiveEvent} within the simulation engine framework.
@@ -231,14 +214,13 @@ public class ActiveEvent {
      */
     public void setLeaderArchetype(LeaderArchetype leaderArchetype) { this.leaderArchetype = leaderArchetype; }
 
-    /*
+    /**
      * Get intervention.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
     public HistoricalIntervention getIntervention() { return intervention; }
-    /*
+    /**
      * Set intervention operation.
      * <p>
      * Executes operational logic for {@code ActiveEvent} within the simulation engine framework.
@@ -249,9 +231,8 @@ public class ActiveEvent {
      */
     public void setIntervention(HistoricalIntervention intervention) { this.intervention = intervention; }
 
-    /*
+    /**
      * Is geophysical.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -266,9 +247,8 @@ public class ActiveEvent {
                upper.contains("DISASTER") || upper.contains("ECO_") || upper.contains("NUCLEAR");
     }
 
-    /*
+    /**
      * Is historical leader.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -279,9 +259,8 @@ public class ActiveEvent {
                upper.contains("PROC_LEADER") || leaderArchetype != null || intervention != null;
     }
 
-    /*
+    /**
      * Is procedural emergence.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -292,9 +271,8 @@ public class ActiveEvent {
                upper.contains("NARRATIVE") || upper.contains("MILESTONE") || upper.contains("POLITY_EMERGENCE");
     }
 
-    /*
+    /**
      * Is expired.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -302,9 +280,8 @@ public class ActiveEvent {
         return (System.currentTimeMillis() - createdAtMs) > (durationSeconds * 1000L);
     }
 
-    /*
+    /**
      * Get formatted date.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -313,9 +290,8 @@ public class ActiveEvent {
         return String.format(template, year, month + 1, day);
     }
 
-    /*
+    /**
      * Get formatted location.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -328,9 +304,8 @@ public class ActiveEvent {
         return String.format("Lat: %.2f°%s, Lng: %.2f°%s", Math.abs(latitude), latDir, Math.abs(longitude), lngDir);
     }
 
-    /*
+    /**
      * Get intensity label.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -341,9 +316,8 @@ public class ActiveEvent {
         return org.ether.society.i18n.I18n.getOrDefault("event.intensity.low", "Low");
     }
 
-    /*
+    /**
      * Get intensity badge color.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -361,9 +335,8 @@ public class ActiveEvent {
         return "#22c55e";
     }
 
-    /*
+    /**
      * Get formatted coordinates.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -376,9 +349,8 @@ public class ActiveEvent {
         return String.format(java.util.Locale.ROOT, "Lat: %.2f°%s, Lng: %.2f°%s", Math.abs(latitude), latDir, Math.abs(longitude), lngDir);
     }
 
-    /*
+    /**
      * Get full message.
-     * Enforces physical invariants and updates associated state variables within {@code ActiveEvent}.
      *
      * @return the resulting computation or state reference
      */

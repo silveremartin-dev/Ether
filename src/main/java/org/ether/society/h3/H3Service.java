@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -32,21 +32,19 @@ public class H3Service {
     private static H3Service instance;
 
     private final H3Core h3;
-    /* Internal state variable for resolution (int). */
+    /** Internal state: resolution (int). */
     private final int resolution;
 
-    /*
+    /**
      * H3service.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      */
     public H3Service() {
         this(8); // Default to Level 8 (~0.74 km²)
     }
 
-    /*
+    /**
      * H3service.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param resolution the resolution parameter (int)
      */
@@ -60,7 +58,7 @@ public class H3Service {
         }
     }
 
-    /*
+    /**
      * Get singleton instance.
      */
     public static synchronized H3Service getInstance() {
@@ -70,9 +68,8 @@ public class H3Service {
         return instance;
     }
 
-    /*
+    /**
      * Lat lng to cell.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param lat the lat parameter (double)
      * @param lng the lng parameter (double)
@@ -82,9 +79,8 @@ public class H3Service {
         return h3.latLngToCell(lat, lng, resolution);
     }
 
-    /*
+    /**
      * Lat lng to h3.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param lat the lat parameter (double)
      * @param lng the lng parameter (double)
@@ -94,9 +90,8 @@ public class H3Service {
         return h3.latLngToCell(lat, lng, resolution);
     }
 
-    /*
+    /**
      * Get resolution.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param h3Index the h3index parameter (long)
      * @return the resulting computation or state reference
@@ -105,9 +100,8 @@ public class H3Service {
         return h3.getResolution(h3Index);
     }
 
-    /*
+    /**
      * Get resolution.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @return the resulting computation or state reference
      */
@@ -115,9 +109,8 @@ public class H3Service {
         return resolution;
     }
 
-    /*
+    /**
      * Get h3.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @return the resulting computation or state reference
      */
@@ -125,9 +118,8 @@ public class H3Service {
         return h3;
     }
 
-    /*
+    /**
      * Lat lng to h3.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param lat the lat parameter (double)
      * @param lng the lng parameter (double)
@@ -138,9 +130,8 @@ public class H3Service {
         return h3.latLngToCell(lat, lng, res);
     }
 
-    /*
+    /**
      * Cell to lat lng.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param h3Index the h3index parameter (long)
      * @return the resulting computation or state reference
@@ -149,9 +140,8 @@ public class H3Service {
         return h3.cellToLatLng(h3Index);
     }
 
-    /*
+    /**
      * H3to lat lng.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param h3Index the h3index parameter (long)
      * @return the resulting computation or state reference
@@ -160,9 +150,8 @@ public class H3Service {
         return h3.cellToLatLng(h3Index);
     }
 
-    /*
+    /**
      * H3to string.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param h3Index the h3index parameter (long)
      * @return the resulting computation or state reference
@@ -171,9 +160,8 @@ public class H3Service {
         return h3.h3ToString(h3Index);
     }
 
-    /*
+    /**
      * Grid disk.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param h3Index the h3index parameter (long)
      * @param k the k parameter (int)
@@ -183,9 +171,8 @@ public class H3Service {
         return h3.gridDisk(h3Index, k);
     }
 
-    /*
+    /**
      * Cell to parent.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param h3Index the h3index parameter (long)
      * @param parentRes the parent res parameter (int)
@@ -195,14 +182,14 @@ public class H3Service {
         return h3.cellToParent(h3Index, parentRes);
     }
 
-    /*
+    /**
      * Thread-safe bounded cache of immutable ring-1 H3 topological neighbor lists.
      * H3 ring-1 adjacency is strictly static for any given h3Index, so caching eliminates
      * hundreds of thousands of JNI crossings and ArrayList/Long boxing allocations per tick.
      */
     private final java.util.concurrent.ConcurrentHashMap<Long, List<Long>> neighborCache = new java.util.concurrent.ConcurrentHashMap<>(65536);
 
-    /*
+    /**
      * Get immediate neighbors of a cell (ring 1).
      */
     public List<Long> getNeighbors(long h3Index) {
@@ -226,7 +213,7 @@ public class H3Service {
         return immutableNeighbors;
     }
 
-    /*
+    /**
      * Get H3 indexes in a bounding box.
      */
     public List<Long> getH3IndexesInBounds(double minLat, double maxLat, double minLng, double maxLng, int res) {
@@ -261,10 +248,10 @@ public class H3Service {
         return cells;
     }
 
-    /*
+    /**
      * Generate H3Cell objects for the entire globe at a specific resolution.
      */
-    /*
+    /**
      * Generate H3Cell objects for the entire globe at a specific resolution.
      */
     public List<H3Cell> generateGlobalMetadata(int res) {
@@ -289,7 +276,7 @@ public class H3Service {
         return result;
     }
 
-    /*
+    /**
      * Generate H3Cell objects filtered directly within a geographic bounding box.
      * Prevents allocating millions of unused global cells on the heap for high resolutions (Res 6-7).
      */
@@ -319,7 +306,7 @@ public class H3Service {
         return result;
     }
 
-    /*
+    /**
      * Calculate grid path between two cells.
      */
     public List<Long> gridPathCells(long start, long end) {
@@ -335,9 +322,8 @@ public class H3Service {
         }
     }
 
-    /*
+    /**
      * Get cell boundary.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param h3Index the h3index parameter (long)
      * @return the resulting computation or state reference
@@ -346,9 +332,8 @@ public class H3Service {
         return h3.cellToBoundary(h3Index);
     }
 
-    /*
+    /**
      * Get directed edge.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param origin the origin parameter (long)
      * @param destination the destination parameter (long)
@@ -358,9 +343,8 @@ public class H3Service {
         return h3.cellsToDirectedEdge(origin, destination);
     }
 
-    /*
+    /**
      * Get edge boundary.
-     * Enforces physical invariants and updates associated state variables within {@code H3Service}.
      *
      * @param edgeIndex the edge index parameter (long)
      * @return the resulting computation or state reference

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
@@ -17,15 +17,14 @@ public class SymbolicExpression {
         ADDITIVE_DELTA // x + delta * dt
     }
 
-    /* Internal state variable for variable name (String). */
+    /** Internal state: variable name (String). */
     private final String variableName;
     private final OpType opType;
     private final double coefficient; // A or delta
     private final double offset;      // B
 
-    /*
+    /**
      * Symbolic expression.
-     * Enforces physical invariants and updates associated state variables within {@code SymbolicExpression}.
      *
      * @param variableName the variable name parameter (String)
      */
@@ -36,9 +35,8 @@ public class SymbolicExpression {
         this.offset = 0.0;
     }
 
-    /*
+    /**
      * Symbolic expression.
-     * Enforces physical invariants and updates associated state variables within {@code SymbolicExpression}.
      *
      * @param variableName the variable name parameter (String)
      * @param coefficient the coefficient parameter (double)
@@ -51,9 +49,8 @@ public class SymbolicExpression {
         this.offset = offset;
     }
 
-    /*
+    /**
      * Get variable name.
-     * Enforces physical invariants and updates associated state variables within {@code SymbolicExpression}.
      *
      * @return the resulting computation or state reference
      */
@@ -61,9 +58,8 @@ public class SymbolicExpression {
         return variableName;
     }
 
-    /*
+    /**
      * Get op type.
-     * Enforces physical invariants and updates associated state variables within {@code SymbolicExpression}.
      *
      * @return the resulting computation or state reference
      */
@@ -71,9 +67,8 @@ public class SymbolicExpression {
         return opType;
     }
 
-    /*
+    /**
      * Get coefficient.
-     * Enforces physical invariants and updates associated state variables within {@code SymbolicExpression}.
      *
      * @return the resulting computation or state reference
      */
@@ -81,9 +76,8 @@ public class SymbolicExpression {
         return coefficient;
     }
 
-    /*
+    /**
      * Get offset.
-     * Enforces physical invariants and updates associated state variables within {@code SymbolicExpression}.
      *
      * @return the resulting computation or state reference
      */
@@ -91,7 +85,7 @@ public class SymbolicExpression {
         return offset;
     }
 
-    /*
+    /**
      * Composes this expression f(x) = A1*x + B1 with g(x) = A2*x + B2
      * Result g(f(x)) = A2*(A1*x + B1) + B2 = (A1*A2)*x + (A2*B1 + B2)
      */
@@ -105,20 +99,19 @@ public class SymbolicExpression {
         return new SymbolicExpression(this.variableName, newCoeff, newOffset);
     }
 
-    /*
+    /**
      * Evaluates the simplified expression for a given input value x.
      */
     public double evaluate(double x) {
         return coefficient * x + offset;
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code SymbolicExpression}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         if (Math.abs(coefficient - 1.0) < 1e-9 && Math.abs(offset) < 1e-9) {
             return variableName;

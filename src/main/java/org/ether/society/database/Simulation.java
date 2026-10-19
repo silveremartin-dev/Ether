@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -56,21 +56,21 @@ public class Simulation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*
+    /**
      * Simulation name (e.g., "Neolithic Europe", "Ice Age Simulation").
      */
     @Column(nullable = false)
-    /* Internal state variable for name (String). */
+    /** Internal state: name (String). */
     private String name;
 
-    /*
+    /**
      * Description of simulation scenario.
      */
     @Column(length = 2000)
-    /* Internal state variable for description (String). */
+    /** Internal state: description (String). */
     private String description;
 
-    /*
+    /**
      * Reference to the WorldMap being used.
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -79,32 +79,32 @@ public class Simulation {
 
     // Time configuration
 
-    /*
+    /**
      * Simulation start year (e.g., -20000 for 20,000 BC).
      */
     @Column(nullable = false)
     private Integer startYear;
 
-    /*
+    /**
      * Current simulated year.
      */
     @Column(nullable = false)
     private Integer currentYear;
 
-    /*
+    /**
      * Current simulated month (0-11).
      */
     @Column(nullable = false)
     private Integer currentMonth = 0;
 
-    /*
+    /**
      * Time step size: MONTH, SEASON, YEAR, DECADE.
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TimeStep timeStep = TimeStep.MONTH;
 
-    /*
+    /**
      * Total ticks (updates) executed.
      */
     @Column(nullable = false)
@@ -112,20 +112,20 @@ public class Simulation {
 
     // Simulation state
 
-    /*
+    /**
      * Current state: CREATED, RUNNING, PAUSED, COMPLETED.
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SimulationState state = SimulationState.CREATED;
 
-    /*
+    /**
      * Total human population across all cells.
      */
     @Column
     private Long totalPopulation = 0L;
 
-    /*
+    /**
      * Global temperature offset (for climate events).
      */
     @Column
@@ -180,17 +180,15 @@ public class Simulation {
 
     // Constructors
 
-    /*
+    /**
      * Simulation.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      */
     public Simulation() {
     }
 
-    /*
+    /**
      * Simulation.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param name the name parameter (String)
      * @param worldMap the world map parameter (WorldMap)
@@ -205,7 +203,7 @@ public class Simulation {
 
     // Business logic
 
-    /*
+    /**
      * Advances simulation time by one time step.
      */
     public void advanceTime() {
@@ -232,7 +230,7 @@ public class Simulation {
         lastTickAt = LocalDateTime.now();
     }
 
-    /*
+    /**
      * Gets formatted date string (e.g., "5000 BC, Month 6").
      */
     public String getFormattedDate() {
@@ -243,9 +241,8 @@ public class Simulation {
 
     // Getters and setters
 
-    /*
+    /**
      * Get id.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -253,9 +250,8 @@ public class Simulation {
         return id;
     }
 
-    /*
+    /**
      * Set id.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param id the id parameter (Long)
      */
@@ -263,9 +259,8 @@ public class Simulation {
         this.id = id;
     }
 
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -273,9 +268,8 @@ public class Simulation {
         return name;
     }
 
-    /*
+    /**
      * Set name.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param name the name parameter (String)
      */
@@ -283,9 +277,8 @@ public class Simulation {
         this.name = name;
     }
 
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -293,9 +286,8 @@ public class Simulation {
         return description;
     }
 
-    /*
+    /**
      * Set description.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param description the description parameter (String)
      */
@@ -303,9 +295,8 @@ public class Simulation {
         this.description = description;
     }
 
-    /*
+    /**
      * Get world map.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -313,9 +304,8 @@ public class Simulation {
         return worldMap;
     }
 
-    /*
+    /**
      * Set world map.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param worldMap the world map parameter (WorldMap)
      */
@@ -323,9 +313,8 @@ public class Simulation {
         this.worldMap = worldMap;
     }
 
-    /*
+    /**
      * Get start year.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -333,9 +322,8 @@ public class Simulation {
         return startYear;
     }
 
-    /*
+    /**
      * Set start year.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param startYear the start year parameter (Integer)
      */
@@ -343,9 +331,8 @@ public class Simulation {
         this.startYear = startYear;
     }
 
-    /*
+    /**
      * Get current year.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -353,9 +340,8 @@ public class Simulation {
         return currentYear;
     }
 
-    /*
+    /**
      * Set current year.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param currentYear the current year parameter (Integer)
      */
@@ -363,9 +349,8 @@ public class Simulation {
         this.currentYear = currentYear;
     }
 
-    /*
+    /**
      * Get current month.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -373,9 +358,8 @@ public class Simulation {
         return currentMonth;
     }
 
-    /*
+    /**
      * Set current month.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param currentMonth the current month parameter (Integer)
      */
@@ -383,9 +367,8 @@ public class Simulation {
         this.currentMonth = currentMonth;
     }
 
-    /*
+    /**
      * Get time step.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -393,9 +376,8 @@ public class Simulation {
         return timeStep;
     }
 
-    /*
+    /**
      * Set time step.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param timeStep the time step parameter (TimeStep)
      */
@@ -403,9 +385,8 @@ public class Simulation {
         this.timeStep = timeStep;
     }
 
-    /*
+    /**
      * Get total ticks.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -413,9 +394,8 @@ public class Simulation {
         return totalTicks;
     }
 
-    /*
+    /**
      * Set total ticks.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param totalTicks the total ticks parameter (Long)
      */
@@ -423,9 +403,8 @@ public class Simulation {
         this.totalTicks = totalTicks;
     }
 
-    /*
+    /**
      * Get state.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -433,9 +412,8 @@ public class Simulation {
         return state;
     }
 
-    /*
+    /**
      * Set state.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param state the state parameter (SimulationState)
      */
@@ -443,9 +421,8 @@ public class Simulation {
         this.state = state;
     }
 
-    /*
+    /**
      * Get total population.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -453,9 +430,8 @@ public class Simulation {
         return totalPopulation;
     }
 
-    /*
+    /**
      * Set total population.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param totalPopulation the total population parameter (Long)
      */
@@ -463,9 +439,8 @@ public class Simulation {
         this.totalPopulation = totalPopulation;
     }
 
-    /*
+    /**
      * Get global temperature offset.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -473,9 +448,8 @@ public class Simulation {
         return globalTemperatureOffset;
     }
 
-    /*
+    /**
      * Set global temperature offset.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param offset the offset parameter (Double)
      */
@@ -483,9 +457,8 @@ public class Simulation {
         this.globalTemperatureOffset = offset;
     }
 
-    /*
+    /**
      * Get created at.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -493,9 +466,8 @@ public class Simulation {
         return createdAt;
     }
 
-    /*
+    /**
      * Get updated at.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */
@@ -503,9 +475,8 @@ public class Simulation {
         return updatedAt;
     }
 
-    /*
+    /**
      * Set updated at.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @param updatedAt the updated at parameter (LocalDateTime)
      */
@@ -515,9 +486,8 @@ public class Simulation {
         this.updatedAt = updatedAt;
     }
 
-    /*
+    /**
      * Get last tick at.
-     * Enforces physical invariants and updates associated state variables within {@code Simulation}.
      *
      * @return the resulting computation or state reference
      */

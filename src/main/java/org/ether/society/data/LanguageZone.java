@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -23,9 +23,8 @@ public class LanguageZone {
     public double centerLng, centerLat;
     public Color color;
 
-    /*
+    /**
      * Language zone.
-     * Enforces physical invariants and updates associated state variables within {@code LanguageZone}.
      *
      * @param name the name parameter (String)
      * @param centerLng the center lng parameter (double)

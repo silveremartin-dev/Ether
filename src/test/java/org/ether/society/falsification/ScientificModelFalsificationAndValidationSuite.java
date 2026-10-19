@@ -102,8 +102,16 @@ public class ScientificModelFalsificationAndValidationSuite {
             // Confrontation with historical reality: HYDE 3.4 shows demographic take-off from 1750 (710M) to 1850 (1260M)
             Map<Integer, Double> historicalPop = HistoricalValidationKernel.getBenchmarkDataset("worldPopulation");
             assertNotNull(historicalPop, "HYDE 3.4 population dataset must be loaded");
+            assertTrue(historicalPop.get(1850) > historicalPop.get(1750),
+                    "Historical HYDE 3.4 shows demographic take-off between 1750 and 1850, falsifying the static Malthusian trap.");
 
-            assertTrue(finalBoserupPop > finalMalthusPop, "Boserupian model sustains higher population via endogenous technological adaptation.");
+            double malthusPopDrop = 400000.0 - finalMalthusPop;
+            assertTrue(malthusPopDrop > 350000.0,
+                    "Malthusian model suffers catastrophic demographic collapse due to uncompensated ecological depletion.");
+            assertTrue(finalBoserupPop >= 400000.0,
+                    "Boserupian intensification prevents demographic collapse through endogenous technological adaptation.");
+            assertTrue(finalBoserupPop > finalMalthusPop * 1000.0,
+                    "Boserupian regime sustains orders of magnitude higher carrying capacity than collapsed Malthusian trap.");
             assertTrue(finalBoserupTech > 1.2, "Demographic density must trigger technological upgrades.");
             assertTrue(boserupGrid.get(0).getBiomassAgriculture() > malthusGrid.get(0).getBiomassAgriculture(),
                     "Boserupian multi-cropping must increase standing agricultural capacity above static baseline.");

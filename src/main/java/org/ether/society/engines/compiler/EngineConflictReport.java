@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
@@ -26,19 +26,18 @@ public class EngineConflictReport {
     }
 
     public static class ConflictEntry {
-        /* Internal state variable for variable name (String). */
+        /** Internal state: variable name (String). */
         private final String variableName;
-        /* Internal state variable for engine a (String). */
+        /** Internal state: engine a (String). */
         private final String engineA;
-        /* Internal state variable for engine b (String). */
+        /** Internal state: engine b (String). */
         private final String engineB;
         private final ConflictSeverity severity;
-        /* Internal state variable for description (String). */
+        /** Internal state: description (String). */
         private final String description;
 
-        /*
+        /**
          * Conflict entry.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
          *
          * @param variableName the variable name parameter (String)
          * @param engineA the engine a parameter (String)
@@ -55,49 +54,43 @@ public class EngineConflictReport {
             this.description = description;
         }
 
-        /*
+        /**
          * Get variable name.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
          *
          * @return the resulting computation or state reference
          */
         public String getVariableName() { return variableName; }
-        /*
+        /**
          * Get engine a.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
          *
          * @return the resulting computation or state reference
          */
         public String getEngineA() { return engineA; }
-        /*
+        /**
          * Get engine b.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
          *
          * @return the resulting computation or state reference
          */
         public String getEngineB() { return engineB; }
-        /*
+        /**
          * Get severity.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
          *
          * @return the resulting computation or state reference
          */
         public ConflictSeverity getSeverity() { return severity; }
-        /*
+        /**
          * Get description.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
          *
          * @return the resulting computation or state reference
          */
         public String getDescription() { return description; }
 
-        @Override
-        /*
+        /**
          * To string.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
          *
          * @return the resulting computation or state reference
          */
+        @Override
         public String toString() {
             return String.format("[%s] Variable: %s | %s vs %s -> %s", severity, variableName, engineA, engineB, description);
         }
@@ -105,9 +98,8 @@ public class EngineConflictReport {
 
     private final List<ConflictEntry> entries = new ArrayList<>();
 
-    /*
+    /**
      * Add conflict.
-     * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
      *
      * @param variableName the variable name parameter (String)
      * @param engineA the engine a parameter (String)
@@ -119,9 +111,8 @@ public class EngineConflictReport {
         entries.add(new ConflictEntry(variableName, engineA, engineB, severity, description));
     }
 
-    /*
+    /**
      * Get entries.
-     * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
      *
      * @return the resulting computation or state reference
      */
@@ -129,9 +120,8 @@ public class EngineConflictReport {
         return entries;
     }
 
-    /*
+    /**
      * Has incompatibilities.
-     * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
      *
      * @return the resulting computation or state reference
      */
@@ -139,9 +129,8 @@ public class EngineConflictReport {
         return entries.stream().anyMatch(e -> e.getSeverity() == ConflictSeverity.INCOMPATIBLE);
     }
 
-    /*
+    /**
      * Generate summary.
-     * Enforces physical invariants and updates associated state variables within {@code EngineConflictReport}.
      *
      * @return the resulting computation or state reference
      */

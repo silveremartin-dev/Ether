@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -31,17 +31,17 @@ public class DynamicMaritimeRoutingGraph {
     private static final Logger logger = LoggerFactory.getLogger(DynamicMaritimeRoutingGraph.class);
 
     // Cache state for dynamic graph invalidation
-    /* Internal state variable for cached avg tech (double). */
+    /** Internal state: cached avg tech (double). */
     private static double cachedAvgTech = -1.0;
-    /* Internal state variable for cached node count (int). */
+    /** Internal state: cached node count (int). */
     private static int cachedNodeCount = -1;
-    /* Internal state variable for last recalculation tick (long). */
+    /** Internal state: last recalculation tick (long). */
     private static long lastRecalculationTick = -1;
 
     // Adjacency graph: Node cell ID -> Map of (Neighbor cell ID -> Path Cost)
     private static final Map<Long, Map<Long, Double>> routingGraph = new ConcurrentHashMap<>();
 
-    /*
+    /**
      * Updates and processes trans-oceanic maritime routes across the grid.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
@@ -59,7 +59,7 @@ public class DynamicMaritimeRoutingGraph {
         applyRoutingGraphEffects(cells, timeStepDays);
     }
 
-    /*
+    /**
      * Determines whether the routing graph should be dynamically invalidated and rebuilt.
      */
     private static boolean shouldRecalculateGraph(List<H3Cell> cells) {
@@ -88,7 +88,7 @@ public class DynamicMaritimeRoutingGraph {
         return false;
     }
 
-    /*
+    /**
      * Rebuilds the dynamic trans-oceanic routing graph based on current physical properties.
      */
     private static void rebuildRoutingGraph(List<H3Cell> cells) {
@@ -161,7 +161,7 @@ public class DynamicMaritimeRoutingGraph {
         logger.info("✅ Trans-Oceanic Maritime Routing Graph rebuilt successfully with {} active route hubs.", routingGraph.size());
     }
 
-    /*
+    /**
      * Calculates local ocean swell significant wave height (Hs in meters) based on bathymetry and atmospheric storm turbulence.
      */
     public static double calculateSignificantWaveHeight(double elevationMeters, double latitudeDegrees) {
@@ -182,7 +182,7 @@ public class DynamicMaritimeRoutingGraph {
         return 0.8 + (3.5 * bathymetryFactor * stormLatitudeFactor);
     }
 
-    /*
+    /**
      * Calculates vessel fleet hull wave clearance tolerance (in meters) from capital density and technology.
      */
     public static double calculateFleetWaveClearance(double capitalPerCapita, double techLevel) {
@@ -198,7 +198,7 @@ public class DynamicMaritimeRoutingGraph {
         return 1.0 + (0.8 * Math.log(1.0 + kFactor)) + (0.5 * techFactor);
     }
 
-    /*
+    /**
      * Calculates navigation cost between two maritime nodes based on distance, temperature, ice, tech, and wave risk.
      */
     private static double calculateNavigationCost(H3Cell source, H3Cell target, double distKm, double tech, double waveOvertoppingRatio) {
@@ -229,7 +229,7 @@ public class DynamicMaritimeRoutingGraph {
         return travelTimeHours;
     }
 
-    /*
+    /**
      * Applies dynamic trade accumulation and friction modulation derived from the graph state.
      */
     private static void applyRoutingGraphEffects(List<H3Cell> cells, double timeStepDays) {
@@ -249,9 +249,8 @@ public class DynamicMaritimeRoutingGraph {
         }
     }
 
-    /*
+    /**
      * Calculate great circle distance.
-     * Enforces physical invariants and updates associated state variables within {@code DynamicMaritimeRoutingGraph}.
      *
      * @param lat1 the lat1 parameter (double)
      * @param lon1 the lon1 parameter (double)
@@ -266,9 +265,8 @@ public class DynamicMaritimeRoutingGraph {
         return calculateGreatCircleDistance(lat1, lon1, lat2, lon2, 6371.0);
     }
 
-    /*
+    /**
      * Calculate great circle distance.
-     * Enforces physical invariants and updates associated state variables within {@code DynamicMaritimeRoutingGraph}.
      *
      * @param lat1 the lat1 parameter (double)
      * @param lon1 the lon1 parameter (double)
@@ -291,9 +289,8 @@ public class DynamicMaritimeRoutingGraph {
         return R * c;
     }
 
-    /*
+    /**
      * Clear cache.
-     * Enforces physical invariants and updates associated state variables within {@code DynamicMaritimeRoutingGraph}.
      *
      */
     public static void clearCache() {

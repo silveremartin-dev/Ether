@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -25,7 +25,7 @@ import java.util.List;
 public class ThermodynamicWarfareEngine {
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicWarfareEngine.class);
 
-    /*
+    /**
      * Executes one kinetic warfare and fortification breaching tick with physical time integration.
      */
     public static void processKineticWarfare(List<H3Cell> cells, double deltaYears) {
@@ -68,9 +68,8 @@ public class ThermodynamicWarfareEngine {
         }
     }
 
-    /*
+    /**
      * Process kinetic warfare.
-     * Enforces physical invariants and updates associated state variables within {@code ThermodynamicWarfareEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */

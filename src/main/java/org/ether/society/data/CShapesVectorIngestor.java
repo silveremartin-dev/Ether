@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -32,7 +32,7 @@ import java.util.List;
 public class CShapesVectorIngestor {
     private static final Logger logger = LoggerFactory.getLogger(CShapesVectorIngestor.class);
 
-    /* Internal state variable for cshapes path (String). */
+    /** Internal state: cshapes path (String). */
     public static final String CSHAPES_PATH = "data/maps/cshapes/cshapes_2.0.geojson";
 
     public static class CShapesFeature {
@@ -50,9 +50,8 @@ public class CShapesVectorIngestor {
         public List<Path2D> paths = new ArrayList<>();
         public Color sovereignColor;
 
-        /*
+        /**
          * Is active in year.
-         * Enforces physical invariants and updates associated state variables within {@code CShapesVectorIngestor}.
          *
          * @param year the year parameter (long)
          * @return the resulting computation or state reference
@@ -62,10 +61,10 @@ public class CShapesVectorIngestor {
         }
     }
 
-    /* Internal state variable for cached features (List&lt;CShapesFeature&gt;). */
+    /** Internal state: cached features (List&lt;CShapesFeature&gt;). */
     private static List<CShapesFeature> CACHED_FEATURES = null;
 
-    /*
+    /**
      * Loads and caches all CShapes 2.0 historical features.
      */
     public static synchronized List<CShapesFeature> getAllFeatures(int imgW, int imgH) {
@@ -110,7 +109,7 @@ public class CShapesVectorIngestor {
         return list;
     }
 
-    /*
+    /**
      * Returns all active CShapes polities for a specific historical year.
      */
     public static List<CShapesFeature> getFeaturesForYear(long year, int imgW, int imgH) {
@@ -124,7 +123,7 @@ public class CShapesVectorIngestor {
         return result;
     }
 
-    /*
+    /**
      * Rasterizes exact CShapes sovereign polygons for a given year (e.g. 1900, 1914, 1950).
      */
     public static BufferedImage rasterizeCShapesSovereigntyMap(long year, int width, int height, BufferedImage elevationMask) {
@@ -148,7 +147,6 @@ public class CShapesVectorIngestor {
         return NaturalEarthVectorIngestor.applyElevationMask(img, elevationMask);
     }
 
-    // Helper subroutine: parse feature - internal state computation & bounds checking
     private static CShapesFeature parseFeature(JsonParser parser, int imgW, int imgH) throws Exception {
         String cntryName = null;
         int gwcode = 0;
@@ -220,7 +218,6 @@ public class CShapesVectorIngestor {
         return cf;
     }
 
-    // Helper subroutine: parse coordinates to paths - internal state computation & bounds checking
     private static void parseCoordinatesToPaths(JsonParser parser, String geomType, int imgW, int imgH, List<Path2D> paths) throws Exception {
         if ("Polygon".equalsIgnoreCase(geomType)) {
             while (parser.nextToken() != JsonToken.END_ARRAY) {
@@ -239,7 +236,6 @@ public class CShapesVectorIngestor {
         }
     }
 
-    // Helper subroutine: parse linear ring - internal state computation & bounds checking
     private static Path2D parseLinearRing(JsonParser parser, int imgW, int imgH) throws Exception {
         if (parser.currentToken() != JsonToken.START_ARRAY) return null;
 
@@ -272,7 +268,6 @@ public class CShapesVectorIngestor {
         return null;
     }
 
-    // Helper subroutine: compute historical sovereign color - internal state computation & bounds checking
     private static Color computeHistoricalSovereignColor(int gwcode, String name) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index

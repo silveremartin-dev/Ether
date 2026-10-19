@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -38,7 +38,7 @@ public enum Resource {
     STONE("Stone", ResourceCategory.NON_RENEWABLE, 0.0),
     SALT("Salt", ResourceCategory.NON_RENEWABLE, 0.0);
 
-    /* Internal state variable for display name (String). */
+    /** Internal state: display name (String). */
     private final String displayName;
     private final ResourceCategory category;
     private final double regenerationRate; // Per tick (0-1 scale, 1 = instant)
@@ -49,9 +49,8 @@ public enum Resource {
         this.regenerationRate = regenerationRate;
     }
 
-    /*
+    /**
      * Get display name.
-     * Enforces physical invariants and updates associated state variables within {@code Resource}.
      *
      * @return the resulting computation or state reference
      */
@@ -59,9 +58,8 @@ public enum Resource {
         return displayName;
     }
 
-    /*
+    /**
      * Get category.
-     * Enforces physical invariants and updates associated state variables within {@code Resource}.
      *
      * @return the resulting computation or state reference
      */
@@ -69,9 +67,8 @@ public enum Resource {
         return category;
     }
 
-    /*
+    /**
      * Get regeneration rate.
-     * Enforces physical invariants and updates associated state variables within {@code Resource}.
      *
      * @return the resulting computation or state reference
      */
@@ -79,9 +76,8 @@ public enum Resource {
         return regenerationRate;
     }
 
-    /*
+    /**
      * Is renewable.
-     * Enforces physical invariants and updates associated state variables within {@code Resource}.
      *
      * @return the resulting computation or state reference
      */
@@ -89,7 +85,7 @@ public enum Resource {
         return category == ResourceCategory.RENEWABLE;
     }
 
-    /*
+    /**
      * Resource category classification.
      */
     public enum ResourceCategory {

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -16,9 +16,8 @@ import java.util.prefs.Preferences;
  * @version 1.0.0-beta.2
  */
 public class Main {
-    /*
+    /**
      * Main.
-     * Enforces physical invariants and updates associated state variables within {@code Main}.
      *
      * @param args the args parameter (String[])
      */

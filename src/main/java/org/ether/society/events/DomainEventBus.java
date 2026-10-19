@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -23,9 +23,8 @@ public class DomainEventBus {
     private static final Logger logger = LoggerFactory.getLogger(DomainEventBus.class);
     private static final DomainEventBus INSTANCE = new DomainEventBus();
 
-    /*
+    /**
      * Get instance.
-     * Enforces physical invariants and updates associated state variables within {@code DomainEventBus}.
      *
      * @return the resulting computation or state reference
      */
@@ -40,12 +39,11 @@ public class DomainEventBus {
         LOW(900),
         LAST(1000);
 
-        /* Internal state variable for order (int). */
+        /** Internal state: order (int). */
         private final int order;
         Priority(int order) { this.order = order; }
-        /*
+        /**
          * Get order.
-         * Enforces physical invariants and updates associated state variables within {@code DomainEventBus}.
          *
          * @return the resulting computation or state reference
          */
@@ -56,10 +54,10 @@ public class DomainEventBus {
 
     private final Map<Class<?>, List<PrioritizedHandler<?>>> subscriberMap = new ConcurrentHashMap<>();
     private final List<Object> pendingEvents = new ArrayList<>();
-    /* Internal state variable for registration seq (int). */
+    /** Internal state: registration seq (int). */
     private int registrationSeq = 0;
 
-    /*
+    /**
      * Subscribes a typed consumer to a specific domain event class.
      */
     public synchronized <T> void subscribe(Class<T> eventType, Priority priority, Consumer<T> handler) {
@@ -76,9 +74,8 @@ public class DomainEventBus {
         });
     }
 
-    /*
+    /**
      * Subscribe.
-     * Enforces physical invariants and updates associated state variables within {@code DomainEventBus}.
      *
      * @param eventType the event type parameter (Class&lt;T&gt;)
      * @param handler the handler parameter (Consumer&lt;T&gt;)
@@ -87,7 +84,7 @@ public class DomainEventBus {
         subscribe(eventType, Priority.NORMAL, handler);
     }
 
-    /*
+    /**
      * Publishes an event immediately in a synchronous, deterministic order.
      */
     @SuppressWarnings("unchecked")
@@ -105,7 +102,7 @@ public class DomainEventBus {
         }
     }
 
-    /*
+    /**
      * Enqueues an event for deferred deterministic phase flush.
      */
     public synchronized void enqueue(Object event) {
@@ -114,7 +111,7 @@ public class DomainEventBus {
         }
     }
 
-    /*
+    /**
      * Flushes and executes all pending events in deterministic FIFO order.
      */
     public synchronized void flushPendingEvents() {
@@ -126,9 +123,8 @@ public class DomainEventBus {
         }
     }
 
-    /*
+    /**
      * Clear.
-     * Enforces physical invariants and updates associated state variables within {@code DomainEventBus}.
      *
      */
     public synchronized void clear() {

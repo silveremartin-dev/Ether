@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -56,21 +56,21 @@ public class WorldMap {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*
+    /**
      * Human-readable map name (e.g., "Earth", "Mars", "Procedural Alpha").
      */
     @Column(nullable = false, unique = true)
-    /* Internal state variable for name (String). */
+    /** Internal state: name (String). */
     private String name;
 
-    /*
+    /**
      * Map description.
      */
     @Column(length = 1000)
-    /* Internal state variable for description (String). */
+    /** Internal state: description (String). */
     private String description;
 
-    /*
+    /**
      * Map type: EARTH, PROCEDURAL, CUSTOM.
      */
     @Enumerated(EnumType.STRING)
@@ -99,17 +99,17 @@ public class WorldMap {
 
     /* Path to map preview image. */
     @Column(length = 500)
-    /* Internal state variable for map image path (String). */
+    /** Internal state: map image path (String). */
     private String mapImagePath;
 
     /* Elevation data source (e.g., "SRTM_90m", "PROCEDURAL"). */
     @Column(length = 200)
-    /* Internal state variable for elevation source (String). */
+    /** Internal state: elevation source (String). */
     private String elevationSource;
 
     /* Biome data source (e.g., "MODIS_MCD12Q1", "PROCEDURAL"). */
     @Column(length = 200)
-    /* Internal state variable for biome source (String). */
+    /** Internal state: biome source (String). */
     private String biomeSource;
 
     // Planet properties (for procedural generation)
@@ -159,17 +159,15 @@ public class WorldMap {
 
     // Constructors
 
-    /*
+    /**
      * World map.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      */
     public WorldMap() {
     }
 
-    /*
+    /**
      * World map.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param name the name parameter (String)
      * @param mapType the map type parameter (MapType)
@@ -181,9 +179,8 @@ public class WorldMap {
 
     // Getters and setters (abbreviated for brevity)
 
-    /*
+    /**
      * Get id.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -191,9 +188,8 @@ public class WorldMap {
         return id;
     }
 
-    /*
+    /**
      * Set id.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param id the id parameter (Long)
      */
@@ -201,9 +197,8 @@ public class WorldMap {
         this.id = id;
     }
 
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -211,9 +206,8 @@ public class WorldMap {
         return name;
     }
 
-    /*
+    /**
      * Set name.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param name the name parameter (String)
      */
@@ -221,9 +215,8 @@ public class WorldMap {
         this.name = name;
     }
 
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -231,9 +224,8 @@ public class WorldMap {
         return description;
     }
 
-    /*
+    /**
      * Set description.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param description the description parameter (String)
      */
@@ -241,9 +233,8 @@ public class WorldMap {
         this.description = description;
     }
 
-    /*
+    /**
      * Get map type.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -251,9 +242,8 @@ public class WorldMap {
         return mapType;
     }
 
-    /*
+    /**
      * Set map type.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param mapType the map type parameter (MapType)
      */
@@ -261,9 +251,8 @@ public class WorldMap {
         this.mapType = mapType;
     }
 
-    /*
+    /**
      * Get min latitude.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -271,9 +260,8 @@ public class WorldMap {
         return minLatitude;
     }
 
-    /*
+    /**
      * Set min latitude.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param minLatitude the min latitude parameter (Double)
      */
@@ -281,9 +269,8 @@ public class WorldMap {
         this.minLatitude = minLatitude;
     }
 
-    /*
+    /**
      * Get max latitude.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -291,9 +278,8 @@ public class WorldMap {
         return maxLatitude;
     }
 
-    /*
+    /**
      * Set max latitude.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param maxLatitude the max latitude parameter (Double)
      */
@@ -301,9 +287,8 @@ public class WorldMap {
         this.maxLatitude = maxLatitude;
     }
 
-    /*
+    /**
      * Get min longitude.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -311,9 +296,8 @@ public class WorldMap {
         return minLongitude;
     }
 
-    /*
+    /**
      * Set min longitude.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param minLongitude the min longitude parameter (Double)
      */
@@ -321,9 +305,8 @@ public class WorldMap {
         this.minLongitude = minLongitude;
     }
 
-    /*
+    /**
      * Get max longitude.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -331,9 +314,8 @@ public class WorldMap {
         return maxLongitude;
     }
 
-    /*
+    /**
      * Set max longitude.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param maxLongitude the max longitude parameter (Double)
      */
@@ -341,9 +323,8 @@ public class WorldMap {
         this.maxLongitude = maxLongitude;
     }
 
-    /*
+    /**
      * Get map image path.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -351,9 +332,8 @@ public class WorldMap {
         return mapImagePath;
     }
 
-    /*
+    /**
      * Set map image path.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param mapImagePath the map image path parameter (String)
      */
@@ -361,9 +341,8 @@ public class WorldMap {
         this.mapImagePath = mapImagePath;
     }
 
-    /*
+    /**
      * Get elevation source.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -371,9 +350,8 @@ public class WorldMap {
         return elevationSource;
     }
 
-    /*
+    /**
      * Set elevation source.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param elevationSource the elevation source parameter (String)
      */
@@ -381,9 +359,8 @@ public class WorldMap {
         this.elevationSource = elevationSource;
     }
 
-    /*
+    /**
      * Get biome source.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -391,9 +368,8 @@ public class WorldMap {
         return biomeSource;
     }
 
-    /*
+    /**
      * Set biome source.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param biomeSource the biome source parameter (String)
      */
@@ -401,9 +377,8 @@ public class WorldMap {
         this.biomeSource = biomeSource;
     }
 
-    /*
+    /**
      * Get planet radius km.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -411,9 +386,8 @@ public class WorldMap {
         return planetRadiusKm;
     }
 
-    /*
+    /**
      * Set planet radius km.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param planetRadiusKm the planet radius km parameter (Double)
      */
@@ -421,9 +395,8 @@ public class WorldMap {
         this.planetRadiusKm = planetRadiusKm;
     }
 
-    /*
+    /**
      * Get planet mass.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -431,9 +404,8 @@ public class WorldMap {
         return planetMass;
     }
 
-    /*
+    /**
      * Set planet mass.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param planetMass the planet mass parameter (Double)
      */
@@ -441,9 +413,8 @@ public class WorldMap {
         this.planetMass = planetMass;
     }
 
-    /*
+    /**
      * Get procedural seed.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -451,9 +422,8 @@ public class WorldMap {
         return proceduralSeed;
     }
 
-    /*
+    /**
      * Set procedural seed.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param proceduralSeed the procedural seed parameter (Long)
      */
@@ -461,9 +431,8 @@ public class WorldMap {
         this.proceduralSeed = proceduralSeed;
     }
 
-    /*
+    /**
      * Get h3resolution.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -471,9 +440,8 @@ public class WorldMap {
         return h3Resolution;
     }
 
-    /*
+    /**
      * Set h3resolution.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param h3Resolution the h3resolution parameter (Integer)
      */
@@ -481,9 +449,8 @@ public class WorldMap {
         this.h3Resolution = h3Resolution;
     }
 
-    /*
+    /**
      * Get total cells.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -491,9 +458,8 @@ public class WorldMap {
         return totalCells;
     }
 
-    /*
+    /**
      * Set total cells.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param totalCells the total cells parameter (Long)
      */
@@ -501,9 +467,8 @@ public class WorldMap {
         this.totalCells = totalCells;
     }
 
-    /*
+    /**
      * Get created at.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -511,9 +476,8 @@ public class WorldMap {
         return createdAt;
     }
 
-    /*
+    /**
      * Get updated at.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -521,9 +485,8 @@ public class WorldMap {
         return updatedAt;
     }
 
-    /*
+    /**
      * Set updated at.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMap}.
      *
      * @param updatedAt the updated at parameter (LocalDateTime)
      */

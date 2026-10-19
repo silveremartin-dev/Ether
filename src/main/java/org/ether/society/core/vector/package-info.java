@@ -1,4 +1,4 @@
-/**
+**
  * <h1>SIMD Hardware Vectorization via JDK Vector API</h1>
  * <p>
  * Provides explicit SIMD (Single Instruction, Multiple Data) vectorized implementations of core

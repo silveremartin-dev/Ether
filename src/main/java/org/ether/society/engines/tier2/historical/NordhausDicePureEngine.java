@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -22,13 +22,12 @@ import java.util.List;
 public class NordhausDicePureEngine {
     private static final Logger logger = LoggerFactory.getLogger(NordhausDicePureEngine.class);
 
-    /* Internal state variable for gdp (double). */
+    /** Internal state: gdp (double). */
     private double gdp = 100.0;
     private double temperatureAnomaly = 1.2; // +1.2°C above pre-industrial baseline
 
-    /*
+    /**
      * Process tick.
-     * Enforces physical invariants and updates associated state variables within {@code NordhausDicePureEngine}.
      *
      * @param deltaYears the delta years parameter (double)
      */
@@ -47,16 +46,14 @@ public class NordhausDicePureEngine {
         gdp = Math.max(0.0, netGdp * (1.0 + 0.02 * deltaYears));
     }
 
-    /*
+    /**
      * Get gdp.
-     * Enforces physical invariants and updates associated state variables within {@code NordhausDicePureEngine}.
      *
      * @return the resulting computation or state reference
      */
     public double getGdp() { return gdp; }
-    /*
+    /**
      * Get temperature anomaly.
-     * Enforces physical invariants and updates associated state variables within {@code NordhausDicePureEngine}.
      *
      * @return the resulting computation or state reference
      */

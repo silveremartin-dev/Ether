@@ -1,4 +1,4 @@
-package org.ether.society.generation;
+ackage org.ether.society.generation;
 
 import java.util.Random;
 
@@ -8,9 +8,9 @@ import java.util.Random;
  */
 public class SimplexNoise {
 
-    /* Internal state variable for f3 (double). */
+    /** Internal state: f3 (double). */
     private static final double F3 = 1.0 / 3.0;
-    /* Internal state variable for g3 (double). */
+    /** Internal state: g3 (double). */
     private static final double G3 = 1.0 / 6.0;
 
     private final short[] perm = new short[512];
@@ -22,9 +22,8 @@ public class SimplexNoise {
             { 0, 1, 1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, -1, -1 }
     };
 
-    /*
+    /**
      * Simplex noise.
-     * Enforces physical invariants and updates associated state variables within {@code SimplexNoise}.
      *
      * @param seed the seed parameter (long)
      */
@@ -49,12 +48,11 @@ public class SimplexNoise {
         }
     }
 
-    // Helper subroutine: dot - internal state computation & bounds checking
     private static double dot(int[] g, double x, double y, double z) {
         return g[0] * x + g[1] * y + g[2] * z;
     }
 
-    /*
+    /**
      * 3D Simplex Noise.
      * 
      * @return Noise value roughly between -1.0 and 1.0
@@ -192,7 +190,6 @@ public class SimplexNoise {
         return 32.0 * (n0 + n1 + n2 + n3);
     }
 
-    // Helper subroutine: fast floor - internal state computation & bounds checking
     private static int fastFloor(double x) {
         int xi = (int) x;
         return x < xi ? xi - 1 : xi;

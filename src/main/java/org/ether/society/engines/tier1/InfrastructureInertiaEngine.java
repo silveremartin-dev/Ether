@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -25,9 +25,8 @@ public class InfrastructureInertiaEngine {
 
     private static double baseCapitalTurnoverHalfLifeYears = 35.0; // Base 35-year physical turnover benchmark
 
-    /*
+    /**
      * Process infrastructure inertia.
-     * Enforces physical invariants and updates associated state variables within {@code InfrastructureInertiaEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -54,14 +53,13 @@ public class InfrastructureInertiaEngine {
         }
     }
 
-    /*
+    /**
      * Get capital turnover half life years.
-     * Enforces physical invariants and updates associated state variables within {@code InfrastructureInertiaEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getCapitalTurnoverHalfLifeYears() { return baseCapitalTurnoverHalfLifeYears; }
-    /*
+    /**
      * Set capital turnover half life years operation.
      * <p>
      * Executes operational logic for {@code InfrastructureInertiaEngine} within the Tier 1 physical conservation solver.

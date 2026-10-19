@@ -1,4 +1,4 @@
-package org.ether.society;
+ackage org.ether.society;
 
 import org.ether.society.data.SvgMapIngestor;
 
@@ -6,7 +6,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 
 public class GenerateYearZeroRasters {
-    /*
+    /**
      * Main operation.
      * <p>
      * Executes operational logic for {@code GenerateYearZeroRasters} within the automated verification and regression test suite.

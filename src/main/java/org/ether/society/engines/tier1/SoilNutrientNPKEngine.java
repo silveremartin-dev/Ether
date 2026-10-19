@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -32,7 +32,7 @@ public class SoilNutrientNPKEngine {
         processSoilNutrients(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes N-P-K stoichiometry, mineral mining extraction, and Haber-Bosch synthesis tick.
      */
     public static void processSoilNutrients(List<H3Cell> cells, double dtYears) {

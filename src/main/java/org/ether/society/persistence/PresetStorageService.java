@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvère Martin-Michiellot
@@ -32,12 +32,10 @@ public final class PresetStorageService {
     private static final Logger logger = LoggerFactory.getLogger(PresetStorageService.class);
     private static final ObjectMapper mapper = createObjectMapper();
 
-    // Helper subroutine: preset storage service - internal state computation & bounds checking
     private PresetStorageService() {
         // Utility
     }
 
-    // Helper subroutine: create object mapper - internal state computation & bounds checking
     private static ObjectMapper createObjectMapper() {
         ObjectMapper om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
@@ -47,9 +45,8 @@ public final class PresetStorageService {
         return om;
     }
 
-    /*
+    /**
      * Get mapper.
-     * Enforces physical invariants and updates associated state variables within {@code PresetStorageService}.
      *
      * @return the resulting computation or state reference
      */
@@ -57,7 +54,7 @@ public final class PresetStorageService {
         return mapper;
     }
 
-    /*
+    /**
      * Converts a preset/scenario name to a clean, canonical filename slug.
      */
     public static String slugify(String name) {
@@ -96,9 +93,8 @@ public final class PresetStorageService {
 
     // ── Planetary Presets ─────────────────────────────────────────────────────
 
-    /*
+    /**
      * Load all planet presets.
-     * Enforces physical invariants and updates associated state variables within {@code PresetStorageService}.
      *
      * @return the resulting computation or state reference
      */
@@ -153,9 +149,8 @@ public final class PresetStorageService {
 
     // ── Ecology Presets ───────────────────────────────────────────────────────
 
-    /*
+    /**
      * Load all ecology presets.
-     * Enforces physical invariants and updates associated state variables within {@code PresetStorageService}.
      *
      * @return the resulting computation or state reference
      */
@@ -192,9 +187,8 @@ public final class PresetStorageService {
 
     // ── Scenario Presets ──────────────────────────────────────────────────────
 
-    /*
+    /**
      * Load all scenarios.
-     * Enforces physical invariants and updates associated state variables within {@code PresetStorageService}.
      *
      * @return the resulting computation or state reference
      */
@@ -274,7 +268,7 @@ public final class PresetStorageService {
 
     // ── Factory Presets Disk Synchronization ─────────────────────────────────
 
-    /*
+    /**
      * Exports all factory presets (planets, ecology, scenarios) to the project data/presets directory
      * and classpath resources directory to guarantee version control and file availability.
      */
@@ -284,7 +278,6 @@ public final class PresetStorageService {
         exportScenarioPresets();
     }
 
-    // Helper subroutine: export planet presets - internal state computation & bounds checking
     private static void exportPlanetPresets() {
         Path targetDir = EtherPaths.getPresetsPlanetsDir();
         Path resDir = Path.of("src", "main", "resources", "data", "presets", "planets");
@@ -297,7 +290,6 @@ public final class PresetStorageService {
         }
     }
 
-    // Helper subroutine: export ecology presets - internal state computation & bounds checking
     private static void exportEcologyPresets() {
         Path targetDir = EtherPaths.getPresetsEcologyDir();
         Path resDir = Path.of("src", "main", "resources", "data", "presets", "ecology");
@@ -310,7 +302,7 @@ public final class PresetStorageService {
         }
     }
 
-    /*
+    /**
      * Formats scenario preset filename in standard pattern: <planet>_<year>_<location_and_topic>.json
      */
     public static String getStandardizedScenarioFilename(Scenario s) {
@@ -336,7 +328,6 @@ public final class PresetStorageService {
         return planetSlug + "_" + yearPart + "_" + cleanKey + ".json";
     }
 
-    // Helper subroutine: export scenario presets - internal state computation & bounds checking
     private static void exportScenarioPresets() {
         Path targetDir = EtherPaths.getPresetsScenariosDir();
         Path resDir = Path.of("src", "main", "resources", "data", "presets", "scenarios");
@@ -349,7 +340,6 @@ public final class PresetStorageService {
         }
     }
 
-    // Helper subroutine: write json safely - internal state computation & bounds checking
     private static void writeJsonSafely(Path targetFile, Object data) {
         try {
             if (targetFile.getParent() != null && !Files.exists(targetFile.getParent())) {

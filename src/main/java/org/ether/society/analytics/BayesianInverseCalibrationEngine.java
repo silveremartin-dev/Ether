@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -372,7 +372,6 @@ public class BayesianInverseCalibrationEngine {
         return corr;
     }
 
-    // Helper subroutine: calculate normalized euclidean distance - internal state computation & bounds checking
     private static double calculateNormalizedEuclideanDistance(Map<Integer, Double> sim, Map<Integer, Double> obs) {
         if (sim == null || obs == null || obs.isEmpty()) return Double.MAX_VALUE;
 
@@ -394,7 +393,6 @@ public class BayesianInverseCalibrationEngine {
         return count > 0 ? Math.sqrt(sumSqNorm / count) : Double.MAX_VALUE;
     }
 
-    // Helper subroutine: calculate rsquared - internal state computation & bounds checking
     public static double calculateRSquared(Map<Integer, Double> sim, Map<Integer, Double> obs) {
         if (sim == null || obs == null || obs.size() < 2) return 0.0;
 
@@ -414,7 +412,6 @@ public class BayesianInverseCalibrationEngine {
         return ssTot > 0 ? Math.max(-1.0, 1.0 - (ssRes / ssTot)) : 0.0;
     }
 
-    // Helper subroutine: calculate rmse - internal state computation & bounds checking
     public static double calculateRMSE(Map<Integer, Double> sim, Map<Integer, Double> obs) {
         if (sim == null || obs == null || obs.isEmpty()) return 0.0;
 
@@ -433,7 +430,6 @@ public class BayesianInverseCalibrationEngine {
         return count > 0 ? Math.sqrt(sumSq / count) : 0.0;
     }
 
-    // Helper subroutine: calculate percentile - internal state computation & bounds checking
     private static double calculatePercentile(List<Double> sortedValues, double percentile) {
         if (sortedValues.isEmpty()) return 0.0;
         if (sortedValues.size() == 1) return sortedValues.get(0);

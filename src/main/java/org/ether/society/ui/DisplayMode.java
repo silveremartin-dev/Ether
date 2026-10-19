@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -108,16 +108,15 @@ public enum DisplayMode {
         MINING("⛏️ RESSOURCES MINÉRALES & EXPLOITATION"),
         SOCIETY_POLITICS("🏛️ ÉCONOMIE, SOCIÉTÉ & CLIODYNAMIQUE");
 
-        /* Internal state variable for category name (String). */
+        /** Internal state: category name (String). */
         private final String categoryName;
 
         Category(String categoryName) {
             this.categoryName = categoryName;
         }
 
-    /*
+    /**
      * Get category name.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @return the resulting computation or state reference
      */
@@ -125,22 +124,21 @@ public enum DisplayMode {
         return org.ether.society.i18n.I18n.getOrDefault("displaymode.category." + name().toLowerCase(), categoryName);
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         return getCategoryName();
     }
 }
 
-    /* Internal state variable for display name (String). */
+    /** Internal state: display name (String). */
     private final String displayName;
     private final Category category;
-    /* Internal state variable for description (String). */
+    /** Internal state: description (String). */
     private final String description;
 
     DisplayMode(String displayName, Category category, String description) {
@@ -149,9 +147,8 @@ public enum DisplayMode {
         this.description = description;
     }
 
-    /*
+    /**
      * Get display name.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @return the resulting computation or state reference
      */
@@ -159,9 +156,8 @@ public enum DisplayMode {
         return org.ether.society.i18n.I18n.getOrDefault("displaymode." + name().toLowerCase() + ".name", displayName);
     }
 
-    /*
+    /**
      * Get category.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @return the resulting computation or state reference
      */
@@ -169,9 +165,8 @@ public enum DisplayMode {
         return category;
     }
 
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @return the resulting computation or state reference
      */
@@ -179,9 +174,8 @@ public enum DisplayMode {
         return org.ether.society.i18n.I18n.getOrDefault("displaymode." + name().toLowerCase() + ".desc", description);
     }
 
-    /*
+    /**
      * Get metric id.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @return the resulting computation or state reference
      */
@@ -213,9 +207,8 @@ public enum DisplayMode {
         }
     }
 
-    /*
+    /**
      * From metric id.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @param metricId the metric id parameter (String)
      * @return the resulting computation or state reference
@@ -234,12 +227,11 @@ public enum DisplayMode {
         SCALAR_1D("1D Scalaire (Continu)"),
         ID_24BIT_CATEGORICAL("ID 24-bits (Catégoriel RVB)");
 
-        /* Internal state variable for default label (String). */
+        /** Internal state: default label (String). */
         private final String defaultLabel;
         EncodingType(String defaultLabel) { this.defaultLabel = defaultLabel; }
-        /*
+        /**
          * Get label.
-         * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
          *
          * @return the resulting computation or state reference
          */
@@ -248,9 +240,8 @@ public enum DisplayMode {
         }
     }
 
-    /*
+    /**
      * Get encoding type.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @return the resulting computation or state reference
      */
@@ -261,13 +252,12 @@ public enum DisplayMode {
         };
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code DisplayMode}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         return displayName;
     }

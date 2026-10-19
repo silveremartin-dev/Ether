@@ -1,4 +1,4 @@
-package org.ether.society.ui.export;
+ackage org.ether.society.ui.export;
 
 import org.ether.society.analytics.HistoryManager;
 import org.ether.society.core.H3SimulationEngine;
@@ -25,14 +25,13 @@ import java.util.concurrent.Executors;
  */
 public class VideoExportService {
     private static final Logger logger = LoggerFactory.getLogger(VideoExportService.class);
-    /* Internal state variable for export dir (String). */
+    /** Internal state: export dir (String). */
     private static final String EXPORT_DIR = "saves/exports";
 
     private final ExecutorService exportExecutor;
 
-    /*
+    /**
      * Video export service.
-     * Enforces physical invariants and updates associated state variables within {@code VideoExportService}.
      *
      */
     public VideoExportService() {
@@ -43,7 +42,7 @@ public class VideoExportService {
         });
     }
 
-    /*
+    /**
      * Export simulation historical snapshots asynchronously.
      *
      * @param engine The simulation engine instance containing history
@@ -108,9 +107,8 @@ public class VideoExportService {
         return future;
     }
 
-    /*
+    /**
      * Shutdown.
-     * Enforces physical invariants and updates associated state variables within {@code VideoExportService}.
      *
      */
     public void shutdown() {

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -68,7 +68,7 @@ public class MainView extends StackPane {
     private PreferencesPanel preferencesPanel;
     private NotificationOverlay notificationOverlay;
     private ColorLegend colorLegend;
-    /* Internal state variable for is switching tabs (boolean). */
+    /** Internal state: is switching tabs (boolean). */
     private boolean isSwitchingTabs = false;
 
     // Headless Mode Dashboard Overlay
@@ -85,7 +85,7 @@ public class MainView extends StackPane {
     // Full-Screen Map Mode
     private BorderPane simulationRoot;
     private StackPane mapStack;
-    /* Internal state variable for is full screen (boolean). */
+    /** Internal state: is full screen (boolean). */
     private boolean isFullScreen = false;
     private javafx.event.EventHandler<javafx.scene.input.KeyEvent> escapeKeyFilter;
 
@@ -114,7 +114,6 @@ public class MainView extends StackPane {
         I18n.languageProperty().addListener((obs, oldVal, newVal) -> updateTabTitles());
     }
 
-    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         tabPane = new TabPane();
         tabPane.getStyleClass().add("main-tab-pane");
@@ -264,9 +263,8 @@ public class MainView extends StackPane {
         getChildren().add(tabPane);
     }
 
-    /*
+    /**
      * Update tab titles.
-     * Enforces physical invariants and updates associated state variables within {@code MainView}.
      *
      */
     public void updateTabTitles() {
@@ -290,7 +288,6 @@ public class MainView extends StackPane {
         updateHeadlessTexts();
     }
 
-    // Helper subroutine: on planet generated - internal state computation & bounds checking
     private void onPlanetGenerated(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
         logger.info("Planet generated with {} cells", cells.size());
@@ -308,7 +305,6 @@ public class MainView extends StackPane {
         tabPane.getSelectionModel().select(resourcesTab);
     }
 
-    // Helper subroutine: on resources applied - internal state computation & bounds checking
     private void onResourcesApplied(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
         logger.info("Resource distribution applied to {} cells", cells.size());
@@ -321,7 +317,6 @@ public class MainView extends StackPane {
         tabPane.getSelectionModel().select(setupTab);
     }
 
-    // Helper subroutine: create simulation view - internal state computation & bounds checking
     private BorderPane createSimulationView() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("glass-panel"); // Apply glass effect base
@@ -469,7 +464,6 @@ public class MainView extends StackPane {
         return root;
     }
 
-    // Helper subroutine: create headless dashboard - internal state computation & bounds checking
     private VBox createHeadlessDashboard() {
         lblHeadlessTitle = new Label();
         lblHeadlessTitle.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 20px; -fx-font-weight: bold;");
@@ -517,7 +511,6 @@ public class MainView extends StackPane {
         return dashboard;
     }
 
-    // Helper subroutine: create metric card - internal state computation & bounds checking
     private VBox createMetricCard(String title, Label valLabel) {
         Label lblT = new Label(title);
         lblT.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
@@ -527,14 +520,12 @@ public class MainView extends StackPane {
         return card;
     }
 
-    // Helper subroutine: create metric val label - internal state computation & bounds checking
     private Label createMetricValLabel(String initial) {
         Label lbl = new Label(initial);
         lbl.setStyle("-fx-text-fill: #f8fafc; -fx-font-size: 16px; -fx-font-weight: bold;");
         return lbl;
     }
 
-    // Helper subroutine: update headless texts - internal state computation & bounds checking
     private void updateHeadlessTexts() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (lblHeadlessTitle != null) lblHeadlessTitle.setText(I18n.getOrDefault("headless.banner.title", "🚀 MODE HEADLESS ACTIF (ACCÉLÉRATION MAXIMALE)"));
@@ -542,7 +533,6 @@ public class MainView extends StackPane {
         if (btnHeadlessSwitchGui != null) btnHeadlessSwitchGui.setText(I18n.getOrDefault("headless.btn.switch_gui", "🖼️ Réactiver l'affichage visuel (Mode GUI)"));
     }
 
-    // Helper subroutine: apply rendering mode - internal state computation & bounds checking
     private void applyRenderingMode(ExecutionContextPanel.RenderingMode mode) {
         boolean isHeadless = (mode == ExecutionContextPanel.RenderingMode.HEADLESS);
         if (mapCanvas != null) {
@@ -561,7 +551,6 @@ public class MainView extends StackPane {
         logger.info("Simulation visual rendering mode updated: {}", mode);
     }
 
-    // Helper subroutine: update headless telemetry - internal state computation & bounds checking
     private void updateHeadlessTelemetry(String dateStr, long currentTick) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (lblHeadlessYearVal != null) lblHeadlessYearVal.setText(dateStr);
@@ -579,10 +568,9 @@ public class MainView extends StackPane {
     }
 
     // --- Timelapse Recording State ---
-    /* Internal state variable for is recording (boolean). */
+    /** Internal state: is recording (boolean). */
     private boolean isRecording = false;
 
-    // Helper subroutine: toggle timelapse recording - internal state computation & bounds checking
     private void toggleTimelapseRecording() {
         isRecording = !isRecording;
         if (isRecording) {
@@ -602,7 +590,6 @@ public class MainView extends StackPane {
     /* Atomic flag guarding against overlapping async stepping operations */
     private final java.util.concurrent.atomic.AtomicBoolean isAsyncStepping = new java.util.concurrent.atomic.AtomicBoolean(false);
 
-    // Helper subroutine: seek to start safe - ensures paused state and jumps to first snapshot / tick 0
     private void seekToStartSafe() {
         if (engine == null) return;
         engine.pause();
@@ -619,7 +606,6 @@ public class MainView extends StackPane {
         logger.info("Rewind to start completed");
     }
 
-    // Helper subroutine: seek to end safe - ensures paused state and jumps to latest captured snapshot
     private void seekToEndSafe() {
         if (engine == null) return;
         engine.pause();
@@ -638,7 +624,6 @@ public class MainView extends StackPane {
         logger.info("Seek to end completed");
     }
 
-    // Helper subroutine: step backward safe - jumps to previous snapshot or seeks backward by ticks
     private void stepBackwardSafe(boolean fast) {
         if (engine == null) return;
         engine.pause();
@@ -668,7 +653,6 @@ public class MainView extends StackPane {
         applySeekToTick(target);
     }
 
-    // Helper subroutine: step forward safe - jumps to next available snapshot or advances off-EDT
     private void stepForwardSafe(boolean fast) {
         if (engine == null) return;
         engine.pause();
@@ -720,7 +704,6 @@ public class MainView extends StackPane {
         });
     }
 
-    // Helper subroutine: apply seek to tick and update UI
     private void applySeekToTick(long tick) {
         if (engine == null) return;
         engine.pause();
@@ -728,7 +711,6 @@ public class MainView extends StackPane {
         refreshViewsAfterSeek();
     }
 
-    // Helper subroutine: refresh views after seek
     private void refreshViewsAfterSeek() {
         if (engine == null) return;
         if (mapCanvas != null) {
@@ -748,7 +730,6 @@ public class MainView extends StackPane {
         }
     }
 
-    // Helper subroutine: seek timelapse - internal state computation & bounds checking
     private void seekTimelapse(int year) {
         long startYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getStartDateYear() : -20000;
         long targetTicks = Math.max(0, (year - startYear) * 12);
@@ -756,7 +737,6 @@ public class MainView extends StackPane {
         logger.info("Timelapse seek to year: {} (tick {})", year, targetTicks);
     }
 
-    // Helper subroutine: on start simulation - internal state computation & bounds checking
     private void onStartSimulation(Scenario scenario) {
         if (setupPanel != null && setupPanel.isResumeFromSnapshotSelected()) {
             var meta = setupPanel.getSelectedSnapshotMetadata();
@@ -853,7 +833,6 @@ public class MainView extends StackPane {
         logger.info("Transitioned directly to Simulation Tab (4) with {} cells in ready/paused mode", newCells.size());
     }
 
-    // Helper subroutine: launch simulation from context - internal state computation & bounds checking
     private void launchSimulationFromContext() {
         if (setupPanel != null) {
             org.ether.society.model.Scenario currentScenario = setupPanel.getScenario();
@@ -892,9 +871,8 @@ public class MainView extends StackPane {
         logger.info("Simulation initialized from Execution Context Panel and switched to Simulation Tab (4) in ready/paused mode");
     }
 
-    /*
+    /**
      * Toggle full screen.
-     * Enforces physical invariants and updates associated state variables within {@code MainView}.
      *
      */
     public void toggleFullScreen() {
@@ -905,9 +883,8 @@ public class MainView extends StackPane {
         }
     }
 
-    /*
+    /**
      * Enter full screen.
-     * Enforces physical invariants and updates associated state variables within {@code MainView}.
      *
      */
     public void enterFullScreen() {
@@ -932,15 +909,14 @@ public class MainView extends StackPane {
 
             // Listen to OS-level fullscreen exit (e.g. default Escape handling by JavaFX)
             stage.fullScreenProperty().addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-                @Override
-                /*
+                /**
                  * Changed.
-                 * Enforces physical invariants and updates associated state variables within {@code MainView}.
                  *
                  * @param obs the obs parameter (Boolean&gt;)
                  * @param oldVal the old val parameter (Boolean)
                  * @param newVal the new val parameter (Boolean)
                  */
+                @Override
                 public void changed(javafx.beans.value.ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
                     if (!newVal && isFullScreen) {
                         stage.fullScreenProperty().removeListener(this);
@@ -969,9 +945,8 @@ public class MainView extends StackPane {
         logger.info("Entered Full Screen map view mode");
     }
 
-    /*
+    /**
      * Exit full screen.
-     * Enforces physical invariants and updates associated state variables within {@code MainView}.
      *
      */
     public void exitFullScreen() {
@@ -1013,9 +988,8 @@ public class MainView extends StackPane {
         logger.info("Exited Full Screen map view mode");
     }
 
-    /*
+    /**
      * Is full screen.
-     * Enforces physical invariants and updates associated state variables within {@code MainView}.
      *
      * @return the resulting computation or state reference
      */
@@ -1023,9 +997,8 @@ public class MainView extends StackPane {
         return isFullScreen;
     }
 
-    /*
+    /**
      * Add legend.
-     * Enforces physical invariants and updates associated state variables within {@code MainView}.
      *
      * @param legend the legend parameter (javafx.scene.Node)
      */
@@ -1039,7 +1012,6 @@ public class MainView extends StackPane {
         }
     }
 
-    // Helper subroutine: start event polling - internal state computation & bounds checking
     private void startEventPolling() {
         if (mapCanvas != null && engine != null) {
             mapCanvas.setEventSystem(engine.getEventSystem());
@@ -1108,16 +1080,15 @@ public class MainView extends StackPane {
         }
 
         AnimationTimer eventLoop = new AnimationTimer() {
-            /* Internal state variable for last update (long). */
+            /** Internal state: last update (long). */
             private long lastUpdate = 0;
 
-            @Override
-            /*
+            /**
              * Handle.
-             * Enforces physical invariants and updates associated state variables within {@code MainView}.
              *
              * @param now the now parameter (long)
              */
+            @Override
             public void handle(long now) {
                 if (now - lastUpdate >= 250_000_000) {
                     List<String> events = engine.getEventSystem().flushEvents();
@@ -1165,7 +1136,6 @@ public class MainView extends StackPane {
         eventLoop.start();
     }
 
-    // Helper subroutine: get age name - internal state computation & bounds checking
     private String getAgeName(float techLevel) {
         if (techLevel < 10) return I18n.getOrDefault("age.stone", "STONE AGE");
         if (techLevel < 30) return I18n.getOrDefault("age.bronze", "BRONZE AGE");
@@ -1175,9 +1145,8 @@ public class MainView extends StackPane {
         return I18n.getOrDefault("age.renaissance", "RENAISSANCE");
     }
 
-    /*
+    /**
      * Save simulation.
-     * Enforces physical invariants and updates associated state variables within {@code MainView}.
      *
      */
     public void saveSimulation() {
@@ -1192,9 +1161,8 @@ public class MainView extends StackPane {
         });
     }
 
-    /*
+    /**
      * Load simulation.
-     * Enforces physical invariants and updates associated state variables within {@code MainView}.
      *
      */
     public void loadSimulation() {

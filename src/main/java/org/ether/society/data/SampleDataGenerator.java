@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -52,9 +52,8 @@ public class SampleDataGenerator {
     private final H3Service h3Service;
     private final Random random;
 
-    /*
+    /**
      * Sample data generator.
-     * Enforces physical invariants and updates associated state variables within {@code SampleDataGenerator}.
      *
      * @param seed the seed parameter (long)
      */
@@ -63,7 +62,7 @@ public class SampleDataGenerator {
         this.random = new Random(seed);
     }
 
-    /*
+    /**
      * Generates sample H3 cells for a region (e.g., Europe).
      *
      * @param minLat Minimum latitude
@@ -104,7 +103,7 @@ public class SampleDataGenerator {
         return cells;
     }
 
-    /*
+    /**
      * Generates realistic elevation, temperature, biome for a cell.
      */
     private void generateCellData(H3Cell cell, double lat, double lng) {
@@ -151,7 +150,6 @@ public class SampleDataGenerator {
         assignResources(cell, biome);
     }
 
-    // Helper subroutine: determine biome - internal state computation & bounds checking
     private Biome determineBiome(double elevation, double temp, double rainfall) {
         if (elevation < 0)
             return Biome.OCEAN;
@@ -173,7 +171,6 @@ public class SampleDataGenerator {
         return Biome.PLAINS;
     }
 
-    // Helper subroutine: assign resources - internal state computation & bounds checking
     private void assignResources(H3Cell cell, Biome biome) {
         switch (biome) {
             case OCEAN -> {
@@ -204,7 +201,7 @@ public class SampleDataGenerator {
         }
     }
 
-    /*
+    /**
      * Generate sample data for Europe region (for MVP).
      */
     public static List<H3Cell> generateEuropeSample() {
@@ -213,9 +210,8 @@ public class SampleDataGenerator {
         return generator.generateRegion(35, 70, -10, 40);
     }
 
-    /*
+    /**
      * Generate sample cells.
-     * Enforces physical invariants and updates associated state variables within {@code SampleDataGenerator}.
      *
      * @param count the count parameter (int)
      * @return the resulting computation or state reference
@@ -228,9 +224,8 @@ public class SampleDataGenerator {
         return cells;
     }
 
-    /*
+    /**
      * Main.
-     * Enforces physical invariants and updates associated state variables within {@code SampleDataGenerator}.
      *
      * @param args the args parameter (String[])
      */

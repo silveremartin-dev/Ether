@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -22,10 +22,10 @@ import java.util.HexFormat;
  */
 public class EtherBundleSigner {
     private static final Logger logger = LoggerFactory.getLogger(EtherBundleSigner.class);
-    /* Internal state variable for system salt (String). */
+    /** Internal state: system salt (String). */
     private static final String SYSTEM_SALT = "ETHER_CLIODYNAMICS_V4_INTEGRITY_SALT";
 
-    /*
+    /**
      * Computes deterministic SHA-256 canonical hash of the bundle content.
      */
     public static String computeChecksum(EtherScenarioBundle bundle) {
@@ -49,7 +49,7 @@ public class EtherBundleSigner {
         }
     }
 
-    /*
+    /**
      * Signs a bundle with an author tag and generates signature metadata.
      */
     public static EtherScenarioBundle signBundle(EtherScenarioBundle bundle, String author) {
@@ -73,7 +73,7 @@ public class EtherBundleSigner {
         );
     }
 
-    /*
+    /**
      * Verifies the cryptographic integrity and provenance signature of a bundle.
      *
      * @param bundle The scenario bundle to verify
@@ -111,7 +111,6 @@ public class EtherBundleSigner {
         return true;
     }
 
-    // Helper subroutine: generate signature - internal state computation & bounds checking
     private static String generateSignature(String checksum, String author) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

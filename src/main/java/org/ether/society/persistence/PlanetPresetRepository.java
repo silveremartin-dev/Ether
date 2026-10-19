@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -16,18 +16,16 @@ import java.util.List;
  */
 public class PlanetPresetRepository extends JsonRepository<PlanetPreset> {
 
-    /*
+    /**
      * Planet preset repository.
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPresetRepository}.
      *
      */
     public PlanetPresetRepository() {
         super("planet_presets.json", PlanetPreset.class);
     }
 
-    /*
+    /**
      * Get all presets.
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPresetRepository}.
      *
      * @return the resulting computation or state reference
      */
@@ -35,7 +33,7 @@ public class PlanetPresetRepository extends JsonRepository<PlanetPreset> {
         return PresetStorageService.loadAllPlanetPresets();
     }
 
-    /*
+    /**
      * seed defaults if empty.
      */
     public void ensureDefaults() {

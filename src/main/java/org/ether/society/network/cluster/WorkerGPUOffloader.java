@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -22,23 +22,21 @@ public class WorkerGPUOffloader {
     private static final Logger logger = LoggerFactory.getLogger(WorkerGPUOffloader.class);
 
     private final EnvironmentalKernel environmentalKernel;
-    /* Internal state variable for total ticks computed (long). */
+    /** Internal state: total ticks computed (long). */
     private long totalTicksComputed = 0;
-    /* Internal state variable for total compute nanos (long). */
+    /** Internal state: total compute nanos (long). */
     private long totalComputeNanos = 0;
 
-    /*
+    /**
      * Worker gpuoffloader.
-     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
      *
      */
     public WorkerGPUOffloader() {
         this.environmentalKernel = new EnvironmentalKernel();
     }
 
-    /*
+    /**
      * Is gpuavailable.
-     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
      *
      * @return the resulting computation or state reference
      */
@@ -46,9 +44,8 @@ public class WorkerGPUOffloader {
         return false;
     }
 
-    /*
+    /**
      * Is gpuenabled.
-     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
      *
      * @return the resulting computation or state reference
      */
@@ -56,9 +53,8 @@ public class WorkerGPUOffloader {
         return false;
     }
 
-    /*
+    /**
      * Set gpuenabled.
-     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
      *
      * @param enabled the enabled parameter (boolean)
      */
@@ -66,7 +62,7 @@ public class WorkerGPUOffloader {
         // GPU acceleration replaced by pure deterministic SIMD
     }
 
-    /*
+    /**
      * Executes local chunk dynamics across partitioned WorldBuffer.
      */
     public void computeChunk(WorldBuffer buffer, float dt) {
@@ -83,9 +79,8 @@ public class WorkerGPUOffloader {
         totalTicksComputed++;
     }
 
-    /*
+    /**
      * Get average compute time ms.
-     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
      *
      * @return the resulting computation or state reference
      */
@@ -93,9 +88,8 @@ public class WorkerGPUOffloader {
         return totalTicksComputed > 0 ? (totalComputeNanos / (double) totalTicksComputed) / 1_000_000.0 : 0.0;
     }
 
-    /*
+    /**
      * Get total ticks computed.
-     * Enforces physical invariants and updates associated state variables within {@code WorkerGPUOffloader}.
      *
      * @return the resulting computation or state reference
      */

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -51,7 +51,7 @@ public class DynamicHydrographicSiltationEngine {
     /* Water dynamic viscosity at 20°C in PaÂ·s (NÂ·s/m²) */
     public static final double WATER_VISCOSITY_PA_S = 1.002e-3;
 
-    /*
+    /**
      * Calculates Stokes settling terminal velocity v_s in m/s.
      *
      * @param grainRadiusMeters Particle radius in meters
@@ -70,7 +70,7 @@ public class DynamicHydrographicSiltationEngine {
         return (2.0 / 9.0) * (deltaRho * GRAVITY_M_S2 * grainRadiusMeters * grainRadiusMeters) / viscosity;
     }
 
-    /*
+    /**
      * Processes river discharge, sediment erosion, and estuarine harbor siltation using Stokes settling velocity.
      *
      * @param cells list of H3 cells in the simulation grid

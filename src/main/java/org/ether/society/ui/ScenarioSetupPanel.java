@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -90,10 +90,9 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label snapshotAutoPruningNotice;
 
     // State & Change Listener Tracking
-    /* Internal state variable for is updating from preset (boolean). */
+    /** Internal state: is updating from preset (boolean). */
     private boolean isUpdatingFromPreset = false;
 
-    // Helper subroutine: notify param change - internal state computation & bounds checking
     private void notifyParamChange() {
         if (!isUpdatingFromPreset && scenarioPresetBar != null) {
             scenarioPresetBar.notifyParametersChanged();
@@ -104,7 +103,7 @@ public class ScenarioSetupPanel extends BorderPane {
         validateScenarioSetup();
     }
 
-    /*
+    /**
      * Attaches default value handling to a JavaFX control:
      * 1. Appends "[DEFAULT VALUE: X]" to the tooltip.
      * 2. Adds a right-click Context Menu ("Reset to default value (X)").
@@ -143,7 +142,6 @@ public class ScenarioSetupPanel extends BorderPane {
         control.setContextMenu(contextMenu);
     }
 
-    // Helper subroutine: update default value indicators - internal state computation & bounds checking
     private void updateDefaultValueIndicators() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isUpdatingFromPreset) return;
@@ -173,7 +171,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: get type bparam default - internal state computation & bounds checking
     private double getTypeBParamDefault(String engineKey, String paramKey) {
         if ("MaritimeHighwayEngine".equals(engineKey)) {
             if ("capitalBoostRate".equals(paramKey)) return 0.05;
@@ -192,7 +189,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return 0.0;
     }
 
-    // Helper subroutine: highlight control if modified - internal state computation & bounds checking
     private void highlightControlIfModified(Control control, boolean isModified) {
         if (control == null) return;
         if (isModified) {
@@ -202,9 +198,8 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    /*
+    /**
      * Reset all to defaults.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      */
     public void resetAllToDefaults() {
@@ -276,7 +271,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private javafx.scene.Node externalOverlayContainer;
 
     // State
-    /* Internal state variable for current preview cells (List&lt;H3Cell&gt;). */
+    /** Internal state: current preview cells (List&lt;H3Cell&gt;). */
     private List<H3Cell> currentPreviewCells;
     private PlanetPreset activePlanetPreset;
     private final java.util.concurrent.atomic.AtomicBoolean isPreviewGenerating = new java.util.concurrent.atomic.AtomicBoolean(false);
@@ -324,19 +319,19 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label engineSortLabel;
 
     // Navigation & Selection State
-    /* Internal state variable for zoom factor (double). */
+    /** Internal state: zoom factor (double). */
     private double zoomFactor = 1.0;
-    /* Internal state variable for pan x (double). */
+    /** Internal state: pan x (double). */
     private double panX = 0.0;
-    /* Internal state variable for pan y (double). */
+    /** Internal state: pan y (double). */
     private double panY = 0.0;
-    /* Internal state variable for drag start x (double). */
+    /** Internal state: drag start x (double). */
     private double dragStartX, dragStartY;
-    /* Internal state variable for is selection drag (boolean). */
+    /** Internal state: is selection drag (boolean). */
     private boolean isSelectionDrag = false;
-    /* Internal state variable for selection start x (double). */
+    /** Internal state: selection start x (double). */
     private double selectionStartX, selectionStartY;
-    /* Internal state variable for selection current x (double). */
+    /** Internal state: selection current x (double). */
     private double selectionCurrentX, selectionCurrentY;
 
     // Density Map Import UI Fields
@@ -448,7 +443,7 @@ public class ScenarioSetupPanel extends BorderPane {
     private VBox liveDiagnosticCard;
     private Label liveDiagnosticHeader;
     private VBox liveDiagnosticContentBox;
-    /* Internal state variable for selected engine class name (String). */
+    /** Internal state: selected engine class name (String). */
     private String selectedEngineClassName = "FrontierAsabiyyahEngine";
     private Label engineInspectorTitle;
     private Label engineInspectorText;
@@ -461,16 +456,15 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label bundleSubtitle;
 
     // Async Calculation & Thread Control Fields
-    /* Internal state variable for boolean (volatile). */
+    /** Internal state: boolean (volatile). */
     private volatile boolean isCalculationRunning = false;
-    /* Internal state variable for boolean (volatile). */
+    /** Internal state: boolean (volatile). */
     private volatile boolean cancelRequested = false;
     private Thread generationThread = null;
     private java.util.function.Supplier<Boolean> isSimulationRunningSupplier;
 
-    /*
+    /**
      * Set is simulation running supplier.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param isSimulationRunningSupplier the is simulation running supplier parameter (java.util.function.Supplier&lt;Boolean&gt;)
      */
@@ -478,7 +472,6 @@ public class ScenarioSetupPanel extends BorderPane {
         this.isSimulationRunningSupplier = isSimulationRunningSupplier;
     }
 
-    // Helper subroutine: update engine inspector - internal state computation & bounds checking
     private void updateEngineInspector(String className, String title, String description, String reference, String equations) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         this.selectedEngineClassName = className;
@@ -489,7 +482,6 @@ public class ScenarioSetupPanel extends BorderPane {
         if (exportSelectedEngineBtn != null) exportSelectedEngineBtn.setText(I18n.getOrDefault("scenario.btn.export_prefix", "📤 Export ") + className + ".java");
     }
 
-    // Helper subroutine: create engine parameter box - internal state computation & bounds checking
     private javafx.scene.Node createEngineParameterBox(String engineKey) {
         GridPane grid = new GridPane();
         grid.setHgap(8);
@@ -645,7 +637,6 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label validationErrorLabel;
     private org.ether.society.persistence.SimulationSaveManager saveManagerForUI = new org.ether.society.persistence.SimulationSaveManager();
 
-    // Helper subroutine: get save manager - internal state computation & bounds checking
     private org.ether.society.persistence.SimulationSaveManager getSaveManager() {
         if (saveManagerForUI == null) {
             saveManagerForUI = new org.ether.society.persistence.SimulationSaveManager();
@@ -664,9 +655,8 @@ public class ScenarioSetupPanel extends BorderPane {
         private final DoubleProperty depth;
         private final DoubleProperty magnitude;
 
-        /*
+        /**
          * Climate event.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param type the type parameter (String)
          * @param name the name parameter (String)
@@ -687,158 +677,136 @@ public class ScenarioSetupPanel extends BorderPane {
             this.magnitude = new SimpleDoubleProperty(mag);
         }
 
-        /*
+        /**
          * Type property.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public StringProperty typeProperty() { return type; }
-        /*
+        /**
          * Name property.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public StringProperty nameProperty() { return name; }
-        /*
+        /**
          * Year property.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public IntegerProperty yearProperty() { return year; }
-        /*
+        /**
          * Latitude property.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public DoubleProperty latitudeProperty() { return latitude; }
-        /*
+        /**
          * Longitude property.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public DoubleProperty longitudeProperty() { return longitude; }
-        /*
+        /**
          * Depth property.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public DoubleProperty depthProperty() { return depth; }
-        /*
+        /**
          * Magnitude property.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public DoubleProperty magnitudeProperty() { return magnitude; }
-        /*
+        /**
          * Get type.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getType() { return type.get(); }
-        /*
+        /**
          * Set type.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param v the v parameter (String)
          */
         public void setType(String v) { type.set(v); }
-        /*
+        /**
          * Get name.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getName() { return name.get(); }
-        /*
+        /**
          * Set name.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param v the v parameter (String)
          */
         public void setName(String v) { name.set(v); }
-        /*
+        /**
          * Get year.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public int getYear() { return year.get(); }
-        /*
+        /**
          * Set year.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param v the v parameter (int)
          */
         public void setYear(int v) { year.set(v); }
-        /*
+        /**
          * Get latitude.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public double getLatitude() { return latitude.get(); }
-        /*
+        /**
          * Set latitude.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param v the v parameter (double)
          */
         public void setLatitude(double v) { latitude.set(v); }
-        /*
+        /**
          * Get longitude.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public double getLongitude() { return longitude.get(); }
-        /*
+        /**
          * Set longitude.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param v the v parameter (double)
          */
         public void setLongitude(double v) { longitude.set(v); }
-        /*
+        /**
          * Get depth.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public double getDepth() { return depth.get(); }
-        /*
+        /**
          * Set depth.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param v the v parameter (double)
          */
         public void setDepth(double v) { depth.set(v); }
-        /*
+        /**
          * Get magnitude.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @return the resulting computation or state reference
          */
         public double getMagnitude() { return magnitude.get(); }
-        /*
+        /**
          * Set magnitude.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param v the v parameter (double)
          */
         public void setMagnitude(double v) { magnitude.set(v); }
     }
 
-    /*
+    /**
      * Scenario setup panel.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param onStartSimulation the on start simulation parameter (Consumer&lt;Scenario&gt;)
      */
@@ -868,9 +836,8 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
-    /*
+    /**
      * Set inherited context.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param planetPreset the planet preset parameter (PlanetPreset)
      * @param ecologyName the ecology name parameter (String)
@@ -922,9 +889,8 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    /*
+    /**
      * Find planet preset by name.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param name the name parameter (String)
      * @return the resulting computation or state reference
@@ -955,7 +921,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return PlanetPreset.EARTH_LIKE;
     }
 
-    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         setPadding(new Insets(20));
         getStyleClass().add("glass-panel");
@@ -990,7 +955,6 @@ public class ScenarioSetupPanel extends BorderPane {
         setCenter(previewPane);
     }
 
-    // Helper subroutine: create config pane - internal state computation & bounds checking
     private VBox createConfigPane() {
         VBox root = new VBox(15);
         root.setPadding(new Insets(0, 20, 0, 0));
@@ -1022,13 +986,12 @@ public class ScenarioSetupPanel extends BorderPane {
         Scenario defaultScenario = builtInScenarios.isEmpty() ? null : builtInScenarios.get(0);
 
         scenarioPresetBar.setListener(new PresetControlBar.PresetActionsListener<Scenario>() {
-            @Override
-            /*
+            /**
              * On preset selected.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param scenario the scenario parameter (Scenario)
              */
+            @Override
             public void onPresetSelected(Scenario scenario) {
                 applyScenarioToUI(scenario);
                 if (previewModeCombo != null) {
@@ -1036,13 +999,12 @@ public class ScenarioSetupPanel extends BorderPane {
                 }
             }
 
-            @Override
-            /*
+            /**
              * On save preset.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param name the name parameter (String)
              */
+            @Override
             public void onSavePreset(String name) {
                 if (!validateScenarioSetup()) {
                     return;
@@ -1056,25 +1018,23 @@ public class ScenarioSetupPanel extends BorderPane {
                 scenarioPresetBar.setNameText(name);
             }
 
-            @Override
-            /*
+            /**
              * On delete preset.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param scenario the scenario parameter (Scenario)
              */
+            @Override
             public void onDeletePreset(Scenario scenario) {
                 scenarioPresetBar.getPresetCombo().getItems().remove(scenario);
             }
 
-            @Override
-            /*
+            /**
              * On export preset.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param targetFile the target file parameter (File)
              * @param scenario the scenario parameter (Scenario)
              */
+            @Override
             public void onExportPreset(File targetFile, Scenario scenario) {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -1086,13 +1046,12 @@ public class ScenarioSetupPanel extends BorderPane {
                 }
             }
 
-            @Override
-            /*
+            /**
              * On import preset.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param sourceFile the source file parameter (File)
              */
+            @Override
             public void onImportPreset(File sourceFile) {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -1113,14 +1072,13 @@ public class ScenarioSetupPanel extends BorderPane {
         planetPresetCombo = new ComboBox<>();
         planetPresetCombo.getItems().setAll(PlanetPreset.getPresets());
         planetPresetCombo.setCellFactory(p -> new ListCell<PlanetPreset>() {
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (PlanetPreset)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(PlanetPreset item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
@@ -1132,14 +1090,13 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
         planetPresetCombo.setButtonCell(new ListCell<PlanetPreset>() {
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (PlanetPreset)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(PlanetPreset item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
@@ -1155,25 +1112,23 @@ public class ScenarioSetupPanel extends BorderPane {
         planetPresetCombo.setMaxWidth(Double.MAX_VALUE);
         planetPresetCombo.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-opacity: 1.0; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 4px;");
         planetPresetCombo.setConverter(new javafx.util.StringConverter<PlanetPreset>() {
-            @Override
-            /*
+            /**
              * To string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (PlanetPreset)
              * @return the resulting computation or state reference
              */
+            @Override
             public String toString(PlanetPreset item) {
                 return item == null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName("Terre (Terran)") : org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name());
             }
-            @Override
-            /*
+            /**
              * From string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param string the string parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public PlanetPreset fromString(String string) {
                 return null;
             }
@@ -1186,38 +1141,35 @@ public class ScenarioSetupPanel extends BorderPane {
         ecologyPresetCombo.setValue(EcologyPreset.getBuiltInPresets().get(0));
         ecologyPresetCombo.setMaxWidth(Double.MAX_VALUE);
         ecologyPresetCombo.setConverter(new javafx.util.StringConverter<EcologyPreset>() {
-            @Override
-            /*
+            /**
              * To string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (EcologyPreset)
              * @return the resulting computation or state reference
              */
+            @Override
             public String toString(EcologyPreset item) {
                 return item == null ? "" : org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name());
             }
-            @Override
-            /*
+            /**
              * From string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param string the string parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public EcologyPreset fromString(String string) {
                 return null;
             }
         });
         ecologyPresetCombo.setCellFactory(p -> new ListCell<EcologyPreset>() {
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (EcologyPreset)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(EcologyPreset item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
@@ -1239,14 +1191,13 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
         ecologyPresetCombo.setButtonCell(new ListCell<EcologyPreset>() {
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (EcologyPreset)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(EcologyPreset item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
@@ -1311,25 +1262,23 @@ public class ScenarioSetupPanel extends BorderPane {
         h3ResolutionCombo.setValue(3);
         h3ResolutionCombo.setMaxWidth(Double.MAX_VALUE);
         h3ResolutionCombo.setConverter(new javafx.util.StringConverter<Integer>() {
-            @Override
-            /*
+            /**
              * To string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (Integer)
              * @return the resulting computation or state reference
              */
+            @Override
             public String toString(Integer item) {
                 return item == null ? "" : org.ether.society.i18n.I18n.getOrDefault("planet.param.resolution.res" + item, "Résolution " + item);
             }
-            @Override
-            /*
+            /**
              * From string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param string the string parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public Integer fromString(String string) {
                 return null;
             }
@@ -1369,14 +1318,13 @@ public class ScenarioSetupPanel extends BorderPane {
         temporalResolutionCombo.setValue(30.0);
         temporalResolutionCombo.setMaxWidth(Double.MAX_VALUE);
         temporalResolutionCombo.setConverter(new javafx.util.StringConverter<Double>() {
-            @Override
-            /*
+            /**
              * To string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (Double)
              * @return the resulting computation or state reference
              */
+            @Override
             public String toString(Double item) {
                 if (item == null) return "";
                 if (item == 1.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.1d", "1 day (High Precision Seasons & Epidemics)");
@@ -1389,14 +1337,13 @@ public class ScenarioSetupPanel extends BorderPane {
                 if (item == 365.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.365d", "1 year (365 days) [Ultra-Fast Multi-Millennia]");
                 return String.format(java.util.Locale.US, "%.0f %s", item, org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.days", "jours"));
             }
-            @Override
-            /*
+            /**
              * From string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param string the string parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public Double fromString(String string) {
                 return null;
             }
@@ -1489,25 +1436,23 @@ public class ScenarioSetupPanel extends BorderPane {
         densityPatternCombo.setValue("UNBIASED_NATURAL");
         densityPatternCombo.setMaxWidth(Double.MAX_VALUE);
         densityPatternCombo.setConverter(new javafx.util.StringConverter<String>() {
-            @Override
-            /*
+            /**
              * To string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public String toString(String item) {
                 return item == null ? "" : org.ether.society.i18n.I18n.getOrDefault("scenario.density." + item, DENSITY_LABELS.getOrDefault(item, item));
             }
-            @Override
-            /*
+            /**
              * From string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param string the string parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public String fromString(String string) {
                 return null;
             }
@@ -1566,25 +1511,23 @@ public class ScenarioSetupPanel extends BorderPane {
         techPresetCombo.setValue(Scenario.TechPreset.AUTO_FROM_YEAR);
         techPresetCombo.setMaxWidth(Double.MAX_VALUE);
         techPresetCombo.setConverter(new javafx.util.StringConverter<Scenario.TechPreset>() {
-            @Override
-            /*
+            /**
              * To string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (Scenario.TechPreset)
              * @return the resulting computation or state reference
              */
+            @Override
             public String toString(Scenario.TechPreset item) {
                 return item == null ? "" : I18n.getOrDefault("scenario.tech." + item.name(), item.getLabel());
             }
-            @Override
-            /*
+            /**
              * From string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param string the string parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public Scenario.TechPreset fromString(String string) {
                 return null;
             }
@@ -1852,7 +1795,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return root;
     }
 
-    // Helper subroutine: create bundle section - internal state computation & bounds checking
     private VBox createBundleSection() {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -1885,7 +1827,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
-    // Helper subroutine: create snapshot section - internal state computation & bounds checking
     private VBox createSnapshotSection() {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -1914,41 +1855,38 @@ public class ScenarioSetupPanel extends BorderPane {
         snapshotCombo.setMaxWidth(Double.MAX_VALUE);
         snapshotCombo.setTooltip(new Tooltip(I18n.getOrDefault("scenario.snapshot.combo.tooltip", "Select an existing checkpoint or full simulation snapshot from the disk to resume execution.")));
         snapshotCombo.setConverter(new javafx.util.StringConverter<org.ether.society.persistence.SaveMetadata>() {
-            @Override
-            /*
+            /**
              * To string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (org.ether.society.persistence.SaveMetadata)
              * @return the resulting computation or state reference
              */
+            @Override
             public String toString(org.ether.society.persistence.SaveMetadata item) {
                 if (item == null) return "";
                 String timeStr = item.getTimestamp() != null ? item.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
                 return String.format("📸 Point de reprise : An %,d (Mois %02d) — %s", item.getYear(), item.getMonth(), timeStr);
             }
-            @Override
-            /*
+            /**
              * From string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param string the string parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public org.ether.society.persistence.SaveMetadata fromString(String string) {
                 return null;
             }
         });
 
         snapshotCombo.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (org.ether.society.persistence.SaveMetadata)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(org.ether.society.persistence.SaveMetadata item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
@@ -2061,7 +1999,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
-    // Helper subroutine: update snapshot details display - internal state computation & bounds checking
     private void updateSnapshotDetailsDisplay(org.ether.society.persistence.SaveMetadata newV) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (newV != null) {
@@ -2108,9 +2045,8 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    /*
+    /**
      * Refresh scenario presets from disk cache / sync updates.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      */
     public void refreshScenarioPresets() {
         javafx.application.Platform.runLater(() -> {
@@ -2129,9 +2065,8 @@ public class ScenarioSetupPanel extends BorderPane {
         });
     }
 
-    /*
+    /**
      * Refresh snapshot list.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      */
     public void refreshSnapshotList() {
@@ -2141,9 +2076,8 @@ public class ScenarioSetupPanel extends BorderPane {
     private List<org.ether.society.persistence.SaveMetadata> cachedSavesList = null;
     private long lastSavesListFetchTime = 0;
 
-    /*
+    /**
      * Refresh snapshot list for scenario.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param s the s parameter (Scenario)
      */
@@ -2233,19 +2167,16 @@ public class ScenarioSetupPanel extends BorderPane {
         logger.info("Refreshed snapshots list for scenario '{}': {} matching checkpoint(s) found on disk.", s != null ? s.getName() : "N/A", filteredSaves.size());
     }
 
-    // Helper subroutine: show snapshot explanation dialog - internal state computation & bounds checking
     private void showSnapshotExplanationDialog() {
         new SnapshotExplanationDialog(getScene() != null ? getScene().getWindow() : null).showAndWait();
     }
 
-    // Helper subroutine: show engine recommendation guide dialog - internal state computation & bounds checking
     private void showEngineRecommendationGuideDialog() {
         new EngineRecommendationGuideDialog(getScene() != null ? getScene().getWindow() : null).showAndWait();
     }
 
-    /*
+    /**
      * Is resume from snapshot selected.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -2253,9 +2184,8 @@ public class ScenarioSetupPanel extends BorderPane {
         return radioResumeSnapshot != null && radioResumeSnapshot.isSelected();
     }
 
-    /*
+    /**
      * Get selected snapshot metadata.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -2263,9 +2193,8 @@ public class ScenarioSetupPanel extends BorderPane {
         return snapshotCombo != null ? snapshotCombo.getValue() : null;
     }
 
-    /*
+    /**
      * Get selected snapshot id.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -2274,7 +2203,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return meta != null ? meta.getId() : null;
     }
 
-    // Helper subroutine: update start button label - internal state computation & bounds checking
     private void updateStartButtonLabel() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (startBtn == null) return;
@@ -2326,7 +2254,6 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
 
-    // Helper subroutine: export unified bundle - internal state computation & bounds checking
     private void exportUnifiedBundle() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.title.export_bundle_dialog", "Export Unified Scenario Bundle (.ether)"));
@@ -2365,7 +2292,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: import unified bundle - internal state computation & bounds checking
     private void importUnifiedBundle() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.title.import_bundle_dialog", "Import Unified Scenario Bundle (.ether)"));
@@ -2429,14 +2355,12 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
 
-    // Helper subroutine: run pre flight sanity check - internal state computation & bounds checking
     private void runPreFlightSanityCheck() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateLiveDiagnosticBlock();
     }
 
     private static org.ether.society.engines.compiler.EngineConflictReport cachedJitReport = null;
-    // Helper subroutine: get or create jit report - internal state computation & bounds checking
     private static synchronized org.ether.society.engines.compiler.EngineConflictReport getOrCreateJitReport() {
         if (cachedJitReport == null) {
             org.ether.society.engines.compiler.ScenarioEngineJITCompiler jit = new org.ether.society.engines.compiler.ScenarioEngineJITCompiler();
@@ -2449,7 +2373,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return cachedJitReport;
     }
 
-    // Helper subroutine: render diagnostic category - internal state computation & bounds checking
     private void renderDiagnosticCategory(VBox container, String title, List<String> items) {
         if (items == null || items.isEmpty()) return;
         Label catLabel = new Label(title);
@@ -2472,7 +2395,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: update live diagnostic block - internal state computation & bounds checking
     private void updateLiveDiagnosticBlock() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (liveDiagnosticContentBox == null) return;
@@ -2741,12 +2663,10 @@ public class ScenarioSetupPanel extends BorderPane {
         renderDiagnosticCategory(liveDiagnosticContentBox, I18n.getOrDefault("scenario.diagnostic.cat.validation", "🛑 Scenario Setup & Configuration Validation"), validationItems);
     }
 
-    // Helper subroutine: create section - internal state computation & bounds checking
     private VBox createSection(Label header, javafx.scene.Node content) {
         return createSection(header, content, null);
     }
 
-    // Helper subroutine: create section - internal state computation & bounds checking
     private VBox createSection(Label header, javafx.scene.Node content, Runnable sectionResetAction) {
         header.getStyleClass().add("label-section-header");
         HBox headerRow = new HBox(8, header);
@@ -2769,12 +2689,10 @@ public class ScenarioSetupPanel extends BorderPane {
         return box;
     }
 
-    // Helper subroutine: get built in scenarios - internal state computation & bounds checking
     private List<Scenario> getBuiltInScenarios() {
         return scenarioRepo != null ? scenarioRepo.getAllScenarios() : org.ether.society.persistence.PresetStorageService.loadAllScenarios();
     }
 
-    // Helper subroutine: update inherited context display - internal state computation & bounds checking
     private void updateInheritedContextDisplay(String ecologyName) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (inheritedContextLabel == null) return;
@@ -2791,9 +2709,8 @@ public class ScenarioSetupPanel extends BorderPane {
         inheritedContextLabel.setText(String.format(fmt, ecoDisplay, planetDisplay, p.radiusKm()));
     }
 
-    /*
+    /**
      * Apply scenario to UI.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param s the scenario to apply
      */
@@ -3091,7 +3008,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: create clipping section - internal state computation & bounds checking
     private VBox createClippingSection() {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -3160,14 +3076,13 @@ public class ScenarioSetupPanel extends BorderPane {
         boundaryModeCombo.setOnAction(e -> notifyParamChange());
         attachDefaultValueHandling(boundaryModeCombo, "DYNAMIC_RESERVOIR", () -> boundaryModeCombo.setValue("DYNAMIC_RESERVOIR"));
         boundaryModeCombo.setConverter(new javafx.util.StringConverter<String>() {
-            @Override
-            /*
+            /**
              * To string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public String toString(String item) {
                 if (item == null) return "";
                 switch (item) {
@@ -3177,14 +3092,13 @@ public class ScenarioSetupPanel extends BorderPane {
                     default -> { return item; }
                 }
             }
-            @Override
-            /*
+            /**
              * From string.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param string the string parameter (String)
              * @return the resulting computation or state reference
              */
+            @Override
             public String fromString(String string) {
                 return null;
             }
@@ -3236,7 +3150,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
-    // Helper subroutine: create ocean optimization section - internal state computation & bounds checking
     private VBox createOceanOptimizationSection() {
         VBox section = new VBox(12);
         section.getStyleClass().add("card-section");
@@ -4260,7 +4173,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
-    // Helper subroutine: update engine texts - internal state computation & bounds checking
     private void updateEngineTexts() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (corePane != null) {
@@ -4387,7 +4299,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: auto select engines for year - internal state computation & bounds checking
     private void autoSelectEnginesForYear(long year) {
         for (Map.Entry<String, CheckBox> entry : typeBCheckBoxMap.entrySet()) {
             long appYear = getEngineApparitionYear(entry.getKey());
@@ -4396,7 +4307,6 @@ public class ScenarioSetupPanel extends BorderPane {
         notifyParamChange();
     }
 
-    // Helper subroutine: sort optional engines - internal state computation & bounds checking
     private void sortOptionalEngines(int sortIdx, List<String[]> optionalEngines, Map<String, VBox> engineContainers) {
         if (typeBBoxContainer == null) return;
         List<javafx.scene.Node> headers = new ArrayList<>();
@@ -4424,7 +4334,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: get engine apparition year - internal state computation & bounds checking
     private static long getEngineApparitionYear(String key) {
         return switch (key) {
             case "OldowanMarrowPercussionEngine" -> -2600000L;
@@ -4535,7 +4444,6 @@ public class ScenarioSetupPanel extends BorderPane {
     private final java.util.Map<Integer, Label> tensorParam3ValueLabels = new java.util.HashMap<>();
     private final java.util.Map<Integer, Button> tensorGenSingleBtns = new java.util.HashMap<>();
 
-    // Helper subroutine: create cultural vector and layers section - internal state computation & bounds checking
     private VBox createCulturalVectorAndLayersSection() {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -4689,7 +4597,6 @@ public class ScenarioSetupPanel extends BorderPane {
         return section;
     }
 
-    // Helper subroutine: export gis multi format - internal state computation & bounds checking
     private void exportGisMultiFormat() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_gis_dialog", "Export Scenario Data under GIS Format (GeoJSON / GeoTIFF / NetCDF)"));
@@ -4724,7 +4631,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: export provenance manifest - internal state computation & bounds checking
     private void exportProvenanceManifest() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_provenance_dialog", "Generate & Export SHA-256 Provenance Manifest"));
@@ -4762,7 +4668,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: show cultural import format help - internal state computation & bounds checking
     private void showCulturalImportFormatHelp() {
         javafx.stage.Stage dialog = new javafx.stage.Stage();
         dialog.setTitle(I18n.getOrDefault("scenario.title.layer_formats_modal", "Spécifications Techniques des Tenseurs Cartographiques & Datasets"));
@@ -4891,7 +4796,6 @@ private String getDefaultTensorName(int index) {
     };
 }
 
-// Helper subroutine: get cultural tensor title - internal state computation & bounds checking
     private String getCulturalTensorTitle(int index) {
         if (customTensorNames.containsKey(index) && !customTensorNames.get(index).isBlank()) {
             return "🧬 3.2." + (index + 1) + " " + I18n.getOrDefault("scenario.tensor.label_prefix", "Tenseur ") + (index + 1) + " : " + customTensorNames.get(index);
@@ -4910,7 +4814,6 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: get cultural tensor tooltip - internal state computation & bounds checking
     private String getCulturalTensorTooltip(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("scenario.tensor.tooltip.0", "Linguistic component: Dialect continua, mutual intelligibility, and phonetic barriers.");
@@ -4926,7 +4829,6 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: get cultural baseline name - internal state computation & bounds checking
     private String getCulturalBaselineName(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("scenario.tensor.0.source.baseline", "Glottolog 4.8 / WALS Language Families (Earth Baseline)");
@@ -4942,7 +4844,6 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: get cultural format hint - internal state computation & bounds checking
     private String getCulturalFormatHint(int index) {
         return switch (index) {
             case 0 -> I18n.getOrDefault("scenario.tensor.0.format", "RGB 24-bit Catégoriel + Dithering Spatial (2:1 équirectangulaire) :\n  Valeurs RGB = Familles linguistiques pures & continuums dialectaux (Glottolog 5.0 / WALS)");
@@ -4958,7 +4859,7 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    /*
+    /**
      * Given the scenario's start year and active planet preset, returns the best-matching
      * entry string for demoSourceCombo, or null if no match can be determined.
      */
@@ -4980,7 +4881,7 @@ private String getDefaultTensorName(int index) {
         return "ðŸŒ Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]";
     }
 
-    /*
+    /**
      * Resiliently selects the best matching item in a source ComboBox.
      */
     private void selectBestSource(ComboBox<String> combo, String target, String fallbackKeyword) {
@@ -5020,7 +4921,7 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    /*
+    /**
      * Given the tensor index, scenario start year, and active planet preset, returns the best-matching
      * entry string for the cultural source combo at that tensor index, or null if the default should be kept.
      */
@@ -5112,7 +5013,6 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: build population source combo - internal state computation & bounds checking
     private ComboBox<String> buildPopulationSourceCombo() {
         ComboBox<String> combo = new ComboBox<>();
         combo.setMaxWidth(Double.MAX_VALUE);
@@ -5126,7 +5026,7 @@ private String getDefaultTensorName(int index) {
             "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton [Planétaire (Lune), +2040 AD à Futur]",
             "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente [Planétaire (Mercure), +2150 AD à Futur]"
         );
-        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+        org.ether.society.ui.util.DataSourceUIHelper.setupDetailedSourceCombo(
                 combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         long startYr = (startYearSpinner != null && startYearSpinner.getValue() != null) ? startYearSpinner.getValue().longValue() : -8000L;
         String initSrc = pickDemoSourceForEpoch(startYr, this.activePlanetPreset);
@@ -5145,7 +5045,6 @@ private String getDefaultTensorName(int index) {
         return combo;
     }
 
-    // Helper subroutine: build cultural source combo - internal state computation & bounds checking
     private ComboBox<String> buildCulturalSourceCombo(int tensorIdx) {
         ComboBox<String> combo = new ComboBox<>();
         combo.setMaxWidth(Double.MAX_VALUE);
@@ -5238,7 +5137,7 @@ private String getDefaultTensorName(int index) {
                 "🔴 Mars — Modèle Cartographique Martien Dérivé [Planétaire (Mars), +2050 AD à Futur]"
             );
         }
-        org.ether.society.data.DataSourceMetadataRegistry.setupDetailedSourceCombo(
+        org.ether.society.ui.util.DataSourceUIHelper.setupDetailedSourceCombo(
                 combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         long scYear = (startYearSpinner != null && startYearSpinner.getValue() != null)
                 ? startYearSpinner.getValue().longValue() : -8000L;
@@ -5283,7 +5182,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: get tensor param1descriptor - internal state computation & bounds checking
     private TensorParamDescriptor getTensorParam1Descriptor(int tensorIdx) {
         return switch (tensorIdx) {
             case 0 -> new TensorParamDescriptor("scenario.tensor.0.p1.label", "Dispersion dialectale (α) :", "scenario.tensor.0.p1.tooltip", "Échelle spatiale de diffusion des variantes phonétiques et lexicales.", 0.01, 0.25, 0.05, 0.01, "%.2f");
@@ -5299,7 +5197,6 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: get tensor param2descriptor - internal state computation & bounds checking
     private TensorParamDescriptor getTensorParam2Descriptor(int tensorIdx) {
         return switch (tensorIdx) {
             case 0 -> new TensorParamDescriptor("scenario.tensor.0.p2.label", "Foyers linguistiques :", "scenario.tensor.0.p2.tooltip", "Nombre de foyers indépendants et familles linguistiques initiales.", 1.0, 16.0, 4.0, 1.0, "%.0f");
@@ -5315,7 +5212,6 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: get tensor param3descriptor - internal state computation & bounds checking
     private TensorParamDescriptor getTensorParam3Descriptor(int tensorIdx) {
         return switch (tensorIdx) {
             case 0 -> new TensorParamDescriptor("scenario.tensor.0.p3.label", "Barrière de relief :", "scenario.tensor.0.p3.tooltip", "Impact du relief et des chaînes de montagnes sur l'isolation linguistique.", 0.0, 1.00, 0.60, 0.05, "%.2f");
@@ -5331,12 +5227,10 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: get default tensor seed - internal state computation & bounds checking
     private String getDefaultTensorSeed(int tensorIdx) {
         return String.valueOf(11235L + tensorIdx * 11111L);
     }
 
-    // Helper subroutine: update tensor file label - internal state computation & bounds checking
     private void updateTensorFileLabel(int tensorIdx) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         Label fileLbl = tensorFileLabels.get(tensorIdx);
@@ -5371,7 +5265,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: export cultural tensor - internal state computation & bounds checking
     private void exportCulturalTensor(int tensorIdx) {
         Image img = customTensorImages.get(tensorIdx);
         if (img == null) {
@@ -5382,7 +5275,6 @@ private String getDefaultTensorName(int index) {
         WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null, img, defaultName, title);
     }
 
-    // Helper subroutine: generate procedural tensor raster image - internal state computation & bounds checking
     private Image generateProceduralTensorRasterImage(int tensorIdx, int w, int h) {
         WritableImage img = new WritableImage(w, h);
         PixelWriter pw = img.getPixelWriter();
@@ -5404,7 +5296,6 @@ private String getDefaultTensorName(int index) {
         return img;
     }
 
-    // Helper subroutine: evaluate procedural tensor color - internal state computation & bounds checking
     private Color evaluateProceduralTensorColor(int tIndex, double lat, double lon, double elevation, double p1, double p2, double p3, long seed) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         double noiseX = (lon + 180.0) / 360.0;
@@ -5459,7 +5350,6 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: create tensor param row - internal state computation & bounds checking
     private HBox createTensorParamRow(TensorParamDescriptor desc, Slider slider, Label valueLabel, Runnable onChange) {
         Label label = new Label(I18n.getOrDefault(desc.labelKey, desc.defaultLabel));
         label.getStyleClass().add("control-label");
@@ -5501,7 +5391,6 @@ private String getDefaultTensorName(int index) {
         return row;
     }
 
-    // Helper subroutine: delete cultural tensor - internal state computation & bounds checking
     private void deleteCulturalTensor(int indexToDelete) {
         int curDims = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
         if (indexToDelete < 0 || indexToDelete >= curDims) return;
@@ -5576,7 +5465,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-        // Helper subroutine: update cultural tensor sub block texts without full UI reconstruction
     private void updateCulturalTensorSubBlockTexts() {
         if (btnGenerateProceduralTensorsSection != null) {
             btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "ðŸª„ Régénérer les Tenseurs"));
@@ -5626,7 +5514,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: rebuild cultural tensor sub blocks - internal state computation & bounds checking
     private void rebuildCulturalTensorSubBlocks(int dimCount) {
         if (btnGenerateProceduralTensorsSection != null) {
             btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "🪄 Régénérer les Tenseurs"));
@@ -5863,13 +5750,11 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: load custom culture layer for tensor - internal state computation & bounds checking
     private void loadCustomCultureLayerForTensor(int tensorIdx, Consumer<Image> onLoaded) {
         String name = getCulturalTensorTitle(tensorIdx);
         loadCustomCultureLayer(name, onLoaded);
     }
 
-    // Helper subroutine: load custom culture layer - internal state computation & bounds checking
     private void loadCustomCultureLayer(String layerName, Consumer<Image> onLoaded) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.dialog.import_layer_title", "Import layer ") + layerName + " (PNG/GeoJSON/JPG)");
@@ -5898,7 +5783,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: add custom engine check box to ui - internal state computation & bounds checking
     private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, String tooltipText, boolean defaultSelected) {
         if (typeBCheckBoxMap.containsKey(engineKey)) {
             typeBCheckBoxMap.get(engineKey).setSelected(defaultSelected);
@@ -5924,7 +5808,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: create preview pane - internal state computation & bounds checking
     private VBox createPreviewPane() {
         VBox root = new VBox(15);
         root.setAlignment(Pos.CENTER);
@@ -5946,14 +5829,13 @@ private String getDefaultTensorName(int index) {
         previewModeCombo.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         previewModeCombo.setMaxWidth(380);
         previewModeCombo.setCellFactory(p -> new ListCell<>() {
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
              *
              * @param item the item parameter (String)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(String item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
@@ -6129,7 +6011,6 @@ private String getDefaultTensorName(int index) {
 
     private HBox legendItemsContainer;
 
-    // Helper subroutine: create legend - internal state computation & bounds checking
     private HBox createLegend() {
         HBox legend = new HBox(12);
         legend.setAlignment(Pos.CENTER);
@@ -6144,7 +6025,6 @@ private String getDefaultTensorName(int index) {
         return legend;
     }
 
-    // Helper subroutine: generate procedural population density - internal state computation & bounds checking
     private void generateProceduralPopulationDensity() {
         customDensityImage = null;
         if (radioProcDemo != null) radioProcDemo.setSelected(true);
@@ -6177,7 +6057,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: generate procedural cultural tensors - internal state computation & bounds checking
     private void generateProceduralCulturalTensors() {
         if (tensorProcRadios != null) {
             for (var entry : tensorProcRadios.entrySet()) {
@@ -6239,7 +6118,6 @@ private String getDefaultTensorName(int index) {
         }));
     }
 
-    // Helper subroutine: update preview modes combo - internal state computation & bounds checking
     private void updatePreviewModesCombo() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewModeCombo == null) return;
@@ -6271,7 +6149,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: get cultural tensor preview name - internal state computation & bounds checking
     private String getCulturalTensorPreviewName(int index) {
         if (customTensorNames.containsKey(index) && !customTensorNames.get(index).isBlank()) {
             return "🧬 " + I18n.getOrDefault("scenario.tensor.custom.preview_prefix", "Tensor ") + (index + 1) + " : " + customTensorNames.get(index);
@@ -6290,14 +6167,12 @@ private String getDefaultTensorName(int index) {
         };
     }
 
-    // Helper subroutine: update preview title text - internal state computation & bounds checking
     private void updatePreviewTitleText() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewTitleLabel == null) return;
         previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "ðŸ—ºï¸ Resource Cartography & Display"));
     }
 
-    // Helper subroutine: update bottom legend - internal state computation & bounds checking
     private void updateBottomLegend() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (legendItemsContainer == null) return;
@@ -6656,7 +6531,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: load custom density map - internal state computation & bounds checking
     private void loadCustomDensityMap() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("scenario.title.load_density_dialog", "Load Population Density Map (PNG/JPEG)"));
@@ -6690,7 +6564,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: update demo compatibility display - internal state computation & bounds checking
     private void updateDemoCompatibilityDisplay() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (demoCompatibilityLabel == null) return;
@@ -6712,7 +6585,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: export density map - internal state computation & bounds checking
     private void exportDensityMap() {
         if (previewCanvas == null) return;
         int w = 2048;
@@ -6763,7 +6635,6 @@ private String getDefaultTensorName(int index) {
                 I18n.getOrDefault("scenario.title.export_density_dialog", "Export Population Density Map (PNG / JPEG)"));
     }
 
-    // Helper subroutine: show density import format help - internal state computation & bounds checking
     private void showDensityImportFormatHelp() {
         WindowUtils.showScrollableInfoDialog(
                 I18n.getOrDefault("scenario.dialog.density_help_title", "Spécifications de la Carte de Densité"),
@@ -6781,7 +6652,6 @@ private String getDefaultTensorName(int index) {
     private static final java.util.Map<String, List<H3Cell>> previewMeshCache = new java.util.concurrent.ConcurrentHashMap<>();
     private final java.util.concurrent.atomic.AtomicLong previewSeq = new java.util.concurrent.atomic.AtomicLong(0);
 
-    // Helper subroutine: generate preview - internal state computation & bounds checking
     private void generatePreview() {
         if (previewStatusLabel != null) {
             previewStatusLabel.setText(I18n.getOrDefault("scenario.status.calc_preview", "⚡ Calculating demographic preview in background..."));
@@ -6862,7 +6732,6 @@ private String getDefaultTensorName(int index) {
         }, "H3-Preview-Async-Thread").start();
     }
 
-    // Helper subroutine: distribute initial population - internal state computation & bounds checking
     private void distributeInitialPopulation(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
 
@@ -6898,7 +6767,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: get relief and density color - internal state computation & bounds checking
     private Color getReliefAndDensityColor(H3Cell c) {
         if (c == null) return Color.rgb(15, 23, 42);
 
@@ -6969,7 +6837,6 @@ private String getDefaultTensorName(int index) {
         return heatCol;
     }
 
-    // Helper subroutine: compute cell carrying capacity - internal state computation & bounds checking
     private double computeCellCarryingCapacity(H3Cell c) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (c == null || c.getElevation() <= 0) return 0.0;
@@ -6991,7 +6858,6 @@ private String getDefaultTensorName(int index) {
         return Math.max(10.0, baseCap);
     }
 
-    // Helper subroutine: get preview color for cell - internal state computation & bounds checking
     private Color getPreviewColorForCell(H3Cell c) {
         if (c == null) return Color.BLACK;
 
@@ -7088,7 +6954,6 @@ private String getDefaultTensorName(int index) {
         return getReliefAndDensityColor(c);
     }
 
-    // Helper subroutine: sample image color at lat lon - internal state computation & bounds checking
     private Color sampleImageColorAtLatLon(Image img, double lat, double lon) {
         if (img == null || img.getWidth() <= 1 || img.getHeight() <= 1) return null;
         PixelReader reader = img.getPixelReader();
@@ -7099,7 +6964,6 @@ private String getDefaultTensorName(int index) {
         return reader.getColor(px, py);
     }
 
-    // Helper subroutine: draw preview - internal state computation & bounds checking
     private void drawPreview() {
         if (isUpdatingFromPreset || previewCanvas == null) return;
         double w = previewCanvas.getWidth();
@@ -7254,7 +7118,6 @@ private String getDefaultTensorName(int index) {
         updateMapInfoSummary();
     }
 
-    // Helper subroutine: sample cultural tensor value - internal state computation & bounds checking
     private double sampleCulturalTensorValue(int tIdx, H3Cell cell) {
         if (cell == null) return 0.5;
         Image img = customTensorImages.get(tIdx);
@@ -7277,7 +7140,6 @@ private String getDefaultTensorName(int index) {
         return col.getBrightness();
     }
 
-    // Helper subroutine: update map info summary - internal state computation & bounds checking
     private void updateMapInfoSummary() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (previewStatusLabel == null) return;
@@ -7380,7 +7242,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: blend colors - internal state computation & bounds checking
     private Color blendColors(Color base, Color overlay, double opacity) {
         if (base == null) return overlay;
         if (overlay == null) return base;
@@ -7390,7 +7251,6 @@ private String getDefaultTensorName(int index) {
         return Color.color(Math.clamp(r, 0.0, 1.0), Math.clamp(g, 0.0, 1.0), Math.clamp(b, 0.0, 1.0));
     }
 
-    // Helper subroutine: get relief shade color - internal state computation & bounds checking
     private Color getReliefShadeColor(double elevation, double waterLevel, double declivity) {
         if (elevation < waterLevel) {
             double depthNorm = Math.clamp((waterLevel - elevation) / 2000.0, 0.0, 1.0);
@@ -7403,7 +7263,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: draw legend dot - internal state computation & bounds checking
     private void drawLegendDot(GraphicsContext gc, double x, double y, Color c, String label) {
         gc.setFill(c);
         gc.fillOval(x, y - 7, 8, 8);
@@ -7411,7 +7270,6 @@ private String getDefaultTensorName(int index) {
         gc.fillText(label, x + 12, y);
     }
 
-    // Helper subroutine: draw instant2ddensity preview - internal state computation & bounds checking
     private void drawInstant2DDensityPreview(GraphicsContext gc, double w, double h, double scale, double offX, double offY) {
         int pwWidth = 320;
         int pwHeight = 160;
@@ -7661,9 +7519,8 @@ private String getDefaultTensorName(int index) {
         gc.fillText("⚡ Aperçu 2D dynamique instantané (" + (mode.isEmpty() ? "Relief/Densité" : mode.toUpperCase()) + ")...", 20, h - 15);
     }
 
-    /*
+    /**
      * Is dirty.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -7671,9 +7528,8 @@ private String getDefaultTensorName(int index) {
         return scenarioPresetBar != null && scenarioPresetBar.isDirty();
     }
 
-    /*
+    /**
      * Prompt save if dirty.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param owner the owner parameter (javafx.stage.Window)
      * @return the resulting computation or state reference
@@ -7683,9 +7539,8 @@ private String getDefaultTensorName(int index) {
         return scenarioPresetBar.promptSavePresetIfDirty(owner);
     }
 
-    /*
+    /**
      * Get preset bar.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -7693,7 +7548,6 @@ private String getDefaultTensorName(int index) {
         return scenarioPresetBar;
     }
 
-    // Helper subroutine: get elevation image for preset - internal state computation & bounds checking
     private Image getElevationImageForPreset(PlanetPreset planet) {
         if (planet == null) planet = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
         if (planet.customElevBase64() != null && !planet.customElevBase64().isBlank()) {
@@ -7711,7 +7565,6 @@ private String getDefaultTensorName(int index) {
         return img;
     }
 
-    // Helper subroutine: get cached earth elevation image - internal state computation & bounds checking
     private Image getCachedEarthElevationImage() {
         return getElevationImageForPreset(activePlanetPreset);
     }
@@ -7720,9 +7573,8 @@ private String getDefaultTensorName(int index) {
     // DEFERRED EXECUTION — Calculate H3 Grid & Start Simulation
     // =========================================================================
 
-    /*
+    /**
      * Set progress controls.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param bar the bar parameter (ProgressBar)
      * @param label the label parameter (Label)
@@ -7734,7 +7586,6 @@ private String getDefaultTensorName(int index) {
         this.externalOverlayContainer = overlayContainer;
     }
 
-    // Helper subroutine: update progress - internal state computation & bounds checking
     private void updateProgress(double progressVal, String msg) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         javafx.application.Platform.runLater(() -> {
@@ -7762,16 +7613,14 @@ private String getDefaultTensorName(int index) {
         });
     }
 
-    /*
+    /**
      * Invalidate generated state.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      */
     public void invalidateGeneratedState() {
         resetStartButtonState();
     }
 
-    // Helper subroutine: reset start button state - internal state computation & bounds checking
     private void resetStartButtonState() {
         isCalculationRunning = false;
         WindowUtils.setBusyCursor(this, false);
@@ -7784,7 +7633,6 @@ private String getDefaultTensorName(int index) {
         });
     }
 
-    // Helper subroutine: set start button completed state - internal state computation & bounds checking
     private void setStartButtonCompletedState() {
         isCalculationRunning = false;
         WindowUtils.setBusyCursor(this, false);
@@ -7797,7 +7645,6 @@ private String getDefaultTensorName(int index) {
         });
     }
 
-    // Helper subroutine: set start button cancel state - internal state computation & bounds checking
     private void setStartButtonCancelState() {
         isCalculationRunning = true;
         javafx.application.Platform.runLater(() -> {
@@ -7809,7 +7656,6 @@ private String getDefaultTensorName(int index) {
         });
     }
 
-    // Helper subroutine: handle start or cancel - internal state computation & bounds checking
     private void handleStartOrCancel() {
         if (isCalculationRunning) {
             cancelCalculation();
@@ -7834,7 +7680,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: cancel calculation - internal state computation & bounds checking
     private void cancelCalculation() {
         cancelRequested = true;
         updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelling", "🛑 Cancelling computation at user request..."));
@@ -7845,7 +7690,6 @@ private String getDefaultTensorName(int index) {
         resetStartButtonState();
     }
 
-    // Helper subroutine: start simulation deferred - internal state computation & bounds checking
     private void startSimulationDeferred() {
         if (!validateScenarioSetup()) {
             resetStartButtonState();
@@ -8048,7 +7892,6 @@ private String getDefaultTensorName(int index) {
         generationThread.start();
     }
 
-    // Helper subroutine: apply preset map to cells - internal state computation & bounds checking
     private void applyPresetMapToCells(List<H3Cell> cells, PlanetPreset cfg) {
         if (cfg == null || cells == null || cells.isEmpty()) return;
         
@@ -8428,7 +8271,6 @@ private String getDefaultTensorName(int index) {
         return section;
     }
 
-    // Helper subroutine: load earth historical events - internal state computation & bounds checking
     private void loadEarthHistoricalEvents() {
         boolean wasUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -8448,7 +8290,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: prompt event load confirmation dialog
     private boolean promptEventLoadConfirmation(boolean promptConfirmation, String titleKey) {
         if (!promptConfirmation || eventsList == null || eventsList.isEmpty()) return true;
 
@@ -8472,7 +8313,6 @@ private String getDefaultTensorName(int index) {
         return result.get() == btnReplace;
     }
 
-    // Helper subroutine: load earth biophysical historical events
     private void loadEarthBiophysicalEvents(int startYear, boolean promptConfirmation) {
         if (eventsList == null) return;
         boolean replaceAll = promptEventLoadConfirmation(promptConfirmation, "scenario.events.load.biophysical_title");
@@ -8506,7 +8346,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: load earth historical leaders events
     private void loadEarthLeadersEvents(int startYear, boolean promptConfirmation) {
         if (eventsList == null) return;
         boolean replaceAll = promptEventLoadConfirmation(promptConfirmation, "scenario.events.load.leaders_title");
@@ -8542,7 +8381,7 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    /*
+    /**
      * Auto-calibrates initial physical capital stock (K0 in kg/capita) based on start year T0.
      */
     public static double computeAutoCapitalFromYear(long year) {
@@ -8558,9 +8397,8 @@ private String getDefaultTensorName(int index) {
         return 15000.0;                   // Modern / Post-Industrial (>15000 kg/hab)
     }
 
-    /*
+    /**
      * Compute auto energy from year.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -8577,9 +8415,8 @@ private String getDefaultTensorName(int index) {
         return 50000.0;                     // Modern/Future (>50000 MJ/hab)
     }
 
-    /*
+    /**
      * Compute auto food from year.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -8596,9 +8433,8 @@ private String getDefaultTensorName(int index) {
         return 18.0;                     // Future/Post-scarcity (18+ months)
     }
 
-    /*
+    /**
      * Compute auto info from year.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -8615,9 +8451,8 @@ private String getDefaultTensorName(int index) {
         return 5000000.0;                      // Internet & AI (>5000000 bits/hab)
     }
 
-    /*
+    /**
      * Apply earth preset.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      */
     public void applyEarthPreset() {
@@ -8630,9 +8465,8 @@ private String getDefaultTensorName(int index) {
     // I18N — Update all UI text based on current language
     // =========================================================================
 
-    /*
+    /**
      * Update texts.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      */
     public void updateTexts() {
@@ -8840,9 +8674,8 @@ private String getDefaultTensorName(int index) {
     }
 
 
-    /*
+    /**
      * Get scenario.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -9036,9 +8869,8 @@ private String getDefaultTensorName(int index) {
 
     private java.util.function.BiConsumer<PlanetPreset, EcologyPreset> onScenarioLoadedCallback;
 
-    /*
+    /**
      * Set on scenario loaded callback.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param callback the callback parameter (EcologyPreset&gt;)
      */
@@ -9046,17 +8878,15 @@ private String getDefaultTensorName(int index) {
         this.onScenarioLoadedCallback = callback;
     }
 
-    /*
+    /**
      * Get cells.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
     public List<H3Cell> getCells() { return currentPreviewCells; }
 
-    /*
+    /**
      * Set generated cells.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */
@@ -9068,9 +8898,8 @@ private String getDefaultTensorName(int index) {
         drawPreview();
     }
 
-    /*
+    /**
      * Ensure preview generated if needed.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      */
     public void ensurePreviewGeneratedIfNeeded() {
@@ -9081,9 +8910,8 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    /*
+    /**
      * Get scheduled events.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -9091,7 +8919,6 @@ private String getDefaultTensorName(int index) {
         return eventsList != null ? new ArrayList<>(eventsList) : new ArrayList<>();
     }
 
-    // Helper subroutine: export physical law engine template - internal state computation & bounds checking
     private void exportPhysicalLawEngineTemplate(String className) {
         try {
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
@@ -9106,13 +8933,12 @@ private String getDefaultTensorName(int index) {
                     import org.ether.society.core.H3SimulationEngine;
                     import org.ether.society.database.H3Cell;
 
-                    /*
+                    /**
                      * Loi Physique Cœur Ether : %s
                      */
                     public class %s {
-                        /*
+                        /**
                          * Update.
-                         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
                          *
                          * @param engine the engine parameter (H3SimulationEngine)
                          * @param cell the cell parameter (H3Cell)
@@ -9133,7 +8959,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: export custom engine template - internal state computation & bounds checking
     private void exportCustomEngineTemplate() {
         try {
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
@@ -9153,7 +8978,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: import custom engine file - internal state computation & bounds checking
     private void importCustomEngineFile() {
         try {
             javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
@@ -9184,7 +9008,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: update performance controls state - internal state computation & bounds checking
     private void updatePerformanceControlsState() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         boolean strict = strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected();
@@ -9218,20 +9041,19 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    /*
+    /**
      * Custom SpinnerValueFactory for Long values to avoid ClassCastException.
      */
     public static class LongSpinnerValueFactory extends SpinnerValueFactory<Long> {
-        /* Internal state variable for min (long). */
+        /** Internal state: min (long). */
         private final long min;
-        /* Internal state variable for max (long). */
+        /** Internal state: max (long). */
         private final long max;
-        /* Internal state variable for step (long). */
+        /** Internal state: step (long). */
         private final long step;
 
-        /*
+        /**
          * Long spinner value factory.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param min the min parameter (long)
          * @param max the max parameter (long)
@@ -9244,25 +9066,23 @@ private String getDefaultTensorName(int index) {
             this.max = max;
             this.step = step;
             setConverter(new StringConverter<Long>() {
-                @Override
-                /*
+                /**
                  * To string.
-                 * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
                  *
                  * @param object the object parameter (Long)
                  * @return the resulting computation or state reference
                  */
+                @Override
                 public String toString(Long object) {
                     return object == null ? "" : String.valueOf(object);
                 }
-                @Override
-                /*
+                /**
                  * From string.
-                 * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
                  *
                  * @param string the string parameter (String)
                  * @return the resulting computation or state reference
                  */
+                @Override
                 public Long fromString(String string) {
                     if (string == null || string.isBlank()) return initialValue;
                     try {
@@ -9276,26 +9096,24 @@ private String getDefaultTensorName(int index) {
             setValue(initialValue);
         }
 
-        @Override
-        /*
+        /**
          * Decrement.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param steps the steps parameter (int)
          */
+        @Override
         public void decrement(int steps) {
             long current = getValue() != null ? getValue() : min;
             long newValue = Math.max(min, current - (long) steps * step);
             setValue(newValue);
         }
 
-        @Override
-        /*
+        /**
          * Increment.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
          *
          * @param steps the steps parameter (int)
          */
+        @Override
         public void increment(int steps) {
             long current = getValue() != null ? getValue() : min;
             long newValue = Math.min(max, current + (long) steps * step);
@@ -9306,9 +9124,8 @@ private String getDefaultTensorName(int index) {
     private java.util.function.Supplier<PlanetGeneratorPanel> planetPanelSupplier;
     private java.util.function.Supplier<ResourceDistributionPanel> resourcePanelSupplier;
 
-    /*
+    /**
      * Set planet panel supplier.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param supplier the supplier parameter (java.util.function.Supplier&lt;PlanetGeneratorPanel&gt;)
      */
@@ -9316,9 +9133,8 @@ private String getDefaultTensorName(int index) {
         this.planetPanelSupplier = supplier;
     }
 
-    /*
+    /**
      * Set resource panel supplier.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @param supplier the supplier parameter (java.util.function.Supplier&lt;ResourceDistributionPanel&gt;)
      */
@@ -9326,9 +9142,8 @@ private String getDefaultTensorName(int index) {
         this.resourcePanelSupplier = supplier;
     }
 
-    /*
+    /**
      * Get scenario validation errors.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -9389,9 +9204,8 @@ private String getDefaultTensorName(int index) {
         return errors;
     }
 
-    /*
+    /**
      * Validate scenario setup.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioSetupPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -9499,7 +9313,6 @@ private String getDefaultTensorName(int index) {
         }
     }
 
-    // Helper subroutine: parse year bpfrom title - internal state computation & bounds checking
     private static long parseYearBPFromTitle(String title) {
         if (title == null) return Long.MAX_VALUE;
         java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("\\((-?\\d+[\\d\\s]*)\\s*(BP|CE|BC|av\\. J\\.-C\\.)?\\)").matcher(title);
@@ -9519,7 +9332,7 @@ private String getDefaultTensorName(int index) {
         return Long.MAX_VALUE;
     }
 
-    /*
+    /**
      * Opens the interactive Time-Travel & Automatic Epoch Scenario generation dialog.
      */
     public void openAutoEpochScenarioDialog() {

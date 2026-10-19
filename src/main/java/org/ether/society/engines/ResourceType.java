@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -37,7 +37,7 @@ public enum ResourceType {
     LITHIUM("Lithium Brines & Spodumene", javafx.scene.paint.Color.web("#a855f7")),
     BAUXITE("Bauxite / Aluminum Crusts", javafx.scene.paint.Color.web("#d97706"));
 
-    /* Internal state variable for display name (String). */
+    /** Internal state: display name (String). */
     private final String displayName;
     private final javafx.scene.paint.Color color;
 
@@ -46,9 +46,8 @@ public enum ResourceType {
         this.color = color;
     }
 
-    /*
+    /**
      * Get display name.
-     * Enforces physical invariants and updates associated state variables within {@code ResourceType}.
      *
      * @return the resulting computation or state reference
      */
@@ -56,9 +55,8 @@ public enum ResourceType {
         return displayName;
     }
 
-    /*
+    /**
      * Get color.
-     * Enforces physical invariants and updates associated state variables within {@code ResourceType}.
      *
      * @return the resulting computation or state reference
      */
@@ -66,13 +64,12 @@ public enum ResourceType {
         return color;
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code ResourceType}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         return displayName;
     }

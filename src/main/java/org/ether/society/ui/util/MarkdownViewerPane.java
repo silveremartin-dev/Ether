@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -31,14 +31,13 @@ public class MarkdownViewerPane extends BorderPane {
     private final ScrollPane scrollPane;
     private final VBox formattedContainer;
     private final Button copyBtn;
-    /* Internal state variable for current markdown (String). */
+    /** Internal state: current markdown (String). */
     private String currentMarkdown = "";
 
     private final HBox toolBar;
 
-    /*
+    /**
      * Markdown viewer pane.
-     * Enforces physical invariants and updates associated state variables within {@code MarkdownViewerPane}.
      *
      */
     public MarkdownViewerPane() {
@@ -72,9 +71,8 @@ public class MarkdownViewerPane extends BorderPane {
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
-    /*
+    /**
      * Update texts.
-     * Enforces physical invariants and updates associated state variables within {@code MarkdownViewerPane}.
      *
      */
     public void updateTexts() {
@@ -99,9 +97,8 @@ public class MarkdownViewerPane extends BorderPane {
         setTop(visible ? toolBar : null);
     }
 
-    /*
+    /**
      * Set markdown.
-     * Enforces physical invariants and updates associated state variables within {@code MarkdownViewerPane}.
      *
      * @param markdown the markdown parameter (String)
      */
@@ -110,9 +107,8 @@ public class MarkdownViewerPane extends BorderPane {
         renderMarkdown(currentMarkdown);
     }
 
-    /*
+    /**
      * Get markdown.
-     * Enforces physical invariants and updates associated state variables within {@code MarkdownViewerPane}.
      *
      * @return the resulting computation or state reference
      */
@@ -120,7 +116,6 @@ public class MarkdownViewerPane extends BorderPane {
         return currentMarkdown;
     }
 
-    // Helper subroutine: copy to clipboard - internal state computation & bounds checking
     private void copyToClipboard() {
         if (currentMarkdown != null && !currentMarkdown.isBlank()) {
             Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -136,7 +131,6 @@ public class MarkdownViewerPane extends BorderPane {
         }
     }
 
-    // Helper subroutine: render markdown - internal state computation & bounds checking
     private void renderMarkdown(String markdown) {
         formattedContainer.getChildren().clear();
 
@@ -210,7 +204,6 @@ public class MarkdownViewerPane extends BorderPane {
         }
     }
 
-    // Helper subroutine: build table node - internal state computation & bounds checking
     private Node buildTableNode(List<String> tableLines) {
         if (tableLines == null || tableLines.isEmpty()) return new VBox();
 
@@ -272,7 +265,6 @@ public class MarkdownViewerPane extends BorderPane {
         return grid;
     }
 
-    // Helper subroutine: parse formatted text flow - internal state computation & bounds checking
     private TextFlow parseFormattedTextFlow(String text) {
         TextFlow flow = new TextFlow();
         if (text == null || text.isBlank()) return flow;

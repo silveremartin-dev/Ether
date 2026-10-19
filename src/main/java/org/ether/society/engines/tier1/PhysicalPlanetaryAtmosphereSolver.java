@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -32,7 +32,7 @@ public class PhysicalPlanetaryAtmosphereSolver {
         int[][] biomeGrid           // RGB biome color
     ) {}
 
-    /*
+    /**
      * Solve coupled 2.5D planetary climatology over a heightmap grid.
      *
      * @param elevGrid Elevation grid in meters (negative = ocean/depression, positive = land/peaks)

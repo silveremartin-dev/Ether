@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -26,7 +26,7 @@ import java.util.List;
 public class EdoJapanIsolationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EdoJapanIsolationEngine.class);
 
-    /* Internal state variable for sakoku isolation active (boolean). */
+    /** Internal state: sakoku isolation active (boolean). */
     private static boolean sakokuIsolationActive = true;
     private static double sustainableEquilibriumCap = 30.0; // 30M population equilibrium cap
 
@@ -113,14 +113,13 @@ public class EdoJapanIsolationEngine {
     /** First-observed standing wood stock per H3 cell, used as the logistic carrying capacity W0. */
     private static final java.util.Map<Long, Double> initialWoodStock = new java.util.concurrent.ConcurrentHashMap<>();
 
-    /*
+    /**
      * Is sakoku isolation active.
-     * Enforces physical invariants and updates associated state variables within {@code EdoJapanIsolationEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static boolean isSakokuIsolationActive() { return sakokuIsolationActive; }
-    /*
+    /**
      * Set sakoku isolation active operation.
      * <p>
      * Executes operational logic for {@code EdoJapanIsolationEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -131,14 +130,13 @@ public class EdoJapanIsolationEngine {
      */
     public static void setSakokuIsolationActive(boolean active) { sakokuIsolationActive = active; }
 
-    /*
+    /**
      * Get sustainable equilibrium cap.
-     * Enforces physical invariants and updates associated state variables within {@code EdoJapanIsolationEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getSustainableEquilibriumCap() { return sustainableEquilibriumCap; }
-    /*
+    /**
      * Set sustainable equilibrium cap operation.
      * <p>
      * Executes operational logic for {@code EdoJapanIsolationEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

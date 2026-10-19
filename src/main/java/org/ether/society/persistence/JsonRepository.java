@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -36,9 +36,8 @@ public abstract class JsonRepository<T> {
     private final Path filePath;
     private final Class<T> types;
 
-    /*
+    /**
      * Json repository.
-     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
      *
      * @param filename the filename parameter (String)
      * @param type the type parameter (Class&lt;T&gt;)
@@ -47,9 +46,8 @@ public abstract class JsonRepository<T> {
         this(org.ether.society.config.EtherPaths.getUserPresetsDir().resolve(Paths.get(filename).getFileName().toString()), type);
     }
 
-    /*
+    /**
      * Json repository.
-     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
      *
      * @param customPath the custom path parameter (Path)
      * @param type the type parameter (Class&lt;T&gt;)
@@ -66,7 +64,6 @@ public abstract class JsonRepository<T> {
         initStorage();
     }
 
-    // Helper subroutine: init storage - internal state computation & bounds checking
     private void initStorage() {
         try {
             if (!Files.exists(filePath.getParent())) {
@@ -81,9 +78,8 @@ public abstract class JsonRepository<T> {
         }
     }
 
-    /*
+    /**
      * Find all.
-     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
      *
      * @return the resulting computation or state reference
      */
@@ -101,9 +97,8 @@ public abstract class JsonRepository<T> {
         }
     }
 
-    /*
+    /**
      * Save.
-     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
      *
      * @param entity the entity parameter (T)
      */
@@ -118,9 +113,8 @@ public abstract class JsonRepository<T> {
         saveAll(all);
     }
 
-    /*
+    /**
      * Save all.
-     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
      *
      * @param entities the entities parameter (List&lt;T&gt;)
      */
@@ -132,9 +126,8 @@ public abstract class JsonRepository<T> {
         }
     }
 
-    /*
+    /**
      * Delete.
-     * Enforces physical invariants and updates associated state variables within {@code JsonRepository}.
      *
      * @param entity the entity parameter (T)
      */

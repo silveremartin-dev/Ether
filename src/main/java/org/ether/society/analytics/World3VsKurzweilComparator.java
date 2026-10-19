@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -46,13 +46,12 @@ public class World3VsKurzweilComparator {
         public double structuralDivergenceIndex = 0.0;
         public String dominantDriverSummary = "";
 
-        @Override
-        /*
+        /**
          * To string.
-         * Enforces physical invariants and updates associated state variables within {@code World3VsKurzweilComparator}.
          *
          * @return the resulting computation or state reference
          */
+        @Override
         public String toString() {
             return String.format(
                 "World3 vs Kurzweil Comparison Report:\n" +
@@ -69,7 +68,7 @@ public class World3VsKurzweilComparator {
         }
     }
 
-    /*
+    /**
      * Executes comparative multi-trajectory analysis over a given time horizon.
      */
     public static ComparisonReport compareTrajectories(H3Cell initialCell, int startYear, int durationYears) {
@@ -139,7 +138,6 @@ public class World3VsKurzweilComparator {
         return report;
     }
 
-    // Helper subroutine: clone cell - internal state computation & bounds checking
     private static H3Cell cloneCell(H3Cell source) {
         H3Cell clone = new H3Cell(source.getH3Index(), source.getLatitude(), source.getLongitude());
         clone.setPopulation(source.getPopulation());

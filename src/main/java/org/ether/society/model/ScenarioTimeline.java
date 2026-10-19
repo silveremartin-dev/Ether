@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -33,9 +33,8 @@ public class ScenarioTimeline implements Serializable {
         double magnitude,
         int durationDays
     ) implements Serializable {
-        /*
+        /**
          * Timeline entry.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTimeline}.
          *
          * @param year the year parameter (long)
          * @param eventType the event type parameter (String)
@@ -51,16 +50,14 @@ public class ScenarioTimeline implements Serializable {
 
     private final ArrayList<TimelineEntry> entries = new ArrayList<>();
 
-    /*
+    /**
      * Scenario timeline.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioTimeline}.
      *
      */
     public ScenarioTimeline() {}
 
-    /*
+    /**
      * Add entry.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioTimeline}.
      *
      * @param year the year parameter (long)
      * @param eventType the event type parameter (String)
@@ -78,9 +75,8 @@ public class ScenarioTimeline implements Serializable {
         Collections.sort(entries, (a, b) -> Long.compare(a.year(), b.year()));
     }
 
-    /*
+    /**
      * Get entries.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioTimeline}.
      *
      * @return the resulting computation or state reference
      */
@@ -88,18 +84,16 @@ public class ScenarioTimeline implements Serializable {
         return Collections.unmodifiableList(entries);
     }
 
-    /*
+    /**
      * Clear.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioTimeline}.
      *
      */
     public void clear() {
         entries.clear();
     }
 
-    /*
+    /**
      * Truncate after.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioTimeline}.
      *
      * @param year the year parameter (long)
      */

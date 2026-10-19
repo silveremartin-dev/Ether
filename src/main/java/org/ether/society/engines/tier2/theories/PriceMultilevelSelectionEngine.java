@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -33,35 +33,32 @@ import java.util.List;
 public class PriceMultilevelSelectionEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(PriceMultilevelSelectionEngine.class);
 
-    @Override
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code PriceMultilevelSelectionEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getName() {
         return "Price Equation Multilevel Cultural Selection";
     }
 
-    @Override
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code PriceMultilevelSelectionEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getDescription() {
         return "Models the evolution of prosocial cooperation, military solidarity, and altruism via Price's multilevel cultural selection theorem.";
     }
 
-    @Override
-    /*
+    /**
      * Get equations tooltip.
-     * Enforces physical invariants and updates associated state variables within {@code PriceMultilevelSelectionEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getEquationsTooltip() {
         return """
                [Price Equation Multilevel Selection (Nature 1970)]
@@ -74,25 +71,23 @@ public class PriceMultilevelSelectionEngine implements ProceduralEnginePlugin {
                """;
     }
 
-    @Override
-    /*
+    /**
      * Get category.
-     * Enforces physical invariants and updates associated state variables within {@code PriceMultilevelSelectionEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getCategory() {
         return "Tier 2: Evolutionary Cliodynamics";
     }
 
-    @Override
-    /*
+    /**
      * Process.
-     * Enforces physical invariants and updates associated state variables within {@code PriceMultilevelSelectionEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
      */
+    @Override
     public void process(List<H3Cell> cells, double deltaYears) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions

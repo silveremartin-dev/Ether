@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -33,9 +33,9 @@ import java.util.List;
 public class HistoricalMapGenerator {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalMapGenerator.class);
 
-    /* Internal state variable for width (int). */
+    /** Internal state: width (int). */
     public static final int WIDTH = 2048;
-    /* Internal state variable for height (int). */
+    /** Internal state: height (int). */
     public static final int HEIGHT = 1024;
 
     private static final List<Path2D> LAND_POLYGONS = new ArrayList<>();
@@ -118,9 +118,8 @@ public class HistoricalMapGenerator {
         {111.0, -7.4}   // Solo River / Ngandong (Java / Sundaland)
     };
 
-    /*
+    /**
      * Compute hominin clade weights.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -220,9 +219,8 @@ public class HistoricalMapGenerator {
         return weights;
     }
 
-    /*
+    /**
      * Get hominin entity id.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -242,9 +240,8 @@ public class HistoricalMapGenerator {
         return bestIdx + 1;
     }
 
-    /*
+    /**
      * Get hominin species type.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -260,9 +257,8 @@ public class HistoricalMapGenerator {
         };
     }
 
-    /*
+    /**
      * Blend paleo traits.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -282,9 +278,8 @@ public class HistoricalMapGenerator {
     }
 
     // --- PREHISTORIC GLACIAL & GEOGRAPHIC POLYGONS ---
-    /*
+    /**
      * Chaikin smooth polygon.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param poly the poly parameter (double[][])
      * @param iterations the iterations parameter (int)
@@ -434,9 +429,8 @@ public class HistoricalMapGenerator {
         {-142.0, 64.0}, {-138.0, 64.0}
     };
 
-    /*
+    /**
      * Dist to polyline.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -470,9 +464,8 @@ public class HistoricalMapGenerator {
         return Math.sqrt(minD2);
     }
 
-    /*
+    /**
      * Signed distance to polygon.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -504,9 +497,8 @@ public class HistoricalMapGenerator {
         return inside ? -dist : dist;
     }
 
-    /*
+    /**
      * Is remote oceanic island.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -590,9 +582,8 @@ public class HistoricalMapGenerator {
         return false;
     }
 
-    /*
+    /**
      * Get hominin occupancy weight.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -870,9 +861,8 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Is hominin occupied.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -883,9 +873,8 @@ public class HistoricalMapGenerator {
         return getHomininOccupancyWeight(lon, lat, year) > 0.001;
     }
 
-    /*
+    /**
      * Is land.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lng the lng parameter (double)
      * @param lat the lat parameter (double)
@@ -906,9 +895,8 @@ public class HistoricalMapGenerator {
         return lat >= -60.0 && lat <= 75.0;
     }
 
-    /*
+    /**
      * Create pure transparent canvas.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @return the resulting computation or state reference
      */
@@ -916,9 +904,8 @@ public class HistoricalMapGenerator {
         return new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
     }
 
-    /*
+    /**
      * Populate scenario historical maps.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenario the scenario parameter (Scenario)
      */
@@ -1158,9 +1145,8 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Load from year directory.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenario the scenario parameter (Scenario)
      * @return the resulting computation or state reference
@@ -1288,9 +1274,8 @@ public class HistoricalMapGenerator {
 
     private static final org.ether.society.generation.SimplexNoise CLIMATE_NOISE = new org.ether.society.generation.SimplexNoise(424242L);
 
-    /*
+    /**
      * Compute surface temperature.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lat the lat parameter (double)
      * @param lon the lon parameter (double)
@@ -1417,9 +1402,8 @@ public class HistoricalMapGenerator {
         return Math.clamp(tempC, -50.0, 50.0);
     }
 
-    /*
+    /**
      * Compute annual precipitation.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lat the lat parameter (double)
      * @param lon the lon parameter (double)
@@ -1527,9 +1511,8 @@ public class HistoricalMapGenerator {
         return Math.clamp(rainMm, 0.0, 3000.0);
     }
 
-    /*
+    /**
      * Compute seasonality amplitude.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lat the lat parameter (double)
      * @param lon the lon parameter (double)
@@ -1602,9 +1585,8 @@ public class HistoricalMapGenerator {
         return Math.clamp(ampC, 0.0, 50.0);
     }
 
-    /*
+    /**
      * Rasterize biomes map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -1636,9 +1618,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize temperature map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -1665,9 +1646,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize precipitation map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -1695,9 +1675,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize seasonality map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -1809,9 +1788,8 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Write png file.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param img the img parameter (BufferedImage)
      * @param targetFile the target file parameter (File)
@@ -1826,7 +1804,7 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Generates or refreshes provenance_and_sources.json, cultural_registry.json, and README.md in accordance with AGENTS.md Rule 6.
      */
     public static void generateOrUpdateEpochMetadataFiles(java.nio.file.Path earthDir, long year) {
@@ -2112,9 +2090,8 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Force generate cultural tensors only.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenario the scenario parameter (Scenario)
      */
@@ -2158,9 +2135,8 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Apply prehistoric geographic mask.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenarioKey the scenario key parameter (String)
      * @param year the year parameter (long)
@@ -2198,9 +2174,8 @@ public class HistoricalMapGenerator {
         return masked;
     }
 
-    /*
+    /**
      * Generate prehistoric synthetic density map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param year the year parameter (long)
      * @param type the type parameter (String)
@@ -2700,9 +2675,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Save images to disk cache.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenarioName the scenario name parameter (String)
      * @param imgDensity the img density parameter (BufferedImage)
@@ -2768,9 +2742,8 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Load from disk cache.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenario the scenario parameter (Scenario)
      * @param cacheDir the cache dir parameter (java.nio.file.Path)
@@ -2831,18 +2804,16 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Ensure all scenario maps generated.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      */
     public static void ensureAllScenarioMapsGenerated() {
         ensureAllScenarioMapsGenerated(false);
     }
 
-    /*
+    /**
      * Ensure all scenario maps generated.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param force the force parameter (boolean)
      */
@@ -2865,9 +2836,8 @@ public class HistoricalMapGenerator {
         logger.info("Batch generation check complete. Generated/updated {} scenarios in data/maps/ether/earth/.", generated);
     }
 
-    /*
+    /**
      * Force generate scenario historical maps.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenario the scenario parameter (Scenario)
      */
@@ -2998,9 +2968,8 @@ public class HistoricalMapGenerator {
 
     // --- 1. CLEAN DENSITY MAP ---
 
-    /*
+    /**
      * Rasterize density map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -3010,9 +2979,8 @@ public class HistoricalMapGenerator {
         return rasterizeDensityMapForYear(type, scenario, (scenario != null) ? scenario.getStartDateYear() : -10000);
     }
 
-    /*
+    /**
      * Rasterize density map for year.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -3040,7 +3008,7 @@ public class HistoricalMapGenerator {
     private static volatile BufferedImage cachedElevationMask = null;
     private static final Object ELEV_LOCK = new Object();
 
-    /*
+    /**
      * Loads the altimetry-derived land/ocean mask from earth_elevation.png in data/maps/ether/.
      * Pixels with luminance ≤ threshold (corresponding to ≤ 0m elevation) are ocean.
      */
@@ -3112,7 +3080,7 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Applies the altimetry-derived coastline mask to a density image.
      * Ocean pixels (mask=0) are forced to the ocean background colour 0x000000 (Pure Black).
      * This ensures coastlines are derived from real elevation data, not vectorized outlines.
@@ -3142,9 +3110,8 @@ public class HistoricalMapGenerator {
         return out;
     }
 
-    /*
+    /**
      * Get topographic habitability.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenarioType the scenario type parameter (String)
      * @param lng the lng parameter (double)
@@ -3206,9 +3173,8 @@ public class HistoricalMapGenerator {
         0x8B5CF6  // Clade 5: Archaic Asian Megafauna & Ochre Traditions (#8B5CF6)
     };
 
-    /*
+    /**
      * Blend clade rgb.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param w the w parameter (double[])
      * @param cladeColors the clade colors parameter (int[])
@@ -3227,9 +3193,8 @@ public class HistoricalMapGenerator {
         return cladeColors[dominantIdx];
     }
 
-    /*
+    /**
      * Rasterize sovereignty map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -3764,9 +3729,8 @@ public class HistoricalMapGenerator {
     }
 
     // --- 3. ISOGLOSS TENSOR MAP ---
-    /*
+    /**
      * Rasterize isogloss map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -4003,9 +3967,8 @@ public class HistoricalMapGenerator {
     }
 
     // --- 4. KINSHIP TENSOR MAP ---
-    /*
+    /**
      * Rasterize kinship map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -4252,9 +4215,8 @@ public class HistoricalMapGenerator {
     }
 
     // --- 5. RITUALS TENSOR MAP ---
-    /*
+    /**
      * Rasterize rituals map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -4523,7 +4485,6 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(ritImg);
     }
 
-    // Helper subroutine: apply multi confessional dithering - internal state computation & bounds checking
     private static void applyMultiConfessionalDithering(BufferedImage img, long year, BufferedImage mask) {
         List<ConfessionalPocket> pockets = new ArrayList<>();
 
@@ -4928,7 +4889,6 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    // Helper subroutine: draw navigable river corridors - internal state computation & bounds checking
     private static void drawNavigableRiverCorridors(Graphics2D g, long year) {
         if (year <= -6000L) return; // Prior to Neolithic / Early Bronze, large-scale riverine trade arteries were nascent
         Color riverCol = new Color(0, 210, 230); // Turquoise / Cyan navigable river artery
@@ -4963,7 +4923,6 @@ public class HistoricalMapGenerator {
         drawTradeRoute(g, new double[][]{{-73.2, -3.7}, {-60.0, -3.1}, {-54.7, -2.4}, {-50.0, -1.0}}, riverCol, 3.2);
     }
 
-    // Helper subroutine: draw trade route - internal state computation & bounds checking
     private static void drawTradeRoute(Graphics2D g, double[][] coords, Color col, double strokeWidth) {
         if (coords == null || coords.length < 2) return;
         int n = coords.length;
@@ -5144,9 +5103,8 @@ public class HistoricalMapGenerator {
     }
 
     // --- 10. PATHOGEN IMMUNITY TENSOR MAP ---
-    /*
+    /**
      * Rasterize pathogen immunity map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -5159,7 +5117,6 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(img);
     }
 
-    // Helper subroutine: init high precision geographic polygons - internal state computation & bounds checking
     private static void initHighPrecisionGeographicPolygons() {
         // Iberian Peninsula
         LAND_POLYGONS.add(createPolygon(new double[][]{
@@ -5373,7 +5330,6 @@ public class HistoricalMapGenerator {
         }
     }
 
-    // Helper subroutine: create polygon - internal state computation & bounds checking
     private static Path2D createPolygon(double[][] points) {
         Path2D p = new Path2D.Double();
         if (points.length == 0) return p;
@@ -5406,9 +5362,8 @@ public class HistoricalMapGenerator {
         return p;
     }
 
-    /*
+    /**
      * Generate procedural maps for scenario.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param scenario the scenario parameter (Scenario)
      */
@@ -5416,7 +5371,6 @@ public class HistoricalMapGenerator {
         populateScenarioHistoricalMaps(scenario);
     }
 
-    // Helper subroutine: get cities for scenario - internal state computation & bounds checking
     private static List<CityPoint> getCitiesForScenario(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         List<CityPoint> list = new ArrayList<>();
@@ -5509,7 +5463,6 @@ public class HistoricalMapGenerator {
         return list;
     }
 
-    // Helper subroutine: get cities for scenario - internal state computation & bounds checking
     private static List<CityPoint> getCitiesForScenario(String type) {
         List<CityPoint> list = new ArrayList<>();
         switch (type.toUpperCase()) {
@@ -5589,7 +5542,6 @@ public class HistoricalMapGenerator {
         return list;
     }
 
-    // Helper subroutine: get rivers for scenario - internal state computation & bounds checking
     private static List<RiverRibbon> getRiversForScenario(String type) {
         List<RiverRibbon> list = new ArrayList<>();
         switch (type.toUpperCase()) {
@@ -5618,7 +5570,6 @@ public class HistoricalMapGenerator {
         return list;
     }
 
-    // Helper subroutine: get empires for scenario - internal state computation & bounds checking
     private static List<EmpireTerritory> getEmpiresForScenario(String type) {
         List<EmpireTerritory> list = new ArrayList<>();
         switch (type.toUpperCase()) {
@@ -5678,7 +5629,6 @@ public class HistoricalMapGenerator {
         return list;
     }
 
-    // Helper subroutine: get language zones for scenario - internal state computation & bounds checking
     private static List<LanguageZone> getLanguageZonesForScenario(String type) {
         List<LanguageZone> list = new ArrayList<>();
         if (type != null) {
@@ -5715,7 +5665,6 @@ public class HistoricalMapGenerator {
         return list;
     }
 
-    // Helper subroutine: get kinship zones for scenario - internal state computation & bounds checking
     private static List<LanguageZone> getKinshipZonesForScenario(String type) {
         List<LanguageZone> list = new ArrayList<>();
         // Focal scenario kinship overrides
@@ -5735,7 +5684,6 @@ public class HistoricalMapGenerator {
         return list;
     }
 
-    // Helper subroutine: get sacred sites for scenario - internal state computation & bounds checking
     private static List<LanguageZone> getSacredSitesForScenario(String type) {
         List<LanguageZone> list = new ArrayList<>();
         if (type != null) {
@@ -5766,7 +5714,6 @@ public class HistoricalMapGenerator {
         return list;
     }
 
-    // Helper subroutine: dist sq - internal state computation & bounds checking
     private static double distSq(double lng1, double lat1, double lng2, double lat2) {
         double dlat = lat1 - lat2;
         double dlng = lng1 - lng2;
@@ -5776,9 +5723,8 @@ public class HistoricalMapGenerator {
         return dlng * dlng + dlat * dlat;
     }
 
-    /*
+    /**
      * Buffered image to base64png.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param bImg the b img parameter (BufferedImage)
      * @return the resulting computation or state reference
@@ -5794,9 +5740,8 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Rasterize extensible tensor map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param tensorIndex the tensor index parameter (int)
      * @param type the type parameter (String)
@@ -5856,7 +5801,6 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    // Helper subroutine: draw deposit hotspots - internal state computation & bounds checking
     private static void drawDepositHotspots(BufferedImage img, double[][] hotspots, Color colorBase) {
         int width = img.getWidth();
         int height = img.getHeight();
@@ -5911,9 +5855,8 @@ public class HistoricalMapGenerator {
         g.dispose();
     }
 
-    /*
+    /**
      * Rasterize coastlines.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param width the width parameter (int)
      * @param height the height parameter (int)
@@ -5928,9 +5871,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Load mrdsdeposits.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param commodityKeywords the commodity keywords parameter (String...)
      * @return the resulting computation or state reference
@@ -5978,9 +5920,8 @@ public class HistoricalMapGenerator {
         return list;
     }
 
-    /*
+    /**
      * Rasterize spot list to alpha.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param img the img parameter (BufferedImage)
      * @param spots the spots parameter (java.util.List&lt;double[]&gt;)
@@ -6042,9 +5983,8 @@ public class HistoricalMapGenerator {
         }
     }
 
-    /*
+    /**
      * Rasterize tiered spot list.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param img the img parameter (BufferedImage)
      * @param spots the spots parameter (java.util.List&lt;double[]&gt;)
@@ -6108,7 +6048,6 @@ public class HistoricalMapGenerator {
         }
     }
 
-    // Helper subroutine: load direct buffered image - internal state computation & bounds checking
     private static BufferedImage loadDirectBufferedImage(String filename) {
         try {
             // 1. Check data/maps/ether/
@@ -6153,9 +6092,8 @@ public class HistoricalMapGenerator {
     private static volatile BufferedImage cachedAquiferMap = null;
     private static volatile float[][] cachedWhymapBlurredGrid = null;
 
-    /*
+    /**
      * Rasterize coal map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6190,9 +6128,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize oil map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6247,9 +6184,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize gas map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6299,9 +6235,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize uranium map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6333,9 +6268,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize helium3map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6348,9 +6282,8 @@ public class HistoricalMapGenerator {
         return cachedHe3Map;
     }
 
-    /*
+    /**
      * Rasterize iron copper map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6402,9 +6335,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize precious metals map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6499,9 +6431,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize rare earths map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6536,9 +6467,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Rasterize mantle heat map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6634,9 +6564,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Get paleo aquifer recharge factor.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param lon the lon parameter (double)
      * @param lat the lat parameter (double)
@@ -6672,7 +6601,6 @@ public class HistoricalMapGenerator {
         return 1.0;
     }
 
-    // Helper subroutine: get or compute base whymap grid - internal state computation & bounds checking
     private static synchronized float[][] getOrComputeBaseWhymapGrid() {
         if (cachedWhymapBlurredGrid != null) return cachedWhymapBlurredGrid;
 
@@ -6886,9 +6814,8 @@ public class HistoricalMapGenerator {
         return blurred;
     }
 
-    /*
+    /**
      * Rasterize aquifer map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param type the type parameter (String)
      * @param scenario the scenario parameter (Scenario)
@@ -6918,9 +6845,8 @@ public class HistoricalMapGenerator {
         return applyAltimetryCoastlineMask(outImg);
     }
 
-    /*
+    /**
      * Rasterize extensible resource tensor map.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      * @param index the index parameter (int)
      * @param type the type parameter (String)
@@ -6961,9 +6887,8 @@ public class HistoricalMapGenerator {
         return img;
     }
 
-    /*
+    /**
      * Precache all built in scenarios.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalMapGenerator}.
      *
      */
     public static void precacheAllBuiltInScenarios() {

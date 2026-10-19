@@ -1,4 +1,4 @@
-/**
+**
  * <h1>Data-Oriented Design (DoD) Memory Layout &amp; Computational Kernels</h1>
  * <p>
  * Implements structure-of-arrays (SoA) contiguous native memory buffers and cache-friendly

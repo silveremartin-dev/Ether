@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -33,9 +33,8 @@ import org.slf4j.LoggerFactory;
 public class SnapshotExplanationDialog extends Stage {
     private static final Logger logger = LoggerFactory.getLogger(SnapshotExplanationDialog.class);
 
-    /*
+    /**
      * Snapshot explanation dialog.
-     * Enforces physical invariants and updates associated state variables within {@code SnapshotExplanationDialog}.
      *
      * @param owner the owner parameter (Window)
      */
@@ -144,7 +143,6 @@ public class SnapshotExplanationDialog extends Stage {
         WindowUtils.applyWindowIcon(this);
     }
 
-    // Helper subroutine: create card - internal state computation & bounds checking
     private VBox createCard(String title, String body, String titleStyle) {
         VBox card = new VBox(6);
         card.getStyleClass().add("card-section");

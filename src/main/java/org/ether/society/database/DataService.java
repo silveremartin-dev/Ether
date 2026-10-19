@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -23,9 +23,8 @@ public class DataService {
     private final WorldMapRepository mapRepository;
     private final EntityManagerFactory emf;
 
-    /*
+    /**
      * Data service.
-     * Enforces physical invariants and updates associated state variables within {@code DataService}.
      *
      */
     public DataService() {
@@ -34,7 +33,7 @@ public class DataService {
         this.mapRepository = new WorldMapRepository(emf);
     }
 
-    /*
+    /**
      * Save a complete simulation state (map + cells).
      */
     public void saveSimulation(String mapName, List<H3Cell> cells) {
@@ -55,7 +54,7 @@ public class DataService {
         logger.info("Simulation saved successfully in {}ms", duration);
     }
 
-    /*
+    /**
      * Load simulation by map name.
      */
     public List<H3Cell> loadSimulation(String mapName) {
@@ -70,7 +69,7 @@ public class DataService {
         return cells;
     }
 
-    /*
+    /**
      * Get all available map names.
      */
     public List<String> getAvailableMaps() {
@@ -79,7 +78,7 @@ public class DataService {
                 .toList();
     }
 
-    /*
+    /**
      * Clear all simulation data (use with caution!).
      */
     public void clearDatabase() {
@@ -88,21 +87,21 @@ public class DataService {
         logger.info("Database cleared");
     }
 
-    /*
+    /**
      * Get cell count.
      */
     public long getCellCount() {
         return cellRepository.count();
     }
 
-    /*
+    /**
      * Check if database is connected and available.
      */
     public boolean isDatabaseAvailable() {
         return DatabaseConfig.isDatabaseAvailable();
     }
 
-    /*
+    /**
      * Close database connections.
      */
     public void close() {

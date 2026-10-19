@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -54,7 +54,7 @@ public class LanguageLinguisticEngine {
         return baseSeed;
     }
 
-    /*
+    /**
      * Executes one linguistic drift and cultural isolation cycle across cells and trade routes.
      */
     public static void processLinguisticDrift(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {

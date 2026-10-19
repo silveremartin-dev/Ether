@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -48,9 +48,8 @@ public class HeadlessRunner {
         SAFE_FALLBACK
     }
 
-    /*
+    /**
      * Main.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessRunner}.
      *
      * @param args the args parameter (String[])
      */
@@ -58,9 +57,8 @@ public class HeadlessRunner {
         run(args);
     }
 
-    /*
+    /**
      * Run.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessRunner}.
      *
      * @param args the args parameter (String[])
      */
@@ -705,7 +703,6 @@ public class HeadlessRunner {
         }
     }
 
-    // Helper subroutine: parse engine mode - internal state computation & bounds checking
     private static CliEngineMode parseEngineMode(String str) {
         if (str.contains("rust") || str.contains("native")) return CliEngineMode.RUST_NATIVE;
         if (str.contains("gpu") || str.contains("shader") || str.contains("opencl")) return CliEngineMode.GPU_SHADERS;
@@ -714,7 +711,6 @@ public class HeadlessRunner {
         return CliEngineMode.CPU_JIT;
     }
 
-    // Helper subroutine: print help - internal state computation & bounds checking
     private static void printHelp() {
         System.out.println("Usage: java -jar society-simulation.jar [options]");
         System.out.println("\nðŸŒ [Tab 4] Compute Engine & Hardware Acceleration Options:");

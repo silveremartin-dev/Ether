@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -25,9 +25,8 @@ public class ProceduralLeaderGenerator {
     private static final String[] LEADER_TITLES_SAGE = {"Prophète", "Sage Éclairé", "Patriarche", "Guide Spirituel", "Maître Moral"};
     private static final String[] LEADER_TITLES_PURGER = {"Autocrate", "Inquisiteur", "Purificateur", "Dictateur Central", "Commandeur"};
 
-    /*
+    /**
      * Set seed.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralLeaderGenerator}.
      *
      * @param seed the seed parameter (long)
      */
@@ -35,7 +34,7 @@ public class ProceduralLeaderGenerator {
         random.setSeed(seed);
     }
 
-    /*
+    /**
      * Checks whether an emergent historical outlier should spawn this year.
      * @param year current simulation year
      * @param totalPopulation total population in world
@@ -107,7 +106,6 @@ public class ProceduralLeaderGenerator {
         return intervention;
     }
 
-    // Helper subroutine: determine archetype - internal state computation & bounds checking
     private LeaderArchetype determineArchetype(H3Cell cell) {
         double r = random.nextDouble();
         Biome biome = cell.getBiome();
@@ -139,7 +137,6 @@ public class ProceduralLeaderGenerator {
         return LeaderArchetype.TOTALITARIAN_PURGER;
     }
 
-    // Helper subroutine: generate title - internal state computation & bounds checking
     private String generateTitle(LeaderArchetype archetype) {
         int idx = random.nextInt(5) + 1;
         String key = "leader.title." + archetype.name().toLowerCase() + "." + idx;

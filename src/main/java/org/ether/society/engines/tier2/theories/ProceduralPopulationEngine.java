@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -31,7 +31,7 @@ import java.util.List;
 public class ProceduralPopulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralPopulationEngine.class);
 
-    /*
+    /**
      * Historical pivot dates with estimated global population and tech levels for Earth preset.
      */
     public record EarthHistoricalPivot(long year, String eraName, long defaultPopulation, double techLevel, String description) {}
@@ -47,7 +47,7 @@ public class ProceduralPopulationEngine {
             new EarthHistoricalPivot(1800, "Industrial Revolution (1800 CE)", 1000000000L, 6.5, "Pre-Industrial Peak & Early Steam: High density in Europe, East Asia, and Eastern Americas.")
     );
 
-    /*
+    /**
      * Distributes total human population across cells according to Earth historical maps or procedural tech suitability.
      * Note: startYear is provided purely for logging/reference and does not affect demographic calculations.
      */
@@ -92,7 +92,7 @@ public class ProceduralPopulationEngine {
         }
     }
 
-    /*
+    /**
      * Earth pre-generated historical population density mapping based on tech suitability.
      */
     private static void distributeEarthHistorical(List<H3Cell> landCells, long totalPopulation, double techLevel, double capitalPerCapita, long startYear, Scenario scenario) {
@@ -117,7 +117,7 @@ public class ProceduralPopulationEngine {
         logger.info("Distributed {} humans on Earth map (Tech: {}, Capital: {} kg/capita)", totalPopulation, techLevel, capitalPerCapita);
     }
 
-    /*
+    /**
      * Regional weighting heuristic for Earth historical geography based on techLevel.
      */
     private static double getEarthHistoricalRegionalWeight(double lat, double lng, Biome biome, double techLevel, long startYear, Scenario scenario) {
@@ -230,7 +230,7 @@ public class ProceduralPopulationEngine {
         return 2.5;
     }
 
-    /*
+    /**
      * Procedural human population simulation taking into account heightmap, temperature, biomes,
      * river/waterway proximity, and technological adaptation capacity across eras.
      */
@@ -281,7 +281,7 @@ public class ProceduralPopulationEngine {
         logger.info("Procedurally distributed {} humans across {} cells (Capital: {} kg/capita, Pattern: {})", totalPopulation, landCells.size(), capitalPerCapita, pattern);
     }
 
-    /*
+    /**
      * Biome & Elevation suitability adjusted by technological capacity.
      */
     private static double calculateBiomeAndElevSuitability(H3Cell cell, double techLevel) {
@@ -330,7 +330,7 @@ public class ProceduralPopulationEngine {
         return biomeScore * Math.max(0.01, elevFactor);
     }
 
-    /*
+    /**
      * Temperature comfort rating.
      * Optimal range: 12°C - 24°C.
      * Low tech has narrow tolerance; High tech broadens thermal adaptation.
@@ -347,7 +347,7 @@ public class ProceduralPopulationEngine {
         return Math.exp(- (diff * diff) / (2.0 * sigma * sigma));
     }
 
-    /*
+    /**
      * Calculates planetary solar insolation (W/m²) dynamically based on celestial mechanics.
      * For Earth (isEarth = true), uses Earth's Milankovitch orbital cycles at 65°N.
      * For Mars, Venus, or procedural exoplanets (isEarth = false), computes solar flux from orbital parameters:
@@ -375,7 +375,7 @@ public class ProceduralPopulationEngine {
         }
     }
 
-    /*
+    /**
      * Standard Earth-preset wrapper for Milankovitch summer insolation at 65°N.
      */
     public static double calculateMilankovitchSummerInsolation65N(long startYearBP) {
@@ -385,7 +385,7 @@ public class ProceduralPopulationEngine {
         return calculatePlanetarySolarInsolation(65.0, 23.44, 0.0167, 1.0, startYearBP, true);
     }
 
-    /*
+    /**
      * Calculates plant Net Primary Productivity (NPP) multiplier based on atmospheric CO2 levels
      * derived from EPICA Dome C / Vostok ice cores (180 ppm LGM peak to 280 ppm Holocene).
      */
@@ -400,7 +400,7 @@ public class ProceduralPopulationEngine {
         return 1.0 + 0.25 * Math.log(co2ppm / 180.0);
     }
 
-    /*
+    /**
      * Calculates coastal foraging carrying capacity boost (2.5x) for intertidal shellfisheries
      * and marine omega-3 (DHA) resource exploitation along coastal margins.
      */
@@ -417,7 +417,7 @@ public class ProceduralPopulationEngine {
         return 1.0;
     }
 
-    /*
+    /**
      * Computes Quaternary Megafauna Extinction (QME) density coupling using Lotka-Volterra dynamics
      * as a synergistic function of human hunting pressure gamma * rho and climate stress.
      */
@@ -439,7 +439,7 @@ public class ProceduralPopulationEngine {
     }
 
 
-    /*
+    /**
      * Freshwater & River / Coastal proximity constraint.
      * Crucial user requirement:
      * - Neolithic / Prehistory (Tech <= 1.5): humans can ONLY live near rivers, lakes, coasts.
@@ -479,7 +479,7 @@ public class ProceduralPopulationEngine {
         return Math.pow(baseWaterScore, exponent);
     }
 
-    /*
+    /**
      * Resource & carrying capacity bonus (Food, Wood, Metal, Agriculture).
      */
     private static double calculateResourceSuitability(H3Cell cell) {
@@ -494,7 +494,7 @@ public class ProceduralPopulationEngine {
         return Math.min(3.0, bonus);
     }
 
-    /*
+    /**
      * Pattern multiplier based on user selected density pattern.
      */
     private static double calculatePatternMultiplier(H3Cell cell, String pattern) {
@@ -537,7 +537,7 @@ public class ProceduralPopulationEngine {
         };
     }
 
-    /*
+    /**
      * Creates high-density urban clusters on top suitable cells when tech permits cities.
      */
     private static void applyUrbanClustering(List<H3Cell> landCells, double[] weights, double techLevel) {
@@ -557,7 +557,7 @@ public class ProceduralPopulationEngine {
         }
     }
 
-    /*
+    /**
      * Detects urban nodes / spatial density singularities on the H3 grid based on local population maxima.
      * Identifies cells with peak density relative to their surroundings and returns them sorted by density.
      */
@@ -586,7 +586,7 @@ public class ProceduralPopulationEngine {
         return nodes;
     }
 
-    /*
+    /**
      * Normalizes weights so sum of cell populations exactly matches totalPopulation.
      * Computes cell terrain friction matrix, spatializes K(x), E(x), F(x), I(x), and populates age pyramid cohorts.
      */

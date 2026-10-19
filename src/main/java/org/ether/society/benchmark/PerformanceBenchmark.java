@@ -1,4 +1,4 @@
-package org.ether.society.benchmark;
+ackage org.ether.society.benchmark;
 
 import org.ether.society.data.SampleDataGenerator;
 import org.ether.society.database.H3Cell;
@@ -16,7 +16,7 @@ public class PerformanceBenchmark {
     private static final int WARMUP_ITERATIONS = 3;
     private static final int BENCHMARK_ITERATIONS = 10;
 
-    /*
+    /**
      * Main operation.
      * <p>
      * Executes operational logic for {@code PerformanceBenchmark} within the automated verification and regression test suite.
@@ -30,7 +30,6 @@ public class PerformanceBenchmark {
         benchmarkDataGeneration();
     }
 
-    // Helper subroutine: benchmark data generation - internal state computation & bounds checking
     private static void benchmarkDataGeneration() {
         System.out.println("## Data Generation Benchmark");
 

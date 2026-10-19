@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version 1.0.0-beta.2
  */
 @Deprecated
+@org.junit.jupiter.api.Tag("manual")
 public class EarthFullResolution175kBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(EarthFullResolution175kBenchmarkTest.class);
 

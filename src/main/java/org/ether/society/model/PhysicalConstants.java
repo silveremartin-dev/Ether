@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -16,7 +16,6 @@ package org.ether.society.model;
  */
 public final class PhysicalConstants {
 
-    // Helper subroutine: physical constants - internal state computation & bounds checking
     private PhysicalConstants() {
         // Utility class
     }

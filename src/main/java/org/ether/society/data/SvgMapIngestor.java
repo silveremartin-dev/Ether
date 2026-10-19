@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
 public class SvgMapIngestor {
     private static final Logger logger = LoggerFactory.getLogger(SvgMapIngestor.class);
 
-    /* Internal state variable for width (int). */
+    /** Internal state: width (int). */
     public static final int WIDTH = 1024;
-    /* Internal state variable for height (int). */
+    /** Internal state: height (int). */
     public static final int HEIGHT = 512;
 
     public static class SvgLayerFeature {
@@ -49,9 +49,8 @@ public class SvgMapIngestor {
         public Path2D geometry;
         public double minLng = -180, maxLng = 180, minLat = -90, maxLat = 90;
 
-        /*
+        /**
          * Svg layer feature.
-         * Enforces physical invariants and updates associated state variables within {@code SvgMapIngestor}.
          *
          * @param layerType the layer type parameter (String)
          * @param id the id parameter (String)
@@ -82,7 +81,7 @@ public class SvgMapIngestor {
         public int parsedFeaturesCount;
     }
 
-    /*
+    /**
      * Ingests SVG maps for a given scenario.
      * Searches external filesystem directory 'data/maps/svg/' first, then falls back to classpath.
      */
@@ -145,7 +144,6 @@ public class SvgMapIngestor {
         return null;
     }
 
-    // Helper subroutine: get fallback svg file name - internal state computation & bounds checking
     private static String getFallbackSvgFileName(String scenarioType) {
         String typeUpper = scenarioType.toUpperCase(Locale.ROOT);
         if (typeUpper.contains("ROMAN")) return "roman_empire_0.svg";
@@ -160,7 +158,7 @@ public class SvgMapIngestor {
         return null;
     }
 
-    /*
+    /**
      * Main entry point to ingest SVG content from an InputStream.
      */
     public static SvgIngestionResult ingestSvg(InputStream inputStream) throws Exception {
@@ -188,7 +186,7 @@ public class SvgMapIngestor {
         return rasterizeFeatures(features);
     }
 
-    /*
+    /**
      * Ingests SVG from a raw String content.
      */
     public static SvgIngestionResult ingestSvgContent(String svgContent) throws Exception {
@@ -198,7 +196,7 @@ public class SvgMapIngestor {
         }
     }
 
-    /*
+    /**
      * Applies the SvgIngestionResult to a Scenario model.
      */
     public static void applyToScenario(Scenario scenario, SvgIngestionResult result) {
@@ -236,7 +234,6 @@ public class SvgMapIngestor {
         return new double[]{0, 0, w, h};
     }
 
-    // Helper subroutine: parse dimension - internal state computation & bounds checking
     private static double parseDimension(String val, double defaultVal) {
         if (val == null || val.isBlank()) return defaultVal;
         String clean = val.replaceAll("[^0-9.]", "");
@@ -302,7 +299,6 @@ public class SvgMapIngestor {
         }
     }
 
-    // Helper subroutine: parse color attribute - internal state computation & bounds checking
     private static Color parseColorAttribute(Element elem, Color defaultColor) {
         String fill = elem.getAttribute("fill");
         if (fill == null || fill.isBlank() || "none".equalsIgnoreCase(fill)) {
@@ -318,7 +314,6 @@ public class SvgMapIngestor {
         return defaultColor;
     }
 
-    // Helper subroutine: extract css property - internal state computation & bounds checking
     private static String extractCssProperty(String style, String prop) {
         for (String pair : style.split(";")) {
             String[] kv = pair.split(":");
@@ -329,7 +324,6 @@ public class SvgMapIngestor {
         return null;
     }
 
-    // Helper subroutine: parse hex or rgb color - internal state computation & bounds checking
     private static Color parseHexOrRgbColor(String colorStr) {
         if (colorStr == null) return null;
         colorStr = colorStr.trim().toLowerCase(Locale.ROOT);
@@ -352,9 +346,8 @@ public class SvgMapIngestor {
 
     // --- SVG PATH GEOMETRY PARSER (M, L, H, V, C, Z, etc.) ---
 
-    /*
+    /**
      * Parse svg path d.
-     * Enforces physical invariants and updates associated state variables within {@code SvgMapIngestor}.
      *
      * @param d the d parameter (String)
      * @param viewBox the view box parameter (double[])
@@ -458,7 +451,6 @@ public class SvgMapIngestor {
         return path;
     }
 
-    // Helper subroutine: parse polygon points - internal state computation & bounds checking
     private static Path2D parsePolygonPoints(String pointsStr, double[] viewBox) {
         Path2D path = new Path2D.Double();
         if (pointsStr == null || pointsStr.isBlank()) return path;
@@ -477,7 +469,6 @@ public class SvgMapIngestor {
         return path;
     }
 
-    // Helper subroutine: parse rect - internal state computation & bounds checking
     private static Path2D parseRect(Element rect, double[] viewBox) {
         double x = parseDimension(rect.getAttribute("x"), 0);
         double y = parseDimension(rect.getAttribute("y"), 0);
@@ -498,7 +489,6 @@ public class SvgMapIngestor {
         return path;
     }
 
-    // Helper subroutine: parse circle - internal state computation & bounds checking
     private static Path2D parseCircle(Element circle, double[] viewBox) {
         double cx = parseDimension(circle.getAttribute("cx"), 0);
         double cy = parseDimension(circle.getAttribute("cy"), 0);
@@ -523,7 +513,6 @@ public class SvgMapIngestor {
         public Point2D(double x, double y) { this.x = x; this.y = y; }
     }
 
-    // Helper subroutine: transform svg to pixel - internal state computation & bounds checking
     private static Point2D transformSvgToPixel(double svgX, double svgY, double[] viewBox) {
         double minX = viewBox[0], minY = viewBox[1];
         double vbW  = viewBox[2] > 0 ? viewBox[2] : 1024;

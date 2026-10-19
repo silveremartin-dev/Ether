@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -22,7 +22,7 @@ import java.util.List;
 public class ResourceRecyclingEngine {
     private static final Logger logger = LoggerFactory.getLogger(ResourceRecyclingEngine.class);
 
-    /*
+    /**
      * Calculates continuous recycling efficiency multiplier based on capital density and tech.
      *
      * @param capital Accumulated structural capital
@@ -39,14 +39,14 @@ public class ResourceRecyclingEngine {
         return capitalFactor * techFactor;
     }
 
-    /*
+    /**
      * Executes one material recycling tick across cells using default monthly step.
      */
     public static void processResourceRecycling(List<H3Cell> cells) {
         processResourceRecycling(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes one material recycling tick across cells scaled by dtYears.
      * Recycling reduces physical depreciation loss rather than creating perpetual compound capital out of nothing.
      */

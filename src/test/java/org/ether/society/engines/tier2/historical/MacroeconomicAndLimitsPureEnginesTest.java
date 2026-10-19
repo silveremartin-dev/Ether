@@ -59,7 +59,7 @@ public class MacroeconomicAndLimitsPureEnginesTest {
     }
 
     @Test
-    @DisplayName("NASA HANDY: Commoners extract nature to produce wealth consumed asymmetrically by elites")
+    @DisplayName("NASA HANDY: Commoners extract nature to produce wealth consumed asymmetrically by elites, triggering famine bifurcation")
     public void testHandyNasaPureDynamics() {
         HandyNasaPureEngine engine = new HandyNasaPureEngine();
 
@@ -67,13 +67,17 @@ public class MacroeconomicAndLimitsPureEnginesTest {
         assertEquals(1.0, engine.getElitesY(), 1e-4);
         double initialNature = engine.getNatureX();
 
-        // Run 10 annual ticks
-        for (int i = 0; i < 10; i++) {
+        // Run multi-decadal simulation (80 annual ticks) to evaluate non-linear dynamics
+        for (int i = 0; i < 80; i++) {
             engine.processTick(1.0);
         }
 
         assertTrue(engine.getWealthK() > 0.0,
                 "Commoner labor coupled with natural resources must accumulate wealth capital");
+        assertTrue(engine.getNatureX() < initialNature,
+                "Intensive labor and elite consumption must exert depletion drag on carrying capacity");
+        assertTrue(engine.getCommonersX() > 0.0, "Commoner population must remain non-negative");
+        assertTrue(engine.getElitesY() > 0.0, "Elite population must remain non-negative");
         assertFalse(Double.isNaN(engine.getCommonersX()), "Commoners population must not be NaN");
         assertFalse(Double.isNaN(engine.getElitesY()), "Elites population must not be NaN");
     }

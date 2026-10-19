@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -44,15 +44,15 @@ public class PresetControlBar<T> extends VBox {
     /* Prefix category used for export file naming (e.g. "planetgenerator", "ecology", "scenario") */
     private String exportCategory = "preset";
 
-    /* Internal state variable for label key (String). */
+    /** Internal state: label key (String). */
     private String labelKey;
-    /* Internal state variable for default label text (String). */
+    /** Internal state: default label text (String). */
     private String defaultLabelText;
 
     private final Label presetLabel;
     private final ComboBox<T> presetCombo;
 
-    /*
+    /**
      * Inline editable name field.
      * - Populated when a preset is selected.
      * - Cleared when parameters change (unsaved custom state).
@@ -67,7 +67,7 @@ public class PresetControlBar<T> extends VBox {
 
     /* When true, parameter changes should clear the name field. */
     private boolean trackingChanges = false;
-    /* Internal state variable for dirty (boolean). */
+    /** Internal state: dirty (boolean). */
     private boolean dirty = false;
 
     /* Floating toast notification shown inside the control bar */
@@ -84,9 +84,8 @@ public class PresetControlBar<T> extends VBox {
         void onImportPreset(File sourceFile);
     }
 
-    /*
+    /**
      * Preset control bar.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      * @param labelText the label text parameter (String)
      */
@@ -94,9 +93,8 @@ public class PresetControlBar<T> extends VBox {
         this(null, labelText);
     }
 
-    /*
+    /**
      * Preset control bar.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      * @param labelKey the label key parameter (String)
      * @param defaultLabelText the default label text parameter (String)
@@ -266,9 +264,8 @@ public class PresetControlBar<T> extends VBox {
         this.exportCategory = category;
     }
 
-    /*
+    /**
      * Get export category.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      * @return the resulting computation or state reference
      */
@@ -276,7 +273,7 @@ public class PresetControlBar<T> extends VBox {
         return exportCategory;
     }
 
-    /*
+    /**
      * Sets the preset list. Pre-selects defaultItem if non-null.
      */
     public void setPresets(List<T> items, T defaultItem) {
@@ -305,9 +302,8 @@ public class PresetControlBar<T> extends VBox {
         dirty = false;
     }
 
-    /*
+    /**
      * Is dirty.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      * @return the resulting computation or state reference
      */
@@ -315,9 +311,8 @@ public class PresetControlBar<T> extends VBox {
         return dirty;
     }
 
-    /*
+    /**
      * Mark dirty.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      */
     public void markDirty() {
@@ -328,9 +323,8 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /*
+    /**
      * Mark clean.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      */
     public void markClean() {
@@ -341,7 +335,7 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /*
+    /**
      * Resets preset bar to a clean state matching the given preset item.
      */
     public void markClean(T item) {
@@ -365,7 +359,7 @@ public class PresetControlBar<T> extends VBox {
         dirty = false;
     }
 
-    /*
+    /**
      * Call this whenever a parameter slider/field is modified by the user.
      * If a preset was selected, the name field is cleared to indicate
      * the configuration is now in an unsaved custom state.
@@ -388,7 +382,7 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /*
+    /**
      * Shows a themed modal dialog asking whether to save unsaved modifications when exiting tab.
      * Returns true if user saved or discarded (ok to switch tab), or false if user cancelled.
      */
@@ -438,7 +432,7 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /*
+    /**
      * Sets the text of the inline name field.
      */
     public void setNameText(String name) {
@@ -449,9 +443,8 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /*
+    /**
      * Get preset combo.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      * @return the resulting computation or state reference
      */
@@ -464,9 +457,8 @@ public class PresetControlBar<T> extends VBox {
         return nameField.getText().trim();
     }
 
-    /*
+    /**
      * Set listener.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      * @param listener the listener parameter (PresetActionsListener&lt;T&gt;)
      */
@@ -478,7 +470,7 @@ public class PresetControlBar<T> extends VBox {
     // Actions
     // -------------------------------------------------------------------------
 
-    /*
+    /**
      * Save with the name currently in the name field.
      * If the field is empty, shows an inline prompt asking for a name.
      */
@@ -506,7 +498,6 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    // Helper subroutine: perform save - internal state computation & bounds checking
     private boolean performSave(String name) {
         boolean exists = presetCombo.getItems().stream()
                 .anyMatch(item -> item != null && formatPresetItem(item).equalsIgnoreCase(name));
@@ -535,7 +526,6 @@ public class PresetControlBar<T> extends VBox {
         return true;
     }
 
-    // Helper subroutine: prompt delete - internal state computation & bounds checking
     private void promptDelete() {
         T selected = presetCombo.getValue();
         if (selected == null) {
@@ -584,7 +574,6 @@ public class PresetControlBar<T> extends VBox {
         });
     }
 
-    // Helper subroutine: prompt export - internal state computation & bounds checking
     private void promptExport() {
         T selected = presetCombo.getValue();
         if (selected == null) {
@@ -618,7 +607,6 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    // Helper subroutine: prompt import - internal state computation & bounds checking
     private void promptImport() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("preset.dialog.import_title", "Import Preset (JSON)"));
@@ -653,7 +641,6 @@ public class PresetControlBar<T> extends VBox {
         pause.play();
     }
 
-    // Helper subroutine: hide toast - internal state computation & bounds checking
     private void hideToast() {
         toastLabel.setVisible(false);
         toastLabel.setManaged(false);
@@ -664,9 +651,8 @@ public class PresetControlBar<T> extends VBox {
     // i18n
     // -------------------------------------------------------------------------
 
-    /*
+    /**
      * Update texts.
-     * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
      *
      */
     public void updateTexts() {
@@ -693,7 +679,6 @@ public class PresetControlBar<T> extends VBox {
         updateTooltips();
     }
 
-    // Helper subroutine: update tooltips - internal state computation & bounds checking
     private void updateTooltips() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (presetCombo != null) presetCombo.setTooltip(new Tooltip(
@@ -710,7 +695,6 @@ public class PresetControlBar<T> extends VBox {
                 I18n.getOrDefault("planet.tooltip.preset_import", "Import JSON preset file")));
     }
 
-    // Helper subroutine: format preset item - internal state computation & bounds checking
     private String formatPresetItem(T item) {
         if (item == null) return "";
         if (item instanceof org.ether.society.generation.PlanetPreset p) return I18n.getPlanetPresetDisplayName(p.name());
@@ -731,13 +715,11 @@ public class PresetControlBar<T> extends VBox {
         return item.toString();
     }
 
-    // Helper subroutine: clean scenario name - internal state computation & bounds checking
     private String cleanScenarioName(String name) {
         if (name == null) return "";
         return name.replaceAll("\\s*\\((?:\\-?\\d+|An 0|Year 0|SSP[0-9\\-\\.]+)\\)\\s*$", "").trim();
     }
 
-    // Helper subroutine: get preset date text - internal state computation & bounds checking
     private String getPresetDateText(T item) {
         if (item instanceof org.ether.society.model.Scenario s) {
             long year = s.getStartDateYear();
@@ -753,7 +735,6 @@ public class PresetControlBar<T> extends VBox {
         return null;
     }
 
-    // Helper subroutine: get preset detailed description - internal state computation & bounds checking
     private String getPresetDetailedDescription(T item) {
         if (item == null) return null;
         if (item instanceof org.ether.society.generation.PlanetPreset p) {
@@ -770,7 +751,6 @@ public class PresetControlBar<T> extends VBox {
         return formatPresetItem(item);
     }
 
-    // Helper subroutine: create preset list cell - internal state computation & bounds checking
     private ListCell<T> createPresetListCell() {
         return new ListCell<>() {
             private final Label nameLabel = new Label();
@@ -786,14 +766,13 @@ public class PresetControlBar<T> extends VBox {
                 dateLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
             }
 
-            @Override
-            /*
+            /**
              * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code PresetControlBar}.
              *
              * @param item the item parameter (T)
              * @param empty the empty parameter (boolean)
              */
+            @Override
             protected void updateItem(T item, boolean empty) {
                 // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);

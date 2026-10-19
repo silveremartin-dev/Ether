@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -30,22 +30,21 @@ public class PerformanceHUD extends VBox {
     private final Label cameraLabel;
 
     // FPS Calculation
-    /* Internal state variable for frame history size (int). */
+    /** Internal state: frame history size (int). */
     private static final int FRAME_HISTORY_SIZE = 100;
-    /* Internal state variable for frame times (long[]). */
+    /** Internal state: frame times (long[]). */
     private final long[] frameTimes = new long[FRAME_HISTORY_SIZE];
-    /* Internal state variable for frame time index (int). */
+    /** Internal state: frame time index (int). */
     private int frameTimeIndex = 0;
-    /* Internal state variable for array filled (boolean). */
+    /** Internal state: array filled (boolean). */
     private boolean arrayFilled = false;
-    /* Internal state variable for last ui update (long). */
+    /** Internal state: last ui update (long). */
     private long lastUiUpdate = 0;
 
     private final Label profilerLabel;
 
-    /*
+    /**
      * Performance hud.
-     * Enforces physical invariants and updates associated state variables within {@code PerformanceHUD}.
      *
      */
     public PerformanceHUD() {
@@ -69,14 +68,13 @@ public class PerformanceHUD extends VBox {
         setMouseTransparent(true);
     }
 
-    // Helper subroutine: create label - internal state computation & bounds checking
     private Label createLabel(String text) {
         Label label = new Label(text);
         label.getStyleClass().add("hud-label");
         return label;
     }
 
-    /*
+    /**
      * Call this method every frame from the AnimationTimer.
      * 
      * @param now Timestamp in nanoseconds
@@ -97,12 +95,11 @@ public class PerformanceHUD extends VBox {
         }
     }
 
-    /* Internal state variable for current fps (double). */
+    /** Internal state: current fps (double). */
     private double currentFps = 0.0;
 
-    /*
+    /**
      * Get fps.
-     * Enforces physical invariants and updates associated state variables within {@code PerformanceHUD}.
      *
      * @return the resulting computation or state reference
      */
@@ -110,7 +107,6 @@ public class PerformanceHUD extends VBox {
         return currentFps;
     }
 
-    // Helper subroutine: update stats - internal state computation & bounds checking
     private void updateStats(long now, long oldTime) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         // 1. Calculate FPS
@@ -143,9 +139,8 @@ public class PerformanceHUD extends VBox {
         // 3. Camera & Entities (Updated via setter to keep this method clean)
     }
 
-    /*
+    /**
      * Update simulation info.
-     * Enforces physical invariants and updates associated state variables within {@code PerformanceHUD}.
      *
      * @param cellCount the cell count parameter (int)
      * @param zoom the zoom parameter (double)
@@ -159,9 +154,8 @@ public class PerformanceHUD extends VBox {
                 String.format("%s %.1fx | %.2f°N, %.2f°E", I18n.get("ui.hud.zoom"), zoom, centerLat, centerLng));
     }
 
-    /*
+    /**
      * Update profiler info.
-     * Enforces physical invariants and updates associated state variables within {@code PerformanceHUD}.
      *
      * @param avgTickMs the avg tick ms parameter (double)
      * @param p95TickMs the p95tick ms parameter (double)

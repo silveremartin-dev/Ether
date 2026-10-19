@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
@@ -21,7 +21,7 @@ import java.util.*;
 public class DPlaceIngestionService {
     private static final Logger logger = LoggerFactory.getLogger(DPlaceIngestionService.class);
 
-    /* Internal state variable for dplace base path (String). */
+    /** Internal state: dplace base path (String). */
     public static final String DPLACE_BASE_PATH = new File("data/sources/dplace").exists() 
             ? "data/sources/dplace" 
             : (new File("data/maps/dplace").exists() ? "data/maps/dplace" : "data/sources/dplace");
@@ -37,7 +37,7 @@ public class DPlaceIngestionService {
             String dataset
     ) {}
 
-    /*
+    /**
      * Loads pre-industrial and indigenous societies from D-PLACE datasets as informative milestone events.
      */
     public static List<ClimateEvent> loadDPlaceMilestones() {
@@ -65,7 +65,7 @@ public class DPlaceIngestionService {
         return events;
     }
 
-    /*
+    /**
      * Parses societies from EA (Ethnographic Atlas), SCCS, and Binford datasets.
      */
     public static List<DPlaceSociety> loadAllSocieties() {
@@ -84,7 +84,6 @@ public class DPlaceIngestionService {
         return list;
     }
 
-    // Helper subroutine: load societies from csv - internal state computation & bounds checking
     private static void loadSocietiesFromCsv(File file, String datasetName, List<DPlaceSociety> target, Set<String> seenNames) {
         if (!file.exists()) {
             logger.warn("D-PLACE dataset file not found: {}", file.getPath());
@@ -141,7 +140,6 @@ public class DPlaceIngestionService {
         }
     }
 
-    // Helper subroutine: find col index - internal state computation & bounds checking
     private static int findColIndex(String[] headers, String colName) {
         for (int i = 0; i < headers.length; i++) {
             if (headers[i].trim().equalsIgnoreCase(colName)) {
@@ -151,9 +149,8 @@ public class DPlaceIngestionService {
         return -1;
     }
 
-    /*
+    /**
      * Parse csv line.
-     * Enforces physical invariants and updates associated state variables within {@code DPlaceIngestionService}.
      *
      * @param line the line parameter (String)
      * @return the resulting computation or state reference

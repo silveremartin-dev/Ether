@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -19,16 +19,15 @@ public enum ScientificColorMap {
     SPECTRAL("Spectral (Diverging Red-Blue)"),
     TERRAIN("Relief Topographique (Terrain)");
 
-    /* Internal state variable for display name (String). */
+    /** Internal state: display name (String). */
     private final String displayName;
 
     ScientificColorMap(String displayName) {
         this.displayName = displayName;
     }
 
-    /*
+    /**
      * Get display name.
-     * Enforces physical invariants and updates associated state variables within {@code ScientificColorMap}.
      *
      * @return the resulting computation or state reference
      */
@@ -36,18 +35,17 @@ public enum ScientificColorMap {
         return displayName;
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code ScientificColorMap}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         return displayName;
     }
 
-    /*
+    /**
      * Map a normalized scalar value [0.0, 1.0] to a Color using the selected palette.
      */
     public Color getColor(double norm) {
@@ -138,7 +136,6 @@ public enum ScientificColorMap {
         return interpolateStops(stops, x);
     }
 
-    // Helper subroutine: interpolate stops - internal state computation & bounds checking
     private static Color interpolateStops(Color[] stops, double x) {
         if (x <= 0.0) return stops[0];
         if (x >= 1.0) return stops[stops.length - 1];

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -201,9 +201,8 @@ public record EcologyPreset(
     public static final EcologyPreset ARCHIPELAGO = new EcologyPreset(
             PlanetPreset.ARCHIPELAGO.name(), PlanetPreset.ARCHIPELAGO.name(), PlanetPreset.ARCHIPELAGO, 550.0, 1800.0, 3.0, 18.0, 90.0, 1400.0, 110.0, 20000.0, 77777L, null, null, null, null, null, null);
 
-    /*
+    /**
      * Get built in presets.
-     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
      *
      * @return the resulting computation or state reference
      */
@@ -232,9 +231,8 @@ public record EcologyPreset(
         );
     }
 
-    /*
+    /**
      * Get associated epoch year.
-     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
      *
      * @return the resulting computation or state reference
      */
@@ -252,9 +250,8 @@ public record EcologyPreset(
         return 2026L;
     }
 
-    /*
+    /**
      * Get canonical planet.
-     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
      *
      * @return the resulting computation or state reference
      */
@@ -269,9 +266,8 @@ public record EcologyPreset(
         return "none";
     }
 
-    /*
+    /**
      * Get preset description.
-     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
      *
      * @return the resulting computation or state reference
      */
@@ -279,13 +275,12 @@ public record EcologyPreset(
         return org.ether.society.i18n.I18n.getEcologyPresetDescription(name);
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code EcologyPreset}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         return name;
     }

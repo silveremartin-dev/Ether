@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -26,13 +26,13 @@ import java.util.List;
 public class NetEnergyEROEIEngine {
     private static final Logger logger = LoggerFactory.getLogger(NetEnergyEROEIEngine.class);
 
-    /*
+    /**
      * Calculates Net Energy Return on Investment (EROEI) for a cell.
      *
      * @param cell H3 terrain cell
      * @return EROEI ratio (e.g. 1.1 to 30.0)
      */
-    /*
+    /**
      * Calculates Net Energy Return on Investment (EROEI) for a cell.
      *
      * @param cell H3 terrain cell
@@ -60,14 +60,14 @@ public class NetEnergyEROEIEngine {
         return Math.max(0.4, eroei);
     }
 
-    /*
+    /**
      * Executes one master EROEI cliodynamic tick across cells using default monthly step.
      */
     public static void processNetEnergyEROEI(List<H3Cell> cells) {
         processNetEnergyEROEI(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes one master EROEI cliodynamic tick across cells scaled by dtYears.
      */
     public static void processNetEnergyEROEI(List<H3Cell> cells, double dtYears) {

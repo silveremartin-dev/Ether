@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -24,9 +24,8 @@ import java.io.IOException;
  */
 public class SimulationReportGenerator {
 
-    /*
+    /**
      * Generate report.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationReportGenerator}.
      *
      * @param engine the engine parameter (H3SimulationEngine)
      * @param outputFile the output file parameter (File)

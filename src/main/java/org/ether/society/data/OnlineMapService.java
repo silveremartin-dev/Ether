@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -34,9 +34,8 @@ public class OnlineMapService {
     private static final File CACHE_DIR = org.ether.society.config.EtherPaths.getCacheDir().resolve("maps").toFile();
     private final HttpClient httpClient;
 
-    /*
+    /**
      * Online map service.
-     * Enforces physical invariants and updates associated state variables within {@code OnlineMapService}.
      *
      */
     public OnlineMapService() {
@@ -76,17 +75,17 @@ public class OnlineMapService {
               null,
               null);
 
-        /* Internal state variable for name (String). */
+        /** Internal state: name (String). */
         private final String name;
-        /* Internal state variable for elevation wms url (String). */
+        /** Internal state: elevation wms url (String). */
         private final String elevationWmsUrl;
-        /* Internal state variable for biome wms url (String). */
+        /** Internal state: biome wms url (String). */
         private final String biomeWmsUrl;
-        /* Internal state variable for climate wms url (String). */
+        /** Internal state: climate wms url (String). */
         private final String climateWmsUrl;
-        /* Internal state variable for rainfall wms url (String). */
+        /** Internal state: rainfall wms url (String). */
         private final String rainfallWmsUrl;
-        /* Internal state variable for hydro wms url (String). */
+        /** Internal state: hydro wms url (String). */
         private final String hydroWmsUrl;
 
         CelestialBody(String name, String elevationWmsUrl, String biomeWmsUrl, String climateWmsUrl, String rainfallWmsUrl, String hydroWmsUrl) {
@@ -98,58 +97,52 @@ public class OnlineMapService {
             this.hydroWmsUrl = hydroWmsUrl;
         }
 
-        /*
+        /**
          * Get name.
-         * Enforces physical invariants and updates associated state variables within {@code OnlineMapService}.
          *
          * @return the resulting computation or state reference
          */
         public String getName() { return name; }
-        /*
+        /**
          * Get elevation wms url.
-         * Enforces physical invariants and updates associated state variables within {@code OnlineMapService}.
          *
          * @return the resulting computation or state reference
          */
         public String getElevationWmsUrl() { return elevationWmsUrl; }
-        /*
+        /**
          * Get biome wms url.
-         * Enforces physical invariants and updates associated state variables within {@code OnlineMapService}.
          *
          * @return the resulting computation or state reference
          */
         public String getBiomeWmsUrl() { return biomeWmsUrl; }
-        /*
+        /**
          * Get climate wms url.
-         * Enforces physical invariants and updates associated state variables within {@code OnlineMapService}.
          *
          * @return the resulting computation or state reference
          */
         public String getClimateWmsUrl() { return climateWmsUrl; }
-        /*
+        /**
          * Get rainfall wms url.
-         * Enforces physical invariants and updates associated state variables within {@code OnlineMapService}.
          *
          * @return the resulting computation or state reference
          */
         public String getRainfallWmsUrl() { return rainfallWmsUrl; }
-        /*
+        /**
          * Get hydro wms url.
-         * Enforces physical invariants and updates associated state variables within {@code OnlineMapService}.
          *
          * @return the resulting computation or state reference
          */
         public String getHydroWmsUrl() { return hydroWmsUrl; }
     }
 
-    /*
+    /**
      * Fetch elevation map image asynchronously from USGS / NASA WMS endpoints.
      */
     public CompletableFuture<Image> fetchElevationMapAsync(CelestialBody body) {
         return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_elevation.png", body.getElevationWmsUrl());
     }
 
-    /*
+    /**
      * Fetch biome/color map image asynchronously from USGS / NASA WMS endpoints.
      */
     public CompletableFuture<Image> fetchBiomeMapAsync(CelestialBody body) {
@@ -159,7 +152,7 @@ public class OnlineMapService {
         return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_biome.png", body.getBiomeWmsUrl());
     }
 
-    /*
+    /**
      * Fetch climate/thermal map image asynchronously from NASA GIBS / USGS WMS endpoints.
      */
     public CompletableFuture<Image> fetchClimateMapAsync(CelestialBody body) {
@@ -169,7 +162,7 @@ public class OnlineMapService {
         return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_climate.png", body.getClimateWmsUrl());
     }
 
-    /*
+    /**
      * Fetch rainfall/precipitation map image asynchronously from NASA GIBS WMS endpoints.
      */
     public CompletableFuture<Image> fetchRainfallMapAsync(CelestialBody body) {
@@ -179,7 +172,7 @@ public class OnlineMapService {
         return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_rainfall.png", body.getRainfallWmsUrl());
     }
 
-    /*
+    /**
      * Fetch hydrographic/river network map image asynchronously from NASA GIBS WMS endpoints.
      */
     public CompletableFuture<Image> fetchHydroMapAsync(CelestialBody body) {
@@ -189,7 +182,7 @@ public class OnlineMapService {
         return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_hydro.png", body.getHydroWmsUrl());
     }
 
-    /*
+    /**
      * Downloads an image from a URL, using cache if available.
      */
     public CompletableFuture<Image> fetchMapFromUrlAsync(String cacheFileName, String urlString) {

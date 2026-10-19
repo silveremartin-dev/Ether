@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -28,12 +28,11 @@ public class HeadlessSimulationRunner {
 
     private final H3SimulationEngine engine;
     private final SimulationSaveManager saveManager;
-    /* Internal state variable for initialized (boolean). */
+    /** Internal state: initialized (boolean). */
     private boolean initialized = false;
 
-    /*
+    /**
      * Headless simulation runner.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessSimulationRunner}.
      *
      */
     public HeadlessSimulationRunner() throws IOException {
@@ -42,9 +41,8 @@ public class HeadlessSimulationRunner {
         this.saveManager = new SimulationSaveManager();
     }
 
-    /*
+    /**
      * Headless simulation runner.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessSimulationRunner}.
      *
      * @param config the config parameter (Configuration)
      */
@@ -53,7 +51,7 @@ public class HeadlessSimulationRunner {
         this.saveManager = new SimulationSaveManager();
     }
 
-    /*
+    /**
      * Initializes the simulation engine with a scenario and world cells without GUI.
      */
     public void initialize(Scenario scenario, List<H3Cell> cells) {
@@ -66,7 +64,7 @@ public class HeadlessSimulationRunner {
                 scenario.getName(), cells.size());
     }
 
-    /*
+    /**
      * Advances the simulation by a specified number of ticks.
      */
     public void step(int ticks) {
@@ -80,7 +78,7 @@ public class HeadlessSimulationRunner {
                 ticks, engine.getTimeManager().getCurrentYear(), engine.getTotalPopulation());
     }
 
-    /*
+    /**
      * Saves the current world state to disk (with optional encryption).
      */
     public void save(String saveName) {
@@ -89,9 +87,8 @@ public class HeadlessSimulationRunner {
         }
     }
 
-    /*
+    /**
      * Get engine.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessSimulationRunner}.
      *
      * @return the resulting computation or state reference
      */
@@ -99,9 +96,8 @@ public class HeadlessSimulationRunner {
         return engine;
     }
 
-    /*
+    /**
      * Is initialized.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessSimulationRunner}.
      *
      * @return the resulting computation or state reference
      */

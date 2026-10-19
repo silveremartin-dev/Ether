@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -33,14 +33,14 @@ public class BioMolecularEpidemiologyEngine {
     /** Zoonotic cross-species transmission coefficient. */
     public static final double ZOONOTIC_KAPPA = 1.5e-6;
 
-    /*
+    /**
      * Executes one bio-molecular immune response and pathogen tick across cells using default monthly step.
      */
     public static void processBioMolecularImmunity(List<H3Cell> cells) {
         processBioMolecularImmunity(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes bio-molecular immune response and pathogen tick across cells scaled by dtYears.
      */
     public static void processBioMolecularImmunity(List<H3Cell> cells, double dtYears) {

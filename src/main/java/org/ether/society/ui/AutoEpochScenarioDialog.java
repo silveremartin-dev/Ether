@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -61,12 +61,11 @@ public class AutoEpochScenarioDialog extends Stage {
     private final Button btnCancel = new Button();
 
     private final Consumer<Scenario> onScenarioGeneratedCallback;
-    /* Internal state variable for is updating (boolean). */
+    /** Internal state: is updating (boolean). */
     private boolean isUpdating = false;
 
-    /*
+    /**
      * Auto epoch scenario dialog.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioDialog}.
      *
      * @param initialPlanetKey the initial planet key parameter (String)
      * @param initialYear the initial year parameter (long)
@@ -351,7 +350,6 @@ public class AutoEpochScenarioDialog extends Stage {
         updateLivePreview();
     }
 
-    // Helper subroutine: rebuild milestone chips - internal state computation & bounds checking
     private void rebuildMilestoneChips() {
         chipsPane.getChildren().clear();
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
@@ -383,7 +381,6 @@ public class AutoEpochScenarioDialog extends Stage {
         }
     }
 
-    // Helper subroutine: launch scenario generation - internal state computation & bounds checking
     private void launchScenarioGeneration() {
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
         int year = yearSpinner.getValue() != null ? yearSpinner.getValue() : -8000;
@@ -399,13 +396,12 @@ public class AutoEpochScenarioDialog extends Stage {
         progressLabel.setText(I18n.getOrDefault("scenario.autodialog.status_generating", "Génération des 25 calques en cours..."));
 
         Task<Scenario> task = new Task<>() {
-            @Override
-            /*
+            /**
              * Call.
-             * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioDialog}.
              *
              * @return the resulting computation or state reference
              */
+            @Override
             protected Scenario call() {
                 return AutoEpochScenarioGenerator.generateScenarioForEpoch(planet, year, forceRegen, strat);
             }
@@ -432,7 +428,6 @@ public class AutoEpochScenarioDialog extends Stage {
         thread.start();
     }
 
-    // Helper subroutine: update live preview - internal state computation & bounds checking
     private void updateLivePreview() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
@@ -491,7 +486,6 @@ public class AutoEpochScenarioDialog extends Stage {
                 year >= 1800 ? activeLabel : disabledLabel));
     }
 
-    // Helper subroutine: get strategy explanation - internal state computation & bounds checking
     private String getStrategyExplanation(TemporalMapTensorManager.DataFallbackStrategy strategy) {
         if (strategy == null) strategy = TemporalMapTensorManager.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH;
         String note = " " + I18n.getOrDefault("scenario.autodialog.tab3_scope_note", "💡 Remarque : Ce réglage s'applique spécifiquement aux calques de l'Onglet 3 (données démographiques initiales et tenseurs culturels).");
@@ -505,7 +499,6 @@ public class AutoEpochScenarioDialog extends Stage {
         };
     }
 
-    // Helper subroutine: get localized planet name - internal state computation & bounds checking
     private String getLocalizedPlanetName(String p) {
         if (p == null) return I18n.getOrDefault("planet.map.earth", "🌍 Terre");
         return switch (p.toLowerCase()) {

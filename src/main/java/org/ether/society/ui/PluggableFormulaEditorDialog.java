@@ -1,4 +1,4 @@
-package org.ether.society.ui;
+ackage org.ether.society.ui;
 
 import org.ether.society.core.dod.PluggableStatEngine;
 import org.ether.society.database.H3Cell;
@@ -26,7 +26,7 @@ import java.util.List;
 public class PluggableFormulaEditorDialog extends Stage {
 
     private final PluggableStatEngine statEngine;
-    /* Internal state variable for current cells (List&lt;H3Cell&gt;). */
+    /** Internal state: current cells (List&lt;H3Cell&gt;). */
     private final List<H3Cell> currentCells;
 
     private final Label headerLabel;
@@ -60,9 +60,8 @@ public class PluggableFormulaEditorDialog extends Stage {
     private final Button btnSave;
     private final Button btnClose;
 
-    /*
+    /**
      * Pluggable formula editor dialog.
-     * Enforces physical invariants and updates associated state variables within {@code PluggableFormulaEditorDialog}.
      *
      * @param statEngine the stat engine parameter (PluggableStatEngine)
      * @param currentCells the current cells parameter (List&lt;H3Cell&gt;)
@@ -201,9 +200,8 @@ public class PluggableFormulaEditorDialog extends Stage {
         updateTexts();
     }
 
-    /*
+    /**
      * Update texts.
-     * Enforces physical invariants and updates associated state variables within {@code PluggableFormulaEditorDialog}.
      *
      */
     public void updateTexts() {
@@ -254,14 +252,12 @@ public class PluggableFormulaEditorDialog extends Stage {
         refreshFormulaList();
     }
 
-    // Helper subroutine: create label - internal state computation & bounds checking
     private Label createLabel() {
         Label l = new Label();
         l.getStyleClass().add("control-label");
         return l;
     }
 
-    // Helper subroutine: refresh formula list - internal state computation & bounds checking
     private void refreshFormulaList() {
         if (formulaListView == null) return;
         formulaListView.getItems().clear();
@@ -274,7 +270,6 @@ public class PluggableFormulaEditorDialog extends Stage {
         }
     }
 
-    // Helper subroutine: extract id - internal state computation & bounds checking
     private String extractId(String item) {
         int idxStart = item.lastIndexOf('(');
         int idxEnd = item.lastIndexOf(')');
@@ -284,7 +279,6 @@ public class PluggableFormulaEditorDialog extends Stage {
         return item;
     }
 
-    // Helper subroutine: populate fields - internal state computation & bounds checking
     private void populateFields(PluggableStatEngine.StatDefinition def) {
         txtId.setText(def.getId());
         txtId.setEditable(!def.isBuiltin());
@@ -296,7 +290,6 @@ public class PluggableFormulaEditorDialog extends Stage {
         lblTestResult.setText(I18n.getOrDefault("formula_editor.result.default", "Test Result: --"));
     }
 
-    // Helper subroutine: clear form - internal state computation & bounds checking
     private void clearForm() {
         txtId.setText("custom_" + System.currentTimeMillis() % 10000);
         txtId.setEditable(true);
@@ -308,7 +301,6 @@ public class PluggableFormulaEditorDialog extends Stage {
         lblTestResult.setText(I18n.getOrDefault("formula_editor.result.default", "Test Result: --"));
     }
 
-    // Helper subroutine: test formula - internal state computation & bounds checking
     private void testFormula() {
         String expr = txtExpression.getText();
         if (expr == null || expr.isBlank()) {
@@ -324,7 +316,6 @@ public class PluggableFormulaEditorDialog extends Stage {
         }
     }
 
-    // Helper subroutine: save formula - internal state computation & bounds checking
     private void saveFormula() {
         String id = txtId.getText().trim();
         String name = txtName.getText().trim();
@@ -347,7 +338,6 @@ public class PluggableFormulaEditorDialog extends Stage {
         new Alert(Alert.AlertType.INFORMATION, String.format(I18n.getOrDefault("formula_editor.alert.saved", "Formula '%s' saved successfully!"), name)).show();
     }
 
-    // Helper subroutine: import formulas - internal state computation & bounds checking
     private void importFormulas() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("formula_editor.dialog.import_title", "Import Formula Library (.properties)"));
@@ -364,7 +354,6 @@ public class PluggableFormulaEditorDialog extends Stage {
         }
     }
 
-    // Helper subroutine: export formulas - internal state computation & bounds checking
     private void exportFormulas() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("formula_editor.dialog.export_title", "Export Custom Formulas (.properties)"));

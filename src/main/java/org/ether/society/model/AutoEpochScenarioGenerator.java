@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -52,14 +52,14 @@ public class AutoEpochScenarioGenerator {
             new EpochMilestone(2050L, "epoch.name.mid_century", "🤖 Energy & Demographics (2050 AD)", "epoch.desc.mid_century", "Demographic stabilization, post-fossil transition, resource circularity.")
     );
 
-    /*
+    /**
      * Synthesizes an automatic scenario for a specified planet and target epoch date.
      */
     public static Scenario generateScenarioForEpoch(String planetKey, long targetYear) {
         return generateScenarioForEpoch(planetKey, targetYear, true, TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
     }
 
-    /*
+    /**
      * Synthesizes an automatic scenario for a specified planet, target epoch date,
      * and optional dedicated raster generation from raw empirical datasets.
      */
@@ -67,7 +67,7 @@ public class AutoEpochScenarioGenerator {
         return generateScenarioForEpoch(planetKey, targetYear, forceRegenerateMaps, TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
     }
 
-    /*
+    /**
      * Synthesizes an automatic scenario for a specified planet, target epoch date,
      * optional dedicated raster generation, and explicit data fallback strategy.
      */
@@ -182,9 +182,8 @@ public class AutoEpochScenarioGenerator {
         return s;
     }
 
-    /*
+    /**
      * Compute recommended end year.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param startYear the start year parameter (long)
      * @return the resulting computation or state reference
@@ -201,9 +200,8 @@ public class AutoEpochScenarioGenerator {
         return startYear + 50L;
     }
 
-    /*
+    /**
      * Estimate population.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param planetKey the planet key parameter (String)
      * @param year the year parameter (long)
@@ -249,9 +247,8 @@ public class AutoEpochScenarioGenerator {
         return 10_000_000_000L;
     }
 
-    /*
+    /**
      * Estimate capital per capita.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param planetKey the planet key parameter (String)
      * @param year the year parameter (long)
@@ -270,9 +267,8 @@ public class AutoEpochScenarioGenerator {
         return 24000.0;                     // Modern advanced physical & digital capital
     }
 
-    /*
+    /**
      * Estimate energy per capita.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param planetKey the planet key parameter (String)
      * @param year the year parameter (long)
@@ -288,9 +284,8 @@ public class AutoEpochScenarioGenerator {
         return 450.0;                       // Modern primary energy consumption
     }
 
-    /*
+    /**
      * Estimate food reserves.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param planetKey the planet key parameter (String)
      * @param year the year parameter (long)
@@ -303,9 +298,8 @@ public class AutoEpochScenarioGenerator {
         return 8.0;                         // Modern global food supply chain
     }
 
-    /*
+    /**
      * Estimate information per capita.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param planetKey the planet key parameter (String)
      * @param year the year parameter (long)
@@ -320,9 +314,8 @@ public class AutoEpochScenarioGenerator {
         return 50000.0;                     // Digital internet & computing
     }
 
-    /*
+    /**
      * Calibrate type bengines.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param planetKey the planet key parameter (String)
      * @param year the year parameter (long)
@@ -405,9 +398,8 @@ public class AutoEpochScenarioGenerator {
         return states;
     }
 
-    /*
+    /**
      * Resolve planet preset for epoch.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param planetKey the planet key parameter (String)
      * @param year the year parameter (long)
@@ -444,9 +436,8 @@ public class AutoEpochScenarioGenerator {
         return PlanetPreset.EARTH_MODERN;
     }
 
-    /*
+    /**
      * Resolve ecology preset for epoch.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param planetKey the planet key parameter (String)
      * @param year the year parameter (long)
@@ -477,7 +468,6 @@ public class AutoEpochScenarioGenerator {
         return EcologyPreset.EARTH_STANDARD;
     }
 
-    // Helper subroutine: find closest built in scenario - internal state computation & bounds checking
     private static Scenario findClosestBuiltInScenario(String planetKey, long targetYear) {
         if (!"earth".equalsIgnoreCase(planetKey)) {
             return null;
@@ -497,7 +487,6 @@ public class AutoEpochScenarioGenerator {
         return closest;
     }
 
-    // Helper subroutine: copy template properties - internal state computation & bounds checking
     private static void copyTemplateProperties(Scenario source, Scenario target) {
         target.setTargetCohortSize(source.getTargetCohortSize());
         target.setTemporalResolutionDays(source.getTemporalResolutionDays());
@@ -514,9 +503,8 @@ public class AutoEpochScenarioGenerator {
         target.setProceduralLeadersEnabled(source.isProceduralLeadersEnabled());
     }
 
-    /*
+    /**
      * Format epoch name.
-     * Enforces physical invariants and updates associated state variables within {@code AutoEpochScenarioGenerator}.
      *
      * @param year the year parameter (long)
      * @return the resulting computation or state reference
@@ -531,7 +519,6 @@ public class AutoEpochScenarioGenerator {
         }
     }
 
-    // Helper subroutine: generate epoch description - internal state computation & bounds checking
     private static String generateEpochDescription(String planet, long year, String epochLabel) {
         return String.format(Locale.ROOT, """
             ðŸŒ SCÉNARIO AUTOMATIQUE D'ÉPOQUE : %s — %s
@@ -554,7 +541,6 @@ public class AutoEpochScenarioGenerator {
                 epochLabel);
     }
 
-    // Helper subroutine: capitalize - internal state computation & bounds checking
     private static String capitalize(String str) {
         if (str == null || str.isEmpty()) return "";
         return str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT);

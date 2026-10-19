@@ -1,4 +1,4 @@
-/**
+**
  * <h1>Tier 2: Theoretical Cliodynamic &amp; Macro-Sociological Models</h1>
  * <p>
  * Implements formal mathematical representations of seminal social science, economic,

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -41,11 +41,11 @@ import java.util.prefs.Preferences;
 public class ExecutionContextPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ExecutionContextPanel.class);
     private static final Preferences prefs = Preferences.userNodeForPackage(PreferencesPanel.class);
-    /* Internal state variable for pref hardware mode key (String). */
+    /** Internal state: pref hardware mode key (String). */
     private static final String PREF_HARDWARE_MODE_KEY = "ether_hardware_mode";
-    /* Internal state variable for pref gpu key (String). */
+    /** Internal state: pref gpu key (String). */
     private static final String PREF_GPU_KEY = "ether_gpu_enabled";
-    /* Internal state variable for cached gpu name (String). */
+    /** Internal state: cached gpu name (String). */
     private static String cachedGpuName = null;
 
     public enum ExecutionMode {
@@ -65,9 +65,8 @@ public class ExecutionContextPanel extends BorderPane {
         GPU_OFF
     }
 
-    /*
+    /**
      * Is rust available.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -75,9 +74,8 @@ public class ExecutionContextPanel extends BorderPane {
         return NativeRustBridge.isNativeAvailable();
     }
 
-    /*
+    /**
      * Is simd available.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -89,9 +87,8 @@ public class ExecutionContextPanel extends BorderPane {
         }
     }
 
-    /*
+    /**
      * Get recommended hardware mode.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -101,9 +98,8 @@ public class ExecutionContextPanel extends BorderPane {
         return HardwareMode.CPU_JIT;
     }
 
-    /*
+    /**
      * Get active hardware mode.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -120,7 +116,6 @@ public class ExecutionContextPanel extends BorderPane {
         return getRecommendedHardwareMode();
     }
 
-    // Helper subroutine: is mode supported - internal state computation & bounds checking
     private static boolean isModeSupported(HardwareMode mode) {
         if (mode == null) return false;
         return switch (mode) {
@@ -131,9 +126,8 @@ public class ExecutionContextPanel extends BorderPane {
         };
     }
 
-    /*
+    /**
      * Get estimated cell ticks throughput.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @param mode the mode parameter (HardwareMode)
      * @return the resulting computation or state reference
@@ -155,9 +149,8 @@ public class ExecutionContextPanel extends BorderPane {
         }
     }
 
-    /*
+    /**
      * Estimate execution time seconds.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @param startYear the start year parameter (long)
      * @param endYear the end year parameter (long)
@@ -193,9 +186,8 @@ public class ExecutionContextPanel extends BorderPane {
         return Math.max(0.5, seconds);
     }
 
-    /*
+    /**
      * Format duration.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @param seconds the seconds parameter (double)
      * @return the resulting computation or state reference
@@ -234,9 +226,8 @@ public class ExecutionContextPanel extends BorderPane {
         private final StringProperty capacity;
         private final StringProperty chunks;
 
-        /*
+        /**
          * Cluster node.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @param id the id parameter (String)
          * @param host the host parameter (String)
@@ -255,87 +246,75 @@ public class ExecutionContextPanel extends BorderPane {
             this.chunks = new SimpleStringProperty(chunks);
         }
 
-        /*
+        /**
          * Id property.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public StringProperty idProperty() { return id; }
-        /*
+        /**
          * Host property.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public StringProperty hostProperty() { return host; }
-        /*
+        /**
          * Role property.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public StringProperty roleProperty() { return role; }
-        /*
+        /**
          * Status property.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public StringProperty statusProperty() { return status; }
-        /*
+        /**
          * Capacity property.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public StringProperty capacityProperty() { return capacity; }
-        /*
+        /**
          * Chunks property.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public StringProperty chunksProperty() { return chunks; }
 
-        /*
+        /**
          * Get id.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getId() { return id.get(); }
-        /*
+        /**
          * Get host.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getHost() { return host.get(); }
-        /*
+        /**
          * Get role.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getRole() { return role.get(); }
-        /*
+        /**
          * Get status.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getStatus() { return status.get(); }
-        /*
+        /**
          * Get capacity.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
         public String getCapacity() { return capacity.get(); }
-        /*
+        /**
          * Get chunks.
-         * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
          *
          * @return the resulting computation or state reference
          */
@@ -344,9 +323,9 @@ public class ExecutionContextPanel extends BorderPane {
 
     private final Runnable onLaunchSimulationCallback;
     private ClusterManager clusterManager;
-    /* Internal state variable for is master running (boolean). */
+    /** Internal state: is master running (boolean). */
     private boolean isMasterRunning = false;
-    /* Internal state variable for is connected cluster (boolean). */
+    /** Internal state: is connected cluster (boolean). */
     private boolean isConnectedCluster = false;
 
     // 1. Hardware Engine Controls
@@ -441,18 +420,16 @@ public class ExecutionContextPanel extends BorderPane {
     private Label hdrClusterLabel;
     private Label summaryClusterNodesLabel;
 
-    /*
+    /**
      * Execution context panel.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      */
     public ExecutionContextPanel() {
         this(null);
     }
 
-    /*
+    /**
      * Execution context panel.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @param onLaunchSimulationCallback the on launch simulation callback parameter (Runnable)
      */
@@ -477,7 +454,6 @@ public class ExecutionContextPanel extends BorderPane {
         autoRefreshTimeline.play();
     }
 
-    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         HBox mainLayout = new HBox(20);
         mainLayout.setAlignment(Pos.TOP_LEFT);
@@ -868,14 +844,12 @@ public class ExecutionContextPanel extends BorderPane {
         setCenter(scroll);
     }
 
-    // Helper subroutine: create small header - internal state computation & bounds checking
     private Label createSmallHeader(String text) {
         Label lbl = new Label(text);
         lbl.getStyleClass().add("sidebar-recap-header");
         return lbl;
     }
 
-    // Helper subroutine: create sys info label - internal state computation & bounds checking
     private Label createSysInfoLabel() {
         Label lbl = new Label();
         lbl.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-padding: 0 0 4 4;");
@@ -883,7 +857,6 @@ public class ExecutionContextPanel extends BorderPane {
         return lbl;
     }
 
-    // Helper subroutine: update system specs - internal state computation & bounds checking
     private void updateSystemSpecs() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         int cpus = Runtime.getRuntime().availableProcessors();
@@ -898,7 +871,6 @@ public class ExecutionContextPanel extends BorderPane {
         if (sysGpuValue != null) sysGpuValue.setText(gpuName);
     }
 
-    // Helper subroutine: update database status - internal state computation & bounds checking
     private void updateDatabaseStatus() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (dbStatusLabel == null) return;
@@ -919,7 +891,6 @@ public class ExecutionContextPanel extends BorderPane {
         dbStatusLabel.setStyle("-fx-text-fill: #f59e0b;");
     }
 
-    // Helper subroutine: update right summary - internal state computation & bounds checking
     private void updateRightSummary() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (summaryHardwareLabel == null) return;
@@ -956,7 +927,6 @@ public class ExecutionContextPanel extends BorderPane {
         }
     }
 
-    // Helper subroutine: get detected gpu name - internal state computation & bounds checking
     private static String getDetectedGpuName() {
         if (cachedGpuName != null) return cachedGpuName;
         try {
@@ -975,7 +945,6 @@ public class ExecutionContextPanel extends BorderPane {
         return cachedGpuName;
     }
 
-    // Helper subroutine: create desc label - internal state computation & bounds checking
     private Label createDescLabel() {
         Label lbl = new Label();
         lbl.setWrapText(true);
@@ -983,21 +952,18 @@ public class ExecutionContextPanel extends BorderPane {
         return lbl;
     }
 
-    // Helper subroutine: create section header - internal state computation & bounds checking
     private Label createSectionHeader(String text) {
         Label lbl = new Label(text);
         lbl.getStyleClass().add("label-section-header");
         return lbl;
     }
 
-    // Helper subroutine: create card section - internal state computation & bounds checking
     private VBox createCardSection(Label header, VBox content) {
         VBox card = new VBox(10, header, content);
         card.getStyleClass().add("card-section");
         return card;
     }
 
-    // Helper subroutine: populate initial cluster nodes - internal state computation & bounds checking
     private void populateInitialClusterNodes() {
         nodeList.clear();
         String localHost = "127.0.0.1";
@@ -1017,7 +983,6 @@ public class ExecutionContextPanel extends BorderPane {
         updateRightSummary();
     }
 
-    // Helper subroutine: toggle master server - internal state computation & bounds checking
     private void toggleMasterServer() {
         String pStr = (portField != null && portField.getText() != null && !portField.getText().isBlank()) ? portField.getText().trim() : "9090";
 
@@ -1080,7 +1045,6 @@ public class ExecutionContextPanel extends BorderPane {
         updateRightSummary();
     }
 
-    // Helper subroutine: join cluster - internal state computation & bounds checking
     private void joinCluster() {
         String host = (hostField != null && hostField.getText() != null && !hostField.getText().isBlank()) ? hostField.getText().trim() : "127.0.0.1";
         String pStr = (portField != null && portField.getText() != null && !portField.getText().isBlank()) ? portField.getText().trim() : "9090";
@@ -1117,14 +1081,12 @@ public class ExecutionContextPanel extends BorderPane {
         updateRightSummary();
     }
 
-    // Helper subroutine: test connection - internal state computation & bounds checking
     private void testConnection() {
         logger.info("Testing cluster connectivity...");
         clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.test_ok", "🟢 Cluster connection established — Network latency: 1.2 ms | Throughput: 10 Gbps"));
         clusterStatusLabel.setStyle("-fx-font-weight: bold;");
     }
 
-    // Helper subroutine: refresh nodes - internal state computation & bounds checking
     private void refreshNodes() {
         logger.info("Refreshing cluster nodes...");
         if (clusterManager != null && isMasterRunning) {
@@ -1153,9 +1115,8 @@ public class ExecutionContextPanel extends BorderPane {
         updateRightSummary();
     }
 
-    /*
+    /**
      * Get cluster manager.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -1163,9 +1124,8 @@ public class ExecutionContextPanel extends BorderPane {
         return clusterManager;
     }
 
-    /*
+    /**
      * Get hardware mode.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -1177,9 +1137,8 @@ public class ExecutionContextPanel extends BorderPane {
         return HardwareMode.CPU_JIT;
     }
 
-    /*
+    /**
      * Get execution topology.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -1188,9 +1147,8 @@ public class ExecutionContextPanel extends BorderPane {
         return ExecutionTopology.LOCAL;
     }
 
-    /*
+    /**
      * Get rendering mode.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -1199,9 +1157,8 @@ public class ExecutionContextPanel extends BorderPane {
         return RenderingMode.GUI;
     }
 
-    /*
+    /**
      * Get target year.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -1209,9 +1166,8 @@ public class ExecutionContextPanel extends BorderPane {
         return (targetYearSpinner != null && targetYearSpinner.getValue() != null) ? targetYearSpinner.getValue() : 2100;
     }
 
-    /*
+    /**
      * Get current mode.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @return the resulting computation or state reference
      */
@@ -1227,9 +1183,8 @@ public class ExecutionContextPanel extends BorderPane {
         };
     }
 
-    /*
+    /**
      * Set mode.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @param mode the mode parameter (ExecutionMode)
      */
@@ -1270,9 +1225,8 @@ public class ExecutionContextPanel extends BorderPane {
         updateRightSummary();
     }
 
-    /*
+    /**
      * Set rendering mode.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @param mode the mode parameter (RenderingMode)
      */
@@ -1303,9 +1257,8 @@ public class ExecutionContextPanel extends BorderPane {
         }
     }
 
-    /*
+    /**
      * Set on live config changed callback.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @param callback the callback parameter (java.util.function.Consumer&lt;HardwareMode&gt;)
      */
@@ -1313,9 +1266,8 @@ public class ExecutionContextPanel extends BorderPane {
         this.onLiveConfigChangedCallback = callback;
     }
 
-    /*
+    /**
      * Set on live rendering mode changed callback.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      * @param callback the callback parameter (java.util.function.Consumer&lt;RenderingMode&gt;)
      */
@@ -1323,23 +1275,20 @@ public class ExecutionContextPanel extends BorderPane {
         this.onLiveRenderingModeChangedCallback = callback;
     }
 
-    // Helper subroutine: notify live config change - internal state computation & bounds checking
     private void notifyLiveConfigChange(HardwareMode mode) {
         if (onLiveConfigChangedCallback != null) {
             onLiveConfigChangedCallback.accept(mode);
         }
     }
 
-    // Helper subroutine: notify live rendering mode change - internal state computation & bounds checking
     private void notifyLiveRenderingModeChange(RenderingMode mode) {
         if (onLiveRenderingModeChangedCallback != null) {
             onLiveRenderingModeChangedCallback.accept(mode);
         }
     }
 
-    /*
+    /**
      * Update texts.
-     * Enforces physical invariants and updates associated state variables within {@code ExecutionContextPanel}.
      *
      */
     public void updateTexts() {

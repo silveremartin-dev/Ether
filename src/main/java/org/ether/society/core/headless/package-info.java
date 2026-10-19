@@ -1,4 +1,4 @@
-/**
+**
  * <h1>Headless Simulation Orchestration</h1>
  * <p>
  * Provides lightweight, non-graphical execution harnesses for continuous integration,

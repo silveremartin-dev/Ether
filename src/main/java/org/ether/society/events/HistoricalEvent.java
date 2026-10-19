@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -16,9 +16,8 @@ package org.ether.society.events;
  * @version 1.0.0-beta.2
  */
 public record HistoricalEvent(int year, String title, String message, double latitude, double longitude) {
-    /*
+    /**
      * Historical event.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalEvent}.
      *
      * @param year the year parameter (int)
      * @param title the title parameter (String)

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -37,9 +37,8 @@ public class RomanImperialCliodynamicEngine {
         eliteOverproductionFactor = 0.15;
     }
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code RomanImperialCliodynamicEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -73,14 +72,13 @@ public class RomanImperialCliodynamicEngine {
         }
     }
 
-    /*
+    /**
      * Get imperial radius km.
-     * Enforces physical invariants and updates associated state variables within {@code RomanImperialCliodynamicEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getImperialRadiusKm() { return imperialRadiusKm; }
-    /*
+    /**
      * Set imperial radius km operation.
      * <p>
      * Executes operational logic for {@code RomanImperialCliodynamicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -91,14 +89,13 @@ public class RomanImperialCliodynamicEngine {
      */
     public static void setImperialRadiusKm(double radius) { imperialRadiusKm = Math.max(100.0, radius); }
 
-    /*
+    /**
      * Get elite overproduction factor.
-     * Enforces physical invariants and updates associated state variables within {@code RomanImperialCliodynamicEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getEliteOverproductionFactor() { return eliteOverproductionFactor; }
-    /*
+    /**
      * Set elite overproduction factor operation.
      * <p>
      * Executes operational logic for {@code RomanImperialCliodynamicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

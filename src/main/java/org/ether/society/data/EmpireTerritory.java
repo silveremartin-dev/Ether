@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -25,9 +25,8 @@ public class EmpireTerritory {
     public Color color;
     public List<double[]> bounds = new ArrayList<>();
 
-    /*
+    /**
      * Empire territory.
-     * Enforces physical invariants and updates associated state variables within {@code EmpireTerritory}.
      *
      * @param name the name parameter (String)
      * @param color the color parameter (Color)
@@ -37,9 +36,8 @@ public class EmpireTerritory {
         this.color = color;
     }
 
-    /*
+    /**
      * Add bounding box.
-     * Enforces physical invariants and updates associated state variables within {@code EmpireTerritory}.
      *
      * @param minLng the min lng parameter (double)
      * @param minLat the min lat parameter (double)
@@ -50,9 +48,8 @@ public class EmpireTerritory {
         bounds.add(new double[]{minLng, minLat, maxLng, maxLat});
     }
 
-    /*
+    /**
      * Contains.
-     * Enforces physical invariants and updates associated state variables within {@code EmpireTerritory}.
      *
      * @param lng the lng parameter (double)
      * @param lat the lat parameter (double)

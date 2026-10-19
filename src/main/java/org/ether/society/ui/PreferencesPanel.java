@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -26,7 +26,7 @@ public class PreferencesPanel extends BorderPane {
 
     private static final java.util.prefs.Preferences prefs =
             java.util.prefs.Preferences.userNodeForPackage(PreferencesPanel.class);
-    /* Internal state variable for pref gpu key (String). */
+    /** Internal state: pref gpu key (String). */
     private static final String PREF_GPU_KEY = "ether_gpu_enabled";
 
     private Label titleHeader;
@@ -42,9 +42,8 @@ public class PreferencesPanel extends BorderPane {
     private Label aboutHeaderLabel;
     private Label engineDesc;
 
-    /*
+    /**
      * Preferences panel.
-     * Enforces physical invariants and updates associated state variables within {@code PreferencesPanel}.
      *
      */
     public PreferencesPanel() {
@@ -58,7 +57,6 @@ public class PreferencesPanel extends BorderPane {
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
-    // Helper subroutine: init ui - internal state computation & bounds checking
     private void initUI() {
         VBox root = new VBox(25);
         root.setMaxWidth(600);
@@ -133,7 +131,7 @@ public class PreferencesPanel extends BorderPane {
         setCenter(scroll);
     }
 
-    /*
+    /**
      * Returns the saved GPU preference (true = hardware auto, false = software only).
      * Intended to be read at startup by the main App class to configure Prism pipeline.
      */
@@ -141,16 +139,14 @@ public class PreferencesPanel extends BorderPane {
         return prefs.getBoolean(PREF_GPU_KEY, true);
     }
 
-    // Helper subroutine: create card section with header - internal state computation & bounds checking
     private VBox createCardSectionWithHeader(Label header, VBox content) {
         VBox card = new VBox(12, header, content);
         card.getStyleClass().add("card-section");
         return card;
     }
 
-    /*
+    /**
      * Update texts.
-     * Enforces physical invariants and updates associated state variables within {@code PreferencesPanel}.
      *
      */
     public void updateTexts() {

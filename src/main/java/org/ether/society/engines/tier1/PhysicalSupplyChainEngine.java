@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -23,7 +23,7 @@ import java.util.List;
 public class PhysicalSupplyChainEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalSupplyChainEngine.class);
 
-    /* Internal state variable for maritime chokepoint blockade active (boolean). */
+    /** Internal state: maritime chokepoint blockade active (boolean). */
     private static boolean maritimeChokepointBlockadeActive = false;
     private static double seaTransportFrictionCoeff = 0.001; // Hydrodynamic friction coeff
     private static double landTransportFrictionCoeff = 0.05;  // Overland friction coeff
@@ -37,9 +37,8 @@ public class PhysicalSupplyChainEngine {
         landTransportFrictionCoeff = 0.05;
     }
 
-    /*
+    /**
      * Process supply chains.
-     * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -74,14 +73,13 @@ public class PhysicalSupplyChainEngine {
     }
 
     // Getters and Setters
-    /*
+    /**
      * Is maritime chokepoint blockade active.
-     * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static boolean isMaritimeChokepointBlockadeActive() { return maritimeChokepointBlockadeActive; }
-    /*
+    /**
      * Set maritime chokepoint blockade active operation.
      * <p>
      * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.
@@ -92,14 +90,13 @@ public class PhysicalSupplyChainEngine {
      */
     public static void setMaritimeChokepointBlockadeActive(boolean blocked) { maritimeChokepointBlockadeActive = blocked; }
 
-    /*
+    /**
      * Get sea transport friction coeff.
-     * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getSeaTransportFrictionCoeff() { return seaTransportFrictionCoeff; }
-    /*
+    /**
      * Set sea transport friction coeff operation.
      * <p>
      * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.
@@ -110,14 +107,13 @@ public class PhysicalSupplyChainEngine {
      */
     public static void setSeaTransportFrictionCoeff(double coeff) { seaTransportFrictionCoeff = Math.max(0.0001, coeff); }
 
-    /*
+    /**
      * Get land transport friction coeff.
-     * Enforces physical invariants and updates associated state variables within {@code PhysicalSupplyChainEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getLandTransportFrictionCoeff() { return landTransportFrictionCoeff; }
-    /*
+    /**
      * Set land transport friction coeff operation.
      * <p>
      * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.

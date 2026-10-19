@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -72,7 +72,6 @@ public class SeshatDataIntegrator {
         loadLocalPolitiesCsv();
     }
 
-    // Helper subroutine: load local polities csv - internal state computation & bounds checking
     private static void loadLocalPolitiesCsv() {
         java.io.File csvFile = org.ether.society.config.EtherPaths.resolveSourceFile("seshat/seshat_polities_database.csv");
         if (!csvFile.exists()) return;
@@ -120,9 +119,8 @@ public class SeshatDataIntegrator {
         BENCHMARK_POLITIES.put(key.toUpperCase(), r);
     }
 
-    /*
+    /**
      * Get seshat record.
-     * Enforces physical invariants and updates associated state variables within {@code SeshatDataIntegrator}.
      *
      * @param key the key parameter (String)
      * @return the resulting computation or state reference
@@ -132,9 +130,8 @@ public class SeshatDataIntegrator {
         return BENCHMARK_POLITIES.get(key.toUpperCase());
     }
 
-    /*
+    /**
      * Get all benchmark polities.
-     * Enforces physical invariants and updates associated state variables within {@code SeshatDataIntegrator}.
      *
      * @return the resulting computation or state reference
      */
@@ -142,9 +139,8 @@ public class SeshatDataIntegrator {
         return new HashMap<>(BENCHMARK_POLITIES);
     }
 
-    /*
+    /**
      * Get cliodynamic benchmark data.
-     * Enforces physical invariants and updates associated state variables within {@code SeshatDataIntegrator}.
      *
      * @return the resulting computation or state reference
      */

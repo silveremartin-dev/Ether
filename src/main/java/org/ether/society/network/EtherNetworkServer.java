@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -30,14 +30,15 @@ import java.util.concurrent.Executors;
  */
 public class EtherNetworkServer {
     private static final Logger logger = LoggerFactory.getLogger(EtherNetworkServer.class);
-    /* Internal state variable for max clients (int). */
+    /** Internal state: max clients (int). */
     private static final int MAX_CLIENTS = 100;
 
-    /* Internal state variable for port (int). */
+    /** Internal state: port (int). */
     private final int port;
     private final EtherSecurityManager securityManager;
+    private final String serverSecretKey;
+    public static final String DEFAULT_SERVER_SECRET = "EtherSecureClusterKey_2026";
     private ServerSocket serverSocket;
-    /* Internal state variable for running (boolean). */
     private boolean running = false;
     private final Set<ClientHandler> clients = Collections.synchronizedSet(new HashSet<>());
     private final ExecutorService threadPool = Executors.newCachedThreadPool(r -> {
@@ -46,41 +47,56 @@ public class EtherNetworkServer {
         return t;
     });
 
-    /*
-     * Ether network server.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+    /**
+     * Constructs a network server on the designated TCP port with baseline security.
      *
-     * @param port the port parameter (int)
+     * @param port listening TCP port
      */
     public EtherNetworkServer(int port) {
-        this(port, new EtherSecurityManager());
+        this(port, new EtherSecurityManager(), DEFAULT_SERVER_SECRET);
     }
 
-    /*
-     * Ether network server.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+    /**
+     * Constructs a network server with a custom security manager and default cluster secret.
      *
-     * @param port the port parameter (int)
-     * @param securityManager the security manager parameter (EtherSecurityManager)
+     * @param port listening TCP port
+     * @param securityManager AES-256 GCM security manager
      */
     public EtherNetworkServer(int port, EtherSecurityManager securityManager) {
-        this.port = port;
-        this.securityManager = securityManager;
+        this(port, securityManager, DEFAULT_SERVER_SECRET);
     }
 
-    /*
-     * Get security manager.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
+    /**
+     * Constructs a network server with explicit security manager and cluster secret key.
      *
-     * @return the resulting computation or state reference
+     * @param port listening TCP port
+     * @param securityManager AES-256 GCM security manager
+     * @param serverSecretKey cluster authentication secret key
+     */
+    public EtherNetworkServer(int port, EtherSecurityManager securityManager, String serverSecretKey) {
+        this.port = port;
+        this.securityManager = securityManager;
+        this.serverSecretKey = serverSecretKey != null && !serverSecretKey.isBlank() ? serverSecretKey : DEFAULT_SERVER_SECRET;
+    }
+
+    /**
+     * Returns the active security manager instance.
+     * @return EtherSecurityManager instance
      */
     public EtherSecurityManager getSecurityManager() {
         return securityManager;
     }
 
-    /*
+    /**
+     * Returns the configured cluster authentication secret key.
+     * @return cluster secret key
+     */
+    public String getServerSecretKey() {
+        return serverSecretKey;
+    }
+
+    /**
      * Start.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
      *
      */
     public void start() throws IOException {
@@ -109,9 +125,8 @@ public class EtherNetworkServer {
         });
     }
 
-    /*
+    /**
      * Broadcast state update.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
      *
      * @param stateJson the state json parameter (String)
      */
@@ -119,9 +134,8 @@ public class EtherNetworkServer {
         broadcastStateUpdate(stateJson, null);
     }
 
-    /*
+    /**
      * Broadcast state update.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
      *
      * @param stateJson the state json parameter (String)
      * @param sender the sender parameter (ClientHandler)
@@ -136,9 +150,8 @@ public class EtherNetworkServer {
         }
     }
 
-    /*
+    /**
      * Stop.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
      *
      */
     public void stop() {
@@ -152,9 +165,8 @@ public class EtherNetworkServer {
         }
     }
 
-    /*
+    /**
      * Get connected client count.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
      *
      * @return the resulting computation or state reference
      */
@@ -167,9 +179,8 @@ public class EtherNetworkServer {
         private DataOutputStream out;
         private AuthToken authToken = null;
 
-        /*
+        /**
          * Client handler.
-         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
          *
          * @param socket the socket parameter (Socket)
          * @return the resulting computation or state reference
@@ -178,9 +189,8 @@ public class EtherNetworkServer {
             this.socket = socket;
         }
 
-        /*
+        /**
          * Get auth token.
-         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
          *
          * @return the resulting computation or state reference
          */
@@ -188,9 +198,8 @@ public class EtherNetworkServer {
             return authToken;
         }
 
-        /*
+        /**
          * Set auth token.
-         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
          *
          * @param token the token parameter (AuthToken)
          */
@@ -198,21 +207,18 @@ public class EtherNetworkServer {
             this.authToken = token;
         }
 
-        @Override
-        /*
-         * Run.
-         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
-         *
+        /**
+         * Listens for inbound client communication, enforces cryptographic constraints,
+         * validates RBAC authorization, and broadcasts verified policy mutations.
          */
+        @Override
         public void run() {
-            // Network synchronization: Validate cryptographic payload and sequence barrier
-            // Process spatial partition boundaries and propagate halo exchange buffer
             String clientIp = socket.getRemoteSocketAddress().toString();
             EtherSecurityAuditLogger.logAuditEvent("CONNECT", clientIp, "Co-Governance Planner connected");
 
             try (DataInputStream in = new DataInputStream(socket.getInputStream())) {
                 out = new DataOutputStream(socket.getOutputStream());
-                
+
                 String handshake = "CONNECTED_TO_ETHER_SECURE_SERVER";
                 if (securityManager != null) {
                     try {
@@ -225,32 +231,77 @@ public class EtherNetworkServer {
 
                 while (running && !socket.isClosed()) {
                     String rawMsg = in.readUTF();
-                    String decryptedMsg = rawMsg;
+                    String decryptedMsg;
                     if (securityManager != null) {
                         try {
                             decryptedMsg = securityManager.decrypt(rawMsg);
                         } catch (Exception e) {
-                            // Fallback if client sent plaintext or decryption error
-                            decryptedMsg = rawMsg;
+                            EtherSecurityAuditLogger.logAuditEvent("SECURITY_VIOLATION", clientIp,
+                                    "Decryption failure on payload: rejected plaintext/tampered message");
+                            sendMessage("ERROR:Security violation: Decryption failed, encrypted frame required");
+                            continue;
                         }
+                    } else {
+                        decryptedMsg = rawMsg;
                     }
 
                     if (decryptedMsg.startsWith("AUTH:")) {
-                        // Format: AUTH:<username>:<role>:<signature>
-                        String[] parts = decryptedMsg.split(":", 4);
-                        if (parts.length >= 3) {
-                            AuthToken.Role role = AuthToken.Role.valueOf(parts[2].toUpperCase());
-                            this.authToken = new AuthToken(parts[1], role, "CoGovSecretKey");
-                            EtherSecurityAuditLogger.logAuditEvent("AUTH_SUCCESS", clientIp, "Authenticated as " + role + " (" + parts[1] + ")");
-                            sendMessage("AUTH_OK:" + role.name());
+                        String[] parts = decryptedMsg.split(":");
+                        boolean authenticated = false;
+                        if (parts.length >= 6) {
+                            // Full signed token: AUTH:<username>:<role>:<tokenId>:<timestamp>:<signature>
+                            String user = parts[1];
+                            String roleStr = parts[2];
+                            String tokenId = parts[3];
+                            try {
+                                long timestamp = Long.parseLong(parts[4]);
+                                String signature = parts[5];
+                                long now = System.currentTimeMillis();
+                                if (Math.abs(now - timestamp) > 600_000) {
+                                    EtherSecurityAuditLogger.logAuditEvent("AUTH_FAILED", clientIp, "Rejected expired authentication token");
+                                    sendMessage("ERROR:Authentication token expired");
+                                    continue;
+                                }
+                                AuthToken.Role role = AuthToken.Role.valueOf(roleStr.toUpperCase());
+                                String expectedSig = AuthToken.generateSignature(tokenId, user, role.name(), timestamp, serverSecretKey);
+                                if (expectedSig.equals(signature)) {
+                                    this.authToken = new AuthToken(tokenId, user, role, timestamp, signature);
+                                    authenticated = true;
+                                }
+                            } catch (Exception e) {
+                                logger.warn("Malformed auth token payload from {}: {}", clientIp, e.getMessage());
+                            }
+                        } else if (parts.length >= 4) {
+                            // Secret verification: AUTH:<username>:<role>:<providedSecret>
+                            String user = parts[1];
+                            String roleStr = parts[2];
+                            String providedSecret = parts[3];
+                            try {
+                                AuthToken.Role role = AuthToken.Role.valueOf(roleStr.toUpperCase());
+                                if (serverSecretKey.equals(providedSecret)) {
+                                    this.authToken = new AuthToken(user, role, serverSecretKey);
+                                    authenticated = true;
+                                }
+                            } catch (Exception e) {
+                                logger.warn("Malformed auth attempt from {}: {}", clientIp, e.getMessage());
+                            }
+                        }
+
+                        if (authenticated && this.authToken != null) {
+                            EtherSecurityAuditLogger.logAuditEvent("AUTH_SUCCESS", clientIp, "Authenticated as " + this.authToken.getRole() + " (" + this.authToken.getUsername() + ")");
+                            sendMessage("AUTH_OK:" + this.authToken.getRole().name());
+                        } else {
+                            EtherSecurityAuditLogger.logAuditEvent("AUTH_FAILED", clientIp, "Authentication failed: invalid credentials or signature");
+                            sendMessage("ERROR:Authentication failed (invalid credentials or signature)");
                         }
                         continue;
                     }
 
-                    // Check RBAC permissions for state mutation
-                    if (authToken != null && !authToken.hasPermission(AuthToken.Role.PLANNER)) {
-                        EtherSecurityAuditLogger.logAuditEvent("AUTH_DENIED", clientIp, "Observer role attempted policy modification");
-                        sendMessage("ERROR:Permission denied (requires PLANNER role)");
+                    // Strict Default-Deny RBAC: Every mutation requires an authenticated session with PLANNER or higher role
+                    if (this.authToken == null || !this.authToken.hasPermission(AuthToken.Role.PLANNER)) {
+                        EtherSecurityAuditLogger.logAuditEvent("AUTH_DENIED", clientIp,
+                                "Unauthorized state mutation attempt without PLANNER role");
+                        sendMessage("ERROR:Permission denied (requires authenticated session with PLANNER role)");
                         continue;
                     }
 
@@ -265,9 +316,8 @@ public class EtherNetworkServer {
             }
         }
 
-        /*
+        /**
          * Send message.
-         * Enforces physical invariants and updates associated state variables within {@code EtherNetworkServer}.
          *
          * @param msg the msg parameter (String)
          */

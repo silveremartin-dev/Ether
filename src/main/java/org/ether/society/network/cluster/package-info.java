@@ -1,4 +1,4 @@
-/**
+**
  * <h1>Cluster Orchestration, Halo Exchange &amp; Clock Barriers</h1>
  * <p>
  * Implements distributed coordination primitives for large-scale spatial simulations across compute nodes:

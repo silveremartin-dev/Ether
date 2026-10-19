@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -23,17 +23,16 @@ import java.io.Serializable;
 public class Scenario implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /* Internal state variable for name (String). */
+    /** Internal state: name (String). */
     private String name;
-    /* Internal state variable for description (String). */
+    /** Internal state: description (String). */
     private String description;
     private Long id;
-    /* Internal state variable for preset key (String). */
+    /** Internal state: preset key (String). */
     private String presetKey;
 
-    /*
+    /**
      * Get preset key.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -41,9 +40,8 @@ public class Scenario implements Serializable {
         return presetKey;
     }
 
-    /*
+    /**
      * Set preset key.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param presetKey the preset key parameter (String)
      */
@@ -51,9 +49,8 @@ public class Scenario implements Serializable {
         this.presetKey = presetKey;
     }
 
-    /*
+    /**
      * Get display name.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -68,9 +65,8 @@ public class Scenario implements Serializable {
         return name != null ? name : "Unnamed Scenario";
     }
 
-    /*
+    /**
      * Get display description.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -141,13 +137,12 @@ public class Scenario implements Serializable {
         return null;
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         return getDisplayName();
     }
@@ -155,16 +150,16 @@ public class Scenario implements Serializable {
     // Planet Configuration
     private PlanetPreset planetPreset = PlanetPreset.EARTH_LIKE;
     private EcologyPreset ecologyPreset = EcologyPreset.EARTH_STANDARD;
-    /* Internal state variable for ecology preset name (String). */
+    /** Internal state: ecology preset name (String). */
     private String ecologyPresetName = "Earth Standard Baseline";
-    /* Internal state variable for use real earth data (boolean). */
+    /** Internal state: use real earth data (boolean). */
     private boolean useRealEarthData;
 
     // Planet Physics
     private double planetRadiusKm; // Size
-    /* Internal state variable for rotation period hours (double). */
+    /** Internal state: rotation period hours (double). */
     private double rotationPeriodHours;
-    /* Internal state variable for revolution period days (double). */
+    /** Internal state: revolution period days (double). */
     private double revolutionPeriodDays;
     private double axialTiltDegrees; // Inclination
 
@@ -179,15 +174,15 @@ public class Scenario implements Serializable {
         SPACE_COLONY_MARS("Space Colony / Mars (Low Pop / Ultra High-Tech)", 50000.0, 200000.0, 24.0, 50000000.0),
         CUSTOM("Custom (Manual Stock Inputs)", -1, -1, -1, -1);
 
-        /* Internal state variable for label (String). */
+        /** Internal state: label (String). */
         private final String label;
-        /* Internal state variable for capital (double). */
+        /** Internal state: capital (double). */
         private final double capital;
-        /* Internal state variable for energy (double). */
+        /** Internal state: energy (double). */
         private final double energy;
-        /* Internal state variable for food months (double). */
+        /** Internal state: food months (double). */
         private final double foodMonths;
-        /* Internal state variable for info (double). */
+        /** Internal state: info (double). */
         private final double info;
 
         TechPreset(String label, double capital, double energy, double foodMonths, double info) {
@@ -198,58 +193,52 @@ public class Scenario implements Serializable {
             this.info = info;
         }
 
-        /*
+        /**
          * Get label.
-         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
          *
          * @return the resulting computation or state reference
          */
         public String getLabel() { return label; }
-        /*
+        /**
          * Get capital.
-         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
          *
          * @return the resulting computation or state reference
          */
         public double getCapital() { return capital; }
-        /*
+        /**
          * Get energy.
-         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
          *
          * @return the resulting computation or state reference
          */
         public double getEnergy() { return energy; }
-        /*
+        /**
          * Get food months.
-         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
          *
          * @return the resulting computation or state reference
          */
         public double getFoodMonths() { return foodMonths; }
-        /*
+        /**
          * Get info.
-         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
          *
          * @return the resulting computation or state reference
          */
         public double getInfo() { return info; }
 
-        @Override
-        /*
+        /**
          * To string.
-         * Enforces physical invariants and updates associated state variables within {@code Scenario}.
          *
          * @return the resulting computation or state reference
          */
+        @Override
         public String toString() { return label; }
     }
 
     private TechPreset techPreset = TechPreset.AUTO_FROM_YEAR;
 
     // Human Start Conditions
-    /* Internal state variable for initial human count (long). */
+    /** Internal state: initial human count (long). */
     private long initialHumanCount;
-    /* Internal state variable for initial tech level (double). */
+    /** Internal state: initial tech level (double). */
     private double initialTechLevel;
     private double initialCapitalPerCapita = 10.0; // Physical capital & tools in kg/capita
     private double initialEnergyPerCapita = 50.0; // Fuel & stored energy in MJ/capita
@@ -258,7 +247,7 @@ public class Scenario implements Serializable {
     private String populationDensityType; // "ONE_CONTINENT", "DENSE", "SPARSE", "RIVER_VALLEYS"
 
     // Simulation Parameters
-    /* Internal state variable for cell size km2 (double). */
+    /** Internal state: cell size km2 (double). */
     private double cellSizeKm2;
     private int targetCohortSize = 150; // Target population per demographic cohort node (1 to 10,000+, default 150 = Dunbar pivot)
     private double temporalResolutionDays = 30.0; // Temporal resolution time step Δt in days (default: 30.0 days = 1 month)
@@ -267,13 +256,13 @@ public class Scenario implements Serializable {
     private long endDateYear = 2100; // e.g. 2100 default forward horizon
     private long seed = 12345L; // Demographic density seed
     private long culturalSeed = 54321L; // Cultural tensor suite seed
-    /* Internal state variable for random events enabled (boolean). */
+    /** Internal state: random events enabled (boolean). */
     private boolean randomEventsEnabled = true;
-    /* Internal state variable for earth historical leaders enabled (boolean). */
+    /** Internal state: earth historical leaders enabled (boolean). */
     private boolean earthHistoricalLeadersEnabled = true;
-    /* Internal state variable for procedural leaders enabled (boolean). */
+    /** Internal state: procedural leaders enabled (boolean). */
     private boolean proceduralLeadersEnabled = true;
-    /* Internal state variable for custom density base64 (String). */
+    /** Internal state: custom density base64 (String). */
     private String customDensityBase64;
     // Cultural Vector & Multi-Field Layers (Persisted per Scenario)
     private int cultureVectorDimensions = 9; // 4D to 32D culture vector dimensions (9D baseline on Earth)
@@ -293,19 +282,19 @@ public class Scenario implements Serializable {
 
     // Engine Optimization & Determinism Controls (Persisted at Scenario Level for Physical Conformance)
     private int h3Resolution = 3; // H3 spatial grid resolution (1 to 8, default: 3)
-    /* Internal state variable for strict determinism (boolean). */
+    /** Internal state: strict determinism (boolean). */
     private boolean strictDeterminism = true;
-    /* Internal state variable for sparse cell skipping enabled (boolean). */
+    /** Internal state: sparse cell skipping enabled (boolean). */
     private boolean sparseCellSkippingEnabled = false;
-    /* Internal state variable for ocean macro aggregation enabled (boolean). */
+    /** Internal state: ocean macro aggregation enabled (boolean). */
     private boolean oceanMacroAggregationEnabled = false;
-    /* Internal state variable for coastal navigation only enabled (boolean). */
+    /** Internal state: coastal navigation only enabled (boolean). */
     private boolean coastalNavigationOnlyEnabled = false;
-    /* Internal state variable for ocean multi rate ticking enabled (boolean). */
+    /** Internal state: ocean multi rate ticking enabled (boolean). */
     private boolean oceanMultiRateTickingEnabled = false;
-    /* Internal state variable for parallel execution enabled (boolean). */
+    /** Internal state: parallel execution enabled (boolean). */
     private boolean parallelExecutionEnabled = false;
-    /* Internal state variable for spatial range truncation enabled (boolean). */
+    /** Internal state: spatial range truncation enabled (boolean). */
     private boolean spatialRangeTruncationEnabled = false;
 
     // Type B Procedural & Cliodynamic Engine Checkbox States & Parameters (Persisted per Scenario)
@@ -316,21 +305,20 @@ public class Scenario implements Serializable {
     private java.util.List<ClimateEvent> climateEvents = new java.util.ArrayList<>();
 
     // Spatial Clipping & Boundary Conditions
-    /* Internal state variable for clipping enabled (boolean). */
+    /** Internal state: clipping enabled (boolean). */
     private boolean clippingEnabled = false;
-    /* Internal state variable for min lat (double). */
+    /** Internal state: min lat (double). */
     private double minLat = -90.0;
-    /* Internal state variable for max lat (double). */
+    /** Internal state: max lat (double). */
     private double maxLat = 90.0;
-    /* Internal state variable for min lng (double). */
+    /** Internal state: min lng (double). */
     private double minLng = -180.0;
-    /* Internal state variable for max lng (double). */
+    /** Internal state: max lng (double). */
     private double maxLng = 180.0;
     private String boundaryMode = "DYNAMIC_RESERVOIR"; // "DYNAMIC_RESERVOIR", "CLOSED_BARRIER", "PERIODIC_WRAP"
 
-    /*
+    /**
      * Scenario.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      */
     public Scenario() {
@@ -356,9 +344,8 @@ public class Scenario implements Serializable {
         this.randomEventsEnabled = true;
     }
 
-    /*
+    /**
      * Create default scenario.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      */
     public static Scenario createDefaultScenario() {
@@ -395,9 +382,8 @@ public class Scenario implements Serializable {
         return s;
     }
 
-    /*
+    /**
      * Copy.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -472,7 +458,7 @@ public class Scenario implements Serializable {
         }
     }
 
-    /*
+    /**
      * Calculates the default number of simulation ticks required to run this scenario from startDateYear to endDateYear.
      */
     public int calculateScenarioTicks() {
@@ -483,9 +469,8 @@ public class Scenario implements Serializable {
 
     // Getters and Setters
 
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -493,9 +478,8 @@ public class Scenario implements Serializable {
         return name;
     }
 
-    /*
+    /**
      * Set name.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param name the name parameter (String)
      */
@@ -503,9 +487,8 @@ public class Scenario implements Serializable {
         this.name = name;
     }
 
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -541,9 +524,8 @@ public class Scenario implements Serializable {
         return description;
     }
 
-    /*
+    /**
      * Set description.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param description the description parameter (String)
      */
@@ -551,9 +533,8 @@ public class Scenario implements Serializable {
         this.description = description;
     }
 
-    /*
+    /**
      * Get id.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -561,9 +542,8 @@ public class Scenario implements Serializable {
         return id;
     }
 
-    /*
+    /**
      * Set id.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param id the id parameter (Long)
      */
@@ -571,9 +551,8 @@ public class Scenario implements Serializable {
         this.id = id;
     }
 
-    /*
+    /**
      * Get h3resolution.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -581,9 +560,8 @@ public class Scenario implements Serializable {
         return h3Resolution > 0 ? h3Resolution : 3;
     }
 
-    /*
+    /**
      * Set h3resolution.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param h3Resolution the h3resolution parameter (int)
      */
@@ -591,9 +569,8 @@ public class Scenario implements Serializable {
         this.h3Resolution = h3Resolution;
     }
 
-    /*
+    /**
      * Get planet preset.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -601,9 +578,8 @@ public class Scenario implements Serializable {
         return planetPreset;
     }
 
-    /*
+    /**
      * Set planet preset.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param planetPreset the planet preset parameter (PlanetPreset)
      */
@@ -611,9 +587,8 @@ public class Scenario implements Serializable {
         this.planetPreset = planetPreset;
     }
 
-    /*
+    /**
      * Get ecology preset.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -621,9 +596,8 @@ public class Scenario implements Serializable {
         return ecologyPreset;
     }
 
-    /*
+    /**
      * Set ecology preset.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param ecologyPreset the ecology preset parameter (EcologyPreset)
      */
@@ -631,9 +605,8 @@ public class Scenario implements Serializable {
         this.ecologyPreset = ecologyPreset;
     }
 
-    /*
+    /**
      * Get ecology preset name.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -641,9 +614,8 @@ public class Scenario implements Serializable {
         return ecologyPresetName;
     }
 
-    /*
+    /**
      * Set ecology preset name.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param ecologyPresetName the ecology preset name parameter (String)
      */
@@ -651,9 +623,8 @@ public class Scenario implements Serializable {
         this.ecologyPresetName = ecologyPresetName;
     }
 
-    /*
+    /**
      * Is use real earth data.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -661,9 +632,8 @@ public class Scenario implements Serializable {
         return useRealEarthData;
     }
 
-    /*
+    /**
      * Set use real earth data.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param useRealEarthData the use real earth data parameter (boolean)
      */
@@ -671,9 +641,8 @@ public class Scenario implements Serializable {
         this.useRealEarthData = useRealEarthData;
     }
 
-    /*
+    /**
      * Get planet radius km.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -681,9 +650,8 @@ public class Scenario implements Serializable {
         return planetRadiusKm;
     }
 
-    /*
+    /**
      * Set planet radius km.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param planetRadiusKm the planet radius km parameter (double)
      */
@@ -691,9 +659,8 @@ public class Scenario implements Serializable {
         this.planetRadiusKm = planetRadiusKm;
     }
 
-    /*
+    /**
      * Get rotation period hours.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -701,9 +668,8 @@ public class Scenario implements Serializable {
         return rotationPeriodHours;
     }
 
-    /*
+    /**
      * Set rotation period hours.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param rotationPeriodHours the rotation period hours parameter (double)
      */
@@ -711,9 +677,8 @@ public class Scenario implements Serializable {
         this.rotationPeriodHours = rotationPeriodHours;
     }
 
-    /*
+    /**
      * Get revolution period days.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -721,9 +686,8 @@ public class Scenario implements Serializable {
         return revolutionPeriodDays;
     }
 
-    /*
+    /**
      * Set revolution period days.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param revolutionPeriodDays the revolution period days parameter (double)
      */
@@ -731,9 +695,8 @@ public class Scenario implements Serializable {
         this.revolutionPeriodDays = revolutionPeriodDays;
     }
 
-    /*
+    /**
      * Get axial tilt degrees.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -741,9 +704,8 @@ public class Scenario implements Serializable {
         return axialTiltDegrees;
     }
 
-    /*
+    /**
      * Set axial tilt degrees.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param axialTiltDegrees the axial tilt degrees parameter (double)
      */
@@ -751,9 +713,8 @@ public class Scenario implements Serializable {
         this.axialTiltDegrees = axialTiltDegrees;
     }
 
-    /*
+    /**
      * Get initial human count.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -761,9 +722,8 @@ public class Scenario implements Serializable {
         return initialHumanCount;
     }
 
-    /*
+    /**
      * Set initial human count.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param initialHumanCount the initial human count parameter (long)
      */
@@ -771,9 +731,8 @@ public class Scenario implements Serializable {
         this.initialHumanCount = initialHumanCount;
     }
 
-    /*
+    /**
      * Get tech preset.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -781,9 +740,8 @@ public class Scenario implements Serializable {
         return techPreset != null ? techPreset : TechPreset.AUTO_FROM_YEAR;
     }
 
-    /*
+    /**
      * Set tech preset.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param techPreset the tech preset parameter (TechPreset)
      */
@@ -791,9 +749,8 @@ public class Scenario implements Serializable {
         this.techPreset = techPreset != null ? techPreset : TechPreset.AUTO_FROM_YEAR;
     }
 
-    /*
+    /**
      * Get initial tech level.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -801,9 +758,8 @@ public class Scenario implements Serializable {
         return initialTechLevel;
     }
 
-    /*
+    /**
      * Set initial tech level.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param initialTechLevel the initial tech level parameter (double)
      */
@@ -811,9 +767,8 @@ public class Scenario implements Serializable {
         this.initialTechLevel = initialTechLevel;
     }
 
-    /*
+    /**
      * Get initial capital per capita.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -821,9 +776,8 @@ public class Scenario implements Serializable {
         return initialCapitalPerCapita;
     }
 
-    /*
+    /**
      * Set initial capital per capita.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param initialCapitalPerCapita the initial capital per capita parameter (double)
      */
@@ -831,9 +785,8 @@ public class Scenario implements Serializable {
         this.initialCapitalPerCapita = initialCapitalPerCapita;
     }
 
-    /*
+    /**
      * Get initial energy per capita.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -841,9 +794,8 @@ public class Scenario implements Serializable {
         return initialEnergyPerCapita;
     }
 
-    /*
+    /**
      * Set initial energy per capita.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param initialEnergyPerCapita the initial energy per capita parameter (double)
      */
@@ -851,9 +803,8 @@ public class Scenario implements Serializable {
         this.initialEnergyPerCapita = initialEnergyPerCapita;
     }
 
-    /*
+    /**
      * Get initial food reserve months.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -861,9 +812,8 @@ public class Scenario implements Serializable {
         return initialFoodReserveMonths;
     }
 
-    /*
+    /**
      * Set initial food reserve months.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param initialFoodReserveMonths the initial food reserve months parameter (double)
      */
@@ -871,9 +821,8 @@ public class Scenario implements Serializable {
         this.initialFoodReserveMonths = initialFoodReserveMonths;
     }
 
-    /*
+    /**
      * Get initial information per capita.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -881,9 +830,8 @@ public class Scenario implements Serializable {
         return initialInformationPerCapita;
     }
 
-    /*
+    /**
      * Set initial information per capita.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param initialInformationPerCapita the initial information per capita parameter (double)
      */
@@ -891,9 +839,8 @@ public class Scenario implements Serializable {
         this.initialInformationPerCapita = initialInformationPerCapita;
     }
 
-    /*
+    /**
      * Get population density type.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -901,9 +848,8 @@ public class Scenario implements Serializable {
         return populationDensityType;
     }
 
-    /*
+    /**
      * Set population density type.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param populationDensityType the population density type parameter (String)
      */
@@ -911,9 +857,8 @@ public class Scenario implements Serializable {
         this.populationDensityType = populationDensityType;
     }
 
-    /*
+    /**
      * Get cell size km2.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -921,9 +866,8 @@ public class Scenario implements Serializable {
         return cellSizeKm2;
     }
 
-    /*
+    /**
      * Set cell size km2.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param cellSizeKm2 the cell size km2 parameter (double)
      */
@@ -931,9 +875,8 @@ public class Scenario implements Serializable {
         this.cellSizeKm2 = cellSizeKm2;
     }
 
-    /*
+    /**
      * Get target cohort size.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -941,9 +884,8 @@ public class Scenario implements Serializable {
         return targetCohortSize;
     }
 
-    /*
+    /**
      * Set target cohort size.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param targetCohortSize the target cohort size parameter (int)
      */
@@ -951,9 +893,8 @@ public class Scenario implements Serializable {
         this.targetCohortSize = targetCohortSize;
     }
 
-    /*
+    /**
      * Get climate harshness.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -961,9 +902,8 @@ public class Scenario implements Serializable {
         return climateHarshness;
     }
 
-    /*
+    /**
      * Set climate harshness.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param climateHarshness the climate harshness parameter (double)
      */
@@ -971,9 +911,8 @@ public class Scenario implements Serializable {
         this.climateHarshness = climateHarshness;
     }
 
-    /*
+    /**
      * Get start date year.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -981,9 +920,8 @@ public class Scenario implements Serializable {
         return startDateYear;
     }
 
-    /*
+    /**
      * Set start date year.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param startDateYear the start date year parameter (long)
      */
@@ -994,9 +932,8 @@ public class Scenario implements Serializable {
         }
     }
 
-    /*
+    /**
      * Get end date year.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1004,9 +941,8 @@ public class Scenario implements Serializable {
         return endDateYear;
     }
 
-    /*
+    /**
      * Set end date year.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param endDateYear the end date year parameter (long)
      */
@@ -1014,9 +950,8 @@ public class Scenario implements Serializable {
         this.endDateYear = endDateYear;
     }
 
-    /*
+    /**
      * Get seed.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1024,9 +959,8 @@ public class Scenario implements Serializable {
         return seed;
     }
 
-    /*
+    /**
      * Set seed.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param seed the seed parameter (long)
      */
@@ -1034,9 +968,8 @@ public class Scenario implements Serializable {
         this.seed = seed;
     }
 
-    /*
+    /**
      * Get cultural seed.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1044,9 +977,8 @@ public class Scenario implements Serializable {
         return culturalSeed;
     }
 
-    /*
+    /**
      * Set cultural seed.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param culturalSeed the cultural seed parameter (long)
      */
@@ -1054,9 +986,8 @@ public class Scenario implements Serializable {
         this.culturalSeed = culturalSeed;
     }
 
-    /*
+    /**
      * Is random events enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1064,9 +995,8 @@ public class Scenario implements Serializable {
         return randomEventsEnabled;
     }
 
-    /*
+    /**
      * Set random events enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param randomEventsEnabled the random events enabled parameter (boolean)
      */
@@ -1074,9 +1004,8 @@ public class Scenario implements Serializable {
         this.randomEventsEnabled = randomEventsEnabled;
     }
 
-    /*
+    /**
      * Is earth historical leaders enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1084,9 +1013,8 @@ public class Scenario implements Serializable {
         return earthHistoricalLeadersEnabled;
     }
 
-    /*
+    /**
      * Set earth historical leaders enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param earthHistoricalLeadersEnabled the earth historical leaders enabled parameter (boolean)
      */
@@ -1094,9 +1022,8 @@ public class Scenario implements Serializable {
         this.earthHistoricalLeadersEnabled = earthHistoricalLeadersEnabled;
     }
 
-    /*
+    /**
      * Is procedural leaders enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1104,9 +1031,8 @@ public class Scenario implements Serializable {
         return proceduralLeadersEnabled;
     }
 
-    /*
+    /**
      * Set procedural leaders enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param proceduralLeadersEnabled the procedural leaders enabled parameter (boolean)
      */
@@ -1114,9 +1040,8 @@ public class Scenario implements Serializable {
         this.proceduralLeadersEnabled = proceduralLeadersEnabled;
     }
 
-    /*
+    /**
      * Get custom density base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1124,9 +1049,8 @@ public class Scenario implements Serializable {
         return customDensityBase64;
     }
 
-    /*
+    /**
      * Set custom density base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param customDensityBase64 the custom density base64 parameter (String)
      */
@@ -1134,9 +1058,8 @@ public class Scenario implements Serializable {
         this.customDensityBase64 = customDensityBase64;
     }
 
-    /*
+    /**
      * Is clipping enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1144,9 +1067,8 @@ public class Scenario implements Serializable {
         return clippingEnabled;
     }
 
-    /*
+    /**
      * Set clipping enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param clippingEnabled the clipping enabled parameter (boolean)
      */
@@ -1154,9 +1076,8 @@ public class Scenario implements Serializable {
         this.clippingEnabled = clippingEnabled;
     }
 
-    /*
+    /**
      * Get min lat.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1164,9 +1085,8 @@ public class Scenario implements Serializable {
         return minLat;
     }
 
-    /*
+    /**
      * Set min lat.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param minLat the min lat parameter (double)
      */
@@ -1174,9 +1094,8 @@ public class Scenario implements Serializable {
         this.minLat = minLat;
     }
 
-    /*
+    /**
      * Get max lat.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1184,9 +1103,8 @@ public class Scenario implements Serializable {
         return maxLat;
     }
 
-    /*
+    /**
      * Set max lat.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param maxLat the max lat parameter (double)
      */
@@ -1194,9 +1112,8 @@ public class Scenario implements Serializable {
         this.maxLat = maxLat;
     }
 
-    /*
+    /**
      * Get min lng.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1204,9 +1121,8 @@ public class Scenario implements Serializable {
         return minLng;
     }
 
-    /*
+    /**
      * Set min lng.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param minLng the min lng parameter (double)
      */
@@ -1214,9 +1130,8 @@ public class Scenario implements Serializable {
         this.minLng = minLng;
     }
 
-    /*
+    /**
      * Get max lng.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1224,9 +1139,8 @@ public class Scenario implements Serializable {
         return maxLng;
     }
 
-    /*
+    /**
      * Set max lng.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param maxLng the max lng parameter (double)
      */
@@ -1234,9 +1148,8 @@ public class Scenario implements Serializable {
         this.maxLng = maxLng;
     }
 
-    /*
+    /**
      * Get boundary mode.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1244,9 +1157,8 @@ public class Scenario implements Serializable {
         return boundaryMode;
     }
 
-    /*
+    /**
      * Set boundary mode.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param boundaryMode the boundary mode parameter (String)
      */
@@ -1254,9 +1166,8 @@ public class Scenario implements Serializable {
         this.boundaryMode = boundaryMode;
     }
 
-    /*
+    /**
      * Is strict determinism.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1264,9 +1175,8 @@ public class Scenario implements Serializable {
         return strictDeterminism;
     }
 
-    /*
+    /**
      * Set strict determinism.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param strictDeterminism the strict determinism parameter (boolean)
      */
@@ -1280,9 +1190,8 @@ public class Scenario implements Serializable {
         }
     }
 
-    /*
+    /**
      * Is sparse cell skipping enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1290,9 +1199,8 @@ public class Scenario implements Serializable {
         return sparseCellSkippingEnabled;
     }
 
-    /*
+    /**
      * Set sparse cell skipping enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param sparseCellSkippingEnabled the sparse cell skipping enabled parameter (boolean)
      */
@@ -1303,9 +1211,8 @@ public class Scenario implements Serializable {
         }
     }
 
-    /*
+    /**
      * Is ocean macro aggregation enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1313,9 +1220,8 @@ public class Scenario implements Serializable {
         return oceanMacroAggregationEnabled;
     }
 
-    /*
+    /**
      * Set ocean macro aggregation enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param oceanMacroAggregationEnabled the ocean macro aggregation enabled parameter (boolean)
      */
@@ -1323,9 +1229,8 @@ public class Scenario implements Serializable {
         this.oceanMacroAggregationEnabled = oceanMacroAggregationEnabled;
     }
 
-    /*
+    /**
      * Is coastal navigation only enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1333,9 +1238,8 @@ public class Scenario implements Serializable {
         return coastalNavigationOnlyEnabled;
     }
 
-    /*
+    /**
      * Set coastal navigation only enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param coastalNavigationOnlyEnabled the coastal navigation only enabled parameter (boolean)
      */
@@ -1343,9 +1247,8 @@ public class Scenario implements Serializable {
         this.coastalNavigationOnlyEnabled = coastalNavigationOnlyEnabled;
     }
 
-    /*
+    /**
      * Is ocean multi rate ticking enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1353,9 +1256,8 @@ public class Scenario implements Serializable {
         return oceanMultiRateTickingEnabled;
     }
 
-    /*
+    /**
      * Set ocean multi rate ticking enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param oceanMultiRateTickingEnabled the ocean multi rate ticking enabled parameter (boolean)
      */
@@ -1366,9 +1268,8 @@ public class Scenario implements Serializable {
         }
     }
 
-    /*
+    /**
      * Is parallel execution enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1376,9 +1277,8 @@ public class Scenario implements Serializable {
         return parallelExecutionEnabled;
     }
 
-    /*
+    /**
      * Set parallel execution enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param parallelExecutionEnabled the parallel execution enabled parameter (boolean)
      */
@@ -1389,9 +1289,8 @@ public class Scenario implements Serializable {
         }
     }
 
-    /*
+    /**
      * Is spatial range truncation enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1399,9 +1298,8 @@ public class Scenario implements Serializable {
         return spatialRangeTruncationEnabled;
     }
 
-    /*
+    /**
      * Set spatial range truncation enabled.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param spatialRangeTruncationEnabled the spatial range truncation enabled parameter (boolean)
      */
@@ -1412,14 +1310,13 @@ public class Scenario implements Serializable {
         }
     }
 
-    /* Internal state variable for climate tick frequency (int). */
+    /** Internal state: climate tick frequency (int). */
     private int climateTickFrequency = 5;
-    /* Internal state variable for parallel thread count (int). */
+    /** Internal state: parallel thread count (int). */
     private int parallelThreadCount = 0;
 
-    /*
+    /**
      * Get climate tick frequency.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1427,9 +1324,8 @@ public class Scenario implements Serializable {
         return climateTickFrequency;
     }
 
-    /*
+    /**
      * Set climate tick frequency.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param climateTickFrequency the climate tick frequency parameter (int)
      */
@@ -1437,9 +1333,8 @@ public class Scenario implements Serializable {
         this.climateTickFrequency = Math.max(1, climateTickFrequency);
     }
 
-    /*
+    /**
      * Get parallel thread count.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1447,9 +1342,8 @@ public class Scenario implements Serializable {
         return parallelThreadCount;
     }
 
-    /*
+    /**
      * Set parallel thread count.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param parallelThreadCount the parallel thread count parameter (int)
      */
@@ -1457,7 +1351,7 @@ public class Scenario implements Serializable {
         this.parallelThreadCount = Math.max(0, parallelThreadCount);
     }
 
-    /*
+    /**
      * Converts this scenario's optimization settings into a runtime SimulationPerformanceConfig instance.
      */
     public org.ether.society.config.SimulationPerformanceConfig toPerformanceConfig() {
@@ -1495,9 +1389,8 @@ public class Scenario implements Serializable {
         this.tier2CliodynamicsEnabled = tier2CliodynamicsEnabled;
     }
 
-    /*
+    /**
      * Get temporal resolution days.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1505,9 +1398,8 @@ public class Scenario implements Serializable {
         return temporalResolutionDays;
     }
 
-    /*
+    /**
      * Set temporal resolution days.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param temporalResolutionDays the temporal resolution days parameter (double)
      */
@@ -1515,9 +1407,8 @@ public class Scenario implements Serializable {
         this.temporalResolutionDays = temporalResolutionDays;
     }
 
-    /*
+    /**
      * Get type bengine states.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1530,9 +1421,8 @@ public class Scenario implements Serializable {
 
 
 
-    /*
+    /**
      * Set type bengine states.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param typeBEngineStates the type bengine states parameter (Boolean&gt;)
      */
@@ -1540,9 +1430,8 @@ public class Scenario implements Serializable {
         this.typeBEngineStates = typeBEngineStates != null ? typeBEngineStates : new java.util.HashMap<>();
     }
 
-    /*
+    /**
      * Get type bengine parameters.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1553,9 +1442,8 @@ public class Scenario implements Serializable {
         return typeBEngineParameters;
     }
 
-    /*
+    /**
      * Set type bengine parameters.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param typeBEngineParameters the type bengine parameters parameter (Double&gt;&gt;)
      */
@@ -1563,9 +1451,8 @@ public class Scenario implements Serializable {
         this.typeBEngineParameters = typeBEngineParameters != null ? typeBEngineParameters : new java.util.HashMap<>();
     }
 
-    /*
+    /**
      * Get culture vector dimensions.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1573,9 +1460,8 @@ public class Scenario implements Serializable {
         return cultureVectorDimensions;
     }
 
-    /*
+    /**
      * Set culture vector dimensions.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param cultureVectorDimensions the culture vector dimensions parameter (int)
      */
@@ -1583,9 +1469,8 @@ public class Scenario implements Serializable {
         this.cultureVectorDimensions = cultureVectorDimensions;
     }
 
-    /*
+    /**
      * Get custom tensor names.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1593,9 +1478,8 @@ public class Scenario implements Serializable {
         return customTensorNames;
     }
 
-    /*
+    /**
      * Set custom tensor names.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param customTensorNames the custom tensor names parameter (String&gt;)
      */
@@ -1603,9 +1487,8 @@ public class Scenario implements Serializable {
         this.customTensorNames = customTensorNames != null ? customTensorNames : new java.util.HashMap<>();
     }
 
-    /*
+    /**
      * Get custom tensor name.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param index the index parameter (int)
      * @return the resulting computation or state reference
@@ -1614,9 +1497,8 @@ public class Scenario implements Serializable {
         return customTensorNames != null ? customTensorNames.get(index) : null;
     }
 
-    /*
+    /**
      * Set custom tensor name.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param index the index parameter (int)
      * @param name the name parameter (String)
@@ -1671,9 +1553,8 @@ public class Scenario implements Serializable {
         return 50.0;
     }
 
-    /*
+    /**
      * Get cultural diffusion rate.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1681,9 +1562,8 @@ public class Scenario implements Serializable {
         return culturalDiffusionRate;
     }
 
-    /*
+    /**
      * Set cultural diffusion rate.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param culturalDiffusionRate the cultural diffusion rate parameter (double)
      */
@@ -1691,9 +1571,8 @@ public class Scenario implements Serializable {
         this.culturalDiffusionRate = culturalDiffusionRate;
     }
 
-    /*
+    /**
      * Get cultural mutation rate.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1701,9 +1580,8 @@ public class Scenario implements Serializable {
         return culturalMutationRate;
     }
 
-    /*
+    /**
      * Set cultural mutation rate.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param culturalMutationRate the cultural mutation rate parameter (double)
      */
@@ -1711,9 +1589,8 @@ public class Scenario implements Serializable {
         this.culturalMutationRate = culturalMutationRate;
     }
 
-    /*
+    /**
      * Get custom tensor maps base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1724,9 +1601,8 @@ public class Scenario implements Serializable {
         return customTensorMapsBase64;
     }
 
-    /*
+    /**
      * Set custom tensor maps base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param customTensorMapsBase64 the custom tensor maps base64 parameter (java.util.List&lt;String&gt;)
      */
@@ -1734,9 +1610,8 @@ public class Scenario implements Serializable {
         this.customTensorMapsBase64 = customTensorMapsBase64 != null ? customTensorMapsBase64 : new java.util.ArrayList<>();
     }
 
-    /*
+    /**
      * Get tensor procedural modes.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1747,9 +1622,8 @@ public class Scenario implements Serializable {
         return tensorProceduralModes;
     }
 
-    /*
+    /**
      * Set tensor procedural modes.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param tensorProceduralModes the tensor procedural modes parameter (java.util.List&lt;Boolean&gt;)
      */
@@ -1757,9 +1631,8 @@ public class Scenario implements Serializable {
         this.tensorProceduralModes = tensorProceduralModes != null ? tensorProceduralModes : new java.util.ArrayList<>();
     }
 
-    /*
+    /**
      * Get custom tensor map base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param index the index parameter (int)
      * @return the resulting computation or state reference
@@ -1772,9 +1645,8 @@ public class Scenario implements Serializable {
         return null;
     }
 
-    /*
+    /**
      * Set custom tensor map base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param index the index parameter (int)
      * @param base64 the base64 parameter (String)
@@ -1787,9 +1659,8 @@ public class Scenario implements Serializable {
         list.set(index, base64);
     }
 
-    /*
+    /**
      * Get tensor seeds.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1800,9 +1671,8 @@ public class Scenario implements Serializable {
         return tensorSeeds;
     }
 
-    /*
+    /**
      * Set tensor seeds.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param tensorSeeds the tensor seeds parameter (Long&gt;)
      */
@@ -1810,9 +1680,8 @@ public class Scenario implements Serializable {
         this.tensorSeeds = tensorSeeds != null ? tensorSeeds : new java.util.HashMap<>();
     }
 
-    /*
+    /**
      * Get tensor procedural parameters.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1823,9 +1692,8 @@ public class Scenario implements Serializable {
         return tensorProceduralParameters;
     }
 
-    /*
+    /**
      * Set tensor procedural parameters.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param tensorProceduralParameters the tensor procedural parameters parameter (Double&gt;&gt;)
      */
@@ -1833,9 +1701,8 @@ public class Scenario implements Serializable {
         this.tensorProceduralParameters = tensorProceduralParameters != null ? tensorProceduralParameters : new java.util.HashMap<>();
     }
 
-    /*
+    /**
      * Get resource vector dimensions.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1843,9 +1710,8 @@ public class Scenario implements Serializable {
         return resourceVectorDimensions;
     }
 
-    /*
+    /**
      * Set resource vector dimensions.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param resourceVectorDimensions the resource vector dimensions parameter (int)
      */
@@ -1853,9 +1719,8 @@ public class Scenario implements Serializable {
         this.resourceVectorDimensions = resourceVectorDimensions;
     }
 
-    /*
+    /**
      * Get custom geology tensor maps base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1866,9 +1731,8 @@ public class Scenario implements Serializable {
         return customGeologyTensorMapsBase64;
     }
 
-    /*
+    /**
      * Set custom geology tensor maps base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param customGeologyTensorMapsBase64 the custom geology tensor maps base64 parameter (java.util.List&lt;String&gt;)
      */
@@ -1876,9 +1740,8 @@ public class Scenario implements Serializable {
         this.customGeologyTensorMapsBase64 = customGeologyTensorMapsBase64 != null ? customGeologyTensorMapsBase64 : new java.util.ArrayList<>();
     }
 
-    /*
+    /**
      * Get geology tensor procedural modes.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1889,9 +1752,8 @@ public class Scenario implements Serializable {
         return geologyTensorProceduralModes;
     }
 
-    /*
+    /**
      * Set geology tensor procedural modes.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param geologyTensorProceduralModes the geology tensor procedural modes parameter (java.util.List&lt;Boolean&gt;)
      */
@@ -1899,9 +1761,8 @@ public class Scenario implements Serializable {
         this.geologyTensorProceduralModes = geologyTensorProceduralModes != null ? geologyTensorProceduralModes : new java.util.ArrayList<>();
     }
 
-    /*
+    /**
      * Get custom geology tensor map base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param index the index parameter (int)
      * @return the resulting computation or state reference
@@ -1914,9 +1775,8 @@ public class Scenario implements Serializable {
         return null;
     }
 
-    /*
+    /**
      * Set custom geology tensor map base64.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param index the index parameter (int)
      * @param base64 the base64 parameter (String)
@@ -1929,9 +1789,8 @@ public class Scenario implements Serializable {
         list.set(index, base64);
     }
 
-    /*
+    /**
      * Get climate events.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */
@@ -1939,9 +1798,8 @@ public class Scenario implements Serializable {
         return climateEvents;
     }
 
-    /*
+    /**
      * Set climate events.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @param climateEvents the climate events parameter (java.util.List&lt;ClimateEvent&gt;)
      */
@@ -1949,9 +1807,8 @@ public class Scenario implements Serializable {
         this.climateEvents = climateEvents != null ? climateEvents : new java.util.ArrayList<>();
     }
 
-    /*
+    /**
      * Get built in scenarios.
-     * Enforces physical invariants and updates associated state variables within {@code Scenario}.
      *
      * @return the resulting computation or state reference
      */

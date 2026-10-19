@@ -1,4 +1,4 @@
-package org.ether.society.core.dod;
+ackage org.ether.society.core.dod;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,14 +61,13 @@ public class CultureKernel {
         return baseSeed;
     }
 
-    /*
+    /**
      * Get diffusion rate.
-     * Enforces physical invariants and updates associated state variables within {@code CultureKernel}.
      *
      * @return the resulting computation or state reference
      */
     public float getDiffusionRate() { return diffusionRate; }
-    /*
+    /**
      * Set diffusion rate operation.
      * <p>
      * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.
@@ -79,14 +78,13 @@ public class CultureKernel {
      */
     public void setDiffusionRate(float rate) { this.diffusionRate = Math.max(0.0f, rate); }
 
-    /*
+    /**
      * Get mutation rate.
-     * Enforces physical invariants and updates associated state variables within {@code CultureKernel}.
      *
      * @return the resulting computation or state reference
      */
     public float getMutationRate() { return mutationRate; }
-    /*
+    /**
      * Set mutation rate operation.
      * <p>
      * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.
@@ -97,14 +95,13 @@ public class CultureKernel {
      */
     public void setMutationRate(float rate) { this.mutationRate = Math.max(0.0f, rate); }
 
-    /*
+    /**
      * Get forcing rate.
-     * Enforces physical invariants and updates associated state variables within {@code CultureKernel}.
      *
      * @return the resulting computation or state reference
      */
     public float getForcingRate() { return forcingRate; }
-    /*
+    /**
      * Set forcing rate operation.
      * <p>
      * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.

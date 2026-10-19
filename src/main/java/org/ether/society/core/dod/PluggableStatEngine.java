@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -23,32 +23,30 @@ public class PluggableStatEngine {
     private static final Logger logger = LoggerFactory.getLogger(PluggableStatEngine.class);
 
     public static class StatDefinition {
-        /* Internal state variable for id (String). */
+        /** Internal state: id (String). */
         private String id;
-        /* Internal state variable for name (String). */
+        /** Internal state: name (String). */
         private String name;
-        /* Internal state variable for category (String). */
+        /** Internal state: category (String). */
         private String category;
-        /* Internal state variable for expression (String). */
+        /** Internal state: expression (String). */
         private String expression;
-        /* Internal state variable for unit (String). */
+        /** Internal state: unit (String). */
         private String unit;
-        /* Internal state variable for description (String). */
+        /** Internal state: description (String). */
         private String description;
-        /* Internal state variable for builtin (boolean). */
+        /** Internal state: builtin (boolean). */
         private boolean builtin;
 
-        /*
+        /**
          * Stat definition.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @return the resulting computation or state reference
          */
         public StatDefinition() {}
 
-        /*
+        /**
          * Stat definition.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @param id the id parameter (String)
          * @param name the name parameter (String)
@@ -69,57 +67,50 @@ public class PluggableStatEngine {
             this.builtin = builtin;
         }
 
-        /*
+        /**
          * Get id.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }
-        /*
+        /**
          * Get name.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
-        /*
+        /**
          * Get category.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getCategory() { return category; }
         public void setCategory(String category) { this.category = category; }
-        /*
+        /**
          * Get expression.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getExpression() { return expression; }
         public void setExpression(String expression) { this.expression = expression; }
-        /*
+        /**
          * Get unit.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getUnit() { return unit; }
         public void setUnit(String unit) { this.unit = unit; }
-        /*
+        /**
          * Get description.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getDescription() { return description; }
         public void setDescription(String description) { this.description = description; }
-        /*
+        /**
          * Is builtin.
-         * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
          *
          * @return the resulting computation or state reference
          */
@@ -130,16 +121,14 @@ public class PluggableStatEngine {
     private final Map<String, StatDefinition> registeredStats = new LinkedHashMap<>();
     private final FormulaEvaluator evaluator = new FormulaEvaluator();
 
-    /*
+    /**
      * Pluggable stat engine.
-     * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
      *
      */
     public PluggableStatEngine() {
         registerBuiltinDefaults();
     }
 
-    // Helper subroutine: register builtin defaults - internal state computation & bounds checking
     private void registerBuiltinDefaults() {
         registerStat(new StatDefinition(
                 "custom_gini_wealth",
@@ -242,9 +231,8 @@ public class PluggableStatEngine {
         ));
     }
 
-    /*
+    /**
      * Register stat.
-     * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
      *
      * @param stat the stat parameter (StatDefinition)
      */
@@ -255,9 +243,8 @@ public class PluggableStatEngine {
         }
     }
 
-    /*
+    /**
      * Unregister stat.
-     * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
      *
      * @param id the id parameter (String)
      */
@@ -269,9 +256,8 @@ public class PluggableStatEngine {
         }
     }
 
-    /*
+    /**
      * Get registered stats.
-     * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
      *
      * @return the resulting computation or state reference
      */
@@ -279,9 +265,8 @@ public class PluggableStatEngine {
         return Collections.unmodifiableCollection(registeredStats.values());
     }
 
-    /*
+    /**
      * Get stat.
-     * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
      *
      * @param id the id parameter (String)
      * @return the resulting computation or state reference
@@ -290,7 +275,7 @@ public class PluggableStatEngine {
         return registeredStats.get(id);
     }
 
-    /*
+    /**
      * Computes the numerical value of a formula over H3 cell data or WorldBuffer.
      */
     public double computeValue(String expression, List<H3Cell> cells, WorldBuffer buffer) {
@@ -304,9 +289,8 @@ public class PluggableStatEngine {
         return evaluator.evaluate(expression, arrayResolver, scalarResolver);
     }
 
-    /*
+    /**
      * Extract variable array.
-     * Enforces physical invariants and updates associated state variables within {@code PluggableStatEngine}.
      *
      * @param varName the var name parameter (String)
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
@@ -544,7 +528,6 @@ public class PluggableStatEngine {
         return new float[0];
     }
 
-    // Helper subroutine: compute scalar variable - internal state computation & bounds checking
     private double computeScalarVariable(String varName, List<H3Cell> cells, WorldBuffer buffer) {
         // High-performance contiguous memory pass: Cache-aligned array streaming
         // Vectorized SIMD / analytical state updates with zero heap allocation
@@ -556,7 +539,7 @@ public class PluggableStatEngine {
         return sum;
     }
 
-    /*
+    /**
      * Export custom formulas to a properties/JSON formatted file.
      */
     public void exportFormulasToFile(File file) throws IOException {
@@ -572,7 +555,7 @@ public class PluggableStatEngine {
         }
     }
 
-    /*
+    /**
      * Import custom formulas from a properties file.
      */
     public void importFormulasFromFile(File file) throws IOException {

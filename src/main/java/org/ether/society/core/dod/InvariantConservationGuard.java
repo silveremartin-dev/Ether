@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -27,32 +27,31 @@ import org.slf4j.LoggerFactory;
 public class InvariantConservationGuard {
     private static final Logger logger = LoggerFactory.getLogger(InvariantConservationGuard.class);
 
-    /* Internal state variable for relative tolerance (double). */
+    /** Internal state: relative tolerance (double). */
     private final double relativeTolerance;
-    /* Internal state variable for throw on violation (boolean). */
+    /** Internal state: throw on violation (boolean). */
     private final boolean throwOnViolation;
 
-    /* Internal state variable for last total biomass (double). */
+    /** Internal state: last total biomass (double). */
     private double lastTotalBiomass = -1.0;
-    /* Internal state variable for last total energy (double). */
+    /** Internal state: last total energy (double). */
     private double lastTotalEnergy = -1.0;
-    /* Internal state variable for last total capital (double). */
+    /** Internal state: last total capital (double). */
     private double lastTotalCapital = -1.0;
-    /* Internal state variable for total invariant checks (long). */
+    /** Internal state: total invariant checks (long). */
     private long totalInvariantChecks = 0;
-    /* Internal state variable for violation count (long). */
+    /** Internal state: violation count (long). */
     private long violationCount = 0;
 
-    /*
+    /**
      * Default constructor with $10^{-5}$ relative tolerance and non-throwing logging mode.
      */
     public InvariantConservationGuard() {
         this(1e-5, false);
     }
 
-    /*
+    /**
      * Invariant conservation guard.
-     * Enforces physical invariants and updates associated state variables within {@code InvariantConservationGuard}.
      *
      * @param relativeTolerance the relative tolerance parameter (double)
      * @param throwOnViolation the throw on violation parameter (boolean)
@@ -62,7 +61,7 @@ public class InvariantConservationGuard {
         this.throwOnViolation = throwOnViolation;
     }
 
-    /*
+    /**
      * Snapshot record of aggregated physical quantities across the planetary WorldBuffer.
      */
     public record ConservationSnapshot(
@@ -73,7 +72,7 @@ public class InvariantConservationGuard {
             boolean boundsValid
     ) {}
 
-    /*
+    /**
      * Captures a global conservation snapshot from the active WorldBuffer.
      *
      * @param buffer the DOD WorldBuffer to inspect
@@ -139,7 +138,7 @@ public class InvariantConservationGuard {
         return new ConservationSnapshot(biomass, energy, capital, active, boundsOk);
     }
 
-    /*
+    /**
      * Verifies that the state transition from pre-step to post-step preserves physical invariants.
      *
      * @param before snapshot before the simulation step
@@ -175,7 +174,6 @@ public class InvariantConservationGuard {
         return true;
     }
 
-    // Helper subroutine: record violation - internal state computation & bounds checking
     private void recordViolation(String message) {
         violationCount++;
         logger.warn("[InvariantConservationGuard] VIOLATION #{}: {}", violationCount, message);
@@ -184,51 +182,44 @@ public class InvariantConservationGuard {
         }
     }
 
-    /*
+    /**
      * Get relative tolerance.
-     * Enforces physical invariants and updates associated state variables within {@code InvariantConservationGuard}.
      *
      * @return the resulting computation or state reference
      */
     public double getRelativeTolerance() { return relativeTolerance; }
-    /*
+    /**
      * Is throw on violation.
-     * Enforces physical invariants and updates associated state variables within {@code InvariantConservationGuard}.
      *
      * @return the resulting computation or state reference
      */
     public boolean isThrowOnViolation() { return throwOnViolation; }
-    /*
+    /**
      * Get total invariant checks.
-     * Enforces physical invariants and updates associated state variables within {@code InvariantConservationGuard}.
      *
      * @return the resulting computation or state reference
      */
     public long getTotalInvariantChecks() { return totalInvariantChecks; }
-    /*
+    /**
      * Get violation count.
-     * Enforces physical invariants and updates associated state variables within {@code InvariantConservationGuard}.
      *
      * @return the resulting computation or state reference
      */
     public long getViolationCount() { return violationCount; }
-    /*
+    /**
      * Get last total biomass.
-     * Enforces physical invariants and updates associated state variables within {@code InvariantConservationGuard}.
      *
      * @return the resulting computation or state reference
      */
     public double getLastTotalBiomass() { return lastTotalBiomass; }
-    /*
+    /**
      * Get last total energy.
-     * Enforces physical invariants and updates associated state variables within {@code InvariantConservationGuard}.
      *
      * @return the resulting computation or state reference
      */
     public double getLastTotalEnergy() { return lastTotalEnergy; }
-    /*
+    /**
      * Get last total capital.
-     * Enforces physical invariants and updates associated state variables within {@code InvariantConservationGuard}.
      *
      * @return the resulting computation or state reference
      */

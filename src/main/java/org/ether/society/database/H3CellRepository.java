@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -29,9 +29,8 @@ public class H3CellRepository {
     private static final Logger logger = LoggerFactory.getLogger(H3CellRepository.class);
     private final EntityManagerFactory emf;
 
-    /*
+    /**
      * H3cell repository.
-     * Enforces physical invariants and updates associated state variables within {@code H3CellRepository}.
      *
      * @param emf the emf parameter (EntityManagerFactory)
      */
@@ -39,7 +38,7 @@ public class H3CellRepository {
         this.emf = emf;
     }
 
-    /*
+    /**
      * Save a single H3Cell.
      */
     public void save(H3Cell cell) {
@@ -68,7 +67,7 @@ public class H3CellRepository {
         }
     }
 
-    /*
+    /**
      * Save multiple H3Cells in batch.
      */
     public void saveAll(List<H3Cell> cells) {
@@ -118,7 +117,7 @@ public class H3CellRepository {
         }
     }
 
-    /*
+    /**
      * Find H3Cell by ID.
      */
     public Optional<H3Cell> findById(Long id) {
@@ -132,7 +131,7 @@ public class H3CellRepository {
         }
     }
 
-    /*
+    /**
      * Find H3Cell by H3 index.
      */
     public Optional<H3Cell> findByH3Index(long h3Index) {
@@ -149,7 +148,7 @@ public class H3CellRepository {
         }
     }
 
-    /*
+    /**
      * Find all H3Cells within lat/lng bounds.
      */
     public List<H3Cell> findByBounds(double minLat, double maxLat, double minLng, double maxLng) {
@@ -170,7 +169,7 @@ public class H3CellRepository {
         }
     }
 
-    /*
+    /**
      * Find all H3Cells (use with caution - can be large!).
      */
     public List<H3Cell> findAll() {
@@ -184,7 +183,7 @@ public class H3CellRepository {
         }
     }
 
-    /*
+    /**
      * Count total H3Cells.
      */
     public long count() {
@@ -198,7 +197,7 @@ public class H3CellRepository {
         }
     }
 
-    /*
+    /**
      * Delete all H3Cells (use with caution!).
      */
     public void deleteAll() {

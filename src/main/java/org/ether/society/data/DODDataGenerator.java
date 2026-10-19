@@ -1,4 +1,4 @@
-package org.ether.society.data;
+ackage org.ether.society.data;
 
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.WorldBuffer;
@@ -22,7 +22,7 @@ import java.util.List;
 public class DODDataGenerator {
     private static final Logger logger = LoggerFactory.getLogger(DODDataGenerator.class);
 
-    /*
+    /**
      * Populates a WorldBuffer from a list of H3Cells.
      */
     public static void populateWorldBuffer(List<H3Cell> cells, WorldBuffer buffer) {
@@ -87,7 +87,7 @@ public class DODDataGenerator {
         logger.info("WorldBuffer population complete.");
     }
 
-    /*
+    /**
      * Initializes the AgentBuffer based on the population density in the WorldBuffer.
      * This creates "Demographic Nodes" (cohorts) for cells with population.
      */
@@ -95,9 +95,8 @@ public class DODDataGenerator {
         initializeAgentBuffer(world, agents, 500);
     }
 
-    /*
+    /**
      * Initialize agent buffer.
-     * Enforces physical invariants and updates associated state variables within {@code DODDataGenerator}.
      *
      * @param world the world parameter (WorldBuffer)
      * @param agents the agents parameter (AgentBuffer)

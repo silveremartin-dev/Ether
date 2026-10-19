@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -20,20 +20,19 @@ import java.util.*;
 public class RootCauseAnalyzer {
 
     public static class MetricDelta {
-        /* Internal state variable for metric name (String). */
+        /** Internal state: metric name (String). */
         private final String metricName;
-        /* Internal state variable for baseline value (double). */
+        /** Internal state: baseline value (double). */
         private final double baselineValue;
-        /* Internal state variable for target value (double). */
+        /** Internal state: target value (double). */
         private final double targetValue;
-        /* Internal state variable for absolute change (double). */
+        /** Internal state: absolute change (double). */
         private final double absoluteChange;
-        /* Internal state variable for percentage change (double). */
+        /** Internal state: percentage change (double). */
         private final double percentageChange;
 
-        /*
+        /**
          * Metric delta.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @param metricName the metric name parameter (String)
          * @param baselineValue the baseline value parameter (double)
@@ -48,37 +47,32 @@ public class RootCauseAnalyzer {
             this.percentageChange = baselineValue != 0 ? (absoluteChange / baselineValue) * 100.0 : 0.0;
         }
 
-        /*
+        /**
          * Get metric name.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public String getMetricName() { return metricName; }
-        /*
+        /**
          * Get baseline value.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public double getBaselineValue() { return baselineValue; }
-        /*
+        /**
          * Get target value.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public double getTargetValue() { return targetValue; }
-        /*
+        /**
          * Get absolute change.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public double getAbsoluteChange() { return absoluteChange; }
-        /*
+        /**
          * Get percentage change.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
@@ -86,20 +80,19 @@ public class RootCauseAnalyzer {
     }
 
     public static class ParameterCorrection {
-        /* Internal state variable for parameter name (String). */
+        /** Internal state: parameter name (String). */
         private final String parameterName;
-        /* Internal state variable for current value (String). */
+        /** Internal state: current value (String). */
         private final String currentValue;
-        /* Internal state variable for proposed value (String). */
+        /** Internal state: proposed value (String). */
         private final String proposedValue;
-        /* Internal state variable for adjustment factor (double). */
+        /** Internal state: adjustment factor (double). */
         private final double adjustmentFactor;
-        /* Internal state variable for rationale (String). */
+        /** Internal state: rationale (String). */
         private final String rationale;
 
-        /*
+        /**
          * Parameter correction.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @param parameterName the parameter name parameter (String)
          * @param currentValue the current value parameter (String)
@@ -116,37 +109,32 @@ public class RootCauseAnalyzer {
             this.rationale = rationale;
         }
 
-        /*
+        /**
          * Get parameter name.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public String getParameterName() { return parameterName; }
-        /*
+        /**
          * Get current value.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public String getCurrentValue() { return currentValue; }
-        /*
+        /**
          * Get proposed value.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public String getProposedValue() { return proposedValue; }
-        /*
+        /**
          * Get adjustment factor.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public double getAdjustmentFactor() { return adjustmentFactor; }
-        /*
+        /**
          * Get rationale.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
@@ -156,15 +144,15 @@ public class RootCauseAnalyzer {
     public static class ComparisonResult {
         private final SimulationRunRecord baselineRun;
         private final SimulationRunRecord targetRun;
-        /* Internal state variable for divergence year (int). */
+        /** Internal state: divergence year (int). */
         private final int divergenceYear;
-        /* Internal state variable for final deltas (List&lt;MetricDelta&gt;). */
+        /** Internal state: final deltas (List&lt;MetricDelta&gt;). */
         private final List<MetricDelta> finalDeltas;
-        /* Internal state variable for key differences (List&lt;String&gt;). */
+        /** Internal state: key differences (List&lt;String&gt;). */
         private final List<String> keyDifferences;
-        /* Internal state variable for primary root cause explanation (String). */
+        /** Internal state: primary root cause explanation (String). */
         private final String primaryRootCauseExplanation;
-        /* Internal state variable for proposed corrections (List&lt;ParameterCorrection&gt;). */
+        /** Internal state: proposed corrections (List&lt;ParameterCorrection&gt;). */
         private final List<ParameterCorrection> proposedCorrections;
 
         public ComparisonResult(SimulationRunRecord baselineRun, SimulationRunRecord targetRun,
@@ -180,60 +168,52 @@ public class RootCauseAnalyzer {
             this.proposedCorrections = proposedCorrections != null ? proposedCorrections : Collections.emptyList();
         }
 
-        /*
+        /**
          * Get baseline run.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public SimulationRunRecord getBaselineRun() { return baselineRun; }
-        /*
+        /**
          * Get target run.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public SimulationRunRecord getTargetRun() { return targetRun; }
-        /*
+        /**
          * Get divergence year.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public int getDivergenceYear() { return divergenceYear; }
-        /*
+        /**
          * Get final deltas.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public List<MetricDelta> getFinalDeltas() { return finalDeltas; }
-        /*
+        /**
          * Get key differences.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public List<String> getKeyDifferences() { return keyDifferences; }
-        /*
+        /**
          * Get primary root cause explanation.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public String getPrimaryRootCauseExplanation() { return primaryRootCauseExplanation; }
-        /*
+        /**
          * Get proposed corrections.
-         * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public List<ParameterCorrection> getProposedCorrections() { return proposedCorrections; }
     }
 
-    /*
+    /**
      * Compare runs.
-     * Enforces physical invariants and updates associated state variables within {@code RootCauseAnalyzer}.
      *
      * @param baseline the baseline parameter (SimulationRunRecord)
      * @param target the target parameter (SimulationRunRecord)
@@ -383,7 +363,6 @@ public class RootCauseAnalyzer {
         return corrections;
     }
 
-    // Helper subroutine: parse double with fallback - internal state computation & bounds checking
     private double parseDoubleWithFallback(String str, double fallback) {
         if (str == null) return fallback;
         try {
@@ -394,7 +373,6 @@ public class RootCauseAnalyzer {
         }
     }
 
-    // Helper subroutine: parse long with fallback - internal state computation & bounds checking
     private long parseLongWithFallback(String str, long fallback) {
         if (str == null) return fallback;
         try {

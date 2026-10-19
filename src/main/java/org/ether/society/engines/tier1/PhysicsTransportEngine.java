@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -25,7 +25,7 @@ import java.util.List;
 public class PhysicsTransportEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicsTransportEngine.class);
 
-    /*
+    /**
      * Calculates the mechanical work (Joules per kg-km) required to transport cargo across a cell.
      *
      * @param cell H3 terrain cell
@@ -57,14 +57,14 @@ public class PhysicsTransportEngine {
         return frictionCoeff * gravity * distanceMeters;
     }
 
-    /*
+    /**
      * Executes one transport work evaluation step across cells using default monthly step.
      */
     public static void processPhysicsTransport(List<H3Cell> cells) {
         processPhysicsTransport(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes transport work evaluation step across cells scaling cargo by dtYears and deducting energy.
      */
     public static void processPhysicsTransport(List<H3Cell> cells, double dtYears) {

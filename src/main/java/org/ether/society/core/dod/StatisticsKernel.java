@@ -1,4 +1,4 @@
-package org.ether.society.core.dod;
+ackage org.ether.society.core.dod;
 
 import java.util.Arrays;
 

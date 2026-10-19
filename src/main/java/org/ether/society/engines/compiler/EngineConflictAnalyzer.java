@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
@@ -14,16 +14,15 @@ import java.util.Map;
 public class EngineConflictAnalyzer {
 
     public static class EngineVariableDescriptor {
-        /* Internal state variable for engine name (String). */
+        /** Internal state: engine name (String). */
         private final String engineName;
-        /* Internal state variable for target variable (String). */
+        /** Internal state: target variable (String). */
         private final String targetVariable;
         private final double rateOrCoeff; // Derivative coefficient (positive or negative)
         private final double targetEquilibrium; // Expected equilibrium bound if any
 
-        /*
+        /**
          * Engine variable descriptor.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictAnalyzer}.
          *
          * @param engineName the engine name parameter (String)
          * @param targetVariable the target variable parameter (String)
@@ -38,37 +37,33 @@ public class EngineConflictAnalyzer {
             this.targetEquilibrium = targetEquilibrium;
         }
 
-        /*
+        /**
          * Get engine name.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public String getEngineName() { return engineName; }
-        /*
+        /**
          * Get target variable.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public String getTargetVariable() { return targetVariable; }
-        /*
+        /**
          * Get rate or coeff.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public double getRateOrCoeff() { return rateOrCoeff; }
-        /*
+        /**
          * Get target equilibrium.
-         * Enforces physical invariants and updates associated state variables within {@code EngineConflictAnalyzer}.
          *
          * @return the resulting computation or state reference
          */
         public double getTargetEquilibrium() { return targetEquilibrium; }
     }
 
-    /*
+    /**
      * Analyzes a set of engine descriptors to detect incompatibilities.
      */
     public static EngineConflictReport analyze(List<EngineVariableDescriptor> descriptors) {

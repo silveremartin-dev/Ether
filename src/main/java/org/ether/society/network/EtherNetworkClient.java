@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -25,20 +25,19 @@ import java.net.Socket;
 public class EtherNetworkClient {
     private static final Logger logger = LoggerFactory.getLogger(EtherNetworkClient.class);
 
-    /* Internal state variable for host (String). */
+    /** Internal state: host (String). */
     private final String host;
-    /* Internal state variable for port (int). */
+    /** Internal state: port (int). */
     private final int port;
     private final EtherSecurityManager securityManager;
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
-    /* Internal state variable for connected (boolean). */
+    /** Internal state: connected (boolean). */
     private boolean connected = false;
 
-    /*
+    /**
      * Ether network client.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkClient}.
      *
      * @param host the host parameter (String)
      * @param port the port parameter (int)
@@ -47,9 +46,8 @@ public class EtherNetworkClient {
         this(host, port, null);
     }
 
-    /*
+    /**
      * Ether network client.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkClient}.
      *
      * @param host the host parameter (String)
      * @param port the port parameter (int)
@@ -61,9 +59,8 @@ public class EtherNetworkClient {
         this.securityManager = securityManager;
     }
 
-    /*
+    /**
      * Connect.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkClient}.
      *
      */
     public void connect() throws IOException {
@@ -81,11 +78,26 @@ public class EtherNetworkClient {
         EtherSecurityAuditLogger.logAuditEvent("CLIENT_CONNECT", host + ":" + port, "Handshake: " + welcome);
     }
 
-    /*
-     * Send policy injection.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkClient}.
+    /**
+     * Authenticates the client with the remote Ether server using a signed RBAC token.
      *
-     * @param policyPayload the policy payload parameter (String)
+     * @param username client identity name
+     * @param role requested RBAC role
+     * @param secretKey shared cluster secret key
+     * @throws IOException on network communication failure
+     */
+    public void authenticate(String username, AuthToken.Role role, String secretKey) throws IOException {
+        AuthToken token = new AuthToken(username, role, secretKey);
+        String authMsg = "AUTH:" + token.getUsername() + ":" + token.getRole().name() + ":"
+                + token.getTokenId() + ":" + token.getIssueTimestamp() + ":" + token.getSignature();
+        sendPolicyInjection(authMsg);
+    }
+
+    /**
+     * Sends a policy payload or God Mode intervention to the server over the encrypted socket.
+     *
+     * @param policyPayload command or state payload string
+     * @throws IOException on transport error
      */
     public void sendPolicyInjection(String policyPayload) throws IOException {
         if (!connected || out == null) throw new IllegalStateException("Client is not connected.");
@@ -101,9 +113,8 @@ public class EtherNetworkClient {
         out.flush();
     }
 
-    /*
+    /**
      * Disconnect.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkClient}.
      *
      */
     public void disconnect() {
@@ -116,9 +127,8 @@ public class EtherNetworkClient {
         }
     }
 
-    /*
+    /**
      * Is connected.
-     * Enforces physical invariants and updates associated state variables within {@code EtherNetworkClient}.
      *
      * @return the resulting computation or state reference
      */

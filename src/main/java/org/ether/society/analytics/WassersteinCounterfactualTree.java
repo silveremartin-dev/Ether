@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -30,7 +30,7 @@ import java.util.*;
 public class WassersteinCounterfactualTree {
     private static final Logger logger = LoggerFactory.getLogger(WassersteinCounterfactualTree.class);
 
-    /*
+    /**
      * Node representing a branched historical counterfactual scenario.
      */
     public record CounterfactualNode(
@@ -43,10 +43,10 @@ public class WassersteinCounterfactualTree {
     ) {}
 
     private final Map<String, CounterfactualNode> nodes = new LinkedHashMap<>();
-    /* Internal state variable for root scenario id (String). */
+    /** Internal state: root scenario id (String). */
     private String rootScenarioId = null;
 
-    /*
+    /**
      * Computes the 1D 1-Wasserstein (Earth Mover's) distance between two normalized histograms / spatial distributions.
      *
      * @param p first probability vector (sums to 1.0)
@@ -83,7 +83,7 @@ public class WassersteinCounterfactualTree {
         return distance / n;
     }
 
-    /*
+    /**
      * Registers the root scenario of the counterfactual tree.
      */
     public void registerRoot(String scenarioId, double startYear, double[] initialDistribution, Map<String, Double> initialMetrics) {
@@ -94,7 +94,7 @@ public class WassersteinCounterfactualTree {
         this.rootScenarioId = scenarioId;
     }
 
-    /*
+    /**
      * Branches a new counterfactual scenario off an existing parent scenario.
      */
     public CounterfactualNode branchScenario(String newScenarioId, String parentScenarioId, double branchingYear,
@@ -112,7 +112,7 @@ public class WassersteinCounterfactualTree {
         return child;
     }
 
-    /*
+    /**
      * Builds a pairwise Wasserstein distance matrix across all registered scenarios.
      */
     public double[][] computeDistanceMatrix() {
@@ -134,23 +134,20 @@ public class WassersteinCounterfactualTree {
         return matrix;
     }
 
-    /*
+    /**
      * Get nodes.
-     * Enforces physical invariants and updates associated state variables within {@code WassersteinCounterfactualTree}.
      *
      * @return the resulting computation or state reference
      */
     public Map<String, CounterfactualNode> getNodes() { return Collections.unmodifiableMap(nodes); }
-    /*
+    /**
      * Get root scenario id.
-     * Enforces physical invariants and updates associated state variables within {@code WassersteinCounterfactualTree}.
      *
      * @return the resulting computation or state reference
      */
     public String getRootScenarioId() { return rootScenarioId; }
-    /*
+    /**
      * Size.
-     * Enforces physical invariants and updates associated state variables within {@code WassersteinCounterfactualTree}.
      *
      * @return the resulting computation or state reference
      */

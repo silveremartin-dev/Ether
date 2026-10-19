@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -47,11 +47,11 @@ public enum StartDatePreset {
     MODERN(1945, "Modern Era",
             "Nuclear age. Information technology. Population ~2.5 billion.");
 
-    /* Internal state variable for year (long). */
+    /** Internal state: year (long). */
     private final long year;
-    /* Internal state variable for display name (String). */
+    /** Internal state: display name (String). */
     private final String displayName;
-    /* Internal state variable for description (String). */
+    /** Internal state: description (String). */
     private final String description;
 
     StartDatePreset(long year, String displayName, String description) {
@@ -60,9 +60,8 @@ public enum StartDatePreset {
         this.description = description;
     }
 
-    /*
+    /**
      * Get year.
-     * Enforces physical invariants and updates associated state variables within {@code StartDatePreset}.
      *
      * @return the resulting computation or state reference
      */
@@ -70,9 +69,8 @@ public enum StartDatePreset {
         return year;
     }
 
-    /*
+    /**
      * Get display name.
-     * Enforces physical invariants and updates associated state variables within {@code StartDatePreset}.
      *
      * @return the resulting computation or state reference
      */
@@ -80,9 +78,8 @@ public enum StartDatePreset {
         return displayName;
     }
 
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code StartDatePreset}.
      *
      * @return the resulting computation or state reference
      */
@@ -90,7 +87,7 @@ public enum StartDatePreset {
         return description;
     }
 
-    /*
+    /**
      * Get estimated world population for this era.
      */
     public long getEstimatedPopulation() {
@@ -110,7 +107,7 @@ public enum StartDatePreset {
         };
     }
 
-    /*
+    /**
      * Get estimated technology level (maps to EnergySource).
      */
     public int getEstimatedTechLevel() {
@@ -125,13 +122,12 @@ public enum StartDatePreset {
         };
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code StartDatePreset}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         return String.format("%s (%d)", displayName, year);
     }

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -28,13 +28,13 @@ public enum HabitatType {
     /* High-Altitude Aerostat Floating Cloud Habitat (Venus 50-55km, Titan). */
     VENUS_AEROSTAT("habitat.type.venus_aerostat", 0.025, 0.60, 1.50, 600.0);
 
-    /* Internal state variable for i18n key (String). */
+    /** Internal state: i18n key (String). */
     private final String i18nKey;
-    /* Internal state variable for baseline wear rate per year (double). */
+    /** Internal state: baseline wear rate per year (double). */
     private final double baselineWearRatePerYear;
     private final double radiationShieldingFactor; // 0.0 = no shielding, 1.0 = total cosmic ray blocking
     private final double baseEnergyKwPerCapita;    // ECLSS power requirement in kW per human
-    /* Internal state variable for construction metal kg per capita (double). */
+    /** Internal state: construction metal kg per capita (double). */
     private final double constructionMetalKgPerCapita;
 
     HabitatType(String i18nKey,
@@ -49,9 +49,8 @@ public enum HabitatType {
         this.constructionMetalKgPerCapita = constructionMetalKgPerCapita;
     }
 
-    /*
+    /**
      * Get i18n key.
-     * Enforces physical invariants and updates associated state variables within {@code HabitatType}.
      *
      * @return the resulting computation or state reference
      */
@@ -59,9 +58,8 @@ public enum HabitatType {
         return i18nKey;
     }
 
-    /*
+    /**
      * Get baseline wear rate per year.
-     * Enforces physical invariants and updates associated state variables within {@code HabitatType}.
      *
      * @return the resulting computation or state reference
      */
@@ -69,9 +67,8 @@ public enum HabitatType {
         return baselineWearRatePerYear;
     }
 
-    /*
+    /**
      * Get radiation shielding factor.
-     * Enforces physical invariants and updates associated state variables within {@code HabitatType}.
      *
      * @return the resulting computation or state reference
      */
@@ -79,9 +76,8 @@ public enum HabitatType {
         return radiationShieldingFactor;
     }
 
-    /*
+    /**
      * Get base energy kw per capita.
-     * Enforces physical invariants and updates associated state variables within {@code HabitatType}.
      *
      * @return the resulting computation or state reference
      */
@@ -89,9 +85,8 @@ public enum HabitatType {
         return baseEnergyKwPerCapita;
     }
 
-    /*
+    /**
      * Get construction metal kg per capita.
-     * Enforces physical invariants and updates associated state variables within {@code HabitatType}.
      *
      * @return the resulting computation or state reference
      */
@@ -99,9 +94,8 @@ public enum HabitatType {
         return constructionMetalKgPerCapita;
     }
 
-    /*
+    /**
      * Is pressurized.
-     * Enforces physical invariants and updates associated state variables within {@code HabitatType}.
      *
      * @return the resulting computation or state reference
      */

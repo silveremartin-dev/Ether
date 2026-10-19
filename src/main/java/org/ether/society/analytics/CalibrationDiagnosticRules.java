@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -16,9 +16,8 @@ import java.util.Map;
  */
 public class CalibrationDiagnosticRules {
 
-    /*
+    /**
      * Generate tuning suggestions.
-     * Enforces physical invariants and updates associated state variables within {@code CalibrationDiagnosticRules}.
      *
      * @param mapes the mapes parameter (Double>)
      * @param rSquared the r squared parameter (double)
@@ -144,7 +143,6 @@ public class CalibrationDiagnosticRules {
         return sb.toString();
     }
 
-    // Helper subroutine: get mape for keyword - internal state computation & bounds checking
     private static Double getMapeForKeyword(Map<String, Double> mapes, String keyword) {
         if (mapes == null || keyword == null) return null;
         for (var entry : mapes.entrySet()) {

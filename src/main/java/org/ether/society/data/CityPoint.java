@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -20,9 +20,8 @@ public class CityPoint {
     public String name;
     public double lat, lng, weight, sigma;
 
-    /*
+    /**
      * City point.
-     * Enforces physical invariants and updates associated state variables within {@code CityPoint}.
      *
      * @param name the name parameter (String)
      * @param lat the lat parameter (double)

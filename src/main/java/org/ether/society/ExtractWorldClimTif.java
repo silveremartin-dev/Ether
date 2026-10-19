@@ -1,4 +1,4 @@
-package org.ether.society;
+ackage org.ether.society;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -7,7 +7,7 @@ import java.awt.image.Raster;
 import java.io.File;
 
 public class ExtractWorldClimTif {
-    /*
+    /**
      * Main operation.
      * <p>
      * Executes operational logic for {@code ExtractWorldClimTif} within the automated verification and regression test suite.

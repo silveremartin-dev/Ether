@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -34,16 +34,16 @@ import java.util.*;
  */
 public class ColorLegend extends VBox {
 
-    /* Internal state variable for canvas width (int). */
+    /** Internal state: canvas width (int). */
     private static final int CANVAS_WIDTH = 220;
-    /* Internal state variable for canvas height (int). */
+    /** Internal state: canvas height (int). */
     private static final int CANVAS_HEIGHT = 38;
-    /* Internal state variable for bar x (double). */
+    /** Internal state: bar x (double). */
     private static final double BAR_X = 6.0;
-    /* Internal state variable for bar y (double). */
+    /** Internal state: bar y (double). */
     private static final double BAR_Y = 6.0;
     private static final double BAR_WIDTH = CANVAS_WIDTH - 12.0; // 208.0
-    /* Internal state variable for bar height (double). */
+    /** Internal state: bar height (double). */
     private static final double BAR_HEIGHT = 10.0;
 
     private final HBox headerRow;
@@ -55,7 +55,7 @@ public class ColorLegend extends VBox {
     private DisplayMode primaryMode = DisplayMode.POPULATION;
     private ScientificColorMap scientificColorMap = ScientificColorMap.TURBO;
 
-    /* Internal state variable for collapsed (boolean). */
+    /** Internal state: collapsed (boolean). */
     private boolean collapsed = false;
 
     // Cache per-mode stats to avoid reallocations
@@ -67,9 +67,8 @@ public class ColorLegend extends VBox {
     }
     private final Map<DisplayMode, ModeStats> statsMap = new EnumMap<>(DisplayMode.class);
 
-    /*
+    /**
      * Color legend.
-     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
      *
      */
     public ColorLegend() {
@@ -104,7 +103,6 @@ public class ColorLegend extends VBox {
         rebuildLegendCards();
     }
 
-    // Helper subroutine: toggle collapse - internal state computation & bounds checking
     private void toggleCollapse() {
         collapsed = !collapsed;
         layersContainer.setVisible(!collapsed);
@@ -112,9 +110,8 @@ public class ColorLegend extends VBox {
         toggleCollapseBtn.setText(collapsed ? "+" : "−");
     }
 
-    /*
+    /**
      * Set scientific color map.
-     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
      *
      * @param cmap the cmap parameter (ScientificColorMap)
      */
@@ -125,9 +122,8 @@ public class ColorLegend extends VBox {
         }
     }
 
-    /*
+    /**
      * Set display mode.
-     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
      *
      * @param mode the mode parameter (DisplayMode)
      */
@@ -140,9 +136,8 @@ public class ColorLegend extends VBox {
         }
     }
 
-    /*
+    /**
      * Get display mode.
-     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
      *
      * @return the resulting computation or state reference
      */
@@ -150,9 +145,8 @@ public class ColorLegend extends VBox {
         return primaryMode;
     }
 
-    /*
+    /**
      * Set active display modes.
-     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
      *
      * @param modes the modes parameter (Collection&lt;DisplayMode&gt;)
      */
@@ -167,9 +161,8 @@ public class ColorLegend extends VBox {
         }
     }
 
-    /*
+    /**
      * Update stats.
-     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
      *
      * @param min the min parameter (double)
      * @param max the max parameter (double)
@@ -186,9 +179,8 @@ public class ColorLegend extends VBox {
         rebuildLegendCards();
     }
 
-    /*
+    /**
      * Update from canvas.
-     * Enforces physical invariants and updates associated state variables within {@code ColorLegend}.
      *
      * @param mapCanvas the map canvas parameter (H3MapCanvas)
      */
@@ -252,7 +244,6 @@ public class ColorLegend extends VBox {
         rebuildLegendCards();
     }
 
-    // Helper subroutine: update title - internal state computation & bounds checking
     private void updateTitle() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         int count = activeModes != null ? activeModes.size() : 0;
@@ -267,7 +258,6 @@ public class ColorLegend extends VBox {
         }
     }
 
-    // Helper subroutine: rebuild legend cards - internal state computation & bounds checking
     private void rebuildLegendCards() {
         layersContainer.getChildren().clear();
 
@@ -285,7 +275,6 @@ public class ColorLegend extends VBox {
         }
     }
 
-    // Helper subroutine: create card for mode - internal state computation & bounds checking
     private VBox createCardForMode(DisplayMode mode) {
         VBox card = new VBox(2);
         card.setStyle("-fx-background-color: rgba(30, 41, 59, 0.65); -fx-padding: 4 6; -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.20); -fx-border-radius: 6;");
@@ -319,7 +308,6 @@ public class ColorLegend extends VBox {
         return card;
     }
 
-    // Helper subroutine: get unit for mode - internal state computation & bounds checking
     private String getUnitForMode(DisplayMode mode) {
         if (mode == null) return "";
         return switch (mode) {
@@ -333,7 +321,6 @@ public class ColorLegend extends VBox {
         };
     }
 
-    // Helper subroutine: draw gradient bar - internal state computation & bounds checking
     private void drawGradientBar(GraphicsContext gc, ModeStats st, String unit) {
         gc.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -397,7 +384,6 @@ public class ColorLegend extends VBox {
         gc.fillText(maxStr, BAR_X + BAR_WIDTH - maxW, BAR_Y + BAR_HEIGHT + 13);
     }
 
-    // Helper subroutine: draw biome legend - internal state computation & bounds checking
     private void drawBiomeLegend(GraphicsContext gc) {
         String[] biomeNames = {
             I18n.getBiomeDisplayName(org.ether.society.model.Biome.OCEAN),

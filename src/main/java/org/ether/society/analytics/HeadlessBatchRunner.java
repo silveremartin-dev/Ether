@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -34,9 +34,8 @@ public class HeadlessBatchRunner {
         void onProgress(Scenario scenario, double progress, int currentYear, int endYear);
     }
 
-    /*
+    /**
      * Execute batch.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
      *
      * @param scenarios the scenarios parameter (List&lt;Scenario&gt;)
      * @return the resulting computation or state reference
@@ -47,9 +46,8 @@ public class HeadlessBatchRunner {
         return executeBatch(scenarios, null, null);
     }
 
-    /*
+    /**
      * Execute batch.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
      *
      * @param scenarios the scenarios parameter (List&lt;Scenario&gt;)
      * @param listener the listener parameter (BatchProgressListener)
@@ -62,9 +60,8 @@ public class HeadlessBatchRunner {
         return executeBatchParallel(scenarios, 1, listener, cancelSupplier);
     }
 
-    /*
+    /**
      * Execute batch parallel.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
      *
      * @param scenarios the scenarios parameter (List&lt;Scenario&gt;)
      * @param threadCount the thread count parameter (int)
@@ -118,9 +115,8 @@ public class HeadlessBatchRunner {
         return results;
     }
 
-    /*
+    /**
      * Execute scenario headless.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
      *
      * @param scenario the scenario parameter (Scenario)
      * @return the resulting computation or state reference
@@ -131,9 +127,8 @@ public class HeadlessBatchRunner {
         return executeScenarioHeadless(scenario, null, null);
     }
 
-    /*
+    /**
      * Execute scenario headless.
-     * Enforces physical invariants and updates associated state variables within {@code HeadlessBatchRunner}.
      *
      * @param scenario the scenario parameter (Scenario)
      * @param listener the listener parameter (BatchProgressListener)
@@ -374,7 +369,6 @@ public class HeadlessBatchRunner {
         }
     }
 
-    // Helper subroutine: record current telemetry snapshot - internal state computation & bounds checking
     private static void recordCurrentTelemetrySnapshot(SimulationRunRecord record, H3SimulationEngine engine, int year) {
         long pop = engine.getTotalPopulation();
         double foodPerCap = engine.getFoodPerCapita();

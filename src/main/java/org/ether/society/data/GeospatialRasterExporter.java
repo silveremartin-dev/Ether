@@ -1,13 +1,10 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
 package org.ether.society.data;
 
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import javafx.stage.Window;
 import org.ether.society.i18n.I18n;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,89 +36,14 @@ import java.util.function.Function;
 public final class GeospatialRasterExporter {
     private static final Logger logger = LoggerFactory.getLogger(GeospatialRasterExporter.class);
 
-    // Helper subroutine: geospatial raster exporter - internal state computation & bounds checking
-    private GeospatialRasterExporter() {}
-
-    /*
-     * Interactive export dialog allowing the user to select their preferred format.
-     */
-    public static void exportRasterWithDialog(Window parentWindow,
-                                             float[][] grid,
-                                             String defaultBaseName,
-                                             String dialogTitle,
-                                             Function<Float, Color> colorMapper,
-                                             float minVal,
-                                             float maxVal,
-                                             String physicalUnit) {
-        if (grid == null || grid.length == 0 || grid[0].length == 0) {
-            logger.warn("Cannot export empty raster grid.");
-            return;
-        }
-
-        int height = grid.length;
-        int width = grid[0].length;
-
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(dialogTitle != null ? dialogTitle : I18n.getOrDefault("raster.export.title", "Export Geospatial Raster Map"));
-
-        FileChooser.ExtensionFilter filterPngColor = new FileChooser.ExtensionFilter(
-                I18n.getOrDefault("raster.filter.png_color", "Universal Color Image (*.png + .tfw)"), "*.png");
-        FileChooser.ExtensionFilter filterGeoTiff = new FileChooser.ExtensionFilter(
-                I18n.getOrDefault("raster.filter.geotiff", "Scientific GeoTIFF Float32 DEM (*.tif, *.tiff)"), "*.tif", "*.tiff");
-        FileChooser.ExtensionFilter filterPng16 = new FileChooser.ExtensionFilter(
-                I18n.getOrDefault("raster.filter.png16", "16-bit Grayscale Heightmap (*.png + .tfw)"), "*.png");
-        FileChooser.ExtensionFilter filterAscii = new FileChooser.ExtensionFilter(
-                I18n.getOrDefault("raster.filter.ascii", "ESRI ASCII Grid (*.asc)"), "*.asc");
-        FileChooser.ExtensionFilter filterJpg = new FileChooser.ExtensionFilter(
-                I18n.getOrDefault("raster.filter.jpg", "JPEG Image (*.jpg + .jgw)"), "*.jpg", "*.jpeg");
-
-        chooser.getExtensionFilters().addAll(filterPngColor, filterGeoTiff, filterPng16, filterAscii, filterJpg);
-        chooser.setInitialFileName(defaultBaseName != null ? defaultBaseName : "raster_map.png");
-
-        File targetFile = chooser.showSaveDialog(parentWindow);
-        if (targetFile == null) return;
-
-        FileChooser.ExtensionFilter selectedFilter = chooser.getSelectedExtensionFilter();
-        String path = targetFile.getAbsolutePath();
-        String lower = path.toLowerCase();
-
-        try {
-            if (lower.endsWith(".tif") || lower.endsWith(".tiff") || selectedFilter == filterGeoTiff) {
-                if (!lower.endsWith(".tif") && !lower.endsWith(".tiff")) {
-                    targetFile = new File(path + ".tif");
-                }
-                writeFloat32GeoTiff(grid, targetFile, -180.0, 180.0, -90.0, 90.0,
-                        "Ether Planetary Simulation Engine - " + (physicalUnit != null ? physicalUnit : "Raw"));
-            } else if (lower.endsWith(".asc") || selectedFilter == filterAscii) {
-                if (!lower.endsWith(".asc")) {
-                    targetFile = new File(path + ".asc");
-                }
-                double cellSize = 360.0 / width;
-                writeEsriAsciiGrid(grid, targetFile, -180.0, -90.0, cellSize, -9999.0f);
-            } else if (selectedFilter == filterPng16) {
-                if (!lower.endsWith(".png")) {
-                    targetFile = new File(path + ".png");
-                }
-                write16BitPng(grid, minVal, maxVal, targetFile);
-            } else if (lower.endsWith(".jpg") || lower.endsWith(".jpeg") || selectedFilter == filterJpg) {
-                if (!lower.endsWith(".jpg") && !lower.endsWith(".jpeg")) {
-                    targetFile = new File(path + ".jpg");
-                }
-                writeColorJpg(grid, colorMapper, targetFile);
-            } else {
-                // Default: Universal Polychrome Color PNG with .tfw
-                if (!lower.endsWith(".png")) {
-                    targetFile = new File(path + ".png");
-                }
-                writeColorPng(grid, colorMapper, targetFile, true);
-            }
-            logger.info("Successfully exported raster map ({}x{}) to {}", width, height, targetFile.getAbsolutePath());
-        } catch (Exception ex) {
-            logger.error("Failed to export raster map to {}", targetFile.getAbsolutePath(), ex);
-        }
+    @FunctionalInterface
+    public interface RasterColorProvider {
+        int getArgb(float value);
     }
 
-    /*
+    private GeospatialRasterExporter() {}
+
+    /**
      * Writes a 100% compliant Float32 GeoTIFF raster in EPSG:4326 (WGS84 / Planetary Equirectangular).
      */
     public static void writeFloat32GeoTiff(float[][] grid, File targetFile,
@@ -275,7 +197,6 @@ public final class GeospatialRasterExporter {
         }
     }
 
-    // Helper subroutine: write ifd entry - internal state computation & bounds checking
     private static void writeIfdEntry(ByteBuffer buf, int tag, int type, int count, int valueOrOffset) {
         buf.putShort((short) tag);
         buf.putShort((short) type);
@@ -283,7 +204,7 @@ public final class GeospatialRasterExporter {
         buf.putInt(valueOrOffset);
     }
 
-    /*
+    /**
      * Writes a high-precision 16-bit Grayscale PNG image + ESRI World File (.tfw).
      */
     public static void write16BitPng(float[][] grid, float minVal, float maxVal, File targetPngFile) throws IOException {
@@ -308,7 +229,7 @@ public final class GeospatialRasterExporter {
         writeWorldFile(targetPngFile, width, height, -180.0, 180.0, -90.0, 90.0);
     }
 
-    /*
+    /**
      * Writes an 8-bit Grayscale PNG image + ESRI World File (.tfw).
      */
     public static void write8BitGrayscalePng(float[][] grid, float minVal, float maxVal, File targetPngFile) throws IOException {
@@ -331,11 +252,17 @@ public final class GeospatialRasterExporter {
         writeWorldFile(targetPngFile, width, height, -180.0, 180.0, -90.0, 90.0);
     }
 
-    /*
-     * Writes a full-resolution polychrome Color PNG map + ESRI World File (.tfw).
+    /**
+     * Writes a full-resolution polychrome Color PNG map using a neutral RasterColorProvider.
+     *
+     * @param grid 2D floating-point matrix
+     * @param colorProvider color provider mapping scalar values to 32-bit ARGB integers
+     * @param targetPngFile destination PNG file
+     * @param generateWorldFile whether to generate accompanying ESRI World File (.tfw)
+     * @throws IOException on file write error
      */
-    public static void writeColorPng(float[][] grid, Function<Float, Color> colorMapper,
-                                     File targetPngFile, boolean generateWorldFile) throws IOException {
+    public static void writeArgbColorPng(float[][] grid, RasterColorProvider colorProvider,
+                                         File targetPngFile, boolean generateWorldFile) throws IOException {
         int height = grid.length;
         int width = grid[0].length;
 
@@ -343,12 +270,7 @@ public final class GeospatialRasterExporter {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 float val = grid[y][x];
-                Color c = colorMapper != null ? colorMapper.apply(val) : Color.color(0.5, 0.5, 0.5);
-                int a = (int) (c.getOpacity() * 255.0);
-                int r = (int) (c.getRed() * 255.0);
-                int g = (int) (c.getGreen() * 255.0);
-                int b = (int) (c.getBlue() * 255.0);
-                int argb = (a << 24) | (r << 16) | (g << 8) | b;
+                int argb = colorProvider != null ? colorProvider.getArgb(val) : 0xFF808080;
                 bImg.setRGB(x, y, argb);
             }
         }
@@ -359,10 +281,26 @@ public final class GeospatialRasterExporter {
         }
     }
 
-    /*
-     * Writes a JPEG Color map + ESRI World File (.jgw).
+    /**
+     * Writes a full-resolution polychrome Color PNG map using a JavaFX Color mapper.
      */
-    public static void writeColorJpg(float[][] grid, Function<Float, Color> colorMapper, File targetJpgFile) throws IOException {
+    public static void writeColorPng(float[][] grid, Function<Float, javafx.scene.paint.Color> colorMapper,
+                                     File targetPngFile, boolean generateWorldFile) throws IOException {
+        RasterColorProvider provider = val -> {
+            javafx.scene.paint.Color c = colorMapper != null ? colorMapper.apply(val) : javafx.scene.paint.Color.color(0.5, 0.5, 0.5);
+            int a = (int) (c.getOpacity() * 255.0);
+            int r = (int) (c.getRed() * 255.0);
+            int g = (int) (c.getGreen() * 255.0);
+            int b = (int) (c.getBlue() * 255.0);
+            return (a << 24) | (r << 16) | (g << 8) | b;
+        };
+        writeArgbColorPng(grid, provider, targetPngFile, generateWorldFile);
+    }
+
+    /**
+     * Writes a JPEG Color map using a neutral RasterColorProvider.
+     */
+    public static void writeArgbColorJpg(float[][] grid, RasterColorProvider colorProvider, File targetJpgFile) throws IOException {
         int height = grid.length;
         int width = grid[0].length;
 
@@ -370,12 +308,8 @@ public final class GeospatialRasterExporter {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 float val = grid[y][x];
-                Color c = colorMapper != null ? colorMapper.apply(val) : Color.color(0.5, 0.5, 0.5);
-                int r = (int) (c.getRed() * 255.0);
-                int g = (int) (c.getGreen() * 255.0);
-                int b = (int) (c.getBlue() * 255.0);
-                int rgb = (r << 16) | (g << 8) | b;
-                bImg.setRGB(x, y, rgb);
+                int argb = colorProvider != null ? colorProvider.getArgb(val) : 0xFF808080;
+                bImg.setRGB(x, y, argb & 0x00FFFFFF);
             }
         }
 
@@ -383,7 +317,22 @@ public final class GeospatialRasterExporter {
         writeWorldFile(targetJpgFile, width, height, -180.0, 180.0, -90.0, 90.0);
     }
 
-    /*
+    /**
+     * Writes a JPEG Color map using a JavaFX Color mapper.
+     */
+    public static void writeColorJpg(float[][] grid, Function<Float, javafx.scene.paint.Color> colorMapper, File targetJpgFile) throws IOException {
+        RasterColorProvider provider = val -> {
+            javafx.scene.paint.Color c = colorMapper != null ? colorMapper.apply(val) : javafx.scene.paint.Color.color(0.5, 0.5, 0.5);
+            int a = (int) (c.getOpacity() * 255.0);
+            int r = (int) (c.getRed() * 255.0);
+            int g = (int) (c.getGreen() * 255.0);
+            int b = (int) (c.getBlue() * 255.0);
+            return (a << 24) | (r << 16) | (g << 8) | b;
+        };
+        writeArgbColorJpg(grid, provider, targetJpgFile);
+    }
+
+    /**
      * Writes an ESRI ASCII Grid (.asc) matrix with standard header.
      */
     public static void writeEsriAsciiGrid(float[][] grid, File targetAscFile,
@@ -411,7 +360,7 @@ public final class GeospatialRasterExporter {
         }
     }
 
-    /*
+    /**
      * Generates an ESRI World File (.tfw for PNG, .jgw for JPG) for accurate GIS alignment.
      */
     public static void writeWorldFile(File targetImageFile, int width, int height,

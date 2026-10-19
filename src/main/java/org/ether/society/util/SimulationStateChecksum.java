@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -21,10 +21,9 @@ import java.util.List;
  */
 public final class SimulationStateChecksum {
 
-    // Helper subroutine: simulation state checksum - internal state computation & bounds checking
     private SimulationStateChecksum() {}
 
-    /*
+    /**
      * Computes a deterministic SHA-256 hex digest of the world state.
      */
     public static String computeStateChecksum(List<H3Cell> cells, long year, int month, double co2Ppm) {

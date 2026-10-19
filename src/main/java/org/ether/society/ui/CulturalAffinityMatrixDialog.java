@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -55,9 +55,8 @@ public class CulturalAffinityMatrixDialog extends Stage {
             String kinshipType,
             String lithicTechnocomplex
     ) {
-        /*
+        /**
          * Get localized name.
-         * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
          *
          * @return the resulting computation or state reference
          */
@@ -70,9 +69,8 @@ public class CulturalAffinityMatrixDialog extends Stage {
             return nameEn != null ? nameEn : id;
         }
 
-        /*
+        /**
          * Distance to.
-         * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
          *
          * @param other the other parameter (CulturalEntity)
          * @return the resulting computation or state reference
@@ -88,9 +86,8 @@ public class CulturalAffinityMatrixDialog extends Stage {
             return Math.sqrt(sumSq);
         }
 
-        /*
+        /**
          * Affinity with.
-         * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
          *
          * @param other the other parameter (CulturalEntity)
          * @return the resulting computation or state reference
@@ -136,20 +133,19 @@ public class CulturalAffinityMatrixDialog extends Stage {
     private StackPane[][] cellPanes = new StackPane[0][0];
     private Label[][] cellLabels = new Label[0][0];
 
-    /* Internal state variable for current epoch (long). */
+    /** Internal state: current epoch (long). */
     private long currentEpoch = -100000L;
-    /* Internal state variable for scenario start year (long). */
+    /** Internal state: scenario start year (long). */
     private final long scenarioStartYear;
-    /* Internal state variable for selected i (int). */
+    /** Internal state: selected i (int). */
     private int selectedI = -1;
-    /* Internal state variable for selected j (int). */
+    /** Internal state: selected j (int). */
     private int selectedJ = -1;
-    /* Internal state variable for is updating editor (boolean). */
+    /** Internal state: is updating editor (boolean). */
     private boolean isUpdatingEditor = false;
 
-    /*
+    /**
      * Cultural affinity matrix dialog.
-     * Enforces physical invariants and updates associated state variables within {@code CulturalAffinityMatrixDialog}.
      *
      * @param initialEpoch the initial epoch parameter (long)
      */
@@ -347,7 +343,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         initialAffinityOverridesSnapshot.putAll(customAffinityOverrides);
     }
 
-    // Helper subroutine: setup quick editor panel - internal state computation & bounds checking
     private void setupQuickEditorPanel() {
         quickEditorCard.setPadding(new Insets(10, 14, 10, 14));
         quickEditorCard.setStyle("-fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 8;");
@@ -428,7 +423,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         quickEditorCard.getChildren().addAll(topRow, sliderRow, presetRow);
     }
 
-    // Helper subroutine: add preset chip - internal state computation & bounds checking
     private void addPresetChip(String label, double val, String tooltipText) {
         Button btn = new Button(label);
         btn.getStyleClass().add("button-secondary");
@@ -448,7 +442,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         presetChipsBox.getChildren().add(btn);
     }
 
-    // Helper subroutine: apply quick edit - internal state computation & bounds checking
     private void applyQuickEdit(double affinity) {
         if (selectedI < 0 || selectedJ < 0 || selectedI >= activeEntities.size() || selectedJ >= activeEntities.size()) return;
         CulturalEntity e1 = activeEntities.get(selectedI);
@@ -468,7 +461,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         updateCellDisplay(selectedJ, selectedI);
     }
 
-    // Helper subroutine: update cell display - internal state computation & bounds checking
     private void updateCellDisplay(int i, int j) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (i >= cellPanes.length || j >= cellPanes[0].length) return;
@@ -511,7 +503,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         Tooltip.install(cell, new Tooltip(tooltipText));
     }
 
-    // Helper subroutine: discover all epochs from disk sorted ascending
     private static List<Long> discoverAllEpochs() {
         List<Long> epochs = new ArrayList<>();
         Path earthDir = Paths.get("data", "maps", "ether", "earth");
@@ -538,7 +529,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         return epochs;
     }
 
-    // Helper subroutine: closest supported epoch - internal state computation & bounds checking
     private static long closestSupportedEpoch(long yr) {
         List<Long> supported = discoverAllEpochs();
         if (supported.isEmpty()) return -100000L;
@@ -554,7 +544,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         return best;
     }
 
-    // Helper subroutine: format epoch name - internal state computation & bounds checking
     private static String formatEpochName(long yr) {
         if (yr == -100000L) return I18n.getOrDefault("cultural.epoch.eemian", "–100 000 BP (Sortie d'Afrique / Éémien)");
         if (yr == -74000L)  return I18n.getOrDefault("cultural.epoch.toba", "–74 000 BP (Goulot d'Étranglement de Toba)");
@@ -587,7 +576,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         return String.format("+%,d CE", yr).replace(',', ' ');
     }
 
-    // Helper subroutine: load epoch registry - internal state computation & bounds checking
     private void loadEpochRegistry(long epoch) {
         this.currentEpoch = epoch;
         activeEntities.clear();
@@ -669,7 +657,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         }
     }
 
-    // Helper subroutine: generate distinct cultural traits for entities with dummy identical vectors
     private void generateDistinctCulturalTraits(List<CulturalEntity> entities) {
         if (entities == null || entities.isEmpty()) return;
         List<CulturalEntity> updated = new ArrayList<>();
@@ -687,7 +674,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         entities.addAll(updated);
     }
 
-    // Helper subroutine: build procedural entities fallback - internal state computation & bounds checking
     private void buildProceduralEntitiesFallback(long epoch) {
         activeEntities.clear();
         String[] colors = {"#E67E22", "#D35400", "#F39C12", "#2980B9", "#1F4788", "#27AE60", "#8E44AD", "#E11D48", "#0EA5E9"};
@@ -721,7 +707,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         }
     }
 
-    // Helper subroutine: get affinity - internal state computation & bounds checking
     private double getAffinity(CulturalEntity e1, CulturalEntity e2) {
         if (e1 == null || e2 == null) return 0.0;
         if (e1.id().equals(e2.id())) return 1.0;
@@ -732,7 +717,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         return e1.affinityWith(e2);
     }
 
-    // Helper subroutine: render entities tab - internal state computation & bounds checking
     private void renderEntitiesTab() {
         entitiesBox.getChildren().clear();
         if (activeEntities.isEmpty()) {
@@ -792,7 +776,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         }
     }
 
-    // Helper subroutine: render matrix heatmap - internal state computation & bounds checking
     private void renderMatrixHeatmap() {
         matrixGrid.getChildren().clear();
         int n = activeEntities.size();
@@ -880,7 +863,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         }
     }
 
-    // Helper subroutine: select cell - internal state computation & bounds checking
     private void selectCell(int i, int j) {
         int oldI = selectedI, oldJ = selectedJ;
         selectedI = i;
@@ -898,7 +880,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         updateQuickEditor();
     }
 
-    // Helper subroutine: update quick editor - internal state computation & bounds checking
     private void updateQuickEditor() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (selectedI < 0 || selectedJ < 0 || selectedI >= activeEntities.size() || selectedJ >= activeEntities.size()) {
@@ -925,7 +906,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         isUpdatingEditor = false;
     }
 
-    // Helper subroutine: generate affinities by geography - internal state computation & bounds checking
     private void generateAffinitiesByGeography() {
         int n = activeEntities.size();
         for (int i = 0; i < n; i++) {
@@ -944,7 +924,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         updateQuickEditor();
     }
 
-    // Helper subroutine: generate affinities by traits - internal state computation & bounds checking
     private void generateAffinitiesByTraits() {
         int n = activeEntities.size();
         for (int i = 0; i < n; i++) {
@@ -962,7 +941,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         updateQuickEditor();
     }
 
-    // Helper subroutine: generate affinities stochastic - internal state computation & bounds checking
     private void generateAffinitiesStochastic() {
         int n = activeEntities.size();
         long seed = (targetScenario != null && targetScenario.getCulturalSeed() != 0L)
@@ -986,7 +964,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         updateQuickEditor();
     }
 
-    // Helper subroutine: compute heatmap color - internal state computation & bounds checking
     private static Color computeHeatmapColor(double val) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         val = Math.clamp(val, 0.0, 1.0);
@@ -1001,7 +978,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         }
     }
 
-    // Helper subroutine: export matrix csv - internal state computation & bounds checking
     private void exportMatrixCsv() {
         if (activeEntities.isEmpty()) return;
         FileChooser chooser = new FileChooser();
@@ -1031,7 +1007,6 @@ public class CulturalAffinityMatrixDialog extends Stage {
         }
     }
 
-    // Helper subroutine: export matrix json - internal state computation & bounds checking
     private void exportMatrixJson() {
         if (activeEntities.isEmpty()) return;
         FileChooser chooser = new FileChooser();

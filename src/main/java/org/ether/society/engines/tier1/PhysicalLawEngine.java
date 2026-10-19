@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -27,9 +27,8 @@ public class PhysicalLawEngine {
     private static boolean roomTemperatureSuperconductivity = false; // Zero Joule heat loss (I^2 * R = 0)
     private static double entropyGenerationScale = 1.0; // Scale factor for waste heat generation
 
-    /*
+    /**
      * Apply physical laws.
-     * Enforces physical invariants and updates associated state variables within {@code PhysicalLawEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -58,14 +57,13 @@ public class PhysicalLawEngine {
     }
 
     // Getters and Setters
-    /*
+    /**
      * Get photosynthetic efficiency multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code PhysicalLawEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getPhotosyntheticEfficiencyMultiplier() { return photosyntheticEfficiencyMultiplier; }
-    /*
+    /**
      * Set photosynthetic efficiency multiplier operation.
      * <p>
      * Executes operational logic for {@code PhysicalLawEngine} within the Tier 1 physical conservation solver.
@@ -76,14 +74,13 @@ public class PhysicalLawEngine {
      */
     public static void setPhotosyntheticEfficiencyMultiplier(double mult) { photosyntheticEfficiencyMultiplier = Math.max(0.1, mult); }
 
-    /*
+    /**
      * Is room temperature superconductivity.
-     * Enforces physical invariants and updates associated state variables within {@code PhysicalLawEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static boolean isRoomTemperatureSuperconductivity() { return roomTemperatureSuperconductivity; }
-    /*
+    /**
      * Set room temperature superconductivity operation.
      * <p>
      * Executes operational logic for {@code PhysicalLawEngine} within the Tier 1 physical conservation solver.
@@ -94,14 +91,13 @@ public class PhysicalLawEngine {
      */
     public static void setRoomTemperatureSuperconductivity(boolean active) { roomTemperatureSuperconductivity = active; }
 
-    /*
+    /**
      * Get entropy generation scale.
-     * Enforces physical invariants and updates associated state variables within {@code PhysicalLawEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getEntropyGenerationScale() { return entropyGenerationScale; }
-    /*
+    /**
      * Set entropy generation scale operation.
      * <p>
      * Executes operational logic for {@code PhysicalLawEngine} within the Tier 1 physical conservation solver.

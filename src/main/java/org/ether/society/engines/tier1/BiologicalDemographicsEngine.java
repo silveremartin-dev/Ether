@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -31,7 +31,7 @@ public class BiologicalDemographicsEngine {
     /* Cellular senescence rate Î² */
     public static final double GOMPERTZ_BETA = 0.08;
 
-    /*
+    /**
      * Calculates Gompertz-Makeham hazard rate Î¼(x) for age x.
      *
      * @param ageYears Age in years
@@ -45,7 +45,7 @@ public class BiologicalDemographicsEngine {
         return GOMPERTZ_ALPHA * Math.exp(GOMPERTZ_BETA * ageYears) + environmentalHazardGamma;
     }
 
-    /*
+    /**
      * Executes one biological demographic mortality tick across cells with dt.
      */
     public static void processBiologicalDemographics(List<H3Cell> cells, double deltaYears) {
@@ -126,9 +126,8 @@ public class BiologicalDemographicsEngine {
         }
     }
 
-    /*
+    /**
      * Process biological demographics.
-     * Enforces physical invariants and updates associated state variables within {@code BiologicalDemographicsEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      */

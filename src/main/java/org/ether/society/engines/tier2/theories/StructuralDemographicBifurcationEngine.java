@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -39,29 +39,27 @@ import java.util.Random;
 public class StructuralDemographicBifurcationEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(StructuralDemographicBifurcationEngine.class);
 
-    /* Internal state variable for psi threshold (double). */
+    /** Internal state: psi threshold (double). */
     private final double psiThreshold;
-    /* Internal state variable for base jump intensity (double). */
+    /** Internal state: base jump intensity (double). */
     private final double baseJumpIntensity;
     private final Random random;
 
-    /* Internal state variable for total crises triggered (long). */
+    /** Internal state: total crises triggered (long). */
     private long totalCrisesTriggered = 0;
-    /* Internal state variable for mean planetary psi (double). */
+    /** Internal state: mean planetary psi (double). */
     private double meanPlanetaryPSI = 0.0;
 
-    /*
+    /**
      * Structural demographic bifurcation engine.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      */
     public StructuralDemographicBifurcationEngine() {
         this(5.0, 0.02, new Random(42));
     }
 
-    /*
+    /**
      * Structural demographic bifurcation engine.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @param psiThreshold the psi threshold parameter (double)
      * @param baseJumpIntensity the base jump intensity parameter (double)
@@ -82,35 +80,32 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
         this.random.setSeed(seed);
     }
 
-    @Override
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getName() {
         return "Structural-Demographic Bifurcation & Crisis Jumps (SDT)";
     }
 
-    @Override
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getDescription() {
         return "Simulates structural secular instability cycles, elite overproduction tension, and discrete Poisson state collapse jumps.";
     }
 
-    @Override
-    /*
+    /**
      * Get equations tooltip.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getEquationsTooltip() {
         return """
                [Turchin-Goldstone Structural Demographic Bifurcation Model]
@@ -124,25 +119,23 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
                """;
     }
 
-    @Override
-    /*
+    /**
      * Get category.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getCategory() {
         return "Tier 2: Structural Cliodynamics";
     }
 
-    @Override
-    /*
+    /**
      * Process.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
      */
+    @Override
     public void process(List<H3Cell> cells, double deltaYears) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
@@ -204,23 +197,20 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
         meanPlanetaryPSI = activeCount > 0 ? sumPSI / activeCount : 0.0;
     }
 
-    /*
+    /**
      * Get total crises triggered.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @return the resulting computation or state reference
      */
     public long getTotalCrisesTriggered() { return totalCrisesTriggered; }
-    /*
+    /**
      * Get mean planetary psi.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @return the resulting computation or state reference
      */
     public double getMeanPlanetaryPSI() { return meanPlanetaryPSI; }
-    /*
+    /**
      * Get psi threshold.
-     * Enforces physical invariants and updates associated state variables within {@code StructuralDemographicBifurcationEngine}.
      *
      * @return the resulting computation or state reference
      */

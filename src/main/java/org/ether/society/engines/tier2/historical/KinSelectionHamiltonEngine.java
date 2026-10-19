@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -23,9 +23,8 @@ import java.util.List;
 public class KinSelectionHamiltonEngine {
     private static final Logger logger = LoggerFactory.getLogger(KinSelectionHamiltonEngine.class);
 
-    /*
+    /**
      * Check hamilton rule.
-     * Enforces physical invariants and updates associated state variables within {@code KinSelectionHamiltonEngine}.
      *
      * @param relatednessR the relatedness r parameter (double)
      * @param benefitB the benefit b parameter (double)
@@ -36,9 +35,8 @@ public class KinSelectionHamiltonEngine {
         return (relatednessR * benefitB) > costC;
     }
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code KinSelectionHamiltonEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)

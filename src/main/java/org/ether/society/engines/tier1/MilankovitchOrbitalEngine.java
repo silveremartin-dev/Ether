@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -36,16 +36,16 @@ public class MilankovitchOrbitalEngine {
 
     /* Mean orbital eccentricity baseline */
     public static final double MEAN_ECCENTRICITY = 0.0167;
-    /* Internal state variable for eccentricity amplitude (double). */
+    /** Internal state: eccentricity amplitude (double). */
     public static final double ECCENTRICITY_AMPLITUDE = 0.020;
-    /* Internal state variable for eccentricity period years (double). */
+    /** Internal state: eccentricity period years (double). */
     public static final double ECCENTRICITY_PERIOD_YEARS = 100_000.0;
 
     /* Mean obliquity (axial tilt) in degrees */
     public static final double MEAN_OBLIQUITY_DEG = 23.44;
-    /* Internal state variable for obliquity amplitude deg (double). */
+    /** Internal state: obliquity amplitude deg (double). */
     public static final double OBLIQUITY_AMPLITUDE_DEG = 1.20;
-    /* Internal state variable for obliquity period years (double). */
+    /** Internal state: obliquity period years (double). */
     public static final double OBLIQUITY_PERIOD_YEARS = 41_000.0;
 
     /* Precession period in years */
@@ -53,7 +53,7 @@ public class MilankovitchOrbitalEngine {
 
     public record MilankovitchParameters(double eccentricity, double obliquityDeg, double precessionAngleRad) {}
 
-    /*
+    /**
      * Computes Milankovitch orbital parameters for a given year before present (or relative to year 0 CE).
      *
      * @param year Current simulation year (negative for BCE/years before present)
@@ -77,7 +77,7 @@ public class MilankovitchOrbitalEngine {
         return new MilankovitchParameters(e, eps, varpi);
     }
 
-    /*
+    /**
      * Computes daily average TOA insolation (W/m²) for a given latitude and day of year.
      *
      * @param latDeg Latitude in degrees [-90, +90]
@@ -112,7 +112,7 @@ public class MilankovitchOrbitalEngine {
         return (SOLAR_CONSTANT_TOA_W_M2 / Math.PI) * distSq * Math.max(0.0, term);
     }
 
-    /*
+    /**
      * Applies Milankovitch insolation forcing anomaly to surface temperatures across all planetary cells.
      *
      * @param cells Simulation H3 cells

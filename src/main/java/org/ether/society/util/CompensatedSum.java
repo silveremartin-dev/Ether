@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -15,21 +15,19 @@ package org.ether.society.util;
  */
 public final class CompensatedSum {
 
-    /* Internal state variable for sum (double). */
+    /** Internal state: sum (double). */
     private double sum = 0.0;
-    /* Internal state variable for compensation (double). */
+    /** Internal state: compensation (double). */
     private double compensation = 0.0;
 
-    /*
+    /**
      * Compensated sum.
-     * Enforces physical invariants and updates associated state variables within {@code CompensatedSum}.
      *
      */
     public CompensatedSum() {}
 
-    /*
+    /**
      * Compensated sum.
-     * Enforces physical invariants and updates associated state variables within {@code CompensatedSum}.
      *
      * @param initialValue the initial value parameter (double)
      */
@@ -37,7 +35,7 @@ public final class CompensatedSum {
         this.sum = initialValue;
     }
 
-    /*
+    /**
      * Adds a value using Neumaier's algorithm (handles both small and large additions).
      */
     public void add(double value) {
@@ -50,14 +48,14 @@ public final class CompensatedSum {
         sum = t;
     }
 
-    /*
+    /**
      * Returns the exact compensated sum.
      */
     public double get() {
         return sum + compensation;
     }
 
-    /*
+    /**
      * Resets the accumulator.
      */
     public void reset() {
@@ -65,7 +63,7 @@ public final class CompensatedSum {
         this.compensation = 0.0;
     }
 
-    /*
+    /**
      * Static utility to sum an array of doubles with Kahan-Neumaier compensation.
      */
     public static double sum(double[] values) {

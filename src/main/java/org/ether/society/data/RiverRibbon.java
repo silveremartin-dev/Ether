@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -19,9 +19,8 @@ package org.ether.society.data;
 public class RiverRibbon {
     public double lng1, lat1, lng2, lat2, weight, widthDeg;
 
-    /*
+    /**
      * River ribbon.
-     * Enforces physical invariants and updates associated state variables within {@code RiverRibbon}.
      *
      * @param lng1 the lng1 parameter (double)
      * @param lat1 the lat1 parameter (double)
@@ -39,9 +38,8 @@ public class RiverRibbon {
         this.widthDeg = widthDeg;
     }
 
-    /*
+    /**
      * Distance to point.
-     * Enforces physical invariants and updates associated state variables within {@code RiverRibbon}.
      *
      * @param px the px parameter (double)
      * @param py the py parameter (double)

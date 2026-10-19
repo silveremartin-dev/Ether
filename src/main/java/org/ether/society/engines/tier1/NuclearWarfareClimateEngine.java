@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -50,7 +50,7 @@ public class NuclearWarfareClimateEngine {
         return baseSeed;
     }
 
-    /*
+    /**
      * Calculates surface solar irradiance attenuation multiplier based on stratospheric soot optical depth.
      *
      * @param opticalDepth Stratospheric soot optical depth Ï„
@@ -63,7 +63,7 @@ public class NuclearWarfareClimateEngine {
         return Math.exp(-opticalDepth);
     }
 
-    /*
+    /**
      * Executes one nuclear conflict trigger, soot injection, and nuclear winter climate tick.
      */
     public static void processNuclearWarfareClimate(List<H3Cell> cells) {
@@ -133,9 +133,8 @@ public class NuclearWarfareClimateEngine {
         }
     }
 
-    /*
+    /**
      * Get global soot optical depth.
-     * Enforces physical invariants and updates associated state variables within {@code NuclearWarfareClimateEngine}.
      *
      * @return the resulting computation or state reference
      */
@@ -143,9 +142,8 @@ public class NuclearWarfareClimateEngine {
         return globalSootOpticalDepth;
     }
 
-    /*
+    /**
      * Set global soot optical depth.
-     * Enforces physical invariants and updates associated state variables within {@code NuclearWarfareClimateEngine}.
      *
      * @param depth the depth parameter (double)
      */

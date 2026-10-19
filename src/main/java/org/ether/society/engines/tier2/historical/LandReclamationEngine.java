@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -26,19 +26,18 @@ import java.util.List;
 public class LandReclamationEngine {
     private static final Logger logger = LoggerFactory.getLogger(LandReclamationEngine.class);
 
-    /* Internal state variable for default polder tech threshold (double). */
+    /** Internal state: default polder tech threshold (double). */
     public static final double DEFAULT_POLDER_TECH_THRESHOLD = 4.0;
-    /* Internal state variable for default polder capital threshold (double). */
+    /** Internal state: default polder capital threshold (double). */
     public static final double DEFAULT_POLDER_CAPITAL_THRESHOLD = 100.0;
 
-    /* Internal state variable for default seasteading tech threshold (double). */
+    /** Internal state: default seasteading tech threshold (double). */
     public static final double DEFAULT_SEASTEADING_TECH_THRESHOLD = 8.5;
-    /* Internal state variable for default seasteading capital threshold (double). */
+    /** Internal state: default seasteading capital threshold (double). */
     public static final double DEFAULT_SEASTEADING_CAPITAL_THRESHOLD = 500.0;
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code LandReclamationEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param timeStepDays the time step days parameter (double)

@@ -1,4 +1,4 @@
-package org.ether.society.persistence;
+ackage org.ether.society.persistence;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -16,36 +16,34 @@ import java.time.LocalDateTime;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SaveMetadata {
-    /* Internal state variable for id (String). */
+    /** Internal state: id (String). */
     private String id;
-    /* Internal state variable for name (String). */
+    /** Internal state: name (String). */
     private String name;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime timestamp = LocalDateTime.now();
-    /* Internal state variable for year (long). */
+    /** Internal state: year (long). */
     private long year;
-    /* Internal state variable for month (int). */
+    /** Internal state: month (int). */
     private int month;
-    /* Internal state variable for scenario name (String). */
+    /** Internal state: scenario name (String). */
     private String scenarioName;
-    /* Internal state variable for cell count (int). */
+    /** Internal state: cell count (int). */
     private int cellCount;
-    /* Internal state variable for H3 resolution (int). */
+    /** Internal state: H3 resolution (int). */
     private int h3Resolution;
-    /* Internal state variable for software version (String). */
+    /** Internal state: software version (String). */
     private String version = org.ether.society.config.AppVersion.getRawVersion();
 
-    /*
+    /**
      * Save metadata.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      */
     public SaveMetadata() {
     }
 
-    /*
+    /**
      * Save metadata.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      * @param id the id parameter (String)
      * @param name the name parameter (String)
@@ -57,7 +55,7 @@ public class SaveMetadata {
         this(id, name, year, month, scenarioName, 0, 3);
     }
 
-    /*
+    /**
      * Save metadata with spatial topology parameters.
      *
      * @param id the save ID
@@ -80,42 +78,41 @@ public class SaveMetadata {
         this.version = "1.0.0-beta.2";
     }
 
-    /*
+    /**
      * Get cell count.
      *
      * @return number of cells in simulation grid
      */
     public int getCellCount() { return cellCount; }
 
-    /*
+    /**
      * Set cell count.
      *
      * @param cellCount the cell count
      */
     public void setCellCount(int cellCount) { this.cellCount = cellCount; }
 
-    /*
+    /**
      * Get H3 spatial resolution.
      *
      * @return resolution level
      */
     public int getH3Resolution() { return h3Resolution; }
 
-    /*
+    /**
      * Set H3 spatial resolution.
      *
      * @param h3Resolution the resolution level
      */
     public void setH3Resolution(int h3Resolution) { this.h3Resolution = h3Resolution; }
 
-    /*
+    /**
      * Get id.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      * @return the resulting computation or state reference
      */
     public String getId() { return id; }
-    /*
+    /**
      * Set id operation.
      * <p>
      * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
@@ -125,14 +122,13 @@ public class SaveMetadata {
      * @param id the id argument (String)
      */
     public void setId(String id) { this.id = id; }
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      * @return the resulting computation or state reference
      */
     public String getName() { return name; }
-    /*
+    /**
      * Set name operation.
      * <p>
      * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
@@ -142,14 +138,13 @@ public class SaveMetadata {
      * @param name the name argument (String)
      */
     public void setName(String name) { this.name = name; }
-    /*
+    /**
      * Get timestamp.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      * @return the resulting computation or state reference
      */
     public LocalDateTime getTimestamp() { return timestamp; }
-    /*
+    /**
      * Set timestamp operation.
      * <p>
      * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
@@ -159,14 +154,13 @@ public class SaveMetadata {
      * @param timestamp the timestamp argument (LocalDateTime)
      */
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
-    /*
+    /**
      * Get year.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      * @return the resulting computation or state reference
      */
     public long getYear() { return year; }
-    /*
+    /**
      * Set year operation.
      * <p>
      * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
@@ -176,14 +170,13 @@ public class SaveMetadata {
      * @param year the year argument (long)
      */
     public void setYear(long year) { this.year = year; }
-    /*
+    /**
      * Get month.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      * @return the resulting computation or state reference
      */
     public int getMonth() { return month; }
-    /*
+    /**
      * Set month operation.
      * <p>
      * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
@@ -193,14 +186,13 @@ public class SaveMetadata {
      * @param month the month argument (int)
      */
     public void setMonth(int month) { this.month = month; }
-    /*
+    /**
      * Get scenario name.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      * @return the resulting computation or state reference
      */
     public String getScenarioName() { return scenarioName; }
-    /*
+    /**
      * Set scenario name operation.
      * <p>
      * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.
@@ -210,14 +202,13 @@ public class SaveMetadata {
      * @param scenarioName the scenario name argument (String)
      */
     public void setScenarioName(String scenarioName) { this.scenarioName = scenarioName; }
-    /*
+    /**
      * Get version.
-     * Enforces physical invariants and updates associated state variables within {@code SaveMetadata}.
      *
      * @return the resulting computation or state reference
      */
     public String getVersion() { return version; }
-    /*
+    /**
      * Set version operation.
      * <p>
      * Executes operational logic for {@code SaveMetadata} within the geospatial raster and tensor ingestion pipeline.

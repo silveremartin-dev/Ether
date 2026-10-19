@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -37,9 +37,8 @@ import java.util.List;
 public class ImageMapLoader {
     private static final Logger logger = LoggerFactory.getLogger(ImageMapLoader.class);
 
-    /*
+    /**
      * Map data to cells.
-     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevationImageStream the elevation image stream parameter (InputStream)
@@ -49,9 +48,8 @@ public class ImageMapLoader {
         mapDataToCells(cells, elevationImageStream, biomeImageStream, null);
     }
 
-    /*
+    /**
      * Map data to cells.
-     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevationImageStream the elevation image stream parameter (InputStream)
@@ -66,9 +64,8 @@ public class ImageMapLoader {
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, -11000.0, 8848.0);
     }
 
-    /*
+    /**
      * Map images to cells.
-     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevImg the elev img parameter (Image)
@@ -81,9 +78,8 @@ public class ImageMapLoader {
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, null, null, null, minAlt, maxAlt);
     }
 
-    /*
+    /**
      * Map images to cells.
-     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevImg the elev img parameter (Image)
@@ -97,9 +93,8 @@ public class ImageMapLoader {
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, climateImg, null, null, minAlt, maxAlt);
     }
 
-    /*
+    /**
      * Map images to cells.
-     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevImg the elev img parameter (Image)
@@ -114,9 +109,8 @@ public class ImageMapLoader {
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, climateImg, rainfallImg, null, minAlt, maxAlt);
     }
 
-    /*
+    /**
      * Map images to cells.
-     * Enforces physical invariants and updates associated state variables within {@code ImageMapLoader}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevImg the elev img parameter (Image)
@@ -281,7 +275,7 @@ public class ImageMapLoader {
         }
     }
 
-    /*
+    /**
      * Match pixel color to nearest Biome.
      */
     public Biome matchBiomeColor(Color c) {
@@ -303,7 +297,6 @@ public class ImageMapLoader {
         return best;
     }
 
-    // Helper subroutine: color distance - internal state computation & bounds checking
     private double colorDistance(Color c1, Color c2) {
         double dr = c1.getRed() - c2.getRed();
         double dg = c1.getGreen() - c2.getGreen();
@@ -311,14 +304,14 @@ public class ImageMapLoader {
         return dr * dr + dg * dg + db * db;
     }
 
-    /*
+    /**
      * Define expected colors for biomes in the input map.
      */
     public Color getBiomeTargetColor(Biome b) {
         return b != null ? BIOME_TARGET_COLORS[b.ordinal()] : BIOME_TARGET_COLORS[Biome.OCEAN.ordinal()];
     }
 
-    /*
+    /**
      * Export an image map to a standard PNG file along with a standard ESRI World File (.tfw).
      */
     public void exportMapToPngAndWorldFile(Image image, File targetPngFile) {
@@ -366,7 +359,7 @@ public class ImageMapLoader {
         }
     }
 
-    /*
+    /**
      * Convert a JavaFX Image to a compressed Base64 PNG string for JSON preset persistence.
      */
     public static String imageToBase64Png(Image image) {
@@ -393,7 +386,7 @@ public class ImageMapLoader {
         }
     }
 
-    /*
+    /**
      * Loads a map image prioritizing the single canonical location data/maps/ether/<planet>/<year>/
      * using TemporalMapTensorManager with automatic epoch fallback and continuous interpolation.
      */
@@ -401,7 +394,7 @@ public class ImageMapLoader {
         return loadMapImage("earth", 2026L, mapFileName);
     }
 
-    /*
+    /**
      * Loads a map image for a specific planet, epoch year, and layer.
      */
     public static Image loadMapImage(String planet, long year, String mapFileName) {
@@ -409,12 +402,10 @@ public class ImageMapLoader {
         return TemporalMapTensorManager.loadTemporalMapImage(planet, year, mapFileName);
     }
 
-    // Helper subroutine: normalize preset dir - internal state computation & bounds checking
     private static String normalizePresetDir(String dir) {
         return TemporalMapTensorManager.normalizePlanet(dir);
     }
 
-    // Helper subroutine: deduce preset from file name - internal state computation & bounds checking
     private static String deducePresetFromFileName(String fileName) {
         if (fileName == null) return null;
         String lower = fileName.toLowerCase();
@@ -436,7 +427,7 @@ public class ImageMapLoader {
             }
     );
 
-    /*
+    /**
      * Convert a Base64 PNG string back into a JavaFX Image with high-performance caching.
      */
     public static Image base64PngToImage(String base64) {
@@ -456,12 +447,12 @@ public class ImageMapLoader {
         }
     }
 
-    /*
+    /**
      * Validation result for map images.
      */
     public record ImageValidationResult(boolean valid, String message, int width, int height, double aspectRatio) {}
 
-    /*
+    /**
      * Checks effective raster image loading and verifies dimensions, pixel reader accessibility, and sanity.
      */
     public static ImageValidationResult validateMapImage(Image image) {

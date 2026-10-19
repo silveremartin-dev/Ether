@@ -1,4 +1,4 @@
-/*
+*
 
  * MIT License
 
@@ -62,7 +62,6 @@ public class CliodynamicAdvisorEngine {
 
      * Generate advisor alerts.
 
-     * Enforces physical invariants and updates associated state variables within {@code CliodynamicAdvisorEngine}.
 
      *
 

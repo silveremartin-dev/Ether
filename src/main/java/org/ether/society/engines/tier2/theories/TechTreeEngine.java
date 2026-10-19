@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -35,14 +35,14 @@ public class TechTreeEngine {
     public static final PhysicalEra MEDIEVAL = new PhysicalEra("Moyen Âge", 1500.0, 400.0, "Charrue lourde, moulins à eau/vent (400 MPa) et éthanol/bois (1500W/hab).");
     public static final PhysicalEra INDUSTRIAL = new PhysicalEra("Révolution Industrielle", 8000.0, 800.0, "Machine à vapeur, acier Bessemer (800 MPa) et charbon (8000W/hab).");
 
-    /*
+    /**
      * Executes physical era progression and spatial power diffusion with default monthly step.
      */
     public static void processTechnologyDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {
         processTechnologyDiffusion(cells, activeRoutes, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes physical era progression and spatial power diffusion scaled by dtYears.
      */
     public static void processTechnologyDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes, double dtYears) {

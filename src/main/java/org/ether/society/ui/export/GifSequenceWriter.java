@@ -1,4 +1,4 @@
-package org.ether.society.ui.export;
+ackage org.ether.society.ui.export;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOInvalidTreeException;
@@ -23,9 +23,8 @@ public class GifSequenceWriter implements AutoCloseable {
     private final ImageWriteParam imageWriteParam;
     private final IIOMetadata imageMetaData;
 
-    /*
+    /**
      * Gif sequence writer.
-     * Enforces physical invariants and updates associated state variables within {@code GifSequenceWriter}.
      *
      * @param outputStream the output stream parameter (ImageOutputStream)
      * @param imageType the image type parameter (int)
@@ -69,9 +68,8 @@ public class GifSequenceWriter implements AutoCloseable {
         gifWriter.prepareWriteSequence(null);
     }
 
-    /*
+    /**
      * Write to sequence.
-     * Enforces physical invariants and updates associated state variables within {@code GifSequenceWriter}.
      *
      * @param img the img parameter (RenderedImage)
      */
@@ -79,12 +77,11 @@ public class GifSequenceWriter implements AutoCloseable {
         gifWriter.writeToSequence(new IIOImage(img, null, imageMetaData), imageWriteParam);
     }
 
-    @Override
-    /*
+    /**
      * Close.
-     * Enforces physical invariants and updates associated state variables within {@code GifSequenceWriter}.
      *
      */
+    @Override
     public void close() throws IOException {
         try {
             gifWriter.endWriteSequence();
@@ -93,7 +90,6 @@ public class GifSequenceWriter implements AutoCloseable {
         }
     }
 
-    // Helper subroutine: get writer - internal state computation & bounds checking
     private static ImageWriter getWriter() throws IIOException {
         Iterator<ImageWriter> iter = ImageIO.getImageWritersBySuffix("gif");
         if (!iter.hasNext()) {
@@ -102,7 +98,6 @@ public class GifSequenceWriter implements AutoCloseable {
         return iter.next();
     }
 
-    // Helper subroutine: get node - internal state computation & bounds checking
     private static IIOMetadataNode getNode(IIOMetadataNode rootNode, String nodeName) {
         int nNodes = rootNode.getLength();
         for (int i = 0; i < nNodes; i++) {

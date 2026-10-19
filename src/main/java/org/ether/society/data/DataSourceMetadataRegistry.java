@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -6,9 +6,6 @@
  */
 package org.ether.society.data;
 
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Tooltip;
 import org.ether.society.i18n.I18n;
 
 import java.util.HashMap;
@@ -21,12 +18,11 @@ import java.util.Map;
  */
 public final class DataSourceMetadataRegistry {
 
-    // Helper subroutine: data source metadata registry - internal state computation & bounds checking
     private DataSourceMetadataRegistry() {
         // Utility class
     }
 
-    /*
+    /**
      * Resolves the full scientific and technical description for a given source key or label.
      * Supports both raw keys (e.g., "earth", "mars", "hyde", "glottolog") and fully qualified UI labels.
      *
@@ -55,103 +51,6 @@ public final class DataSourceMetadataRegistry {
         return buildStructuredDescription(raw, lower);
     }
 
-    /*
-     * Configures any JavaFX ComboBox for scientific data sources:
-     * - Configures each dropdown ListCell with its formatted label AND its dedicated technical Tooltip.
-     * - Configures the ComboBox's own Tooltip to dynamically reflect the selected item's technical metadata.
-     * - Initializes the ComboBox's tooltip immediately based on its current value.
-     */
-    public static void setupDetailedSourceCombo(ComboBox<String> combo, String promptKey, String defaultTooltipKey) {
-        if (combo == null) return;
-
-        combo.setCellFactory(p -> new ListCell<>() {
-            @Override
-            /*
-             * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code DataSourceMetadataRegistry}.
-             *
-             * @param item the item parameter (String)
-             * @param empty the empty parameter (boolean)
-             */
-            protected void updateItem(String item, boolean empty) {
-                // Ingestion & Transformation: Parse raw geospatial/tabular records
-                // Standardize coordinates, normalize projection tensors, and populate spatial index
-                super.updateItem(item, empty);
-                if (empty || item == null || item.isBlank() || "none".equalsIgnoreCase(item.trim())) {
-                    setText(I18n.getOrDefault(promptKey, "— Select Data Source —"));
-                    setTooltip(null);
-                } else {
-                    String label = item;
-                    if ("earth".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.earth", "🌍 Terre — NOAA ETOPO2022 / GMTED2010 [Global, -100ka à Actuel]");
-                    else if ("mars".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mars", "🔴 Mars — MGS MOLA Global Elevation [Planétaire, Éon Actuel]");
-                    else if ("venus".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.venus", "🟡 Vénus — Magellan SAR & VIRTIS [Planétaire, Éon Actuel]");
-                    else if ("moon".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.moon", "⚪ Lune — LRO LOLA Altimetry [Planétaire, Éon Actuel]");
-                    else if ("mercury".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mercury", "⚪ Mercure — MESSENGER MLA Topography [Planétaire, Éon Actuel]");
-
-                    setText(label);
-                    String desc = getDetailedSourceDescription(item);
-                    if (desc != null && !desc.isBlank()) {
-                        Tooltip cellTooltip = new Tooltip(desc);
-                        cellTooltip.setWrapText(true);
-                        cellTooltip.setMaxWidth(480);
-                        setTooltip(cellTooltip);
-                    } else {
-                        setTooltip(null);
-                    }
-                }
-            }
-        });
-
-        combo.setButtonCell(new ListCell<>() {
-            @Override
-            /*
-             * Update item.
-             * Enforces physical invariants and updates associated state variables within {@code DataSourceMetadataRegistry}.
-             *
-             * @param item the item parameter (String)
-             * @param empty the empty parameter (boolean)
-             */
-            protected void updateItem(String item, boolean empty) {
-                // Ingestion & Transformation: Parse raw geospatial/tabular records
-                // Standardize coordinates, normalize projection tensors, and populate spatial index
-                super.updateItem(item, empty);
-                if (empty || item == null || item.isBlank() || "none".equalsIgnoreCase(item.trim())) {
-                    setText(I18n.getOrDefault(promptKey, "— Select Data Source —"));
-                } else {
-                    String label = item;
-                    if ("earth".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.earth", "🌍 Terre — NOAA ETOPO2022 / GMTED2010 [Global, -100ka à Actuel]");
-                    else if ("mars".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mars", "🔴 Mars — MGS MOLA Global Elevation [Planétaire, Éon Actuel]");
-                    else if ("venus".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.venus", "🟡 Vénus — Magellan SAR & VIRTIS [Planétaire, Éon Actuel]");
-                    else if ("moon".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.moon", "⚪ Lune — LRO LOLA Altimetry [Planétaire, Éon Actuel]");
-                    else if ("mercury".equalsIgnoreCase(item)) label = I18n.getOrDefault("planet.map.mercury", "⚪ Mercure — MESSENGER MLA Topography [Planétaire, Éon Actuel]");
-                    setText(label);
-                }
-            }
-        });
-
-        // Dynamic update of the ComboBox's tooltip on selection change
-        Runnable updateComboTooltip = () -> {
-            String val = combo.getValue();
-            if (val == null || val.isBlank() || "none".equalsIgnoreCase(val.trim())) {
-                Tooltip tip = new Tooltip(I18n.getOrDefault(defaultTooltipKey,
-                        "Sélectionnez une source de données de référence dans la liste déroulante."));
-                tip.setWrapText(true);
-                tip.setMaxWidth(480);
-                combo.setTooltip(tip);
-            } else {
-                String desc = getDetailedSourceDescription(val);
-                Tooltip tip = new Tooltip(desc);
-                tip.setWrapText(true);
-                tip.setMaxWidth(480);
-                combo.setTooltip(tip);
-            }
-        };
-
-        combo.valueProperty().addListener((obs, oldV, newV) -> updateComboTooltip.run());
-        updateComboTooltip.run();
-    }
-
-    // Helper subroutine: get i18n key for source - internal state computation & bounds checking
     private static String getI18nKeyForSource(String lower) {
         // --- TOPOGRAPHY ---
         if (lower.equals("earth") || lower.contains("etopo") || lower.contains("gmted")) return "source.topo.earth";
@@ -218,7 +117,6 @@ public final class DataSourceMetadataRegistry {
         return null;
     }
 
-    // Helper subroutine: build structured description - internal state computation & bounds checking
     private static String buildStructuredDescription(String raw, String lower) {
         StringBuilder sb = new StringBuilder();
 

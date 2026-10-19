@@ -1,4 +1,4 @@
-package org.ether.society.core.dod;
+ackage org.ether.society.core.dod;
 
 import org.ether.society.model.Biome;
 import org.ether.society.model.PhysicalConstants;
@@ -24,16 +24,16 @@ public class EnvironmentalKernel {
 
     // Pre-computed Farquhar FvCB 2D Look-Up Table (Temperature x CO2)
     // T: -10°C to +45°C (56 steps), CO2: 150 ppm to 1000 ppm (35 steps)
-    /* Internal state variable for lut temp min (int). */
+    /** Internal state: lut temp min (int). */
     private static final int LUT_TEMP_MIN = -10;
-    /* Internal state variable for lut temp max (int). */
+    /** Internal state: lut temp max (int). */
     private static final int LUT_TEMP_MAX = 45;
     private static final int LUT_TEMP_STEPS = LUT_TEMP_MAX - LUT_TEMP_MIN + 1; // 56
-    /* Internal state variable for lut co2 min (int). */
+    /** Internal state: lut co2 min (int). */
     private static final int LUT_CO2_MIN = 150;
-    /* Internal state variable for lut co2 max (int). */
+    /** Internal state: lut co2 max (int). */
     private static final int LUT_CO2_MAX = 1000;
-    /* Internal state variable for lut co2 step size (int). */
+    /** Internal state: lut co2 step size (int). */
     private static final int LUT_CO2_STEP_SIZE = 25;
     private static final int LUT_CO2_STEPS = (LUT_CO2_MAX - LUT_CO2_MIN) / LUT_CO2_STEP_SIZE + 1; // 35
 
@@ -73,7 +73,7 @@ public class EnvironmentalKernel {
         }
     }
 
-    /*
+    /**
      * Retrieves photosynthetic assimilation factor from the precomputed Farquhar FvCB LUT.
      */
     public static float evaluateFarquharYield(float tempC, float co2Ppm) {
@@ -84,7 +84,7 @@ public class EnvironmentalKernel {
         return FVCB_PHOTOSYNTHESIS_LUT[tIdx][cIdx];
     }
 
-    /*
+    /**
      * Calculates Beer-Lambert canopy light transmission fraction I / I_0 = exp(-k_ext * LAI).
      *
      * @param leafAreaIndex Leaf Area Index (LAI in m²/m²)
@@ -114,7 +114,7 @@ public class EnvironmentalKernel {
         }
     }
 
-    /*
+    /**
      * Calculates Priestley-Taylor Potential Evapotranspiration (PET in mm/year).
      */
     public static float calculatePriestleyTaylorPET(float tempC) {
@@ -126,9 +126,8 @@ public class EnvironmentalKernel {
         return PET_LUT[idx] + frac * (PET_LUT[idx + 1] - PET_LUT[idx]);
     }
 
-    /*
+    /**
      * Tick.
-     * Enforces physical invariants and updates associated state variables within {@code EnvironmentalKernel}.
      *
      * @param world the world parameter (WorldBuffer)
      * @param dt the dt parameter (float)
@@ -139,7 +138,7 @@ public class EnvironmentalKernel {
         tick(world, 0, dt);
     }
 
-    /*
+    /**
      * Executes one environmental update tick over all active land cells in WorldBuffer.
      *
      * @param world DOD buffer container for world state
@@ -220,7 +219,7 @@ public class EnvironmentalKernel {
         }
     }
 
-    /*
+    /**
      * Net primary photosynthetic & trophic energy production rate per biome in Gigajoules per year (GJ/yr).
      * Scaled for macro-hexagonal cells (1,250 to 11,000 km²) supporting preindustrial & historical bands.
      */
@@ -240,7 +239,7 @@ public class EnvironmentalKernel {
         };
     }
 
-    /*
+    /**
      * Maximum annual agricultural caloric potential per macro-cell in Gigajoules per year (GJ/yr).
      * Represents arable soil carrying capacity and photosynthetic limits for preindustrial/early agrarian regimes.
      */

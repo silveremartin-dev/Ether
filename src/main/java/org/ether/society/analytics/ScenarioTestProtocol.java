@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -34,11 +34,11 @@ public class ScenarioTestProtocol {
         private final SimulationRunRecord executionRecord;
         private final SimulationRunRecord targetRecord;
         private final RootCauseAnalyzer.ComparisonResult comparisonResult;
-        /* Internal state variable for rmse (double). */
+        /** Internal state: rmse (double). */
         private final double rmse;
-        /* Internal state variable for r squared (double). */
+        /** Internal state: r squared (double). */
         private final double rSquared;
-        /* Internal state variable for is calibrated (boolean). */
+        /** Internal state: is calibrated (boolean). */
         private final boolean isCalibrated;
 
         private final MapComparisonMetrics.MapComparisonResult spatialMetrics;
@@ -57,66 +57,57 @@ public class ScenarioTestProtocol {
             this.spatialMetrics = spatialMetrics;
         }
 
-        /*
+        /**
          * Get initial scenario.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
         public Scenario getInitialScenario() { return initialScenario; }
-        /*
+        /**
          * Get execution record.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
         public SimulationRunRecord getExecutionRecord() { return executionRecord; }
-        /*
+        /**
          * Get target record.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
         public SimulationRunRecord getTargetRecord() { return targetRecord; }
-        /*
+        /**
          * Get comparison result.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
         public RootCauseAnalyzer.ComparisonResult getComparisonResult() { return comparisonResult; }
-        /*
+        /**
          * Get rmse.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
         public double getRmse() { return rmse; }
-        /*
+        /**
          * Get rsquared.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
         public double getRSquared() { return rSquared; }
-        /*
+        /**
          * Is calibrated.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
         public boolean isCalibrated() { return isCalibrated; }
-        /*
+        /**
          * Get spatial metrics.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
         public MapComparisonMetrics.MapComparisonResult getSpatialMetrics() { return spatialMetrics; }
 
-        /*
+        /**
          * Get summary.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
          *
          * @return the resulting computation or state reference
          */
@@ -139,9 +130,8 @@ public class ScenarioTestProtocol {
         }
     }
 
-    /*
+    /**
      * Scenario test protocol.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioTestProtocol}.
      *
      */
     public ScenarioTestProtocol() {
@@ -149,7 +139,7 @@ public class ScenarioTestProtocol {
         this.scenarioRepository = new ScenarioRepository();
     }
 
-    /*
+    /**
      * Executes the full testing protocol for a scenario against a known target run:
      * 1. Known Start: Executes the scenario headlessly.
      * 2. Expected End Comparison: Compares generated run against expected target run.
@@ -185,7 +175,7 @@ public class ScenarioTestProtocol {
         return report;
     }
 
-    /*
+    /**
      * Executes the scenario protocol against a 20-variable historical benchmark window.
      */
     public ProtocolReport runProtocolAgainstBenchmark(Scenario scenario, HistoricalValidationKernel.EpochWindow window) {
@@ -198,7 +188,7 @@ public class ScenarioTestProtocol {
         return runProtocol(scenario, benchmarkRecord);
     }
 
-    /*
+    /**
      * Applies proposed parameter corrections ("Corriger") directly to a Scenario object.
      */
     public void applyCorrections(Scenario scenario, List<RootCauseAnalyzer.ParameterCorrection> corrections) {
@@ -233,7 +223,7 @@ public class ScenarioTestProtocol {
         scenarioRepository.saveOrUpdate(scenario);
     }
 
-    /*
+    /**
      * Executes an automated iterative self-calibration loop ("Expliquer et Corriger").
      * Iteratively executes the protocol, applies proposed corrections, and re-runs until
      * calibrated or maximum iterations reached.
@@ -262,7 +252,6 @@ public class ScenarioTestProtocol {
         return currentReport;
     }
 
-    // Helper subroutine: extract population map - internal state computation & bounds checking
     private Map<Integer, Double> extractPopulationMap(SimulationRunRecord record) {
         Map<Integer, Double> map = new java.util.TreeMap<>();
         if (record != null && record.getTimeSeriesData() != null) {
@@ -273,7 +262,6 @@ public class ScenarioTestProtocol {
         return map;
     }
 
-    // Helper subroutine: create synthetic benchmark record - internal state computation & bounds checking
     private SimulationRunRecord createSyntheticBenchmarkRecord(Scenario scenario, Map<Integer, Double> benchmarkPop) {
         String runId = "BENCHMARK-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase();
         SimulationRunRecord record = new SimulationRunRecord(runId, "Benchmark " + scenario.getName(), "Historical Benchmark Reference Data", Map.of());
@@ -286,7 +274,6 @@ public class ScenarioTestProtocol {
         return record;
     }
 
-    // Helper subroutine: parse double - internal state computation & bounds checking
     private double parseDouble(String str, double fallback) {
         try {
             String cleaned = str.replaceAll("[^0-9,.-]", "").replace(',', '.');
@@ -296,7 +283,6 @@ public class ScenarioTestProtocol {
         }
     }
 
-    // Helper subroutine: parse long - internal state computation & bounds checking
     private long parseLong(String str, long fallback) {
         try {
             String cleaned = str.replaceAll("[^0-9-]", "");

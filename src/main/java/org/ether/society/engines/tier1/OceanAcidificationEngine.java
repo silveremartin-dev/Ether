@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -40,7 +40,7 @@ public class OceanAcidificationEngine {
     /* Enthalpy of dissolution / R for CO2 in Kelvin */
     public static final double ENTHALPY_DISSOLUTION_OVER_R = 2400.0;
 
-    /*
+    /**
      * Calculates Henry's solubility constant K_H(T) for CO2 in mol/(LÂ·atm).
      * Cold waters absorb significantly more CO2 than warm tropical waters.
      */
@@ -53,7 +53,7 @@ public class OceanAcidificationEngine {
         return HENRY_K0_CO2 * Math.exp(ENTHALPY_DISSOLUTION_OVER_R * deltaInvT);
     }
 
-    /*
+    /**
      * Calculates dissolved CO2 concentration in aqueous phase in mol/L.
      */
     public static double calculateDissolvedCO2(double tempCelsius, double co2Ppm) {
@@ -64,7 +64,7 @@ public class OceanAcidificationEngine {
         return calculateHenrySolubility(tempCelsius) * pCO2Atm;
     }
 
-    /*
+    /**
      * Executes one ocean acidification and Henry solubility pump tick.
      *
      * @param cells   List of H3 cells

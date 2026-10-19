@@ -1,4 +1,4 @@
-/*
+*
 
 
  * MIT License
@@ -162,37 +162,37 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    /* Internal state variable for last tick time (long). */
+    /** Internal state: last tick time (long). */
 
 
     private long lastTickTime = 0;
 
 
-    /* Internal state variable for current tps (double). */
+    /** Internal state: current tps (double). */
 
 
     private double currentTPS = 0;
 
 
-    /* Internal state variable for current gini (float). */
+    /** Internal state: current gini (float). */
 
 
     private float currentGini = 0;
 
 
-    /* Internal state variable for current gdp (float). */
+    /** Internal state: current gdp (float). */
 
 
     private float currentGDP = 0;
 
 
-    /* Internal state variable for current life expectancy (float). */
+    /** Internal state: current life expectancy (float). */
 
 
     private float currentLifeExpectancy = 0;
 
 
-    /* Internal state variable for current fertility (float). */
+    /** Internal state: current fertility (float). */
 
 
     private float currentFertility = 0;
@@ -213,7 +213,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    /* Internal state variable for cells (List&lt;H3Cell&gt;). */
+    /** Internal state: cells (List&lt;H3Cell&gt;). */
 
 
     private List<H3Cell> cells;
@@ -246,7 +246,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     private final java.util.concurrent.atomic.AtomicBoolean pauseAtNextEvent = new java.util.concurrent.atomic.AtomicBoolean(false);
 
 
-    /* Internal state variable for speed multiplier (double). */
+    /** Internal state: speed multiplier (double). */
 
 
     private double speedMultiplier = 1.0;
@@ -261,7 +261,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * H3simulation engine.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -327,7 +326,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get event system.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -357,7 +355,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: initialize - internal state computation & bounds checking
 
 
     private void initialize() {
@@ -390,7 +387,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Initialize from scenario.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -609,7 +605,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get current scenario.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -648,7 +643,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get performance config.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -678,7 +672,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set performance config.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -702,7 +695,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: initialize population - internal state computation & bounds checking
 
 
     private void initializePopulation() {
@@ -809,7 +801,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Start.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -842,7 +833,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Pause.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -876,7 +866,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Reset.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -915,7 +904,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set speed.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -948,7 +936,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set speed.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -993,7 +980,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get speed.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1026,7 +1012,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get speed multiplier.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1059,7 +1044,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get time manager.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1089,7 +1073,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get current year.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1122,7 +1105,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Is running.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1155,7 +1137,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set pause at next event.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1188,7 +1169,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Is pause at next event.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1218,7 +1198,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get cells.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1248,7 +1227,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set cells.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1361,7 +1339,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Save simulation.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1396,7 +1373,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Load simulation.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1435,7 +1411,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: start game loop - internal state computation & bounds checking
 
 
     private void startGameLoop() {
@@ -1498,7 +1473,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Shutdown.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1549,7 +1523,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set cluster manager.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1588,7 +1561,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get cluster manager.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1618,7 +1590,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set on tick callback.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1648,7 +1619,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get profiler.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1672,7 +1642,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    /* Internal state variable for tick counter (int). */
+    /** Internal state: tick counter (int). */
 
 
     private int tickCounter = 0;
@@ -1687,7 +1657,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get tick counter.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1723,13 +1692,13 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-        /* Internal state variable for factor (int). */
+        /** Internal state: factor (int). */
 
 
         private final int factor;
 
 
-        /* Internal state variable for label (String). */
+        /** Internal state: label (String). */
 
 
         private final String label;
@@ -1759,7 +1728,6 @@ public class H3SimulationEngine implements ISimulationEngine {
          * Get factor.
 
 
-         * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
          *
@@ -1780,7 +1748,6 @@ public class H3SimulationEngine implements ISimulationEngine {
          * Get label.
 
 
-         * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
          *
@@ -1807,7 +1774,6 @@ public class H3SimulationEngine implements ISimulationEngine {
          * To string.
 
 
-         * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
          *
@@ -1846,7 +1812,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get temporal scale.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1867,7 +1832,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set temporal scale.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -1900,7 +1864,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: tick - internal state computation & bounds checking
 
 
     private void tick() {
@@ -2211,7 +2174,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: check scenario climate events - internal state computation & bounds checking
 
 
     private void checkScenarioClimateEvents() {
@@ -2322,7 +2284,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: apply climate event impact - internal state computation & bounds checking
 
 
     private void applyClimateEventImpact(org.ether.society.model.ClimateEvent evt) {
@@ -2476,7 +2437,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Step forward.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -2517,7 +2477,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Step backward.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -2562,7 +2521,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Seek to end.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -2625,7 +2583,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Seek to tick.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -2841,7 +2798,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    /* Internal state variable for last auto save time ms (long). */
+    /** Internal state: last auto save time ms (long). */
 
 
     private long lastAutoSaveTimeMs = 0;
@@ -2850,7 +2807,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: auto save checkpoint - internal state computation & bounds checking
 
 
     private void autoSaveCheckpoint() {
@@ -2910,7 +2866,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Sync buffer to cells.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3138,7 +3093,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get total population.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3225,7 +3179,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get populated cell count.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3267,7 +3220,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: initialize political seeding - internal state computation & bounds checking
 
 
     private void initializePoliticalSeeding(int populatedCount) {
@@ -3333,7 +3285,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get history manager.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3367,7 +3318,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get current tps.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3397,7 +3347,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get total biomass natural.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3441,7 +3390,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get current gini.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3471,7 +3419,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get density distribution.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3501,7 +3448,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get current gdp.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3522,7 +3468,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get current life expectancy.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3543,7 +3488,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get current fertility.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3573,7 +3517,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get energy captured.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3627,7 +3570,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get resource depletion rate.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3663,7 +3605,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get energy per capita.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3696,7 +3637,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get food per capita.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3729,7 +3669,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get biomass domesticated.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3759,7 +3698,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get potable water total.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3792,7 +3730,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get remaining resources ratio.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3822,7 +3759,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get systemic entropy.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3851,7 +3787,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get pollution level.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3887,7 +3822,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get occupied territory area.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -3995,7 +3929,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get offspring percentage.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4028,7 +3961,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get age at first child.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4061,7 +3993,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get immigration rate.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4090,7 +4021,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get education level.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4123,7 +4053,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get happiness index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4171,7 +4100,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get conflict level.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4216,7 +4144,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get city states count.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4267,7 +4194,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get institutional maturity.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4300,7 +4226,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get division of labor index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4489,7 +4414,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get max hierarchy level.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4537,7 +4461,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get largest cultural unit size.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4588,7 +4511,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get largest organization complexity.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4657,7 +4579,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get largest organization entropy.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4696,7 +4617,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get kardashev scale.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4738,7 +4658,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get built capital total.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4777,7 +4696,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get elite formation ratio.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4810,7 +4728,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get elder capital share.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4846,7 +4763,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get land rent index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4885,7 +4801,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get tools count.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4918,7 +4833,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get products count.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4951,7 +4865,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get system complexity index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -4987,7 +4900,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get reconstruction capability index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5023,7 +4935,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get system interdependence index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5056,7 +4967,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get age pyramid.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5230,7 +5140,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get shannon bandwidth.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5263,7 +5172,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get collective memory stock.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5299,7 +5207,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get innovation diffusion speed.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5335,7 +5242,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get knowledge decay rate.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5374,7 +5280,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get soil npkquality.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5410,7 +5315,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get carbon footprint.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5446,7 +5350,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get wild biodiversity index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5485,7 +5388,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get wet bulb safety margin.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5536,7 +5438,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get elite overproduction index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5575,7 +5476,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get fiscal stress index.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5614,7 +5514,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get geopolitical tension.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5653,7 +5552,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get collapse vulnerability.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5713,7 +5611,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get average asabiyyah.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5760,7 +5657,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get population survival rate.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5793,7 +5689,6 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
 
-    // Helper subroutine: sync climate to buffer - internal state computation & bounds checking
 
 
     private void syncClimateToBuffer() {
@@ -5819,7 +5714,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get world buffer.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5849,7 +5743,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Set world buffer.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5879,7 +5772,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get agent buffer.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *
@@ -5909,7 +5801,6 @@ public class H3SimulationEngine implements ISimulationEngine {
      * Get simulation save manager.
 
 
-     * Enforces physical invariants and updates associated state variables within {@code H3SimulationEngine}.
 
 
      *

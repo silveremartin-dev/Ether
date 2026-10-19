@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -28,7 +28,7 @@ import java.awt.image.BufferedImage;
 public class AnalyticalEpidemiologyModel {
     private static final Logger logger = LoggerFactory.getLogger(AnalyticalEpidemiologyModel.class);
 
-    /*
+    /**
      * Generates an authentic continuous $R_0$ pathogen stress raster for the specified epoch.
      *
      * @param year Historical epoch year
@@ -151,7 +151,7 @@ public class AnalyticalEpidemiologyModel {
         return img;
     }
 
-    /*
+    /**
      * Continuous, smooth elevation barrier (Himalayas/Tibet, Andes, Alps, Ethiopian Highlands).
      * Smooth Gaussian falloff with distance to mountain crests — no sharp rectangular box discontinuities.
      */
@@ -170,7 +170,6 @@ public class AnalyticalEpidemiologyModel {
         return 1.0 - 0.80 * maxMountain;
     }
 
-    // Helper subroutine: get epidemic outbreaks for year - internal state computation & bounds checking
     private static double[][] getEpidemicOutbreaksForYear(long year) {
         if (year == 536L || (year >= 530L && year <= 560L)) {
             // Justinianic Plague (Pelusium, Constantinople, Rome)
@@ -203,7 +202,6 @@ public class AnalyticalEpidemiologyModel {
         return new double[0][];
     }
 
-    // Helper subroutine: compute continuous sanitary suppression - internal state computation & bounds checking
     private static double computeContinuousSanitarySuppression(double lon, double lat, long year) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index

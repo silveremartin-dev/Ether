@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -46,7 +46,7 @@ public class AiryIsostasyCrustalRootEngine {
     /* Airy buoyancy ratio = Ï_crust / (Ï_mantle - Ï_crust) = 4.5 */
     public static final double AIRY_ROOT_RATIO = CRUST_DENSITY_KG_M3 / (MANTLE_DENSITY_KG_M3 - CRUST_DENSITY_KG_M3);
 
-    /*
+    /**
      * Calculates mountain root thickness (in meters) penetrating into the mantle for a given topography elevation.
      *
      * @param elevationMeters Topographic elevation in meters
@@ -60,7 +60,7 @@ public class AiryIsostasyCrustalRootEngine {
         return elevationMeters * AIRY_ROOT_RATIO;
     }
 
-    /*
+    /**
      * Calculates total lithospheric crustal thickness (in km) at a given topographic elevation.
      */
     public static double calculateTotalCrustThicknessKm(double elevationMeters) {
@@ -72,7 +72,7 @@ public class AiryIsostasyCrustalRootEngine {
         return (BASELINE_CRUST_THICKNESS_METERS + topoMeters + rootMeters) / 1000.0;
     }
 
-    /*
+    /**
      * Processes Airy crustal roots and updates geothermal heat flow and metal concentration across cells.
      */
     public static void processAiryIsostasy(List<H3Cell> cells) {

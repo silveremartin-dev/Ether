@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -37,9 +37,8 @@ public class SplashScreen {
     private final Label statusLabel;
     private final Label subStatusLabel;
 
-    /*
+    /**
      * Splash screen.
-     * Enforces physical invariants and updates associated state variables within {@code SplashScreen}.
      *
      */
     public SplashScreen() {
@@ -118,18 +117,16 @@ public class SplashScreen {
         stage.centerOnScreen();
     }
 
-    /*
+    /**
      * Show.
-     * Enforces physical invariants and updates associated state variables within {@code SplashScreen}.
      *
      */
     public void show() {
         stage.show();
     }
 
-    /*
+    /**
      * Update progress.
-     * Enforces physical invariants and updates associated state variables within {@code SplashScreen}.
      *
      * @param progress the progress parameter (double)
      * @param status the status parameter (String)
@@ -144,9 +141,8 @@ public class SplashScreen {
         });
     }
 
-    /*
+    /**
      * Close.
-     * Enforces physical invariants and updates associated state variables within {@code SplashScreen}.
      *
      */
     public void close() {

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -30,7 +30,7 @@ public class DeforestationErosionEngine {
         processDeforestationErosion(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes one deforestation soil erosion tick across cells.
      */
     public static void processDeforestationErosion(List<H3Cell> cells, double dtYears) {

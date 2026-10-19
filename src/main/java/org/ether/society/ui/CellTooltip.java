@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -38,9 +38,8 @@ public class CellTooltip extends VBox {
     private final Label coordLabel;
     private final Label h3Label;
 
-    /*
+    /**
      * Cell tooltip.
-     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
      *
      */
     public CellTooltip() {
@@ -120,7 +119,6 @@ public class CellTooltip extends VBox {
         setMouseTransparent(true);
     }
 
-    // Helper subroutine: create label - internal state computation & bounds checking
     private Label createLabel() {
         Label label = new Label();
         label.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
@@ -132,7 +130,7 @@ public class CellTooltip extends VBox {
         return label;
     }
 
-    /*
+    /**
      * Unified comprehensive cell update method.
      */
     public void updateCell(H3Cell cell, org.ether.society.core.dod.WorldBuffer world, Integer bufferIndex, Integer prevPop, List<ActiveEvent> activeEvents) {
@@ -326,9 +324,8 @@ public class CellTooltip extends VBox {
         setVisible(true);
     }
 
-    /*
+    /**
      * Update cell.
-     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
      *
      * @param cell the cell parameter (H3Cell)
      * @param prevPop the prev pop parameter (Integer)
@@ -338,9 +335,8 @@ public class CellTooltip extends VBox {
         updateCell(cell, null, null, prevPop, null);
     }
 
-    /*
+    /**
      * Update cell.
-     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
      *
      * @param cell the cell parameter (H3Cell)
      */
@@ -349,9 +345,8 @@ public class CellTooltip extends VBox {
         updateCell(cell, null, null, null, null);
     }
 
-    /*
+    /**
      * Update from buffer.
-     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
      *
      * @param world the world parameter (org.ether.society.core.dod.WorldBuffer)
      * @param index the index parameter (int)
@@ -361,7 +356,6 @@ public class CellTooltip extends VBox {
         updateCell(null, world, index, null, null);
     }
 
-    // Helper subroutine: compute carrying capacity - internal state computation & bounds checking
     private double computeCarryingCapacity(Biome biome, int elevation, double water, double aquifer, double tech) {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (elevation <= 0 && biome == Biome.OCEAN) return 0.0;
@@ -385,13 +379,11 @@ public class CellTooltip extends VBox {
         return Math.max(10.0, baseCap);
     }
 
-    // Helper subroutine: get biome name - internal state computation & bounds checking
     private String getBiomeName(String biomeEnumName) {
         String key = "biome." + biomeEnumName.toLowerCase();
         return I18n.getOrDefault(key, biomeEnumName);
     }
 
-    // Helper subroutine: get biome icon - internal state computation & bounds checking
     private String getBiomeIcon(Biome biome) {
         if (biome == null) return "🌍";
         return switch (biome) {
@@ -406,9 +398,8 @@ public class CellTooltip extends VBox {
         };
     }
 
-    /*
+    /**
      * Position.
-     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
      *
      * @param canvasX the canvas x parameter (double)
      * @param canvasY the canvas y parameter (double)
@@ -447,9 +438,8 @@ public class CellTooltip extends VBox {
         setVisible(true);
     }
 
-    /*
+    /**
      * Hide.
-     * Enforces physical invariants and updates associated state variables within {@code CellTooltip}.
      *
      */
     public void hide() {

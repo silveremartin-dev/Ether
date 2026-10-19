@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -29,7 +29,7 @@ import java.util.List;
 public class SimulationInvariantGuard {
     private static final Logger logger = LoggerFactory.getLogger(SimulationInvariantGuard.class);
 
-    /*
+    /**
      * Sanitizes and verifies invariant conditions across all simulation cells.
      *
      * @param cells List of H3 cells to validate

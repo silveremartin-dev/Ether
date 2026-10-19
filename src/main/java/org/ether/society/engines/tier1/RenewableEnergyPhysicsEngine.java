@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -33,7 +33,7 @@ public class RenewableEnergyPhysicsEngine {
     /* Air density at sea level in kg/m³ */
     public static final double AIR_DENSITY_KG_PER_M3 = 1.225;
 
-    /*
+    /**
      * Calculates kinetic wind power density in W/m² based on Betz Law.
      *
      * @param windSpeedMetersPerSec Wind speed in m/s
@@ -47,7 +47,7 @@ public class RenewableEnergyPhysicsEngine {
         return 0.5 * AIR_DENSITY_KG_PER_M3 * Math.pow(windSpeedMetersPerSec, 3.0) * BETZ_LIMIT_CP;
     }
 
-    /*
+    /**
      * Executes one renewable energy physics tick across cells.
      */
     public static void processRenewableEnergyPhysics(List<H3Cell> cells) {

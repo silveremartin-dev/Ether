@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -23,12 +23,11 @@ import java.util.List;
 public class TasmanianCulturalRegressionEngine {
     private static final Logger logger = LoggerFactory.getLogger(TasmanianCulturalRegressionEngine.class);
 
-    /* Internal state variable for isolation population threshold (double). */
+    /** Internal state: isolation population threshold (double). */
     private static double isolationPopulationThreshold = 5000.0;
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code TasmanianCulturalRegressionEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -57,9 +56,8 @@ public class TasmanianCulturalRegressionEngine {
         }
     }
 
-    /*
+    /**
      * Get isolation population threshold.
-     * Enforces physical invariants and updates associated state variables within {@code TasmanianCulturalRegressionEngine}.
      *
      * @return the resulting computation or state reference
      */

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -23,9 +23,8 @@ import java.util.List;
 public class AiAutonomousRegulationPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(AiAutonomousRegulationPureEngine.class);
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code AiAutonomousRegulationPureEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)

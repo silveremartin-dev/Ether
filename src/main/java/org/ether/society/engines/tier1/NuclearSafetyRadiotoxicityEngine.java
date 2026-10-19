@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -68,14 +68,14 @@ public class NuclearSafetyRadiotoxicityEngine {
         accidentProbability = Math.max(0.0, Math.min(1.0, prob));
     }
 
-    /*
+    /**
      * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick.
      */
     public static void processNuclearEnergySafety(List<H3Cell> cells) {
         processNuclearEnergySafety(cells, 0L);
     }
 
-    /*
+    /**
      * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick with explicit simulation tick.
      */
     public static void processNuclearEnergySafety(List<H3Cell> cells, long tick) {

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -33,21 +33,21 @@ public class MetallurgyEnthalpyEngine {
     /* Specific thermal cupellation and refining enthalpy for precious bullion ore in MJ/kg */
     public static final double PRECIOUS_CUPELLATION_ENTHALPY_MJ_PER_KG = 12.0;
 
-    /*
+    /**
      * Executes one chemical ore smelting tick across cells using default monthly step.
      */
     public static void processOreSmelting(List<H3Cell> cells) {
         processOreSmelting(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Alias for processOreSmelting for metallurgical conservation and historical bottleneck tests.
      */
     public static void processMetallurgyAndSmelting(List<H3Cell> cells, double dtYears) {
         processOreSmelting(cells, dtYears);
     }
 
-    /*
+    /**
      * Executes chemical ore smelting constrained by furnace activation temperature thresholds,
      * labor throughput, fuel kinetics (charcoal vs mineral coke), alloying bottlenecks (Late Bronze Age Tin crisis),
      * and dual-regime precious metal dynamics (pre-industrial monetary specie & Dutch Disease vs modern high-tech catalysts).

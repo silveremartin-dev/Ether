@@ -1,4 +1,4 @@
-package org.ether.society.model;
+ackage org.ether.society.model;
 
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.model.EcologyPreset;
@@ -17,9 +17,8 @@ public record EtherScenarioBundle(
         String author,
         Long createdTimestamp
 ) {
-    /*
+    /**
      * Ether scenario bundle.
-     * Enforces physical invariants and updates associated state variables within {@code encapsulating}.
      *
      * @param version the version parameter (String)
      * @param planetPreset the planet preset parameter (PlanetPreset)

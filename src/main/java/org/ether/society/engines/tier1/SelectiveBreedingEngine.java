@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -24,7 +24,7 @@ import java.util.List;
 public class SelectiveBreedingEngine {
     private static final Logger logger = LoggerFactory.getLogger(SelectiveBreedingEngine.class);
 
-    /*
+    /**
      * Calculates dynamic artificial selection yield multiplier.
      *
      * @param techLevel Technology era level
@@ -38,14 +38,14 @@ public class SelectiveBreedingEngine {
         return 1.0 + Math.min(2.5, techLevel * 0.35); // 3.5x multiplier in Green Revolution era
     }
 
-    /*
+    /**
      * Executes one selective breeding tick across cells using default monthly step.
      */
     public static void processSelectiveBreeding(List<H3Cell> cells) {
         processSelectiveBreeding(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes one selective breeding tick across cells scaled by dtYears and cell surface area.
      */
     public static void processSelectiveBreeding(List<H3Cell> cells, double dtYears) {

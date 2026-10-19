@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -23,9 +23,8 @@ import java.util.List;
 public class PsychohistoryPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(PsychohistoryPureEngine.class);
 
-    /*
+    /**
      * Calculate seldon crisis probability.
-     * Enforces physical invariants and updates associated state variables within {@code PsychohistoryPureEngine}.
      *
      * @param globalPopulation the global population parameter (double)
      * @param inequalityGini the inequality gini parameter (double)
@@ -40,9 +39,8 @@ public class PsychohistoryPureEngine {
         return Math.min(0.99, (Math.log10(globalPopulation) / 10.0) * inequalityGini);
     }
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code PsychohistoryPureEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)

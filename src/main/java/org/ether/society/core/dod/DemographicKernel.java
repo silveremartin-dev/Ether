@@ -1,4 +1,4 @@
-package org.ether.society.core.dod;
+ackage org.ether.society.core.dod;
 
 /**
  * <h1>Data-Oriented Demographic Simulation Kernel</h1>
@@ -28,7 +28,7 @@ public class DemographicKernel {
     /* Target individual population threshold per cohort (Dunbar pivot). */
     private float targetCohortSize = 150.0f;
 
-    /*
+    /**
      * Retrieves the target cohort size threshold.
      *
      * @return target population per cohort (float)
@@ -37,7 +37,7 @@ public class DemographicKernel {
         return targetCohortSize;
     }
 
-    /*
+    /**
      * Sets the target cohort size threshold, bounded below by 0.1 individuals.
      *
      * @param targetCohortSize the target cohort size threshold (float)
@@ -103,7 +103,7 @@ public class DemographicKernel {
     private int[] activeCellIndices;
     private int activeCellCount = 0;
 
-    /*
+    /**
      * Executes one complete demographic simulation cycle across all active cohorts.
      *
      * @param world the global world buffer containing cell states
@@ -117,7 +117,7 @@ public class DemographicKernel {
         processMitosis(agents);
     }
 
-    /*
+    /**
      * Evaluates caloric consumption, mass updates, age progression, births, and deaths per cohort.
      */
     private void processMetabolism(WorldBuffer world, AgentBuffer agents, float dt) {
@@ -416,7 +416,7 @@ public class DemographicKernel {
         }
     }
 
-    /*
+    /**
      * Manages the mitosis and splitting of oversized population cohorts (Dunbar fission).
      *
      * @param agents the agent/cohort contiguous memory buffer
@@ -466,7 +466,7 @@ public class DemographicKernel {
     /* Cached pointer hint for next free agent slot to achieve O(1) amortized allocation. */
     private int nextFreeSlotHint = 0;
 
-    /*
+    /**
      * Finds a free slot in the AgentBuffer using a rotating pointer hint.
      *
      * @param agents the agent memory buffer

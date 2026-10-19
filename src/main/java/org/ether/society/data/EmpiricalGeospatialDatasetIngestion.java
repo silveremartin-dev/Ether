@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024 Silvere Martin-Michiellot & Gemini AI
  */
@@ -36,7 +36,7 @@ import java.util.zip.ZipInputStream;
 public class EmpiricalGeospatialDatasetIngestion {
     private static final Logger logger = LoggerFactory.getLogger(EmpiricalGeospatialDatasetIngestion.class);
 
-    /*
+    /**
      * Fast binary ESRI shapefile parser returning (lon, lat, weight) coordinate vertices.
      */
     public static List<double[]> readShapefileCoordinates(File shpFile, double defaultWeight) {
@@ -115,7 +115,7 @@ public class EmpiricalGeospatialDatasetIngestion {
         return list;
     }
 
-    /*
+    /**
      * High-speed streaming parser for XLSX spreadsheets extracting geographic coordinates (lon, lat)
      * and optional filter keywords (e.g. "Oil", "Gas", "Coal").
      */
@@ -173,7 +173,6 @@ public class EmpiricalGeospatialDatasetIngestion {
         return list;
     }
 
-    // Helper subroutine: parse worksheet - internal state computation & bounds checking
     private static void parseWorksheet(InputStream is, List<String> sst, List<double[]> out, String... filterKeywords) {
         try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -273,7 +272,6 @@ public class EmpiricalGeospatialDatasetIngestion {
         }
     }
 
-    // Helper subroutine: get column index - internal state computation & bounds checking
     private static int getColumnIndex(String cellRef) {
         if (cellRef == null || cellRef.isEmpty()) return 0;
         int col = 0;
@@ -288,17 +286,17 @@ public class EmpiricalGeospatialDatasetIngestion {
         return col;
     }
 
-    /* Internal state variable for cached coal occurrences (List&lt;double[]&gt;). */
+    /** Internal state: cached coal occurrences (List&lt;double[]&gt;). */
     private static List<double[]> cachedCoalOccurrences = null;
-    /* Internal state variable for cached oil occurrences (List&lt;double[]&gt;). */
+    /** Internal state: cached oil occurrences (List&lt;double[]&gt;). */
     private static List<double[]> cachedOilOccurrences = null;
-    /* Internal state variable for cached gas occurrences (List&lt;double[]&gt;). */
+    /** Internal state: cached gas occurrences (List&lt;double[]&gt;). */
     private static List<double[]> cachedGasOccurrences = null;
-    /* Internal state variable for cached aquifer occurrences (List&lt;double[]&gt;). */
+    /** Internal state: cached aquifer occurrences (List&lt;double[]&gt;). */
     private static List<double[]> cachedAquiferOccurrences = null;
     private static final Object CACHE_LOCK = new Object();
 
-    /*
+    /**
      * Extracts tens of thousands of empirical Coal deposit and mine points.
      */
     public static List<double[]> getEmpiricalCoalOccurrences() {
@@ -322,7 +320,7 @@ public class EmpiricalGeospatialDatasetIngestion {
         }
     }
 
-    /*
+    /**
      * Extracts tens of thousands of empirical Crude Oil extraction, basin, and pipeline points.
      */
     public static List<double[]> getEmpiricalOilOccurrences() {
@@ -350,7 +348,7 @@ public class EmpiricalGeospatialDatasetIngestion {
         }
     }
 
-    /*
+    /**
      * Extracts tens of thousands of empirical Natural Gas extraction, field, pipeline, and LNG points.
      */
     public static List<double[]> getEmpiricalGasOccurrences() {
@@ -383,7 +381,7 @@ public class EmpiricalGeospatialDatasetIngestion {
         }
     }
 
-    /*
+    /**
      * Extracts tens of thousands of empirical WHYMAP Groundwater Aquifers & Wetlands polygons/points.
      */
     public static List<double[]> getEmpiricalAquiferOccurrences() {
@@ -415,7 +413,7 @@ public class EmpiricalGeospatialDatasetIngestion {
         }
     }
 
-    /*
+    /**
      * Extracts strictly Precious Metals occurrences (Gold, Silver, Platinum, Palladium, Electrum)
      * excluding Rare Earth Elements and Lithium.
      */
@@ -423,7 +421,7 @@ public class EmpiricalGeospatialDatasetIngestion {
         return extractMrdsDeposits("gold", "silver", "platinum", "palladium", "electrum");
     }
 
-    /*
+    /**
      * Extracts strictly Rare Earth Elements & Critical Minerals occurrences (REE, Bastnasite, Monazite,
      * Xenotime, Neodymium, Dysprosium, Yttrium, Lithium, Spodumene, Carbonatite, Loparite).
      */
@@ -432,7 +430,7 @@ public class EmpiricalGeospatialDatasetIngestion {
                 "dysprosium", "yttrium", "lanthanum", "cerium", "lithium", "spodumene", "carbonatite", "loparite", "allanite");
     }
 
-    /*
+    /**
      * Fast parsing of MRDS CSV archive for mineral/fuel keywords.
      */
     public static List<double[]> extractMrdsDeposits(String... keywords) {
@@ -492,9 +490,8 @@ public class EmpiricalGeospatialDatasetIngestion {
         return list;
     }
 
-    /*
+    /**
      * Fast parse csv.
-     * Enforces physical invariants and updates associated state variables within {@code EmpiricalGeospatialDatasetIngestion}.
      *
      * @param line the line parameter (String)
      * @return the resulting computation or state reference

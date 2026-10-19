@@ -1,4 +1,4 @@
-package org.ether.society.benchmark;
+ackage org.ether.society.benchmark;
 
 import org.ether.society.core.dod.*;
 import org.ether.society.model.Biome;

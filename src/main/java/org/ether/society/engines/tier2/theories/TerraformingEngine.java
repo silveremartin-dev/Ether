@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -26,18 +26,17 @@ public class TerraformingEngine {
 
     // Global Terraforming State Variables
     private static boolean terraformingActive = false;
-    /* Internal state variable for atmospheric pressure atm (double). */
+    /** Internal state: atmospheric pressure atm (double). */
     private static double atmosphericPressureAtm = 1.0;
-    /* Internal state variable for co2ppm (double). */
+    /** Internal state: co2ppm (double). */
     private static double co2Ppm = 280.0;
     private static double solarMirrorInsolationMultiplier = 1.0; // Multiplier from orbital mirrors
-    /* Internal state variable for asteroid mining flux tonnes per year (double). */
+    /** Internal state: asteroid mining flux tonnes per year (double). */
     private static double asteroidMiningFluxTonnesPerYear = 0.0;
     private static double offWorldEroeiRatio = 15.0; // Asteroid mining EROEI
 
-    /*
+    /**
      * Process terraforming.
-     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -77,14 +76,13 @@ public class TerraformingEngine {
     public static boolean isTerraformingActive() { return terraformingActive; }
     public static void setTerraformingActive(boolean active) { terraformingActive = active; }
 
-    /*
+    /**
      * Get atmospheric pressure atm.
-     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getAtmosphericPressureAtm() { return atmosphericPressureAtm; }
-    /*
+    /**
      * Set atmospheric pressure atm operation.
      * <p>
      * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -95,14 +93,13 @@ public class TerraformingEngine {
      */
     public static void setAtmosphericPressureAtm(double pressure) { atmosphericPressureAtm = Math.max(0.01, pressure); }
 
-    /*
+    /**
      * Get co2ppm.
-     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getCo2Ppm() { return co2Ppm; }
-    /*
+    /**
      * Set co2ppm operation.
      * <p>
      * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -113,14 +110,13 @@ public class TerraformingEngine {
      */
     public static void setCo2Ppm(double ppm) { co2Ppm = Math.max(10.0, ppm); }
 
-    /*
+    /**
      * Get solar mirror insolation multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getSolarMirrorInsolationMultiplier() { return solarMirrorInsolationMultiplier; }
-    /*
+    /**
      * Set solar mirror insolation multiplier operation.
      * <p>
      * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -131,14 +127,13 @@ public class TerraformingEngine {
      */
     public static void setSolarMirrorInsolationMultiplier(double mult) { solarMirrorInsolationMultiplier = Math.max(0.5, Math.min(5.0, mult)); }
 
-    /*
+    /**
      * Get asteroid mining flux tonnes per year.
-     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getAsteroidMiningFluxTonnesPerYear() { return asteroidMiningFluxTonnesPerYear; }
-    /*
+    /**
      * Set asteroid mining flux tonnes per year operation.
      * <p>
      * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -149,14 +144,13 @@ public class TerraformingEngine {
      */
     public static void setAsteroidMiningFluxTonnesPerYear(double flux) { asteroidMiningFluxTonnesPerYear = Math.max(0.0, flux); }
 
-    /*
+    /**
      * Get off world eroei ratio.
-     * Enforces physical invariants and updates associated state variables within {@code TerraformingEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getOffWorldEroeiRatio() { return offWorldEroeiRatio; }
-    /*
+    /**
      * Set off world eroei ratio operation.
      * <p>
      * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

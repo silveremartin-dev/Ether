@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
@@ -57,7 +57,7 @@ import java.util.zip.GZIPOutputStream;
 public class HistoricalScenarioCalibrationHarness {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalScenarioCalibrationHarness.class);
 
-    /*
+    /**
      * Drift classification taxonomy.
      */
     public enum DriftCategory {
@@ -72,7 +72,7 @@ public class HistoricalScenarioCalibrationHarness {
         DriftCategory(String desc) { this.description = desc; }
     }
 
-    /*
+    /**
      * Historical empire / polity ground truth definition for spatial localization verification.
      */
     public record EmpireGroundTruth(
@@ -85,7 +85,7 @@ public class HistoricalScenarioCalibrationHarness {
             double expectedTerritoryAreaKm2
     ) {}
 
-    /*
+    /**
      * Calibration scenario definition for non-bifurcating historical regimes.
      */
     public record CalibrationScenarioDefinition(
@@ -104,7 +104,7 @@ public class HistoricalScenarioCalibrationHarness {
             boolean isNonBifurcatingCalibrationTarget
     ) {}
 
-    /*
+    /**
      * Empire localization validation checkpoint.
      */
     public record EmpireLocalizationResult(
@@ -124,7 +124,7 @@ public class HistoricalScenarioCalibrationHarness {
             boolean isProperlyLocated
     ) {}
 
-    /*
+    /**
      * Intermediate checkpoint evaluation snapshot.
      */
     public static class IntermediateCheckpointSnapshot {
@@ -141,7 +141,7 @@ public class HistoricalScenarioCalibrationHarness {
         public List<EmpireLocalizationResult> empireValidations = new ArrayList<>();
     }
 
-    /*
+    /**
      * Discrepancy index and spectral derivative evaluation.
      */
     public record DiscrepancySpectrum(
@@ -151,7 +151,7 @@ public class HistoricalScenarioCalibrationHarness {
             String regimeClassification
     ) {}
 
-    /*
+    /**
      * Predefined canonical steady-regime calibration scenarios.
      */
     public static final List<CalibrationScenarioDefinition> CALIBRATION_SCENARIOS = List.of(
@@ -232,7 +232,7 @@ public class HistoricalScenarioCalibrationHarness {
             )
     );
 
-    /*
+    /**
      * Counterfactual Falsification Twin Scenarios (Acute Bifurcations & Historical Ruptures).
      */
     public static final List<CalibrationScenarioDefinition> FALSIFICATION_COUNTERFACTUAL_SCENARIOS = List.of(
@@ -452,7 +452,7 @@ public class HistoricalScenarioCalibrationHarness {
             )
     );
 
-    /*
+    /**
      * Archaeological Detective Scenarios for Unrecorded Anomaly Detection (Omega_dot >= 0.015 / yr).
      */
     public static final List<CalibrationScenarioDefinition> ARCHAEOLOGICAL_DETECTIVE_SCENARIOS = List.of(
@@ -506,7 +506,7 @@ public class HistoricalScenarioCalibrationHarness {
             )
     );
 
-    /*
+    /**
      * Master Multi-Millennial 9-Epoch Historical Slices (-100,000 BP to 2026 CE).
      * Pure unforced physics within each epoch window to evaluate intrinsic drift without artificial nudging.
      */
@@ -612,7 +612,7 @@ public class HistoricalScenarioCalibrationHarness {
             )
     );
 
-    /*
+    /**
      * Parameter drift diagnostic and remediation item.
      */
     public record DriftDiagnosis(
@@ -629,7 +629,7 @@ public class HistoricalScenarioCalibrationHarness {
             double tuningMultiplier
     ) {}
 
-    /*
+    /**
      * Calibration outcome for a single scenario.
      */
     public static class ScenarioCalibrationResult {
@@ -654,9 +654,8 @@ public class HistoricalScenarioCalibrationHarness {
         // Root Cause & Remediation
         public List<DriftDiagnosis> driftDiagnoses = new ArrayList<>();
 
-        /*
+        /**
          * Scenario calibration result.
-         * Enforces physical invariants and updates associated state variables within {@code HistoricalScenarioCalibrationHarness}.
          *
          * @param scenario the scenario parameter (CalibrationScenarioDefinition)
          * @return the resulting computation or state reference
@@ -666,7 +665,7 @@ public class HistoricalScenarioCalibrationHarness {
         }
     }
 
-    /*
+    /**
      * Multi-scale sensitivity matrix result.
      */
     public record SpatialSensitivityEntry(
@@ -701,7 +700,7 @@ public class HistoricalScenarioCalibrationHarness {
         public List<CohortSensitivityEntry> cohortEntries = new ArrayList<>();
     }
 
-    /*
+    /**
      * Runs comprehensive calibration across canonical steady-regime scenarios.
      */
     public static List<ScenarioCalibrationResult> runAllScenarioCalibrations() {
@@ -717,7 +716,7 @@ public class HistoricalScenarioCalibrationHarness {
         return results;
     }
 
-    /*
+    /**
      * Runs twin counterfactual falsification scenarios.
      */
     public static List<ScenarioCalibrationResult> runAllFalsificationCounterfactuals() {
@@ -733,7 +732,7 @@ public class HistoricalScenarioCalibrationHarness {
         return results;
     }
 
-    /*
+    /**
      * Runs full scientific calibration and falsification suite.
      */
     public static List<ScenarioCalibrationResult> runFullScientificValidationSuite() {
@@ -746,7 +745,7 @@ public class HistoricalScenarioCalibrationHarness {
         return all;
     }
 
-    /*
+    /**
      * Runs Archaeological Detective scenarios to locate unrecorded historical anomalies.
      */
     public static List<ScenarioCalibrationResult> runAllArchaeologicalDetectiveScenarios() {
@@ -762,7 +761,7 @@ public class HistoricalScenarioCalibrationHarness {
         return results;
     }
 
-    /*
+    /**
      * Runs master 9-epoch historical blocks across the entire -100,000 BP to 2026 CE timeline.
      */
     public static List<ScenarioCalibrationResult> runAllMasterNineEpochBlocks() {
@@ -778,7 +777,7 @@ public class HistoricalScenarioCalibrationHarness {
         return results;
     }
 
-    /*
+    /**
      * Ablation audit record for specialized/hybrid engines.
      */
     public record EngineAblationAuditEntry(
@@ -790,7 +789,7 @@ public class HistoricalScenarioCalibrationHarness {
             String justification
     ) {}
 
-    /*
+    /**
      * Evaluates marginal sensitivity and CPU cost of Tier 2 & World3 hybrid engines.
      */
     public static List<EngineAblationAuditEntry> runPluggableEngineAndWorld3AblationAudit() {
@@ -848,7 +847,7 @@ public class HistoricalScenarioCalibrationHarness {
         return audit;
     }
 
-    /*
+    /**
      * Discovers all authentic 20-year epochs present on disk intersecting [startYear, endYear].
      */
     public static List<Integer> discoverAvailableDiskEpochs(int startYear, int endYear) {
@@ -882,7 +881,7 @@ public class HistoricalScenarioCalibrationHarness {
         return cachedEarthGrid;
     }
 
-    /*
+    /**
      * Executes single-scenario before-after calibration, intermediate checkpoint checks, and drift analysis.
      */
     public static ScenarioCalibrationResult runScenarioCalibration(CalibrationScenarioDefinition def) {
@@ -1173,7 +1172,7 @@ public class HistoricalScenarioCalibrationHarness {
         }
     }
 
-    /*
+    /**
      * Evaluates dense intermediate checkpoints, actual 2D raster maps, and spectral discrepancy derivative dot{Omega}(t).
      */
     private static void evaluateDenseIntermediateCheckpoints(CalibrationScenarioDefinition def, ScenarioCalibrationResult result, List<Integer> epochYears, double growthRate) {
@@ -1269,7 +1268,7 @@ public class HistoricalScenarioCalibrationHarness {
         }
     }
 
-    /*
+    /**
      * Computes Haversine great-circle distance between two geographic coordinates in km.
      */
     private static double computeHaversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
@@ -1285,7 +1284,7 @@ public class HistoricalScenarioCalibrationHarness {
         return R * c;
     }
 
-    /*
+    /**
      * Evaluates cartographic rasters between t0, t1, and simulated states.
      */
     private static void evaluateSpatialMaps(CalibrationScenarioDefinition def, ScenarioCalibrationResult result) {
@@ -1332,7 +1331,7 @@ public class HistoricalScenarioCalibrationHarness {
         }
     }
 
-    /*
+    /**
      * Systematic root-cause drift decomposition and actionable parameter remediation.
      */
     private static void diagnoseRootCausesAndProposeRemediations(CalibrationScenarioDefinition def, ScenarioCalibrationResult result) {
@@ -1397,7 +1396,7 @@ public class HistoricalScenarioCalibrationHarness {
         }
     }
 
-    /*
+    /**
      * Executes multi-scale sensitivity sweep across spatial, temporal, and cohort dimensions.
      */
     public static MultiScaleSensitivityMatrix runMultiScaleSensitivityMatrix(CalibrationScenarioDefinition def) {
@@ -1470,7 +1469,7 @@ public class HistoricalScenarioCalibrationHarness {
         return matrix;
     }
 
-    /*
+    /**
      * Generates a comprehensive standardized academic markdown calibration and falsification report.
      */
     public static String generateMarkdownCalibrationReport(List<ScenarioCalibrationResult> results, MultiScaleSensitivityMatrix sensitivity) {
@@ -1647,7 +1646,7 @@ public class HistoricalScenarioCalibrationHarness {
         return sb.toString();
     }
 
-    /*
+    /**
      * CLI and Cloud execution entry point for full academic calibration and falsification pipeline.
      */
     public static void main(String[] args) {

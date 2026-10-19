@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -29,23 +29,23 @@ import java.util.Arrays;
 public class SaveEncryptionVault {
     private static final Logger logger = LoggerFactory.getLogger(SaveEncryptionVault.class);
 
-    /* Internal state variable for magic header (String). */
+    /** Internal state: magic header (String). */
     private static final String MAGIC_HEADER = "ETHER_ENC_V1";
     private static final byte[] MAGIC_BYTES = MAGIC_HEADER.getBytes(StandardCharsets.US_ASCII);
-    /* Internal state variable for salt length (int). */
+    /** Internal state: salt length (int). */
     private static final int SALT_LENGTH = 16;
     private static final int IV_LENGTH = 12; // 96-bit IV for GCM
-    /* Internal state variable for gcm tag length (int). */
+    /** Internal state: gcm tag length (int). */
     private static final int GCM_TAG_LENGTH = 128;
-    /* Internal state variable for iteration count (int). */
+    /** Internal state: iteration count (int). */
     private static final int ITERATION_COUNT = 65536;
-    /* Internal state variable for key length (int). */
+    /** Internal state: key length (int). */
     private static final int KEY_LENGTH = 256;
 
-    /* Internal state variable for default app secret (String). */
+    /** Internal state: default app secret (String). */
     private static final String DEFAULT_APP_SECRET = "Ether_Planetary_Simulation_Vault_Key_2026_Secured";
 
-    /*
+    /**
      * Checks if the given raw bytes represent an encrypted Ether save snapshot.
      */
     public static boolean isEncrypted(byte[] data) {
@@ -56,7 +56,7 @@ public class SaveEncryptionVault {
         return true;
     }
 
-    /*
+    /**
      * Encrypts plaintext bytes using AES-256 GCM.
      */
     public static byte[] encrypt(byte[] plaintext, String password) throws Exception {
@@ -86,9 +86,8 @@ public class SaveEncryptionVault {
         return buffer.array();
     }
 
-    /*
+    /**
      * Encrypt.
-     * Enforces physical invariants and updates associated state variables within {@code SaveEncryptionVault}.
      *
      * @param plaintext the plaintext parameter (byte[])
      * @return the resulting computation or state reference
@@ -97,7 +96,7 @@ public class SaveEncryptionVault {
         return encrypt(plaintext, DEFAULT_APP_SECRET);
     }
 
-    /*
+    /**
      * Decrypts encrypted bytes using AES-256 GCM.
      */
     public static byte[] decrypt(byte[] encryptedData, String password) throws Exception {
@@ -127,9 +126,8 @@ public class SaveEncryptionVault {
         return cipher.doFinal(ciphertext);
     }
 
-    /*
+    /**
      * Decrypt.
-     * Enforces physical invariants and updates associated state variables within {@code SaveEncryptionVault}.
      *
      * @param encryptedData the encrypted data parameter (byte[])
      * @return the resulting computation or state reference
@@ -138,7 +136,6 @@ public class SaveEncryptionVault {
         return decrypt(encryptedData, DEFAULT_APP_SECRET);
     }
 
-    // Helper subroutine: derive key - internal state computation & bounds checking
     private static SecretKey deriveKey(String password, byte[] salt) throws Exception {
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, KEY_LENGTH);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");

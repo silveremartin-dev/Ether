@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -26,9 +26,8 @@ public class ProceduralEngineRegistry {
 
     private static final Map<String, ProceduralEnginePlugin> registeredPlugins = new ConcurrentHashMap<>();
 
-    /*
+    /**
      * Register plugin.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
      *
      * @param name the name parameter (String)
      * @param plugin the plugin parameter (ProceduralEnginePlugin)
@@ -39,9 +38,8 @@ public class ProceduralEngineRegistry {
         logger.info("🔌 Registered custom procedural engine plugin: {}", name);
     }
 
-    /*
+    /**
      * Unregister plugin.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
      *
      * @param name the name parameter (String)
      */
@@ -52,18 +50,16 @@ public class ProceduralEngineRegistry {
         }
     }
 
-    /*
+    /**
      * Clear plugins.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
      *
      */
     public static void clearPlugins() {
         registeredPlugins.clear();
     }
 
-    /*
+    /**
      * Process plugins.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -78,9 +74,8 @@ public class ProceduralEngineRegistry {
         }
     }
 
-    /*
+    /**
      * Get plugin count.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralEngineRegistry}.
      *
      * @return the resulting computation or state reference
      */

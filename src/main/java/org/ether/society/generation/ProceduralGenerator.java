@@ -1,4 +1,4 @@
-package org.ether.society.generation;
+ackage org.ether.society.generation;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.h3.H3Service;
@@ -30,9 +30,8 @@ public class ProceduralGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralGenerator.class);
     private static final ProceduralGenerator INSTANCE = new ProceduralGenerator();
 
-    /*
+    /**
      * Get instance.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
      *
      * @return the resulting computation or state reference
      */
@@ -66,9 +65,8 @@ public class ProceduralGenerator {
             this(elevation, 0.0, temperature, rainfall, 0.0, biome, declivity, riverFlow, accessibleAquifer, 0.0);
         }
 
-        /*
+        /**
          * Planet point.
-         * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
          *
          * @param elevation the elevation parameter (double)
          * @param temperature the temperature parameter (double)
@@ -85,7 +83,7 @@ public class ProceduralGenerator {
     // Public API
     // -------------------------------------------------------------------------
 
-    /*
+    /**
      * Compute normalized gravitational tidal force intensity ($F_{tidal}$) exerted on the body.
      *
      * <p>Formula:</p>
@@ -111,9 +109,8 @@ public class ProceduralGenerator {
         }
     }
 
-    /*
+    /**
      * Get planet point.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
      *
      * @param lat the lat parameter (double)
      * @param lng the lng parameter (double)
@@ -202,9 +199,8 @@ public class ProceduralGenerator {
                 biome, declivity, riverFlow, aquifer, metalDensity);
     }
 
-    /*
+    /**
      * Generate planet.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
      *
      * @param preset the preset parameter (PlanetPreset)
      * @return the resulting computation or state reference
@@ -213,9 +209,8 @@ public class ProceduralGenerator {
         return generatePlanet(preset, null, null);
     }
 
-    /*
+    /**
      * Generate planet.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
      *
      * @param preset the preset parameter (PlanetPreset)
      * @param progressCallback the progress callback parameter (Integer&gt;)
@@ -268,9 +263,8 @@ public class ProceduralGenerator {
         return cells;
     }
 
-    /*
+    /**
      * Generate regional planet.
-     * Enforces physical invariants and updates associated state variables within {@code ProceduralGenerator}.
      *
      * @param preset the preset parameter (PlanetPreset)
      * @param minLat the min lat parameter (double)
@@ -487,7 +481,6 @@ public class ProceduralGenerator {
         return Biome.PLAINS;
     }
 
-    // Helper subroutine: populate resources - internal state computation & bounds checking
     private void populateResources(H3Cell cell, PlanetPoint p, PlanetPreset preset) {
         Biome b = cell.getBiome();
         if (b == null) return;
@@ -554,7 +547,6 @@ public class ProceduralGenerator {
         }
     }
 
-    // Helper subroutine: accumulate hydrography flow - internal state computation & bounds checking
     private void accumulateHydrographyFlow(List<H3Cell> cells, PlanetPreset preset, java.util.function.BooleanSupplier cancelSupplier) {
         if (cells == null || cells.isEmpty() || preset.atmospherePressureAtm() < 0.01) return;
 

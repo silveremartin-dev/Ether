@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -57,72 +57,72 @@ public class H3Cell {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*
+    /**
      * H3 hexagon index (Level 8, ~1 km² resolution).
      * This is the primary geospatial identifier.
      */
     @Column(name = "h3_index", nullable = false, unique = true)
     private Long h3Index;
 
-    /*
+    /**
      * Center latitude in degrees.
      */
     @Column(nullable = false)
     private Double latitude;
 
-    /*
+    /**
      * Center longitude in degrees.
      */
     @Column(nullable = false)
     private Double longitude;
 
-    /*
+    /**
      * Mean elevation in meters (from SRTM data).
      */
     @Column(nullable = false)
     private Double elevation;
 
-    /*
+    /**
      * Current temperature in Celsius.
      * Updated each simulation tick by GPU kernel.
      */
     @Column(nullable = false)
     private Double temperature;
 
-    /*
+    /**
      * Annual rainfall in millimeters.
      */
     @Column(nullable = false)
     private Double rainfall;
 
-    /*
+    /**
      * Biome classification.
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Biome biome;
 
-    /*
+    /**
      * Human population density (count per hexagon).
      * Updated each simulation tick by GPU kernel.
      */
     @Column(nullable = false)
     private Integer population = 0;
 
-    /*
+    /**
      * Food resource availability / caloric stockpile in Gigajoules (GJ).
      * 1 human annual metabolic requirement is ~3.362 GJ/yr (9,205 kJ/day).
      */
     @Column(nullable = false)
     private Double foodResource = 0.0;
 
-    /*
+    /**
      * Water resource availability in thousand cubic meters (10³ m³).
      */
     @Column(nullable = false)
     private Double waterResource = 0.0;
 
-    /*
+    /**
      * Wood and combustible forestry biomass stockpile in metric tonnes (t).
      */
     @Column(nullable = false)
@@ -296,19 +296,19 @@ public class H3Cell {
     @Column(nullable = false)
     private Integer epidemicRecovered = 0;
     @Column(length = 50)
-    /* Internal state variable for active pathogen name (String). */
+    /** Internal state: active pathogen name (String). */
     private String activePathogenName = null;
 
     // --- Linguistic & Cultural Diffusion ---
     @Column(length = 50)
-    /* Internal state variable for language group (String). */
+    /** Internal state: language group (String). */
     private String languageGroup = "Proto-Human";
     @Column(nullable = false)
     private Double linguisticDrift = 0.0;
 
     // Analytics / Simulation State
     @Transient
-    /* Internal state variable for flux pressure (double). */
+    /** Internal state: flux pressure (double). */
     private double fluxPressure = 0.0;
 
     @Transient // Not persisting political ownership yet
@@ -316,22 +316,20 @@ public class H3Cell {
     private Polity owner;
 
     @Transient
-    /* Internal state variable for boundary cell (boolean). */
+    /** Internal state: boundary cell (boolean). */
     private boolean boundaryCell = false;
 
     // Constructors
 
-    /*
+    /**
      * H3cell.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      */
     public H3Cell() {
     }
 
-    /*
+    /**
      * H3cell.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param h3Index the h3index parameter (Long)
      * @param latitude the latitude parameter (Double)
@@ -349,9 +347,8 @@ public class H3Cell {
 
     // Getters and setters
 
-    /*
+    /**
      * Get id.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -359,9 +356,8 @@ public class H3Cell {
         return id;
     }
 
-    /*
+    /**
      * Set id.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param id the id parameter (Long)
      */
@@ -369,9 +365,8 @@ public class H3Cell {
         this.id = id;
     }
 
-    /*
+    /**
      * Get h3index.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -379,9 +374,8 @@ public class H3Cell {
         return h3Index;
     }
 
-    /*
+    /**
      * Set h3index.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param h3Index the h3index parameter (Long)
      */
@@ -389,9 +383,8 @@ public class H3Cell {
         this.h3Index = h3Index;
     }
 
-    /*
+    /**
      * Get latitude.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -399,9 +392,8 @@ public class H3Cell {
         return latitude;
     }
 
-    /*
+    /**
      * Set latitude.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param latitude the latitude parameter (Double)
      */
@@ -409,9 +401,8 @@ public class H3Cell {
         this.latitude = latitude;
     }
 
-    /*
+    /**
      * Get longitude.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -419,9 +410,8 @@ public class H3Cell {
         return longitude;
     }
 
-    /*
+    /**
      * Set longitude.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param longitude the longitude parameter (Double)
      */
@@ -429,9 +419,8 @@ public class H3Cell {
         this.longitude = longitude;
     }
 
-    /*
+    /**
      * Get elevation.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -439,9 +428,8 @@ public class H3Cell {
         return elevation;
     }
 
-    /*
+    /**
      * Set elevation.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param elevation the elevation parameter (Double)
      */
@@ -449,9 +437,8 @@ public class H3Cell {
         this.elevation = elevation;
     }
 
-    /*
+    /**
      * Get temperature.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -459,9 +446,8 @@ public class H3Cell {
         return temperature;
     }
 
-    /*
+    /**
      * Set temperature.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param temperature the temperature parameter (Double)
      */
@@ -469,9 +455,8 @@ public class H3Cell {
         this.temperature = temperature;
     }
 
-    /*
+    /**
      * Get rainfall.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -479,9 +464,8 @@ public class H3Cell {
         return rainfall;
     }
 
-    /*
+    /**
      * Set rainfall.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param rainfall the rainfall parameter (Double)
      */
@@ -489,9 +473,8 @@ public class H3Cell {
         this.rainfall = rainfall;
     }
 
-    /*
+    /**
      * Get biome.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -499,9 +482,8 @@ public class H3Cell {
         return biome;
     }
 
-    /*
+    /**
      * Set biome.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param biome the biome parameter (Biome)
      */
@@ -509,9 +491,8 @@ public class H3Cell {
         this.biome = biome;
     }
 
-    /*
+    /**
      * Get population.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -519,9 +500,8 @@ public class H3Cell {
         return population;
     }
 
-    /*
+    /**
      * Set population.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param population the population parameter (Integer)
      */
@@ -537,9 +517,8 @@ public class H3Cell {
         this.biomassHuman = (double) newPop;
     }
 
-    /*
+    /**
      * Get food resource.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -547,9 +526,8 @@ public class H3Cell {
         return foodResource;
     }
 
-    /*
+    /**
      * Set food resource.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param foodResource the food resource parameter (Double)
      */
@@ -557,9 +535,8 @@ public class H3Cell {
         this.foodResource = foodResource;
     }
 
-    /*
+    /**
      * Get water resource.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -567,9 +544,8 @@ public class H3Cell {
         return waterResource;
     }
 
-    /*
+    /**
      * Set water resource.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param waterResource the water resource parameter (Double)
      */
@@ -577,9 +553,8 @@ public class H3Cell {
         this.waterResource = waterResource;
     }
 
-    /*
+    /**
      * Get flux pressure.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -587,9 +562,8 @@ public class H3Cell {
         return fluxPressure;
     }
 
-    /*
+    /**
      * Set flux pressure.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param fluxPressure the flux pressure parameter (double)
      */
@@ -597,31 +571,28 @@ public class H3Cell {
         this.fluxPressure = fluxPressure;
     }
 
-    @JsonIgnore
-    /*
+    /**
      * Get owner.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
+    @JsonIgnore
     public Polity getOwner() {
         return owner;
     }
 
-    @JsonIgnore
-    /*
+    /**
      * Set owner.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param owner the owner parameter (Polity)
      */
+    @JsonIgnore
     public void setOwner(Polity owner) {
         this.owner = owner;
     }
 
-    /*
+    /**
      * Get wood resource.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -629,9 +600,8 @@ public class H3Cell {
         return woodResource;
     }
 
-    /*
+    /**
      * Set wood resource.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param woodResource the wood resource parameter (Double)
      */
@@ -641,9 +611,8 @@ public class H3Cell {
 
     // New Fields Getters/Setters
 
-    /*
+    /**
      * Get biomass human.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -651,9 +620,8 @@ public class H3Cell {
         return biomassHuman != null ? biomassHuman : (population != null ? population.doubleValue() : 0.0);
     }
 
-    /*
+    /**
      * Set biomass human.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param biomassHuman the biomass human parameter (Double)
      */
@@ -662,9 +630,8 @@ public class H3Cell {
         this.population = (int) Math.round(this.biomassHuman);
     }
 
-    /*
+    /**
      * Get biomass livestock.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -672,9 +639,8 @@ public class H3Cell {
         return biomassLivestock;
     }
 
-    /*
+    /**
      * Set biomass livestock.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -682,9 +648,8 @@ public class H3Cell {
         this.biomassLivestock = val;
     }
 
-    /*
+    /**
      * Get biomass fish.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -692,9 +657,8 @@ public class H3Cell {
         return biomassFish;
     }
 
-    /*
+    /**
      * Set biomass fish.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -702,9 +666,8 @@ public class H3Cell {
         this.biomassFish = val;
     }
 
-    /*
+    /**
      * Get biomass agriculture.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -712,9 +675,8 @@ public class H3Cell {
         return biomassAgriculture;
     }
 
-    /*
+    /**
      * Set biomass agriculture.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -722,9 +684,8 @@ public class H3Cell {
         this.biomassAgriculture = val;
     }
 
-    /*
+    /**
      * Get biomass natural.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -732,9 +693,8 @@ public class H3Cell {
         return biomassNatural;
     }
 
-    /*
+    /**
      * Set biomass natural.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -742,9 +702,8 @@ public class H3Cell {
         this.biomassNatural = val;
     }
 
-    /*
+    /**
      * Get energy wind.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -752,9 +711,8 @@ public class H3Cell {
         return energyWind;
     }
 
-    /*
+    /**
      * Set energy wind.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -762,9 +720,8 @@ public class H3Cell {
         this.energyWind = val;
     }
 
-    /*
+    /**
      * Get energy solar.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -772,9 +729,8 @@ public class H3Cell {
         return energySolar;
     }
 
-    /*
+    /**
      * Set energy solar.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -782,9 +738,8 @@ public class H3Cell {
         this.energySolar = val;
     }
 
-    /*
+    /**
      * Get energy fire.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -792,9 +747,8 @@ public class H3Cell {
         return energyFire;
     }
 
-    /*
+    /**
      * Set energy fire.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -802,9 +756,8 @@ public class H3Cell {
         this.energyFire = val;
     }
 
-    /*
+    /**
      * Get energy slaves.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -812,9 +765,8 @@ public class H3Cell {
         return energySlaves;
     }
 
-    /*
+    /**
      * Set energy slaves.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -822,9 +774,8 @@ public class H3Cell {
         this.energySlaves = val;
     }
 
-    /*
+    /**
      * Get energy food consumed.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -832,9 +783,8 @@ public class H3Cell {
         return energyFoodConsumed;
     }
 
-    /*
+    /**
      * Set energy food consumed.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -842,9 +792,8 @@ public class H3Cell {
         this.energyFoodConsumed = val;
     }
 
-    /*
+    /**
      * Get resource metal.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -852,9 +801,8 @@ public class H3Cell {
         return resourceMetal;
     }
 
-    /*
+    /**
      * Set resource metal.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -862,9 +810,8 @@ public class H3Cell {
         this.resourceMetal = val;
     }
 
-    /*
+    /**
      * Get resource precious metal.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -872,9 +819,8 @@ public class H3Cell {
         return resourcePreciousMetal;
     }
 
-    /*
+    /**
      * Set resource precious metal.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -882,9 +828,8 @@ public class H3Cell {
         this.resourcePreciousMetal = val;
     }
 
-    /*
+    /**
      * Get soil organic carbon.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -892,9 +837,8 @@ public class H3Cell {
         return soilOrganicCarbon;
     }
 
-    /*
+    /**
      * Set soil organic carbon.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -902,9 +846,8 @@ public class H3Cell {
         this.soilOrganicCarbon = val;
     }
 
-    /*
+    /**
      * Get soil salinity.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the soil salinity / electrical conductivity EC_e in dS/m
      */
@@ -912,9 +855,8 @@ public class H3Cell {
         return soilSalinity != null ? soilSalinity : 0.0;
     }
 
-    /*
+    /**
      * Set soil salinity.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the soil salinity in dS/m
      */
@@ -922,9 +864,8 @@ public class H3Cell {
         this.soilSalinity = val != null ? val : 0.0;
     }
 
-    /*
+    /**
      * Get resource coal.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return extractable coal reserve in metric tonnes
      */
@@ -932,9 +873,8 @@ public class H3Cell {
         return resourceCoal != null ? resourceCoal : 0.0;
     }
 
-    /*
+    /**
      * Set resource coal.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val extractable coal reserve in metric tonnes
      */
@@ -942,9 +882,8 @@ public class H3Cell {
         this.resourceCoal = val != null ? Math.max(0.0, val) : 0.0;
     }
 
-    /*
+    /**
      * Get resource crude oil.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return extractable oil reserve in metric tonnes
      */
@@ -952,9 +891,8 @@ public class H3Cell {
         return resourceOil != null ? resourceOil : 0.0;
     }
 
-    /*
+    /**
      * Set resource crude oil.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val extractable oil reserve in metric tonnes
      */
@@ -962,9 +900,8 @@ public class H3Cell {
         this.resourceOil = val != null ? Math.max(0.0, val) : 0.0;
     }
 
-    /*
+    /**
      * Get resource natural gas.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return extractable natural gas reserve in energy equivalent tonnes
      */
@@ -972,9 +909,8 @@ public class H3Cell {
         return resourceGas != null ? resourceGas : 0.0;
     }
 
-    /*
+    /**
      * Set resource natural gas.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val extractable natural gas reserve in energy equivalent tonnes
      */
@@ -982,9 +918,8 @@ public class H3Cell {
         this.resourceGas = val != null ? Math.max(0.0, val) : 0.0;
     }
 
-    /*
+    /**
      * Get resource fissile uranium.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return extractable fissile ore reserve in metric tonnes
      */
@@ -992,9 +927,8 @@ public class H3Cell {
         return resourceUranium != null ? resourceUranium : 0.0;
     }
 
-    /*
+    /**
      * Set resource fissile uranium.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val extractable fissile ore reserve in metric tonnes
      */
@@ -1002,9 +936,8 @@ public class H3Cell {
         this.resourceUranium = val != null ? Math.max(0.0, val) : 0.0;
     }
 
-    /*
+    /**
      * Get resource rare earth elements and lithium.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return extractable critical mineral reserve in metric tonnes
      */
@@ -1012,9 +945,8 @@ public class H3Cell {
         return resourceRareEarths != null ? resourceRareEarths : 0.0;
     }
 
-    /*
+    /**
      * Set resource rare earth elements and lithium.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val extractable critical mineral reserve in metric tonnes
      */
@@ -1022,9 +954,8 @@ public class H3Cell {
         this.resourceRareEarths = val != null ? Math.max(0.0, val) : 0.0;
     }
 
-    /*
+    /**
      * Get mantle heat flow.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1032,9 +963,8 @@ public class H3Cell {
         return mantleHeatFlow;
     }
 
-    /*
+    /**
      * Set mantle heat flow.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1042,9 +972,8 @@ public class H3Cell {
         this.mantleHeatFlow = val;
     }
 
-    /*
+    /**
      * Get freshwater aquifer.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1052,9 +981,8 @@ public class H3Cell {
         return freshwaterAquifer;
     }
 
-    /*
+    /**
      * Set freshwater aquifer.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1062,9 +990,8 @@ public class H3Cell {
         this.freshwaterAquifer = val;
     }
 
-    /*
+    /**
      * Get resource clay.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1072,9 +999,8 @@ public class H3Cell {
         return resourceClay;
     }
 
-    /*
+    /**
      * Set resource clay.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1082,9 +1008,8 @@ public class H3Cell {
         this.resourceClay = val;
     }
 
-    /*
+    /**
      * Get resource work.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1092,9 +1017,8 @@ public class H3Cell {
         return resourceWork;
     }
 
-    /*
+    /**
      * Set resource work.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1102,9 +1026,8 @@ public class H3Cell {
         this.resourceWork = val;
     }
 
-    /*
+    /**
      * Get resource capital.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1112,9 +1035,8 @@ public class H3Cell {
         return resourceCapital;
     }
 
-    /*
+    /**
      * Set resource capital.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1122,9 +1044,8 @@ public class H3Cell {
         this.resourceCapital = val;
     }
 
-    /*
+    /**
      * Get lifespan.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1132,9 +1053,8 @@ public class H3Cell {
         return lifespan;
     }
 
-    /*
+    /**
      * Set lifespan.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1142,9 +1062,8 @@ public class H3Cell {
         this.lifespan = val;
     }
 
-    /*
+    /**
      * Get fertility.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1152,9 +1071,8 @@ public class H3Cell {
         return fertility;
     }
 
-    /*
+    /**
      * Set fertility.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1162,9 +1080,8 @@ public class H3Cell {
         this.fertility = val;
     }
 
-    /*
+    /**
      * Get gini index.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1172,9 +1089,8 @@ public class H3Cell {
         return giniIndex;
     }
 
-    /*
+    /**
      * Set gini index.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1182,9 +1098,8 @@ public class H3Cell {
         this.giniIndex = val;
     }
 
-    /*
+    /**
      * Get technology level.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1192,9 +1107,8 @@ public class H3Cell {
         return technologyLevel;
     }
 
-    /*
+    /**
      * Set technology level.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param val the val parameter (Double)
      */
@@ -1219,9 +1133,8 @@ public class H3Cell {
     public void setHomininSpecies(Integer val) {
         this.homininSpecies = val != null ? val : 1;
     }
-    /*
+    /**
      * Get accessible aquifer.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1229,9 +1142,8 @@ public class H3Cell {
         return accessibleAquifer;
     }
 
-    /*
+    /**
      * Set accessible aquifer.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param accessibleAquifer the accessible aquifer parameter (Double)
      */
@@ -1239,9 +1151,8 @@ public class H3Cell {
         this.accessibleAquifer = accessibleAquifer;
     }
 
-    /*
+    /**
      * Get pollution level.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1249,9 +1160,8 @@ public class H3Cell {
         return pollutionLevel;
     }
 
-    /*
+    /**
      * Set pollution level.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param pollutionLevel the pollution level parameter (Double)
      */
@@ -1259,9 +1169,8 @@ public class H3Cell {
         this.pollutionLevel = pollutionLevel;
     }
 
-    /*
+    /**
      * Is boundary cell.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1269,9 +1178,8 @@ public class H3Cell {
         return boundaryCell;
     }
 
-    /*
+    /**
      * Set boundary cell.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param boundaryCell the boundary cell parameter (boolean)
      */
@@ -1279,9 +1187,8 @@ public class H3Cell {
         this.boundaryCell = boundaryCell;
     }
 
-    /*
+    /**
      * Get movement friction.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1289,9 +1196,8 @@ public class H3Cell {
         return movementFriction;
     }
 
-    /*
+    /**
      * Set movement friction.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param movementFriction the movement friction parameter (Double)
      */
@@ -1299,9 +1205,8 @@ public class H3Cell {
         this.movementFriction = movementFriction;
     }
 
-    /*
+    /**
      * Get choke point score.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return topological trade bottleneck funneling score (0.0 to 1.0)
      */
@@ -1309,9 +1214,8 @@ public class H3Cell {
         return chokePointScore != null ? chokePointScore : 0.0;
     }
 
-    /*
+    /**
      * Set choke point score.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param chokePointScore the choke point score (0.0 to 1.0)
      */
@@ -1319,9 +1223,8 @@ public class H3Cell {
         this.chokePointScore = chokePointScore != null ? Math.clamp(chokePointScore, 0.0, 1.0) : 0.0;
     }
 
-    /*
+    /**
      * Get transit toll revenue.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return cumulative economic transit tariff rent collected in capital units
      */
@@ -1329,9 +1232,8 @@ public class H3Cell {
         return transitTollRevenue != null ? transitTollRevenue : 0.0;
     }
 
-    /*
+    /**
      * Set transit toll revenue.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param transitTollRevenue the transit toll revenue
      */
@@ -1339,9 +1241,8 @@ public class H3Cell {
         this.transitTollRevenue = transitTollRevenue != null ? Math.max(0.0, transitTollRevenue) : 0.0;
     }
 
-    /*
+    /**
      * Get pop youth.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1352,9 +1253,8 @@ public class H3Cell {
         return popYouth;
     }
 
-    /*
+    /**
      * Set pop youth.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param popYouth the pop youth parameter (Integer)
      */
@@ -1362,9 +1262,8 @@ public class H3Cell {
         this.popYouth = popYouth;
     }
 
-    /*
+    /**
      * Get pop adult.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1375,9 +1274,8 @@ public class H3Cell {
         return popAdult;
     }
 
-    /*
+    /**
      * Set pop adult.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param popAdult the pop adult parameter (Integer)
      */
@@ -1385,9 +1283,8 @@ public class H3Cell {
         this.popAdult = popAdult;
     }
 
-    /*
+    /**
      * Get pop elderly.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1398,9 +1295,8 @@ public class H3Cell {
         return popElderly;
     }
 
-    /*
+    /**
      * Set pop elderly.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param popElderly the pop elderly parameter (Integer)
      */
@@ -1408,7 +1304,7 @@ public class H3Cell {
         this.popElderly = popElderly;
     }
 
-    /*
+    /**
      * Calculates terrain movement friction (cost-distance factor) based on elevation,
      * biome, water resources and current technology level.
      * @param techLevel technology level (1.0 = ancient, 10.0 = modern)
@@ -1451,9 +1347,8 @@ public class H3Cell {
         return this.movementFriction;
     }
 
-    /*
+    /**
      * Get dynamic albedo.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -1461,9 +1356,8 @@ public class H3Cell {
         return dynamicAlbedo;
     }
 
-    /*
+    /**
      * Set dynamic albedo.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param dynamicAlbedo the dynamic albedo parameter (Double)
      */
@@ -1471,14 +1365,13 @@ public class H3Cell {
         this.dynamicAlbedo = dynamicAlbedo;
     }
 
-    /*
+    /**
      * Get pop0to4.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getPop0to4() { return pop0to4; }
-    /*
+    /**
      * Set pop0to4 operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1489,14 +1382,13 @@ public class H3Cell {
      */
     public void setPop0to4(Integer val) { this.pop0to4 = val; }
 
-    /*
+    /**
      * Get pop5to14.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getPop5to14() { return pop5to14; }
-    /*
+    /**
      * Set pop5to14 operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1507,14 +1399,13 @@ public class H3Cell {
      */
     public void setPop5to14(Integer val) { this.pop5to14 = val; }
 
-    /*
+    /**
      * Get pop15to24.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getPop15to24() { return pop15to24; }
-    /*
+    /**
      * Set pop15to24 operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1525,14 +1416,13 @@ public class H3Cell {
      */
     public void setPop15to24(Integer val) { this.pop15to24 = val; }
 
-    /*
+    /**
      * Get pop25to49.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getPop25to49() { return pop25to49; }
-    /*
+    /**
      * Set pop25to49 operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1543,14 +1433,13 @@ public class H3Cell {
      */
     public void setPop25to49(Integer val) { this.pop25to49 = val; }
 
-    /*
+    /**
      * Get pop50to64.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getPop50to64() { return pop50to64; }
-    /*
+    /**
      * Set pop50to64 operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1561,14 +1450,13 @@ public class H3Cell {
      */
     public void setPop50to64(Integer val) { this.pop50to64 = val; }
 
-    /*
+    /**
      * Get pop65to79.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getPop65to79() { return pop65to79; }
-    /*
+    /**
      * Set pop65to79 operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1579,14 +1467,13 @@ public class H3Cell {
      */
     public void setPop65to79(Integer val) { this.pop65to79 = val; }
 
-    /*
+    /**
      * Get pop80plus.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getPop80Plus() { return pop80Plus; }
-    /*
+    /**
      * Set pop80plus operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1597,14 +1484,13 @@ public class H3Cell {
      */
     public void setPop80Plus(Integer val) { this.pop80Plus = val; }
 
-    /*
+    /**
      * Get epidemic infected.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getEpidemicInfected() { return epidemicInfected; }
-    /*
+    /**
      * Set epidemic infected operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1615,14 +1501,13 @@ public class H3Cell {
      */
     public void setEpidemicInfected(Integer val) { this.epidemicInfected = val; }
 
-    /*
+    /**
      * Get epidemic recovered.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Integer getEpidemicRecovered() { return epidemicRecovered; }
-    /*
+    /**
      * Set epidemic recovered operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1633,14 +1518,13 @@ public class H3Cell {
      */
     public void setEpidemicRecovered(Integer val) { this.epidemicRecovered = val; }
 
-    /*
+    /**
      * Get active pathogen name.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public String getActivePathogenName() { return activePathogenName; }
-    /*
+    /**
      * Set active pathogen name operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1651,14 +1535,13 @@ public class H3Cell {
      */
     public void setActivePathogenName(String name) { this.activePathogenName = name; }
 
-    /*
+    /**
      * Get language group.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public String getLanguageGroup() { return languageGroup; }
-    /*
+    /**
      * Set language group operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1669,14 +1552,13 @@ public class H3Cell {
      */
     public void setLanguageGroup(String lang) { this.languageGroup = lang; }
 
-    /*
+    /**
      * Get linguistic drift.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
     public Double getLinguisticDrift() { return linguisticDrift; }
-    /*
+    /**
      * Set linguistic drift operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1687,7 +1569,7 @@ public class H3Cell {
      */
     public void setLinguisticDrift(Double drift) { this.linguisticDrift = drift; }
 
-    /*
+    /**
      * Calculates dynamic surface albedo based on snow cover, biome, and natural vegetation density.
      */
     public double calculateDynamicAlbedo() {
@@ -1717,7 +1599,7 @@ public class H3Cell {
         return this.dynamicAlbedo;
     }
 
-    /*
+    /**
      * Updates the detailed 7-segment age pyramid based on total population
      * and technological demographic transition stage.
      */
@@ -1842,7 +1724,7 @@ public class H3Cell {
         return totalPop * basePerCapitaGJ * laborMultiplier * speciesMultiplier;
     }
 
-    /*
+    /**
      * Get ice sheet thickness meters operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1852,7 +1734,7 @@ public class H3Cell {
      * @return the resulting computation or updated state reference
      */
     public Double getIceSheetThicknessMeters() { return iceSheetThicknessMeters != null ? iceSheetThicknessMeters : 0.0; }
-    /*
+    /**
      * Set ice sheet thickness meters operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1863,7 +1745,7 @@ public class H3Cell {
      */
     public void setIceSheetThicknessMeters(Double iceSheetThicknessMeters) { this.iceSheetThicknessMeters = iceSheetThicknessMeters; }
 
-    /*
+    /**
      * Get sea level offset meters operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1873,7 +1755,7 @@ public class H3Cell {
      * @return the resulting computation or updated state reference
      */
     public Double getSeaLevelOffsetMeters() { return seaLevelOffsetMeters != null ? seaLevelOffsetMeters : 0.0; }
-    /*
+    /**
      * Set sea level offset meters operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1884,7 +1766,7 @@ public class H3Cell {
      */
     public void setSeaLevelOffsetMeters(Double seaLevelOffsetMeters) { this.seaLevelOffsetMeters = seaLevelOffsetMeters; }
 
-    /*
+    /**
      * Get is coastal operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1894,7 +1776,7 @@ public class H3Cell {
      * @return the resulting computation or updated state reference
      */
     public Boolean getIsCoastal() { return isCoastal != null ? isCoastal : false; }
-    /*
+    /**
      * Set is coastal operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1905,7 +1787,7 @@ public class H3Cell {
      */
     public void setIsCoastal(Boolean isCoastal) { this.isCoastal = isCoastal; }
 
-    /*
+    /**
      * Get coastal marine resource operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1915,7 +1797,7 @@ public class H3Cell {
      * @return the resulting computation or updated state reference
      */
     public Double getCoastalMarineResource() { return coastalMarineResource != null ? coastalMarineResource : 0.0; }
-    /*
+    /**
      * Set coastal marine resource operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1926,7 +1808,7 @@ public class H3Cell {
      */
     public void setCoastalMarineResource(Double coastalMarineResource) { this.coastalMarineResource = coastalMarineResource; }
 
-    /*
+    /**
      * Get is polder operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1936,7 +1818,7 @@ public class H3Cell {
      * @return the resulting computation or updated state reference
      */
     public Boolean getIsPolder() { return isPolder != null ? isPolder : false; }
-    /*
+    /**
      * Set is polder operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1947,7 +1829,7 @@ public class H3Cell {
      */
     public void setIsPolder(Boolean isPolder) { this.isPolder = isPolder; }
 
-    /*
+    /**
      * Get has floating infrastructure operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1957,7 +1839,7 @@ public class H3Cell {
      * @return the resulting computation or updated state reference
      */
     public Boolean getHasFloatingInfrastructure() { return hasFloatingInfrastructure != null ? hasFloatingInfrastructure : false; }
-    /*
+    /**
      * Set has floating infrastructure operation.
      * <p>
      * Executes operational logic for {@code H3Cell} within the geospatial raster and tensor ingestion pipeline.
@@ -1968,7 +1850,7 @@ public class H3Cell {
      */
     public void setHasFloatingInfrastructure(Boolean hasFloatingInfrastructure) { this.hasFloatingInfrastructure = hasFloatingInfrastructure; }
 
-    /*
+    /**
      * Standard average H3 hexagon area in km² according to resolution level (0 to 15).
      */
     public static double getAvgHexagonAreaKm2(int resolution) {
@@ -1988,7 +1870,7 @@ public class H3Cell {
         };
     }
 
-    /*
+    /**
      * Calculates the effective 3D real surface area of the cell in km², taking into account:
      * 1. H3 grid resolution level embedded in the H3 64-bit index.
      * 2. Topographical 3D slope expansion derived from terrain ruggedness / movement friction.
@@ -2012,7 +1894,7 @@ public class H3Cell {
         return baseArea * slopeFactor3D;
     }
 
-    /*
+    /**
      * Create a snapshot copy of this cell.
      */
     public H3Cell snapshot() {
@@ -2079,9 +1961,8 @@ public class H3Cell {
         return copy;
     }
 
-    /*
+    /**
      * Get habitat type.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -2089,9 +1970,8 @@ public class H3Cell {
         return habitatType != null ? habitatType : org.ether.society.model.HabitatType.NONE;
     }
 
-    /*
+    /**
      * Set habitat type.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param habitatType the habitat type parameter (org.ether.society.model.HabitatType)
      */
@@ -2099,9 +1979,8 @@ public class H3Cell {
         this.habitatType = habitatType != null ? habitatType : org.ether.society.model.HabitatType.NONE;
     }
 
-    /*
+    /**
      * Get habitat tier.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -2109,9 +1988,8 @@ public class H3Cell {
         return habitatTier != null ? habitatTier : 0;
     }
 
-    /*
+    /**
      * Set habitat tier.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param habitatTier the habitat tier parameter (Integer)
      */
@@ -2119,9 +1997,8 @@ public class H3Cell {
         this.habitatTier = habitatTier != null ? habitatTier : 0;
     }
 
-    /*
+    /**
      * Get habitat capacity.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -2129,9 +2006,8 @@ public class H3Cell {
         return habitatCapacity != null ? habitatCapacity : 0.0;
     }
 
-    /*
+    /**
      * Set habitat capacity.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param habitatCapacity the habitat capacity parameter (Double)
      */
@@ -2139,9 +2015,8 @@ public class H3Cell {
         this.habitatCapacity = habitatCapacity != null ? Math.max(0.0, habitatCapacity) : 0.0;
     }
 
-    /*
+    /**
      * Get habitat integrity.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -2149,9 +2024,8 @@ public class H3Cell {
         return habitatIntegrity != null ? habitatIntegrity : 1.0;
     }
 
-    /*
+    /**
      * Set habitat integrity.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param habitatIntegrity the habitat integrity parameter (Double)
      */
@@ -2159,9 +2033,8 @@ public class H3Cell {
         this.habitatIntegrity = habitatIntegrity != null ? Math.clamp(habitatIntegrity, 0.0, 1.0) : 1.0;
     }
 
-    /*
+    /**
      * Get habitat energy kw.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -2169,9 +2042,8 @@ public class H3Cell {
         return habitatEnergyKw != null ? habitatEnergyKw : 0.0;
     }
 
-    /*
+    /**
      * Set habitat energy kw.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param habitatEnergyKw the habitat energy kw parameter (Double)
      */
@@ -2179,9 +2051,8 @@ public class H3Cell {
         this.habitatEnergyKw = habitatEnergyKw != null ? Math.max(0.0, habitatEnergyKw) : 0.0;
     }
 
-    /*
+    /**
      * Get habitat age years.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @return the resulting computation or state reference
      */
@@ -2189,9 +2060,8 @@ public class H3Cell {
         return habitatAgeYears != null ? habitatAgeYears : 0.0;
     }
 
-    /*
+    /**
      * Set habitat age years.
-     * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
      * @param habitatAgeYears the habitat age years parameter (Double)
      */

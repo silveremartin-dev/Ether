@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -20,33 +20,31 @@ import java.io.Serializable;
 public class ClimateEvent implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /* Internal state variable for type (String). */
+    /** Internal state: type (String). */
     private String type;
-    /* Internal state variable for name (String). */
+    /** Internal state: name (String). */
     private String name;
-    /* Internal state variable for year (int). */
+    /** Internal state: year (int). */
     private int year;
-    /* Internal state variable for latitude (double). */
+    /** Internal state: latitude (double). */
     private double latitude;
-    /* Internal state variable for longitude (double). */
+    /** Internal state: longitude (double). */
     private double longitude;
-    /* Internal state variable for depth (double). */
+    /** Internal state: depth (double). */
     private double depth;
-    /* Internal state variable for magnitude (double). */
+    /** Internal state: magnitude (double). */
     private double magnitude;
 
-    /*
+    /**
      * Climate event.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      */
     public ClimateEvent() {
         this("volcano", "Event", 0, 0.0, 0.0, 0.0, 0.0);
     }
 
-    /*
+    /**
      * Climate event.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @param type the type parameter (String)
      * @param name the name parameter (String)
@@ -66,9 +64,8 @@ public class ClimateEvent implements Serializable {
         this.magnitude = magnitude;
     }
 
-    /*
+    /**
      * Get type.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -76,9 +73,8 @@ public class ClimateEvent implements Serializable {
         return type;
     }
 
-    /*
+    /**
      * Set type.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @param type the type parameter (String)
      */
@@ -86,9 +82,8 @@ public class ClimateEvent implements Serializable {
         this.type = type;
     }
 
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -96,9 +91,8 @@ public class ClimateEvent implements Serializable {
         return name;
     }
 
-    /*
+    /**
      * Set name.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @param name the name parameter (String)
      */
@@ -106,9 +100,8 @@ public class ClimateEvent implements Serializable {
         this.name = name;
     }
 
-    /*
+    /**
      * Get year.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -116,9 +109,8 @@ public class ClimateEvent implements Serializable {
         return year;
     }
 
-    /*
+    /**
      * Set year.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @param year the year parameter (int)
      */
@@ -126,9 +118,8 @@ public class ClimateEvent implements Serializable {
         this.year = year;
     }
 
-    /*
+    /**
      * Get latitude.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -136,9 +127,8 @@ public class ClimateEvent implements Serializable {
         return latitude;
     }
 
-    /*
+    /**
      * Set latitude.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @param latitude the latitude parameter (double)
      */
@@ -146,9 +136,8 @@ public class ClimateEvent implements Serializable {
         this.latitude = latitude;
     }
 
-    /*
+    /**
      * Get longitude.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -156,9 +145,8 @@ public class ClimateEvent implements Serializable {
         return longitude;
     }
 
-    /*
+    /**
      * Set longitude.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @param longitude the longitude parameter (double)
      */
@@ -166,9 +154,8 @@ public class ClimateEvent implements Serializable {
         this.longitude = longitude;
     }
 
-    /*
+    /**
      * Get depth.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -176,9 +163,8 @@ public class ClimateEvent implements Serializable {
         return depth;
     }
 
-    /*
+    /**
      * Set depth.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @param depth the depth parameter (double)
      */
@@ -186,9 +172,8 @@ public class ClimateEvent implements Serializable {
         this.depth = depth;
     }
 
-    /*
+    /**
      * Get magnitude.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @return the resulting computation or state reference
      */
@@ -196,9 +181,8 @@ public class ClimateEvent implements Serializable {
         return magnitude;
     }
 
-    /*
+    /**
      * Set magnitude.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @param magnitude the magnitude parameter (double)
      */
@@ -206,13 +190,12 @@ public class ClimateEvent implements Serializable {
         this.magnitude = magnitude;
     }
 
-    @Override
-    /*
+    /**
      * To string.
-     * Enforces physical invariants and updates associated state variables within {@code ClimateEvent}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String toString() {
         return String.format("%s (%d) [%.2f°, %.2f° Mag: %.1f]", name, year, latitude, longitude, magnitude);
     }

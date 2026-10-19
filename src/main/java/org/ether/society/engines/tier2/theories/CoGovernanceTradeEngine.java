@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -23,9 +23,9 @@ import java.util.List;
 public class CoGovernanceTradeEngine {
     private static final Logger logger = LoggerFactory.getLogger(CoGovernanceTradeEngine.class);
 
-    /* Internal state variable for global carbon quota treaty active (boolean). */
+    /** Internal state: global carbon quota treaty active (boolean). */
     private static boolean globalCarbonQuotaTreatyActive = false;
-    /* Internal state variable for international resource trade volume (double). */
+    /** Internal state: international resource trade volume (double). */
     private static double internationalResourceTradeVolume = 1.0;
 
     /**
@@ -36,9 +36,8 @@ public class CoGovernanceTradeEngine {
         internationalResourceTradeVolume = 1.0;
     }
 
-    /*
+    /**
      * Process trade and governance.
-     * Enforces physical invariants and updates associated state variables within {@code CoGovernanceTradeEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -62,14 +61,13 @@ public class CoGovernanceTradeEngine {
     }
 
     // Getters and Setters
-    /*
+    /**
      * Is global carbon quota treaty active.
-     * Enforces physical invariants and updates associated state variables within {@code CoGovernanceTradeEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static boolean isGlobalCarbonQuotaTreatyActive() { return globalCarbonQuotaTreatyActive; }
-    /*
+    /**
      * Set global carbon quota treaty active operation.
      * <p>
      * Executes operational logic for {@code CoGovernanceTradeEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -80,14 +78,13 @@ public class CoGovernanceTradeEngine {
      */
     public static void setGlobalCarbonQuotaTreatyActive(boolean active) { globalCarbonQuotaTreatyActive = active; }
 
-    /*
+    /**
      * Get international resource trade volume.
-     * Enforces physical invariants and updates associated state variables within {@code CoGovernanceTradeEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getInternationalResourceTradeVolume() { return internationalResourceTradeVolume; }
-    /*
+    /**
      * Set international resource trade volume operation.
      * <p>
      * Executes operational logic for {@code CoGovernanceTradeEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

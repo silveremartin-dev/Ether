@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -26,9 +26,8 @@ public class EtherSecurityAuditLogger {
     private static final Logger logger = LoggerFactory.getLogger(EtherSecurityAuditLogger.class);
     private static final File auditLogFile = new File("ether_network_security_audit.log");
 
-    /*
+    /**
      * Log audit event.
-     * Enforces physical invariants and updates associated state variables within {@code EtherSecurityAuditLogger}.
      *
      * @param eventType the event type parameter (String)
      * @param clientIp the client ip parameter (String)

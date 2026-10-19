@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -27,10 +27,10 @@ import java.util.ServiceLoader;
  */
 public class ProceduralEngineSpiLoader {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralEngineSpiLoader.class);
-    /* Internal state variable for default plugin dir (String). */
+    /** Internal state: default plugin dir (String). */
     private static final String DEFAULT_PLUGIN_DIR = "plugins";
 
-    /*
+    /**
      * Discovers and registers all available plugins via standard Java ServiceLoader.
      */
     public static int loadAllPlugins() {
@@ -39,7 +39,7 @@ public class ProceduralEngineSpiLoader {
         return count;
     }
 
-    /*
+    /**
      * Loads plugins registered on the standard classpath.
      */
     public static int loadClasspathPlugins() {
@@ -58,7 +58,7 @@ public class ProceduralEngineSpiLoader {
         return count;
     }
 
-    /*
+    /**
      * Loads plugins from external .jar files in the specified directory.
      */
     public static int loadExternalDirectoryPlugins(Path directory) {

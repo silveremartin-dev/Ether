@@ -1,4 +1,4 @@
-package org.ether.society.generation;
+ackage org.ether.society.generation;
 
 
 
@@ -592,7 +592,6 @@ public record PlanetPreset(
 
      * With name.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -634,7 +633,6 @@ public record PlanetPreset(
 
      * With seismic and volcanic.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -676,7 +674,6 @@ public record PlanetPreset(
 
      * Get presets.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -738,7 +735,6 @@ public record PlanetPreset(
 
      * Get associated epoch year.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -778,7 +774,6 @@ public record PlanetPreset(
 
      * Get canonical planet.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -812,7 +807,6 @@ public record PlanetPreset(
 
      * Get preset description.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -832,7 +826,6 @@ public record PlanetPreset(
 
      * Is tidal locked.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -852,7 +845,6 @@ public record PlanetPreset(
 
      * Cell count.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -958,7 +950,6 @@ public record PlanetPreset(
 
      * With resolution.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 
@@ -997,7 +988,6 @@ public record PlanetPreset(
 
      * To string.
 
-     * Enforces physical invariants and updates associated state variables within {@code PlanetPreset}.
 
      *
 

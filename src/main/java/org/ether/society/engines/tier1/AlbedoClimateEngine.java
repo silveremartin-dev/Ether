@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -35,14 +35,14 @@ import java.util.List;
 public class AlbedoClimateEngine {
     private static final Logger logger = LoggerFactory.getLogger(AlbedoClimateEngine.class);
 
-    /*
+    /**
      * Convenience method for updating albedo feedback with baseline parameters.
      */
     public static void processAlbedoFeedback(List<H3Cell> cells) {
         processAlbedoFeedback(cells, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Updates albedo feedback scaled by time step in years.
      *
      * @param cells List of H3 simulation cells
@@ -52,7 +52,7 @@ public class AlbedoClimateEngine {
         processAlbedoAndClimateEvents(cells, 0L, 0.0, dtYears);
     }
 
-    /*
+    /**
      * Updates dynamic albedo, orbital precession (Green Sahara), and climate disaster events.
      *
      * @param cells                 List of H3 simulation cells
@@ -63,7 +63,7 @@ public class AlbedoClimateEngine {
         processAlbedoAndClimateEvents(cells, simulationYear, volcanicCoolingOffset, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Updates dynamic albedo, orbital precession (Green Sahara), and climate disaster events with time-step invariance.
      *
      * @param cells                 List of H3 simulation cells

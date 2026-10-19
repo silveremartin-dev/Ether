@@ -1,4 +1,4 @@
-package org.ether.society;
+ackage org.ether.society;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -52,9 +52,8 @@ public class CaptureRealShots extends Application {
             "docs/images/screenshots"
     );
 
-    /*
+    /**
      * Main.
-     * Enforces physical invariants and updates associated state variables within {@code CaptureRealShots}.
      *
      * @param args the args parameter (String[])
      */
@@ -65,13 +64,12 @@ public class CaptureRealShots extends Application {
         launch(args);
     }
 
-    @Override
-    /*
+    /**
      * Start.
-     * Enforces physical invariants and updates associated state variables within {@code CaptureRealShots}.
      *
      * @param primaryStage the primary stage parameter (Stage)
      */
+    @Override
     public void start(Stage primaryStage) throws Exception {
         System.err.println(">>> CaptureRealShots start() called <<<");
         Locale.setDefault(Locale.ENGLISH);
@@ -120,7 +118,6 @@ public class CaptureRealShots extends Application {
         });
     }
 
-    // Helper subroutine: run capture workflow - internal state computation & bounds checking
     private void runCaptureWorkflow() {
         try {
             System.err.println("=== Starting Ether Real UI Screenshots Capture Workflow (Language: EN) ===");
@@ -300,7 +297,6 @@ public class CaptureRealShots extends Application {
         }
     }
 
-    // Helper subroutine: run on fx - internal state computation & bounds checking
     private void runOnFx(Runnable action) {
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
@@ -322,7 +318,6 @@ public class CaptureRealShots extends Application {
         }
     }
 
-    // Helper subroutine: sleep - internal state computation & bounds checking
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
@@ -331,7 +326,6 @@ public class CaptureRealShots extends Application {
         }
     }
 
-    // Helper subroutine: save node snapshot - internal state computation & bounds checking
     private void saveNodeSnapshot(javafx.scene.Node node, String filename) {
         try {
             SnapshotParameters params = new SnapshotParameters();

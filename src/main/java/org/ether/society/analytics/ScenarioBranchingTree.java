@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -24,20 +24,19 @@ public class ScenarioBranchingTree implements Serializable {
 
     public static class SimulationBranch implements Serializable {
         private static final long serialVersionUID = 1L;
-        /* Internal state variable for id (String). */
+        /** Internal state: id (String). */
         private final String id;
-        /* Internal state variable for name (String). */
+        /** Internal state: name (String). */
         private final String name;
-        /* Internal state variable for parent branch year (long). */
+        /** Internal state: parent branch year (long). */
         private final long parentBranchYear;
-        /* Internal state variable for snapshot cells (List&lt;H3Cell&gt;). */
+        /** Internal state: snapshot cells (List&lt;H3Cell&gt;). */
         private final transient List<H3Cell> snapshotCells;
         private final LinkedHashMap<Long, Double> yearToTotalPopulation = new LinkedHashMap<>();
         private final LinkedHashMap<Long, Double> yearToAverageTemperature = new LinkedHashMap<>();
 
-        /*
+        /**
          * Simulation branch.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
          *
          * @param id the id parameter (String)
          * @param name the name parameter (String)
@@ -52,9 +51,8 @@ public class ScenarioBranchingTree implements Serializable {
             this.snapshotCells = snapshotCells != null ? new ArrayList<>(snapshotCells) : new ArrayList<>();
         }
 
-        /*
+        /**
          * Record telemetry.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
          *
          * @param year the year parameter (long)
          * @param totalPop the total pop parameter (double)
@@ -65,44 +63,38 @@ public class ScenarioBranchingTree implements Serializable {
             yearToAverageTemperature.put(year, avgTemp);
         }
 
-        /*
+        /**
          * Get id.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
          *
          * @return the resulting computation or state reference
          */
         public String getId() { return id; }
-        /*
+        /**
          * Get name.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
          *
          * @return the resulting computation or state reference
          */
         public String getName() { return name; }
-        /*
+        /**
          * Get parent branch year.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
          *
          * @return the resulting computation or state reference
          */
         public long getParentBranchYear() { return parentBranchYear; }
-        /*
+        /**
          * Get snapshot cells.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
          *
          * @return the resulting computation or state reference
          */
         public List<H3Cell> getSnapshotCells() { return snapshotCells; }
-        /*
+        /**
          * Get year to total population.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
          *
          * @return the resulting computation or state reference
          */
         public Map<Long, Double> getYearToTotalPopulation() { return yearToTotalPopulation; }
-        /*
+        /**
          * Get year to average temperature.
-         * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
          *
          * @return the resulting computation or state reference
          */
@@ -110,12 +102,11 @@ public class ScenarioBranchingTree implements Serializable {
     }
 
     private final LinkedHashMap<String, SimulationBranch> branches = new LinkedHashMap<>();
-    /* Internal state variable for active branch id (String). */
+    /** Internal state: active branch id (String). */
     private String activeBranchId = "main";
 
-    /*
+    /**
      * Scenario branching tree.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
      *
      */
     public ScenarioBranchingTree() {
@@ -123,9 +114,8 @@ public class ScenarioBranchingTree implements Serializable {
         branches.put("main", new SimulationBranch("main", "Trajectoire Principale (Main)", 0, Collections.emptyList()));
     }
 
-    /*
+    /**
      * Create branch.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
      *
      * @param branchName the branch name parameter (String)
      * @param currentYear the current year parameter (long)
@@ -139,21 +129,19 @@ public class ScenarioBranchingTree implements Serializable {
         return branch;
     }
 
-    /*
+    /**
      * Get branches.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
      *
      * @return the resulting computation or state reference
      */
     public Map<String, SimulationBranch> getBranches() { return Collections.unmodifiableMap(branches); }
-    /*
+    /**
      * Get active branch id.
-     * Enforces physical invariants and updates associated state variables within {@code ScenarioBranchingTree}.
      *
      * @return the resulting computation or state reference
      */
     public String getActiveBranchId() { return activeBranchId; }
-    /*
+    /**
      * Set active branch id operation.
      * <p>
      * Executes operational logic for {@code ScenarioBranchingTree} within the simulation engine framework.

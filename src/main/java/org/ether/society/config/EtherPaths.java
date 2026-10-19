@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvère Martin-Michiellot
@@ -33,15 +33,15 @@ public final class EtherPaths {
     private static final Logger logger = LoggerFactory.getLogger(EtherPaths.class);
 
     // Environment variable names
-    /* Internal state variable for env data dir (String). */
+    /** Internal state: env data dir (String). */
     public static final String ENV_DATA_DIR = "ETHER_DATA_DIR";
-    /* Internal state variable for env saves dir (String). */
+    /** Internal state: env saves dir (String). */
     public static final String ENV_SAVES_DIR = "ETHER_SAVES_DIR";
-    /* Internal state variable for env logs dir (String). */
+    /** Internal state: env logs dir (String). */
     public static final String ENV_LOGS_DIR = "ETHER_LOGS_DIR";
-    /* Internal state variable for env user presets dir (String). */
+    /** Internal state: env user presets dir (String). */
     public static final String ENV_USER_PRESETS_DIR = "ETHER_USER_PRESETS_DIR";
-    /* Internal state variable for env cache dir (String). */
+    /** Internal state: env cache dir (String). */
     public static final String ENV_CACHE_DIR = "ETHER_CACHE_DIR";
 
     private static Path dataDir;
@@ -54,12 +54,11 @@ public final class EtherPaths {
         initPaths();
     }
 
-    // Helper subroutine: ether paths - internal state computation & bounds checking
     private EtherPaths() {
         // Utility class
     }
 
-    /*
+    /**
      * Initializes all paths from environment variables or sensible defaults.
      */
     public static synchronized void initPaths() {
@@ -116,7 +115,6 @@ public final class EtherPaths {
         ensureDirectories();
     }
 
-    // Helper subroutine: ensure directories - internal state computation & bounds checking
     private static void ensureDirectories() {
         createDirSafely(dataDir, "Data");
         createDirSafely(savesDir, "Saves");
@@ -131,7 +129,6 @@ public final class EtherPaths {
         createDirSafely(getPresetsLeadersDir(), "Presets - Leaders");
     }
 
-    // Helper subroutine: create dir safely - internal state computation & bounds checking
     private static void createDirSafely(Path path, String name) {
         if (path == null) return;
         try {
@@ -145,9 +142,8 @@ public final class EtherPaths {
 
     // ── Root Paths ────────────────────────────────────────────────────────────
 
-    /*
+    /**
      * Get data dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -155,9 +151,8 @@ public final class EtherPaths {
         return dataDir;
     }
 
-    /*
+    /**
      * Get saves dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -165,9 +160,8 @@ public final class EtherPaths {
         return savesDir;
     }
 
-    /*
+    /**
      * Get logs dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -175,9 +169,8 @@ public final class EtherPaths {
         return logsDir;
     }
 
-    /*
+    /**
      * Get user presets dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -185,9 +178,8 @@ public final class EtherPaths {
         return userPresetsDir;
     }
 
-    /*
+    /**
      * Get cache dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -197,9 +189,8 @@ public final class EtherPaths {
 
     // ── Preset Sub-Directories ────────────────────────────────────────────────
 
-    /*
+    /**
      * Get presets dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -207,9 +198,8 @@ public final class EtherPaths {
         return dataDir.resolve("presets");
     }
 
-    /*
+    /**
      * Get presets planets dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -217,9 +207,8 @@ public final class EtherPaths {
         return getPresetsDir().resolve("planets");
     }
 
-    /*
+    /**
      * Get presets ecology dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -227,9 +216,8 @@ public final class EtherPaths {
         return getPresetsDir().resolve("ecology");
     }
 
-    /*
+    /**
      * Get presets scenarios dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -237,9 +225,8 @@ public final class EtherPaths {
         return getPresetsDir().resolve("scenarios");
     }
 
-    /*
+    /**
      * Get presets leaders dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -249,9 +236,8 @@ public final class EtherPaths {
 
     // ── Saves Sub-Directories ─────────────────────────────────────────────────
 
-    /*
+    /**
      * Get engines compiled dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */
@@ -259,9 +245,8 @@ public final class EtherPaths {
         return savesDir.resolve(Paths.get("engines", "compiled"));
     }
 
-    /*
+    /**
      * Get cluster snapshots dir.
-     * Enforces physical invariants and updates associated state variables within {@code EtherPaths}.
      *
      * @return the resulting computation or state reference
      */

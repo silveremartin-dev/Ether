@@ -54,15 +54,11 @@ public class EtherNetworkTestSuite {
         }
     }
 
-    @Test
-    /*
-     * Test server client connection operation.
-     * <p>
-     * Executes operational logic for {@code EtherNetworkTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
+    /**
+     * Verifies that an authenticated PLANNER client connects securely via AES-256 GCM,
+     * authenticates with HMAC token signature, and transmits valid state mutations.
      */
+    @Test
     public void testServerClientConnection() throws IOException, InterruptedException {
         EtherNetworkClient client = new EtherNetworkClient("localhost", TEST_PORT, server.getSecurityManager());
         client.connect();
@@ -71,6 +67,11 @@ public class EtherNetworkTestSuite {
         Thread.sleep(100);
         assertEquals(1, server.getConnectedClientCount(), "Server should register 1 connected client.");
 
+        // Authenticate with server secret key as PLANNER
+        client.authenticate("AlicePlanner", AuthToken.Role.PLANNER, server.getServerSecretKey());
+        Thread.sleep(100);
+
+        // Send policy injection as authenticated planner
         client.sendPolicyInjection("POLICY:CARBON_TAX_50");
         client.disconnect();
     }

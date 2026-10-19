@@ -1,4 +1,4 @@
-package org.ether.society.database;
+ackage org.ether.society.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +17,15 @@ import java.util.Base64;
 public class PostgresVaultService {
     private static final Logger logger = LoggerFactory.getLogger(PostgresVaultService.class);
 
-    /* Internal state variable for db url (String). */
+    /** Internal state: db url (String). */
     private final String dbUrl;
-    /* Internal state variable for user (String). */
+    /** Internal state: user (String). */
     private final String user;
-    /* Internal state variable for password (String). */
+    /** Internal state: password (String). */
     private final String password;
 
-    /*
+    /**
      * Postgres vault service.
-     * Enforces physical invariants and updates associated state variables within {@code PostgresVaultService}.
      *
      * @param dbUrl the db url parameter (String)
      * @param user the user parameter (String)
@@ -38,9 +37,8 @@ public class PostgresVaultService {
         this.password = password;
     }
 
-    /*
+    /**
      * Initialize schema.
-     * Enforces physical invariants and updates associated state variables within {@code PostgresVaultService}.
      *
      * @return the resulting computation or state reference
      */
@@ -72,9 +70,8 @@ public class PostgresVaultService {
         }
     }
 
-    /*
+    /**
      * Upload map to vault.
-     * Enforces physical invariants and updates associated state variables within {@code PostgresVaultService}.
      *
      * @param filename the filename parameter (String)
      * @param pngFile the png file parameter (File)
@@ -109,9 +106,8 @@ public class PostgresVaultService {
         }
     }
 
-    /*
+    /**
      * Download map from vault.
-     * Enforces physical invariants and updates associated state variables within {@code PostgresVaultService}.
      *
      * @param filename the filename parameter (String)
      * @param targetFile the target file parameter (File)

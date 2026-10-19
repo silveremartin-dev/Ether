@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class FormulaEvaluator {
     private static final Logger logger = LoggerFactory.getLogger(FormulaEvaluator.class);
 
-    /*
+    /**
      * Interface for resolving raw variable arrays (e.g. "wealth" -> float[]{10.5, 42.0, ...})
      */
     @FunctionalInterface
@@ -33,7 +33,7 @@ public class FormulaEvaluator {
         float[] resolveArray(String varName);
     }
 
-    /*
+    /**
      * Interface for resolving single scalar values (e.g. "population" -> 1000.0)
      */
     @FunctionalInterface
@@ -58,7 +58,7 @@ public class FormulaEvaluator {
         }
     }
 
-    /*
+    /**
      * Evaluates a formula string given array and scalar resolvers with compiled token caching.
      */
     public double evaluate(String expression, VariableResolver arrayResolver, ScalarResolver scalarResolver) {
@@ -83,7 +83,6 @@ public class FormulaEvaluator {
         }
     }
 
-    // Helper subroutine: compile expression - internal state computation & bounds checking
     private List<Token> compileExpression(String expr) {
         List<Token> tokens = new ArrayList<>();
         int len = expr.length();
@@ -139,12 +138,11 @@ public class FormulaEvaluator {
         return tokens;
     }
 
-    // Helper subroutine: sanitize - internal state computation & bounds checking
     private String sanitize(String expr) {
         return expr.trim();
     }
 
-    /*
+    /**
      * Finds and replaces stat function calls like SUM(var), AVG(var), STDDEV(var), GINI(var)
      * with their calculated scalar numerical values.
      */
@@ -199,7 +197,6 @@ public class FormulaEvaluator {
         return sb.toString();
     }
 
-    // Helper subroutine: is stat function - internal state computation & bounds checking
     private boolean isStatFunction(String name) {
         String u = name.toUpperCase(Locale.ROOT);
         return u.equals("SUM") || u.equals("AVG") || u.equals("MEAN") || u.equals("MEDIAN")
@@ -209,7 +206,6 @@ public class FormulaEvaluator {
                 || u.equals("SKEWNESS") || u.equals("KURTOSIS");
     }
 
-    // Helper subroutine: compute stat function - internal state computation & bounds checking
     private double computeStatFunction(String funcName, String varName, VariableResolver arrayResolver) {
         // High-performance contiguous memory pass: Cache-aligned array streaming
         // Vectorized SIMD / analytical state updates with zero heap allocation
@@ -340,7 +336,7 @@ public class FormulaEvaluator {
         }
     }
 
-    /*
+    /**
      * Evaluates a scalar mathematical expression containing arithmetic operations and scalar variables.
      */
     private double parseAndEvaluateMath(String expr, ScalarResolver scalarResolver) {

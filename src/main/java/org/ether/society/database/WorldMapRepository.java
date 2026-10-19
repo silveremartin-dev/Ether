@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -29,9 +29,8 @@ public class WorldMapRepository {
     private static final Logger logger = LoggerFactory.getLogger(WorldMapRepository.class);
     private final EntityManagerFactory emf;
 
-    /*
+    /**
      * World map repository.
-     * Enforces physical invariants and updates associated state variables within {@code WorldMapRepository}.
      *
      * @param emf the emf parameter (EntityManagerFactory)
      */
@@ -39,7 +38,7 @@ public class WorldMapRepository {
         this.emf = emf;
     }
 
-    /*
+    /**
      * Save a WorldMap.
      */
     public void save(WorldMap map) {
@@ -68,7 +67,7 @@ public class WorldMapRepository {
         }
     }
 
-    /*
+    /**
      * Find WorldMap by ID.
      */
     public Optional<WorldMap> findById(Long id) {
@@ -82,7 +81,7 @@ public class WorldMapRepository {
         }
     }
 
-    /*
+    /**
      * Find WorldMap by name.
      */
     public Optional<WorldMap> findByName(String name) {
@@ -99,7 +98,7 @@ public class WorldMapRepository {
         }
     }
 
-    /*
+    /**
      * Find all WorldMaps.
      */
     public List<WorldMap> findAll() {
@@ -113,7 +112,7 @@ public class WorldMapRepository {
         }
     }
 
-    /*
+    /**
      * Delete a WorldMap.
      */
     public void delete(Long id) {

@@ -1,4 +1,4 @@
-/*
+*
  * Ether - Human Society Simulation
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * MIT License
@@ -23,20 +23,19 @@ public class StatisticalReplayEngine {
     private static final Logger logger = LoggerFactory.getLogger(StatisticalReplayEngine.class);
 
     public static class ReconstitutedSeries {
-        /* Internal state variable for formula id (String). */
+        /** Internal state: formula id (String). */
         private final String formulaId;
-        /* Internal state variable for formula name (String). */
+        /** Internal state: formula name (String). */
         private final String formulaName;
-        /* Internal state variable for expression (String). */
+        /** Internal state: expression (String). */
         private final String expression;
-        /* Internal state variable for unit (String). */
+        /** Internal state: unit (String). */
         private final String unit;
         private final List<Long> ticks = new ArrayList<>();
         private final List<Double> values = new ArrayList<>();
 
-        /*
+        /**
          * Reconstituted series.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @param formulaId the formula id parameter (String)
          * @param formulaName the formula name parameter (String)
@@ -51,9 +50,8 @@ public class StatisticalReplayEngine {
             this.unit = unit;
         }
 
-        /*
+        /**
          * Add point.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @param tick the tick parameter (long)
          * @param value the value parameter (double)
@@ -63,52 +61,45 @@ public class StatisticalReplayEngine {
             values.add(value);
         }
 
-        /*
+        /**
          * Get formula id.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getFormulaId() { return formulaId; }
-        /*
+        /**
          * Get formula name.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getFormulaName() { return formulaName; }
-        /*
+        /**
          * Get expression.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getExpression() { return expression; }
-        /*
+        /**
          * Get unit.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
         public String getUnit() { return unit; }
-        /*
+        /**
          * Get ticks.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
         public List<Long> getTicks() { return Collections.unmodifiableList(ticks); }
-        /*
+        /**
          * Get values.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
         public List<Double> getValues() { return Collections.unmodifiableList(values); }
 
-        /*
+        /**
          * Get min.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
@@ -116,9 +107,8 @@ public class StatisticalReplayEngine {
             return values.stream().mapToDouble(Double::doubleValue).min().orElse(0.0);
         }
 
-        /*
+        /**
          * Get max.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
@@ -126,9 +116,8 @@ public class StatisticalReplayEngine {
             return values.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
         }
 
-        /*
+        /**
          * Get mean.
-         * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
          *
          * @return the resulting computation or state reference
          */
@@ -139,9 +128,8 @@ public class StatisticalReplayEngine {
 
     private final PluggableStatEngine statEngine;
 
-    /*
+    /**
      * Statistical replay engine.
-     * Enforces physical invariants and updates associated state variables within {@code StatisticalReplayEngine}.
      *
      * @param statEngine the stat engine parameter (PluggableStatEngine)
      */
@@ -149,7 +137,7 @@ public class StatisticalReplayEngine {
         this.statEngine = statEngine;
     }
 
-    /*
+    /**
      * Reconstructs a statistical time-series for a given formula across recorded snapshots.
      */
     public ReconstitutedSeries reconstituteFromSnapshots(

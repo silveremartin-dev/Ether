@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
@@ -29,9 +29,8 @@ import java.util.List;
 public class IsruAutarkyAndSpaceColonizationEngine {
     private static final Logger logger = LoggerFactory.getLogger(IsruAutarkyAndSpaceColonizationEngine.class);
 
-    /*
+    /**
      * Process space colonization cliodynamics.
-     * Enforces physical invariants and updates associated state variables within {@code IsruAutarkyAndSpaceColonizationEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param preset the preset parameter (PlanetPreset)

@@ -1,4 +1,4 @@
-/**
+**
  * <h1>Spatial Partitioning &amp; H3 Load Balancing</h1>
  * <p>
  * Partitions the global H3 hexagonal grid into balanced geometric domains for parallel

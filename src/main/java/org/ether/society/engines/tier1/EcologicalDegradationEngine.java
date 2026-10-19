@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -30,14 +30,14 @@ import java.util.List;
 public class EcologicalDegradationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EcologicalDegradationEngine.class);
 
-    /* Internal state variable for caloric requirement per capita (double). */
+    /** Internal state: caloric requirement per capita (double). */
     private static final double CALORIC_REQUIREMENT_PER_CAPITA = 0.5;
 
     public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel) {
         processEcologicalDegradation(cells, techLevel, 1.0 / 12.0);
     }
 
-    /*
+    /**
      * Executes one ecological, pollution, overfishing & socio-demographic simulation tick across all cells.
      */
     public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel, double deltaYears) {
@@ -282,7 +282,7 @@ public class EcologicalDegradationEngine {
         }
     }
 
-    /*
+    /**
      * Atmospheric and aquatic dispersion of toxic pollution across neighboring cells,
      * diffusing contaminants even into unpopulated, high-altitude or remote wilderness sites.
      */
@@ -330,7 +330,6 @@ public class EcologicalDegradationEngine {
         }
     }
 
-    // Helper subroutine: process migration flux - internal state computation & bounds checking
     private static int processMigrationFlux(List<H3Cell> cells, double defaultTech, double deltaYears) {
         // Phase 1: Invariant state validation and environmental boundary initialization
         // Phase 2: Numerical evaluation of differential conservation equations
@@ -427,9 +426,8 @@ public class EcologicalDegradationEngine {
         return totalMigrated;
     }
 
-    /*
+    /**
      * Calculate carrying capacity.
-     * Enforces physical invariants and updates associated state variables within {@code EcologicalDegradationEngine}.
      *
      * @param cell the cell parameter (H3Cell)
      * @param techLevel the tech level parameter (double)

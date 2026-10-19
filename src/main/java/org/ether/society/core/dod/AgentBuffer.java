@@ -1,16 +1,16 @@
-package org.ether.society.core.dod;
+ackage org.ether.society.core.dod;
 
 /**
  * High-performance Data-Oriented Storage for demographic nodes (cohorts).
  * Uses SOA (Structure of Arrays) pattern for GPU compatibility.
  */
 public class AgentBuffer {
-    /* Internal state variable for capacity (int). */
+    /** Internal state: capacity (int). */
     private final int capacity;
     
     // Position & Identification
     private final int[] hexIds; // Index into WorldBuffer
-    /* Internal state variable for h3indexes (long[]). */
+    /** Internal state: h3indexes (long[]). */
     private final long[] h3Indexes;
     
     // Core Demography
@@ -29,9 +29,8 @@ public class AgentBuffer {
     // Cultural Tensor (configurable dimensions)
     private final float[][] culture;
 
-    /*
+    /**
      * Agent buffer.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @param capacity the capacity parameter (int)
      */
@@ -39,9 +38,8 @@ public class AgentBuffer {
         this(capacity, 9);
     }
 
-    /*
+    /**
      * Agent buffer with customizable cultural tensor dimensions.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @param capacity the capacity parameter (int)
      * @param cultureDimensions the number of cultural tensor dimensions (clamped between 4 and 32)
@@ -70,95 +68,82 @@ public class AgentBuffer {
         }
     }
 
-    /*
+    /**
      * Get capacity.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public int getCapacity() { return capacity; }
-    /*
+    /**
      * Get hex ids.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public int[] getHexIds() { return hexIds; }
-    /*
+    /**
      * Get h3indexes.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public long[] getH3Indexes() { return h3Indexes; }
     
-    /*
+    /**
      * Get mass.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public float[] getMass() { return mass; }
-    /*
+    /**
      * Get energy.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public float[] getEnergy() { return energy; }
-    /*
+    /**
      * Get sigma cost.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public float[] getSigmaCost() { return sigmaCost; }
-    /*
+    /**
      * Get tech level.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public float[] getTechLevel() { return techLevel; }
-    /*
+    /**
      * Get age.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public float[] getAge() { return age; }
-    /*
+    /**
      * Get births.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public float[] getBirths() { return births; }
-    /*
+    /**
      * Get deaths.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public float[] getDeaths() { return deaths; }
-    /*
+    /**
      * Get generation count.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public int[] getGenerationCount() { return generationCount; }
     
-    /*
+    /**
      * Get genetics.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */
     public float[][] getGenetics() { return genetics; }
-    /*
+    /**
      * Get culture.
-     * Enforces physical invariants and updates associated state variables within {@code AgentBuffer}.
      *
      * @return the resulting computation or state reference
      */

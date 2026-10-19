@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -25,9 +25,9 @@ public enum EnergySource {
     NUCLEAR(8, "Nuclear Fission", 50.0, 6.0), // Uranium/Thorium fission
     FUSION_HE3(9, "Helium-3 Fusion", 150.0, 10.0); // High-tech Aneutronic Fusion
 
-    /* Internal state variable for tech level (int). */
+    /** Internal state: tech level (int). */
     private final int techLevel;
-    /* Internal state variable for display name (String). */
+    /** Internal state: display name (String). */
     private final String displayName;
     private final double energyMultiplier; // How much energy is available
     private final double carryingCapacityBoost; // Multiplier for population capacity
@@ -39,9 +39,8 @@ public enum EnergySource {
         this.carryingCapacityBoost = carryingCapacityBoost;
     }
 
-    /*
+    /**
      * Get tech level.
-     * Enforces physical invariants and updates associated state variables within {@code EnergySource}.
      *
      * @return the resulting computation or state reference
      */
@@ -49,9 +48,8 @@ public enum EnergySource {
         return techLevel;
     }
 
-    /*
+    /**
      * Get display name.
-     * Enforces physical invariants and updates associated state variables within {@code EnergySource}.
      *
      * @return the resulting computation or state reference
      */
@@ -59,9 +57,8 @@ public enum EnergySource {
         return displayName;
     }
 
-    /*
+    /**
      * Get energy multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code EnergySource}.
      *
      * @return the resulting computation or state reference
      */
@@ -69,9 +66,8 @@ public enum EnergySource {
         return energyMultiplier;
     }
 
-    /*
+    /**
      * Get carrying capacity boost.
-     * Enforces physical invariants and updates associated state variables within {@code EnergySource}.
      *
      * @return the resulting computation or state reference
      */
@@ -79,7 +75,7 @@ public enum EnergySource {
         return carryingCapacityBoost;
     }
 
-    /*
+    /**
      * Get energy source by tech level.
      */
     public static EnergySource byTechLevel(int level) {
@@ -91,7 +87,7 @@ public enum EnergySource {
         return FIRE; // Default
     }
 
-    /*
+    /**
      * Check if this source requires a specific resource.
      */
     public Resource getRequiredResource() {

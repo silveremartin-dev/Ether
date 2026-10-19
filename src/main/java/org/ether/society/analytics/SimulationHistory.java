@@ -1,4 +1,4 @@
-package org.ether.society.analytics;
+ackage org.ether.society.analytics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,9 +82,8 @@ public class SimulationHistory {
         }
     }
 
-    /*
+    /**
      * Get snapshots.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationHistory}.
      *
      * @return the resulting computation or state reference
      */
@@ -94,9 +93,8 @@ public class SimulationHistory {
         }
     }
 
-    /*
+    /**
      * Clear.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationHistory}.
      *
      */
     public void clear() {
@@ -105,9 +103,8 @@ public class SimulationHistory {
         }
     }
 
-    /*
+    /**
      * Truncate after.
-     * Enforces physical invariants and updates associated state variables within {@code SimulationHistory}.
      *
      * @param year the year parameter (int)
      * @param month the month parameter (int)

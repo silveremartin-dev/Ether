@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -33,10 +33,10 @@ import java.util.Map;
 public class CliopatriaPolityVectorReader {
     private static final Logger logger = LoggerFactory.getLogger(CliopatriaPolityVectorReader.class);
 
-    /* Internal state variable for seshat geojson path (String). */
+    /** Internal state: seshat geojson path (String). */
     public static final String SESHAT_GEOJSON_PATH = "data/maps/seshat/cliopatria_polities_only.geojson";
 
-    /*
+    /**
      * Loads and rasterizes Seshat ClioPatria historical polity polygons for the specified year.
      */
     public static BufferedImage rasterizeSeshatSovereigntyMap(long targetYear, int width, int height, BufferedImage elevationMask) {
@@ -143,7 +143,7 @@ public class CliopatriaPolityVectorReader {
         return img;
     }
 
-    /*
+    /**
      * Builds authentic regional tribal / clan domain seeds for orographic cost-distance propagation.
      */
     public static List<OrographicGlottologPropagator.CulturalSeed> getTribalDomainSeeds(long year) {
@@ -181,7 +181,7 @@ public class CliopatriaPolityVectorReader {
         return seeds;
     }
 
-    /*
+    /**
      * Determines the authentic regional tribal / clan domain color for stateless inhabited lands.
      */
     public static int getTribalDomainColor(double lon, double lat, long year) {
@@ -236,7 +236,7 @@ public class CliopatriaPolityVectorReader {
         return bestColor;
     }
 
-    /*
+    /**
      * Loads and rasterizes high-precision authentic Isogloss (Linguistic Phyla) map for the specified year.
      */
     public static BufferedImage rasterizeSeshatIsoglossMap(long targetYear, int width, int height, BufferedImage elevationMask) {
@@ -509,7 +509,7 @@ public class CliopatriaPolityVectorReader {
         return img;
     }
 
-    /*
+    /**
      * Loads and rasterizes high-precision authentic Kinship & Social Organization map for the specified year.
      */
     public static BufferedImage rasterizeSeshatKinshipMap(long targetYear, int width, int height, BufferedImage elevationMask) {
@@ -696,7 +696,7 @@ public class CliopatriaPolityVectorReader {
         return img;
     }
 
-    /*
+    /**
      * Map historical polity name to authentic Isogloss (Linguistic Phylum / Branch) color.
      */
     private static String normalize(String s) {
@@ -706,7 +706,7 @@ public class CliopatriaPolityVectorReader {
         return n.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
     }
 
-    /*
+    /**
      * Map historical polity name to authentic Isogloss (Linguistic Phylum / Branch) color.
      */
     public static Color getPolityIsoglossColor(String name, String seshatId) {
@@ -811,7 +811,7 @@ public class CliopatriaPolityVectorReader {
         return new Color(0x2563EB);
     }
 
-    /*
+    /**
      * Map historical polity name to authentic Kinship & Social Structure color.
      */
     public static Color getPolityKinshipColor(String name, String seshatId) {
@@ -898,7 +898,7 @@ public class CliopatriaPolityVectorReader {
         return new Color(0x8B5CF6);
     }
 
-    /*
+    /**
      * Map historical polity name to official hex color matching cultural_registry.json.
      */
     public static Color getPolityColor(String name, String seshatId) {
@@ -1178,7 +1178,7 @@ public class CliopatriaPolityVectorReader {
         };
     }
 
-    /*
+    /**
      * Fast streaming parser for 158 MB GeoJSON file using Jackson Streaming API.
      */
     public static List<HistoricalPolityFeature> loadPolitiesForYear(File geoJsonFile, int targetYear, int imgW, int imgH) {
@@ -1205,7 +1205,6 @@ public class CliopatriaPolityVectorReader {
         return matched;
     }
 
-    // Helper subroutine: parse feature if matches - internal state computation & bounds checking
     private static void parseFeatureIfMatches(JsonParser parser, int targetYear, int imgW, int imgH, List<HistoricalPolityFeature> matched) throws Exception {
         String name = null;
         int fromYear = -99999;
@@ -1264,7 +1263,6 @@ public class CliopatriaPolityVectorReader {
         }
     }
 
-    // Helper subroutine: parse coordinates to paths - internal state computation & bounds checking
     private static void parseCoordinatesToPaths(JsonParser parser, String geomType, int imgW, int imgH, List<Path2D> paths) throws Exception {
         if ("Polygon".equalsIgnoreCase(geomType)) {
             // Array of linear rings: [ [ [x,y], [x,y]... ], [hole...] ]
@@ -1285,7 +1283,6 @@ public class CliopatriaPolityVectorReader {
         }
     }
 
-    // Helper subroutine: parse linear ring - internal state computation & bounds checking
     private static Path2D parseLinearRing(JsonParser parser, int imgW, int imgH) throws Exception {
         if (parser.currentToken() != JsonToken.START_ARRAY) return null;
 

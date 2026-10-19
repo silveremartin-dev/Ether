@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -29,35 +29,32 @@ import java.util.List;
 public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(ArthurCombinatorialTechnologyEngine.class);
 
-    @Override
-    /*
+    /**
      * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getName() {
         return "Arthur Combinatorial Technological Evolution";
     }
 
-    @Override
-    /*
+    /**
      * Get description.
-     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getDescription() {
         return "Models technological evolution through recursive combinatorial recombinant assembly of existing modular primitives.";
     }
 
-    @Override
-    /*
+    /**
      * Get equations tooltip.
-     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getEquationsTooltip() {
         return """
                [W. Brian Arthur Combinatorial Evolution (The Nature of Technology 2009)]
@@ -69,25 +66,23 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
                """;
     }
 
-    @Override
-    /*
+    /**
      * Get category.
-     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
      *
      * @return the resulting computation or state reference
      */
+    @Override
     public String getCategory() {
         return "Tier 2: Socio-Technical Evolution";
     }
 
-    @Override
-    /*
+    /**
      * Process.
-     * Enforces physical invariants and updates associated state variables within {@code ArthurCombinatorialTechnologyEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
      */
+    @Override
     public void process(List<H3Cell> cells, double deltaYears) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions

@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -28,7 +28,7 @@ public class EcotoxicologyFertilityEngine {
     /* Endocrine toxicity decay constant k */
     public static final double ENDOCRINE_TOXICITY_DECAY_K = 0.0002;
 
-    /*
+    /**
      * Calculates effective biological fertility factor based on chemical pollution load.
      *
      * @param pollutionLevel Pollution load in cell
@@ -42,7 +42,7 @@ public class EcotoxicologyFertilityEngine {
         return Math.max(0.35, Math.exp(-ENDOCRINE_TOXICITY_DECAY_K * pollutionLevel));
     }
 
-    /*
+    /**
      * Executes one ecotoxicology fertility stress tick across cells.
      */
     public static void processEcotoxicologyFertility(List<H3Cell> cells) {

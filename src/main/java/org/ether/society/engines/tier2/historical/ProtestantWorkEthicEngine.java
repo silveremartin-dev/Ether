@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -28,9 +28,8 @@ public class ProtestantWorkEthicEngine {
     private static double techAccelerationMultiplier = 1.25; // +25% tech innovation speed
     private static double literacyRateMultiplier = 1.40; // +40% literacy boost
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code ProtestantWorkEthicEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -64,14 +63,13 @@ public class ProtestantWorkEthicEngine {
         }
     }
 
-    /*
+    /**
      * Get capital savings multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code ProtestantWorkEthicEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getCapitalSavingsMultiplier() { return capitalSavingsMultiplier; }
-    /*
+    /**
      * Set capital savings multiplier operation.
      * <p>
      * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -82,14 +80,13 @@ public class ProtestantWorkEthicEngine {
      */
     public static void setCapitalSavingsMultiplier(double v) { capitalSavingsMultiplier = Math.max(1.0, v); }
 
-    /*
+    /**
      * Get tech acceleration multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code ProtestantWorkEthicEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getTechAccelerationMultiplier() { return techAccelerationMultiplier; }
-    /*
+    /**
      * Set tech acceleration multiplier operation.
      * <p>
      * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
@@ -100,14 +97,13 @@ public class ProtestantWorkEthicEngine {
      */
     public static void setTechAccelerationMultiplier(double v) { techAccelerationMultiplier = Math.max(1.0, v); }
 
-    /*
+    /**
      * Get literacy rate multiplier.
-     * Enforces physical invariants and updates associated state variables within {@code ProtestantWorkEthicEngine}.
      *
      * @return the resulting computation or state reference
      */
     public static double getLiteracyRateMultiplier() { return literacyRateMultiplier; }
-    /*
+    /**
      * Set literacy rate multiplier operation.
      * <p>
      * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.

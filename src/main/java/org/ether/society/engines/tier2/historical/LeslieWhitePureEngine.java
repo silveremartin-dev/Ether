@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -22,9 +22,8 @@ import java.util.List;
 public class LeslieWhitePureEngine {
     private static final Logger logger = LoggerFactory.getLogger(LeslieWhitePureEngine.class);
 
-    /*
+    /**
      * Calculate cultural complexity.
-     * Enforces physical invariants and updates associated state variables within {@code LeslieWhitePureEngine}.
      *
      * @param energyPerCapita the energy per capita parameter (double)
      * @param techEfficiency the tech efficiency parameter (double)
@@ -37,9 +36,8 @@ public class LeslieWhitePureEngine {
         return Math.max(1.0, energyPerCapita * techEfficiency);
     }
 
-    /*
+    /**
      * Process hybrid.
-     * Enforces physical invariants and updates associated state variables within {@code LeslieWhitePureEngine}.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)

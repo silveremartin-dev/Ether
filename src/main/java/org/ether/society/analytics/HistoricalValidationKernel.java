@@ -1,4 +1,4 @@
-/*
+*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -42,9 +42,8 @@ public class HistoricalValidationKernel {
             this.description = desc;
         }
 
-        /*
+        /**
          * Contains year.
-         * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
          *
          * @param yr the yr parameter (int)
          * @return the resulting computation or state reference
@@ -73,7 +72,6 @@ public class HistoricalValidationKernel {
         loadJsonBenchmarksResource();
     }
 
-    // Helper subroutine: load json benchmarks resource - internal state computation & bounds checking
     private static void loadJsonBenchmarksResource() {
         try (InputStream is = HistoricalValidationKernel.class.getClassLoader().getResourceAsStream("historical_cliodynamic_benchmarks.json")) {
             if (is != null) {
@@ -127,9 +125,8 @@ public class HistoricalValidationKernel {
         public double compositeRSquared;
         public double compositeRmse;
 
-        /*
+        /**
          * Get summary.
-         * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
          *
          * @return the resulting computation or state reference
          */
@@ -147,9 +144,8 @@ public class HistoricalValidationKernel {
     public static class MultiMetricTrajectory {
         public Map<String, Map<Integer, Double>> seriesMap = new HashMap<>();
 
-        /*
+        /**
          * Record value.
-         * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
          *
          * @param metricKey the metric key parameter (String)
          * @param year the year parameter (int)
@@ -159,9 +155,8 @@ public class HistoricalValidationKernel {
             seriesMap.computeIfAbsent(metricKey, k -> new TreeMap<>()).put(year, value);
         }
 
-        /*
+        /**
          * Get series.
-         * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
          *
          * @param metricKey the metric key parameter (String)
          * @return the resulting computation or state reference
@@ -171,9 +166,8 @@ public class HistoricalValidationKernel {
         }
     }
 
-    /*
+    /**
      * Filter by window.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @param dataset the dataset parameter (Double&gt;)
      * @param window the window parameter (EpochWindow)
@@ -186,9 +180,8 @@ public class HistoricalValidationKernel {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1, TreeMap::new));
     }
 
-    /*
+    /**
      * Calculate rmse.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @param simulatedData the simulated data parameter (Double&gt;)
      * @return the resulting computation or state reference
@@ -199,9 +192,8 @@ public class HistoricalValidationKernel {
         return calculateRmse(simulatedData, getHistoricalWorldPopulation());
     }
 
-    /*
+    /**
      * Calculate rsquared.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @param simulatedData the simulated data parameter (Double&gt;)
      * @return the resulting computation or state reference
@@ -212,9 +204,8 @@ public class HistoricalValidationKernel {
         return calculateRSquared(simulatedData, getHistoricalWorldPopulation());
     }
 
-    /*
+    /**
      * Calculate rmse.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @param simulatedData the simulated data parameter (Double&gt;)
      * @param benchmarkData the benchmark data parameter (Double&gt;)
@@ -244,9 +235,8 @@ public class HistoricalValidationKernel {
         return Math.sqrt(sumSquaredErrors / count);
     }
 
-    /*
+    /**
      * Calculate rsquared.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @param simulatedData the simulated data parameter (Double&gt;)
      * @param benchmarkData the benchmark data parameter (Double&gt;)
@@ -279,9 +269,43 @@ public class HistoricalValidationKernel {
         return Math.max(0.0, 1.0 - (ssRes / ssTot));
     }
 
-    /*
+    /**
+     * Calculates the Pearson correlation coefficient \(r \in [-1.0, 1.0]\) between simulated trajectories
+     * and empirical benchmark ground truth over intersecting time points.
+     *
+     * @param simulatedData simulated trajectory time series
+     * @param benchmarkData empirical benchmark dataset
+     * @return Pearson correlation coefficient r
+     */
+    public static double calculatePearsonCorrelation(Map<Integer, Double> simulatedData, Map<Integer, Double> benchmarkData) {
+        if (simulatedData == null || benchmarkData == null) return 0.0;
+        List<Double> x = new ArrayList<>();
+        List<Double> y = new ArrayList<>();
+        for (Map.Entry<Integer, Double> entry : benchmarkData.entrySet()) {
+            int year = entry.getKey();
+            if (simulatedData.containsKey(year)) {
+                x.add(simulatedData.get(year));
+                y.add(entry.getValue());
+            }
+        }
+        int n = x.size();
+        if (n < 2) return 0.0;
+        double meanX = x.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        double meanY = y.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+        double num = 0.0, denX = 0.0, denY = 0.0;
+        for (int i = 0; i < n; i++) {
+            double dx = x.get(i) - meanX;
+            double dy = y.get(i) - meanY;
+            num += dx * dy;
+            denX += dx * dx;
+            denY += dy * dy;
+        }
+        if (denX <= 0.0 || denY <= 0.0) return 0.0;
+        return num / Math.sqrt(denX * denY);
+    }
+
+    /**
      * Evaluate windowed fit.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @param trajectory the trajectory parameter (MultiMetricTrajectory)
      * @param window the window parameter (EpochWindow)
@@ -466,7 +490,6 @@ public class HistoricalValidationKernel {
         }
     }
 
-    // Helper subroutine: linear interpolate - internal state computation & bounds checking
     private static double linearInterpolate(Map<Integer, Double> dataset, List<Integer> x, double targetX) {
         int intYear = (int) Math.round(targetX);
         if (dataset.containsKey(intYear)) return dataset.get(intYear);
@@ -497,7 +520,6 @@ public class HistoricalValidationKernel {
         return valLower + fraction * (valUpper - valLower);
     }
 
-    // Helper subroutine: pchip interpolate - internal state computation & bounds checking
     private static double pchipInterpolate(Map<Integer, Double> dataset, List<Integer> x, double targetX) {
         int n = x.size();
         double[] h = new double[n - 1];
@@ -554,7 +576,6 @@ public class HistoricalValidationKernel {
         return h00 * y[k] + h10 * hk * d[k] + h01 * y[k + 1] + h11 * hk * d[k + 1];
     }
 
-    // Helper subroutine: pchip end derivative - internal state computation & bounds checking
     private static double pchipEndDerivative(double h1, double h2, double delta1, double delta2) {
         double d = ((2.0 * h1 + h2) * delta1 - h1 * delta2) / (h1 + h2);
         if (d * delta1 < 0.0) {
@@ -565,7 +586,6 @@ public class HistoricalValidationKernel {
         return d;
     }
 
-    // Helper subroutine: catmull rom interpolate - internal state computation & bounds checking
     private static double catmullRomInterpolate(Map<Integer, Double> dataset, List<Integer> x, double targetX) {
         int n = x.size();
         int k = 0;
@@ -596,51 +616,44 @@ public class HistoricalValidationKernel {
         return a0 * t3 + a1 * t2 + a2 * t + a3;
     }
 
-    /*
+    /**
      * Get historical world population.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @return the resulting computation or state reference
      */
     public static Map<Integer, Double> getHistoricalWorldPopulation() { return getBenchmarkDataset("worldPopulation"); }
-    /*
+    /**
      * Get historical world gdp.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @return the resulting computation or state reference
      */
     public static Map<Integer, Double> getHistoricalWorldGdp() { return getBenchmarkDataset("grossWorldProduct"); }
-    /*
+    /**
      * Get historical world energy.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @return the resulting computation or state reference
      */
     public static Map<Integer, Double> getHistoricalWorldEnergy() { return getBenchmarkDataset("primaryEnergy"); }
-    /*
+    /**
      * Get historical urbanization rate.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @return the resulting computation or state reference
      */
     public static Map<Integer, Double> getHistoricalUrbanizationRate() { return getBenchmarkDataset("urbanizationRate"); }
-    /*
+    /**
      * Get historical co2concentration.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @return the resulting computation or state reference
      */
     public static Map<Integer, Double> getHistoricalCo2Concentration() { return getBenchmarkDataset("co2Concentration"); }
-    /*
+    /**
      * Get historical literacy rate.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @return the resulting computation or state reference
      */
     public static Map<Integer, Double> getHistoricalLiteracyRate() { return getBenchmarkDataset("literacyRate"); }
-    /*
+    /**
      * Get historical currency debasement.
-     * Enforces physical invariants and updates associated state variables within {@code HistoricalValidationKernel}.
      *
      * @return the resulting computation or state reference
      */
