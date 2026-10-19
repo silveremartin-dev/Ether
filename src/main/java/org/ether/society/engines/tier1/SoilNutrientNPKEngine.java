@@ -64,13 +64,13 @@ public class SoilNutrientNPKEngine {
 
         java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
             if (cell == null) return;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-            double baseBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
+            int pop = cell.getPopulationOr(0);
+            double baseBiomass = cell.getBiomassAgricultureOr(0.0);
             if (baseBiomass <= 0.0 && pop <= 0) return;
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double metalOre = cell.getResourceMetal() != null ? cell.getResourceMetal() : 100.0;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double metalOre = cell.getResourceMetalOr(100.0);
+            double tech = cell.getTechnologyLevelOr(0.0);
 
             // 1. Rock Phosphate (P) & Potash (K) Geological Mining Extraction
             double extractedMiningP = Math.min(metalOre * 0.05, minMinedOreScaled);

@@ -44,7 +44,7 @@ public class CulturalSociologyEngine {
 
             // Environmental stewardship allocates labor to Soil Organic Carbon (SOC) preservation
             if (globalEnvironmentalStewardship > 0.6) {
-                double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 0.0;
+                double soc = cell.getSoilOrganicCarbonOr(0.0);
                 cell.setSoilOrganicCarbon(soc + (globalEnvironmentalStewardship - 0.5) * 0.1 * deltaYears);
             }
 

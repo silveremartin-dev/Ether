@@ -105,13 +105,13 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             activeCellsCount++;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             totalPop += pop;
-            totalCapital += (cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0);
-            totalPollution += (cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0);
-            totalFood += (cell.getFoodResource() != null ? cell.getFoodResource() : 0.0);
-            totalGiniSum += (cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.0);
-            avgTemp += (cell.getTemperature() != null ? cell.getTemperature() : 15.0);
+            totalCapital += (cell.getResourceCapitalOr(0.0));
+            totalPollution += (cell.getPollutionLevelOr(0.0));
+            totalFood += (cell.getFoodResourceOr(0.0));
+            totalGiniSum += (cell.getGiniIndexOr(0.0));
+            avgTemp += (cell.getTemperatureOr(15.0));
         }
 
         if (activeCellsCount == 0) return;
@@ -155,12 +155,12 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
             }
 
             // High-efficiency Clean Infrastructure Injection
-            double cap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double cap = cell.getResourceCapitalOr(0.0);
             cell.setResourceCapital(cap + (50.0 * aggressiveOptimizationFactor * deltaYears));
 
             // Boost renewable solar/wind energy harness
-            cell.setEnergySolar((cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0) + (10.0 * deltaYears));
-            cell.setEnergyWind((cell.getEnergyWind() != null ? cell.getEnergyWind() : 0.0) + (10.0 * deltaYears));
+            cell.setEnergySolar((cell.getEnergySolarOr(0.0)) + (10.0 * deltaYears));
+            cell.setEnergyWind((cell.getEnergyWindOr(0.0)) + (10.0 * deltaYears));
         }
     }
 
@@ -174,15 +174,15 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
         // Northern Hemisphere AI Agent vs Southern Hemisphere AI Agent rival optimization
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
+            double lat = cell.getLatitudeOr(0.0);
 
             if (lat >= 0) {
                 // North Bloc AI: Focuses heavily on High-Tech & Clean Capital Acceleration
-                double cap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                double cap = cell.getResourceCapitalOr(0.0);
                 cell.setResourceCapital(cap * (1.0 + (0.02 * deltaYears)));
             } else {
                 // South Bloc AI: Focuses heavily on Ecological Regeneration & Resource Extraction Security
-                double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 0.0;
+                double soc = cell.getSoilOrganicCarbonOr(0.0);
                 cell.setSoilOrganicCarbon(soc + (5.0 * deltaYears));
                 if (cell.getPollutionLevel() != null) {
                     cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() - (5.0 * deltaYears)));
@@ -203,7 +203,7 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
 
             // Nudge clean energy shift by subsidizing solar/wind where pollution is elevated
             if (cell.getPollutionLevel() != null && cell.getPollutionLevel() > 50.0) {
-                cell.setEnergySolar((cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0) + 5.0 * deltaYears);
+                cell.setEnergySolar((cell.getEnergySolarOr(0.0)) + 5.0 * deltaYears);
             }
         }
     }
@@ -222,7 +222,7 @@ public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
             if (cell.getPollutionLevel() != null && cell.getPollutionLevel() > 10.0) {
                 cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() - (20.0 * deltaYears)));
                 // Throttles fertility to force demographic shrinkage
-                cell.setFertility(Math.max(1.0, (cell.getFertility() != null ? cell.getFertility() : 2.1) - 0.2 * deltaYears));
+                cell.setFertility(Math.max(1.0, (cell.getFertilityOr(2.1)) - 0.2 * deltaYears));
             }
         }
     }

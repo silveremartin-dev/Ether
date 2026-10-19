@@ -58,8 +58,8 @@ public class LandReclamationEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
+            double capital = cell.getResourceCapitalOr(0.0);
             boolean isCoastal = Boolean.TRUE.equals(cell.getIsCoastal());
             boolean isPolder = Boolean.TRUE.equals(cell.getIsPolder());
             boolean hasFloating = Boolean.TRUE.equals(cell.getHasFloatingInfrastructure());
@@ -72,7 +72,7 @@ public class LandReclamationEngine {
                     if (biome == Biome.OCEAN || biome == Biome.BEACH) {
                         cell.setBiome(Biome.PLAINS);
                     }
-                    double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 0.0;
+                    double soc = cell.getSoilOrganicCarbonOr(0.0);
                     cell.setSoilOrganicCarbon(Math.max(100.0, soc + 20.0 * timeStepDays));
                 }
             }
@@ -82,7 +82,7 @@ public class LandReclamationEngine {
                 if (tech >= seasteadingTechThreshold && capital >= seasteadingCapitalThreshold) {
                     cell.setHasFloatingInfrastructure(true);
                     // Floating energy & water collection bonus
-                    double solar = cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0;
+                    double solar = cell.getEnergySolarOr(0.0);
                     cell.setEnergySolar(solar + 50.0 * timeStepDays);
                 }
             }

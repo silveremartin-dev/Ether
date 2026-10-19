@@ -92,13 +92,13 @@ public class SchellingAxelrodSegregationEngine implements ProceduralEnginePlugin
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.35;
+            double gini = cell.getGiniIndexOr(0.35);
             // High internal inequality / segregation increases movement friction and civil tension
             if (gini > 0.50) {
-                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+                double friction = cell.getMovementFrictionOr(1.0);
                 cell.setMovementFriction(Math.min(10.0, friction + (0.05 * (gini - 0.50) * deltaYears)));
             }
         }

@@ -73,14 +73,14 @@ public class NuclearWarfareClimateEngine {
         // 1. Evaluate conflict triggers & stratospheric soot injection
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 5000) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
             if (tech < 4.0) continue; // Nuclear capability requires atomic age technology
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double capital = cell.getResourceCapitalOr(0.0);
 
             // Nuclear war trigger: High power capability & extreme population density conflict
             if (powerPerCapita >= NUCLEAR_CAPABILITY_POWER_WATTS && capital > 20000.0) {
@@ -93,7 +93,7 @@ public class NuclearWarfareClimateEngine {
                     // Immediate local destruction
                     cell.setPopulation((int) (pop * 0.20));
                     cell.setResourceCapital(capital * 0.10);
-                    cell.setPollutionLevel((cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0) + 25000.0);
+                    cell.setPollutionLevel((cell.getPollutionLevelOr(0.0)) + 25000.0);
                 }
             }
         }
@@ -107,12 +107,12 @@ public class NuclearWarfareClimateEngine {
             for (H3Cell cell : cells) {
                 if (cell == null) continue;
                 // Surface temperature drop anomaly
-                double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+                double currentTemp = cell.getTemperatureOr(15.0);
                 cell.setTemperature(currentTemp + tempAnomaly);
 
                 // Agricultural crop failure under nuclear winter freezing
                 if (currentTemp + tempAnomaly < 0.0) {
-                    double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
+                    double currentAgri = cell.getBiomassAgricultureOr(0.0);
                     cell.setBiomassAgriculture(Math.max(0.0, currentAgri * 0.10));
                 }
             }

@@ -93,10 +93,10 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double capital = cell.getResourceCapitalOr(0.0);
             if (capital < 50.0) continue;
 
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             double surplus = pop * 0.05;
 
             // Complexity index derived from institutional capital depth

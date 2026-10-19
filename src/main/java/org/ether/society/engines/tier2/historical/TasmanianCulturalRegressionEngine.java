@@ -48,7 +48,7 @@ public class TasmanianCulturalRegressionEngine {
             double lossRate = 0.04 * (1.0 - totalPop / isolationPopulationThreshold) * deltaYears;
             for (H3Cell cell : cells) {
                 if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+                double tech = cell.getTechnologyLevelOr(1.0);
                 if (tech > 1.0) {
                     cell.setTechnologyLevel(Math.max(1.0, tech - lossRate));
                 }

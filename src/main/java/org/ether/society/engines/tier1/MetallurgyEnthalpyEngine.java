@@ -60,15 +60,15 @@ public class MetallurgyEnthalpyEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double rawMetalOre = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
-            double bioNat = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
-            double woodRes = cell.getWoodResource() != null ? cell.getWoodResource() : 0.0;
+            double rawMetalOre = cell.getResourceMetalOr(0.0);
+            double bioNat = cell.getBiomassNaturalOr(0.0);
+            double woodRes = cell.getWoodResourceOr(0.0);
             double woodBiomass = Math.max(bioNat, woodRes);
-            double coalReserve = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double coalReserve = cell.getResourceCoalOr(0.0);
+            double tech = cell.getTechnologyLevelOr(0.0);
 
             // =========================================================================
             // PART A: Structural Metallurgy along the Furnace Temperature Continuum
@@ -94,10 +94,10 @@ public class MetallurgyEnthalpyEngine {
                 } else if (tech < 2.5) {
                     // Bronze Age (Cu + 10% Sn): requires scarce Tin (polymetallic geology) or active long-distance trade corridor
                     enthalpyMJPerKg = BRONZE_SMELTING_ENTHALPY_MJ_PER_KG;
-                    double localPolymetallicTin = (cell.getResourceRareEarths() != null ? cell.getResourceRareEarths() : 0.0)
-                            + (cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0.0) * 2.0;
-                    double tradeAccess = (cell.getChokePointScore() != null ? cell.getChokePointScore() : 0.0)
-                            + (cell.getTransitTollRevenue() != null ? cell.getTransitTollRevenue() : 0.0);
+                    double localPolymetallicTin = (cell.getResourceRareEarthsOr(0.0))
+                            + (cell.getResourcePreciousMetalOr(0.0)) * 2.0;
+                    double tradeAccess = (cell.getChokePointScoreOr(0.0))
+                            + (cell.getTransitTollRevenueOr(0.0));
                     boolean hasTinSupply = (localPolymetallicTin > 1.0) || (tradeAccess > 0.01);
                     // Late Bronze Age Collapse bottleneck: if trade is severed and no local tin exists,
                     // bronze alloying fails and metallurgy reverts to brittle/soft unalloyed copper (Q = 0.18)!
@@ -109,8 +109,8 @@ public class MetallurgyEnthalpyEngine {
 
                     // Modern High-Tech Metallurgy (tech >= 3.8): Liebig bottleneck on Rare Earths & Precious Catalysts
                     if (tech >= 3.8) {
-                        double ree = cell.getResourceRareEarths() != null ? cell.getResourceRareEarths() : 0.0;
-                        double prec = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0.0;
+                        double ree = cell.getResourceRareEarthsOr(0.0);
+                        double prec = cell.getResourcePreciousMetalOr(0.0);
                         double criticalMineralFeasibility = Math.min(1.0, (ree + prec * 2.0) / Math.max(0.5, pop * 0.0005));
                         alloyQuality = 0.85 + 0.65 * criticalMineralFeasibility;
                     }
@@ -136,8 +136,8 @@ public class MetallurgyEnthalpyEngine {
                 // Universal Hydrostatic Mine-Dewatering Law (applies to all deep subsurface shaft extraction):
                 // Subsurface shafts flood proportionally to groundwater head (freshwaterAquifer).
                 // Accessible seam depth scales with mechanical pumping work (K * tech) vs hydrostatic head.
-                double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-                double aquiferFlooding = cell.getFreshwaterAquifer() != null ? cell.getFreshwaterAquifer() : 0.0;
+                double curCap = cell.getResourceCapitalOr(0.0);
+                double aquiferFlooding = cell.getFreshwaterAquiferOr(0.0);
                 double hydrostaticHead = Math.max(1.0, aquiferFlooding * 0.01);
                 double mineDrainageEfficiency = Math.clamp(
                         0.20 + 0.80 * Math.min(1.0, (curCap * Math.max(0.1, tech - 1.5)) / hydrostaticHead),
@@ -179,14 +179,14 @@ public class MetallurgyEnthalpyEngine {
 
                     // In high-tech era (tech >= 3.8), deduct trace critical rare earths & precious catalysts used in alloys/electronics
                     if (tech >= 3.8) {
-                        double ree = cell.getResourceRareEarths() != null ? cell.getResourceRareEarths() : 0.0;
+                        double ree = cell.getResourceRareEarthsOr(0.0);
                         if (ree > 0.0) {
                             cell.setResourceRareEarths(Math.max(0.0, ree - actualRefinedMetal * 0.005));
                         }
                     }
 
                     // Expand cell physical capital (tools, weapons, plows, machinery) minus mechanical wear & rust
-                    curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                    curCap = cell.getResourceCapitalOr(0.0);
                     double durableToolInvestment = actualRefinedMetal * alloyQuality;
                     double materialWearRate = Math.max(0.01, 0.05 / Math.max(0.5, tech * 0.4)) * dtSafe;
                     double newCapital = Math.max(0.0, (curCap + durableToolInvestment) * (1.0 - materialWearRate));
@@ -204,7 +204,7 @@ public class MetallurgyEnthalpyEngine {
             // 2. Modern High-Tech (tech >= 3.8): Precious metals act as physical catalytic
             //    and microelectronic inputs (gold bonding wires, silver contacts, platinum catalysts).
             // =========================================================================
-            double rawPreciousOre = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0.0;
+            double rawPreciousOre = cell.getResourcePreciousMetalOr(0.0);
             if (tech >= 1.2 && rawPreciousOre > 0.05) {
                 double preciousMiners = pop * Math.clamp(0.001 * tech, 0.0005, 0.015);
                 double extractionRateKgPerWorker = 2.0 * Math.clamp(tech / 1.5, 0.5, 8.0);
@@ -219,7 +219,7 @@ public class MetallurgyEnthalpyEngine {
                     }
                     cell.setResourcePreciousMetal(Math.max(0.0, rawPreciousOre - actualExtractedPreciousKg));
 
-                    double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                    double curCap = cell.getResourceCapitalOr(0.0);
                     if (tech >= 3.8) {
                         // Modern industrial regime: precious metals form high-reliability microelectronics & catalytic capital
                         cell.setResourceCapital(curCap + actualExtractedPreciousKg * 3.0);
@@ -228,13 +228,13 @@ public class MetallurgyEnthalpyEngine {
                         if (cell.getOwner() != null) {
                             cell.getOwner().setTreasuryBullion(cell.getOwner().getTreasuryBullion() + actualExtractedPreciousKg);
                         }
-                        double curTollSpecie = cell.getTransitTollRevenue() != null ? cell.getTransitTollRevenue() : 0.0;
+                        double curTollSpecie = cell.getTransitTollRevenueOr(0.0);
                         cell.setTransitTollRevenue(curTollSpecie + actualExtractedPreciousKg);
 
                         // Fisher Monetary Balance & Dutch Disease (Potosi / Spanish Price Revolution):
                         // Moderate specie monetizes local markets, facilitating artisan division of labor (+capital).
                         // Excessive bullion relative to real physical output (Capital + Food) triggers hyperinflation & Dutch Disease!
-                        double foodRes = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+                        double foodRes = cell.getFoodResourceOr(0.0);
                         double bullionIntensity = (curTollSpecie + actualExtractedPreciousKg) / Math.max(10.0, curCap + foodRes * 0.5);
                         if (bullionIntensity <= 1.2) {
                             // Healthy monetization: lowers local barter friction, enabling artisan capital accumulation
@@ -244,7 +244,7 @@ public class MetallurgyEnthalpyEngine {
                             // and spikes wealth inequality (Gini)
                             double inflationPenalty = Math.clamp((bullionIntensity - 1.2) * 0.08 * dtSafe, 0.0, 0.15);
                             cell.setResourceCapital(Math.max(0.0, curCap * (1.0 - inflationPenalty)));
-                            double curGini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.30;
+                            double curGini = cell.getGiniIndexOr(0.30);
                             cell.setGiniIndex(Math.clamp(curGini + 0.03 * dtSafe, 0.0, 0.95));
                         }
                     }

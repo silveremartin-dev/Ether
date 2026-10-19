@@ -147,13 +147,13 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop < 50) continue;
             activeCount++;
 
-            double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.35;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 100.0;
-            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 1000.0;
+            double gini = cell.getGiniIndexOr(0.35);
+            double capital = cell.getResourceCapitalOr(100.0);
+            double food = cell.getFoodResourceOr(1000.0);
 
             // 1. Mass Mobilization Potential (MMP): Food scarcity relative to population
             double requiredFood = pop * 2.0;

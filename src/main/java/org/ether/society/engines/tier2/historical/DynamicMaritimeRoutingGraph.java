@@ -67,7 +67,7 @@ public class DynamicMaritimeRoutingGraph {
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
         double currentAvgTech = cells.stream()
-                .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0)
+                .mapToDouble(c -> c.getTechnologyLevelOr(0.0))
                 .average().orElse(0.0);
 
         int currentNodeCount = (int) cells.stream()
@@ -121,13 +121,13 @@ public class DynamicMaritimeRoutingGraph {
                 // Physical Ocean Hydrodynamic Model:
                 // Calculate significant wave height (Hs) along route from bathymetry & atmospheric storm turbulence,
                 // and compare with vessel fleet physical hull wave clearance tolerance derived from capital density (K) & tech.
-                double sElev = source.getElevation() != null ? source.getElevation() : 0.0;
-                double tElev = target.getElevation() != null ? target.getElevation() : 0.0;
+                double sElev = source.getElevationOr(0.0);
+                double tElev = target.getElevationOr(0.0);
                 double midElevation = (sElev + tElev) / 2.0;
                 double midLatitude = (source.getLatitude() + target.getLatitude()) / 2.0;
 
-                double sCap = source.getResourceCapital() != null ? source.getResourceCapital() : 0.0;
-                double tCap = target.getResourceCapital() != null ? target.getResourceCapital() : 0.0;
+                double sCap = source.getResourceCapitalOr(0.0);
+                double tCap = target.getResourceCapitalOr(0.0);
                 double avgCapital = (sCap + tCap) / 2.0;
 
                 double significantWaveHeightMeters = calculateSignificantWaveHeight(midElevation, midLatitude);
@@ -205,8 +205,8 @@ public class DynamicMaritimeRoutingGraph {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        double avgTemp = ((source.getTemperature() != null ? source.getTemperature() : 15.0)
-                + (target.getTemperature() != null ? target.getTemperature() : 15.0)) / 2.0;
+        double avgTemp = ((source.getTemperatureOr(15.0))
+                + (target.getTemperatureOr(15.0))) / 2.0;
 
         // Base velocity increases logarithmically with technology level (knot speed scaling)
         double vesselSpeedKmH = 10.0 * (1.0 + Math.log(1.0 + Math.max(0.0, tech)));
@@ -239,11 +239,11 @@ public class DynamicMaritimeRoutingGraph {
             if (routes != null && !routes.isEmpty()) {
                 // Capital boost scales with connectivity degree and route efficiency
                 double connectivityFactor = Math.min(2.0, 1.0 + 0.05 * routes.size());
-                double currentCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                double currentCap = cell.getResourceCapitalOr(0.0);
                 cell.setResourceCapital(currentCap * (1.0 + 0.02 * connectivityFactor * (timeStepDays / 30.0)));
 
                 // Hydrodynamic friction reduction over active sea lanes
-                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+                double friction = cell.getMovementFrictionOr(1.0);
                 cell.setMovementFriction(Math.max(0.1, friction * 0.30));
             }
         }

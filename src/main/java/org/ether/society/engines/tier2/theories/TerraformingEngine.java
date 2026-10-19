@@ -60,14 +60,14 @@ public class TerraformingEngine {
             if (cell == null) continue;
 
             // Update cell temperature based on global terraforming radiative forcing
-            double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double currentTemp = cell.getTemperatureOr(15.0);
             cell.setTemperature(currentTemp + globalTempDelta);
 
             // Asteroid mining influx boosts local metal/mineral density
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (asteroidMiningFluxTonnesPerYear > 0 && pop > 1000) {
                 double mineralBoost = (asteroidMiningFluxTonnesPerYear / cells.size()) * 0.0001;
-                cell.setResourceMetal((cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0) + mineralBoost);
+                cell.setResourceMetal((cell.getResourceMetalOr(0.0)) + mineralBoost);
             }
         }
     }

@@ -60,19 +60,19 @@ public class MaritimeHighwayEngine {
                     || cell.getBiome() == Biome.DEEP_OCEAN
                     || (cell.getElevation() != null && cell.getElevation() <= 0);
 
-            double tempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double tempC = cell.getTemperatureOr(15.0);
 
             if (isMaritimeBasin && tempC > 0.0) {
                 // Coastal & maritime trade acceleration: buoyancy eliminates solid dry friction
-                double currentCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                double currentCap = cell.getResourceCapitalOr(0.0);
                 cell.setResourceCapital(currentCap * (1.0 + capitalBoostRate));
 
                 // Hydrodynamic friction reduction over open ice-free water
-                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+                double friction = cell.getMovementFrictionOr(1.0);
                 cell.setMovementFriction(Math.max(0.1, friction * frictionMultiplier));
             } else if (isMaritimeBasin && tempC <= 0.0) {
                 // Sub-zero sea ice increases friction for maritime navigation
-                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+                double friction = cell.getMovementFrictionOr(1.0);
                 cell.setMovementFriction(Math.min(20.0, friction * 1.50));
             }
         }

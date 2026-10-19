@@ -95,9 +95,9 @@ public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugi
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.35;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;
+            double gini = cell.getGiniIndexOr(0.35);
+            double tech = cell.getTechnologyLevelOr(1.0);
+            double capital = cell.getResourceCapitalOr(10.0);
 
             // Inclusiveness score: low Gini + high pluralism
             double inclusiveness = Math.clamp(1.0 - gini, 0.1, 0.9);

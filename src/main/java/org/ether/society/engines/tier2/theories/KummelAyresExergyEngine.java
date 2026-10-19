@@ -100,7 +100,7 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
             double capital = cell.getResourceCapital() != null ? Math.max(1.0, cell.getResourceCapital()) : 10.0;
@@ -111,7 +111,7 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
             double totalPrimaryWatts = powerPerCapitaWatts * pop;
 
             // Thermodynamic conversion efficiency: ranges from 5% (muscular/fire) to 40% (modern thermal cycle)
-            double techLevel = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double techLevel = cell.getTechnologyLevelOr(1.0);
             double etaThermo = Math.min(0.45, 0.05 + 0.05 * Math.log(1.0 + techLevel));
             double usefulExergy = Math.max(1.0, totalPrimaryWatts * etaThermo);
 

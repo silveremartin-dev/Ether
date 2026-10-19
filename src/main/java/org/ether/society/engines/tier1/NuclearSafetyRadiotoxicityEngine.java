@@ -87,14 +87,14 @@ public class NuclearSafetyRadiotoxicityEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
             if (tech < 4.0) continue; // Nuclear fission requires atomic age technology (tech >= 4.0)
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
+            double pollution = cell.getPollutionLevelOr(0.0);
 
             // Fission accident probability under high power flux without fusion
             if (powerPerCapita >= FISSION_POWER_THRESHOLD && powerPerCapita < FUSION_POWER_THRESHOLD) {

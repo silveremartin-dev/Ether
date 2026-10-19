@@ -49,7 +49,7 @@ public class KurzweilAcceleratingReturnsEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double currentTech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double currentTech = cell.getTechnologyLevelOr(0.0);
             // S-Curve Paradigm Shift Envelope: P(t) = K / (1 + exp(-beta * t))
             double paradigmCapacity = 10.0 / (1.0 + Math.exp(-0.1 * globalKnowledgeStock));
 

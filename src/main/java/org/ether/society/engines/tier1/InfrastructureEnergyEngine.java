@@ -36,14 +36,14 @@ public class InfrastructureEnergyEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double capital = cell.getResourceCapitalOr(0.0);
+            double tech = cell.getTechnologyLevelOr(0.0);
 
             // High capital & tech (Tech >= 2.5) builds paved roads & canals, lowering friction
             if (tech >= 2.5 && capital > 1000.0) {
                 pavedCells++;
                 double minFriction = 0.05; // Paved road / canal friction limit
-                double currentFriction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+                double currentFriction = cell.getMovementFrictionOr(1.0);
                 cell.setMovementFriction(Math.max(minFriction, currentFriction * 0.90));
             }
         }

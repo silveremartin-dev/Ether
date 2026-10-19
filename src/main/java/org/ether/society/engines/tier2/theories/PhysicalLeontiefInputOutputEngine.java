@@ -58,24 +58,24 @@ public class PhysicalLeontiefInputOutputEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double solar = cell.getEnergySolar() != null ? cell.getEnergySolar() : 0.0;
-            double wind = cell.getEnergyWind() != null ? cell.getEnergyWind() : 0.0;
-            double fire = cell.getEnergyFire() != null ? cell.getEnergyFire() : 0.0;
-            double coal = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
-            double oil = cell.getResourceOil() != null ? cell.getResourceOil() : 0.0;
-            double gas = cell.getResourceGas() != null ? cell.getResourceGas() : 0.0;
-            double uranium = cell.getResourceUranium() != null ? cell.getResourceUranium() : 0.0;
+            double solar = cell.getEnergySolarOr(0.0);
+            double wind = cell.getEnergyWindOr(0.0);
+            double fire = cell.getEnergyFireOr(0.0);
+            double coal = cell.getResourceCoalOr(0.0);
+            double oil = cell.getResourceOilOr(0.0);
+            double gas = cell.getResourceGasOr(0.0);
+            double uranium = cell.getResourceUraniumOr(0.0);
 
-            double currentCapital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            double currentMetal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
-            double currentWood = cell.getWoodResource() != null ? cell.getWoodResource() : 0.0;
-            double currentClay = cell.getResourceClay() != null ? cell.getResourceClay() : 0.0;
-            double currentFish = cell.getBiomassFish() != null ? cell.getBiomassFish() : 0.0;
-            double currentLivestock = cell.getBiomassLivestock() != null ? cell.getBiomassLivestock() : 0.0;
-            double currentRareEarths = cell.getResourceRareEarths() != null ? cell.getResourceRareEarths() : 0.0;
-            double currentPrecious = cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() : 0.0;
+            double currentCapital = cell.getResourceCapitalOr(0.0);
+            double currentMetal = cell.getResourceMetalOr(0.0);
+            double currentWood = cell.getWoodResourceOr(0.0);
+            double currentClay = cell.getResourceClayOr(0.0);
+            double currentFish = cell.getBiomassFishOr(0.0);
+            double currentLivestock = cell.getBiomassLivestockOr(0.0);
+            double currentRareEarths = cell.getResourceRareEarthsOr(0.0);
+            double currentPrecious = cell.getResourcePreciousMetalOr(0.0);
 
-            double techLevel = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double techLevel = cell.getTechnologyLevelOr(1.0);
 
             // 1. Material Entropy Spectrum Omega_mat(T): count active physical input channels
             int activeMaterialChannels = 0;

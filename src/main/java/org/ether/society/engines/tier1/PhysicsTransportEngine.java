@@ -75,7 +75,7 @@ public class PhysicsTransportEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop > 0) {
                 double workPerKgKm = calculateTransportWorkJoules(cell);
                 // 2 kg cargo per person per month scaled by dt
@@ -86,7 +86,7 @@ public class PhysicsTransportEngine {
 
                 // Deduct mechanical transport work in GJ from cell energetic labor capacity
                 double cellWorkGJ = cellWorkJoules / 1.0e9;
-                double curWork = cell.getResourceWork() != null ? cell.getResourceWork() : 0.0;
+                double curWork = cell.getResourceWorkOr(0.0);
                 cell.setResourceWork(Math.max(0.0, curWork - cellWorkGJ));
             }
         }

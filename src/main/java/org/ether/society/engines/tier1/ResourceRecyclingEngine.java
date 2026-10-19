@@ -55,11 +55,11 @@ public class ResourceRecyclingEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
+            double capital = cell.getResourceCapitalOr(0.0);
 
             double efficiency = calculateContinuousRecyclingDiscount(capital, tech);
             if (efficiency > 0.05) {

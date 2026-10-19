@@ -88,7 +88,7 @@ public class GlacialThermodynamicMeltEngine {
             Biome biome = cell.getBiome();
             boolean isGlacial = (biome == Biome.GLACIER || biome == Biome.SNOW || biome == Biome.TUNDRA
                     || (cell.getElevation() != null && cell.getElevation() > 2500.0));
-            double tempC = cell.getTemperature() != null ? cell.getTemperature() : 0.0;
+            double tempC = cell.getTemperatureOr(0.0);
 
             if (isGlacial && tempC > 0.0) {
                 double meltDepthM = calculateGlacialMeltDepthMeters(tempC, deltaYears);
@@ -105,7 +105,7 @@ public class GlacialThermodynamicMeltEngine {
                     }
 
                     // Release meltwater into local water resource
-                    double currentWater = cell.getWaterResource() != null ? cell.getWaterResource() : 500.0;
+                    double currentWater = cell.getWaterResourceOr(500.0);
                     cell.setWaterResource(Math.min(1000.0, currentWater + Math.min(100.0, meltDepthM * 10.0)));
                 }
             }

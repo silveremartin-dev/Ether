@@ -61,7 +61,7 @@ public class RenewableEnergyPhysicsEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double elev = cell.getElevationOr(0.0);
 
             // Wind speed increases with altitude & slope (v ~ 5.0 to 15.0 m/s)
             double windSpeed = 5.0 + Math.min(10.0, elev / 300.0);
@@ -70,7 +70,7 @@ public class RenewableEnergyPhysicsEngine {
             cell.setEnergyWind(betzWindPowerW);
 
             // Solar irradiance attenuated by latitude & optical depth
-            double latRad = Math.toRadians(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
+            double latRad = Math.toRadians(cell.getLatitudeOr(0.0));
             double solarIrradianceW = SOLAR_CONSTANT_W_PER_M2 * Math.max(0.1, Math.cos(latRad)) * 0.70; // 70% atmospheric transmittance
 
             cell.setEnergySolar(solarIrradianceW);

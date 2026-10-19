@@ -36,13 +36,13 @@ public class WarDiplomacyEngine {
         // Step 3: Apply state transitions and update local cell attributes
         if (c1 == null || c2 == null) return 1.0;
 
-        double baseFriction1 = c1.getMovementFriction() != null ? c1.getMovementFriction() : 1.0;
-        double baseFriction2 = c2.getMovementFriction() != null ? c2.getMovementFriction() : 1.0;
+        double baseFriction1 = c1.getMovementFrictionOr(1.0);
+        double baseFriction2 = c2.getMovementFrictionOr(1.0);
         double avgTerrainFriction = (baseFriction1 + baseFriction2) / 2.0;
 
         // Elevation gradient resistance
-        double elev1 = c1.getElevation() != null ? c1.getElevation() : 0.0;
-        double elev2 = c2.getElevation() != null ? c2.getElevation() : 0.0;
+        double elev1 = c1.getElevationOr(0.0);
+        double elev2 = c2.getElevationOr(0.0);
         double elevDiff = Math.abs(elev1 - elev2) / 500.0;
 
         // Sovereignty mask transition penalty
@@ -136,21 +136,21 @@ public class WarDiplomacyEngine {
      */
     private static void resolveBorderBattle(Polity aggressor, Polity defender, double borderFriction) {
         // Step 1: Aggregate military recruitment cohort (pop15to24)
-        long aggressorForce = aggressor.getTerritory().stream().filter(java.util.Objects::nonNull).mapToLong(c -> c.getPop15to24() != null ? c.getPop15to24() : 0).sum();
-        long defenderForce = defender.getTerritory().stream().filter(java.util.Objects::nonNull).mapToLong(c -> c.getPop15to24() != null ? c.getPop15to24() : 0).sum();
+        long aggressorForce = aggressor.getTerritory().stream().filter(java.util.Objects::nonNull).mapToLong(c -> c.getPop15to24Or(0)).sum();
+        long defenderForce = defender.getTerritory().stream().filter(java.util.Objects::nonNull).mapToLong(c -> c.getPop15to24Or(0)).sum();
 
         if (aggressorForce <= 0 || defenderForce <= 0) return;
 
         // Step 2: Aggregate physical armament & fortification capital (K), cavalry/fuel mobility, and metallurgical tech
-        double aggCapital = aggressor.getTerritory().stream().filter(java.util.Objects::nonNull).mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).sum();
-        double defCapital = defender.getTerritory().stream().filter(java.util.Objects::nonNull).mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).sum();
+        double aggCapital = aggressor.getTerritory().stream().filter(java.util.Objects::nonNull).mapToDouble(c -> c.getResourceCapitalOr(0.0)).sum();
+        double defCapital = defender.getTerritory().stream().filter(java.util.Objects::nonNull).mapToDouble(c -> c.getResourceCapitalOr(0.0)).sum();
 
         double aggMobility = aggressor.getTerritory().stream().filter(java.util.Objects::nonNull).mapToDouble(c ->
-                (c.getBiomassLivestock() != null ? c.getBiomassLivestock() : 0.0) * 0.2
-                + (c.getResourceOil() != null ? c.getResourceOil() : 0.0) * 0.5).sum();
+                (c.getBiomassLivestockOr(0.0)) * 0.2
+                + (c.getResourceOilOr(0.0)) * 0.5).sum();
         double defMobility = defender.getTerritory().stream().filter(java.util.Objects::nonNull).mapToDouble(c ->
-                (c.getBiomassLivestock() != null ? c.getBiomassLivestock() : 0.0) * 0.2
-                + (c.getResourceOil() != null ? c.getResourceOil() : 0.0) * 0.5).sum();
+                (c.getBiomassLivestockOr(0.0)) * 0.2
+                + (c.getResourceOilOr(0.0)) * 0.5).sum();
 
         // Armament multiplier per soldier (bronze/iron/steel weapons, armor, siege engines)
         double aggArmamentFactor = 1.0 + Math.min(2.5, Math.log1p(aggCapital / Math.max(1.0, aggressorForce)));
@@ -195,14 +195,14 @@ public class WarDiplomacyEngine {
 
                 // War casualties in 15-24 military cohort scale with boundary friction resistance
                 double casualtyRate = Math.clamp(0.15 * Math.sqrt(safeFriction), 0.10, 0.45);
-                int curPop15to24 = conqueredCell.getPop15to24() != null ? conqueredCell.getPop15to24() : 0;
-                int curPop = conqueredCell.getPopulation() != null ? conqueredCell.getPopulation() : 0;
+                int curPop15to24 = conqueredCell.getPop15to24Or(0);
+                int curPop = conqueredCell.getPopulationOr(0);
                 int casualties = (int) (curPop15to24 * casualtyRate);
                 conqueredCell.setPop15to24(Math.max(0, curPop15to24 - casualties));
                 conqueredCell.setPopulation(Math.max(0, curPop - casualties));
 
                 // Collateral infrastructure & weapon destruction on the battlefield cell
-                double cellCap = conqueredCell.getResourceCapital() != null ? conqueredCell.getResourceCapital() : 0.0;
+                double cellCap = conqueredCell.getResourceCapitalOr(0.0);
                 conqueredCell.setResourceCapital(Math.max(0.0, cellCap * (1.0 - 0.25 * casualtyRate)));
 
                 logger.info("War Resolution: Nation '{}' conquered cell {} from Nation '{}' (Boundary Friction: {}). Military casualties: {}.",

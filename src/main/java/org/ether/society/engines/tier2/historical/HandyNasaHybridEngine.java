@@ -40,7 +40,7 @@ public class HandyNasaHybridEngine {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double pop = cell.getPopulation();
-            double biomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 100.0;
+            double biomass = cell.getBiomassNaturalOr(100.0);
 
             // HANDY hypothesis: high population depletes natural biomass carrying capacity
             double depletionRate = 0.0001 * pop * deltaYears;

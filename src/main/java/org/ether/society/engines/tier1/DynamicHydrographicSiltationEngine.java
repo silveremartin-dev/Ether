@@ -94,9 +94,9 @@ public class DynamicHydrographicSiltationEngine {
         double totalSiltDepositedM = 0.0;
 
         for (H3Cell cell : estuaryCells) {
-            double tempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
-            double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
-            double naturalVeg = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 500.0;
+            double tempC = cell.getTemperatureOr(15.0);
+            double rainfall = cell.getRainfallOr(500.0);
+            double naturalVeg = cell.getBiomassNaturalOr(500.0);
 
             // Erosion index based on rainfall and canopy/vegetation cover
             double erosionIndex = Math.max(0.1, (rainfall / 1000.0) * (1.0 - Math.clamp(naturalVeg / 1000.0, 0.0, 1.0)));
@@ -107,12 +107,12 @@ public class DynamicHydrographicSiltationEngine {
             // Annual silt deposition depth (m/year) scaled by Stokes settling kinetics and erosion index
             // Settling velocity ~ 0.00072 m/s -> scaled to realistic geological deltaic accretion rate (~1-3 mm/year)
             double siltationIncrement = erosionIndex * (settlingVelocity * 2.0) * deltaYears;
-            double curElev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double curElev = cell.getElevationOr(0.0);
             cell.setElevation(curElev + siltationIncrement);
             totalSiltDepositedM += siltationIncrement;
 
             // Movement friction penalty: Harbor siltation increases maritime navigation cost
-            double currentFriction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+            double currentFriction = cell.getMovementFrictionOr(1.0);
             if (siltationIncrement > 0.0005) {
                 double newFriction = Math.min(15.0, currentFriction + (siltationIncrement * 10.0));
                 cell.setMovementFriction(newFriction);
@@ -123,7 +123,7 @@ public class DynamicHydrographicSiltationEngine {
         if (!upstreamCells.isEmpty() && totalSiltDepositedM > 0.0) {
             double upstreamErosionPerCell = totalSiltDepositedM / upstreamCells.size();
             for (H3Cell upCell : upstreamCells) {
-                double upElev = upCell.getElevation() != null ? upCell.getElevation() : 0.0;
+                double upElev = upCell.getElevationOr(0.0);
                 upCell.setElevation(Math.max(0.0, upElev - upstreamErosionPerCell));
             }
         }

@@ -58,9 +58,9 @@ public class MegafaunaEcosystemEngine {
             boolean isOpenGrassland = (biome == Biome.PLAINS);
 
             if (isCryosphericSteppe || isOpenGrassland) {
-                int humanPop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-                double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 1.0;
-                double domesticLivestock = cell.getBiomassLivestock() != null ? cell.getBiomassLivestock() : 0.0;
+                int humanPop = cell.getPopulationOr(0);
+                double naturalBiomass = cell.getBiomassNaturalOr(1.0);
+                double domesticLivestock = cell.getBiomassLivestockOr(0.0);
 
                 // Universal substitution: pastoral/agricultural societies with high domestic livestock
                 // rely less on wild megafauna hunting, whereas societies without livestock exert full hunting pressure
@@ -77,7 +77,7 @@ public class MegafaunaEcosystemEngine {
                     double annualDepletionRate = Math.min(0.20, huntingPressureRatio * 0.02);
                     double stepDepletion = Math.min(0.20, annualDepletionRate * safeDt);
                     cell.setBiomassNatural(Math.max(10.0, naturalBiomass * (1.0 - stepDepletion)));
-                    double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 15.0;
+                    double soc = cell.getSoilOrganicCarbonOr(15.0);
                     double updatedSoc = Math.max(2.0, soc - (stepDepletion * 0.5));
                     cell.setSoilOrganicCarbon(updatedSoc);
 

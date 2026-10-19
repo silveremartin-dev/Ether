@@ -247,7 +247,7 @@ public class ProceduralPopulationEngine {
             double envSuit = calculateBiomeAndElevSuitability(cell, techLevel);
 
             // 2. Temperature comfort suitability
-            double cellTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double cellTemp = cell.getTemperatureOr(15.0);
             double tempSuit = calculateTemperatureSuitability(cellTemp, techLevel);
 
             // 3. Freshwater & River proximity constraint (Tech dependent!)
@@ -296,7 +296,7 @@ public class ProceduralPopulationEngine {
         }
 
         Biome b = cell.getBiome();
-        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+        double elev = cell.getElevationOr(0.0);
 
         // Biome base score
         if (b == null) return 0.1;
@@ -410,7 +410,7 @@ public class ProceduralPopulationEngine {
         // Step 3: Apply state transitions and update local cell attributes
         if (cell == null) return 1.0;
         Biome b = cell.getBiome();
-        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+        double elev = cell.getElevationOr(0.0);
         if (b == Biome.BEACH || (elev > 0 && elev <= 25.0 && cell.getWaterResource() != null && cell.getWaterResource() > 0.6)) {
             return 2.5; // High-density intertidal shellfishery & marine foraging boost
         }
@@ -450,12 +450,12 @@ public class ProceduralPopulationEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
-        double accessibleAquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
+        double water = cell.getWaterResourceOr(0.0);
+        double accessibleAquifer = cell.getAccessibleAquiferOr(0.0);
         Biome b = cell.getBiome();
 
-        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
-        double rain = cell.getRainfall() != null ? cell.getRainfall() : 0.0;
+        double elev = cell.getElevationOr(0.0);
+        double rain = cell.getRainfallOr(0.0);
         boolean isCoastal = (b == Biome.BEACH || b == Biome.PLAINS || elev < 50.0);
         boolean isRiverValley = (b == Biome.PLAINS && rain > 0.4) || water > 400.0;
 
@@ -486,9 +486,9 @@ public class ProceduralPopulationEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
-        double wood = cell.getWoodResource() != null ? cell.getWoodResource() : 0.0;
-        double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
+        double food = cell.getFoodResourceOr(0.0);
+        double wood = cell.getWoodResourceOr(0.0);
+        double metal = cell.getResourceMetalOr(0.0);
 
         double bonus = 1.0 + (food / 2000.0) + (wood / 3000.0) + (metal / 4000.0);
         return Math.min(3.0, bonus);
@@ -503,11 +503,11 @@ public class ProceduralPopulationEngine {
         // Step 3: Apply state transitions and update local cell attributes
         if (pattern == null) return 1.0;
         Biome b = cell.getBiome();
-        double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
-        double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
-        double lng = cell.getLongitude() != null ? cell.getLongitude() : 0.0;
-        double water = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
-        double aquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
+        double elev = cell.getElevationOr(0.0);
+        double lat = cell.getLatitudeOr(0.0);
+        double lng = cell.getLongitudeOr(0.0);
+        double water = cell.getWaterResourceOr(0.0);
+        double aquifer = cell.getAccessibleAquiferOr(0.0);
 
         return switch (pattern) {
             case "UNBIASED_NATURAL", "UNBIASED", "NONE", "NATURAL_EQUILIBRIUM" -> 1.0;
@@ -618,7 +618,7 @@ public class ProceduralPopulationEngine {
                     .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
                     .max(Comparator.comparingInt(H3Cell::getPopulation))
                     .orElse(landCells.get(0));
-            long curTopPop = topCell.getPopulation() != null ? topCell.getPopulation() : 0L;
+            long curTopPop = topCell.getPopulationOr(0);
             long newTopPop = Math.clamp(curTopPop + diff, 0L, (long) Integer.MAX_VALUE);
             topCell.setPopulation((int) newTopPop);
             topCell.setBiomassHuman((double) newTopPop);
@@ -628,7 +628,7 @@ public class ProceduralPopulationEngine {
         // Second pass: Spatialization of Physical Capital K(x), Food Reserves F(x), Energy E(x), and Info I(x)
         double baseCapital = capitalPerCapita;
         for (H3Cell cell : landCells) {
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             double normDensity = maxCellPop > 0 ? ((double) pop / (double) maxCellPop) : 0.0; // 0.0 to 1.0
 
             // 1. Spatial Physical Capital K(x) [kg/capita]

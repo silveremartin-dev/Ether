@@ -88,8 +88,8 @@ public class AlbedoClimateEngine {
 
         java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
             if (cell == null) return;
-            double lat = cell.getLatitude() != null ? cell.getLatitude() : 0.0;
-            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double lat = cell.getLatitudeOr(0.0);
+            double elev = cell.getElevationOr(0.0);
 
             if (elev <= 0 || cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) {
                 cell.setDynamicAlbedo(0.06);
@@ -104,11 +104,11 @@ public class AlbedoClimateEngine {
 
             if (continuousMonsoonForcing > 0.05 && cell.getBiome() == Biome.DESERT) {
                 greenSaharaCounter.incrementAndGet();
-                double curRain = cell.getRainfall() != null ? cell.getRainfall() : 0.0;
-                double curAquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
-                double curWater = cell.getWaterResource() != null ? cell.getWaterResource() : 0.0;
-                double curSoc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 0.0;
-                double curBioNat = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
+                double curRain = cell.getRainfallOr(0.0);
+                double curAquifer = cell.getAccessibleAquiferOr(0.0);
+                double curWater = cell.getWaterResourceOr(0.0);
+                double curSoc = cell.getSoilOrganicCarbonOr(0.0);
+                double curBioNat = cell.getBiomassNaturalOr(0.0);
 
                 cell.setRainfall(Math.min(1200.0, curRain + 500.0 * continuousMonsoonForcing * dtSafe));
                 cell.setAccessibleAquifer(Math.min(15000.0, curAquifer + 2000.0 * continuousMonsoonForcing * dtSafe));
@@ -123,7 +123,7 @@ public class AlbedoClimateEngine {
 
             // ── 2. Budyko-Sellers 1-D Energy Balance Radiative Equilibrium ──────
             double albedo = cell.calculateDynamicAlbedo();
-            double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double currentTemp = cell.getTemperatureOr(15.0);
 
             double equilibriumTempAnomaly = (0.30 - albedo) * 6.0 + volcanicCoolingOffset;
             double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
@@ -133,14 +133,14 @@ public class AlbedoClimateEngine {
             cell.setTemperature(Math.max(-250.0, Math.min(600.0, updatedTemp)));
 
             // ── 3. Megastorm / Flood Disaster Impact ──────────────────────────
-            double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+            double rain = cell.getRainfallOr(500.0);
             if (rain > 900.0 && elev < 30.0 && cell.getBiome() == Biome.BEACH) {
                 floodDisasterCounter.incrementAndGet();
-                double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                double curCap = cell.getResourceCapitalOr(0.0);
                 // Continuous exponential storm damage calibrated so 1/12 yr equals 0.70 retention if unscaled, or bounded continuous rate
                 double capRetention = dtYears >= 0.08 && dtYears <= 0.09 ? 0.70 : Math.exp(-0.356675 * (dtSafe * 12.0));
                 cell.setResourceCapital(curCap * capRetention);
-                double curWater = cell.getWaterResource() != null ? cell.getWaterResource() : 100.0;
+                double curWater = cell.getWaterResourceOr(100.0);
                 double waterRetention = dtYears >= 0.08 && dtYears <= 0.09 ? 0.50 : Math.exp(-0.693147 * (dtSafe * 12.0));
                 cell.setWaterResource(Math.max(50.0, curWater * waterRetention));
             }

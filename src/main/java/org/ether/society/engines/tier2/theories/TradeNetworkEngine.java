@@ -237,18 +237,18 @@ public class TradeNetworkEngine {
         double bulkRetention = Math.clamp(0.95 + 0.01 * techLevel, 0.95, 0.999);
 
         // Monetary lubrication: circulating bullion/specie reduces barter friction and enhances conductance
-        double origPrecious = orig != null && orig.getResourcePreciousMetal() != null ? orig.getResourcePreciousMetal() : 0.0;
-        double destPrecious = dest != null && dest.getResourcePreciousMetal() != null ? dest.getResourcePreciousMetal() : 0.0;
+        double origPrecious = orig != null ? orig.getResourcePreciousMetalOr(0.0) : 0.0;
+        double destPrecious = dest != null ? dest.getResourcePreciousMetalOr(0.0) : 0.0;
         double monetaryLubrication = 1.0 + Math.min(1.5, Math.log1p(origPrecious + destPrecious) * 0.25);
         double conductance = Math.min(1.0, (1.0 / friction) * monetaryLubrication);
 
         // 1. Bilateral Physical Commodity Arbitrage between Origin and Destination Hubs
-        int origPop = orig != null && orig.getPopulation() != null ? orig.getPopulation() : 0;
-        int destPop = dest != null && dest.getPopulation() != null ? dest.getPopulation() : 0;
+        int origPop = orig != null ? orig.getPopulationOr(0) : 0;
+        int destPop = dest != null ? dest.getPopulationOr(0) : 0;
         if (orig != null && dest != null && origPop > 0 && destPop > 0) {
             // A. Physical Food Arbitrage (Ricardian Grain/Fish Trade):
-            double origFood = orig.getFoodResource() != null ? orig.getFoodResource() : 0.0;
-            double destFood = dest.getFoodResource() != null ? dest.getFoodResource() : 0.0;
+            double origFood = orig.getFoodResourceOr(0.0);
+            double destFood = dest.getFoodResourceOr(0.0);
             // Annual subsistence metabolic baseline in GJ (age pyramid, labor intensity & hominin species)
             double origNeed = orig.calculateAnnualMetabolicNeedGJ();
             double destNeed = dest.calculateAnnualMetabolicNeedGJ();
@@ -275,8 +275,8 @@ public class TradeNetworkEngine {
             }
 
             // B. Physical Metal and Tool Arbitrage:
-            double origMetal = orig.getResourceMetal() != null ? orig.getResourceMetal() : 0.0;
-            double destMetal = dest.getResourceMetal() != null ? dest.getResourceMetal() : 0.0;
+            double origMetal = orig.getResourceMetalOr(0.0);
+            double destMetal = dest.getResourceMetalOr(0.0);
             if (origMetal > destMetal + 10.0) {
                 double metalTrade = Math.min(origMetal * 0.20, (origMetal - destMetal) * 0.25) * conductance * dtYears;
                 if (metalTrade > 0.0) {
@@ -295,8 +295,8 @@ public class TradeNetworkEngine {
 
             // B2. Physical Fossil Energy Arbitrage (Coal, Hydrocarbons, Natural Gas)
             if (techLevel >= 2.8) {
-                double origCoal = orig.getResourceCoal() != null ? orig.getResourceCoal() : 0.0;
-                double destCoal = dest.getResourceCoal() != null ? dest.getResourceCoal() : 0.0;
+                double origCoal = orig.getResourceCoalOr(0.0);
+                double destCoal = dest.getResourceCoalOr(0.0);
                 if (origCoal > destCoal + 50.0) {
                     double coalTrade = Math.min(origCoal * 0.15, (origCoal - destCoal) * 0.20) * conductance * dtYears;
                     orig.setResourceCoal(Math.max(0.0, origCoal - coalTrade));
@@ -307,8 +307,8 @@ public class TradeNetworkEngine {
                     orig.setResourceCoal(origCoal + coalTrade * bulkRetention);
                 }
 
-                double origOil = orig.getResourceOil() != null ? orig.getResourceOil() : 0.0;
-                double destOil = dest.getResourceOil() != null ? dest.getResourceOil() : 0.0;
+                double origOil = orig.getResourceOilOr(0.0);
+                double destOil = dest.getResourceOilOr(0.0);
                 if (origOil > destOil + 30.0) {
                     double oilTrade = Math.min(origOil * 0.20, (origOil - destOil) * 0.25) * conductance * dtYears;
                     orig.setResourceOil(Math.max(0.0, origOil - oilTrade));
@@ -319,8 +319,8 @@ public class TradeNetworkEngine {
                     orig.setResourceOil(origOil + oilTrade * bulkRetention);
                 }
 
-                double origGas = orig.getResourceGas() != null ? orig.getResourceGas() : 0.0;
-                double destGas = dest.getResourceGas() != null ? dest.getResourceGas() : 0.0;
+                double origGas = orig.getResourceGasOr(0.0);
+                double destGas = dest.getResourceGasOr(0.0);
                 if (origGas > destGas + 25.0) {
                     double gasTrade = Math.min(origGas * 0.15, (origGas - destGas) * 0.20) * conductance * dtYears;
                     orig.setResourceGas(Math.max(0.0, origGas - gasTrade));
@@ -352,8 +352,8 @@ public class TradeNetworkEngine {
 
             // B4. Modern Critical Minerals & Rare Earth Elements Arbitrage (tech >= 4.0)
             if (techLevel >= 4.0) {
-                double origRee = orig.getResourceRareEarths() != null ? orig.getResourceRareEarths() : 0.0;
-                double destRee = dest.getResourceRareEarths() != null ? dest.getResourceRareEarths() : 0.0;
+                double origRee = orig.getResourceRareEarthsOr(0.0);
+                double destRee = dest.getResourceRareEarthsOr(0.0);
                 if (origRee > destRee + 1.0) {
                     double reeTrade = Math.min(origRee * 0.20, (origRee - destRee) * 0.25) * conductance * dtYears;
                     orig.setResourceRareEarths(Math.max(0.0, origRee - reeTrade));
@@ -366,8 +366,8 @@ public class TradeNetworkEngine {
             }
 
             // C. Physical Capital Tool Arbitrage (Intensive K/N Rebalancing):
-            double origCap = orig.getResourceCapital() != null ? orig.getResourceCapital() : 0.0;
-            double destCap = dest.getResourceCapital() != null ? dest.getResourceCapital() : 0.0;
+            double origCap = orig.getResourceCapitalOr(0.0);
+            double destCap = dest.getResourceCapitalOr(0.0);
             double origCapPerCap = origCap / Math.max(1.0, origPop);
             double destCapPerCap = destCap / Math.max(1.0, destPop);
             if (origCapPerCap > destCapPerCap * 1.3 && origCap > 50.0) {
@@ -401,24 +401,24 @@ public class TradeNetworkEngine {
         double perCellSpillover = routeValue / Math.sqrt(pathLen);
 
         for (H3Cell cell : route.pathCells()) {
-            int cellPop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int cellPop = cell.getPopulationOr(0);
             if (cellPop <= 0) continue;
 
             // Merchant capital accumulation along trade route bounded by local labor absorption capacity
-            double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double curCap = cell.getResourceCapitalOr(0.0);
             double maxMerchantCap = cellPop * 15.0 * Math.max(1.0, techLevel);
             if (curCap < maxMerchantCap) {
                 cell.setResourceCapital(Math.min(maxMerchantCap, curCap + perCellSpillover * 0.5));
             }
 
             // Technology diffusion along trade route
-            double curTech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double curTech = cell.getTechnologyLevelOr(1.0);
             if (curTech < techLevel) {
                 cell.setTechnologyLevel(Math.min(techLevel, curTech + 0.03 * dtYears));
             }
 
             // Gini index slightly increases in trading hubs due to merchant wealth accumulation
-            double curGini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.3;
+            double curGini = cell.getGiniIndexOr(0.3);
             cell.setGiniIndex(Math.clamp(curGini + 0.005 * dtYears, 0.15, 0.85));
         }
     }
@@ -475,16 +475,16 @@ public class TradeNetworkEngine {
                     double tollRatePerTransit = 1.5 * Math.max(0.5, 1.0 + (cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() * 0.1 : 0.0));
                     double transitToll = rawScore * frequency * tollRatePerTransit * dtYears;
 
-                    double currentTollRev = cell.getTransitTollRevenue() != null ? cell.getTransitTollRevenue() : 0.0;
+                    double currentTollRev = cell.getTransitTollRevenueOr(0.0);
                     cell.setTransitTollRevenue(currentTollRev + transitToll);
 
                     // Transit toll accrues directly into productive capital of the controlling cell
-                    double currentCapital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                    double currentCapital = cell.getResourceCapitalOr(0.0);
                     cell.setResourceCapital(currentCapital + transitToll);
                 }
             } else {
                 // Graceful decay of choke point score when trade routes shift elsewhere
-                double currentScore = cell.getChokePointScore() != null ? cell.getChokePointScore() : 0.0;
+                double currentScore = cell.getChokePointScoreOr(0.0);
                 if (currentScore > 0.0) {
                     double decayed = currentScore * 0.90;
                     if (decayed > 0.01) {

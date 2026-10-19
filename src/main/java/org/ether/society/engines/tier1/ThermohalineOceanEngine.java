@@ -56,7 +56,7 @@ public class ThermohalineOceanEngine {
 
             // AMOC collapse cooling shock on high latitude cells (> 45° latitude)
             if (amocCollapsed && cell.getLatitude() != null && Math.abs(cell.getLatitude()) > 45.0) {
-                double currentTemp = cell.getTemperature() != null ? cell.getTemperature() : 10.0;
+                double currentTemp = cell.getTemperatureOr(10.0);
                 cell.setTemperature(currentTemp - 8.0); // 8°C thermal drop
             }
         }

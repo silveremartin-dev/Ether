@@ -100,16 +100,16 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
 
         double meanCapital = cells.stream()
                 .filter(java.util.Objects::nonNull)
-                .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0)
+                .mapToDouble(c -> c.getResourceCapitalOr(0.0))
                 .average().orElse(10.0);
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;
-            double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+            double capital = cell.getResourceCapitalOr(10.0);
+            double friction = cell.getMovementFrictionOr(1.0);
 
             // Core hub advantage: high local market access + low transport friction -> capital inflow
             double accessibilityIndex = (pop * 0.001) / Math.max(0.2, friction);

@@ -47,7 +47,7 @@ public class OreGradeThermodynamicsEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double currentMetalStock = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
+            double currentMetalStock = cell.getResourceMetalOr(0.0);
             if (currentMetalStock > 0) {
                 // Ore concentration decreases as cumulative extraction proceeds
                 double oreConcentration = Math.max(minOreConcentrationFloor, referenceOreConcentration * (currentMetalStock / 100.0));

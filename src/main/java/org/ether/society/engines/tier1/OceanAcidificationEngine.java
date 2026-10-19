@@ -81,13 +81,13 @@ public class OceanAcidificationEngine {
             Biome biome = cell.getBiome();
             if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH) {
                 impactedCells++;
-                double tempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+                double tempC = cell.getTemperatureOr(15.0);
                 double henrySolubility = calculateHenrySolubility(tempC);
 
                 // Colder polar waters absorb more CO2 and acidify faster
                 double polarAcidificationMultiplier = henrySolubility / HENRY_K0_CO2;
 
-                double fish = cell.getBiomassFish() != null ? cell.getBiomassFish() : 500.0;
+                double fish = cell.getBiomassFishOr(500.0);
                 // Acidification & coral reef degradation reduces fish nursery capacity
                 double updatedFish = Math.max(0.0, fish * (1.0 - 0.05 * acidificationFactor * polarAcidificationMultiplier));
                 cell.setBiomassFish(updatedFish);

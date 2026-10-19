@@ -96,19 +96,19 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop < 100) continue;
 
             double normalizedPop = Math.max(1.0, (double) pop / refPop);
 
             // Super-linear capital & innovation output
             double superlinearFactor = Math.pow(normalizedPop, SUPERLINEAR_EXPONENT - 1.0); // N^0.15 boost per capita
-            double currentCapital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;
+            double currentCapital = cell.getResourceCapitalOr(10.0);
             cell.setResourceCapital(currentCapital + (currentCapital * 0.02 * superlinearFactor * deltaYears));
 
             // Sub-linear infrastructure maintenance cost efficiency
             double sublinearFactor = Math.pow(normalizedPop, SUBLINEAR_EXPONENT - 1.0); // N^-0.15 savings per capita
-            double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+            double friction = cell.getMovementFrictionOr(1.0);
             // High density reduces relative movement friction due to denser transport networks
             cell.setMovementFriction(Math.max(0.5, friction * (1.0 - 0.01 * sublinearFactor * deltaYears)));
         }

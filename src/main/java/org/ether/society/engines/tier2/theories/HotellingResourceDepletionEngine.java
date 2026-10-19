@@ -97,10 +97,10 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double metalDeposit = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
+            double metalDeposit = cell.getResourceMetalOr(0.0);
             if (metalDeposit <= 5.0) continue;
 
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             double industrialDemand = Math.max(1.0, pop * 0.02);
 
             // Deplete ore deposit based on extraction demand
@@ -111,7 +111,7 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
             double remainingFraction = Math.max(0.01, (metalDeposit - extraction) / (metalDeposit + 100.0));
             double costMultiplier = Math.pow(1.0 / remainingFraction, 0.5);
 
-            double currentCapital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;
+            double currentCapital = cell.getResourceCapitalOr(10.0);
             // High resource rents increase local capital accumulation in mining hub
             cell.setResourceCapital(currentCapital + (extraction * 2.0 * costMultiplier));
         }

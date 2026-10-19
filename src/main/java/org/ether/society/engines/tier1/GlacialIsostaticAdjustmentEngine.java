@@ -71,7 +71,7 @@ public class GlacialIsostaticAdjustmentEngine {
             Double elevation = cell.getElevation();
             if (elevation == null) continue;
 
-            double iceThickness = cell.getIceSheetThicknessMeters() != null ? cell.getIceSheetThicknessMeters() : 0.0;
+            double iceThickness = cell.getIceSheetThicknessMetersOr(0.0);
             double targetDeflection = calculateEquilibriumDeflectionMeters(iceThickness);
 
             // Isostatic relaxation towards target equilibrium

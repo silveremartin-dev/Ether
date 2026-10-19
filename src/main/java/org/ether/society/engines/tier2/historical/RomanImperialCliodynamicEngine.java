@@ -54,7 +54,7 @@ public class RomanImperialCliodynamicEngine {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             // Universal Imperial Overstretch & Pre-Industrial Urban Mortality Law (no hardcoded GPS bounding box):
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 500.0;
+            double capital = cell.getResourceCapitalOr(500.0);
             double pop = cell.getPopulation();
 
             // Administrative friction quadratic penalty O(R^2)
@@ -67,7 +67,7 @@ public class RomanImperialCliodynamicEngine {
 
             // Pre-modern urban mortality sink (crowding + sanitation/water contamination) dampens urban lifespan
             if (pop > 20000) {
-                cell.setLifespan(Math.max(25.0, (cell.getLifespan() != null ? cell.getLifespan() : 35.0) - 0.2 * deltaYears));
+                cell.setLifespan(Math.max(25.0, (cell.getLifespanOr(35.0)) - 0.2 * deltaYears));
             }
         }
     }

@@ -48,18 +48,18 @@ public class TrophicEcosystemEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
-            double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
+            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
 
             // Rewilding effect: Megafauna trampling snow increases winter soil cooling,
             // preserving permafrost and sequestering Soil Organic Carbon (SOC) in cold/periglacial biomes.
-            double temp = cell.getTemperature() != null ? cell.getTemperature() : 10.0;
+            double temp = cell.getTemperatureOr(10.0);
             double absLat = cell.getLatitude() != null ? Math.abs(cell.getLatitude()) : 0.0;
             if (pleistoceneRewildingActive && (temp <= 4.0 || absLat > 45.0)) {
-                double SOC = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 0.0;
+                double SOC = cell.getSoilOrganicCarbonOr(0.0);
                 cell.setSoilOrganicCarbon(SOC + megafaunaDensityPerKm2 * 0.05 * deltaYears);
 
                 // Slight albedo increase due to grassland maintenance vs dark shrub encroachment
-                double albedo = cell.getDynamicAlbedo() != null ? cell.getDynamicAlbedo() : 0.30;
+                double albedo = cell.getDynamicAlbedoOr(0.30);
                 cell.setDynamicAlbedo(Math.min(0.80, albedo + 0.001 * megafaunaDensityPerKm2));
             }
 

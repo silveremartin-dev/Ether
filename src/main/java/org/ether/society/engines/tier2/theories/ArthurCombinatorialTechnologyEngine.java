@@ -91,11 +91,11 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop < 100) continue;
 
             double tech = cell.getTechnologyLevel() != null ? Math.max(1.0, cell.getTechnologyLevel()) : 1.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;
+            double capital = cell.getResourceCapitalOr(10.0);
 
             // Combinatorial innovation rate scales super-linearly with existing tech primitives (Arthur 2009)
             double rAndDIntensity = Math.clamp(capital / Math.max(10.0, pop * 0.05), 0.0, 5.0);

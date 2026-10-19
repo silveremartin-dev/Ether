@@ -51,7 +51,7 @@ public class PermafrostThawEngine {
                 totalMethaneOutgassing += methaneRelease;
 
                 // Ground thaw converts tundra to wetland / taiga, boosting soil organic carbon loss
-                double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;
+                double soc = cell.getSoilOrganicCarbonOr(20.0);
                 cell.setSoilOrganicCarbon(Math.max(5.0, soc - 0.2));
             }
         }

@@ -116,7 +116,7 @@ public class ThermohalineStommelAMOCEngine {
 
             // North Atlantic & Europe region: Lat 40°N to 75°N, Lng -60° to +40°
             if (lat >= 40.0 && lat <= 75.0 && lng >= -60.0 && lng <= 40.0) {
-                double baseTemp = cell.getTemperature() != null ? cell.getTemperature() : 10.0;
+                double baseTemp = cell.getTemperatureOr(10.0);
                 double regionalShift = state.northAtlanticCoolingShiftC() * Math.min(1.0, (lat - 35.0) / 25.0);
                 cell.setTemperature(baseTemp + regionalShift * 0.05);
             }

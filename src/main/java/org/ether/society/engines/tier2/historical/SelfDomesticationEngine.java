@@ -42,7 +42,7 @@ public class SelfDomesticationEngine {
             double popDensity = cell.getPopulation() / 1000.0;
             // High social density accelerates self-domestication, reducing internal violence
             if (popDensity > 1.0) {
-                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+                double tech = cell.getTechnologyLevelOr(1.0);
                 // Boost technological/linguistic learning rate via grandmother effect & prolonged childhood
                 cell.setTechnologyLevel(tech + 0.002 * Math.log10(1.0 + popDensity) * deltaYears);
             }

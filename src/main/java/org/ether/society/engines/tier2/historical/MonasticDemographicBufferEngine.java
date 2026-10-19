@@ -41,7 +41,7 @@ public class MonasticDemographicBufferEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+            double food = cell.getFoodResourceOr(0.0);
             double pop = cell.getPopulation();
 
             // When food per capita drops below threshold, monastic vocation increases to buffer fertility

@@ -129,7 +129,7 @@ public class MilankovitchOrbitalEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double baseTemp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double baseTemp = cell.getTemperatureOr(15.0);
             double latFactor = Math.cos(Math.toRadians(cell.getLatitude()));
             // Polar amplification: higher latitudes experience greater orbital temperature shifts
             double localShift = globalTempShiftC * (0.5 + 1.0 * (1.0 - latFactor));

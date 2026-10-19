@@ -52,12 +52,12 @@ public class DeforestationErosionEngine {
 
         java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
             if (cell == null) return;
-            double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 500.0;
+            double naturalBiomass = cell.getBiomassNaturalOr(500.0);
             double woodBiomass = cell.getWoodResource() != null ? (cell.getWoodResource() / Math.max(0.01, areaScale)) : naturalBiomass;
             double effectiveCanopy = Math.max(naturalBiomass, woodBiomass);
-            double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 20.0;
-            double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
-            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double soc = cell.getSoilOrganicCarbonOr(20.0);
+            double rain = cell.getRainfallOr(500.0);
+            double elev = cell.getElevationOr(0.0);
 
             // Severe deforestation on sloped terrain with high rainfall causes erosion
             if (effectiveCanopy < canopyThreshold && elev > 200.0 && rain > 400.0) {

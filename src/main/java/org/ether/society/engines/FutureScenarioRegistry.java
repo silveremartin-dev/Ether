@@ -81,17 +81,17 @@ public class FutureScenarioRegistry {
         for (H3Cell cell : cells) {
             if (preset.id().equals("BAU_SSP585")) {
                 // High CO2 greenhouse forcing (+4.5°C) & high initial pollution
-                cell.setTemperature((cell.getTemperature() != null ? cell.getTemperature() : 15.0) + 4.5);
+                cell.setTemperature((cell.getTemperatureOr(15.0)) + 4.5);
                 cell.setPollutionLevel(2000.0);
             } else if (preset.id().equals("TECH_SINGULARITY")) {
                 // High energy grid capability (50,000 W/capita)
-                cell.setResourceCapital((cell.getResourceCapital() != null ? cell.getResourceCapital() : 1000.0) + 50000.0);
+                cell.setResourceCapital((cell.getResourceCapitalOr(1000.0)) + 50000.0);
             } else if (preset.id().equals("NUCLEAR_WINTER")) {
                 // Stratospheric soot injection
                 NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.5);
             } else if (preset.id().equals("AMOC_COLLAPSE")) {
                 // Ocean thermohaline collapse (-8°C cooling drop)
-                cell.setTemperature((cell.getTemperature() != null ? cell.getTemperature() : 15.0) - 8.0);
+                cell.setTemperature((cell.getTemperatureOr(15.0)) - 8.0);
             } else if (preset.id().equals("PEAK_PHOSPHORUS")) {
                 // Phosphate depletion
                 cell.setResourceMetal(5.0); // Depleted mineral ore

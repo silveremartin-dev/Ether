@@ -96,15 +96,15 @@ public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.35;
-            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 500.0;
+            double gini = cell.getGiniIndexOr(0.35);
+            double food = cell.getFoodResourceOr(500.0);
 
             // Environmental grievance driver: high inequality + acute hunger
             double grievance = (gini > 0.45 ? (gini - 0.45) * 2.0 : 0.0) + (food < 300.0 ? (300.0 - food) / 300.0 : 0.0);
 
             // Granovetter threshold shift: grievances lower the mobilization threshold
             if (grievance > 0.5) {
-                double work = cell.getResourceWork() != null ? cell.getResourceWork() : 50.0;
+                double work = cell.getResourceWorkOr(50.0);
                 // Strike / civil defiance reallocates labor away from standard production
                 cell.setResourceWork(Math.max(10.0, work * (1.0 - 0.05 * grievance * deltaYears)));
             }

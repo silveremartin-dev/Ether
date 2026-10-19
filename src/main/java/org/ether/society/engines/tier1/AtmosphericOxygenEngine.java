@@ -61,7 +61,7 @@ public class AtmosphericOxygenEngine {
             if (cell == null) continue;
             // Apply VO2max capacity limit to human physical labor output
             if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+                double friction = cell.getMovementFrictionOr(1.0);
                 cell.setMovementFriction(Math.max(0.2, friction / vo2maxFactor));
             }
 

@@ -313,9 +313,6 @@ public class WorldClimEmpiricalRasterLoader {
     /**
      * Compute authentic Sea Surface Temperature (SST) for oceans (°C).
      */
-    /**
-     * Compute authentic Sea Surface Temperature (SST) for oceans (°C).
-     */
     public static double computePhysicalOceanSST(double lat, double lon) {
         // Ingestion & Transformation: Parse raw geospatial/tabular records
         // Standardize coordinates, normalize projection tensors, and populate spatial index

@@ -77,7 +77,7 @@ public class AiryIsostasyCrustalRootEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double elevation = cell.getElevationOr(0.0);
             if (elevation <= 0.0) continue;
 
             double crustThicknessKm = calculateTotalCrustThicknessKm(elevation);
@@ -89,7 +89,7 @@ public class AiryIsostasyCrustalRootEngine {
 
             // Porphyry hydrothermal metallogeny: high orogenic root concentration yields metal ores
             if (elevation > 1500.0) {
-                double currentMetal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 100.0;
+                double currentMetal = cell.getResourceMetalOr(100.0);
                 double oreEnrichment = (elevation / 1000.0) * 5.0;
                 cell.setResourceMetal(Math.min(1000.0, currentMetal + oreEnrichment));
             }

@@ -47,9 +47,9 @@ public class World3CouplingEngine {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double pop = cell.getPopulation();
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            double resource = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
-            double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
+            double capital = cell.getResourceCapitalOr(0.0);
+            double resource = cell.getResourceMetalOr(0.0);
+            double pollution = cell.getPollutionLevelOr(0.0);
 
             // 1. FCAOR: Fraction of Capital Allocated to Obtaining Resources
             double resourceRatio = Math.max(0.01, Math.min(1.0, resource / initialGlobalResourceStock));
@@ -59,7 +59,7 @@ public class World3CouplingEngine {
             double industrialOutput = capital * (1.0 - fcaor);
 
             // 3. Multipliers for Life Expectancy (LE)
-            double mFood = Math.min(1.5, Math.max(0.2, (cell.getFoodResource() != null ? cell.getFoodResource() : 100.0) / (pop * 0.1)));
+            double mFood = Math.min(1.5, Math.max(0.2, (cell.getFoodResourceOr(100.0)) / (pop * 0.1)));
             double mHeal = Math.min(1.4, Math.max(0.5, 1.0 + Math.log10(1.0 + capital / 100.0)));
             double mPoll = Math.min(1.0, Math.max(0.1, 1.0 - (pollution / 1000.0)));
             double mCrowd = Math.min(1.0, Math.max(0.5, 1.0 - (pop / 200000.0)));

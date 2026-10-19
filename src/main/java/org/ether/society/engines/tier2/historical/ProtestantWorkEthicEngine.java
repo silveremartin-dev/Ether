@@ -45,8 +45,8 @@ public class ProtestantWorkEthicEngine {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             // Apply Protestant Ethic effects to cells with active cultural/religious transformation
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 100.0;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double capital = cell.getResourceCapitalOr(100.0);
+            double tech = cell.getTechnologyLevelOr(1.0);
             double pop = cell.getPopulation();
 
             // Accelerated capital formation via frugal savings

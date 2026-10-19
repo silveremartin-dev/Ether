@@ -42,10 +42,10 @@ public class FrontierAsabiyyahEngine {
             double capital = cell.getResourceCapital();
             // High capital hinterland center: Asabiyyah decays by 2% per tick due to luxury
             if (capital > 1000.0) {
-                cell.setResourceWork(Math.max(10.0, (cell.getResourceWork() != null ? cell.getResourceWork() : 50.0) * 0.98));
+                cell.setResourceWork(Math.max(10.0, (cell.getResourceWorkOr(50.0)) * 0.98));
             } else {
                 // Frontier cell: Asabiyyah (military readiness) increases
-                cell.setResourceWork((cell.getResourceWork() != null ? cell.getResourceWork() : 50.0) * 1.02);
+                cell.setResourceWork((cell.getResourceWorkOr(50.0)) * 1.02);
             }
         }
     }

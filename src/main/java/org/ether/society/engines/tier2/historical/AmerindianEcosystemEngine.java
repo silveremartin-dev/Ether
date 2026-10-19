@@ -56,13 +56,13 @@ public class AmerindianEcosystemEngine {
             // Universal Draft Megafauna Absence & Zoonotic Naivety Law (no hardcoded GPS longitude box):
             // Applies to any society lacking domesticated draft livestock (biomassLivestock < 1.0)
             // before industrial mechanization (tech < 3.0).
-            double livestock = cell.getBiomassLivestock() != null ? cell.getBiomassLivestock() : 0.0;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double livestock = cell.getBiomassLivestockOr(0.0);
+            double tech = cell.getTechnologyLevelOr(1.0);
             double pop = cell.getPopulation();
 
             if (livestock < 1.0 && tech < 3.0) {
                 // Draft animal constraint: Mechanical work density capped when relying purely on human muscle
-                double work = cell.getResourceWork() != null ? cell.getResourceWork() : 20.0;
+                double work = cell.getResourceWorkOr(20.0);
                 cell.setResourceWork(Math.min(work, 40.0));
             }
 

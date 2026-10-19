@@ -104,12 +104,12 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop < 100) continue;
 
-            double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.35;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;
-            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 500.0;
+            double gini = cell.getGiniIndexOr(0.35);
+            double capital = cell.getResourceCapitalOr(10.0);
+            double food = cell.getFoodResourceOr(500.0);
 
             // 1. Mass Mobilization Potential: food scarcity + demographic density (in hab/km²)
             double areaKm2 = cell.getEffectiveSurfaceAreaKm2();
@@ -131,7 +131,7 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
                 cell.setResourceCapital(Math.max(5.0, capital - unrestDamage));
 
                 // Increases local friction due to riots and civil breakdown
-                double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+                double friction = cell.getMovementFrictionOr(1.0);
                 cell.setMovementFriction(Math.min(10.0, friction + (0.1 * deltaYears)));
 
                 // Post-crisis elite purge: structural breakdown purges excessive elite fortunes, resetting Gini

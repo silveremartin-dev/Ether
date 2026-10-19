@@ -101,24 +101,24 @@ public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop < 50) continue;
 
-            double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
-            double temp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
-            double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double rainfall = cell.getRainfallOr(500.0);
+            double temp = cell.getTemperatureOr(15.0);
+            double elevation = cell.getElevationOr(0.0);
 
             // Salinization is acute in arid/semi-arid plains and lowlands (Rain < 450mm, Temp > 18°C)
             if (rainfall < 450.0 && temp > 18.0 && elevation < 800.0) {
-                double currentSalinity = cell.getSoilSalinity() != null ? cell.getSoilSalinity() : 0.0;
-                double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-                double food = cell.getFoodResource() != null ? cell.getFoodResource() : 1000.0;
+                double currentSalinity = cell.getSoilSalinityOr(0.0);
+                double tech = cell.getTechnologyLevelOr(1.0);
+                double food = cell.getFoodResourceOr(1000.0);
 
                 // 1. Irrigation intensity scales with population density and agrarian technology (pre-industrial drainage limits)
                 double irrigationIntensity = Math.min(3.0, (pop / 200.0)) * (tech <= 4.0 ? 1.2 : 0.4);
 
                 // 2. Capillary groundwater upward flux driven by potential evapotranspiration (PET >> Precipitation)
-                double accessibleAquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 0.0;
+                double accessibleAquifer = cell.getAccessibleAquiferOr(0.0);
                 double capillaryFlux = (accessibleAquifer > 10.0)
                         ? Math.max(0.0, (temp - 15.0) * 0.04 * (1.0 - Math.min(1.0, rainfall / 450.0)))
                         : 0.0;

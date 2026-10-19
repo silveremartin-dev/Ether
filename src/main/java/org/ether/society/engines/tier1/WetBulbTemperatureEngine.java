@@ -55,8 +55,8 @@ public class WetBulbTemperatureEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double tempC = cell.getTemperature() != null ? cell.getTemperature() : 20.0;
-            double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+            double tempC = cell.getTemperatureOr(20.0);
+            double rain = cell.getRainfallOr(500.0);
             double rh = Math.min(100.0, Math.max(20.0, (rain / 1200.0) * 100.0));
 
             double wetBulbTempC = calculateWetBulbTemperatureStull(tempC, rh);

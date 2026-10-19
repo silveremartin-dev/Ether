@@ -53,9 +53,9 @@ public class SelectiveBreedingEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
             if (tech >= 1.5) {
-                int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+                int pop = cell.getPopulationOr(0);
                 double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
                 double breedingFactor = calculateSelectiveBreedingYieldFactor(tech);
                 double techLandCeiling = (360.0 + 550.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale;

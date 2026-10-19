@@ -40,7 +40,7 @@ public class AsymmetricColonialTradeEngine {
             if (cell == null || cell.getResourceMetal() == null) continue;
 
             double metal = cell.getResourceMetal(); // Bullion stock
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double capital = cell.getResourceCapitalOr(0.0);
 
             // Asymmetric trade bullion drain: silver exchanged for perishable spices
             if (metal > 10.0) {

@@ -85,9 +85,9 @@ public class ManningStricklerHydrodynamicsEngine {
         int upstreamCellCount = 0;
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double elev = cell.getElevationOr(0.0);
             if (elev > 100.0 || cell.getBiome() == Biome.MOUNTAINS || cell.getBiome() == Biome.HILLS) {
-                double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+                double rain = cell.getRainfallOr(500.0);
                 totalCatchmentRunoff += rain * 0.40; // 40% surface runoff coefficient
                 upstreamCellCount++;
             }
@@ -97,8 +97,8 @@ public class ManningStricklerHydrodynamicsEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
-            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+            double rainfall = cell.getRainfallOr(500.0);
+            double elev = cell.getElevationOr(0.0);
 
             // In lowlands / floodplains, effective water flow accumulates from upstream catchment runoff
             double effectiveFlowRainfall = (elev < 100.0 && (cell.getBiome() == Biome.PLAINS || cell.getBiome() == Biome.BEACH))
@@ -114,7 +114,7 @@ public class ManningStricklerHydrodynamicsEngine {
 
             // Fertile floodplain silt bonus for large lowland rivers (Plains/Beach with high discharge)
             if (dischargeQ > 50.0 && (cell.getBiome() == Biome.PLAINS || cell.getBiome() == Biome.BEACH)) {
-                int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+                int pop = cell.getPopulationOr(0);
                 double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
                         ? cell.getBiomassAgriculture()
                         : Math.min(2000.0, Math.max(50.0, pop * 2.5));

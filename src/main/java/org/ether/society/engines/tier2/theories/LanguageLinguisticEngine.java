@@ -69,10 +69,10 @@ public class LanguageLinguisticEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+            double friction = cell.getMovementFrictionOr(1.0);
             Biome biome = cell.getBiome();
-            double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
-            double curDrift = cell.getLinguisticDrift() != null ? cell.getLinguisticDrift() : 0.0;
+            double elevation = cell.getElevationOr(0.0);
+            double curDrift = cell.getLinguisticDriftOr(0.0);
 
             // 1. Isolat Culturel (Cultural Isolation): Island / Coastal / Mountainous isolation
             boolean isIslandOrIsolated = (biome == Biome.BEACH || friction > 3.5 || elevation > 1200);
@@ -124,14 +124,14 @@ public class LanguageLinguisticEngine {
                 // Iterate over spatial cell domains and apply localized cellular state transformations
                 for (H3Cell routeCell : route.pathCells()) {
                     if (routeCell == null) continue;
-                    double rFriction = routeCell.getMovementFriction() != null ? routeCell.getMovementFriction() : 1.0;
+                    double rFriction = routeCell.getMovementFrictionOr(1.0);
                     boolean isIsolated = routeCell.getBiome() == Biome.BEACH || rFriction > 3.5;
                     double diffusionChance = isIsolated ? 0.05 : 0.25;
 
                     long routeCellId = routeCell.getH3Index() != null ? routeCell.getH3Index() : 0L;
                     if (org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, routeCellId, 313L) < diffusionChance) {
                         routeCell.setLanguageGroup(hubLang);
-                        double routeDrift = routeCell.getLinguisticDrift() != null ? routeCell.getLinguisticDrift() : 0.0;
+                        double routeDrift = routeCell.getLinguisticDriftOr(0.0);
                         routeCell.setLinguisticDrift(Math.max(0.0, routeDrift - 0.2));
                     }
                 }

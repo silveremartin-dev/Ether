@@ -180,8 +180,8 @@ public class ThermodynamicMigrationEngine {
                 H3Cell c = cells.get(idx);
                 if (c == null) continue;
                 cellIndexMap.put(c, idx);
-                double cLat = c.getLatitude() != null ? c.getLatitude() : 0.0;
-                double cLon = c.getLongitude() != null ? c.getLongitude() : 0.0;
+                double cLat = c.getLatitudeOr(0.0);
+                double cLon = c.getLongitudeOr(0.0);
                 int bLat = (int) Math.floor((cLat + 90.0) / binSizeDeg);
                 int bLon = (int) Math.floor((cLon + 180.0) / binSizeDeg);
                 long key = (((long) bLat) << 32) | (bLon & 0xFFFFFFFFL);
@@ -203,18 +203,18 @@ public class ThermodynamicMigrationEngine {
             if (popBuffer != null && popBuffer[i] < 10.0f) continue;
             H3Cell origin = cells.get(i);
             if (origin == null) continue;
-            int popOrigin = origin.getPopulation() != null ? origin.getPopulation() : 0;
+            int popOrigin = origin.getPopulationOr(0);
             if (popOrigin < 10) continue;
 
-            double foodOrigin = origin.getFoodResource() != null ? origin.getFoodResource() : 0.0;
-            double waterOrigin = origin.getWaterResource() != null ? origin.getWaterResource() : 0.0;
+            double foodOrigin = origin.getFoodResourceOr(0.0);
+            double waterOrigin = origin.getWaterResourceOr(0.0);
             double phiOrigin = (foodOrigin + waterOrigin) / (popOrigin + 1.0);
 
             H3Cell bestDestination = null;
             double maxDeltaPhi = 0.05; // Minimum potential gradient threshold
 
-            double latOrigin = origin.getLatitude() != null ? origin.getLatitude() : 0.0;
-            double lonOrigin = origin.getLongitude() != null ? origin.getLongitude() : 0.0;
+            double latOrigin = origin.getLatitudeOr(0.0);
+            double lonOrigin = origin.getLongitudeOr(0.0);
             double degToKmLon = degToKmLat * Math.cos(Math.toRadians(latOrigin));
 
             int bLat = (int) Math.floor((latOrigin + 90.0) / binSizeDeg);
@@ -231,8 +231,8 @@ public class ThermodynamicMigrationEngine {
                     for (H3Cell destination : bucket) {
                         if (destination == origin) continue;
 
-                        double destLat = destination.getLatitude() != null ? destination.getLatitude() : 0.0;
-                        double destLon = destination.getLongitude() != null ? destination.getLongitude() : 0.0;
+                        double destLat = destination.getLatitudeOr(0.0);
+                        double destLon = destination.getLongitudeOr(0.0);
                         double latDiff = Math.abs(latOrigin - destLat);
                         if (latDiff > 1.5) continue;
                         double lonDiff = Math.abs(lonOrigin - destLon);
@@ -246,11 +246,11 @@ public class ThermodynamicMigrationEngine {
 
 
 
-                        int popDest = destination.getPopulation() != null ? destination.getPopulation() : 0;
+                        int popDest = destination.getPopulationOr(0);
 
-                        double foodDest = destination.getFoodResource() != null ? destination.getFoodResource() : 0.0;
+                        double foodDest = destination.getFoodResourceOr(0.0);
 
-                        double waterDest = destination.getWaterResource() != null ? destination.getWaterResource() : 0.0;
+                        double waterDest = destination.getWaterResourceOr(0.0);
 
                         double phiDest = (foodDest + waterDest) / (popDest + 1.0);
 
@@ -288,7 +288,7 @@ public class ThermodynamicMigrationEngine {
 
                 origin.setPopulation(popOrigin - migrants);
                 origin.setBiomassHuman((double) (popOrigin - migrants));
-                int destPop = (bestDestination.getPopulation() != null ? bestDestination.getPopulation() : 0) + migrants;
+                int destPop = (bestDestination.getPopulationOr(0)) + migrants;
                 bestDestination.setPopulation(destPop);
                 bestDestination.setBiomassHuman((double) destPop);
 

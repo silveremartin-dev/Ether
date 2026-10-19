@@ -65,11 +65,11 @@ public class MarineSubmersionEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
-            double seaLevelOffset = cell.getSeaLevelOffsetMeters() != null ? cell.getSeaLevelOffsetMeters() : 0.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            double elevation = cell.getElevationOr(0.0);
+            double seaLevelOffset = cell.getSeaLevelOffsetMetersOr(0.0);
+            double capital = cell.getResourceCapitalOr(0.0);
+            double tech = cell.getTechnologyLevelOr(0.0);
+            int pop = cell.getPopulationOr(0);
 
             // Determine if polder/coastal cell is flooded (elevation below sea level or dike failure)
             boolean isSubmerged = (elevation < seaLevelOffset);
@@ -126,14 +126,14 @@ public class MarineSubmersionEngine {
 
                 if (!safeNeighbors.isEmpty() && evacuatedPop > 0) {
                     int popPerNeighbor = evacuatedPop / safeNeighbors.size();
-                    double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+                    double curCap = cell.getResourceCapitalOr(0.0);
                     double capitalToTransfer = (curCap * 0.50) / safeNeighbors.size();
 
                     // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell target : safeNeighbors) {
                         if (target == null) continue;
-                        int targetPop = target.getPopulation() != null ? target.getPopulation() : 0;
-                        double targetCap = target.getResourceCapital() != null ? target.getResourceCapital() : 0.0;
+                        int targetPop = target.getPopulationOr(0);
+                        double targetCap = target.getResourceCapitalOr(0.0);
                         target.setPopulation(targetPop + popPerNeighbor);
                         target.setResourceCapital(targetCap + capitalToTransfer);
                     }

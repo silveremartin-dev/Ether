@@ -52,7 +52,7 @@ public class PressurizedHabitatEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             HabitatType type = cell.getHabitatType();
 
             // If planet is hostile
@@ -85,10 +85,10 @@ public class PressurizedHabitatEngine {
 
     private static void processShelteredCell(H3Cell cell, HabitatType type, PlanetPreset preset, double dt) {
 // Numerical integration step for PressurizedHabitatEngine - verifies boundary conservation and updates local thermodynamic state
-        int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-        double integrity = cell.getHabitatIntegrity() != null ? cell.getHabitatIntegrity() : 1.0;
-        double capacity = cell.getHabitatCapacity() != null ? cell.getHabitatCapacity() : 0.0;
-        double age = cell.getHabitatAgeYears() != null ? cell.getHabitatAgeYears() : 0.0;
+        int pop = cell.getPopulationOr(0);
+        double integrity = cell.getHabitatIntegrityOr(1.0);
+        double capacity = cell.getHabitatCapacityOr(0.0);
+        double age = cell.getHabitatAgeYearsOr(0.0);
 
         // Ensure minimum capacity baseline if uninitialized
         if (capacity < pop) {
@@ -109,8 +109,8 @@ public class PressurizedHabitatEngine {
         double requiredCapital = pop * 5.0 * dt;
         double requiredMetal = pop * 1.0 * dt;
 
-        double availableCapital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-        double availableMetal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
+        double availableCapital = cell.getResourceCapitalOr(0.0);
+        double availableMetal = cell.getResourceMetalOr(0.0);
 
         double capCoverage = (requiredCapital > 0) ? Math.min(1.0, availableCapital / requiredCapital) : 1.0;
         double metalCoverage = (requiredMetal > 0) ? Math.min(1.0, availableMetal / requiredMetal) : 1.0;
@@ -168,7 +168,7 @@ public class PressurizedHabitatEngine {
 
         // 7. Auto-Expansion of Habitats when approaching capacity
         if (pop >= 0.80 * capacity && availableCapital >= 1000.0 && availableMetal >= 200.0) {
-            int currentTier = cell.getHabitatTier() != null ? cell.getHabitatTier() : 1;
+            int currentTier = cell.getHabitatTierOr(1);
             int newTier = Math.min(4, currentTier + 1);
             double newCapacity = switch (newTier) {
                 case 1 -> 500.0;
@@ -198,8 +198,8 @@ public class PressurizedHabitatEngine {
         if (preset != null && preset.atmospherePressureAtm() > 50.0) {
             chosenType = HabitatType.VENUS_AEROSTAT;
         } else {
-            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
-            double mantleHeat = cell.getMantleHeatFlow() != null ? cell.getMantleHeatFlow() : 0.0;
+            double elev = cell.getElevationOr(0.0);
+            double mantleHeat = cell.getMantleHeatFlowOr(0.0);
             if (elev > 1000.0 || mantleHeat > 100.0) {
                 chosenType = HabitatType.LAVA_TUBE;
             } else if (elev < 0) {

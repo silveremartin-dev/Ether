@@ -51,12 +51,12 @@ public class IsruAutarkyAndSpaceColonizationEngine {
             HabitatType habitatType = cell.getHabitatType();
             if (habitatType == HabitatType.NONE) continue;
 
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
+            double tech = cell.getTechnologyLevelOr(1.0);
+            double capital = cell.getResourceCapitalOr(0.0);
+            double metal = cell.getResourceMetalOr(0.0);
 
             // 1. ISRU Extraction & Transformation Rate
             // Local mineral exploitation efficiency scales with technology level
@@ -69,7 +69,7 @@ public class IsruAutarkyAndSpaceColonizationEngine {
 
             // 2. High Pioneer Social Cohesion (Asabiyyah)
             // Life under hostile dome conditions elevates collective mutual aid
-            double workAvailable = cell.getResourceWork() != null ? cell.getResourceWork() : 0.0;
+            double workAvailable = cell.getResourceWorkOr(0.0);
             cell.setResourceWork(workAvailable + (pop * 1.10 * dt));
 
             // 3. Technical Knowledge & Information Entropy Mitigation

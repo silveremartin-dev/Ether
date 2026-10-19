@@ -92,7 +92,7 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
             // Calculate genuine geographic density in hab/km² based on planar H3 resolution area
@@ -102,7 +102,7 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
             double cellArea = Math.max(10.0, H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3));
             double areaScale = Math.max(0.05, cellArea / 1770.49);
             double density = pop / cellArea;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double tech = cell.getTechnologyLevelOr(1.0);
             if (tech < 1.5 && density < 2.0) {
                 // Stage 1 Foraging (D < 2 hab/km², tech < 1.5): no crop cultivation
                 continue;
@@ -125,7 +125,7 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
                 cell.setBiomassAgriculture(Math.min(techLandCeiling * 1.35, agriBiomass + (agriBiomass * 0.04 * deltaYears)));
                 cell.setTechnologyLevel(Math.min(10.0, tech + 0.005 * deltaYears));
                 // High labor demand absorbs work capacity
-                double work = cell.getResourceWork() != null ? cell.getResourceWork() : 50.0;
+                double work = cell.getResourceWorkOr(50.0);
                 cell.setResourceWork(Math.max(10.0, work * 0.98));
             } else if (density > 10.0) {
                 // Moderate density: Annual cropping / draft animals (Stage 3)

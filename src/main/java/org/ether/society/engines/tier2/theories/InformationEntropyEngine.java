@@ -50,8 +50,8 @@ public class InformationEntropyEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-            double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
+            double friction = cell.getMovementFrictionOr(1.0);
 
             // Bandwidth Hz scales with technology era (Runner -> Paper -> Telegraph -> Fiber)
             double bandwidthHz = 1.0 + Math.pow(tech, 3.0) * 1000.0;
@@ -61,7 +61,7 @@ public class InformationEntropyEngine {
 
             // High information capacity suppresses linguistic drift
             if (channelCapacityBitsPerSec > 100.0) {
-                double drift = cell.getLinguisticDrift() != null ? cell.getLinguisticDrift() : 0.0;
+                double drift = cell.getLinguisticDriftOr(0.0);
                 cell.setLinguisticDrift(Math.max(0.0, drift - 0.01));
             }
         }

@@ -74,7 +74,7 @@ public class EdoJapanIsolationEngine {
             // without any hardcoded geographic GPS bounding box.
 
             // 1. Tomeyama silviculture: logistic plantation regrowth toward the pre-intervention stock W0
-            double wood = cell.getWoodResource() != null ? cell.getWoodResource() : 0.0;
+            double wood = cell.getWoodResourceOr(0.0);
             Long key = cell.getH3Index();
             double w0 = (key != null) ? initialWoodStock.computeIfAbsent(key, k -> wood) : wood;
             if (w0 > 0.0) {
@@ -84,7 +84,7 @@ public class EdoJapanIsolationEngine {
             }
 
             // 2. Night-soil recycling: density-proportional organic carbon return with saturation
-            double soc = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 15.0;
+            double soc = cell.getSoilOrganicCarbonOr(15.0);
             double areaKm2 = Math.max(1.0, cell.getEffectiveSurfaceAreaKm2());
             int pop = cell.getPopulation();
             double density = pop / areaKm2;
@@ -100,7 +100,7 @@ public class EdoJapanIsolationEngine {
             }
 
             // 4. Zero pollution accumulation due to closed-loop organic waste recycling
-            cell.setPollutionLevel(Math.max(0.0, (cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0) - 1.0 * dt));
+            cell.setPollutionLevel(Math.max(0.0, (cell.getPollutionLevelOr(0.0)) - 1.0 * dt));
         }
     }
 

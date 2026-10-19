@@ -36,13 +36,13 @@ public class OzoneLayerDepletionEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
+            double pollution = cell.getPollutionLevelOr(0.0);
 
             // High industrial chemical pollution releases CFCs destroying O3
             if (pollution > 5000.0) {
                 ozoneDepletionEvents++;
                 // UV-B damage to crop DNA
-                double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
+                double currentAgri = cell.getBiomassAgricultureOr(0.0);
                 if (currentAgri > 0.0) {
                     cell.setBiomassAgriculture(Math.max(1.0, currentAgri * 0.92));
                 }

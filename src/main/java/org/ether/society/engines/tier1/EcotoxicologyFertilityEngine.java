@@ -51,13 +51,13 @@ public class EcotoxicologyFertilityEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
+            double pollution = cell.getPollutionLevelOr(0.0);
             if (pollution > 1000.0) {
                 toxicStressCells++;
                 double fertilityFactor = calculateEcotoxicFertilityFactor(pollution);
 
                 // Reduce birth rate / demographic growth factor in polluted cells
-                int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+                int pop = cell.getPopulationOr(0);
                 if (pop > 0) {
                     int suppressedBirths = (int) (pop * (1.0 - fertilityFactor) * 0.02);
                     cell.setPopulation(Math.max(0, pop - suppressedBirths));

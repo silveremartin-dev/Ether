@@ -57,13 +57,13 @@ public class TechTreeEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double capital = cell.getResourceCapitalOr(0.0);
             double capitalPerCapita = pop > 0 ? (capital / pop) : 0.0;
-            double currentTech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.5;
+            double currentTech = cell.getTechnologyLevelOr(0.5);
 
             // 1. Continuous Physical Power & Material Envelope Ceiling (replaces circular step-function deadlock)
             double targetEraTech;
@@ -106,8 +106,8 @@ public class TechTreeEngine {
                 if (route == null || route.origin() == null || route.destination() == null) continue;
                 H3Cell orig = route.origin();
                 H3Cell dest = route.destination();
-                double tOrig = orig.getTechnologyLevel() != null ? orig.getTechnologyLevel() : 1.0;
-                double tDest = dest.getTechnologyLevel() != null ? dest.getTechnologyLevel() : 1.0;
+                double tOrig = orig.getTechnologyLevelOr(1.0);
+                double tDest = dest.getTechnologyLevelOr(1.0);
                 double diff = tOrig - tDest;
                 if (Math.abs(diff) > 0.05) {
                     double stepMag = 0.008 * Math.min(Math.abs(diff), 1.0) / Math.max(1.0, route.totalFrictionCost() * 0.1) * dt;
@@ -144,18 +144,18 @@ public class TechTreeEngine {
      */
     public static double calculateBottleneckInducedSubstitution(H3Cell cell, double dtYears) {
         if (cell == null) return 0.0;
-        int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+        int pop = cell.getPopulationOr(0);
         if (pop <= 0) return 0.0;
 
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.5;
+        double tech = cell.getTechnologyLevelOr(0.5);
         double wood = Math.max(
-                cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0,
-                cell.getWoodResource() != null ? cell.getWoodResource() : 0.0);
-        double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
-        double coal = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
-        double oilGas = (cell.getResourceOil() != null ? cell.getResourceOil() : 0.0)
-                + (cell.getResourceGas() != null ? cell.getResourceGas() : 0.0);
-        double uranium = cell.getResourceUranium() != null ? cell.getResourceUranium() : 0.0;
+                cell.getBiomassNaturalOr(0.0),
+                cell.getWoodResourceOr(0.0));
+        double metal = cell.getResourceMetalOr(0.0);
+        double coal = cell.getResourceCoalOr(0.0);
+        double oilGas = (cell.getResourceOilOr(0.0))
+                + (cell.getResourceGasOr(0.0));
+        double uranium = cell.getResourceUraniumOr(0.0);
 
         // 1. Primary organic fuel & biomass scarcity stress relative to population and pyrometallurgical demand
         double organicDemand = pop * 0.15 * Math.max(0.5, tech);
@@ -168,7 +168,7 @@ public class TechTreeEngine {
             latentSubstitutePotential = Math.min(1.0, Math.log1p(metal) / 5.0);
         } else if (tech >= 1.8 && tech < 2.5 && metal > 10.0) {
             // Alloying/Tin bottleneck with abundant crustal iron oxide
-            double reeTin = cell.getResourceRareEarths() != null ? cell.getResourceRareEarths() : 0.0;
+            double reeTin = cell.getResourceRareEarthsOr(0.0);
             double tinScarcity = Math.clamp(1.0 - (reeTin / 2.0), 0.0, 1.0);
             organicScarcityStress = Math.max(organicScarcityStress, tinScarcity);
             latentSubstitutePotential = Math.min(1.0, Math.log1p(metal) / 5.0);

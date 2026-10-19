@@ -54,18 +54,18 @@ public class BiologicalDemographicsEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
-            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
-            double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
-            double tempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double pollution = cell.getPollutionLevelOr(0.0);
+            double food = cell.getFoodResourceOr(0.0);
+            double elev = cell.getElevationOr(0.0);
+            double tempC = cell.getTemperatureOr(15.0);
 
-            double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
-            double agBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
-            double fishBiomass = cell.getBiomassFish() != null ? cell.getBiomassFish() : 0.0;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
+            double agBiomass = cell.getBiomassAgricultureOr(0.0);
+            double fishBiomass = cell.getBiomassFishOr(0.0);
+            double tech = cell.getTechnologyLevelOr(1.0);
             double edibleNaturalBiomassGJ = naturalBiomass * (tech < 1.5 ? 0.008 : 0.005) * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
             double edibleAgBiomassGJ = agBiomass * 0.70 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
             double edibleFishBiomassGJ = fishBiomass * 0.25 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;

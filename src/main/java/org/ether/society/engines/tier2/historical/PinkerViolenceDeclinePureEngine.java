@@ -55,7 +55,7 @@ public class PinkerViolenceDeclinePureEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            double tech = cell.getTechnologyLevelOr(1.0);
             double literacy = Math.min(1.0, tech / 5.0);
             double stateStrength = Math.min(1.0, tech / 4.0);
             double tradeOpenness = 0.50;

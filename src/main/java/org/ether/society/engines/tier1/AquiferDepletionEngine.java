@@ -63,9 +63,9 @@ public class AquiferDepletionEngine {
 
         java.util.function.Consumer<H3Cell> rechargeProcessor = cell -> {
             if (cell == null) return;
-            double aquifer = cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 1000.0;
-            double rain = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            double aquifer = cell.getAccessibleAquiferOr(1000.0);
+            double rain = cell.getRainfallOr(500.0);
+            int pop = cell.getPopulationOr(0);
 
             double naturalRecharge = (rain * 0.15) * dt;
             double perCapitaGroundwaterDemand = (rain >= 800.0) ? 0.05 : (rain >= 400.0 ? 0.35 : 0.80);
@@ -77,7 +77,7 @@ public class AquiferDepletionEngine {
 
             if (newAquifer < 100.0 && pop > 300) {
                 depletedCounter.incrementAndGet();
-                double currentAgri = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
+                double currentAgri = cell.getBiomassAgricultureOr(0.0);
                 cell.setBiomassAgriculture(Math.max(50.0, currentAgri * Math.exp(-0.30 * dt)));
             }
         };
@@ -103,12 +103,12 @@ public class AquiferDepletionEngine {
             for (int i = 0; i < n; i++) {
                 H3Cell c = cells.get(i);
                 if (c == null) continue;
-                double elev = c.getElevation() != null ? c.getElevation() : 0.0;
-                double aq = c.getAccessibleAquifer() != null ? c.getAccessibleAquifer() : 1000.0;
+                double elev = c.getElevationOr(0.0);
+                double aq = c.getAccessibleAquiferOr(1000.0);
                 aqArray[i] = aq;
                 headArray[i] = elev + (aq / (SPECIFIC_YIELD_SY * 1000.0));
-                latArray[i] = c.getLatitude() != null ? c.getLatitude() : 0.0;
-                lonArray[i] = c.getLongitude() != null ? c.getLongitude() : 0.0;
+                latArray[i] = c.getLatitudeOr(0.0);
+                lonArray[i] = c.getLongitudeOr(0.0);
             }
 
             for (int i = 0; i < n; i++) {

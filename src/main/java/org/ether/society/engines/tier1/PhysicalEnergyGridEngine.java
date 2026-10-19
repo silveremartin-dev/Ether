@@ -41,11 +41,11 @@ public class PhysicalEnergyGridEngine {
 // Numerical integration step for PhysicalEnergyGridEngine - verifies boundary conservation and updates local thermodynamic state
         if (cell == null) return 0.0;
 
-        int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+        int pop = cell.getPopulationOr(0);
         if (pop <= 0) return 0.0;
 
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-        double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+        double tech = cell.getTechnologyLevelOr(0.0);
+        double capital = cell.getResourceCapitalOr(0.0);
         double capitalPerCapita = capital / pop;
         double converterEfficiency = 0.15 + Math.min(0.75, tech * 0.08 + Math.min(0.15, capitalPerCapita * 0.02)); // 15% muscle to 90% electric
 
@@ -61,7 +61,7 @@ public class PhysicalEnergyGridEngine {
         double humanLaborWatts = 50.0;
 
         // 2. Firewood & kiln thermal work (heating, kilns, smelting, cooking)
-        double woodBiomassKg = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
+        double woodBiomassKg = cell.getBiomassNaturalOr(0.0);
         double firewoodThermalWatts = (woodBiomassKg > 10.0)
                 ? (450.0 + Math.min(350.0, capitalPerCapita * 15.0))
                 : 150.0;
@@ -76,7 +76,7 @@ public class PhysicalEnergyGridEngine {
 
         // 4. Hydro / Wind / Watermill kinetic contribution (Antiquity/Medieval engineering tech >= 2.0)
         if (tech >= 2.0) {
-            double windEnergyW = cell.getEnergyWind() != null ? cell.getEnergyWind() : 0.0;
+            double windEnergyW = cell.getEnergyWindOr(0.0);
             double millFactor = Math.min(3.0, Math.max(0.5, tech - 1.5) + Math.min(1.0, capitalPerCapita * 0.05));
             double kineticHarness = (windEnergyW * 0.05 + 400.0 * millFactor) * (tech >= 4.5 ? 5.0 : 1.0);
             double maxPerCapitaWindHydro = (tech < 3.0) ? 250.0 : ((tech < 4.0) ? 1200.0 : 2500.0);
@@ -88,9 +88,9 @@ public class PhysicalEnergyGridEngine {
         double hydrocarbonWatts = 0.0;
         if (tech >= 3.0) {
             double industrialFactor = Math.min(3.0, tech - 2.0);
-            double coalStock = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
-            double oilStock = cell.getResourceOil() != null ? cell.getResourceOil() : 0.0;
-            double gasStock = cell.getResourceGas() != null ? cell.getResourceGas() : 0.0;
+            double coalStock = cell.getResourceCoalOr(0.0);
+            double oilStock = cell.getResourceOilOr(0.0);
+            double gasStock = cell.getResourceGasOr(0.0);
             double fossilAvailability = Math.min(1.0, (coalStock + oilStock * 1.5 + gasStock * 1.2) / Math.max(10.0, pop * 0.05));
             coalWatts = 3000.0 * industrialFactor * fossilAvailability; // Primary thermal coal
             hydrocarbonWatts = (tech >= 3.5) ? 4000.0 * Math.min(2.0, tech - 3.0) * Math.min(1.0, (oilStock + gasStock) / Math.max(5.0, pop * 0.02)) : 0.0;
@@ -101,7 +101,7 @@ public class PhysicalEnergyGridEngine {
         double nuclearWatts = 0.0;
         if (tech >= 4.0) {
             double modernFactor = Math.min(2.5, tech - 3.5);
-            double uraniumStock = cell.getResourceUranium() != null ? cell.getResourceUranium() : 0.0;
+            double uraniumStock = cell.getResourceUraniumOr(0.0);
             double fissileAvailability = Math.min(1.0, uraniumStock / Math.max(1.0, pop * 0.001));
             // Electro-nuclear power flux: scales into 15-30 kW per capita range, strictly bounded by fissile reserves
             nuclearWatts = 35000.0 * modernFactor * fissileAvailability;
@@ -137,7 +137,7 @@ public class PhysicalEnergyGridEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
             double powerPerCapitaW = calculatePerCapitaMechanicalPowerWatts(cell);
             double tech = cell.getTechnologyLevel() != null ? Math.max(0.5, cell.getTechnologyLevel()) : 1.0;
@@ -147,9 +147,9 @@ public class PhysicalEnergyGridEngine {
 
             // Deplete consumed geological fuels (Coal, Oil, Gas, Uranium, Rare Earths) according to power generation
             if (tech >= 3.0) {
-                double coalStock = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
-                double oilStock = cell.getResourceOil() != null ? cell.getResourceOil() : 0.0;
-                double gasStock = cell.getResourceGas() != null ? cell.getResourceGas() : 0.0;
+                double coalStock = cell.getResourceCoalOr(0.0);
+                double oilStock = cell.getResourceOilOr(0.0);
+                double gasStock = cell.getResourceGasOr(0.0);
                 // Specific energy consumption: 1 W-year = 3.1536e7 J ~ 1.3 kg Coal (at 24 MJ/kg)
                 double coalBurnTons = (pop * (powerPerCapitaW * 0.4) * 0.0013 * dtSafe) / 1000.0;
                 double oilBurnTons = (tech >= 3.5) ? (pop * (powerPerCapitaW * 0.3) * 0.0008 * dtSafe) / 1000.0 : 0.0;
@@ -159,13 +159,13 @@ public class PhysicalEnergyGridEngine {
                 cell.setResourceGas(Math.max(0.0, gasStock - gasBurnTons));
             }
             if (tech >= 4.0) {
-                double uStock = cell.getResourceUranium() != null ? cell.getResourceUranium() : 0.0;
+                double uStock = cell.getResourceUraniumOr(0.0);
                 // 1 kg U-235 provides ~8e13 J (fission), minimal mass burn rate
                 double uBurnTons = (pop * (powerPerCapitaW * 0.3) * 1e-8 * dtSafe) / 1000.0;
                 cell.setResourceUranium(Math.max(0.0, uStock - uBurnTons));
 
                 // Advanced electro-nuclear grid, wind turbines, and semiconductors consume critical rare earth elements
-                double reeStock = cell.getResourceRareEarths() != null ? cell.getResourceRareEarths() : 0.0;
+                double reeStock = cell.getResourceRareEarthsOr(0.0);
                 double reeBurnTons = (pop * (powerPerCapitaW * 0.1) * 2e-7 * dtSafe) / 1000.0;
                 cell.setResourceRareEarths(Math.max(0.0, reeStock - reeBurnTons));
             }
@@ -173,7 +173,7 @@ public class PhysicalEnergyGridEngine {
             // Solow-Swan physical capital formation from mechanical work:
             // Gross investment scales with mechanical power flux, while depreciation scales with existing stock
             // and intensive capital density (K/N) to prevent unphysical infinite accumulation in pre-industrial eras.
-            double curCap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double curCap = cell.getResourceCapitalOr(0.0);
             double capPerCapita = curCap / pop;
             double equilibriumCapPerCapita = 8.0 * Math.pow(tech, 1.5) * (powerPerCapitaW / 250.0);
             double saturationFactor = Math.max(0.0, 1.0 - (capPerCapita / Math.max(10.0, equilibriumCapPerCapita)));

@@ -521,6 +521,14 @@ public class H3Cell {
     public int getPopulationOr(int defaultValue) { return population != null ? population : defaultValue; }
 
     /**
+     * Primitive-safe population getter as double avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if population is null
+     * @return population count as double
+     */
+    public double getPopulationOr(double defaultValue) { return population != null ? population.doubleValue() : defaultValue; }
+
+    /**
      * Set population.
      *
      * @param population the population parameter (Integer)

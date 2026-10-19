@@ -39,13 +39,13 @@ public class CulturalMaterialismPureEngine {
             if (cell == null) continue;
 
             // Infrastructure constraint: food and water determine political structure stability
-            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            double food = cell.getFoodResourceOr(0.0);
+            int pop = cell.getPopulationOr(0);
 
             if (pop > 0 && (food / pop) < 0.05) {
                 // Infrastructural deficit forces structural collapse
                 double decay = Math.max(0.0, 1.0 - 0.10 * deltaYears);
-                cell.setResourceCapital(Math.max(0.0, (cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0) * decay));
+                cell.setResourceCapital(Math.max(0.0, (cell.getResourceCapitalOr(0.0)) * decay));
             }
         }
     }

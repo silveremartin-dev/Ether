@@ -96,16 +96,16 @@ public class PriceMultilevelSelectionEngine implements ProceduralEnginePlugin {
 
         double meanWealth = cells.stream()
                 .filter(java.util.Objects::nonNull)
-                .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0)
+                .mapToDouble(c -> c.getResourceCapitalOr(0.0))
                 .average().orElse(10.0);
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.35;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;
+            double gini = cell.getGiniIndexOr(0.35);
+            double capital = cell.getResourceCapitalOr(10.0);
 
             // Group-level prosociality / cohesion index z = (1.0 - gini)
             double prosociality = Math.clamp(1.0 - gini, 0.0, 1.0);
@@ -116,7 +116,7 @@ public class PriceMultilevelSelectionEngine implements ProceduralEnginePlugin {
             double withinGroupErosion = (gini > 0.45) ? (gini - 0.45) * 0.02 : 0.0;
 
             double netAltruismShift = (betweenGroupAdvantage - withinGroupErosion) * deltaYears;
-            double currentWork = cell.getResourceWork() != null ? cell.getResourceWork() : 50.0;
+            double currentWork = cell.getResourceWorkOr(50.0);
             cell.setResourceWork(Math.max(10.0, currentWork * (1.0 + netAltruismShift)));
         }
     }

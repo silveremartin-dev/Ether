@@ -96,18 +96,18 @@ public class SoilWaterRetentionEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-            double agriBiomass = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() : 0.0;
+            int pop = cell.getPopulationOr(0);
+            double agriBiomass = cell.getBiomassAgricultureOr(0.0);
             if (agriBiomass <= 0.0 && pop <= 0) continue;
 
-            double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
+            double rainfall = cell.getRainfallOr(500.0);
             // Slope gradient approximated by biome / elevation
             double slope = (cell.getBiome() == Biome.MOUNTAINS) ? 0.35 : (cell.getBiome() == Biome.HILLS ? 0.15 : 0.03);
 
             double awcIndex = calculatePlantAvailableWaterIndex(rainfall, slope);
 
             // Modulate agricultural biomass based on van Genuchten plant available water
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
             double potentialBiomass = Math.min(3000.0, Math.max(50.0, pop * (3.0 + tech * 0.5)));
             if (agriBiomass <= 0.0) {
                 agriBiomass = potentialBiomass;

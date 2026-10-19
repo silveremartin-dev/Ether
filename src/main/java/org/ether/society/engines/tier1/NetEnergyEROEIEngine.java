@@ -30,21 +30,15 @@ public class NetEnergyEROEIEngine {
      * Calculates Net Energy Return on Investment (EROEI) for a cell.
      *
      * @param cell H3 terrain cell
-     * @return EROEI ratio (e.g. 1.1 to 30.0)
-     */
-    /**
-     * Calculates Net Energy Return on Investment (EROEI) for a cell.
-     *
-     * @param cell H3 terrain cell
      * @return EROEI ratio (e.g. 0.5 to 30.0)
      */
     public static double calculateEROEI(H3Cell cell) {
 // Numerical integration step for NetEnergyEROEIEngine - verifies boundary conservation and updates local thermodynamic state
         if (cell == null) return 1.1;
 
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+        double tech = cell.getTechnologyLevelOr(0.0);
         double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
-        double woodBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
+        double woodBiomass = cell.getBiomassNaturalOr(0.0);
         if (cell.getWoodResource() != null && cell.getWoodResource() > woodBiomass) {
             woodBiomass = cell.getWoodResource();
         }
@@ -78,7 +72,7 @@ public class NetEnergyEROEIEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             double eroei = calculateEROEI(cell);
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
 
             // EROEI < 1.0 triggers societal energy deficit and demographic crisis
             if (eroei < 1.0 && pop > 50) {
@@ -86,7 +80,7 @@ public class NetEnergyEROEIEngine {
                 int famineDeaths = (int) Math.clamp(pop * 0.05 * dtMonthlyRatio, 1, pop / 3);
                 cell.setPopulation(Math.max(0, pop - famineDeaths));
                 cell.setBiomassHuman((double) Math.max(0, pop - famineDeaths));
-                double curLife = cell.getLifespan() != null ? cell.getLifespan() : 40.0;
+                double curLife = cell.getLifespanOr(40.0);
                 cell.setLifespan(Math.max(15.0, curLife - 1.0 * dtMonthlyRatio));
             }
         }

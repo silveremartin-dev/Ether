@@ -97,12 +97,12 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop < 50) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 10.0;
-            double food = cell.getFoodResource() != null ? cell.getFoodResource() : 1000.0;
+            double tech = cell.getTechnologyLevelOr(1.0);
+            double capital = cell.getResourceCapitalOr(10.0);
+            double food = cell.getFoodResourceOr(1000.0);
 
             // Pre-mechanized agrarian era (Tech 1.5 to 4.5): draft animals provide high traction but consume fodder
             if (tech >= 1.5 && tech < 4.5) {

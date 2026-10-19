@@ -50,11 +50,11 @@ public class PlanetaryBoundariesEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            totalPop += cell.getPopulation() != null ? cell.getPopulation() : 0;
-            totalAquiferDeficit += Math.max(0.0, 500.0 - (cell.getAccessibleAquifer() != null ? cell.getAccessibleAquifer() : 500.0));
-            totalSocDeficit += Math.max(0.0, 100.0 - (cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon() : 100.0));
-            totalPollution += cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
-            totalTemp += cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            totalPop += cell.getPopulationOr(0);
+            totalAquiferDeficit += Math.max(0.0, 500.0 - (cell.getAccessibleAquiferOr(500.0)));
+            totalSocDeficit += Math.max(0.0, 100.0 - (cell.getSoilOrganicCarbonOr(100.0)));
+            totalPollution += cell.getPollutionLevelOr(0.0);
+            totalTemp += cell.getTemperatureOr(15.0);
         }
 
         double avgTemp = totalTemp / cells.size();

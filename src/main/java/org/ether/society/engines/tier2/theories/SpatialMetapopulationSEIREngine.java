@@ -112,10 +112,10 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            int infected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
+            int infected = cell.getEpidemicInfectedOr(0);
             if (infected <= 0) continue;
             infected = Math.min(pop, infected);
 
@@ -153,7 +153,7 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
                         for (Long nIdx : neighborIndexes) {
                             H3Cell neighbor = lookup.get(nIdx);
                             if (neighbor != null && neighbor.getPopulation() != null && neighbor.getPopulation() > 0) {
-                                int nInfected = neighbor.getEpidemicInfected() != null ? neighbor.getEpidemicInfected() : 0;
+                                int nInfected = neighbor.getEpidemicInfectedOr(0);
                                 neighbor.setEpidemicInfected(Math.min(neighbor.getPopulation(), nInfected + perNeighborSpread));
                             }
                         }

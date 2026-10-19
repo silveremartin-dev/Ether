@@ -55,14 +55,14 @@ public class BioMolecularEpidemiologyEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
             // Monthly metabolic food requirement scaled by tick duration dt
             double foodRequired = pop * 1.0 * dtMonthlyRatio;
 
             // Available caloric resources: granary store + standing crop harvest + foraging
-            double grainFood = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+            double grainFood = cell.getFoodResourceOr(0.0);
             double agriHarvest = cell.getBiomassAgriculture() != null ? (cell.getBiomassAgriculture() * 0.70 * dtYears) : 0.0;
             double wildHarvest = cell.getBiomassNatural() != null ? (cell.getBiomassNatural() * 0.05 * dtYears) : 0.0;
             double totalFoodAvailable = grainFood + agriHarvest + wildHarvest;
@@ -73,7 +73,7 @@ public class BioMolecularEpidemiologyEngine {
             // Immunoglobulin synthesis capacity (0.05 to 1.0)
             double immunoglobulinSynthesisRate = Math.clamp(energyRatio, 0.05, 1.0);
 
-            double curLife = cell.getLifespan() != null ? cell.getLifespan() : 40.0;
+            double curLife = cell.getLifespanOr(40.0);
             double targetBaselineLife = (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() >= 1.5) ? 48.0 : 38.0;
 
             // Malnutrition-induced immune collapse
@@ -88,18 +88,18 @@ public class BioMolecularEpidemiologyEngine {
             }
 
             // --- Improvement 1: Endogenous Zoonotic Spillover ---
-            double livestock = cell.getBiomassLivestock() != null ? cell.getBiomassLivestock() : 0.0;
+            double livestock = cell.getBiomassLivestockOr(0.0);
             if (livestock > 10.0 && pop >= 50) {
                 double exposureProduct = livestock * pop;
                 double immuneProtection = 1.0 + immunoglobulinSynthesisRate;
                 double exponent = -ZOONOTIC_KAPPA * (exposureProduct / immuneProtection) * dtYears;
                 double pSpillover = 1.0 - Math.exp(Math.max(-10.0, exponent));
 
-                int currentInfected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
+                int currentInfected = cell.getEpidemicInfectedOr(0);
 
                 // Deterministic pseudo-random seed based on H3 index, lifespan, and food state
-                double curLifespan = cell.getLifespan() != null ? cell.getLifespan() : 40.0;
-                double curFood = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
+                double curLifespan = cell.getLifespanOr(40.0);
+                double curFood = cell.getFoodResourceOr(0.0);
                 long seed = (cell.getH3Index() * 6364136223846793005L
                         + (long)(curLifespan * 1000.0) * 1442695040888963407L
                         + (long)(curFood * 10.0));
@@ -114,7 +114,7 @@ public class BioMolecularEpidemiologyEngine {
             }
 
             // Pathogen Progression & Mortality within infected populations
-            int infected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
+            int infected = cell.getEpidemicInfectedOr(0);
             if (infected > 0) {
                 activeEpidemicCells++;
                 infected = Math.min(pop, infected);
@@ -127,7 +127,7 @@ public class BioMolecularEpidemiologyEngine {
                 double recoveryRate = 0.15 * dtMonthlyRatio;
                 int recovered = Math.min(infected - deaths, (int) Math.round(infected * recoveryRate));
 
-                int totalRecovered = (cell.getEpidemicRecovered() != null ? cell.getEpidemicRecovered() : 0) + recovered;
+                int totalRecovered = (cell.getEpidemicRecoveredOr(0)) + recovered;
                 cell.setEpidemicRecovered(totalRecovered);
 
                 int remainingInfected = Math.max(0, infected - recovered - deaths);
@@ -139,7 +139,7 @@ public class BioMolecularEpidemiologyEngine {
 
                 // Acute epidemiological lifespan depression
                 double epidemicLifespanPenalty = 3.0 * ((double) infected / pop) * dtMonthlyRatio;
-                double activeLifespan = cell.getLifespan() != null ? cell.getLifespan() : 40.0;
+                double activeLifespan = cell.getLifespanOr(40.0);
                 cell.setLifespan(Math.max(15.0, activeLifespan - epidemicLifespanPenalty));
 
                 if (remainingInfected == 0) {

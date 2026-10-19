@@ -66,14 +66,14 @@ public class TechnologicalSingularityEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
             if (tech < 5.0) continue; // Singularity requires trans-human technological tier (tech >= 5.0 and P_capita >= 50,000 W)
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double capital = cell.getResourceCapitalOr(0.0);
 
             double throughputBitsPerSec = calculateAlgorithmicThroughputBitsPerSec(powerPerCapita, capital);
 
@@ -85,11 +85,11 @@ public class TechnologicalSingularityEngine {
                 cell.setResourceCapital(capital + (capital * 0.10 * dtSafe));
 
                 // 2. Pollution elimination via automated molecular remediation
-                double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
+                double pollution = cell.getPollutionLevelOr(0.0);
                 cell.setPollutionLevel(Math.max(0.0, pollution * Math.pow(0.50, dtSafe)));
 
                 // 3. Trans-human health & lifespan expansion
-                cell.setLifespan(Math.min(150.0, (cell.getLifespan() != null ? cell.getLifespan() : 70.0) + 1.0 * dtSafe));
+                cell.setLifespan(Math.min(150.0, (cell.getLifespanOr(70.0)) + 1.0 * dtSafe));
             }
         }
 

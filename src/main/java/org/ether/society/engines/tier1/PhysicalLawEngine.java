@@ -45,7 +45,7 @@ public class PhysicalLawEngine {
 
             // Photosynthetic efficiency boost to natural biomass
             if (photosyntheticEfficiencyMultiplier != 1.0) {
-                double naturalBiomass = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : 0.0;
+                double naturalBiomass = cell.getBiomassNaturalOr(0.0);
                 cell.setBiomassNatural(naturalBiomass * (1.0 + (photosyntheticEfficiencyMultiplier - 1.0) * 0.02 * deltaYears));
             }
 

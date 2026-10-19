@@ -54,16 +54,16 @@ public class CrustalGeothermalEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
             double maxDepthMeters = calculateMaxMiningDepthMeters(tech);
 
             // Sub-surface temperature at max mining depth
-            double surfaceTempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double surfaceTempC = cell.getTemperatureOr(15.0);
             double miningSubsurfaceTempC = surfaceTempC + (maxDepthMeters / 1000.0) * GEOTHERMAL_GRADIENT_C_PER_KM;
 
             // Deep mining yields additional metal ores if tech can withstand subsurface heat (> 60°C)
             if (tech >= 5.0 && miningSubsurfaceTempC > 60.0) {
-                double metalOre = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
+                double metalOre = cell.getResourceMetalOr(0.0);
                 cell.setResourceMetal(metalOre + 50.0);
             }
         }

@@ -71,11 +71,11 @@ public class HydrologicalEngineeringEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            double elevation = cell.getElevation() != null ? cell.getElevation() : 0.0;
-            double rainfall = cell.getRainfall() != null ? cell.getRainfall() : 500.0;
-            double tempC = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
+            double capital = cell.getResourceCapitalOr(0.0);
+            double elevation = cell.getElevationOr(0.0);
+            double rainfall = cell.getRainfallOr(500.0);
+            double tempC = cell.getTemperatureOr(15.0);
             int pop = cell.getPopulation();
             Biome biome = cell.getBiome();
 

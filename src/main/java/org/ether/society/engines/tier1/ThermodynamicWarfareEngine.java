@@ -38,11 +38,11 @@ public class ThermodynamicWarfareEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
+            int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
+            double tech = cell.getTechnologyLevelOr(0.0);
+            double capital = cell.getResourceCapitalOr(0.0);
 
             // Material Yield Strength (Ïƒ_yield in MPa): Wood (20 MPa) -> Bronze (200 MPa) -> Steel (500 MPa) -> Composites (1200+ MPa)
             double materialYieldStrengthMPa = Math.clamp(20.0 + tech * 15.0, 20.0, 2000.0);

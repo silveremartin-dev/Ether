@@ -42,7 +42,7 @@ public class SexualSelectionMatingEngine {
             double capital = cell.getResourceCapital();
             // High capital inequality creates surplus unmated male military mobilization
             if (capital > 500.0) {
-                double work = cell.getResourceWork() != null ? cell.getResourceWork() : 50.0;
+                double work = cell.getResourceWorkOr(50.0);
                 cell.setResourceWork(work * (1.0 + 0.05 * deltaYears)); // Increased military mobilization
             }
         }

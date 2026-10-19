@@ -39,9 +39,9 @@ public class World3HybridEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double metal = cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0;
-            double capital = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-            double pollution = cell.getPollutionLevel() != null ? cell.getPollutionLevel() : 0.0;
+            double metal = cell.getResourceMetalOr(0.0);
+            double capital = cell.getResourceCapitalOr(0.0);
+            double pollution = cell.getPollutionLevelOr(0.0);
 
             // FCAOR hypothesis: capital diverted to mining increases as local mineral stock drops below 50.0
             double fcaor = 0.05 + 0.85 * Math.pow(Math.max(0.0, 1.0 - (metal / 50.0)), 2.0);
