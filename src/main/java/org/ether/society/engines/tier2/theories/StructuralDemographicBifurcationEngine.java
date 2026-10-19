@@ -73,6 +73,15 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
         this.random = random != null ? random : new Random(42);
     }
 
+    /**
+     * Sets the scenario seed on the internal random number generator.
+     *
+     * @param seed the scenario seed (long)
+     */
+    public void setSeed(long seed) {
+        this.random.setSeed(seed);
+    }
+
     @Override
     /*
      * Get name.

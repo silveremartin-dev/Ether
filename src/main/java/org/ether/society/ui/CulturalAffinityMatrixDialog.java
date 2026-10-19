@@ -965,7 +965,10 @@ public class CulturalAffinityMatrixDialog extends Stage {
     // Helper subroutine: generate affinities stochastic - internal state computation & bounds checking
     private void generateAffinitiesStochastic() {
         int n = activeEntities.size();
-        Random rng = new Random();
+        long seed = (targetScenario != null && targetScenario.getCulturalSeed() != 0L)
+                ? targetScenario.getCulturalSeed()
+                : ((targetScenario != null && targetScenario.getSeed() != 0L) ? targetScenario.getSeed() : 42L);
+        Random rng = new Random(seed);
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
                 CulturalEntity e1 = activeEntities.get(i);

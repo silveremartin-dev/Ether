@@ -39,9 +39,15 @@ public class PreComputePhase {
      */
     public PreComputePhase(Scenario scenario) {
         this.scenario = scenario;
-        this.random = new Random(scenario.getPlanetPreset() != null
-                ? scenario.getPlanetPreset().seed()
-                : 12345L);
+        long seed = 12345L;
+        if (scenario != null) {
+            if (scenario.getSeed() != 0L) {
+                seed = scenario.getSeed();
+            } else if (scenario.getPlanetPreset() != null) {
+                seed = scenario.getPlanetPreset().seed();
+            }
+        }
+        this.random = new Random(seed);
     }
 
     /*

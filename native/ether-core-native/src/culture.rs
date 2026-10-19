@@ -28,6 +28,19 @@ pub unsafe fn process_culture(
     diffusion_rate: f32,
     forcing_rate: f32,
 ) {
+    process_culture_full(world, agents, dt_years, diffusion_rate, forcing_rate, 0.0, 42, 1);
+}
+
+pub unsafe fn process_culture_full(
+    world: &mut WorldBufferRaw,
+    agents: &mut AgentBufferRaw,
+    dt_years: f32,
+    diffusion_rate: f32,
+    forcing_rate: f32,
+    mutation_rate: f32,
+    seed: i64,
+    tick_counter: i64,
+) {
     let a_cap = agents.capacity;
     let w_cap = world.capacity;
     if a_cap == 0 || w_cap == 0 { return; }
@@ -51,6 +64,19 @@ pub unsafe fn process_culture(
     };
 
     let dt = dt_years.max(0.0001);
+
+    // Step 0: Langevin stochastic Wiener drift
+    if mutation_rate > 0.0 {
+        let noise_coeff = ((mutation_rate as f64) * (dt as f64).sqrt()) as f32;
+        for i in 0..a_cap {
+            if hex_ids[i] == -1 { continue; }
+            for d in 0..4 {
+                let gaussian_noise = crate::prng::next_gaussian(seed, tick_counter, ((i as i64) << 4) | (d as i64)).clamp(-3.0, 3.0) as f32;
+                let val = culture[d * a_cap + i] + gaussian_noise * noise_coeff;
+                culture[d * a_cap + i] = val.clamp(0.0, 1.0);
+            }
+        }
+    }
 
     // Step 1: Spatial aggregation into cells
     let mut hex_agent_count = vec![0_i32; w_cap];

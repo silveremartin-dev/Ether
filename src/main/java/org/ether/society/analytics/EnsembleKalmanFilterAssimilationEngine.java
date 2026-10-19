@@ -75,6 +75,15 @@ public class EnsembleKalmanFilterAssimilationEngine {
         this.random = random != null ? random : new Random(1234);
     }
 
+    /**
+     * Sets the seed for the internal random number generator.
+     *
+     * @param seed the seed (long)
+     */
+    public void setSeed(long seed) {
+        this.random.setSeed(seed);
+    }
+
     /*
      * Executes a sequential EnKF analysis update over an ensemble of state vectors.
      *

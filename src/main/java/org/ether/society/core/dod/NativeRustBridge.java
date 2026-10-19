@@ -50,6 +50,7 @@ public class NativeRustBridge {
     private static MethodHandle fluxTickHandle = null;
     private static MethodHandle demogTickHandle = null;
     private static MethodHandle cultureTickHandle = null;
+    private static MethodHandle cultureTickFullHandle = null;
 
     static {
         try {
@@ -119,6 +120,15 @@ public class NativeRustBridge {
                 lookup.find("ether_culture_tick").ifPresent(addr -> {
                     cultureTickHandle = linker.downcallHandle(addr, FunctionDescriptor.ofVoid(
                             ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT));
+                });
+
+                lookup.find("ether_culture_tick_full").ifPresentOrElse(addr -> {
+                    cultureTickFullHandle = linker.downcallHandle(addr, FunctionDescriptor.ofVoid(
+                            ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT,
+                            ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
+                    logger.info("DEBUG: ether_culture_tick_full BOUND successfully!");
+                }, () -> {
+                    logger.warn("DEBUG: ether_culture_tick_full NOT FOUND in loaded library!");
                 });
 
                 nativeAvailable = (envTickHandle != null && urbanTickHandle != null && fluxTickHandle != null
@@ -477,6 +487,22 @@ public class NativeRustBridge {
             } catch (Throwable t) {
                 throw new RuntimeException("Failed native culture tick", t);
             }
+        }
+
+        /**
+         * Executes cultural Langevin SDE tensor drift tick with explicit stochastic Wiener drift via native Rust library.
+         */
+        public void tickCulture(float dtYears, float diffusionRate, float forcingRate, float mutationRate, long seed, long tickCounter) {
+            if (cultureTickFullHandle != null) {
+                try {
+                    cultureTickFullHandle.invokeExact(worldStructSeg, agentStructSeg, dtYears, diffusionRate, forcingRate, mutationRate, seed, tickCounter);
+                    return;
+                } catch (Throwable t) {
+                    throw new RuntimeException("Failed native full culture tick", t);
+                }
+            }
+            logger.warn("cultureTickFullHandle is null! Falling back to 5-param culture tick");
+            tickCulture(dtYears, diffusionRate, forcingRate);
         }
 
         /**

@@ -27,6 +27,32 @@ import java.util.List;
  */
 public class LanguageLinguisticEngine {
     private static final Logger logger = LoggerFactory.getLogger(LanguageLinguisticEngine.class);
+    private static long baseSeed = 42L;
+
+    /**
+     * Resets mutable static state between scenario executions to guarantee isolation.
+     */
+    public static void resetState() {
+        baseSeed = 42L;
+    }
+
+    /**
+     * Sets the scenario-derived random seed for deterministic language assimilation and diffusion.
+     *
+     * @param seed the scenario seed (long)
+     */
+    public static void setBaseSeed(long seed) {
+        baseSeed = seed;
+    }
+
+    /**
+     * Gets the scenario-derived random seed for deterministic language assimilation and diffusion.
+     *
+     * @return the base seed (long)
+     */
+    public static long getBaseSeed() {
+        return baseSeed;
+    }
 
     /*
      * Executes one linguistic drift and cultural isolation cycle across cells and trade routes.
@@ -80,7 +106,7 @@ public class LanguageLinguisticEngine {
                     // Isolated cells resist foreign assimilation (lower chance)
                     double assimilationChance = isIslandOrIsolated ? 0.03 : 0.15;
                     long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
-                    if (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, cellId, 311L) < assimilationChance) {
+                    if (org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, cellId, 311L) < assimilationChance) {
                         cell.setLanguageGroup(capital.getLanguageGroup());
                         cell.setLinguisticDrift(0.1);
                     }
@@ -103,7 +129,7 @@ public class LanguageLinguisticEngine {
                     double diffusionChance = isIsolated ? 0.05 : 0.25;
 
                     long routeCellId = routeCell.getH3Index() != null ? routeCell.getH3Index() : 0L;
-                    if (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, routeCellId, 313L) < diffusionChance) {
+                    if (org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, routeCellId, 313L) < diffusionChance) {
                         routeCell.setLanguageGroup(hubLang);
                         double routeDrift = routeCell.getLinguisticDrift() != null ? routeCell.getLinguisticDrift() : 0.0;
                         routeCell.setLinguisticDrift(Math.max(0.0, routeDrift - 0.2));

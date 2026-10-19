@@ -32,12 +32,32 @@ public class NuclearSafetyRadiotoxicityEngine {
 
     /* Baseline annual core meltdown probability per fission cell */
     private static double accidentProbability = 0.0005;
+    private static long baseSeed = 42L;
 
     /**
      * Resets mutable static state between scenario executions to guarantee isolation.
      */
     public static void resetState() {
         accidentProbability = 0.0005;
+        baseSeed = 42L;
+    }
+
+    /**
+     * Sets the scenario-derived random seed for deterministic fission meltdown evaluations.
+     *
+     * @param seed the scenario seed (long)
+     */
+    public static void setBaseSeed(long seed) {
+        baseSeed = seed;
+    }
+
+    /**
+     * Gets the scenario-derived random seed for deterministic fission meltdown evaluations.
+     *
+     * @return the base seed (long)
+     */
+    public static long getBaseSeed() {
+        return baseSeed;
     }
 
     public static double getAccidentProbability() {
@@ -81,7 +101,7 @@ public class NuclearSafetyRadiotoxicityEngine {
             // Fission accident probability under high power flux without fusion
             if (powerPerCapita >= FISSION_POWER_THRESHOLD && powerPerCapita < FUSION_POWER_THRESHOLD) {
                 long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
-                double prng = org.ether.society.util.DeterministicPRNG.nextDouble(42L, tick, cellId, 107L);
+                double prng = org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, tick, cellId, 107L);
                 if (accidentProbability >= 1.0 || prng < accidentProbability) { // Deterministic meltdown risk event
                     meltdownEvents++;
                     // Radiotoxic fallout spike (Bq/m^2 modeled via pollution)

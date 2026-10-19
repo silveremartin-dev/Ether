@@ -153,14 +153,9 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     private org.ether.society.core.dod.CultureKernel cultureKernel;
-
-
+    private final org.ether.society.core.dod.FluxKernel fluxKernel;
     private final org.ether.society.core.dod.EnvironmentalKernel environmentalKernel;
-
-
     private final org.ether.society.core.dod.StatisticsKernel statisticsKernel;
-
-
     private final SimulationPipeline simulationPipeline;
 
 
@@ -314,11 +309,8 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.statisticsKernel = new org.ether.society.core.dod.StatisticsKernel();
 
 
-        this.simulationPipeline = new SimulationPipeline(demographicKernel, urbanKernel, cultureKernel, environmentalKernel, statisticsKernel);
-
-
-
-
+        this.fluxKernel = new org.ether.society.core.dod.FluxKernel();
+        this.simulationPipeline = new SimulationPipeline(demographicKernel, urbanKernel, cultureKernel, environmentalKernel, statisticsKernel, fluxKernel);
 
         initialize();
 
@@ -534,11 +526,18 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
         if (demographicKernel != null) {
-
-
             demographicKernel.setTargetCohortSize(cohortSize);
-
-
+            long sSeed = scenario != null && scenario.getSeed() != 0L ? scenario.getSeed() : 42L;
+            demographicKernel.setBaseSeed(sSeed);
+        }
+        if (cultureKernel != null) {
+            cultureKernel.resetState();
+            long sSeed = scenario != null && scenario.getSeed() != 0L ? scenario.getSeed() : 42L;
+            long cSeed = scenario != null && scenario.getCulturalSeed() != 0L ? scenario.getCulturalSeed() : sSeed;
+            cultureKernel.setBaseSeed(cSeed);
+        }
+        if (simulationPipeline != null) {
+            simulationPipeline.configureScenario(scenario);
         }
 
 
@@ -779,7 +778,8 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
             long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
-            if (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, cellId, 503L) < 0.1 && basePop > 0) {
+            long sSeed = currentScenario != null && currentScenario.getSeed() != 0L ? currentScenario.getSeed() : 42L;
+            if (org.ether.society.util.DeterministicPRNG.nextDouble(sSeed, 0L, cellId, 503L) < 0.1 && basePop > 0) {
                 cell.setPopulation(basePop);
                 populatedCells++;
             }
@@ -5922,14 +5922,17 @@ public class H3SimulationEngine implements ISimulationEngine {
 
 
     public SimulationSaveManager getSimulationSaveManager() {
-
-
         return simulationSaveManager;
-
-
     }
 
-
+    /**
+     * Gets the data-oriented hexagonal trade and resource diffusion flux kernel.
+     *
+     * @return the flux kernel instance
+     */
+    public org.ether.society.core.dod.FluxKernel getFluxKernel() {
+        return fluxKernel;
+    }
 }
 
 

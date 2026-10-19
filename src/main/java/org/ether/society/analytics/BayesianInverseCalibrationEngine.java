@@ -112,12 +112,23 @@ public class BayesianInverseCalibrationEngine {
             int targetParticles,
             int maxIterations,
             double initialTolerance) {
+        return calibrateParametersABC(priors, observedTrajectory, forwardSimulator, targetParticles, maxIterations, initialTolerance, 42L);
+    }
+
+    public static CalibrationReport calibrateParametersABC(
+            List<ParameterPrior> priors,
+            Map<Integer, Double> observedTrajectory,
+            Function<Map<String, Double>, Map<Integer, Double>> forwardSimulator,
+            int targetParticles,
+            int maxIterations,
+            double initialTolerance,
+            long seed) {
 
         if (priors == null || priors.isEmpty() || observedTrajectory == null || observedTrajectory.isEmpty()) {
             throw new IllegalArgumentException("Priors and observed trajectory must be non-empty.");
         }
 
-        Random rng = new Random(42L); // Deterministic seed for reproducible scientific calibration
+        Random rng = new Random(seed); // Deterministic seed for reproducible scientific calibration
         List<Map<String, Double>> acceptedParticles = new ArrayList<>();
         List<Double> acceptedDistances = new ArrayList<>();
 

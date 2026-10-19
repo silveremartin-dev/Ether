@@ -118,7 +118,7 @@ pub unsafe fn process_demographics(
         }
 
         let age_years = age[i];
-        sigma[i] = m.powf(1.05) * 0.01;
+        sigma[i] = ((m as f64).powf(1.05) as f32) * 0.01;
 
         let t = tech[i];
         let trophic_mult = if t < 1.5 {
@@ -156,13 +156,14 @@ pub unsafe fn process_demographics(
         let kinship_natalism = culture_slice[1 * a_cap + i].clamp(0.0, 1.0);
         let primiparity_age = HUMAN_MIN_PRIMIPARITY_AGE_YEARS 
             + 10.0 * (1.0 - kinship_natalism) 
-            + 6.0 * (t / 80.0).tanh();
+            + 6.0 * ((t as f64 / 80.0).tanh() as f32);
         let peak_fertility_age = primiparity_age + 8.0;
 
         let fecundity_age_factor = if age_years < primiparity_age - 1.5 {
             0.0
         } else {
-            ( -((age_years - peak_fertility_age).powi(2)) / (2.0 * 13.0_f32.powi(2)) ).exp()
+            let age_diff = age_years - peak_fertility_age;
+            ((-((age_diff * age_diff) as f64) / 338.0).exp()) as f32
         };
 
         let nutritional_factor = (0.15 + 0.85 * (energy[i] / 75.0) * food_satisfaction).clamp(0.05, 1.25);
@@ -181,9 +182,9 @@ pub unsafe fn process_demographics(
 
         // 5. Birth Rate
         let max_bio_fertility = if t < 1.5 {
-            0.024 + 0.004 * t.tanh()
+            (0.024_f64 + 0.004_f64 * (t as f64).tanh()) as f32
         } else {
-            0.0375 + 0.012 * ((t - 1.5) / 1.5).tanh()
+            (0.0375_f64 + 0.012_f64 * (((t - 1.5) / 1.5) as f64).tanh()) as f32
         };
         let fertility_modulation = fecundity_age_factor * nutritional_factor.min(1.0) * cultural_fertility_mult * density_feedback;
         let birth_rate = max_bio_fertility * fertility_modulation.clamp(0.0, 1.25);
@@ -199,7 +200,7 @@ pub unsafe fn process_demographics(
         // 7. Infant mortality
         let capital_per_cap = if m > 0.001 { capital[h] / m } else { 0.0 };
         let water_security = if water[h] > 10.0 { 1.0 } else { 0.3 };
-        let hygiene_factor = (-capital_per_cap / 50.0).exp();
+        let hygiene_factor = ((-capital_per_cap as f64 / 50.0).exp()) as f32;
         let mut infant_mortality_rate = (0.015 + 0.20 * hygiene_factor * (1.5 - 0.5 * food_satisfaction) * (1.5 - 0.5 * water_security)).clamp(0.015, 0.50);
 
         let mut lifespan_ratio = 1.0_f32;
@@ -214,14 +215,14 @@ pub unsafe fn process_demographics(
         let non_surviving_infants = new_births - surviving_newborns;
 
         // 8. Adult & Senescent mortality
-        let gompertz_senescence = 0.0001 * (0.08 * age_years).exp();
+        let gompertz_senescence = (0.0001_f64 * (0.08_f64 * age_years as f64).exp()) as f32;
         let acute_deficit = (1.0 - food_satisfaction).max(0.0);
         let starvation_mortality = (if acute_deficit > 0.3 { 0.35 * (acute_deficit - 0.3) } else { 0.0 })
             + (if energy[i] < 25.0 { 0.45 * (1.0 - energy[i] / 25.0) } else { 0.0 });
         let baseline_hazard = 0.010 * lifespan_ratio;
         let adult_hazard_rate = (baseline_hazard + gompertz_senescence + starvation_mortality).max(0.008);
 
-        let survival_fraction = (-adult_hazard_rate * dt_in_years).exp();
+        let survival_fraction = ((-adult_hazard_rate as f64 * dt_in_years as f64).exp()) as f32;
         let adult_deaths = m * (1.0 - survival_fraction);
         let total_deaths = adult_deaths + non_surviving_infants;
         deaths[i] = total_deaths;
@@ -238,7 +239,7 @@ pub unsafe fn process_demographics(
                 - mean_senescent_death_age * senescent_deaths;
             let mut updated_mean_age = (age_sum / new_mass).max(16.0);
 
-            let target_eq_age = 24.5 + 12.0 * (t / 80.0).tanh();
+            let target_eq_age = 24.5 + 12.0 * ((t as f64 / 80.0).tanh() as f32);
             let gen_turnover = (0.08 * dt_in_years).min(1.0);
             updated_mean_age += (target_eq_age - updated_mean_age) * gen_turnover;
             age[i] = updated_mean_age.clamp(18.0, 50.0);
@@ -254,6 +255,22 @@ pub unsafe fn process_demographics(
     process_mitosis(agents, a_cap, target_cohort_size);
 }
 
+fn find_free_slot(hex_ids: &[i32], capacity: usize, hint: &mut usize) -> Option<usize> {
+    for idx in *hint..capacity {
+        if hex_ids[idx] == -1 {
+            *hint = if idx + 1 < capacity { idx + 1 } else { 0 };
+            return Some(idx);
+        }
+    }
+    for idx in 0..*hint {
+        if hex_ids[idx] == -1 {
+            *hint = if idx + 1 < capacity { idx + 1 } else { 0 };
+            return Some(idx);
+        }
+    }
+    None
+}
+
 unsafe fn process_mitosis(agents: &mut AgentBufferRaw, capacity: usize, target_cohort_size: f32) {
     let mass = std::slice::from_raw_parts_mut(agents.mass, capacity);
     let energy = std::slice::from_raw_parts_mut(agents.energy, capacity);
@@ -265,24 +282,29 @@ unsafe fn process_mitosis(agents: &mut AgentBufferRaw, capacity: usize, target_c
     let culture = std::slice::from_raw_parts_mut(agents.culture, 4 * capacity);
     let genetics = std::slice::from_raw_parts_mut(agents.genetics, 4 * capacity);
 
+    let mut hint = 0;
     for i in 0..capacity {
         if hex_ids[i] == -1 { continue; }
 
         if mass[i] >= target_cohort_size * 1.25 && energy[i] >= 25.0 {
-            if let Some(free_idx) = (0..capacity).find(|&k| hex_ids[k] == -1) {
-                mass[free_idx] = mass[i] / 2.0;
-                energy[free_idx] = energy[i]; // Preserves per-capita energy status
+            if let Some(new_slot) = find_free_slot(hex_ids, capacity, &mut hint) {
+                mass[new_slot] = mass[i] / 2.0;
+                energy[new_slot] = energy[i]; // Preserves per-capita energy status
                 mass[i] /= 2.0;
 
-                hex_ids[free_idx] = hex_ids[i];
-                h3_indexes[free_idx] = h3_indexes[i];
-                tech[free_idx] = tech[i];
-                gen[free_idx] = gen[i] + 1;
-                age[free_idx] = 20.0; // Young adult generation
+                hex_ids[new_slot] = hex_ids[i];
+                h3_indexes[new_slot] = h3_indexes[i];
+                tech[new_slot] = tech[i];
+                gen[new_slot] = gen[i] + 1;
+
+                let age_rnd = crate::prng::next_double(42, 0, new_slot as i64, 403) as f32;
+                age[new_slot] = (18.0 + age_rnd * 8.0).max(16.0);
 
                 for d in 0..4 {
-                    genetics[d * capacity + free_idx] = genetics[d * capacity + i];
-                    culture[d * capacity + free_idx] = culture[d * capacity + i];
+                    let mut_g = ((crate::prng::next_double(42, 0, new_slot as i64, 405 + d as i64) - 0.5) as f32) * 0.05_f32;
+                    let mut_c = ((crate::prng::next_double(42, 0, new_slot as i64, 415 + d as i64) - 0.5) as f32) * 0.05_f32;
+                    genetics[d * capacity + new_slot] = (genetics[d * capacity + i] + mut_g).clamp(0.0, 1.0);
+                    culture[d * capacity + new_slot] = (culture[d * capacity + i] + mut_c).clamp(0.0, 1.0);
                 }
             } else {
                 break;

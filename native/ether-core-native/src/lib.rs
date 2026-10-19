@@ -4,6 +4,7 @@ pub mod culture;
 pub mod demographic;
 pub mod environmental;
 pub mod flux;
+pub mod prng;
 pub mod urban;
 
 use buffers::{AgentBufferRaw, WorldBufferRaw};
@@ -53,4 +54,20 @@ pub unsafe extern "C" fn ether_culture_tick(
 ) {
     if world_ptr.is_null() || agents_ptr.is_null() { return; }
     culture::process_culture(&mut *world_ptr, &mut *agents_ptr, dt_years, diffusion_rate, forcing_rate);
+}
+
+/// Complete FFI Export: Advances Cultural Langevin SDE Drift and Tensor Anchoring with explicit stochastic parameters.
+#[no_mangle]
+pub unsafe extern "C" fn ether_culture_tick_full(
+    world_ptr: *mut WorldBufferRaw,
+    agents_ptr: *mut AgentBufferRaw,
+    dt_years: c_float,
+    diffusion_rate: c_float,
+    forcing_rate: c_float,
+    mutation_rate: c_float,
+    seed: i64,
+    tick_counter: i64,
+) {
+    if world_ptr.is_null() || agents_ptr.is_null() { return; }
+    culture::process_culture_full(&mut *world_ptr, &mut *agents_ptr, dt_years, diffusion_rate, forcing_rate, mutation_rate, seed, tick_counter);
 }

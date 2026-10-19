@@ -39,6 +39,7 @@ public class SimulationPipeline {
     private final CultureKernel cultureKernel;
     private final EnvironmentalKernel environmentalKernel;
     private final StatisticsKernel statisticsKernel;
+    private final FluxKernel fluxKernel;
 
     private Scenario configuredScenario;
     private CompiledEngineKernel compiledKernel;
@@ -53,11 +54,21 @@ public class SimulationPipeline {
                               CultureKernel cultureKernel,
                               EnvironmentalKernel environmentalKernel,
                               StatisticsKernel statisticsKernel) {
+        this(demographicKernel, urbanKernel, cultureKernel, environmentalKernel, statisticsKernel, new FluxKernel());
+    }
+
+    public SimulationPipeline(DemographicKernel demographicKernel,
+                              UrbanKernel urbanKernel,
+                              CultureKernel cultureKernel,
+                              EnvironmentalKernel environmentalKernel,
+                              StatisticsKernel statisticsKernel,
+                              FluxKernel fluxKernel) {
         this.demographicKernel = demographicKernel != null ? demographicKernel : new DemographicKernel();
         this.urbanKernel = urbanKernel != null ? urbanKernel : new UrbanKernel();
         this.cultureKernel = cultureKernel != null ? cultureKernel : new CultureKernel();
         this.environmentalKernel = environmentalKernel != null ? environmentalKernel : new EnvironmentalKernel();
         this.statisticsKernel = statisticsKernel != null ? statisticsKernel : new StatisticsKernel();
+        this.fluxKernel = fluxKernel != null ? fluxKernel : new FluxKernel();
     }
 
     /**
@@ -90,11 +101,13 @@ public class SimulationPipeline {
         SmilMaterialTransitionsPureEngine.resetState();
         TasmanianCulturalRegressionEngine.resetState();
         JevonsParadoxEngine.resetState();
+        LanguageLinguisticEngine.resetState();
         ProceduralEngineRegistry.clearPlugins();
     }
 
     /**
      * Configures and JIT-compiles active Type B scenario theories into a single fused execution kernel.
+     * Also binds all underlying physical and cliodynamic RNGs to the scenario seed.
      *
      * @param scenario the active simulation scenario
      */
@@ -102,9 +115,23 @@ public class SimulationPipeline {
         this.configuredScenario = scenario;
         this.cachedLandCells = null;
         this.cachedLandCellsCount = -1;
+
+        long sSeed = scenario != null && scenario.getSeed() != 0L ? scenario.getSeed() : 42L;
         if (this.cultureKernel != null) {
             this.cultureKernel.resetState();
+            long cSeed = scenario != null && scenario.getCulturalSeed() != 0L ? scenario.getCulturalSeed() : sSeed;
+            this.cultureKernel.setBaseSeed(cSeed);
         }
+        if (this.demographicKernel != null) {
+            this.demographicKernel.setBaseSeed(sSeed);
+        }
+        if (this.structuralDemographicBifurcationEngine != null) {
+            this.structuralDemographicBifurcationEngine.setSeed(sSeed);
+        }
+        NuclearSafetyRadiotoxicityEngine.setBaseSeed(sSeed);
+        NuclearWarfareClimateEngine.setBaseSeed(sSeed);
+        LanguageLinguisticEngine.setBaseSeed(sSeed);
+
         if (scenario == null || scenario.getTypeBEngineStates() == null || scenario.getTypeBEngineStates().isEmpty()) {
             this.compiledKernel = null;
             return;
@@ -190,6 +217,7 @@ public class SimulationPipeline {
         environmentalKernel.tick(worldBuffer, dtSlow);
         demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
         urbanKernel.tick(worldBuffer, dtSlow);
+        fluxKernel.tick(worldBuffer, dtSlow);
         cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
         if (engine != null) {
             engine.syncBufferToCells();

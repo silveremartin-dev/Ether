@@ -24,6 +24,7 @@ public class CultureKernel {
     private float mutationRate = 0.015f;   // Langevin stochastic noise intensity (sigma_Langevin)
     private float forcingRate = 0.05f;    // Geocultural map tensor anchoring rate (lambda_forcing)
     private long deterministicTickCounter = 0L;
+    private long baseSeed = 42L;
 
     private float[][] cachedHexCultureSum;
     private int[] cachedHexAgentCount;
@@ -39,6 +40,25 @@ public class CultureKernel {
         this.mutationRate = 0.015f;
         this.forcingRate = 0.05f;
         this.deterministicTickCounter = 0L;
+        this.baseSeed = 42L;
+    }
+
+    /**
+     * Sets the scenario-derived random seed for deterministic cultural drift.
+     *
+     * @param seed the scenario seed (long)
+     */
+    public void setBaseSeed(long seed) {
+        this.baseSeed = seed;
+    }
+
+    /**
+     * Gets the scenario-derived random seed for deterministic cultural drift.
+     *
+     * @return the base seed (long)
+     */
+    public long getBaseSeed() {
+        return baseSeed;
     }
 
     /*
@@ -126,7 +146,7 @@ public class CultureKernel {
             for (int d = 0; d < dims; d++) {
                 // Deterministic Langevin stochastic Wiener increment (dw = Normal(0, sqrt(dt)))
                 double gaussianNoise = Math.clamp(
-                        org.ether.society.util.DeterministicPRNG.nextGaussian(42L, tickIndex, ((long) i << 4) | d),
+                        org.ether.society.util.DeterministicPRNG.nextGaussian(baseSeed, tickIndex, ((long) i << 4) | d),
                         -3.0, 3.0);
                 
                 culture[d][i] += (float) (gaussianNoise * noiseCoeff);

@@ -46,6 +46,34 @@ public class DemographicKernel {
         this.targetCohortSize = Math.max(0.1f, targetCohortSize);
     }
 
+    private long baseSeed = 42L;
+
+    /**
+     * Sets the scenario-derived random seed for deterministic demographic mutation and age sampling.
+     *
+     * @param seed the scenario seed (long)
+     */
+    public void setBaseSeed(long seed) {
+        this.baseSeed = seed;
+    }
+
+    /**
+     * Gets the scenario-derived random seed for deterministic demographic mutation.
+     *
+     * @return the base seed (long)
+     */
+    public long getBaseSeed() {
+        return baseSeed;
+    }
+
+    /**
+     * Resets internal state variables and slot hints for inter-scenario isolation.
+     */
+    public void resetState() {
+        this.baseSeed = 42L;
+        this.nextFreeSlotHint = 0;
+    }
+
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DemographicKernel.class);
 
     /**
@@ -417,13 +445,13 @@ public class DemographicKernel {
                     agents.getH3Indexes()[newSlot] = agents.getH3Indexes()[i];
                     agents.getTechLevel()[newSlot] = agents.getTechLevel()[i];
                     agents.getGenerationCount()[newSlot] = agents.getGenerationCount()[i] + 1;
-                    float ageRnd = (float) org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 403L);
+                    float ageRnd = (float) org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, newSlot, 403L);
                     agents.getAge()[newSlot] = Math.max(16.0f, 18.0f + ageRnd * 8.0f); // Young adult generation (18-26 yrs)
                     
                     // Cultural and genetic inheritance with stochastic mutation drift bounded to [0.0, 1.0]
                     for (int d = 0; d < 4; d++) {
-                        float mutG = (float) (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 405L + d) - 0.5) * 0.05f;
-                        float mutC = (float) (org.ether.society.util.DeterministicPRNG.nextDouble(42L, 0L, newSlot, 415L + d) - 0.5) * 0.05f;
+                        float mutG = (float) (org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, newSlot, 405L + d) - 0.5) * 0.05f;
+                        float mutC = (float) (org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, newSlot, 415L + d) - 0.5) * 0.05f;
                         agents.getGenetics()[d][newSlot] = Math.clamp(agents.getGenetics()[d][i] + mutG, 0.0f, 1.0f);
                         agents.getCulture()[d][newSlot] = Math.clamp(agents.getCulture()[d][i] + mutC, 0.0f, 1.0f);
                     }

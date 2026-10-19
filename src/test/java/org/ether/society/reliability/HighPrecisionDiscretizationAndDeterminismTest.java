@@ -472,6 +472,7 @@ public class HighPrecisionDiscretizationAndDeterminismTest {
         scenario.setName("Determinism Multi-Tick Verification");
         scenario.setDescription("Full pipeline multi-tick bit-exactness verification");
         scenario.setTemporalResolutionDays(30.0);
+        scenario.setSeed(seed);
 
         engine.initializeFromScenario(scenario, cells);
         engine.stepForward(ticks);

@@ -125,9 +125,9 @@ public class ProceduralGenerator {
     }
 
     public PlanetPoint getPlanetPoint(double lat, double lng, PlanetPreset preset,
-                                       long tempSeed, long precipSeed, long seasonSeed) {
+                                       long elevSeed, long precipSeed, long seasonSeed) {
 
-        SimplexNoise elevNoise     = new SimplexNoise(preset.seed());
+        SimplexNoise elevNoise     = new SimplexNoise(elevSeed != 0L ? elevSeed : preset.seed());
         SimplexNoise rainfallNoise = new SimplexNoise(precipSeed);
         SimplexNoise seasonNoise   = new SimplexNoise(seasonSeed);
 
