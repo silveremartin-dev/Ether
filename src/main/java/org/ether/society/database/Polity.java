@@ -1,8 +1,7 @@
-package org.ether.society.model;
+package org.ether.society.database;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.ether.society.database.H3Cell;
 import javafx.scene.paint.Color;
 
 import java.util.Collections;
@@ -11,20 +10,22 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * <h1>Nation</h1>
+ * <h1>Polity</h1>
  * <p>
- * Represents a political entity (Tribe, Nation, Empire) that controls territory.
- * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * Represents an autonomous sovereign political entity (Tribe, Chiefdom, City-State, Empire)
+ * that administers hexagonal territorial cells.
+ * Tracks cliodynamic institutional indicators based on Peter Turchin's Secular Cycles (SDT)
+ * and Fisher Monetary Exchange balances.
  * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Nation {
-    /* Internal state variable for id (String). */
+public class Polity {
+    /* Unique identifier for the polity entity. */
     private final String id;
-    /* Internal state variable for name (String). */
+    /* Name of the sovereign polity. */
     private String name;
     @JsonIgnore
     private Color color;
@@ -41,15 +42,14 @@ public class Nation {
     private double treasuryBullion = 0.0;       // Sovereign precious metal bullion treasury (kg of Au/Ag specie)
     private double monetaryInflation = 0.0;     // Bullion-driven inflation / Dutch Disease index (0.0 to 1.0)
 
-    /*
-     * Nation.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
+    /**
+     * Constructs a new sovereign Polity with initial capital.
      *
-     * @param name the name parameter (String)
-     * @param color the color parameter (Color)
-     * @param capital the capital parameter (H3Cell)
+     * @param name Name of the polity
+     * @param color Map visualization color
+     * @param capital Capital hexagonal cell
      */
-    public Nation(String name, Color color, H3Cell capital) {
+    public Polity(String name, Color color, H3Cell capital) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.color = color;
@@ -59,101 +59,47 @@ public class Nation {
         }
     }
 
-    /*
-     * Get id.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public String getId() {
         return id;
     }
 
-    /*
-     * Get name.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public String getName() {
         return name;
     }
 
-    /*
-     * Set name.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param name the name parameter (String)
-     */
     public void setName(String name) {
         this.name = name;
     }
 
     @JsonIgnore
-    /*
-     * Get color.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public Color getColor() {
         return color;
     }
 
     @JsonIgnore
-    /*
-     * Set color.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param color the color parameter (Color)
-     */
     public void setColor(Color color) {
         this.color = color;
     }
 
     @JsonIgnore
-    /*
-     * Get capital.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public H3Cell getCapital() {
         return capital;
     }
 
     @JsonIgnore
-    /*
-     * Set capital.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param capital the capital parameter (H3Cell)
-     */
     public void setCapital(H3Cell capital) {
         this.capital = capital;
         if (capital != null) {
-            addCell(capital); // Ensure capital is owned
+            addCell(capital);
         }
     }
 
-    /*
-     * Add cell.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param cell the cell parameter (H3Cell)
-     */
     public void addCell(H3Cell cell) {
         if (cell != null && territory.add(cell)) {
-            cell.setOwner(this); // Assuming H3Cell has setOwner
+            cell.setOwner(this);
         }
     }
 
-    /*
-     * Remove cell.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param cell the cell parameter (H3Cell)
-     */
     public void removeCell(H3Cell cell) {
         if (territory.remove(cell)) {
             if (cell.getOwner() == this) {
@@ -163,144 +109,64 @@ public class Nation {
     }
 
     @JsonIgnore
-    /*
-     * Get territory.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public Set<H3Cell> getTerritory() {
         return Collections.unmodifiableSet(territory);
     }
 
     @JsonIgnore
-    /*
-     * Get total population.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public long getTotalPopulation() {
-        return territory.stream().mapToLong(H3Cell::getPopulation).sum();
+        return territory.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
     }
 
-    /*
-     * Get asabiyyah.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public double getAsabiyyah() {
         return asabiyyah;
     }
 
-    /*
-     * Set asabiyyah.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param asabiyyah the asabiyyah parameter (double)
-     */
     public void setAsabiyyah(double asabiyyah) {
         this.asabiyyah = Math.clamp(asabiyyah, 0.0, 1.0);
     }
 
-    /*
-     * Get elite overproduction.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public double getEliteOverproduction() {
         return eliteOverproduction;
     }
 
-    /*
-     * Set elite overproduction.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param eliteOverproduction the elite overproduction parameter (double)
-     */
     public void setEliteOverproduction(double eliteOverproduction) {
         this.eliteOverproduction = Math.clamp(eliteOverproduction, 0.0, 1.0);
     }
 
-    /*
-     * Get state capacity.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public double getStateCapacity() {
         return stateCapacity;
     }
 
-    /*
-     * Set state capacity.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param stateCapacity the state capacity parameter (double)
-     */
     public void setStateCapacity(double stateCapacity) {
         this.stateCapacity = Math.clamp(stateCapacity, 0.0, 1.0);
     }
 
-    /*
-     * Get political instability.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @return the resulting computation or state reference
-     */
     public double getPoliticalInstability() {
         return politicalInstability;
     }
 
-    /*
-     * Set political instability.
-     * Enforces physical invariants and updates associated state variables within {@code Nation}.
-     *
-     * @param politicalInstability the political instability parameter (double)
-     */
     public void setPoliticalInstability(double politicalInstability) {
         this.politicalInstability = Math.clamp(politicalInstability, 0.0, 1.0);
     }
 
-    /**
-     * Gets the sovereign precious metal bullion treasury (in kg of gold/silver equivalent).
-     *
-     * @return accumulated bullion stock in the national treasury
-     */
     public double getTreasuryBullion() {
         return treasuryBullion;
     }
 
-    /**
-     * Sets the sovereign precious metal bullion treasury.
-     *
-     * @param treasuryBullion bullion stock in kg
-     */
     public void setTreasuryBullion(double treasuryBullion) {
         this.treasuryBullion = Math.max(0.0, treasuryBullion);
     }
 
-    /**
-     * Gets the monetary inflation / Dutch Disease index (0.0 to 1.0) caused by excess bullion relative to real goods.
-     *
-     * @return monetary inflation index
-     */
     public double getMonetaryInflation() {
         return monetaryInflation;
     }
 
-    /**
-     * Sets the monetary inflation index.
-     *
-     * @param monetaryInflation inflation index in [0.0, 1.0]
-     */
     public void setMonetaryInflation(double monetaryInflation) {
         this.monetaryInflation = Math.clamp(monetaryInflation, 0.0, 1.0);
     }
 
-    /*
+    /**
      * Updates Peter Turchin's Secular Cycle indices (Asabiyyah, Elite Overproduction, Political Instability)
      * and Fisher Monetary Exchange balance (M*V = P*Y) based on territorial size, Gini coefficient,
      * population density, and sovereign bullion reserves.
@@ -308,7 +174,7 @@ public class Nation {
     public void updateCliodynamicsCycle() {
         if (territory.isEmpty()) return;
 
-        double avgGini = territory.stream().mapToDouble(H3Cell::getGiniIndex).average().orElse(0.35);
+        double avgGini = territory.stream().mapToDouble(c -> c.getGiniIndex() != null ? c.getGiniIndex() : 0.35).average().orElse(0.35);
         long totalPop = getTotalPopulation();
         double totalRealCapital = territory.stream()
                 .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0)
@@ -318,8 +184,6 @@ public class Nation {
                 .sum();
 
         // 0. Fisher Equation of Exchange & Dutch Disease (Potosi / 3rd-Century Rome Bullion Inflation):
-        // Moderate bullion lubricates fiscal extraction, but excessive bullion relative to real physical output (K + 0.5 * Food)
-        // triggers monetary inflation, eroding productive capacity and spiking elite overproduction.
         double bullionToRealOutputRatio = treasuryBullion / Math.max(10.0, totalRealCapital + totalFoodOutput * 0.5);
         this.monetaryInflation = Math.clamp(Math.max(0.0, bullionToRealOutputRatio - 0.35) * 0.50, 0.0, 1.0);
         double fiscalMonetizationBonus = Math.min(0.15, Math.log1p(treasuryBullion) * 0.02) * (1.0 - monetaryInflation);

@@ -7,7 +7,7 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,22 +58,22 @@ public class WarDiplomacyEngine {
     /*
      * Executes geopolitical evaluation and resolves border conflicts across active nations.
      */
-    public static void processGeopoliticalConflicts(List<Nation> nations, List<H3Cell> cells) {
+    public static void processGeopoliticalConflicts(List<Polity> nations, List<H3Cell> cells) {
         processGeopoliticalConflicts(nations, cells, null);
     }
 
-    public static void processGeopoliticalConflicts(List<Nation> nations, List<H3Cell> cells, org.ether.society.model.Scenario scenario) {
+    public static void processGeopoliticalConflicts(List<Polity> nations, List<H3Cell> cells, org.ether.society.model.Scenario scenario) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
         if (nations == null || nations.size() < 2) return;
 
         for (int i = 0; i < nations.size() - 1; i++) {
-            Nation aggressor = nations.get(i);
+            Polity aggressor = nations.get(i);
             if (aggressor.getTerritory().isEmpty() || aggressor.getAsabiyyah() < 0.40) continue;
 
             for (int j = i + 1; j < nations.size(); j++) {
-                Nation defender = nations.get(j);
+                Polity defender = nations.get(j);
                 if (defender.getTerritory().isEmpty()) continue;
 
                 // Check territorial adjacency & compute average boundary friction
@@ -106,7 +106,7 @@ public class WarDiplomacyEngine {
      * Computes average boundary friction across common border cells of two nations.
      * Returns -1 if nations do not share a border.
      */
-    private static double getAverageBorderFriction(Nation n1, Nation n2) {
+    private static double getAverageBorderFriction(Polity n1, Polity n2) {
         double totalFriction = 0.0;
         int count = 0;
 
@@ -134,7 +134,7 @@ public class WarDiplomacyEngine {
      * @param defender       defending nation
      * @param borderFriction geopolitical and topographic boundary friction $\sigma_{\text{friction}}$
      */
-    private static void resolveBorderBattle(Nation aggressor, Nation defender, double borderFriction) {
+    private static void resolveBorderBattle(Polity aggressor, Polity defender, double borderFriction) {
         // Step 1: Aggregate military recruitment cohort (pop15to24)
         long aggressorForce = aggressor.getTerritory().stream().filter(java.util.Objects::nonNull).mapToLong(c -> c.getPop15to24() != null ? c.getPop15to24() : 0).sum();
         long defenderForce = defender.getTerritory().stream().filter(java.util.Objects::nonNull).mapToLong(c -> c.getPop15to24() != null ? c.getPop15to24() : 0).sum();

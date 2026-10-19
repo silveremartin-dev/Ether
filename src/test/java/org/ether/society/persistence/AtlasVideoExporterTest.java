@@ -4,6 +4,7 @@ import org.ether.society.analytics.HistoryManager;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.ui.DisplayMode;
+import org.ether.society.ui.export.AtlasVideoExporter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

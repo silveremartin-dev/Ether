@@ -7,7 +7,7 @@ package org.ether.society.events;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.Nation;
+
 
 /**
  * <h1>Historical Intervention</h1>

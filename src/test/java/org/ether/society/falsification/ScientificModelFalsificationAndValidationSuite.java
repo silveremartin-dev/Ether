@@ -24,7 +24,7 @@ import org.ether.society.engines.tier2.theories.GranovetterThresholdCascadeEngin
 import org.ether.society.engines.tier2.theories.KummelAyresExergyEngine;
 import org.ether.society.engines.tier2.theories.StructuralDemographicBifurcationEngine;
 import org.ether.society.engines.tier2.theories.TurchinGoldstoneSDTEngine;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -195,7 +195,7 @@ public class ScientificModelFalsificationAndValidationSuite {
             logger.info("🧪 [Scenario 2.1] Testing Pinker Linear Pacification vs Turchin Non-Linear SDT PSI Spikes...");
 
             List<H3Cell> imperialCells = createMockAgrarianGrid(50, 15000, 3.5, 45000.0);
-            Nation empire = new Nation("Imperium", javafx.scene.paint.Color.RED, imperialCells.get(0));
+            Polity empire = new Polity("Imperium", javafx.scene.paint.Color.RED, imperialCells.get(0));
             imperialCells.forEach(empire::addCell);
 
             List<H3Cell> pinkerCells = createMockAgrarianGrid(50, 15000, 3.5, 45000.0);

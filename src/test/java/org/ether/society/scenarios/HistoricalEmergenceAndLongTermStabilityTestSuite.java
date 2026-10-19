@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
 import org.ether.society.core.PreComputePhase;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import org.ether.society.model.Scenario;
 import org.ether.society.engines.tier2.historical.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -235,19 +235,19 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
      *
      */
     public void testNileAndMesopotamiaStateFormationAndEmpireEmergence() {
-        List<Nation> nations = new java.util.ArrayList<>();
+        List<Polity> nations = new java.util.ArrayList<>();
 
         // Seed initial Nile Empire and Mesopotamian City-State
         H3Cell nileCell = globalCells.get(1);
         nileCell.setPopulation(15000);
         nileCell.setResourceCapital(150.0);
-        Nation egyptEmpire = new Nation("Kemet Nile Empire", Color.GOLD, nileCell);
+        Polity egyptEmpire = new Polity("Kemet Nile Empire", Color.GOLD, nileCell);
         nations.add(egyptEmpire);
 
         H3Cell mesoCell = globalCells.get(2);
         mesoCell.setPopulation(12000);
         mesoCell.setResourceCapital(120.0);
-        Nation mesopotamiaState = new Nation("Sumerian City-State", Color.BLUE, mesoCell);
+        Polity mesopotamiaState = new Polity("Sumerian City-State", Color.BLUE, mesoCell);
         nations.add(mesopotamiaState);
 
         // Run 30 political and thermodynamic simulation ticks

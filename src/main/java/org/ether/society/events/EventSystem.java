@@ -7,7 +7,7 @@ package org.ether.society.events;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -579,7 +579,7 @@ public class EventSystem {
                     }
 
                     // Apply nation socio-political modifiers if cell is owned
-                    Nation owner = cell.getOwner();
+                    Polity owner = cell.getOwner();
                     if (owner != null) {
                         if (hi.getStateCapacityDelta() != 0) {
                             owner.setStateCapacity(Math.max(0.0, Math.min(1.0, owner.getStateCapacity() + (hi.getStateCapacityDelta() * 0.02))));

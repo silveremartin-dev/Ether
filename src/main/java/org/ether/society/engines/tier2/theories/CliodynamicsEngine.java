@@ -7,7 +7,7 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +31,13 @@ public class CliodynamicsEngine {
     /*
      * Executes one tick of Cliodynamics update across all nations and territory cells.
      */
-    public static void updateCliodynamics(List<Nation> nations, List<H3Cell> cells) {
+    public static void updateCliodynamics(List<Polity> nations, List<H3Cell> cells) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
         if (nations == null || nations.isEmpty()) return;
 
-        for (Nation nation : nations) {
+        for (Polity nation : nations) {
             nation.updateCliodynamicsCycle();
 
             double psi = nation.getPoliticalInstability();
@@ -54,7 +54,7 @@ public class CliodynamicsEngine {
     /*
      * Handles social unrest, riots, or balkanization when political instability crosses critical thresholds.
      */
-    private static void handlePoliticalUnrest(Nation nation) {
+    private static void handlePoliticalUnrest(Polity nation) {
         if (nation == null || nation.getTerritory().isEmpty()) return;
 
         List<H3Cell> territory = new ArrayList<>(nation.getTerritory());

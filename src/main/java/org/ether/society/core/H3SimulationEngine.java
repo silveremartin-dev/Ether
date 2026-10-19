@@ -125,7 +125,7 @@ public class H3SimulationEngine implements ISimulationEngine {
     private final org.ether.society.analytics.HistoryManager historyManager;
 
 
-    private final List<org.ether.society.model.Nation> nations = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private final List<org.ether.society.database.Polity> nations = new java.util.concurrent.CopyOnWriteArrayList<>();
 
 
     private final SimulationSaveManager simulationSaveManager;
@@ -3310,7 +3310,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                         javafx.scene.paint.Color color = javafx.scene.paint.Color.hsb(org.ether.society.util.DeterministicPRNG.nextDouble(c.getH3Index(), 777) * 360.0, 0.8, 0.9);
 
 
-                        org.ether.society.model.Nation nation = new org.ether.society.model.Nation(name, color, c);
+                        org.ether.society.database.Polity nation = new org.ether.society.database.Polity(name, color, c);
 
 
                         nations.add(nation);
@@ -3346,7 +3346,7 @@ public class H3SimulationEngine implements ISimulationEngine {
      */
 
 
-    public java.util.List<org.ether.society.model.Nation> getNations() {
+    public java.util.List<org.ether.society.database.Polity> getNations() {
         return nations;
     }
 
@@ -4559,7 +4559,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             return nations.stream()
 
 
-                    .mapToLong(org.ether.society.model.Nation::getTotalPopulation)
+                    .mapToLong(org.ether.society.database.Polity::getTotalPopulation)
 
 
                     .max()
@@ -4622,10 +4622,10 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (!nations.isEmpty()) {
 
 
-            org.ether.society.model.Nation largest = nations.stream()
+            org.ether.society.database.Polity largest = nations.stream()
 
 
-                    .max(java.util.Comparator.comparingLong(org.ether.society.model.Nation::getTotalPopulation))
+                    .max(java.util.Comparator.comparingLong(org.ether.society.database.Polity::getTotalPopulation))
 
 
                     .orElse(null);

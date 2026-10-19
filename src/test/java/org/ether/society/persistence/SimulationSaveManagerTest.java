@@ -5,7 +5,7 @@ import org.ether.society.config.ConfigurationLoader;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -44,13 +44,13 @@ class SimulationSaveManagerTest {
         territoryCell.setResourceCapital(5000.0);
         cells.add(territoryCell);
 
-        // Create nation linking capital and territory
-        Nation nation = new Nation("Test Empire", Color.BLUE, capitalCell);
-        nation.addCell(territoryCell);
+        // Create Polity linking capital and territory
+        Polity Polity = new Polity("Test Empire", Color.BLUE, capitalCell);
+        Polity.addCell(territoryCell);
 
         // Establish bidirectional linkage
-        capitalCell.setOwner(nation);
-        territoryCell.setOwner(nation);
+        capitalCell.setOwner(Polity);
+        territoryCell.setOwner(Polity);
 
         engine.setCells(cells);
 

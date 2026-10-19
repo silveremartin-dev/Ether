@@ -2,7 +2,7 @@ package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Test;
 

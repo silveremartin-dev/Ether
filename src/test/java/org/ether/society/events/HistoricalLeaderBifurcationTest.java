@@ -7,7 +7,7 @@ package org.ether.society.events;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

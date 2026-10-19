@@ -9,7 +9,7 @@ import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import org.junit.jupiter.api.Test;
 import javafx.scene.paint.Color;
 
@@ -37,16 +37,16 @@ public class CliodynamicsEngineTest {
         cell2.setPopulation(3000);
         cell2.setGiniIndex(0.50);
 
-        Nation nation = new Nation("Test Empire", Color.BLUE, cell1);
-        nation.addCell(cell2);
+        Polity Polity = new Polity("Test Empire", Color.BLUE, cell1);
+        Polity.addCell(cell2);
 
-        double initialAsabiyyah = nation.getAsabiyyah();
+        double initialAsabiyyah = Polity.getAsabiyyah();
 
-        CliodynamicsEngine.updateCliodynamics(List.of(nation), List.of(cell1, cell2));
+        CliodynamicsEngine.updateCliodynamics(List.of(Polity), List.of(cell1, cell2));
 
-        assertTrue(nation.getAsabiyyah() <= initialAsabiyyah, "Asabiyyah should decay under inequality and large territory");
-        assertTrue(nation.getEliteOverproduction() > 0.0, "Elite overproduction should increase with high Gini index");
-        assertTrue(nation.getPoliticalInstability() >= 0.0, "Political instability index should be computed");
+        assertTrue(Polity.getAsabiyyah() <= initialAsabiyyah, "Asabiyyah should decay under inequality and large territory");
+        assertTrue(Polity.getEliteOverproduction() > 0.0, "Elite overproduction should increase with high Gini index");
+        assertTrue(Polity.getPoliticalInstability() >= 0.0, "Political instability index should be computed");
     }
 
     @Test

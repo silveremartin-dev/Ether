@@ -336,7 +336,7 @@ public class ClosedLoopResourceConservationTest {
         potosiCell.setResourceCapital(20.0); // Low real physical capital -> triggers Dutch Disease
         potosiCell.setFoodResource(30.0);
         potosiCell.setGiniIndex(0.35);
-        org.ether.society.model.Nation spanishEmpire = new org.ether.society.model.Nation("BullionEmpire", null, potosiCell);
+        org.ether.society.database.Polity spanishEmpire = new org.ether.society.database.Polity("BullionEmpire", null, potosiCell);
 
         double initialBullion = spanishEmpire.getTreasuryBullion();
         double initialGini = potosiCell.getGiniIndex();

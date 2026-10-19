@@ -313,7 +313,7 @@ public class H3Cell {
 
     @Transient // Not persisting political ownership yet
     @JsonIgnore
-    private org.ether.society.model.Nation owner;
+    private Polity owner;
 
     @Transient
     /* Internal state variable for boundary cell (boolean). */
@@ -604,7 +604,7 @@ public class H3Cell {
      *
      * @return the resulting computation or state reference
      */
-    public org.ether.society.model.Nation getOwner() {
+    public Polity getOwner() {
         return owner;
     }
 
@@ -613,9 +613,9 @@ public class H3Cell {
      * Set owner.
      * Enforces physical invariants and updates associated state variables within {@code H3Cell}.
      *
-     * @param owner the owner parameter (org.ether.society.model.Nation)
+     * @param owner the owner parameter (Polity)
      */
-    public void setOwner(org.ether.society.model.Nation owner) {
+    public void setOwner(Polity owner) {
         this.owner = owner;
     }
 

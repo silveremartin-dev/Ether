@@ -9,7 +9,7 @@ import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.Nation;
+import org.ether.society.database.Polity;
 import org.junit.jupiter.api.Test;
 import javafx.scene.paint.Color;
 
@@ -41,11 +41,11 @@ public class WarDiplomacyEngineTest {
         defTarget.setPopulation(1000);
         defTarget.updateAgePyramidFromTotal(1.0);
 
-        Nation aggressor = new Nation("Aggressor Kingdom", Color.RED, aggCapital);
+        Polity aggressor = new Polity("Aggressor Kingdom", Color.RED, aggCapital);
         aggressor.setAsabiyyah(0.95);
         aggressor.setStateCapacity(0.90);
 
-        Nation defender = new Nation("Weak Empire", Color.BLUE, defCapital);
+        Polity defender = new Polity("Weak Empire", Color.BLUE, defCapital);
         defender.addCell(defTarget);
         defender.setAsabiyyah(0.10);
         defender.setPoliticalInstability(0.85);
@@ -130,11 +130,11 @@ public class WarDiplomacyEngineTest {
         defBorder.setPopulation(null); // Null population
         defBorder.setPop15to24(null); // Null pop15to24
 
-        Nation agg = new Nation("Aggressor", Color.RED, aggCell);
+        Polity agg = new Polity("Aggressor", Color.RED, aggCell);
         agg.setAsabiyyah(0.99);
         agg.setStateCapacity(0.95);
 
-        Nation def = new Nation("Defender", Color.BLUE, defCap);
+        Polity def = new Polity("Defender", Color.BLUE, defCap);
         def.addCell(defBorder);
         def.setAsabiyyah(0.05);
         def.setPoliticalInstability(0.95);

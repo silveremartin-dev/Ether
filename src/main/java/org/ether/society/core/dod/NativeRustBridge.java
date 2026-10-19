@@ -326,11 +326,25 @@ public class NativeRustBridge {
             if (wb.getWaterResource() != null) MemorySegment.copy(wb.getWaterResource(), 0, waterResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getBiomassHuman() != null) MemorySegment.copy(wb.getBiomassHuman(), 0, biomassHumanSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getBiomassNatural() != null) MemorySegment.copy(wb.getBiomassNatural(), 0, biomassNaturalSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getBiomassAgriculture() != null) MemorySegment.copy(wb.getBiomassAgriculture(), 0, biomassAgricultureSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getBiomassFish() != null) MemorySegment.copy(wb.getBiomassFish(), 0, biomassFishSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getResourceCapital() != null) MemorySegment.copy(wb.getResourceCapital(), 0, resourceCapitalSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getTechnologyLevel() != null) MemorySegment.copy(wb.getTechnologyLevel(), 0, technologyLevelSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getLifespan() != null) MemorySegment.copy(wb.getLifespan(), 0, lifespanSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getFertility() != null) MemorySegment.copy(wb.getFertility(), 0, fertilitySeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getInstitutionalComplexity() != null) MemorySegment.copy(wb.getInstitutionalComplexity(), 0, institutionalComplexitySeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getLocalPrice() != null) MemorySegment.copy(wb.getLocalPrice(), 0, localPriceSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getEnergyFoodConsumed() != null) MemorySegment.copy(wb.getEnergyFoodConsumed(), 0, energyFoodConsumedSeg, ValueLayout.JAVA_FLOAT, 0, count);
+
+            if (wb.getNeighborIndexes() != null) {
+                int[][] nbrs = wb.getNeighborIndexes();
+                int rows = Math.min(capacity, nbrs.length);
+                for (int r = 0; r < rows; r++) {
+                    if (nbrs[r] != null) {
+                        MemorySegment.copy(nbrs[r], 0, neighborIndexesSeg, ValueLayout.JAVA_INT, (long) r * 6 * Integer.BYTES, Math.min(6, nbrs[r].length));
+                    }
+                }
+            }
 
             if (ab != null) {
                 int aCount = Math.min(capacity, ab.getCapacity());
@@ -339,6 +353,25 @@ public class NativeRustBridge {
                 if (ab.getEnergy() != null) MemorySegment.copy(ab.getEnergy(), 0, energySeg, ValueLayout.JAVA_FLOAT, 0, aCount);
                 if (ab.getAge() != null) MemorySegment.copy(ab.getAge(), 0, ageSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
                 if (ab.getTechLevel() != null) MemorySegment.copy(ab.getTechLevel(), 0, techLevelSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
+                if (ab.getBirths() != null) MemorySegment.copy(ab.getBirths(), 0, birthsSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
+                if (ab.getDeaths() != null) MemorySegment.copy(ab.getDeaths(), 0, deathsSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
+
+                if (ab.getGenetics() != null) {
+                    float[][] gen = ab.getGenetics();
+                    for (int d = 0; d < Math.min(4, gen.length); d++) {
+                        if (gen[d] != null) {
+                            MemorySegment.copy(gen[d], 0, geneticsSeg, ValueLayout.JAVA_FLOAT, (long) d * capacity * Float.BYTES, Math.min(capacity, gen[d].length));
+                        }
+                    }
+                }
+                if (ab.getCulture() != null) {
+                    float[][] cul = ab.getCulture();
+                    for (int d = 0; d < Math.min(4, cul.length); d++) {
+                        if (cul[d] != null) {
+                            MemorySegment.copy(cul[d], 0, cultureSeg, ValueLayout.JAVA_FLOAT, (long) d * capacity * Float.BYTES, Math.min(capacity, cul[d].length));
+                        }
+                    }
+                }
             }
         }
 
@@ -350,14 +383,39 @@ public class NativeRustBridge {
             if (wb.getFoodResource() != null) MemorySegment.copy(foodResourceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getFoodResource(), 0, count);
             if (wb.getBiomassHuman() != null) MemorySegment.copy(biomassHumanSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassHuman(), 0, count);
             if (wb.getBiomassNatural() != null) MemorySegment.copy(biomassNaturalSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassNatural(), 0, count);
+            if (wb.getBiomassAgriculture() != null) MemorySegment.copy(biomassAgricultureSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassAgriculture(), 0, count);
             if (wb.getResourceCapital() != null) MemorySegment.copy(resourceCapitalSeg, ValueLayout.JAVA_FLOAT, 0, wb.getResourceCapital(), 0, count);
+            if (wb.getTechnologyLevel() != null) MemorySegment.copy(technologyLevelSeg, ValueLayout.JAVA_FLOAT, 0, wb.getTechnologyLevel(), 0, count);
             if (wb.getInstitutionalComplexity() != null) MemorySegment.copy(institutionalComplexitySeg, ValueLayout.JAVA_FLOAT, 0, wb.getInstitutionalComplexity(), 0, count);
+            if (wb.getLocalPrice() != null) MemorySegment.copy(localPriceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getLocalPrice(), 0, count);
+            if (wb.getEnergyFoodConsumed() != null) MemorySegment.copy(energyFoodConsumedSeg, ValueLayout.JAVA_FLOAT, 0, wb.getEnergyFoodConsumed(), 0, count);
 
             if (ab != null) {
                 int aCount = Math.min(capacity, ab.getCapacity());
+                if (ab.getHexIds() != null) MemorySegment.copy(hexIdsSeg, ValueLayout.JAVA_INT, 0, ab.getHexIds(), 0, aCount);
                 if (ab.getMass() != null) MemorySegment.copy(massSeg, ValueLayout.JAVA_FLOAT, 0, ab.getMass(), 0, aCount);
                 if (ab.getEnergy() != null) MemorySegment.copy(energySeg, ValueLayout.JAVA_FLOAT, 0, ab.getEnergy(), 0, aCount);
                 if (ab.getAge() != null) MemorySegment.copy(ageSeg, ValueLayout.JAVA_FLOAT, 0, ab.getAge(), 0, aCount);
+                if (ab.getTechLevel() != null) MemorySegment.copy(techLevelSeg, ValueLayout.JAVA_FLOAT, 0, ab.getTechLevel(), 0, aCount);
+                if (ab.getBirths() != null) MemorySegment.copy(birthsSeg, ValueLayout.JAVA_FLOAT, 0, ab.getBirths(), 0, aCount);
+                if (ab.getDeaths() != null) MemorySegment.copy(deathsSeg, ValueLayout.JAVA_FLOAT, 0, ab.getDeaths(), 0, aCount);
+
+                if (ab.getGenetics() != null) {
+                    float[][] gen = ab.getGenetics();
+                    for (int d = 0; d < Math.min(4, gen.length); d++) {
+                        if (gen[d] != null) {
+                            MemorySegment.copy(geneticsSeg, ValueLayout.JAVA_FLOAT, (long) d * capacity * Float.BYTES, gen[d], 0, Math.min(capacity, gen[d].length));
+                        }
+                    }
+                }
+                if (ab.getCulture() != null) {
+                    float[][] cul = ab.getCulture();
+                    for (int d = 0; d < Math.min(4, cul.length); d++) {
+                        if (cul[d] != null) {
+                            MemorySegment.copy(cultureSeg, ValueLayout.JAVA_FLOAT, (long) d * capacity * Float.BYTES, cul[d], 0, Math.min(capacity, cul[d].length));
+                        }
+                    }
+                }
             }
         }
 

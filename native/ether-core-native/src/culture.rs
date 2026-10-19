@@ -1,11 +1,31 @@
 use crate::buffers::{AgentBufferRaw, WorldBufferRaw};
 
-/// Langevin Cultural SDE Drift and Memetic Spatial Diffusion.
+#[inline(always)]
+fn get_spatial_tensor_anchor(
+    elevation: &[f32],
+    tech: &[f32],
+    hex_idx: usize,
+    dimension: usize,
+) -> f32 {
+    let e_val = if hex_idx < elevation.len() { elevation[hex_idx] } else { 0.0 };
+    let t_val = if hex_idx < tech.len() { tech[hex_idx] } else { 1.0 };
+
+    match dimension {
+        0 => (0.5 + (e_val / 4000.0) * 0.3).clamp(0.0, 1.0), // Isogloss
+        1 => (0.8 - (t_val / 10.0) * 0.4).clamp(0.0, 1.0),   // Kinship
+        2 => (0.6_f32 + if e_val > 1000.0 { 0.2_f32 } else { 0.0_f32 }).clamp(0.0, 1.0), // Rituals
+        3 => ((t_val / 10.0) * 0.7 + 0.2).clamp(0.0, 1.0),    // Sovereignty
+        _ => 0.5,
+    }
+}
+
+/// Langevin Cultural SDE Drift and Memetic Spatial Diffusion across 6 H3 neighbors.
+/// Mathematically and algorithmically identical to CultureKernel.java.
 pub unsafe fn process_culture(
     world: &mut WorldBufferRaw,
     agents: &mut AgentBufferRaw,
     dt_years: f32,
-    _diffusion_rate: f32,
+    diffusion_rate: f32,
     forcing_rate: f32,
 ) {
     let a_cap = agents.capacity;
@@ -19,29 +39,80 @@ pub unsafe fn process_culture(
     } else {
         &[]
     };
-    let elev = std::slice::from_raw_parts(world.elevation, w_cap);
+    let elev = if !world.elevation.is_null() {
+        std::slice::from_raw_parts(world.elevation, w_cap)
+    } else {
+        &[]
+    };
+    let neighbors = if !world.neighbor_indexes.is_null() {
+        std::slice::from_raw_parts(world.neighbor_indexes, w_cap * 6)
+    } else {
+        &[]
+    };
 
-    // 1. Spatial Tensor Anchoring & Drift
+    let dt = dt_years.max(0.0001);
+
+    // Step 1: Spatial aggregation into cells
+    let mut hex_agent_count = vec![0_i32; w_cap];
+    let mut hex_culture_sum = vec![[0.0_f32; 4]; w_cap];
+    let mut hex_culture_mean = vec![[0.0_f32; 4]; w_cap];
+
+    for i in 0..a_cap {
+        let h = hex_ids[i];
+        if h >= 0 && (h as usize) < w_cap {
+            let u = h as usize;
+            hex_agent_count[u] += 1;
+            for d in 0..4 {
+                hex_culture_sum[u][d] += culture[d * a_cap + i];
+            }
+        }
+    }
+
+    for u in 0..w_cap {
+        let count = hex_agent_count[u];
+        if count > 0 {
+            let inv_count = 1.0 / (count as f32);
+            for d in 0..4 {
+                hex_culture_mean[u][d] = hex_culture_sum[u][d] * inv_count;
+            }
+        }
+    }
+
+    // Step 2: Neighbor memetic diffusion and regional forcing
+    let diff_coeff = (diffusion_rate / 6.0) * dt;
+    let force_coeff = forcing_rate * dt;
+
     for i in 0..a_cap {
         let h_idx = hex_ids[i];
-        if h_idx == -1 || (h_idx as usize) >= w_cap { continue; }
-        let h = h_idx as usize;
-
-        let t_val = if !tech.is_empty() { tech[h] } else { 0.0 };
-        let e_val = elev[h];
-
-        let anchors = [
-            (0.5 + (e_val / 4000.0) * 0.3).clamp(0.0, 1.0), // Isoglosse
-            (0.8 - (t_val / 10.0) * 0.4).clamp(0.0, 1.0),   // Kinship
-            if e_val > 1000.0 { 0.8 } else { 0.6 },          // Rituals
-            ((t_val / 10.0) * 0.7 + 0.2).clamp(0.0, 1.0),    // Sovereignty
-        ];
+        if h_idx < 0 || (h_idx as usize) >= w_cap { continue; }
+        let my_hex = h_idx as usize;
 
         for d in 0..4 {
-            let current = culture[d * a_cap + i];
-            let diff = anchors[d] - current;
-            let updated = current + diff * forcing_rate * dt_years;
-            culture[d * a_cap + i] = updated.clamp(0.0, 1.0);
+            let my_val = culture[d * a_cap + i];
+            let mut delta = 0.0_f32;
+
+            // 6-Neighbor diffusion
+            if !neighbors.is_empty() {
+                let base_idx = my_hex * 6;
+                for j in 0..6 {
+                    let n_idx = neighbors[base_idx + j];
+                    if n_idx >= 0 && (n_idx as usize) < w_cap {
+                        let n_u = n_idx as usize;
+                        let neighbor_mean = if hex_agent_count[n_u] > 0 {
+                            hex_culture_mean[n_u][d]
+                        } else {
+                            get_spatial_tensor_anchor(elev, tech, n_u, d)
+                        };
+                        delta += (neighbor_mean - my_val) * diff_coeff;
+                    }
+                }
+            }
+
+            // Regional tensor forcing
+            let target_spatial_val = get_spatial_tensor_anchor(elev, tech, my_hex, d);
+            delta += (target_spatial_val - my_val) * force_coeff;
+
+            culture[d * a_cap + i] = (my_val + delta).clamp(0.0, 1.0);
         }
     }
 }
