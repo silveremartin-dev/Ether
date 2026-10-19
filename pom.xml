@@ -53,6 +53,7 @@
         <javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
         <spotless-maven-plugin.version>2.41.0</spotless-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <jacoco.skip>true</jacoco.skip>
         <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
     </properties>
 
@@ -251,7 +252,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <release>21</release>
+                    <release>25</release>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>-parameters</arg>

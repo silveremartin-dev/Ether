@@ -49,21 +49,21 @@ public class HandyNasaPureEngine {
         double beta = 0.01;  // Regeneration rate of nature
 
         // Nature regeneration vs depletion
-        natureX += (beta * natureX * (100.0 - natureX) - delta * (commonersX + elitesY) * natureX) * deltaYears;
+        natureX = Math.max(0.0, natureX + (beta * natureX * (100.0 - natureX) - delta * (commonersX + elitesY) * natureX) * deltaYears);
 
         // Wealth production by commoners
-        wealthK += (delta * commonersX * natureX) * deltaYears;
+        wealthK = Math.max(0.0, wealthK + (delta * commonersX * natureX) * deltaYears);
 
         // Consumption ratio: Elites consume kappa times more than commoners
         double kappa = 10.0;
         double totalConsumptionNeeded = (commonersX + kappa * elitesY);
-        if (wealthK < totalConsumptionNeeded) {
+        if (wealthK < totalConsumptionNeeded && totalConsumptionNeeded > 0.0) {
             // Famine penalizes commoners first
             alphaX += 0.05 * (1.0 - wealthK / totalConsumptionNeeded);
         }
 
-        commonersX += (gammaX * commonersX - alphaX * commonersX) * deltaYears;
-        elitesY += (gammaY * elitesY - alphaY * elitesY) * deltaYears;
+        commonersX = Math.max(0.0, commonersX + (gammaX * commonersX - alphaX * commonersX) * deltaYears);
+        elitesY = Math.max(0.0, elitesY + (gammaY * elitesY - alphaY * elitesY) * deltaYears);
     }
 
     /*
@@ -94,6 +94,13 @@ public class HandyNasaPureEngine {
      * @return the resulting computation or state reference
      */
     public double getWealthK() { return wealthK; }
+
+    /**
+     * Executes spatial coupling on grid cells by delegating to HandyNasaHybridEngine.
+     */
+    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
+        HandyNasaHybridEngine.processPlugin(cells, deltaYears);
+    }
 }
 
 

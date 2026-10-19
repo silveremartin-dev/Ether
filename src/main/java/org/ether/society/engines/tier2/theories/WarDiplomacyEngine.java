@@ -59,6 +59,10 @@ public class WarDiplomacyEngine {
      * Executes geopolitical evaluation and resolves border conflicts across active nations.
      */
     public static void processGeopoliticalConflicts(List<Nation> nations, List<H3Cell> cells) {
+        processGeopoliticalConflicts(nations, cells, null);
+    }
+
+    public static void processGeopoliticalConflicts(List<Nation> nations, List<H3Cell> cells, org.ether.society.model.Scenario scenario) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
@@ -77,7 +81,18 @@ public class WarDiplomacyEngine {
                 if (avgBorderFriction > 0) {
                     // War trigger condition: High aggressor Asabiyyah + Weak defender State Capacity / High Instability, modulated by boundary friction
                     double baseWarDesire = (aggressor.getAsabiyyah() * 0.6) + (defender.getPoliticalInstability() * 0.4) - (defender.getStateCapacity() * 0.3);
-                    double warDesire = baseWarDesire / Math.sqrt(avgBorderFriction);
+
+                    // Cliodynamic Cultural Affinity Matrix Modulation:
+                    // High bilateral affinity (e.g. 80-100%) acts as strong pacification factor.
+                    // Low affinity (e.g. 0-20% hostile animosity) amplifies belligerence.
+                    double affinityMultiplier = 1.0;
+                    if (scenario != null) {
+                        double affinity = scenario.getPairwiseAffinity(aggressor.getId(), defender.getId());
+                        // Affinity 50% => 1.0x, Affinity 0% => 1.5x (hostility), Affinity 100% => 0.2x (pax)
+                        affinityMultiplier = Math.clamp(1.5 - (affinity / 100.0) * 1.3, 0.1, 2.0);
+                    }
+
+                    double warDesire = (baseWarDesire * affinityMultiplier) / Math.sqrt(avgBorderFriction);
 
                     if (warDesire > 0.65) {
                         resolveBorderBattle(aggressor, defender, avgBorderFriction);

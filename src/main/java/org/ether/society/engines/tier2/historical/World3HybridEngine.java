@@ -46,12 +46,12 @@ public class World3HybridEngine {
 
             // FCAOR hypothesis: capital diverted to mining increases as local mineral stock drops below 50.0
             double fcaor = 0.05 + 0.85 * Math.pow(Math.max(0.0, 1.0 - (metal / 50.0)), 2.0);
-            double netCapitalOutput = capital * (1.0 - fcaor);
+            double netCapitalOutput = Math.max(0.0, capital * (1.0 - fcaor * deltaYears));
             cell.setResourceCapital(netCapitalOutput);
 
             // Pollution mortality multiplier: LE reduction when pollution > 20.0
             if (pollution > 20.0 && cell.getLifespan() != null) {
-                double pollPenalty = Math.min(0.40, (pollution - 20.0) * 0.005);
+                double pollPenalty = Math.min(0.40, (pollution - 20.0) * 0.005 * deltaYears);
                 cell.setLifespan(Math.max(20.0, cell.getLifespan() * (1.0 - pollPenalty)));
             }
         }

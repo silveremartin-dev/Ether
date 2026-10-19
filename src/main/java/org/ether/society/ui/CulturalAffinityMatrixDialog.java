@@ -153,9 +153,16 @@ public class CulturalAffinityMatrixDialog extends Stage {
      *
      * @param initialEpoch the initial epoch parameter (long)
      */
+    private final org.ether.society.model.Scenario targetScenario;
+
     public CulturalAffinityMatrixDialog(long initialEpoch) {
+        this(initialEpoch, null);
+    }
+
+    public CulturalAffinityMatrixDialog(long initialEpoch, org.ether.society.model.Scenario scenario) {
         this.scenarioStartYear = initialEpoch;
         this.currentEpoch = initialEpoch;
+        this.targetScenario = scenario;
         initModality(Modality.APPLICATION_MODAL);
         setTitle(I18n.getOrDefault("cultural.matrix.window_title", "🧩 Matrice d'Affinité & Distances Culturelles"));
 
@@ -310,7 +317,14 @@ public class CulturalAffinityMatrixDialog extends Stage {
         btnClose.getStyleClass().add("button-primary");
         btnClose.setStyle("-fx-font-weight: bold;");
         btnClose.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.close", "Valider et fermer l'inspecteur des affinités culturelles.")));
-        btnClose.setOnAction(e -> close());
+        btnClose.setOnAction(e -> {
+            if (targetScenario != null) {
+                targetScenario.setCulturalAffinityMatrix(customAffinityOverrides);
+                logger.info("Persisted {} custom cultural affinity overrides into scenario '{}'.",
+                        customAffinityOverrides.size(), targetScenario.getName());
+            }
+            close();
+        });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -325,6 +339,10 @@ public class CulturalAffinityMatrixDialog extends Stage {
         WindowUtils.applyWindowIcon(this);
 
         loadEpochRegistry(epochSelector.getValue());
+        if (targetScenario != null && !targetScenario.getCulturalAffinityMatrix().isEmpty()) {
+            customAffinityOverrides.putAll(targetScenario.getCulturalAffinityMatrix());
+            renderMatrixHeatmap();
+        }
         initialAffinityOverridesSnapshot.clear();
         initialAffinityOverridesSnapshot.putAll(customAffinityOverrides);
     }

@@ -15,7 +15,7 @@ import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.model.ScenarioBranchingTree;
+import org.ether.society.analytics.ScenarioBranchingTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

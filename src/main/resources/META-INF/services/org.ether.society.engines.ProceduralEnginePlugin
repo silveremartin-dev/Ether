@@ -11,7 +11,6 @@ org.ether.society.engines.tier2.theories.TainterComplexityCollapseEngine
 org.ether.society.engines.tier2.theories.PriceMultilevelSelectionEngine
 org.ether.society.engines.tier2.theories.SpatialMetapopulationSEIREngine
 org.ether.society.engines.tier2.theories.KummelAyresExergyEngine
-org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine
 org.ether.society.engines.tier2.theories.KrugmanCorePeripheryEngine
 org.ether.society.engines.tier2.theories.SchellingAxelrodSegregationEngine
 org.ether.society.engines.tier2.theories.StructuralDemographicBifurcationEngine

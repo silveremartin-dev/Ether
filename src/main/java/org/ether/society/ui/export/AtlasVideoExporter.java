@@ -1,4 +1,4 @@
-package org.ether.society.persistence;
+package org.ether.society.ui.export;
 
 import org.ether.society.analytics.HistoryManager;
 import org.ether.society.database.H3Cell;
@@ -7,7 +7,6 @@ import org.ether.society.ui.DisplayMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;

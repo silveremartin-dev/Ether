@@ -220,10 +220,12 @@ Ether decouples numerical integration across three discrete physical time scales
   $$\frac{d[\text{O}_3]}{dt} = 2 J_{\text{O2}}[\text{O}_2] - k_1[\text{O}][\text{O}_3] - \sum_X k_X [X][\text{O}_3]$$
 - **Complexity**: $O(1)$ per cell.
 
-#### 23. Salinization & Evaporite Accumulation (`SalinizationEngine`)
+#### 23. Soil Salinization & Hydrological Mass-Balance (`SoilSalinizationHydrologyEngine`)
 - **Governing Equations**:
-  $$\frac{d S_{\text{salt}}}{dt} = Q_{\text{irrigation}} \cdot C_{\text{salt}} - P_{\text{leach}} - \text{Drainage}(S_{\text{salt}})$$
-- **Complexity**: $O(1)$ per cell.
+  $$\frac{d [\text{Salts}]_{\text{soil}}}{dt} = \frac{Q_{\text{irr}} \cdot [\text{Salts}]_{\text{water}}}{h_{\text{root}} \cdot \theta_{\text{field}}} + Q_{\text{capillary}} - \frac{Q_{\text{drain}} \cdot [\text{Salts}]_{\text{leach}}}{h_{\text{root}} \cdot \theta_{\text{field}}} - \gamma_{\text{flush}}(P)$$
+  Yield attenuation (Jacobsen & Adams 1958, Maas-Hoffman):
+  $$Y(t) = Y_0 \cdot \max(0.10, \, 1.0 - 0.06 \cdot \max(0, [\text{Salts}] - 2.0))$$
+- **Complexity**: $O(1)$ per land cell in Pass 2 (Terrestrial Pass).
 
 ---
 
@@ -469,12 +471,7 @@ Ether decouples numerical integration across three discrete physical time scales
   $$\frac{d B_{\text{pyrogenic}}}{dt} = P_{\text{fire\_ignition}} \cdot (1 - \text{FuelMoisture}) - K_{\text{regrowth}} B_{\text{pyrogenic}}$$
 - **Complexity**: $O(1)$ per terrestrial cell.
 
-#### 60. Fertile Crescent Irrigation Salinization (`FertileCrescentSalinizationEngine`)
-- **Governing Equations**:
-  $$\frac{d S_{\text{salt}}}{dt} = \frac{Q_{\text{euphrates\_tigris}} \cdot C_{\text{mineral}}}{A_{\text{basin}}} - \text{DrainageCapacity}$$
-- **Complexity**: $O(1)$ per irrigated cell.
-
-#### 61. Roman Imperial Expansion & Currency Debasement (`RomanImperialCliodynamicEngine`)
+#### 60. Roman Imperial Expansion & Currency Debasement (`RomanImperialCliodynamicEngine`)
 - **Governing Equations**:
   $$\text{Debasement} = \frac{\Delta \text{LegionaryPayDeficit}}{\text{SilverReserves}}, \quad \text{Inflation} \propto \left(\frac{\text{DenariusSilverContent}_0}{\text{DenariusSilverContent}_t}\right)$$
 - **Complexity**: $O(1)$ per imperial province.

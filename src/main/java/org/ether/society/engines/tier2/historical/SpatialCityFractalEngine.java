@@ -40,8 +40,8 @@ public class SpatialCityFractalEngine {
 
         // Sort cells by population descending to compute spatial power law hierarchy
         List<H3Cell> sortedCells = cells.stream()
-                .filter(c -> c != null && c.getPopulation() > 0)
-                .sorted(Comparator.comparingInt(H3Cell::getPopulation).reversed())
+                .filter(c -> c != null && c.getPopulation() != null && c.getPopulation() > 0)
+                .sorted(Comparator.comparingInt((H3Cell c) -> c.getPopulation() != null ? c.getPopulation() : 0).reversed())
                 .collect(Collectors.toList());
 
         if (sortedCells.isEmpty()) return;

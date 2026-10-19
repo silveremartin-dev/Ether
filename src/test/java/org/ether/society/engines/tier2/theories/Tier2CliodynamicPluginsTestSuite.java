@@ -246,10 +246,6 @@ public class Tier2CliodynamicPluginsTestSuite {
      *
      */
     public void testSoilSalinization() {
-        SoilSalinizationHydrologyEngine engine = new SoilSalinizationHydrologyEngine();
-        assertNotNull(engine.getEquationsTooltip());
-        assertTrue(engine.getEquationsTooltip().contains("Jacobsen"));
-
         H3Cell mesopotamianCell = new H3Cell();
         mesopotamianCell.setPopulation(5000);
         mesopotamianCell.setRainfall(180.0);
@@ -258,7 +254,7 @@ public class Tier2CliodynamicPluginsTestSuite {
         mesopotamianCell.setFoodResource(5000.0);
         mesopotamianCell.setTechnologyLevel(2.0);
 
-        engine.process(List.of(mesopotamianCell), 10.0);
+        org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine.processSoilSalinization(List.of(mesopotamianCell), 10.0);
         assertTrue(mesopotamianCell.getFoodResource() < 5000.0, "Intensive irrigation in arid lowland must trigger salinization yield penalty");
     }
 

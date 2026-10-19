@@ -991,7 +991,7 @@ public class ControlPanel extends VBox {
         }
     }
 
-    private final org.ether.society.persistence.VideoExportService videoExportService = new org.ether.society.persistence.VideoExportService();
+    private final org.ether.society.ui.export.VideoExportService videoExportService = new org.ether.society.ui.export.VideoExportService();
 
     /*
      * Toggle video recording.

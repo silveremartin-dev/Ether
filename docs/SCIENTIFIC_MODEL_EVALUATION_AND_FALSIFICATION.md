@@ -466,7 +466,7 @@ To guarantee the mathematical and physical integrity of the planetary state acro
 ║ [T2] TasmanianCulturalRegressionEngine   ║ VALIDATED    ║ 0.965        ║ Henrich (2004) / Isolated island demographic loss║
 ║ [T2] DeforestationErosionEngine          ║ VALIDATED    ║ 0.892        ║ FAO / USLE agricultural sloped terrain           ║
 ║ [T2] EntropicMetalDissipationEngine      ║ VALIDATED    ║ 0.942        ║ Ayres (2009) / Physical metal entropy dissipation║
-║ [T2] SoilSalinizationHydrologyEngine     ║ VALIDATED    ║ 0.924        ║ Jacobsen & Adams (1958) / Arid irrigated plains  ║
+║ [T1] SoilSalinizationHydrologyEngine     ║ VALIDATED    ║ 0.924        ║ Jacobsen & Adams (1958) / Arid irrigated plains  ║
 ║ [T2] DraftAnimalFodderAllocationEngine   ║ VALIDATED    ║ 0.941        ║ Smil (2017), Wrigley (2010) / Traction vs fodder ║
 ║ [T2] NetEnergyEROEIEngine                ║ VALIDATED    ║ 0.974        ║ Hall & Klitgaard (2018) / Net energy cliff       ║
 ║ [T2] ThermodynamicWarfareEngine          ║ VALIDATED    ║ 0.938        ║ Lanchester (1916) / Firepower kinetic scaling    ║

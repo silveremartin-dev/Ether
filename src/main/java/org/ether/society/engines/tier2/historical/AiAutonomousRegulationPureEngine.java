@@ -44,11 +44,11 @@ public class AiAutonomousRegulationPureEngine {
             if (tech >= 6.0) { // High technology threshold for AI Autonomous Planetary Governance
                 // 1. Frictionless resource work output optimization
                 if (cell.getResourceWork() != null) {
-                    cell.setResourceWork(cell.getResourceWork() * 1.05);
+                    cell.setResourceWork(cell.getResourceWork() * (1.0 + 0.05 * deltaYears));
                 }
                 // 2. Automated pollution remediation
                 if (cell.getPollutionLevel() != null) {
-                    cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() * 0.80));
+                    cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() * Math.max(0.0, 1.0 - 0.20 * deltaYears)));
                 }
             }
         }

@@ -118,6 +118,7 @@ public class CultureKernel {
         float[][] culture = agents.getCulture();
         int[] hexIds = agents.getHexIds();
         int dims = culture != null ? culture.length : 0;
+        float noiseCoeff = (float) (mutationRate * Math.sqrt(dt));
         
         for (int i = 0; i < agents.getCapacity(); i++) {
             if (hexIds[i] == -1) continue;
@@ -127,9 +128,8 @@ public class CultureKernel {
                 double gaussianNoise = Math.clamp(
                         org.ether.society.util.DeterministicPRNG.nextGaussian(42L, tickIndex, ((long) i << 4) | d),
                         -3.0, 3.0);
-                float dw = (float) (gaussianNoise * Math.sqrt(dt));
                 
-                culture[d][i] += mutationRate * dw;
+                culture[d][i] += (float) (gaussianNoise * noiseCoeff);
                 // Closed projection onto the unit hypercube tensor domain [0.0, 1.0]
                 culture[d][i] = Math.max(0.0f, Math.min(1.0f, culture[d][i]));
             }
@@ -184,6 +184,9 @@ public class CultureKernel {
         }
 
         // 2. Apply spatial neighbor diffusion and regional tensor forcing: O(N_agents)
+        float diffCoeff = (diffusionRate / 6.0f) * dt;
+        float forceCoeff = forcingRate * dt;
+
         for (int i = 0; i < agentCapacity; i++) {
             int myHex = hexIds[i];
             if (myHex < 0 || myHex >= worldCapacity) continue;
@@ -199,13 +202,13 @@ public class CultureKernel {
                         float neighborMean = (cachedHexAgentCount[nHex] > 0)
                                 ? cachedHexCultureMean[d][nHex]
                                 : getSpatialTensorAnchor(world, nHex, d);
-                        delta += (neighborMean - myVal) * (diffusionRate / 6.0f) * dt;
+                        delta += (neighborMean - myVal) * diffCoeff;
                     }
                 }
 
                 // Thermodynamic forcing lambda toward the regional tensor attractor
                 float targetSpatialVal = getSpatialTensorAnchor(world, myHex, d);
-                delta += (targetSpatialVal - myVal) * forcingRate * dt;
+                delta += (targetSpatialVal - myVal) * forceCoeff;
 
                 // Bounded state update within [0.0, 1.0]
                 culture[d][i] = Math.max(0.0f, Math.min(1.0f, myVal + delta));

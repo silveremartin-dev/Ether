@@ -4,7 +4,7 @@ import org.ether.society.analytics.HistoryManager;
 import org.ether.society.database.H3Cell;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Biome;
-import org.ether.society.persistence.AtlasVideoExporter;
+import org.ether.society.ui.export.AtlasVideoExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

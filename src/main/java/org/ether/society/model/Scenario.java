@@ -284,6 +284,7 @@ public class Scenario implements Serializable {
     private java.util.Map<Integer, Long> tensorSeeds = new java.util.HashMap<>();
     private java.util.Map<Integer, java.util.Map<String, Double>> tensorProceduralParameters = new java.util.HashMap<>();
     private java.util.Map<Integer, String> customTensorNames = new java.util.HashMap<>();
+    private java.util.Map<String, Double> culturalAffinityMatrix = new java.util.HashMap<>();
 
     // Geological & Mineral Energy Extensible Tensor Layers (Persisted per Scenario)
     private int resourceVectorDimensions = 10; // Extensible resource dimensions (COAL, OIL, GAS, URANIUM, HELIUM_3, IRON_COPPER, PRECIOUS_METALS, CRITICAL_REE, MANTLE_HEAT, AQUIFERS...)
@@ -445,6 +446,7 @@ public class Scenario implements Serializable {
             copy.tensorSeeds = new java.util.HashMap<>(this.tensorSeeds);
             copy.tensorProceduralParameters = new java.util.HashMap<>(this.tensorProceduralParameters);
             copy.customTensorNames = new java.util.HashMap<>(this.customTensorNames);
+            copy.culturalAffinityMatrix = new java.util.HashMap<>(this.culturalAffinityMatrix);
             copy.resourceVectorDimensions = this.resourceVectorDimensions;
             copy.customGeologyTensorMapsBase64 = new java.util.ArrayList<>(this.customGeologyTensorMapsBase64);
             copy.geologyTensorProceduralModes = new java.util.ArrayList<>(this.geologyTensorProceduralModes);
@@ -1626,6 +1628,47 @@ public class Scenario implements Serializable {
         } else {
             this.customTensorNames.put(index, name.trim());
         }
+    }
+
+    /**
+     * Gets the custom cliodynamic pairwise cultural affinity matrix overrides ($A_{i,j} \in [0.0, 100.0]$).
+     * Keys are formatted as {@code "idA:idB"}.
+     *
+     * @return map of affinity overrides
+     */
+    public java.util.Map<String, Double> getCulturalAffinityMatrix() {
+        if (culturalAffinityMatrix == null) {
+            culturalAffinityMatrix = new java.util.HashMap<>();
+        }
+        return culturalAffinityMatrix;
+    }
+
+    /**
+     * Sets the custom cliodynamic pairwise cultural affinity matrix overrides.
+     *
+     * @param culturalAffinityMatrix map of overrides
+     */
+    public void setCulturalAffinityMatrix(java.util.Map<String, Double> culturalAffinityMatrix) {
+        this.culturalAffinityMatrix = culturalAffinityMatrix != null ? new java.util.HashMap<>(culturalAffinityMatrix) : new java.util.HashMap<>();
+    }
+
+    /**
+     * Gets pairwise cultural affinity between two polities, defaulting to 50.0 (neutral coexistence) if unspecified.
+     *
+     * @param idA first polity or cultural entity identifier
+     * @param idB second polity or cultural entity identifier
+     * @return affinity value in [0.0, 100.0]
+     */
+    public double getPairwiseAffinity(String idA, String idB) {
+        if (idA == null || idB == null) return 50.0;
+        if (idA.equalsIgnoreCase(idB)) return 100.0;
+        String key1 = idA + ":" + idB;
+        String key2 = idB + ":" + idA;
+        if (culturalAffinityMatrix != null) {
+            if (culturalAffinityMatrix.containsKey(key1)) return culturalAffinityMatrix.get(key1);
+            if (culturalAffinityMatrix.containsKey(key2)) return culturalAffinityMatrix.get(key2);
+        }
+        return 50.0;
     }
 
     /*

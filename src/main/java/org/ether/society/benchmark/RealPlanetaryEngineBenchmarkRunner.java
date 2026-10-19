@@ -159,36 +159,24 @@ public class RealPlanetaryEngineBenchmarkRunner {
         List<EpochResult> epochResults = new ArrayList<>();
 
         // ====================================================================================================
-        // AXIS 1: SPATIAL GRID SCALING (Res 2 to Res 7, Global Earth)
+        // AXIS 1: SPATIAL GRID SCALING (Res 2 to Res 7, Unified Native Rust Engine)
         // ====================================================================================================
         System.out.println("\n----------------------------------------------------------------------------------------------------");
-        System.out.println("📍 AXIS 1: SPATIAL GRID SCALING SWEEP (Full Earth Global Res 2 to Res 7, Monthly Δt = 30d)");
+        System.out.println("📍 AXIS 1: SPATIAL GRID SCALING SWEEP (Full Earth Global Res 2 to Res 7, Unified Native Rust Core)");
         System.out.println("----------------------------------------------------------------------------------------------------");
 
-        spatialResults.add(executeSpatialRun("Res 2 Global Macro", 2, false, availableCores, 10));
-        spatialResults.add(executeSpatialRun("Res 3 Global Standard", 3, false, availableCores, 10));
-        spatialResults.add(executeSpatialRun("Res 5 Regional Windowed", 5, true, availableCores, 10));
-        spatialResults.add(executeSpatialRun("Res 4 Global High-Fi", 4, false, availableCores, 5));
-
-        // Res 5 Global: 2,016,842 cells (~6 km spacing)
-        if (maxHeapMb >= 16000) {
-            spatialResults.add(executeSpatialRun("Res 5 Global Ultra-Fi", 5, false, availableCores, 3));
-        } else {
-            System.out.println("⚠️  Res 5 Global OOP requires >= 16 GB JVM heap. Executing high-density DOD memory streaming pass...");
-            spatialResults.add(executeDodSpatialRun("Res 5 Global (DOD Streaming)", 5, 2_016_842, availableCores, 5));
-        }
-
-        // Res 6 Global: 14,117,882 cells (~2.3 km spacing) - Flat DOD Memory Streaming Kernel
-        spatialResults.add(executeDodSpatialRun("Res 6 Global (DOD Streaming)", 6, 14_117_882, availableCores, 3));
-
-        // Res 7 Global: 98,825,162 cells (~0.86 km spacing) - Flat DOD Memory Streaming Kernel
-        spatialResults.add(executeDodSpatialRun("Res 7 Global (DOD Streaming)", 7, 98_825_162, availableCores, 2));
+        spatialResults.add(executeNativeSpatialRun("Res 2 Global Macro", 2, 5_882, availableCores, 10));
+        spatialResults.add(executeNativeSpatialRun("Res 3 Global Standard", 3, 41_162, availableCores, 10));
+        spatialResults.add(executeNativeSpatialRun("Res 4 Global High-Fi", 4, 288_122, availableCores, 10));
+        spatialResults.add(executeNativeSpatialRun("Res 5 Global Ultra-Fi", 5, 2_016_842, availableCores, 5));
+        spatialResults.add(executeNativeSpatialRun("Res 6 Global Continental", 6, 14_117_882, availableCores, 3));
+        spatialResults.add(executeNativeSpatialRun("Res 7 Global Sub-Kilometer", 7, 98_825_162, availableCores, 2));
 
         // ====================================================================================================
         // AXIS 2: TEMPORAL STEP RESOLUTION SWEEP (Res 3 Global, 41,162 cells)
         // ====================================================================================================
         System.out.println("\n----------------------------------------------------------------------------------------------------");
-        System.out.println("⏱️ AXIS 2: TEMPORAL INTEGRATION STEP RESOLUTION SWEEP (Res 3 Global, 41,162 Hexagons)");
+        System.out.println("⏱️ AXIS 2: TEMPORAL INTEGRATION STEP RESOLUTION SWEEP (Res 3 Global Earth, 41,162 Hexagons)");
         System.out.println("----------------------------------------------------------------------------------------------------");
 
         temporalResults.add(executeTemporalRun("Daily (Δt = 1d)", 3, 1.0, availableCores, 10));
@@ -200,14 +188,14 @@ public class RealPlanetaryEngineBenchmarkRunner {
         // AXIS 3: COMPUTE BACKEND ARCHITECTURE (Res 3 Global, 41,162 cells)
         // ====================================================================================================
         System.out.println("\n----------------------------------------------------------------------------------------------------");
-        System.out.println("⚙️ AXIS 3: COMPUTE BACKEND ENGINE ARCHITECTURE (Res 3 Global, 41,162 Hexagons)");
+        System.out.println("⚙️ AXIS 3: COMPUTE BACKEND ENGINE ARCHITECTURE (Res 3 Global Earth, 41,162 Hexagons)");
         System.out.println("----------------------------------------------------------------------------------------------------");
 
         BackendResult monocore = executeBackendRun("Java JIT (Monocœur, 1 Thread)", 3, 41_162, 1, 10, 1.0);
         backendResults.add(monocore);
         double baselineTps = monocore.tps();
 
-        BackendResult simdMulticore = executeBackendRun("Java 21 SIMD Vector (Multicœur)", 3, 41_162, availableCores, 10, baselineTps);
+        BackendResult simdMulticore = executeBackendRun("Java 25 SIMD Vector (Multicœur)", 3, 41_162, availableCores, 10, baselineTps);
         backendResults.add(simdMulticore);
 
         BackendResult rustNative = executeBackendRun("Native Rust Core (AVX-512 + Rayon)", 3, 41_162, availableCores, 10, baselineTps);
@@ -342,8 +330,8 @@ public class RealPlanetaryEngineBenchmarkRunner {
         );
     }
 
-    public static SpatialResult executeDodSpatialRun(String label, int resolution, int targetCells, int threads, int ticks) {
-        System.out.printf("\n>>> Axis 1 DOD Streaming Run: %-28s | Res %d | Cells: %,d | Ticks: %d\n",
+    public static SpatialResult executeNativeSpatialRun(String label, int resolution, int targetCells, int threads, int ticks) {
+        System.out.printf("\n>>> Axis 1 Native Core Run: %-28s | Res %d | Cells: %,d | Ticks: %d\n",
                 label, resolution, targetCells, ticks);
 
         // Benchmark chunk sized to memory limits
@@ -351,17 +339,13 @@ public class RealPlanetaryEngineBenchmarkRunner {
         WorldBuffer world = new WorldBuffer(sampleChunk);
         AgentBuffer agents = new AgentBuffer(sampleChunk);
 
-        DemographicKernel demog = new DemographicKernel();
-        EnvironmentalKernel env = new EnvironmentalKernel();
-        UrbanKernel urban = new UrbanKernel();
-        CultureKernel culture = new CultureKernel();
-
         for (int i = 0; i < sampleChunk; i++) {
             world.getElevation()[i] = (i % 5 == 0) ? -500.0f : 200.0f;
             world.getTemperature()[i] = 18.0f;
             world.getRainfall()[i] = 750.0f;
             world.getBiomes()[i] = (byte) ((i % 5 == 0) ? Biome.OCEAN.ordinal() : Biome.PLAINS.ordinal());
             world.getFoodResource()[i] = 10000.0f;
+            world.getWaterResource()[i] = 1000.0f;
             world.getBiomassNatural()[i] = 500.0f;
             world.getResourceCapital()[i] = 150.0f;
             world.getTechnologyLevel()[i] = 2.5f;
@@ -375,26 +359,47 @@ public class RealPlanetaryEngineBenchmarkRunner {
             }
         }
 
-        float dt = 30.0f * 86400.0f;
+        double sampleSec;
+        String modeName = "Native Rust Core";
 
-        // Warmup (2 ticks)
-        for (int t = 0; t < 2; t++) {
-            env.tick(world, 6, dt);
-            demog.tick(world, agents, dt);
-            urban.tick(world, dt);
-            culture.tick(world, agents, dt);
+        if (NativeRustBridge.isNativeAvailable()) {
+            try (NativeRustBridge.NativeWorldArena arena = new NativeRustBridge.NativeWorldArena(sampleChunk)) {
+                arena.syncFromJavaBuffers(world, agents);
+                // Warmup (2 ticks)
+                for (int t = 0; t < 2; t++) {
+                    arena.stepUnifiedCycle(30.0f);
+                }
+                long startNanos = System.nanoTime();
+                for (int t = 0; t < ticks; t++) {
+                    arena.stepUnifiedCycle(30.0f);
+                }
+                long durationNanos = System.nanoTime() - startNanos;
+                sampleSec = durationNanos / 1e9;
+                arena.syncToJavaBuffers(world, agents);
+            }
+        } else {
+            modeName = "Java SIMD Fallback";
+            DemographicKernel demog = new DemographicKernel();
+            EnvironmentalKernel env = new EnvironmentalKernel();
+            UrbanKernel urban = new UrbanKernel();
+            CultureKernel culture = new CultureKernel();
+            float dt = 30.0f * 86400.0f;
+            for (int t = 0; t < 2; t++) {
+                env.tick(world, 6, dt);
+                demog.tick(world, agents, dt);
+                urban.tick(world, dt);
+                culture.tick(world, agents, dt);
+            }
+            long startNanos = System.nanoTime();
+            for (int t = 0; t < ticks; t++) {
+                env.tick(world, 6, dt);
+                demog.tick(world, agents, dt);
+                urban.tick(world, dt);
+                culture.tick(world, agents, dt);
+            }
+            sampleSec = (System.nanoTime() - startNanos) / 1e9;
         }
 
-        long startNanos = System.nanoTime();
-        for (int t = 0; t < ticks; t++) {
-            env.tick(world, 6, dt);
-            demog.tick(world, agents, dt);
-            urban.tick(world, dt);
-            culture.tick(world, agents, dt);
-        }
-        long durationNanos = System.nanoTime() - startNanos;
-
-        double sampleSec = durationNanos / 1e9;
         double scaleRatio = (double) targetCells / sampleChunk;
         double extrapolatedTickSec = (sampleSec / ticks) * scaleRatio;
         double tps = 1.0 / Math.max(0.00001, extrapolatedTickSec);
@@ -403,11 +408,11 @@ public class RealPlanetaryEngineBenchmarkRunner {
         double extrapolated10kMin = (msPerTick * 10_000.0) / (1000.0 * 60.0);
         long estimatedSnapBytes = targetCells * 48L;
 
-        System.out.printf("    Measured DOD Kernel: %7.1f ms/tick | %6.2f TPS | Latency: %6.2f μs/cell\n",
-                msPerTick, tps, latencyUsPerCell);
+        System.out.printf("    Measured %s: %7.1f ms/tick | %6.2f TPS | Latency: %6.2f μs/cell\n",
+                modeName, msPerTick, tps, latencyUsPerCell);
 
         return new SpatialResult(
-                label, resolution, targetCells, false, "DOD Streaming", threads,
+                label, resolution, targetCells, false, modeName, threads,
                 ticks, sampleSec, tps, msPerTick, latencyUsPerCell,
                 extrapolated10kMin, estimatedSnapBytes, 100_000L
         );
@@ -483,31 +488,62 @@ public class RealPlanetaryEngineBenchmarkRunner {
         boolean isRust = label.contains("Rust");
         boolean isSingleCore = threads == 1;
 
-        if (isRust && !NativeRustBridge.isNativeAvailable()) {
-            // Emulate Native Rust AVX-512 with DOD zero-copy array kernel
+        if (isRust) {
             WorldBuffer world = new WorldBuffer(cells);
             AgentBuffer agents = new AgentBuffer(cells);
-            DemographicKernel demog = new DemographicKernel();
-            EnvironmentalKernel env = new EnvironmentalKernel();
-            UrbanKernel urban = new UrbanKernel();
-            CultureKernel culture = new CultureKernel();
+            for (int i = 0; i < cells; i++) {
+                world.getElevation()[i] = (i % 5 == 0) ? -500.0f : 200.0f;
+                world.getTemperature()[i] = 18.0f;
+                world.getRainfall()[i] = 750.0f;
+                world.getBiomes()[i] = (byte) ((i % 5 == 0) ? Biome.OCEAN.ordinal() : Biome.PLAINS.ordinal());
+                world.getFoodResource()[i] = 10000.0f;
+                world.getWaterResource()[i] = 1000.0f;
+                world.getBiomassNatural()[i] = 500.0f;
+                world.getResourceCapital()[i] = 150.0f;
+                world.getTechnologyLevel()[i] = 2.5f;
 
-            float dt = 30.0f * 86400.0f;
-            for (int t = 0; t < 2; t++) {
-                env.tick(world, 6, dt);
-                demog.tick(world, agents, dt);
-                urban.tick(world, dt);
-                culture.tick(world, agents, dt);
+                if (i < cells / 2) {
+                    agents.getHexIds()[i] = i;
+                    agents.getMass()[i] = 150.0f;
+                    agents.getEnergy()[i] = 80.0f;
+                    agents.getAge()[i] = 25.0f;
+                    agents.getTechLevel()[i] = 2.5f;
+                }
             }
 
-            long startNanos = System.nanoTime();
-            for (int t = 0; t < ticks; t++) {
-                env.tick(world, 6, dt);
-                demog.tick(world, agents, dt);
-                urban.tick(world, dt);
-                culture.tick(world, agents, dt);
+            long durationNanos;
+            if (NativeRustBridge.isNativeAvailable()) {
+                try (NativeRustBridge.NativeWorldArena arena = new NativeRustBridge.NativeWorldArena(cells)) {
+                    arena.syncFromJavaBuffers(world, agents);
+                    for (int t = 0; t < 2; t++) arena.stepUnifiedCycle(30.0f);
+                    long startNanos = System.nanoTime();
+                    for (int t = 0; t < ticks; t++) arena.stepUnifiedCycle(30.0f);
+                    durationNanos = System.nanoTime() - startNanos;
+                    arena.syncToJavaBuffers(world, agents);
+                }
+            } else {
+                DemographicKernel demog = new DemographicKernel();
+                EnvironmentalKernel env = new EnvironmentalKernel();
+                UrbanKernel urban = new UrbanKernel();
+                CultureKernel culture = new CultureKernel();
+
+                float dt = 30.0f * 86400.0f;
+                for (int t = 0; t < 2; t++) {
+                    env.tick(world, 6, dt);
+                    demog.tick(world, agents, dt);
+                    urban.tick(world, dt);
+                    culture.tick(world, agents, dt);
+                }
+
+                long startNanos = System.nanoTime();
+                for (int t = 0; t < ticks; t++) {
+                    env.tick(world, 6, dt);
+                    demog.tick(world, agents, dt);
+                    urban.tick(world, dt);
+                    culture.tick(world, agents, dt);
+                }
+                durationNanos = System.nanoTime() - startNanos;
             }
-            long durationNanos = System.nanoTime() - startNanos;
 
             double durationMs = durationNanos / 1e6;
             double tps = ticks / (durationNanos / 1e9);

@@ -98,21 +98,32 @@ public class EnvironmentalKernel {
         return (float) Math.exp(-extinctionCoeff * leafAreaIndex);
     }
 
+    private static final int PET_LUT_MIN = -5;
+    private static final int PET_LUT_MAX = 50;
+    private static final int PET_LUT_STEPS = (PET_LUT_MAX - PET_LUT_MIN) * 2 + 1; // 111 steps (0.5°C)
+    private static final float[] PET_LUT = new float[PET_LUT_STEPS];
+
+    static {
+        for (int i = 0; i < PET_LUT_STEPS; i++) {
+            double t = PET_LUT_MIN + i * 0.5;
+            double delta = (4098.0 * (0.6108 * Math.exp(17.27 * t / (t + 237.3)))) / ((t + 237.3) * (t + 237.3));
+            double gammaPsy = 0.066;
+            double alphaPT = 1.26;
+            double netSolarRadiationMmEquiv = Math.max(100.0, (t + 10.0) * 35.0);
+            PET_LUT[i] = (float) (alphaPT * (delta / (delta + gammaPsy)) * netSolarRadiationMmEquiv);
+        }
+    }
+
     /*
      * Calculates Priestley-Taylor Potential Evapotranspiration (PET in mm/year).
      */
     public static float calculatePriestleyTaylorPET(float tempC) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         if (tempC <= -5.0f) return 50.0f;
-        double t = Math.clamp(tempC, -5.0, 50.0);
-        // Slope of saturation vapor curve Delta in kPa/°C
-        double delta = (4098.0 * (0.6108 * Math.exp(17.27 * t / (t + 237.3)))) / Math.pow(t + 237.3, 2.0);
-        double gammaPsy = 0.066; // Psychrometric constant in kPa/°C
-        double alphaPT = 1.26; // Priestley-Taylor coefficient
-        double netSolarRadiationMmEquiv = Math.max(100.0, (t + 10.0) * 35.0); // Equivalent mm/yr radiation
-
-        return (float) (alphaPT * (delta / (delta + gammaPsy)) * netSolarRadiationMmEquiv);
+        if (tempC >= 50.0f) return PET_LUT[PET_LUT_STEPS - 1];
+        float idxF = (tempC - PET_LUT_MIN) * 2.0f;
+        int idx = (int) idxF;
+        float frac = idxF - idx;
+        return PET_LUT[idx] + frac * (PET_LUT[idx + 1] - PET_LUT[idx]);
     }
 
     /*

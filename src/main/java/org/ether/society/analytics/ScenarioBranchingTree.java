@@ -4,7 +4,7 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.model;
+package org.ether.society.analytics;
 
 import org.ether.society.database.H3Cell;
 
@@ -164,4 +164,3 @@ public class ScenarioBranchingTree implements Serializable {
      */
     public void setActiveBranchId(String id) { if (branches.containsKey(id)) this.activeBranchId = id; }
 }
-

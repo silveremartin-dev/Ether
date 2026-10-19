@@ -497,7 +497,6 @@ public class EmpiricalEngineCounterfactualValidationSuite {
         @DisplayName("Demonstrate progressive food yield collapse in arid irrigated river basins (-2400 Sumerian Mesopotamia)")
         void testSoilSalinizationYieldCollapse() {
             logger.info("=== Executing Soil Salinization Mass-Balance Benchmark ===");
-            SoilSalinizationHydrologyEngine engine = new SoilSalinizationHydrologyEngine();
             ProceduralGenerator generator = new ProceduralGenerator();
 
             double[] controlFoodTerminal = new double[MONTE_CARLO_SEEDS.length];
@@ -522,7 +521,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 double deltaYears = 1.0;
 
                 for (int year = 0; year < simYears; year++) {
-                    engine.process(treatmentGrid, deltaYears);
+                    SoilSalinizationHydrologyEngine.processSoilSalinization(treatmentGrid, deltaYears);
                 }
 
                 double avgFoodControl = controlGrid.stream().mapToDouble(c -> c.getFoodResource() != null ? c.getFoodResource() : 0.0).average().orElse(0.0);

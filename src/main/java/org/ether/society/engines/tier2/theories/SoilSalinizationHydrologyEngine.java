@@ -84,6 +84,16 @@ public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
         return "Tier 2: Agro-Hydrological Degradation";
     }
 
+    /*
+     * Static utility entry point for fused pipeline execution.
+     *
+     * @param cells the spatial grid cells to process
+     * @param deltaYears elapsed time step in fractional solar years
+     */
+    public static void processSoilSalinization(List<H3Cell> cells, double deltaYears) {
+        new SoilSalinizationHydrologyEngine().process(cells, deltaYears);
+    }
+
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
         // Step 1: Read institutional, demographic, and economic state tensors

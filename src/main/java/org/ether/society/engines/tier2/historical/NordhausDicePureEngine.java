@@ -44,7 +44,7 @@ public class NordhausDicePureEngine {
         double emissions = netGdp * 0.05;
         temperatureAnomaly += emissions * 0.001 * deltaYears;
 
-        gdp = netGdp * 1.02; // 2% baseline growth
+        gdp = Math.max(0.0, netGdp * (1.0 + 0.02 * deltaYears));
     }
 
     /*
@@ -61,6 +61,16 @@ public class NordhausDicePureEngine {
      * @return the resulting computation or state reference
      */
     public double getTemperatureAnomaly() { return temperatureAnomaly; }
+
+    /**
+     * Executes hybrid spatial coupling for populated grid cells applying Nordhaus quadratic climate damage.
+     *
+     * @param cells List of populated cells
+     * @param deltaYears Simulation time step in years
+     */
+    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
+        NordhausDiceHybridEngine.processPlugin(cells, deltaYears);
+    }
 }
 
 

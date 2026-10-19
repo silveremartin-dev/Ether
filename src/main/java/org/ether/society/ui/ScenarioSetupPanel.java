@@ -4658,7 +4658,7 @@ public class ScenarioSetupPanel extends BorderPane {
         btnCulturalMatrix.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_matrix", "Inspect the N × N Pairwise Cultural Affinity and Distance Heatmap Matrix.")));
         btnCulturalMatrix.setOnAction(e -> {
             long epoch = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -100000L;
-            new CulturalAffinityMatrixDialog(epoch).show();
+            new CulturalAffinityMatrixDialog(epoch, getScenario()).show();
         });
 
         HBox actionButtonsRow = new HBox(8, culturalHelpBtn, btnExportGisMultiFormat, btnExportProvenanceManifest);

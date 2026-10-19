@@ -1,4 +1,4 @@
-package org.ether.society.persistence;
+package org.ether.society.ui.export;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOInvalidTreeException;

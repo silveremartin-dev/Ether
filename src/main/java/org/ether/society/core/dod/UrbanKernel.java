@@ -38,7 +38,11 @@ public class UrbanKernel {
         float decayComplexity = (float) Math.pow(0.90, dtInYears);
 
         int capacity = world.getCapacity();
-        for (int i = 0; i < capacity; i++) {
+        int[] landIndices = world.getLandIndices();
+        int count = landIndices != null ? landIndices.length : capacity;
+        for (int idx = 0; idx < count; idx++) {
+            int i = landIndices != null ? landIndices[idx] : idx;
+            if (i < 0 || i >= capacity) continue;
             if (pop[i] > 10.0f) {
                 float effectiveTech = tech != null ? Math.max(0.5f, tech[i]) : 1.0f;
                 float capitalPerCapita = pop[i] > 0.001f ? (capital[i] / pop[i]) : 0.0f;

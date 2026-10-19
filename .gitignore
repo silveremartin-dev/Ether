@@ -14,6 +14,9 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 *.jar
+*.dll
+*.so
+*.dylib
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 

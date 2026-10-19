@@ -3346,6 +3346,10 @@ public class H3SimulationEngine implements ISimulationEngine {
      */
 
 
+    public java.util.List<org.ether.society.model.Nation> getNations() {
+        return nations;
+    }
+
     public org.ether.society.analytics.HistoryManager getHistoryManager() {
 
 
