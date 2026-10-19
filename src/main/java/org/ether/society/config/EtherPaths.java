@@ -299,4 +299,44 @@ public final class EtherPaths {
         } catch (IOException ignored) {}
         return p;
     }
+
+    /**
+     * Sanitizes a user-provided or network-provided file name to prevent directory traversal (CWE-22).
+     * Replaces any path separators, parent traversal sequences ({@code ..}), or illegal filesystem characters.
+     *
+     * @param fileName raw file name or scenario identifier
+     * @return sanitized base file name safe for filesystem operations
+     */
+    public static String sanitizeFileName(String fileName) {
+        if (fileName == null || fileName.isBlank()) {
+            return "unnamed";
+        }
+        // Strip path traversal sequences and illegal characters
+        String safe = fileName.replaceAll("[\\\\/\\r\\n\\t\\0]", "_")
+                .replaceAll("\\.{2,}", "_")
+                .replaceAll("[^a-zA-Z0-9._\\-\\s]", "_")
+                .trim();
+        return safe.isEmpty() ? "unnamed" : safe;
+    }
+
+    /**
+     * Safely resolves a child path within a parent directory, enforcing that the resolved path
+     * strictly resides within the parent directory hierarchy (preventing directory traversal attacks).
+     *
+     * @param parentDirectory trusted parent directory
+     * @param childRelativePath untrusted relative child path
+     * @return normalized resolved path strictly located within {@code parentDirectory}
+     * @throws SecurityException if the resolved path escapes the parent directory boundary
+     */
+    public static Path resolveSafeChildPath(Path parentDirectory, String childRelativePath) {
+        if (parentDirectory == null) {
+            throw new IllegalArgumentException("Parent directory cannot be null");
+        }
+        String cleanName = sanitizeFileName(childRelativePath);
+        Path resolved = parentDirectory.resolve(cleanName).normalize();
+        if (!resolved.startsWith(parentDirectory.normalize())) {
+            throw new SecurityException("Potential directory traversal attack detected: " + childRelativePath);
+        }
+        return resolved;
+    }
 }

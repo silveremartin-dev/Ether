@@ -3831,88 +3831,15 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
     private void exportMarkdownReport() {
         String currentReport = (reportPreviewPane != null) ? reportPreviewPane.getMarkdown() : "";
-        if (currentReport == null || currentReport.isBlank() || currentReport.startsWith("## Please select")) {
-            return;
-        }
-
-        String timestamp = java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(java.time.LocalDateTime.now());
-        String fileName = currentReport.contains("RAPPORT D'AUDIT") || currentReport.contains("CLIODYNAMIC AUDIT")
-            ? "Report_Cliodynamic_Audit_" + timestamp + ".md"
-            : "Report_Comparative_Analysis_" + timestamp + ".md";
-
-        java.nio.file.Path targetFile = EtherPaths.getExportsDir().resolve(fileName);
-        try (FileWriter writer = new FileWriter(targetFile.toFile(), java.nio.charset.StandardCharsets.UTF_8)) {
-            writer.write(currentReport);
-            logger.info("Exported comparative analysis report to {}", targetFile.toAbsolutePath());
-
-            String origText = exportMdBtn.getText();
-            exportMdBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_md_success", "✅ Exporté : %s"), fileName));
-            exportMdBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #059669; -fx-text-fill: white; -fx-padding: 6 14;");
-
-            Timeline resetTimer = new Timeline(new KeyFrame(Duration.seconds(3), evt -> {
-                exportMdBtn.setText(origText);
-                exportMdBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #10b981; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
-            }));
-            resetTimer.setCycleCount(1);
-            resetTimer.play();
-        } catch (IOException ex) {
-            logger.error("Error writing markdown report to file", ex);
-        }
+        org.ether.society.ui.export.ComparativeAnalyticsExporter.exportMarkdownReport(currentReport, exportMdBtn);
     }
 
     private void exportCsvData() {
-        List<ScenarioSelectableItem> selected = scenarioList.stream()
-            .filter(ScenarioSelectableItem::isSelected)
-            .toList();
-
-        if (selected.isEmpty()) {
-            return;
-        }
-
-        List<SimulationRunRecord> runsToExport = new ArrayList<>();
-        boolean includeGroundTruth = false;
-        int minYear = Integer.MAX_VALUE;
-        int maxYear = Integer.MIN_VALUE;
-
-        for (ScenarioSelectableItem it : selected) {
-            if ("HISTORICAL_GROUND_TRUTH".equals(it.getRunId())) {
-                includeGroundTruth = true;
-            } else if (it.isExecuted()) {
-                SimulationRunRecord r = resolveRunRecord(it);
-                if (r != null) {
-                    runsToExport.add(r);
-                    if (it.getScenario() != null) {
-                        minYear = Math.min(minYear, (int) it.getScenario().getStartDateYear());
-                        maxYear = Math.max(maxYear, (int) it.getScenario().getEndDateYear());
-                    }
-                }
-            }
-        }
-
-        if (minYear == Integer.MAX_VALUE) { minYear = -100000; maxYear = 2026; }
-
-        String csv = ComparativeReportGenerator.generateCsvExport(runsToExport, includeGroundTruth, minYear, maxYear);
-        String timestamp = java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(java.time.LocalDateTime.now());
-        String fileName = "Data_Comparative_Analysis_" + timestamp + ".csv";
-        java.nio.file.Path targetFile = EtherPaths.getExportsDir().resolve(fileName);
-
-        try (FileWriter writer = new FileWriter(targetFile.toFile(), java.nio.charset.StandardCharsets.UTF_8)) {
-            writer.write(csv);
-            logger.info("Exported CSV telemetry data to {}", targetFile.toAbsolutePath());
-
-            String origText = exportCsvBtn.getText();
-            exportCsvBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_csv_success", "✅ Exporté : %s"), fileName));
-            exportCsvBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #6d28d9; -fx-text-fill: white; -fx-padding: 6 14;");
-
-            Timeline resetTimer = new Timeline(new KeyFrame(Duration.seconds(3), evt -> {
-                exportCsvBtn.setText(origText);
-                exportCsvBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
-            }));
-            resetTimer.setCycleCount(1);
-            resetTimer.play();
-        } catch (IOException ex) {
-            logger.error("Error writing CSV export to file", ex);
-        }
+        org.ether.society.ui.export.ComparativeAnalyticsExporter.exportCsvData(
+                scenarioList,
+                exportCsvBtn,
+                this::resolveRunRecord
+        );
     }
 
     private void export2DCartographyZip() {
@@ -3923,93 +3850,22 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (itemB == null) itemB = itemA;
         if (itemA == null) return;
 
-        final ScenarioSelectableItem finalA = itemA;
-        final ScenarioSelectableItem finalB = itemB;
         final int targetYear = dateSlider != null ? (int) dateSlider.getValue() : 0;
         final String spatialReportText = spatialMetricsReportArea != null ? spatialMetricsReportArea.getText() : "";
         final String channelKey = resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
 
-        String timestamp = java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(java.time.LocalDateTime.now());
-        String zipName = "Cartography_Tensors_Export_" + timestamp + ".zip";
-
-        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-        fileChooser.setTitle(I18n.getOrDefault("analytics.filechooser.export_tensors", "Save 2D Cartography Tensors ZIP"));
-        fileChooser.setInitialFileName(zipName);
-        fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("ZIP Archives (*.zip)", "*.zip"));
-        try {
-            java.io.File defaultDir = EtherPaths.getExportsDir().toFile();
-            if (defaultDir.exists()) fileChooser.setInitialDirectory(defaultDir);
-        } catch (Exception ignored) {}
-
-        javafx.stage.Window window = export2DZipBtn.getScene() != null ? export2DZipBtn.getScene().getWindow() : null;
-        java.io.File selectedFile = (window != null) ? fileChooser.showSaveDialog(window) : EtherPaths.getExportsDir().resolve(zipName).toFile();
-        if (selectedFile == null) return;
-        final java.nio.file.Path targetZip = selectedFile.toPath();
-        final String savedFileName = selectedFile.getName();
-
-        export2DZipBtn.setDisable(true);
-        export2DZipBtn.setText("⏳ Compression ZIP...");
-
-        java.util.concurrent.CompletableFuture.runAsync(() -> {
-            try (ZipOutputStream zos = new ZipOutputStream(new java.io.BufferedOutputStream(java.nio.file.Files.newOutputStream(targetZip)))) {
-                zos.setLevel(java.util.zip.Deflater.BEST_SPEED);
-                // 1. Add spatial report text file
-                zos.putNextEntry(new ZipEntry("spatial_metrics_report.txt"));
-                zos.write(spatialReportText.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                zos.closeEntry();
-
-                // 2. Export currently displayed maps
-                if (mapImageViewA != null && mapImageViewA.getImage() != null) {
-                    addFxImageToZip(zos, mapImageViewA.getImage(), "Map_A_" + sanitizeFileName(finalA.getName()) + "_" + targetYear + "_" + channelKey + ".png");
-                }
-                if (mapImageViewB != null && mapImageViewB.getImage() != null) {
-                    addFxImageToZip(zos, mapImageViewB.getImage(), "Map_B_" + sanitizeFileName(finalB.getName()) + "_" + targetYear + "_" + channelKey + ".png");
-                }
-                if (mapImageViewDiff != null && mapImageViewDiff.getImage() != null) {
-                    addFxImageToZip(zos, mapImageViewDiff.getImage(), "Delta_A_minus_B_" + targetYear + "_" + channelKey + ".png");
-                }
-
-                // 3. Export all available cached channels (excluding file paths and null keys)
-                for (Map.Entry<String, java.awt.image.BufferedImage> entry : RASTER_IMAGE_CACHE.entrySet()) {
-                    String key = entry.getKey();
-                    if (key == null || key.startsWith("FILE_") || key.contains("null")) continue;
-                    java.awt.image.BufferedImage img = entry.getValue();
-                    if (img != null) {
-                        addBufferedImageToZip(zos, img, "tensors_cache/" + sanitizeFileName(key) + ".png");
-                    }
-                }
-
-                javafx.application.Platform.runLater(() -> {
-                    export2DZipBtn.setDisable(false);
-                    export2DZipBtn.setText("✅ Exporté : " + savedFileName);
-                    export2DZipBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #059669; -fx-text-fill: white; -fx-padding: 6 14;");
-                    Timeline t = new Timeline(new KeyFrame(Duration.seconds(4), evt -> {
-                        export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "📦 Export 2D Tensors (.zip)"));
-                        export2DZipBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #6366f1; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
-                    }));
-                    t.setCycleCount(1);
-                    t.play();
-                });
-            } catch (Exception ex) {
-                logger.error("Failed to export 2D cartography ZIP", ex);
-                javafx.application.Platform.runLater(() -> {
-                    export2DZipBtn.setDisable(false);
-                    export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "📦 Export 2D Tensors (.zip)"));
-                });
-            }
-        });
-    }
-
-    private void addFxImageToZip(ZipOutputStream zos, Image fxImage, String entryName) throws IOException {
-        java.awt.image.BufferedImage bImg = javafx.embed.swing.SwingFXUtils.fromFXImage(fxImage, null);
-        addBufferedImageToZip(zos, bImg, entryName);
-    }
-
-    private void addBufferedImageToZip(ZipOutputStream zos, java.awt.image.BufferedImage bImg, String entryName) throws IOException {
-        if (bImg == null) return;
-        zos.putNextEntry(new ZipEntry(entryName));
-        ImageIO.write(bImg, "PNG", zos);
-        zos.closeEntry();
+        org.ether.society.ui.export.ComparativeAnalyticsExporter.export2DCartographyZip(
+                export2DZipBtn,
+                itemA,
+                itemB,
+                targetYear,
+                channelKey,
+                spatialReportText,
+                mapImageViewA != null ? mapImageViewA.getImage() : null,
+                mapImageViewB != null ? mapImageViewB.getImage() : null,
+                mapImageViewDiff != null ? mapImageViewDiff.getImage() : null,
+                RASTER_IMAGE_CACHE
+        );
     }
 
     private String sanitizeFileName(String name) {
