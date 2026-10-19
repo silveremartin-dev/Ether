@@ -1,4 +1,4 @@
-ackage org.ether.society.persistence;
+package org.ether.society.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

@@ -1,4 +1,4 @@
-ackage org.ether.society.persistence;
+package org.ether.society.persistence;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

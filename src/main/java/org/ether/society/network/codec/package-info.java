@@ -1,4 +1,4 @@
-**
+/**
  * <h1>Network Wire Serialization Codecs</h1>
  * <p>
  * High-throughput binary serialization and deserialization codecs for streaming cell state,

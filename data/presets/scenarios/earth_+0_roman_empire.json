@@ -1,6 +1,6 @@
 {
   "name" : "Empire Romain & Pax Romana (An 0)",
-  "description" : "ðŸ›ï¸ SCÉNARIO HISTORIQUE : L'Empire Romain Ã  son Apogée (Pax Romana, An 0)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE - SOURCES BESSES & BENCHMARKS CIA / SESHAT / HYDE]\nModélise le bassin méditerranéen au moment de la Pax Romana sous Auguste. Intègre les données démographiques historiques (55 millions d'habitants), les réseaux d'infrastructures (viae, aqueducs) et les dynamiques cliodynamiques de Turchin.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Déploiement des infrastructures de transport (réseau viaire terrestre et autoroutes maritimes méditerranéennes).\n• Cycles cliodynamiques de Turchin (surproduction des élites, instabilité politique, dévaluation monétaire du denier).\n• Impact conjugué des chocs climatiques (Optimum Romain vers refroidissement) et des épidémies (Peste Antonine).\n",
+  "description" : "SCÉNARIO HISTORIQUE : L'Empire Romain à son Apogée (Pax Romana, An 0)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE - SOURCES BESSES & BENCHMARKS CIA / SESHAT / HYDE]\nModélise le bassin méditerranéen au moment de la Pax Romana sous Auguste. Intègre les données démographiques historiques (55 millions d'habitants), les réseaux d'infrastructures (viae, aqueducs) et les dynamiques cliodynamiques de Turchin.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Déploiement des infrastructures de transport (réseau viaire terrestre et autoroutes maritimes méditerranéennes).\n• Cycles cliodynamiques de Turchin (surproduction des élites, instabilité politique, dévaluation monétaire du denier).\n• Impact conjugué des chocs climatiques (Optimum Romain vers refroidissement) et des épidémies (Peste Antonine).\n",
   "id" : null,
   "presetKey" : "roman_empire",
   "planetPreset" : {
@@ -38,7 +38,7 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "ðŸŒ Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
     "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
@@ -48,7 +48,7 @@
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -89,7 +89,7 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "ðŸŒ Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
       "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
@@ -99,7 +99,7 @@
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
-      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,10 +156,11 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
-  "h3Resolution" : 3,
+  "h3Resolution" : 5,
   "strictDeterminism" : true,
   "sparseCellSkippingEnabled" : false,
   "oceanMacroAggregationEnabled" : false,
@@ -193,6 +194,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Pax Romana & Mediterranean Trade Peak (117 AD)",
-  "displayDescription" : "HISTORICAL SCENARIO: Pax Romana & Mediterranean Economic Integration (117 AD)\n\nMaximum territorial extent of the Roman Empire, imperial road networks, maritime grain trade, coin debasement dynamics, and urban sanitation."
+  "tier2CliodynamicsEnabled" : true,
+  "displayName" : "Pax Romana & Réseau Commercial Méditerranéen (117)",
+  "displayDescription" : "\uD83C\uDFDB SCÉNARIO HISTORIQUE : Pax Romana & L'Intégration Économique Méditerranéenne (117 apr. J.-C.)\n\nExtension territoriale maximale de l'Empire Romain, réseaux routiers impériaux, commerce annonaire maritime, dynamique d'altération monétaire et hygiène urbaine."
 }

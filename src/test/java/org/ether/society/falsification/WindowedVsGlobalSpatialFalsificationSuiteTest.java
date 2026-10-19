@@ -37,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 1.0.0-beta.2
  */
 @Tag("falsification")
+@Tag("benchmark")
 public class WindowedVsGlobalSpatialFalsificationSuiteTest {
 
     private static final Logger logger = LoggerFactory.getLogger(WindowedVsGlobalSpatialFalsificationSuiteTest.class);

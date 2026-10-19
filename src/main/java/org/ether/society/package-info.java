@@ -1,4 +1,4 @@
-**
+/**
  * <h1>Ether - Physical-based Cliodynamic &amp; Historical Planetary Simulation Engine</h1>
  * <p>
  * Ether is an advanced multi-scale computational framework designed to simulate how

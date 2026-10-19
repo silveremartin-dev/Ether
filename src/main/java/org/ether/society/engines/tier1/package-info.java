@@ -1,4 +1,4 @@
-**
+/**
  * <h1>Tier 1: Core Physical, Thermodynamic &amp; Ecological Conservation Laws</h1>
  * <p>
  * Implements non-negotiable, empirically grounded physical laws and biophysical limits:

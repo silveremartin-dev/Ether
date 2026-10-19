@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2026 Silvere Martin-Michiellot & Antigravity AI

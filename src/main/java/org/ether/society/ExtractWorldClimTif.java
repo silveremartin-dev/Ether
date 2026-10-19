@@ -1,4 +1,4 @@
-ackage org.ether.society;
+package org.ether.society;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;

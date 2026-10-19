@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version 1.0.0-beta.2
  */
 @Deprecated
+@org.junit.jupiter.api.Tag("benchmark")
 public class MultiResolutionScenarioBenchmarkHarnessTest {
     private static final Logger logger = LoggerFactory.getLogger(MultiResolutionScenarioBenchmarkHarnessTest.class);
 

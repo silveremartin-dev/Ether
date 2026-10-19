@@ -46,7 +46,7 @@
     "seasonSeed" : 14346,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -3000,
-    "presetDescription" : "­ƒÅø´©Å EARTH (-3,000 BP / Late Holocene): Modern coastline stabilization, progressive aridification of the Sahara, and rise of hydraulic agrarian empires along the Nile, Tigris-Euphrates, Indus, and Yellow Rivers.",
+    "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune.",
     "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 560.0,
@@ -67,5 +67,5 @@
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
   "associatedEpochYear" : -3000,
-  "presetDescription" : "­ƒÅø´©Å EARTH (-3,000 BP / Late Holocene): Modern coastline stabilization, progressive aridification of the Sahara, and rise of hydraulic agrarian empires along the Nile, Tigris-Euphrates, Indus, and Yellow Rivers."
+  "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune."
 }

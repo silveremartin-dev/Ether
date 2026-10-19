@@ -48,7 +48,7 @@
     "seasonSeed" : 57555,
     "canonicalPlanet" : "venus",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒƒí VENUS (Hesperos): Runaway greenhouse hellscape with 92 atm COÔéé atmosphere, 465┬░C surface temperature, sulfuric acid clouds, active basaltic volcanism, and complete absence of liquid water.",
+    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -99,7 +99,7 @@
       "seasonSeed" : 57555,
       "canonicalPlanet" : "venus",
       "associatedEpochYear" : 2026,
-      "presetDescription" : "­ƒƒí VENUS (Hesperos): Runaway greenhouse hellscape with 92 atm COÔéé atmosphere, 465┬░C surface temperature, sulfuric acid clouds, active basaltic volcanism, and complete absence of liquid water.",
+      "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 0.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "venus",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒƒí VENUS (Hesperos): Runaway greenhouse hellscape with 92 atm COÔéé atmosphere, 465┬░C surface temperature, sulfuric acid clouds, active basaltic volcanism, and complete absence of liquid water."
+    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,6 +156,7 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
@@ -182,6 +183,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Cités Flottantes Vénusiennes : Aérostats de Haute Altitude (2080)",
   "displayDescription" : "\uD83D\uDFE1 SCÉNARIO EXOPLANÉTAIRE : Aérostats Flottants & Extraction Atmosphérique Vénusienne (2080 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nCités aérostatiques flottantes à 55 km d'altitude où la pression est de 1,0 atm et la température de 25°C. Enveloppes en PTFE résistant à l'acide sulfurique et raffinage du carbone atmosphérique.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation de la flottabilité naturelle de l'air respirable (N₂/O₂) comme gaz sustentateur dans une atmosphère de CO₂ dense.\n• Récolte de vapeur d'eau et de composés soufrés par condensation en haute altitude.\n• Équilibre aérostatique dynamique et résistance à la super-rotation zonale des vents.\n"
 }

@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -87,7 +87,6 @@ public class DensityMap {
      * Specific resource type (e.g., "FISH", "COPPER", "WHEAT").
      */
     @Column(nullable = false, length = 50)
-    /** Internal state: resource type (String). */
     private String resourceType;
 
     /**

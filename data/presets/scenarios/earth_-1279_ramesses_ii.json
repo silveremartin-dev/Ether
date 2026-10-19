@@ -48,7 +48,7 @@
     "seasonSeed" : 14346,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -3000,
-    "presetDescription" : "­ƒÅø´©Å EARTH (-3,000 BP / Late Holocene): Modern coastline stabilization, progressive aridification of the Sahara, and rise of hydraulic agrarian empires along the Nile, Tigris-Euphrates, Indus, and Yellow Rivers.",
+    "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -99,7 +99,7 @@
       "seasonSeed" : 14346,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : -3000,
-      "presetDescription" : "­ƒÅø´©Å EARTH (-3,000 BP / Late Holocene): Modern coastline stabilization, progressive aridification of the Sahara, and rise of hydraulic agrarian empires along the Nile, Tigris-Euphrates, Indus, and Yellow Rivers.",
+      "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 560.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -3000,
-    "presetDescription" : "­ƒÅø´©Å EARTH (-3,000 BP / Late Holocene): Modern coastline stabilization, progressive aridification of the Sahara, and rise of hydraulic agrarian empires along the Nile, Tigris-Euphrates, Indus, and Yellow Rivers."
+    "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,6 +156,7 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
@@ -189,6 +190,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)",
   "displayDescription" : "\uD83C\uDFDB SCÉNARIO HISTORIQUE : Règne de Ramsès II, Traité de Qadesh & Architecture Monumentale (-1279 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le long règne de 66 ans de Ramsès II (XIXe dynastie), le traité de paix de Qadesh (-1259) avec l'Empire Hittite, et les chantiers monumentaux majeurs (Abou Simbel, Ramesseum, Pi-Ramsès).\n\n[THÉORIE DE L'INFLUENCE DES GRANDS HOMMES & OBSERVABLES]\n• Effet transitoire mais puissant d'un leadership exceptionnellement long : centralisation de la capacité étatique et sur-accumulation de capital physique (canaux, temples, greniers).\n• Stabilité géopolitique régionale et commerce méditerranéen sécurisé (Pax Aegyptiaca).\n• Vulnérabilité de succession post-recul du grand règne à l'approche de la crise systémique de l'Âge du Bronze (-1200).\n"
 }

@@ -48,7 +48,7 @@
     "seasonSeed" : 35333,
     "canonicalPlanet" : "none",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒæü´©Å TIDALLY LOCKED WORLD (Eyeball): Synchronous rotation around a red dwarf star. Permanent blistering day side, frozen night hemisphere, and a narrow habitable twilight terminator ring.",
+    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
     "tidalLocked" : true
   },
   "ecologyPreset" : {
@@ -99,7 +99,7 @@
       "seasonSeed" : 35333,
       "canonicalPlanet" : "none",
       "associatedEpochYear" : 2026,
-      "presetDescription" : "­ƒæü´©Å TIDALLY LOCKED WORLD (Eyeball): Synchronous rotation around a red dwarf star. Permanent blistering day side, frozen night hemisphere, and a narrow habitable twilight terminator ring.",
+      "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
       "tidalLocked" : true
     },
     "terrestrialBiomassGtC" : 180.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "none",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒæü´©Å TIDALLY LOCKED WORLD (Eyeball): Synchronous rotation around a red dwarf star. Permanent blistering day side, frozen night hemisphere, and a narrow habitable twilight terminator ring."
+    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,6 +156,7 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
@@ -182,6 +183,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Monde Synchrone : L'Anneau du Crépuscule & Terminateur (2220)",
   "displayDescription" : "\uD83D\uDC41 SCÉNARIO EXOPLANÉTAIRE : Civilisation de l'Anneau Crépusculaire Synchrone (2220 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nColonisation d'une planète en verrouillage gravitationnel autour d'une naine rouge. Population concentrée exclusivement sur l'étroite bande tempérée du terminateur entre brasier permanent et nuit glacée.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Climat statique hyper-contrasté avec vents catabatiques puissants redistribuant l'énergie de la face éclairée vers la face sombre.\n• Ceinture de mégalopoles thermiquement isolées exploitant l'énergie solaire ininterrompue côté jour et les glaces permanentes côté nuit.\n• Équilibre précaire des flux hydrologiques et gestion rigoureuse de la capacité de charge locale.\n"
 }

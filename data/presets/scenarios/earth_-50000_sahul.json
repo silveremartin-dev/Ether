@@ -48,7 +48,7 @@
     "seasonSeed" : 14352,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -50000,
-    "presetDescription" : "­ƒªÿ EARTH (-50,000 BP / MIS 3 Interstadial): Temperate glacial climate with sea level at -60m, exposing the Sunda and Sahul continental shelves across the Wallace Line; first maritime ocean crossing and settlement of Australia.",
+    "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -99,7 +99,7 @@
       "seasonSeed" : 14352,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : -50000,
-      "presetDescription" : "­ƒªÿ EARTH (-50,000 BP / MIS 3 Interstadial): Temperate glacial climate with sea level at -60m, exposing the Sunda and Sahul continental shelves across the Wallace Line; first maritime ocean crossing and settlement of Australia.",
+      "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 480.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -50000,
-    "presetDescription" : "­ƒªÿ EARTH (-50,000 BP / MIS 3 Interstadial): Temperate glacial climate with sea level at -60m, exposing the Sunda and Sahul continental shelves across the Wallace Line; first maritime ocean crossing and settlement of Australia."
+    "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,10 +156,11 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
-  "h3Resolution" : 3,
+  "h3Resolution" : 5,
   "strictDeterminism" : true,
   "sparseCellSkippingEnabled" : false,
   "oceanMacroAggregationEnabled" : false,
@@ -192,6 +193,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Sahul & First Settlement of Australia (-50,000 BP)",
-  "displayDescription" : "PALEOLITHIC SCENARIO: Maritime Crossing & Incursion into Sahul (-50,000 BC)\n\nFirst major ocean crossing of the Wallace Line by ancestors of Indigenous Australians. Models colonization of Sahul (Australia, Tasmania, New Guinea combined) and adaptation to arid environments."
+  "tier2CliodynamicsEnabled" : true,
+  "displayName" : "Sahul & Premier Peuplement de l'Australie (-50000)",
+  "displayDescription" : "\uD83E\uDD98 SCÉNARIO PALÉOLITHIQUE : Traversée Maritime & Incursion dans le Sahul (-50 000 av. J.-C.)\n\nPremier franchissement maritime majeur de la ligne de Wallace par les ancêtres des Aborigènes d'Australie. Modélise la colonisation du continent Sahul (Australie, Tasmanie, Nouvelle-Guinée réunies) et l'adaptation aux écosystèmes arides."
 }

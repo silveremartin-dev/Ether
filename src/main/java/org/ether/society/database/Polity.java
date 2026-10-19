@@ -1,4 +1,4 @@
-ackage org.ether.society.database;
+package org.ether.society.database;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

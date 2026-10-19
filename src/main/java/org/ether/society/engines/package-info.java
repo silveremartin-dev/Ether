@@ -1,4 +1,4 @@
-**
+/**
  * <h1>Modular Cliodynamic &amp; Physical Simulation Engine Framework</h1>
  * <p>
  * Ether's core execution architecture is organized around pluggable, deterministic simulation engines

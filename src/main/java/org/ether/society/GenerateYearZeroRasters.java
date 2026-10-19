@@ -1,4 +1,4 @@
-ackage org.ether.society;
+package org.ether.society;
 
 import org.ether.society.data.SvgMapIngestor;
 

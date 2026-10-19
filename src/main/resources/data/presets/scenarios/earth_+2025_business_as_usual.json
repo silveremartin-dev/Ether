@@ -38,7 +38,7 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "ðŸŒ Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
     "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
@@ -48,7 +48,7 @@
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -89,7 +89,7 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "ðŸŒ Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+      "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
       "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
@@ -99,7 +99,7 @@
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
-      "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies.",
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒîì EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0┬░C global mean temperature, 420 ppm COÔéé, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,6 +156,7 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
@@ -189,6 +190,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Terre 2025-2055 : Trajectoire Tendancielle Biophysique (Business As Usual)",
   "displayDescription" : "\uD83C\uDF10 SCÉNARIO FUTUR : Trajectoire Tendancielle Biophysique & Ressources Réelles (2025-2055)\n\n[DESCRIPTION DES CONDITIONS INITIALES & FRICTIONS (T₀)]\nModélisation de la poursuite de l'histoire humaine à partir de l'état macro-physique réel de 2025 sans présumer d'aucun moratoire normatif ni plafond artificiel. Intègre les frictions géopolitiques contemporaines de transit (détroit d'Ormuz, mer Rouge, sanctions d'Europe orientale), la déplétion cumulative des gisements conventionnels (~48% du pétrole déjà extrait, transition vers le schiste et l'offshore profond), et le taux d'apprentissage industriel des énergies bas-carbone.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Extraction continue des combustibles fossiles et des minerais gouvernée par la thermodynamique d'abaissement des teneurs (Bihouix) et la rente d'Hotelling.\n• Ajustement endogène de l'exergue utile (Kümmel-Ayres) entre capital fossile et déploiement spontané des renouvelables/nucléaire.\n• Évolution non-contrainte des émissions de CO₂, forçage radiatif continu et rétroactions climatiques sur les rendements agricoles et le stress hydrique.\n"
 }

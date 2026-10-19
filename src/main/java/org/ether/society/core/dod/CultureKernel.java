@@ -1,4 +1,4 @@
-ackage org.ether.society.core.dod;
+package org.ether.society.core.dod;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -60,14 +60,12 @@ public class Simulation {
      * Simulation name (e.g., "Neolithic Europe", "Ice Age Simulation").
      */
     @Column(nullable = false)
-    /** Internal state: name (String). */
     private String name;
 
     /**
      * Description of simulation scenario.
      */
     @Column(length = 2000)
-    /** Internal state: description (String). */
     private String description;
 
     /**

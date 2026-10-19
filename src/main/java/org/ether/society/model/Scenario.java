@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -377,7 +377,7 @@ public class Scenario implements Serializable {
         s.setStrictDeterminism(true);
         s.setParallelExecutionEnabled(true);
         s.setParallelThreadCount(Runtime.getRuntime().availableProcessors());
-        s.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(3));
+        s.setPlanetPreset(PlanetPreset.EARTH_EH_10000BP.withResolution(3));
         s.setEcologyPreset(EcologyPreset.EARTH_EH_10000BP);
         return s;
     }
@@ -2305,8 +2305,8 @@ public class Scenario implements Serializable {
         sRamesses.setMaxLat(36.0);
         sRamesses.setMinLng(24.0);
         sRamesses.setMaxLng(42.0);
-        sRamesses.setPlanetPreset(PlanetPreset.EARTH_LH_3000BP);
-        sRamesses.setEcologyPreset(EcologyPreset.EARTH_LH_3000BP);
+        sRamesses.setPlanetPreset(PlanetPreset.EARTH_BRONZE_1900BP);
+        sRamesses.setEcologyPreset(EcologyPreset.EARTH_BRONZE_1900BP);
         sRamesses.setEarthHistoricalLeadersEnabled(true);
         sRamesses.setDescription("""
             🏛️ SCÉNARIO HISTORIQUE : Règne de Ramsès II, Traité de Qadesh & Architecture Monumentale (-1279 av. J.-C.)

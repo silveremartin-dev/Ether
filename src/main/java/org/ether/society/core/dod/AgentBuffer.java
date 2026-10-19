@@ -1,4 +1,4 @@
-ackage org.ether.society.core.dod;
+package org.ether.society.core.dod;
 
 /**
  * High-performance Data-Oriented Storage for demographic nodes (cohorts).

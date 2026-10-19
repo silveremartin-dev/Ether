@@ -1,4 +1,4 @@
-ackage org.ether.society.analytics;
+package org.ether.society.analytics;
 
 /**
  * <h1>History Snapshot</h1>

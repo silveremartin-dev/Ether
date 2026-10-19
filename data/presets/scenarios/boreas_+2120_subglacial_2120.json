@@ -48,7 +48,7 @@
     "seasonSeed" : 13111,
     "canonicalPlanet" : "none",
     "associatedEpochYear" : -20000,
-    "presetDescription" : "­ƒºè ICE WORLD (Boreas): Deep snowball planet locked in runaway glaciation. Global ice sheets, cryogenic oceans under thick pack ice, high albedo (0.65), and severe biological productivity constraints.",
+    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -99,7 +99,7 @@
       "seasonSeed" : 13111,
       "canonicalPlanet" : "none",
       "associatedEpochYear" : -20000,
-      "presetDescription" : "­ƒºè ICE WORLD (Boreas): Deep snowball planet locked in runaway glaciation. Global ice sheets, cryogenic oceans under thick pack ice, high albedo (0.65), and severe biological productivity constraints.",
+      "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 30.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "none",
     "associatedEpochYear" : -20000,
-    "presetDescription" : "­ƒºè ICE WORLD (Boreas): Deep snowball planet locked in runaway glaciation. Global ice sheets, cryogenic oceans under thick pack ice, high albedo (0.65), and severe biological productivity constraints."
+    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,6 +156,7 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
@@ -182,6 +183,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Monde Glaciaire Boreas : Havres Géothermiques & Cités Sous Glace (2120)",
   "displayDescription" : "❄ SCÉNARIO EXOPLANÉTAIRE : Cités Sous-Glaciaires & Puits Géothermiques de Boreas (2120 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nPlanète boule de neige cryogénique où l'humanité s'abrite dans des cavités volcaniques sous-glaciaires chauffées par le flux géothermique du manteau sous des kilomètres de banquise.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation du gradient thermique entre la croûte volcanique profonde et la calotte de surface.\n• Cités troglodytiques taillées dans la glace consolidée et la roche ignée avec biosphères hydroponiques étanches.\n• Économie d'énergie thermique maximale et recyclage thermodynamique intégral.\n"
 }

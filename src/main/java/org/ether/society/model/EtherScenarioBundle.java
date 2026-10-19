@@ -1,4 +1,4 @@
-ackage org.ether.society.model;
+package org.ether.society.model;
 
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.model.EcologyPreset;

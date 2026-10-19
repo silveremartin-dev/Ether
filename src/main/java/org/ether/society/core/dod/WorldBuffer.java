@@ -1,4 +1,4 @@
-ackage org.ether.society.core.dod;
+package org.ether.society.core.dod;
 
 import org.ether.society.model.Biome;
 

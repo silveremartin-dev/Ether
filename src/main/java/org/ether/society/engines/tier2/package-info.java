@@ -1,4 +1,4 @@
-**
+/**
  * <h1>Tier 2: Pluggable Cliodynamic, Sociological &amp; Macroeconomic Hypotheses</h1>
  * <p>
  * Provides interfaces, registries, and abstractions for competing socio-historical and macroeconomic theories.

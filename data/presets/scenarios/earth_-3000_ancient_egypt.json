@@ -48,7 +48,7 @@
     "seasonSeed" : 14346,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -3000,
-    "presetDescription" : "­ƒÅø´©Å EARTH (-3,000 BP / Late Holocene): Modern coastline stabilization, progressive aridification of the Sahara, and rise of hydraulic agrarian empires along the Nile, Tigris-Euphrates, Indus, and Yellow Rivers.",
+    "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -99,7 +99,7 @@
       "seasonSeed" : 14346,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : -3000,
-      "presetDescription" : "­ƒÅø´©Å EARTH (-3,000 BP / Late Holocene): Modern coastline stabilization, progressive aridification of the Sahara, and rise of hydraulic agrarian empires along the Nile, Tigris-Euphrates, Indus, and Yellow Rivers.",
+      "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 560.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -3000,
-    "presetDescription" : "­ƒÅø´©Å EARTH (-3,000 BP / Late Holocene): Modern coastline stabilization, progressive aridification of the Sahara, and rise of hydraulic agrarian empires along the Nile, Tigris-Euphrates, Indus, and Yellow Rivers."
+    "presetDescription" : "\uD83C\uDFDB TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l'Indus et du Fleuve Jaune."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,10 +156,11 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
-  "h3Resolution" : 3,
+  "h3Resolution" : 5,
   "strictDeterminism" : true,
   "sparseCellSkippingEnabled" : false,
   "oceanMacroAggregationEnabled" : false,
@@ -189,6 +190,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Unification of Egypt & Early Dynasties (-3100 BP)",
-  "displayDescription" : "HISTORICAL SCENARIO: Unification of Upper & Lower Egypt (-3100 BC)\n\nEmergence of the first territorial state along the Nile corridor, organized around inundation agriculture, centralized storage, and divine kingship."
+  "tier2CliodynamicsEnabled" : true,
+  "displayName" : "Unification de l'Égypte & Premières Dynasties (-3100)",
+  "displayDescription" : "\uD83C\uDFDB SCÉNARIO HISTORIQUE : L'Unification de la Haute et Basse Égypte par Narmer (-3100 av. J.-C.)\n\nÉmergence du premier État territorial le long du couloir du Nil. Structuration des premières dynasties autour de l'agriculture de crue, du stockage centralisé et de la royauté divine."
 }

@@ -1,4 +1,4 @@
-ackage org.ether.society.generation;
+package org.ether.society.generation;
 
 
 

@@ -1,4 +1,4 @@
-ackage org.ether.society.core.dod;
+package org.ether.society.core.dod;
 
 /**
  * <h1>Data-Oriented Demographic Simulation Kernel</h1>

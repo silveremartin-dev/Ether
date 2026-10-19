@@ -48,7 +48,7 @@
     "seasonSeed" : 79711,
     "canonicalPlanet" : "moon",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒƒá TITAN (Cryo-Moon): Massive cryogenic moon with dense nitrogen-methane atmosphere (1.5 atm, 94 K), liquid hydrocarbon lakes (methane/ethane), and water-ice bedrock mountains.",
+    "presetDescription" : "\uD83D\uDFE0 TITAN (Cryo-Lune) : Lune cryogénique massive avec atmosphère dense d'azote et de méthane (1,5 atm, 94 K), lacs d'hydrocarbures liquides (méthane/éthane) et relief de glace d'eau rocheuse.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -99,7 +99,7 @@
       "seasonSeed" : 79711,
       "canonicalPlanet" : "moon",
       "associatedEpochYear" : 2026,
-      "presetDescription" : "­ƒƒá TITAN (Cryo-Moon): Massive cryogenic moon with dense nitrogen-methane atmosphere (1.5 atm, 94 K), liquid hydrocarbon lakes (methane/ethane), and water-ice bedrock mountains.",
+      "presetDescription" : "\uD83D\uDFE0 TITAN (Cryo-Lune) : Lune cryogénique massive avec atmosphère dense d'azote et de méthane (1,5 atm, 94 K), lacs d'hydrocarbures liquides (méthane/éthane) et relief de glace d'eau rocheuse.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 0.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "moon",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "­ƒƒá TITAN (Cryo-Moon): Massive cryogenic moon with dense nitrogen-methane atmosphere (1.5 atm, 94 K), liquid hydrocarbon lakes (methane/ethane), and water-ice bedrock mountains."
+    "presetDescription" : "\uD83D\uDFE0 TITAN (Cryo-Lune) : Lune cryogénique massive avec atmosphère dense d'azote et de méthane (1,5 atm, 94 K), lacs d'hydrocarbures liquides (méthane/éthane) et relief de glace d'eau rocheuse."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,6 +156,7 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
@@ -182,6 +183,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Colonie Cryogénique de Titan & Hydrocarbures Kraken Mare (2150)",
   "displayDescription" : "\uD83E\uDE90 SCÉNARIO EXOPLANÉTAIRE : Cryocités de Titan & Mers d'Hydrocarbures de Kraken Mare (2150 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nHabitats cryogéniques pressurisés au bord de Kraken Mare exploitant les mers de méthane/éthane liquide, l'épaisse couverture atmosphérique d'azote (1,45 atm) et les isotopes de fusion.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Richesse organique illimitée : chimie des tholins, plastiques et carburants de synthèse à coût quasi-nul.\n• Protection radiatif naturelle grâce à l'atmosphère épaisse (1,45 atm) sous très faible gravité (0,14g).\n• Utilisation de générateurs thermoélectriques nucléaires et de réacteurs à fusion deutérium pour le chauffage vital.\n"
 }

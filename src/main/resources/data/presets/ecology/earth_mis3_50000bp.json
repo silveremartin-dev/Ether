@@ -46,7 +46,7 @@
     "seasonSeed" : 14352,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -50000,
-    "presetDescription" : "­ƒªÿ EARTH (-50,000 BP / MIS 3 Interstadial): Temperate glacial climate with sea level at -60m, exposing the Sunda and Sahul continental shelves across the Wallace Line; first maritime ocean crossing and settlement of Australia.",
+    "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie.",
     "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 480.0,
@@ -67,5 +67,5 @@
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
   "associatedEpochYear" : -50000,
-  "presetDescription" : "­ƒªÿ EARTH (-50,000 BP / MIS 3 Interstadial): Temperate glacial climate with sea level at -60m, exposing the Sunda and Sahul continental shelves across the Wallace Line; first maritime ocean crossing and settlement of Australia."
+  "presetDescription" : "\uD83E\uDD98 TERRE (-50 000 / Stade Isotopique Marin MIS 3) : Climat glaciaire intermédiaire avec niveau marin à -60m découvrant les plateaux de Sunda et Sahul de part et d'autre de la ligne Wallace ; première navigation maritime océanique et peuplement de l'Australie."
 }

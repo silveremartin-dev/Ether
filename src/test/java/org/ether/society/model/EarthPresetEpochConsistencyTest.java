@@ -62,6 +62,10 @@ class EarthPresetEpochConsistencyTest {
             assertNotNull(planet, "Scenario '" + sc.getName() + "' must have a non-null PlanetPreset");
             assertNotNull(ecology, "Scenario '" + sc.getName() + "' must have a non-null EcologyPreset");
 
+            if (!"earth".equalsIgnoreCase(planet.getCanonicalPlanet())) {
+                continue;
+            }
+
             long year = sc.getStartDateYear();
 
             if (year <= -80000) {

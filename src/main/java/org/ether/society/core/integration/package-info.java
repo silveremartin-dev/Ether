@@ -1,4 +1,4 @@
-**
+/**
  * <h1>Simulation Temporal Integration &amp; Tick Loop</h1>
  * <p>
  * Handles time-stepping integration, sub-stepping dynamics, and multi-rate temporal scheduling

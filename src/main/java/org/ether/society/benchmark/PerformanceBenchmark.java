@@ -1,4 +1,4 @@
-ackage org.ether.society.benchmark;
+package org.ether.society.benchmark;
 
 import org.ether.society.data.SampleDataGenerator;
 import org.ether.society.database.H3Cell;

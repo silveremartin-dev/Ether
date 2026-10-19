@@ -46,7 +46,7 @@
     "seasonSeed" : 14351,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -25000,
-    "presetDescription" : "­ƒÅö´©Å EARTH (-25,000 BP / LGM Onset & Beringia): Onset of the Last Glacial Maximum. Falling sea levels (-100m) expose the Bering land bridge connecting Siberia and Alaska, enabling human migration to the Americas.",
+    "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique.",
     "tidalLocked" : false
   },
   "terrestrialBiomassGtC" : 360.0,
@@ -67,5 +67,5 @@
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
   "associatedEpochYear" : -25000,
-  "presetDescription" : "­ƒÅö´©Å EARTH (-25,000 BP / LGM Onset & Beringia): Onset of the Last Glacial Maximum. Falling sea levels (-100m) expose the Bering land bridge connecting Siberia and Alaska, enabling human migration to the Americas."
+  "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique."
 }

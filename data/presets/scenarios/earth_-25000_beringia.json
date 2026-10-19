@@ -48,7 +48,7 @@
     "seasonSeed" : 14351,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -25000,
-    "presetDescription" : "­ƒÅö´©Å EARTH (-25,000 BP / LGM Onset & Beringia): Onset of the Last Glacial Maximum. Falling sea levels (-100m) expose the Bering land bridge connecting Siberia and Alaska, enabling human migration to the Americas.",
+    "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -99,7 +99,7 @@
       "seasonSeed" : 14351,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : -25000,
-      "presetDescription" : "­ƒÅö´©Å EARTH (-25,000 BP / LGM Onset & Beringia): Onset of the Last Glacial Maximum. Falling sea levels (-100m) expose the Bering land bridge connecting Siberia and Alaska, enabling human migration to the Americas.",
+      "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 360.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -25000,
-    "presetDescription" : "­ƒÅö´©Å EARTH (-25,000 BP / LGM Onset & Beringia): Onset of the Last Glacial Maximum. Falling sea levels (-100m) expose the Bering land bridge connecting Siberia and Alaska, enabling human migration to the Americas."
+    "presetDescription" : "\uD83C\uDFD4 TERRE (-25 000 / Début du Maximum Glaciaire & Béringie) : Avancée glaciaire majeure. La baisse eustatique du niveau marin (-100m) découvre le pont continental de Béringie reliant la Sibérie et l'Alaska, facilitant le peuplement de l'Amérique."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -156,10 +156,11 @@
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
+  "culturalAffinityMatrix" : { },
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
-  "h3Resolution" : 3,
+  "h3Resolution" : 5,
   "strictDeterminism" : true,
   "sparseCellSkippingEnabled" : false,
   "oceanMacroAggregationEnabled" : false,
@@ -192,6 +193,7 @@
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
-  "displayName" : "Beringia & Peopling of the Americas (-25,000 BP)",
-  "displayDescription" : "PALEOLITHIC SCENARIO: The Bering Land Bridge & American Incursion (-25,000 BC)\n\nModels isolation of Paleolithic populations on the Bering land bridge during the Last Glacial Maximum (LGM), followed by dispersal through the ice-free corridor and Pacific coastal route."
+  "tier2CliodynamicsEnabled" : true,
+  "displayName" : "Béringie & Peuplement des Amériques (-25000)",
+  "displayDescription" : "\uD83C\uDFD4 SCÉNARIO PALÉOLITHIQUE : Le Pont Terrestre de Béringie & Incursion Américaine (-25 000 av. J.-C.)\n\nModélise l'isolation des populations paléolithiques sur le pont terrestre de Béringie pendant le Dernier Maximum Glaciaire (LGM), suivie de leur dispersion à travers le corridor libre de glace et la route côtière du Pacifique."
 }

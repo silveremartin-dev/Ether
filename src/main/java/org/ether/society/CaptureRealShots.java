@@ -1,4 +1,4 @@
-ackage org.ether.society;
+package org.ether.society;
 
 import javafx.application.Application;
 import javafx.application.Platform;

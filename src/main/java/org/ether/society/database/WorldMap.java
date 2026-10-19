@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2024 Gemini AI Assistant
@@ -60,14 +60,12 @@ public class WorldMap {
      * Human-readable map name (e.g., "Earth", "Mars", "Procedural Alpha").
      */
     @Column(nullable = false, unique = true)
-    /** Internal state: name (String). */
     private String name;
 
     /**
      * Map description.
      */
     @Column(length = 1000)
-    /** Internal state: description (String). */
     private String description;
 
     /**
@@ -99,17 +97,14 @@ public class WorldMap {
 
     /* Path to map preview image. */
     @Column(length = 500)
-    /** Internal state: map image path (String). */
     private String mapImagePath;
 
     /* Elevation data source (e.g., "SRTM_90m", "PROCEDURAL"). */
     @Column(length = 200)
-    /** Internal state: elevation source (String). */
     private String elevationSource;
 
     /* Biome data source (e.g., "MODIS_MCD12Q1", "PROCEDURAL"). */
     @Column(length = 200)
-    /** Internal state: biome source (String). */
     private String biomeSource;
 
     // Planet properties (for procedural generation)

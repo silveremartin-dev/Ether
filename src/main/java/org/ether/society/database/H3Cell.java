@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -296,19 +296,16 @@ public class H3Cell {
     @Column(nullable = false)
     private Integer epidemicRecovered = 0;
     @Column(length = 50)
-    /** Internal state: active pathogen name (String). */
     private String activePathogenName = null;
 
     // --- Linguistic & Cultural Diffusion ---
     @Column(length = 50)
-    /** Internal state: language group (String). */
     private String languageGroup = "Proto-Human";
     @Column(nullable = false)
     private Double linguisticDrift = 0.0;
 
     // Analytics / Simulation State
     @Transient
-    /** Internal state: flux pressure (double). */
     private double fluxPressure = 0.0;
 
     @Transient // Not persisting political ownership yet
@@ -316,7 +313,6 @@ public class H3Cell {
     private Polity owner;
 
     @Transient
-    /** Internal state: boundary cell (boolean). */
     private boolean boundaryCell = false;
 
     // Constructors
@@ -424,9 +420,15 @@ public class H3Cell {
      *
      * @return the resulting computation or state reference
      */
-    public Double getElevation() {
-        return elevation;
-    }
+    public Double getElevation() { return elevation; }
+
+    /**
+     * Primitive-safe elevation getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if elevation is null
+     * @return mean elevation in meters
+     */
+    public double getElevationOr(double defaultValue) { return elevation != null ? elevation : defaultValue; }
 
     /**
      * Set elevation.
@@ -442,9 +444,15 @@ public class H3Cell {
      *
      * @return the resulting computation or state reference
      */
-    public Double getTemperature() {
-        return temperature;
-    }
+    public Double getTemperature() { return temperature; }
+
+    /**
+     * Primitive-safe temperature getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if temperature is null
+     * @return surface temperature in Celsius
+     */
+    public double getTemperatureOr(double defaultValue) { return temperature != null ? temperature : defaultValue; }
 
     /**
      * Set temperature.
@@ -460,9 +468,15 @@ public class H3Cell {
      *
      * @return the resulting computation or state reference
      */
-    public Double getRainfall() {
-        return rainfall;
-    }
+    public Double getRainfall() { return rainfall; }
+
+    /**
+     * Primitive-safe rainfall getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if rainfall is null
+     * @return annual rainfall in mm
+     */
+    public double getRainfallOr(double defaultValue) { return rainfall != null ? rainfall : defaultValue; }
 
     /**
      * Set rainfall.
@@ -496,9 +510,15 @@ public class H3Cell {
      *
      * @return the resulting computation or state reference
      */
-    public Integer getPopulation() {
-        return population;
-    }
+    public Integer getPopulation() { return population; }
+
+    /**
+     * Primitive-safe population getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if population is null
+     * @return population count
+     */
+    public int getPopulationOr(int defaultValue) { return population != null ? population : defaultValue; }
 
     /**
      * Set population.
@@ -522,9 +542,15 @@ public class H3Cell {
      *
      * @return the resulting computation or state reference
      */
-    public Double getFoodResource() {
-        return foodResource;
-    }
+    public Double getFoodResource() { return foodResource; }
+
+    /**
+     * Primitive-safe food resource getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if foodResource is null
+     * @return food resource in GJ
+     */
+    public double getFoodResourceOr(double defaultValue) { return foodResource != null ? foodResource : defaultValue; }
 
     /**
      * Set food resource.
@@ -540,9 +566,15 @@ public class H3Cell {
      *
      * @return the resulting computation or state reference
      */
-    public Double getWaterResource() {
-        return waterResource;
-    }
+    public Double getWaterResource() { return waterResource; }
+
+    /**
+     * Primitive-safe water resource getter avoiding NPEs and unboxing overhead.
+     *
+     * @param defaultValue fallback value if waterResource is null
+     * @return water resource in 1000 m³
+     */
+    public double getWaterResourceOr(double defaultValue) { return waterResource != null ? waterResource : defaultValue; }
 
     /**
      * Set water resource.

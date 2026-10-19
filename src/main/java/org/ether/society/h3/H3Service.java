@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
@@ -248,9 +248,6 @@ public class H3Service {
         return cells;
     }
 
-    /**
-     * Generate H3Cell objects for the entire globe at a specific resolution.
-     */
     /**
      * Generate H3Cell objects for the entire globe at a specific resolution.
      */

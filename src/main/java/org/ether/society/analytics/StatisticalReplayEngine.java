@@ -1,4 +1,4 @@
-*
+/*
  * Ether - Human Society Simulation
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * MIT License

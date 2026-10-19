@@ -1,4 +1,4 @@
-ackage org.ether.society.analytics;
+package org.ether.society.analytics;
 
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;

@@ -1,4 +1,4 @@
-ackage org.ether.society.analytics;
+package org.ether.society.analytics;
 
 import java.util.ArrayList;
 import java.util.Collections;

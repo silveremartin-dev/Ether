@@ -1,4 +1,4 @@
-ackage org.ether.society.ui;
+package org.ether.society.ui;
 
 import org.ether.society.core.dod.PluggableStatEngine;
 import org.ether.society.core.dod.StatisticsKernel;

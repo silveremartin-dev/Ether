@@ -1,4 +1,4 @@
-*
+/*
  * MIT License
  *
  * Copyright (c) 2024-2026 Silvère Martin-Michiellot
@@ -261,7 +261,13 @@ public final class PresetStorageService {
             deduplicated.put(dedupKey, s);
         }
 
-        List<Scenario> result = new ArrayList<>(deduplicated.values());
+        Map<String, Scenario> uniqueByName = new LinkedHashMap<>();
+        for (Scenario s : deduplicated.values()) {
+            if (s.getName() != null) {
+                uniqueByName.put(s.getName().trim(), s);
+            }
+        }
+        List<Scenario> result = new ArrayList<>(uniqueByName.values());
         result.sort(Comparator.comparingLong(Scenario::getStartDateYear));
         return result;
     }

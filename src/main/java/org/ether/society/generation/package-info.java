@@ -1,4 +1,4 @@
-**
+/**
  * <h1>Procedural Planetary &amp; Geography Generation</h1>
  * <p>
  * Generates synthetic or semi-procedural planetary topographies, hydrological networks,

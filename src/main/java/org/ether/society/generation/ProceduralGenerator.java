@@ -1,4 +1,4 @@
-ackage org.ether.society.generation;
+package org.ether.society.generation;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.h3.H3Service;
