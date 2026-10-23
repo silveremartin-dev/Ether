@@ -8,6 +8,7 @@ param (
     [string]$Zone = "europe-west1-b",
     [string]$InstanceName = "ether-master",
     [string]$JarPath = "target/society-simulation-1.0.0-beta.2-executable.jar",
+    [switch]$Res3 = $false,
     [switch]$ForceRegenerate = $false
 )
 
@@ -76,15 +77,22 @@ if (Test-Path "data/history") {
     gcloud compute scp --recurse data/history "${InstanceName}:/opt/ether/data/" --zone=$Zone --project=$ProjectId --quiet
 }
 if (Test-Path "data/maps/ether") {
-    Write-Host "Uploading raster maps tensors (data/maps/ether)..." -ForegroundColor Cyan
-    gcloud compute scp --recurse "data/maps/ether" "${InstanceName}:/opt/ether/data/maps/" --zone=$Zone --project=$ProjectId --quiet
+    $remoteMapsExist = (gcloud compute ssh $InstanceName --zone=$Zone --project=$ProjectId --quiet --command="test -d /opt/ether/data/maps/ether && echo 'EXISTS'" 2>$null)
+    if ($remoteMapsExist -like "*EXISTS*") {
+        Write-Host "Remote raster maps tensors (/opt/ether/data/maps/ether) already present on VM. Skipping redundant 2GB upload." -ForegroundColor Green
+    } else {
+        Write-Host "Uploading raster maps tensors (data/maps/ether)..." -ForegroundColor Cyan
+        gcloud compute scp --recurse "data/maps/ether" "${InstanceName}:/opt/ether/data/maps/" --zone=$Zone --project=$ProjectId --quiet
+    }
 }
-gcloud compute scp "scripts/gcp/run-all-45-scenarios.sh" "${InstanceName}:/opt/ether/run_scenarios.sh" --zone=$Zone --project=$ProjectId --quiet
+$scenarioScript = if ($Res3) { "scripts/gcp/run-all-45-scenarios-res3.sh" } else { "scripts/gcp/run-all-45-scenarios.sh" }
+$logName = if ($Res3) { "overnight_res3.log" } else { "overnight.log" }
+gcloud compute scp $scenarioScript "${InstanceName}:/opt/ether/run_scenarios.sh" --zone=$Zone --project=$ProjectId --quiet
 
 # Step 5: Launch detached background execution
 Write-Host "[5/5] Launching background execution with Auto-Shutdown Guard..." -ForegroundColor Green
 $envPrefix = if ($ForceRegenerate) { "export FORCE_REGENERATE=1 && " } else { "" }
-$remoteLaunch = "chmod +x /opt/ether/run_scenarios.sh && nohup bash -c '${envPrefix}/opt/ether/run_scenarios.sh' > /opt/ether/logs/gcp_batch/overnight.log 2>&1 &"
+$remoteLaunch = "chmod +x /opt/ether/run_scenarios.sh && nohup bash -c '${envPrefix}/opt/ether/run_scenarios.sh' > /opt/ether/logs/gcp_batch/${logName} 2>&1 &"
 gcloud compute ssh $InstanceName --zone=$Zone --project=$ProjectId --quiet --command="$remoteLaunch"
 
 Write-Host "================================================================================" -ForegroundColor Green

@@ -113,6 +113,7 @@ public class HeadlessRunner {
 
         // Scenario & Spatial Overrides
         String scenarioName = "OUT_OF_AFRICA";
+        String scenarioSuffix = null;
         boolean ticksExplicitlySet = false;
         Long overrideStartYear = null;
         Long overrideEndYear = null;
@@ -317,6 +318,10 @@ public class HeadlessRunner {
                 overrideInitialTech = Integer.parseInt(a.substring(a.indexOf('=') + 1));
             } else if (a.startsWith("--seed=")) {
                 randomSeed = Long.parseLong(a.substring("--seed=".length()));
+            } else if (a.startsWith("--scenario-suffix=")) {
+                scenarioSuffix = arg.substring("--scenario-suffix=".length()).trim();
+            } else if (a.equals("--scenario-suffix") && i + 1 < args.length) {
+                scenarioSuffix = args[++i].trim();
             }
 
             // Persistence & Telemetry
@@ -513,6 +518,9 @@ public class HeadlessRunner {
             if (overrideInitialPop != null) scenario.setInitialHumanCount(overrideInitialPop);
             if (overrideInitialTech != null) scenario.setInitialTechLevel(overrideInitialTech);
             if (randomSeed != null) scenario.setSeed(randomSeed);
+            if (scenarioSuffix != null && !scenarioSuffix.isBlank()) {
+                scenario.setName(scenario.getName() + scenarioSuffix);
+            }
 
             // Apply CLI Overrides on Tab 3 Scenario Optimizations
             if (cliStrictDeterminism != null) {
@@ -590,11 +598,17 @@ public class HeadlessRunner {
             System.out.printf("   • Multi-Rate Climate  : %s (Every %d Ticks)\n", effectivePerfConfig.isEnableMultiFreqClimateTicks() ? "ENABLED" : "DISABLED", effectivePerfConfig.getClimateTickFrequency());
             System.out.printf("   • Async Parallelism   : %s (%d Threads)\n", effectivePerfConfig.isEnableParallelExecution() ? "ENABLED" : "DISABLED", threadCount);
             System.out.printf("   • Spatial Truncation  : %s (10^-6 Cutoff)\n", effectivePerfConfig.isEnableSpatialRangeTruncation() ? "ENABLED" : "DISABLED");
-            int effectiveRes = h3Resolution >= 0 ? h3Resolution : (scenario.getH3Resolution() > 0 ? scenario.getH3Resolution() : 4);
-            if (scenario.isClippingEnabled() && scenario.getH3Resolution() >= 5) {
-                // Clipped regional scenarios run at high spatial fidelity (Res 5)
+            int effectiveRes;
+            if (h3Resolution >= 0) {
+                // Explicit CLI override has absolute precedence (e.g. Res 3 test/calibration runs)
+                effectiveRes = h3Resolution;
+            } else if (scenario.isClippingEnabled() && scenario.getH3Resolution() >= 5) {
+                // Clipped regional scenarios run at high spatial fidelity (Res 5) by default
                 effectiveRes = scenario.getH3Resolution();
+            } else {
+                effectiveRes = scenario.getH3Resolution() > 0 ? scenario.getH3Resolution() : 4;
             }
+            scenario.setH3Resolution(effectiveRes);
 
             System.out.printf("   • Scenario Epoch      : %s (Start: %d, End: %d, H3 Res: %s)\n",
                     scenarioName, scenario.getStartDateYear(), scenario.getEndDateYear(), "Res " + effectiveRes);
@@ -682,7 +696,7 @@ public class HeadlessRunner {
                     String saveTarget = customSaveName != null ? customSaveName : "Headless_" + scenarioName;
                     System.out.printf("💾 Persisting simulation save '%s'...\n", saveTarget);
                     if (engine.getSimulationSaveManager() != null) {
-                        engine.getSimulationSaveManager().saveSimulation(engine, saveTarget);
+                        engine.getSimulationSaveManager().saveSimulation(engine, saveTarget, saveTarget);
                         System.out.println("✅ Simulation state successfully persisted to disk & database.");
                     }
                 } catch (Exception e) {
