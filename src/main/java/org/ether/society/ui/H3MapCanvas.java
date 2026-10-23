@@ -495,6 +495,12 @@ public class H3MapCanvas extends Canvas {
     // Mini-map reference (for updates)
     private MiniMap miniMap;
 
+    // Thematic Layer Renderers (Decoupled Architecture)
+    private final org.ether.society.ui.renderers.TerrainLayerRenderer terrainLayerRenderer = new org.ether.society.ui.renderers.TerrainLayerRenderer(scientificColorMap);
+    private final org.ether.society.ui.renderers.BiomassLayerRenderer biomassLayerRenderer = new org.ether.society.ui.renderers.BiomassLayerRenderer(scientificColorMap);
+    private final org.ether.society.ui.renderers.PolityBordersRenderer polityBordersRenderer = new org.ether.society.ui.renderers.PolityBordersRenderer();
+    private final org.ether.society.ui.renderers.HeatmapRenderer heatmapRenderer = new org.ether.society.ui.renderers.HeatmapRenderer(scientificColorMap);
+
     /**
      * H3map canvas.
      *
@@ -2618,17 +2624,7 @@ public class H3MapCanvas extends Canvas {
     }
 
     private Color getHabitatInfrastructureColor(H3Cell cell) {
-        if (cell == null || cell.getHabitatType() == null || cell.getHabitatType() == org.ether.society.model.HabitatType.NONE) {
-            return Color.rgb(30, 35, 45); // Uninhabited / no habitat
-        }
-        double integrity = cell.getHabitatIntegrity() != null ? cell.getHabitatIntegrity() : 1.0;
-        if (integrity >= 0.80) {
-            return Color.rgb(16, 185, 129); // Nominal (Emerald green)
-        } else if (integrity >= 0.40) {
-            return Color.rgb(245, 158, 11); // Aging / Degraded (Amber)
-        } else {
-            return Color.rgb(239, 68, 68);  // Critical Breach (Red)
-        }
+        return terrainLayerRenderer.getHabitatInfrastructureColor(cell);
     }
 
     private Color getCellColor(H3Cell cell) {
@@ -2636,28 +2632,11 @@ public class H3MapCanvas extends Canvas {
     }
 
     private Color getOceanPhColor(H3Cell cell) {
-        if (cell == null) return Color.rgb(20, 30, 60);
-        if (cell.getBiome() != Biome.OCEAN && cell.getBiome() != Biome.DEEP_OCEAN && cell.getBiome() != Biome.BEACH) {
-            return Color.rgb(40, 45, 55); // Grayed-out land cells
-        }
-        double temp = cell.getTemperature() != null ? cell.getTemperature() : 15.0;
-        // pH gradient: 8.2 (healthy ocean blue) -> 7.6 (yellow/orange) -> 7.2 (critical acidic red)
-        double ph = org.ether.society.engines.tier1.OceanAcidificationEngine.calculateHenrySolubility(temp);
-        double norm = Math.clamp((ph - 0.03) / 0.05, 0.0, 1.0);
-        int r = (int) (30 + norm * 200);
-        int g = (int) (140 - norm * 60);
-        int b = (int) (220 - norm * 150);
-        return Color.rgb(Math.clamp(r, 0, 255), Math.clamp(g, 0, 255), Math.clamp(b, 0, 255));
+        return terrainLayerRenderer.getOceanPhColor(cell);
     }
 
     private Color getPermafrostColor(H3Cell cell) {
-        if (cell == null) return Color.rgb(30, 40, 50);
-        double lat = Math.abs(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
-        if (lat < 50.0) return Color.rgb(50, 60, 70); // Outside boreal zone
-        double temp = cell.getTemperature() != null ? cell.getTemperature() : -5.0;
-        if (temp < -2.0) return Color.rgb(180, 220, 255); // Stable permafrost (icy cyan)
-        if (temp < 3.0) return Color.rgb(240, 180, 60); // Active thaw (amber/orange)
-        return Color.rgb(220, 50, 50); // Thermal collapse & methane outgassing (bright red)
+        return terrainLayerRenderer.getPermafrostColor(cell);
     }
 
     private Color getMalthusianPressureColor(H3Cell cell) {
@@ -2733,9 +2712,7 @@ public class H3MapCanvas extends Canvas {
     }
 
     private Color getAsabiyyahColor(H3Cell cell) {
-        if (cell.getOwner() == null) return Color.rgb(40, 40, 50);
-        double asabiyyah = cell.getOwner().getAsabiyyah();
-        return Color.color(1.0 - asabiyyah, asabiyyah, 0.2); // Green (high cohesion) to Red (instability)
+        return polityBordersRenderer.getAsabiyyahColor(cell);
     }
 
     private Color getAgePyramidColor(H3Cell cell) {
@@ -2746,15 +2723,11 @@ public class H3MapCanvas extends Canvas {
     }
 
     private Color getAlbedoColor(H3Cell cell) {
-        double albedo = cell.getDynamicAlbedo() != null ? cell.getDynamicAlbedo() : 0.30;
-        return Color.gray(Math.clamp(albedo, 0.05, 0.95)); // Grayscale reflectance
+        return terrainLayerRenderer.getAlbedoColor(cell);
     }
 
     private Color getEpidemicColor(H3Cell cell) {
-        int infected = cell.getEpidemicInfected() != null ? cell.getEpidemicInfected() : 0;
-        if (infected == 0) return getBiomeColor(cell.getBiome()).desaturate();
-        double norm = Math.min(1.0, infected / 200.0);
-        return Color.rgb(255, (int) ((1 - norm) * 100), (int) ((1 - norm) * 100)); // Vivid red outbreak
+        return heatmapRenderer.getEpidemicColor(cell);
     }
 
     private Color getFrictionColor(H3Cell cell) {
@@ -2780,19 +2753,11 @@ public class H3MapCanvas extends Canvas {
     }
 
     private Color getSoilQualityColor(H3Cell cell) {
-        if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 30, 60);
-        double wood = cell.getWoodResource() != null ? cell.getWoodResource() : 100.0;
-        double food = cell.getFoodResource() != null ? cell.getFoodResource() : 100.0;
-        double npk = Math.min(1.0, (wood + food) / 1200.0);
-        return Color.color(0.4 * (1.0 - npk), 0.2 + npk * 0.7, 0.1); // Arid Brown to Rich Soil Green
+        return biomassLayerRenderer.getSoilQualityColor(cell);
     }
 
     private Color getBiodiversityColor(H3Cell cell) {
-        if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(20, 45, 80);
-        int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-        double wood = cell.getWoodResource() != null ? cell.getWoodResource() : 100.0;
-        double pristine = Math.max(0.0, Math.min(1.0, (wood / 800.0) - (pop / 1000.0)));
-        return Color.color(0.1, 0.3 + pristine * 0.6, 0.2 + pristine * 0.3); // Pristine Deep Forest Green
+        return biomassLayerRenderer.getBiodiversityColor(cell);
     }
 
     private Color getHealthLifeExpectancyColor(H3Cell cell) {
@@ -2819,25 +2784,15 @@ public class H3MapCanvas extends Canvas {
     }
 
     private Color getConflictColor(H3Cell cell) {
-        if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
-        double gini = cell.getGiniIndex() != null ? cell.getGiniIndex() : 0.3;
-        double conflict = Math.min(1.0, gini * 2.0);
-        return Color.color(conflict, 0.8 * (1.0 - conflict), 0.1); // Green (peace) to Crimson Red (war)
+        return polityBordersRenderer.getConflictColor(cell);
     }
 
     private Color getInstitutionalMaturityColor(H3Cell cell) {
-        if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 20, 40);
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-        double mat = Math.min(1.0, tech / 10.0);
-        return Color.color(0.4 + mat * 0.5, 0.2, 0.6 + mat * 0.4); // Dark Blue to Royal Purple
+        return polityBordersRenderer.getInstitutionalMaturityColor(cell);
     }
 
     private Color getGdpWealthColor(H3Cell cell) {
-        if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
-        int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-        double gdp = Math.min(1.0, (pop * tech) / 2500.0);
-        return Color.color(gdp, gdp * 0.8, 0.2 * (1.0 - gdp)); // Slate to Glowing Gold
+        return heatmapRenderer.getGdpWealthColor(cell);
     }
 
     private Color getEliteDensityColor(H3Cell cell) {
@@ -2966,214 +2921,48 @@ public class H3MapCanvas extends Canvas {
     }
 
     private Color getBiomeColor(Biome biome) {
-        if (biome == null)
-            return Color.GRAY;
-
-        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TURBO && scientificColorMap != ScientificColorMap.TERRAIN) {
-            double norm = (double) biome.ordinal() / Math.max(1.0, Biome.VALUES.length - 1);
-            return scientificColorMap.getColor(norm);
-        }
-
-        return switch (biome) {
-            case OCEAN -> Color.rgb(25, 50, 150);
-            case DEEP_OCEAN -> Color.rgb(15, 30, 100);
-            case BEACH -> Color.rgb(238, 214, 175);
-            case DESERT -> Color.rgb(237, 201, 175);
-            case PLAINS -> Color.rgb(124, 252, 0);
-            case SAVANNAH -> Color.rgb(180, 200, 70);
-            case FOREST -> Color.rgb(34, 139, 34);
-            case JUNGLE -> Color.rgb(0, 100, 0);
-            case MOUNTAINS -> Color.rgb(139, 137, 137);
-            case HILLS -> Color.rgb(160, 160, 120);
-            case TUNDRA -> Color.rgb(221, 221, 187);
-            case SNOW -> Color.rgb(255, 250, 250);
-            case GLACIER -> Color.rgb(220, 240, 255);
-            case LAKE -> Color.rgb(25, 50, 150);
-        };
+        return terrainLayerRenderer.getBiomeColor(biome);
     }
 
     /**
      * Get population density color (blue -> cyan -> green -> yellow -> red).
      */
     private Color getPopulationColor(int population) {
-        return getPopulationColor(population, false);
+        return heatmapRenderer.getPopulationColor(population, false);
     }
 
     private Color getPopulationColor(int population, boolean isWater) {
-        if (isWater) {
-            return Color.rgb(12, 24, 50); // Dark ocean blue for ocean/water cells
-        }
-        if (population <= 0) {
-            return Color.rgb(25, 35, 45); // Dark land gray for unpopulated land
-        }
-
-        // Log scale for better visualization (most populations < 100)
-        double normalized = Math.clamp(Math.log1p(population) / Math.log1p(500), 0.0, 1.0);
-        if (scientificColorMap != null) {
-            return scientificColorMap.getColor(normalized);
-        }
-
-        // Vibrant Heat map: Deep Blue -> Cyan -> Green -> Yellow -> Bright Red
-        if (normalized < 0.25) {
-            double t = normalized / 0.25;
-            return Color.rgb(0, (int) (120 + t * 135), 255); // Deep Blue to Cyan
-        } else if (normalized < 0.5) {
-            double t = (normalized - 0.25) / 0.25;
-            return Color.rgb(0, 255, (int) (255 * (1 - t))); // Cyan to Bright Green
-        } else if (normalized < 0.75) {
-            double t = (normalized - 0.5) / 0.25;
-            return Color.rgb((int) (t * 255), 255, 0); // Green to Yellow
-        } else {
-            double t = (normalized - 0.75) / 0.25;
-            return Color.rgb(255, (int) (255 * (1 - t)), 0); // Yellow to Red
-        }
+        return heatmapRenderer.getPopulationColor(population, isWater);
     }
 
     /**
      * Get food resource color (brown -> yellow -> green).
      */
     private Color getFoodColor(double food) {
-        if (food < 10 && scientificColorMap == ScientificColorMap.TERRAIN) {
-            return Color.rgb(60, 40, 20); // Dark brown for no food
-        }
-
-        double normalized = Math.clamp(food / 800.0, 0.0, 1.0); // 800 as high food level
-        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TERRAIN) {
-            return scientificColorMap.getColor(normalized);
-        }
-
-        if (normalized < 0.5) {
-            double t = normalized / 0.5;
-            return Color.rgb((int) (139 - t * 100), (int) (69 + t * 186), 19); // Brown to Yellow-green
-        } else {
-            double t = (normalized - 0.5) / 0.5;
-            return Color.rgb((int) (39 * (1 - t)), (int) (139 + t * 116), (int) (34 * (1 - t)));
-        }
+        return biomassLayerRenderer.getFoodColor(food);
     }
-
-    /**
-     * Get temperature color (cool blue -> warm red).
-     */
     private Color getTemperatureColor(double temp) {
-        // Normalize -30 to +45°C to 0-1 range
-        double normalized = Math.clamp((temp + 30.0) / 75.0, 0.0, 1.0);
-        if (scientificColorMap != null) {
-            return scientificColorMap.getColor(normalized);
-        }
-
-        if (normalized < 0.25) {
-            return Color.rgb(0, 0, (int) (128 + normalized * 4 * 127)); // Dark blue to bright blue
-        } else if (normalized < 0.5) {
-            double t = (normalized - 0.25) / 0.25;
-            return Color.rgb(0, (int) (t * 255), 255); // Blue to Cyan
-        } else if (normalized < 0.75) {
-            double t = (normalized - 0.5) / 0.25;
-            return Color.rgb((int) (t * 255), 255, (int) (255 * (1 - t))); // Cyan to Yellow
-        } else {
-            double t = (normalized - 0.75) / 0.25;
-            return Color.rgb(255, (int) (255 * (1 - t)), 0); // Yellow to Red
-        }
+        return heatmapRenderer.getTemperatureColor(temp);
     }
 
-    /**
-     * Get precipitation color (arid sand -> yellow green -> cyan -> deep monsoon blue).
-     */
     private Color getPrecipitationColor(double precipMm) {
-        // Normalize 0 to 2500 mm/year to 0-1 range
-        double normalized = Math.clamp(precipMm / 2500.0, 0.0, 1.0);
-        if (scientificColorMap != null) {
-            return scientificColorMap.getColor(normalized);
-        }
-
-        if (normalized < 0.2) {
-            double t = normalized / 0.2;
-            return Color.rgb((int)(235 - t * 55), (int)(215 - t * 5), (int)(160 - t * 20));
-        } else if (normalized < 0.5) {
-            double t = (normalized - 0.2) / 0.3;
-            return Color.rgb((int)(180 - t * 120), (int)(210 - t * 20), (int)(140 + t * 20));
-        } else if (normalized < 0.8) {
-            double t = (normalized - 0.5) / 0.3;
-            return Color.rgb((int)(60 - t * 30), (int)(190 - t * 60), (int)(160 + t * 60));
-        } else {
-            double t = (normalized - 0.8) / 0.2;
-            return Color.rgb((int)(30 - t * 20), (int)(130 - t * 80), (int)(220 - t * 60));
-        }
+        return heatmapRenderer.getPrecipitationColor(precipMm);
     }
 
-    /**
-     * Get technology level color (dark -> purple -> bright).
-     */
     private Color getTechColor(Double techLevel) {
-        if (techLevel == null || techLevel <= 0) {
-            return Color.rgb(30, 30, 30);
-        }
-
-        double normalized = Math.clamp(techLevel / 10.0, 0.0, 1.0);
-        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TERRAIN) {
-            return scientificColorMap.getColor(normalized);
-        }
-
-        int r = (int) (80 + normalized * 100);
-        int g = (int) (20 + normalized * 235);
-        int b = (int) (150 + normalized * 105);
-        return Color.rgb(Math.min(255, r), Math.min(255, g), Math.min(255, b));
+        return heatmapRenderer.getTechColor(techLevel);
     }
 
-    /**
-     * Get water resource color (brown -> blue).
-     */
     private Color getWaterColor(Double water) {
-        if (water == null || water < 10) {
-            return Color.rgb(139, 90, 43); // Dry brown
-        }
-
-        double normalized = Math.clamp(water / 1000.0, 0.0, 1.0);
-        if (scientificColorMap != null) {
-            return scientificColorMap.getColor(normalized);
-        }
-
-        int r = (int) (139 - normalized * 119);
-        int g = (int) (90 + normalized * 100);
-        int b = (int) (43 + normalized * 172);
-        return Color.rgb(Math.max(0, r), Math.min(255, g), Math.min(255, b));
+        return biomassLayerRenderer.getWaterColor(water);
     }
 
-    /**
-     * Get wood resource color (light -> dark green).
-     */
     private Color getWoodColor(Double wood) {
-        if (wood == null || wood < 10) {
-            return Color.rgb(100, 80, 60); // Barren brown
-        }
-
-        double normalized = Math.clamp(wood / 1000.0, 0.0, 1.0);
-        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TERRAIN) {
-            return scientificColorMap.getColor(normalized);
-        }
-
-        int r = (int) (100 - normalized * 80);
-        int g = (int) (80 + normalized * 100);
-        int b = (int) (60 - normalized * 40);
-        return Color.rgb(Math.max(0, r), Math.min(180, g), Math.max(0, b));
+        return biomassLayerRenderer.getWoodColor(wood);
     }
 
-    /**
-     * Get Gini inequality color (green=equal, red=unequal).
-     */
     private Color getGiniColor(Double gini) {
-        if (gini == null || gini < 0.01) {
-            return Color.rgb(50, 50, 50); // No data
-        }
-
-        double normalized = Math.clamp(gini, 0.0, 1.0);
-        if (scientificColorMap != null && scientificColorMap != ScientificColorMap.TERRAIN) {
-            return scientificColorMap.getColor(normalized);
-        }
-
-        int r = (int) (normalized * 255);
-        int g = (int) ((1 - normalized) * 200);
-        int b = 50;
-        return Color.rgb(r, g, b);
+        return heatmapRenderer.getGiniColor(gini);
     }
 
     /**
@@ -3272,7 +3061,7 @@ public class H3MapCanvas extends Canvas {
      * Get cultural identity color.
      */
     private Color getCultureColor(H3Cell cell) {
-        return Color.GRAY;
+        return polityBordersRenderer.getCultureColor(cell);
     }
 
     /**

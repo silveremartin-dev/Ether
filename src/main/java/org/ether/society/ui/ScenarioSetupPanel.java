@@ -4598,181 +4598,24 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private void exportGisMultiFormat() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_gis_dialog", "Export Scenario Data under GIS Format (GeoJSON / GeoTIFF / NetCDF)"));
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("GeoJSON Vector File (*.geojson)", "*.geojson"),
-            new FileChooser.ExtensionFilter("GeoTIFF Multi-Band Raster Metadata (*.json)", "*.json"),
-            new FileChooser.ExtensionFilter("NetCDF-4 Spatiotemporal Cube (*.nc.json)", "*.nc.json")
+        org.ether.society.ui.scenario.ScenarioGisExporter.exportGisMultiFormat(
+                getScene() != null ? getScene().getWindow() : null,
+                scenarioDescriptionArea != null ? scenarioDescriptionArea.getText() : "Ether Scenario",
+                startYearSpinner != null ? startYearSpinner.getValue() : -100000,
+                cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9
         );
-        File targetFile = fileChooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (targetFile != null) {
-            try {
-                Map<String, Object> gisData = new LinkedHashMap<>();
-                gisData.put("type", "FeatureCollection");
-                gisData.put("crs", Map.of("type", "name", "properties", Map.of("name", "urn:ogc:def:crs:OGC:1.3:CRS84")));
-                gisData.put("scenario", scenarioDescriptionArea != null ? scenarioDescriptionArea.getText() : "Ether Scenario");
-                gisData.put("startYear", startYearSpinner != null ? startYearSpinner.getValue() : -100000);
-                gisData.put("culturalTensorsCount", cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9);
-                gisData.put("exportTimestamp", java.time.Instant.now().toString());
-
-                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                mapper.writeValue(targetFile, gisData);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(I18n.getOrDefault("scenario.title.gis_success", "GIS Export Successful"));
-                alert.setHeaderText(I18n.getOrDefault("scenario.header.gis_success", "GIS File Generated Successfully"));
-                alert.setContentText("Le scénario a été exporté sous format SIG compatible QGIS/ArcGIS : " + targetFile.getName());
-                alert.showAndWait();
-            } catch (Exception ex) {
-                logger.error("Erreur lors de l'exportation SIG du scénario: {}", ex.getMessage(), ex);
-            }
-        }
     }
 
     private void exportProvenanceManifest() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_provenance_dialog", "Generate & Export SHA-256 Provenance Manifest"));
-        fileChooser.setInitialFileName("provenance.json");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Manifest (*.json)", "*.json"));
-        File targetFile = fileChooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (targetFile != null) {
-            try {
-                Map<String, Object> manifest = new LinkedHashMap<>();
-                manifest.put("manifestVersion", "1.0.0");
-                manifest.put("engineVersion", "Ether 1.0.0-beta.2");
-                manifest.put("exportTimestamp", java.time.Instant.now().toString());
-                manifest.put("startYearBP", startYearSpinner != null ? startYearSpinner.getValue() : -100000);
-                manifest.put("prngSeed", cultSeedField != null ? cultSeedField.getText() : "54321");
-                manifest.put("deterministicReplayGuaranteed", true);
-
-                Map<String, String> hashes = new LinkedHashMap<>();
-                hashes.put("hyde34_baseline", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-                hashes.put("natural_earth_vectors", "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e");
-                hashes.put("chelsa_trace21k_paleoclimate", "3b7b4d32f7e77a1122ab9123456789abcdef0123456789abcdef0123456789ab");
-                manifest.put("datasetHashesSHA256", hashes);
-
-                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                mapper.writeValue(targetFile, manifest);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(I18n.getOrDefault("scenario.title.provenance_success", "Cryptographic Manifest Generated"));
-                alert.setHeaderText(I18n.getOrDefault("scenario.header.provenance_success", "provenance.json Manifest Created"));
-                alert.setContentText("Le manifeste de provenance SHA-256 garantissant la reproductibilité a été écrit dans : " + targetFile.getName());
-                alert.showAndWait();
-            } catch (Exception ex) {
-                logger.error("Erreur lors de la génération du manifeste de provenance: {}", ex.getMessage(), ex);
-            }
-        }
+        org.ether.society.ui.scenario.ScenarioGisExporter.exportProvenanceManifest(
+                getScene() != null ? getScene().getWindow() : null,
+                startYearSpinner != null ? startYearSpinner.getValue() : -100000,
+                cultSeedField != null ? cultSeedField.getText() : "54321"
+        );
     }
 
     private void showCulturalImportFormatHelp() {
-        javafx.stage.Stage dialog = new javafx.stage.Stage();
-        dialog.setTitle(I18n.getOrDefault("scenario.title.layer_formats_modal", "Spécifications Techniques des Tenseurs Cartographiques & Datasets"));
-        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-        if (getScene() != null && getScene().getWindow() != null) {
-            dialog.initOwner(getScene().getWindow());
-        }
-
-        VBox root = new VBox(14);
-        root.setPadding(new Insets(20));
-        root.setStyle("-fx-background-color: #0f172a; -fx-text-fill: #f8fafc;");
-        root.setPrefWidth(720);
-        root.setPrefHeight(600);
-
-        Label title = new Label(I18n.getOrDefault("scenario.layer_formats.title", "Standard des Tenseurs Spatio-Temporels (2048 x 1024, Équirectangulaire 2:1)"));
-        title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
-
-        ScrollPane scroll = new ScrollPane();
-        scroll.setFitToWidth(true);
-        scroll.setStyle("-fx-background: #0f172a; -fx-background-color: transparent;");
-        VBox.setVgrow(scroll, Priority.ALWAYS);
-
-        VBox contentBox = new VBox(14);
-        contentBox.setStyle("-fx-background-color: #0f172a;");
-
-        // Section 1: 24-bit RGB Categorical & Spatial Dithering Tensors
-        VBox sec1 = new VBox(6);
-        sec1.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #3b82f6; -fx-border-radius: 8;");
-        Label lblSec1 = new Label("ðŸ·ï¸ " + I18n.getOrDefault("scenario.layer_formats.rgb_title", "1. Tenseurs Catégoriels Discrets & Dithering Spatial (Encodage RGB 24-bit)"));
-        lblSec1.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #60a5fa;");
-        Label descSec1 = new Label(
-            "• Tenseur 0 (Isoglosses / Langues) : Couleur RGB pure par famille linguistique (Glottolog 5.0 / WALS) + Dithering stochastique aux zones de contact.\n" +
-            "• Tenseur 1 (Parenté / Filiation) : Typologie Todd & Murdock (Famille souche #8B5CF6, Nucléaire #2563EB, Communautaire #DC2626, Matrilinéaire #F43F5E).\n" +
-            "• Tenseur 2 (Rituels & Croyances) : Systèmes sacrés (Sunnisme #10B981, Catholicisme #EC4899, Orthodoxie #8B5CF6, Culte Gréco-Romain #EA580C, Hindouisme #F59E0B, Bouddhisme #EAB308, Judaïsme #2563EB) + Mosaïque multiconfessionnelle dans les grands carrefours sacrés.\n" +
-            "• Tenseur 3 (Souveraineté & Domaines) : Entités politiques étatiques (Seshat ClioPatria / CShapes) et 22 domaines claniques/tribaux régionaux.\n" +
-            "↳ Référence d'association : data/maps/ether/earth/<année>/cultural_registry.json"
-        );
-        descSec1.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
-        descSec1.setWrapText(true);
-        sec1.getChildren().addAll(lblSec1, descSec1);
-
-        // Section 2: Multi-Modal Network & Connectivity Tensor
-        VBox sec2 = new VBox(6);
-        sec2.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #06b6d4; -fx-border-radius: 8;");
-        Label lblSec2 = new Label("ðŸŒ " + I18n.getOrDefault("scenario.layer_formats.network_title", "2. Tenseur de Réseau Multi-Modal & Flux (RGB 24-bit)"));
-        lblSec2.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #22d3ee;");
-        Label descSec2 = new Label(
-            "• Tenseur 5 (Réseau Commercial & Hydrographie) : Réseau multi-modal interconnecté :\n" +
-            "  - Corridors fluviaux navigables (Nil, Tigre-Euphrate, Indus, Gange, Yangtsé, Fleuve Jaune, Rhin, Danube, Dniepr, Volga, Niger, Mississippi, Amazone) en cyan (#00D2E6).\n" +
-            "  - Voies impériales antiques pavées (Voies romaines, Route royale perse, Chi Dao Qin-Han, Grand Trunk Road) en or/terracotta (#FFAA28).\n" +
-            "  - Routes transcontinentales (Soie, Encens, Ambre) en or éclatant (#FFC832).\n" +
-            "  - Voies maritimes (Méditerranée, Océan Indien, Atlantique, Galions de Manille) en bleu/sarcelle (#1EB4D2).\n" +
-            "  - Nœuds d'Emporia & Comptoirs marchands matérialisés par des disques blancs à halo luminescent hiérarchisé selon le tonnage de transit."
-        );
-        descSec2.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
-        descSec2.setWrapText(true);
-        sec2.getChildren().addAll(lblSec2, descSec2);
-
-        // Section 3: 8-bit Continuous Grayscale Physical Intensity Tensors
-        VBox sec3 = new VBox(6);
-        sec3.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #10b981; -fx-border-radius: 8;");
-        Label lblSec3 = new Label("📈 " + I18n.getOrDefault("scenario.layer_formats.gray_title", "3. Tenseurs Continus d'Intensité Physique & Cliodynamique (Niveaux de Gris 8-bit [0..255])"));
-        lblSec3.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34d399;");
-        Label descSec3 = new Label(
-            "• Démographie (Density) : [0..255] Densité de population par km² calibrée sur HYDE 3.4.\n" +
-            "• Tenseur 4 (Matérialité & Technologies) : [0..255] EROEI, outillage, capital K₀ et intensité d'innovation (ArchaeoGLOBE).\n" +
-            "• Tenseur 6 (Complexité Institutionnelle) : [0..255] Hiérarchie administrative SESHAT (Rome/Han 160, 2026 à 220, headroom futur [226-255]) avec portée étendue le long des infrastructures.\n" +
-            "• Tenseur 7 (Empreinte Écologique) : [0..255] Consommation d'exergy agricole, déforestation et pression biotique.\n" +
-            "• Tenseur 8 (Pathogènes & R₀) : [0..255] Charge vectorielle tropicale, réservoirs zoonotiques et foyers épidémiques de promiscuité urbaine.\n" +
-            "• 10 Tenseurs Géologiques : Charbon, Pétrole, Gaz, Uranium, Hélium-3, Fer/Cuivre, Métaux Précieux, Terres Rares, Géothermie, Aquifères (USGS MRDS / WHYMAP / GEM)."
-        );
-        descSec3.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
-        descSec3.setWrapText(true);
-        sec3.getChildren().addAll(lblSec3, descSec3);
-
-        // Section 4: Temporal Validity of Datasets
-        VBox sec4 = new VBox(6);
-        sec4.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #f59e0b; -fx-border-radius: 8;");
-        Label lblSec4 = new Label("⏳ " + I18n.getOrDefault("scenario.layer_formats.validity_title", "4. Plage de Validité Temporelle des Jeux de Données"));
-        lblSec4.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #fbbf24;");
-        Label descSec4 = new Label(
-            "• SESHAT & HYDE 3.4 : Strictement valides pour t ≥ -10 000 BCE (Holocène et Histoire documentée).\n" +
-            "• Préhistoire Paléolithique (t < -10 000 BCE) : Modèles archéologiques orographiques multi-clades (Sapiens, Néandertaliens, Denisoviens, Archaïques).\n" +
-            "• Forçages Paléoclimatiques : CHELSA-TraCE21k (LGM -20k, Holocène) et WorldClim / PaleoClim LIG (-100k BP).\n" +
-            "• Altimétrie & Bathymétrie : NOAA ETOPO 2022 (Niveau marin ajusté dynamiquement selon l'époque glaciaire)."
-        );
-        descSec4.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
-        descSec4.setWrapText(true);
-        sec4.getChildren().addAll(lblSec4, descSec4);
-
-        contentBox.getChildren().addAll(sec1, sec2, sec3, sec4);
-        scroll.setContent(contentBox);
-
-        Button btnClose = new Button(I18n.getOrDefault("common.close", "Fermer"));
-        btnClose.getStyleClass().add("button-primary");
-        btnClose.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20;");
-        btnClose.setOnAction(e -> dialog.close());
-
-        HBox btnBox = new HBox(btnClose);
-        btnBox.setAlignment(Pos.CENTER_RIGHT);
-
-        root.getChildren().addAll(title, scroll, btnBox);
-        javafx.scene.Scene scene = new javafx.scene.Scene(root);
-        dialog.setScene(scene);
-        dialog.show();
+        org.ether.society.ui.scenario.ScenarioGisExporter.showCulturalImportFormatHelp(getScene() != null ? getScene().getWindow() : null);
     }
 
     /**
@@ -9258,4 +9101,3 @@ private String getDefaultTensorName(int index) {
     }
 
 }
-

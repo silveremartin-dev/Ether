@@ -1,5 +1,9 @@
 package org.ether.society.core.dod;
 
+import org.ether.society.database.components.BiomassState;
+import org.ether.society.database.components.ClimateState;
+import org.ether.society.database.components.DemographicState;
+import org.ether.society.database.components.MineralState;
 import org.ether.society.model.Biome;
 
 /**
@@ -370,6 +374,140 @@ public class WorldBuffer {
      * Invalidate partition indices.
      *
      */
+    // =========================================================================
+    // COMPONENT ADAPTERS (DATA-ORIENTED DESIGN)
+    // =========================================================================
+
+    /**
+     * Extracts an immutable {@link ClimateState} component for a cell index.
+     *
+     * @param index cell buffer index
+     * @return climate state component
+     */
+    public ClimateState getClimateState(int index) {
+        return new ClimateState(
+                this.temperature[index],
+                this.rainfall[index],
+                0.30,
+                0.0,
+                0.0
+        );
+    }
+
+    /**
+     * Updates buffer climate variables from an immutable {@link ClimateState} component.
+     *
+     * @param index cell buffer index
+     * @param state climate state component
+     */
+    public void setClimateState(int index, ClimateState state) {
+        if (state == null) return;
+        this.temperature[index] = (float) state.temperature();
+        this.rainfall[index] = (float) state.rainfall();
+    }
+
+    /**
+     * Extracts an immutable {@link BiomassState} component for a cell index.
+     *
+     * @param index cell buffer index
+     * @return biomass state component
+     */
+    public BiomassState getBiomassState(int index) {
+        return new BiomassState(
+                this.biomassHuman[index],
+                this.biomassLivestock[index],
+                this.biomassFish[index],
+                this.biomassAgriculture[index],
+                this.biomassNatural[index],
+                this.foodResource[index],
+                this.waterResource[index],
+                this.woodResource[index],
+                10.0,
+                0.0
+        );
+    }
+
+    /**
+     * Updates buffer biomass variables from an immutable {@link BiomassState} component.
+     *
+     * @param index cell buffer index
+     * @param state biomass state component
+     */
+    public void setBiomassState(int index, BiomassState state) {
+        if (state == null) return;
+        this.biomassHuman[index] = (float) state.biomassHuman();
+        this.biomassLivestock[index] = (float) state.biomassLivestock();
+        this.biomassFish[index] = (float) state.biomassFish();
+        this.biomassAgriculture[index] = (float) state.biomassAgriculture();
+        this.biomassNatural[index] = (float) state.biomassNatural();
+        this.foodResource[index] = (float) state.foodResource();
+        this.waterResource[index] = (float) state.waterResource();
+        this.woodResource[index] = (float) state.woodResource();
+    }
+
+    /**
+     * Extracts an immutable {@link DemographicState} component for a cell index.
+     *
+     * @param index cell buffer index
+     * @return demographic state component
+     */
+    public DemographicState getDemographicState(int index) {
+        return new DemographicState(
+                (int) this.biomassHuman[index],
+                this.lifespan[index],
+                this.fertility[index],
+                this.giniIndex[index],
+                this.technologyLevel[index],
+                1
+        );
+    }
+
+    /**
+     * Updates buffer demographic variables from an immutable {@link DemographicState} component.
+     *
+     * @param index cell buffer index
+     * @param state demographic state component
+     */
+    public void setDemographicState(int index, DemographicState state) {
+        if (state == null) return;
+        this.lifespan[index] = (float) state.lifespan();
+        this.fertility[index] = (float) state.fertility();
+        this.giniIndex[index] = (float) state.giniIndex();
+        this.technologyLevel[index] = (float) state.technologyLevel();
+    }
+
+    /**
+     * Extracts an immutable {@link MineralState} component for a cell index.
+     *
+     * @param index cell buffer index
+     * @return mineral state component
+     */
+    public MineralState getMineralState(int index) {
+        return new MineralState(
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                this.metalResource[index],
+                0.0,
+                0.0,
+                87.0,
+                0.0,
+                0.0
+        );
+    }
+
+    /**
+     * Updates buffer mineral variables from an immutable {@link MineralState} component.
+     *
+     * @param index cell buffer index
+     * @param state mineral state component
+     */
+    public void setMineralState(int index, MineralState state) {
+        if (state == null) return;
+        this.metalResource[index] = (float) state.resourceMetal();
+    }
+
     public void invalidatePartitionIndices() {
         this.landIndices = null;
         this.oceanIndices = null;

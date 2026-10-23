@@ -2698,4 +2698,146 @@ public class H3Cell {
     public int getEpidemicRecoveredOr(int defaultValue) {
         return this.epidemicRecovered != null ? this.epidemicRecovered : defaultValue;
     }
+
+    // =========================================================================
+    // DATA-ORIENTED DESIGN (DOD) COMPONENT ACCESSORS
+    // =========================================================================
+
+    /**
+     * Extracts an immutable {@link org.ether.society.database.components.ClimateState} component from this cell.
+     *
+     * @return current climate state component
+     */
+    public org.ether.society.database.components.ClimateState getClimateState() {
+        return new org.ether.society.database.components.ClimateState(
+                getTemperatureOr(15.0),
+                getRainfallOr(800.0),
+                getDynamicAlbedoOr(0.30),
+                getIceSheetThicknessMetersOr(0.0),
+                getSeaLevelOffsetMetersOr(0.0)
+        );
+    }
+
+    /**
+     * Applies an immutable {@link org.ether.society.database.components.ClimateState} component to this cell.
+     *
+     * @param state climate state component to apply
+     */
+    public void setClimateState(org.ether.society.database.components.ClimateState state) {
+        if (state == null) return;
+        this.temperature = state.temperature();
+        this.rainfall = state.rainfall();
+        this.dynamicAlbedo = state.dynamicAlbedo();
+        this.iceSheetThicknessMeters = state.iceSheetThicknessMeters();
+        this.seaLevelOffsetMeters = state.seaLevelOffsetMeters();
+    }
+
+    /**
+     * Extracts an immutable {@link org.ether.society.database.components.BiomassState} component from this cell.
+     *
+     * @return current biomass state component
+     */
+    public org.ether.society.database.components.BiomassState getBiomassState() {
+        return new org.ether.society.database.components.BiomassState(
+                getBiomassHumanOr(0.0),
+                getBiomassLivestockOr(0.0),
+                getBiomassFishOr(0.0),
+                getBiomassAgricultureOr(0.0),
+                getBiomassNaturalOr(100.0),
+                getFoodResourceOr(50.0),
+                getWaterResourceOr(50.0),
+                getWoodResourceOr(50.0),
+                getSoilOrganicCarbonOr(10.0),
+                getSoilSalinityOr(0.0)
+        );
+    }
+
+    /**
+     * Applies an immutable {@link org.ether.society.database.components.BiomassState} component to this cell.
+     *
+     * @param state biomass state component to apply
+     */
+    public void setBiomassState(org.ether.society.database.components.BiomassState state) {
+        if (state == null) return;
+        this.biomassHuman = state.biomassHuman();
+        this.biomassLivestock = state.biomassLivestock();
+        this.biomassFish = state.biomassFish();
+        this.biomassAgriculture = state.biomassAgriculture();
+        this.biomassNatural = state.biomassNatural();
+        this.foodResource = state.foodResource();
+        this.waterResource = state.waterResource();
+        this.woodResource = state.woodResource();
+        this.soilOrganicCarbon = state.soilOrganicCarbon();
+        this.soilSalinity = state.soilSalinity();
+    }
+
+    /**
+     * Extracts an immutable {@link org.ether.society.database.components.DemographicState} component from this cell.
+     *
+     * @return current demographic state component
+     */
+    public org.ether.society.database.components.DemographicState getDemographicState() {
+        return new org.ether.society.database.components.DemographicState(
+                getPopulationOr(0),
+                getLifespanOr(40.0),
+                getFertilityOr(6.0),
+                getGiniIndexOr(0.0),
+                getTechnologyLevelOr(0.0),
+                getHomininSpeciesOr(1)
+        );
+    }
+
+    /**
+     * Applies an immutable {@link org.ether.society.database.components.DemographicState} component to this cell.
+     *
+     * @param state demographic state component to apply
+     */
+    public void setDemographicState(org.ether.society.database.components.DemographicState state) {
+        if (state == null) return;
+        this.population = state.population();
+        this.lifespan = state.lifespan();
+        this.fertility = state.fertility();
+        this.giniIndex = state.giniIndex();
+        this.technologyLevel = state.technologyLevel();
+        this.homininSpecies = state.homininSpecies();
+    }
+
+    /**
+     * Extracts an immutable {@link org.ether.society.database.components.MineralState} component from this cell.
+     *
+     * @return current mineral state component
+     */
+    public org.ether.society.database.components.MineralState getMineralState() {
+        return new org.ether.society.database.components.MineralState(
+                getResourceCoalOr(0.0),
+                getResourceOilOr(0.0),
+                getResourceGasOr(0.0),
+                getResourceUraniumOr(0.0),
+                getResourceMetalOr(0.0),
+                getResourcePreciousMetalOr(0.0),
+                getResourceRareEarthsOr(0.0),
+                getMantleHeatFlowOr(87.0),
+                getFreshwaterAquiferOr(0.0),
+                getAccessibleAquiferOr(0.0)
+        );
+    }
+
+    /**
+     * Applies an immutable {@link org.ether.society.database.components.MineralState} component to this cell.
+     *
+     * @param state mineral state component to apply
+     */
+    public void setMineralState(org.ether.society.database.components.MineralState state) {
+        if (state == null) return;
+        this.resourceCoal = state.resourceCoal();
+        this.resourceOil = state.resourceOil();
+        this.resourceGas = state.resourceGas();
+        this.resourceUranium = state.resourceUranium();
+        this.resourceMetal = state.resourceMetal();
+        this.resourcePreciousMetal = state.resourcePreciousMetal();
+        this.resourceRareEarths = state.resourceRareEarths();
+        this.mantleHeatFlow = state.mantleHeatFlow();
+        this.freshwaterAquifer = state.freshwaterAquifer();
+        this.accessibleAquifer = state.accessibleAquifer();
+    }
 }
