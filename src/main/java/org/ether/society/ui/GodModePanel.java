@@ -7,9 +7,14 @@ package org.ether.society.ui;
 
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
-import org.ether.society.i18n.I18n;
-import org.ether.society.model.ScenarioTimeline;
 import org.ether.society.engines.tier1.NuclearWarfareClimateEngine;
+import org.ether.society.events.ActiveEvent;
+import org.ether.society.i18n.I18n;
+import org.ether.society.model.Biome;
+import org.ether.society.model.ScenarioTimeline;
+import org.ether.society.ui.godmode.GodModeDisasterExecutor;
+import org.ether.society.ui.godmode.GodModeEventCatalog;
+import org.ether.society.ui.godmode.GodModeEventCatalog.EventTypeItem;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * God Mode & Interactive Timeline Controller.
+ * God Mode &amp; Interactive Timeline Controller.
  * Allows pausing live simulation, injecting real physical events (volcanoes, EMP, heatwaves),
  * selecting duration, and viewing/navigating the chronological scenario timeline audit trail.
  *
@@ -33,88 +38,7 @@ import java.util.Locale;
 public class GodModePanel extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(GodModePanel.class);
 
-    public record EventTypeItem(
-        String id,
-        String typeI18nKey,
-        String nameI18nKey,
-        String descI18nKey,
-        int defaultDurationDays,
-        double defaultMagnitude,
-        boolean isLeader
-    ) {
-        /**
-         * Get display name.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getDisplayName() {
-            return I18n.getOrDefault(typeI18nKey, id);
-        }
-
-        /**
-         * Get default title.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getDefaultTitle() {
-            return I18n.getOrDefault(nameI18nKey, id);
-        }
-
-        /**
-         * Get description.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getDescription() {
-            return I18n.getOrDefault(descI18nKey, "");
-        }
-
-        /**
-         * To string.
-         *
-         * @return the resulting computation or state reference
-         */
-        @Override
-        public String toString() {
-            return getDisplayName();
-        }
-    }
-
-    private static final List<EventTypeItem> EVENT_TYPES = List.of(
-        // Catégorie 1 : Événements Géophysiques & Catastrophes Naturelles
-        new EventTypeItem("FLOOD", "godmode.type.flood", "godmode.event.flood", "godmode.event.flood.desc", 30, 6.0, false),
-        new EventTypeItem("DROUGHT", "godmode.type.drought", "godmode.event.drought", "godmode.event.drought.desc", 180, 5.5, false),
-        new EventTypeItem("VOLCANO", "godmode.type.volcano", "godmode.event.volcano", "godmode.event.volcano.desc", 365, 7.0, false),
-        new EventTypeItem("TSUNAMI", "godmode.type.tsunami", "godmode.event.tsunami", "godmode.event.tsunami.desc", 1, 8.5, false),
-        new EventTypeItem("EARTHQUAKE", "godmode.type.earthquake", "godmode.event.earthquake", "godmode.event.earthquake.desc", 3, 8.0, false),
-        new EventTypeItem("METEOR", "godmode.type.meteor", "godmode.event.meteor", "godmode.event.meteor.desc", 7, 9.0, false),
-        new EventTypeItem("HEATWAVE", "godmode.type.heatwave", "godmode.event.heatwave", "godmode.event.heatwave.desc", 30, 5.0, false),
-        new EventTypeItem("ICE_AGE", "godmode.type.ice_age", "godmode.event.ice_age", "godmode.event.ice_age.desc", 18250, 5.0, false),
-        new EventTypeItem("FAMINE", "godmode.type.famine", "godmode.event.famine", "godmode.event.famine.desc", 180, 6.0, false),
-        new EventTypeItem("PANDEMIC", "godmode.type.pandemic", "godmode.event.pandemic", "godmode.event.pandemic.desc", 730, 8.0, false),
-        new EventTypeItem("BIODIVERSITY_COLLAPSE", "godmode.type.biodiversity_collapse", "godmode.event.biodiversity_collapse", "godmode.event.biodiversity_collapse.desc", 3650, 6.0, false),
-        new EventTypeItem("SOLAR_EMP", "godmode.type.solar_emp", "godmode.event.solar_emp", "godmode.event.solar_emp.desc", 30, 8.5, false),
-        new EventTypeItem("NUCLEAR_STRIKE", "godmode.type.nuclear_strike", "godmode.event.nuclear_strike", "godmode.event.nuclear_strike.desc", 0, 7.5, false),
-        new EventTypeItem("NUCLEAR_WINTER", "godmode.type.nuclear_winter", "godmode.event.nuclear_winter", "godmode.event.nuclear_winter.desc", 3650, 7.5, false),
-        new EventTypeItem("CYBER_ATTACK", "godmode.type.cyber_attack", "godmode.event.cyber_attack", "godmode.event.cyber_attack.desc", 14, 6.5, false),
-        new EventTypeItem("ECONOMIC_CRASH", "godmode.type.economic_crash", "godmode.event.economic_crash", "godmode.event.economic_crash.desc", 365, 7.0, false),
-        new EventTypeItem("GEOENGINEERING", "godmode.type.geoengineering", "godmode.event.geoengineering", "godmode.event.geoengineering.desc", 730, 4.0, false),
-        new EventTypeItem("RENAISSANCE_BOOM", "godmode.type.renaissance_boom", "godmode.event.renaissance_boom", "godmode.event.renaissance_boom.desc", 7300, 8.0, false),
-        new EventTypeItem("TECH_SINGULARITY", "godmode.type.tech_singularity", "godmode.event.tech_singularity", "godmode.event.tech_singularity.desc", 3650, 9.5, false),
-        new EventTypeItem("ALIEN_CONTACT", "godmode.type.alien_contact", "godmode.event.alien_contact", "godmode.event.alien_contact.desc", 1825, 10.0, false),
-        // Catégorie 2 : Catastrophes Spatiales & Habitats Extraterrestres
-        new EventTypeItem("DOME_BREACH", "godmode.type.dome_breach", "godmode.event.dome_breach", "godmode.event.dome_breach.desc", 7, 8.5, false),
-        new EventTypeItem("ECLSS_FAILURE", "godmode.type.eclss_failure", "godmode.event.eclss_failure", "godmode.event.eclss_failure.desc", 30, 7.5, false),
-        new EventTypeItem("AEROSTAT_PUNCTURE", "godmode.type.aerostat_puncture", "godmode.event.aerostat_puncture", "godmode.event.aerostat_puncture.desc", 14, 8.0, false),
-        new EventTypeItem("LAVA_TUBE_COLLAPSE", "godmode.type.lava_tube_collapse", "godmode.event.lava_tube_collapse", "godmode.event.lava_tube_collapse.desc", 1, 9.0, false),
-        // Catégorie 3 : Personnages Historiques & Dirigeants d'Impact (6 Archétypes)
-        new EventTypeItem("LEADER_MILITARY_CONQUEROR", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror", "leader.archetype.military_conqueror.desc", 7300, 8.0, true),
-        new EventTypeItem("LEADER_INFRASTRUCTURE_BUILDER", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder", "leader.archetype.infrastructure_builder.desc", 10950, 7.5, true),
-        new EventTypeItem("LEADER_INSTITUTIONAL_REFORMER", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer", "leader.archetype.institutional_reformer.desc", 9125, 7.0, true),
-        new EventTypeItem("LEADER_HYDRAULIC_AGRARIAN_INNOVATOR", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator", "leader.archetype.hydraulic_agrarian_innovator.desc", 12775, 7.5, true),
-        new EventTypeItem("LEADER_MORAL_RELIGIOUS_SAGE", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage", "leader.archetype.moral_religious_sage.desc", 14600, 8.0, true),
-        new EventTypeItem("LEADER_TOTALITARIAN_PURGER", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger", "leader.archetype.totalitarian_purger.desc", 5475, 8.5, true)
-    );
+    public static final List<EventTypeItem> EVENT_TYPES = GodModeEventCatalog.EVENT_TYPES;
 
     private final H3SimulationEngine engine;
     private final ScenarioTimeline timeline;
@@ -170,10 +94,10 @@ public class GodModePanel extends VBox {
     private final Button resetDisastersBtn;
 
     /**
-     * God mode panel.
+     * God mode panel constructor.
      *
-     * @param engine the engine parameter (H3SimulationEngine)
-     * @param timeline the timeline parameter (ScenarioTimeline)
+     * @param engine the simulation engine
+     * @param timeline the scenario timeline
      */
     public GodModePanel(H3SimulationEngine engine, ScenarioTimeline timeline) {
         this.engine = engine;
@@ -199,22 +123,11 @@ public class GodModePanel extends VBox {
         eventTypeCombo.setMaxWidth(280);
 
         eventTypeCombo.setConverter(new StringConverter<>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (EventTypeItem)
-             * @return the resulting computation or state reference
-             */
             @Override
             public String toString(EventTypeItem item) {
                 return item != null ? item.getDisplayName() : "";
             }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
+
             @Override
             public EventTypeItem fromString(String string) {
                 if (string == null) return null;
@@ -228,15 +141,8 @@ public class GodModePanel extends VBox {
         });
 
         eventTypeCombo.setCellFactory(lv -> new ListCell<>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (EventTypeItem)
-             * @param empty the empty parameter (boolean)
-             */
             @Override
             protected void updateItem(EventTypeItem item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -248,15 +154,8 @@ public class GodModePanel extends VBox {
             }
         });
         eventTypeCombo.setButtonCell(new ListCell<>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (EventTypeItem)
-             * @param empty the empty parameter (boolean)
-             */
             @Override
             protected void updateItem(EventTypeItem item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -297,7 +196,6 @@ public class GodModePanel extends VBox {
         targetYearSlider.setPrefWidth(120);
         targetYearSlider.setMaxWidth(150);
 
-        // Synchronize Spinner & Slider
         targetYearSlider.valueProperty().addListener((obs, oldV, newV) -> {
             if (newV != null && Math.abs(targetYearSpinner.getValue() - newV.intValue()) > 0) {
                 targetYearSpinner.getValueFactory().setValue(newV.intValue());
@@ -334,7 +232,6 @@ public class GodModePanel extends VBox {
         radiusKmSpinner.setPrefWidth(95);
         radiusKmSpinner.setMaxWidth(110);
 
-        // Update defaults when event type selection changes
         eventTypeCombo.valueProperty().addListener((obs, oldV, newV) -> {
             if (newV == null) return;
             eventNameField.setText(newV.getDefaultTitle());
@@ -386,25 +283,10 @@ public class GodModePanel extends VBox {
         injectPopBtn.setOnAction(e -> {
             double targetLat = latSpinner.getValue();
             double targetLng = lngSpinner.getValue();
-            if (engine != null && engine.getCells() != null) {
-                H3Cell nearest = null;
-                double minDist = Double.MAX_VALUE;
-                // Iterate over spatial cell domains and apply localized cellular state transformations
-                for (H3Cell c : engine.getCells()) {
-                    double dist = Math.hypot(c.getLatitude() - targetLat, c.getLongitude() - targetLng);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        nearest = c;
-                    }
-                }
-                if (nearest != null) {
-                    nearest.setPopulation(nearest.getPopulation() + 100_000);
-                    targetLat = nearest.getLatitude();
-                    targetLng = nearest.getLongitude();
-                    if (engine.getWorldBuffer() != null) {
-                        org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
-                    }
-                }
+            H3Cell nearest = GodModeDisasterExecutor.injectPopulationAtEpicenter(engine, targetLat, targetLng, 100_000);
+            if (nearest != null) {
+                targetLat = nearest.getLatitude();
+                targetLng = nearest.getLongitude();
             }
             recordIntervention(
                 "POP_INJECT",
@@ -418,15 +300,7 @@ public class GodModePanel extends VBox {
         injectFoodBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
         injectFoodBtn.setMaxWidth(Double.MAX_VALUE);
         injectFoodBtn.setOnAction(e -> {
-            if (engine != null && engine.getCells() != null) {
-                // Iterate over spatial cell domains and apply localized cellular state transformations
-                for (H3Cell c : engine.getCells()) {
-                    c.setFoodResource((c.getFoodResource() != null ? c.getFoodResource() : 0.0) + 1000.0);
-                }
-                if (engine.getWorldBuffer() != null) {
-                    org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
-                }
-            }
+            GodModeDisasterExecutor.injectGlobalFood(engine, 1000.0);
             recordIntervention(
                 "FOOD_INJECT",
                 I18n.getOrDefault("godmode.spawner.food_title", "🌾 Ravitaillement Alimentaire Mondial (+1000 t)"),
@@ -441,19 +315,11 @@ public class GodModePanel extends VBox {
         massExtinctionBtn.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle(I18n.getOrDefault("godmode.dialog.extinction_title", "Confirmation d'Extinction Massive"));
-            alert.setHeaderText(I18n.getOrDefault("godmode.dialog.extinction_header", "⚠️ï¸ Action Destructive en Mode Dieu"));
+            alert.setHeaderText(I18n.getOrDefault("godmode.dialog.extinction_header", "⚠️ Action Destructive en Mode Dieu"));
             alert.setContentText(I18n.getOrDefault("godmode.dialog.extinction_desc", "Are you sure you want to eliminate 50% of world population? This action will be logged irreversibly in the audit trail."));
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    if (engine != null && engine.getCells() != null) {
-                        // Iterate over spatial cell domains and apply localized cellular state transformations
-                        for (H3Cell c : engine.getCells()) {
-                            c.setPopulation((int) (c.getPopulation() * 0.5));
-                        }
-                        if (engine.getWorldBuffer() != null) {
-                            org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
-                        }
-                    }
+                    GodModeDisasterExecutor.triggerMassExtinction(engine, 0.5);
                     recordIntervention(
                         "MASS_EXTINCTION",
                         I18n.getOrDefault("godmode.spawner.extinction_title", "💀 Extinction Cataclysmique (-50% Pop)"),
@@ -483,74 +349,9 @@ public class GodModePanel extends VBox {
             double targetLat = latSpinner.getValue();
             double targetLng = lngSpinner.getValue();
             int selectedIdx = brushModeCombo.getSelectionModel().getSelectedIndex();
-
-            H3Cell nearest = null;
-            double minDist = Double.MAX_VALUE;
-            // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (H3Cell c : engine.getCells()) {
-                double dist = Math.hypot(c.getLatitude() - targetLat, c.getLongitude() - targetLng);
-                if (dist < minDist) {
-                    minDist = dist;
-                    nearest = c;
-                }
-            }
-
-            if (nearest != null) {
-                String brushType;
-                String brushTitle;
-                String brushDesc;
-                double brushMag;
-
-                switch (selectedIdx) {
-                    case 0 -> {
-                        nearest.setPopulation(nearest.getPopulation() + 50000);
-                        brushType = "POP_BOOST";
-                        brushTitle = I18n.getOrDefault("godmode.brush.pop", "👥 Boost Population (+50 000 hab)");
-                        brushDesc = String.format(Locale.ROOT, "Ajout de +50 000 habitants à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
-                        brushMag = 50000.0;
-                    }
-                    case 1 -> {
-                        nearest.setFoodResource((nearest.getFoodResource() != null ? nearest.getFoodResource() : 0.0) + 500.0);
-                        brushType = "AGRI_BOOST";
-                        brushTitle = I18n.getOrDefault("godmode.brush.agri", "🌾 Injection Agricole & Silos (+500 t)");
-                        brushDesc = String.format(Locale.ROOT, "Apport de +500 t de céréales à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
-                        brushMag = 500.0;
-                    }
-                    case 2 -> {
-                        nearest.setFreshwaterAquifer((nearest.getFreshwaterAquifer() != null ? nearest.getFreshwaterAquifer() : 0.0) + 2000.0);
-                        brushType = "WATER_RECHARGE";
-                        brushTitle = I18n.getOrDefault("godmode.brush.water", "🚰 Recharge Aquifère (+2 000 m³)");
-                        brushDesc = String.format(Locale.ROOT, "Recharge de nappe phréatique (+2 000 m³) à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
-                        brushMag = 2000.0;
-                    }
-                    case 3 -> {
-                        nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) + 10.0);
-                        brushType = "HEAT_INJECTION";
-                        brushTitle = I18n.getOrDefault("godmode.brush.heat", "🔥 Vague de Chaleur Locale (+10,0°C)");
-                        brushDesc = String.format(Locale.ROOT, "Hausse thermique locale (+10.0°C) à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
-                        brushMag = 10.0;
-                    }
-                    case 4 -> {
-                        nearest.setTemperature((nearest.getTemperature() != null ? nearest.getTemperature() : 15.0) - 10.0);
-                        brushType = "COLD_INJECTION";
-                        brushTitle = I18n.getOrDefault("godmode.brush.cold", "â„ï¸ Refroidissement Local (-10,0°C)");
-                        brushDesc = String.format(Locale.ROOT, "Refroidissement local (-10.0°C) à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
-                        brushMag = 10.0;
-                    }
-                    default -> {
-                        nearest.setPollutionLevel(0.0);
-                        brushType = "CLEAN_ECO";
-                        brushTitle = I18n.getOrDefault("godmode.brush.clean", "🧼 Nettoyage Écologique Intégral");
-                        brushDesc = String.format(Locale.ROOT, "Dépollution intégrale à (Lat: %.2f°, Lng: %.2f°)", nearest.getLatitude(), nearest.getLongitude());
-                        brushMag = 1.0;
-                    }
-                }
-
-                if (engine.getWorldBuffer() != null) {
-                    org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
-                }
-
-                recordIntervention(brushType, brushTitle, brushDesc, nearest.getLatitude(), nearest.getLongitude(), brushMag, 365);
+            GodModeDisasterExecutor.BrushOutcome outcome = GodModeDisasterExecutor.applyTerraformBrush(engine, selectedIdx, targetLat, targetLng);
+            if (outcome != null) {
+                recordIntervention(outcome.type(), outcome.title(), outcome.description(), outcome.cell().getLatitude(), outcome.cell().getLongitude(), outcome.magnitude(), 365);
             }
         });
 
@@ -586,15 +387,8 @@ public class GodModePanel extends VBox {
         timelineListView.setMinHeight(140);
 
         timelineListView.setCellFactory(lv -> new ListCell<>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (String)
-             * @param empty the empty parameter (boolean)
-             */
             @Override
             protected void updateItem(String item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -633,7 +427,6 @@ public class GodModePanel extends VBox {
                 double lat = entry.latitude();
                 double lng = entry.longitude();
 
-                // If coordinates were 0, try parsing from details
                 if (lat == 0.0 && lng == 0.0 && entry.details() != null) {
                     try {
                         if (entry.details().contains("Lat:") && entry.details().contains("Lng:")) {
@@ -655,7 +448,6 @@ public class GodModePanel extends VBox {
                 if (mapCanvas != null) {
                     mapCanvas.flyTo(lat, lng);
                 }
-
             }
         });
 
@@ -670,30 +462,18 @@ public class GodModePanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
-    /**
-     * Set map canvas.
-     *
-     * @param mapCanvas the map canvas parameter (H3MapCanvas)
-     */
     public void setMapCanvas(H3MapCanvas mapCanvas) {
         this.mapCanvas = mapCanvas;
     }
 
-    /**
-     * Set notification overlay.
-     *
-     * @param notificationOverlay the notification overlay parameter (NotificationOverlay)
-     */
     public void setNotificationOverlay(NotificationOverlay notificationOverlay) {
         this.notificationOverlay = notificationOverlay;
     }
 
     /**
-     * Update texts.
-     *
+     * Updates all localized UI texts and controls.
      */
     public void updateTexts() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         headerLabel.setText(I18n.getOrDefault("godmode.title", "⚡ 5. GOD MODE & CHRONOLOGY"));
         pauseNoticeLabel.setText(I18n.getOrDefault("godmode.pause_notice", "⏸️ Simulation is automatically paused on this tab to allow peaceful configuration of climatic disturbances without temporal drift."));
 
@@ -760,7 +540,6 @@ public class GodModePanel extends VBox {
             dateRangeLabel.setText(String.format(I18n.getOrDefault("godmode.label.date_range", "📅 Allowed Range: [Year %,d ➔ Year %,d]"), minYr, maxYr));
         }
 
-        // Refresh event type display
         EventTypeItem currentType = eventTypeCombo.getValue();
         if (currentType != null) {
             eventNameField.setText(currentType.getDefaultTitle());
@@ -854,38 +633,6 @@ public class GodModePanel extends VBox {
         return createLabel("", 140);
     }
 
-    private H3Cell findNearestCell(double lat, double lng) {
-        if (engine == null || engine.getCells() == null || engine.getCells().isEmpty()) return null;
-        H3Cell nearest = null;
-        double minD = Double.MAX_VALUE;
-        for (H3Cell c : engine.getCells()) {
-            double d = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-            if (d < minD) {
-                minD = d;
-                nearest = c;
-            }
-        }
-        return nearest;
-    }
-
-    private boolean isTerrestrialEventType(String type) {
-        if (type == null) return false;
-        return switch (type.toUpperCase()) {
-            case "FLOOD", "DROUGHT", "FAMINE", "VOLCANO", "EARTHQUAKE", "PANDEMIC",
-                 "RENAISSANCE_BOOM", "TECH_SINGULARITY", "CYBER_ATTACK", "ECONOMIC_CRASH",
-                 "BIODIVERSITY_COLLAPSE" -> true;
-            default -> false;
-        };
-    }
-
-    private boolean isOceanicEventType(String type) {
-        if (type == null) return false;
-        return switch (type.toUpperCase()) {
-            case "TSUNAMI" -> true;
-            default -> false;
-        };
-    }
-
     private void scheduleEvent(boolean immediate) {
         EventTypeItem item = eventTypeCombo.getValue();
         String type = item != null ? item.id() : "VOLCANO";
@@ -903,24 +650,23 @@ public class GodModePanel extends VBox {
         double radiusKm = radiusKmSpinner != null ? radiusKmSpinner.getValue() : 1000.0;
         int durationDays = durationDaysSpinner.getValue();
 
-        // Biome and spatial compatibility validation
-        H3Cell nearestCell = findNearestCell(lat, lng);
+        H3Cell nearestCell = GodModeDisasterExecutor.findNearestCell(engine, lat, lng);
         if (nearestCell != null) {
-            boolean isOcean = nearestCell.getBiome() == org.ether.society.model.Biome.OCEAN || nearestCell.getBiome() == org.ether.society.model.Biome.DEEP_OCEAN;
-            if (isTerrestrialEventType(type) && isOcean) {
-                String warnMsg = String.format(Locale.ROOT, "⚠️ï¸ Incompatibilité Géographique :\nL'événement '%s' (%s) ne peut pas se produire en plein océan (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
+            boolean isOcean = nearestCell.getBiome() == Biome.OCEAN || nearestCell.getBiome() == Biome.DEEP_OCEAN;
+            if (GodModeDisasterExecutor.isTerrestrialEventType(type) && isOcean) {
+                String warnMsg = String.format(Locale.ROOT, "⚠️ Incompatibilité Géographique :\nL'événement '%s' (%s) ne peut pas se produire en plein océan (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ï¸ Événement incompatible avec le milieu océanique"));
+                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ Événement incompatible avec le milieu océanique"));
                 alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice", "Veuillez sélectionner des coordonnées situées sur la terre ferme."));
                 WindowUtils.applyWindowIcon(alert);
                 alert.showAndWait();
                 return;
-            } else if (isOceanicEventType(type) && !isOcean && nearestCell.getElevation() != null && nearestCell.getElevation() > 300) {
-                String warnMsg = String.format(Locale.ROOT, "⚠️ï¸ Incompatibilité Géographique :\nL'événement '%s' (%s) nécessite une zone maritime ou côtière (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
+            } else if (GodModeDisasterExecutor.isOceanicEventType(type) && !isOcean && nearestCell.getElevation() != null && nearestCell.getElevation() > 300) {
+                String warnMsg = String.format(Locale.ROOT, "⚠️ Incompatibilité Géographique :\nL'événement '%s' (%s) nécessite une zone maritime ou côtière (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ï¸ Événement incompatible avec les hautes terres"));
+                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ Événement incompatible avec les hautes terres"));
                 alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice_ocean", "Veuillez sélectionner des coordonnées maritimes ou côtières."));
                 WindowUtils.applyWindowIcon(alert);
                 alert.showAndWait();
@@ -935,7 +681,7 @@ public class GodModePanel extends VBox {
         refreshTimelineView();
 
         if (engine != null && engine.getEventSystem() != null) {
-            org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
+            ActiveEvent ae = new ActiveEvent(
                 "GM_" + System.currentTimeMillis(),
                 "⚡ GOD MODE: " + name,
                 type, lat, lng, targetYear, currentMonth, currentDay, Math.max(15.0, durationDays * 0.5), mag, durationDays
@@ -944,7 +690,7 @@ public class GodModePanel extends VBox {
         }
 
         if (immediate || targetYear <= currentYear) {
-            executePhysicalForcing(type, mag, lat, lng, radiusKm);
+            GodModeDisasterExecutor.executePhysicalForcing(engine, type, mag, lat, lng, radiusKm);
             if (engine != null && engine.getWorldBuffer() != null && engine.getCells() != null) {
                 org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
                 if (engine.getHistoryManager() != null) {
@@ -961,224 +707,12 @@ public class GodModePanel extends VBox {
         }
     }
 
-    private void executePhysicalForcing(String type, double mag, double lat, double lng, double radiusKm) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (type == null) return;
-        switch (type) {
-            case "VOLCANO" -> NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(mag);
-            case "NUCLEAR_STRIKE" -> {
-                NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() + mag * 1.5);
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-                        if (dist < mag * 1.5) {
-                            double blastFactor = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
-                            c.setPopulation((int) (c.getPopulation() * (1.0 - 0.90 * blastFactor)));
-                            c.setFoodResource(Math.max(0.0, (c.getFoodResource() != null ? c.getFoodResource() : 0.0) * (1.0 - 0.80 * blastFactor)));
-                            c.setTechnologyLevel(Math.max(0.0, (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0) * (1.0 - 0.70 * blastFactor)));
-                            c.setPollutionLevel(Math.min(1.0, (c.getPollutionLevel() != null ? c.getPollutionLevel() : 0.0) + 0.9 * blastFactor));
-                        }
-                    }
-                }
-            }
-            case "HEATWAVE" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        c.setTemperature((c.getTemperature() != null ? c.getTemperature() : 15.0) + mag * 2.0);
-                    }
-                }
-            }
-            case "NUCLEAR_WINTER", "ICE_AGE" -> NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(mag * 2.5);
-            case "METEOR" -> NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(mag * 3.5);
-            case "GEOENGINEERING" -> NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(Math.max(0, NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() - mag));
-            case "FAMINE" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        c.setFoodResource(Math.max(0.0, (c.getFoodResource() != null ? c.getFoodResource() : 100.0) * (1.0 - mag * 0.08)));
-                    }
-                }
-            }
-            case "FLOOD" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-                        if (dist < mag * 1.5) {
-                            double blast = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
-                            if (c.getPopulation() != null && c.getPopulation() > 0) {
-                                c.setPopulation((int) (c.getPopulation() * (1.0 - 0.20 * blast)));
-                            }
-                            if (c.getFoodResource() != null) {
-                                c.setFoodResource(Math.max(0.0, c.getFoodResource() * (1.0 - 0.50 * blast)));
-                            }
-                        }
-                    }
-                }
-            }
-            case "DROUGHT" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-                        if (dist < mag * 2.0) {
-                            double blast = Math.max(0.0, 1.0 - (dist / (mag * 2.0)));
-                            if (c.getWaterResource() != null) {
-                                c.setWaterResource(Math.max(0.0, c.getWaterResource() * (1.0 - 0.70 * blast)));
-                            }
-                            if (c.getFoodResource() != null) {
-                                c.setFoodResource(Math.max(0.0, c.getFoodResource() * (1.0 - 0.40 * blast)));
-                            }
-                        }
-                    }
-                }
-            }
-            case "TSUNAMI", "EARTHQUAKE" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-                        if (dist < mag * 2.0) {
-                            int pop = c.getPopulation();
-                            c.setPopulation((int) (pop * Math.max(0.1, 1.0 - (mag * 0.15))));
-                        }
-                    }
-                }
-            }
-            case "PANDEMIC", "BIODIVERSITY_COLLAPSE" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        int pop = c.getPopulation();
-                        c.setPopulation((int) (pop * Math.max(0.2, 1.0 - (mag * 0.05))));
-                    }
-                }
-            }
-            case "SOLAR_EMP", "CYBER_ATTACK", "ECONOMIC_CRASH" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        c.setTechnologyLevel(Math.max(0.0, (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 10.0) * (1.0 - mag * 0.05)));
-                    }
-                }
-            }
-            case "RENAISSANCE_BOOM", "TECH_SINGULARITY", "ALIEN_CONTACT" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        c.setTechnologyLevel((c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 10.0) + mag * 5.0);
-                    }
-                }
-            }
-            case "DOME_BREACH" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-                        if (dist < mag * 1.5) {
-                            double blast = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
-                            c.setHabitatIntegrity(0.0);
-                            int pop = c.getPopulation() != null ? c.getPopulation() : 0;
-                            int survivors = (int) Math.round(pop * (1.0 - 0.90 * blast));
-                            c.setPopulation(survivors);
-                            c.setBiomassHuman((double) survivors);
-                            if (c.getFoodResource() != null) {
-                                c.setFoodResource(c.getFoodResource() * (1.0 - 0.95 * blast));
-                            }
-                        }
-                    }
-                }
-            }
-            case "ECLSS_FAILURE" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-                        if (dist < mag * 1.5) {
-                            double blast = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
-                            double curIntegrity = c.getHabitatIntegrity() != null ? c.getHabitatIntegrity() : 1.0;
-                            c.setHabitatIntegrity(Math.max(0.05, curIntegrity - 0.70 * blast));
-                            int pop = c.getPopulation() != null ? c.getPopulation() : 0;
-                            int survivors = (int) Math.round(pop * (1.0 - 0.65 * blast));
-                            c.setPopulation(survivors);
-                            c.setBiomassHuman((double) survivors);
-                            if (c.getFoodResource() != null) {
-                                c.setFoodResource(c.getFoodResource() * (1.0 - 0.80 * blast));
-                            }
-                        }
-                    }
-                }
-            }
-            case "AEROSTAT_PUNCTURE" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-                        if (dist < mag * 1.5) {
-                            double blast = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
-                            c.setHabitatIntegrity(0.0);
-                            c.setHabitatType(org.ether.society.model.HabitatType.NONE);
-                            int pop = c.getPopulation() != null ? c.getPopulation() : 0;
-                            int survivors = (int) Math.round(pop * (1.0 - 0.95 * blast));
-                            c.setPopulation(survivors);
-                            c.setBiomassHuman((double) survivors);
-                        }
-                    }
-                }
-            }
-            case "LAVA_TUBE_COLLAPSE" -> {
-                if (engine != null && engine.getCells() != null) {
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : engine.getCells()) {
-                        double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
-                        if (dist < mag * 1.5) {
-                            double blast = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
-                            c.setHabitatIntegrity(0.0);
-                            int pop = c.getPopulation() != null ? c.getPopulation() : 0;
-                            int survivors = (int) Math.round(pop * (1.0 - 0.80 * blast));
-                            c.setPopulation(survivors);
-                            c.setBiomassHuman((double) survivors);
-                            if (c.getResourceCapital() != null) {
-                                c.setResourceCapital(c.getResourceCapital() * (1.0 - 0.90 * blast));
-                            }
-                        }
-                    }
-                }
-            }
-            case "LEADER_MILITARY_CONQUEROR", "LEADER_INFRASTRUCTURE_BUILDER", "LEADER_INSTITUTIONAL_REFORMER",
-                 "LEADER_HYDRAULIC_AGRARIAN_INNOVATOR", "LEADER_MORAL_RELIGIOUS_SAGE", "LEADER_TOTALITARIAN_PURGER" -> {
-                org.ether.society.events.LeaderArchetype arch = switch (type) {
-                    case "LEADER_MILITARY_CONQUEROR" -> org.ether.society.events.LeaderArchetype.MILITARY_CONQUEROR;
-                    case "LEADER_INFRASTRUCTURE_BUILDER" -> org.ether.society.events.LeaderArchetype.INFRASTRUCTURE_BUILDER;
-                    case "LEADER_INSTITUTIONAL_REFORMER" -> org.ether.society.events.LeaderArchetype.INSTITUTIONAL_REFORMER;
-                    case "LEADER_HYDRAULIC_AGRARIAN_INNOVATOR" -> org.ether.society.events.LeaderArchetype.HYDRAULIC_AGRARIAN_INNOVATOR;
-                    case "LEADER_MORAL_RELIGIOUS_SAGE" -> org.ether.society.events.LeaderArchetype.MORAL_RELIGIOUS_SAGE;
-                    default -> org.ether.society.events.LeaderArchetype.TOTALITARIAN_PURGER;
-                };
-                int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 0;
-                org.ether.society.events.HistoricalIntervention hi = new org.ether.society.events.HistoricalIntervention(
-                    "GM_LEADER_" + System.currentTimeMillis(),
-                    arch.getDisplayName() + " (God Mode)",
-                    "Intervention divine d'une figure majeure sous mandat divin.",
-                    currentYear,
-                    arch.getDefaultDurationYears(),
-                    lat, lng, radiusKm, arch, mag
-                );
-                if (engine != null && engine.getEventSystem() != null) {
-                    engine.getEventSystem().injectCustomIntervention(hi);
-                }
-            }
-        }
-    }
-
     /**
-     * Record intervention.
+     * Records a divine intervention in the scenario timeline.
      *
-     * @param type the type parameter (String)
-     * @param title the title parameter (String)
-     * @param details the details parameter (String)
+     * @param type event identifier
+     * @param title human readable title
+     * @param details descriptive details
      */
     public void recordIntervention(String type, String title, String details) {
         double lat = latSpinner != null ? latSpinner.getValue() : 0.0;
@@ -1189,15 +723,15 @@ public class GodModePanel extends VBox {
     }
 
     /**
-     * Record intervention.
+     * Records a divine intervention in the scenario timeline with explicit spatial parameters.
      *
-     * @param type the type parameter (String)
-     * @param title the title parameter (String)
-     * @param details the details parameter (String)
-     * @param lat the lat parameter (double)
-     * @param lng the lng parameter (double)
-     * @param mag the mag parameter (double)
-     * @param durationDays the duration days parameter (int)
+     * @param type event identifier
+     * @param title title
+     * @param details details
+     * @param lat latitude
+     * @param lng longitude
+     * @param mag magnitude
+     * @param durationDays duration in days
      */
     public void recordIntervention(String type, String title, String details, double lat, double lng, double mag, int durationDays) {
         int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
@@ -1216,7 +750,7 @@ public class GodModePanel extends VBox {
         refreshTimelineView();
 
         if (engine != null && engine.getEventSystem() != null) {
-            org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
+            ActiveEvent ae = new ActiveEvent(
                 "GM_" + System.currentTimeMillis(),
                 "⚡ GOD MODE: " + title,
                 type, lat, lng, currentYear, currentMonth, currentDay, Math.max(15.0, durationDays * 0.5), mag, durationDays
@@ -1228,8 +762,7 @@ public class GodModePanel extends VBox {
     }
 
     /**
-     * Refresh timeline view.
-     *
+     * Refreshes the scenario timeline audit log list view.
      */
     public void refreshTimelineView() {
         if (timelineListView == null) return;
@@ -1248,13 +781,12 @@ public class GodModePanel extends VBox {
     }
 
     /**
-     * Update coordinates.
+     * Updates coordinates in the God Mode latitude and longitude spinners.
      *
-     * @param lat the lat parameter (double)
-     * @param lng the lng parameter (double)
+     * @param lat target latitude
+     * @param lng target longitude
      */
     public void updateCoordinates(double lat, double lng) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (latSpinner != null && latSpinner.getValueFactory() != null) {
             latSpinner.getValueFactory().setValue(Math.max(-90.0, Math.min(90.0, lat)));
         }
@@ -1263,6 +795,3 @@ public class GodModePanel extends VBox {
         }
     }
 }
-
-
-
