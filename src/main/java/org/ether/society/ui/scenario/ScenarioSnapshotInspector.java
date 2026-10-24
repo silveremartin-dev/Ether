@@ -310,6 +310,26 @@ public class ScenarioSnapshotInspector {
     }
 
     /**
+     * Checks if any snapshots exist in the dropdown.
+     *
+     * @return {@code true} if snapshots are available
+     */
+    public boolean hasSnapshots() {
+        return snapshotCombo != null && snapshotCombo.getItems() != null && !snapshotCombo.getItems().isEmpty();
+    }
+
+    /**
+     * Disables or enables the resume snapshot radio option.
+     *
+     * @param disable {@code true} to disable resumption
+     */
+    public void setResumeDisabled(boolean disable) {
+        if (radioResumeSnapshot != null) {
+            radioResumeSnapshot.setDisable(disable);
+        }
+    }
+
+    /**
      * Checks if user has toggled resumption from snapshot.
      *
      * @return true if resume radio button is checked

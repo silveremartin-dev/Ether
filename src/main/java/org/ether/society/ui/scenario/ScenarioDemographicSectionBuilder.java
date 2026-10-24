@@ -724,6 +724,18 @@ public class ScenarioDemographicSectionBuilder {
     // --- Getters & Accessors ---
     public Spinner<Long> getInitialHumanCountSpinner() { return initialHumanCountSpinner; }
     public ComboBox<String> getDensityPatternCombo() { return densityPatternCombo; }
+
+    public boolean isDensityImportActive() {
+        return radioImportDemo != null && radioImportDemo.isSelected();
+    }
+
+    public long getInitialHumanCount() {
+        return initialHumanCountSpinner != null && initialHumanCountSpinner.getValue() != null ? initialHumanCountSpinner.getValue() : 1_000_000L;
+    }
+
+    public String getDensityPattern() {
+        return densityPatternCombo != null && densityPatternCombo.getValue() != null ? densityPatternCombo.getValue() : "UNBIASED_NATURAL";
+    }
     public ComboBox<Scenario.TechPreset> getTechPresetCombo() { return techPresetCombo; }
     public Spinner<Double> getCustomCapitalSpinner() { return customCapitalSpinner; }
     public Spinner<Double> getCustomEnergySpinner() { return customEnergySpinner; }
