@@ -5,113 +5,191 @@
  */
 package org.ether.society.ui;
 
-import org.ether.society.ui.scenario.ScenarioConfigPaneBuilder;
-import org.ether.society.ui.scenario.ScenarioSanityValidator;
-import org.ether.society.ui.scenario.ScenarioDefaultValueManager;
-import org.ether.society.ui.scenario.ScenarioLiveDiagnosticSection;
-import org.ether.society.ui.scenario.ScenarioPlanetSyncManager;
-import org.ether.society.ui.scenario.ScenarioSpatiotemporalSectionBuilder;
-import org.ether.society.ui.scenario.ScenarioClimateEventModel;
-import org.ether.society.ui.scenario.ScenarioBundleManager;
-import org.ether.society.ui.scenario.ScenarioEpochCatalog;
-import org.ether.society.ui.scenario.ScenarioPresetManager;
-import org.ether.society.ui.scenario.ScenarioSimulationLauncher;
-import org.ether.society.ui.scenario.ScenarioSpatialBoundsSectionBuilder;
-import org.ether.society.ui.scenario.ScenarioThermodynamicAutocalc;
-import org.ether.society.ui.scenario.ScenarioValidationHelper;
-
-import org.ether.society.database.H3Cell;
-import org.ether.society.model.Biome;
-import org.ether.society.model.EcologyPreset;
-import org.ether.society.model.Scenario;
-import org.ether.society.model.StartDatePreset;
-import org.ether.society.i18n.I18n;
-import org.ether.society.ui.util.LaTeXFormatter;
-import org.ether.society.generation.PlanetPreset;
-import org.ether.society.generation.ProceduralGenerator;
-import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
-import org.ether.society.ui.scenario.ScenarioCulturalSectionBuilder;
-import org.ether.society.ui.scenario.ScenarioDemographicSectionBuilder;
-import org.ether.society.ui.scenario.ScenarioPreviewPaneBuilder;
-import javafx.util.StringConverter;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.ComboBoxTableCell;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import org.ether.society.database.H3Cell;
+import org.ether.society.generation.PlanetPreset;
+import org.ether.society.i18n.I18n;
+import org.ether.society.model.EcologyPreset;
+import org.ether.society.model.Scenario;
+import org.ether.society.ui.scenario.ScenarioBundleManager;
+import org.ether.society.ui.scenario.ScenarioClimateEventModel;
+import org.ether.society.ui.scenario.ScenarioConfigPaneBuilder;
+import org.ether.society.ui.scenario.ScenarioCulturalSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioDefaultValueManager;
+import org.ether.society.ui.scenario.ScenarioDemographicSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioEngineConfigSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioEpochCatalog;
+import org.ether.society.ui.scenario.ScenarioEventsSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioLiveDiagnosticSection;
+import org.ether.society.ui.scenario.ScenarioPlanetSyncManager;
+import org.ether.society.ui.scenario.ScenarioPresetManager;
+import org.ether.society.ui.scenario.ScenarioPreviewPaneBuilder;
+import org.ether.society.ui.scenario.ScenarioSanityValidator;
+import org.ether.society.ui.scenario.ScenarioSimulationLauncher;
+import org.ether.society.ui.scenario.ScenarioSnapshotInspector;
+import org.ether.society.ui.scenario.ScenarioSpatialBoundsSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioSpatiotemporalSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioThermodynamicAutocalc;
+import org.ether.society.ui.scenario.ScenarioValidationHelper;
+import org.ether.society.ui.util.ScenarioCellPopulationDistributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Panel for setting up civilization, initial population distribution, historical scenarios,
  * and civilizational start parameters.
+ *
+ * <p>Coordinates delegated autonomous section builders for planetary synchronization, spatiotemporal
+ * boundaries, population distribution, cultural multi-tensors, physics engine configurations, and scheduled
+ * historical perturbations.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 public class ScenarioSetupPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioSetupPanel.class);
-    private final java.util.Map<String, WritableImage> proceduralImageCache = new java.util.HashMap<>();
 
-    // Inherited Presets Header
-    private Label planetSectionHeader;
-    private ComboBox<PlanetPreset> planetPresetCombo;
-    private ComboBox<EcologyPreset> ecologyPresetCombo;
+    // Inherited Presets Controls
+    ComboBox<PlanetPreset> planetPresetCombo;
+    ComboBox<EcologyPreset> ecologyPresetCombo;
     private Label inheritedContextLabel;
 
     // Standardized Preset Bar for Scenarios
     private Label scenarioPresetHeader;
-    private Label snapshotHeader;
-    private Label bundleHeader;
-    private PresetControlBar<Scenario> scenarioPresetBar;
+    PresetControlBar<Scenario> scenarioPresetBar;
     private Button btnAutoEpochScenario;
     private VBox bottomActionBox;
 
     // Form Controls
     private Label scenarioDescLabel;
-    private TextArea scenarioDescriptionArea;
-    private Spinner<Integer> startYearSpinner;
-    private Spinner<Integer> endYearSpinner;
-    private ComboBox<Integer> h3ResolutionCombo;
-    private Label h3ResolutionLabel;
-    private Label h3ResolutionHintLabel;
+    TextArea scenarioDescriptionArea;
+    Spinner<Integer> startYearSpinner;
+    Spinner<Integer> endYearSpinner;
+    ComboBox<Integer> h3ResolutionCombo;
     private Spinner<Integer> targetCohortSizeSpinner;
-    private Label cohortSizeLabel;
-    private Label cohortSizeHintLabel;
     private ComboBox<Double> temporalResolutionCombo;
-    private Label temporalResolutionLabel;
-    private Label temporalResolutionHintLabel;
-    private Label snapshotAutoPruningNotice;
 
     // State & Change Listener Tracking
-    /** Internal state: is updating from preset (boolean). */
-    private boolean isUpdatingFromPreset = false;
+    boolean isUpdatingFromPreset = false;
 
-    private void notifyParamChange() {
+    // Delegated Section Builders and Managers
+    final ScenarioPlanetSyncManager planetSyncManager = new ScenarioPlanetSyncManager(ScenarioHostContextFactory.createPlanetSyncHostContext(this));
+    final ScenarioSpatiotemporalSectionBuilder spatiotemporalSectionBuilder = new ScenarioSpatiotemporalSectionBuilder(ScenarioHostContextFactory.createSpatiotemporalHostContext(this));
+    final ScenarioSpatialBoundsSectionBuilder spatialBoundsBuilder = new ScenarioSpatialBoundsSectionBuilder(ScenarioHostContextFactory.createSpatialBoundsHostContext(this));
+    final ScenarioBundleManager bundleManager = new ScenarioBundleManager(ScenarioHostContextFactory.createBundleHostContext(this));
+    final ScenarioDemographicSectionBuilder demographicSectionBuilder = new ScenarioDemographicSectionBuilder(ScenarioHostContextFactory.createDemographicHostContext(this));
+    final ScenarioCulturalSectionBuilder culturalSectionBuilder = new ScenarioCulturalSectionBuilder(ScenarioHostContextFactory.createCulturalHostContext(this));
+    final ScenarioPreviewPaneBuilder previewPaneBuilder = new ScenarioPreviewPaneBuilder(ScenarioHostContextFactory.createPreviewPaneHostContext(this));
+    private ScenarioEngineConfigSectionBuilder engineConfigSectionBuilder;
+    final ScenarioSimulationLauncher simulationLauncher;
+    final ScenarioPresetManager presetManager;
+    private final ScenarioLiveDiagnosticSection liveDiagnosticSection = new ScenarioLiveDiagnosticSection();
+    private final ScenarioSnapshotInspector snapshotInspector = new ScenarioSnapshotInspector(meta -> {
+        updateStartButtonLabel();
+        notifyParamChange();
+    });
+
+    // Map Preview Controls
+    ComboBox<String> previewModeCombo;
+    private ToggleButton btnReliefOverlay;
+    Label previewStatusLabel;
+
+    // Execution & Calculation Controls
+    private ProgressBar progressBar;
+    private Label progressStatusLabel;
+    private Button startBtn;
+    private Button generateBtn;
+
+    // State
+    List<H3Cell> currentPreviewCells;
+    PlanetPreset activePlanetPreset;
+    private final Consumer<Scenario> onStartSimulation;
+    private final org.ether.society.persistence.ScenarioRepository scenarioRepo;
+    BiConsumer<PlanetPreset, EcologyPreset> onScenarioLoadedCallback;
+    Supplier<Boolean> isSimulationRunningSupplier;
+
+    // UI Titles & Labels
+    private Label headerLabel;
+    private ScrollPane configScroll;
+    VBox validationErrorBanner;
+    private Label validationBannerHeaderLabel;
+    Label validationErrorLabel;
+
+    // Seed & Random Events Controls
+    TextField demoSeedField;
+    TextField cultSeedField;
+    private CheckBox randomEventsCheckBox;
+    private CheckBox earthLeadersCheckBox;
+    private CheckBox proceduralLeadersCheckBox;
+
+    // Events section
+    private ScenarioEventsSectionBuilder eventsSectionBuilder;
+    private ObservableList<ClimateEvent> eventsList;
+    private RadioButton radioNewSimulation;
+
+    private Supplier<PlanetGeneratorPanel> planetPanelSupplier;
+    private Supplier<ResourceDistributionPanel> resourcePanelSupplier;
+
+    public void setIsSimulationRunningSupplier(Supplier<Boolean> isSimulationRunningSupplier) {
+        this.isSimulationRunningSupplier = isSimulationRunningSupplier;
+    }
+
+    /** Internal model for a scheduled planetary event */
+    public static class ClimateEvent extends ScenarioClimateEventModel {
+        public ClimateEvent(String type, String name, int year, double lat, double lon, double depth, double mag) {
+            super(type, name, year, lat, lon, depth, mag);
+        }
+    }
+
+    public boolean isDirty() {
+        return presetManager != null && presetManager.isDirty();
+    }
+
+    public boolean promptSaveIfDirty(javafx.stage.Window owner) {
+        return presetManager == null || presetManager.promptSaveIfDirty(owner);
+    }
+
+    public PresetControlBar<Scenario> getPresetBar() {
+        return presetManager != null ? presetManager.getPresetBar() : scenarioPresetBar;
+    }
+
+    public ScenarioSetupPanel(Consumer<Scenario> onStartSimulation) {
+        this.onStartSimulation = onStartSimulation;
+        this.scenarioRepo = new org.ether.society.persistence.ScenarioRepository();
+        this.presetManager = ScenarioHostContextFactory.createPresetManager(this, this.scenarioRepo);
+        this.simulationLauncher = ScenarioHostContextFactory.createSimulationLauncher(this, this.scenarioRepo, onStartSimulation);
+        initUI();
+        updateTexts();
+
+        I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
+        
+        org.ether.society.data.sync.GitHubContentSyncService.addListener(new org.ether.society.data.sync.GitHubContentSyncService.SyncEventListener() {
+            @Override
+            public void onSyncCompleted(int downloaded, int checked) {
+                if (downloaded > 0) refreshScenarioPresets();
+            }
+            @Override
+            public void onScenarioDiscovered(String name) {
+                refreshScenarioPresets();
+            }
+        });
+
+        javafx.application.Platform.runLater(this::loadEarthHistoricalEvents);
+    }
+
+    void notifyParamChange() {
         if (!isUpdatingFromPreset && scenarioPresetBar != null) {
             scenarioPresetBar.notifyParametersChanged();
         }
@@ -121,12 +199,7 @@ public class ScenarioSetupPanel extends BorderPane {
         validateScenarioSetup();
     }
 
-    /**
-     * Attaches default value handling to a JavaFX control:
-     * 1. Appends "[DEFAULT VALUE: X]" to the tooltip.
-     * 2. Adds a right-click Context Menu ("Reset to default value (X)").
-     */
-    private <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
+    <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
         ScenarioDefaultValueManager.attachDefaultValueHandling(control, defaultValue, resetAction, this::notifyParamChange);
     }
 
@@ -149,16 +222,12 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    private void highlightControlIfModified(Control control, boolean isModified) {
-        ScenarioDefaultValueManager.highlightControlIfModified(control, isModified);
-    }
-
     public void resetAllToDefaults() {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
         try {
             Scenario def = new Scenario();
-            def.setName(org.ether.society.i18n.I18n.getOrDefault("scenario.default_name", "New Baseline Scenario"));
+            def.setName(I18n.getOrDefault("scenario.default_name", "New Baseline Scenario"));
             applyScenarioToUI(def);
         } finally {
             isUpdatingFromPreset = oldUpdating;
@@ -170,312 +239,6 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    // Delegated Section Builders and Managers
-    private final ScenarioPlanetSyncManager planetSyncManager = new ScenarioPlanetSyncManager(new ScenarioPlanetSyncManager.HostContext() {
-        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
-        @Override public void generatePreview() { ScenarioSetupPanel.this.generatePreview(); }
-        @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
-        @Override public boolean hasPreviewCells() { return currentPreviewCells != null && !currentPreviewCells.isEmpty(); }
-    });
-
-    private final ScenarioSpatiotemporalSectionBuilder spatiotemporalSectionBuilder = new ScenarioSpatiotemporalSectionBuilder(new ScenarioSpatiotemporalSectionBuilder.HostContext() {
-        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
-        @Override public void loadEarthHistoricalEvents() { ScenarioSetupPanel.this.loadEarthHistoricalEvents(); }
-        @Override public <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
-            ScenarioSetupPanel.this.attachDefaultValueHandling(control, defaultValue, resetAction);
-        }
-    });
-
-    private final ScenarioSpatialBoundsSectionBuilder spatialBoundsBuilder = new ScenarioSpatialBoundsSectionBuilder(new ScenarioSpatialBoundsSectionBuilder.HostContext() {
-        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
-        @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
-        @Override public void resetPreviewCells() { ScenarioSetupPanel.this.currentPreviewCells = null; }
-        @Override public <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
-            ScenarioSetupPanel.this.attachDefaultValueHandling(control, defaultValue, resetAction);
-        }
-    });
-
-    private final ScenarioBundleManager bundleManager = new ScenarioBundleManager(new ScenarioBundleManager.HostContext() {
-        @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
-        @Override public PlanetPreset getActivePlanetPreset() { return ScenarioSetupPanel.this.activePlanetPreset != null ? ScenarioSetupPanel.this.activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null); }
-        @Override public EcologyPreset getActiveEcologyPreset() { return ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null; }
-        @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
-        @Override public void applyScenarioToUI(Scenario scenario) { ScenarioSetupPanel.this.applyScenarioToUI(scenario); }
-        @Override public void onBundleLoaded(PlanetPreset planet, EcologyPreset ecology) {
-            if (planet != null) {
-                ScenarioSetupPanel.this.activePlanetPreset = planet;
-                if (planetPresetCombo != null) {
-                    if (!planetPresetCombo.getItems().contains(planet)) {
-                        planetPresetCombo.getItems().add(planet);
-                    }
-                    planetPresetCombo.setValue(planet);
-                }
-            }
-            if (ecology != null && ecologyPresetCombo != null) {
-                if (!ecologyPresetCombo.getItems().contains(ecology)) {
-                    ecologyPresetCombo.getItems().add(ecology);
-                }
-                ecologyPresetCombo.setValue(ecology);
-            }
-            if (onScenarioLoadedCallback != null) {
-                onScenarioLoadedCallback.accept(ScenarioSetupPanel.this.activePlanetPreset, ecology != null ? ecology : EcologyPreset.EARTH_STANDARD);
-            }
-        }
-        @Override public void generatePreview() { ScenarioSetupPanel.this.generatePreview(); }
-        @Override public void showIntegrityWarning(String message) {
-            if (validationErrorLabel != null && validationErrorBanner != null) {
-                validationErrorLabel.setText(message);
-                validationErrorBanner.setVisible(true);
-                validationErrorBanner.setManaged(true);
-            }
-        }
-    });
-
-    private final ScenarioSimulationLauncher simulationLauncher;
-
-    private ScenarioSimulationLauncher createSimulationLauncher() {
-        return new ScenarioSimulationLauncher(
-            new ScenarioSimulationLauncher.HostContext() {
-                @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
-                @Override public javafx.scene.Node getContainerNode() { return ScenarioSetupPanel.this; }
-                @Override public boolean validateScenarioSetup() { return ScenarioSetupPanel.this.validateScenarioSetup(); }
-                @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
-                @Override public PlanetPreset getActivePlanetPreset() { return ScenarioSetupPanel.this.activePlanetPreset != null ? ScenarioSetupPanel.this.activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null); }
-                @Override public EcologyPreset getActiveEcologyPreset() { return ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null; }
-                @Override public Integer getH3Resolution() { return h3ResolutionCombo != null ? h3ResolutionCombo.getValue() : 3; }
-                @Override public boolean isClippingActive() { return spatialBoundsBuilder.isClippingEnabled(); }
-                @Override public double getClippingMinLat() { return spatialBoundsBuilder.getMinLat(); }
-                @Override public double getClippingMaxLat() { return spatialBoundsBuilder.getMaxLat(); }
-                @Override public double getClippingMinLng() { return spatialBoundsBuilder.getMinLng(); }
-                @Override public double getClippingMaxLng() { return spatialBoundsBuilder.getMaxLng(); }
-                @Override public boolean isResumeFromSnapshotSelected() { return ScenarioSetupPanel.this.isResumeFromSnapshotSelected(); }
-                @Override public org.ether.society.persistence.SaveMetadata getSelectedSnapshotMetadata() { return ScenarioSetupPanel.this.getSelectedSnapshotMetadata(); }
-                @Override public boolean isSimulationCurrentlyRunning() { return isSimulationRunningSupplier != null && Boolean.TRUE.equals(isSimulationRunningSupplier.get()); }
-                @Override public boolean isDirty() { return ScenarioSetupPanel.this.isDirty(); }
-                @Override public boolean promptSaveIfDirty(javafx.stage.Window owner) { return ScenarioSetupPanel.this.promptSaveIfDirty(owner); }
-                @Override public void distributeInitialPopulation(List<H3Cell> cells) { ScenarioSetupPanel.this.distributeInitialPopulation(cells); }
-                @Override public void onCellsGenerated(List<H3Cell> cells) { ScenarioSetupPanel.this.currentPreviewCells = cells; }
-                @Override public void markClean() { if (scenarioPresetBar != null) scenarioPresetBar.markClean(); }
-                @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
-                @Override public void setPreviewStatusText(String text) { if (previewStatusLabel != null) previewStatusLabel.setText(text); }
-            },
-            scenarioRepo,
-            scenario -> { if (onStartSimulation != null) onStartSimulation.accept(scenario); }
-        );
-    }
-
-    // Demographic Section Builder & Controller
-    private final ScenarioDemographicSectionBuilder demographicSectionBuilder = new ScenarioDemographicSectionBuilder(new ScenarioDemographicSectionBuilder.HostContext() {
-        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
-        @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
-        @Override public void selectPreviewMode(int modeIndex) {
-            if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != modeIndex) {
-                previewModeCombo.getSelectionModel().select(modeIndex);
-            }
-        }
-        @Override public List<H3Cell> getPreviewCells() { return ScenarioSetupPanel.this.getCells(); }
-        @Override public void distributeInitialPopulation(List<H3Cell> cells) { ScenarioSetupPanel.this.distributeInitialPopulation(cells); }
-        @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
-        @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null); }
-        @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
-        @Override public boolean isUpdatingFromPreset() { return isUpdatingFromPreset; }
-        @Override public long getStartYear() { return startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue().longValue() : -8000L; }
-        @Override public double computeAutoCapitalFromYear(long year) { return ScenarioSetupPanel.this.computeAutoCapitalFromYear(year); }
-        @Override public void generatePreview() { ScenarioSetupPanel.this.generatePreview(); }
-        @Override public void updatePreviewTitleText() { ScenarioSetupPanel.this.updatePreviewTitleText(); }
-        @Override public void updateBottomLegend() { ScenarioSetupPanel.this.updateBottomLegend(); }
-    });
-
-    // Cultural Vector & Multi-Field Layer Controls (Tab 3)
-    private final ScenarioCulturalSectionBuilder culturalSectionBuilder = new ScenarioCulturalSectionBuilder(new ScenarioCulturalSectionBuilder.HostContext() {
-        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
-        @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
-        @Override public void updatePreviewModesCombo() { ScenarioSetupPanel.this.updatePreviewModesCombo(); }
-        @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
-        @Override public long getStartYear() { return startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -100000L; }
-        @Override public PlanetPreset getActivePlanetPreset() { return ScenarioSetupPanel.this.activePlanetPreset; }
-        @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
-        @Override public boolean isUpdatingFromPreset() { return isUpdatingFromPreset; }
-        @Override public void selectPreviewMode(int modeIndex) {
-            if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != modeIndex) {
-                previewModeCombo.getSelectionModel().select(modeIndex);
-            }
-        }
-        @Override public String getScenarioDescription() {
-            return scenarioDescriptionArea != null ? scenarioDescriptionArea.getText() : "Ether Scenario";
-        }
-    });
-
-// Map Preview Subsystem Builder & Controller
-private final ScenarioPreviewPaneBuilder previewPaneBuilder = new ScenarioPreviewPaneBuilder(new ScenarioPreviewPaneBuilder.HostContext() {
-    @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
-    @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null); }
-    @Override public long getStartYear() { return startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000L; }
-    @Override public int getCultureVectorDimensions() { return culturalSectionBuilder != null ? culturalSectionBuilder.getCultureVectorDimensions() : 9; }
-    @Override public double getCulturalDiffusionRate() { return culturalSectionBuilder != null ? culturalSectionBuilder.getCulturalDiffusionRate() : 0.05; }
-    @Override public double getCulturalMutationRate() { return culturalSectionBuilder != null ? culturalSectionBuilder.getCulturalMutationRate() : 0.02; }
-    @Override public Image getCustomTensorImage(int index) { return culturalSectionBuilder != null ? culturalSectionBuilder.getCustomTensorImage(index) : null; }
-    @Override public boolean isTensorImportActive(int index) { return culturalSectionBuilder != null && culturalSectionBuilder.isTensorImportActive(index); }
-    @Override public double getTensorParam1(int index) { return culturalSectionBuilder != null ? culturalSectionBuilder.getTensorParam1(index) : 1.0; }
-    @Override public double getTensorParam2(int index) { return culturalSectionBuilder != null ? culturalSectionBuilder.getTensorParam2(index) : 1.0; }
-    @Override public double getTensorParam3(int index) { return culturalSectionBuilder != null ? culturalSectionBuilder.getTensorParam3(index) : 1.0; }
-    @Override public long getTensorSeed(int index) { return culturalSectionBuilder != null ? culturalSectionBuilder.getTensorSeed(index) : (11235L + index * 11111L); }
-    @Override public Color evaluateProceduralTensorColor(int tIdx, double lat, double lon, double elev, double p1, double p2, double p3, long seed) {
-        return culturalSectionBuilder != null ? culturalSectionBuilder.evaluateProceduralTensorColor(tIdx, lat, lon, elev, p1, p2, p3, seed) : Color.GRAY;
-    }
-    @Override public String getCulturalTensorTitle(int index) { return culturalSectionBuilder != null ? culturalSectionBuilder.getCulturalTensorTitle(index) : ""; }
-    @Override public String getCulturalTensorPreviewName(int index) { return culturalSectionBuilder != null ? culturalSectionBuilder.getCulturalTensorPreviewName(index) : ""; }
-    @Override public Image getCustomDensityImage() { return demographicSectionBuilder != null ? demographicSectionBuilder.getCustomDensityImage() : null; }
-    @Override public boolean isDensityImportActive() { return demographicSectionBuilder != null && demographicSectionBuilder.isDensityImportActive(); }
-    @Override public long getInitialHumanCount() { return demographicSectionBuilder != null ? demographicSectionBuilder.getInitialHumanCount() : 1_000_000L; }
-    @Override public String getDensityPattern() { return demographicSectionBuilder != null ? demographicSectionBuilder.getDensityPattern() : "UNBIASED_NATURAL"; }
-    @Override public String getDemoSeed() { return demoSeedField != null ? demoSeedField.getText() : ""; }
-    @Override public String getCultSeed() { return cultSeedField != null ? cultSeedField.getText() : ""; }
-    @Override public int getH3Resolution() { return h3ResolutionCombo != null && h3ResolutionCombo.getValue() != null ? h3ResolutionCombo.getValue() : 3; }
-    @Override public boolean isUpdatingFromPreset() { return isUpdatingFromPreset; }
-    @Override public double computeAutoCapitalFromYear(long year) { return ScenarioSetupPanel.this.computeAutoCapitalFromYear(year); }
-    @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
-    @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
-    @Override public void applySpatialClippingBounds(double minLat, double maxLat, double minLon, double maxLon) {
-        spatialBoundsBuilder.applySpatialClippingBounds(minLat, maxLat, minLon, maxLon);
-    }
-    @Override public boolean isGraphicSelectActive() { return spatialBoundsBuilder.isGraphicSelectActive(); }
-    @Override public void setGraphicSelectActive(boolean active) { spatialBoundsBuilder.setGraphicSelectActive(active); }
-    @Override public double getClippingMinLat() { return spatialBoundsBuilder.getMinLat(); }
-    @Override public double getClippingMaxLat() { return spatialBoundsBuilder.getMaxLat(); }
-    @Override public double getClippingMinLng() { return spatialBoundsBuilder.getMinLng(); }
-    @Override public double getClippingMaxLng() { return spatialBoundsBuilder.getMaxLng(); }
-    @Override public boolean isClippingEnabled() { return spatialBoundsBuilder.isClippingEnabled(); }
-    @Override public Image getElevationImageForPreset(PlanetPreset preset) { return ScenarioSetupPanel.this.getElevationImageForPreset(preset); }
-    @Override public void applyPresetMapToCells(List<H3Cell> cells, PlanetPreset cfg) { simulationLauncher.applyPresetMapToCells(cells, cfg, getScenario()); }
-    @Override public void onPreviewCellsGenerated(List<H3Cell> cells) { ScenarioSetupPanel.this.currentPreviewCells = cells; }
-});
-
-// Map Preview
-private Canvas previewCanvas;
-    private ComboBox<String> previewModeCombo;
-    private ToggleButton btnReliefOverlay;
-    private Label previewStatusLabel;
-
-    // Execution & Calculation Controls
-    private ProgressBar progressBar;
-    private Label progressStatusLabel;
-    private Button startBtn;
-    private Button generateBtn;
-
-    // State
-    private List<H3Cell> currentPreviewCells;
-    private PlanetPreset activePlanetPreset;
-    private final Consumer<Scenario> onStartSimulation;
-    private final org.ether.society.persistence.ScenarioRepository scenarioRepo;
-    private final ScenarioPresetManager presetManager;
-    private final ScenarioLiveDiagnosticSection liveDiagnosticSection = new ScenarioLiveDiagnosticSection();
-
-    // UI Titles & Labels
-    private Label headerLabel;
-    private Label previewTitleLabel;
-    private ScrollPane configScroll;
-    private VBox validationErrorBanner;
-    private Label validationBannerHeaderLabel;
-    private Label validationErrorLabel;
-
-    // Seed & Random Events Controls
-    private TextField demoSeedField;
-    private TextField cultSeedField;
-    private CheckBox randomEventsCheckBox;
-    private CheckBox randomBiophysicalEventsCheckBox;
-    private CheckBox randomPoliticalEventsCheckBox;
-    private CheckBox earthLeadersCheckBox;
-    private CheckBox proceduralLeadersCheckBox;
-
-    // Events section
-    private org.ether.society.ui.scenario.ScenarioEventsSectionBuilder eventsSectionBuilder;
-    private ObservableList<ClimateEvent> eventsList;
-
-    // Snapshot Management
-    private RadioButton radioNewSimulation;
-    private java.util.function.Supplier<Boolean> isSimulationRunningSupplier;
-
-    public void setIsSimulationRunningSupplier(java.util.function.Supplier<Boolean> isSimulationRunningSupplier) {
-        this.isSimulationRunningSupplier = isSimulationRunningSupplier;
-    }
-
-    /** Internal model for a scheduled planetary event */
-    public static class ClimateEvent extends ScenarioClimateEventModel {
-        public ClimateEvent(String type, String name, int year, double lat, double lon, double depth, double mag) {
-            super(type, name, year, lat, lon, depth, mag);
-        }
-    }
-
-    /**
-     * Scenario setup panel.
-     *
-     * @param onStartSimulation the on start simulation parameter (Consumer&lt;Scenario&gt;)
-     */
-    private ScenarioPresetManager createPresetManager() {
-        return new ScenarioPresetManager(new ScenarioPresetManager.HostContext() {
-            @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
-            @Override public boolean validateScenarioSetup() { return ScenarioSetupPanel.this.validateScenarioSetup(); }
-            @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
-            @Override public void applyScenarioToUI(Scenario s) { ScenarioSetupPanel.this.applyScenarioToUI(s); }
-            @Override public void selectPreviewMode(int modeIndex) {
-                if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != modeIndex) {
-                    previewModeCombo.getSelectionModel().select(modeIndex);
-                }
-            }
-            @Override public void refreshSnapshotList() { ScenarioSetupPanel.this.refreshSnapshotList(); }
-            @Override public void refreshSnapshotListForScenario(Scenario s) { ScenarioSetupPanel.this.refreshSnapshotListForScenario(s); }
-            @Override public void updateStartButtonLabel() { ScenarioSetupPanel.this.updateStartButtonLabel(); }
-            @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
-        }, this.scenarioRepo);
-    }
-
-    public boolean isDirty() {
-        return presetManager != null && presetManager.isDirty();
-    }
-
-    public boolean promptSaveIfDirty(javafx.stage.Window owner) {
-        return presetManager == null || presetManager.promptSaveIfDirty(owner);
-    }
-
-    public PresetControlBar<Scenario> getPresetBar() {
-        return presetManager != null ? presetManager.getPresetBar() : scenarioPresetBar;
-    }
-
-    public ScenarioSetupPanel(Consumer<Scenario> onStartSimulation) {
-        this.onStartSimulation = onStartSimulation;
-        this.scenarioRepo = new org.ether.society.persistence.ScenarioRepository();
-        this.presetManager = createPresetManager();
-        this.simulationLauncher = createSimulationLauncher();
-        initUI();
-        updateTexts();
-
-        org.ether.society.i18n.I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
-        
-        org.ether.society.data.sync.GitHubContentSyncService.addListener(new org.ether.society.data.sync.GitHubContentSyncService.SyncEventListener() {
-            @Override
-            public void onSyncCompleted(int downloaded, int checked) {
-                if (downloaded > 0) {
-                    refreshScenarioPresets();
-                }
-            }
-            @Override
-            public void onScenarioDiscovered(String name) {
-                refreshScenarioPresets();
-            }
-        });
-
-        javafx.application.Platform.runLater(() -> {
-            loadEarthHistoricalEvents();
-        });
-    }
-
-    /**
-     * Set inherited context.
-     *
-     * @param planetPreset the planet preset parameter (PlanetPreset)
-     * @param ecologyName the ecology name parameter (String)
-     */
     public void setInheritedContext(PlanetPreset planetPreset, String ecologyName) {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -496,7 +259,6 @@ private Canvas previewCanvas;
         getStyleClass().add("glass-panel");
         setStyle("-fx-background-color: transparent;");
 
-        // Left: Configuration Controls with pinned bottom action bar
         VBox configPane = createConfigPane();
         configPane.setPrefWidth(480);
         configPane.setMinWidth(480);
@@ -518,9 +280,7 @@ private Canvas previewCanvas;
             leftSidebar.setBottom(bottomActionBox);
         }
 
-        // Right: Preview Area
         VBox previewPane = createPreviewPane();
-
         setLeft(leftSidebar);
         setCenter(previewPane);
     }
@@ -554,9 +314,9 @@ private Canvas previewCanvas;
         targetCohortSizeSpinner = spatiotemporalSectionBuilder.getTargetCohortSizeSpinner();
         temporalResolutionCombo = spatiotemporalSectionBuilder.getTemporalResolutionCombo();
 
-        VBox popSection = createPopulationDensitySection();
+        VBox popSection = demographicSectionBuilder.buildSection();
         VBox cultureSection = createCulturalVectorAndLayersSection();
-        VBox clippingSection = createClippingSection();
+        VBox clippingSection = spatialBoundsBuilder.buildSection();
         VBox oceanOptSection = createOceanOptimizationSection();
         VBox eventsSection = createEventsSection();
 
@@ -607,7 +367,7 @@ private Canvas previewCanvas;
         scenarioPresetHeader = new Label(I18n.getOrDefault("scenario.section.presets", "🎛️ GLOBAL PRESETS & SCENARIO SAVE"));
         VBox scenarioPresetSection = ScenarioConfigPaneBuilder.buildScenarioPresetSection(scenarioPresetHeader, scenarioPresetBar, btnAutoEpochScenario, scenarioDescLabel, scenarioDescriptionArea);
         VBox snapshotSection = createSnapshotSection();
-        VBox bundleSection = createBundleSection();
+        VBox bundleSection = bundleManager.buildSection();
         bottomActionBox = ScenarioConfigPaneBuilder.buildBottomActionBox(progressBar, progressStatusLabel, startBtn);
 
         VBox root = ScenarioConfigPaneBuilder.assembleConfigPane(
@@ -622,16 +382,6 @@ private Canvas previewCanvas;
         }
         return root;
     }
-
-    private VBox createBundleSection() {
-        return bundleManager.buildSection();
-    }
-
-    private final org.ether.society.ui.scenario.ScenarioSnapshotInspector snapshotInspector =
-            new org.ether.society.ui.scenario.ScenarioSnapshotInspector(meta -> {
-                updateStartButtonLabel();
-                notifyParamChange();
-            });
 
     private VBox createSnapshotSection() {
         ToggleGroup modeGroup = new ToggleGroup();
@@ -670,11 +420,7 @@ private Canvas previewCanvas;
         return snapshotInspector.getSelectedSnapshotId();
     }
 
-    private void updateSnapshotDetailsDisplay(org.ether.society.persistence.SaveMetadata meta) {
-        snapshotInspector.updateSnapshotDetailsDisplay(meta);
-    }
-
-    private void updateStartButtonLabel() {
+    void updateStartButtonLabel() {
         if (startBtn == null) return;
         boolean dirty = isDirty();
         Scenario s = getScenario();
@@ -692,10 +438,6 @@ private Canvas previewCanvas;
 
         snapshotInspector.setResumeDisabled(!snapshotInspector.hasSnapshots());
         snapshotInspector.updateStartButtonContext(startBtn, startYr, endYr);
-    }
-
-    private void runPreFlightSanityCheck() {
-        updateLiveDiagnosticBlock();
     }
 
     private void updateLiveDiagnosticBlock() {
@@ -716,21 +458,13 @@ private Canvas previewCanvas;
                 elevImg,
                 demographicSectionBuilder != null ? demographicSectionBuilder.getCustomDensityImage() : null,
                 dimsCount,
-                culturalSectionBuilder != null ? culturalSectionBuilder.getCustomTensorImages() : java.util.Collections.emptyMap(),
+                culturalSectionBuilder != null ? culturalSectionBuilder.getCustomTensorImages() : Collections.emptyMap(),
                 culturalSectionBuilder != null ? culturalSectionBuilder::getCulturalTensorTitle : i -> "Cultural Tensor #" + (i + 1),
                 startY,
                 initPop,
                 getScenarioValidationErrors(),
                 ScenarioSanityValidator.getOrCreateJitReport()
         );
-    }
-
-    private List<Scenario> getBuiltInScenarios() {
-        return presetManager != null ? presetManager.getBuiltInScenarios() : java.util.Collections.emptyList();
-    }
-
-    private void updateInheritedContextDisplay(String ecologyName) {
-        planetSyncManager.updateInheritedContextDisplay(ecologyName);
     }
 
     public void applyScenarioToUI(Scenario s) {
@@ -744,7 +478,6 @@ private Canvas previewCanvas;
                 scenarioDescriptionArea.setText(s.getDescription() != null ? s.getDescription() : "");
             }
 
-            // Determine if planet is Earth
             boolean isEarth = true;
             if (s.getPlanetPreset() != null) {
                 isEarth = "earth".equalsIgnoreCase(s.getPlanetPreset().getCanonicalPlanet());
@@ -752,14 +485,12 @@ private Canvas previewCanvas;
                 isEarth = "earth".equalsIgnoreCase(activePlanetPreset.getCanonicalPlanet());
             }
 
-            // Lazy populate cartographic buffer maps asynchronously if not already generated (only for Earth)
             if (isEarth && s.getCustomDensityBase64() == null) {
                 java.util.concurrent.CompletableFuture.runAsync(() -> {
                     org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(s);
                 });
             }
 
-            // Select Ecology Preset which cascades to Planet Preset
             if (s.getEcologyPreset() != null && ecologyPresetCombo != null) {
                 ecologyPresetCombo.setValue(s.getEcologyPreset());
             } else if (s.getEcologyPresetName() != null && ecologyPresetCombo != null) {
@@ -779,7 +510,7 @@ private Canvas previewCanvas;
                     planetPresetCombo.setValue(cascaded);
                 }
             }
-            updateInheritedContextDisplay(activeEco != null ? activeEco.name() : null);
+            planetSyncManager.updateInheritedContextDisplay(activeEco != null ? activeEco.name() : null);
 
             spatiotemporalSectionBuilder.applyScenario(s);
             demographicSectionBuilder.applyScenario(s);
@@ -805,13 +536,11 @@ private Canvas previewCanvas;
                 proceduralLeadersCheckBox.setSelected(s.isProceduralLeadersEnabled());
             }
 
-            // Auto-select the demographic reference source combo based on the scenario epoch/planet
             if (demographicSectionBuilder != null && demographicSectionBuilder.getDemoSourceCombo() != null) {
-                String autoSrc = pickDemoSourceForEpoch(s.getStartDateYear(), this.activePlanetPreset);
-                selectBestSource(demographicSectionBuilder.getDemoSourceCombo(), autoSrc, "Terre");
+                String autoSrc = demographicSectionBuilder.pickDemoSourceForEpoch(s.getStartDateYear(), this.activePlanetPreset);
+                ScenarioEpochCatalog.selectBestSource(demographicSectionBuilder.getDemoSourceCombo(), autoSrc, "Terre");
             }
 
-            // Restore Scheduled Events
             if (eventsList != null) {
                 eventsList.clear();
                 if (s.getClimateEvents() != null && !s.getClimateEvents().isEmpty()) {
@@ -840,19 +569,9 @@ private Canvas previewCanvas;
         }
     }
 
-    private VBox createClippingSection() {
-        return spatialBoundsBuilder.buildSection();
-    }
-
-    private void applySpatialClippingBounds(double minLat, double maxLat, double minLon, double maxLon) {
-        spatialBoundsBuilder.applySpatialClippingBounds(minLat, maxLat, minLon, maxLon);
-    }
-
-    private org.ether.society.ui.scenario.ScenarioEngineConfigSectionBuilder engineConfigSectionBuilder;
-
     private VBox createOceanOptimizationSection() {
         if (engineConfigSectionBuilder == null) {
-            engineConfigSectionBuilder = new org.ether.society.ui.scenario.ScenarioEngineConfigSectionBuilder(
+            engineConfigSectionBuilder = new ScenarioEngineConfigSectionBuilder(
                 this::notifyParamChange,
                 className -> {}
             );
@@ -866,25 +585,12 @@ private Canvas previewCanvas;
         return section;
     }
 
-    private String pickDemoSourceForEpoch(long startYear, org.ether.society.generation.PlanetPreset planet) {
-        return demographicSectionBuilder != null ? demographicSectionBuilder.pickDemoSourceForEpoch(startYear, planet) : "";
-    }
-
-    private void selectBestSource(ComboBox<String> combo, String target, String fallbackKeyword) {
-        ScenarioEpochCatalog.selectBestSource(combo, target, fallbackKeyword);
-    }
-
     private VBox createPreviewPane() {
         VBox root = previewPaneBuilder.buildPreviewPane();
-        previewCanvas = previewPaneBuilder.getPreviewCanvas();
         previewModeCombo = previewPaneBuilder.getPreviewModeCombo();
         previewStatusLabel = previewPaneBuilder.getPreviewStatusLabel();
         btnReliefOverlay = previewPaneBuilder.getBtnReliefOverlay();
         return root;
-    }
-
-    private VBox createPopulationDensitySection() {
-        return demographicSectionBuilder.buildSection();
     }
 
     public void generatePreview() {
@@ -893,7 +599,7 @@ private Canvas previewCanvas;
         }
     }
 
-    private void distributeInitialPopulation(List<H3Cell> cells) {
+    void distributeInitialPopulation(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
         long totalPop = demographicSectionBuilder != null ? demographicSectionBuilder.getInitialHumanCount() : 1_000_000L;
         double capitalK0 = computeAutoCapitalFromYear(startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000);
@@ -902,7 +608,7 @@ private Canvas previewCanvas;
                 && "earth".equalsIgnoreCase(activePlanetPreset.elevationMapSource());
         long startYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000;
 
-        org.ether.society.ui.util.ScenarioCellPopulationDistributor.distributeInitialPopulation(
+        ScenarioCellPopulationDistributor.distributeInitialPopulation(
                 cells, totalPop, capitalK0, pattern, isEarthPreset, startYear,
                 demographicSectionBuilder != null ? demographicSectionBuilder.getCustomDensityImage() : null, getScenario()
         );
@@ -932,7 +638,7 @@ private Canvas previewCanvas;
         }
     }
 
-    private Image getElevationImageForPreset(PlanetPreset planet) {
+    Image getElevationImageForPreset(PlanetPreset planet) {
         return planetSyncManager.getElevationImageForPreset(planet);
     }
 
@@ -950,44 +656,20 @@ private Canvas previewCanvas;
 
     private VBox createEventsSection() {
         if (eventsSectionBuilder == null) {
-            eventsSectionBuilder = new org.ether.society.ui.scenario.ScenarioEventsSectionBuilder(eventsList, this::notifyParamChange);
+            eventsSectionBuilder = new ScenarioEventsSectionBuilder(eventsList, this::notifyParamChange);
         }
-        return eventsSectionBuilder.buildEventsSection(randomBiophysicalEventsCheckBox, randomPoliticalEventsCheckBox,
+        return eventsSectionBuilder.buildEventsSection(null, null,
                 () -> startYearSpinner != null ? startYearSpinner.getValue() : -8000);
     }
 
-    private void loadEarthHistoricalEvents() {
+    void loadEarthHistoricalEvents() {
         if (eventsSectionBuilder != null) {
             eventsSectionBuilder.loadEarthBiophysicalEvents(startYearSpinner != null ? startYearSpinner.getValue() : -8000, true);
         }
     }
 
-    private void loadEarthBiophysicalEvents(int startYear, boolean promptConfirmation) {
-        if (eventsSectionBuilder != null) {
-            eventsSectionBuilder.loadEarthBiophysicalEvents(startYear, promptConfirmation);
-        }
-    }
-
-    private void loadEarthLeadersEvents(int startYear, boolean promptConfirmation) {
-        if (eventsSectionBuilder != null) {
-            eventsSectionBuilder.loadHistoricalLeaderInterventions(startYear, promptConfirmation);
-        }
-    }
-
     public static double computeAutoCapitalFromYear(long year) {
         return ScenarioThermodynamicAutocalc.computeAutoCapitalFromYear(year);
-    }
-
-    public static double computeAutoEnergyFromYear(long year) {
-        return ScenarioThermodynamicAutocalc.computeAutoEnergyFromYear(year);
-    }
-
-    public static double computeAutoFoodFromYear(long year) {
-        return ScenarioThermodynamicAutocalc.computeAutoFoodFromYear(year);
-    }
-
-    public static double computeAutoInfoFromYear(long year) {
-        return ScenarioThermodynamicAutocalc.computeAutoInfoFromYear(year);
     }
 
     public void applyEarthPreset() {
@@ -996,14 +678,6 @@ private Canvas previewCanvas;
         }
     }
 
-    // =========================================================================
-    // I18N — Update all UI text based on current language
-    // =========================================================================
-
-    /**
-     * Update texts.
-     *
-     */
     public void updateTexts() {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
@@ -1015,8 +689,6 @@ private Canvas previewCanvas;
             }
             if (scenarioPresetBar != null) scenarioPresetBar.updateTexts();
             if (scenarioDescLabel != null) scenarioDescLabel.setText(I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
-            
-            if (previewTitleLabel != null) previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "🗺️ Resource Cartography & Display"));
             if (startBtn != null) startBtn.setText(I18n.get("scenario.start_btn"));
             if (generateBtn != null) generateBtn.setText(I18n.getOrDefault("scenario.preview_btn", "🔄 Preview Distribution"));
             if (btnReliefOverlay != null) {
@@ -1075,9 +747,8 @@ private Canvas previewCanvas;
         s.setEarthHistoricalLeadersEnabled(earthLeadersCheckBox == null || earthLeadersCheckBox.isSelected());
         s.setProceduralLeadersEnabled(proceduralLeadersCheckBox == null || proceduralLeadersCheckBox.isSelected());
 
-        // Save Scheduled Events
         if (eventsList != null) {
-            java.util.List<org.ether.society.model.ClimateEvent> sEvents = new java.util.ArrayList<>();
+            List<org.ether.society.model.ClimateEvent> sEvents = new ArrayList<>();
             for (ClimateEvent ce : eventsList) {
                 sEvents.add(new org.ether.society.model.ClimateEvent(ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude()));
             }
@@ -1087,29 +758,12 @@ private Canvas previewCanvas;
         return s;
     }
 
-    private java.util.function.BiConsumer<PlanetPreset, EcologyPreset> onScenarioLoadedCallback;
-
-    /**
-     * Sets the callback invoked when a scenario preset or bundle is loaded into the UI.
-     *
-     * @param callback consumer receiving active planet and ecology presets
-     */
-    public void setOnScenarioLoadedCallback(java.util.function.BiConsumer<PlanetPreset, EcologyPreset> callback) {
+    public void setOnScenarioLoadedCallback(BiConsumer<PlanetPreset, EcologyPreset> callback) {
         this.onScenarioLoadedCallback = callback;
     }
 
-    /**
-     * Get cells.
-     *
-     * @return the resulting computation or state reference
-     */
     public List<H3Cell> getCells() { return currentPreviewCells; }
 
-    /**
-     * Set generated cells.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     */
     public void setGeneratedCells(List<H3Cell> cells) {
         this.currentPreviewCells = cells;
         if (cells != null && !cells.isEmpty()) {
@@ -1118,10 +772,6 @@ private Canvas previewCanvas;
         drawPreview();
     }
 
-    /**
-     * Ensure preview generated if needed.
-     *
-     */
     public void ensurePreviewGeneratedIfNeeded() {
         if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
             generatePreview();
@@ -1130,11 +780,6 @@ private Canvas previewCanvas;
         }
     }
 
-    /**
-     * Get scheduled events.
-     *
-     * @return the resulting computation or state reference
-     */
     public List<ClimateEvent> getScheduledEvents() {
         return eventsList != null ? new ArrayList<>(eventsList) : new ArrayList<>();
     }
@@ -1154,32 +799,14 @@ private Canvas previewCanvas;
         }
     }
 
-    private java.util.function.Supplier<PlanetGeneratorPanel> planetPanelSupplier;
-    private java.util.function.Supplier<ResourceDistributionPanel> resourcePanelSupplier;
-
-    /**
-     * Set planet panel supplier.
-     *
-     * @param supplier the supplier parameter (java.util.function.Supplier&lt;PlanetGeneratorPanel&gt;)
-     */
-    public void setPlanetPanelSupplier(java.util.function.Supplier<PlanetGeneratorPanel> supplier) {
+    public void setPlanetPanelSupplier(Supplier<PlanetGeneratorPanel> supplier) {
         this.planetPanelSupplier = supplier;
     }
 
-    /**
-     * Set resource panel supplier.
-     *
-     * @param supplier the supplier parameter (java.util.function.Supplier&lt;ResourceDistributionPanel&gt;)
-     */
-    public void setResourcePanelSupplier(java.util.function.Supplier<ResourceDistributionPanel> supplier) {
+    public void setResourcePanelSupplier(Supplier<ResourceDistributionPanel> supplier) {
         this.resourcePanelSupplier = supplier;
     }
 
-    /**
-     * Get scenario validation errors.
-     *
-     * @return the resulting computation or state reference
-     */
     public List<String> getScenarioValidationErrors() {
         return ScenarioValidationHelper.getValidationErrors(
                 planetPanelSupplier,
@@ -1219,18 +846,18 @@ private Canvas previewCanvas;
 
     public void openAutoEpochScenarioDialog() {
         try {
-        String currentPlanet = activePlanetPreset != null ? activePlanetPreset.getCanonicalPlanet() : "earth";
-        long currentYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue().longValue() : -8000L;
+            String currentPlanet = activePlanetPreset != null ? activePlanetPreset.getCanonicalPlanet() : "earth";
+            long currentYear = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue().longValue() : -8000L;
 
-        AutoEpochScenarioDialog dialog = new AutoEpochScenarioDialog(currentPlanet, currentYear, generatedScenario -> {
-            applyScenarioToUI(generatedScenario);
-            if (scenarioPresetBar != null) {
-                scenarioPresetBar.getPresetCombo().setValue(null);
-                scenarioPresetBar.setNameText(generatedScenario.getName());
-                scenarioPresetBar.markClean(generatedScenario);
-            }
-            notifyParamChange();
-        });
+            AutoEpochScenarioDialog dialog = new AutoEpochScenarioDialog(currentPlanet, currentYear, generatedScenario -> {
+                applyScenarioToUI(generatedScenario);
+                if (scenarioPresetBar != null) {
+                    scenarioPresetBar.getPresetCombo().setValue(null);
+                    scenarioPresetBar.setNameText(generatedScenario.getName());
+                    scenarioPresetBar.markClean(generatedScenario);
+                }
+                notifyParamChange();
+            });
             if (getScene() != null && getScene().getWindow() != null) {
                 dialog.initOwner(getScene().getWindow());
             }
@@ -1239,5 +866,4 @@ private Canvas previewCanvas;
             logger.error("Failed to open AutoEpochScenarioDialog", ex);
         }
     }
-
 }

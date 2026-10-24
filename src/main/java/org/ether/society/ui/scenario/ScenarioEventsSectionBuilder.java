@@ -74,8 +74,10 @@ public class ScenarioEventsSectionBuilder {
     @SuppressWarnings("unchecked")
     public VBox buildEventsSection(CheckBox randomBiophysicalCB, CheckBox randomPoliticalCB,
                                   java.util.function.Supplier<Integer> startYearSupplier) {
-        this.randomBiophysicalEventsCheckBox = randomBiophysicalCB;
-        this.randomPoliticalEventsCheckBox = randomPoliticalCB;
+        this.randomBiophysicalEventsCheckBox = randomBiophysicalCB != null ? randomBiophysicalCB :
+                new CheckBox(I18n.getOrDefault("scenario.events.biophysical_enable", "🌋 Enable random planetary biophysical events (Volcanoes, Earthquakes, Epidemics)"));
+        this.randomPoliticalEventsCheckBox = randomPoliticalCB != null ? randomPoliticalCB :
+                new CheckBox(I18n.getOrDefault("scenario.events.political_enable", "👑 Enable random political & sociological interventions"));
 
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -370,5 +372,13 @@ public class ScenarioEventsSectionBuilder {
 
     public CheckBox getEventsCheckBox() {
         return eventsCheckBox;
+    }
+
+    public CheckBox getRandomBiophysicalEventsCheckBox() {
+        return randomBiophysicalEventsCheckBox;
+    }
+
+    public CheckBox getRandomPoliticalEventsCheckBox() {
+        return randomPoliticalEventsCheckBox;
     }
 }
