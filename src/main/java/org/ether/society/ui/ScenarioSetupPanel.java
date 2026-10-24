@@ -5,6 +5,7 @@
  */
 package org.ether.society.ui;
 
+import org.ether.society.ui.scenario.ScenarioConfigPaneBuilder;
 import org.ether.society.ui.scenario.ScenarioSanityValidator;
 import org.ether.society.ui.scenario.ScenarioDefaultValueManager;
 import org.ether.society.ui.scenario.ScenarioLiveDiagnosticSection;
@@ -285,27 +286,6 @@ public class ScenarioSetupPanel extends BorderPane {
         @Override public void updateBottomLegend() { ScenarioSetupPanel.this.updateBottomLegend(); }
     });
 
-    // Population & Density Controls
-    private Spinner<Long> initialHumanCountSpinner;
-    private ComboBox<String> densityPatternCombo;
-    private ComboBox<Scenario.TechPreset> techPresetCombo;
-    private Spinner<Double> customCapitalSpinner;
-    private Spinner<Double> customEnergySpinner;
-    private Spinner<Double> customFoodSpinner;
-    private Spinner<Double> customInfoSpinner;
-    private VBox customPhysicalSubPanel;
-
-    // Density Map Import/Export Controls
-    private ComboBox<String> demoSourceCombo;
-    private Label demoSourceLabel;
-    private Image customDensityImage;
-    private Label densityMapFileLabel;
-    private Button loadDensityMapBtn;
-    private Button clearDensityMapBtn;
-    private Button demoHelpBtn;
-    private Label densityFormatHintLabel;
-    private Button exportDensityMapBtn;
-
     // Cultural Vector & Multi-Field Layer Controls (Tab 3)
     private final ScenarioCulturalSectionBuilder culturalSectionBuilder = new ScenarioCulturalSectionBuilder(new ScenarioCulturalSectionBuilder.HostContext() {
         @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
@@ -325,29 +305,6 @@ public class ScenarioSetupPanel extends BorderPane {
             return scenarioDescriptionArea != null ? scenarioDescriptionArea.getText() : "Ether Scenario";
         }
     });
-
-    private Spinner<Integer> cultureVectorDimSpinner;
-    private Spinner<Double> culturalDiffusionRateSpinner;
-    private Spinner<Double> culturalMutationRateSpinner;
-    private Image customIsoglossImage;
-    private Image customKinshipImage;
-    private Image customRitualsImage;
-    private Image customSovereigntyImage;
-    private Label isoglossFileLabel;
-    private Label kinshipFileLabel;
-    private Label ritualsFileLabel;
-    private final java.util.Map<Integer, Image> customTensorImages = culturalSectionBuilder.getCustomTensorImages();
-    private final java.util.Map<Integer, String> customTensorNames = culturalSectionBuilder.getCustomTensorNames();
-    private final java.util.Map<Integer, RadioButton> tensorProcRadios = culturalSectionBuilder.getTensorProcRadios();
-    private final java.util.Map<Integer, RadioButton> tensorImportRadios = culturalSectionBuilder.getTensorImportRadios();
-    private final java.util.Map<Integer, Slider> tensorParam1Sliders = culturalSectionBuilder.getTensorParam1Sliders();
-    private final java.util.Map<Integer, Slider> tensorParam2Sliders = culturalSectionBuilder.getTensorParam2Sliders();
-    private final java.util.Map<Integer, Slider> tensorParam3Sliders = culturalSectionBuilder.getTensorParam3Sliders();
-    private final java.util.Map<Integer, TextField> tensorSeedFields = culturalSectionBuilder.getTensorSeedFields();
-    private final java.util.Map<Integer, ComboBox<String>> tensorSourceCombos = culturalSectionBuilder.getTensorSourceCombos();
-    private final java.util.Map<Integer, Button> tensorLoadBtns = culturalSectionBuilder.getTensorLoadBtns();
-    private VBox layersDynamicContainer;
-    private Button culturalHelpBtn;
 
 // Map Preview Subsystem Builder & Controller
 private final ScenarioPreviewPaneBuilder previewPaneBuilder = new ScenarioPreviewPaneBuilder(new ScenarioPreviewPaneBuilder.HostContext() {
@@ -569,123 +526,27 @@ private Canvas previewCanvas;
     }
 
     private VBox createConfigPane() {
-        VBox root = new VBox(15);
-        root.setPadding(new Insets(0, 20, 0, 0));
-
-        headerLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.panel.title", "📜 Scenario Configuration & Setup"));
+        headerLabel = new Label(I18n.getOrDefault("scenario.panel.title", "📜 Scenario Configuration & Setup"));
         headerLabel.getStyleClass().add("label-title");
         headerLabel.setAlignment(Pos.CENTER);
         headerLabel.setMaxWidth(Double.MAX_VALUE);
 
-        validationBannerHeaderLabel = new Label(I18n.getOrDefault("scenario.validation.header_errors", "⚠️ï¸ VALIDATION ERRORS DETECTED — PLEASE CORRECT THE FOLLOWING POINTS:"));
+        validationBannerHeaderLabel = new Label(I18n.getOrDefault("scenario.validation.header_errors", "⚠️ VALIDATION ERRORS DETECTED — PLEASE CORRECT THE FOLLOWING POINTS:"));
         validationBannerHeaderLabel.setStyle("-fx-text-fill: #f87171; -fx-font-weight: bold; -fx-font-size: 13px;");
-
         validationErrorLabel = new Label();
         validationErrorLabel.setWrapText(true);
         validationErrorLabel.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 12px;");
+        validationErrorBanner = ScenarioConfigPaneBuilder.createValidationErrorBanner(validationBannerHeaderLabel, validationErrorLabel);
 
-        validationErrorBanner = new VBox(6,
-                validationBannerHeaderLabel,
-                validationErrorLabel
-        );
-        validationErrorBanner.setStyle("-fx-background-color: rgba(239, 68, 68, 0.15); -fx-border-color: #ef4444; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
-        validationErrorBanner.setVisible(false);
-        validationErrorBanner.setManaged(false);
-
-        // --- 1. Standardized Preset Control Bar for Scenarios ---
-        scenarioPresetBar = new PresetControlBar<>("scenario.preset_bar", "1. PRÉRÉGLAGES DE SCÉNARIOS");
-        scenarioPresetBar.setExportCategory("scenario");
-        List<Scenario> builtInScenarios = getBuiltInScenarios();
+        this.scenarioPresetBar = presetManager.getPresetBar();
+        List<Scenario> builtInScenarios = presetManager.getBuiltInScenarios();
         Scenario defaultScenario = builtInScenarios.isEmpty() ? null : builtInScenarios.get(0);
 
-        scenarioPresetBar.setListener(new PresetControlBar.PresetActionsListener<Scenario>() {
-            /**
-             * On preset selected.
-             *
-             * @param scenario the scenario parameter (Scenario)
-             */
-            @Override
-            public void onPresetSelected(Scenario scenario) {
-                applyScenarioToUI(scenario);
-                if (previewModeCombo != null) {
-                    previewModeCombo.getSelectionModel().select(0);
-                }
-            }
-
-            /**
-             * On save preset.
-             *
-             * @param name the name parameter (String)
-             */
-            @Override
-            public void onSavePreset(String name) {
-                if (!validateScenarioSetup()) {
-                    return;
-                }
-                Scenario custom = getScenario();
-                custom.setName(name);
-                scenarioRepo.saveOrUpdate(custom);
-                scenarioPresetBar.getPresetCombo().getItems().removeIf(s -> s != null && name.equalsIgnoreCase(s.getName()));
-                scenarioPresetBar.getPresetCombo().getItems().add(custom);
-                scenarioPresetBar.getPresetCombo().setValue(custom);
-                scenarioPresetBar.setNameText(name);
-            }
-
-            /**
-             * On delete preset.
-             *
-             * @param scenario the scenario parameter (Scenario)
-             */
-            @Override
-            public void onDeletePreset(Scenario scenario) {
-                scenarioPresetBar.getPresetCombo().getItems().remove(scenario);
-            }
-
-            /**
-             * On export preset.
-             *
-             * @param targetFile the target file parameter (File)
-             * @param scenario the scenario parameter (Scenario)
-             */
-            @Override
-            public void onExportPreset(File targetFile, Scenario scenario) {
-                try {
-                    ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
-                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                    mapper.writeValue(targetFile, scenario);
-                    logger.info("Exported scenario preset to {}", targetFile.getAbsolutePath());
-                } catch (IOException ex) {
-                    logger.error("Failed to export scenario preset", ex);
-                }
-            }
-
-            /**
-             * On import preset.
-             *
-             * @param sourceFile the source file parameter (File)
-             */
-            @Override
-            public void onImportPreset(File sourceFile) {
-                try {
-                    ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
-                    Scenario scenario = mapper.readValue(sourceFile, Scenario.class);
-                    scenarioPresetBar.getPresetCombo().getItems().add(scenario);
-                    scenarioPresetBar.getPresetCombo().setValue(scenario);
-                    applyScenarioToUI(scenario);
-                    logger.info("Imported scenario preset from {}", sourceFile.getAbsolutePath());
-                } catch (IOException ex) {
-                    logger.error("Failed to import scenario preset", ex);
-                }
-            }
-        });
-
-        // --- Inherited Presets (Tab 1 Planet + Tab 2 Ecology) ---
         VBox inheritedSection = planetSyncManager.buildSection();
         planetPresetCombo = planetSyncManager.getPlanetPresetCombo();
         ecologyPresetCombo = planetSyncManager.getEcologyPresetCombo();
         inheritedContextLabel = planetSyncManager.getInheritedContextLabel();
 
-        // --- Scenario General Info Section ---
         VBox section1 = spatiotemporalSectionBuilder.buildSection();
         startYearSpinner = spatiotemporalSectionBuilder.getStartYearSpinner();
         endYearSpinner = spatiotemporalSectionBuilder.getEndYearSpinner();
@@ -693,27 +554,17 @@ private Canvas previewCanvas;
         targetCohortSizeSpinner = spatiotemporalSectionBuilder.getTargetCohortSizeSpinner();
         temporalResolutionCombo = spatiotemporalSectionBuilder.getTemporalResolutionCombo();
 
-        // --- 2. Demographics & Density Map Management ---
         VBox popSection = createPopulationDensitySection();
-
-        // --- 4. Cultural Vector & Multi-Field Layers Section (Tab 3) ---
         VBox cultureSection = createCulturalVectorAndLayersSection();
-
-        // --- 5. Spatial Clipping & Boundary Condition Section ---
         VBox clippingSection = createClippingSection();
-
-        // --- 6. Ocean Optimizations Section (Persisted in Scenario for Determinism) ---
         VBox oceanOptSection = createOceanOptimizationSection();
-
-        // --- 7. Events Section ---
         VBox eventsSection = createEventsSection();
 
-        // --- 8. Actions & Progress Bar (Deferred Execution) ---
         generateBtn = new Button();
         generateBtn.setMaxWidth(Double.MAX_VALUE);
         generateBtn.getStyleClass().add("button-secondary");
         generateBtn.setOnAction(e -> generatePreview());
-        generateBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.preview", "Quick preview of demographic distribution.")));
+        generateBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.preview", "Quick preview of demographic distribution.")));
 
         progressBar = new ProgressBar(0);
         progressBar.setMaxWidth(Double.MAX_VALUE);
@@ -726,7 +577,6 @@ private Canvas previewCanvas;
         progressStatusLabel.setVisible(false);
         progressStatusLabel.setManaged(false);
 
-        // Real-Time Integrated Diagnostic Block
         VBox liveDiagnosticCard = liveDiagnosticSection.buildSection();
         updateLiveDiagnosticBlock();
 
@@ -735,7 +585,7 @@ private Canvas previewCanvas;
         startBtn.setMaxWidth(Double.MAX_VALUE);
         startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;");
         startBtn.setOnAction(e -> simulationLauncher.handleStartOrCancel());
-        startBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start", "Calculate H3 cells and launch simulation.")));
+        startBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.start", "Calculate H3 cells and launch simulation.")));
         simulationLauncher.bindControls(startBtn, progressBar, progressStatusLabel);
 
         scenarioDescLabel = new Label(I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
@@ -754,22 +604,22 @@ private Canvas previewCanvas;
         btnAutoEpochScenario.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.auto_epoch_wizard", "Ouvre l'assistant de scénario temporel pour configurer en un clic les cartes d'élévation, biomes, ressources, démographie et moteurs de Type B compatibles pour n'importe quelle date.")));
         btnAutoEpochScenario.setOnAction(e -> openAutoEpochScenarioDialog());
 
-        scenarioPresetHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "ðŸŽ›ï¸ GLOBAL PRESETS & SCENARIO SAVE"));
-        VBox scenarioPresetSection = createSection(scenarioPresetHeader, new VBox(8, scenarioPresetBar, btnAutoEpochScenario, scenarioDescLabel, scenarioDescriptionArea));
-
+        scenarioPresetHeader = new Label(I18n.getOrDefault("scenario.section.presets", "🎛️ GLOBAL PRESETS & SCENARIO SAVE"));
+        VBox scenarioPresetSection = ScenarioConfigPaneBuilder.buildScenarioPresetSection(scenarioPresetHeader, scenarioPresetBar, btnAutoEpochScenario, scenarioDescLabel, scenarioDescriptionArea);
         VBox snapshotSection = createSnapshotSection();
         VBox bundleSection = createBundleSection();
+        bottomActionBox = ScenarioConfigPaneBuilder.buildBottomActionBox(progressBar, progressStatusLabel, startBtn);
 
-        bottomActionBox = new VBox(8, progressBar, progressStatusLabel, startBtn);
-        bottomActionBox.setAlignment(Pos.CENTER);
-
-        root.getChildren().addAll(headerLabel, validationErrorBanner, scenarioPresetSection, inheritedSection, section1, popSection, cultureSection, clippingSection, oceanOptSection, eventsSection, snapshotSection, bundleSection, liveDiagnosticCard);
+        VBox root = ScenarioConfigPaneBuilder.assembleConfigPane(
+                headerLabel, validationErrorBanner, scenarioPresetSection, inheritedSection, section1,
+                popSection, cultureSection, clippingSection, oceanOptSection, eventsSection,
+                snapshotSection, bundleSection, liveDiagnosticCard
+        );
 
         scenarioPresetBar.setPresets(builtInScenarios, defaultScenario);
         if (defaultScenario != null) {
             applyScenarioToUI(defaultScenario);
         }
-
         return root;
     }
 
@@ -793,20 +643,9 @@ private Canvas previewCanvas;
     }
 
     public void refreshScenarioPresets() {
-        javafx.application.Platform.runLater(() -> {
-            try {
-                List<Scenario> all = getBuiltInScenarios();
-                Scenario current = scenarioPresetBar != null && scenarioPresetBar.getPresetCombo() != null
-                        ? scenarioPresetBar.getPresetCombo().getValue() : null;
-                if (scenarioPresetBar != null) {
-                    scenarioPresetBar.setPresets(all, current != null ? current : (all.isEmpty() ? null : all.get(0)));
-                }
-                refreshSnapshotList();
-                logger.info("Successfully refreshed {} scenario preset(s) into UI.", all.size());
-            } catch (Exception e) {
-                logger.warn("Could not refresh scenario presets: {}", e.getMessage());
-            }
-        });
+        if (presetManager != null) {
+            presetManager.refreshScenarioPresets();
+        }
     }
 
     public void refreshSnapshotList() {
@@ -886,57 +725,14 @@ private Canvas previewCanvas;
         );
     }
 
-    private VBox createSection(Label header, javafx.scene.Node content) {
-        return createSection(header, content, null);
-    }
-
-    private VBox createSection(Label header, javafx.scene.Node content, Runnable sectionResetAction) {
-        header.getStyleClass().add("label-section-header");
-        HBox headerRow = new HBox(8, header);
-        headerRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        if (sectionResetAction != null) {
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-            Button resetSecBtn = new Button("🔄 " + org.ether.society.i18n.I18n.getOrDefault("scenario.btn.reset_section", "Default"));
-            resetSecBtn.getStyleClass().add("button-secondary");
-            resetSecBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 6;");
-            resetSecBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.reset_section", "Reset section parameters to canonical default values.")));
-            resetSecBtn.setOnAction(e -> {
-                sectionResetAction.run();
-                notifyParamChange();
-            });
-            headerRow.getChildren().addAll(spacer, resetSecBtn);
-        }
-        VBox box = new VBox(8, headerRow, content);
-        box.getStyleClass().add("card-section");
-        return box;
-    }
-
     private List<Scenario> getBuiltInScenarios() {
-        return scenarioRepo != null ? scenarioRepo.getAllScenarios() : org.ether.society.persistence.PresetStorageService.loadAllScenarios();
+        return presetManager != null ? presetManager.getBuiltInScenarios() : java.util.Collections.emptyList();
     }
 
     private void updateInheritedContextDisplay(String ecologyName) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (inheritedContextLabel == null) return;
-        EcologyPreset eco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null;
-        String ecoDisplay = eco != null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName(eco.name()) : (ecologyName != null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName(ecologyName) : "Earth Standard Baseline");
-        PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null);
-        if (p == null && eco != null) {
-            p = findPlanetPresetByName(eco.planetPresetName());
-        }
-        if (p == null) p = PlanetPreset.EARTH_LIKE;
-        String planetDisplay = org.ether.society.i18n.I18n.getPlanetPresetDisplayName(p.name());
-
-        String fmt = org.ether.society.i18n.I18n.getOrDefault("scenario.info.inherited_context_format", "ðŸŒ¿ Ecology (Tab 2): %s  âž”  ðŸª Planet (cascaded): %s (Radius: %,.0f km)");
-        inheritedContextLabel.setText(String.format(fmt, ecoDisplay, planetDisplay, p.radiusKm()));
+        planetSyncManager.updateInheritedContextDisplay(ecologyName);
     }
 
-    /**
-     * Apply scenario to UI.
-     *
-     * @param s the scenario to apply
-     */
     public void applyScenarioToUI(Scenario s) {
         if (s == null) return;
         isUpdatingFromPreset = true;
@@ -1010,9 +806,9 @@ private Canvas previewCanvas;
             }
 
             // Auto-select the demographic reference source combo based on the scenario epoch/planet
-            if (demoSourceCombo != null) {
+            if (demographicSectionBuilder != null && demographicSectionBuilder.getDemoSourceCombo() != null) {
                 String autoSrc = pickDemoSourceForEpoch(s.getStartDateYear(), this.activePlanetPreset);
-                selectBestSource(demoSourceCombo, autoSrc, "Terre");
+                selectBestSource(demographicSectionBuilder.getDemoSourceCombo(), autoSrc, "Terre");
             }
 
             // Restore Scheduled Events
