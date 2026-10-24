@@ -13,6 +13,7 @@ import org.ether.society.generation.PlanetPreset;
 import org.ether.society.persistence.ScenarioRepository;
 import org.ether.society.ui.analytics.BatchState;
 import org.ether.society.ui.analytics.ScenarioSelectableItem;
+import org.ether.society.ui.analytics.SpatialTensorComparisonPane;
 import org.ether.society.ui.util.MarkdownViewerPane;
 
 import javafx.beans.binding.Bindings;
@@ -137,64 +138,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private Button cancelBatchBtn;
 
     // 2D Spatial Tensor Comparison Controls
-    private ComboBox<String> spatialChannelCombo;
-    private Label channelLabel;
-    private Label scenarioSelectLabelA;
-    private ComboBox<ScenarioSelectableItem> comboScenarioA;
-    private Label scenarioSelectLabelB;
-    private ComboBox<ScenarioSelectableItem> comboScenarioB;
-    private Slider dateSlider;
-    private Label currentDateLabel;
-    private Button playTimelineBtn;
-    private Button export2DZipBtn;
-    private ImageView mapImageViewA;
-    private ImageView mapImageViewB;
-    private ImageView mapImageViewDiff;
-    private Label mapLabelA;
-    private Label mapLabelB;
-    private Label mapLabelDiff;
-    private TextArea spatialMetricsReportArea;
-    private Timeline timelineAnimation;
-    private boolean isPlayingAnimation = false;
-    private final java.util.concurrent.atomic.AtomicLong spatialComparisonRequestId = new java.util.concurrent.atomic.AtomicLong(0);
-    private final java.util.List<Integer> preloadedTimelineYears = new java.util.concurrent.CopyOnWriteArrayList<>();
-    private int currentTimelineFrameIndex = 0;
-
-    // Dynamic map prefetch and regeneration status indicators
-    private HBox mapRegenBox;
-    private Label mapRegenStatusLabel;
-    private ProgressBar mapRegenProgress;
-
-    // Cached available historical Earth epoch directories for O(1) binary search lookup
-    private static final int[] AVAILABLE_EARTH_EPOCHS;
-    static {
-        File earthDir = new File("data/maps/ether/earth/");
-        if (earthDir.exists() && earthDir.isDirectory()) {
-            File[] sub = earthDir.listFiles(File::isDirectory);
-            if (sub != null) {
-                List<Integer> yrs = new ArrayList<>();
-                for (File d : sub) {
-                    try {
-                        yrs.add(Integer.parseInt(d.getName()));
-                    } catch (NumberFormatException ignored) {}
-                }
-                Collections.sort(yrs);
-                AVAILABLE_EARTH_EPOCHS = yrs.stream().mapToInt(Integer::intValue).toArray();
-            } else {
-                AVAILABLE_EARTH_EPOCHS = new int[0];
-            }
-        } else {
-            AVAILABLE_EARTH_EPOCHS = new int[0];
-        }
-    }
-    // High-performance LRU cache for 2D cartographic rasters (avoids disk read locks and procedural recomputations during timeline scrubbing)
-    private static final Map<String, java.awt.image.BufferedImage> RASTER_IMAGE_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
-
-    // Hover Map Magnifier Popup
-    private final Popup hoverMapPopup = new Popup();
-    private final ImageView popupImageView = new ImageView();
-    private final Label popupTitleLabel = new Label();
-    private Timeline popupHideTimer;
+    private SpatialTensorComparisonPane spatialTensorComparisonPane;
 
     private Label diagHeader;
     private Label divergenceLabel;
@@ -202,10 +146,6 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private Label synthHeader;
     private MarkdownViewerPane reportPreviewPane;
     private Label chartHintLabel;
-    private Label legendBlue;
-    private Label legendSlate;
-    private Label legendGreen;
-    private Label legendRed;
     private javafx.animation.PauseTransition debouncedAnalyticsTransition;
 
     private void scheduleDebouncedAnalyticsUpdate() {
@@ -715,165 +655,8 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         timeSeriesTab.setClosable(false);
 
         // --- TAB 3: 2D SPATIAL TENSOR & CARTOGRAPHIC COMPARISON ---
-        VBox spatialBox = new VBox(8);
-        spatialBox.setPadding(new Insets(12));
-
-        // Spatial Channel Selector & Scenario Pair Selector
-        channelLabel = new Label(I18n.getOrDefault("analytics.channel_label", "Tensor Channel:"));
-        channelLabel.getStyleClass().add("control-label");
-
-        spatialChannelCombo = new ComboBox<>();
-        spatialChannelCombo.setPrefWidth(240);
-        spatialChannelCombo.setOnAction(e -> update2DSpatialComparison());
-        spatialChannelCombo.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.channel_select", "Select spatial physical/cliodynamic tensor layer to compare between scenarios A and B.")));
-
-        scenarioSelectLabelA = new Label(I18n.getOrDefault("analytics.label.select_a", "Baseline (A):"));
-        scenarioSelectLabelA.getStyleClass().add("control-label");
-        comboScenarioA = new ComboBox<>();
-        comboScenarioA.setPrefWidth(210);
-        comboScenarioA.setOnAction(e -> update2DSpatialComparison());
-        comboScenarioA.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.scenario_a", "Select baseline scenario (or empirical Ground Truth) for spatial differential tensor mapping.")));
-
-        scenarioSelectLabelB = new Label(I18n.getOrDefault("analytics.label.select_b", "Target (B):"));
-        scenarioSelectLabelB.getStyleClass().add("control-label");
-        comboScenarioB = new ComboBox<>();
-        comboScenarioB.setPrefWidth(210);
-        comboScenarioB.setOnAction(e -> update2DSpatialComparison());
-        comboScenarioB.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.scenario_b", "Select target scenario to evaluate against baseline A across 2D map fidelity metrics.")));
-
-        currentDateLabel = new Label(I18n.getOrDefault("analytics.label.year_ad", "📅 Year: 0 AD"));
-        currentDateLabel.getStyleClass().add("value-label");
-
-        playTimelineBtn = new Button(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Play Timeline"));
-        playTimelineBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-cursor: hand;");
-        playTimelineBtn.setOnAction(e -> toggleDateAnimation());
-        playTimelineBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.play_timeline", "Animate chronological evolution of 2D cartographic tensors over historical centuries.")));
-
-        dateSlider = new Slider(0, 2000, 0);
-        dateSlider.setBlockIncrement(50);
-        dateSlider.setMajorTickUnit(500);
-        dateSlider.setMinorTickCount(4);
-        dateSlider.setShowTickMarks(true);
-        dateSlider.setShowTickLabels(true);
-        dateSlider.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.date_slider", "Drag to navigate historical chronological timeline of comparative maps.")));
-        HBox.setHgrow(dateSlider, Priority.ALWAYS);
-        javafx.animation.PauseTransition sliderDebounce = new javafx.animation.PauseTransition(Duration.millis(90));
-        sliderDebounce.setOnFinished(e -> update2DSpatialComparison());
-        dateSlider.valueProperty().addListener((obs, oldV, newV) -> {
-            int year = newV.intValue();
-            currentDateLabel.setText(String.format(I18n.getOrDefault("analytics.label.year_ad_formatted", "📅 Year: %d AD"), year));
-            if (isPlayingAnimation) {
-                update2DSpatialComparison();
-            } else {
-                sliderDebounce.playFromStart();
-            }
-        });
-
-        HBox scenarioRow = new HBox(10, scenarioSelectLabelA, comboScenarioA, scenarioSelectLabelB, comboScenarioB);
-        scenarioRow.setAlignment(Pos.CENTER_LEFT);
-
-        HBox channelRow = new HBox(10, channelLabel, spatialChannelCombo);
-        channelRow.setAlignment(Pos.CENTER_LEFT);
-
-        VBox spatialControlsBox = new VBox(6, scenarioRow, channelRow);
-
-        mapRegenStatusLabel = new Label("");
-        mapRegenStatusLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-font-size: 11px;");
-
-        mapRegenProgress = new ProgressBar(0.0);
-        mapRegenProgress.setPrefWidth(220);
-        mapRegenProgress.setStyle("-fx-accent: #38bdf8;");
-
-        mapRegenBox = new HBox(10, mapRegenProgress, mapRegenStatusLabel);
-        mapRegenBox.setAlignment(Pos.CENTER_LEFT);
-        mapRegenBox.setPadding(new Insets(2, 0, 4, 0));
-        mapRegenBox.setVisible(false);
-        mapRegenBox.setManaged(false);
-
-        HBox spatialTimelineRow = new HBox(12, dateSlider, currentDateLabel, playTimelineBtn);
-        spatialTimelineRow.setAlignment(Pos.CENTER_LEFT);
-
-        export2DZipBtn = new Button();
-        export2DZipBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #6366f1; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
-        export2DZipBtn.setOnAction(e -> export2DCartographyZip());
-
-        HBox spatialBottomBox = new HBox(10, export2DZipBtn);
-        spatialBottomBox.setAlignment(Pos.CENTER_LEFT);
-        spatialBottomBox.setPadding(new Insets(6, 0, 0, 0));
-
-        // 3-Map Side-by-Side Spatial Map Viewers (A, B, and Difference Heatmap)
-        mapLabelA = new Label(I18n.getOrDefault("analytics.label.scenario_a_ref", "Scenario A (Reference Baseline)"));
-        mapLabelA.getStyleClass().add("label-section-header");
-        mapImageViewA = new ImageView();
-        mapImageViewA.setFitWidth(360);
-        mapImageViewA.setFitHeight(180);
-        mapImageViewA.setPreserveRatio(true);
-        mapImageViewA.getStyleClass().add("card-section");
-
-        VBox mapBoxA = new VBox(4, mapLabelA, mapImageViewA);
-        mapBoxA.setAlignment(Pos.CENTER);
-
-        mapLabelB = new Label(I18n.getOrDefault("analytics.label.scenario_b_target", "Scenario B (Comparison Target)"));
-        mapLabelB.getStyleClass().add("label-section-header");
-        mapImageViewB = new ImageView();
-        mapImageViewB.setFitWidth(360);
-        mapImageViewB.setFitHeight(180);
-        mapImageViewB.setPreserveRatio(true);
-        mapImageViewB.getStyleClass().add("card-section");
-
-        VBox mapBoxB = new VBox(4, mapLabelB, mapImageViewB);
-        mapBoxB.setAlignment(Pos.CENTER);
-
-        mapLabelDiff = new Label(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
-        mapLabelDiff.getStyleClass().add("label-section-header");
-        mapLabelDiff.setStyle("-fx-text-fill: #f59e0b;");
-        mapImageViewDiff = new ImageView();
-        mapImageViewDiff.setFitWidth(360);
-        mapImageViewDiff.setFitHeight(180);
-        mapImageViewDiff.setPreserveRatio(true);
-        mapImageViewDiff.getStyleClass().add("card-section");
-
-        VBox mapBoxDiff = new VBox(4, mapLabelDiff, mapImageViewDiff);
-        mapBoxDiff.setAlignment(Pos.CENTER);
-
-        HBox mapPairBox = new HBox(12, mapBoxA, mapBoxB, mapBoxDiff);
-        mapPairBox.setAlignment(Pos.CENTER);
-
-        // Setup Hover Magnifier Popup
-        initHoverPopup();
-        attachHoverZoom(mapImageViewA, () -> mapLabelA.getText());
-        attachHoverZoom(mapImageViewB, () -> mapLabelB.getText());
-        attachHoverZoom(mapImageViewDiff, () -> mapLabelDiff.getText());
-
-        // Discrepancy Heatmap Color Scale Legend
-        HBox discrepancyLegendBox = new HBox(16);
-        discrepancyLegendBox.setAlignment(Pos.CENTER);
-        discrepancyLegendBox.setPadding(new Insets(4, 12, 4, 12));
-        discrepancyLegendBox.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6;");
-
-        legendBlue = new Label("🟦 " + I18n.getOrDefault("analytics.legend.under", "A < B (Underestimation)"));
-        legendBlue.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px;");
-
-        legendSlate = new Label("⬛ " + I18n.getOrDefault("analytics.legend.zero", "Δ = 0 (Identical / Zero divergence)"));
-        legendSlate.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
-
-        legendGreen = new Label("🟩 " + I18n.getOrDefault("analytics.legend.close", "|Δ| ≤ 5% (Close agreement)"));
-        legendGreen.setStyle("-fx-text-fill: #10b981; -fx-font-size: 11px;");
-
-        legendRed = new Label("🟥 " + I18n.getOrDefault("analytics.legend.over", "A > B (Overestimation)"));
-        legendRed.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
-
-        discrepancyLegendBox.getChildren().addAll(legendBlue, legendSlate, legendGreen, legendRed);
-
-        // Quantitative Spatial Comparison Metrics Area
-        spatialMetricsReportArea = new TextArea();
-        spatialMetricsReportArea.setEditable(false);
-        spatialMetricsReportArea.setPrefRowCount(6);
-        spatialMetricsReportArea.getStyleClass().add("scenario-description-area");
-        VBox.setVgrow(spatialMetricsReportArea, Priority.ALWAYS);
-
-        spatialBox.getChildren().addAll(spatialControlsBox, spatialTimelineRow, mapRegenBox, mapPairBox, discrepancyLegendBox, spatialMetricsReportArea, spatialBottomBox);
-        spatialCartoTab = new Tab(I18n.getOrDefault("analytics.tab.carto_tensors", "🗺️ Cartography & Tensors (2D)"), spatialBox);
+        spatialTensorComparisonPane = new SpatialTensorComparisonPane(this::resolveRunRecord);
+        spatialCartoTab = new Tab(I18n.getOrDefault("analytics.tab.carto_tensors", "ðŸ—ºï¸ Cartography & Tensors (2D)"), spatialTensorComparisonPane);
         spatialCartoTab.setClosable(false);
 
         // --- TAB 4: DIAGNOSTIC REPORTS & EXPORT BUTTONS ---
@@ -923,105 +706,16 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 runAnalysis();
             } else if (newTab == spatialCartoTab) {
                 update2DSpatialComparison();
+            } else {
+                if (spatialTensorComparisonPane != null) {
+                    spatialTensorComparisonPane.stopAnimation();
+                }
             }
         });
 
         setCenter(mainTabPane);
 
         refreshRunList();
-    }
-
-    private void initHoverPopup() {
-        popupImageView.setFitWidth(560);
-        popupImageView.setFitHeight(280);
-        popupImageView.setPreserveRatio(true);
-        popupTitleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 4 8; -fx-font-size: 13px;");
-
-        VBox popupBox = new VBox(6, popupTitleLabel, popupImageView);
-        popupBox.setStyle(
-            "-fx-background-color: rgba(15, 23, 42, 0.96);" +
-            "-fx-padding: 10px;" +
-            "-fx-border-color: #38bdf8;" +
-            "-fx-border-width: 1.5px;" +
-            "-fx-border-radius: 8px;" +
-            "-fx-background-radius: 8px;" +
-            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 12, 0, 0, 4);"
-        );
-        hoverMapPopup.getContent().add(popupBox);
-        hoverMapPopup.setAutoHide(false);
-    }
-
-    private void attachHoverZoom(ImageView view, java.util.function.Supplier<String> titleSupplier) {
-        view.setCursor(javafx.scene.Cursor.HAND);
-        view.setOnMouseEntered(e -> {
-            if (view.getImage() != null) {
-                cancelHideTimer();
-                popupImageView.setImage(view.getImage());
-                popupTitleLabel.setText(titleSupplier.get());
-                javafx.geometry.Bounds bounds = view.localToScreen(view.getBoundsInLocal());
-                if (bounds != null) {
-                    double popupX = bounds.getMinX();
-                    double popupY = bounds.getMaxY() + 8;
-                    javafx.geometry.Rectangle2D screen = javafx.stage.Screen.getPrimary().getVisualBounds();
-                    if (popupY + 300 > screen.getMaxY()) {
-                        popupY = bounds.getMinY() - 310;
-                    }
-                    if (popupX + 580 > screen.getMaxX()) {
-                        popupX = screen.getMaxX() - 590;
-                    }
-                    hoverMapPopup.show(view, Math.max(10, popupX), Math.max(10, popupY));
-                }
-            }
-        });
-        view.setOnMouseExited(e -> scheduleHidePopup());
-        view.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.PRIMARY && view.getImage() != null) {
-                showFullMapModal(titleSupplier.get(), view.getImage());
-            }
-        });
-    }
-
-    private void scheduleHidePopup() {
-        cancelHideTimer();
-        popupHideTimer = new Timeline(new KeyFrame(Duration.millis(200), ev -> hoverMapPopup.hide()));
-        popupHideTimer.setCycleCount(1);
-        popupHideTimer.play();
-    }
-
-    private void cancelHideTimer() {
-        if (popupHideTimer != null) {
-            popupHideTimer.stop();
-            popupHideTimer = null;
-        }
-    }
-
-    private void showFullMapModal(String title, Image img) {
-        if (img == null) return;
-        Stage modal = new Stage();
-        modal.initModality(Modality.APPLICATION_MODAL);
-        modal.setTitle(title != null ? title : I18n.getOrDefault("analytics.preview.modal_title", "2D Cartographic Tensor High-Resolution View"));
-
-        ImageView largeView = new ImageView(img);
-        largeView.setFitWidth(800);
-        largeView.setFitHeight(400);
-        largeView.setPreserveRatio(true);
-
-        Label titleLbl = new Label(title);
-        titleLbl.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-font-size: 15px;");
-
-        Button closeBtn = new Button(I18n.getOrDefault("analytics.preview.close", "Close"));
-        closeBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 6 16; -fx-cursor: hand;");
-        closeBtn.setOnAction(e -> modal.close());
-        closeBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.close_modal", "Close detailed view dialog.")));
-
-        VBox layout = new VBox(12, titleLbl, largeView, closeBtn);
-        layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(16));
-        layout.setStyle("-fx-background-color: #0f172a;");
-
-        Scene scene = new Scene(layout, 840, 500);
-        modal.setScene(scene);
-        modal.show();
     }
 
     public void refreshRunList() {
@@ -1303,37 +997,10 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void updateScenarioPairCombos() {
-        if (comboScenarioA == null || comboScenarioB == null) return;
-
-        List<ScenarioSelectableItem> selected = scenarioList.stream()
-            .filter(ScenarioSelectableItem::isSelected)
-            .toList();
-
-        List<ScenarioSelectableItem> pool = (selected.size() >= 2) ? selected : new ArrayList<>(scenarioList);
-
-        ScenarioSelectableItem prevA = comboScenarioA.getValue();
-        ScenarioSelectableItem prevB = comboScenarioB.getValue();
-
-        comboScenarioA.getItems().setAll(pool);
-        comboScenarioB.getItems().setAll(pool);
-
-        if (prevA != null && pool.contains(prevA)) {
-            comboScenarioA.setValue(prevA);
-        } else if (!pool.isEmpty()) {
-            comboScenarioA.setValue(pool.get(0));
+        if (spatialTensorComparisonPane != null) {
+            spatialTensorComparisonPane.updateScenarioPairCombos(scenarioList);
         }
-
-        if (prevB != null && pool.contains(prevB)) {
-            comboScenarioB.setValue(prevB);
-        } else if (pool.size() > 1) {
-            comboScenarioB.setValue(pool.get(1));
-        } else if (!pool.isEmpty()) {
-            comboScenarioB.setValue(pool.get(0));
-        }
-
-        update2DSpatialComparison();
     }
-
     private void ensureHistoryLoadedForSave(String saveId, String scenarioName) {
         if (saveId == null || saveId.isBlank() || "N/A".equals(saveId) || "HISTORICAL_GROUND_TRUTH".equals(saveId)) return;
         if (runRepository.getRun(saveId) != null) return;
@@ -2720,706 +2387,21 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void update2DSpatialComparison() {
-        if (isUpdatingTexts) return;
-
-        ScenarioSelectableItem itemA = comboScenarioA != null ? comboScenarioA.getValue() : null;
-        ScenarioSelectableItem itemB = comboScenarioB != null ? comboScenarioB.getValue() : null;
-
-        if (itemA == null && !scenarioList.isEmpty()) itemA = scenarioList.get(0);
-        if (itemB == null && scenarioList.size() > 1) itemB = scenarioList.get(1);
-        if (itemB == null) itemB = itemA;
-
-        if (itemA == null) {
-            if (mapLabelA != null) mapLabelA.setText(I18n.getOrDefault("analytics.label.scenario_a_none", "Scenario A (None selected)"));
-            if (mapLabelB != null) mapLabelB.setText(I18n.getOrDefault("analytics.label.scenario_b_none", "Scenario B (None selected)"));
-            if (mapLabelDiff != null) mapLabelDiff.setText(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
-            if (mapImageViewA != null) mapImageViewA.setImage(null);
-            if (mapImageViewB != null) mapImageViewB.setImage(null);
-            if (mapImageViewDiff != null) mapImageViewDiff.setImage(null);
-            if (spatialMetricsReportArea != null) spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.prompt.select_2d", "⚠️ Please select at least 2 scenarios in table to launch 2D map comparison."));
-            return;
+        if (spatialTensorComparisonPane != null) {
+            spatialTensorComparisonPane.update2DSpatialComparison();
         }
-
-        Scenario scA = itemA.getScenario();
-        Scenario scB = (itemB != null) ? itemB.getScenario() : scA;
-
-        if (scA == null) return;
-        if (scB == null) scB = scA;
-
-        if (mapLabelA != null) mapLabelA.setText(I18n.getOrDefault("analytics.label.scenario_a_prefix", "Scenario A: ") + itemA.getName());
-        if (mapLabelB != null) mapLabelB.setText(I18n.getOrDefault("analytics.label.scenario_b_prefix", "Scenario B: ") + (itemB != null ? itemB.getName() : scB.getName()));
-        if (mapLabelDiff != null) mapLabelDiff.setText(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
-
-        int startA = (int) scA.getStartDateYear();
-        int endA = (int) scA.getEndDateYear();
-        int startB = (int) scB.getStartDateYear();
-        int endB = (int) scB.getEndDateYear();
-
-        boolean isGroundTruthA = "HISTORICAL_GROUND_TRUTH".equals(itemA.getRunId());
-        boolean isGroundTruthB = (itemB != null) && "HISTORICAL_GROUND_TRUTH".equals(itemB.getRunId());
-
-        String planetA = itemA.getPlanetDisplayName();
-        String planetB = (itemB != null) ? itemB.getPlanetDisplayName() : planetA;
-        boolean differentPlanets = !planetA.equalsIgnoreCase(planetB);
-
-        double minLatA = itemA.getMinLat(), maxLatA = itemA.getMaxLat();
-        double minLngA = itemA.getMinLng(), maxLngA = itemA.getMaxLng();
-        double minLatB = (itemB != null) ? itemB.getMinLat() : minLatA;
-        double maxLatB = (itemB != null) ? itemB.getMaxLat() : maxLatA;
-        double minLngB = (itemB != null) ? itemB.getMinLng() : minLngA;
-        double maxLngB = (itemB != null) ? itemB.getMaxLng() : maxLngA;
-
-        double interMinLat = Math.max(minLatA, minLatB);
-        double interMaxLat = Math.min(maxLatA, maxLatB);
-        double interMinLng = Math.max(minLngA, minLngB);
-        double interMaxLng = Math.min(maxLngA, maxLngB);
-
-        boolean spatialDisjoint = differentPlanets || (interMinLat >= interMaxLat) || (interMinLng >= interMaxLng);
-
-        int minYear;
-        int maxYear;
-        boolean temporalDisjoint = false;
-
-        if (isGroundTruthA && !isGroundTruthB) {
-            minYear = startB;
-            maxYear = endB;
-        } else if (!isGroundTruthA && isGroundTruthB) {
-            minYear = startA;
-            maxYear = endA;
-        } else if (!isGroundTruthA && !isGroundTruthB) {
-            // Strict chronological intersection between scenarios A and B
-            minYear = Math.max(startA, startB);
-            maxYear = Math.min(endA, endB);
-            if (maxYear < minYear) {
-                temporalDisjoint = true;
-            }
-        } else {
-            minYear = -100000;
-            maxYear = 2026;
-        }
-
-        if (spatialDisjoint || temporalDisjoint) {
-            if (mapImageViewDiff != null) mapImageViewDiff.setImage(null);
-            if (dateSlider != null) dateSlider.setDisable(true);
-            if (playTimelineBtn != null) playTimelineBtn.setDisable(true);
-            if (spatialMetricsReportArea != null) {
-                if (spatialDisjoint) {
-                    spatialMetricsReportArea.setText(differentPlanets
-                        ? String.format(I18n.getOrDefault("analytics.spatial.disjoint_planets_fmt", "⚠️ Scénarios sur des planètes distinctes (%s vs %s) : aucune intersection spatiale possible. Données comparatives cartographiques directes indisponibles."), planetA, planetB)
-                        : String.format(java.util.Locale.US, I18n.getOrDefault("analytics.spatial.disjoint_coords_fmt", "⚠️ Scénarios spatialement disjoints : aucune intersection géographique possible ([%.1f°..%.1f° Lat] vs [%.1f°..%.1f° Lat]). Données comparatives cartographiques indisponibles."), minLatA, maxLatA, minLatB, maxLatB));
-                } else {
-                    spatialMetricsReportArea.setText(String.format(I18n.getOrDefault("analytics.spatial.disjoint_time_fmt", "⚠️ Scénarios temporellement disjoints : aucune intersection temporelle possible (Scénario A : %d ➔ %d | Scénario B : %d ➔ %d). Données comparatives indisponibles."), startA, endA, startB, endB));
-                }
-            }
-            return;
-        }
-
-        if (dateSlider != null) dateSlider.setDisable(false);
-        if (playTimelineBtn != null) playTimelineBtn.setDisable(false);
-
-        if (maxYear <= minYear) maxYear = minYear + 100;
-
-        if (dateSlider != null) {
-            if (minYear != (int) dateSlider.getMin() || maxYear != (int) dateSlider.getMax()) {
-                dateSlider.setMin(minYear);
-                dateSlider.setMax(maxYear);
-                double tickUnit = Math.max(10.0, (maxYear - minYear) / 5.0);
-                dateSlider.setMajorTickUnit(tickUnit);
-                if (dateSlider.getValue() < minYear || dateSlider.getValue() > maxYear) {
-                    dateSlider.setValue(minYear);
-                }
-                preloadAll2DTensorsAsync(itemA, itemB, minYear, maxYear);
-            }
-        }
-
-        String rawChannel = spatialChannelCombo != null ? spatialChannelCombo.getValue() : null;
-        final String channelKey = resolveCanonicalChannelKey(rawChannel);
-
-        int targetYear = dateSlider != null ? (int) dateSlider.getValue() : 0;
-        final long currentReqId = spatialComparisonRequestId.incrementAndGet();
-
-        if (spatialMetricsReportArea != null && (spatialMetricsReportArea.getText() == null || spatialMetricsReportArea.getText().isBlank())) {
-            spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.status.loading_tensors", "ℹ️ Loading cartographic tensors for selected scenarios..."));
-        }
-
-        final Scenario finalScA = scA;
-        final Scenario finalScB = scB;
-        final ScenarioSelectableItem finalItemA = itemA;
-        final ScenarioSelectableItem finalItemB = itemB;
-
-        String runIdA = finalItemA != null ? finalItemA.getRunId() : "N/A";
-        String runIdB = finalItemB != null ? finalItemB.getRunId() : runIdA;
-        String checkKeyA = runIdA + "_" + targetYear + "_" + channelKey;
-        String checkKeyB = runIdB + "_" + targetYear + "_" + channelKey;
-        boolean alreadyCached = RASTER_IMAGE_CACHE.containsKey(checkKeyA) && RASTER_IMAGE_CACHE.containsKey(checkKeyB);
-
-        if (!alreadyCached && mapRegenBox != null) {
-            mapRegenBox.setVisible(true);
-            mapRegenBox.setManaged(true);
-            mapRegenProgress.setProgress(-1);
-            mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.loading_tensors", "ℹ️ Loading cartographic tensors..."));
-        } else if (alreadyCached && mapRegenBox != null) {
-            mapRegenBox.setVisible(false);
-            mapRegenBox.setManaged(false);
-        }
-
-        java.util.concurrent.CompletableFuture.runAsync(() -> {
-            java.awt.image.BufferedImage bufA = null;
-            java.awt.image.BufferedImage bufB = null;
-            java.awt.image.BufferedImage bufDiff = null;
-
-            try {
-                SimulationRunRecord runA = resolveRunRecord(finalItemA);
-                SimulationRunRecord runB = resolveRunRecord(finalItemB);
-
-                List<org.ether.society.database.H3Cell> snapshotCellsA = runA != null ? runA.getSpatialSnapshotAt(targetYear) : null;
-                List<org.ether.society.database.H3Cell> snapshotCellsB = runB != null ? runB.getSpatialSnapshotAt(targetYear) : null;
-
-                // Check how many maps need generation
-                String cacheKeyA = checkKeyA;
-                String cacheKeyB = checkKeyB;
-                int mapsToGenerate = 0;
-                if (!RASTER_IMAGE_CACHE.containsKey(cacheKeyA)) mapsToGenerate++;
-                if (!RASTER_IMAGE_CACHE.containsKey(cacheKeyB) && !cacheKeyA.equals(cacheKeyB)) mapsToGenerate++;
-
-                final int totalMapsNeeded = mapsToGenerate;
-                if (totalMapsNeeded > 0) {
-                    javafx.application.Platform.runLater(() -> {
-                        if (mapRegenBox != null && mapRegenStatusLabel != null) {
-                            mapRegenBox.setVisible(true);
-                            mapRegenBox.setManaged(true);
-                            mapRegenProgress.setProgress(0.1);
-                            mapRegenStatusLabel.setText(String.format(I18n.getOrDefault("analytics.status.regen_maps_fmt", "⚡ Regenerating 2D maps: %d / %d"), 1, totalMapsNeeded));
-                        }
-                    });
-                }
-
-                // 1. Channel A Raster Extraction with In-Memory Cache
-                bufA = RASTER_IMAGE_CACHE.get(cacheKeyA);
-                if (bufA == null) {
-                    File diskRasterA = getDiskRasterForChannel(targetYear, channelKey);
-                    if ("HISTORICAL_GROUND_TRUTH".equals(runIdA) && diskRasterA != null && diskRasterA.exists()) {
-                        String filePathKey = "FILE_" + diskRasterA.getAbsolutePath();
-                        bufA = RASTER_IMAGE_CACHE.get(filePathKey);
-                        if (bufA == null) {
-                            bufA = ImageIO.read(diskRasterA);
-                            if (bufA != null) RASTER_IMAGE_CACHE.put(filePathKey, bufA);
-                        }
-                    } else if (snapshotCellsA != null && !snapshotCellsA.isEmpty()) {
-                        bufA = rasterizeCellsToImage(snapshotCellsA, channelKey, 512, 256);
-                    } else if (diskRasterA != null && diskRasterA.exists()) {
-                        String filePathKey = "FILE_" + diskRasterA.getAbsolutePath();
-                        bufA = RASTER_IMAGE_CACHE.get(filePathKey);
-                        if (bufA == null) {
-                            bufA = ImageIO.read(diskRasterA);
-                            if (bufA != null) RASTER_IMAGE_CACHE.put(filePathKey, bufA);
-                        }
-                    } else if ("density".equals(channelKey)) {
-                        bufA = HistoricalMapGenerator.rasterizeDensityMapForYear(finalScA.getPopulationDensityType(), finalScA, targetYear);
-                    } else {
-                        HistoricalMapGenerator.populateScenarioHistoricalMaps(finalScA);
-                        bufA = base64ToBufferedImage(extractChannelBase64(finalScA, channelKey));
-                    }
-                    if (bufA != null) {
-                        RASTER_IMAGE_CACHE.put(cacheKeyA, bufA);
-                    }
-                }
-
-                // 2. Channel B Raster Extraction with In-Memory Cache
-                if ("HISTORICAL_GROUND_TRUTH".equals(runIdA) && "HISTORICAL_GROUND_TRUTH".equals(runIdB) && bufA != null) {
-                    bufB = bufA;
-                } else {
-                    bufB = RASTER_IMAGE_CACHE.get(cacheKeyB);
-                    if (bufB == null) {
-                        File diskRasterB = getDiskRasterForChannel(targetYear, channelKey);
-                        if ("HISTORICAL_GROUND_TRUTH".equals(runIdB) && diskRasterB != null && diskRasterB.exists()) {
-                            String filePathKey = "FILE_" + diskRasterB.getAbsolutePath();
-                            bufB = RASTER_IMAGE_CACHE.get(filePathKey);
-                            if (bufB == null) {
-                                bufB = ImageIO.read(diskRasterB);
-                                if (bufB != null) RASTER_IMAGE_CACHE.put(filePathKey, bufB);
-                            }
-                        } else if (snapshotCellsB != null && !snapshotCellsB.isEmpty()) {
-                            int w = computeOptimalRasterWidth(snapshotCellsB.size());
-                            bufB = rasterizeCellsToImage(snapshotCellsB, channelKey, w, w / 2);
-                        } else if (diskRasterB != null && diskRasterB.exists()) {
-                            String filePathKey = "FILE_" + diskRasterB.getAbsolutePath();
-                            bufB = RASTER_IMAGE_CACHE.get(filePathKey);
-                            if (bufB == null) {
-                                bufB = ImageIO.read(diskRasterB);
-                                if (bufB != null) RASTER_IMAGE_CACHE.put(filePathKey, bufB);
-                            }
-                        } else if ("density".equals(channelKey)) {
-                            bufB = HistoricalMapGenerator.rasterizeDensityMapForYear(finalScB.getPopulationDensityType(), finalScB, targetYear);
-                        } else {
-                            HistoricalMapGenerator.populateScenarioHistoricalMaps(finalScB);
-                            bufB = base64ToBufferedImage(extractChannelBase64(finalScB, channelKey));
-                        }
-                        if (bufB != null) {
-                            RASTER_IMAGE_CACHE.put(cacheKeyB, bufB);
-                        }
-                    }
-                }
-
-                if (bufA != null && bufB != null) {
-                    bufDiff = MapComparisonMetrics.generateDiscrepancyHeatmap(bufA, bufB);
-                }
-            } catch (Exception ex) {
-                logger.warn("Could not generate 2D comparison maps for target year {}: {}", targetYear, ex.getMessage());
-            }
-
-            if (currentReqId != spatialComparisonRequestId.get()) return;
-
-            final Image imgFxA = bufferedImageToFxImage(bufA);
-            final Image imgFxB = bufferedImageToFxImage(bufB);
-            final Image imgFxDiff = bufferedImageToFxImage(bufDiff);
-
-            final MapComparisonMetrics.MapComparisonResult metrics = (bufA != null && bufB != null)
-                ? MapComparisonMetrics.compareImages(bufA, bufB) : null;
-
-            javafx.application.Platform.runLater(() -> {
-                if (currentReqId != spatialComparisonRequestId.get()) return;
-
-                if (mapImageViewA != null) mapImageViewA.setImage(imgFxA);
-                if (mapImageViewB != null) mapImageViewB.setImage(imgFxB);
-                if (mapImageViewDiff != null) mapImageViewDiff.setImage(imgFxDiff);
-
-                if (metrics != null && spatialMetricsReportArea != null) {
-                    String pearsonEval = metrics.getPearsonR() >= 0.85
-                        ? "✅ (" + I18n.getOrDefault("analytics.spatial.high_fidelity", "High Fidelity") + ")"
-                        : "⚠️ (" + I18n.getOrDefault("analytics.spatial.divergence_detected", "Divergence Detected") + ")";
-
-                    spatialMetricsReportArea.setText(String.format(
-                        "📊 %s (Year %d AD - %s)\n" +
-                        "------------------------------------------------------------------------\n" +
-                        "• %s : %.4f\n" +
-                        "• %s : %.4f %s\n" +
-                        "• %s : %.4f\n" +
-                        "• %s : %.4f\n" +
-                        "• %s : %.4f\n" +
-                        "• %s : %.4f\n" +
-                        "• %s : %.4f (%s)\n" +
-                        "------------------------------------------------------------------------\n" +
-                        "%s",
-                        I18n.getOrDefault("analytics.spatial.metrics_header", "2D CARTOGRAPHIC FIDELITY METRICS"),
-                        targetYear,
-                        channelKey,
-                        I18n.getOrDefault("analytics.spatial.rmse", "Spatial Root Mean Square Error (RMSE)"), metrics.getRmse(),
-                        I18n.getOrDefault("analytics.spatial.pearson", "Spatial Pearson Correlation (r)"), metrics.getPearsonR(), pearsonEval,
-                        I18n.getOrDefault("analytics.spatial.ssim", "2D Structural Similarity (SSIM)"), metrics.getSsim(),
-                        I18n.getOrDefault("analytics.spatial.jaccard", "Categorical Jaccard Overlap Index"), metrics.getJaccardIndex(),
-                        I18n.getOrDefault("analytics.spatial.dice", "Dice Overlap Coefficient"), metrics.getDiceCoefficient(),
-                        I18n.getOrDefault("analytics.spatial.kl", "Spatial Entropy KL Divergence"), metrics.getKlDivergence(),
-                        I18n.getOrDefault("analytics.spatial.max_delta", "Maximum Spatial Discrepancy"), metrics.getMaxDeltaValue(),
-                        String.format(I18n.getOrDefault("analytics.spatial.coords_fmt", "Lat: %.2f°, Lng: %.2f°"), metrics.getMaxDeltaLat(), metrics.getMaxDeltaLng()),
-                        metrics.getFormattedReport()
-                    ));
-                } else if (spatialMetricsReportArea != null) {
-                    spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.status.tensor_unavailable", "⚠️ Cartographic tensor data unavailable for the selected epoch and channel."));
-                }
-
-                if (mapRegenBox != null) {
-                    mapRegenBox.setVisible(false);
-                    mapRegenBox.setManaged(false);
-                }
-            });
-        });
     }
 
-    private void preloadAll2DTensorsAsync(ScenarioSelectableItem itemA, ScenarioSelectableItem itemB, int startYear, int endYear) {
-        if (itemA == null && itemB == null) return;
-        if (playTimelineBtn != null) {
-            playTimelineBtn.setDisable(true);
-        }
-        if (mapRegenBox != null) {
-            mapRegenBox.setVisible(true);
-            mapRegenBox.setManaged(true);
-            mapRegenProgress.setProgress(0.0);
-            mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.preloading_maps", "⏳ Chargement des tenseurs 2D en mémoire..."));
-        }
-
-        preloadedTimelineYears.clear();
-
-        java.util.concurrent.CompletableFuture.runAsync(() -> {
-            try {
-                SimulationRunRecord runA = resolveRunRecord(itemA);
-                SimulationRunRecord runB = resolveRunRecord(itemB);
-                int step = Math.max(1, (endYear - startYear) / 12);
-                String channelKey = resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
-
-                int totalFrames = ((endYear - startYear) / step) + 1;
-                int count = 0;
-
-                for (int yr = startYear; yr <= endYear; yr += step) {
-                    preloadedTimelineYears.add(yr);
-                    count++;
-                    final double progress = (double) count / totalFrames;
-                    javafx.application.Platform.runLater(() -> {
-                        if (mapRegenProgress != null) mapRegenProgress.setProgress(progress);
-                        if (mapRegenStatusLabel != null) {
-                            mapRegenStatusLabel.setText(String.format(I18n.getOrDefault("analytics.status.preloading_maps_fmt", "⏳ Chargement des tenseurs 2D : %d%% (Veuillez patienter)"), (int) Math.round(progress * 100.0)));
-                        }
-                    });
-
-                    // Preload A
-                    if (itemA != null) {
-                        String keyA = itemA.getRunId() + "_" + yr + "_" + channelKey;
-                        if (!RASTER_IMAGE_CACHE.containsKey(keyA)) {
-                            java.awt.image.BufferedImage imgA = null;
-                            List<org.ether.society.database.H3Cell> cellsA = runA != null ? runA.getSpatialSnapshotAt(yr) : null;
-                            if (cellsA != null && !cellsA.isEmpty()) {
-                                int wA = computeOptimalRasterWidth(cellsA.size());
-                                imgA = rasterizeCellsToImage(cellsA, channelKey, wA, wA / 2);
-                            } else {
-                                File diskA = getDiskRasterForChannel(yr, channelKey);
-                                if (diskA != null && diskA.exists()) imgA = ImageIO.read(diskA);
-                            }
-                            if (imgA != null) RASTER_IMAGE_CACHE.put(keyA, imgA);
-                        }
-                    }
-
-                    // Preload B
-                    if (itemB != null) {
-                        String keyB = itemB.getRunId() + "_" + yr + "_" + channelKey;
-                        if (!RASTER_IMAGE_CACHE.containsKey(keyB)) {
-                            java.awt.image.BufferedImage imgB = null;
-                            List<org.ether.society.database.H3Cell> cellsB = runB != null ? runB.getSpatialSnapshotAt(yr) : null;
-                            if (cellsB != null && !cellsB.isEmpty()) {
-                                int wB = computeOptimalRasterWidth(cellsB.size());
-                                imgB = rasterizeCellsToImage(cellsB, channelKey, wB, wB / 2);
-                            } else {
-                                File diskB = getDiskRasterForChannel(yr, channelKey);
-                                if (diskB != null && diskB.exists()) imgB = ImageIO.read(diskB);
-                            }
-                            if (imgB != null) RASTER_IMAGE_CACHE.put(keyB, imgB);
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                logger.warn("Tensor preloading completed with minor exceptions: {}", ex.getMessage());
-            } finally {
-                javafx.application.Platform.runLater(() -> {
-                    if (playTimelineBtn != null) playTimelineBtn.setDisable(false);
-                    if (mapRegenBox != null) {
-                        mapRegenBox.setVisible(false);
-                        mapRegenBox.setManaged(false);
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * Dynamically computes the optimal equirectangular raster width based on H3 grid cell count.
-     * Guarantees fine sub-pixel representation for H3 resolutions 5, 6, and 7 without aliasing.
-     *
-     * @param cellCount the total number of cells in the spatial layer
-     * @return the optimal image width (1024, 2048, 4096, or 8192)
-     */
     public static int computeOptimalRasterWidth(int cellCount) {
-        if (cellCount > 10_000_000) {
-            // Uber H3 Resolution 7 (~17.7M to 98M cells)
-            long maxMem = Runtime.getRuntime().maxMemory();
-            if (maxMem >= 8L * 1024 * 1024 * 1024) {
-                return 8192; // 8192 x 4096 (Ultra-HD 33.5 MP)
-            }
-            return 4096;
-        } else if (cellCount > 1_500_000) {
-            // Uber H3 Resolution 5 / 6 (2M to 14M cells)
-            return 4096; // 4096 x 2048 (Crisp 8.3 MP)
-        } else if (cellCount > 10_000) {
-            return 2048; // 2048 x 1024 (Nominal 2.1 MP)
-        } else {
-            return 1024;
-        }
-    }
-
-    private java.awt.image.BufferedImage rasterizeCellsToImage(List<org.ether.society.database.H3Cell> cells, String channel, int width, int height) {
-        if (cells == null || cells.isEmpty()) return null;
-        int targetW = width > 0 ? width : computeOptimalRasterWidth(cells.size());
-        int targetH = height > 0 ? height : targetW / 2;
-
-        java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(targetW, targetH, java.awt.image.BufferedImage.TYPE_INT_ARGB);
-        java.awt.Graphics2D g2 = img.createGraphics();
-        g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-
-        g2.setColor(new java.awt.Color(15, 23, 42));
-        g2.fillRect(0, 0, targetW, targetH);
-
-        // Adaptive disc radius: scales inversely with sqrt(cellCount) to avoid severe overdraw at Res 5-7
-        int r = Math.max(1, (int) Math.round(targetW / Math.sqrt(cells.size() * 3.5)));
-        if (r > 15) r = 15;
-
-        String chLower = channel != null ? channel.toLowerCase() : "";
-
-        for (org.ether.society.database.H3Cell c : cells) {
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            int x = (int) Math.round(((lng + 180.0) / 360.0) * targetW);
-            int y = (int) Math.round(((90.0 - lat) / 180.0) * targetH);
-
-            java.awt.Color col;
-            if (chLower.contains("densité") || chLower.contains("demographic") || chLower.contains("density") || chLower.contains("人口")) {
-                long pop = c.getPopulation() != null ? c.getPopulation() : 0;
-                if (pop > 0) {
-                    double norm = Math.min(1.0, Math.log10(pop + 1.0) / 6.0);
-                    col = getDensityColor(norm);
-                } else {
-                    col = new java.awt.Color(30, 41, 59);
-                }
-            } else if (chLower.contains("technologie") || chLower.contains("technology") || chLower.contains("outillage") || chLower.contains("科技")) {
-                double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
-                double norm = Math.min(1.0, tech / 100.0);
-                col = getTechColor(norm);
-            } else if (chLower.contains("température") || chLower.contains("temperature") || chLower.contains("climat") || chLower.contains("气温")) {
-                double temp = c.getTemperature() != null ? c.getTemperature() : 15.0;
-                double norm = Math.max(0.0, Math.min(1.0, (temp + 20.0) / 60.0));
-                col = getTemperatureColor(norm);
-            } else if (chLower.contains("aquifère") || chLower.contains("aquifer") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("含水层")) {
-                double aqua = c.getFreshwaterAquifer() != null ? c.getFreshwaterAquifer() : 50.0;
-                double norm = Math.max(0.0, Math.min(1.0, aqua / 100.0));
-                col = getAquiferColor(norm);
-            } else if (chLower.contains("biomasse") || chLower.contains("biomass") || chLower.contains("agricole") || chLower.contains("agriculture") || chLower.contains("农业")) {
-                double bio = c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0;
-                double norm = Math.max(0.0, Math.min(1.0, bio / 1000.0));
-                col = getAgricultureColor(norm);
-            } else if (chLower.contains("souveraineté") || chLower.contains("sovereignty") || chLower.contains("主权")) {
-                long polity = (c.getLanguageGroup() != null) ? (long) Math.abs(c.getLanguageGroup().hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode()) : 0L);
-                col = getPolityColor(polity);
-            } else if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("亲属")) {
-                long hash = c.getLanguageGroup() != null ? (long) Math.abs((c.getLanguageGroup() + "_kin").hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode() * 31) : 0L);
-                col = getPolityColor(hash);
-            } else if (chLower.contains("rituel") || chLower.contains("ritual") || chLower.contains("croyan") || chLower.contains("belief") || chLower.contains("信仰")) {
-                long hash = c.getLanguageGroup() != null ? (long) Math.abs((c.getLanguageGroup() + "_rit").hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode() * 73) : 0L);
-                col = getPolityColor(hash);
-            } else if (chLower.contains("commerc") || chLower.contains("trade") || chLower.contains("route") || chLower.contains("贸易")) {
-                double friction = c.getMovementFriction() != null ? c.getMovementFriction() : 1.0;
-                double norm = Math.max(0.0, Math.min(1.0, 1.0 - (friction / 5.0)));
-                col = getTechColor(norm);
-            } else if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("制度")) {
-                double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
-                col = getTechColor(Math.min(1.0, tech / 80.0));
-            } else if (chLower.contains("écolog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("生态")) {
-                double soc = c.getSoilOrganicCarbon() != null ? c.getSoilOrganicCarbon() : 50.0;
-                col = getAgricultureColor(Math.max(0.0, Math.min(1.0, soc / 100.0)));
-            } else if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("病原")) {
-                int recovered = c.getEpidemicRecovered() != null ? c.getEpidemicRecovered() : 0;
-                double norm = Math.min(1.0, recovered / 500.0);
-                col = getDensityColor(norm);
-            } else {
-                // Generalized fallback for any 10th, 11th, or custom user-defined cultural layer
-                long customHash = Math.abs((chLower + "_" + (c.getLanguageGroup() != null ? c.getLanguageGroup() : c.getId())).hashCode());
-                col = getPolityColor(customHash);
-            }
-
-            g2.setColor(col);
-            g2.fillOval(x - r, y - r, r * 2, r * 2);
-        }
-        g2.dispose();
-        return img;
-    }
-
-    private java.awt.Color getTemperatureColor(double norm) {
-        int r = (int) (norm * 255);
-        int g = (int) ((1.0 - Math.abs(norm - 0.5) * 2.0) * 200);
-        int b = (int) ((1.0 - norm) * 255);
-        return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
-    }
-
-    private java.awt.Color getAquiferColor(double norm) {
-        int r = (int) (20 + norm * 30);
-        int g = (int) (100 + norm * 140);
-        int b = (int) (200 + norm * 55);
-        return new java.awt.Color(Math.min(255, r), Math.min(255, g), Math.min(255, b));
-    }
-
-    private java.awt.Color getAgricultureColor(double norm) {
-        int r = (int) (120 - norm * 80);
-        int g = (int) (140 + norm * 100);
-        int b = (int) (30 + norm * 20);
-        return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
-    }
-
-    private java.awt.Color getDensityColor(double norm) {
-        if (norm < 0.33) {
-            return new java.awt.Color(16, 185, 129);
-        } else if (norm < 0.66) {
-            return new java.awt.Color(245, 158, 11);
-        } else {
-            return new java.awt.Color(239, 68, 68);
-        }
-    }
-
-    private java.awt.Color getTechColor(double norm) {
-        int r = (int) (56 + norm * (245 - 56));
-        int g = (int) (189 - norm * 80);
-        int b = (int) (248 - norm * 150);
-        return new java.awt.Color(Math.max(0, Math.min(255, r)), Math.max(0, Math.min(255, g)), Math.max(0, Math.min(255, b)));
-    }
-
-    private java.awt.Color getPolityColor(long id) {
-        if (id <= 0) return new java.awt.Color(100, 116, 139);
-        return java.awt.Color.getHSBColor((float) ((id * 0.618033988749895) % 1.0), 0.75f, 0.85f);
+        return SpatialTensorComparisonPane.computeOptimalRasterWidth(cellCount);
     }
 
     public static String resolveCanonicalChannelKey(String channel) {
-        if (channel == null || channel.isBlank()) {
-            return "density";
-        }
-        String ch = channel.trim();
-        // Disambiguate explicit tensor slug enclosed in parentheses e.g. "(custom_tensor_10_culte)"
-        if (ch.contains("(") && ch.contains(")")) {
-            int openIdx = ch.lastIndexOf('(');
-            int closeIdx = ch.lastIndexOf(')');
-            if (openIdx >= 0 && closeIdx > openIdx) {
-                String candidate = ch.substring(openIdx + 1, closeIdx).trim().toLowerCase();
-                if (candidate.startsWith("custom_tensor_") || candidate.startsWith("tensor_")) {
-                    return candidate.replaceAll("[^a-z0-9_]+", "_");
-                }
-            }
-        }
-        String chLower = ch.toLowerCase();
-        if (chLower.contains("technolog") || chLower.contains("outillage") || chLower.contains("科技")) return "technology";
-        if (chLower.contains("températ") || chLower.contains("temperat") || chLower.contains("climat") || chLower.contains("气温")) return "temperature";
-        if (chLower.contains("aquif") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("含水层")) return "aquifers";
-        if (chLower.contains("biom") || chLower.contains("agricul") || chLower.contains("biomass") || chLower.contains("农业")) return "biomes";
-        if (chLower.contains("souverain") || chLower.contains("sovereign") || chLower.contains("politi") || chLower.contains("fronti") || chLower.contains("border") || chLower.contains("主权")) return "sovereignty";
-        if (chLower.contains("isogloss") || chLower.contains("linguist") || chLower.contains("lang") || chLower.contains("语言")) return "isogloss";
-        if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("亲属")) return "kinship";
-        if (chLower.contains("rituel") || chLower.contains("ritual") || chLower.contains("croyan") || chLower.contains("belief") || chLower.contains("信仰")) return "rituals";
-        if (chLower.contains("commerc") || chLower.contains("trade") || chLower.contains("route") || chLower.contains("贸易")) return "tradenetwork";
-        if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("制度")) return "institutional";
-        if (chLower.contains("écolog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("生态")) return "ecological";
-        if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("病原")) return "pathogen";
-        if (chLower.contains("précipit") || chLower.contains("precipit") || chLower.contains("pluie") || chLower.contains("rainfall") || chLower.contains("降水")) return "precipitation";
-        if (chLower.contains("élévat") || chLower.contains("elevat") || chLower.contains("altitude") || chLower.contains("relief") || chLower.contains("海拔")) return "elevation";
-        if (chLower.contains("saison") || chLower.contains("season") || chLower.contains("季节")) return "seasonality";
-
-        // Dynamic fallback for custom or renamed 10th/11th cultural or geological layers
-        String customSlug = chLower.replaceAll("[^a-z0-9_]+", "_").replaceAll("^_+|_+$", "");
-        return customSlug.isBlank() ? "density" : customSlug;
+        return SpatialTensorComparisonPane.resolveCanonicalChannelKey(channel);
     }
 
-    private File getDiskRasterForChannel(int year, String channel) {
-        String baseMapDir = "data/maps/ether/earth/" + year + "/";
-        String channelKey = resolveCanonicalChannelKey(channel);
-        File rasterFile = new File(baseMapDir, "earth_" + year + "_" + channelKey + ".png");
-        if (rasterFile.exists()) return rasterFile;
-
-        // Support custom / non-standard layer filenames in the epoch directory
-        File dir = new File(baseMapDir);
-        if (dir.exists() && dir.isDirectory()) {
-            File[] matches = dir.listFiles((d, name) -> {
-                String n = name.toLowerCase();
-                return n.endsWith(".png") && (n.contains(channelKey) || n.endsWith("_" + channelKey + ".png"));
-            });
-            if (matches != null && matches.length > 0) {
-                return matches[0];
-            }
-        }
-
-        // O(log N) lookup in pre-indexed array of Earth epochs instead of scanning disk directories
-        if (AVAILABLE_EARTH_EPOCHS.length > 0) {
-            int idx = java.util.Arrays.binarySearch(AVAILABLE_EARTH_EPOCHS, year);
-            int closestYear;
-            if (idx >= 0) {
-                closestYear = AVAILABLE_EARTH_EPOCHS[idx];
-            } else {
-                int ins = -idx - 1;
-                if (ins == 0) {
-                    closestYear = AVAILABLE_EARTH_EPOCHS[0];
-                } else if (ins >= AVAILABLE_EARTH_EPOCHS.length) {
-                    closestYear = AVAILABLE_EARTH_EPOCHS[AVAILABLE_EARTH_EPOCHS.length - 1];
-                } else {
-                    int prev = AVAILABLE_EARTH_EPOCHS[ins - 1];
-                    int next = AVAILABLE_EARTH_EPOCHS[ins];
-                    closestYear = (Math.abs(prev - year) <= Math.abs(next - year)) ? prev : next;
-                }
-            }
-            File candidate = new File("data/maps/ether/earth/" + closestYear + "/earth_" + closestYear + "_" + channelKey + ".png");
-            if (candidate.exists()) return candidate;
-
-            File closestDir = new File("data/maps/ether/earth/" + closestYear + "/");
-            if (closestDir.exists() && closestDir.isDirectory()) {
-                File[] matches = closestDir.listFiles((d, name) -> {
-                    String n = name.toLowerCase();
-                    return n.endsWith(".png") && (n.contains(channelKey) || n.endsWith("_" + channelKey + ".png"));
-                });
-                if (matches != null && matches.length > 0) {
-                    return matches[0];
-                }
-            }
-        }
-        return null;
-    }
-
-    private String extractChannelBase64(Scenario sc, String channel) {
-        if (sc == null || channel == null) return null;
-        String chLower = channel.toLowerCase();
-        if (chLower.contains("souveraineté") || chLower.contains("sovereignty")) return sc.getCustomTensorMapBase64(3);
-        if (chLower.contains("isoglosses") || chLower.contains("linguistique") || chLower.contains("linguistic") || chLower.contains("langues")) return sc.getCustomTensorMapBase64(0);
-        if (chLower.contains("parenté") || chLower.contains("kinship")) return sc.getCustomTensorMapBase64(1);
-        if (chLower.contains("rituels") || chLower.contains("rituals") || chLower.contains("croyances")) return sc.getCustomTensorMapBase64(2);
-        if (chLower.contains("technologie") || chLower.contains("technology") || chLower.contains("artefacts") || chLower.contains("outillage")) return sc.getCustomTensorMapBase64(4);
-        if (chLower.contains("commerce") || chLower.contains("trade") || chLower.contains("corridors")) return sc.getCustomTensorMapBase64(5);
-        if (chLower.contains("institution") || chLower.contains("institutional") || chLower.contains("seshat")) return sc.getCustomTensorMapBase64(6);
-        if (chLower.contains("écologique") || chLower.contains("ecological") || chLower.contains("empreinte")) return sc.getCustomTensorMapBase64(7);
-        if (chLower.contains("pathogène") || chLower.contains("pathogen") || chLower.contains("immunité") || chLower.contains("santé")) return sc.getCustomTensorMapBase64(8);
-        return sc.getCustomDensityBase64();
-    }
-
-    private Image bufferedImageToFxImage(java.awt.image.BufferedImage buf) {
-        if (buf == null) return null;
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(buf, "PNG", baos);
-            return new Image(new ByteArrayInputStream(baos.toByteArray()));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private java.awt.image.BufferedImage base64ToBufferedImage(String base64) {
-        if (base64 == null || base64.isBlank()) return null;
-        try {
-            byte[] bytes = Base64.getDecoder().decode(base64);
-            return ImageIO.read(new ByteArrayInputStream(bytes));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private void toggleDateAnimation() {
-        if (isPlayingAnimation) {
-            if (timelineAnimation != null) timelineAnimation.stop();
-            isPlayingAnimation = false;
-            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Play Timeline"));
-        } else {
-            if (preloadedTimelineYears.isEmpty() && dateSlider != null) {
-                preloadedTimelineYears.add((int) dateSlider.getValue());
-            }
-            isPlayingAnimation = true;
-            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.pause_timeline", "⏸️ Pause"));
-            currentTimelineFrameIndex = 0;
-            if (dateSlider != null && !preloadedTimelineYears.isEmpty()) {
-                int curVal = (int) dateSlider.getValue();
-                for (int i = 0; i < preloadedTimelineYears.size(); i++) {
-                    if (preloadedTimelineYears.get(i) >= curVal) {
-                        currentTimelineFrameIndex = i;
-                        break;
-                    }
-                }
-            }
-            timelineAnimation = new Timeline(new KeyFrame(Duration.millis(350), evt -> {
-                if (dateSlider != null && !preloadedTimelineYears.isEmpty()) {
-                    currentTimelineFrameIndex = (currentTimelineFrameIndex + 1) % preloadedTimelineYears.size();
-                    int targetYr = preloadedTimelineYears.get(currentTimelineFrameIndex);
-                    dateSlider.setValue(targetYr);
-                }
-            }));
-            timelineAnimation.setCycleCount(Timeline.INDEFINITE);
-            timelineAnimation.play();
-        }
+    public SpatialTensorComparisonPane getSpatialTensorComparisonPane() {
+        return spatialTensorComparisonPane;
     }
 
     private double extractValue(SimulationRunRecord.MetricSnapshot snap, String metric, int year) {
@@ -3460,7 +2442,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             if (val == 0.0) val = snap.getStability();
             if (val != 0.0) return val;
         }
-        if (lower.contains("energy") || lower.contains("énerg")) {
+        if (lower.contains("energy") || lower.contains("├®nerg")) {
             val = snap.getValue("energyCaptured");
             if (val == 0.0) val = snap.getValue("primaryEnergy");
             if (val != 0.0) return val;
@@ -3473,7 +2455,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             if (val != 0.0) return val;
         }
 
-        if (lower.contains("mégafaune") || lower.contains("megafauna")) {
+        if (lower.contains("m├®gafaune") || lower.contains("megafauna")) {
             val = snap.getValue("megafaunaIndex");
             if (val != 0.0) return val;
             return org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(year, snap.getPopulation() / 1e6, 0.2);
@@ -3487,7 +2469,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             val = snap.getValue("zeroContainmentScore");
             return val != 0.0 ? val : 100.0;
         }
-        if (lower.contains("gini") || lower.contains("inégal")) {
+        if (lower.contains("gini") || lower.contains("in├®gal")) {
             val = snap.getValue("gini");
             if (val == 0.0) val = snap.getValue("giniIndex");
             if (val != 0.0) return val;
@@ -3508,15 +2490,15 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             val = snap.getValue("potableWater");
             if (val != 0.0) return val;
         }
-        if (lower.contains("fertil") || lower.contains("fécond")) {
+        if (lower.contains("fertil") || lower.contains("f├®cond")) {
             val = snap.getValue("fertilityRate");
             if (val != 0.0) return val;
         }
-        if (lower.contains("vie") || lower.contains("life") || lower.contains("espérance")) {
+        if (lower.contains("vie") || lower.contains("life") || lower.contains("esp├®rance")) {
             val = snap.getValue("lifeExpectancy");
             if (val != 0.0) return val;
         }
-        if (lower.contains("surproduction") || lower.contains("elite") || lower.contains("élite")) {
+        if (lower.contains("surproduction") || lower.contains("elite") || lower.contains("├®lite")) {
             val = snap.getValue("eliteOverproduction");
             if (val != 0.0) return val;
         }
@@ -3529,12 +2511,12 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             if (val == 0.0) val = snap.getValue("collapseVulnerability");
             if (val != 0.0) return val;
         }
-        if (lower.contains("complex") || lower.contains("interdépend")) {
+        if (lower.contains("complex") || lower.contains("interd├®pend")) {
             val = snap.getValue("systemComplexity");
             if (val == 0.0) val = snap.getValue("systemInterdependence");
             if (val != 0.0) return val;
         }
-        if (lower.contains("mémoire") || lower.contains("memory")) {
+        if (lower.contains("m├®moire") || lower.contains("memory")) {
             val = snap.getValue("collectiveMemory");
             if (val != 0.0) return val;
         }
@@ -3552,13 +2534,13 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
             return 0.0;
         }
-        if (lower.contains("températ") || lower.contains("temperat")) {
+        if (lower.contains("temp├®rat") || lower.contains("temperat")) {
             val = snap.getValue("temperature");
             if (val != 0.0) return val;
             double anom = snap.getValue("temperatureAnomaly");
             if (anom != 0.0) return 14.0 + anom;
         }
-        if (lower.contains("précipit") || lower.contains("precipit") || lower.contains("pluie")) {
+        if (lower.contains("pr├®cipit") || lower.contains("precipit") || lower.contains("pluie")) {
             val = snap.getValue("precipitation");
             if (val != 0.0) return val;
         }
@@ -3586,7 +2568,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             clipboard.setContent(content);
 
             String origText = copyReportBtn.getText();
-            copyReportBtn.setText(I18n.getOrDefault("analytics.status.copy_success", "✅ Rapport Copié !"));
+            copyReportBtn.setText(I18n.getOrDefault("analytics.status.copy_success", "Ô£à Rapport Copi├® !"));
             copyReportBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #059669; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
 
             Timeline resetBtnTimer = new Timeline(new KeyFrame(Duration.millis(2500), ev -> {
@@ -3614,32 +2596,6 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         );
     }
 
-    private void export2DCartographyZip() {
-        ScenarioSelectableItem itemA = comboScenarioA != null ? comboScenarioA.getValue() : null;
-        ScenarioSelectableItem itemB = comboScenarioB != null ? comboScenarioB.getValue() : null;
-        if (itemA == null && !scenarioList.isEmpty()) itemA = scenarioList.get(0);
-        if (itemB == null && scenarioList.size() > 1) itemB = scenarioList.get(1);
-        if (itemB == null) itemB = itemA;
-        if (itemA == null) return;
-
-        final int targetYear = dateSlider != null ? (int) dateSlider.getValue() : 0;
-        final String spatialReportText = spatialMetricsReportArea != null ? spatialMetricsReportArea.getText() : "";
-        final String channelKey = resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
-
-        org.ether.society.ui.export.ComparativeAnalyticsExporter.export2DCartographyZip(
-                export2DZipBtn,
-                itemA,
-                itemB,
-                targetYear,
-                channelKey,
-                spatialReportText,
-                mapImageViewA != null ? mapImageViewA.getImage() : null,
-                mapImageViewB != null ? mapImageViewB.getImage() : null,
-                mapImageViewDiff != null ? mapImageViewDiff.getImage() : null,
-                RASTER_IMAGE_CACHE
-        );
-    }
-
     private String sanitizeFileName(String name) {
         if (name == null) return "unknown";
         return name.replaceAll("[^a-zA-Z0-9_.-]", "_");
@@ -3660,15 +2616,10 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             if (statusCol != null) statusCol.setText(I18n.getOrDefault("analytics.col.status", "Database Execution Status"));
             if (metricLabel != null) metricLabel.setText(I18n.getOrDefault("analytics.metric_label", "Visualized Metric:"));
             if (interpolationLabel != null) interpolationLabel.setText(I18n.getOrDefault("analytics.interp_label", "Interpolation:"));
-            if (channelLabel != null) channelLabel.setText(I18n.getOrDefault("analytics.channel_label", "Tensor Channel:"));
-            if (scenarioSelectLabelA != null) scenarioSelectLabelA.setText(I18n.getOrDefault("analytics.label.select_a", "Baseline (A):"));
-            if (scenarioSelectLabelB != null) scenarioSelectLabelB.setText(I18n.getOrDefault("analytics.label.select_b", "Target (B):"));
-            updateExecutionContextBadge();
-            if (mapLabelDiff != null) mapLabelDiff.setText(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
-            if (playTimelineBtn != null) {
-                playTimelineBtn.setText(isPlayingAnimation ? I18n.getOrDefault("analytics.btn.pause_timeline", "⏸️ Pause") : I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Play Timeline"));
-                playTimelineBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.play_timeline", "Animate chronological evolution of 2D cartographic tensors over historical centuries.")));
+            if (spatialTensorComparisonPane != null) {
+                spatialTensorComparisonPane.updateTexts(scenarioList);
             }
+            updateExecutionContextBadge();
             if (copyReportBtn != null) {
                 copyReportBtn.setText(I18n.getOrDefault("analytics.btn.copy", "📋 Copy Report"));
                 copyReportBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.copy", "Copy markdown audit and comparative synthesis report directly to system clipboard.")));
@@ -3685,10 +2636,6 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 export1DCsvBtn.setText(I18n.getOrDefault("analytics.btn.export_1d_csv", "📥 Exporter les données CSV (Séries 1D)"));
                 export1DCsvBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.export_1d_csv", "Exporter l'ensemble des séries temporelles 1D sélectionnées avec leurs valeurs interpolées au format CSV.")));
             }
-            if (export2DZipBtn != null) {
-                export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "📦 Export 2D Tensors (.zip)"));
-                export2DZipBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.export_2d_zip", "Export all 2D comparative maps and spatial metrics report into a timestamped ZIP archive.")));
-            }
             if (executeMissingBtn != null) {
                 executeMissingBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.execute", "Run physical headless simulation across queued scenarios using the H3SimulationEngine.")));
             }
@@ -3699,10 +2646,6 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             if (chartHintLabel != null) {
                 chartHintLabel.setText(I18n.getOrDefault("analytics.chart.hint", "💡 Scroll wheel: Zoom on cursor | Drag: Pan horizontally | Double-click: Reset time range"));
             }
-            if (legendBlue != null) legendBlue.setText("🔵 " + I18n.getOrDefault("analytics.legend.under", "A < B (Underestimation)"));
-            if (legendSlate != null) legendSlate.setText("⬜ " + I18n.getOrDefault("analytics.legend.zero", "Δ = 0 (Identical / Zero divergence)"));
-            if (legendGreen != null) legendGreen.setText("🟢 " + I18n.getOrDefault("analytics.legend.close", "|Δ| ≤ 5% (Close agreement)"));
-            if (legendRed != null) legendRed.setText("🔴 " + I18n.getOrDefault("analytics.legend.over", "A > B (Overestimation)"));
             if (xAxis != null) {
                 xAxis.setLabel(I18n.getOrDefault("analytics.axis.x", "Calendar Year (BCE / CE)"));
                 Tooltip.install(xAxis, new Tooltip(I18n.getOrDefault("analytics.axis.tooltip_x", "Chronological Timeline: Calendar years (BC / AD). Mouse wheel zooms on cursor, drag pans, double-click resets.")));
@@ -3722,58 +2665,6 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             }
             if (explanationLabel != null && (explanationLabel.getText() == null || explanationLabel.getText().isBlank() || explanationLabel.getText().startsWith("Cochez les scénarios") || explanationLabel.getText().startsWith("Check scenarios") || explanationLabel.getText().startsWith("Marque los escenarios") || explanationLabel.getText().startsWith("Wählen Sie Szenarien") || explanationLabel.getText().startsWith("勾选上方列表"))) {
                 explanationLabel.setText(I18n.getOrDefault("analytics.divergence.check_hint", "Check scenarios in the list above to start comparison."));
-            }
-
-            if (spatialChannelCombo != null) {
-                int selectedIdx = spatialChannelCombo.getSelectionModel().getSelectedIndex();
-                if (selectedIdx < 0) selectedIdx = 0;
-                var oldAction = spatialChannelCombo.getOnAction();
-                spatialChannelCombo.setOnAction(null);
-                spatialChannelCombo.getItems().addAll(
-                    I18n.getOrDefault("analytics.spatial.density", "👥 Demographic Density"),
-                    I18n.getOrDefault("analytics.spatial.technology", "🔬 Technology & Tooling Level"),
-                    I18n.getOrDefault("analytics.spatial.temperature", "🌡️ Surface Temperature & Climate"),
-                    I18n.getOrDefault("analytics.spatial.aquifers", "💧 Aquifers & Freshwater Tables"),
-                    I18n.getOrDefault("analytics.spatial.agriculture", "🌾 Agricultural Biomass & Soils"),
-                    I18n.getOrDefault("analytics.spatial.sovereignty", "👑 Political Sovereignty & Borders"),
-                    I18n.getOrDefault("analytics.spatial.linguistic", "🗣️ Linguistic Isoglosses (Languages)"),
-                    I18n.getOrDefault("analytics.spatial.kinship", "🧬 Kinship & Family Structures"),
-                    I18n.getOrDefault("analytics.spatial.rituals", "🔮 Sacred Beliefs & Ritual Practices"),
-                    I18n.getOrDefault("analytics.spatial.trade", "🛣️ Trade Corridors & Exchange Routes"),
-                    I18n.getOrDefault("analytics.spatial.institutional", "⚖️ Institutional Complexity (Seshat)"),
-                    I18n.getOrDefault("analytics.spatial.ecological", "⚠️ Ecological Footprint & Overshoot"),
-                    I18n.getOrDefault("analytics.spatial.pathogen", "🧬 Pathogen Burden & Zoonotic Risk")
-                );
-
-                // Dynamically append any custom tensor names defined in loaded scenarios with explicit index & slug disambiguation
-                java.util.Set<String> customChannels = new java.util.LinkedHashSet<>();
-                if (scenarioList != null) {
-                    for (ScenarioSelectableItem item : scenarioList) {
-                        if (item != null && item.getScenario() != null) {
-                            int dims = item.getScenario().getCultureVectorDimensions();
-                            var customNames = item.getScenario().getCustomTensorNames();
-                            int maxDim = Math.max(dims, (customNames != null && !customNames.isEmpty()) ? customNames.keySet().stream().mapToInt(k -> k + 1).max().orElse(0) : 0);
-                            for (int tIdx = 9; tIdx < maxDim; tIdx++) {
-                                int oneBased = tIdx + 1;
-                                String rawName = customNames != null ? customNames.get(tIdx) : null;
-                                boolean hasCustomName = rawName != null && !rawName.isBlank();
-                                String displayName = hasCustomName ? rawName.trim() : (I18n.getOrDefault("scenario.tensor.custom.fallback", "Custom Layer") + " " + oneBased);
-                                String sanitized = displayName.toLowerCase().replaceAll("[^a-z0-9_]+", "_").replaceAll("^_+|_+$", "");
-                                String slug = "custom_tensor_" + String.format("%02d", oneBased) + (sanitized.isBlank() ? "" : "_" + sanitized);
-                                customChannels.add("🧬 " + I18n.getOrDefault("scenario.tensor.label_prefix", "Tensor ") + "[" + oneBased + "]: " + displayName + " (" + slug + ")");
-                            }
-                        }
-                    }
-                }
-                for (String customCh : customChannels) {
-                    if (!spatialChannelCombo.getItems().contains(customCh)) {
-                        spatialChannelCombo.getItems().add(customCh);
-                    }
-                }
-
-                if (selectedIdx >= spatialChannelCombo.getItems().size()) selectedIdx = 0;
-                spatialChannelCombo.getSelectionModel().select(selectedIdx);
-                spatialChannelCombo.setOnAction(oldAction);
             }
 
             if (interpolationCombo != null) {
