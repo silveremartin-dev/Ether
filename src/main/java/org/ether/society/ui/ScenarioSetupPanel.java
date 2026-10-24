@@ -5,6 +5,9 @@
  */
 package org.ether.society.ui;
 
+import org.ether.society.ui.scenario.ScenarioPlanetSyncManager;
+import org.ether.society.ui.scenario.ScenarioSpatiotemporalSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioClimateEventModel;
 import org.ether.society.ui.scenario.ScenarioBundleManager;
 import org.ether.society.ui.scenario.ScenarioEpochCatalog;
 import org.ether.society.ui.scenario.ScenarioPresetManager;
@@ -231,6 +234,21 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     // Delegated Section Builders and Managers
+    private final ScenarioPlanetSyncManager planetSyncManager = new ScenarioPlanetSyncManager(new ScenarioPlanetSyncManager.HostContext() {
+        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
+        @Override public void generatePreview() { ScenarioSetupPanel.this.generatePreview(); }
+        @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
+        @Override public boolean hasPreviewCells() { return currentPreviewCells != null && !currentPreviewCells.isEmpty(); }
+    });
+
+    private final ScenarioSpatiotemporalSectionBuilder spatiotemporalSectionBuilder = new ScenarioSpatiotemporalSectionBuilder(new ScenarioSpatiotemporalSectionBuilder.HostContext() {
+        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
+        @Override public void loadEarthHistoricalEvents() { ScenarioSetupPanel.this.loadEarthHistoricalEvents(); }
+        @Override public <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
+            ScenarioSetupPanel.this.attachDefaultValueHandling(control, defaultValue, resetAction);
+        }
+    });
+
     private final ScenarioSpatialBoundsSectionBuilder spatialBoundsBuilder = new ScenarioSpatialBoundsSectionBuilder(new ScenarioSpatialBoundsSectionBuilder.HostContext() {
         @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
         @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
@@ -693,163 +711,10 @@ public class ScenarioSetupPanel extends BorderPane {
 
 
     /** Internal model for a scheduled planetary event */
-    public static class ClimateEvent {
-        private final StringProperty type;
-        private final StringProperty name;
-        private final IntegerProperty year;
-        private final DoubleProperty latitude;
-        private final DoubleProperty longitude;
-        private final DoubleProperty depth;
-        private final DoubleProperty magnitude;
-
-        /**
-         * Climate event.
-         *
-         * @param type the type parameter (String)
-         * @param name the name parameter (String)
-         * @param year the year parameter (int)
-         * @param lat the lat parameter (double)
-         * @param lon the lon parameter (double)
-         * @param depth the depth parameter (double)
-         * @param mag the mag parameter (double)
-         * @return the resulting computation or state reference
-         */
+    public static class ClimateEvent extends ScenarioClimateEventModel {
         public ClimateEvent(String type, String name, int year, double lat, double lon, double depth, double mag) {
-            this.type = new SimpleStringProperty(type);
-            this.name = new SimpleStringProperty(name);
-            this.year = new SimpleIntegerProperty(year);
-            this.latitude = new SimpleDoubleProperty(lat);
-            this.longitude = new SimpleDoubleProperty(lon);
-            this.depth = new SimpleDoubleProperty(depth);
-            this.magnitude = new SimpleDoubleProperty(mag);
+            super(type, name, year, lat, lon, depth, mag);
         }
-
-        /**
-         * Type property.
-         *
-         * @return the resulting computation or state reference
-         */
-        public StringProperty typeProperty() { return type; }
-        /**
-         * Name property.
-         *
-         * @return the resulting computation or state reference
-         */
-        public StringProperty nameProperty() { return name; }
-        /**
-         * Year property.
-         *
-         * @return the resulting computation or state reference
-         */
-        public IntegerProperty yearProperty() { return year; }
-        /**
-         * Latitude property.
-         *
-         * @return the resulting computation or state reference
-         */
-        public DoubleProperty latitudeProperty() { return latitude; }
-        /**
-         * Longitude property.
-         *
-         * @return the resulting computation or state reference
-         */
-        public DoubleProperty longitudeProperty() { return longitude; }
-        /**
-         * Depth property.
-         *
-         * @return the resulting computation or state reference
-         */
-        public DoubleProperty depthProperty() { return depth; }
-        /**
-         * Magnitude property.
-         *
-         * @return the resulting computation or state reference
-         */
-        public DoubleProperty magnitudeProperty() { return magnitude; }
-        /**
-         * Get type.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getType() { return type.get(); }
-        /**
-         * Set type.
-         *
-         * @param v the v parameter (String)
-         */
-        public void setType(String v) { type.set(v); }
-        /**
-         * Get name.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getName() { return name.get(); }
-        /**
-         * Set name.
-         *
-         * @param v the v parameter (String)
-         */
-        public void setName(String v) { name.set(v); }
-        /**
-         * Get year.
-         *
-         * @return the resulting computation or state reference
-         */
-        public int getYear() { return year.get(); }
-        /**
-         * Set year.
-         *
-         * @param v the v parameter (int)
-         */
-        public void setYear(int v) { year.set(v); }
-        /**
-         * Get latitude.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getLatitude() { return latitude.get(); }
-        /**
-         * Set latitude.
-         *
-         * @param v the v parameter (double)
-         */
-        public void setLatitude(double v) { latitude.set(v); }
-        /**
-         * Get longitude.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getLongitude() { return longitude.get(); }
-        /**
-         * Set longitude.
-         *
-         * @param v the v parameter (double)
-         */
-        public void setLongitude(double v) { longitude.set(v); }
-        /**
-         * Get depth.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getDepth() { return depth.get(); }
-        /**
-         * Set depth.
-         *
-         * @param v the v parameter (double)
-         */
-        public void setDepth(double v) { depth.set(v); }
-        /**
-         * Get magnitude.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getMagnitude() { return magnitude.get(); }
-        /**
-         * Set magnitude.
-         *
-         * @param v the v parameter (double)
-         */
-        public void setMagnitude(double v) { magnitude.set(v); }
     }
 
     /**
@@ -894,79 +759,15 @@ public class ScenarioSetupPanel extends BorderPane {
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
         try {
-            boolean presetChanged = false;
-            if (planetPreset != null) {
-                if (!planetPreset.equals(this.activePlanetPreset)) {
-                    this.activePlanetPreset = planetPreset;
-                    presetChanged = true;
-                }
-            } else {
-                EcologyPreset activeEco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null;
-                if (activeEco != null) {
-                    PlanetPreset found = findPlanetPresetByName(activeEco.planetPresetName());
-                    if (!Objects.equals(found, this.activePlanetPreset)) {
-                        this.activePlanetPreset = found;
-                        presetChanged = true;
-                    }
-                }
-            }
-            if (this.activePlanetPreset == null) {
-                this.activePlanetPreset = PlanetPreset.EARTH_LIKE;
-                presetChanged = true;
-            }
-
-            if (planetPresetCombo != null) {
-                planetPresetCombo.setValue(this.activePlanetPreset);
-            }
-            if (ecologyName != null && ecologyPresetCombo != null) {
-                for (EcologyPreset eco : ecologyPresetCombo.getItems()) {
-                    if (eco.name().equalsIgnoreCase(ecologyName)) {
-                        ecologyPresetCombo.setValue(eco);
-                        break;
-                    }
-                }
-            }
-            updateInheritedContextDisplay(ecologyName);
-            if (presetChanged || currentPreviewCells == null || currentPreviewCells.isEmpty()) {
-                generatePreview();
-            } else {
-                drawPreview();
-            }
+            planetSyncManager.setInheritedContext(planetPreset, ecologyName);
+            this.activePlanetPreset = planetSyncManager.getActivePlanetPreset();
         } finally {
             isUpdatingFromPreset = oldUpdating;
         }
     }
 
-    /**
-     * Find planet preset by name.
-     *
-     * @param name the name parameter (String)
-     * @return the resulting computation or state reference
-     */
     public PlanetPreset findPlanetPresetByName(String name) {
-        if (name == null || name.isBlank()) return PlanetPreset.EARTH_LIKE;
-        for (PlanetPreset p : PlanetPreset.getPresets()) {
-            if (p.name().equalsIgnoreCase(name)) return p;
-        }
-        String lower = name.toLowerCase();
-        if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) return PlanetPreset.EARTH_LIG_100000BP;
-        if (lower.contains("-50") || lower.contains("sahul") || lower.contains("mis3") || lower.contains("mis 3")) return PlanetPreset.EARTH_MIS3_50000BP;
-        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) return PlanetPreset.EARTH_LGM_ONSET_25000BP;
-        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire") || lower.contains("solutrean") || lower.contains("solutréen")) return PlanetPreset.EARTH_LGM_20000BP;
-        if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene") || lower.contains("dryas")) return PlanetPreset.EARTH_EH_10000BP;
-        if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene")) return PlanetPreset.EARTH_MH_6000BP;
-        if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) return PlanetPreset.EARTH_LH_3000BP;
-        if (lower.contains("-1900") || lower.contains("bronze")) return PlanetPreset.EARTH_BRONZE_1900BP;
-        if (lower.contains("-1000") || lower.contains("iron") || lower.contains("fer")) return PlanetPreset.EARTH_IRON_1000BP;
-        for (PlanetPreset p : PlanetPreset.getPresets()) {
-            if (p.name().toLowerCase().contains(lower) || lower.contains(p.name().toLowerCase())) {
-                return p;
-            }
-        }
-        if (lower.contains("earth") || lower.contains("terre") || lower.contains("terran")) {
-            return PlanetPreset.EARTH_LIKE;
-        }
-        return PlanetPreset.EARTH_LIKE;
+        return planetSyncManager.findPlanetPresetByName(name);
     }
 
     private void initUI() {
@@ -1114,339 +915,19 @@ public class ScenarioSetupPanel extends BorderPane {
             }
         });
 
-        // --- Inherited Presets (Tab 1 Planet + Tab 2 Ecology) Header ---
-        planetSectionHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "ðŸª INHERITED CONTEXT (TABS 1 & 2)"));
-
-        planetPresetCombo = new ComboBox<>();
-        planetPresetCombo.getItems().setAll(PlanetPreset.getPresets());
-        planetPresetCombo.setCellFactory(p -> new ListCell<PlanetPreset>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (PlanetPreset)
-             * @param empty the empty parameter (boolean)
-             */
-            @Override
-            protected void updateItem(PlanetPreset item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("");
-                } else {
-                    setText(org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name()));
-                }
-            }
-        });
-        planetPresetCombo.setButtonCell(new ListCell<PlanetPreset>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (PlanetPreset)
-             * @param empty the empty parameter (boolean)
-             */
-            @Override
-            protected void updateItem(PlanetPreset item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    PlanetPreset current = planetPresetCombo != null ? planetPresetCombo.getValue() : null;
-                    setText(current != null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName(current.name()) : org.ether.society.i18n.I18n.getPlanetPresetDisplayName("Terre (Terran)"));
-                } else {
-                    setText(org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name()));
-                }
-            }
-        });
-        planetPresetCombo.setValue(PlanetPreset.EARTH_LIKE);
-        planetPresetCombo.setMaxWidth(Double.MAX_VALUE);
-        planetPresetCombo.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-opacity: 1.0; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 4px;");
-        planetPresetCombo.setConverter(new javafx.util.StringConverter<PlanetPreset>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (PlanetPreset)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String toString(PlanetPreset item) {
-                return item == null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName("Terre (Terran)") : org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name());
-            }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public PlanetPreset fromString(String string) {
-                return null;
-            }
-        });
-        planetPresetCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.planet_preset_disabled", "Inherited planetary preset automatically derived from chosen ecology (Tab 2).")));
-        planetPresetCombo.setDisable(true);
-
-        ecologyPresetCombo = new ComboBox<>();
-        ecologyPresetCombo.getItems().setAll(EcologyPreset.getBuiltInPresets());
-        ecologyPresetCombo.setValue(EcologyPreset.getBuiltInPresets().get(0));
-        ecologyPresetCombo.setMaxWidth(Double.MAX_VALUE);
-        ecologyPresetCombo.setConverter(new javafx.util.StringConverter<EcologyPreset>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (EcologyPreset)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String toString(EcologyPreset item) {
-                return item == null ? "" : org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name());
-            }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public EcologyPreset fromString(String string) {
-                return null;
-            }
-        });
-        ecologyPresetCombo.setCellFactory(p -> new ListCell<EcologyPreset>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (EcologyPreset)
-             * @param empty the empty parameter (boolean)
-             */
-            @Override
-            protected void updateItem(EcologyPreset item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setTooltip(null);
-                } else {
-                    setText(org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name()));
-                    String desc = item.getPresetDescription();
-                    if (desc != null && !desc.isBlank()) {
-                        Tooltip tip = new Tooltip(desc);
-                        tip.setWrapText(true);
-                        tip.setMaxWidth(450);
-                        setTooltip(tip);
-                    } else {
-                        setTooltip(null);
-                    }
-                }
-            }
-        });
-        ecologyPresetCombo.setButtonCell(new ListCell<EcologyPreset>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (EcologyPreset)
-             * @param empty the empty parameter (boolean)
-             */
-            @Override
-            protected void updateItem(EcologyPreset item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    EcologyPreset current = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null;
-                    setText(current != null ? org.ether.society.i18n.I18n.getPlanetPresetDisplayName(current.name()) : "");
-                } else {
-                    setText(org.ether.society.i18n.I18n.getPlanetPresetDisplayName(item.name()));
-                }
-            }
-        });
-        ecologyPresetCombo.setOnAction(e -> {
-            EcologyPreset selected = ecologyPresetCombo.getValue();
-            if (selected != null) {
-                PlanetPreset cascadedPlanet = findPlanetPresetByName(selected.planetPresetName());
-                if (cascadedPlanet != null) {
-                    this.activePlanetPreset = cascadedPlanet;
-                    planetPresetCombo.setValue(cascadedPlanet);
-                }
-                updateInheritedContextDisplay(selected.name());
-                notifyParamChange();
-            }
-        });
-
-        inheritedContextLabel = new Label(I18n.getOrDefault("scenario.info.earth_derived", "ðŸŒ¿ Ecology: Earth Standard Baseline  âž”  ðŸª Planet (derived): Earth (Terran)"));
-        inheritedContextLabel.setWrapText(true);
-        inheritedContextLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #0284c7; -fx-padding: 6 10; -fx-background-color: rgba(56, 189, 248, 0.12); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 6;");
-
-        ecoPromptLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.label.ecology_preset", "1. Ecological Preset (Tab 2):"));
-        planetPromptLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.label.planet_preset", "2. Planetary Preset (Tab 1 — Cascaded from Ecology):"));
-
-        VBox inheritedSection = createSection(planetSectionHeader, new VBox(8,
-                ecoPromptLabel,
-                ecologyPresetCombo,
-                planetPromptLabel,
-                planetPresetCombo,
-                inheritedContextLabel
-        ));
+        // --- Inherited Presets (Tab 1 Planet + Tab 2 Ecology) ---
+        VBox inheritedSection = planetSyncManager.buildSection();
+        planetPresetCombo = planetSyncManager.getPlanetPresetCombo();
+        ecologyPresetCombo = planetSyncManager.getEcologyPresetCombo();
+        inheritedContextLabel = planetSyncManager.getInheritedContextLabel();
 
         // --- Scenario General Info Section ---
-        title1 = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "ðŸŒ EPOCH & SPATIOTEMPORAL DEFINITION"));
-        GridPane grid1 = new GridPane();
-        grid1.setHgap(10);
-        grid1.setVgap(10);
-
-        startYearSpinner = new Spinner<>(-100000, 5000, -8000, 100);
-        startYearSpinner.setEditable(true);
-        startYearSpinner.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start_year", "Chronological marker at T=0 to set the simulation on a standard calendar reference. This value is for reference and does not directly affect physics equations.")));
-
-        endYearSpinner = new Spinner<>(-100000, 5000, 100, 100);
-        endYearSpinner.setEditable(true);
-        endYearSpinner.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.end_year", "Target end year of simulation. Determines total campaign duration for headless runs and comparative analytics.")));
-        endYearSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        startYearLabel = new Label();
-        endYearLabel = new Label();
-        h3ResolutionLabel = new Label();
-
-        // H3 Resolution (Row 0)
-        h3ResolutionCombo = new ComboBox<>();
-        h3ResolutionCombo.getItems().addAll(1, 2, 3, 4, 5, 6, 7, 8);
-        h3ResolutionCombo.setValue(3);
-        h3ResolutionCombo.setMaxWidth(Double.MAX_VALUE);
-        h3ResolutionCombo.setConverter(new javafx.util.StringConverter<Integer>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (Integer)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String toString(Integer item) {
-                return item == null ? "" : org.ether.society.i18n.I18n.getOrDefault("planet.param.resolution.res" + item, "Résolution " + item);
-            }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public Integer fromString(String string) {
-                return null;
-            }
-        });
-        Tooltip.install(h3ResolutionCombo, new Tooltip(org.ether.society.i18n.I18n.getOrDefault("planet.tooltip.resolution", "H3 Grid Resolution")));
-        Tooltip.install(h3ResolutionLabel, h3ResolutionCombo.getTooltip());
-        h3ResolutionHintLabel = new Label(I18n.getOrDefault("scenario.h3.hint",
-                "• Res 2–3 : Planétaire global multi-millénaire (~41k cel.) | Res 4–5 : Régional (~2.8M cel.) | Res 6+ : Micro-bassin."));
-        h3ResolutionHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
-        h3ResolutionHintLabel.setWrapText(true);
-        VBox h3Box = new VBox(2, h3ResolutionCombo, h3ResolutionHintLabel);
-
-        // Target Cohort Size (Row 1)
-        cohortSizeLabel = new Label();
-        targetCohortSizeSpinner = new Spinner<>(1, 100000, 150, 25);
-        targetCohortSizeSpinner.setEditable(true);
-        targetCohortSizeSpinner.setMaxWidth(Double.MAX_VALUE);
-        targetCohortSizeSpinner.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.cohort_size", 
-                "👥 Taille Cible des Cohortes Démographiques (Nœuds Agents DOD) [hab/cohorte] :\n" +
-                "Détermine la taille moyenne des groupes d'habitants représentés par un même nœud agent.\n" +
-                "• 1 à 30 hab/cohorte : Bandes nomades & chasseurs-cueilleurs\n" +
-                "• 150 hab/cohorte : Nombre de Dunbar (Villages sédentaires & communautés de base - Recommandé)\n" +
-                "• 10 000 à 50 000 hab/cohorte : Macro-cohortes, métropoles & calcul accéléré")));
-        Tooltip.install(cohortSizeLabel, targetCohortSizeSpinner.getTooltip());
-        targetCohortSizeSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        cohortSizeHintLabel = new Label(I18n.getOrDefault("scenario.cohort.hint",
-                "• 1–30 : Micro-tribus nomades | 150 : Recommandé par défaut (Nombre de Dunbar) | 10k–50k : Macro-cohortes."));
-        cohortSizeHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
-        cohortSizeHintLabel.setWrapText(true);
-        VBox cohortBox = new VBox(2, targetCohortSizeSpinner, cohortSizeHintLabel);
-
-        // Temporal Resolution (Row 2)
-        temporalResolutionLabel = new Label();
-        temporalResolutionCombo = new ComboBox<>();
-        temporalResolutionCombo.getItems().addAll(1.0, 7.0, 15.0, 30.0, 60.0, 90.0, 180.0, 365.0);
-        temporalResolutionCombo.setValue(30.0);
-        temporalResolutionCombo.setMaxWidth(Double.MAX_VALUE);
-        temporalResolutionCombo.setConverter(new javafx.util.StringConverter<Double>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (Double)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String toString(Double item) {
-                if (item == null) return "";
-                if (item == 1.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.1d", "1 day (High Precision Seasons & Epidemics)");
-                if (item == 7.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.7d", "1 semaine (7 jours)");
-                if (item == 15.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.15d", "15 jours");
-                if (item == 30.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.30d", "1 month (~30 days) [Default - Balanced]");
-                if (item == 60.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.60d", "2 mois");
-                if (item == 90.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.90d", "1 trimestre (~3 mois)");
-                if (item == 180.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.180d", "1 semestre (~6 mois)");
-                if (item == 365.0) return org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.365d", "1 year (365 days) [Ultra-Fast Multi-Millennia]");
-                return String.format(java.util.Locale.US, "%.0f %s", item, org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.days", "jours"));
-            }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public Double fromString(String string) {
-                return null;
-            }
-        });
-        Tooltip temporalTooltip = new Tooltip("""
-            ⏱️ Résolution Temporelle de la Simulation (Pas de Temps Δt) :
-            Détermine la granularité temporelle de chaque pas de calcul de la simulation.
-            • Pas de temps court (< 1 mois, ex: 1 jour, 1 semaine) : Haute précision dynamique pour les épidémies, le climat saisonnier et la mobilité rapide.
-            • Pas de temps standard (1 mois - par défaut) : Équilibre optimal entre la précision physique et la vitesse d'exécution.
-            • Pas de temps long (> 1 mois, ex: 3 mois, 1 an) : Accélération majeure pour les simulations à très grande échelle sur plusieurs millénaires.
-            """);
-        temporalResolutionCombo.setTooltip(temporalTooltip);
-        Tooltip.install(temporalResolutionLabel, temporalTooltip);
-        temporalResolutionCombo.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        temporalResolutionHintLabel = new Label(I18n.getOrDefault("scenario.temporal.hint",
-                "• 1 Mois : Recommandé par défaut (équilibre saisons/vitesse) | 1 Jour/Sem. : Épidémies & météo | 1 An : Multi-millénaire ultra-rapide."));
-        temporalResolutionHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
-        temporalResolutionHintLabel.setWrapText(true);
-        VBox tempBox = new VBox(2, temporalResolutionCombo, temporalResolutionHintLabel);
-
-        // Start Year (Row 3)
-        startYearSpinner.valueProperty().addListener((obs, oldV, newV) -> {
-            notifyParamChange();
-            if (newV != null) {
-                loadEarthHistoricalEvents();
-            }
-        });
-        Tooltip.install(startYearLabel, startYearSpinner.getTooltip());
-        Tooltip.install(endYearLabel, endYearSpinner.getTooltip());
-
-        // Add to grid1: Row 0 = H3 Res, Row 1 = Pas de temps, Row 2 = Cohort Size, Row 3 = Start Year, Row 4 = End Year
-        ColumnConstraints col0 = new ColumnConstraints();
-        col0.setMinWidth(190);
-        col0.setPrefWidth(220);
-        col0.setHgrow(Priority.NEVER);
-        ColumnConstraints col1 = new ColumnConstraints();
-        col1.setHgrow(Priority.ALWAYS);
-        col1.setFillWidth(true);
-        grid1.getColumnConstraints().addAll(col0, col1);
-
-        h3ResolutionLabel.setWrapText(true);
-        temporalResolutionLabel.setWrapText(true);
-        cohortSizeLabel.setWrapText(true);
-        startYearLabel.setWrapText(true);
-        endYearLabel.setWrapText(true);
-
-        grid1.addRow(0, h3ResolutionLabel, h3Box);
-        grid1.addRow(1, temporalResolutionLabel, tempBox);
-        grid1.addRow(2, cohortSizeLabel, cohortBox);
-        grid1.addRow(3, startYearLabel, startYearSpinner);
-        grid1.addRow(4, endYearLabel, endYearSpinner);
-
-        VBox section1Content = new VBox(10, grid1);
-        VBox section1 = createSection(title1, section1Content);
+        VBox section1 = spatiotemporalSectionBuilder.buildSection();
+        startYearSpinner = spatiotemporalSectionBuilder.getStartYearSpinner();
+        endYearSpinner = spatiotemporalSectionBuilder.getEndYearSpinner();
+        h3ResolutionCombo = spatiotemporalSectionBuilder.getH3ResolutionCombo();
+        targetCohortSizeSpinner = spatiotemporalSectionBuilder.getTargetCohortSizeSpinner();
+        temporalResolutionCombo = spatiotemporalSectionBuilder.getTemporalResolutionCombo();
 
         // --- 2. Demographics & Density Map Management ---
         VBox popSection = createPopulationDensitySection();
@@ -2279,20 +1760,7 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
     }
 
     private Image getElevationImageForPreset(PlanetPreset planet) {
-        if (planet == null) planet = activePlanetPreset != null ? activePlanetPreset : PlanetPreset.EARTH_LIKE;
-        if (planet.customElevBase64() != null && !planet.customElevBase64().isBlank()) {
-            return org.ether.society.data.ImageMapLoader.base64PngToImage(planet.customElevBase64());
-        }
-        String pSource = planet.elevationMapSource();
-        if (pSource == null || pSource.isBlank() || "none".equalsIgnoreCase(pSource)) {
-            pSource = planet.getCanonicalPlanet();
-        }
-        long yr = planet.getAssociatedEpochYear();
-        Image img = org.ether.society.data.ImageMapLoader.loadMapImage(pSource, yr, "elevation.png");
-        if (img == null && "earth".equalsIgnoreCase(pSource)) {
-            img = org.ether.society.data.ImageMapLoader.loadMapImage("earth", 2026L, "elevation.png");
-        }
-        return img;
+        return planetSyncManager.getElevationImageForPreset(planet);
     }
 
     private Image getCachedEarthElevationImage() {
@@ -2430,7 +1898,8 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
             if (ecologyPresetCombo != null && ecologyPresetCombo.getCellFactory() != null) {
                 ecologyPresetCombo.setButtonCell(ecologyPresetCombo.getCellFactory().call(null));
             }
-            updateInheritedContextDisplay(null);
+            planetSyncManager.updateTexts();
+            spatiotemporalSectionBuilder.updateTexts();
             updateEngineTexts();
             if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "ðŸŒ EPOCH & SPATIOTEMPORAL DEFINITION"));
             if (cultureHeader != null) cultureHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.culture_section", "🧠 CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
@@ -2809,80 +2278,9 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
     /**
      * Custom SpinnerValueFactory for Long values to avoid ClassCastException.
      */
-    public static class LongSpinnerValueFactory extends SpinnerValueFactory<Long> {
-        /** Internal state: min (long). */
-        private final long min;
-        /** Internal state: max (long). */
-        private final long max;
-        /** Internal state: step (long). */
-        private final long step;
-
-        /**
-         * Long spinner value factory.
-         *
-         * @param min the min parameter (long)
-         * @param max the max parameter (long)
-         * @param initialValue the initial value parameter (long)
-         * @param step the step parameter (long)
-         * @return the resulting computation or state reference
-         */
+    public static class LongSpinnerValueFactory extends org.ether.society.ui.util.LongSpinnerValueFactory {
         public LongSpinnerValueFactory(long min, long max, long initialValue, long step) {
-            this.min = min;
-            this.max = max;
-            this.step = step;
-            setConverter(new StringConverter<Long>() {
-                /**
-                 * To string.
-                 *
-                 * @param object the object parameter (Long)
-                 * @return the resulting computation or state reference
-                 */
-                @Override
-                public String toString(Long object) {
-                    return object == null ? "" : String.valueOf(object);
-                }
-                /**
-                 * From string.
-                 *
-                 * @param string the string parameter (String)
-                 * @return the resulting computation or state reference
-                 */
-                @Override
-                public Long fromString(String string) {
-                    if (string == null || string.isBlank()) return initialValue;
-                    try {
-                        String clean = string.replaceAll("[^0-9\\-]", "");
-                        return Long.parseLong(clean);
-                    } catch (Exception e) {
-                        return initialValue;
-                    }
-                }
-            });
-            setValue(initialValue);
-        }
-
-        /**
-         * Decrement.
-         *
-         * @param steps the steps parameter (int)
-         */
-        @Override
-        public void decrement(int steps) {
-            long current = getValue() != null ? getValue() : min;
-            long newValue = Math.max(min, current - (long) steps * step);
-            setValue(newValue);
-        }
-
-        /**
-         * Increment.
-         *
-         * @param steps the steps parameter (int)
-         */
-        @Override
-        public void increment(int steps) {
-            long current = getValue() != null ? getValue() : min;
-            long newValue = Math.min(max, current + (long) steps * step);
-            setValue(newValue);
+            super(min, max, initialValue, step);
         }
     }
 
