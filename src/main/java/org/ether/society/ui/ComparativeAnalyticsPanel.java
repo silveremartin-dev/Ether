@@ -10,8 +10,6 @@ import org.ether.society.analytics.*;
 import org.ether.society.analytics.GroundTruthAuditGenerator.AuditResult;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.i18n.I18n;
-import org.ether.society.model.Scenario;
-import org.ether.society.persistence.SaveMetadata;
 import org.ether.society.persistence.ScenarioRepository;
 import org.ether.society.persistence.SimulationSaveManager;
 import org.ether.society.ui.analytics.*;
@@ -20,17 +18,14 @@ import org.ether.society.ui.util.MarkdownViewerPane;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
@@ -41,7 +36,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * 6th Tab UI Panel: Comparative Analytics & Sensitivity Benchmarks.
+ * 6th Tab UI Panel: Comparative Analytics &amp; Sensitivity Benchmarks.
  * 
  * <p>Supports multi-scenario selection, execution status validation, automated headless
  * batch execution of missing scenarios, 1D multi-curve time-series visualization,
@@ -72,6 +67,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private TableView<ScenarioSelectableItem> scenarioTable;
     private ObservableList<ScenarioSelectableItem> scenarioList;
     private FilteredList<ScenarioSelectableItem> filteredScenarioList;
+    private ComparativeScenarioTableCoordinator.TableColumns tableColumns;
 
     private Label headerLabel;
     private Label metricLabel;
@@ -85,15 +81,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     private Label tableTitle;
     private TextField searchField;
 
-    private TableColumn<ScenarioSelectableItem, Boolean> selectCol;
     private boolean isUpdatingTexts = false;
-    private TableColumn<ScenarioSelectableItem, String> nameCol;
-    private TableColumn<ScenarioSelectableItem, String> planetCol;
-    private TableColumn<ScenarioSelectableItem, String> clippingCol;
-    private TableColumn<ScenarioSelectableItem, Long> yearsCol;
-    private TableColumn<ScenarioSelectableItem, Double> progressCol;
-    private TableColumn<ScenarioSelectableItem, Double> estDurationCol;
-    private TableColumn<ScenarioSelectableItem, String> statusCol;
 
     private HBox timeSeriesWarningBox;
     private Label timeSeriesWarningLabel;
@@ -168,271 +156,23 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
         scenarioTable = new TableView<>();
         VBox.setVgrow(scenarioTable, Priority.ALWAYS);
-        scenarioTable.setEditable(true);
-
-        scenarioTable.setRowFactory(tv -> {
-            TableRow<ScenarioSelectableItem> row = new TableRow<>() {
-                @Override
-                protected void updateItem(ScenarioSelectableItem item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setStyle("");
-                    } else if ("HISTORICAL_GROUND_TRUTH".equals(item.getRunId())) {
-                        setStyle("-fx-border-color: transparent transparent #38bdf8 transparent; -fx-border-width: 0 0 3px 0; -fx-border-style: solid; -fx-background-color: rgba(56, 189, 248, 0.12); -fx-font-weight: bold;");
-                    } else {
-                        setStyle("");
-                    }
-                }
-            };
-            row.setOnMouseClicked(event -> {
-                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY) {
-                    ScenarioSelectableItem item = row.getItem();
-                    if (item != null) {
-                        boolean isCheckBoxClick = false;
-                        if (event.getTarget() instanceof javafx.scene.Node target) {
-                            while (target != null && target != row) {
-                                if (target instanceof CheckBox) {
-                                    isCheckBoxClick = true;
-                                    break;
-                                }
-                                target = target.getParent();
-                            }
-                        }
-                        if (!isCheckBoxClick) {
-                            item.setSelected(!item.isSelected());
-                        }
-                    }
-                }
-            });
-            return row;
-        });
-
-        scenarioTable.getSelectionModel().selectedIndexProperty().addListener((obs, oldV, newV) -> {
-            if (newV != null && newV.intValue() >= 0) {
-                javafx.application.Platform.runLater(() -> scenarioTable.getSelectionModel().clearSelection());
-            }
-        });
-
-        selectCol = new TableColumn<>();
-        selectCol.setCellValueFactory(p -> p.getValue().selectedProperty());
-        selectCol.setCellFactory(col -> new TableCell<>() {
-            private final CheckBox checkBox = new CheckBox();
-            {
-                setAlignment(Pos.CENTER);
-                checkBox.setMnemonicParsing(false);
-                checkBox.setOnAction(e -> {
-                    ScenarioSelectableItem item = getTableRow() != null ? getTableRow().getItem() : null;
-                    if (item != null) item.setSelected(checkBox.isSelected());
-                });
-            }
-
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    checkBox.setSelected(item);
-                    setGraphic(checkBox);
-                }
-            }
-        });
-        selectCol.setPrefWidth(80);
-
-        nameCol = new TableColumn<>();
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        nameCol.setPrefWidth(220);
-
-        planetCol = new TableColumn<>();
-        planetCol.setCellValueFactory(p -> new javafx.beans.property.SimpleStringProperty(p.getValue().getPlanetDisplayName()));
-        planetCol.setPrefWidth(125);
-
-        clippingCol = new TableColumn<>();
-        clippingCol.setCellValueFactory(p -> new javafx.beans.property.SimpleStringProperty(p.getValue().getClippingDisplay()));
-        clippingCol.setPrefWidth(210);
-
-        yearsCol = new TableColumn<>();
-        yearsCol.setCellValueFactory(p -> new javafx.beans.property.SimpleLongProperty(p.getValue().getStartDateYear()).asObject());
-        yearsCol.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(Long item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setText(null);
-                } else {
-                    setText(getTableRow().getItem().getYearRange());
-                }
-            }
-        });
-        yearsCol.setPrefWidth(130);
-
-        progressCol = new TableColumn<>();
-        progressCol.setCellValueFactory(p -> new javafx.beans.property.SimpleDoubleProperty(p.getValue().getProgress()).asObject());
-        progressCol.setPrefWidth(130);
-        progressCol.setCellFactory(col -> new TableCell<>() {
-            private final ProgressBar progressBar = new ProgressBar(0.0);
-            private final Label percentLabel = new Label("0%");
-            private final HBox container = new HBox(6, progressBar, percentLabel);
-            {
-                progressBar.setPrefWidth(65);
-                progressBar.setMaxWidth(65);
-                progressBar.setPrefHeight(10);
-                container.setAlignment(Pos.CENTER_LEFT);
-                setAlignment(Pos.CENTER_LEFT);
-            }
-
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    ScenarioSelectableItem scItem = getTableRow().getItem();
-                    double prog = scItem.getProgress();
-                    progressBar.setProgress(prog);
-                    percentLabel.setText(scItem.getProgressPercentDisplay());
-                    if (prog >= 1.0) {
-                        progressBar.setStyle("-fx-accent: #10b981;");
-                        percentLabel.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 11px;");
-                    } else if (prog > 0.0) {
-                        progressBar.setStyle("-fx-accent: #f59e0b;");
-                        percentLabel.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold; -fx-font-size: 11px;");
-                    } else {
-                        progressBar.setStyle("-fx-accent: #64748b;");
-                        percentLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px;");
-                    }
-                    setGraphic(container);
-                    setText(null);
-                }
-            }
-        });
-
-        estDurationCol = new TableColumn<>();
-        estDurationCol.setCellValueFactory(p -> new javafx.beans.property.SimpleDoubleProperty(p.getValue().getRemainingDurationSec()).asObject());
-        estDurationCol.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setText(null);
-                } else {
-                    setText(getTableRow().getItem().getEstimatedDurationDisplay());
-                }
-            }
-        });
-        estDurationCol.setPrefWidth(110);
-        estDurationCol.setStyle("-fx-alignment: CENTER;");
-
-        statusCol = new TableColumn<>();
-        statusCol.setCellValueFactory(new PropertyValueFactory<>("statusDisplay"));
-        statusCol.setPrefWidth(240);
-        statusCol.setCellFactory(col -> new TableCell<>() {
-            private final ProgressIndicator spinner = new ProgressIndicator();
-            private final Label label = new Label();
-            private final HBox container = new HBox(6, spinner, label);
-            {
-                spinner.setMaxSize(16, 16);
-                spinner.setPrefSize(16, 16);
-                container.setAlignment(Pos.CENTER_LEFT);
-                setAlignment(Pos.CENTER_LEFT);
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    ScenarioSelectableItem scItem = getTableRow().getItem();
-                    switch (scItem.getBatchState()) {
-                        case RUNNING -> {
-                            spinner.setProgress(scItem.getProgress() > 0 ? scItem.getProgress() : -1);
-                            label.setText(String.format(I18n.getOrDefault("analytics.status.running_fmt", "🔄 Running (%d%%)"), (int) (scItem.getProgress() * 100)));
-                            label.setStyle("-fx-text-fill: #3b82f6; -fx-font-weight: bold;");
-                            setGraphic(container);
-                            setText(null);
-                        }
-                        case QUEUED -> {
-                            label.setText(String.format(I18n.getOrDefault("analytics.status.queued_fmt", "⏳ Queued (#%d)"), scItem.getQueueIndex()));
-                            label.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-                            setGraphic(label);
-                            setText(null);
-                        }
-                        case PAUSED -> {
-                            label.setText(I18n.getOrDefault("analytics.status.paused", "⏸️ Paused"));
-                            label.setStyle("-fx-text-fill: #94a3b8; -fx-font-weight: bold;");
-                            setGraphic(label);
-                            setText(null);
-                        }
-                        case EXECUTED -> {
-                            label.setText(scItem.getStatusDisplay());
-                            label.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                            label.setTooltip(new Tooltip(scItem.getRunId() != null && !scItem.getRunId().equals("N/A") ? "Run ID: " + scItem.getRunId() : ""));
-                            setGraphic(label);
-                            setText(null);
-                        }
-                        default -> {
-                            label.setText(scItem.getStatusDisplay());
-                            label.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                            label.setTooltip(new Tooltip(scItem.getRunId() != null && !scItem.getRunId().equals("N/A") ? "Run ID: " + scItem.getRunId() : ""));
-                            setGraphic(label);
-                            setText(null);
-                        }
-                    }
-                }
-            }
-        });
-
-        scenarioTable.getColumns().addAll(List.of(selectCol, nameCol, planetCol, clippingCol, yearsCol, progressCol, estDurationCol, statusCol));
-
-        selectCol.setComparator(Boolean::compare);
-        nameCol.setComparator(String.CASE_INSENSITIVE_ORDER);
-        planetCol.setComparator(String.CASE_INSENSITIVE_ORDER);
-        clippingCol.setComparator(String.CASE_INSENSITIVE_ORDER);
-        yearsCol.setComparator(Long::compare);
-        progressCol.setComparator(Double::compare);
-        estDurationCol.setComparator(Double::compare);
-        statusCol.setComparator(String.CASE_INSENSITIVE_ORDER);
 
         scenarioList = FXCollections.observableArrayList();
         filteredScenarioList = new FilteredList<>(scenarioList, p -> true);
-        SortedList<ScenarioSelectableItem> sortedScenarioList = new SortedList<>(filteredScenarioList);
-        sortedScenarioList.comparatorProperty().bind(Bindings.createObjectBinding(() -> {
-            Comparator<ScenarioSelectableItem> baseComp = scenarioTable.getComparator();
-            return (a, b) -> {
-                if (a == b) return 0;
-                if (a == null) return 1;
-                if (b == null) return -1;
-                boolean aGround = "HISTORICAL_GROUND_TRUTH".equals(a.getRunId());
-                boolean bGround = "HISTORICAL_GROUND_TRUTH".equals(b.getRunId());
-                if (aGround && bGround) return 0;
-                if (aGround) return -1;
-                if (bGround) return 1;
-                if (baseComp != null) {
-                    return baseComp.compare(a, b);
-                }
-                return 0;
-            };
-        }, scenarioTable.comparatorProperty()));
-
-        scenarioTable.setSortPolicy(tv -> TableView.DEFAULT_SORT_POLICY.call(tv));
+        tableColumns = ComparativeScenarioTableCoordinator.configureTable(scenarioTable, scenarioList, filteredScenarioList);
 
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             filteredScenarioList.setPredicate(item -> {
                 if (newVal == null || newVal.isBlank()) return true;
-                String lower = newVal.toLowerCase();
-                return item.getName().toLowerCase().contains(lower)
-                    || item.getPlanetDisplayName().toLowerCase().contains(lower)
-                    || item.getClippingDisplay().toLowerCase().contains(lower)
-                    || item.getYearRange().toLowerCase().contains(lower)
-                    || item.getProgressPercentDisplay().toLowerCase().contains(lower)
-                    || item.getStatusDisplay().toLowerCase().contains(lower);
+                String lower = newVal.toLowerCase(Locale.ROOT);
+                return item.getName().toLowerCase(Locale.ROOT).contains(lower)
+                    || item.getPlanetDisplayName().toLowerCase(Locale.ROOT).contains(lower)
+                    || item.getClippingDisplay().toLowerCase(Locale.ROOT).contains(lower)
+                    || item.getYearRange().toLowerCase(Locale.ROOT).contains(lower)
+                    || item.getProgressPercentDisplay().toLowerCase(Locale.ROOT).contains(lower)
+                    || item.getStatusDisplay().toLowerCase(Locale.ROOT).contains(lower);
             });
         });
-
-        scenarioTable.setItems(sortedScenarioList);
 
         warningLabel = new Label("");
         warningLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;");
@@ -668,213 +408,18 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     public void refreshRunList() {
-        Set<String> previousSelectedNames = new HashSet<>();
-        for (ScenarioSelectableItem it : scenarioList) {
-            if (it.isSelected()) {
-                previousSelectedNames.add(it.getName());
-                if (it.getScenario() != null && it.getScenario().getId() != null) {
-                    previousSelectedNames.add(String.valueOf(it.getScenario().getId()));
-                }
-                if (it.getRunId() != null) {
-                    previousSelectedNames.add(it.getRunId());
-                }
-            }
-        }
-
-        scenarioList.clear();
-
-        Scenario histScenario = new Scenario();
-        histScenario.setName(I18n.getOrDefault("analytics.scenario.ground_truth", "🌍 Historical Reality (Cliodynamic Ground Truth)"));
-        histScenario.setStartDateYear(-100000);
-        histScenario.setEndDateYear(2026);
-        boolean wasHistSelected = previousSelectedNames.isEmpty() || previousSelectedNames.contains("HISTORICAL_GROUND_TRUTH") || previousSelectedNames.contains(histScenario.getName());
-        ScenarioSelectableItem histItem = new ScenarioSelectableItem(histScenario, wasHistSelected, true, "HISTORICAL_GROUND_TRUTH");
-        histItem.selectedProperty().addListener((obs, oldV, newV) -> {
-            updateScenarioPairCombos();
-            checkExecutionStatus();
-            updateChartAndAnalysis();
-            updateReportIfActive();
-            update2DSpatialComparison();
-        });
-        scenarioList.add(histItem);
-
-        List<Scenario> allScenarios = scenarioRepository.getAllScenarios();
-        List<SaveMetadata> allSaves = Collections.emptyList();
-        try {
-            allSaves = saveManager.listSaves();
-        } catch (Exception e) {
-            logger.warn("Failed to list saves for analytics revalidation: {}", e.getMessage());
-        }
-
-        H3SimulationEngine activeEngine = (engineSupplier != null) ? engineSupplier.get() : null;
-        Set<String> matchedSaveIds = new HashSet<>();
-
-        for (Scenario sc : allScenarios) {
-            String scName = sc.getDisplayName();
-            if (scName == null || scName.isBlank()) {
-                scName = I18n.getOrDefault("analytics.unnamed_scenario", "Unnamed Scenario") + (sc.getId() != null ? " (#" + sc.getId() + ")" : "");
-            }
-
-            Optional<SimulationRunRecord> recordOpt = runRepository.getRunByScenarioName(sc.getName());
-            if (!recordOpt.isPresent()) recordOpt = runRepository.getRunByScenarioName(scName);
-            if (!recordOpt.isPresent() && sc.getId() != null) recordOpt = Optional.ofNullable(runRepository.getRun(String.valueOf(sc.getId())));
-
-            SaveMetadata matchingSave = null;
-            String scNorm = sc.getName() != null ? sc.getName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
-            String scKey = sc.getPresetKey() != null ? sc.getPresetKey().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
-            String scDisp = sc.getDisplayName() != null ? sc.getDisplayName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
-            String scDensity = sc.getPopulationDensityType() != null ? sc.getPopulationDensityType().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
-
-            for (SaveMetadata save : allSaves) {
-                String saveId = save.getId() != null ? save.getId().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
-                String saveNorm = save.getName() != null ? save.getName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
-                String saveScNorm = save.getScenarioName() != null ? save.getScenarioName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
-                
-                boolean textMatch = (!scKey.isEmpty() && (saveNorm.contains(scKey) || saveScNorm.contains(scKey) || saveId.contains(scKey)))
-                             || (!scNorm.isEmpty() && (saveNorm.contains(scNorm) || saveScNorm.contains(scNorm) || saveId.contains(scNorm)))
-                             || (!scDisp.isEmpty() && (saveNorm.contains(scDisp) || saveScNorm.contains(scDisp) || saveId.contains(scDisp)))
-                             || (!scDensity.isEmpty() && (saveNorm.contains(scDensity) || saveScNorm.contains(scDensity)));
-
-                boolean epochSemanticMatch = false;
-                if (!textMatch) {
-                    if ((scNorm.contains("afrique") || scNorm.contains("africa") || scNorm.contains("toba") || scNorm.contains("sapiens")) && (saveId.contains("epoch1") || saveId.contains("paleolithic") || saveNorm.contains("africa") || saveScNorm.contains("afrique"))) {
-                        epochSemanticMatch = true;
-                    } else if ((scNorm.contains("dryas") || scNorm.contains("natufien")) && (saveId.contains("dryas") || saveNorm.contains("dryas") || saveScNorm.contains("dryas"))) {
-                        epochSemanticMatch = true;
-                    } else if ((scNorm.contains("bering") || scNorm.contains("solutre") || scNorm.contains("lgm") || scNorm.contains("glaciaire")) && (saveId.contains("epoch2") || saveId.contains("lgm") || saveNorm.contains("beringia"))) {
-                        epochSemanticMatch = true;
-                    } else if ((scNorm.contains("fertile") || scNorm.contains("crescent") || scNorm.contains("sahara") || scNorm.contains("neolith")) && (saveId.contains("epoch3") || saveId.contains("neolithic") || saveNorm.contains("sahara"))) {
-                        epochSemanticMatch = true;
-                    } else if ((scNorm.contains("bronze") || scNorm.contains("mesopotam") || scNorm.contains("assyri") || scNorm.contains("harappa") || scNorm.contains("egypt")) && (saveId.contains("epoch4") || saveId.contains("bronze") || saveId.contains("harappa") || saveNorm.contains("egypt"))) {
-                        epochSemanticMatch = true;
-                    }
-                }
-
-                if (textMatch || epochSemanticMatch) {
-                    matchedSaveIds.add(save.getId());
-                    boolean isSaveRun = save.getId() != null && save.getId().startsWith("RUN-");
-                    boolean prevIsRun = matchingSave != null && matchingSave.getId() != null && matchingSave.getId().startsWith("RUN-");
-                    if (matchingSave == null || (isSaveRun && !prevIsRun) || (isSaveRun == prevIsRun && save.getYear() > matchingSave.getYear())) {
-                        matchingSave = save;
-                    }
-                }
-            }
-
-            boolean isInteractiveMatch = (activeEngine != null 
-                && activeEngine.getCurrentScenario() != null 
-                && (activeEngine.getCurrentScenario().getName().equalsIgnoreCase(sc.getName())
-                    || (sc.getId() != null && sc.getId().equals(activeEngine.getCurrentScenario().getId()))));
-
-            long startYear = sc.getStartDateYear();
-            long endYear = sc.getEndDateYear();
-            long totalYears = Math.max(1, endYear - startYear);
-            long maxYearReached = startYear;
-            String runId = "N/A";
-
-            if (recordOpt.isPresent() && !recordOpt.get().getTimeSeriesData().isEmpty()) {
-                SimulationRunRecord rec = recordOpt.get();
-                runId = rec.getRunId();
-                maxYearReached = Math.max(maxYearReached, rec.getEndYear());
-            }
-
-            if (matchingSave != null) {
-                String saveId = matchingSave.getId();
-                ComparativeTelemetryDataLoader.ensureHistoryLoadedForSave(saveId, sc.getName(), runRepository);
-                recordOpt = Optional.ofNullable(runRepository.getRun(saveId));
-                if (recordOpt.isPresent() && !recordOpt.get().getTimeSeriesData().isEmpty()) {
-                    runId = saveId;
-                    maxYearReached = Math.max(maxYearReached, matchingSave.getYear());
-                }
-            }
-
-            if (isInteractiveMatch) {
-                maxYearReached = Math.max(maxYearReached, activeEngine.getCurrentYear());
-            }
-
-            boolean hasTelemetry = recordOpt.isPresent() && !recordOpt.get().getTimeSeriesData().isEmpty();
-            double progress = Math.min(1.0, Math.max(0.0, (double) (maxYearReached - startYear) / totalYears));
-            if (hasTelemetry && (matchingSave != null || recordOpt.get().getEndYear() >= endYear)) {
-                progress = 1.0;
-            }
-            boolean executed = hasTelemetry && progress >= 1.0;
-            if (!hasTelemetry) {
-                executed = false;
-                runId = "N/A";
-            }
-
-            boolean isSelected = previousSelectedNames.contains(sc.getName())
-                || previousSelectedNames.contains(scName)
-                || (sc.getId() != null && previousSelectedNames.contains(String.valueOf(sc.getId())))
-                || (!"N/A".equals(runId) && previousSelectedNames.contains(runId));
-
-            ScenarioSelectableItem item = new ScenarioSelectableItem(sc, isSelected, executed, runId);
-            item.setProgress(progress);
-            item.recalculateEstimate();
-
-            item.selectedProperty().addListener((obs, oldV, newV) -> {
-                updateScenarioPairCombos();
-                checkExecutionStatus();
-                scheduleDebouncedAnalyticsUpdate();
-            });
-
-            scenarioList.add(item);
-            if (item.isExecuted() && item.getRunId() != null && !item.getRunId().equals("N/A")) {
-                matchedSaveIds.add(item.getRunId());
-            }
-        }
-
-        for (SaveMetadata save : allSaves) {
-            String saveId = save.getId();
-            if (saveId == null || matchedSaveIds.contains(saveId)) continue;
-
-            String runName = save.getName();
-            if (runName == null || runName.isBlank() || runName.equalsIgnoreCase("Unknown")) {
-                runName = save.getScenarioName();
-            }
-            if (runName == null || runName.isBlank()) runName = saveId;
-
-            String runNameLower = runName.toLowerCase();
-            String saveIdLower = saveId.toLowerCase();
-            if (runNameLower.contains("test_save") || runNameLower.contains("autosave_exit") ||
-                saveIdLower.startsWith("autosave_") || saveIdLower.contains("test_save") ||
-                runNameLower.startsWith("test") || runNameLower.equals("null")) {
-                continue;
-            }
-
-            ComparativeTelemetryDataLoader.ensureHistoryLoadedForSave(saveId, save.getScenarioName(), runRepository);
-            SimulationRunRecord runRec = runRepository.getRun(saveId);
-            if (runRec != null && !runRec.getTimeSeriesData().isEmpty()) {
-                long startY = runRec.getStartYear();
-                long endY = Math.max(startY + 1, runRec.getEndYear());
-
-                final String finalRunName = runName;
-                boolean alreadyListed = scenarioList.stream().anyMatch(ex -> ex.getName().equalsIgnoreCase(finalRunName));
-                if (alreadyListed) {
-                    matchedSaveIds.add(saveId);
-                    continue;
-                }
-
-                Scenario synthScenario = new Scenario();
-                synthScenario.setName(runName);
-                synthScenario.setStartDateYear(startY);
-                synthScenario.setEndDateYear(endY);
-                synthScenario.setH3Resolution(save.getH3Resolution() > 0 ? save.getH3Resolution() : 3);
-
-                boolean isSelected = previousSelectedNames.contains(runName) || previousSelectedNames.contains(saveId);
-                ScenarioSelectableItem extraItem = new ScenarioSelectableItem(synthScenario, isSelected, true, saveId);
-                extraItem.setProgress(1.0);
-                extraItem.recalculateEstimate();
-
-                extraItem.selectedProperty().addListener((obs, oldV, newV) -> {
+        ComparativeRunListLoader.refreshRunList(
+                scenarioList,
+                scenarioRepository,
+                saveManager,
+                runRepository,
+                engineSupplier,
+                item -> {
                     updateScenarioPairCombos();
                     checkExecutionStatus();
                     scheduleDebouncedAnalyticsUpdate();
-                });
-
-                scenarioList.add(extraItem);
-                matchedSaveIds.add(saveId);
-            }
-        }
+                }
+        );
 
         updateScenarioPairCombos();
         checkExecutionStatus();
@@ -1070,14 +615,16 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         try {
             if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("analytics.header", "📊 COMPARATIVE ANALYTICS & SCENARIO BENCHMARKS (DEEP ANALYTICS)"));
             if (tableTitle != null) tableTitle.setText(I18n.getOrDefault("analytics.table_title", "📋 Historical Baseline & Simulated Scenarios"));
-            if (selectCol != null) selectCol.setText(I18n.getOrDefault("analytics.col.compare", "Compare"));
-            if (nameCol != null) nameCol.setText(I18n.getOrDefault("analytics.col.name", "Scenario Name"));
-            if (planetCol != null) planetCol.setText(I18n.getOrDefault("analytics.col.planet", "Planète"));
-            if (clippingCol != null) clippingCol.setText(I18n.getOrDefault("analytics.col.clipping", "Fenêtrage"));
-            if (yearsCol != null) yearsCol.setText(I18n.getOrDefault("analytics.col.years", "Time Range"));
-            if (progressCol != null) progressCol.setText(I18n.getOrDefault("analytics.col.progress", "Progress"));
-            if (estDurationCol != null) estDurationCol.setText(I18n.getOrDefault("analytics.col.est_duration", "Remaining Time"));
-            if (statusCol != null) statusCol.setText(I18n.getOrDefault("analytics.col.status", "Database Execution Status"));
+            if (tableColumns != null) {
+                if (tableColumns.selectCol() != null) tableColumns.selectCol().setText(I18n.getOrDefault("analytics.col.compare", "Compare"));
+                if (tableColumns.nameCol() != null) tableColumns.nameCol().setText(I18n.getOrDefault("analytics.col.name", "Scenario Name"));
+                if (tableColumns.planetCol() != null) tableColumns.planetCol().setText(I18n.getOrDefault("analytics.col.planet", "Planète"));
+                if (tableColumns.clippingCol() != null) tableColumns.clippingCol().setText(I18n.getOrDefault("analytics.col.clipping", "Fenêtrage"));
+                if (tableColumns.yearsCol() != null) tableColumns.yearsCol().setText(I18n.getOrDefault("analytics.col.years", "Time Range"));
+                if (tableColumns.progressCol() != null) tableColumns.progressCol().setText(I18n.getOrDefault("analytics.col.progress", "Progress"));
+                if (tableColumns.estDurationCol() != null) tableColumns.estDurationCol().setText(I18n.getOrDefault("analytics.col.est_duration", "Remaining Time"));
+                if (tableColumns.statusCol() != null) tableColumns.statusCol().setText(I18n.getOrDefault("analytics.col.status", "Database Execution Status"));
+            }
             if (metricLabel != null) metricLabel.setText(I18n.getOrDefault("analytics.metric_label", "Visualized Metric:"));
             if (interpolationLabel != null) interpolationLabel.setText(I18n.getOrDefault("analytics.interp_label", "Interpolation:"));
             if (spatialTensorComparisonPane != null) spatialTensorComparisonPane.updateTexts(scenarioList);
@@ -1196,21 +743,21 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             @Override
             protected void updateItem(HistoricalValidationKernel.InterpolationMethod item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : I18n.getOrDefault("interpolation." + item.name().toLowerCase(), item.name()));
+                setText(empty || item == null ? "" : I18n.getOrDefault("interpolation." + item.name().toLowerCase(Locale.ROOT), item.name()));
             }
         });
         combo.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(HistoricalValidationKernel.InterpolationMethod item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "" : I18n.getOrDefault("interpolation." + item.name().toLowerCase(), item.name()));
+                setText(empty || item == null ? "" : I18n.getOrDefault("interpolation." + item.name().toLowerCase(Locale.ROOT), item.name()));
             }
         });
         combo.setConverter(new javafx.util.StringConverter<>() {
             @Override
             public String toString(HistoricalValidationKernel.InterpolationMethod object) {
                 if (object == null) return "";
-                return I18n.getOrDefault("interpolation." + object.name().toLowerCase(), object.name());
+                return I18n.getOrDefault("interpolation." + object.name().toLowerCase(Locale.ROOT), object.name());
             }
             @Override
             public HistoricalValidationKernel.InterpolationMethod fromString(String string) {
