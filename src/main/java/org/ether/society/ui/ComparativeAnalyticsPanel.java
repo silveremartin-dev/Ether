@@ -14,6 +14,8 @@ import org.ether.society.persistence.ScenarioRepository;
 import org.ether.society.ui.analytics.BatchState;
 import org.ether.society.ui.analytics.ScenarioSelectableItem;
 import org.ether.society.ui.analytics.SpatialTensorComparisonPane;
+import org.ether.society.analytics.GroundTruthAuditGenerator;
+import org.ether.society.analytics.GroundTruthAuditGenerator.VariableDriftAnalysis;
 import org.ether.society.ui.util.MarkdownViewerPane;
 
 import javafx.beans.binding.Bindings;
@@ -1584,224 +1586,6 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         }
     }
 
-    public static class VariableDriftAnalysis {
-        public final String variableName;
-        public final double mape;
-        public final String status;
-        public final String driftOnsetYear;
-        public final String peakDiscrepancy;
-        public final String temporalPattern;
-        public final String suspectEngine;
-        public final int sampleCount;
-        public final double meanObs;
-        public final double meanSim;
-        public final double stdSim;
-        public final double medianSim;
-        public final double q1Sim;
-        public final double q3Sim;
-        public final double cohenD;
-        public final String significance;
-
-        public VariableDriftAnalysis(String variableName, double mape, String status,
-                                     String driftOnsetYear, String peakDiscrepancy,
-                                     String temporalPattern, String suspectEngine,
-                                     int sampleCount, double meanObs, double meanSim,
-                                     double stdSim, double medianSim, double q1Sim,
-                                     double q3Sim, double cohenD, String significance) {
-            this.variableName = variableName;
-            this.mape = mape;
-            this.status = status;
-            this.driftOnsetYear = driftOnsetYear;
-            this.peakDiscrepancy = peakDiscrepancy;
-            this.temporalPattern = temporalPattern;
-            this.suspectEngine = suspectEngine;
-            this.sampleCount = sampleCount;
-            this.meanObs = meanObs;
-            this.meanSim = meanSim;
-            this.stdSim = stdSim;
-            this.medianSim = medianSim;
-            this.q1Sim = q1Sim;
-            this.q3Sim = q3Sim;
-            this.cohenD = cohenD;
-            this.significance = significance;
-        }
-
-        public String getCi95Display() {
-            if (sampleCount <= 1 || stdSim <= 1e-9) return String.format("[%,.2f ; %,.2f]", meanSim, meanSim);
-            double se = stdSim / Math.sqrt(sampleCount);
-            double moe = 1.96 * se;
-            return String.format("[%,.2f ; %,.2f]", meanSim - moe, meanSim + moe);
-        }
-    }
-
-    private VariableDriftAnalysis computeVariableDrift(String label, String benchKey, Map<Integer, Double> benchmark, Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries) {
-        if (timeSeries == null || timeSeries.isEmpty()) {
-            return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
-        }
-
-        List<Integer> simYears = new ArrayList<>(timeSeries.keySet());
-        Collections.sort(simYears);
-        if (simYears.isEmpty()) {
-            return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
-        }
-
-        HistoricalValidationKernel.InterpolationMethod method = (interpolationCombo != null && interpolationCombo.getValue() != null)
-            ? interpolationCombo.getValue() : HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC;
-
-        List<Integer> sampleYears = new ArrayList<>();
-        int sampleStep = Math.max(1, simYears.size() / 80);
-        for (int i = 0; i < simYears.size(); i += sampleStep) {
-            sampleYears.add(simYears.get(i));
-        }
-        if (!sampleYears.contains(simYears.get(simYears.size() - 1))) {
-            sampleYears.add(simYears.get(simYears.size() - 1));
-        }
-
-        double sumAbsError = 0.0;
-        int count = 0;
-        Integer driftYear = null;
-        int peakYear = sampleYears.get(0);
-        double maxError = 0.0;
-        List<Double> errorList = new ArrayList<>();
-        List<Double> obsList = new ArrayList<>();
-        List<Double> simList = new ArrayList<>();
-
-        for (int yr : sampleYears) {
-            double obs = HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, yr, method);
-            if (Double.isNaN(obs)) {
-                if (benchmark != null && !benchmark.isEmpty()) {
-                    int nearestY = benchmark.keySet().stream().min(Comparator.comparingInt(y -> Math.abs(y - yr))).orElse(yr);
-                    if (Math.abs(nearestY - yr) <= 10000) {
-                        obs = benchmark.get(nearestY);
-                    } else {
-                        continue;
-                    }
-                } else {
-                    continue;
-                }
-            }
-            if (obs == 0.0) continue;
-            double sim = extractValue(timeSeries.get(yr), benchKey, yr);
-            if ("worldPopulation".equals(benchKey) && sim > 10000.0) {
-                sim = sim / 1_000_000.0;
-            } else if ("grossWorldProduct".equals(benchKey)) {
-                // Benchmark is in Billion 1990 USD. If simulation stores raw GDP, convert to Billions:
-                if (sim > 1e6) {
-                    sim = sim / 1e9;
-                }
-            } else if ("primaryEnergy".equals(benchKey)) {
-                // Benchmark is in Exajoules (EJ). If simulation is in Joules, scale to EJ:
-                if (sim > 1e12) {
-                    sim = sim / 1e18;
-                }
-            } else if ("co2Concentration".equals(benchKey)) {
-                // Benchmark is in ppm (260-425 ppm). If carbonFootprint is stored as offset, scale to baseline 280 ppm:
-                if (sim < 100.0) {
-                    sim = 280.0 + sim;
-                }
-            } else if ("literacyRate".equals(benchKey)) {
-                // Benchmark is in percentage (0 - 100%). If avgTech is 0 - 10, scale to percentage:
-                if (sim <= 10.0 && sim > 0.0) {
-                    sim = sim * 10.0;
-                }
-            } else if ("sociopoliticalInstability".equals(benchKey)) {
-                // Benchmark is instability index (0 - 100). If stability is returned (> 50 while instability is low):
-                var snap = timeSeries.get(yr);
-                if (snap != null && snap.getMetricsMap().containsKey("conflict")) {
-                    sim = snap.getValue("conflict");
-                }
-            }
-
-            if (obs != 0.0) {
-                double errPct = Math.abs(sim - obs) / Math.abs(obs) * 100.0;
-                sumAbsError += errPct;
-                count++;
-                errorList.add(errPct);
-                obsList.add(obs);
-                simList.add(sim);
-
-                if (errPct > 10.0 && driftYear == null) {
-                    driftYear = yr;
-                }
-                if (errPct > maxError) {
-                    maxError = errPct;
-                    peakYear = yr;
-                }
-            }
-        }
-
-        double mape = (count > 0) ? (sumAbsError / count) : 0.0;
-        String status = mape < 5.0 ? "🟢 " + I18n.getOrDefault("analytics.audit.status_close", "Alignement fort (< 5%)")
-            : (mape < 25.0 ? "🟡 " + I18n.getOrDefault("analytics.audit.status_moderate", "Dérive modérée (5-25%)")
-            : "🔴 " + I18n.getOrDefault("analytics.audit.status_major", "Divergence critique (> 25%)"));
-
-        String onsetStr = (driftYear != null) ? String.format("%d AD", driftYear) : "— (" + I18n.getOrDefault("analytics.dynamics.aligned", "Stable / < 10%") + ")";
-        String peakStr = String.format("%d AD (Δ = %.1f%%)", peakYear, maxError);
-
-        // Compute scientific descriptive statistics
-        double meanObs = obsList.isEmpty() ? 0.0 : obsList.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-        double meanSim = simList.isEmpty() ? 0.0 : simList.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-
-        double varSim = 0.0;
-        double varObs = 0.0;
-        for (double v : simList) varSim += (v - meanSim) * (v - meanSim);
-        for (double v : obsList) varObs += (v - meanObs) * (v - meanObs);
-        double stdSim = simList.size() > 1 ? Math.sqrt(varSim / (simList.size() - 1)) : 0.0;
-        double stdObs = obsList.size() > 1 ? Math.sqrt(varObs / (obsList.size() - 1)) : 0.0;
-        double pooledStd = Math.sqrt((stdSim * stdSim + stdObs * stdObs) / 2.0);
-        double cohenD = (pooledStd > 1e-9) ? ((meanSim - meanObs) / pooledStd) : 0.0;
-
-        List<Double> sortedSim = new ArrayList<>(simList);
-        Collections.sort(sortedSim);
-        double medianSim = sortedSim.isEmpty() ? 0.0 : sortedSim.get(sortedSim.size() / 2);
-        double q1Sim = sortedSim.isEmpty() ? 0.0 : sortedSim.get(sortedSim.size() / 4);
-        double q3Sim = sortedSim.isEmpty() ? 0.0 : sortedSim.get(Math.min(sortedSim.size() - 1, (3 * sortedSim.size()) / 4));
-
-        String significance = Math.abs(cohenD) < 0.2 ? "ns (p > 0.10)"
-            : (Math.abs(cohenD) < 0.5 ? "* (p < 0.05)"
-            : (Math.abs(cohenD) < 0.8 ? "** (p < 0.01)" : "*** (p < 0.001)"));
-
-        String pattern;
-        if (errorList.size() <= 2) {
-            pattern = I18n.getOrDefault("analytics.dynamics.insufficient", "Intervalle restreint");
-        } else {
-            int signChanges = 0;
-            double firstErr = errorList.get(0);
-            double lastErr = errorList.get(errorList.size() - 1);
-            double minErr = Collections.min(errorList);
-            double errRange = maxError - minErr;
-            boolean sharpJump = false;
-
-            for (int i = 0; i < errorList.size() - 1; i++) {
-                double diff = errorList.get(i + 1) - errorList.get(i);
-                if (Math.abs(diff) > 0.45 * errRange && errRange > 15.0) {
-                    sharpJump = true;
-                }
-                if (i < errorList.size() - 2) {
-                    double nextDiff = errorList.get(i + 2) - errorList.get(i + 1);
-                    if ((diff > 0 && nextDiff < 0) || (diff < 0 && nextDiff > 0)) {
-                        signChanges++;
-                    }
-                }
-            }
-
-            if (signChanges >= 3 && errRange > 15.0) {
-                pattern = "〰️ " + I18n.getOrDefault("analytics.dynamics.oscillations", "Oscillations cycliques");
-            } else if (sharpJump) {
-                pattern = "⚡ " + I18n.getOrDefault("analytics.dynamics.shock", "Choc brusque / Bifurcation");
-            } else if (lastErr > firstErr + 10.0) {
-                pattern = "📈 " + I18n.getOrDefault("analytics.dynamics.accumulation", "Accumulation progressive");
-            } else if (maxError < 10.0) {
-                pattern = "🟢 " + I18n.getOrDefault("analytics.dynamics.parallel", "Trajectoire parallèle");
-            } else {
-                pattern = "📈 " + I18n.getOrDefault("analytics.dynamics.progressive", "Dérive progressive");
-            }
-        }
-
-        return new VariableDriftAnalysis(label, mape, status, onsetStr, peakStr, pattern, getEngineModuleForVariable(label),
-            count, meanObs, meanSim, stdSim, medianSim, q1Sim, q3Sim, cohenD, significance);
-    }
-
     private void runAnalysis() {
         List<ScenarioSelectableItem> selectedExecuted = scenarioList.stream()
             .filter(i -> i.isSelected() && i.isExecuted())
@@ -1833,304 +1617,48 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     }
 
     private void generateMultiScenarioGroundTruthAudit(List<ScenarioSelectableItem> simulatedSelected) {
-        StringBuilder fullReport = new StringBuilder();
-        fullReport.append("# ").append(I18n.getOrDefault("analytics.audit.title_clean", "📊 CLIODYNAMIC AUDIT & CALIBRATION REPORT")).append("\n\n");
-        fullReport.append(String.format("**%s** : %s\n\n", I18n.getOrDefault("analytics.report.baseline_label", "Baseline Reference"), I18n.getOrDefault("analytics.audit.ground_truth_ref", "Cliodynamic Historical Reality (-100,000 ➔ 2026 CE)")));
+        HistoricalValidationKernel.InterpolationMethod method = (interpolationCombo != null && interpolationCombo.getValue() != null)
+                ? interpolationCombo.getValue() : HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC;
 
-        int earliestDivergence = -1;
-        StringBuilder explanationSummary = new StringBuilder();
+        GroundTruthAuditGenerator.AuditResult result = GroundTruthAuditGenerator.generateMultiScenarioGroundTruthAudit(
+                simulatedSelected, method, this::resolveRunRecord);
 
-        Map<String, String> benchmarkKeys = new LinkedHashMap<>();
-        benchmarkKeys.put("👥 " + I18n.getOrDefault("analytics.spatial.density", "Global Population") + " (worldPopulation)", "worldPopulation");
-        benchmarkKeys.put("🦣 " + I18n.getOrDefault("metric.megafauna", "Megafauna Abundance Index") + " (megafaunaIndex)", "megafaunaIndex");
-        benchmarkKeys.put("☀️ " + I18n.getOrDefault("metric.milankovitch", "Milankovitch 65°N Insolation") + " (milankovitchInsolation)", "milankovitchInsolation");
-        benchmarkKeys.put("🛡️ " + I18n.getOrDefault("metric.containment", "Biogeographical Zero-Containment") + " (zeroContainmentScore)", "zeroContainmentScore");
-        benchmarkKeys.put("💰 " + I18n.getOrDefault("metric.gdp", "Gross World Product (GWP)") + " (grossWorldProduct)", "grossWorldProduct");
-        benchmarkKeys.put("⚡ " + I18n.getOrDefault("metric.energy", "Primary Energy Consumption") + " (primaryEnergy)", "primaryEnergy");
-        benchmarkKeys.put("🏙️ " + I18n.getOrDefault("metric.urbanization", "Urbanization Rate") + " (urbanizationRate)", "urbanizationRate");
-        benchmarkKeys.put("🌿 " + I18n.getOrDefault("metric.co2", "Atmospheric CO2 Concentration") + " (co2Concentration)", "co2Concentration");
-        benchmarkKeys.put("📖 " + I18n.getOrDefault("metric.literacy", "Global Literacy Rate") + " (literacyRate)", "literacyRate");
-        benchmarkKeys.put("📉 " + I18n.getOrDefault("metric.currency", "Sociopolitical Instability") + " (sociopoliticalInstability)", "sociopoliticalInstability");
-
-        record ScenarioAudit(
-            ScenarioSelectableItem item,
-            SimulationRunRecord run,
-            List<VariableDriftAnalysis> drifts,
-            Map<String, Double> mapes,
-            double avgMape,
-            double rSquared,
-            int scenarioDivergence
-        ) {}
-
-        List<ScenarioAudit> audits = new ArrayList<>();
-        Set<String> criticalDivergentVariables = new LinkedHashSet<>();
-        Set<String> suspectEngines = new LinkedHashSet<>();
-
-        for (ScenarioSelectableItem item : simulatedSelected) {
-            SimulationRunRecord run = resolveRunRecord(item);
-            if (run == null || run.getTimeSeriesData() == null || run.getTimeSeriesData().isEmpty()) {
-                continue;
-            }
-
-            var timeSeries = run.getTimeSeriesData();
-            List<VariableDriftAnalysis> drifts = new ArrayList<>();
-            Map<String, Double> mapes = new LinkedHashMap<>();
-            double totalMape = 0.0;
-            int validCount = 0;
-            int scenarioDivergence = -1;
-
-            for (var entry : benchmarkKeys.entrySet()) {
-                String label = entry.getKey();
-                String benchKey = entry.getValue();
-                Map<Integer, Double> benchmark = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
-                VariableDriftAnalysis drift = computeVariableDrift(label, benchKey, benchmark, timeSeries);
-                drifts.add(drift);
-                mapes.put(label, drift.mape);
-                if (drift.mape > 0) {
-                    totalMape += drift.mape;
-                    validCount++;
-                }
-                if (drift.mape > 20.0 || Math.abs(drift.cohenD) >= 0.8) {
-                    criticalDivergentVariables.add(label);
-                    if (drift.suspectEngine != null && !drift.suspectEngine.isBlank() && !drift.suspectEngine.equals("—")) {
-                        suspectEngines.add(drift.suspectEngine);
-                    }
-                }
-                if (drift.driftOnsetYear != null && !drift.driftOnsetYear.startsWith("—")) {
-                    try {
-                        int yr = Integer.parseInt(drift.driftOnsetYear.replace(" AD", "").trim());
-                        if (scenarioDivergence == -1 || yr < scenarioDivergence) {
-                            scenarioDivergence = yr;
-                        }
-                    } catch (Exception ignored) {}
-                }
-            }
-
-            double avgMape = validCount > 0 ? (totalMape / validCount) : 0.0;
-            double rSquared = Math.max(0.0, 1.0 - (avgMape / 100.0));
-
-            if (scenarioDivergence != -1 && (earliestDivergence == -1 || scenarioDivergence < earliestDivergence)) {
-                earliestDivergence = scenarioDivergence;
-            }
-
-            audits.add(new ScenarioAudit(item, run, drifts, mapes, avgMape, rSquared, scenarioDivergence));
-        }
-
-        // --- SECTION 1: SYNTHÈSE EXÉCUTIVE & ÉLÉMENTS SAILLANTS ---
-        double totalGlobalMape = 0.0;
-        for (ScenarioAudit a : audits) totalGlobalMape += a.avgMape;
-        double overallMeanMape = audits.isEmpty() ? 0.0 : (totalGlobalMape / audits.size());
-        double overallMeanR2 = Math.max(0.0, 1.0 - (overallMeanMape / 100.0));
-
-        fullReport.append("## 📋 1. ").append(I18n.getOrDefault("analytics.report.summary_header", "Synthèse Exécutive & Verdict Cliodynamique")).append("\n\n");
-        fullReport.append(String.format("• **Corpus Analysé** : %d scénario(s) sélectionné(s) et simulé(s)\n", audits.size()));
-        fullReport.append(String.format("• **Indice de Concordance Global ($R^2_{\\text{macro}}$)** : `%.4f` | MAPE macroscopique = `%.2f%%`\n", overallMeanR2, overallMeanMape));
-
-        String globalVerdict;
-        if (overallMeanMape <= 5.0) {
-            globalVerdict = "🟢 **Fidélité Empirique Étroite (< 5%)** — Les trajectoires biophysiques et démographiques reproduisent fidèlement les séries Seshat / Maddison / HYDE.";
-        } else if (overallMeanMape <= 20.0) {
-            globalVerdict = "🟡 **Conformité Biophysique Satisfaisante avec Dérive Modérée (5-20%)** — La dynamique macroscopique est respectée mais certaines transitions d'ères présentent des points d'inflexion sensibles.";
-        } else {
-            globalVerdict = "🔴 **Divergence Cliodynamique Critique (> 20%)** — Dérive systémique constatée nécessitant une révision des constantes de rétroaction des moteurs M3.";
-        }
-        fullReport.append("• **Verdict Scientifique Global** : ").append(globalVerdict).append("\n");
-
-        if (earliestDivergence != -1) {
-            fullReport.append(String.format("• **Premier Point de Bascule Historique ($T_{\\text{divergence}}$)** : **Année %d AD**\n", earliestDivergence));
-        } else {
-            fullReport.append("• **Premier Point de Bascule Historique ($T_{\\text{divergence}}$)** : *Aucun décrochage brutal détecté (Trajectoires parallèles)*\n");
-        }
-
-        if (!criticalDivergentVariables.isEmpty()) {
-            fullReport.append("• **Indicateurs sous Vigilance Prioritaire** : ").append(String.join(", ", criticalDivergentVariables)).append("\n");
-        } else {
-            fullReport.append("• **Indicateurs sous Vigilance Prioritaire** : *Tous les indicateurs respectent les marges d'erreur historiques (< 20%)*\n");
-        }
-
-        if (!suspectEngines.isEmpty()) {
-            fullReport.append("• **Moteurs M3 Impliqués dans la Dérive** : `").append(String.join("`, `", suspectEngines)).append("`\n\n");
-        } else {
-            fullReport.append("• **Moteurs M3 Impliqués dans la Dérive** : *Aucun moteur suspect identifié*\n\n");
-        }
-
-        // --- SECTION 2: ANALYSE STATISTIQUE APPROFONDIE PAR SCÉNARIO ---
-        fullReport.append("## 📈 2. ").append(I18n.getOrDefault("analytics.report.stats_header", "Analyse Statistique Approfondie (Format Publication Peer-Reviewed)")).append("\n\n");
-
-        for (int idx = 0; idx < audits.size(); idx++) {
-            ScenarioAudit a = audits.get(idx);
-            fullReport.append(String.format("### 🔬 Audit %d: %s\n\n", idx + 1, a.item.getName()));
-            if (a.scenarioDivergence != -1) {
-                fullReport.append(String.format("> ⚠️ **Rupture temporelle détectée ($T_{\\text{drift}}$)** : **Année %d AD** | Score $R^2$ = `%.4f` | MAPE moyen = `%.2f%%`\n\n", a.scenarioDivergence, a.rSquared, a.avgMape));
-            } else {
-                fullReport.append(String.format("> 🟢 **Alignement empirique étroit** : Aucune rupture majeure (> 10%%) | Score $R^2$ = `%.4f` | MAPE moyen = `%.2f%%`\n\n", a.rSquared, a.avgMape));
-            }
-
-                        fullReport.append("#### 📊 Matrice d'analyse temporelle et dérive des variables\n\n");
-            fullReport.append("| Variable cliodynamique | N | $\\mu_{\\text{obs}}$ | $\\mu_{\\text{sim}} \\pm \\sigma$ | {95\\%}$ | Médiane [Q1 ; Q3] | MAPE | Statut | Tendance | Début dérive ({\\text{drift}}$) | Cohen $ (Signif.) | Moteur suspect |\n");
-            fullReport.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n");
-
-            for (VariableDriftAnalysis d : a.drifts) {
-                String obsStr = String.format(java.util.Locale.US, "%,.2f", d.meanObs);
-                String simStr = String.format(java.util.Locale.US, "%,.2f \u00B1 %,.2f", d.meanSim, d.stdSim);
-                String medStr = String.format(java.util.Locale.US, "%,.2f [%,.2f ; %,.2f]", d.medianSim, d.q1Sim, d.q3Sim);
-                String cohenStr = String.format(java.util.Locale.US, "%.2f (%s)", d.cohenD, d.significance);
-                fullReport.append(String.format(java.util.Locale.US, "| %s | %d | %s | %s | %s | %s | %.2f%% | %s | %s | %s | %s | %s |\n",
-                    d.variableName, d.sampleCount, obsStr, simStr, d.getCi95Display(), medStr, d.mape, d.status, d.temporalPattern, d.driftOnsetYear, cohenStr, d.suspectEngine));
-            }fullReport.append("\n");
-            fullReport.append(CalibrationDiagnosticRules.generateTuningSuggestions(a.mapes, a.rSquared, a.scenarioDivergence));
-            fullReport.append("\n---\n\n");
-
-            explanationSummary.append(String.format("• **%s** : R² = %.3f, MAPE = %.1f%% (%s)\n",
-                a.item.getName(), a.rSquared, a.avgMape, a.scenarioDivergence != -1 ? "Rupture " + a.scenarioDivergence + " AD" : "Aligné"));
-        }
-
-        // Section 2: Multi-scenario Cross Comparison (if >= 2 simulated scenarios)
-        if (simulatedSelected.size() >= 2) {
-            fullReport.append("## 🔀 Synthèse comparative croisée entre scénarios simulés\n\n");
-            for (int i = 0; i < simulatedSelected.size(); i++) {
-                for (int j = i + 1; j < simulatedSelected.size(); j++) {
-                    ScenarioSelectableItem itemA = simulatedSelected.get(i);
-                    ScenarioSelectableItem itemB = simulatedSelected.get(j);
-                    SimulationRunRecord runA = runRepository.getRun(itemA.getRunId());
-                    if (runA == null) runA = runRepository.getRunByScenarioName(itemA.getName()).orElse(null);
-                    SimulationRunRecord runB = runRepository.getRun(itemB.getRunId());
-                    if (runB == null) runB = runRepository.getRunByScenarioName(itemB.getName()).orElse(null);
-
-                    if (runA != null && runB != null) {
-                        RootCauseAnalyzer.ComparisonResult crossRes = analyzer.compareRuns(runA, runB);
-                        fullReport.append(String.format("### ⚖️ Comparaison : %s ⟷ %s\n\n", itemA.getName(), itemB.getName()));
-                        if (crossRes.getDivergenceYear() != -1) {
-                            fullReport.append(String.format("> ⚡ **Bifurcation entre scénarios ($T_{\\text{divergence}}$)** : Année **%d AD**\n\n", crossRes.getDivergenceYear()));
-                        } else {
-                            fullReport.append("> 🟢 **Évolution parallèle** : Pas de divergence brusque constatée entre les deux scénarios.\n\n");
-                        }
-                        fullReport.append(String.format("> 💡 **Synthèse explicative** : %s\n\n", crossRes.getPrimaryRootCauseExplanation()));
-
-                        fullReport.append("#### Perturbations et variations paramétriques :\n");
-                        if (crossRes.getKeyDifferences().isEmpty()) {
-                            fullReport.append("- *Aucune différence paramétrique enregistrée.*\n\n");
-                        } else {
-                            for (String diff : crossRes.getKeyDifferences()) {
-                                fullReport.append("- ").append(diff).append("\n");
-                            }
-                            fullReport.append("\n");
-                        }
-
-                        fullReport.append("#### Écarts télémétriques aux horizons communs :\n\n");
-                        fullReport.append("| Indicateur | Valeur A | Valeur B | Delta absolu | Écart relatif |\n");
-                        fullReport.append("| :--- | :--- | :--- | :--- | :--- |\n");
-                        for (RootCauseAnalyzer.MetricDelta delta : crossRes.getFinalDeltas()) {
-                            fullReport.append(String.format("| %s | %,.1f | %,.1f | %+.1f | %+.2f%% |\n",
-                                delta.getMetricName(), delta.getBaselineValue(), delta.getTargetValue(), delta.getAbsoluteChange(), delta.getPercentageChange()));
-                        }
-                        fullReport.append("\n---\n\n");
-                    }
-                }
-            }
-        }
-
-        fullReport.append("--- *Rapport généré automatiquement par le banc de calibration et d'audit cliodynamique d'Ether* ---\n");
-
-        if (earliestDivergence != -1) {
-            divergenceLabel.setText(String.format(I18n.getOrDefault("analytics.status.first_divergence", "Point de rupture détecté (T_divergence) : ANNÉE %d"), earliestDivergence));
+        if (result.divergenceYear() != -1) {
+            divergenceLabel.setText(String.format(I18n.getOrDefault("analytics.status.first_divergence", "Point de rupture dÃ©tectÃ© (T_divergence) : ANNÃ‰E %d"), result.divergenceYear()));
             divergenceLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         } else {
-            divergenceLabel.setText(I18n.getOrDefault("analytics.status.parallel", "Trajectoires parallèles (Aucune rupture majeure > 10%)"));
+            divergenceLabel.setText(I18n.getOrDefault("analytics.status.parallel", "Trajectoires parallÃ¨les (Aucune divergence > 10%)"));
             divergenceLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         }
 
-        explanationLabel.setText(explanationSummary.toString());
-        reportPreviewPane.setMarkdown(fullReport.toString());
+        explanationLabel.setText(result.explanationSummary());
+        reportPreviewPane.setMarkdown(result.reportMarkdown());
     }
 
     private void generateInterScenarioComparativeReport(List<ScenarioSelectableItem> simulatedSelected) {
-        ScenarioSelectableItem baselineItem = simulatedSelected.get(0);
-        SimulationRunRecord baseline = resolveRunRecord(baselineItem);
+        GroundTruthAuditGenerator.AuditResult result = GroundTruthAuditGenerator.generateInterScenarioComparativeReport(
+                simulatedSelected, analyzer, this::resolveRunRecord, runRepository);
 
-        if (baseline == null) {
-            reportPreviewPane.setMarkdown(I18n.getOrDefault("analytics.error.no_telemetry", "⚠️ Unable to access base scenario telemetry data."));
-            return;
-        }
-
-        StringBuilder explanationSummary = new StringBuilder();
-        StringBuilder multiReport = new StringBuilder();
-        multiReport.append("# ").append(I18n.getOrDefault("analytics.report.title", "📊 RAPPORT D'ANALYSE COMPARATIVE INTER-SCÉNARIOS")).append("\n\n");
-        multiReport.append(String.format("**%s** : `%s`\n\n", I18n.getOrDefault("analytics.report.baseline_label", "Baseline Reference Scenario"), baselineItem.getName()));
-
-        int firstDivergence = -1;
-
-        for (int i = 1; i < simulatedSelected.size(); i++) {
-            ScenarioSelectableItem targetItem = simulatedSelected.get(i);
-            SimulationRunRecord target = resolveRunRecord(targetItem);
-
-            if (target != null) {
-                RootCauseAnalyzer.ComparisonResult result = analyzer.compareRuns(baseline, target);
-                if (result.getDivergenceYear() != -1 && (firstDivergence == -1 || result.getDivergenceYear() < firstDivergence)) {
-                    firstDivergence = result.getDivergenceYear();
-                }
-                explanationSummary.append(String.format("• **vs %s** : %s\n", targetItem.getName(), result.getPrimaryRootCauseExplanation()));
-                multiReport.append(ComparativeReportGenerator.generateMarkdownReport(result));
-                multiReport.append("\n\n---\n\n");
-            }
-        }
-
-        // If >= 3 scenarios, cross-compare targets among each other
-        if (simulatedSelected.size() >= 3) {
-            multiReport.append("## 🔀 Matrice croisée entre scénarios alternatifs\n\n");
-            for (int i = 1; i < simulatedSelected.size(); i++) {
-                for (int j = i + 1; j < simulatedSelected.size(); j++) {
-                    ScenarioSelectableItem itemA = simulatedSelected.get(i);
-                    ScenarioSelectableItem itemB = simulatedSelected.get(j);
-                    SimulationRunRecord runA = runRepository.getRun(itemA.getRunId());
-                    if (runA == null) runA = runRepository.getRunByScenarioName(itemA.getName()).orElse(null);
-                    SimulationRunRecord runB = runRepository.getRun(itemB.getRunId());
-                    if (runB == null) runB = runRepository.getRunByScenarioName(itemB.getName()).orElse(null);
-
-                    if (runA != null && runB != null) {
-                        RootCauseAnalyzer.ComparisonResult crossRes = analyzer.compareRuns(runA, runB);
-                        multiReport.append(String.format("### ⚖️ Comparaison : %s ⟷ %s\n\n", itemA.getName(), itemB.getName()));
-                        if (crossRes.getDivergenceYear() != -1) {
-                            multiReport.append(String.format("> ⚡ **Bifurcation ($T_{\\text{divergence}}$)** : Année **%d AD**\n\n", crossRes.getDivergenceYear()));
-                        }
-                        fullReportOrCross(crossRes, multiReport);
-                        multiReport.append("\n---\n\n");
-                    }
-                }
-            }
-        }
-
-        if (firstDivergence != -1) {
-            divergenceLabel.setText(String.format(I18n.getOrDefault("analytics.status.first_divergence", "Point de rupture détecté (T_divergence) : ANNÉE %d"), firstDivergence));
+        if (result.divergenceYear() != -1) {
+            divergenceLabel.setText(String.format(I18n.getOrDefault("analytics.status.first_divergence", "Point de rupture dÃ©tectÃ© (T_divergence) : ANNÃ‰E %d"), result.divergenceYear()));
             divergenceLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         } else {
-            divergenceLabel.setText(I18n.getOrDefault("analytics.status.parallel", "Trajectoires parallèles (Aucune divergence > 10%)"));
+            divergenceLabel.setText(I18n.getOrDefault("analytics.status.parallel", "Trajectoires parallÃ¨les (Aucune divergence > 10%)"));
             divergenceLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         }
 
-        explanationLabel.setText(explanationSummary.toString());
-        reportPreviewPane.setMarkdown(multiReport.toString());
+        explanationLabel.setText(result.explanationSummary());
+        reportPreviewPane.setMarkdown(result.reportMarkdown());
     }
 
-    private void fullReportOrCross(RootCauseAnalyzer.ComparisonResult crossRes, StringBuilder multiReport) {
-        multiReport.append(String.format("> 💡 %s\n\n", crossRes.getPrimaryRootCauseExplanation()));
-        if (!crossRes.getKeyDifferences().isEmpty()) {
-            multiReport.append("#### Différences paramétriques :\n");
-            for (String diff : crossRes.getKeyDifferences()) {
-                multiReport.append("- ").append(diff).append("\n");
-            }
-            multiReport.append("\n");
-        }
+    private VariableDriftAnalysis computeVariableDrift(String label, String benchKey, Map<Integer, Double> benchmark, Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries) {
+        HistoricalValidationKernel.InterpolationMethod method = (interpolationCombo != null && interpolationCombo.getValue() != null)
+                ? interpolationCombo.getValue() : HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC;
+        return GroundTruthAuditGenerator.computeVariableDrift(label, benchKey, benchmark, timeSeries, method);
     }
 
-    private String getEngineModuleForVariable(String varName) {
-        if (varName.contains("Population") || varName.contains("worldPopulation")) return "DemographicEngine";
-        if (varName.contains("Product") || varName.contains("GWP") || varName.contains("grossWorldProduct")) return "SociologyEngine (Capital)";
-        if (varName.contains("Energy") || varName.contains("primaryEnergy") || varName.contains("CO2") || varName.contains("co2Concentration")) return "EcologyEngine (Biomass)";
-        if (varName.contains("Urbanization") || varName.contains("urbanizationRate")) return "SettlementEngine";
-        if (varName.contains("Literacy") || varName.contains("literacyRate")) return "CulturalSociologyEngine";
-        if (varName.contains("Currency") || varName.contains("currencyDebasement") || varName.contains("Instability")) return "InstitutionalEngine";
-        return "H3SimulationEngine";
+    private double extractValue(SimulationRunRecord.MetricSnapshot snap, String metric, int year) {
+        return GroundTruthAuditGenerator.extractValue(snap, metric, year);
     }
 
     private void updateChartAndAnalysis() {
@@ -2402,157 +1930,6 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
     public SpatialTensorComparisonPane getSpatialTensorComparisonPane() {
         return spatialTensorComparisonPane;
-    }
-
-    private double extractValue(SimulationRunRecord.MetricSnapshot snap, String metric, int year) {
-        if (metric == null || snap == null) return 0.0;
-        MetricDescriptor desc = MetricRegistry.getInstance().getDescriptorByName(metric);
-        String id = desc != null ? desc.getId() : null;
-        if (id == null) {
-            MetricDescriptor descDirect = MetricRegistry.getInstance().getDescriptor(metric);
-            if (descDirect != null) id = descDirect.getId();
-        }
-        if (id == null) id = metric;
-
-        // Try direct lookup
-        double val = snap.getValue(id);
-        if (val != 0.0) return val;
-
-        // Check canonical aliases in snap metrics map
-        String lower = id.toLowerCase();
-        if (lower.contains("populat") || lower.contains("densit")) {
-            val = snap.getValue("population");
-            if (val == 0.0) val = snap.getValue("worldPopulation");
-            if (val == 0.0) val = (double) snap.getPopulation();
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("tech") || lower.contains("outillage") || lower.contains("literacy")) {
-            val = snap.getValue("avgTechLevel");
-            if (val == 0.0) val = snap.getValue("technology");
-            if (val == 0.0) val = snap.getAvgTech();
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("food") || lower.contains("alim")) {
-            val = snap.getValue("foodPerCapita");
-            if (val == 0.0) val = snap.getFood();
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("asabiyyah") || lower.contains("stabilit") || lower.contains("cohesion")) {
-            val = snap.getValue("asabiyyah");
-            if (val == 0.0) val = snap.getStability();
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("energy") || lower.contains("├®nerg")) {
-            val = snap.getValue("energyCaptured");
-            if (val == 0.0) val = snap.getValue("primaryEnergy");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("gdp") || lower.contains("product") || lower.contains("richesse") || lower.contains("pib")) {
-            val = snap.getValue("grossWorldProduct");
-            if (val == 0.0) val = snap.getValue("gdp");
-            if (val == 0.0) val = snap.getValue("gdpTotal");
-            if (val > 1e6) val /= 1e9;
-            if (val != 0.0) return val;
-        }
-
-        if (lower.contains("m├®gafaune") || lower.contains("megafauna")) {
-            val = snap.getValue("megafaunaIndex");
-            if (val != 0.0) return val;
-            return org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(year, snap.getPopulation() / 1e6, 0.2);
-        }
-        if (lower.contains("milankovitch") || lower.contains("insolation")) {
-            val = snap.getValue("milankovitchInsolation");
-            if (val != 0.0) return val;
-            return org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year);
-        }
-        if (lower.contains("confinement") || lower.contains("zerocontainment")) {
-            val = snap.getValue("zeroContainmentScore");
-            return val != 0.0 ? val : 100.0;
-        }
-        if (lower.contains("gini") || lower.contains("in├®gal")) {
-            val = snap.getValue("gini");
-            if (val == 0.0) val = snap.getValue("giniIndex");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("bonheur") || lower.contains("happiness")) {
-            val = snap.getValue("happiness");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("conflit") || lower.contains("conflict") || lower.contains("guerre")) {
-            val = snap.getValue("conflict");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("kardashev")) {
-            val = snap.getValue("kardashev");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("eau") || lower.contains("water") || lower.contains("aquif")) {
-            val = snap.getValue("potableWater");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("fertil") || lower.contains("f├®cond")) {
-            val = snap.getValue("fertilityRate");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("vie") || lower.contains("life") || lower.contains("esp├®rance")) {
-            val = snap.getValue("lifeExpectancy");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("surproduction") || lower.contains("elite") || lower.contains("├®lite")) {
-            val = snap.getValue("eliteOverproduction");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("stress") || lower.contains("psi")) {
-            val = snap.getValue("psiStressIndex");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("effondrement") || lower.contains("collapse")) {
-            val = snap.getValue("collapseRisk");
-            if (val == 0.0) val = snap.getValue("collapseVulnerability");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("complex") || lower.contains("interd├®pend")) {
-            val = snap.getValue("systemComplexity");
-            if (val == 0.0) val = snap.getValue("systemInterdependence");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("m├®moire") || lower.contains("memory")) {
-            val = snap.getValue("collectiveMemory");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("co2") || lower.contains("carbone") || lower.contains("carbon")) {
-            val = snap.getValue("carbonFootprint");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("anomal") || lower.contains("temperatureanomaly")) {
-            val = snap.getValue("temperatureAnomaly");
-            if (val != 0.0) return val;
-            double rawT = snap.getValue("temperature");
-            if (rawT != 0.0) {
-                double cT = rawT > 100.0 ? (rawT - 273.15) : rawT;
-                return cT - 14.0;
-            }
-            return 0.0;
-        }
-        if (lower.contains("temp├®rat") || lower.contains("temperat")) {
-            val = snap.getValue("temperature");
-            if (val != 0.0) return val;
-            double anom = snap.getValue("temperatureAnomaly");
-            if (anom != 0.0) return 14.0 + anom;
-        }
-        if (lower.contains("pr├®cipit") || lower.contains("precipit") || lower.contains("pluie")) {
-            val = snap.getValue("precipitation");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("eroi") || lower.contains("rendement")) {
-            val = snap.getValue("eroiAlim");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("biomass") || lower.contains("biomasse")) {
-            val = snap.getValue("biomassMobilized");
-            if (val != 0.0) return val;
-        }
-        return val;
     }
 
     private void copyReportToClipboard() {
