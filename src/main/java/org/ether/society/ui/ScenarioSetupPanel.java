@@ -1232,7 +1232,7 @@ public class ScenarioSetupPanel extends BorderPane {
             if (scenarioDescriptionArea != null) {
                 scenarioDescriptionArea.setText(s.getDescription() != null ? s.getDescription() : "");
             }
-            
+
             // Determine if planet is Earth
             boolean isEarth = true;
             if (s.getPlanetPreset() != null) {
@@ -1247,7 +1247,7 @@ public class ScenarioSetupPanel extends BorderPane {
                     org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(s);
                 });
             }
-            
+
             // Select Ecology Preset which cascades to Planet Preset
             if (s.getEcologyPreset() != null && ecologyPresetCombo != null) {
                 ecologyPresetCombo.setValue(s.getEcologyPreset());
@@ -1270,43 +1270,14 @@ public class ScenarioSetupPanel extends BorderPane {
             }
             updateInheritedContextDisplay(activeEco != null ? activeEco.name() : null);
 
-            if (startYearSpinner != null && startYearSpinner.getValueFactory() != null) {
-                startYearSpinner.getValueFactory().setValue((int) s.getStartDateYear());
-            }
-            if (endYearSpinner != null && endYearSpinner.getValueFactory() != null) {
-                endYearSpinner.getValueFactory().setValue((int) s.getEndDateYear());
-            }
-            if (targetCohortSizeSpinner != null && targetCohortSizeSpinner.getValueFactory() != null) {
-                targetCohortSizeSpinner.getValueFactory().setValue(s.getTargetCohortSize() > 0 ? s.getTargetCohortSize() : 150);
-            }
-            if (temporalResolutionCombo != null) {
-                temporalResolutionCombo.setValue(s.getTemporalResolutionDays() > 0 ? s.getTemporalResolutionDays() : 30.0);
-            }
-            if (h3ResolutionCombo != null) {
-                h3ResolutionCombo.setValue(s.getH3Resolution() > 0 ? s.getH3Resolution() : 3);
-            }
-            if (initialHumanCountSpinner != null && initialHumanCountSpinner.getValueFactory() != null) {
-                initialHumanCountSpinner.getValueFactory().setValue(s.getInitialHumanCount());
+            spatiotemporalSectionBuilder.applyScenario(s);
+            demographicSectionBuilder.applyScenario(s);
+            culturalSectionBuilder.applyScenario(s);
+            spatialBoundsBuilder.applyScenario(s);
+            if (engineConfigSectionBuilder != null) {
+                engineConfigSectionBuilder.applyScenario(s);
             }
 
-            if (s.getPopulationDensityType() != null && densityPatternCombo != null && densityPatternCombo.getItems().contains(s.getPopulationDensityType())) {
-                densityPatternCombo.setValue(s.getPopulationDensityType());
-            }
-            if (techPresetCombo != null && s.getTechPreset() != null) {
-                techPresetCombo.setValue(s.getTechPreset());
-            }
-            if (customCapitalSpinner != null && customCapitalSpinner.getValueFactory() != null) {
-                customCapitalSpinner.getValueFactory().setValue(s.getInitialCapitalPerCapita());
-            }
-            if (customEnergySpinner != null && customEnergySpinner.getValueFactory() != null) {
-                customEnergySpinner.getValueFactory().setValue(s.getInitialEnergyPerCapita());
-            }
-            if (customFoodSpinner != null && customFoodSpinner.getValueFactory() != null) {
-                customFoodSpinner.getValueFactory().setValue(s.getInitialFoodReserveMonths());
-            }
-            if (customInfoSpinner != null && customInfoSpinner.getValueFactory() != null) {
-                customInfoSpinner.getValueFactory().setValue(s.getInitialInformationPerCapita());
-            }
             if (s.getSeed() != 0 && demoSeedField != null) {
                 demoSeedField.setText(String.valueOf(s.getSeed()));
             }
@@ -1322,93 +1293,12 @@ public class ScenarioSetupPanel extends BorderPane {
             if (proceduralLeadersCheckBox != null) {
                 proceduralLeadersCheckBox.setSelected(s.isProceduralLeadersEnabled());
             }
-            if (clippingCheckBox != null) {
-                boolean active = s.isClippingEnabled();
-                clippingCheckBox.setSelected(active);
-                if (minLatSpinner != null && minLatSpinner.getValueFactory() != null) minLatSpinner.getValueFactory().setValue(s.getMinLat());
-                if (maxLatSpinner != null && maxLatSpinner.getValueFactory() != null) maxLatSpinner.getValueFactory().setValue(s.getMaxLat());
-                if (minLngSpinner != null && minLngSpinner.getValueFactory() != null) minLngSpinner.getValueFactory().setValue(s.getMinLng());
-                if (maxLngSpinner != null && maxLngSpinner.getValueFactory() != null) maxLngSpinner.getValueFactory().setValue(s.getMaxLng());
-                if (s.getBoundaryMode() != null && boundaryModeCombo != null) boundaryModeCombo.setValue(s.getBoundaryMode());
-            }
-            if (strictDeterminismCheckBox != null) {
-                strictDeterminismCheckBox.setSelected(s.isStrictDeterminism());
-            }
-            if (sparseCellSkippingCheckBox != null) {
-                sparseCellSkippingCheckBox.setSelected(s.isSparseCellSkippingEnabled());
-            }
-            if (oceanMacroAggregationCheckBox != null) {
-                oceanMacroAggregationCheckBox.setSelected(s.isOceanMacroAggregationEnabled());
-            }
-            if (coastalNavigationOnlyCheckBox != null) {
-                coastalNavigationOnlyCheckBox.setSelected(s.isCoastalNavigationOnlyEnabled());
-            }
-            if (oceanMultiRateTickingCheckBox != null) {
-                oceanMultiRateTickingCheckBox.setSelected(s.isOceanMultiRateTickingEnabled());
-            }
-            if (climateTickFreqSlider != null) {
-                climateTickFreqSlider.setValue(s.getClimateTickFrequency());
-            }
-            if (parallelExecutionCheckBox != null) {
-                parallelExecutionCheckBox.setSelected(s.isParallelExecutionEnabled());
-            }
-            if (threadCountSlider != null) {
-                threadCountSlider.setValue(s.getParallelThreadCount());
-            }
-            if (spatialRangeTruncationCheckBox != null) {
-                spatialRangeTruncationCheckBox.setSelected(s.isSpatialRangeTruncationEnabled());
-            }
-
-            // Restore Type B engine checkbox states
-            java.util.Map<String, Boolean> typeBStates = s.getTypeBEngineStates();
-            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-            for (java.util.Map.Entry<String, CheckBox> entry : typeBCheckBoxMap.entrySet()) {
-                boolean active = typeBStates != null && typeBStates.getOrDefault(entry.getKey(), false);
-                entry.getValue().setSelected(active);
-            }
-
-            // Restore Type B engine fine-grained parameter values
-            java.util.Map<String, java.util.Map<String, Double>> typeBParams = s.getTypeBEngineParameters();
-            if (typeBParams != null) {
-                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-                for (java.util.Map.Entry<String, java.util.Map<String, Spinner<Double>>> engEntry : typeBParamSpinnersMap.entrySet()) {
-                    String engKey = engEntry.getKey();
-                    java.util.Map<String, Double> savedEngParams = typeBParams.get(engKey);
-                    if (savedEngParams != null) {
-                        // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-                        for (java.util.Map.Entry<String, Spinner<Double>> paramEntry : engEntry.getValue().entrySet()) {
-                            Double val = savedEngParams.get(paramEntry.getKey());
-                            if (val != null && paramEntry.getValue() != null && paramEntry.getValue().getValueFactory() != null) {
-                                paramEntry.getValue().getValueFactory().setValue(val);
-                            }
-                        }
-                    }
-                }
-            }
-            if (s.getCustomDensityBase64() != null && !s.getCustomDensityBase64().isBlank()) {
-                customDensityImage = org.ether.society.data.ImageMapLoader.base64PngToImage(s.getCustomDensityBase64());
-                String yrStr = s.getStartDateYear() != 0 ? (s.getStartDateYear() < 0 ? Math.abs(s.getStartDateYear()) + " BC" : s.getStartDateYear() + " AD") : "";
-                if (densityMapFileLabel != null) densityMapFileLabel.setText(I18n.getOrDefault("scenario.preset.density_map", "📷 Carte de Densité Précalculée") + (yrStr.isEmpty() ? "" : " (" + yrStr + ")"));
-                if (radioImportDemo != null) radioImportDemo.setSelected(true);
-                updateDemoCompatibilityDisplay();
-            } else {
-                customDensityImage = null;
-                if (densityMapFileLabel != null) densityMapFileLabel.setText(org.ether.society.i18n.I18n.get("planet.map.none"));
-                if (radioProcDemo != null) radioProcDemo.setSelected(true);
-                updateDemoCompatibilityDisplay();
-            }
 
             // Auto-select the demographic reference source combo based on the scenario epoch/planet
             if (demoSourceCombo != null) {
                 String autoSrc = pickDemoSourceForEpoch(s.getStartDateYear(), this.activePlanetPreset);
                 selectBestSource(demoSourceCombo, autoSrc, "Terre");
             }
-
-
-            if (s.getCultureVectorDimensions() > 0 && cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValueFactory() != null) {
-                cultureVectorDimSpinner.getValueFactory().setValue(s.getCultureVectorDimensions());
-            }
-            culturalSectionBuilder.applyScenario(s);
 
             // Restore Scheduled Events
             if (eventsList != null) {
@@ -1875,256 +1765,59 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
      *
      */
     public void updateTexts() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         boolean oldUpdating = isUpdatingFromPreset;
         isUpdatingFromPreset = true;
         try {
-            if (headerLabel != null) headerLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.panel.title", "📜 Scenario Configuration & Setup"));
-            if (scenarioPresetHeader != null) scenarioPresetHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.presets", "ðŸŽ›ï¸ GLOBAL PRESETS & SCENARIO SAVE"));
+            if (headerLabel != null) headerLabel.setText(I18n.getOrDefault("scenario.panel.title", "📜 Scenario Configuration & Setup"));
             if (btnAutoEpochScenario != null) {
-                btnAutoEpochScenario.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.auto_epoch_wizard", "✨ Créer un Scénario Automatique par Date..."));
-                btnAutoEpochScenario.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.auto_epoch_wizard", "Ouvre l'assistant de scénario temporel pour configurer en un clic les cartes d'élévation, biomes, ressources, démographie et moteurs de Type B compatibles pour n'importe quelle date.")));
+                btnAutoEpochScenario.setText(I18n.getOrDefault("scenario.btn.auto_epoch_wizard", "✨ Créer un Scénario Automatique par Date..."));
+                btnAutoEpochScenario.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.auto_epoch_wizard", "Ouvre l'assistant de scénario temporel pour configurer en un clic les cartes d'élévation, biomes, ressources, démographie et moteurs de Type B compatibles pour n'importe quelle date.")));
             }
-            if (scenarioPresetBar != null) {
-                scenarioPresetBar.updateTexts();
+            if (scenarioPresetBar != null) scenarioPresetBar.updateTexts();
+            if (scenarioDescLabel != null) scenarioDescLabel.setText(I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
+            if (liveDiagnosticHeader != null) liveDiagnosticHeader.setText(I18n.getOrDefault("scenario.diagnostic.header", "📋 CIVILIZATIONAL VIABILITY DIAGNOSTIC (REAL TIME)"));
+            if (previewTitleLabel != null) previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "🗺️ Resource Cartography & Display"));
+            if (startBtn != null) startBtn.setText(I18n.get("scenario.start_btn"));
+            if (generateBtn != null) generateBtn.setText(I18n.getOrDefault("scenario.preview_btn", "🔄 Preview Distribution"));
+            if (btnReliefOverlay != null) {
+                btnReliefOverlay.setText(I18n.getOrDefault("scenario.btn.relief_overlay", "⛏️ Relief"));
+                btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
             }
-            if (scenarioDescLabel != null) scenarioDescLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
-            if (planetSectionHeader != null) planetSectionHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.inherited", "ðŸª INHERITED CONTEXT (TABS 1 & 2)"));
-            if (ecoPromptLabel != null) ecoPromptLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.label.ecology_preset", "1. Ecological Preset (Tab 2):"));
-            if (planetPromptLabel != null) planetPromptLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.label.planet_preset", "2. Planetary Preset (Tab 1 — Cascaded from Ecology):"));
-            if (planetPresetCombo != null && planetPresetCombo.getCellFactory() != null) {
-                planetPresetCombo.setButtonCell(planetPresetCombo.getCellFactory().call(null));
-            }
-            if (ecologyPresetCombo != null && ecologyPresetCombo.getCellFactory() != null) {
-                ecologyPresetCombo.setButtonCell(ecologyPresetCombo.getCellFactory().call(null));
-            }
+
             planetSyncManager.updateTexts();
             spatiotemporalSectionBuilder.updateTexts();
-            updateEngineTexts();
-            if (title1 != null) title1.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.section.spatiotemporal", "ðŸŒ EPOCH & SPATIOTEMPORAL DEFINITION"));
-            if (cultureHeader != null) cultureHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.culture_section", "🧠 CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
-            if (clippingHeader != null) clippingHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.header", "✂️ï¸ BORDERS & HISTORICAL SPATIAL CLIPPING"));
-            if (oceanOptHeader != null) oceanOptHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.ocean_opt.header", "⚙️ï¸ ENGINE ARCHITECTURE & OPTIMIZATIONS (ETHER CORE & OPTIONAL)"));
-            if (title3Events != null) title3Events.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events_section", "ðŸŒªï¸ HISTORICAL PLANETARY EVENTS & CLIMATE DRIFTS"));
-            if (snapshotHeader != null) snapshotHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.header", "📸 7. RESUME FROM EXISTING SNAPSHOT (PREVIOUS SESSION)"));
-            if (radioNewSimulation != null) {
-                radioNewSimulation.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_fresh", "🌱 Start a new simulation from scratch (Year T₀)"));
-                radioNewSimulation.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_fresh.tooltip", "Initialize a brand-new historical simulation from canonical T₀ initial conditions.")));
-            }
-            if (radioResumeSnapshot != null) {
-                radioResumeSnapshot.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_snapshot", "📸 Resume from an existing Snapshot (Previous Session / Checkpoint)"));
-                radioResumeSnapshot.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.start_snapshot.tooltip", "Load a previously saved physical state or periodic checkpoint directly into memory.")));
-            }
-            if (snapshotExplainBtn != null) {
-                snapshotExplainBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.snapshot_explain", "ℹ️ï¸ What is a Snapshot? (Explanations & Mechanics)"));
-                snapshotExplainBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.snapshot_explain", "Open detailed technical guide explaining physical state capture, rolling checkpoints, and multiverse branching.")));
-            }
-            if (snapshotRefreshBtn != null) {
-                snapshotRefreshBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.refresh", "🔄 Refresh Snapshots"));
-                snapshotRefreshBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.snapshot_refresh", "Rescans the disk saves directory (saves/) to synchronize the list of real simulation snapshots and checkpoints.")));
-            }
-            if (snapshotCombo != null) {
-                snapshotCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.combo.tooltip", "Select an existing checkpoint or full simulation snapshot from the disk to resume execution.")));
-                updateSnapshotDetailsDisplay(snapshotCombo.getValue());
-            }
             spatialBoundsBuilder.updateTexts();
             bundleManager.updateTexts();
-            if (bundleHeader != null) bundleHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 UNIFIED BUNDLE MULTI-SCENARIO IMPORT/EXPORT (.ETHER)"));
-            if (bundleSubtitle != null) bundleSubtitle.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.desc.bundle", "Export or import the complete scenario (planetary context, ecology, active engines, cultural layers, and demographic grid) in unified .ether format for archiving or sharing."));
-            if (btnExportBundle != null) {
-                btnExportBundle.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.export_bundle", "📦 Export Bundle (.ether)"));
-                btnExportBundle.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.export_bundle", "Export complete scenario (physics, ecology, engines, layers, and demographics) to a unified .ether bundle file.")));
-            }
-            if (btnImportBundle != null) {
-                btnImportBundle.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.import_bundle", "📂 Import Bundle (.ether)"));
-                btnImportBundle.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.import_bundle", "Import and apply a unified .ether bundle file to instantly restore full scenario state.")));
-            }
-            if (liveDiagnosticHeader != null) liveDiagnosticHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.diagnostic.header", "📋 CIVILIZATIONAL VIABILITY DIAGNOSTIC (REAL TIME)"));
-            if (previewTitleLabel != null) previewTitleLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.title.right_view", "ðŸ—ºï¸ Resource Cartography & Display"));
-            if (startYearLabel != null) startYearLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.start_year", "Start Year (Chronological Reference):"));
-            if (endYearLabel != null) endYearLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.end_year", "End / Target Year (Chronological Reference):"));
-            if (popCountLabel != null) popCountLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_count", "Initial Population (1,000 to 10,000,000,000):"));
-            if (densityPatternLabel != null) densityPatternLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.density_pattern", "Distribution Pattern:"));
-            if (h3ResolutionLabel != null) h3ResolutionLabel.setText(org.ether.society.i18n.I18n.getOrDefault("planet.param.resolution", "H3 Resolution:"));
-            if (h3ResolutionHintLabel != null) h3ResolutionHintLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.h3.hint", "• Res 2–3 : Planétaire global (~41k cel.) | Res 4–5 : Régional (~2.8M cel.) | Res 6+ : Micro-bassin."));
-            if (temporalResolutionLabel != null) temporalResolutionLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.label.temporal_resolution", "Time Step Δt (Temporal Resolution):"));
-            if (temporalResolutionHintLabel != null) temporalResolutionHintLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.temporal.hint", "• 1 Mois : Recommandé par défaut (équilibre saisons/vitesse) | 1 Jour/Sem. : Épidémies & météo | 1 An : Multi-millénaire."));
-            if (cohortSizeLabel != null) cohortSizeLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.label.cohort_size", "Cohort Size:"));
-            if (cohortSizeHintLabel != null) cohortSizeHintLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.cohort.hint", "• 1–30 : Micro-tribus nomades | 150 : Recommandé par défaut (Nombre de Dunbar) | 10k–50k : Macro-cohortes."));
-            if (snapshotAutoPruningNotice != null) snapshotAutoPruningNotice.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.auto_pruning_notice", "ℹ️ Gestion Automatique : Les snapshots sont générés automatiquement par le moteur à intervalles réguliers et élagués logarithmiquement dans le temps. L'utilisateur n'a aucune action manuelle de suppression à effectuer : l'historique s'étale de façon optimale sur des millénaires sans saturer la mémoire ni le disque."));
-            if (startBtn != null) startBtn.setText(org.ether.society.i18n.I18n.get("scenario.start_btn"));
-            if (generateBtn != null) generateBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.preview_btn", "🔄 Preview Distribution"));
-            if (addEventBtn != null) addEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.add", "➕ Ajouter"));
-            if (removeEventBtn != null) removeEventBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.remove", "🗑️ Supprimer"));
-            if (clearEventsBtn != null) clearEventsBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.clear", "🧹 Vider le Calendrier"));
-            if (loadEarthEventsBtn != null) loadEarthEventsBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.load_biophysical", "🌋 Injecter Catastrophes Biophysiques"));
-            if (loadEarthLeadersBtn != null) loadEarthLeadersBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.load_leaders", "👑 Injecter Figures & Personnages Historiques"));
-            if (randomBiophysicalEventsCheckBox != null) {
-                randomBiophysicalEventsCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.random_biophysical", "🎲 Événements aléatoires biophysiques (Séismes, Volcans, Famines, Sécheresses, Épidémies)"));
-                randomBiophysicalEventsCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_biophysical",
-                    "🎲 ÉVÉNEMENTS ALÉATOIRES BIOPHYSIQUES & CATASTROPHES\n" +
-                    "• Si activé : Le moteur simule des crises biophysiques spontanées (éruptions, tremblements de terre, pestes, famines) générées selon la graine (Seed) et la température globale.\n" +
-                    "• Si désactivé : Aucune crise biophysique aléatoire ne survient.")));
-            }
-            if (randomPoliticalEventsCheckBox != null) {
-                randomPoliticalEventsCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.random_political", "👑 Événements aléatoires politiques & historiques (Émergence d'outliers, Réformateurs, Crises dynastiques)"));
-                randomPoliticalEventsCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_political",
-                    "👑 ÉVÉNEMENTS ALÉATOIRES POLITIQUES & SOCIÉTAUX\n" +
-                    "• Si activé : Le moteur fait émerger stochastiquement des figures historiques et leaders de rupture (bâtisseurs, conquérants, prophètes) selon la complexité et les tensions sociales.\n" +
-                    "• Si désactivé : Trajectoire sociologique structurelle pure sans émergence spontanée de leaders.")));
-            }
+            if (engineConfigSectionBuilder != null) engineConfigSectionBuilder.updateTexts();
+            if (demographicSectionBuilder != null) demographicSectionBuilder.updateTexts();
+            if (culturalSectionBuilder != null) culturalSectionBuilder.updateTexts();
 
-            if (colType != null) colType.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.type", "Event Type"));
-            if (colName != null) colName.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.name", "Event Name"));
-            if (colYear != null) colYear.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.year", "Year (Yr)"));
-            if (colLat != null) colLat.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.lat", "Lat (°)"));
-            if (colLon != null) colLon.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.lon", "Lng (°)"));
-            if (colDepth != null) colDepth.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.depth", "Depth (km)"));
-            if (colMag != null) colMag.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.table.col.mag", "Magnitude / Intensity"));
-
-            if (clippingCheckBox != null) clippingCheckBox.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.enable", "Enable Partial Simulation (Truncated Zone)"));
-            if (graphicSelectBtn != null) graphicSelectBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.select_mode", "ðŸ–±ï¸ Graphic Map Selection Mode"));
-            if (resetClippingBtn != null) resetClippingBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.reset", "🔄 Reset Area (Full Planet)"));
-            if (latMaxLabel != null) latMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lat_max", "Lat Max (Top):"));
-            if (latMinLabel != null) latMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lat_min", "Lat Min (Bottom):"));
-            if (lngMinLabel != null) lngMinLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_min", "Lng Min (Left):"));
-            if (lngMaxLabel != null) lngMaxLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.lng_max", "Lng Max (Right):"));
-            if (boundaryLabel != null) boundaryLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.clipping.boundary_label", "Scientific Border Modeling:"));
-            if (culturalHelpBtn != null) culturalHelpBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.cultural_format_help", "â“ Format des Calques"));
-            if (btnGenerateProceduralTensorsSection != null) {
-                btnGenerateProceduralTensorsSection.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.regen_tensors", "🪄 Régénérer les Tenseurs"));
-                btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.regen_tensors", "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
-            }
-            if (btnReliefOverlay != null) {
-                btnReliefOverlay.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.btn.relief_overlay", "⛏️ï¸ Relief"));
-                btnReliefOverlay.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
-            }
             updatePreviewModesCombo();
             updatePreviewTitleText();
-
-            if (radioProcDemo != null) radioProcDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.procedural", "▶ Procedural Generation (Perlin / Simplex Noise)"));
-            if (radioImportDemo != null) radioImportDemo.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.import", "📂 External Source / Import (PNG / WMS / GeoTIFF)"));
-            if (loadDensityMapBtn != null) loadDensityMapBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.btn_load", "📥 Import External Density Map (PNG)"));
-            if (exportDensityMapBtn != null) exportDensityMapBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.demo.btn_export", "📤 Export Generated Density Map (PNG)"));
-
-            if (boundaryModeCombo != null && boundaryModeCombo.getCellFactory() != null) {
-                boundaryModeCombo.setButtonCell(boundaryModeCombo.getCellFactory().call(null));
-            }
-
-            if (densityPatternCombo != null) {
-                if (densityPatternCombo.getCellFactory() != null) {
-                    densityPatternCombo.setButtonCell(densityPatternCombo.getCellFactory().call(null));
-                }
-                String val = densityPatternCombo.getValue();
-                if (val != null) {
-                    densityPatternCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.density.desc." + val, DENSITY_DESCRIPTIONS.getOrDefault(val, ""))));
-                }
-            }
-
-            if (temporalResolutionCombo != null && temporalResolutionCombo.getCellFactory() != null) {
-                temporalResolutionCombo.setButtonCell(temporalResolutionCombo.getCellFactory().call(null));
-            }
-
-            if (techPresetCombo != null && techPresetCombo.getCellFactory() != null) {
-                techPresetCombo.setButtonCell(techPresetCombo.getCellFactory().call(null));
-            }
-
-            if (h3ResolutionCombo != null && h3ResolutionCombo.getCellFactory() != null) {
-                h3ResolutionCombo.setButtonCell(h3ResolutionCombo.getCellFactory().call(null));
-            }
-
-            if (tensorSourceCombos != null) {
-                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-                for (ComboBox<String> sc : tensorSourceCombos.values()) {
-                    if (sc != null && sc.getCellFactory() != null) {
-                        sc.setButtonCell(sc.getCellFactory().call(null));
-                    }
-                }
-            }
-
-            updatePreviewModesCombo();
-
-            if (eventsTable != null && eventsTable.getUserData() instanceof TableColumn<?, ?>[] cols && cols.length == 7) {
-                cols[0].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.type", "Type"));
-                cols[1].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.name", "Nom / Description"));
-                cols[2].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.year", "Year"));
-                cols[3].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lat", "Latitude"));
-                cols[4].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.lon", "Longitude"));
-                cols[5].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.depth", "Profondeur (km)"));
-                cols[6].setText(org.ether.society.i18n.I18n.getOrDefault("scenario.events.col.magnitude", "Magnitude"));
-            }
-            if (popHeader != null) {
-                popHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD"));
-            }
-            if (engineSortLabel != null) {
-                engineSortLabel.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.sort.label", "🔀 Engine Sorting:"));
-            }
-            if (engineSortCombo != null) {
-                int selIdx = engineSortCombo.getSelectionModel().getSelectedIndex();
-                engineSortCombo.getItems().setAll(
-                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.default", "⚙️ï¸ System Order (By Category)"),
-                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_asc", "📅 Chronological Sort (Oldest → Newest)"),
-                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.date_desc", "📅 Reverse Chronological Sort (Newest → Oldest)"),
-                    org.ether.society.i18n.I18n.getOrDefault("scenario.sort.alpha_asc", "🔤 Alphabetical Sort (A - Z)")
-                );
-                if (selIdx >= 0 && selIdx < engineSortCombo.getItems().size()) {
-                    engineSortCombo.getSelectionModel().select(selIdx);
-                } else {
-                    engineSortCombo.getSelectionModel().select(0);
-                }
-            }
-
-            updateCulturalTensorSubBlockTexts();
-            updateDemoCompatibilityDisplay();
         } finally {
             isUpdatingFromPreset = oldUpdating;
         }
     }
 
-
-    /**
-     * Get scenario.
-     *
-     * @return the resulting computation or state reference
-     */
     public Scenario getScenario() {
         Scenario s = new Scenario();
         s.setName(scenarioPresetBar != null ? scenarioPresetBar.getCurrentName() : "New Scenario");
         if (scenarioDescriptionArea != null) {
             s.setDescription(scenarioDescriptionArea.getText());
         }
-        s.setStartDateYear(startYearSpinner.getValue());
-        s.setEndDateYear(endYearSpinner != null && endYearSpinner.getValue() != null ? endYearSpinner.getValue() : 100);
-        s.setTargetCohortSize(targetCohortSizeSpinner != null ? targetCohortSizeSpinner.getValue() : 150);
-        s.setTemporalResolutionDays(temporalResolutionCombo != null && temporalResolutionCombo.getValue() != null ? temporalResolutionCombo.getValue() : 30.0);
-        s.setH3Resolution(h3ResolutionCombo != null && h3ResolutionCombo.getValue() != null ? h3ResolutionCombo.getValue() : 3);
-        s.setInitialHumanCount(initialHumanCountSpinner.getValue());
-        Scenario.TechPreset preset = techPresetCombo != null && techPresetCombo.getValue() != null ? techPresetCombo.getValue() : Scenario.TechPreset.AUTO_FROM_YEAR;
-        s.setTechPreset(preset);
-
-        if (preset == Scenario.TechPreset.AUTO_FROM_YEAR) {
-            long startY = startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -8000;
-            s.setInitialCapitalPerCapita(computeAutoCapitalFromYear(startY));
-            s.setInitialEnergyPerCapita(computeAutoEnergyFromYear(startY));
-            s.setInitialFoodReserveMonths(computeAutoFoodFromYear(startY));
-            s.setInitialInformationPerCapita(computeAutoInfoFromYear(startY));
-        } else if (preset == Scenario.TechPreset.CUSTOM) {
-            s.setInitialCapitalPerCapita(customCapitalSpinner != null && customCapitalSpinner.getValue() != null ? customCapitalSpinner.getValue() : 100.0);
-            s.setInitialEnergyPerCapita(customEnergySpinner != null && customEnergySpinner.getValue() != null ? customEnergySpinner.getValue() : 300.0);
-            s.setInitialFoodReserveMonths(customFoodSpinner != null && customFoodSpinner.getValue() != null ? customFoodSpinner.getValue() : 6.0);
-            s.setInitialInformationPerCapita(customInfoSpinner != null && customInfoSpinner.getValue() != null ? customInfoSpinner.getValue() : 2000.0);
-        } else {
-            s.setInitialCapitalPerCapita(preset.getCapital());
-            s.setInitialEnergyPerCapita(preset.getEnergy());
-            s.setInitialFoodReserveMonths(preset.getFoodMonths());
-            s.setInitialInformationPerCapita(preset.getInfo());
+        spatiotemporalSectionBuilder.exportToScenario(s);
+        demographicSectionBuilder.exportToScenario(s);
+        culturalSectionBuilder.exportToScenario(s);
+        spatialBoundsBuilder.exportToScenario(s);
+        if (engineConfigSectionBuilder != null) {
+            engineConfigSectionBuilder.exportToScenario(s);
         }
-        s.setPopulationDensityType(densityPatternCombo.getValue());
+
         s.setEcologyPreset(ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null);
         if (ecologyPresetCombo != null && ecologyPresetCombo.getValue() != null) {
             s.setEcologyPresetName(ecologyPresetCombo.getValue().name());
         }
-        s.setPlanetPreset(activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue());
+        s.setPlanetPreset(activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null));
 
         long seedVal = 12345L;
         try {
@@ -2140,70 +1833,6 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
         s.setRandomEventsEnabled(randomEventsCheckBox == null || randomEventsCheckBox.isSelected());
         s.setEarthHistoricalLeadersEnabled(earthLeadersCheckBox == null || earthLeadersCheckBox.isSelected());
         s.setProceduralLeadersEnabled(proceduralLeadersCheckBox == null || proceduralLeadersCheckBox.isSelected());
-        if (clippingCheckBox != null) {
-            s.setClippingEnabled(clippingCheckBox.isSelected());
-            s.setMinLat(minLatSpinner.getValue());
-            s.setMaxLat(maxLatSpinner.getValue());
-            s.setMinLng(minLngSpinner.getValue());
-            s.setMaxLng(maxLngSpinner.getValue());
-            s.setBoundaryMode(boundaryModeCombo.getValue());
-        }
-        if (strictDeterminismCheckBox != null) {
-            s.setStrictDeterminism(strictDeterminismCheckBox.isSelected());
-        }
-        if (sparseCellSkippingCheckBox != null) {
-            s.setSparseCellSkippingEnabled(sparseCellSkippingCheckBox.isSelected());
-        }
-        if (oceanMacroAggregationCheckBox != null) {
-            s.setOceanMacroAggregationEnabled(oceanMacroAggregationCheckBox.isSelected());
-        }
-        if (coastalNavigationOnlyCheckBox != null) {
-            s.setCoastalNavigationOnlyEnabled(coastalNavigationOnlyCheckBox.isSelected());
-        }
-        if (oceanMultiRateTickingCheckBox != null) {
-            s.setOceanMultiRateTickingEnabled(oceanMultiRateTickingCheckBox.isSelected());
-        }
-        if (climateTickFreqSlider != null) {
-            s.setClimateTickFrequency((int) climateTickFreqSlider.getValue());
-        }
-        if (parallelExecutionCheckBox != null) {
-            s.setParallelExecutionEnabled(parallelExecutionCheckBox.isSelected());
-        }
-        if (threadCountSlider != null) {
-            s.setParallelThreadCount((int) threadCountSlider.getValue());
-        }
-        if (spatialRangeTruncationCheckBox != null) {
-            s.setSpatialRangeTruncationEnabled(spatialRangeTruncationCheckBox.isSelected());
-        }
-        if (customDensityImage != null) {
-            s.setCustomDensityBase64(org.ether.society.data.ImageMapLoader.imageToBase64Png(customDensityImage));
-        }
-
-        // Save Cultural Vector & Multi-Field Layers
-        culturalSectionBuilder.exportToScenario(s);
-
-        // Save Type B engine checkbox states
-        java.util.Map<String, Boolean> typeBStates = new java.util.HashMap<>();
-        for (java.util.Map.Entry<String, CheckBox> entry : typeBCheckBoxMap.entrySet()) {
-            typeBStates.put(entry.getKey(), entry.getValue().isSelected());
-        }
-        s.setTypeBEngineStates(typeBStates);
-
-        // Save Type B engine fine-grained parameter values
-        java.util.Map<String, java.util.Map<String, Double>> typeBParams = new java.util.HashMap<>();
-        for (java.util.Map.Entry<String, java.util.Map<String, Spinner<Double>>> engEntry : typeBParamSpinnersMap.entrySet()) {
-            java.util.Map<String, Double> engParams = new java.util.HashMap<>();
-            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-            for (java.util.Map.Entry<String, Spinner<Double>> paramEntry : engEntry.getValue().entrySet()) {
-                if (paramEntry.getValue() != null && paramEntry.getValue().getValue() != null) {
-                    engParams.put(paramEntry.getKey(), paramEntry.getValue().getValue());
-                }
-            }
-            if (!engParams.isEmpty()) {
-                typeBParams.put(engEntry.getKey(), engParams);
-            }
-        }
-        s.setTypeBEngineParameters(typeBParams);
 
         // Save Scheduled Events
         if (eventsList != null) {
@@ -2220,9 +1849,9 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
     private java.util.function.BiConsumer<PlanetPreset, EcologyPreset> onScenarioLoadedCallback;
 
     /**
-     * Set on scenario loaded callback.
+     * Sets the callback invoked when a scenario preset or bundle is loaded into the UI.
      *
-     * @param callback the callback parameter (EcologyPreset&gt;)
+     * @param callback consumer receiving active planet and ecology presets
      */
     public void setOnScenarioLoadedCallback(java.util.function.BiConsumer<PlanetPreset, EcologyPreset> callback) {
         this.onScenarioLoadedCallback = callback;

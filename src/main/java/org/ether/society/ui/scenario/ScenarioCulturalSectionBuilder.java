@@ -906,6 +906,16 @@ public class ScenarioCulturalSectionBuilder {
         }
     }
 
+    /**
+     * Updates all localized UI texts and tooltips across the cultural section.
+     */
+    public void updateTexts() {
+        if (cultureHeader != null) {
+            cultureHeader.setText(I18n.getOrDefault("scenario.culture_section", "🎭 CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
+        }
+        updateCulturalTensorSubBlockTexts();
+    }
+
     public void updateCulturalTensorSubBlockTexts() {
         if (btnGenerateProceduralTensorsSection != null) {
             btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "⚡ Régénérer les Tenseurs"));

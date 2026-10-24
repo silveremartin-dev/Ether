@@ -661,6 +661,35 @@ public class ScenarioDemographicSectionBuilder {
         updateDemoCompatibilityDisplay();
     }
 
+    public void exportToScenario(Scenario s) {
+        collectParameters(s);
+    }
+
+    /**
+     * Updates all localized UI texts and tooltips across the demographic section.
+     */
+    public void updateTexts() {
+        if (popHeader != null) {
+            popHeader.setText(I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD"));
+        }
+        if (radioProcDemo != null) {
+            radioProcDemo.setText(I18n.getOrDefault("scenario.radio.procedural", "▶ Procedural Mode (Algorithms & Demographic Patterns)"));
+        }
+        if (radioImportDemo != null) {
+            radioImportDemo.setText(I18n.getOrDefault("scenario.radio.import", "📂 Loading Mode for Existing Density Map (PNG)"));
+        }
+        if (demoSourceLabel != null) {
+            demoSourceLabel.setText(I18n.getOrDefault("resource.label.reference_source", "Reference Source:"));
+        }
+        if (loadDensityMapBtn != null) {
+            loadDensityMapBtn.setText(I18n.getOrDefault("resource.btn.load_map", "Load Map"));
+        }
+        if (exportDensityMapBtn != null) {
+            exportDensityMapBtn.setText(I18n.getOrDefault("scenario.btn.export_density", "💾 Export"));
+        }
+        updateDemoCompatibilityDisplay();
+    }
+
     public void collectParameters(Scenario s) {
         if (s == null) return;
         if (initialHumanCountSpinner != null && initialHumanCountSpinner.getValue() != null) {
