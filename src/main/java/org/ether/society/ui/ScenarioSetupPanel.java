@@ -16,6 +16,7 @@ import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
 import org.ether.society.ui.scenario.ScenarioCulturalSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioDemographicSectionBuilder;
 import org.ether.society.ui.scenario.ScenarioPreviewPaneBuilder;
 import javafx.util.StringConverter;
 
@@ -220,6 +221,28 @@ public class ScenarioSetupPanel extends BorderPane {
             scenarioDescriptionArea.setText(I18n.getOrDefault("scenario.msg.reset_default", "Scenario reset to canonical simulation default values."));
         }
     }
+
+    // Demographic Section Builder & Controller
+    private final ScenarioDemographicSectionBuilder demographicSectionBuilder = new ScenarioDemographicSectionBuilder(new ScenarioDemographicSectionBuilder.HostContext() {
+        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
+        @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
+        @Override public void selectPreviewMode(int modeIndex) {
+            if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != modeIndex) {
+                previewModeCombo.getSelectionModel().select(modeIndex);
+            }
+        }
+        @Override public List<H3Cell> getPreviewCells() { return ScenarioSetupPanel.this.getCells(); }
+        @Override public void distributeInitialPopulation(List<H3Cell> cells) { ScenarioSetupPanel.this.distributeInitialPopulation(cells); }
+        @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
+        @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null); }
+        @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
+        @Override public boolean isUpdatingFromPreset() { return isUpdatingFromPreset; }
+        @Override public long getStartYear() { return startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue().longValue() : -8000L; }
+        @Override public double computeAutoCapitalFromYear(long year) { return ScenarioSetupPanel.this.computeAutoCapitalFromYear(year); }
+        @Override public void generatePreview() { ScenarioSetupPanel.this.generatePreview(); }
+        @Override public void updatePreviewTitleText() { ScenarioSetupPanel.this.updatePreviewTitleText(); }
+        @Override public void updateBottomLegend() { ScenarioSetupPanel.this.updateBottomLegend(); }
+    });
 
     // Population & Density Controls
     private Spinner<Long> initialHumanCountSpinner;
@@ -1475,317 +1498,8 @@ public class ScenarioSetupPanel extends BorderPane {
         VBox section1Content = new VBox(10, grid1);
         VBox section1 = createSection(title1, section1Content);
 
-        // --- 2. Demographics & Density Map Management (RadioButtons) ---
-        VBox popSection = new VBox(10);
-        popSection.getStyleClass().add("card-section");
-        popHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_section", "👥 2. INITIAL POPULATION IDENTITY CARD"));
-        popHeader.getStyleClass().add("label-section-header");
-        popHeader.setId("__popHeader");
-
-        ToggleGroup demoSourceGroup = new ToggleGroup();
-        radioProcDemo = new RadioButton(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.procedural", "▶ Procedural Mode (Algorithms & Demographic Patterns)"));
-        radioImportDemo = new RadioButton(org.ether.society.i18n.I18n.getOrDefault("scenario.radio.import", "📂 Loading Mode for Existing Density Map (PNG)"));
-        radioProcDemo.setToggleGroup(demoSourceGroup);
-        radioImportDemo.setToggleGroup(demoSourceGroup);
-        radioProcDemo.setSelected(true);
-
-        Label demoTypeLabel = new Label(I18n.getOrDefault("scenario.label.demographic_mode", "⚙ Demographic Generation Mode:"));
-        demoTypeLabel.setStyle("-fx-font-weight: bold;");
-
-        VBox demoProcBox = new VBox(8);
-        demoProcBox.setStyle("-fx-padding: 8; -fx-background-color: rgba(56, 189, 248, 0.04); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.15); -fx-border-radius: 6;");
-
-        initialHumanCountSpinner = new Spinner<>(new LongSpinnerValueFactory(1_000L, 10_000_000_000L, 1_000_000L, 100_000L));
-        initialHumanCountSpinner.setEditable(true);
-        initialHumanCountSpinner.setMaxWidth(Double.MAX_VALUE);
-        initialHumanCountSpinner.valueProperty().addListener((obs, oldV, newV) -> {
-            notifyParamChange();
-            if (!isUpdatingFromPreset && newV != null && currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
-                distributeInitialPopulation(currentPreviewCells);
-                drawPreview();
-            }
-        });
-
-        densityPatternCombo = new ComboBox<>();
-        densityPatternCombo.getItems().addAll("UNBIASED_NATURAL", "COASTAL_MARITIME", "RIVER_VALLEYS", "HIGHLAND_MOUNTAIN", "INLAND_OASIS", "EQUATORIAL_BELT", "URBAN_CLUSTERS", "SPARSE_NOMADIC", "UNIFORM", "RANDOM");
-        densityPatternCombo.setValue("UNBIASED_NATURAL");
-        densityPatternCombo.setMaxWidth(Double.MAX_VALUE);
-        densityPatternCombo.setConverter(new javafx.util.StringConverter<String>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String toString(String item) {
-                return item == null ? "" : org.ether.society.i18n.I18n.getOrDefault("scenario.density." + item, DENSITY_LABELS.getOrDefault(item, item));
-            }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String fromString(String string) {
-                return null;
-            }
-        });
-        densityPatternCombo.setCellFactory(lv -> new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setTooltip(null);
-                } else {
-                    setText(org.ether.society.i18n.I18n.getOrDefault("scenario.density." + item, DENSITY_LABELS.getOrDefault(item, item)));
-                    String desc = org.ether.society.i18n.I18n.getOrDefault("scenario.density.desc." + item, DENSITY_DESCRIPTIONS.getOrDefault(item, ""));
-                    if (!desc.isBlank()) {
-                        setTooltip(new Tooltip(desc));
-                    } else {
-                        setTooltip(null);
-                    }
-                }
-            }
-        });
-        densityPatternCombo.setButtonCell(new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(org.ether.society.i18n.I18n.getOrDefault("scenario.density." + item, DENSITY_LABELS.getOrDefault(item, item)));
-                }
-            }
-        });
-        densityPatternCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.density.desc.UNBIASED_NATURAL", DENSITY_DESCRIPTIONS.get("UNBIASED_NATURAL"))));
-        densityPatternCombo.valueProperty().addListener((obs, oldV, newV) -> {
-            notifyParamChange();
-            if (newV != null) {
-                densityPatternCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.density.desc." + newV, DENSITY_DESCRIPTIONS.getOrDefault(newV, ""))));
-            }
-        });
-
-        popCountLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.pop_count", "Initial Population (1,000 to 10,000,000,000):"));
-        densityPatternLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.density_pattern", "Distribution Pattern:"));
-
-        GridPane popGrid = new GridPane();
-        popGrid.setHgap(10);
-        popGrid.setVgap(10);
-        ColumnConstraints pCol1 = new ColumnConstraints();
-        pCol1.setPercentWidth(45);
-        ColumnConstraints pCol2 = new ColumnConstraints();
-        pCol2.setPercentWidth(55);
-        popGrid.getColumnConstraints().setAll(pCol1, pCol2);
-
-        techPresetCombo = new ComboBox<>();
-        techPresetCombo.getItems().setAll(Scenario.TechPreset.values());
-        techPresetCombo.setValue(Scenario.TechPreset.AUTO_FROM_YEAR);
-        techPresetCombo.setMaxWidth(Double.MAX_VALUE);
-        techPresetCombo.setConverter(new javafx.util.StringConverter<Scenario.TechPreset>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (Scenario.TechPreset)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String toString(Scenario.TechPreset item) {
-                return item == null ? "" : I18n.getOrDefault("scenario.tech." + item.name(), item.getLabel());
-            }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public Scenario.TechPreset fromString(String string) {
-                return null;
-            }
-        });
-        techPresetCombo.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.tech_preset", "Select initial physical endowment (K₀, E₀, F₀, I₀) or leave auto-calculated based on T₀ year.")));
-
-        Label techPresetLabel = new Label(I18n.getOrDefault("scenario.label.tech_preset", "🚀 Dotation & Niveau Technologique T₀ :"));
-        techPresetLabel.setTooltip(techPresetCombo.getTooltip());
-
-        popGrid.addRow(0, popCountLabel, initialHumanCountSpinner);
-        popGrid.addRow(1, densityPatternLabel, densityPatternCombo);
-        popGrid.addRow(2, techPresetLabel, techPresetCombo);
-
-        demoSeedField = new TextField("12345");
-        demoSeedField.setPrefWidth(120);
-        demoSeedField.textProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        demoRandSeedBtn = new Button("🎲");
-        demoRandSeedBtn.getStyleClass().add("button-secondary");
-        demoRandSeedBtn.setOnAction(e -> {
-            notifyParamChange();
-            demoSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
-            if (currentPreviewCells != null) {
-                distributeInitialPopulation(currentPreviewCells);
-                drawPreview();
-            }
-        });
-        demoRandSeedBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.seed.tooltip", "Generate new random seed for demographics.")));
-        HBox demoSeedBox = new HBox(5, demoSeedField, demoRandSeedBtn);
-        HBox.setHgrow(demoSeedField, Priority.ALWAYS);
-
-        Label demoSeedLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.seed.label", "🎲 Scenario Procedural Seed:"));
-        popGrid.addRow(3, demoSeedLabel, demoSeedBox);
-
-        // Custom Physical Stocks Sub-Panel (Visible only when CUSTOM tech preset selected)
-        customCapitalSpinner = new Spinner<>(0.0, 1_000_000.0, 100.0, 10.0);
-        customCapitalSpinner.setEditable(true);
-        customCapitalSpinner.setMaxWidth(Double.MAX_VALUE);
-        customCapitalSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        customEnergySpinner = new Spinner<>(0.0, 10_000_000.0, 300.0, 50.0);
-        customEnergySpinner.setEditable(true);
-        customEnergySpinner.setMaxWidth(Double.MAX_VALUE);
-        customEnergySpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        customFoodSpinner = new Spinner<>(0.0, 120.0, 6.0, 1.0);
-        customFoodSpinner.setEditable(true);
-        customFoodSpinner.setMaxWidth(Double.MAX_VALUE);
-        customFoodSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        customInfoSpinner = new Spinner<>(0.0, 100_000_000_000.0, 2000.0, 100.0);
-        customInfoSpinner.setEditable(true);
-        customInfoSpinner.setMaxWidth(Double.MAX_VALUE);
-        customInfoSpinner.valueProperty().addListener((obs, oldV, newV) -> notifyParamChange());
-
-        GridPane customGrid = new GridPane();
-        customGrid.setHgap(8);
-        customGrid.setVgap(8);
-        ColumnConstraints cgCol1 = new ColumnConstraints();
-        cgCol1.setPercentWidth(25);
-        ColumnConstraints cgCol2 = new ColumnConstraints();
-        cgCol2.setPercentWidth(25);
-        ColumnConstraints cgCol3 = new ColumnConstraints();
-        cgCol3.setPercentWidth(25);
-        ColumnConstraints cgCol4 = new ColumnConstraints();
-        cgCol4.setPercentWidth(25);
-        customGrid.getColumnConstraints().setAll(cgCol1, cgCol2, cgCol3, cgCol4);
-
-        customGrid.addRow(0, new Label(I18n.getOrDefault("scenario.label.stock_k0", "ðŸ› ï¸ Kâ‚€ (kg/hab) :")), customCapitalSpinner, new Label(I18n.getOrDefault("scenario.label.stock_e0", "⚡ Eâ‚€ (MJ/hab) :")), customEnergySpinner);
-        customGrid.addRow(1, new Label(I18n.getOrDefault("scenario.label.stock_f0", "🌾 F₀ (mois) :")), customFoodSpinner, new Label(I18n.getOrDefault("scenario.label.stock_i0", "🧠 I₀ (bits/hab) :")), customInfoSpinner);
-
-        Label customTitleLabel = new Label(I18n.getOrDefault("scenario.section.custom_stocks", "⚙️ï¸ MANUAL INITIAL PHYSICAL STOCKS SETUP (CUSTOM):"));
-        customTitleLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;");
-
-        customPhysicalSubPanel = new VBox(6, customTitleLabel, customGrid);
-        customPhysicalSubPanel.setStyle("-fx-padding: 8px; -fx-background-color: rgba(245, 158, 11, 0.05); -fx-background-radius: 6px; -fx-border-color: rgba(245, 158, 11, 0.25); -fx-border-radius: 6px; -fx-border-width: 1px;");
-        customPhysicalSubPanel.setVisible(false);
-        customPhysicalSubPanel.setManaged(false);
-
-        techPresetCombo.valueProperty().addListener((obs, oldV, newV) -> {
-            notifyParamChange();
-            boolean isCustom = (newV == Scenario.TechPreset.CUSTOM);
-            customPhysicalSubPanel.setVisible(isCustom);
-            customPhysicalSubPanel.setManaged(isCustom);
-        });
-
-        exportDensityMapBtn = new Button(I18n.getOrDefault("scenario.btn.export_map_png", "📤 Export Raster (PNG / JPEG)"));
-        exportDensityMapBtn.getStyleClass().add("button-secondary");
-        exportDensityMapBtn.setMaxWidth(Double.MAX_VALUE);
-        exportDensityMapBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_map_png", "Export demographic density map as a high-resolution PNG or JPEG raster file.")));
-        exportDensityMapBtn.setOnAction(e -> exportDensityMap());
-
-        HBox demoBtnBar = new HBox(8, exportDensityMapBtn);
-        HBox.setHgrow(exportDensityMapBtn, Priority.ALWAYS);
-
-        VBox proceduralDemoPanel = new VBox(8, popGrid, customPhysicalSubPanel, demoBtnBar);
-        proceduralDemoPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
-
-        // Import Panel — section labels to match tensor block format
-        Label sourceRefLabel = new Label("ðŸ“ " + I18n.getOrDefault("resource.label.reference_source", "Source de Référence :"));
-        sourceRefLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 10px;");
-        demoSourceLabel = sourceRefLabel;
-        demoSourceCombo = buildPopulationSourceCombo();
-
-        densityMapFileLabel = new Label(org.ether.society.i18n.I18n.get("planet.map.none"));
-        densityMapFileLabel.getStyleClass().add("value-label");
-        densityMapFileLabel.setStyle("-fx-font-size: 10px;");
-
-        demoCompatibilityLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.status.terrain_no_map", "ðŸª Terrain validation: No external map loaded"));
-        demoCompatibilityLabel.getStyleClass().add("subcard-status-muted");
-        demoCompatibilityLabel.setWrapText(true);
-        demoCompatibilityLabel.setStyle("-fx-font-size: 11px;");
-
-        densityFormatHintLabel = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.format.density_hint",
-                "PNG / JPEG (projection équirectangulaire 2:1) :\n  Noir (0) = 0 hab/km² | Blanc (255) = Densité maximale d'habitation."));
-        densityFormatHintLabel.setWrapText(true);
-        densityFormatHintLabel.getStyleClass().add("card-description-muted");
-        densityFormatHintLabel.setStyle("-fx-font-size: 9px; -fx-font-style: italic;");
-
-        loadDensityMapBtn = new Button(I18n.getOrDefault("resource.btn.load_map", "📂 Charger la Carte"));
-        loadDensityMapBtn.getStyleClass().add("button-secondary");
-        loadDensityMapBtn.setStyle("-fx-font-size: 11px;");
-        loadDensityMapBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.import_density_map", "Import an external demographic density map in 2:1 equirectangular PNG format.")));
-        loadDensityMapBtn.setOnAction(e -> {
-            notifyParamChange();
-            loadCustomDensityMap();
-        });
-
-        clearDensityMapBtn = new Button("❌");
-        clearDensityMapBtn.getStyleClass().add("button-secondary");
-        clearDensityMapBtn.setStyle("-fx-font-size: 11px;");
-        clearDensityMapBtn.setOnAction(e -> {
-            customDensityImage = null;
-            densityMapFileLabel.setText("—");
-            if (radioProcDemo != null) {
-                radioProcDemo.setSelected(true);
-            }
-            notifyParamChange();
-            drawPreview();
-        });
-
-        demoHelpBtn = new Button(I18n.getOrDefault("scenario.btn.format_specs", "â“ Format"));
-        demoHelpBtn.getStyleClass().add("button-secondary");
-        demoHelpBtn.setStyle("-fx-font-size: 11px;");
-        demoHelpBtn.setMinWidth(Region.USE_PREF_SIZE);
-        demoHelpBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.density_specs", "Display instructions and image format specifications.")));
-        demoHelpBtn.setOnAction(e -> showDensityImportFormatHelp());
-
-        Label loadMapSectionLabel = new Label("📂 " + I18n.getOrDefault("scenario.label.load_map_section", "Charger la Carte :"));
-        loadMapSectionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 10px;");
-        Label formatSectionLabel = new Label("ðŸ“ " + I18n.getOrDefault("scenario.label.format_section", "Format de Carte :"));
-        formatSectionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 10px;");
-
-        HBox mapBtnBox = new HBox(6, loadDensityMapBtn, clearDensityMapBtn, demoHelpBtn);
-        mapBtnBox.setAlignment(Pos.CENTER_LEFT);
-
-        VBox importDemoPanel = new VBox(6, sourceRefLabel, demoSourceCombo, loadMapSectionLabel, mapBtnBox, densityMapFileLabel, demoCompatibilityLabel, formatSectionLabel, densityFormatHintLabel);
-        importDemoPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
-        importDemoPanel.setVisible(false);
-        importDemoPanel.setManaged(false);
-
-        // Toggle listener
-        demoSourceGroup.selectedToggleProperty().addListener((obs, old, sel) -> {
-            notifyParamChange();
-            boolean isProc = sel == radioProcDemo;
-            proceduralDemoPanel.setVisible(isProc);
-            proceduralDemoPanel.setManaged(isProc);
-            importDemoPanel.setVisible(!isProc);
-            importDemoPanel.setManaged(!isProc);
-            if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != 0) {
-                previewModeCombo.getSelectionModel().select(0);
-            }
-            if (currentPreviewCells != null) {
-                distributeInitialPopulation(currentPreviewCells);
-            }
-            drawPreview();
-        });
-
-        // Live preview listeners
-        initialHumanCountSpinner.valueProperty().addListener((obs, oldV, newV) -> { notifyParamChange(); if (currentPreviewCells != null) { distributeInitialPopulation(currentPreviewCells); drawPreview(); } });
-        densityPatternCombo.valueProperty().addListener((obs, oldV, newV) -> { notifyParamChange(); if (currentPreviewCells != null) { distributeInitialPopulation(currentPreviewCells); drawPreview(); } });
-
-        popSection.getChildren().addAll(popHeader, radioProcDemo, proceduralDemoPanel, radioImportDemo, importDemoPanel);
+        // --- 2. Demographics & Density Map Management ---
+        VBox popSection = createPopulationDensitySection();
 
         // --- 4. Cultural Vector & Multi-Field Layers Section (Tab 3) ---
         VBox cultureSection = createCulturalVectorAndLayersSection();
@@ -2117,39 +1831,12 @@ public class ScenarioSetupPanel extends BorderPane {
         updateLiveDiagnosticBlock();
     }
 
-    private static org.ether.society.engines.compiler.EngineConflictReport cachedJitReport = null;
-    private static synchronized org.ether.society.engines.compiler.EngineConflictReport getOrCreateJitReport() {
-        if (cachedJitReport == null) {
-            org.ether.society.engines.compiler.ScenarioEngineJITCompiler jit = new org.ether.society.engines.compiler.ScenarioEngineJITCompiler();
-            jit.registerEngineStep("BiologicalDemographics", "biomassHuman", new org.ether.society.engines.compiler.SymbolicExpression("biomassHuman", 1.01, 0.0), 10000.0);
-            jit.registerEngineStep("EcologicalDegradation", "biomassHuman", new org.ether.society.engines.compiler.SymbolicExpression("biomassHuman", 0.995, 0.0), 10000.0);
-            jit.registerEngineStep("AtmosphericSolar", "temperature", new org.ether.society.engines.compiler.SymbolicExpression("temperature", 1.0, 0.02), 25.0);
-            jit.compile();
-            cachedJitReport = jit.getConflictReport();
-        }
-        return cachedJitReport;
+    private static org.ether.society.engines.compiler.EngineConflictReport getOrCreateJitReport() {
+        return org.ether.society.ui.scenario.ScenarioSanityValidator.getOrCreateJitReport();
     }
 
     private void renderDiagnosticCategory(VBox container, String title, List<String> items) {
-        if (items == null || items.isEmpty()) return;
-        Label catLabel = new Label(title);
-        catLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #38bdf8; -fx-padding: 6 0 2 0;");
-        container.getChildren().add(catLabel);
-        for (String item : items) {
-            Label lbl = new Label("  • " + item);
-            lbl.setWrapText(true);
-            if (item.startsWith("❌")) {
-                lbl.getStyleClass().add("diagnostic-error");
-                lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
-            } else if (item.startsWith("⚠️ï¸")) {
-                lbl.getStyleClass().add("diagnostic-warn");
-                lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #f59e0b;");
-            } else {
-                lbl.getStyleClass().add("diagnostic-pass");
-                lbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981;");
-            }
-            container.getChildren().add(lbl);
-        }
+        org.ether.society.ui.scenario.ScenarioSanityValidator.renderDiagnosticCategory(container, title, items);
     }
 
     private void updateLiveDiagnosticBlock() {
@@ -2692,23 +2379,8 @@ public class ScenarioSetupPanel extends BorderPane {
      * entry string for demoSourceCombo, or null if no match can be determined.
      */
     private String pickDemoSourceForEpoch(long startYear, org.ether.society.generation.PlanetPreset planet) {
-        String pName = planet != null ? planet.name().toLowerCase() : "";
-        if (pName.contains("mars") || pName.contains("ares"))
-            return "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation [Planétaire (Mars), +2050 AD à Futur]";
-        if (pName.contains("vénus") || pName.contains("venus") || pName.contains("hesperos"))
-            return "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km) [Planétaire (Vénus), +2100 AD à Futur]";
-        if (pName.contains("lune") || pName.contains("moon") || pName.contains("selene"))
-            return "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton [Planétaire (Lune), +2040 AD à Futur]";
-        if (pName.contains("mercure") || pName.contains("mercury") || pName.contains("hermes"))
-            return "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente [Planétaire (Mercure), +2150 AD à Futur]";
-        // Earth epochs
-        if (startYear < -10000)
-            return "ðŸŒ Terre — Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]";
-        if (startYear >= -3000 && startYear < 1900)
-            return "ðŸŒ Terre — CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]";
-        return "ðŸŒ Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]";
+        return demographicSectionBuilder != null ? demographicSectionBuilder.pickDemoSourceForEpoch(startYear, planet) : "";
     }
-
     /**
      * Resiliently selects the best matching item in a source ComboBox.
      */
@@ -2842,35 +2514,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private ComboBox<String> buildPopulationSourceCombo() {
-        ComboBox<String> combo = new ComboBox<>();
-        combo.setMaxWidth(Double.MAX_VALUE);
-        combo.getItems().addAll(
-            "",
-            "ðŸŒ Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]",
-            "ðŸŒ Terre — Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]",
-            "ðŸŒ Terre — CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]",
-            "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation [Planétaire (Mars), +2050 AD à Futur]",
-            "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km) [Planétaire (Vénus), +2100 AD à Futur]",
-            "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton [Planétaire (Lune), +2040 AD à Futur]",
-            "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente [Planétaire (Mercure), +2150 AD à Futur]"
-        );
-        org.ether.society.ui.util.DataSourceUIHelper.setupDetailedSourceCombo(
-                combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
-        long startYr = (startYearSpinner != null && startYearSpinner.getValue() != null) ? startYearSpinner.getValue().longValue() : -8000L;
-        String initSrc = pickDemoSourceForEpoch(startYr, this.activePlanetPreset);
-        selectBestSource(combo, initSrc, "Terre");
-        combo.setOnAction(e -> {
-            if (isUpdatingFromPreset) return;
-            String val = combo.getValue();
-            if (val != null && !val.isEmpty()) {
-                if (customDensityImage != null && radioImportDemo != null) {
-                    radioImportDemo.setSelected(true);
-                }
-                notifyParamChange();
-                drawPreview();
-            }
-        });
-        return combo;
+        return demographicSectionBuilder != null ? demographicSectionBuilder.getDemoSourceCombo() : new ComboBox<>();
     }
 
     private ComboBox<String> buildCulturalSourceCombo(int tensorIdx) {
@@ -2963,177 +2607,44 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
         return root;
     }
 
+    private VBox createPopulationDensitySection() {
+        VBox popSection = demographicSectionBuilder.buildSection();
+        initialHumanCountSpinner = demographicSectionBuilder.getInitialHumanCountSpinner();
+        densityPatternCombo = demographicSectionBuilder.getDensityPatternCombo();
+        techPresetCombo = demographicSectionBuilder.getTechPresetCombo();
+        customCapitalSpinner = demographicSectionBuilder.getCustomCapitalSpinner();
+        customEnergySpinner = demographicSectionBuilder.getCustomEnergySpinner();
+        customFoodSpinner = demographicSectionBuilder.getCustomFoodSpinner();
+        customInfoSpinner = demographicSectionBuilder.getCustomInfoSpinner();
+        radioProcDemo = demographicSectionBuilder.getRadioProcDemo();
+        radioImportDemo = demographicSectionBuilder.getRadioImportDemo();
+        demoSourceCombo = demographicSectionBuilder.getDemoSourceCombo();
+        demoCompatibilityLabel = demographicSectionBuilder.getDemoCompatibilityLabel();
+        densityMapFileLabel = demographicSectionBuilder.getDensityMapFileLabel();
+        popHeader = demographicSectionBuilder.getPopHeader();
+        exportDensityMapBtn = demographicSectionBuilder.getExportDensityMapBtn();
+        loadDensityMapBtn = demographicSectionBuilder.getLoadDensityMapBtn();
+        return popSection;
+    }
+
     private void generateProceduralPopulationDensity() {
-        customDensityImage = null;
-        if (radioProcDemo != null) radioProcDemo.setSelected(true);
-        if (previewModeCombo != null) {
-            previewModeCombo.getSelectionModel().select(0);
-            updatePreviewTitleText();
-            updateBottomLegend();
-        }
-        Scenario s = getScenario();
-        if (s != null) {
-            java.util.concurrent.CompletableFuture.runAsync(() -> {
-                org.ether.society.data.HistoricalMapGenerator.generateProceduralMapsForScenario(s);
-            }).thenRun(() -> javafx.application.Platform.runLater(() -> {
-                String b64 = s.getCustomDensityBase64();
-                if (b64 != null && !b64.isBlank()) {
-                    customDensityImage = org.ether.society.data.ImageMapLoader.base64PngToImage(b64);
-                }
-                if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
-                    distributeInitialPopulation(currentPreviewCells);
-                }
-                notifyParamChange();
-                drawPreview();
-            }));
-        } else if (currentPreviewCells == null || currentPreviewCells.isEmpty()) {
-            generatePreview();
-        } else {
-            java.util.concurrent.CompletableFuture.runAsync(() -> {
-                distributeInitialPopulation(currentPreviewCells);
-            }).thenRun(() -> javafx.application.Platform.runLater(this::drawPreview));
-        }
-    }
-
-    private void generateProceduralCulturalTensors() {
-        culturalSectionBuilder.generateProceduralCulturalTensors();
-    }
-
-
-    public void updatePreviewModesCombo() {
-        if (previewPaneBuilder != null) {
-            previewPaneBuilder.updatePreviewModesCombo();
-        }
-    }
-
-    public void updatePreviewTitleText() {
-        if (previewPaneBuilder != null) {
-            previewPaneBuilder.updatePreviewTitleText();
-        }
-    }
-
-    public void updateBottomLegend() {
-        if (previewPaneBuilder != null) {
-            previewPaneBuilder.updateBottomLegend();
-        }
+        demographicSectionBuilder.generateProceduralPopulationDensity();
     }
 
     private void loadCustomDensityMap() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("scenario.title.load_density_dialog", "Load Population Density Map (PNG/JPEG)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images PNG/JPG", "*.png", "*.jpg", "*.jpeg"));
-        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null) {
-            try {
-                Image img = new Image(new FileInputStream(file));
-                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
-                if (!val.valid()) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle(I18n.getOrDefault("scenario.dialog.invalid_map_title", "Carte Incompatible ou Invalide"));
-                    alert.setHeaderText(I18n.getOrDefault("scenario.dialog.invalid_map_header", "Fichier de carte non supporté ou illisible"));
-                    alert.setContentText(file.getName() + " :\n" + val.message() + "\n\n" + I18n.getOrDefault("scenario.dialog.invalid_map_hint", "Veuillez fournir une image raster valide (PNG/JPG) en projection équirectangulaire (2:1)."));
-                    alert.showAndWait();
-                    return;
-                }
-                customDensityImage = img;
-                densityMapFileLabel.setText(String.format("📷 %s (%dx%d)", file.getName(), val.width(), val.height()));
-                if (radioImportDemo != null) radioImportDemo.setSelected(true);
-                updateDemoCompatibilityDisplay();
-                if (currentPreviewCells != null) {
-                    distributeInitialPopulation(currentPreviewCells);
-                    drawPreview();
-                }
-            } catch (Exception ex) {
-                logger.error("Failed to load custom density map", ex);
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Erreur de chargement: " + ex.getMessage());
-                alert.showAndWait();
-            }
-        }
+        demographicSectionBuilder.loadCustomDensityMap();
     }
 
     private void updateDemoCompatibilityDisplay() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (demoCompatibilityLabel == null) return;
-        PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
-        String planetName = p != null ? p.name() : "Standard";
-        if (customDensityImage != null) {
-            org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage);
-            if (!val.valid()) {
-                demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_invalid", "⚠️ï¸ Carte démographique incompatible : %s"), val.message()));
-                demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
-            } else {
-                demoCompatibilityLabel.setText(String.format(I18n.getOrDefault("scenario.demo.map_loaded", "✅ Map loaded and compatible with selected Tab 1 world (%s)"), planetName));
-                demoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
-            }
-        } else {
-            demoCompatibilityLabel.setText(I18n.getOrDefault("scenario.demo.no_map", "ðŸª No external map loaded — Procedural mode active"));
-            demoCompatibilityLabel.getStyleClass().add("subcard-status-muted");
-            demoCompatibilityLabel.setStyle("-fx-font-size: 11px;");
-        }
+        demographicSectionBuilder.updateDemoCompatibilityDisplay();
     }
 
     private void exportDensityMap() {
-        if (previewCanvas == null) return;
-        int w = 2048;
-        int h = 1024;
-        WritableImage image = new WritableImage(w, h);
-        PixelWriter pw = image.getPixelWriter();
-
-        if (customDensityImage != null && customDensityImage.getWidth() > 0) {
-            PixelReader pr = customDensityImage.getPixelReader();
-            double srcW = customDensityImage.getWidth();
-            double srcH = customDensityImage.getHeight();
-            for (int y = 0; y < h; y++) {
-                int sy = (int) Math.clamp((y / (double) h) * srcH, 0, srcH - 1);
-                for (int x = 0; x < w; x++) {
-                    int sx = (int) Math.clamp((x / (double) w) * srcW, 0, srcW - 1);
-                    pw.setColor(x, y, pr.getColor(sx, sy));
-                }
-            }
-        } else if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
-            double minLat = -90, maxLat = 90;
-            double minLng = -180, maxLng = 180;
-            double scaleX = w / (maxLng - minLng);
-            double scaleY = h / (maxLat - minLat);
-
-            for (int y = 0; y < h; y++) {
-                for (int x = 0; x < w; x++) {
-                    pw.setColor(x, y, Color.rgb(15, 23, 42));
-                }
-            }
-
-            // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (H3Cell c : currentPreviewCells) {
-                int px = (int) ((c.getLongitude() - minLng) * scaleX);
-                int py = (int) ((maxLat - c.getLatitude()) * scaleY);
-                if (px >= 0 && px < w && py >= 0 && py < h) {
-                    pw.setColor(px, py, getReliefAndDensityColor(c));
-                }
-            }
-        } else {
-            for (int y = 0; y < h; y++) {
-                for (int x = 0; x < w; x++) {
-                    pw.setColor(x, y, Color.rgb(15, 23, 42));
-                }
-            }
-        }
-        WindowUtils.exportImageWithChooser(getScene() != null ? getScene().getWindow() : null, image,
-                "ether-population-density.png",
-                I18n.getOrDefault("scenario.title.export_density_dialog", "Export Population Density Map (PNG / JPEG)"));
+        demographicSectionBuilder.exportDensityMap();
     }
 
     private void showDensityImportFormatHelp() {
-        WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("scenario.dialog.density_help_title", "Spécifications de la Carte de Densité"),
-                I18n.getOrDefault("scenario.dialog.density_help_header", "Formats d'Image Supportés pour l'Import de Densité Démographique"),
-                "Vous pouvez importer une carte de répartition démographique sous forme d'image PNG/JPEG au ratio 2:1 (ex: 2048x1024 pixels en projection équirectangulaire) :\n\n" +
-                "1. CARTE DE DENSITÉ NIVEAUX DE GRIS :\n" +
-                "   • Noir (0) = 0 hab/km² (Zone inhabitée / désertique / aquatique)\n" +
-                "   • Blanc (255) = Densité maximale d'habitation (Foyer urbain ou métropole)\n\n" +
-                "2. INTÉGRATION AVEC LE TERRAIN ET L'ÉCOLOGIE :\n" +
-                "   • Les zones d'eau (océans/mers) définies dans l'onglet 1 sont automatiquement filtrées pour éviter l'apparition de populations en pleine mer.\n" +
-                "   • La population totale paramétrée dans le spinner est distribuée au prorata de la luminosité de chaque pixel."
-        );
+        demographicSectionBuilder.showDensityImportFormatHelp();
     }
 
     public void generatePreview() {
@@ -3169,6 +2680,24 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
     public void drawPreview() {
         if (previewPaneBuilder != null) {
             previewPaneBuilder.drawPreview();
+        }
+    }
+
+    public void updatePreviewModesCombo() {
+        if (previewPaneBuilder != null) {
+            previewPaneBuilder.updatePreviewModesCombo();
+        }
+    }
+
+    public void updatePreviewTitleText() {
+        if (previewPaneBuilder != null) {
+            previewPaneBuilder.updatePreviewTitleText();
+        }
+    }
+
+    public void updateBottomLegend() {
+        if (previewPaneBuilder != null) {
+            previewPaneBuilder.updateBottomLegend();
         }
     }
     public boolean isDirty() {
