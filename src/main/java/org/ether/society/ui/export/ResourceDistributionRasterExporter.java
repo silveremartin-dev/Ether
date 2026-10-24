@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import org.ether.society.data.ImageMapLoader;
 import org.ether.society.generation.PlanetPreset;
+import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.i18n.I18n;
+import org.ether.society.model.Biome;
 import org.ether.society.persistence.EtherJsonUtil;
 import org.ether.society.ui.WindowUtils;
 import org.slf4j.Logger;
@@ -17,6 +21,7 @@ import java.io.File;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * <h2>Resource Distribution Raster Exporter</h2>
@@ -26,6 +31,7 @@ import java.util.Map;
  *   <li><b>GIS Multi-Format Exports</b>: GeoJSON FeatureCollections, GeoTIFF multi-band metadata, and NetCDF-4 spatiotemporal cube structures.</li>
  *   <li><b>Cryptographic Provenance Manifests</b>: Generates SHA-256 provenance checksum manifests verifying empirical dataset integrity against USGS, IAEA, and UNESCO WHyMAP standards.</li>
  *   <li><b>Raster Image Serialization</b>: PNG / JPEG exports of biomes, hydrography, and 10 lithospheric tensor layers with user-facing dialogs.</li>
+ *   <li><b>Equirectangular ESRI WorldFile Rasterization</b>: Generates 2:1 raster planes (2048x1024) coupled with ESRI .tfw / .pgw metadata.</li>
  * </ul>
  * </p>
  *
@@ -36,6 +42,23 @@ import java.util.Map;
 public final class ResourceDistributionRasterExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceDistributionRasterExporter.class);
+
+    /**
+     * Functional callback for spatial procedural sampling of a geological tensor layer.
+     */
+    @FunctionalInterface
+    public interface GeologyTensorSampler {
+        /**
+         * Samples tensor density at the given equirectangular coordinates.
+         *
+         * @param layerIdx tensor layer index [0..9]
+         * @param lon longitude in degrees [-180, 180]
+         * @param lat latitude in degrees [-90, 90]
+         * @param planet active planet preset
+         * @return normalized density value
+         */
+        double sample(int layerIdx, double lon, double lat, PlanetPreset planet);
+    }
 
     private ResourceDistributionRasterExporter() {
         // Utility class
@@ -155,5 +178,165 @@ public final class ResourceDistributionRasterExporter {
      */
     public static void exportRasterImage(Window window, Image img, String defaultFileName, String dialogTitle) {
         WindowUtils.exportImageWithChooser(window, img, defaultFileName, dialogTitle);
+    }
+
+    /**
+     * Generates a high-resolution 2:1 raster grid (2048x1024) and triggers the GIS export dialog
+     * with ESRI WorldFile (.tfw) generation for the selected view mode.
+     *
+     * @param window host JavaFX window
+     * @param viewModeIndex active view mode (0=Biomes, 1=Hydrography, 2..11=Geology tensors, other=Temperature)
+     * @param planet active planet preset
+     * @param seismicVal seismic activity level override (optional)
+     * @param volcanicVal volcanic activity level override (optional)
+     * @param generator procedural generator
+     * @param mapLoader image map loader for discrete color palettes
+     * @param sampler callback for sampling procedural geology tensors
+     * @param geologyColorMapper callback for resolving color of a geology tensor value
+     */
+    public static void exportMapsWithWorldFiles(
+            Window window,
+            int viewModeIndex,
+            PlanetPreset planet,
+            Double seismicVal,
+            Double volcanicVal,
+            ProceduralGenerator generator,
+            ImageMapLoader mapLoader,
+            GeologyTensorSampler sampler,
+            BiFunction<Integer, Float, Color> geologyColorMapper) {
+
+        if (planet == null) {
+            planet = PlanetPreset.EARTH_LIKE;
+        }
+        if (seismicVal != null || volcanicVal != null) {
+            double s = seismicVal != null ? seismicVal : planet.seismicActivityLevel();
+            double v = volcanicVal != null ? volcanicVal : planet.volcanicActivityLevel();
+            planet = planet.withSeismicAndVolcanic(s, v);
+        }
+
+        int w = 2048;
+        int h = 1024;
+        float[][] grid = new float[h][w];
+        String layerName;
+        String unit = "Index";
+        float minVal = 0.0f;
+        float maxVal = 1.0f;
+        java.util.function.Function<Float, Color> colorMapper;
+
+        if (viewModeIndex == 0) { // Biomes
+            layerName = "biomes";
+            unit = "BiomeID";
+            maxVal = 13.0f;
+            for (int y = 0; y < h; y++) {
+                double lat = 90.0 - ((double) y / h) * 180.0;
+                for (int x = 0; x < w; x++) {
+                    double lon = -180.0 + ((double) x / w) * 360.0;
+                    var pt = generator.getPlanetPoint(lat, lon, planet);
+                    grid[y][x] = (float) pt.biome().ordinal();
+                }
+            }
+            colorMapper = val -> {
+                int ord = Math.round(val);
+                Biome[] biomes = Biome.values();
+                if (ord >= 0 && ord < biomes.length) {
+                    return mapLoader.getBiomeTargetColor(biomes[ord]);
+                }
+                return Color.BLACK;
+            };
+        } else if (viewModeIndex == 1) { // Hydrography
+            layerName = "hydrography";
+            unit = "FlowIndex";
+            for (int y = 0; y < h; y++) {
+                double lat = 90.0 - ((double) y / h) * 180.0;
+                for (int x = 0; x < w; x++) {
+                    double lon = -180.0 + ((double) x / w) * 360.0;
+                    var pt = generator.getPlanetPoint(lat, lon, planet);
+                    grid[y][x] = (float) pt.riverFlow();
+                }
+            }
+            colorMapper = val -> {
+                if (val > 0.42f) return Color.rgb(2, 132, 199);
+                if (val > 0.28f) return Color.rgb(56, 189, 248);
+                if (val > 0.16f) return Color.rgb(20, 184, 166);
+                return Color.rgb(75, 85, 99);
+            };
+        } else if (viewModeIndex >= 2 && viewModeIndex <= 11) { // Geology 0..9
+            int layerIdx = viewModeIndex - 2;
+            layerName = "geology_layer_" + layerIdx;
+            unit = "Density";
+            for (int y = 0; y < h; y++) {
+                double lat = 90.0 - ((double) y / h) * 180.0;
+                for (int x = 0; x < w; x++) {
+                    double lon = -180.0 + ((double) x / w) * 360.0;
+                    grid[y][x] = (float) (sampler != null ? sampler.sample(layerIdx, lon, lat, planet) : 0.0);
+                }
+            }
+            colorMapper = val -> geologyColorMapper != null ? geologyColorMapper.apply(layerIdx, val) : Color.GRAY;
+        } else {
+            layerName = "raster_layer";
+            for (int y = 0; y < h; y++) {
+                double lat = 90.0 - ((double) y / h) * 180.0;
+                for (int x = 0; x < w; x++) {
+                    double lon = -180.0 + ((double) x / w) * 360.0;
+                    var pt = generator.getPlanetPoint(lat, lon, planet);
+                    grid[y][x] = (float) pt.temperature();
+                }
+            }
+            colorMapper = val -> Color.color(0.5, 0.5, 0.5);
+        }
+
+        String defaultName = String.format("ether-%s-%s-%dx%d.png",
+                layerName, planet.name().toLowerCase().replaceAll("[^a-z0-9]", "-"), w, h);
+        GeospatialExportUIHelper.exportRasterWithDialog(
+                window,
+                grid,
+                defaultName,
+                I18n.getOrDefault("resource.dialog.export_raster", "Export Ecological / Geological Raster (GeoTIFF / PNG / ASCII)"),
+                colorMapper,
+                minVal,
+                maxVal,
+                unit
+        );
+    }
+
+    /**
+     * Displays the technical specification dialog detailing discrete polychrome biomes and geological rasters.
+     */
+    public static void showEcologyImportFormatHelp() {
+        WindowUtils.showScrollableInfoDialog(
+                I18n.getOrDefault("resource.dialog.specs_title", "Spécifications des Biomes & Ressources Géologiques"),
+                I18n.getOrDefault("resource.dialog.specs_header", "Formats Attendus : Biomes Polychromes & Gisements Minéraux"),
+                "Vous pouvez importer des cartes de biomes et de ressources géologiques (PNG/JPEG ratio 2:1) :\n\n" +
+                "1. CARTE DE BIOMES (POLYCHROME DISCRET CATÉGORIEL) :\n" +
+                "   Chaque biome correspond à un code couleur RVB strict (identique sur toutes les planètes) :\n" +
+                "   • Océan Profond : RGB(0, 0, 100)\n" +
+                "   • Océan / Mer : RGB(0, 50, 200)\n" +
+                "   • Plage / Littoral : RGB(240, 220, 150)\n" +
+                "   • Plaines / Prairies : RGB(100, 200, 50)\n" +
+                "   • Forêt Tempérée : RGB(20, 120, 20)\n" +
+                "   • Jungle Tropicale : RGB(0, 80, 0)\n" +
+                "   • Désert Aride : RGB(255, 200, 50)\n" +
+                "   • Collines : RGB(150, 150, 100)\n" +
+                "   • Montagnes : RGB(100, 100, 100)\n" +
+                "   • Toundra : RGB(150, 200, 220)\n" +
+                "   • Neige / Glaciers : RGB(255, 255, 255)\n\n" +
+                "2. CARTES GÉOLOGIQUES & ÉNERGÉTIQUES UNIFIÉES (PAR CORPS CÉLESTE) :\n" +
+                "   Les couches géologiques utilisent une charte chromatique standardisée :\n" +
+                "   • 🪨 Charbon : Dégradé Ambre / Brun doré (#92400E → #FBBF24)\n" +
+                "   • 🛢️ Pétrole : Dégradé Rouge Rubis / Carmin (#991B1B → #F87171)\n" +
+                "   • 💨 Gaz Naturel : Dégradé Cyan / Bleu Ciel (#0E7490 → #38BDF8)\n" +
+                "   • ☢️ Uranium / Thorium : Vert Émeraude (#22C55E)\n" +
+                "   • ⚛️ Hélium-3 : Violet Néon / Pourpre (#A855F7)\n" +
+                "   • ⛏️ Fer & Cuivre : Rouille / Cuivre Orangé (#8B4513 → #F97316)\n" +
+                "   • 🪙 Métaux Précieux & Terres Rares : Or / Jaune (#EAB308)\n" +
+                "   • 🌋 Géothermie / Chaleur Mantellique : Incandescence Rouge-Orange (#EF4444)\n" +
+                "   • 💧 Aquifères & Glace d'Eau : Bleu Azur (#3B82F6)\n\n" +
+                "3. CARTE GÉOLOGIQUE MULTI-CANAUX COMBINÉE (RGB) :\n" +
+                "   • Canal Rouge (R) = Gisements Métalliques (Fer, Cuivre)\n" +
+                "   • Canal Vert (V) = Biomasse Végétale et Forêts\n" +
+                "   • Canal Bleu (B) = Eau Souterraine / Aquifères\n\n" +
+                "4. GÉORÉFÉRENCEMENT ESRI WORLD FILE (.tfw) :\n" +
+                "   • L'export génère automatiquement un fichier .tfw pour l'ouverture directe dans QGIS / ArcGIS."
+        );
     }
 }

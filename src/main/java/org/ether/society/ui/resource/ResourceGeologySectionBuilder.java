@@ -1222,6 +1222,18 @@ public class ResourceGeologySectionBuilder {
         return geologyImportRadios.containsKey(layerIdx) && geologyImportRadios.get(layerIdx).isSelected();
     }
 
+    /**
+     * Checks if any of the 10 geological layers is currently in external import mode.
+     *
+     * @return true if at least one layer has import mode selected
+     */
+    public boolean isAnyGeologyImportActive() {
+        for (int i = 0; i < 10; i++) {
+            if (isGeologyImportActive(i)) return true;
+        }
+        return false;
+    }
+
     public Image getGeologyLayerImage(int layerIdx) {
         return customGeologyLayerImages.get(layerIdx);
     }
