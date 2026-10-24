@@ -1,37 +1,51 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Gemini AI Assistant
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.ui;
 
-import org.ether.society.core.ISimulationEngine;
-import org.ether.society.i18n.I18n;
-import org.ether.society.i18n.Language;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.SnapshotParameters;
-import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import org.ether.society.core.ISimulationEngine;
+import org.ether.society.events.ActiveEvent;
+import org.ether.society.i18n.I18n;
+import org.ether.society.ui.control.ControlPanelCaptureSection;
+import org.ether.society.ui.control.ControlPanelEventsSection;
+import org.ether.society.ui.control.ControlPanelLayersSection;
+import org.ether.society.ui.control.ControlPanelRenderingSection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.ether.society.events.ActiveEvent;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * Modern simulation control and rendering panel for Tab 4 (Simulation View).
- * Provides video recording, HD screenshots, temporal controls, display modes, and live metrics.
+ *
+ * <p>Refactored according to the Single Responsibility Principle (SRP). Acts as the primary
+ * coordinator for simulation clock playback, temporal resolution scaling, and delegates modular cards to:
+ * <ul>
+ *   <li>{@link ControlPanelLayersSection} for cartographic layer stack multi-selection and 1-click scientific presets</li>
+ *   <li>{@link ControlPanelRenderingSection} for 3D spherical globe projections, relief exaggeration, and uniform palettes</li>
+ *   <li>{@link ControlPanelCaptureSection} for HD screenshots and MP4 video timelapse generation</li>
+ *   <li>{@link ControlPanelEventsSection} for chronological planetary event feeds and click-to-ping navigation</li>
+ * </ul>
+ * </p>
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
  */
 public class ControlPanel extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(ControlPanel.class);
@@ -57,13 +71,8 @@ public class ControlPanel extends VBox {
     private final Label dbStatusLabel;
     private final List<String> eventHistory = new ArrayList<>();
 
-    // Section 5: Recent Events UI
-    private final Label eventsTitleLabel;
-    private final Label eventsHintLabel;
-    private final Label noEventsLabel;
-    private final VBox eventsListBox;
-
-    // Controls
+    // Section 1: Temporal Controls
+    private Label timeTitle;
     private final Button playPauseBtn;
     private final Button rewindBtn;
     private final Button fastRewindBtn;
@@ -75,69 +84,25 @@ public class ControlPanel extends VBox {
     private final ToggleButton speedMax;
     private final Slider speedSlider;
     private final Label speedValueLabel;
-
-    private final Button hdScreenshotBtn;
-    private final Button recordVideoBtn;
-    private final CheckBox autoRecordCheck;
-    /** Internal state: is recording video (boolean). */
-    private boolean isRecordingVideo = false;
-
-    private final CheckBox mode3dCheck;
-    private final CheckBox autoRotateCheck;
-    private final Label reliefLabel;
-    private final Slider reliefSlider;
-    private final CheckBox hillshadingCheck;
-    private final CheckBox solarTerminatorCheck;
-    private final CheckBox smoothMapCheck;
-    private final CheckBox contourCheck;
-    private final CheckBox fluxVectorCheck;
-    private final CheckBox resourceOverlayCheck;
-    private final CheckBox floatingLayerCheck;
-    private final CheckBox legendCheck;
-    private final CheckBox dateOverlayCheck;
-    private final CheckBox cellInfoCheck;
-    private final CheckBox hexGridCheck;
-    private final MenuButton activeLayersMenuBtn;
-    private final java.util.Map<DisplayMode, CheckBox> layerCheckBoxMap = new java.util.EnumMap<>(DisplayMode.class);
-    private final FlowPane activeLayersChipsBox;
-    private final Button fullScreenBtn;
-    private final CheckBox filterGeophysicalCheck;
-    private final CheckBox filterHistoricalCheck;
-    private final CheckBox filterChronicleCheck;
-    private final List<ActiveEvent> rawEventsCache = new ArrayList<>();
-
-    // Section 1: Time & Playback UI
-    private Label timeTitle;
     private final CheckBox pauseOnEventCheck;
 
-    // Section 2: Layers & Presets UI
-    private Label layersTitle;
-    private Label presetsTitle;
-    private final Button presetSynth;
-    private final Button presetEcon;
-    private final Button presetClim;
-    private final Button presetCliodyn;
-    private Label layerComboLabel;
-    private Label dataLayersTitle;
-    private Label uiOverlaysTitle;
+    // Sub-Sections
+    private final ControlPanelLayersSection layersSection;
+    private final ControlPanelRenderingSection renderingSection;
+    private final ControlPanelCaptureSection captureSection;
+    private final ControlPanelEventsSection eventsSection;
 
-    // Section 3: Rendering UI
-    private Label renderTitle;
-    private Label paletteLabel;
-    private final ComboBox<ScientificColorMap> paletteCombo;
-
-    // Section 4: Export UI
-    private Label exportTitle;
+    // Cluster & DB state
+    private boolean isDbOnline = false;
+    private String clusterNodeState = "💻 Nœud Local Standalone";
 
     // Callbacks
     private Runnable onSave;
     private Runnable onLoad;
-    private Consumer<Boolean> onContourToggle;
     private Runnable onTimelapseRecord;
     private Consumer<Integer> onTimelapseSeek;
     private Runnable onTimelapseSeekToEnd;
     private Consumer<Boolean> onStatsToggle;
-    private Runnable onFullScreen;
     private Runnable onRewindStart;
     private Runnable onFastRewind;
     private Runnable onStepBack;
@@ -146,9 +111,9 @@ public class ControlPanel extends VBox {
     private Runnable onSeekToEnd;
 
     /**
-     * Control panel.
+     * Constructs the simulation control panel.
      *
-     * @param engine the engine parameter (ISimulationEngine)
+     * @param engine active simulation engine instance
      */
     public ControlPanel(ISimulationEngine engine) {
         this.engine = engine;
@@ -173,6 +138,34 @@ public class ControlPanel extends VBox {
         dbStatusLabel = new Label(I18n.getOrDefault("sim.status.dbcheck", "DB: Checking..."));
         dbStatusLabel.getStyleClass().add("control-label");
         dbStatusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-padding: 2 0 0 0;");
+
+        pauseOnEventCheck = new CheckBox(I18n.getOrDefault("sim.option.pause_on_event", "⏸️ Auto-pause on event"));
+        pauseOnEventCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause_on_event", "Automatically pauses simulation when a new planetary or regional event occurs")));
+        pauseOnEventCheck.getStyleClass().add("opt-sub-checkbox");
+        pauseOnEventCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+        pauseOnEventCheck.setOnAction(e -> engine.setPauseAtNextEvent(pauseOnEventCheck.isSelected()));
+
+        // --- SUB-SECTIONS INITIALIZATION ---
+        layersSection = new ControlPanelLayersSection();
+        layersSection.setMapCanvasSupplier(() -> this.mapCanvas);
+        layersSection.setColorLegendSupplier(() -> this.colorLegend);
+        layersSection.setEngineSupplier(() -> this.engine);
+        layersSection.setPauseOnEventCheckSupplier(() -> this.pauseOnEventCheck);
+
+        renderingSection = new ControlPanelRenderingSection();
+        renderingSection.setMapCanvasSupplier(() -> this.mapCanvas);
+        renderingSection.setColorLegendSupplier(() -> this.colorLegend);
+        layersSection.setRenderingSectionSupplier(() -> this.renderingSection);
+
+        captureSection = new ControlPanelCaptureSection(this::takeHDScreenshot, this::toggleVideoRecording);
+
+        eventsSection = new ControlPanelEventsSection();
+        eventsSection.setOnEventSelected(evt -> {
+            if (mapCanvas != null) {
+                mapCanvas.flyTo(evt.getLatitude(), evt.getLongitude());
+                mapCanvas.pingLocation(evt.getLatitude(), evt.getLongitude(), evt.getTitle(), evt.getType(), evt.getMagnitude());
+            }
+        });
 
         // --- 2. TEMPORAL & PLAYBACK CONTROLS CARD ---
         timeTitle = createCardTitle("⏱️ " + I18n.getOrDefault("sim.card.time", "TIME & PLAYBACK CONTROLS"));
@@ -217,23 +210,17 @@ public class ControlPanel extends VBox {
             updatePlayPauseVisuals(false);
         });
 
-        // Auto Record Checkbox (initialized early for button handlers)
-        autoRecordCheck = new CheckBox(I18n.getOrDefault("sim.option.auto_record", "🎬 Auto Sync Video (Start & Pause)"));
-        autoRecordCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.auto_record", "Automatically starts/stops 1:1 video recording in sync with scenario start/pause")));
-        autoRecordCheck.getStyleClass().add("opt-sub-checkbox");
-        autoRecordCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-
         playPauseBtn = new Button("▶");
         playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.start", "Start / Resume")));
         playPauseBtn.setOnAction(e -> {
             if (engine.isRunning()) {
                 engine.pause();
-                if (autoRecordCheck != null && autoRecordCheck.isSelected() && isRecordingVideo) {
+                if (captureSection != null && captureSection.isAutoRecordSelected() && captureSection.isRecordingVideo()) {
                     toggleVideoRecording();
                 }
                 updatePlayPauseVisuals(false);
             } else {
-                if (autoRecordCheck.isSelected() && !isRecordingVideo) {
+                if (captureSection != null && captureSection.isAutoRecordSelected() && !captureSection.isRecordingVideo()) {
                     toggleVideoRecording();
                 }
                 engine.start();
@@ -293,12 +280,6 @@ public class ControlPanel extends VBox {
         }
 
         updatePlayPauseVisuals(engine.isRunning());
-
-        pauseOnEventCheck = new CheckBox(I18n.getOrDefault("sim.option.pause_on_event", "⏸️ Auto-pause on event"));
-        pauseOnEventCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause_on_event", "Automatically pauses simulation when a new planetary or regional event occurs")));
-        pauseOnEventCheck.getStyleClass().add("opt-sub-checkbox");
-        pauseOnEventCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        pauseOnEventCheck.setOnAction(e -> engine.setPauseAtNextEvent(pauseOnEventCheck.isSelected()));
 
         HBox playBar = new HBox(4, rewindBtn, fastRewindBtn, stepBackBtn, playPauseBtn, stepForwardBtn, fastForwardBtn, endBtn);
         playBar.setAlignment(Pos.CENTER);
@@ -368,324 +349,9 @@ public class ControlPanel extends VBox {
         sliderRow.setAlignment(Pos.TOP_LEFT);
         HBox.setMargin(speedMax, new Insets(2, 0, 0, 0));
 
-        // --- 1. HORLOGE & CONTRÔLE TEMPOREL CARD ---
         VBox timeCard = new VBox(8, scenarioHeaderLabel, dateHeaderLabel, dbStatusLabel, timeTitle, playBar, pauseOnEventCheck, speedValueLabel, sliderRow);
-        styleCard(timeCard);
+        timeCard.getStyleClass().add("card-section");
 
-        // --- 4. TÉLÉMÉTRIE & EXPORT CARD ---
-        exportTitle = createCardTitle(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
-
-        hdScreenshotBtn = new Button("📸 " + I18n.getOrDefault("sim.btn.screenshot", "HD Screenshot"));
-        hdScreenshotBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.screenshot", "Exports HD PNG screenshot to saves/screenshots/")));
-        hdScreenshotBtn.setMaxWidth(Double.MAX_VALUE);
-        hdScreenshotBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 6 10; -fx-background-radius: 6;");
-        hdScreenshotBtn.setOnAction(e -> takeHDScreenshot());
-
-        recordVideoBtn = new Button("🎥 " + I18n.getOrDefault("sim.btn.video", "Record MP4 Video"));
-        recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Starts MP4 video capture (1:1 step) in saves/timelapse/")));
-        recordVideoBtn.setMaxWidth(Double.MAX_VALUE);
-        recordVideoBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 6 10; -fx-background-radius: 6;");
-        recordVideoBtn.setOnAction(e -> toggleVideoRecording());
-
-        // --- 2. PILE DE COUCHES & PRÉRÉGLAGES SCIENTIFIQUES CARD ---
-        layersTitle = createCardTitle(I18n.getOrDefault("sim.card.layers_presets", "🗺️ 2. LAYER STACK & SCIENTIFIC PRESETS"));
-
-        // 1-Click Scientific Presets
-        presetsTitle = new Label(I18n.getOrDefault("sim.presets.1click", "⚡ 1-Click Scientific Presets:"));
-        presetsTitle.getStyleClass().add("opt-subheader");
-        presetsTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
-
-        presetSynth = createPresetBtn(I18n.getOrDefault("sim.preset.synthesis", "🌍 Synthesis"), I18n.getOrDefault("sim.preset.synthesis.desc", "3D Globe Mode + Biomes + Relief + Contour Lines"), () -> applyPresetSynthesis(pauseOnEventCheck));
-        presetEcon = createPresetBtn(I18n.getOrDefault("sim.preset.economy", "📈 Economy"), I18n.getOrDefault("sim.preset.economy.desc", "Flux / GDP Map + Transport Vectors + Ore Deposits"), () -> applyPresetEcon());
-        presetClim = createPresetBtn(I18n.getOrDefault("sim.preset.climate", "🌡️ Climate"), I18n.getOrDefault("sim.preset.climate.desc", "Temperature Map + Aquifers + Relief Contour Lines"), () -> applyPresetClimate());
-        presetCliodyn = createPresetBtn(I18n.getOrDefault("sim.preset.cliodynamics", "🏛️ Cliodynamics"), I18n.getOrDefault("sim.preset.cliodynamics.desc", "Demographic Map + H3 Mesh + Event Pause"), () -> applyPresetCliodynamics(pauseOnEventCheck));
-
-        GridPane presetGrid = new GridPane();
-        presetGrid.setHgap(4);
-        presetGrid.setVgap(4);
-        presetGrid.add(presetSynth, 0, 0);
-        presetGrid.add(presetEcon, 1, 0);
-        presetGrid.add(presetClim, 0, 1);
-        presetGrid.add(presetCliodyn, 1, 1);
-        ColumnConstraints col1 = new ColumnConstraints(); col1.setPercentWidth(50);
-        ColumnConstraints col2 = new ColumnConstraints(); col2.setPercentWidth(50);
-        presetGrid.getColumnConstraints().addAll(col1, col2);
-
-        VBox presetBox = new VBox(4, presetsTitle, presetGrid);
-        presetBox.getStyleClass().add("subcard-section");
-
-        layerComboLabel = new Label(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layers (Multi-Select):"));
-        layerComboLabel.getStyleClass().add("card-description-muted");
-        layerComboLabel.setStyle("-fx-font-size: 11px;");
-
-        activeLayersMenuBtn = new MenuButton();
-        activeLayersMenuBtn.setMaxWidth(Double.MAX_VALUE);
-        activeLayersMenuBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.datacategory", "Toggle one or more layers to superimpose on the map")));
-        activeLayersMenuBtn.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-border-color: #38bdf8; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand;");
-
-        activeLayersChipsBox = new FlowPane(4, 4);
-        activeLayersChipsBox.setStyle("-fx-padding: 2 0;");
-
-        rebuildLayerMenuItems();
-        updateActiveLayerUI();
-
-        contourCheck = new CheckBox(I18n.getOrDefault("sim.layer.contours", "📈 Elevation Contour Lines"));
-        contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Displays elevation contour lines on H3 cells")));
-        contourCheck.getStyleClass().add("opt-sub-checkbox");
-        contourCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        contourCheck.setOnAction(e -> {
-            if (mapCanvas != null) mapCanvas.setShowContours(contourCheck.isSelected());
-            if (onContourToggle != null) onContourToggle.accept(contourCheck.isSelected());
-        });
-
-        fluxVectorCheck = new CheckBox(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vectors)"));
-        fluxVectorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fluxvectors", "Overlays material flux and population transport vectors")));
-        fluxVectorCheck.getStyleClass().add("opt-sub-checkbox");
-        fluxVectorCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        fluxVectorCheck.setOnAction(e -> {
-            if (mapCanvas != null) mapCanvas.setShowFlowVectors(fluxVectorCheck.isSelected());
-        });
-
-        resourceOverlayCheck = new CheckBox(I18n.getOrDefault("sim.layer.resources", "💎 Deposits & Capital (Overlays)"));
-        resourceOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.resources", "Displays metal, aquifer, and infrastructure markers")));
-        resourceOverlayCheck.getStyleClass().add("opt-sub-checkbox");
-        resourceOverlayCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        resourceOverlayCheck.setOnAction(e -> {
-            if (mapCanvas != null) mapCanvas.setShowResourceOverlay(resourceOverlayCheck.isSelected());
-        });
-
-        floatingLayerCheck = new CheckBox(I18n.getOrDefault("sim.layer.floating", "☁️ 2.5D Floating Layers (Altitude)"));
-        floatingLayerCheck.setSelected(true);
-        floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projects thematic layers in 2.5D elevation floating above biome topography")));
-        floatingLayerCheck.getStyleClass().add("opt-sub-checkbox");
-        floatingLayerCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        floatingLayerCheck.setOnAction(e -> {
-            if (mapCanvas != null) mapCanvas.setShowFloatingLayers(floatingLayerCheck.isSelected());
-        });
-
-        legendCheck = new CheckBox(I18n.getOrDefault("sim.layer.legend", "🗺️ Color Legend (Overlay)"));
-        legendCheck.setSelected(true);
-        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Shows or hides the map color legend pane")));
-        legendCheck.getStyleClass().add("opt-sub-checkbox");
-        legendCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        legendCheck.setOnAction(e -> {
-            if (colorLegend != null) {
-                colorLegend.setVisible(legendCheck.isSelected());
-                colorLegend.setManaged(legendCheck.isSelected());
-            }
-        });
-
-        dateOverlayCheck = new CheckBox(I18n.getOrDefault("sim.layer.date_overlay", "📅 Date & Scenario Inset"));
-        dateOverlayCheck.setSelected(true);
-        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Shows or hides time and scenario overlay badges on the map")));
-        dateOverlayCheck.getStyleClass().add("opt-sub-checkbox");
-        dateOverlayCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        dateOverlayCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setShowCornerOverlays(dateOverlayCheck.isSelected());
-            }
-        });
-
-        cellInfoCheck = new CheckBox(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Hover Cell Info (Tooltip)"));
-        cellInfoCheck.setSelected(true);
-        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Enables or disables inspection tooltip when hovering over hexagons")));
-        cellInfoCheck.getStyleClass().add("opt-sub-checkbox");
-        cellInfoCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        cellInfoCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setShowMouseOverInfo(cellInfoCheck.isSelected());
-            }
-        });
-
-        dataLayersTitle = new Label(I18n.getOrDefault("sim.layer.datalayers", "📊 Data Layers & Vectors:"));
-        dataLayersTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
-
-        VBox dataLayersBox = new VBox(4, dataLayersTitle, contourCheck, fluxVectorCheck, resourceOverlayCheck, floatingLayerCheck);
-        dataLayersBox.getStyleClass().add("subcard-section");
-
-        uiOverlaysTitle = new Label(I18n.getOrDefault("sim.layer.uioverlays", "🖥️ UI Overlays & Insets:"));
-        uiOverlaysTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
-
-        VBox uiOverlaysBox = new VBox(4, uiOverlaysTitle, legendCheck, dateOverlayCheck, cellInfoCheck);
-        uiOverlaysBox.getStyleClass().add("subcard-section");
-
-        VBox layersCard = new VBox(8, layersTitle, presetBox, layerComboLabel, activeLayersMenuBtn, activeLayersChipsBox, dataLayersBox, uiOverlaysBox);
-        styleCard(layersCard);
-
-        // --- 3. PROJECTION & PARAMÈTRES DE RENDU CARD ---
-        renderTitle = createCardTitle(I18n.getOrDefault("sim.card.rendering", "🌐 3. PROJECTION & RENDERING PARAMETERS"));
-
-        mode3dCheck = new CheckBox(I18n.getOrDefault("sim.layer.mode3d", "🌐 3D H3 Globe"));
-        mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Toggles between 3D spherical globe and 2D flat map")));
-        mode3dCheck.getStyleClass().add("opt-sub-checkbox");
-        mode3dCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-
-        reliefLabel = new Label(I18n.getOrDefault("sim.layer.relief3d", "⛰️ 3D Relief") + " : 25x");
-        reliefLabel.getStyleClass().add("control-label");
-        reliefLabel.setDisable(true);
-
-        reliefSlider = new Slider(0.0, 50.0, 25.0);
-        reliefSlider.setBlockIncrement(5.0);
-        reliefSlider.setMajorTickUnit(15.0);
-        reliefSlider.setMinorTickCount(2);
-        reliefSlider.setShowTickMarks(true);
-        reliefSlider.setShowTickLabels(false);
-        reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Adjusts topographic elevation height in 3D Globe mode (0.0x to 50x)")));
-        reliefSlider.setDisable(true);
-        reliefSlider.valueProperty().addListener((obs, oldV, newV) -> {
-            double val = newV.doubleValue();
-            if (mapCanvas != null) {
-                mapCanvas.setVerticalExaggeration(val);
-            }
-            reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ 3D Relief"), val));
-        });
-
-        autoRotateCheck = new CheckBox(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotate Globe"));
-        autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Auto-rotates 3D spherical globe")));
-        autoRotateCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        autoRotateCheck.setDisable(true);
-        autoRotateCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setAutoRotating(autoRotateCheck.isSelected());
-            }
-        });
-
-        hillshadingCheck = new CheckBox(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Topographic Hillshading"));
-        hillshadingCheck.setSelected(false);
-        hillshadingCheck.setDisable(true);
-        hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applies Lambertian topographic shading based on relief slope")));
-        hillshadingCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        hillshadingCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setShowHillshading(hillshadingCheck.isSelected());
-            }
-        });
-
-        solarTerminatorCheck = new CheckBox(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Solar Day/Night Terminator"));
-        solarTerminatorCheck.setSelected(false);
-        solarTerminatorCheck.setDisable(true);
-        solarTerminatorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.solarterminator", "Displays night and twilight shadow overlay")));
-        solarTerminatorCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        solarTerminatorCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setShowSolarTerminator(solarTerminatorCheck.isSelected());
-            }
-        });
-
-        mode3dCheck.setOnAction(e -> {
-            boolean is3D = mode3dCheck.isSelected();
-            if (mapCanvas != null) {
-                mapCanvas.setViewMode(is3D ? ViewMode.VIEW_3D : ViewMode.VIEW_2D);
-            }
-            reliefSlider.setDisable(!is3D);
-            reliefLabel.setDisable(!is3D);
-            autoRotateCheck.setDisable(!is3D);
-            hillshadingCheck.setDisable(!is3D);
-            solarTerminatorCheck.setDisable(!is3D);
-        });
-
-        VBox globe3dSubBox = new VBox(6, reliefLabel, reliefSlider, autoRotateCheck, hillshadingCheck, solarTerminatorCheck);
-        globe3dSubBox.setStyle("-fx-padding: 4 0 4 12; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-width: 0 0 0 2;");
-
-        // 2D & General Map Parameters
-        smoothMapCheck = new CheckBox(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Smooth Map (Continuous Heatmap)"));
-        smoothMapCheck.setSelected(true);
-        smoothMapCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.smoothmap", "Displays continuous map with smooth gradients instead of individual hexagons")));
-        smoothMapCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        smoothMapCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setSmoothMap(smoothMapCheck.isSelected());
-            }
-        });
-
-        hexGridCheck = new CheckBox(I18n.getOrDefault("sim.layer.hexgrid", "⬡ H3 Hexagon Borders"));
-        hexGridCheck.setSelected(false);
-        hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Shows or hides H3 hexagon grid (smooth view without borders vs grid view)")));
-        hexGridCheck.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-        hexGridCheck.setOnAction(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.setShowHexGrid(hexGridCheck.isSelected());
-            }
-        });
-
-        paletteLabel = new Label(I18n.getOrDefault("sim.render.palette", "🎨 Scientific Palette:"));
-        paletteLabel.getStyleClass().add("control-label");
-
-        paletteCombo = new ComboBox<>();
-        paletteCombo.getItems().addAll(ScientificColorMap.values());
-        paletteCombo.setValue(ScientificColorMap.TURBO);
-        paletteCombo.setMaxWidth(Double.MAX_VALUE);
-        paletteCombo.setStyle("-fx-font-size: 11px;");
-        paletteCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.palette", "Selects perceptually uniform color palette")));
-        paletteCombo.setOnAction(e -> {
-            if (mapCanvas != null && paletteCombo.getValue() != null) {
-                mapCanvas.setScientificColorMap(paletteCombo.getValue());
-                if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
-            }
-        });
-
-        fullScreenBtn = new Button(I18n.getOrDefault("sim.btn.fullscreen", "🖥️ Plein Écran (Carte)"));
-        fullScreenBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fullscreen", "Affiche la carte en plein écran sans aucun autre élément (Touche Échap pour quitter)")));
-        fullScreenBtn.setMaxWidth(Double.MAX_VALUE);
-        fullScreenBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-padding: 7 12; -fx-background-radius: 6; -fx-cursor: hand;");
-        fullScreenBtn.setOnAction(e -> {
-            if (onFullScreen != null) {
-                onFullScreen.run();
-            }
-        });
-
-        VBox renderCard = new VBox(8, renderTitle, mode3dCheck, globe3dSubBox, paletteLabel, paletteCombo, smoothMapCheck, hexGridCheck, fullScreenBtn);
-        styleCard(renderCard);
-
-        // --- 4. TÉLÉMÉTRIE, CAPTURES & EXPORT CARD ---
-        exportTitle = createCardTitle(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
-        VBox exportCard = new VBox(8, exportTitle, hdScreenshotBtn, recordVideoBtn, autoRecordCheck);
-        styleCard(exportCard);
-
-        // --- 5. ÉVÉNEMENTS RÉCENTS (CHRONOLOGIE) CARD ---
-        eventsTitleLabel = createCardTitle(I18n.getOrDefault("sim.card.recent_events", "📜 5. ÉVÉNEMENTS RÉCENTS (CHRONOLOGIE)"));
-        eventsHintLabel = new Label(I18n.getOrDefault("control.events.double_click_hint", "💡 Double-cliquez sur un événement pour centrer la caméra et afficher l'épicentre."));
-        eventsHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-style: italic;");
-        eventsHintLabel.setWrapText(true);
-
-        filterGeophysicalCheck = new CheckBox(I18n.getOrDefault("sim.filter.geophysical", "🌋 Événements géophysiques & catastrophes"));
-        filterGeophysicalCheck.setSelected(true);
-        filterGeophysicalCheck.setWrapText(true);
-        filterGeophysicalCheck.setMaxWidth(Double.MAX_VALUE);
-        filterGeophysicalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_geophysical", "Afficher ou masquer les séismes, volcans, tsunamis, inondations, sécheresses et désastres naturels.")));
-        filterGeophysicalCheck.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #f87171; -fx-cursor: hand;");
-        filterGeophysicalCheck.setOnAction(e -> applyEventsFilter());
-
-        filterHistoricalCheck = new CheckBox(I18n.getOrDefault("sim.filter.historical_leaders", "👑 Personnages & figures historiques"));
-        filterHistoricalCheck.setSelected(true);
-        filterHistoricalCheck.setWrapText(true);
-        filterHistoricalCheck.setMaxWidth(Double.MAX_VALUE);
-        filterHistoricalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_historical", "Afficher ou masquer les figures historiques, dirigeants, conquérants et réformateurs.")));
-        filterHistoricalCheck.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #a78bfa; -fx-cursor: hand;");
-        filterHistoricalCheck.setOnAction(e -> applyEventsFilter());
-
-        filterChronicleCheck = new CheckBox(I18n.getOrDefault("sim.filter.chronicle_emergences", "📜 Chroniques, systèmes & émergences (Informatif)"));
-        filterChronicleCheck.setSelected(true);
-        filterChronicleCheck.setWrapText(true);
-        filterChronicleCheck.setMaxWidth(Double.MAX_VALUE);
-        filterChronicleCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_chronicle", "Afficher ou masquer les émergences procédurales (purement informatives / résultat de la simulation).")));
-        filterChronicleCheck.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #34d399; -fx-cursor: hand;");
-        filterChronicleCheck.setOnAction(e -> applyEventsFilter());
-
-        VBox filtersBox = new VBox(4, filterGeophysicalCheck, filterHistoricalCheck, filterChronicleCheck);
-        filtersBox.setFillWidth(true);
-        filtersBox.setAlignment(Pos.CENTER_LEFT);
-
-        noEventsLabel = new Label(I18n.getOrDefault("sim.events.no_events", "Aucun événement enregistré pour le moment."));
-        noEventsLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-style: italic; -fx-padding: 4 0;");
-
-        eventsListBox = new VBox(6);
-        eventsListBox.getChildren().add(noEventsLabel);
-
-        VBox eventsCard = new VBox(8, eventsTitleLabel, eventsHintLabel, filtersBox, eventsListBox);
-        styleCard(eventsCard);
-
-        // Keep age and season labels initialized for dateHeaderBox updates
         popStatValue = new Label();
         foodStatValue = new Label();
         cellStatValue = new Label();
@@ -694,20 +360,19 @@ public class ControlPanel extends VBox {
         seasonLabel = new Label(I18n.getOrDefault("sim.season.spring", "Season: Spring"));
         seasonLabel.setStyle("-fx-text-fill: #16a34a; -fx-font-weight: bold;");
 
-        // Combine cards cleanly into 5 modular accordion-style sections
-        getChildren().addAll(timeCard, layersCard, renderCard, exportCard, eventsCard);
+        // Combine cards into 5 modular accordion-style sections
+        getChildren().addAll(timeCard, layersSection.getCard(), renderingSection.getCard(), captureSection.getCard(), eventsSection.getCard());
 
         updateTexts();
         I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
     }
 
     /**
-     * Update play pause visuals.
+     * Updates play/pause button styling and tooltips.
      *
-     * @param isRunning the is running parameter (boolean)
+     * @param isRunning true if engine is running
      */
     public void updatePlayPauseVisuals(boolean isRunning) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (playPauseBtn == null) return;
         if (isRunning) {
             playPauseBtn.setText("⏸");
@@ -721,7 +386,6 @@ public class ControlPanel extends VBox {
     }
 
     private void updateSpeedMaxStyle(boolean isMax) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (speedMax == null) return;
         speedMax.setSelected(isMax);
         if (isMax) {
@@ -732,7 +396,6 @@ public class ControlPanel extends VBox {
     }
 
     private void updateSpeedLabel(double spd) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (speedValueLabel == null) return;
         if (speedMax != null && speedMax.isSelected()) {
             speedValueLabel.setText("⏱️ " + I18n.getOrDefault("sim.speed.max_label", "Vitesse Cible : MAX 🚀 (Calcul CPU sans limite de fréquence)"));
@@ -783,294 +446,46 @@ public class ControlPanel extends VBox {
         speedValueLabel.setText("⏱️ " + String.format(fmt, spdStr, timeUnit));
     }
 
-    private void onLayerToggled(DisplayMode mode, boolean selected) {
-        if (mapCanvas != null) {
-            mapCanvas.setDisplayModeActive(mode, selected);
-            if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
-            updateActiveLayerUI();
-        }
-    }
-
-    /**
-     * Update active layer ui.
-     *
-     */
-    public void updateActiveLayerUI() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (activeLayersMenuBtn == null) return;
-
-        if (mapCanvas == null) {
-            for (java.util.Map.Entry<DisplayMode, CheckBox> entry : layerCheckBoxMap.entrySet()) {
-                DisplayMode dm = entry.getKey();
-                entry.getValue().setSelected(dm == DisplayMode.BIOME || dm == DisplayMode.POPULATION);
-            }
-            activeLayersMenuBtn.setText("📊 " + I18n.getOrDefault("sim.layer.datacategory", "Couches Actives") + " (2)");
-            return;
-        }
-
-        java.util.Set<DisplayMode> active = mapCanvas.getActiveDisplayModes();
-        for (java.util.Map.Entry<DisplayMode, CheckBox> entry : layerCheckBoxMap.entrySet()) {
-            entry.getValue().setSelected(active.contains(entry.getKey()));
-        }
-
-        int count = active.size();
-        if (count == 0) {
-            activeLayersMenuBtn.setText("📊 " + I18n.getOrDefault("sim.layer.none", "Aucun calque"));
-        } else if (count == 1) {
-            activeLayersMenuBtn.setText("📊 " + active.iterator().next().getDisplayName());
-        } else {
-            activeLayersMenuBtn.setText(String.format(java.util.Locale.ROOT, "📊 %s (%d %s)",
-                    I18n.getOrDefault("sim.layer.datacategory", "Couches Actives"), count, I18n.getOrDefault("sim.layer.checked", "cochées")));
-        }
-
-        if (activeLayersChipsBox != null) {
-            activeLayersChipsBox.getChildren().clear();
-            for (DisplayMode dm : active) {
-                Button chip = new Button(dm.getDisplayName() + " ✕");
-                chip.setStyle("-fx-background-color: rgba(14, 165, 233, 0.18); -fx-text-fill: #38bdf8; -fx-border-color: #38bdf8; -fx-border-radius: 10; -fx-background-radius: 10; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 2 6; -fx-cursor: hand;");
-                chip.setOnAction(e -> {
-                    mapCanvas.setDisplayModeActive(dm, false);
-                    if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
-                    updateActiveLayerUI();
-                });
-                activeLayersChipsBox.getChildren().add(chip);
-            }
-        }
-    }
-
-    private Button createPresetBtn(String label, String tooltip, Runnable action) {
-        Button btn = new Button(label);
-        btn.setTooltip(new Tooltip(tooltip));
-        btn.setMaxWidth(Double.MAX_VALUE);
-        btn.getStyleClass().add("button-secondary");
-        btn.setStyle("-fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 5; -fx-cursor: hand;");
-        btn.setOnAction(e -> action.run());
-        return btn;
-    }
-
-    private void applyPresetSynthesis(CheckBox pauseOnEventCheck) {
-        mode3dCheck.setSelected(true);
-        reliefSlider.setDisable(false); reliefLabel.setDisable(false); autoRotateCheck.setDisable(false);
-        contourCheck.setSelected(true);
-        fluxVectorCheck.setSelected(false);
-        resourceOverlayCheck.setSelected(false);
-
-        if (mapCanvas != null) {
-            mapCanvas.setViewMode(ViewMode.VIEW_3D);
-            mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME));
-            mapCanvas.setShowContours(true);
-            mapCanvas.setShowFlowVectors(false);
-            mapCanvas.setShowResourceOverlay(false);
-            mapCanvas.setSmoothMap(true);
-            if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
-            updateActiveLayerUI();
-        }
-    }
-
-    private void applyPresetEcon() {
-        mode3dCheck.setSelected(false);
-        reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
-        contourCheck.setSelected(false);
-        fluxVectorCheck.setSelected(true);
-        resourceOverlayCheck.setSelected(true);
-
-        if (mapCanvas != null) {
-            mapCanvas.setViewMode(ViewMode.VIEW_2D);
-            mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.FLUX));
-            mapCanvas.setShowContours(false);
-            mapCanvas.setShowFlowVectors(true);
-            mapCanvas.setShowResourceOverlay(true);
-            if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
-            updateActiveLayerUI();
-        }
-    }
-
-    private void applyPresetClimate() {
-        mode3dCheck.setSelected(false);
-        reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
-        contourCheck.setSelected(true);
-        fluxVectorCheck.setSelected(false);
-        resourceOverlayCheck.setSelected(true);
-
-        if (mapCanvas != null) {
-            mapCanvas.setViewMode(ViewMode.VIEW_2D);
-            mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.TEMPERATURE));
-            mapCanvas.setShowContours(true);
-            mapCanvas.setShowFlowVectors(false);
-            mapCanvas.setShowResourceOverlay(true);
-            if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
-            updateActiveLayerUI();
-        }
-    }
-
-    private void applyPresetCliodynamics(CheckBox pauseOnEventCheck) {
-        mode3dCheck.setSelected(false);
-        reliefSlider.setDisable(true); reliefLabel.setDisable(true); autoRotateCheck.setDisable(true);
-        contourCheck.setSelected(false);
-        fluxVectorCheck.setSelected(false);
-        resourceOverlayCheck.setSelected(false);
-        hexGridCheck.setSelected(true);
-        if (pauseOnEventCheck != null) pauseOnEventCheck.setSelected(true);
-        engine.setPauseAtNextEvent(true);
-
-        if (mapCanvas != null) {
-            mapCanvas.setViewMode(ViewMode.VIEW_2D);
-            mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.POPULATION));
-            mapCanvas.setShowContours(false);
-            mapCanvas.setShowFlowVectors(false);
-            mapCanvas.setShowResourceOverlay(false);
-            mapCanvas.setShowHexGrid(true);
-            if (colorLegend != null) colorLegend.updateFromCanvas(mapCanvas);
-            updateActiveLayerUI();
-        }
-    }
-
-    private Label createCardTitle(String title) {
+    private static Label createCardTitle(String title) {
         Label label = new Label(title);
         label.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
         return label;
     }
 
-    private void styleCard(VBox card) {
-        card.getStyleClass().add("card-section");
-    }
-
     /**
-     * Set notification overlay.
+     * Sets notification overlay.
      *
-     * @param overlay the overlay parameter (NotificationOverlay)
+     * @param overlay notification overlay
      */
     public void setNotificationOverlay(NotificationOverlay overlay) {
         this.notificationOverlay = overlay;
     }
 
     /**
-     * Take hdscreenshot.
-     *
+     * Takes HD screenshot of active map canvas.
      */
     public void takeHDScreenshot() {
-        if (mapCanvas == null) {
-            logger.warn("Cannot capture screenshot: mapCanvas is null");
-            return;
-        }
-        try {
-            WritableImage writableImage = mapCanvas.snapshot(new SnapshotParameters(), null);
-            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(writableImage, null);
-
-            File dir = new File("saves/screenshots");
-            if (!dir.exists()) dir.mkdirs();
-
-            String filename = "Ether_Capture_HD_" + System.currentTimeMillis() + ".png";
-            File outputFile = new File(dir, filename);
-            ImageIO.write(bufferedImage, "png", outputFile);
-
-            logger.info("Saved HD screenshot to {}", outputFile.getAbsolutePath());
-            if (notificationOverlay != null) {
-                notificationOverlay.showNotification("📸 Capture Photo HD Sauvegardée !\n" + outputFile.getName(), "#38bdf8");
-            }
-        } catch (Exception ex) {
-            logger.error("Failed to take HD screenshot", ex);
-            if (notificationOverlay != null) {
-                notificationOverlay.showNotification("❌ Erreur de Capture Photo HD", "#ef4444");
-            }
+        if (captureSection != null) {
+            captureSection.takeHDScreenshot(mapCanvas, notificationOverlay);
         }
     }
 
-    private final org.ether.society.ui.export.VideoExportService videoExportService = new org.ether.society.ui.export.VideoExportService();
-
     /**
-     * Toggle video recording.
-     *
+     * Toggles video recording.
      */
     public void toggleVideoRecording() {
-        if (onTimelapseRecord != null) {
-            onTimelapseRecord.run();
-        }
-
-        if (engine instanceof org.ether.society.core.H3SimulationEngine h3Engine) {
-            if (notificationOverlay != null) {
-                notificationOverlay.showNotification("🎬 Lancement de l'Export Vidéo MP4 (Arrière-plan)...", "#38bdf8");
-            }
-
-            String scenarioName = (mapCanvas != null && mapCanvas.getScenarioName() != null) ? mapCanvas.getScenarioName() : "Simulation";
-            videoExportService.exportSimulationVideoAsync(h3Engine, scenarioName)
-                    .thenAccept(outputDir -> {
-                        javafx.application.Platform.runLater(() -> {
-                            if (notificationOverlay != null) {
-                                notificationOverlay.showNotification("✅ Export Vidéo Réussi !\nFichiers dans saves/exports/", "#10b981");
-                            }
-                        });
-                    })
-                    .exceptionally(ex -> {
-                        javafx.application.Platform.runLater(() -> {
-                            if (notificationOverlay != null) {
-                                notificationOverlay.showNotification("❌ Erreur Export Vidéo: " + ex.getMessage(), "#ef4444");
-                            }
-                        });
-                        return null;
-                    });
+        if (captureSection != null) {
+            captureSection.toggleVideoRecording(engine, mapCanvas, notificationOverlay, onTimelapseRecord);
         }
     }
 
-    /**
-     * Set on save operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param onSave the on save argument (Runnable)
-     */
     public void setOnSave(Runnable onSave) { this.onSave = onSave; }
-    /**
-     * Set on load operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param onLoad the on load argument (Runnable)
-     */
     public void setOnLoad(Runnable onLoad) { this.onLoad = onLoad; }
-    /**
-     * Set on contour toggle operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param onContourToggle the on contour toggle argument (Consumer&lt;Boolean&gt;)
-     */
-    public void setOnContourToggle(Consumer<Boolean> onContourToggle) { this.onContourToggle = onContourToggle; }
-    /**
-     * Set on timelapse record operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param onTimelapseRecord the on timelapse record argument (Runnable)
-     */
+    public void setOnContourToggle(Consumer<Boolean> onContourToggle) {
+        if (layersSection != null) layersSection.setOnContourToggle(onContourToggle);
+    }
     public void setOnTimelapseRecord(Runnable onTimelapseRecord) { this.onTimelapseRecord = onTimelapseRecord; }
-    /**
-     * Set on timelapse seek operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param onTimelapseSeek the on timelapse seek argument (Consumer&lt;Integer&gt;)
-     */
     public void setOnTimelapseSeek(Consumer<Integer> onTimelapseSeek) { this.onTimelapseSeek = onTimelapseSeek; }
-    /**
-     * Set on timelapse seek to end operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param onTimelapseSeekToEnd the on timelapse seek to end argument (Runnable)
-     */
     public void setOnTimelapseSeekToEnd(Runnable onTimelapseSeekToEnd) { this.onTimelapseSeekToEnd = onTimelapseSeekToEnd; }
     public void setOnRewindStart(Runnable onRewindStart) { this.onRewindStart = onRewindStart; }
     public void setOnFastRewind(Runnable onFastRewind) { this.onFastRewind = onFastRewind; }
@@ -1078,137 +493,50 @@ public class ControlPanel extends VBox {
     public void setOnStepForward(Runnable onStepForward) { this.onStepForward = onStepForward; }
     public void setOnFastForward(Runnable onFastForward) { this.onFastForward = onFastForward; }
     public void setOnSeekToEnd(Runnable onSeekToEnd) { this.onSeekToEnd = onSeekToEnd; }
-    /**
-     * Set on stats toggle operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param onStatsToggle the on stats toggle argument (Consumer&lt;Boolean&gt;)
-     */
     public void setOnStatsToggle(Consumer<Boolean> onStatsToggle) { this.onStatsToggle = onStatsToggle; }
-    /**
-     * Set on full screen operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param onFullScreen the on full screen argument (Runnable)
-     */
-    public void setOnFullScreen(Runnable onFullScreen) { this.onFullScreen = onFullScreen; }
+    public void setOnFullScreen(Runnable onFullScreen) {
+        if (renderingSection != null) renderingSection.setOnFullScreen(onFullScreen);
+    }
 
     /**
-     * Update timelapse slider.
+     * Updates date header for timelapse slider.
      *
-     * @param minYear the min year parameter (int)
-     * @param maxYear the max year parameter (int)
-     * @param currentYear the current year parameter (int)
+     * @param minYear minimum year
+     * @param maxYear maximum year
+     * @param currentYear current simulation year
      */
     public void updateTimelapseSlider(int minYear, int maxYear, int currentYear) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         dateHeaderLabel.setText("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + String.format(java.util.Locale.ROOT, "An %d", currentYear));
     }
 
     /**
-     * Set map canvas.
+     * Sets active H3 map canvas.
      *
-     * @param canvas the canvas parameter (H3MapCanvas)
+     * @param canvas map canvas
      */
     public void setMapCanvas(H3MapCanvas canvas) {
         this.mapCanvas = canvas;
         updateViewToggleButton();
         updateDisplayToggleButton();
-        if (mapCanvas != null) {
-            if (contourCheck != null) contourCheck.setSelected(mapCanvas.isShowContours());
-            if (fluxVectorCheck != null) fluxVectorCheck.setSelected(mapCanvas.isShowFlowVectors());
-            if (resourceOverlayCheck != null) resourceOverlayCheck.setSelected(mapCanvas.isShowResourceOverlay());
-            if (floatingLayerCheck != null) floatingLayerCheck.setSelected(mapCanvas.isShowFloatingLayers());
-            if (dateOverlayCheck != null) dateOverlayCheck.setSelected(mapCanvas.isShowCornerOverlays());
-            if (cellInfoCheck != null) cellInfoCheck.setSelected(mapCanvas.isShowMouseOverInfo());
-        }
     }
 
-    /**
-     * Set mini map operation.
-     * <p>
-     * Executes operational logic for {@code ControlPanel} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param miniMap the mini map argument (MiniMap)
-     */
     public void setMiniMap(MiniMap miniMap) { this.miniMap = miniMap; }
-    /**
-     * Set color legend.
-     *
-     * @param legend the legend parameter (ColorLegend)
-     */
-    public void setColorLegend(ColorLegend legend) { 
-        this.colorLegend = legend; 
-        if (legendCheck != null && colorLegend != null) {
-            legendCheck.setSelected(colorLegend.isVisible());
-        }
+
+    public void setColorLegend(ColorLegend legend) {
+        this.colorLegend = legend;
     }
 
-    private void setupRepeatAction(Button btn, Runnable action) {
-        javafx.animation.Timeline repeatTimeline = new javafx.animation.Timeline(
-            new javafx.animation.KeyFrame(javafx.util.Duration.millis(80), e -> action.run())
-        );
-        repeatTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-
-        javafx.animation.PauseTransition initialDelay = new javafx.animation.PauseTransition(javafx.util.Duration.millis(350));
-        initialDelay.setOnFinished(e -> repeatTimeline.playFromStart());
-
-        btn.setOnMousePressed(e -> {
-            if (e.isPrimaryButtonDown()) {
-                action.run();
-                initialDelay.playFromStart();
-            }
-        });
-
-        Runnable stopRepeat = () -> {
-            initialDelay.stop();
-            repeatTimeline.stop();
-        };
-
-        btn.setOnMouseReleased(e -> stopRepeat.run());
-        btn.setOnMouseExited(e -> stopRepeat.run());
-    }
-
-    /**
-     * Update scenario name.
-     *
-     * @param scenarioName the scenario name parameter (String)
-     */
     public void updateScenarioName(String scenarioName) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (scenarioName != null && !scenarioName.isBlank()) {
             scenarioHeaderLabel.setText(I18n.getOrDefault("sim.header.scenario", "🎬 Scenario: ") + scenarioName);
         }
     }
 
-    /**
-     * Update year.
-     *
-     * @param year the year parameter (String)
-     */
     public void updateYear(String year) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         dateHeaderLabel.setText("📅 " + I18n.getOrDefault("sim.header.date", "Date : ") + year);
     }
 
-    /**
-     * Update stats.
-     *
-     * @param population the population parameter (long)
-     * @param food the food parameter (double)
-     * @param populatedCells the populated cells parameter (long)
-     * @param tps the tps parameter (double)
-     */
     public void updateStats(long population, double food, long populatedCells, double tps) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         popStatValue.setText(String.format(I18n.getOrDefault("sim.status.pop_total", "Pop. Totale : %s"), formatNumber(population)));
         foodStatValue.setText(String.format(I18n.getOrDefault("sim.status.food_stocks", "Stocks Alim. : %s"), formatNumber((long) food)));
         cellStatValue.setText(String.format(I18n.getOrDefault("sim.status.populated_cells", "Populated Cells: %,d"), populatedCells));
@@ -1225,13 +553,7 @@ public class ControlPanel extends VBox {
         return String.valueOf(num);
     }
 
-    /**
-     * Update season.
-     *
-     * @param month the month parameter (int)
-     */
     public void updateSeason(int month) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         String[] seasonNames = {
             I18n.getOrDefault("sim.season.winter", "Hiver ❄️"),
             I18n.getOrDefault("sim.season.spring", "Printemps 🌿"),
@@ -1250,206 +572,39 @@ public class ControlPanel extends VBox {
         seasonLabel.setStyle("-fx-text-fill: " + seasonColors[seasonIndex] + "; -fx-font-weight: bold;");
     }
 
-    /**
-     * Log events.
-     *
-     * @param events the events parameter (List&lt;String&gt;)
-     */
     public void logEvents(List<String> events) {
         if (events == null || events.isEmpty()) return;
         eventHistory.addAll(events);
     }
 
-    private final List<String> lastRenderedEventSignatures = new ArrayList<>();
-
-    private void applyEventsFilter() {
-        lastRenderedEventSignatures.clear();
-        updateRecentEvents(rawEventsCache);
-    }
-
-    /**
-     * Update recent events.
-     *
-     * @param events the events parameter (List&lt;ActiveEvent&gt;)
-     */
     public void updateRecentEvents(List<ActiveEvent> events) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (eventsListBox == null) return;
-        if (events != null) {
-            rawEventsCache.clear();
-            rawEventsCache.addAll(events);
-        }
-
-        boolean showGeo = filterGeophysicalCheck == null || filterGeophysicalCheck.isSelected();
-        boolean showHist = filterHistoricalCheck == null || filterHistoricalCheck.isSelected();
-        boolean showChronicle = filterChronicleCheck == null || filterChronicleCheck.isSelected();
-
-        List<ActiveEvent> filteredList = new ArrayList<>();
-        for (ActiveEvent evt : rawEventsCache) {
-            if (evt.isGeophysical() && !showGeo) continue;
-            if (evt.isHistoricalLeader() && !showHist) continue;
-            if (evt.isProceduralEmergence() && !showChronicle) continue;
-            filteredList.add(evt);
-        }
-
-        // Filter and get last 10 events sorted chronologically (by year, then month, then day)
-        List<ActiveEvent> sortedList = new ArrayList<>(filteredList);
-        sortedList.sort(Comparator.comparingInt(ActiveEvent::getYear)
-                .thenComparingInt(ActiveEvent::getMonth)
-                .thenComparingInt(ActiveEvent::getDay));
-
-        if (sortedList.size() > 10) {
-            sortedList = sortedList.subList(sortedList.size() - 10, sortedList.size());
-        }
-
-        // Fast signature check to avoid rebuilding DOM nodes 4x per second if unchanged
-        List<String> currentSignatures = sortedList.stream()
-                .map(e -> e.getId() + "@" + e.getYear() + ":" + e.getMonth() + ":" + e.getDay() + "#" + e.getMagnitude())
-                .toList();
-
-        if (currentSignatures.equals(lastRenderedEventSignatures) && !eventsListBox.getChildren().isEmpty()) {
-            return;
-        }
-
-        lastRenderedEventSignatures.clear();
-        lastRenderedEventSignatures.addAll(currentSignatures);
-
-        eventsListBox.getChildren().clear();
-        if (sortedList.isEmpty()) {
-            eventsListBox.getChildren().add(noEventsLabel);
-            return;
-        }
-
-        for (ActiveEvent evt : sortedList) {
-            VBox itemCard = createEventItemNode(evt);
-            eventsListBox.getChildren().add(itemCard);
+        if (eventsSection != null) {
+            eventsSection.updateRecentEvents(events);
         }
     }
 
-    private VBox createEventItemNode(ActiveEvent evt) {
-        VBox card = new VBox(4);
-        String normalStyle = "-fx-background-color: rgba(30, 41, 59, 0.75); -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-width: 1; -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 6 8; -fx-cursor: hand;";
-        String hoverStyle = "-fx-background-color: rgba(51, 65, 85, 0.90); -fx-border-color: #38bdf8; -fx-border-width: 1; -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 6 8; -fx-cursor: hand;";
-        card.setStyle(normalStyle);
-
-        card.setOnMouseEntered(e -> card.setStyle(hoverStyle));
-        card.setOnMouseExited(e -> card.setStyle(normalStyle));
-
-        // Header row: Title (left) + Date (right)
-        Label titleLabel = new Label(evt.getTitle());
-        titleLabel.setStyle("-fx-text-fill: #f8fafc; -fx-font-weight: bold; -fx-font-size: 11px;");
-        titleLabel.setMaxWidth(260);
-        titleLabel.setEllipsisString("...");
-
-        Label dateLabel = new Label(evt.getFormattedDate());
-        dateLabel.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 10px;");
-
-        Region spacerTop = new Region();
-        HBox.setHgrow(spacerTop, Priority.ALWAYS);
-        HBox topRow = new HBox(6, titleLabel, spacerTop, dateLabel);
-        topRow.setAlignment(Pos.CENTER_LEFT);
-
-        // Details row: Magnitude/Intensity (left) + Coordinates (right)
-        String magColor = evt.getIntensityBadgeColor();
-        Label magLabel = new Label(String.format(java.util.Locale.ROOT, "⚡ Mag: %.1f (%s)", evt.getMagnitude(), evt.getIntensityLabel()));
-        magLabel.setStyle("-fx-text-fill: " + magColor + "; -fx-font-weight: bold; -fx-font-size: 10px;");
-
-        Label coordLabel = new Label("📍 " + evt.getFormattedCoordinates());
-        coordLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 10px;");
-
-        Region spacerBottom = new Region();
-        HBox.setHgrow(spacerBottom, Priority.ALWAYS);
-        HBox bottomRow = new HBox(6, magLabel, spacerBottom, coordLabel);
-        bottomRow.setAlignment(Pos.CENTER_LEFT);
-
-        card.getChildren().addAll(topRow, bottomRow);
-
-        // Tooltip with complete event details
-        Tooltip tooltip = new Tooltip(String.format(
-            "%s\n\n📅 Date : %s\n⚡ Magnitude : %.1f (%s)\n📍 Coordonnées : %s\n\n💡 Cliquer pour centrer la vue 3D / 2D sur cet événement.",
-            evt.getTitle(), evt.getFormattedDate(), evt.getMagnitude(), evt.getIntensityLabel(), evt.getFormattedCoordinates()
-        ));
-        tooltip.setShowDelay(javafx.util.Duration.millis(150));
-        Tooltip.install(card, tooltip);
-
-        // Click or Double click navigates / flies camera to this event's coordinates and pings the location
-        card.setOnMouseClicked(e -> {
-            if (mapCanvas != null) {
-                mapCanvas.flyTo(evt.getLatitude(), evt.getLongitude());
-                mapCanvas.pingLocation(evt.getLatitude(), evt.getLongitude(), evt.getTitle(), evt.getType(), evt.getMagnitude());
-            }
-        });
-
-        return card;
-    }
-
-    /**
-     * Update age.
-     *
-     * @param ageName the age name parameter (String)
-     */
     public void updateAge(String ageName) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         ageLabel.setText(I18n.getOrDefault("sim.status.age_prefix", "Age: ") + ageName);
     }
 
-    /** Internal state: is db online (boolean). */
-    private boolean isDbOnline = false;
-    /** Internal state: cluster node state (String). */
-    private String clusterNodeState = "💻 Nœud Local Standalone";
-
-    /**
-     * Update database status.
-     *
-     * @param online the online parameter (boolean)
-     */
     public void updateDatabaseStatus(boolean online) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         this.isDbOnline = online;
         refreshStatusBadge();
     }
 
-    /**
-     * Rebuild layer menu items.
-     *
-     */
     public void rebuildLayerMenuItems() {
-        if (activeLayersMenuBtn == null) return;
-        java.util.Set<DisplayMode> active = mapCanvas != null ? mapCanvas.getActiveDisplayModes() : java.util.Set.of(DisplayMode.BIOME, DisplayMode.POPULATION);
-        activeLayersMenuBtn.getItems().clear();
-        layerCheckBoxMap.clear();
-
-        for (DisplayMode.Category cat : DisplayMode.Category.values()) {
-            Label catHeader = new Label("─── " + cat.getCategoryName() + " ───");
-            catHeader.setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 8 2 8;");
-            CustomMenuItem catItem = new CustomMenuItem(catHeader, false);
-            activeLayersMenuBtn.getItems().add(catItem);
-
-            for (DisplayMode dm : DisplayMode.values()) {
-                if (dm.getCategory() == cat) {
-                    CheckBox cb = new CheckBox(dm.getDisplayName());
-                    cb.setTooltip(new Tooltip(dm.getDescription()));
-                    cb.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px; -fx-padding: 2 8; -fx-cursor: hand;");
-                    cb.setSelected(active.contains(dm));
-                    cb.setOnAction(e -> onLayerToggled(dm, cb.isSelected()));
-                    layerCheckBoxMap.put(dm, cb);
-                    CustomMenuItem mi = new CustomMenuItem(cb, false);
-                    activeLayersMenuBtn.getItems().add(mi);
-                }
-            }
-            activeLayersMenuBtn.getItems().add(new SeparatorMenuItem());
+        if (layersSection != null) {
+            layersSection.rebuildLayerMenuItems();
         }
     }
 
-    /**
-     * Update cluster status.
-     *
-     * @param nodeRole the node role parameter (String)
-     * @param hostPort the host port parameter (String)
-     * @param isConnected the is connected parameter (boolean)
-     */
+    public void updateActiveLayerUI() {
+        if (layersSection != null) {
+            layersSection.updateActiveLayerUI();
+        }
+    }
+
     public void updateClusterStatus(String nodeRole, String hostPort, boolean isConnected) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (isConnected) {
             this.clusterNodeState = String.format("🌐 %s (%s)", nodeRole, hostPort);
         } else {
@@ -1468,7 +623,6 @@ public class ControlPanel extends VBox {
     }
 
     private void updateTexts() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (playPauseBtn != null) {
             boolean running = engine != null && engine.isRunning();
             playPauseBtn.setText(running ? "⏸" : "▶");
@@ -1483,51 +637,6 @@ public class ControlPanel extends VBox {
             pauseOnEventCheck.setText(I18n.getOrDefault("sim.option.pause_on_event", "⏸️ Auto-pause on event"));
             pauseOnEventCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.pause_on_event", "Automatically pauses simulation when a new planetary or regional event occurs")));
         }
-        if (layersTitle != null) {
-            layersTitle.setText(I18n.getOrDefault("sim.card.layers_presets", "🗺️ 2. LAYER STACK & SCIENTIFIC PRESETS"));
-        }
-        if (presetsTitle != null) {
-            presetsTitle.setText(I18n.getOrDefault("sim.presets.1click", "⚡ 1-Click Scientific Presets:"));
-        }
-        if (presetSynth != null) {
-            presetSynth.setText(I18n.getOrDefault("sim.preset.synthesis", "🌍 Synthesis"));
-            presetSynth.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.synthesis.desc", "3D Globe Mode + Biomes + Relief + Contour Lines")));
-        }
-        if (presetEcon != null) {
-            presetEcon.setText(I18n.getOrDefault("sim.preset.economy", "📈 Economy"));
-            presetEcon.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.economy.desc", "Flux / GDP Map + Transport Vectors + Ore Deposits")));
-        }
-        if (presetClim != null) {
-            presetClim.setText(I18n.getOrDefault("sim.preset.climate", "🌡️ Climate"));
-            presetClim.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.climate.desc", "Temperature Map + Aquifers + Relief Contour Lines")));
-        }
-        if (presetCliodyn != null) {
-            presetCliodyn.setText(I18n.getOrDefault("sim.preset.cliodynamics", "🏛️ Cliodynamics"));
-            presetCliodyn.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.cliodynamics.desc", "Demographic Map + H3 Mesh + Event Pause")));
-        }
-        if (layerComboLabel != null) {
-            layerComboLabel.setText(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layers (Multi-Select):"));
-        }
-        if (dataLayersTitle != null) {
-            dataLayersTitle.setText(I18n.getOrDefault("sim.layer.datalayers", "📊 Data Layers & Vectors:"));
-        }
-        if (uiOverlaysTitle != null) {
-            uiOverlaysTitle.setText(I18n.getOrDefault("sim.layer.uioverlays", "🖥️ UI Overlays & Insets:"));
-        }
-        if (renderTitle != null) {
-            renderTitle.setText(I18n.getOrDefault("sim.card.rendering", "🌐 3. PROJECTION & RENDERING PARAMETERS"));
-        }
-        if (paletteLabel != null) {
-            paletteLabel.setText(I18n.getOrDefault("sim.render.palette", "🎨 Scientific Palette:"));
-        }
-        if (paletteCombo != null) {
-            paletteCombo.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.palette", "Selects perceptually uniform color palette")));
-        }
-        if (exportTitle != null) {
-            exportTitle.setText(I18n.getOrDefault("sim.card.telemetry", "📊 4. TELEMETRY, SCREENSHOTS & EXPORTS"));
-        }
-
-        rebuildLayerMenuItems();
 
         rewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.rewind", "Reset to T=0 — Pauses simulation")));
         fastRewindBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fastrewind", "Previous snapshot / Fast rewind — Pauses simulation")));
@@ -1539,100 +648,23 @@ public class ControlPanel extends VBox {
         speedMax.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_max", "Runs iterations at maximum processor capacity")));
         speedSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.speed_slider", "CPU simulation speed (0.1 to 20 steps/sec or MAX)")));
         updateSpeedLabel(speedMax != null && speedMax.isSelected() ? 999.0 : (speedSlider != null ? speedSlider.getValue() : 1.0));
-        mode3dCheck.setText(I18n.getOrDefault("sim.layer.mode3d", "🌐 3D H3 Globe"));
-        mode3dCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.mode3d", "Toggles between 3D spherical globe and 2D flat map")));
-        reliefLabel.setText(String.format(java.util.Locale.ROOT, "%s : %.0fx", I18n.getOrDefault("sim.layer.relief3d", "⛰️ 3D Relief"), reliefSlider != null ? reliefSlider.getValue() : 25.0));
-        reliefSlider.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.relief3d", "Adjusts topographic elevation height in 3D Globe mode (0.0x to 50x)")));
-        autoRotateCheck.setText(I18n.getOrDefault("sim.layer.autorotate", "🔄 Auto-rotate Globe"));
-        autoRotateCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.autorotate", "Auto-rotates 3D spherical globe")));
-        if (hillshadingCheck != null) {
-            hillshadingCheck.setText(I18n.getOrDefault("sim.layer.hillshading", "⛰️ Topographic Hillshading"));
-            hillshadingCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hillshading", "Applies Lambertian topographic shading based on relief slope")));
-        }
-        if (solarTerminatorCheck != null) {
-            solarTerminatorCheck.setText(I18n.getOrDefault("sim.layer.solarterminator", "☀️ Solar Day/Night Terminator"));
-            solarTerminatorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.solarterminator", "Displays night and twilight shadow overlay")));
-        }
-        if (smoothMapCheck != null) {
-            smoothMapCheck.setText(I18n.getOrDefault("sim.layer.smoothmap", "🎨 Smooth Map (Continuous Heatmap)"));
-            smoothMapCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.smoothmap", "Displays continuous map with smooth gradients instead of individual hexagons")));
-        }
-        contourCheck.setText(I18n.getOrDefault("sim.layer.contours", "📈 Elevation Contour Lines"));
-        contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Displays elevation contour lines on H3 cells")));
-        fluxVectorCheck.setText(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vectors)"));
-        fluxVectorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fluxvectors", "Overlays material flux and population transport vectors")));
-        resourceOverlayCheck.setText(I18n.getOrDefault("sim.layer.resources", "💎 Deposits & Capital (Overlays)"));
-        resourceOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.resources", "Displays metal, aquifer, and infrastructure markers")));
-        if (floatingLayerCheck != null) {
-            floatingLayerCheck.setText(I18n.getOrDefault("sim.layer.floating", "☁️ 2.5D Floating Layers (Altitude)"));
-            floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projects thematic layers in 2.5D elevation floating above biome topography")));
-        }
-        legendCheck.setText(I18n.getOrDefault("sim.layer.legend", "🗺️ Color Legend (Overlay)"));
-        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Shows or hides the map color legend pane")));
-        dateOverlayCheck.setText(I18n.getOrDefault("sim.layer.date_overlay", "📅 Date & Scenario Inset"));
-        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Shows or hides time and scenario overlay badges on the map")));
-        cellInfoCheck.setText(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Hover Cell Info (Tooltip)"));
-        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Enables or disables inspection tooltip when hovering over hexagons")));
-        hexGridCheck.setText(I18n.getOrDefault("sim.layer.hexgrid", "⬡ H3 Hexagon Borders"));
-        hexGridCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.hexgrid", "Shows or hides H3 hexagon grid (smooth view without borders vs grid view)")));
-        if (fullScreenBtn != null) {
-            fullScreenBtn.setText(I18n.getOrDefault("sim.btn.fullscreen", "🖥️ Fullscreen (Map)"));
-            fullScreenBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fullscreen", "Displays the map in fullscreen mode without other UI panels (Press Esc to exit)")));
-        }
-        if (hdScreenshotBtn != null) {
-            hdScreenshotBtn.setText("📸 " + I18n.getOrDefault("sim.btn.screenshot", "HD Screenshot"));
-            hdScreenshotBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.screenshot", "Exports HD PNG screenshot to saves/screenshots/")));
-        }
-        if (recordVideoBtn != null) {
-            recordVideoBtn.setText("🎥 " + I18n.getOrDefault("sim.btn.video", "Record MP4 Video"));
-            recordVideoBtn.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.video", "Starts MP4 video capture (1:1 step) in saves/timelapse/")));
-        }
-        if (autoRecordCheck != null) {
-            autoRecordCheck.setText(I18n.getOrDefault("sim.option.auto_record", "🎬 Auto Sync Video (Start & Pause)"));
-            autoRecordCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.auto_record", "Automatically starts/stops 1:1 video recording in sync with scenario start/pause")));
-        }
-        if (eventsTitleLabel != null) {
-            eventsTitleLabel.setText(I18n.getOrDefault("sim.card.recent_events", "📜 5. RECENT EVENTS (CHRONOLOGY)"));
-        }
-        if (eventsHintLabel != null) {
-            eventsHintLabel.setText(I18n.getOrDefault("sim.events.double_click_hint", "💡 Double-click an event to fly camera to its epicenter location."));
-        }
-        if (filterGeophysicalCheck != null) {
-            filterGeophysicalCheck.setText(I18n.getOrDefault("sim.filter.geophysical", "🌋 Événements géophysiques & catastrophes"));
-            filterGeophysicalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_geophysical", "Show or hide earthquakes, volcanoes, tsunamis, floods, droughts, and natural disasters.")));
-        }
-        if (filterHistoricalCheck != null) {
-            filterHistoricalCheck.setText(I18n.getOrDefault("sim.filter.historical_leaders", "👑 Personnages & figures historiques"));
-            filterHistoricalCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_historical", "Show or hide historical figures, leaders, conquerors, and reformers.")));
-        }
-        if (filterChronicleCheck != null) {
-            filterChronicleCheck.setText(I18n.getOrDefault("sim.filter.chronicle_emergences", "📜 Chroniques, systèmes & émergences (Informatif)"));
-            filterChronicleCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.filter_chronicle", "Show or hide procedural emergences (purely informative telemetry / simulation outcomes).")));
-        }
-        if (noEventsLabel != null) {
-            noEventsLabel.setText(I18n.getOrDefault("sim.events.no_events", "No events recorded yet."));
-        }
+
+        if (layersSection != null) layersSection.updateTexts();
+        if (renderingSection != null) renderingSection.updateTexts();
+        if (captureSection != null) captureSection.updateTexts();
+        if (eventsSection != null) eventsSection.updateTexts();
+
         updateViewToggleButton();
         updateDisplayToggleButton();
     }
 
     private void updateViewToggleButton() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (mapCanvas != null && mode3dCheck != null) {
-            boolean is3D = mapCanvas.getViewMode() == ViewMode.VIEW_3D;
-            mode3dCheck.setSelected(is3D);
-            if (reliefSlider != null) reliefSlider.setDisable(!is3D);
-            if (reliefLabel != null) reliefLabel.setDisable(!is3D);
-            if (autoRotateCheck != null) autoRotateCheck.setDisable(!is3D);
-            if (hillshadingCheck != null) hillshadingCheck.setDisable(!is3D);
-            if (solarTerminatorCheck != null) solarTerminatorCheck.setDisable(!is3D);
-            if (hexGridCheck != null) hexGridCheck.setSelected(mapCanvas.isShowHexGrid());
-            if (smoothMapCheck != null) smoothMapCheck.setSelected(mapCanvas.isSmoothMap());
+        if (renderingSection != null && mapCanvas != null) {
+            renderingSection.updateViewToggleButton(mapCanvas);
         }
     }
 
     private void updateDisplayToggleButton() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateActiveLayerUI();
     }
 }
