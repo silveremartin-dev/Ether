@@ -102,4 +102,40 @@ public final class DataSourceUIHelper {
         combo.valueProperty().addListener((obs, oldV, newV) -> updateComboTooltip.run());
         updateComboTooltip.run();
     }
+
+    /**
+     * Selects the best matching item in a ComboBox based on target string or fallback keyword.
+     *
+     * @param combo target ComboBox
+     * @param target target item or substring
+     * @param fallbackKeyword fallback keyword if target match fails
+     */
+    public static void selectBestSource(ComboBox<String> combo, String target, String fallbackKeyword) {
+        if (combo == null || combo.getItems() == null || combo.getItems().isEmpty()) return;
+        if (target != null && combo.getItems().contains(target)) {
+            combo.setValue(target);
+            return;
+        }
+        if (target != null && !target.isBlank()) {
+            String cleanTarget = target.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+            for (String it : combo.getItems()) {
+                if (it != null && !it.isEmpty()) {
+                    String cleanIt = it.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
+                    if (cleanIt.contains(cleanTarget) || cleanTarget.contains(cleanIt)) {
+                        combo.setValue(it);
+                        return;
+                    }
+                }
+            }
+        }
+        if (fallbackKeyword != null && !fallbackKeyword.isBlank()) {
+            String kw = fallbackKeyword.toLowerCase();
+            for (String it : combo.getItems()) {
+                if (it != null && it.toLowerCase().contains(kw)) {
+                    combo.setValue(it);
+                    return;
+                }
+            }
+        }
+    }
 }

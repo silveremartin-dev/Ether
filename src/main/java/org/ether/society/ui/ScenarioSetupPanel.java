@@ -15,6 +15,7 @@ import org.ether.society.ui.util.LaTeXFormatter;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.ui.scenario.ScenarioCulturalSectionBuilder;
 import javafx.util.StringConverter;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -241,6 +242,25 @@ public class ScenarioSetupPanel extends BorderPane {
     private Button exportDensityMapBtn;
 
     // Cultural Vector & Multi-Field Layer Controls (Tab 3)
+    private final ScenarioCulturalSectionBuilder culturalSectionBuilder = new ScenarioCulturalSectionBuilder(new ScenarioCulturalSectionBuilder.HostContext() {
+        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
+        @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
+        @Override public void updatePreviewModesCombo() { ScenarioSetupPanel.this.updatePreviewModesCombo(); }
+        @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
+        @Override public long getStartYear() { return startYearSpinner != null && startYearSpinner.getValue() != null ? startYearSpinner.getValue() : -100000L; }
+        @Override public PlanetPreset getActivePlanetPreset() { return ScenarioSetupPanel.this.activePlanetPreset; }
+        @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
+        @Override public boolean isUpdatingFromPreset() { return isUpdatingFromPreset; }
+        @Override public void selectPreviewMode(int modeIndex) {
+            if (previewModeCombo != null && previewModeCombo.getSelectionModel().getSelectedIndex() != modeIndex) {
+                previewModeCombo.getSelectionModel().select(modeIndex);
+            }
+        }
+        @Override public String getScenarioDescription() {
+            return scenarioDescriptionArea != null ? scenarioDescriptionArea.getText() : "Ether Scenario";
+        }
+    });
+
     private Spinner<Integer> cultureVectorDimSpinner;
     private Spinner<Double> culturalDiffusionRateSpinner;
     private Spinner<Double> culturalMutationRateSpinner;
@@ -251,8 +271,14 @@ public class ScenarioSetupPanel extends BorderPane {
     private Label isoglossFileLabel;
     private Label kinshipFileLabel;
     private Label ritualsFileLabel;
-    private final java.util.Map<Integer, Image> customTensorImages = new java.util.HashMap<>();
-    private final java.util.Map<Integer, String> customTensorNames = new java.util.HashMap<>();
+    private final java.util.Map<Integer, Image> customTensorImages = culturalSectionBuilder.getCustomTensorImages();
+    private final java.util.Map<Integer, String> customTensorNames = culturalSectionBuilder.getCustomTensorNames();
+    private final java.util.Map<Integer, RadioButton> tensorProcRadios = culturalSectionBuilder.getTensorProcRadios();
+    private final java.util.Map<Integer, RadioButton> tensorImportRadios = culturalSectionBuilder.getTensorImportRadios();
+    private final java.util.Map<Integer, Slider> tensorParam1Sliders = culturalSectionBuilder.getTensorParam1Sliders();
+    private final java.util.Map<Integer, Slider> tensorParam2Sliders = culturalSectionBuilder.getTensorParam2Sliders();
+    private final java.util.Map<Integer, Slider> tensorParam3Sliders = culturalSectionBuilder.getTensorParam3Sliders();
+    private final java.util.Map<Integer, TextField> tensorSeedFields = culturalSectionBuilder.getTensorSeedFields();
     private VBox layersDynamicContainer;
     private Button culturalHelpBtn;
 
@@ -2344,84 +2370,7 @@ public class ScenarioSetupPanel extends BorderPane {
             if (s.getCultureVectorDimensions() > 0 && cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValueFactory() != null) {
                 cultureVectorDimSpinner.getValueFactory().setValue(s.getCultureVectorDimensions());
             }
-            if (s.getCulturalDiffusionRate() > 0 && culturalDiffusionRateSpinner != null && culturalDiffusionRateSpinner.getValueFactory() != null) {
-                culturalDiffusionRateSpinner.getValueFactory().setValue(s.getCulturalDiffusionRate());
-            }
-            if (s.getCulturalMutationRate() > 0 && culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValueFactory() != null) {
-                culturalMutationRateSpinner.getValueFactory().setValue(s.getCulturalMutationRate());
-            }
-            int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
-            customTensorImages.clear();
-            customTensorNames.clear();
-            if (s.getCustomTensorNames() != null) {
-                customTensorNames.putAll(s.getCustomTensorNames());
-            }
-            customIsoglossImage = null;
-            customKinshipImage = null;
-            customRitualsImage = null;
-            customSovereigntyImage = null;
-
-            for (int i = 0; i < dims; i++) {
-                String b64 = s.getCustomTensorMapBase64(i);
-                if (b64 != null && !b64.isBlank()) {
-                    Image img = org.ether.society.data.ImageMapLoader.base64PngToImage(b64);
-                    if (img != null) {
-                        customTensorImages.put(i, img);
-                        if (i == 0) customIsoglossImage = img;
-                        if (i == 1) customKinshipImage = img;
-                        if (i == 2) customRitualsImage = img;
-                        if (i == 3) customSovereigntyImage = img;
-                    }
-                }
-            }
-            rebuildCulturalTensorSubBlocks(dims);
-
-            if (s.getTensorSeeds() != null) {
-                for (java.util.Map.Entry<Integer, Long> entry : s.getTensorSeeds().entrySet()) {
-                    int tIdx = entry.getKey();
-                    if (tensorSeedFields.containsKey(tIdx) && tensorSeedFields.get(tIdx) != null) {
-                        tensorSeedFields.get(tIdx).setText(String.valueOf(entry.getValue()));
-                    }
-                }
-            }
-            if (s.getTensorProceduralParameters() != null) {
-                // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-                for (java.util.Map.Entry<Integer, java.util.Map<String, Double>> entry : s.getTensorProceduralParameters().entrySet()) {
-                    int tIdx = entry.getKey();
-                    java.util.Map<String, Double> pMap = entry.getValue();
-                    if (pMap != null) {
-                        TensorParamDescriptor d1 = getTensorParam1Descriptor(tIdx);
-                        TensorParamDescriptor d2 = getTensorParam2Descriptor(tIdx);
-                        TensorParamDescriptor d3 = getTensorParam3Descriptor(tIdx);
-                        if (pMap.containsKey(d1.labelKey) && tensorParam1Sliders.containsKey(tIdx) && tensorParam1Sliders.get(tIdx) != null) {
-                            tensorParam1Sliders.get(tIdx).setValue(pMap.get(d1.labelKey));
-                        }
-                        if (pMap.containsKey(d2.labelKey) && tensorParam2Sliders.containsKey(tIdx) && tensorParam2Sliders.get(tIdx) != null) {
-                            tensorParam2Sliders.get(tIdx).setValue(pMap.get(d2.labelKey));
-                        }
-                        if (pMap.containsKey(d3.labelKey) && tensorParam3Sliders.containsKey(tIdx) && tensorParam3Sliders.get(tIdx) != null) {
-                            tensorParam3Sliders.get(tIdx).setValue(pMap.get(d3.labelKey));
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < dims; i++) {
-                boolean hasCustomImage = customTensorImages.containsKey(i) && customTensorImages.get(i) != null;
-                boolean isProc = true;
-                if (s.getTensorProceduralModes() != null && i < s.getTensorProceduralModes().size()) {
-                    isProc = s.getTensorProceduralModes().get(i);
-                    if (!isProc && !hasCustomImage) {
-                        isProc = true;
-                    }
-                } else {
-                    isProc = !hasCustomImage;
-                }
-                if (isProc && tensorProcRadios.containsKey(i)) {
-                    tensorProcRadios.get(i).setSelected(true);
-                } else if (!isProc && tensorImportRadios.containsKey(i)) {
-                    tensorImportRadios.get(i).setSelected(true);
-                }
-            }
+            culturalSectionBuilder.applyScenario(s);
 
             // Restore Scheduled Events
             if (eventsList != null) {
@@ -2627,18 +2576,12 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
-    private final java.util.Map<Integer, RadioButton> tensorProcRadios = new java.util.HashMap<>();
-    private final java.util.Map<Integer, RadioButton> tensorImportRadios = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorSubTitles = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorFileLabels = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorSourceLabels = new java.util.HashMap<>();
     private final java.util.Map<Integer, ComboBox<String>> tensorSourceCombos = new java.util.HashMap<>();
     private final java.util.Map<Integer, Button> tensorLoadBtns = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorFormatLabels = new java.util.HashMap<>();
-    private final java.util.Map<Integer, TextField> tensorSeedFields = new java.util.HashMap<>();
-    private final java.util.Map<Integer, Slider> tensorParam1Sliders = new java.util.HashMap<>();
-    private final java.util.Map<Integer, Slider> tensorParam2Sliders = new java.util.HashMap<>();
-    private final java.util.Map<Integer, Slider> tensorParam3Sliders = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorParam1ValueLabels = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorParam2ValueLabels = new java.util.HashMap<>();
     private final java.util.Map<Integer, Label> tensorParam3ValueLabels = new java.util.HashMap<>();
@@ -6295,65 +6238,7 @@ private String getDefaultTensorName(int index) {
         }
 
         // Save Cultural Vector & Multi-Field Layers
-        int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
-        s.setCultureVectorDimensions(dims);
-        s.setCustomTensorNames(new java.util.HashMap<>(customTensorNames));
-        if (culturalDiffusionRateSpinner != null) {
-            s.setCulturalDiffusionRate(culturalDiffusionRateSpinner.getValue());
-        }
-        if (culturalMutationRateSpinner != null) {
-            s.setCulturalMutationRate(culturalMutationRateSpinner.getValue());
-        }
-        java.util.Map<Integer, Long> tSeeds = new java.util.HashMap<>();
-        java.util.Map<Integer, java.util.Map<String, Double>> tProcParams = new java.util.HashMap<>();
-
-        for (int i = 0; i < dims; i++) {
-            if (customTensorImages.get(i) != null) {
-                s.setCustomTensorMapBase64(i, org.ether.society.data.ImageMapLoader.imageToBase64Png(customTensorImages.get(i)));
-            }
-            boolean isProc = tensorProcRadios.containsKey(i) && tensorProcRadios.get(i).isSelected();
-            while (s.getTensorProceduralModes().size() <= i) {
-                s.getTensorProceduralModes().add(true);
-            }
-            s.getTensorProceduralModes().set(i, isProc);
-
-            // Tensor Seeds
-            if (tensorSeedFields.containsKey(i) && tensorSeedFields.get(i) != null) {
-                try {
-                    tSeeds.put(i, Long.parseLong(tensorSeedFields.get(i).getText().trim()));
-                } catch (NumberFormatException ignored) {
-                    try {
-                        tSeeds.put(i, Long.parseLong(getDefaultTensorSeed(i)));
-                    } catch (Exception e) {
-                        tSeeds.put(i, 12345L);
-                    }
-                }
-            } else {
-                try {
-                    tSeeds.put(i, Long.parseLong(getDefaultTensorSeed(i)));
-                } catch (Exception e) {
-                    tSeeds.put(i, 12345L);
-                }
-            }
-
-            // Tensor Procedural Parameters
-            java.util.Map<String, Double> pMap = new java.util.HashMap<>();
-            TensorParamDescriptor d1 = getTensorParam1Descriptor(i);
-            TensorParamDescriptor d2 = getTensorParam2Descriptor(i);
-            TensorParamDescriptor d3 = getTensorParam3Descriptor(i);
-            if (tensorParam1Sliders.containsKey(i) && tensorParam1Sliders.get(i) != null) {
-                pMap.put(d1.labelKey, tensorParam1Sliders.get(i).getValue());
-            }
-            if (tensorParam2Sliders.containsKey(i) && tensorParam2Sliders.get(i) != null) {
-                pMap.put(d2.labelKey, tensorParam2Sliders.get(i).getValue());
-            }
-            if (tensorParam3Sliders.containsKey(i) && tensorParam3Sliders.get(i) != null) {
-                pMap.put(d3.labelKey, tensorParam3Sliders.get(i).getValue());
-            }
-            tProcParams.put(i, pMap);
-        }
-        s.setTensorSeeds(tSeeds);
-        s.setTensorProceduralParameters(tProcParams);
+        culturalSectionBuilder.exportToScenario(s);
 
         // Save Type B engine checkbox states
         java.util.Map<String, Boolean> typeBStates = new java.util.HashMap<>();

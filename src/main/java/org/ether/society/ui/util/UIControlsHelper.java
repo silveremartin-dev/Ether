@@ -33,6 +33,18 @@ public final class UIControlsHelper {
      * @param control JavaFX control
      * @param defaultValue the canonical default value
      * @param resetAction callback to reset the control state
+     * @param <T> type of default value
+     */
+    public static <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
+        attachDefaultValueHandling(control, defaultValue, resetAction, null);
+    }
+
+    /**
+     * Attaches default value tooltip annotation and a right-click context menu to reset the control to its default value.
+     *
+     * @param control JavaFX control
+     * @param defaultValue the canonical default value
+     * @param resetAction callback to reset the control state
      * @param onModifiedCallback callback to notify state change after reset
      * @param <T> type of default value
      */

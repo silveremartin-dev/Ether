@@ -38,10 +38,10 @@
     "seasonUseImport" : true,
     "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
-    "tidalLocked" : false,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
     "associatedEpochYear" : 2026,
-    "canonicalPlanet" : "earth"
+    "canonicalPlanet" : "earth",
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies.",
+    "tidalLocked" : false
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -83,10 +83,10 @@
       "seasonUseImport" : true,
       "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
-      "tidalLocked" : false,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
       "associatedEpochYear" : 2026,
-      "canonicalPlanet" : "earth"
+      "canonicalPlanet" : "earth",
+      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies.",
+      "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -97,9 +97,9 @@
     "mantleHeatFlowMwM2" : 87.0,
     "freshwaterReserveKm3" : 15000.0,
     "seed" : 12345,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
     "associatedEpochYear" : 2026,
-    "canonicalPlanet" : "earth"
+    "canonicalPlanet" : "earth",
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -158,6 +158,6 @@
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
   "tier2CliodynamicsEnabled" : true,
-  "displayName" : "Échange Colombien & Réseau Commercial Mondial (1500)",
-  "displayDescription" : "⛵ SCÉNARIO HISTORIQUE : Le Grand Contact & L'Échange Biologique Mondial (1500 apr. J.-C.)\n\nConvergence des deux hémisphères, transferts de cultures (maïs, pomme de terre), flux d'argent métal et choc épidémiologique dévastateur."
+  "displayName" : "Columbian Exchange & Global Trade Network (1500 AD)",
+  "displayDescription" : "HISTORICAL SCENARIO: The Great Contact & Global Biological Exchange (1500 AD)\n\nHemispheric convergence, transatlantic crop transfers (maize, potato, cassava), silver flows, and catastrophic epidemiological shocks."
 }
