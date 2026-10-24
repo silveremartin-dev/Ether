@@ -1453,4 +1453,12 @@ public class ScenarioCulturalSectionBuilder {
     public Map<Integer, TextField> getTensorSeedFields() {
         return tensorSeedFields;
     }
+
+    public Map<Integer, ComboBox<String>> getTensorSourceCombos() {
+        return tensorSourceCombos;
+    }
+
+    public Map<Integer, Button> getTensorLoadBtns() {
+        return tensorLoadBtns;
+    }
 }
