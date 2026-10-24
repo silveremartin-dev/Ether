@@ -1406,6 +1406,47 @@ public class ScenarioCulturalSectionBuilder {
 
     // --- Getters & Accessors ---
 
+    public int getCultureVectorDimensions() {
+        return cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
+    }
+
+    public double getCulturalDiffusionRate() {
+        return culturalDiffusionRateSpinner != null && culturalDiffusionRateSpinner.getValue() != null ? culturalDiffusionRateSpinner.getValue() : 0.05;
+    }
+
+    public double getCulturalMutationRate() {
+        return culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValue() != null ? culturalMutationRateSpinner.getValue() : 0.02;
+    }
+
+    public Image getCustomTensorImage(int index) {
+        return customTensorImages.get(index);
+    }
+
+    public boolean isTensorImportActive(int index) {
+        return tensorImportRadios.containsKey(index) && tensorImportRadios.get(index).isSelected();
+    }
+
+    public double getTensorParam1(int index) {
+        return tensorParam1Sliders.containsKey(index) ? tensorParam1Sliders.get(index).getValue() : 1.0;
+    }
+
+    public double getTensorParam2(int index) {
+        return tensorParam2Sliders.containsKey(index) ? tensorParam2Sliders.get(index).getValue() : 1.0;
+    }
+
+    public double getTensorParam3(int index) {
+        return tensorParam3Sliders.containsKey(index) ? tensorParam3Sliders.get(index).getValue() : 1.0;
+    }
+
+    public long getTensorSeed(int index) {
+        if (tensorSeedFields.containsKey(index)) {
+            try {
+                return Long.parseLong(tensorSeedFields.get(index).getText().trim());
+            } catch (Exception ignored) {}
+        }
+        return 11235L + index * 11111L;
+    }
+
     public Spinner<Integer> getCultureVectorDimSpinner() {
         return cultureVectorDimSpinner;
     }
