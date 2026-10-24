@@ -65,10 +65,6 @@ public class ResourceDistributionPanel extends BorderPane {
     // Custom Ecology Image Maps
     private Image customBiomeImage;
     private Image customResourceImage;
-    // Climate maps moved from Tab 1
-    private Image customClimateImage;     // Temperature / Combined RGB
-    private Image customRainfallImage;    // Precipitation
-    private Image customSeasonalityImage; // Seasonality
     /** Internal state: active loaded body key (String). */
     private String activeLoadedBodyKey = null;
     // Geological & Energy Tensor Maps (Tab 2 Parity with Tab 1 & Tab 3)
@@ -92,6 +88,18 @@ public class ResourceDistributionPanel extends BorderPane {
                 @Override public void notifyParamChange() { if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged(); }
                 @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
                 @Override public void selectViewMode(int viewModeIndex) { ResourceDistributionPanel.this.selectViewMode(viewModeIndex); }
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE); }
+                @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
+                @Override public boolean isUpdatingFromPreset() { return isUpdatingFromPreset; }
+                @Override public OnlineMapService getOnlineMapService() { return onlineMapService; }
+                @Override public String getMapSourceComboValue() { return mapSourceCombo != null ? mapSourceCombo.getValue() : "earth"; }
+                @Override public void setMapStatus(String status) { if (mapStatusLabel != null) mapStatusLabel.setText(status); }
+            });
+    // Climate & Atmosphere Domain Maps (Tab 2 Parity)
+    private final org.ether.society.ui.resource.ResourceClimateSectionBuilder climateSectionBuilder =
+            new org.ether.society.ui.resource.ResourceClimateSectionBuilder(new org.ether.society.ui.resource.ResourceClimateSectionBuilder.HostContext() {
+                @Override public void notifyParamChange() { if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged(); }
+                @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
                 @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE); }
                 @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
                 @Override public boolean isUpdatingFromPreset() { return isUpdatingFromPreset; }
@@ -155,21 +163,6 @@ public class ResourceDistributionPanel extends BorderPane {
     private Button loadResourceBtn;
     private Button clearResourceBtn;
     // Climate map controls (moved from Tab 1)
-    private Label climateMapRowLabel;
-    private Label rainfallMapRowLabel;
-    private Label seasonalityMapRowLabel;
-    private Label climateFileLabel;
-    private Label rainfallFileLabel;
-    private Label seasonalityFileLabel;
-    private Button loadClimateBtn;
-    private Button clearClimateBtn;
-    private Button loadRainfallBtn;
-    private Button clearRainfallBtn;
-    private Button loadSeasonalityBtn;
-    private Button clearSeasonalityBtn;
-    private Button fetchOnlineClimateBtn;
-    private Button climateHelpBtn;
-    private Label climateStatusLabel;
     private Button fetchOnlineBtn;
     private Button exportMapsBtn;
     private Button specsHelpBtn;
@@ -183,9 +176,6 @@ public class ResourceDistributionPanel extends BorderPane {
     private RadioButton radioProcBiome;
     private RadioButton radioImportBiome;
     private Label biomeCompatibilityLabel;
-    private RadioButton radioProcClimate;
-    private RadioButton radioImportClimate;
-    private Label climateCompatibilityLabel;
     private RadioButton radioProcGeology;
     private RadioButton radioImportGeology;
     private Label geologyCompatibilityLabel;
@@ -197,24 +187,19 @@ public class ResourceDistributionPanel extends BorderPane {
     private final Map<Integer, Slider> geologyParam4Sliders = new java.util.HashMap<>();
     // Independent Domain Seeds
     private TextField biomeSeedField;
-    private TextField climateSeedField;
     private TextField geologySeedField;
     // Domain Source ComboBoxes
     private ComboBox<String> biomeSourceCombo;
-    private ComboBox<String> climateSourceCombo;
     private ComboBox<String> geologySourceCombo;
     // Section header labels for live i18n update
     private Label seedSecHeader;
     private Label biomeDomainSecHeader;
-    private Label climateSummaryLabel;
-    private Label climateDomainSecHeader;
     private Label geologyDomainSecHeader;
     private Button btnExportProvenanceManifest;
     private Button autoDeriveMasterBtn;
     private Button exportBiomeBtn;
     private Button exportGeologyBtn;
     private Label biomeSourcePromptLabel;
-    private Label climateSourcePromptLabel;
     private Label geologySourcePromptLabel;
     private Label ecoCompatibilityLabel;
     private VBox validationWarningBanner;
@@ -509,9 +494,9 @@ public class ResourceDistributionPanel extends BorderPane {
                 String customBiomeB64 = customBiomeImage != null ? ImageMapLoader.imageToBase64Png(customBiomeImage) : null;
                 String customResourceB64 = customResourceImage != null ? ImageMapLoader.imageToBase64Png(customResourceImage) : null;
                 String customHydroB64 = hydroSectionBuilder.getCustomHydroImage() != null ? ImageMapLoader.imageToBase64Png(hydroSectionBuilder.getCustomHydroImage()) : null;
-                String customClimateB64 = customClimateImage != null ? ImageMapLoader.imageToBase64Png(customClimateImage) : null;
-                String customRainfallB64 = customRainfallImage != null ? ImageMapLoader.imageToBase64Png(customRainfallImage) : null;
-                String customSeasonalityB64 = customSeasonalityImage != null ? ImageMapLoader.imageToBase64Png(customSeasonalityImage) : null;
+                String customClimateB64 = climateSectionBuilder.getCustomClimateImage() != null ? ImageMapLoader.imageToBase64Png(climateSectionBuilder.getCustomClimateImage()) : null;
+                String customRainfallB64 = climateSectionBuilder.getCustomRainfallImage() != null ? ImageMapLoader.imageToBase64Png(climateSectionBuilder.getCustomRainfallImage()) : null;
+                String customSeasonalityB64 = climateSectionBuilder.getCustomSeasonalityImage() != null ? ImageMapLoader.imageToBase64Png(climateSectionBuilder.getCustomSeasonalityImage()) : null;
                 PlanetPreset currentPlanet = planetPresetSupplier != null ? planetPresetSupplier.get() : activePlanetPreset;
                 if (currentPlanet == null) currentPlanet = PlanetPreset.EARTH_LIKE;
                 String planetName = currentPlanet.name() != null ? currentPlanet.name() : PlanetPreset.EARTH_LIKE.name();
@@ -666,87 +651,6 @@ public class ResourceDistributionPanel extends BorderPane {
         mapStatusLabel.setWrapText(true);
         // Note: customMapsSection legacy wrapper removed — controls are assembled
         // inside their respective domain import boxes (biomeDomainSection, hydroDomainSection, geologyDomainSection).
-        // --- Climate map controls (used inside climateDomainSection → climateImportBox) ---
-        climateMapRowLabel = new Label();
-        climateFileLabel = new Label(I18n.get("planet.map.none"));
-        climateFileLabel.getStyleClass().add("value-label");
-        loadClimateBtn = new Button(I18n.get("planet.map.btn_load"));
-        loadClimateBtn.getStyleClass().add("button-secondary");
-        loadClimateBtn.setOnAction(e -> chooseClimateMapFile());
-        clearClimateBtn = new Button("❌");
-        clearClimateBtn.getStyleClass().add("button-secondary");
-        clearClimateBtn.setOnAction(e -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Delete Confirmation"));
-            alert.setHeaderText(null);
-            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_climate", "Do you really want to clear the imported climate map?"));
-            WindowUtils.applyWindowIcon(alert);
-            alert.showAndWait().ifPresent(res -> {
-                if (res == ButtonType.OK) {
-                    customClimateImage = null;
-                    climateFileLabel.setText(I18n.get("planet.map.none"));
-                    updatePreviewCanvas();
-                }
-            });
-        });
-        HBox climateBox = new HBox(5, loadClimateBtn, clearClimateBtn);
-        rainfallMapRowLabel = new Label();
-        rainfallFileLabel = new Label(I18n.get("planet.map.none"));
-        rainfallFileLabel.getStyleClass().add("value-label");
-        loadRainfallBtn = new Button(I18n.get("planet.map.btn_load"));
-        loadRainfallBtn.getStyleClass().add("button-secondary");
-        loadRainfallBtn.setOnAction(e -> chooseRainfallMapFile());
-        clearRainfallBtn = new Button("❌");
-        clearRainfallBtn.getStyleClass().add("button-secondary");
-        clearRainfallBtn.setOnAction(e -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Delete Confirmation"));
-            alert.setHeaderText(null);
-            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_rainfall", "Do you really want to clear the imported precipitation map?"));
-            WindowUtils.applyWindowIcon(alert);
-            alert.showAndWait().ifPresent(res -> {
-                if (res == ButtonType.OK) {
-                    customRainfallImage = null;
-                    rainfallFileLabel.setText(I18n.get("planet.map.none"));
-                    updatePreviewCanvas();
-                }
-            });
-        });
-        HBox rainfallBox = new HBox(5, loadRainfallBtn, clearRainfallBtn);
-        seasonalityMapRowLabel = new Label();
-        seasonalityFileLabel = new Label(I18n.get("planet.map.none"));
-        seasonalityFileLabel.getStyleClass().add("value-label");
-        loadSeasonalityBtn = new Button(I18n.get("planet.map.btn_load"));
-        loadSeasonalityBtn.getStyleClass().add("button-secondary");
-        loadSeasonalityBtn.setOnAction(e -> chooseSeasonalityMapFile());
-        clearSeasonalityBtn = new Button("❌");
-        clearSeasonalityBtn.getStyleClass().add("button-secondary");
-        clearSeasonalityBtn.setOnAction(e -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Delete Confirmation"));
-            alert.setHeaderText(null);
-            alert.setContentText(I18n.getOrDefault("resource.confirm.clear_seasonality", "Do you really want to clear the imported seasonality map?"));
-            WindowUtils.applyWindowIcon(alert);
-            alert.showAndWait().ifPresent(res -> {
-                if (res == ButtonType.OK) {
-                    customSeasonalityImage = null;
-                    seasonalityFileLabel.setText(I18n.get("planet.map.none"));
-                    updatePreviewCanvas();
-                }
-            });
-        });
-        HBox seasonalityBox = new HBox(5, loadSeasonalityBtn, clearSeasonalityBtn);
-        fetchOnlineClimateBtn = new Button(I18n.getOrDefault("planet.map.btn_fetch_online_climate", "ðŸŒ Download Satellite Climate NASA/USGS (WMS)"));
-        fetchOnlineClimateBtn.setMaxWidth(Double.MAX_VALUE);
-        fetchOnlineClimateBtn.getStyleClass().add("button-secondary");
-        fetchOnlineClimateBtn.setOnAction(e -> fetchOnlineClimateData());
-        climateHelpBtn = new Button(I18n.getOrDefault("planet.map.btn_climate_help", "ℹ️ï¸ Climate Map Specifications"));
-        climateHelpBtn.setMaxWidth(Double.MAX_VALUE);
-        climateHelpBtn.getStyleClass().add("button-secondary");
-        climateHelpBtn.setOnAction(e -> showClimateImportFormatHelp());
-        climateStatusLabel = new Label();
-        climateStatusLabel.getStyleClass().add("value-label");
-        climateStatusLabel.setWrapText(true);
         // --- 5. Flora & Terrestrial Plant Resources ---
         terrestrialBiomassSlider = createSlider(1.0, 5000.0, 450.0);
         soilCarbonSlider = createSlider(10.0, 10000.0, 1500.0);
@@ -869,83 +773,8 @@ public class ResourceDistributionPanel extends BorderPane {
         VBox hydroDomainSection = hydroSectionBuilder.buildHydroSection();
         
         // --- DOMAINE 3 : CLIMAT & ATMOSPHÈRE ---
-        ToggleGroup climateGroup = new ToggleGroup();
-        radioProcClimate = new RadioButton(I18n.getOrDefault("resource.mode.procedural_climate", "▶ Procedural Climate"));
-        radioImportClimate = new RadioButton(I18n.getOrDefault("resource.mode.import_climate", "📂 Climate Maps (PNG)"));
-        radioProcClimate.setToggleGroup(climateGroup);
-        radioImportClimate.setToggleGroup(climateGroup);
-        radioProcClimate.setSelected(true);
-        radioProcClimate.getStyleClass().add("radio-proc");
-        radioImportClimate.getStyleClass().add("radio-import");
-        climateSeedField = new TextField("34567");
-        climateSeedField.textProperty().addListener((obs, old, val) -> {
-            if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
-            updatePreviewCanvas();
-        });
-        Button climateRandBtn = new Button("🎲");
-        climateRandBtn.getStyleClass().add("button-secondary");
-        climateRandBtn.setOnAction(e -> {
-            climateSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
-            if (!isUpdatingFromPreset && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
-            updatePreviewCanvas();
-        });
-        HBox climateSeedBox = new HBox(5, climateSeedField, climateRandBtn);
-        HBox.setHgrow(climateSeedField, Priority.ALWAYS);
-        climateSummaryLabel = new Label(I18n.getOrDefault("resource.climate.summary", "ðŸŒ¡ï¸ Climate Model: Inherited from Tab 1 planet parameters (Temperature, Gradient, Pressure, Oâ‚‚, COâ‚‚, Albedo)"));
-        climateSummaryLabel.getStyleClass().add("subcard-status-muted");
-        climateSummaryLabel.setWrapText(true);
-        VBox climateProcBox = new VBox(8,
-                createControlRow(new Label(I18n.getOrDefault("resource.seed.label", "Generation Seed:")), climateSeedBox,
-                        I18n.getOrDefault("resource.tooltip.seed_climate", "Random seed for procedural climate model")),
-                climateSummaryLabel
-        );
-        climateProcBox.getStyleClass().add("subcard-procedural-box");
-        climateSourceCombo = new ComboBox<>();
-        climateSourceCombo.getItems().addAll(
-                "none",
-                "earth", "mars", "venus", "moon", "mercury"
-        );
-        climateSourceCombo.setValue("none");
-        org.ether.society.ui.util.DataSourceUIHelper.setupDetailedSourceCombo(
-                climateSourceCombo, "common.combo.prompt_source", "planet.tooltip.climate_map");
-        climateSourceCombo.setMaxWidth(Double.MAX_VALUE);
-        climateSourceCombo.setOnAction(e -> {
-            if (isUpdatingFromPreset) return;
-            String val = climateSourceCombo.getValue();
-            if (val != null && !"none".equals(val)) {
-                radioImportClimate.setSelected(true);
-                fetchOnlineClimateData();
-            }
-        });
-        climateSourcePromptLabel = new Label(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
-        VBox climateImportBox = new VBox(8,
-                createControlRow(climateSourcePromptLabel, climateSourceCombo,
-                        I18n.getOrDefault("planet.tooltip.climate_map", "Reference climate data source")),
-                createControlRow(climateMapRowLabel, new VBox(3, climateBox, climateFileLabel), I18n.getOrDefault("planet.tooltip.climate_map", "Thermal or combined RGB map import")),
-                createControlRow(rainfallMapRowLabel, new VBox(3, rainfallBox, rainfallFileLabel), I18n.getOrDefault("planet.tooltip.rainfall_map", "Precipitation / humidity map import")),
-                createControlRow(seasonalityMapRowLabel, new VBox(3, seasonalityBox, seasonalityFileLabel), I18n.getOrDefault("planet.tooltip.seasonality_map", "Import a seasonal variance map")),
-                fetchOnlineClimateBtn,
-                climateHelpBtn
-        );
-        climateImportBox.getStyleClass().add("subcard-import-box");
-        climateImportBox.setVisible(false);
-        climateImportBox.setManaged(false);
-        climateGroup.selectedToggleProperty().addListener((obs, old, sel) -> {
-            boolean isProc = sel == radioProcClimate;
-            climateProcBox.setVisible(isProc); climateProcBox.setManaged(isProc);
-            climateImportBox.setVisible(!isProc); climateImportBox.setManaged(!isProc);
-            if (!isProc && customClimateImage == null && climateSourceCombo.getValue() != null && !"none".equals(climateSourceCombo.getValue())) {
-                fetchOnlineClimateData();
-            }
-            if (!isUpdatingFromPreset) {
-                if (ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
-                updatePreviewCanvas();
-            }
-        });
-        climateDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.climate", "3. CLIMATE & ATMOSPHERE DOMAIN"));
-        VBox climateDomainSection = createSection(climateDomainSecHeader, new VBox(8,
-                radioProcClimate, climateProcBox, radioImportClimate, climateImportBox
-        ));
+        VBox climateDomainSection = climateSectionBuilder.buildClimateSection();
+        
         // --- DOMAIN 4: GEOLOGY, TECTONICS & MINERALS ---
         ToggleGroup geologyGroup = new ToggleGroup();
         radioProcGeology = new RadioButton(I18n.getOrDefault("resource.mode.procedural_geology", "▶ Procedural Geology"));
@@ -1271,58 +1100,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (geologySourceCombo != null) geologySourceCombo.setValue("none");
         }
         hydroSectionBuilder.applyPresetHydro(p, planetKey, epochYear);
-        if (p.customClimateBase64() != null) {
-            customClimateImage = ImageMapLoader.base64PngToImage(p.customClimateBase64());
-            if (climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.preset.climate", "ðŸŒ¡ï¸ Preset Climate"));
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else if ("earth".equals(planetKey)) {
-            customClimateImage = ImageMapLoader.loadMapImage("earth", epochYear, "temperature");
-            String yearStr = (epochYear <= 0) ? Math.abs(epochYear) + " BP" : epochYear + " AD";
-            if (climateFileLabel != null) climateFileLabel.setText(getClimateSourceDisplayName("earth") + " (" + yearStr + ")");
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else if (planetKey != null && !"none".equals(planetKey)) {
-            customClimateImage = ImageMapLoader.loadMapImage(planetKey + "_temperature.png");
-            if (climateFileLabel != null) climateFileLabel.setText(getClimateSourceDisplayName(planetKey));
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else {
-            customClimateImage = null;
-            if (climateFileLabel != null) climateFileLabel.setText("—");
-            if (radioProcClimate != null) radioProcClimate.setSelected(true);
-        }
-        if (p.customRainfallBase64() != null) {
-            customRainfallImage = ImageMapLoader.base64PngToImage(p.customRainfallBase64());
-            if (rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.preset.rainfall", "ðŸŒ§ï¸ Preset Rainfall"));
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else if ("earth".equals(planetKey)) {
-            customRainfallImage = ImageMapLoader.loadMapImage("earth", epochYear, "precipitation");
-            String yearStr = (epochYear <= 0) ? Math.abs(epochYear) + " BP" : epochYear + " AD";
-            if (rainfallFileLabel != null) rainfallFileLabel.setText(getRainfallSourceDisplayName("earth") + " (" + yearStr + ")");
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else if (planetKey != null && !"none".equals(planetKey)) {
-            customRainfallImage = ImageMapLoader.loadMapImage(planetKey + "_precipitation.png");
-            if (rainfallFileLabel != null) rainfallFileLabel.setText(getRainfallSourceDisplayName(planetKey));
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else {
-            customRainfallImage = null;
-            if (rainfallFileLabel != null) rainfallFileLabel.setText("—");
-        }
-        if (p.customSeasonalityBase64() != null) {
-            customSeasonalityImage = ImageMapLoader.base64PngToImage(p.customSeasonalityBase64());
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.preset.seasonality", "â˜€ï¸ Preset Seasonality"));
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else if ("earth".equals(planetKey)) {
-            customSeasonalityImage = ImageMapLoader.loadMapImage("earth", epochYear, "seasonality");
-            String yearStr = (epochYear <= 0) ? Math.abs(epochYear) + " BP" : epochYear + " AD";
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(getSeasonalitySourceDisplayName("earth") + " (" + yearStr + ")");
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else if (planetKey != null && !"none".equals(planetKey)) {
-            customSeasonalityImage = ImageMapLoader.loadMapImage(planetKey + "_seasonality.png");
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText(getSeasonalitySourceDisplayName(planetKey));
-            if (radioImportClimate != null) radioImportClimate.setSelected(true);
-        } else {
-            customSeasonalityImage = null;
-            if (seasonalityFileLabel != null) seasonalityFileLabel.setText("—");
-        }
+        climateSectionBuilder.applyPresetClimate(p, planetKey, epochYear);
         selectViewMode(1);
         if (ecologyPresetBar != null) {
             ecologyPresetBar.markClean(p);
@@ -1364,94 +1142,6 @@ public class ResourceDistributionPanel extends BorderPane {
                 logger.error("Failed to load custom resource map", ex);
             }
         }
-    }
-    private void chooseClimateMapFile() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("planet.dialog.climate_load", "Load Climate / Thermal Map (PNG/JPEG)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images PNG/JPG", "*.png", "*.jpg", "*.jpeg"));
-        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null) {
-            try {
-                customClimateImage = new Image(new FileInputStream(file));
-                climateFileLabel.setText("ðŸŒ¡ï¸ " + file.getName());
-                updatePreviewCanvas();
-            } catch (Exception ex) {
-                logger.error("Failed to load climate map", ex);
-            }
-        }
-    }
-    private void chooseRainfallMapFile() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("planet.dialog.rainfall_load", "Load Precipitation Map (PNG/JPEG)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images PNG/JPG", "*.png", "*.jpg", "*.jpeg"));
-        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null) {
-            try {
-                customRainfallImage = new Image(new FileInputStream(file));
-                rainfallFileLabel.setText("ðŸŒ§ï¸ " + file.getName());
-                updatePreviewCanvas();
-            } catch (Exception ex) {
-                logger.error("Failed to load rainfall map", ex);
-            }
-        }
-    }
-    private void chooseSeasonalityMapFile() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("planet.dialog.seasonality_load", "Load Seasonality Map (PNG/JPEG)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images PNG/JPG", "*.png", "*.jpg", "*.jpeg"));
-        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null) {
-            try {
-                customSeasonalityImage = new Image(new FileInputStream(file));
-                seasonalityFileLabel.setText("ðŸ‚ " + file.getName());
-                updatePreviewCanvas();
-            } catch (Exception ex) {
-                logger.error("Failed to load seasonality map", ex);
-            }
-        }
-    }
-    private void fetchOnlineClimateData() {
-        String sourceKey = mapSourceCombo.getValue();
-        OnlineMapService.CelestialBody body = switch (sourceKey) {
-            case "mars" -> OnlineMapService.CelestialBody.MARS;
-            case "moon" -> OnlineMapService.CelestialBody.MOON;
-            case "venus" -> OnlineMapService.CelestialBody.VENUS;
-            default -> OnlineMapService.CelestialBody.EARTH;
-        };
-        if (climateStatusLabel != null)
-            climateStatusLabel.setText(I18n.getOrDefault("planet.map.status_fetching", "WMS Download in Progress..."));
-        onlineMapService.fetchClimateMapAsync(body).thenAccept(img -> javafx.application.Platform.runLater(() -> {
-            if (img != null) {
-                customClimateImage = img;
-                climateFileLabel.setText("ðŸŒ " + body.getName() + " MODIS Thermal WMS");
-                if (climateStatusLabel != null) climateStatusLabel.setText(I18n.get("planet.map.status_success"));
-                updatePreviewCanvas();
-            }
-        }));
-        onlineMapService.fetchRainfallMapAsync(body).thenAccept(img -> javafx.application.Platform.runLater(() -> {
-            if (img != null) {
-                customRainfallImage = img;
-                rainfallFileLabel.setText("ðŸŒ " + body.getName() + " GPM Rainfall WMS");
-                updatePreviewCanvas();
-            }
-        }));
-    }
-    private void showClimateImportFormatHelp() {
-        WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("planet.dialog.climate_help_title", "Spécifications des Cartes Climatiques"),
-                I18n.getOrDefault("planet.dialog.climate_help_header", "Formats d'Image Supportés pour les Données Climatiques"),
-                "Images PNG/JPEG au ratio 2:1 (ex: 2048×1024 px, projection équirectangulaire Plate Carrée).\n\n" +
-                "1. CARTES SÉPARÉES EN NIVEAUX DE GRIS OU DÉGRADÉS THERMIQUES :\n" +
-                "   • Températures : Noir / Bleu = −50°C, Blanc / Rouge = +50°C\n" +
-                "   • Précipitations : Noir = 0 mm/an, Blanc / Bleu foncé = 3000 mm/an\n" +
-                "   • Saisonnalité : Noir = 0°C, Blanc / Magenta = 50°C d'amplitude annuelle\n\n" +
-                "2. CARTE COMBINÉE MULTI-CANAUX RGB :\n" +
-                "   • R (Rouge) = Température (−50°C à +50°C)\n" +
-                "   • G (Vert) = Précipitations (0 à 3000 mm/an)\n" +
-                "   • B (Bleu) = Saisonnalité / Amplitude thermique (0 à 50°C)\n\n" +
-                "3. TÉLÉCHARGEMENT SATELLITE WMS :\n" +
-                "   • Le bouton « ðŸŒ Télécharger Climat Satellite » permet d'obtenir directement les flux officiels NASA MODIS (température) et GPM (pluviométrie)."
-        );
     }
     private boolean validateTerrainMapCompatibility(String sourceKey) {
         if ("none".equals(sourceKey) || sourceKey == null) return true;
@@ -1559,6 +1249,7 @@ public class ResourceDistributionPanel extends BorderPane {
             biomeFileLabel.setText(I18n.get("planet.map.none"));
             resourceFileLabel.setText(I18n.get("planet.map.none"));
             hydroSectionBuilder.applyPresetMapSource(sourceKey, "none");
+            climateSectionBuilder.applyPresetMapSource(sourceKey, "none");
             if (ecoCompatibilityLabel != null) {
                 ecoCompatibilityLabel.setText(I18n.getOrDefault("resource.status.no_map", "ðŸª No external map loaded — Procedural mode active"));
                 ecoCompatibilityLabel.getStyleClass().setAll("compatibility-neutral");
@@ -1580,7 +1271,6 @@ public class ResourceDistributionPanel extends BorderPane {
         isUpdatingFromPreset = true;
         if (radioImportBiome != null) radioImportBiome.setSelected(true);
         if (radioImportGeology != null) radioImportGeology.setSelected(true);
-        if (radioImportClimate != null) radioImportClimate.setSelected(true);
         isUpdatingFromPreset = false;
         String body = sourceKey.toLowerCase();
         if (biomeSourceCombo != null) biomeSourceCombo.setValue(body);
@@ -1589,13 +1279,7 @@ public class ResourceDistributionPanel extends BorderPane {
         customBiomeImage = ImageMapLoader.loadMapImage(body + "_biomes.png");
         if (biomeFileLabel != null) biomeFileLabel.setText(getBiomeSourceDisplayName(body));
         hydroSectionBuilder.applyPresetMapSource(sourceKey, body);
-        // Load Climate
-        customClimateImage = ImageMapLoader.loadMapImage(body + "_temperature.png");
-        customRainfallImage = ImageMapLoader.loadMapImage(body + "_precipitation.png");
-        customSeasonalityImage = ImageMapLoader.loadMapImage(body + "_seasonality.png");
-        if (climateFileLabel != null) climateFileLabel.setText(getClimateSourceDisplayName(body));
-        if (rainfallFileLabel != null) rainfallFileLabel.setText(getRainfallSourceDisplayName(body));
-        if (seasonalityFileLabel != null) seasonalityFileLabel.setText(getSeasonalitySourceDisplayName(body));
+        climateSectionBuilder.applyPresetMapSource(sourceKey, body);
         // Load Geology Tensors
         if (resourceFileLabel != null) resourceFileLabel.setText(getGeologySourceDisplayName(body));
         prepopulateGeologyTensors(body);
@@ -1943,8 +1627,6 @@ public class ResourceDistributionPanel extends BorderPane {
             }
             if (planetSectionHeader != null) planetSectionHeader.setText(I18n.getOrDefault("resource.section.planet_preset", "PLANETARY PARAMETERS"));
             if (biomeDomainSecHeader != null) biomeDomainSecHeader.setText(I18n.getOrDefault("resource.domain.biome", "BIOME & FLORA DOMAIN (VEGETATION)"));
-            if (climateSummaryLabel != null) climateSummaryLabel.setText(I18n.getOrDefault("resource.climate.summary", "ðŸŒ¡ï¸ Climate Model: Inherited from Tab 1 planet parameters (Temperature, Gradient, Pressure, Oâ‚‚, COâ‚‚, Albedo)"));
-            if (climateDomainSecHeader != null) climateDomainSecHeader.setText(I18n.getOrDefault("resource.domain.climate", "CLIMATE & ATMOSPHERE DOMAIN"));
             if (geologyDomainSecHeader != null) geologyDomainSecHeader.setText(I18n.getOrDefault("resource.domain.geology", "GEOLOGY, TECTONICS & ORES DOMAIN"));
             if (floraSecHeader != null) floraSecHeader.setText(I18n.getOrDefault("resource.section.flora", "PLANT ECOLOGY & SOILS (METRICS)"));
             if (faunaSecHeader != null) faunaSecHeader.setText(I18n.getOrDefault("resource.section.fauna", "ANIMAL & AQUATIC BIOMASS (METRICS)"));
@@ -1958,12 +1640,7 @@ public class ResourceDistributionPanel extends BorderPane {
             if (mapSourceRowLabel != null) mapSourceRowLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body Model / Satellite:"));
             if (biomeMapRowLabel != null) biomeMapRowLabel.setText(I18n.getOrDefault("resource.param.biome_map", "Biome / Extraterrestrial Vegetation Map (PNG):"));
             if (resourceMapRowLabel != null) resourceMapRowLabel.setText(I18n.getOrDefault("resource.param.resource_map", "Geological & Multi-Channel Ore Map (PNG):"));
-            if (climateMapRowLabel != null) climateMapRowLabel.setText(I18n.getOrDefault("planet.map.climate", "Climate Map (Thermal / RGB):"));
-            if (rainfallMapRowLabel != null) rainfallMapRowLabel.setText(I18n.getOrDefault("planet.map.rainfall", "Precipitation Map (Humidity):"));
-            if (seasonalityMapRowLabel != null) seasonalityMapRowLabel.setText(I18n.getOrDefault("planet.map.seasonality", "Seasonality / Variance Map:"));
             if (fetchOnlineBtn != null) fetchOnlineBtn.setText(I18n.getOrDefault("resource.btn.fetch_online", "ðŸŒ Download WMS Satellite Maps (USGS / NASA)"));
-            if (fetchOnlineClimateBtn != null) fetchOnlineClimateBtn.setText(I18n.getOrDefault("planet.map.btn_fetch_online_climate", "ðŸŒ Download Satellite Climate NASA/USGS (WMS)"));
-            if (climateHelpBtn != null) climateHelpBtn.setText(I18n.getOrDefault("planet.map.btn_climate_help", "ℹ️ï¸ Climate Map Specifications"));
             if (exportMapsBtn != null) exportMapsBtn.setText(I18n.getOrDefault("resource.btn.export_maps", "📤 Export Maps (PNG + WorldFile .tfw)"));
             if (specsHelpBtn != null) specsHelpBtn.setText(I18n.getOrDefault("resource.btn.specs_help", "ℹ️ï¸ Biome & Geology Map Specifications"));
             if (terrestrialBiomassRowLabel != null) terrestrialBiomassRowLabel.setText(I18n.getOrDefault("resource.param.terrestrial_biomass", "Terrestrial Plant Biomass (GtC):"));
@@ -1977,33 +1654,26 @@ public class ResourceDistributionPanel extends BorderPane {
             if (volcanicRowLabel != null) volcanicRowLabel.setText(I18n.getOrDefault("resource.param.volcanic", "Global Volcanic Activity (VEI):"));
             if (radioProcBiome != null) radioProcBiome.setText(I18n.getOrDefault("resource.mode.procedural_biome", "▶ Procedural Biomes"));
             if (radioImportBiome != null) radioImportBiome.setText(I18n.getOrDefault("resource.mode.import_biome", "📂 Biome Map (PNG)"));
-            if (radioProcClimate != null) radioProcClimate.setText(I18n.getOrDefault("resource.mode.procedural_climate", "▶ Procedural Climate"));
-            if (radioImportClimate != null) radioImportClimate.setText(I18n.getOrDefault("resource.mode.import_climate", "📂 Climate Maps (PNG)"));
             if (radioProcGeology != null) radioProcGeology.setText(I18n.getOrDefault("resource.mode.procedural_geology", "▶ Procedural Geology"));
             if (radioImportGeology != null) radioImportGeology.setText(I18n.getOrDefault("resource.mode.import_geology", "📂 Geological Map (PNG)"));
             if (mapSourceCombo != null && mapSourceCombo.getCellFactory() != null) mapSourceCombo.setButtonCell(mapSourceCombo.getCellFactory().call(null));
             if (biomeSourceCombo != null && biomeSourceCombo.getCellFactory() != null) biomeSourceCombo.setButtonCell(biomeSourceCombo.getCellFactory().call(null));
-            if (climateSourceCombo != null && climateSourceCombo.getCellFactory() != null) climateSourceCombo.setButtonCell(climateSourceCombo.getCellFactory().call(null));
             if (geologySourceCombo != null && geologySourceCombo.getCellFactory() != null) geologySourceCombo.setButtonCell(geologySourceCombo.getCellFactory().call(null));
             if (loadBiomeBtn != null) loadBiomeBtn.setText(I18n.get("planet.map.btn_load"));
             if (loadResourceBtn != null) loadResourceBtn.setText(I18n.get("planet.map.btn_load"));
-            if (loadClimateBtn != null) loadClimateBtn.setText(I18n.get("planet.map.btn_load"));
-            if (loadRainfallBtn != null) loadRainfallBtn.setText(I18n.get("planet.map.btn_load"));
-            if (loadSeasonalityBtn != null) loadSeasonalityBtn.setText(I18n.get("planet.map.btn_load"));
             if (customBiomeImage == null && biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
             if (customResourceImage == null && resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
-            if (customClimateImage == null && climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
-            if (customRainfallImage == null && rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
-            if (customSeasonalityImage == null && seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
             if (biomeFormatHintLabel != null) biomeFormatHintLabel.setText(I18n.getOrDefault("resource.format.biome_hint", "PNG / JPEG (2:1 equirectangular projection):\n  Biome image or vegetation cover (grayscale or RGB)."));
             if (geologyFormatHintLabel != null) geologyFormatHintLabel.setText(I18n.getOrDefault("resource.format.geology_hint", "Multi-channel PNG (2:1 equirectangular projection):\n • R Channel (Red) = Industrial crustal metals (Iron/Copper)\n • G Channel (Green) = Precious ores & REE (Gold/Pt)\n • B Channel (Blue) = Mantle heat flux & aquifers"));
-            if (climateSummaryLabel != null) climateSummaryLabel.setText(I18n.getOrDefault("resource.climate.summary", "ðŸŒ¡ï¸ Climate Model: Inherited from Tab 1 planet parameters (Temperature, Gradient, Pressure, Oâ‚‚, COâ‚‚, Albedo)"));
             if (applyBtn != null) applyBtn.setText(I18n.getOrDefault("resource.btn.apply", "✅ Apply scientific distribution to simulation"));
             if (geologySectionBuilder != null) {
                 geologySectionBuilder.updateTexts();
             }
             if (hydroSectionBuilder != null) {
                 hydroSectionBuilder.updateTexts();
+            }
+            if (climateSectionBuilder != null) {
+                climateSectionBuilder.updateTexts();
             }
             if (btnExportProvenanceManifest != null) {
                 btnExportProvenanceManifest.setText(I18n.getOrDefault("resource.btn.provenance_manifest", "🔒 SHA-256 Provenance Manifest"));
@@ -2013,7 +1683,6 @@ public class ResourceDistributionPanel extends BorderPane {
             if (exportBiomeBtn != null) exportBiomeBtn.setText(I18n.getOrDefault("resource.btn.export_biome", "📤 Export Biome Map (PNG + WorldFile)"));
             if (exportGeologyBtn != null) exportGeologyBtn.setText(I18n.getOrDefault("resource.btn.export_geology", "📤 Export Geological Map (PNG + WorldFile)"));
             if (biomeSourcePromptLabel != null) biomeSourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
-            if (climateSourcePromptLabel != null) climateSourcePromptLabel.setText(I18n.getOrDefault("planet.climate.source_label", "Reference Source:"));
             if (geologySourcePromptLabel != null) geologySourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
             updateSummary();
             updatePlanetContextDisplay();
@@ -2195,13 +1864,13 @@ public class ResourceDistributionPanel extends BorderPane {
                 }
             }
         }
-        if (radioImportClimate != null && radioImportClimate.isSelected()) {
-            if (customClimateImage == null) {
+        if (climateSectionBuilder.isRadioImportClimateSelected()) {
+            if (climateSectionBuilder.getCustomClimateImage() == null) {
                 errors.add(I18n.getOrDefault("resource.validation.missing_climate_map", "Missing macro-climate map in import mode (Tab 2)."));
             } else {
-                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customClimateImage);
+                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(climateSectionBuilder.getCustomClimateImage());
                 if (!val.valid()) {
-                    errors.add(I18n.getOrDefault("resource.validation.invalid_climate_map", "Macro-climate map incompatible (Tab 2): ") + val.message());
+                    errors.add(I18n.getOrDefault("resource.validation.invalid_climate_map", "Macro-climate map incompatible (Tab 2): " ) + val.message());
                 }
             }
         }
@@ -2223,8 +1892,8 @@ public class ResourceDistributionPanel extends BorderPane {
         if (hydroSectionBuilder.getLoadHydroBtn() != null) hydroSectionBuilder.getLoadHydroBtn().setStyle(hydroBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
         boolean geoBad = radioImportGeology != null && radioImportGeology.isSelected() && (customResourceImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customResourceImage).valid()) && (geologySectionBuilder.getCustomGeologyLayerImages() == null || geologySectionBuilder.getCustomGeologyLayerImages().isEmpty());
         if (loadResourceBtn != null) loadResourceBtn.setStyle(geoBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
-        boolean climateBad = radioImportClimate != null && radioImportClimate.isSelected() && (customClimateImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customClimateImage).valid());
-        if (loadClimateBtn != null) loadClimateBtn.setStyle(climateBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
+        boolean climateBad = climateSectionBuilder.isRadioImportClimateSelected() && (climateSectionBuilder.getCustomClimateImage() == null || !org.ether.society.data.ImageMapLoader.validateMapImage(climateSectionBuilder.getCustomClimateImage()).valid());
+        if (climateSectionBuilder.getLoadClimateBtn() != null) climateSectionBuilder.getLoadClimateBtn().setStyle(climateBad ? "-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;" : "");
         if (!isValid) {
             if (showDialog && validationWarningLabel != null && validationWarningBanner != null) {
                 StringBuilder errorMsg = new StringBuilder();
@@ -2351,4 +2020,14 @@ public class ResourceDistributionPanel extends BorderPane {
     public Label getHydroFileLabel() { return hydroSectionBuilder.getHydroFileLabel(); }
     public Button getLoadHydroBtn() { return hydroSectionBuilder.getLoadHydroBtn(); }
     public org.ether.society.ui.resource.ResourceHydroSectionBuilder getHydroSectionBuilder() { return hydroSectionBuilder; }
+    public Image getCustomClimateImage() { return climateSectionBuilder.getCustomClimateImage(); }
+    public void setCustomClimateImage(Image img) { climateSectionBuilder.setCustomClimateImage(img); }
+    public Image getCustomRainfallImage() { return climateSectionBuilder.getCustomRainfallImage(); }
+    public void setCustomRainfallImage(Image img) { climateSectionBuilder.setCustomRainfallImage(img); }
+    public Image getCustomSeasonalityImage() { return climateSectionBuilder.getCustomSeasonalityImage(); }
+    public void setCustomSeasonalityImage(Image img) { climateSectionBuilder.setCustomSeasonalityImage(img); }
+    public boolean isRadioImportClimateSelected() { return climateSectionBuilder.isRadioImportClimateSelected(); }
+    public TextField getClimateSeedField() { return climateSectionBuilder.getClimateSeedField(); }
+    public ComboBox<String> getClimateSourceCombo() { return climateSectionBuilder.getClimateSourceCombo(); }
+    public org.ether.society.ui.resource.ResourceClimateSectionBuilder getClimateSectionBuilder() { return climateSectionBuilder; }
 }
