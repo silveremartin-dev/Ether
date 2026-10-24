@@ -1,200 +1,120 @@
 /*
  * MIT License
 
-
  * Copyright (c) 2024 Gemini AI Assistant
-
 
  * Copyright (c) 2024 Silvere Martin-Michiellot
 
-
  */
-
 
 package org.ether.society.core;
 
-
-
-
-
 import org.ether.society.config.Configuration;
-
 
 import org.ether.society.data.SampleDataGenerator;
 
-
 import org.ether.society.database.H3Cell;
-
 
 import org.ether.society.model.PhysicalConstants;
 
-
 import org.ether.society.model.Scenario;
-
 
 import org.ether.society.generation.PlanetPreset;
 
-
-
 import org.slf4j.Logger;
-
 
 import org.slf4j.LoggerFactory;
 
-
-
-
-
 import org.ether.society.persistence.SimulationSaveManager;
-
-
-
-
 
 import java.util.List;
 
-
 import java.util.concurrent.Executors;
-
 
 import java.util.concurrent.ScheduledExecutorService;
 
-
 import java.util.concurrent.TimeUnit;
-
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
-
-
-
 /**
-
 
  * <h1>H3Simulation Engine</h1>
 
-
  * <p>
-
 
  * Core operational component for the Ether civilizational and planetary simulation framework.<br>
 
-
  * Integrates cellular dynamics, data structures, and deterministic state transitions.
-
 
  * </p>
 
-
  * 
-
 
  * @author Silvere Martin-Michiellot
 
-
  * @version 1.0.0-beta.2
-
 
  */
 
-
 public class H3SimulationEngine implements ISimulationEngine {
-
 
     private static final Logger logger = LoggerFactory.getLogger(H3SimulationEngine.class);
 
-
-
-
-
     private final Configuration config;
-
 
     private final TimeManager timeManager;
 
-
     private final org.ether.society.events.EventSystem eventSystem;
-
-
-
-
 
     private final org.ether.society.analytics.HistoryManager historyManager;
 
-
     private final List<org.ether.society.database.Polity> nations = new java.util.concurrent.CopyOnWriteArrayList<>();
-
 
     private final SimulationSaveManager simulationSaveManager;
 
-
-
-
-
     // DOD Layer
-
 
     private final org.ether.society.core.profiling.SimulationProfiler profiler = new org.ether.society.core.profiling.SimulationProfiler();
 
-
     private org.ether.society.core.dod.WorldBuffer worldBuffer;
-
 
     private org.ether.society.core.dod.AgentBuffer agentBuffer;
 
-
     private org.ether.society.core.dod.DemographicKernel demographicKernel;
 
-
     private org.ether.society.core.dod.UrbanKernel urbanKernel;
-
 
     private org.ether.society.core.dod.CultureKernel cultureKernel;
     private final org.ether.society.core.dod.FluxKernel fluxKernel;
     private final org.ether.society.core.dod.EnvironmentalKernel environmentalKernel;
     private final org.ether.society.core.dod.StatisticsKernel statisticsKernel;
     private final SimulationPipeline simulationPipeline;
-
-
-
-
+    private final SimulationMetricsAggregator metricsAggregator;
 
     /** Internal state: last tick time (long). */
 
-
     private long lastTickTime = 0;
-
 
     /** Internal state: current tps (double). */
 
-
     private double currentTPS = 0;
-
 
     /** Internal state: current gini (float). */
 
-
     private float currentGini = 0;
-
 
     /** Internal state: current gdp (float). */
 
-
     private float currentGDP = 0;
-
 
     /** Internal state: current life expectancy (float). */
 
-
     private float currentLifeExpectancy = 0;
-
 
     /** Internal state: current fertility (float). */
 
-
     private float currentFertility = 0;
-
 
     private int[] densityDistribution = new int[20]; // 20 bins
 
@@ -207,133 +127,79 @@ public class H3SimulationEngine implements ISimulationEngine {
     private double cachedResourceCapital = -1;
     private long lastCacheTick = -1;
 
-
-
-
-
     /** Internal state: cells (List&lt;H3Cell&gt;). */
-
 
     private List<H3Cell> cells;
 
-
     private Scenario currentScenario;
-
 
     private final java.util.Set<String> firedScenarioEventKeys = new java.util.HashSet<>();
 
-
     private org.ether.society.config.SimulationPerformanceConfig performanceConfig = new org.ether.society.config.SimulationPerformanceConfig(true);
-
-
-
-
 
     private org.ether.society.network.ClusterManager clusterManager;
 
-
-
-
-
     private ScheduledExecutorService executorService;
-
 
     private final AtomicBoolean running = new AtomicBoolean(false);
 
-
     private final java.util.concurrent.atomic.AtomicBoolean pauseAtNextEvent = new java.util.concurrent.atomic.AtomicBoolean(false);
-
 
     /** Internal state: speed multiplier (double). */
 
-
     private double speedMultiplier = 1.0;
 
-
-
-
-
     /*
-
 
      * H3simulation engine.
 
-
-
-
      *
-
 
      * @param config the config parameter (Configuration)
 
-
      */
-
 
     public H3SimulationEngine(Configuration config) {
 
-
         this.config = config;
-
 
         this.timeManager = new TimeManager(config.simulation().startYear());
 
-
         this.eventSystem = new org.ether.society.events.EventSystem();
-
 
         // Initialize History Manager
 
-
         this.historyManager = new org.ether.society.analytics.HistoryManager();
-
 
         this.simulationSaveManager = new SimulationSaveManager();
 
-
         this.demographicKernel = new org.ether.society.core.dod.DemographicKernel();
-
 
         this.urbanKernel = new org.ether.society.core.dod.UrbanKernel();
 
-
         this.cultureKernel = new org.ether.society.core.dod.CultureKernel();
-
 
         this.environmentalKernel = new org.ether.society.core.dod.EnvironmentalKernel();
 
-
         this.statisticsKernel = new org.ether.society.core.dod.StatisticsKernel();
-
 
         this.fluxKernel = new org.ether.society.core.dod.FluxKernel();
         this.simulationPipeline = new SimulationPipeline(demographicKernel, urbanKernel, cultureKernel, environmentalKernel, statisticsKernel, fluxKernel);
+        this.metricsAggregator = new SimulationMetricsAggregator(this);
 
         initialize();
 
-
     }
-
-
-
-
 
     /*
 
-
      * Get event system.
-
-
-
 
      *
 
-
      * @return the resulting computation or state reference
 
-
      */
-
 
     public org.ether.society.events.EventSystem getEventSystem() {
         return eventSystem;
@@ -349,79 +215,43 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-
-
-
-
-
-
     private void initialize() {
-
 
         logger.info("Initializing H3 simulation engine (idle state)...");
 
-
         this.cells = new java.util.ArrayList<>();
-
 
         nations.clear();
 
-
         this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(0);
-
 
         this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
 
-
     }
-
-
-
-
 
     /*
 
-
      * Initialize from scenario.
-
-
-
 
      *
 
-
      * @param scenario the scenario parameter (Scenario)
-
 
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
 
-
      */
-
 
     public void initializeFromScenario(Scenario scenario, List<H3Cell> cells) {
 
-
         logger.info("Initializing from scenario: {}", scenario.getName());
-
-
-
-
 
         boolean wasRunning = running.get();
 
-
         if (wasRunning) {
-
 
             pause();
 
-
         }
-
-
-
-
 
         SimulationPipeline.resetGlobalSimulationState();
         this.currentScenario = scenario;
@@ -438,81 +268,45 @@ public class H3SimulationEngine implements ISimulationEngine {
             }
         } catch (Throwable ignored) {}
 
-
         this.cells = cells;
-
-
-
-
 
         timeManager.reset((int) scenario.getStartDateYear());
 
-
         firedScenarioEventKeys.clear();
-
 
         if (eventSystem != null) {
 
-
             eventSystem.reset();
-
 
             if (scenario != null) {
 
-
                 eventSystem.setSeed(scenario.getSeed());
-
 
                 eventSystem.setEnableRandomEvents(scenario.isRandomEventsEnabled());
 
-
                 eventSystem.setEnableHistoricalMilestones(scenario.isRandomEventsEnabled());
-
 
                 eventSystem.setEnableEarthHistoricalLeaders(scenario.isEarthHistoricalLeadersEnabled());
 
-
                 eventSystem.setEnableProceduralLeaders(scenario.isProceduralLeadersEnabled());
-
 
             } else {
 
-
                 eventSystem.setEnableRandomEvents(true);
-
 
                 eventSystem.setEnableHistoricalMilestones(true);
 
-
             }
-
 
         }
 
-
-
-
-
         nations.clear();
-
-
-
-
 
         org.ether.society.network.spatial.H3SpatialPartitioner.sortCellsByHilbertCurve(cells);
 
-
-
-
-
         PreComputePhase preCompute = new PreComputePhase(scenario);
 
-
         preCompute.execute(cells);
-
-
-
-
 
         int populatedCount = 0;
         for (H3Cell c : cells) {
@@ -523,12 +317,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
         initializePoliticalSeeding(populatedCount);
 
-
-
-
-
         int cohortSize = scenario != null && scenario.getTargetCohortSize() > 0 ? scenario.getTargetCohortSize() : 150;
-
 
         if (demographicKernel != null) {
             demographicKernel.setTargetCohortSize(cohortSize);
@@ -545,88 +334,49 @@ public class H3SimulationEngine implements ISimulationEngine {
             simulationPipeline.configureScenario(scenario);
         }
 
-
-
-
-
         long initialPop = scenario != null ? scenario.getInitialHumanCount() : 1_000_000L;
-
 
         int estimatedAgents = (int) Math.max(cells.size(), Math.min(10_000_000L, initialPop / Math.max(1, cohortSize)));
 
-
-
-
-
         this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
-
 
         int cDims = currentScenario != null ? currentScenario.getCultureVectorDimensions() : 9;
         int agentCapacity = Math.min(10_000_000, Math.max(8192, Math.max(cells.size() * 24, estimatedAgents * 8)));
         this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(agentCapacity, cDims);
 
-
         org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
-
 
         long sSeed = currentScenario != null ? currentScenario.getSeed() : 42L;
         org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize, sSeed);
 
-
-
-
-
         if (clusterManager != null) {
-
 
             clusterManager.setWorldBuffer(worldBuffer);
 
-
         }
-
-
-
-
 
         if (historyManager != null) {
 
-
             historyManager.reset();
-
 
             historyManager.captureSnapshot(this);
 
-
             historyManager.captureWorldSnapshot(this);
-
 
         }
 
-
     }
-
-
-
-
 
     /*
 
-
      * Get current scenario.
-
-
-
 
      *
 
-
      * @return the resulting computation or state reference
-
 
      */
 
-
-    
     /**
      * Sets the current scenario.
      *
@@ -637,78 +387,43 @@ public class H3SimulationEngine implements ISimulationEngine {
     }
     public Scenario getCurrentScenario() {
 
-
         return currentScenario;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get performance config.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public org.ether.society.config.SimulationPerformanceConfig getPerformanceConfig() {
 
-
         return performanceConfig;
 
-
     }
-
-
-
-
 
     /*
 
-
      * Set performance config.
-
-
-
 
      *
 
-
      * @param performanceConfig the performance config parameter (org.ether.society.config.SimulationPerformanceConfig)
-
 
      */
 
-
     public void setPerformanceConfig(org.ether.society.config.SimulationPerformanceConfig performanceConfig) {
-
 
         this.performanceConfig = performanceConfig;
 
-
     }
 
-
-
-
-
-
-
     private void initializePopulation() {
-
 
         int existingCount = 0;
         for (H3Cell c : cells) {
@@ -722,12 +437,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             return;
         }
 
-
-
-
-
         int populatedCells = 0;
-
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
@@ -736,48 +446,29 @@ public class H3SimulationEngine implements ISimulationEngine {
                 continue;
             }
 
-
-
-
-
             int basePop = switch (biome) {
-
 
                 case PLAINS -> 50;
 
-
                 case FOREST -> 30;
-
 
                 case JUNGLE -> 40;
 
-
                 case HILLS -> 20;
-
 
                 case BEACH -> 25;
 
-
                 case MOUNTAINS -> 10;
-
 
                 case TUNDRA -> 5;
 
-
                 case DESERT -> 3;
-
 
                 case SNOW -> 2;
 
-
                 default -> 0;
 
-
             };
-
-
-
-
 
             long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
             long sSeed = currentScenario != null && currentScenario.getSeed() != 0L ? currentScenario.getSeed() : 42L;
@@ -786,70 +477,39 @@ public class H3SimulationEngine implements ISimulationEngine {
                 populatedCells++;
             }
 
-
         }
-
-
-
-
 
         initializePoliticalSeeding(populatedCells);
 
-
     }
-
-
-
-
 
     @Override
 
-
     /*
-
 
      * Start.
 
-
-
-
      *
 
-
      */
-
 
     public void start() {
 
-
         if (running.getAndSet(true)) return;
-
 
         startGameLoop();
 
-
     }
-
-
-
-
 
     @Override
 
-
     /*
-
 
      * Pause.
 
-
-
-
      *
 
-
      */
-
 
     public void pause() {
         if (!running.getAndSet(false)) return;
@@ -863,503 +523,289 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-
-
-
-
     @Override
-
 
     /*
 
-
      * Reset.
-
-
-
 
      *
 
-
      */
-
 
     public void reset() {
         pause();
         SimulationPipeline.resetGlobalSimulationState();
         firedScenarioEventKeys.clear();
 
-
         timeManager.reset(config.simulation().startYear());
-
 
         historyManager.reset();
 
-
         initialize();
-
 
     }
 
-
-
-
-
     @Override
-
 
     /*
 
-
      * Set speed.
 
-
-
-
      *
-
 
      * @param multiplier the multiplier parameter (int)
 
-
      */
-
 
     public void setSpeed(int multiplier) {
 
-
         setSpeed((double) multiplier);
-
 
     }
 
-
-
-
-
     @Override
 
-
     /*
-
 
      * Set speed.
 
-
-
-
      *
-
 
      * @param multiplier the multiplier parameter (double)
 
-
      */
-
 
     public void setSpeed(double multiplier) {
 
-
         this.speedMultiplier = Math.max(0.01, multiplier);
-
 
         if (running.get()) {
 
-
             pause();
-
 
             start();
 
-
         }
-
 
     }
 
-
-
-
-
     @Override
 
-
     /*
-
 
      * Get speed.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public int getSpeed() {
 
-
         return (int) Math.round(speedMultiplier);
-
 
     }
 
-
-
-
-
     @Override
 
-
     /*
-
 
      * Get speed multiplier.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public double getSpeedMultiplier() {
 
-
         return speedMultiplier;
-
 
     }
 
-
-
-
-
     @Override
 
-
     /*
-
 
      * Get time manager.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public TimeManager getTimeManager() {
 
-
         return timeManager;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get current year.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public long getCurrentYear() {
 
-
         return timeManager != null ? timeManager.getCurrentYear() : 0;
-
 
     }
 
-
-
-
-
     @Override
 
-
     /*
-
 
      * Is running.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public boolean isRunning() {
 
-
         return running.get();
-
 
     }
 
-
-
-
-
     @Override
 
-
     /*
-
 
      * Set pause at next event.
 
-
-
-
      *
-
 
      * @param pause the pause parameter (boolean)
 
-
      */
-
 
     public void setPauseAtNextEvent(boolean pause) {
 
-
         this.pauseAtNextEvent.set(pause);
 
-
     }
-
-
-
-
 
     @Override
 
-
     /*
-
 
      * Is pause at next event.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public boolean isPauseAtNextEvent() {
 
-
         return this.pauseAtNextEvent.get();
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get cells.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public List<H3Cell> getCells() {
 
-
         return cells;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Set cells.
 
-
-
-
      *
-
 
      * @param newCells the new cells parameter (List&lt;H3Cell&gt;)
 
-
      */
-
 
     public void setCells(List<H3Cell> newCells) {
 
-
         boolean wasRunning = running.get();
-
 
         if (wasRunning) pause();
 
-
-
-
-
         this.cells = newCells;
-
 
         nations.clear();
 
-
-
-
-
         if (newCells != null && !newCells.isEmpty()) {
-
 
             if (currentScenario != null) {
 
-
                 PreComputePhase preCompute = new PreComputePhase(currentScenario);
-
 
                 preCompute.execute(newCells);
 
-
             } else {
-
 
                 initializePopulation();
 
-
             }
-
 
             int cohortSize = currentScenario != null && currentScenario.getTargetCohortSize() > 0 ? currentScenario.getTargetCohortSize() : 150;
 
-
             if (demographicKernel != null) {
-
 
                 demographicKernel.setTargetCohortSize(cohortSize);
 
-
             }
-
 
             long initialPop = currentScenario != null ? currentScenario.getInitialHumanCount() : 1_000_000L;
 
-
             int estimatedAgents = (int) Math.max(cells.size(), Math.min(10_000_000L, initialPop / Math.max(1, cohortSize)));
 
-
-
-
-
             this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(cells.size());
-
 
             int cDims = currentScenario != null ? currentScenario.getCultureVectorDimensions() : 9;
             int agentCapacity = Math.min(10_000_000, Math.max(8192, Math.max(cells.size() * 24, estimatedAgents * 8)));
             this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(agentCapacity, cDims);
 
-
             org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
-
 
             long sSeed = currentScenario != null ? currentScenario.getSeed() : 42L;
             org.ether.society.data.DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize, sSeed);
 
-
         } else {
-
 
             this.worldBuffer = new org.ether.society.core.dod.WorldBuffer(0);
 
-
             this.agentBuffer = new org.ether.society.core.dod.AgentBuffer(0);
-
 
         }
 
-
     }
-
-
-
-
 
     /*
 
-
      * Save simulation.
-
-
-
 
      *
 
-
      * @param saveName the save name parameter (String)
 
-
      */
-
 
     public void saveSimulation(String saveName) {
         saveSimulation(null, saveName);
@@ -1374,583 +820,320 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (wasRunning) start();
     }
 
-
-
-
-
     /*
-
 
      * Load simulation.
 
-
-
-
      *
-
 
      * @param saveId the save id parameter (String)
 
-
      */
-
 
     public void loadSimulation(String saveId) {
 
-
         boolean wasRunning = running.get();
-
 
         if (wasRunning) pause();
 
-
         simulationSaveManager.loadSimulation(saveId, this);
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private void startGameLoop() {
 
-
         if (executorService != null && !executorService.isShutdown()) {
-
 
             executorService.shutdownNow();
 
-
         }
-
 
         executorService = Executors.newSingleThreadScheduledExecutor(r -> {
 
-
             Thread t = new Thread(r, "H3SimulationEngine-Thread");
-
 
             t.setDaemon(true);
 
-
             return t;
-
 
         });
 
-
         if (speedMultiplier >= 999.0) {
-
 
             // MAX speed: continuous non-accumulating loop with minimum fixed delay (1 ms)
 
-
             executorService.scheduleWithFixedDelay(this::tick, 0, 1, TimeUnit.MILLISECONDS);
-
 
         } else {
 
-
             long delay = Math.max(1L, Math.round(config.simulation().tickRateMs() / Math.max(0.01, speedMultiplier)));
-
 
             executorService.scheduleWithFixedDelay(this::tick, 0, delay, TimeUnit.MILLISECONDS);
 
-
         }
-
 
     }
 
-
-
-
-
     /*
-
 
      * Shutdown.
 
-
-
-
      *
 
-
      */
-
 
     public void shutdown() {
 
-
         running.set(false);
-
 
         if (executorService != null && !executorService.isShutdown()) {
 
-
             executorService.shutdownNow();
 
-
         }
-
 
         if (saveExecutor != null && !saveExecutor.isShutdown()) {
 
-
             saveExecutor.shutdownNow();
-
 
         }
 
-
     }
-
-
-
-
 
     private Runnable onTickCallback;
 
-
-
-
-
     /*
-
 
      * Set cluster manager.
 
-
-
-
      *
-
 
      * @param clusterManager the cluster manager parameter (org.ether.society.network.ClusterManager)
 
-
      */
-
 
     public void setClusterManager(org.ether.society.network.ClusterManager clusterManager) {
 
-
         this.clusterManager = clusterManager;
-
 
         if (this.clusterManager != null && this.worldBuffer != null) {
 
-
             this.clusterManager.setWorldBuffer(this.worldBuffer);
-
 
         }
 
-
     }
 
-
-
-
-
     /*
-
 
      * Get cluster manager.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public org.ether.society.network.ClusterManager getClusterManager() {
 
-
         return clusterManager;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Set on tick callback.
 
-
-
-
      *
-
 
      * @param callback the callback parameter (Runnable)
 
-
      */
-
 
     public void setOnTickCallback(Runnable callback) {
 
-
         this.onTickCallback = callback;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get profiler.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public org.ether.society.core.profiling.SimulationProfiler getProfiler() {
 
-
         return profiler;
 
-
     }
-
-
-
-
 
     /** Internal state: tick counter (int). */
 
-
     private int tickCounter = 0;
 
-
-
-
-
     /*
-
 
      * Get tick counter.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public long getTickCounter() {
 
-
         return tickCounter;
 
-
     }
-
-
-
-
 
     public enum TemporalScale {
 
-
         DAILY(1, "📅 Pas Quotidien (Jour par Jour - Détaillé)"),
-
 
         MONTHLY(30, "🚀 Pas Mensuel (Mois par Mois - Mode Rapide)");
 
-
-
-
-
         /** Internal state: factor (int). */
-
 
         private final int factor;
 
-
         /** Internal state: label (String). */
-
 
         private final String label;
 
-
-
-
-
         TemporalScale(int factor, String label) {
-
 
             this.factor = factor;
 
-
             this.label = label;
-
 
         }
 
-
-
-
-
         /*
-
 
          * Get factor.
 
-
-
-
          *
-
 
          * @return the resulting computation or state reference
 
-
          */
-
 
         public int getFactor() { return factor; }
 
-
         /*
-
 
          * Get label.
 
-
-
-
          *
-
 
          * @return the resulting computation or state reference
 
-
          */
-
 
         public String getLabel() { return label; }
 
-
-
-
-
         @Override
-
 
         /*
 
-
          * To string.
-
-
-
 
          *
 
-
          * @return the resulting computation or state reference
-
 
          */
 
-
         public String toString() {
-
 
             return label;
 
-
         }
 
-
     }
-
-
-
-
 
     private TemporalScale temporalScale = TemporalScale.DAILY;
 
-
-
-
-
     /*
-
 
      * Get temporal scale.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public TemporalScale getTemporalScale() { return temporalScale; }
 
-
     /*
-
 
      * Set temporal scale.
 
-
-
-
      *
-
 
      * @param scale the scale parameter (TemporalScale)
 
-
      */
-
 
     public void setTemporalScale(TemporalScale scale) {
 
-
         if (scale != null) {
-
 
             this.temporalScale = scale;
 
-
             logger.info("Temporal scale updated to: {}", scale);
 
-
         }
-
 
     }
 
-
-
-
-
-
-
     private void tick() {
-
 
         if (!running.get()) return;
 
-
-
-
-
         long tickStartNanos = System.nanoTime();
-
 
         if (lastTickTime != 0) {
 
-
             double diff = (tickStartNanos - lastTickTime) / 1_000_000_000.0;
-
 
             if (diff > 0) {
 
-
                 double instantTPS = 1.0 / diff;
-
 
                 currentTPS = (currentTPS <= 0) ? instantTPS : (currentTPS * 0.90 + instantTPS * 0.10);
 
-
             }
-
 
         }
 
-
         lastTickTime = tickStartNanos;
-
-
-
-
 
         try {
 
-
             int stepDays = (currentScenario != null && currentScenario.getTemporalResolutionDays() > 0)
-
 
                     ? (int) Math.round(currentScenario.getTemporalResolutionDays()) : 1;
 
-
             stepDays = Math.max(1, stepDays);
-
-
-
-
 
             final float DT_TICK = stepDays * 86400f; // Delta time for this tick in seconds
 
-
-
-
-
             // 1. FAST SCALE DYNAMICS (Scaled to stepDays)
-
 
             int yearBeforeTick = timeManager.getCurrentYear();
             timeManager.advanceDays(stepDays);
             boolean yearChanged = (timeManager.getCurrentYear() != yearBeforeTick);
             profiler.endPhase("1_FastScaleFlux");
 
-
-
-
-
             // 2. SLOW SCALE PHYSICALIST DYNAMICS
-
 
             // Triggered every tick when strictDeterminism is true or multi-frequency climate ticks are disabled
             boolean multiFreq = performanceConfig != null
@@ -1959,18 +1142,11 @@ public class H3SimulationEngine implements ISimulationEngine {
             int slowModulo = multiFreq ? Math.max(1, 30 / stepDays) : 1;
             boolean runSlowScale = (stepDays >= 30) || (tickCounter % slowModulo == 0);
 
-
-
-
-
             if (runSlowScale) {
-
 
                 if (currentScenario != null && timeManager.getCurrentYear() > currentScenario.getEndDateYear()) {
 
-
                     logger.info("Simulation reached scenario target end date (Year {}). Auto-pausing.", currentScenario.getEndDateYear());
-
 
                     if (historyManager != null) {
                         historyManager.captureSnapshot(this);
@@ -1978,339 +1154,191 @@ public class H3SimulationEngine implements ISimulationEngine {
                     }
                     pause();
 
-
                     return;
-
 
                 }
 
-
                 int month = timeManager.getCurrentMonth();
-
 
                 float dtSlow = multiFreq ? Math.max(DT_TICK, slowModulo * DT_TICK) : DT_TICK;
 
                 simulationPipeline.executeTick(
 
-
                         this, cells, worldBuffer, agentBuffer,
-
 
                         profiler, performanceConfig, (long) dtSlow, getAverageTechnology()
 
-
                 );
 
-
-
-
-
                 // Statistics & Snapshots
-
 
                 profiler.beginPhase("5_StatisticsAndHistory");
                 updateGlobalAggregatesCache();
 
-
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
-
 
                 densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
 
-
                 currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
-
 
                 float foodPerCapVal = (float) getFoodPerCapita();
 
-
                 float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
-
 
                 currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds(), getAverageTechnology(), foodSatVal);
 
-
                 currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
 
-
-
-
-
                 historyManager.captureSnapshot(this);
-
 
                 if (historyManager != null && historyManager.shouldCaptureWorldSnapshot(tickCounter, false, yearChanged)) {
                     historyManager.captureWorldSnapshot(this);
                 }
 
-
-                
-
-
                 int eventCountBefore = eventSystem.peekEvents().size();
-
 
                 checkScenarioClimateEvents();
 
-
                 eventSystem.checkEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), getTotalPopulation(), getTotalFood(), cells);
-
 
                 eventSystem.checkCellEvents(timeManager.getCurrentYear(), timeManager.getCurrentMonth(), cells);
 
-
                 int eventCountAfter = eventSystem.peekEvents().size();
-
-
-
-
 
                 if (pauseAtNextEvent.get() && eventCountAfter > eventCountBefore) {
 
-
                     logger.info("[Step {}] Automatic simulation pause on event (pauseAtNextEvent=true)", tickCounter);
-
 
                     pause();
 
-
                 }
 
-
                 profiler.endPhase("5_StatisticsAndHistory");
-
-
-
-
 
                 profiler.beginPhase("6_BufferSync");
                 // Cells are already synchronized with WorldBuffer from Phase 2 (syncCellsToBuffer).
                 // Phase 6 is preserved as a lightweight boundary phase avoiding redundant O(N) object traversals.
                 profiler.endPhase("6_BufferSync");
 
-
-
-
-
                 if (tickCounter % Math.max(1, 12 / stepDays) == 0) {
-
 
                     logger.info("[Step {}] Year {} Month {} | Pop: {} | TPS: {} it/s",
 
-
                             tickCounter, timeManager.getCurrentYear(),
-
 
                             String.format("%02d", timeManager.getCurrentMonth() + 1),
 
-
                             String.format("%,d", getTotalPopulation()),
-
 
                             String.format("%.1f", currentTPS));
 
-
                 }
 
-
             }
-
-
-
-
 
             // Every 60 Ticks: trigger rolling checkpoint auto-save
 
-
             if (tickCounter > 0 && tickCounter % 60 == 0) {
-
 
                 autoSaveCheckpoint();
 
-
             }
-
-
-
-
 
             tickCounter++;
 
-
-
-
-
             long tickDuration = System.nanoTime() - tickStartNanos;
-
-
-
-
 
             long renderStartNanos = System.nanoTime();
 
-
             if (onTickCallback != null) {
-
 
                 onTickCallback.run();
 
-
             }
-
 
             long renderDuration = System.nanoTime() - renderStartNanos;
 
-
-
-
-
             profiler.recordTick(tickDuration, renderDuration);
-
-
-
-
 
         } catch (Exception e) {
 
-
             logger.error("Error during simulation tick", e);
-
 
         }
 
-
     }
-
-
-
-
-
-
 
     private void checkScenarioClimateEvents() {
 
-
         if (currentScenario == null || currentScenario.getClimateEvents() == null || currentScenario.getClimateEvents().isEmpty()) return;
-
 
         int currentYear = timeManager.getCurrentYear();
 
-
-
-
-
         for (org.ether.society.model.ClimateEvent evt : currentScenario.getClimateEvents()) {
-
 
             if (evt.getYear() == currentYear) {
 
-
                 String eventKey = evt.getName() + "_" + evt.getYear() + "_" + evt.getType();
-
 
                 if (!firedScenarioEventKeys.contains(eventKey)) {
 
-
                     firedScenarioEventKeys.add(eventKey);
-
-
-
-
 
                     String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
 
-
                     String displayTitle;
-
 
                     if (type.contains("milestone") || type.contains("hist")) {
 
-
                         displayTitle = "📜 REPÈRE : " + evt.getName();
-
 
                     } else if (type.contains("nuclear") || type.contains("strike")) {
 
-
                         displayTitle = "☢️ FRAPPE NUCLÉAIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
-
 
                     } else {
 
-
                         displayTitle = "🌋 ÉVÉNEMENT : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")";
-
 
                     }
 
-
-
-
-
                     org.ether.society.events.ActiveEvent ae = new org.ether.society.events.ActiveEvent(
-
 
                         "SCENARIO_EVT_" + currentYear + "_" + tickCounter,
 
-
                         displayTitle,
-
 
                         evt.getType().toUpperCase(),
 
-
                         evt.getLatitude(), evt.getLongitude(),
-
 
                         currentYear, timeManager.getCurrentMonth(), 1, 25.0, evt.getMagnitude()
 
-
                     );
-
 
                     eventSystem.recordSpatialEvent(ae);
 
-
                     logger.info("🌋 [Tick {}] Scenario event triggered: {} (Year {})", tickCounter, evt.getName(), currentYear);
-
-
-
-
 
                     applyClimateEventImpact(evt);
 
-
                 }
-
 
             }
 
-
         }
-
 
     }
 
-
-
-
-
-
-
     private void applyClimateEventImpact(org.ether.society.model.ClimateEvent evt) {
-
 
         if (cells == null || cells.isEmpty()) return;
 
-
         double evtLat = evt.getLatitude();
-
 
         double evtLng = evt.getLongitude();
 
-
         double mag = evt.getMagnitude();
-
 
         int totalCells = cells.size();
         float[] cellSurvival = null;
@@ -2432,32 +1460,19 @@ public class H3SimulationEngine implements ISimulationEngine {
             }
         }
 
-
     }
-
-
-
-
 
     @Override
 
-
     /*
-
 
      * Step forward.
 
-
-
-
      *
-
 
      * @param ticks the ticks parameter (int)
 
-
      */
-
 
     public void stepForward(int ticks) {
         pause();
@@ -2475,174 +1490,103 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-
-
-
-
     @Override
 
-
     /*
-
 
      * Step backward.
 
-
-
-
      *
-
 
      * @param ticks the ticks parameter (int)
 
-
      */
-
 
     public void stepBackward(int ticks) {
 
-
         pause();
 
-
         if (historyManager == null || cells == null || cells.isEmpty()) return;
-
 
         long currentTicks = timeManager.getTotalTicks();
 
-
         long targetTicks = Math.max(0, currentTicks - ticks);
-
 
         seekToTick(targetTicks);
 
-
     }
-
-
-
-
 
     @Override
 
-
     /*
-
 
      * Seek to end.
 
-
-
-
      *
 
-
      */
-
 
     public void seekToEnd() {
 
-
         pause();
-
 
         if (historyManager != null && !historyManager.getWorldSnapshots().isEmpty()) {
 
-
             long lastTick = historyManager.getWorldSnapshots().lastKey();
-
 
             seekToTick(lastTick);
 
-
         } else if (currentScenario != null) {
-
 
             long initialYear = currentScenario.getStartDateYear();
 
-
             long endYear = currentScenario.getEndDateYear();
-
 
             int stepDaysVal = (currentScenario.getTemporalResolutionDays() > 0)
 
-
                     ? (int) Math.round(currentScenario.getTemporalResolutionDays()) : 1;
-
 
             long totalDays = Math.max(0, (endYear - initialYear) * 365L);
 
-
             long maxTicks = totalDays / stepDaysVal;
-
 
             seekToTick(maxTicks);
 
-
         }
-
 
     }
 
-
-
-
-
     /*
-
 
      * Seek to tick.
 
-
-
-
      *
-
 
      * @param targetTicks the target ticks parameter (long)
 
-
      */
-
 
     public void seekToTick(long targetTicks) {
 
-
         pause();
-
 
         if (historyManager == null || cells == null || cells.isEmpty()) return;
 
-
-
-
-
         java.util.NavigableMap<Long, List<H3Cell>> snapshots = historyManager.getWorldSnapshots();
-
 
         if (!snapshots.isEmpty()) {
 
-
             java.util.Map.Entry<Long, List<H3Cell>> entry = snapshots.floorEntry(targetTicks);
-
 
             if (entry == null) {
 
-
                 entry = snapshots.firstEntry();
-
 
             }
 
-
-
-
-
             if (entry != null && entry.getValue() != null) {
 
-
                 List<H3Cell> snapshot = entry.getValue();
-
 
                 java.util.Map<Long, H3Cell> map = snapshot.stream()
                         .filter(c -> c != null && c.getH3Index() != null)
@@ -2652,238 +1596,143 @@ public class H3SimulationEngine implements ISimulationEngine {
                     if (c == null || c.getH3Index() == null) continue;
                     H3Cell snap = map.get(c.getH3Index());
 
-
                     if (snap != null) {
-
 
                         c.setPopulation(snap.getPopulation());
 
-
                         c.setTemperature(snap.getTemperature());
-
 
                         c.setFoodResource(snap.getFoodResource());
 
-
                         c.setWaterResource(snap.getWaterResource());
-
 
                         c.setFreshwaterAquifer(snap.getFreshwaterAquifer());
 
-
                         c.setTechnologyLevel(snap.getTechnologyLevel());
-
 
                         c.setBiomassHuman(snap.getBiomassHuman());
 
-
                         c.setBiomassNatural(snap.getBiomassNatural());
-
 
                         c.setBiomassLivestock(snap.getBiomassLivestock());
 
-
                         c.setBiomassAgriculture(snap.getBiomassAgriculture());
-
 
                         c.setResourceCapital(snap.getResourceCapital());
 
-
                         c.setPollutionLevel(snap.getPollutionLevel());
-
 
                     }
 
-
                 }
-
 
                 if (worldBuffer != null) {
 
-
                     org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
-
 
                 }
 
-
             }
 
-
         }
-
-
-
-
 
         // Compute new year, month, and day based on targetTicks
 
-
         long initialYear = currentScenario != null ? currentScenario.getStartDateYear() : -20000;
-
 
         int stepDaysVal = (currentScenario != null && currentScenario.getTemporalResolutionDays() > 0)
 
-
                 ? (int) Math.round(currentScenario.getTemporalResolutionDays()) : 1;
-
 
         long totalDays = targetTicks * stepDaysVal;
 
-
         long totalMonths = totalDays / 30;
-
 
         int targetYear = (int) (initialYear + (totalMonths / 12));
 
-
         int targetMonth = (int) (totalMonths % 12);
-
 
         int targetDay = (int) ((totalDays % 30) + 1);
 
-
-
-
-
         timeManager.setTime(targetYear, targetMonth, targetDay, targetTicks);
-
 
         this.tickCounter = (int) targetTicks;
 
-
-
-
-
         // Recalculate metrics for the current time
-
 
         if (worldBuffer != null && statisticsKernel != null) {
 
-
             currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
-
 
             densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
 
-
             currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
-
 
             if (agentBuffer != null) {
 
-
                 currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds());
-
 
                 currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
 
-
             }
-
 
         }
 
-
     }
-
-
-
-
 
     private final java.util.concurrent.ExecutorService saveExecutor = Executors.newSingleThreadExecutor(r -> {
 
-
         Thread t = new Thread(r, "Ether-AutoSave-Thread");
-
 
         t.setDaemon(true);
 
-
         return t;
-
 
     });
 
-
-
-
-
     /** Internal state: last auto save time ms (long). */
-
 
     private long lastAutoSaveTimeMs = 0;
 
-
-
-
-
-
-
     private void autoSaveCheckpoint() {
-
 
         if (cells == null || cells.isEmpty()) return;
 
-
         long now = System.currentTimeMillis();
-
 
         if (now - lastAutoSaveTimeMs < 30_000L) {
 
-
             return;
-
 
         }
 
-
         lastAutoSaveTimeMs = now;
-
 
         final int currentTick = tickCounter;
 
-
         saveExecutor.submit(() -> {
-
 
             try {
 
-
                 simulationSaveManager.saveCheckpoint(this, currentTick);
-
 
             } catch (Exception ex) {
 
-
                 logger.error("Failed to save periodic checkpoint", ex);
-
 
             }
 
-
         });
-
 
     }
 
-
-
-
-
     /*
-
 
      * Sync buffer to cells.
 
-
-
-
      *
 
-
      */
-
 
     public void syncBufferToCells() {
         if (worldBuffer == null || cells == null) return;
@@ -3094,26 +1943,15 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-
-
-
-
     /*
-
 
      * Get total population.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     /**
      * Updates cached scalar aggregates in a single fused O(N) cache-aligned pass over WorldBuffer.
@@ -3180,132 +2018,75 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total;
     }
 
-
-
-
-
     /*
-
 
      * Get populated cell count.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public long getPopulatedCellCount() {
 
-
         if (worldBuffer == null) return 0;
-
 
         long count = 0;
 
-
         float[] pop = worldBuffer.getBiomassHuman();
-
 
         for (int i = 0; i < worldBuffer.getCapacity(); i++) {
 
-
             if (pop[i] > 0.1f) count++;
-
 
         }
 
-
         return count;
 
-
     }
-
-
-
-
-
-
 
     private void initializePoliticalSeeding(int populatedCount) {
 
-
         if (populatedCount < 3 || cells == null || cells.isEmpty()) return;
-
-
-
-
 
         nations.clear();
 
-
-
-
-
         cells.stream()
-
 
                 .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
 
-
                 .sorted(java.util.Comparator.comparingInt(H3Cell::getPopulation).reversed())
-
 
                 .limit(3)
 
-
                 .forEach(c -> {
-
 
                     if (c.getOwner() == null) {
 
-
                         String name = "Realm of Hex " + Long.toHexString(c.getH3Index()).toUpperCase();
-
 
                         javafx.scene.paint.Color color = javafx.scene.paint.Color.hsb(org.ether.society.util.DeterministicPRNG.nextDouble(c.getH3Index(), 777) * 360.0, 0.8, 0.9);
 
-
                         org.ether.society.database.Polity nation = new org.ether.society.database.Polity(name, color, c);
-
 
                         nations.add(nation);
 
-
                     }
-
 
                 });
 
-
     }
-
-
-
-
 
     /*
 
-
      * Get history manager.
-
-
-
 
      *
 
-
      * @return the resulting computation or state reference
 
-
      */
-
 
     public java.util.List<org.ether.society.database.Polity> getNations() {
         return nations;
@@ -3313,61 +2094,35 @@ public class H3SimulationEngine implements ISimulationEngine {
 
     public org.ether.society.analytics.HistoryManager getHistoryManager() {
 
-
         return historyManager;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get current tps.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public double getCurrentTPS() {
 
-
         return currentTPS;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get total biomass natural.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public float getTotalBiomassNatural() {
         if (lastCacheTick == tickCounter && cachedBiomassNatural >= 0) {
@@ -3391,2316 +2146,543 @@ public class H3SimulationEngine implements ISimulationEngine {
         return total / worldBuffer.getCapacity();
     }
 
-
-
-
-
     /*
-
 
      * Get current gini.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public float getCurrentGini() {
 
-
         return currentGini;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get density distribution.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public int[] getDensityDistribution() {
 
-
         return densityDistribution;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get current gdp.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public float getCurrentGDP() { return currentGDP; }
 
-
     /*
-
 
      * Get current life expectancy.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public float getCurrentLifeExpectancy() { return currentLifeExpectancy; }
 
-
     /*
-
 
      * Get current fertility.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public float getCurrentFertility() { return currentFertility; }
 
+    // --- EXTENDED CLIODYNAMIC & PHYSICAL METRICS (Delegated to SimulationMetricsAggregator) ---
 
-
-
-
-    // --- EXTENDED CLIODYNAMIC & PHYSICAL METRICS ---
-
-
-
-
-
-    /*
-
-
-     * Get energy captured.
-
-
-
-
+    /**
+     * Evaluates getEnergyCaptured via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getEnergyCaptured() {
-
-
-        long pop = getTotalPopulation();
-
-
-        if (pop <= 0) return 0.0;
-
-
-        float tech = getAverageTechnology();
-
-
-        // Leslie White Energy Law: P_tot = N_pop * P_capita
-
-
-        // Baseline 300 W per capita (human metabolic work ~120W + fire energy ~180W)
-
-
-        // Technology scales energy extraction: animal, water, steam, electrical
-
-
-        double wattsPerCapita = 300.0 + Math.pow(Math.max(0.0, tech), 2.2) * 35.0;
-
-
-        double totalWatts = pop * wattsPerCapita;
-
-
-        return totalWatts / 1e6; // Energy returned in Megawatts (MW)
-
-
+        return metricsAggregator.getEnergyCaptured();
     }
 
-
-
-
-
-    /*
-
-
-     * Get resource depletion rate.
-
-
-
-
+    /**
+     * Evaluates getResourceDepletionRate via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getResourceDepletionRate() {
-        if (worldBuffer == null || worldBuffer.getCapacity() == 0) return 0;
-        double maxRes = worldBuffer.getCapacity() * 1000.0;
-        double currentRes;
-        if (lastCacheTick == tickCounter && cachedResourceCapital >= 0) {
-            currentRes = cachedResourceCapital;
-        } else {
-            currentRes = 0;
-            float[] res = worldBuffer.getResourceCapital();
-            for (int i = 0; i < worldBuffer.getCapacity(); i++) currentRes += res[i];
-        }
-        return Math.max(0, Math.min(100.0, (1.0 - currentRes / Math.max(1, maxRes)) * 100.0));
+        return metricsAggregator.getResourceDepletionRate();
     }
 
-
-
-
-
-    /*
-
-
-     * Get energy per capita.
-
-
-
-
+    /**
+     * Evaluates getEnergyPerCapita via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getEnergyPerCapita() {
-
-
-        long pop = getTotalPopulation();
-
-
-        return pop > 0 ? (getEnergyCaptured() * 1e6) / pop : 300.0; // in Joules/sec (Watts)
-
-
+        return metricsAggregator.getEnergyPerCapita();
     }
 
-
-
-
-
-    /*
-
-
-     * Get food per capita.
-
-
-
-
+    /**
+     * Evaluates getFoodPerCapita via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getFoodPerCapita() {
-
-
-        long pop = getTotalPopulation();
-
-
-        return pop > 0 ? getTotalFood() / pop : 0;
-
-
+        return metricsAggregator.getFoodPerCapita();
     }
 
-
-
-
-
-    /*
-
-
-     * Get biomass domesticated.
-
-
-
-
+    /**
+     * Evaluates getBiomassDomesticated via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getBiomassDomesticated() {
-
-
-        return getTotalPopulation() * 0.15 + getTotalFood() * 0.4;
-
-
+        return metricsAggregator.getBiomassDomesticated();
     }
 
-
-
-
-
-    /*
-
-
-     * Get potable water total.
-
-
-
-
+    /**
+     * Evaluates getPotableWaterTotal via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getPotableWaterTotal() {
-        if (lastCacheTick == tickCounter && cachedPotableWater >= 0) {
-            return cachedPotableWater;
-        }
-        if (worldBuffer == null) return 0;
-        double water = 0;
-        float[] w = worldBuffer.getWaterResource();
-        for (int i = 0; i < worldBuffer.getCapacity(); i++) water += w[i];
-        return water;
+        return metricsAggregator.getPotableWaterTotal();
     }
 
-
-
-
-
-    /*
-
-
-     * Get remaining resources ratio.
-
-
-
-
+    /**
+     * Evaluates getRemainingResourcesRatio via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getRemainingResourcesRatio() {
-
-
-        return 100.0 - getResourceDepletionRate();
-
-
+        return metricsAggregator.getRemainingResourcesRatio();
     }
 
-
-
-
-
-    /*
-
-
-     * Get systemic entropy.
-
-
-
-
+    /**
+     * Evaluates getSystemicEntropy via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getSystemicEntropy() {
-        float tech = getAverageTechnology();
-        long pop = getTotalPopulation();
-        if (pop <= 0) return 0.0;
-        return Math.min(1000.0, (Math.log1p(pop) * 25.0) + (tech * 2.5));
+        return metricsAggregator.getSystemicEntropy();
     }
 
-
-
-
-
-    /*
-
-
-     * Get pollution level.
-
-
-
-
+    /**
+     * Evaluates getPollutionLevel via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getPollutionLevel() {
-
-
-        float tech = getAverageTechnology();
-
-
-        long pop = getTotalPopulation();
-
-
-        return Math.max(0, (tech > 50 ? (tech - 50) * 1.5 * (pop / 100000.0) : 0));
-
-
+        return metricsAggregator.getPollutionLevel();
     }
 
-
-
-
-
-    /*
-
-
-     * Get occupied territory area.
-
-
-
-
+    /**
+     * Evaluates getOccupiedTerritoryArea via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getOccupiedTerritoryArea() {
-
-
-        double baseCellArea = (currentScenario != null && currentScenario.getCellSizeKm2() > 0)
-
-
-                ? currentScenario.getCellSizeKm2() : 1250.0;
-
-
-        long populatedCells = getPopulatedCellCount();
-
-
-        long pop = getTotalPopulation();
-
-
-        if (populatedCells == 0 || pop == 0) return 0.0;
-
-
-
-
-
-        float tech = getAverageTechnology();
-
-
-        double physicalGridArea = populatedCells * baseCellArea;
-
-
-
-
-
-        // Binford (2001), Kelly (1995), Hassan (1981) - Behavioral Ecology & Home Range:
-
-
-        // Pre-agricultural Hunter-Gatherers (Tech < 1.5): 10 to 100 km² per capita diffuse subsistence home range
-
-
-        if (tech < 1.5f) {
-
-
-            double temp = 15.0;
-
-
-            if (worldBuffer != null && worldBuffer.getTemperature().length > 0) {
-
-
-                temp = worldBuffer.getTemperature()[0];
-
-
-            }
-
-
-            // Harsh cold/arid biomes require 80-100 km²/hab, rich temperate/river valleys 15-40 km²/hab
-
-
-            double km2PerCapita = (temp < 5.0) ? 85.0 : Math.max(12.0, 45.0 - (temp * 1.2));
-
-
-            double ecologicalHomeRange = pop * km2PerCapita;
-
-
-            return Math.max(physicalGridArea, ecologicalHomeRange);
-
-
-        } else if (tech < 5.0f) {
-
-
-            // Neolithic & Agrarian transition (Tech 1.5 to 5.0): 0.05 to 2.0 km²/hab
-
-
-            double km2PerCapita = Math.max(0.05, 2.0 - (tech - 1.5) * 0.55);
-
-
-            return Math.max(physicalGridArea, pop * km2PerCapita);
-
-
-        }
-
-
-
-
-
-        return physicalGridArea;
-
-
+        return metricsAggregator.getOccupiedTerritoryArea();
     }
 
-
-
-
-
-    /*
-
-
-     * Get offspring percentage.
-
-
-
-
+    /**
+     * Evaluates getOffspringPercentage via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getOffspringPercentage() {
-
-
-        float fert = getCurrentFertility();
-
-
-        return Math.min(95.0, Math.max(20.0, 40.0 + fert * 7.5));
-
-
+        return metricsAggregator.getOffspringPercentage();
     }
 
-
-
-
-
-    /*
-
-
-     * Get age at first child.
-
-
-
-
+    /**
+     * Evaluates getAgeAtFirstChild via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getAgeAtFirstChild() {
-
-
-        float tech = getAverageTechnology();
-
-
-        return Math.min(32.0, Math.max(16.0, 18.0 + (tech / 200.0) * 10.0));
-
-
+        return metricsAggregator.getAgeAtFirstChild();
     }
 
-
-
-
-
-    /*
-
-
-     * Get immigration rate.
-
-
-
-
+    /**
+     * Evaluates getImmigrationRate via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getImmigrationRate() {
-        long pop = getTotalPopulation();
-        if (pop <= 0) return 0.0;
-        float tech = getAverageTechnology();
-        return Math.min(100.0, Math.max(0.0, (Math.log1p(pop) * 1.5) + (tech * 0.35)));
+        return metricsAggregator.getImmigrationRate();
     }
 
-
-
-
-
-    /*
-
-
-     * Get education level.
-
-
-
-
+    /**
+     * Evaluates getEducationLevel via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getEducationLevel() {
-
-
-        float tech = getAverageTechnology();
-
-
-        return Math.min(100.0, (tech / 250.0) * 100.0);
-
-
+        return metricsAggregator.getEducationLevel();
     }
 
-
-
-
-
-    /*
-
-
-     * Get happiness index.
-
-
-
-
+    /**
+     * Evaluates getHappinessIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getHappinessIndex() {
-
-
-        float gini = getCurrentGini();
-
-
-        float life = getCurrentLifeExpectancy();
-
-
-        double foodPerCap = getFoodPerCapita();
-
-
-        double annualReq = PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
-
-
-        double foodSat = Math.min(1.0, foodPerCap > 0 ? foodPerCap / annualReq : 0.5);
-
-
-        double base = 40.0 + (life / 80.0) * 30.0 + (foodSat * 30.0) - (gini * 20.0);
-
-
-        return Math.max(10.0, Math.min(100.0, base));
-
-
+        return metricsAggregator.getHappinessIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Get conflict level.
-
-
-
-
+    /**
+     * Evaluates getConflictLevel via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getConflictLevel() {
-
-
-        float gini = getCurrentGini();
-
-
-        double happiness = getHappinessIndex();
-
-
-        double foodPerCap = getFoodPerCapita();
-
-
-        double annualReq = PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
-
-
-        double scarcity = (foodPerCap > 0 && foodPerCap < annualReq) ? (1.0 - foodPerCap / annualReq) * 25.0 : 0.0;
-
-
-        return Math.max(0.0, Math.min(100.0, (gini * 35.0) + (100.0 - happiness) * 0.25 + scarcity));
-
-
+        return metricsAggregator.getConflictLevel();
     }
 
-
-
-
-
-    /*
-
-
-     * Get city states count.
-
-
-
-
+    /**
+     * Evaluates getCityStatesCount via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public int getCityStatesCount() {
-
-
-        float tech = getAverageTechnology();
-
-
-        long year = getCurrentYear();
-
-
-        // City-states and urban hubs strictly appear in the Bronze/Agricultural Revolution era (post -4000 BC, Tech >= 15)
-
-
-        if (tech < 15.0f || year < -4000) {
-
-
-            return 0;
-
-
-        }
-
-
-        long popCells = getPopulatedCellCount();
-
-
-        return (int) Math.max(0, popCells / 12);
-
-
+        return metricsAggregator.getCityStatesCount();
     }
 
-
-
-
-
-    /*
-
-
-     * Get institutional maturity.
-
-
-
-
+    /**
+     * Evaluates getInstitutionalMaturity via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getInstitutionalMaturity() {
-
-
-        float tech = getAverageTechnology();
-
-
-        return Math.min(100.0, tech * 0.45);
-
-
+        return metricsAggregator.getInstitutionalMaturity();
     }
 
-
-
-
-
-    /*
-
-
-     * Get division of labor index.
-
-
-
-
+    /**
+     * Evaluates getDivisionOfLaborIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getDivisionOfLaborIndex() {
-
-
-        float tech = getAverageTechnology();
-
-
-        long pop = getTotalPopulation();
-
-
-        double surplus = getNetSurplusFraction();
-
-
-        return Math.min(100.0, (surplus * 60.0) + (tech * 0.25) + Math.log10(Math.max(1, pop)) * 3.0);
-
-
+        return metricsAggregator.getDivisionOfLaborIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Energy Return on Investment for the food/subsistence system (EROI_alim = E_out / E_in).
-
-
-     * Preindustrial: 3:1 to 15:1. Industrial thermodynamic inversion: < 1.0 (7-10 kcal fossil per 1 kcal ingested).
-
-
+    /**
+     * Evaluates getEroiAlimentaire via {\@link SimulationMetricsAggregator}.
+     *
+     * \@return computed metric
      */
-
-
     public double getEroiAlimentaire() {
-
-
-        float tech = getAverageTechnology();
-
-
-        if (tech < 1.5f) {
-
-
-            return 7.0; // Paleolithic Hunter-Gatherer baseline
-
-
-        } else if (tech < 4.0f) {
-
-
-            return 6.5; // Early Neolithic
-
-
-        } else if (tech < 50.0f) {
-
-
-            return 2.8; // Preindustrial Agrarian with Draft Animals
-
-
-        } else if (tech < 120.0f) {
-
-
-            return 0.50; // Industrial Era (Thermodynamic inversion)
-
-
-        } else {
-
-
-            return 0.12; // Post-Industrial Globalized Food System (10:1 fossil input)
-
-
-        }
-
-
+        return metricsAggregator.getEroiAlimentaire();
     }
 
-
-
-
-
-    /*
-
-
-     * Net societal energy surplus fraction Phi = 1 - 1 / EROI_alim (Tainter 1988, Hall et al. 2014).
-
-
+    /**
+     * Evaluates getNetSurplusFraction via {\@link SimulationMetricsAggregator}.
+     *
+     * \@return computed metric
      */
-
-
     public double getNetSurplusFraction() {
-
-
-        double eroi = getEroiAlimentaire();
-
-
-        return Math.max(0.0, 1.0 - (1.0 / Math.max(0.1, eroi)));
-
-
+        return metricsAggregator.getNetSurplusFraction();
     }
 
-
-
-
-
-    /*
-
-
-     * Trophic footprint multiplier mu = Mobilized Raw Biomass / Ingested Energy (2.0x to 25.0x).
-
-
+    /**
+     * Evaluates getTrophicMultiplier via {\@link SimulationMetricsAggregator}.
+     *
+     * \@return computed metric
      */
-
-
     public double getTrophicMultiplier() {
-
-
-        float tech = getAverageTechnology();
-
-
-        if (tech < 1.5f) return PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER;
-
-
-        if (tech < 4.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN;
-
-
-        if (tech < 50.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_PREINDUSTRIAL_ADVANCED_AGRARIAN;
-
-
-        if (tech < 120.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_INDUSTRIAL_WORKER;
-
-
-        return PhysicalConstants.TROPHIC_MULTIPLIER_POST_INDUSTRIAL;
-
-
+        return metricsAggregator.getTrophicMultiplier();
     }
 
-
-
-
-
-    /*
-
-
-     * Gross raw biomass mobilized per capita per year in kg/hab/an.
-
-
+    /**
+     * Evaluates getBiomassMobilizedPerCapitaKg via {\@link SimulationMetricsAggregator}.
+     *
+     * \@return computed metric
      */
-
-
     public double getBiomassMobilizedPerCapitaKg() {
-
-
-        double trophicMul = getTrophicMultiplier();
-
-
-        float tech = getAverageTechnology();
-
-
-        double energyDensity = (tech < 1.5f) ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG
-
-
-                : (tech < 50.0f ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG : 14.0);
-
-
-        return (PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_MJ * trophicMul) / energyDensity;
-
-
+        return metricsAggregator.getBiomassMobilizedPerCapitaKg();
     }
 
-
-
-
-
-    /*
-
-
-     * Get max hierarchy level.
-
-
-
-
+    /**
+     * Evaluates getMaxHierarchyLevel via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public int getMaxHierarchyLevel() {
-
-
-        float tech = getAverageTechnology();
-
-
-        if (tech < 10) return 1;
-
-
-        if (tech < 30) return 2;
-
-
-        if (tech < 60) return 3;
-
-
-        if (tech < 100) return 4;
-
-
-        if (tech < 200) return 5;
-
-
-        return 6;
-
-
+        return metricsAggregator.getMaxHierarchyLevel();
     }
 
-
-
-
-
-    /*
-
-
-     * Get largest cultural unit size.
-
-
-
-
+    /**
+     * Evaluates getLargestCulturalUnitSize via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public long getLargestCulturalUnitSize() {
-
-
-        if (!nations.isEmpty()) {
-
-
-            return nations.stream()
-
-
-                    .mapToLong(org.ether.society.database.Polity::getTotalPopulation)
-
-
-                    .max()
-
-
-                    .orElse((long) (getTotalPopulation() * Math.min(0.85, 0.2 + (getAverageTechnology() / 300.0))));
-
-
-        }
-
-
-        long pop = getTotalPopulation();
-
-
-        return (long) (pop * Math.min(0.85, 0.2 + (getAverageTechnology() / 300.0)));
-
-
+        return metricsAggregator.getLargestCulturalUnitSize();
     }
 
-
-
-
-
-    /*
-
-
-     * Get largest organization complexity.
-
-
-
-
+    /**
+     * Evaluates getLargestOrganizationComplexity via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getLargestOrganizationComplexity() {
-
-
-        long largestPop = getLargestCulturalUnitSize();
-
-
-        if (largestPop <= 0) return 0.0;
-
-
-        float avgTech = getAverageTechnology();
-
-
-        int hierarchy = getMaxHierarchyLevel();
-
-
-        double stateCap = 0.5;
-
-
-        if (!nations.isEmpty()) {
-
-
-            org.ether.society.database.Polity largest = nations.stream()
-
-
-                    .max(java.util.Comparator.comparingLong(org.ether.society.database.Polity::getTotalPopulation))
-
-
-                    .orElse(null);
-
-
-            if (largest != null) {
-
-
-                stateCap = largest.getStateCapacity();
-
-
-            }
-
-
-        }
-
-
-        return largestPop * (1.0 + avgTech * 0.4) * stateCap * (Math.log(1.0 + hierarchy) / Math.log(2.0));
-
-
+        return metricsAggregator.getLargestOrganizationComplexity();
     }
 
-
-
-
-
-    /*
-
-
-     * Get largest organization entropy.
-
-
-
-
+    /**
+     * Evaluates getLargestOrganizationEntropy via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getLargestOrganizationEntropy() {
-
-
-        double complexity = getLargestOrganizationComplexity();
-
-
-        double pollution = getPollutionLevel();
-
-
-        float tech = getAverageTechnology();
-
-
-        return (complexity * 0.05 + tech * 1.2) * (1.0 + pollution / 100.0);
-
-
+        return metricsAggregator.getLargestOrganizationEntropy();
     }
 
-
-
-
-
-    /*
-
-
-     * Get kardashev scale.
-
-
-
-
+    /**
+     * Evaluates getKardashevScale via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getKardashevScale() {
-
-
-        double energyMW = getEnergyCaptured();
-
-
-        if (energyMW <= 0) return 0.0;
-
-
-        double watts = energyMW * 1e6;
-
-
-        double k = (Math.log10(Math.max(1.0, watts)) - 6.0) / 10.0;
-
-
-        return Math.max(0.0, Math.min(3.0, k));
-
-
+        return metricsAggregator.getKardashevScale();
     }
 
-
-
-
-
-    /*
-
-
-     * Get built capital total.
-
-
-
-
+    /**
+     * Evaluates getBuiltCapitalTotal via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getBuiltCapitalTotal() {
-
-
-        float tech = getAverageTechnology();
-
-
-        long pop = getTotalPopulation();
-
-
-        // Proportional to physical tools, structures and technology level
-
-
-        return pop * (0.5 + Math.pow(Math.max(0.0, tech), 1.8) * 8.0);
-
-
+        return metricsAggregator.getBuiltCapitalTotal();
     }
 
-
-
-
-
-    /*
-
-
-     * Get elite formation ratio.
-
-
-
-
+    /**
+     * Evaluates getEliteFormationRatio via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getEliteFormationRatio() {
-
-
-        float gini = getCurrentGini();
-
-
-        return Math.min(25.0, Math.max(0.5, 1.0 + gini * 15.0));
-
-
+        return metricsAggregator.getEliteFormationRatio();
     }
 
-
-
-
-
-    /*
-
-
-     * Get elder capital share.
-
-
-
-
+    /**
+     * Evaluates getElderCapitalShare via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getElderCapitalShare() {
-
-
-        float gini = getCurrentGini();
-
-
-        float life = getCurrentLifeExpectancy();
-
-
-        return Math.min(90.0, Math.max(30.0, 40.0 + (life / 80.0) * 30.0 + gini * 20.0));
-
-
+        return metricsAggregator.getElderCapitalShare();
     }
 
-
-
-
-
-    /*
-
-
-     * Get land rent index.
-
-
-
-
+    /**
+     * Evaluates getLandRentIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getLandRentIndex() {
-
-
-        long pop = getTotalPopulation();
-
-
-        long cells = getPopulatedCellCount();
-
-
-        double density = cells > 0 ? (double) pop / cells : 0;
-
-
-        return density * 1.5 + getAverageTechnology() * 0.8;
-
-
+        return metricsAggregator.getLandRentIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Get tools count.
-
-
-
-
+    /**
+     * Evaluates getToolsCount via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public long getToolsCount() {
-
-
-        float tech = getAverageTechnology();
-
-
-        return (long) (getTotalPopulation() * (0.5 + tech * 0.2));
-
-
+        return metricsAggregator.getToolsCount();
     }
 
-
-
-
-
-    /*
-
-
-     * Get products count.
-
-
-
-
+    /**
+     * Evaluates getProductsCount via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public long getProductsCount() {
-
-
-        float tech = getAverageTechnology();
-
-
-        return (long) Math.max(3, 5 + Math.pow(tech, 1.6));
-
-
+        return metricsAggregator.getProductsCount();
     }
 
-
-
-
-
-    /*
-
-
-     * Get system complexity index.
-
-
-
-
+    /**
+     * Evaluates getSystemComplexityIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getSystemComplexityIndex() {
-
-
-        float tech = getAverageTechnology();
-
-
-        double divLabor = getDivisionOfLaborIndex();
-
-
-        return Math.min(100.0, (tech * 0.4 + divLabor * 0.6));
-
-
+        return metricsAggregator.getSystemComplexityIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Get reconstruction capability index.
-
-
-
-
+    /**
+     * Evaluates getReconstructionCapabilityIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getReconstructionCapabilityIndex() {
-
-
-        double edu = getEducationLevel();
-
-
-        float tech = getAverageTechnology();
-
-
-        return Math.min(100.0, (edu * 0.7 + tech * 0.3));
-
-
+        return metricsAggregator.getReconstructionCapabilityIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Get system interdependence index.
-
-
-
-
+    /**
+     * Evaluates getSystemInterdependenceIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getSystemInterdependenceIndex() {
-
-
-        double complexity = getSystemComplexityIndex();
-
-
-        return Math.min(100.0, complexity * 0.95);
-
-
+        return metricsAggregator.getSystemInterdependenceIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Get age pyramid.
-
-
-
-
+    /**
+     * Evaluates getAgePyramid via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public int[] getAgePyramid() {
-
-
-        int[] cohorts = new int[7];
-
-
-        if (agentBuffer != null && agentBuffer.getCapacity() > 0) {
-
-
-            float[] ages = agentBuffer.getAge();
-
-
-            float[] masses = agentBuffer.getMass();
-
-
-            int[] hexIds = agentBuffer.getHexIds();
-
-
-            // Iterate through active agent / demographic cohort buffers
-
-
-            for (int i = 0; i < agentBuffer.getCapacity(); i++) {
-
-
-                if (hexIds != null && hexIds[i] == -1) continue;
-
-
-                float age = ages != null ? ages[i] : 25.0f;
-
-
-                float m = masses != null ? masses[i] : 1.0f;
-
-
-                if (m <= 0) continue;
-
-
-                int count = Math.max(1, Math.round(m));
-
-
-                if (age < 15) cohorts[0] += count;
-
-
-                else if (age < 25) cohorts[1] += count;
-
-
-                else if (age < 40) cohorts[2] += count;
-
-
-                else if (age < 55) cohorts[3] += count;
-
-
-                else if (age < 70) cohorts[4] += count;
-
-
-                else if (age < 85) cohorts[5] += count;
-
-
-                else cohorts[6] += count;
-
-
-            }
-
-
-            long realPop = getTotalPopulation();
-
-
-            long agentSum = 0; for (int c : cohorts) agentSum += c;
-
-
-            if (agentSum > 0 && Math.abs(realPop - agentSum) > 5) {
-
-
-                double scale = (double) realPop / agentSum;
-
-
-                // Iterate through active agent / demographic cohort buffers
-
-
-                for (int i = 0; i < 7; i++) cohorts[i] = (int) Math.round(cohorts[i] * scale);
-
-
-            }
-
-
-        }
-
-
-        if (cohorts[0] == 0 && cohorts[1] == 0 && cohorts[2] == 0 && cohorts[3] == 0 && cohorts[4] == 0 && cohorts[5] == 0 && cohorts[6] == 0) {
-
-
-            long pop = getTotalPopulation();
-
-
-            float life = getCurrentLifeExpectancy();
-
-
-            double c0_pct = Math.max(0.12, 0.35 - (life - 30.0) * 0.003);
-
-
-            double c1_pct = 0.18;
-
-
-            double c2_pct = 0.24;
-
-
-            double c3_pct = 0.18;
-
-
-            double c4_pct = 0.12;
-
-
-            double c5_pct = 0.06 + Math.min(0.06, (life - 50.0) * 0.002);
-
-
-            double c6_pct = Math.max(0.01, 1.0 - (c0_pct + c1_pct + c2_pct + c3_pct + c4_pct + c5_pct));
-
-
-
-
-
-            cohorts[0] = (int) (pop * c0_pct);
-
-
-            cohorts[1] = (int) (pop * c1_pct);
-
-
-            cohorts[2] = (int) (pop * c2_pct);
-
-
-            cohorts[3] = (int) (pop * c3_pct);
-
-
-            cohorts[4] = (int) (pop * c4_pct);
-
-
-            cohorts[5] = (int) (pop * c5_pct);
-
-
-            cohorts[6] = (int) (pop * c6_pct);
-
-
-        }
-
-
-        return cohorts;
-
-
+        return metricsAggregator.getAgePyramid();
     }
 
-
-
-
-
-    // --- 🧠 COGNITION & INFORMATION ---
-
-
-    /*
-
-
-     * Get shannon bandwidth.
-
-
-
-
+    /**
+     * Evaluates getShannonBandwidth via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getShannonBandwidth() {
-
-
-        float tech = getAverageTechnology();
-
-
-        return 1.0 + Math.pow(tech, 1.4) * 0.8;
-
-
+        return metricsAggregator.getShannonBandwidth();
     }
 
-
-
-
-
-    /*
-
-
-     * Get collective memory stock.
-
-
-
-
+    /**
+     * Evaluates getCollectiveMemoryStock via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getCollectiveMemoryStock() {
-
-
-        float tech = getAverageTechnology();
-
-
-        long pop = getTotalPopulation();
-
-
-        return (pop * 0.05 + Math.pow(tech, 2.1));
-
-
+        return metricsAggregator.getCollectiveMemoryStock();
     }
 
-
-
-
-
-    /*
-
-
-     * Get innovation diffusion speed.
-
-
-
-
+    /**
+     * Evaluates getInnovationDiffusionSpeed via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getInnovationDiffusionSpeed() {
-
-
-        float tech = getAverageTechnology();
-
-
-        double divLabor = getDivisionOfLaborIndex();
-
-
-        return Math.min(100.0, (tech * 0.4 + divLabor * 0.6));
-
-
+        return metricsAggregator.getInnovationDiffusionSpeed();
     }
 
-
-
-
-
-    /*
-
-
-     * Get knowledge decay rate.
-
-
-
-
+    /**
+     * Evaluates getKnowledgeDecayRate via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getKnowledgeDecayRate() {
-
-
-        float gini = getCurrentGini();
-
-
-        double conflict = getConflictLevel();
-
-
-        return Math.min(100.0, (conflict * 0.7 + gini * 30.0));
-
-
+        return metricsAggregator.getKnowledgeDecayRate();
     }
 
-
-
-
-
-    // --- ECOLOGY & PLANETARY BOUNDARIES ---
-
-
-    /*
-
-
-     * Get soil npkquality.
-
-
-
-
+    /**
+     * Evaluates getSoilNPKQuality via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getSoilNPKQuality() {
-
-
-        float tech = getAverageTechnology();
-
-
-        double resDep = getResourceDepletionRate();
-
-
-        return Math.max(5.0, 100.0 - (resDep * 0.6) + Math.min(15.0, tech * 0.1));
-
-
+        return metricsAggregator.getSoilNPKQuality();
     }
 
-
-
-
-
-    /*
-
-
-     * Get carbon footprint.
-
-
-
-
+    /**
+     * Evaluates getCarbonFootprint via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getCarbonFootprint() {
-
-
-        double energy = getEnergyCaptured();
-
-
-        float tech = getAverageTechnology();
-
-
-        return (energy * (tech > 40 && tech < 180 ? 0.85 : 0.2)) / 1000.0;
-
-
+        return metricsAggregator.getCarbonFootprint();
     }
 
-
-
-
-
-    /*
-
-
-     * Get wild biodiversity index.
-
-
-
-
+    /**
+     * Evaluates getWildBiodiversityIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getWildBiodiversityIndex() {
-
-
-        float bioNat = getTotalBiomassNatural();
-
-
-        double bioDom = getBiomassDomesticated();
-
-
-        double total = bioNat + bioDom;
-
-
-        return total > 0 ? Math.min(100.0, (bioNat / total) * 100.0) : 100.0;
-
-
+        return metricsAggregator.getWildBiodiversityIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Get wet bulb safety margin.
-
-
-
-
+    /**
+     * Evaluates getWetBulbSafetyMargin via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getWetBulbSafetyMargin() {
-
-
-        float temp = 15.0f;
-
-
-        float[] temps = worldBuffer != null ? worldBuffer.getTemperature() : null;
-
-
-        if (temps != null && temps.length > 0) {
-
-
-            float sum = 0; for(float t : temps) sum += t;
-
-
-            temp = sum / temps.length;
-
-
-        }
-
-
-        return Math.max(0.0, 35.0 - (temp + 3.5));
-
-
+        return metricsAggregator.getWetBulbSafetyMargin();
     }
 
-
-
-
-
-    // --- CLIODYNAMICS & SYSTEMIC RISKS ---
-
-
-    /*
-
-
-     * Get elite overproduction index.
-
-
-
-
+    /**
+     * Evaluates getEliteOverproductionIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getEliteOverproductionIndex() {
-
-
-        double eliteForm = getEliteFormationRatio();
-
-
-        float gini = getCurrentGini();
-
-
-        double val = (eliteForm / 5.0) * (1.0 + (Double.isNaN(gini) ? 0.0 : gini) * 2.0);
-
-
-        return Double.isNaN(val) ? 1.0 : Math.max(0.0, Math.min(10.0, val));
-
-
+        return metricsAggregator.getEliteOverproductionIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Get fiscal stress index.
-
-
-
-
+    /**
+     * Evaluates getFiscalStressIndex via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getFiscalStressIndex() {
-
-
-        double landRent = getLandRentIndex();
-
-
-        float gini = getCurrentGini();
-
-
-        double val = ((Double.isNaN(gini) ? 0.0 : gini) * 50.0) + (landRent * 0.3);
-
-
-        return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
-
-
+        return metricsAggregator.getFiscalStressIndex();
     }
 
-
-
-
-
-    /*
-
-
-     * Get geopolitical tension.
-
-
-
-
+    /**
+     * Evaluates getGeopoliticalTension via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getGeopoliticalTension() {
-
-
-        int cityStates = getCityStatesCount();
-
-
-        double conflict = getConflictLevel();
-
-
-        double val = (cityStates * 2.5) + (conflict * 0.7);
-
-
-        return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
-
-
+        return metricsAggregator.getGeopoliticalTension();
     }
 
-
-
-
-
-    /*
-
-
-     * Get collapse vulnerability.
-
-
-
-
+    /**
+     * Evaluates getCollapseVulnerability via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getCollapseVulnerability() {
-
-
-        double resDep = getResourceDepletionRate();
-
-
-        double psi = getEliteOverproductionIndex();
-
-
-        double entropy = getSystemicEntropy();
-
-
-        double eroi = getEroiAlimentaire();
-
-
-        // Inversion thermodynamique : if EROI < 1.0 (industrial dependency), resource depletion accelerates collapse risk
-
-
-        double thermodynamicInversionRisk = (eroi < 1.0) ? (1.0 / Math.max(0.05, eroi)) * ((Double.isNaN(resDep) ? 0.0 : resDep) / 100.0) * 15.0 : 0.0;
-
-
-        double val = ((Double.isNaN(resDep) ? 0.0 : resDep) * 0.25) +
-
-
-                     ((Double.isNaN(psi) ? 0.0 : psi) * 3.5) +
-
-
-                     ((Double.isNaN(entropy) ? 0.0 : entropy) / 20.0) +
-
-
-                     thermodynamicInversionRisk;
-
-
-        return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
-
-
+        return metricsAggregator.getCollapseVulnerability();
     }
 
-
-
-
-
-    /*
-
-
-     * Get average asabiyyah.
-
-
-
-
+    /**
+     * Evaluates getAverageAsabiyyah via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getAverageAsabiyyah() {
-
-
-        if (cells == null || cells.isEmpty()) return 80.0;
-
-
-        double sum = 0;
-
-
-        int count = 0;
-
-
-        for (H3Cell c : cells) {
-            if (c != null && c.getOwner() != null) {
-                sum += c.getOwner().getAsabiyyah();
-                count++;
-            }
-        }
-
-
-        return count > 0 ? (sum / count) * 100.0 : 80.0;
-
-
+        return metricsAggregator.getAverageAsabiyyah();
     }
 
-
-
-
-
-    /*
-
-
-     * Get population survival rate.
-
-
-
-
+    /**
+     * Evaluates getPopulationSurvivalRate via {\@link SimulationMetricsAggregator}.
      *
-
-
-     * @return the resulting computation or state reference
-
-
+     * \@return computed metric
      */
-
-
     public double getPopulationSurvivalRate() {
-
-
-        long currentPop = getTotalPopulation();
-
-
-        long initPop = currentScenario != null ? currentScenario.getInitialHumanCount() : 1_000_000L;
-
-
-        if (initPop <= 0) return 100.0;
-
-
-        return Math.min(100.0, Math.max(0.0, ((double) currentPop / initPop) * 100.0));
-
-
+        return metricsAggregator.getPopulationSurvivalRate();
     }
-
-
-
-
-
-
 
     private void syncClimateToBuffer() {
         if (worldBuffer == null || cells == null) return;
@@ -5715,113 +2697,63 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-
-
-
-
     /*
-
 
      * Get world buffer.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public org.ether.society.core.dod.WorldBuffer getWorldBuffer() {
 
-
         return worldBuffer;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Set world buffer.
 
-
-
-
      *
-
 
      * @param worldBuffer the world buffer parameter (org.ether.society.core.dod.WorldBuffer)
 
-
      */
-
 
     public void setWorldBuffer(org.ether.society.core.dod.WorldBuffer worldBuffer) {
 
-
         this.worldBuffer = worldBuffer;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get agent buffer.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public org.ether.society.core.dod.AgentBuffer getAgentBuffer() {
 
-
         return agentBuffer;
-
 
     }
 
-
-
-
-
     /*
-
 
      * Get simulation save manager.
 
-
-
-
      *
-
 
      * @return the resulting computation or state reference
 
-
      */
-
 
     public SimulationSaveManager getSimulationSaveManager() {
         return simulationSaveManager;
@@ -5835,9 +2767,10 @@ public class H3SimulationEngine implements ISimulationEngine {
     public org.ether.society.core.dod.FluxKernel getFluxKernel() {
         return fluxKernel;
     }
+
+    long getLastCacheTick() { return lastCacheTick; }
+    double getCachedPotableWater() { return cachedPotableWater; }
+    double getCachedResourceCapital() { return cachedResourceCapital; }
+    public SimulationMetricsAggregator getMetricsAggregator() { return metricsAggregator; }
 }
-
-
-
-
 

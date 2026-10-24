@@ -173,23 +173,94 @@ public class ScenarioSnapshotInspector {
      * Rescans disk directory for simulation saves and checkpoints.
      */
     public void refreshSnapshotList() {
+        refreshSnapshotListForScenario(null);
+    }
+
+    private List<SaveMetadata> cachedSavesList = null;
+    private long lastSavesListFetchTime = 0;
+
+    /**
+     * Rescans and filters saves matching the given scenario boundaries and temporal era.
+     *
+     * @param s target scenario
+     */
+    public void refreshSnapshotListForScenario(org.ether.society.model.Scenario s) {
         if (snapshotCombo == null) return;
-        List<SaveMetadata> saves;
-        try {
-            saves = saveManager.listSaves();
-        } catch (Exception e) {
-            saves = Collections.emptyList();
-        }
-        SaveMetadata current = snapshotCombo.getValue();
-        snapshotCombo.getItems().clear();
-        if (saves != null && !saves.isEmpty()) {
-            snapshotCombo.getItems().addAll(saves);
-            if (current != null && snapshotCombo.getItems().contains(current)) {
-                snapshotCombo.setValue(current);
-            } else {
-                snapshotCombo.getSelectionModel().selectFirst();
+        long now = System.currentTimeMillis();
+        if (cachedSavesList == null || (now - lastSavesListFetchTime > 3000)) {
+            try {
+                cachedSavesList = saveManager.listSaves();
+                lastSavesListFetchTime = now;
+            } catch (Exception e) {
+                cachedSavesList = Collections.emptyList();
             }
         }
+        List<SaveMetadata> allSaves = cachedSavesList != null ? cachedSavesList : Collections.emptyList();
+        List<SaveMetadata> matchingSaves = new java.util.ArrayList<>();
+
+        if (s != null && !allSaves.isEmpty()) {
+            long targetStartYear = s.getStartDateYear();
+            long targetEndYear = s.getEndDateYear();
+            String scNorm = s.getName() != null ? s.getName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
+            String scKey = s.getPresetKey() != null ? s.getPresetKey().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
+            String scDisp = s.getDisplayName() != null ? s.getDisplayName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
+            String scDensity = s.getPopulationDensityType() != null ? s.getPopulationDensityType().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
+
+            for (SaveMetadata save : allSaves) {
+                String saveNorm = save.getName() != null ? save.getName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
+                String saveScNorm = save.getScenarioName() != null ? save.getScenarioName().toLowerCase().replaceAll("[^a-z0-9]", "") : "";
+
+                boolean match = (!scKey.isEmpty() && (saveNorm.contains(scKey) || saveScNorm.contains(scKey)))
+                             || (!scNorm.isEmpty() && (saveNorm.contains(scNorm) || saveScNorm.contains(scNorm)))
+                             || (!scDisp.isEmpty() && (saveNorm.contains(scDisp) || saveScNorm.contains(scDisp)))
+                             || (!scDensity.isEmpty() && (saveNorm.contains(scDensity) || saveScNorm.contains(scDensity)))
+                             || (Math.abs(save.getYear() - targetStartYear) <= 150)
+                             || (Math.abs(save.getYear() - targetEndYear) <= 150);
+
+                if (match) {
+                    matchingSaves.add(save);
+                }
+            }
+        } else {
+            matchingSaves.addAll(allSaves);
+        }
+
+        // Deduplicate snapshots covering the same year / scenario (keep the newest save)
+        java.util.Map<Long, SaveMetadata> deduplicatedByYear = new java.util.LinkedHashMap<>();
+        matchingSaves.sort((a, b) -> {
+            if (a.getTimestamp() != null && b.getTimestamp() != null) {
+                return b.getTimestamp().compareTo(a.getTimestamp());
+            }
+            return 0;
+        });
+        for (var save : matchingSaves) {
+            deduplicatedByYear.putIfAbsent(save.getYear(), save);
+        }
+
+        List<SaveMetadata> filteredSaves = new java.util.ArrayList<>(deduplicatedByYear.values());
+        filteredSaves.sort((a, b) -> Long.compare(b.getYear(), a.getYear()));
+
+        snapshotCombo.getItems().setAll(filteredSaves);
+
+        if (!filteredSaves.isEmpty()) {
+            if (radioResumeSnapshot != null) {
+                radioResumeSnapshot.setDisable(false);
+                radioResumeSnapshot.setSelected(true);
+            }
+            snapshotCombo.setValue(filteredSaves.get(0));
+            updateSnapshotDetailsDisplay(filteredSaves.get(0));
+        } else {
+            if (radioResumeSnapshot != null) {
+                radioResumeSnapshot.setDisable(true);
+                if (radioColdStart != null) {
+                    radioColdStart.setSelected(true);
+                }
+            }
+            snapshotCombo.setValue(null);
+            snapshotCombo.setPromptText(I18n.getOrDefault("scenario.snapshot.no_saves_for_scenario", "(Aucun snapshot enregistré pour ce scénario)"));
+            updateSnapshotDetailsDisplay(null);
+        }
+        logger.info("Refreshed snapshots list for scenario '{}': {} matching checkpoint(s) found on disk.", s != null ? s.getName() : "N/A", filteredSaves.size());
     }
 
     /**
