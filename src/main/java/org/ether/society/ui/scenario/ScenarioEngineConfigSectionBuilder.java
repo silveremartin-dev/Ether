@@ -780,7 +780,7 @@ public class ScenarioEngineConfigSectionBuilder {
         }
     }
 
-    private void updatePerformanceControlsState() {
+    public void updatePerformanceControlsState() {
         boolean strict = strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected();
         if (sparseCellSkippingCheckBox != null) sparseCellSkippingCheckBox.setDisable(strict);
         if (oceanMacroAggregationCheckBox != null) oceanMacroAggregationCheckBox.setDisable(strict);
