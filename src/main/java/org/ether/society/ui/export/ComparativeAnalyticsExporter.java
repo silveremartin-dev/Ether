@@ -12,7 +12,7 @@ import org.ether.society.analytics.ComparativeReportGenerator;
 import org.ether.society.analytics.SimulationRunRecord;
 import org.ether.society.config.EtherPaths;
 import org.ether.society.i18n.I18n;
-import org.ether.society.ui.ComparativeAnalyticsPanel.ScenarioSelectableItem;
+import org.ether.society.ui.analytics.ScenarioSelectableItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
