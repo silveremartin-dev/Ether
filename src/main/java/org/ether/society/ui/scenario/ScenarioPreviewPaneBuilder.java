@@ -12,8 +12,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -355,187 +353,10 @@ public class ScenarioPreviewPaneBuilder {
 
     public void updateBottomLegend() {
         if (legendItemsContainer == null) return;
-        legendItemsContainer.getChildren().clear();
-
         int curSel = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
         int dims = context.getCultureVectorDimensions();
-
-        Color[] colors;
-        String[] labels;
-        String[] fullTooltips;
-
-        if (curSel == 0) {
-            colors = new Color[]{
-                Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
-            };
-            labels = new String[]{
-                I18n.getOrDefault("setup.legend.demo.0", "Inhabité (0)"),
-                I18n.getOrDefault("setup.legend.demo.1", "Faible (< 5/km²)"),
-                I18n.getOrDefault("setup.legend.demo.2", "Moyen (5-25)"),
-                I18n.getOrDefault("setup.legend.demo.3", "Dense (25-100)"),
-                I18n.getOrDefault("setup.legend.demo.4", "Métropole (> 100)")
-            };
-            fullTooltips = new String[]{
-                I18n.getOrDefault("setup.legend.demo.0.desc", "Cellules sans présence humaine détectée"),
-                I18n.getOrDefault("setup.legend.demo.1.desc", "Communautés de chasseurs-cueilleurs ou pasteurs nomades"),
-                I18n.getOrDefault("setup.legend.demo.2.desc", "Villages agricoles et bassins d'agriculture pluviale"),
-                I18n.getOrDefault("setup.legend.demo.3.desc", "Grandes vallées alluviales et terroirs d'agriculture intensive"),
-                I18n.getOrDefault("setup.legend.demo.4.desc", "Foyers urbains majeurs, cités-États et conurbations denses")
-            };
-        } else if (curSel >= 1 && curSel <= dims) {
-            colors = new Color[]{
-                Color.rgb(15, 23, 42), Color.rgb(30, 58, 138), Color.rgb(59, 130, 246), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
-            };
-            labels = new String[]{
-                I18n.getOrDefault("setup.legend.cult.0", "Min (0.0)"),
-                I18n.getOrDefault("setup.legend.cult.1", "Faible (0.25)"),
-                I18n.getOrDefault("setup.legend.cult.2", "Médian (0.50)"),
-                I18n.getOrDefault("setup.legend.cult.3", "Élevé (0.75)"),
-                I18n.getOrDefault("setup.legend.cult.4", "Max (1.0)")
-            };
-            fullTooltips = new String[]{
-                I18n.getOrDefault("setup.legend.cult.0.desc", "Intensité nulle ou pôle opposé du trait culturel"),
-                I18n.getOrDefault("setup.legend.cult.1.desc", "Faible expression ou pratique culturelle diffuse"),
-                I18n.getOrDefault("setup.legend.cult.2.desc", "Valeur médiane, équilibre culturel"),
-                I18n.getOrDefault("setup.legend.cult.3.desc", "Expression forte du trait dans la société"),
-                I18n.getOrDefault("setup.legend.cult.4.desc", "Polarisation maximale du trait culturel dans la population")
-            };
-        } else {
-            int derivedOffset = curSel - (dims + 1);
-            if (derivedOffset == 1 || mode.contains("capital") || mode.contains("k(x)")) {
-                colors = new Color[]{
-                    Color.rgb(30, 41, 59), Color.rgb(14, 116, 144), Color.rgb(16, 185, 129), Color.rgb(245, 158, 11), Color.rgb(239, 68, 68)
-                };
-                labels = new String[]{
-                    I18n.getOrDefault("setup.legend.capital.0", "Rudimentaire (< 50 kg)"),
-                    I18n.getOrDefault("setup.legend.capital.1", "Agraire (50-200 kg)"),
-                    I18n.getOrDefault("setup.legend.capital.2", "Artisanal (200-500 kg)"),
-                    I18n.getOrDefault("setup.legend.capital.3", "Manufacturier (500-2k)"),
-                    I18n.getOrDefault("setup.legend.capital.4", "Industriel (> 2 000 kg)")
-                };
-                fullTooltips = new String[]{
-                    I18n.getOrDefault("setup.legend.capital.0.desc", "Outils de pierre et de bois de subsistance"),
-                    I18n.getOrDefault("setup.legend.capital.1.desc", "Socles d'araire, céramique, meules dormantes et silos en terre"),
-                    I18n.getOrDefault("setup.legend.capital.2.desc", "Forges, moulins à eau, pressoirs et ateliers de tissage"),
-                    I18n.getOrDefault("setup.legend.capital.3.desc", "Manufactures royales, hauts fourneaux et canaux de navigation"),
-                    I18n.getOrDefault("setup.legend.capital.4.desc", "Machinisme lourd à vapeur, réseau ferré et aciéries")
-                };
-            } else if (derivedOffset == 2 || mode.contains("énergétique") || mode.contains("energy") || mode.contains("energie") || mode.contains("energético") || mode.contains("e(x)")) {
-                colors = new Color[]{
-                    Color.rgb(69, 26, 3), Color.rgb(180, 83, 9), Color.rgb(234, 88, 12), Color.rgb(250, 204, 21), Color.rgb(254, 240, 138)
-                };
-                labels = new String[]{
-                    I18n.getOrDefault("setup.legend.energy.0", "Biomasse (< 10 MJ/hab)"),
-                    I18n.getOrDefault("setup.legend.energy.1", "Traction (10-50 MJ)"),
-                    I18n.getOrDefault("setup.legend.energy.2", "Hydraulique/Charbon (50-200)"),
-                    I18n.getOrDefault("setup.legend.energy.3", "Fossile (200-500 MJ)"),
-                    I18n.getOrDefault("setup.legend.energy.4", "Électrique (> 500 MJ)")
-                };
-                fullTooltips = new String[]{
-                    I18n.getOrDefault("setup.legend.energy.0.desc", "Régime Biomasse : Chaleur du bois et travail musculaire"),
-                    I18n.getOrDefault("setup.legend.energy.1.desc", "Régime Traction Animale : Attelages, bœufs et chevaux"),
-                    I18n.getOrDefault("setup.legend.energy.2.desc", "Régime Mécanique : Énergie hydraulique, éolienne et débuts du charbon"),
-                    I18n.getOrDefault("setup.legend.energy.3.desc", "Régime Hydrocarbures : Pétrole, gaz et thermodynamique industrielle"),
-                    I18n.getOrDefault("setup.legend.energy.4.desc", "Régime Électrique Massif : Réseaux de puissance et transition énergétique")
-                };
-            } else if (derivedOffset == 3 || mode.contains("alimentaires") || mode.contains("food") || mode.contains("nahrung") || mode.contains("alimentos") || mode.contains("f(x)")) {
-                colors = new Color[]{
-                    Color.rgb(163, 230, 53), Color.rgb(132, 204, 22), Color.rgb(34, 197, 94), Color.rgb(5, 150, 105), Color.rgb(6, 78, 59)
-                };
-                labels = new String[]{
-                    I18n.getOrDefault("setup.legend.food.0", "< 1 Mois (Critique)"),
-                    I18n.getOrDefault("setup.legend.food.1", "1–3 Mois (Faible)"),
-                    I18n.getOrDefault("setup.legend.food.2", "3–6 Mois (Moyen)"),
-                    I18n.getOrDefault("setup.legend.food.3", "6–12 Mois (Sécurisé)"),
-                    I18n.getOrDefault("setup.legend.food.4", "> 12 Mois (Abondance)")
-                };
-                fullTooltips = new String[]{
-                    I18n.getOrDefault("setup.legend.food.0.desc", "Réserves Critiques : Vulnérabilité immédiate à la moindre mauvaise récolte"),
-                    I18n.getOrDefault("setup.legend.food.1.desc", "Réserves de Subsistance : Stocks saisonniers d'appoint"),
-                    I18n.getOrDefault("setup.legend.food.2.desc", "Greniers Traditionnels : Capacité de soudure inter-annuelle"),
-                    I18n.getOrDefault("setup.legend.food.3.desc", "Réserves Stratégiques : Silos régionaux prévenant toute disette"),
-                    I18n.getOrDefault("setup.legend.food.4.desc", "Surplus Systémique : Chaînes logistiques agroalimentaires pérennes")
-                };
-            } else if (derivedOffset == 4 || mode.contains("informationnel") || mode.contains("info") || mode.contains("i(x)")) {
-                colors = new Color[]{
-                    Color.rgb(55, 48, 163), Color.rgb(124, 58, 237), Color.rgb(219, 39, 119), Color.rgb(6, 182, 212), Color.rgb(224, 242, 254)
-                };
-                labels = new String[]{
-                    I18n.getOrDefault("setup.legend.info.0", "Oral (< 10 bits/hab)"),
-                    I18n.getOrDefault("setup.legend.info.1", "Écrit & Parchemin (10-100)"),
-                    I18n.getOrDefault("setup.legend.info.2", "Imprimerie (100-1k)"),
-                    I18n.getOrDefault("setup.legend.info.3", "Médias Masse (1k-10k)"),
-                    I18n.getOrDefault("setup.legend.info.4", "Numérique (> 10k)")
-                };
-                fullTooltips = new String[]{
-                    I18n.getOrDefault("setup.legend.info.0.desc", "Tradition Orale : Savoirs transmis par la mémoire et le chant"),
-                    I18n.getOrDefault("setup.legend.info.1.desc", "Écrit & Manuscrits : Enregistrement sur argile, papyrus et parchemins"),
-                    I18n.getOrDefault("setup.legend.info.2.desc", "Imprimerie Mécanique : Diffusion élargie des traités et encyclopédies"),
-                    I18n.getOrDefault("setup.legend.info.3.desc", "Télécommunications : Presse quotidienne, télégraphe, radio et cinéma"),
-                    I18n.getOrDefault("setup.legend.info.4.desc", "Société Numérique : Internet, calcul haute performance et bases de données")
-                };
-            } else if (derivedOffset == 5 || mode.contains("empreinte") || mode.contains("footprint") || mode.contains("fußabdruck") || mode.contains("huella") || mode.contains("malthus")) {
-                colors = new Color[]{
-                    Color.rgb(16, 185, 129), Color.rgb(132, 204, 22), Color.rgb(245, 158, 11), Color.rgb(239, 68, 68), Color.rgb(127, 29, 29)
-                };
-                labels = new String[]{
-                    I18n.getOrDefault("setup.legend.eco.0", "Biome Vierge (C₇=0)"),
-                    I18n.getOrDefault("setup.legend.eco.1", "Pression Modérée (0.25)"),
-                    I18n.getOrDefault("setup.legend.eco.2", "Surexploitation (0.50)"),
-                    I18n.getOrDefault("setup.legend.eco.3", "Tension Critique (0.75)"),
-                    I18n.getOrDefault("setup.legend.eco.4", "Effondrement (1.0)")
-                };
-                fullTooltips = new String[]{
-                    I18n.getOrDefault("setup.legend.eco.0.desc", "Biome Intact : Écosystèmes à l'équilibre sans perturbation anthropique"),
-                    I18n.getOrDefault("setup.legend.eco.1.desc", "Pression Légère : Forêt gérée, chasse et élevage durable"),
-                    I18n.getOrDefault("setup.legend.eco.2.desc", "Surexploitation Agricole : Déforestation, érosion des sols, baisse des rendements"),
-                    I18n.getOrDefault("setup.legend.eco.3.desc", "Tension Malthusienne Sévère : Pénuries de bois, raréfaction du gibier et des nappes"),
-                    I18n.getOrDefault("setup.legend.eco.4.desc", "Effondrement Écologique : Désertification irréversible et disette systémique")
-                };
-            } else if (derivedOffset == 6 || mode.contains("friction") || mode.contains("reibung") || mode.contains("fricción")) {
-                colors = new Color[]{
-                    Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68), Color.rgb(167, 139, 250)
-                };
-                labels = new String[]{
-                    I18n.getOrDefault("setup.legend.friction.0", "Plaine (Faible σ)"),
-                    I18n.getOrDefault("setup.legend.friction.1", "Colline / Fleuve (Moyen)"),
-                    I18n.getOrDefault("setup.legend.friction.2", "Montagne (Fort)"),
-                    I18n.getOrDefault("setup.legend.friction.3", "Désert / Extrême"),
-                    I18n.getOrDefault("setup.legend.friction.4", "Barrière Absolue")
-                };
-                fullTooltips = new String[]{
-                    I18n.getOrDefault("setup.legend.friction.0.desc", "Plaine Alluviale : Friction minimale à la mobilité (σ ≈ 0.1)"),
-                    I18n.getOrDefault("setup.legend.friction.1.desc", "Colline / Fleuve : Obstacle naturel mineur franchissable"),
-                    I18n.getOrDefault("setup.legend.friction.2.desc", "Chaîne Montagneuse : Transports ralentis, cols escarpés"),
-                    I18n.getOrDefault("setup.legend.friction.3.desc", "Désert Extrême : Zone aride exigeant des convois spécialisés"),
-                    I18n.getOrDefault("setup.legend.friction.4.desc", "Haute Altitude / Falaise : Barrière infranchissable pour les armées")
-                };
-            } else {
-                colors = new Color[]{
-                    Color.rgb(30, 95, 165), Color.rgb(16, 185, 129), Color.rgb(234, 179, 8), Color.rgb(249, 115, 22), Color.rgb(239, 68, 68)
-                };
-                labels = new String[]{"0.0", "0.25", "0.50", "0.75", "1.0"};
-                fullTooltips = new String[]{"0.0", "0.25", "0.50", "0.75", "1.0"};
-            }
-        }
-
-        for (int i = 0; i < labels.length; i++) {
-            javafx.scene.shape.Rectangle colorBox = new javafx.scene.shape.Rectangle(14, 10);
-            colorBox.setFill(colors[i]);
-            colorBox.setStroke(Color.GRAY);
-            colorBox.setArcWidth(3);
-            colorBox.setArcHeight(3);
-
-            Label lbl = new Label(labels[i]);
-            lbl.getStyleClass().add("control-label");
-            lbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
-
-            HBox item = new HBox(4, colorBox, lbl);
-            item.setAlignment(Pos.CENTER);
-            Tooltip.install(item, new Tooltip(fullTooltips[i]));
-            legendItemsContainer.getChildren().add(item);
-        }
+        ScenarioPreviewLegendBuilder.populateLegend(curSel, mode, dims, legendItemsContainer);
     }
 
     public void clearCache() {
@@ -740,13 +561,11 @@ public class ScenarioPreviewPaneBuilder {
     }
 
     public Color sampleImageColorAtLatLon(Image img, double lat, double lon) {
-        if (img == null || img.getWidth() <= 1 || img.getHeight() <= 1) return null;
-        PixelReader reader = img.getPixelReader();
-        if (reader == null) return null;
+        return ScenarioPreviewRasterRenderer.sampleImageColorAtLatLon(img, lat, lon);
+    }
 
-        int px = (int) Math.clamp(((lon + 180.0) / 360.0) * img.getWidth(), 0, img.getWidth() - 1);
-        int py = (int) Math.clamp(((90.0 - lat) / 180.0) * img.getHeight(), 0, img.getHeight() - 1);
-        return reader.getColor(px, py);
+    public Color blendColors(Color base, Color overlay, double opacity) {
+        return ScenarioPreviewRasterRenderer.blendColors(base, overlay, opacity);
     }
 
     public void drawPreview() {
@@ -832,7 +651,12 @@ public class ScenarioPreviewPaneBuilder {
                 }
             }
         } else {
-            drawInstant2DDensityPreview(gc, w, h, scale, offX, offY);
+            int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
+            String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
+            boolean isReliefOverlay = btnReliefOverlay != null && btnReliefOverlay.isSelected();
+            ScenarioPreviewRasterRenderer.drawInstant2DDensityPreview(
+                    gc, w, h, scale, offX, offY, context, idx, mode, isReliefOverlay, proceduralImageCache
+            );
         }
 
         // Draw spatial clipping rectangle if enabled
@@ -960,252 +784,10 @@ public class ScenarioPreviewPaneBuilder {
         }
     }
 
-    private Color blendColors(Color base, Color overlay, double opacity) {
-        if (base == null) return overlay;
-        if (overlay == null) return base;
-        double r = base.getRed() * (1.0 - opacity) + overlay.getRed() * opacity;
-        double g = base.getGreen() * (1.0 - opacity) + overlay.getGreen() * opacity;
-        double b = base.getBlue() * (1.0 - opacity) + overlay.getBlue() * opacity;
-        return Color.color(Math.clamp(r, 0.0, 1.0), Math.clamp(g, 0.0, 1.0), Math.clamp(b, 0.0, 1.0));
-    }
-
-    private void drawInstant2DDensityPreview(GraphicsContext gc, double w, double h, double scale, double offX, double offY) {
-        int pwWidth = 320;
-        int pwHeight = 160;
-
-        PlanetPreset planet = context.getActivePlanetPreset() != null ? context.getActivePlanetPreset() : PlanetPreset.EARTH_LIKE;
-        Image bgImage = null;
-        if (planet.customElevBase64() != null && !planet.customElevBase64().isBlank()) {
-            bgImage = org.ether.society.data.ImageMapLoader.base64PngToImage(planet.customElevBase64());
-        } else if (planet.elevationUseImport()) {
-            bgImage = org.ether.society.data.ImageMapLoader.loadMapImage(planet.elevationMapSource(), planet.getAssociatedEpochYear(), "elevation.png");
-        }
-        if (bgImage == null && "earth".equalsIgnoreCase(planet.elevationMapSource())) {
-            bgImage = context.getElevationImageForPreset(planet);
-        }
-        PixelReader bgReader = bgImage != null ? bgImage.getPixelReader() : null;
-
-        int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
-        String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
-        int dims = context.getCultureVectorDimensions();
-        Image activeCustomImage = null;
-        boolean isImportActive = false;
-        if (idx >= 1 && idx <= dims) {
-            int tIndex = idx - 1;
-            isImportActive = context.isTensorImportActive(tIndex);
-            activeCustomImage = context.getCustomTensorImage(tIndex);
-        } else if (idx == 0) {
-            isImportActive = context.isDensityImportActive();
-            activeCustomImage = context.getCustomDensityImage();
-        }
-
-        PixelReader customReader = activeCustomImage != null ? activeCustomImage.getPixelReader() : null;
-        boolean isFootprintMode = idx == 6 || mode.contains("empreinte");
-        boolean isReliefOverlay = btnReliefOverlay != null && btnReliefOverlay.isSelected();
-
-        String cacheKey = "sc_mode=" + idx + "_w=" + pwWidth + "_h=" + pwHeight + "_relief=" + isReliefOverlay
-                + "_import=" + isImportActive
-                + "_pName=" + (planet != null ? planet.name() : "")
-                + "_startYear=" + context.getStartYear()
-                + "_pop=" + context.getInitialHumanCount()
-                + "_pattern=" + context.getDensityPattern()
-                + "_demoSeed=" + context.getDemoSeed()
-                + "_cultSeed=" + context.getCultSeed()
-                + "_hasCustomDensity=" + (context.getCustomDensityImage() != null);
-
-        WritableImage img = proceduralImageCache.get(cacheKey);
-        if (img == null) {
-            img = new WritableImage(pwWidth, pwHeight);
-            PixelWriter writer = img.getPixelWriter();
-            ProceduralGenerator generator = new ProceduralGenerator();
-
-            double minAlt = planet != null ? planet.minAltitudeMeters() : -11000.0;
-            double maxAlt = planet != null ? planet.maxAltitudeMeters() : 8848.0;
-            double wLevel = planet != null ? planet.waterLevel() : 0.478;
-            boolean hasOcean = wLevel > -0.4;
-
-            double cutThreshold;
-            if (hasOcean) {
-                cutThreshold = Math.clamp(wLevel, 0.01, 0.99);
-            } else {
-                double altRange = Math.max(100.0, maxAlt - minAlt);
-                cutThreshold = Math.clamp((-minAlt) / altRange, 0.05, 0.95);
-            }
-
-            for (int py = 0; py < pwHeight; py++) {
-                for (int px = 0; px < pwWidth; px++) {
-                    double lat = 90.0 - (py / (double) pwHeight) * 180.0;
-                    double lon = -180.0 + (px / (double) pwWidth) * 360.0;
-
-                    double elevVal;
-                    boolean isLand;
-                    boolean isCoast;
-                    double hillshade;
-
-                    if (bgReader != null && bgImage != null) {
-                        double bgW = bgImage.getWidth();
-                        double bgH = bgImage.getHeight();
-                        int bx = (int) Math.clamp(((px / (double) pwWidth) * bgW), 0, bgW - 1);
-                        int by = (int) Math.clamp(((py / (double) pwHeight) * bgH), 0, bgH - 1);
-                        elevVal = bgReader.getColor(bx, by).getRed();
-                        boolean isAboveCut = elevVal >= cutThreshold;
-                        isLand = hasOcean ? isAboveCut : true;
-
-                        int bxE = (bx + 1) % (int) bgW;
-                        int bxW = (bx - 1 + (int) bgW) % (int) bgW;
-                        int byN = Math.max(0, by - 1);
-                        int byS = Math.min((int) bgH - 1, by + 1);
-
-                        double eE = bgReader.getColor(bxE, by).getRed();
-                        double eW = bgReader.getColor(bxW, by).getRed();
-                        double eN = bgReader.getColor(bx, byN).getRed();
-                        double eS = bgReader.getColor(bx, byS).getRed();
-
-                        isCoast = (isAboveCut != (eE >= cutThreshold)) || (isAboveCut != (eW >= cutThreshold))
-                                || (isAboveCut != (eN >= cutThreshold)) || (isAboveCut != (eS >= cutThreshold));
-
-                        double dLng = (eE - eW) * 16.0;
-                        double dLat = (eN - eS) * 16.0;
-                        hillshade = (0.5 * dLng + 0.5 * dLat + 0.707) / Math.sqrt(dLng * dLng + dLat * dLat + 1.0);
-                    } else {
-                        var pt = generator.getPlanetPoint(lat, lon, planet);
-                        elevVal = pt.elevation();
-
-                        double dDeg = 0.5;
-                        var ptE = generator.getPlanetPoint(lat, lon + dDeg, planet);
-                        var ptW = generator.getPlanetPoint(lat, lon - dDeg, planet);
-                        var ptN = generator.getPlanetPoint(lat + dDeg, lon, planet);
-                        var ptS = generator.getPlanetPoint(lat - dDeg, lon, planet);
-
-                        if (hasOcean) {
-                            isLand = elevVal >= wLevel;
-                            isCoast = (isLand != (ptE.elevation() >= wLevel)) || (isLand != (ptW.elevation() >= wLevel))
-                                    || (isLand != (ptN.elevation() >= wLevel)) || (isLand != (ptS.elevation() >= wLevel));
-                        } else {
-                            isLand = true;
-                            isCoast = Math.abs(elevVal) < 350.0;
-                        }
-
-                        double dLng = (ptE.elevation() - ptW.elevation()) * 4.0;
-                        double dLat = (ptN.elevation() - ptS.elevation()) * 4.0;
-                        hillshade = (0.5 * dLng + 0.5 * dLat + 0.707) / Math.sqrt(dLng * dLng + dLat * dLat + 1.0);
-                    }
-
-                    Color baseReliefColor;
-                    if (!isLand) {
-                        double depth = Math.clamp((cutThreshold - elevVal) / Math.max(0.01, cutThreshold), 0.0, 1.0);
-                        baseReliefColor = blendColors(Color.rgb(15, 23, 42), Color.rgb(30, 58, 138), 1.0 - depth);
-                    } else {
-                        double landNorm = Math.clamp((elevVal - cutThreshold) / Math.max(0.01, 1.0 - cutThreshold), 0.0, 1.0);
-                        if (landNorm < 0.20) {
-                            double t = landNorm / 0.20;
-                            baseReliefColor = Color.rgb((int)(34 + 60 * t), (int)(139 + 30 * t), (int)(34 + 20 * t));
-                        } else if (landNorm < 0.40) {
-                            double t = (landNorm - 0.20) / 0.20;
-                            baseReliefColor = Color.rgb((int)(94 + 86 * t), (int)(169 + 16 * t), (int)(54 + 21 * t));
-                        } else if (landNorm < 0.65) {
-                            double t = (landNorm - 0.40) / 0.25;
-                            baseReliefColor = Color.rgb((int)(180 - 10 * t), (int)(185 - 65 * t), (int)(75 - 15 * t));
-                        } else if (landNorm < 0.85) {
-                            double t = (landNorm - 0.65) / 0.20;
-                            baseReliefColor = Color.rgb((int)(170 - 20 * t), (int)(120 + 40 * t), (int)(60 + 80 * t));
-                        } else {
-                            double t = (landNorm - 0.85) / 0.15;
-                            baseReliefColor = Color.rgb((int)(150 + 95 * t), (int)(160 + 90 * t), (int)(140 + 115 * t));
-                        }
-                    }
-
-                    Color pxColor;
-                    if (idx >= 1 && idx <= dims) {
-                        int tIndex = idx - 1;
-                        if (isImportActive) {
-                            if (customReader != null && activeCustomImage.getWidth() > 0 && activeCustomImage.getHeight() > 0) {
-                                int imgX = (int) Math.clamp(((px / (double) pwWidth) * activeCustomImage.getWidth()), 0, activeCustomImage.getWidth() - 1);
-                                int imgY = (int) Math.clamp(((py / (double) pwHeight) * activeCustomImage.getHeight()), 0, activeCustomImage.getHeight() - 1);
-                                pxColor = customReader.getColor(imgX, imgY);
-                            } else {
-                                pxColor = Color.BLACK;
-                            }
-                        } else {
-                            double p1 = context.getTensorParam1(tIndex);
-                            double p2 = context.getTensorParam2(tIndex);
-                            double p3 = context.getTensorParam3(tIndex);
-                            long seed = context.getTensorSeed(tIndex);
-                            pxColor = context.evaluateProceduralTensorColor(tIndex, lat, lon, elevVal, p1, p2, p3, seed);
-                        }
-                    } else if (isImportActive) {
-                        if (customReader != null && activeCustomImage.getWidth() > 0 && activeCustomImage.getHeight() > 0) {
-                            int imgX = (int) Math.clamp(((px / (double) pwWidth) * activeCustomImage.getWidth()), 0, activeCustomImage.getWidth() - 1);
-                            int imgY = (int) Math.clamp(((py / (double) pwHeight) * activeCustomImage.getHeight()), 0, activeCustomImage.getHeight() - 1);
-                            pxColor = customReader.getColor(imgX, imgY);
-                            if (!isLand) {
-                                pxColor = baseReliefColor;
-                            }
-                        } else {
-                            pxColor = Color.BLACK;
-                        }
-                    } else if (!isLand) {
-                        pxColor = baseReliefColor;
-                    } else {
-                        long startYear = context.getStartYear();
-                        boolean isAmericas = lon < -25.0;
-                        boolean isSahul = (lat < 10.0 && lon > 95.0) || (lat < -10.0 && lon > 110.0);
-
-                        boolean isHumanSettled = true;
-                        if (startYear <= -50000 && (isAmericas || isSahul)) {
-                            isHumanSettled = false;
-                        } else if (startYear <= -25000 && isAmericas) {
-                            isHumanSettled = false;
-                        }
-
-                        if (!isHumanSettled) {
-                            pxColor = blendColors(baseReliefColor, Color.rgb(30, 95, 165), 0.35);
-                        } else {
-                            boolean isEastAfrica = (lat >= -15 && lat <= 15) && (lon >= 25 && lon <= 45);
-                            boolean isFertileCrescent = (lat >= 20 && lat <= 38) && (lon >= 25 && lon <= 90);
-                            boolean isChinaIndus = (lat >= 10 && lat <= 42) && (lon >= 65 && lon <= 125);
-
-                            if (isEastAfrica || isFertileCrescent || isChinaIndus) {
-                                Color heatCol = isFootprintMode ? Color.rgb(239, 68, 68) : Color.rgb(249, 115, 22);
-                                pxColor = blendColors(baseReliefColor, heatCol, 0.70);
-                            } else {
-                                pxColor = blendColors(baseReliefColor, Color.rgb(16, 185, 129), 0.50);
-                            }
-                        }
-                    }
-
-                    if (isReliefOverlay && pxColor != Color.BLACK) {
-                        if (isCoast) {
-                            pxColor = hasOcean ? Color.rgb(240, 249, 255) : Color.rgb(251, 191, 36);
-                        } else {
-                            double mult = 0.68 + 0.45 * hillshade;
-                            pxColor = Color.color(
-                                Math.clamp(pxColor.getRed() * mult, 0.0, 1.0),
-                                Math.clamp(pxColor.getGreen() * mult, 0.0, 1.0),
-                                Math.clamp(pxColor.getBlue() * mult, 0.0, 1.0)
-                            );
-                        }
-                    }
-
-                    writer.setColor(px, py, pxColor != null ? pxColor : Color.BLACK);
-                }
-            }
-            proceduralImageCache.put(cacheKey, img);
-        }
-
-        double drawW = 360.0 * scale;
-        double drawH = 180.0 * scale;
-        gc.drawImage(img, offX, offY, drawW, drawH);
-
-        gc.setFill(Color.rgb(56, 189, 248, 0.95));
-        gc.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 12));
-        gc.fillText("⚡ Aperçu 2D dynamique instantané (" + (mode.isEmpty() ? "Relief/Densité" : mode.toUpperCase()) + ")...", 20, h - 15);
-    }
-
     private void exportPreviewImage() {
         if (previewCanvas == null) return;
         try {
-            javafx.scene.image.WritableImage wImg = new javafx.scene.image.WritableImage((int) previewCanvas.getWidth(), (int) previewCanvas.getHeight());
+            WritableImage wImg = new WritableImage((int) previewCanvas.getWidth(), (int) previewCanvas.getHeight());
             previewCanvas.snapshot(null, wImg);
             WindowUtils.exportImageWithChooser(context.getWindow(), wImg, "ether-map-preview.png", I18n.getOrDefault("scenario.title.export_preview_dialog", "Exporter l'Aperçu Cartographique (PNG)"));
         } catch (Exception ex) {
