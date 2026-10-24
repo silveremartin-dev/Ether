@@ -5,6 +5,14 @@
  */
 package org.ether.society.ui;
 
+import org.ether.society.ui.scenario.ScenarioBundleManager;
+import org.ether.society.ui.scenario.ScenarioEpochCatalog;
+import org.ether.society.ui.scenario.ScenarioPresetManager;
+import org.ether.society.ui.scenario.ScenarioSimulationLauncher;
+import org.ether.society.ui.scenario.ScenarioSpatialBoundsSectionBuilder;
+import org.ether.society.ui.scenario.ScenarioThermodynamicAutocalc;
+import org.ether.society.ui.scenario.ScenarioValidationHelper;
+
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.model.EcologyPreset;
@@ -222,6 +230,85 @@ public class ScenarioSetupPanel extends BorderPane {
         }
     }
 
+    // Delegated Section Builders and Managers
+    private final ScenarioSpatialBoundsSectionBuilder spatialBoundsBuilder = new ScenarioSpatialBoundsSectionBuilder(new ScenarioSpatialBoundsSectionBuilder.HostContext() {
+        @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
+        @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
+        @Override public void resetPreviewCells() { ScenarioSetupPanel.this.currentPreviewCells = null; }
+        @Override public <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
+            ScenarioSetupPanel.this.attachDefaultValueHandling(control, defaultValue, resetAction);
+        }
+    });
+
+    private final ScenarioBundleManager bundleManager = new ScenarioBundleManager(new ScenarioBundleManager.HostContext() {
+        @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
+        @Override public PlanetPreset getActivePlanetPreset() { return ScenarioSetupPanel.this.activePlanetPreset != null ? ScenarioSetupPanel.this.activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null); }
+        @Override public EcologyPreset getActiveEcologyPreset() { return ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null; }
+        @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
+        @Override public void applyScenarioToUI(Scenario scenario) { ScenarioSetupPanel.this.applyScenarioToUI(scenario); }
+        @Override public void onBundleLoaded(PlanetPreset planet, EcologyPreset ecology) {
+            if (planet != null) {
+                ScenarioSetupPanel.this.activePlanetPreset = planet;
+                if (planetPresetCombo != null) {
+                    if (!planetPresetCombo.getItems().contains(planet)) {
+                        planetPresetCombo.getItems().add(planet);
+                    }
+                    planetPresetCombo.setValue(planet);
+                }
+            }
+            if (ecology != null && ecologyPresetCombo != null) {
+                if (!ecologyPresetCombo.getItems().contains(ecology)) {
+                    ecologyPresetCombo.getItems().add(ecology);
+                }
+                ecologyPresetCombo.setValue(ecology);
+            }
+            if (onScenarioLoadedCallback != null) {
+                onScenarioLoadedCallback.accept(ScenarioSetupPanel.this.activePlanetPreset, ecology != null ? ecology : EcologyPreset.EARTH_STANDARD);
+            }
+        }
+        @Override public void generatePreview() { ScenarioSetupPanel.this.generatePreview(); }
+        @Override public void showIntegrityWarning(String message) {
+            if (validationErrorLabel != null && validationErrorBanner != null) {
+                validationErrorLabel.setText(message);
+                validationErrorBanner.setVisible(true);
+                validationErrorBanner.setManaged(true);
+            }
+        }
+    });
+
+    private final ScenarioSimulationLauncher simulationLauncher;
+
+    private ScenarioSimulationLauncher createSimulationLauncher() {
+        return new ScenarioSimulationLauncher(
+            new ScenarioSimulationLauncher.HostContext() {
+                @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
+                @Override public javafx.scene.Node getContainerNode() { return ScenarioSetupPanel.this; }
+                @Override public boolean validateScenarioSetup() { return ScenarioSetupPanel.this.validateScenarioSetup(); }
+                @Override public Scenario getScenario() { return ScenarioSetupPanel.this.getScenario(); }
+                @Override public PlanetPreset getActivePlanetPreset() { return ScenarioSetupPanel.this.activePlanetPreset != null ? ScenarioSetupPanel.this.activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null); }
+                @Override public EcologyPreset getActiveEcologyPreset() { return ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null; }
+                @Override public Integer getH3Resolution() { return h3ResolutionCombo != null ? h3ResolutionCombo.getValue() : 3; }
+                @Override public boolean isClippingActive() { return spatialBoundsBuilder.isClippingEnabled(); }
+                @Override public double getClippingMinLat() { return spatialBoundsBuilder.getMinLat(); }
+                @Override public double getClippingMaxLat() { return spatialBoundsBuilder.getMaxLat(); }
+                @Override public double getClippingMinLng() { return spatialBoundsBuilder.getMinLng(); }
+                @Override public double getClippingMaxLng() { return spatialBoundsBuilder.getMaxLng(); }
+                @Override public boolean isResumeFromSnapshotSelected() { return ScenarioSetupPanel.this.isResumeFromSnapshotSelected(); }
+                @Override public org.ether.society.persistence.SaveMetadata getSelectedSnapshotMetadata() { return ScenarioSetupPanel.this.getSelectedSnapshotMetadata(); }
+                @Override public boolean isSimulationCurrentlyRunning() { return isSimulationRunningSupplier != null && Boolean.TRUE.equals(isSimulationRunningSupplier.get()); }
+                @Override public boolean isDirty() { return ScenarioSetupPanel.this.isDirty(); }
+                @Override public boolean promptSaveIfDirty(javafx.stage.Window owner) { return ScenarioSetupPanel.this.promptSaveIfDirty(owner); }
+                @Override public void distributeInitialPopulation(List<H3Cell> cells) { ScenarioSetupPanel.this.distributeInitialPopulation(cells); }
+                @Override public void onCellsGenerated(List<H3Cell> cells) { ScenarioSetupPanel.this.currentPreviewCells = cells; }
+                @Override public void markClean() { if (scenarioPresetBar != null) scenarioPresetBar.markClean(); }
+                @Override public void drawPreview() { ScenarioSetupPanel.this.drawPreview(); }
+                @Override public void setPreviewStatusText(String text) { if (previewStatusLabel != null) previewStatusLabel.setText(text); }
+            },
+            scenarioRepo,
+            scenario -> { if (onStartSimulation != null) onStartSimulation.accept(scenario); }
+        );
+    }
+
     // Demographic Section Builder & Controller
     private final ScenarioDemographicSectionBuilder demographicSectionBuilder = new ScenarioDemographicSectionBuilder(new ScenarioDemographicSectionBuilder.HostContext() {
         @Override public void notifyParamChange() { ScenarioSetupPanel.this.notifyParamChange(); }
@@ -341,13 +428,13 @@ public class ScenarioSetupPanel extends BorderPane {
         @Override public void applySpatialClippingBounds(double minLat, double maxLat, double minLon, double maxLon) {
             ScenarioSetupPanel.this.applySpatialClippingBounds(minLat, maxLat, minLon, maxLon);
         }
-        @Override public boolean isGraphicSelectActive() { return graphicSelectBtn != null && graphicSelectBtn.isSelected(); }
-        @Override public void setGraphicSelectActive(boolean active) { if (graphicSelectBtn != null) graphicSelectBtn.setSelected(active); }
-        @Override public double getClippingMinLat() { return minLatSpinner != null && minLatSpinner.getValue() != null ? minLatSpinner.getValue() : -90.0; }
-        @Override public double getClippingMaxLat() { return maxLatSpinner != null && maxLatSpinner.getValue() != null ? maxLatSpinner.getValue() : 90.0; }
-        @Override public double getClippingMinLng() { return minLngSpinner != null && minLngSpinner.getValue() != null ? minLngSpinner.getValue() : -180.0; }
-        @Override public double getClippingMaxLng() { return maxLngSpinner != null && maxLngSpinner.getValue() != null ? maxLngSpinner.getValue() : 180.0; }
-        @Override public boolean isClippingEnabled() { return clippingCheckBox != null && clippingCheckBox.isSelected(); }
+        @Override public boolean isGraphicSelectActive() { return spatialBoundsBuilder.isGraphicSelectActive(); }
+        @Override public void setGraphicSelectActive(boolean active) { spatialBoundsBuilder.setGraphicSelectActive(active); }
+        @Override public double getClippingMinLat() { return spatialBoundsBuilder.getMinLat(); }
+        @Override public double getClippingMaxLat() { return spatialBoundsBuilder.getMaxLat(); }
+        @Override public double getClippingMinLng() { return spatialBoundsBuilder.getMinLng(); }
+        @Override public double getClippingMaxLng() { return spatialBoundsBuilder.getMaxLng(); }
+        @Override public boolean isClippingEnabled() { return spatialBoundsBuilder.isClippingEnabled(); }
         @Override public Image getElevationImageForPreset(PlanetPreset preset) { return ScenarioSetupPanel.this.getElevationImageForPreset(preset); }
         @Override public void applyPresetMapToCells(List<H3Cell> cells, PlanetPreset cfg) { ScenarioSetupPanel.this.applyPresetMapToCells(cells, cfg); }
         @Override public void onPreviewCellsGenerated(List<H3Cell> cells) { ScenarioSetupPanel.this.currentPreviewCells = cells; }
@@ -773,6 +860,7 @@ public class ScenarioSetupPanel extends BorderPane {
     public ScenarioSetupPanel(Consumer<Scenario> onStartSimulation) {
         this.onStartSimulation = onStartSimulation;
         this.scenarioRepo = new org.ether.society.persistence.ScenarioRepository();
+        this.simulationLauncher = createSimulationLauncher();
         initUI();
         updateTexts();
 
@@ -1410,6 +1498,7 @@ public class ScenarioSetupPanel extends BorderPane {
         startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;");
         startBtn.setOnAction(e -> handleStartOrCancel());
         startBtn.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.tooltip.start", "Calculate H3 cells and launch simulation.")));
+        simulationLauncher.bindControls(startBtn, progressBar, progressStatusLabel);
 
         scenarioDescLabel = new Label(I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
         scenarioDescLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 6 0 2 0;");
@@ -1447,35 +1536,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private VBox createBundleSection() {
-        VBox section = new VBox(10);
-        section.getStyleClass().add("card-section");
-
-        bundleHeader = new Label(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 7. UNIFIED BUNDLE MULTI-SCENARIO IMPORT/EXPORT (.ETHER)"));
-        bundleHeader.getStyleClass().add("label-section-header");
-
-        bundleSubtitle = new Label(I18n.getOrDefault("scenario.desc.bundle", "Export or import the complete scenario (planetary context, ecology, active engines, cultural layers, and demographic grid) in unified .ether format for archiving or sharing."));
-        bundleSubtitle.setWrapText(true);
-        bundleSubtitle.getStyleClass().add("card-description-muted");
-
-        btnExportBundle = new Button(I18n.getOrDefault("scenario.btn.export_bundle", "📦 Export Bundle (.ether)"));
-        btnExportBundle.getStyleClass().add("button-secondary");
-        btnExportBundle.setMaxWidth(Double.MAX_VALUE);
-        btnExportBundle.getStyleClass().add("button-accent-blue");
-        btnExportBundle.setOnAction(e -> exportUnifiedBundle());
-        btnExportBundle.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_bundle", "Export complete scenario (physics, ecology, engines, layers, and demographics) to a unified .ether bundle file.")));
-
-        btnImportBundle = new Button(I18n.getOrDefault("scenario.btn.import_bundle", "📂 Import Bundle (.ether)"));
-        btnImportBundle.getStyleClass().add("button-secondary");
-        btnImportBundle.setMaxWidth(Double.MAX_VALUE);
-        btnImportBundle.setOnAction(e -> importUnifiedBundle());
-        btnImportBundle.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.import_bundle", "Import and apply a unified .ether bundle file to instantly restore full scenario state.")));
-
-        HBox bundleBox = new HBox(8, btnExportBundle, btnImportBundle);
-        HBox.setHgrow(btnExportBundle, Priority.ALWAYS);
-        HBox.setHgrow(btnImportBundle, Priority.ALWAYS);
-
-        section.getChildren().addAll(bundleHeader, bundleSubtitle, bundleBox);
-        return section;
+        return bundleManager.buildSection();
     }
 
     private final org.ether.society.ui.scenario.ScenarioSnapshotInspector snapshotInspector =
@@ -1583,107 +1644,6 @@ public class ScenarioSetupPanel extends BorderPane {
             startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;");
             startBtn.setTooltip(new Tooltip(String.format(I18n.getOrDefault("scenario.tooltip.start_fresh",
                 "Calcule une trajectoire depuis l'An %,d jusqu'à l'An %,d sans utiliser de snapshot existant."), startYr, endYr)));
-        }
-    }
-
-
-    private void exportUnifiedBundle() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("scenario.title.export_bundle_dialog", "Export Unified Scenario Bundle (.ether)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers Ether (*.ether, *.json)", "*.ether", "*.json"));
-        chooser.setInitialFileName("mon-scenario-ether.ether");
-        File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null) {
-            try {
-                PlanetPreset planet = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
-                if (planet == null) planet = PlanetPreset.EARTH_LIKE;
-                EcologyPreset eco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : EcologyPreset.EARTH_STANDARD;
-                Scenario scenario = getScenario();
-
-                org.ether.society.model.EtherScenarioBundle rawBundle =
-                        new org.ether.society.model.EtherScenarioBundle("1.0.0-beta.2", planet, eco, scenario);
-                org.ether.society.model.EtherScenarioBundle bundle = 
-                        org.ether.society.security.EtherBundleSigner.signBundle(rawBundle, "Ether Lead Planner");
-
-                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
-                mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                mapper.writeValue(file, bundle);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(I18n.getOrDefault("scenario.title.export_success", "Export Successful"));
-                alert.setHeaderText(I18n.getOrDefault("scenario.header.export_success", "Simulation Bundle Exported Successfully"));
-                alert.setContentText(I18n.getOrDefault("scenario.alert.export_bundle_desc", "Unified simulation bundle signed & saved to:\n") + file.getAbsolutePath());
-                alert.showAndWait();
-            } catch (Exception ex) {
-                logger.error("Failed to export unified bundle", ex);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(I18n.getOrDefault("scenario.title.export_error", "Export Error"));
-                alert.setContentText(I18n.getOrDefault("scenario.alert.export_failed", "Cannot save bundle: ") + ex.getMessage());
-                alert.showAndWait();
-            }
-        }
-    }
-
-    private void importUnifiedBundle() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("scenario.title.import_bundle_dialog", "Import Unified Scenario Bundle (.ether)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Ether Files (*.ether, *.json)", "*.ether", "*.json"));
-        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null) {
-            try {
-                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
-                mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-                org.ether.society.model.EtherScenarioBundle bundle =
-                        mapper.readValue(file, org.ether.society.model.EtherScenarioBundle.class);
-
-                if (bundle != null) {
-                    boolean isValid = org.ether.society.security.EtherBundleSigner.verifyBundle(bundle);
-                    if (!isValid) {
-                        if (validationErrorLabel != null && validationErrorBanner != null) {
-                            validationErrorLabel.setText("⚠️ï¸ Avertissement d'intégrité : Le bundle importé a été modifié ou sa signature ne concorde pas.");
-                            validationErrorBanner.setVisible(true);
-                            validationErrorBanner.setManaged(true);
-                        }
-                    }
-
-                    if (bundle.planetPreset() != null) {
-                        this.activePlanetPreset = bundle.planetPreset();
-                        if (planetPresetCombo != null) {
-                            if (!planetPresetCombo.getItems().contains(bundle.planetPreset())) {
-                                planetPresetCombo.getItems().add(bundle.planetPreset());
-                            }
-                            planetPresetCombo.setValue(bundle.planetPreset());
-                        }
-                    }
-                    if (bundle.ecologyPreset() != null && ecologyPresetCombo != null) {
-                        if (!ecologyPresetCombo.getItems().contains(bundle.ecologyPreset())) {
-                            ecologyPresetCombo.getItems().add(bundle.ecologyPreset());
-                        }
-                        ecologyPresetCombo.setValue(bundle.ecologyPreset());
-                    }
-                    if (bundle.scenario() != null) {
-                        applyScenarioToUI(bundle.scenario());
-                    }
-                    if (onScenarioLoadedCallback != null) {
-                        onScenarioLoadedCallback.accept(this.activePlanetPreset, bundle.ecologyPreset() != null ? bundle.ecologyPreset() : EcologyPreset.EARTH_STANDARD);
-                    }
-                    generatePreview();
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle(I18n.getOrDefault("scenario.title.import_success", "Import Successful"));
-                    alert.setHeaderText(I18n.getOrDefault("scenario.header.import_success", "Unified Bundle Applied"));
-                    alert.setContentText(I18n.getOrDefault("scenario.alert.import_bundle_success", "Physical, ecological, and demographic parameters loaded successfully from bundle."));
-                    alert.showAndWait();
-                }
-            } catch (Exception ex) {
-                logger.error("Failed to import unified bundle", ex);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(I18n.getOrDefault("scenario.title.import_error", "Import Error"));
-                alert.setContentText(I18n.getOrDefault("scenario.alert.import_bundle_invalid", "Invalid bundle file: ") + ex.getMessage());
-                alert.showAndWait();
-            }
         }
     }
 
@@ -1999,158 +1959,11 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     private VBox createClippingSection() {
-        VBox section = new VBox(10);
-        section.getStyleClass().add("card-section");
-
-        clippingHeader = new Label(I18n.getOrDefault("scenario.clipping.header", "✂️ï¸ 4. BORDERS & HISTORICAL SPATIAL CLIPPING"));
-        clippingHeader.getStyleClass().add("label-section-header");
-
-        clippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.clipping.enable", "Enable Partial Simulation (Truncated Zone)"));
-        clippingCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
-        clippingCheckBox.setOnAction(e -> {
-            notifyParamChange();
-            drawPreview();
-        });
-
-        graphicSelectBtn = new ToggleButton(I18n.getOrDefault("scenario.clipping.select_mode", "ðŸ–±ï¸ Graphic Map Selection Mode"));
-        graphicSelectBtn.setMaxWidth(Double.MAX_VALUE);
-        graphicSelectBtn.getStyleClass().add("button-secondary");
-        graphicSelectBtn.setStyle("-fx-font-size: 12px;");
-        graphicSelectBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.graphic_select", "Activate this button or hold SHIFT to draw a selection rectangle on preview map.")));
-
-        GridPane boundsGrid = new GridPane();
-        boundsGrid.setHgap(8);
-        boundsGrid.setVgap(6);
-
-        maxLatSpinner = new Spinner<>(-90.0, 90.0, 90.0, 1.0);
-        minLatSpinner = new Spinner<>(-90.0, 90.0, -90.0, 1.0);
-        minLngSpinner = new Spinner<>(-180.0, 180.0, -180.0, 1.0);
-        maxLngSpinner = new Spinner<>(-180.0, 180.0, 180.0, 1.0);
-
-        attachDefaultValueHandling(clippingCheckBox, false, () -> clippingCheckBox.setSelected(false));
-        attachDefaultValueHandling(maxLatSpinner, 90.0, () -> maxLatSpinner.getValueFactory().setValue(90.0));
-        attachDefaultValueHandling(minLatSpinner, -90.0, () -> minLatSpinner.getValueFactory().setValue(-90.0));
-        attachDefaultValueHandling(minLngSpinner, -180.0, () -> minLngSpinner.getValueFactory().setValue(-180.0));
-        attachDefaultValueHandling(maxLngSpinner, 180.0, () -> maxLngSpinner.getValueFactory().setValue(180.0));
-
-        for (Spinner<Double> sp : List.of(maxLatSpinner, minLatSpinner, minLngSpinner, maxLngSpinner)) {
-            sp.setEditable(true);
-            sp.setPrefWidth(75);
-            sp.valueProperty().addListener((obs, old, val) -> {
-                notifyParamChange();
-                drawPreview();
-            });
-        }
-
-        latMaxLabel = new Label(I18n.getOrDefault("scenario.clipping.lat_max", "Lat Max (Haut) :"));
-        latMinLabel = new Label(I18n.getOrDefault("scenario.clipping.lat_min", "Lat Min (Bas) :"));
-        lngMinLabel = new Label(I18n.getOrDefault("scenario.clipping.lng_min", "Lng Min (Gau.) :"));
-        lngMaxLabel = new Label(I18n.getOrDefault("scenario.clipping.lng_max", "Lng Max (Dro.) :"));
-        for (Label lbl : List.of(latMaxLabel, latMinLabel, lngMinLabel, lngMaxLabel)) {
-            lbl.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-        }
-        boundsGrid.addRow(0, latMaxLabel, maxLatSpinner, latMinLabel, minLatSpinner);
-        boundsGrid.addRow(1, lngMinLabel, minLngSpinner, lngMaxLabel, maxLngSpinner);
-
-        boundaryLabel = new Label(I18n.getOrDefault("scenario.clipping.boundary_label", "Scientific Border Modeling:"));
-        boundaryLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-
-        boundaryModeCombo = new ComboBox<>();
-        boundaryModeCombo.getItems().addAll(
-            "DYNAMIC_RESERVOIR",
-            "CLOSED_BARRIER",
-            "PERIODIC_WRAP"
-        );
-        boundaryModeCombo.setValue("DYNAMIC_RESERVOIR");
-        boundaryModeCombo.setMaxWidth(Double.MAX_VALUE);
-        boundaryModeCombo.setOnAction(e -> notifyParamChange());
-        attachDefaultValueHandling(boundaryModeCombo, "DYNAMIC_RESERVOIR", () -> boundaryModeCombo.setValue("DYNAMIC_RESERVOIR"));
-        boundaryModeCombo.setConverter(new javafx.util.StringConverter<String>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String toString(String item) {
-                if (item == null) return "";
-                switch (item) {
-                    case "DYNAMIC_RESERVOIR" -> { return I18n.getOrDefault("scenario.boundary.reservoir", "🌊 External Virtual Reservoir (Free Flow)"); }
-                    case "CLOSED_BARRIER" -> { return I18n.getOrDefault("scenario.boundary.barrier", "🧱 Sealed Barrier / Isolated (Closed Edges)"); }
-                    case "PERIODIC_WRAP" -> { return I18n.getOrDefault("scenario.boundary.wrap", "ðŸŒ Periodic Boundary (Toroidal)"); }
-                    default -> { return item; }
-                }
-            }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String fromString(String string) {
-                return null;
-            }
-        });
-
-        resetClippingBtn = new Button(I18n.getOrDefault("scenario.clipping.reset", "🔄 Reset Area (Full Planet)"));
-        resetClippingBtn.setMaxWidth(Double.MAX_VALUE);
-        resetClippingBtn.getStyleClass().add("button-secondary");
-        resetClippingBtn.setStyle("-fx-font-size: 12px;");
-
-        clippingSubPanel = new VBox(10, graphicSelectBtn, boundsGrid, boundaryLabel, boundaryModeCombo, resetClippingBtn);
-        clippingSubPanel.setStyle("-fx-padding: 10px; -fx-background-color: rgba(56, 189, 248, 0.04); -fx-background-radius: 6px; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6px; -fx-border-width: 1px;");
-        clippingSubPanel.setVisible(false);
-        clippingSubPanel.setManaged(false);
-
-        resetClippingBtn.setOnAction(e -> {
-            if (minLatSpinner != null && minLatSpinner.getValueFactory() != null) minLatSpinner.getValueFactory().setValue(-90.0);
-            if (maxLatSpinner != null && maxLatSpinner.getValueFactory() != null) maxLatSpinner.getValueFactory().setValue(90.0);
-            if (minLngSpinner != null && minLngSpinner.getValueFactory() != null) minLngSpinner.getValueFactory().setValue(-180.0);
-            if (maxLngSpinner != null && maxLngSpinner.getValueFactory() != null) maxLngSpinner.getValueFactory().setValue(180.0);
-            if (clippingCheckBox != null) clippingCheckBox.setSelected(false);
-            if (graphicSelectBtn != null) graphicSelectBtn.setSelected(false);
-            clippingSubPanel.setVisible(false);
-            clippingSubPanel.setManaged(false);
-            isSelectionDrag = false;
-            currentPreviewCells = null;
-            notifyParamChange();
-            drawPreview();
-        });
-
-        clippingCheckBox.setOnAction(e -> {
-            boolean active = clippingCheckBox.isSelected();
-            clippingSubPanel.setVisible(active);
-            clippingSubPanel.setManaged(active);
-            if (!active) {
-                if (minLatSpinner != null && minLatSpinner.getValueFactory() != null) minLatSpinner.getValueFactory().setValue(-90.0);
-                if (maxLatSpinner != null && maxLatSpinner.getValueFactory() != null) maxLatSpinner.getValueFactory().setValue(90.0);
-                if (minLngSpinner != null && minLngSpinner.getValueFactory() != null) minLngSpinner.getValueFactory().setValue(-180.0);
-                if (maxLngSpinner != null && maxLngSpinner.getValueFactory() != null) maxLngSpinner.getValueFactory().setValue(180.0);
-                if (graphicSelectBtn != null) graphicSelectBtn.setSelected(false);
-                isSelectionDrag = false;
-                currentPreviewCells = null;
-            }
-            notifyParamChange();
-            drawPreview();
-        });
-
-        section.getChildren().addAll(clippingHeader, clippingCheckBox, clippingSubPanel);
-        return section;
+        return spatialBoundsBuilder.buildSection();
     }
 
     private void applySpatialClippingBounds(double minLat, double maxLat, double minLon, double maxLon) {
-        if (minLatSpinner != null && minLatSpinner.getValueFactory() != null) minLatSpinner.getValueFactory().setValue(Math.round(minLat * 10.0) / 10.0);
-        if (maxLatSpinner != null && maxLatSpinner.getValueFactory() != null) maxLatSpinner.getValueFactory().setValue(Math.round(maxLat * 10.0) / 10.0);
-        if (minLngSpinner != null && minLngSpinner.getValueFactory() != null) minLngSpinner.getValueFactory().setValue(Math.round(minLon * 10.0) / 10.0);
-        if (maxLngSpinner != null && maxLngSpinner.getValueFactory() != null) maxLngSpinner.getValueFactory().setValue(Math.round(maxLon * 10.0) / 10.0);
-        if (clippingCheckBox != null) clippingCheckBox.setSelected(true);
-        if (clippingSubPanel != null) {
-            clippingSubPanel.setVisible(true);
-            clippingSubPanel.setManaged(true);
-        }
-        if (graphicSelectBtn != null) graphicSelectBtn.setSelected(false);
+        spatialBoundsBuilder.applySpatialClippingBounds(minLat, maxLat, minLon, maxLon);
     }
 
     private org.ether.society.ui.scenario.ScenarioEngineConfigSectionBuilder engineConfigSectionBuilder;
@@ -2247,132 +2060,11 @@ public class ScenarioSetupPanel extends BorderPane {
      * Resiliently selects the best matching item in a source ComboBox.
      */
     private void selectBestSource(ComboBox<String> combo, String target, String fallbackKeyword) {
-        if (combo == null || combo.getItems() == null || combo.getItems().isEmpty()) return;
-        if (target != null && combo.getItems().contains(target)) {
-            combo.setValue(target);
-            return;
-        }
-        if (target != null && !target.isBlank()) {
-            String cleanTarget = target.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
-            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-            for (String it : combo.getItems()) {
-                if (it != null && !it.isEmpty()) {
-                    String cleanIt = it.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
-                    if (cleanIt.contains(cleanTarget) || cleanTarget.contains(cleanIt)) {
-                        combo.setValue(it);
-                        return;
-                    }
-                }
-            }
-        }
-        if (fallbackKeyword != null && !fallbackKeyword.isBlank()) {
-            String kw = fallbackKeyword.toLowerCase();
-            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-            for (String it : combo.getItems()) {
-                if (it != null && it.toLowerCase().contains(kw)) {
-                    combo.setValue(it);
-                    return;
-                }
-            }
-        }
-        for (String it : combo.getItems()) {
-            if (it != null && !it.isEmpty()) {
-                combo.setValue(it);
-                return;
-            }
-        }
+        ScenarioEpochCatalog.selectBestSource(combo, target, fallbackKeyword);
     }
 
-    /**
-     * Given the tensor index, scenario start year, and active planet preset, returns the best-matching
-     * entry string for the cultural source combo at that tensor index, or null if the default should be kept.
-     */
     private String pickCulturalSourceForEpoch(int tensorIdx, long startYear, org.ether.society.generation.PlanetPreset planet) {
-        String pName = planet != null ? planet.name().toLowerCase() : "";
-        if (pName.contains("mars") || pName.contains("ares")) {
-            return switch (tensorIdx) {
-                case 0 -> "🔴 Mars — Cartographie Linguistique Coloniale Martienne [Planétaire (Mars), +2060 AD à Futur]";
-                case 1 -> "🔴 Mars — Structures de Parenté & Cohortes Pionnières [Planétaire (Mars), +2050 AD à Futur]";
-                case 2 -> "🔴 Mars — Mythologie Martienne & Cultes de la Frontière [Planétaire (Mars), +2060 AD à Futur]";
-                case 3 -> "🔴 Mars — Juridictions Consulaires & Traités Martiens [Planétaire (Mars), +2060 AD à Futur]";
-                case 4 -> "🔴 Mars — Niveau Technologique Industriel & Robotique ISRU [Planétaire (Mars), +2050 AD à Futur]";
-                case 5 -> "🔴 Mars — Réseau Ferroviaire Maglev Sub-Surface [Planétaire (Mars), +2070 AD à Futur]";
-                case 6 -> "🔴 Mars — Conseil Spatial & Chartes Constitutionnelles [Planétaire (Mars), +2060 AD à Futur]";
-                case 7 -> "🔴 Mars — Bioregenerative Life Support (BLSS) & Dégradation [Planétaire (Mars), +2050 AD à Futur]";
-                case 8 -> "🔴 Mars — Microbiome Artificiel Confiné & Résistance [Planétaire (Mars), +2050 AD à Futur]";
-                default -> null;
-            };
-        }
-        if (pName.contains("vénus") || pName.contains("venus") || pName.contains("hesperos")) {
-            return switch (tensorIdx) {
-                case 0 -> "🟡 Vénus — Réseau Isogloss des Cités Aérostatiques [Planétaire (Vénus), +2120 AD à Futur]";
-                case 1 -> "🟡 Vénus — Guildes & Lignages Technologiques Flottants [Planétaire (Vénus), +2100 AD à Futur]";
-                case 2 -> "🟡 Vénus — Rituels Solaires & Cérémonies de Nuages [Planétaire (Vénus), +2120 AD à Futur]";
-                case 3 -> "🟡 Vénus — Fédération des Stations Stratosphériques [Planétaire (Vénus), +2110 AD à Futur]";
-                case 4 -> "🟡 Vénus — Synthèse Aérostatique & Ingénierie Acide [Planétaire (Vénus), +2100 AD à Futur]";
-                case 5 -> "🟡 Vénus — Navettes Stratosphériques Inter-Stations [Planétaire (Vénus), +2110 AD à Futur]";
-                case 6 -> "🟡 Vénus — Syndicats Flottants & Corporations Aérostats [Planétaire (Vénus), +2110 AD à Futur]";
-                case 7 -> "🟡 Vénus — Érosion Chimique & Recyclage Fermé [Planétaire (Vénus), +2100 AD à Futur]";
-                case 8 -> "🟡 Vénus — Immunologie en Atmosphère Confinée [Planétaire (Vénus), +2110 AD à Futur]";
-                default -> null;
-            };
-        }
-        if (pName.contains("lune") || pName.contains("moon") || pName.contains("selene")) {
-            return switch (tensorIdx) {
-                case 0 -> "⚪ Lune — Dialectes Sélénites des Stations Cratériques [Planétaire (Lune), +2050 AD à Futur]";
-                case 1 -> "⚪ Lune — Associations d'Équipages & Clans Sélénites [Planétaire (Lune), +2045 AD à Futur]";
-                case 2 -> "⚪ Lune — Philosophie Cosmique & Rituels du Clair de Terre [Planétaire (Lune), +2050 AD à Futur]";
-                case 3 -> "⚪ Lune — Secteurs Traité de l'Espace & Bases Nationales [Planétaire (Lune), +2050 AD à Futur]";
-                case 4 -> "⚪ Lune — Fonderies Régolithes & Extraction Sélénite [Planétaire (Lune), +2045 AD à Futur]";
-                case 5 -> "⚪ Lune — Tunnels de Transport Magnétique Sélénite [Planétaire (Lune), +2050 AD à Futur]";
-                case 6 -> "⚪ Lune — Protocoles Légaux des Habitats Sélénites [Planétaire (Lune), +2050 AD à Futur]";
-                case 7 -> "⚪ Lune — Épuisement des Volatils & Poussière Régolithe [Planétaire (Lune), +2045 AD à Futur]";
-                case 8 -> "⚪ Lune — Pathogènes d'Isolement & Régime Stérile [Planétaire (Lune), +2045 AD à Futur]";
-                default -> null;
-            };
-        }
-        if (pName.contains("mercure") || pName.contains("mercury") || pName.contains("hermes")) {
-            return switch (tensorIdx) {
-                case 0 -> "⚪ Mercure — Protocoles Herméens & Terminologie d'Ombre [Planétaire (Mercure), +2160 AD à Futur]";
-                case 1 -> "⚪ Mercure — Confréries de Maintenance & Lignages Thermiques [Planétaire (Mercure), +2150 AD à Futur]";
-                case 2 -> "⚪ Mercure — Ordres d'Énergie & Croyances de Haute Radiation [Planétaire (Mercure), +2170 AD à Futur]";
-                case 3 -> "⚪ Mercure — Domaines Miniers & Enclaves Polaires [Planétaire (Mercure), +2150 AD à Futur]";
-                case 4 -> "⚪ Mercure — Collecteurs Haute Énergie & Fours Directs [Planétaire (Mercure), +2150 AD à Futur]";
-                case 5 -> "⚪ Mercure — Réseau de Convois Électromagnétiques [Planétaire (Mercure), +2160 AD à Futur]";
-                case 6 -> "⚪ Mercure — Administration Thermique & Urgences [Planétaire (Mercure), +2160 AD à Futur]";
-                case 7 -> "⚪ Mercure — Usure Thermique & Contraintes Matérielles [Planétaire (Mercure), +2150 AD à Futur]";
-                case 8 -> "⚪ Mercure — Filtrage Radiatif & Microbiote Synthétique [Planétaire (Mercure), +2160 AD à Futur]";
-                default -> null;
-            };
-        }
-        // Earth — pick based on epoch
-        if (startYear < -10000) {
-            return switch (tensorIdx) {
-                case 0 -> "ðŸŒ Terre — Automated Phonological Distance Model (ASJP) [Global, -10 000 BC à Actuel (Macro-Familles)]";
-                case 1 -> "ðŸŒ Terre — Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC à Actuel (186 Cultures)]";
-                case 2 -> "ðŸŒ Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC à +2000 AD]";
-                case 3 -> "ðŸŒ Terre — GADM Administrative Sovereign Centers [Global, 1950 AD à Actuel]";
-                case 4 -> "ðŸŒ Terre — Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC à +2000 AD]";
-                case 5 -> "ðŸŒ Terre — Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC à +1800 AD]";
-                case 6 -> "ðŸŒ Terre — Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC à +1800 AD]";
-                case 7 -> "ðŸŒ Terre — Malthusian Carrying Capacity Model [Global, -100 000 BC à +2100 AD]";
-                case 8 -> "ðŸŒ Terre — Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC à +2100 AD]";
-                default -> null;
-            };
-        }
-        // Default Earth modern/historical: first real item per tensor
-        return switch (tensorIdx) {
-            case 0 -> "ðŸŒ Terre — Glottolog 4.8 / WALS Language Families [Global, -10 000 BC à Actuel (8 500+ Langues)]";
-            case 1 -> "ðŸŒ Terre — Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC à Actuel (1 267 Sociétés)]";
-            case 2 -> "ðŸŒ Terre — Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC à +1900 AD]";
-            case 3 -> "ðŸŒ Terre — Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / Amériques, -1000 BC à +2000 AD]";
-            case 4 -> "ðŸŒ Terre — ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC à +1850 AD]";
-            case 5 -> "ðŸŒ Terre — ORBIS Stanford Geospatial Network (Trade Routes) [Bassin Méditerranéen & Proche-Orient, -300 BC à +500 AD]";
-            case 6 -> "ðŸŒ Terre — Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC à +1900 AD]";
-            case 7 -> "ðŸŒ Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC à +2023 AD]";
-            case 8 -> "ðŸŒ Terre — GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC à +2023 AD]";
-            default -> null;
-        };
+        return ScenarioEpochCatalog.pickCulturalSourceForEpoch(tensorIdx, startYear, planet);
     }
 
     private ComboBox<String> buildPopulationSourceCombo() {
@@ -2619,364 +2311,45 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
      * @param overlayContainer the overlay container parameter (javafx.scene.Node)
      */
     public void setProgressControls(ProgressBar bar, Label label, javafx.scene.Node overlayContainer) {
-        this.externalProgressBar = bar;
-        this.externalStatusLabel = label;
-        this.externalOverlayContainer = overlayContainer;
+        simulationLauncher.setProgressControls(bar, label, overlayContainer);
     }
 
     private void updateProgress(double progressVal, String msg) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        javafx.application.Platform.runLater(() -> {
-            if (progressBar != null) {
-                progressBar.setProgress(progressVal);
-                progressBar.setVisible(true);
-                progressBar.setManaged(true);
-            }
-            if (progressStatusLabel != null) {
-                progressStatusLabel.setText(msg);
-                progressStatusLabel.setVisible(true);
-                progressStatusLabel.setManaged(true);
-            }
-            if (externalProgressBar != null) {
-                externalProgressBar.setProgress(progressVal);
-            }
-            if (externalStatusLabel != null) {
-                externalStatusLabel.setText(msg);
-            }
-            if (externalOverlayContainer != null) {
-                boolean active = progressVal < 1.0;
-                externalOverlayContainer.setVisible(active);
-                externalOverlayContainer.setManaged(active);
-            }
-        });
+        simulationLauncher.updateProgress(progressVal, msg);
     }
 
-    /**
-     * Invalidate generated state.
-     *
-     */
     public void invalidateGeneratedState() {
-        resetStartButtonState();
+        simulationLauncher.resetStartButtonState();
     }
 
     private void resetStartButtonState() {
-        isCalculationRunning = false;
-        WindowUtils.setBusyCursor(this, false);
-        javafx.application.Platform.runLater(() -> {
-            if (startBtn != null) {
-                startBtn.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.start_btn", "🚀 VALIDER ET LANCER LA SIMULATION"));
-                startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;");
-                startBtn.setDisable(false);
-            }
-        });
+        simulationLauncher.resetStartButtonState();
     }
 
     private void setStartButtonCompletedState() {
-        isCalculationRunning = false;
-        WindowUtils.setBusyCursor(this, false);
-        javafx.application.Platform.runLater(() -> {
-            if (startBtn != null) {
-                startBtn.setText(I18n.getOrDefault("scenario.btn.valid_ready", "⚡ VALID & READY — PROCEED TO EXECUTION CONTEXT (TAB 4)"));
-                startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #0284c7; -fx-text-fill: white; -fx-background-radius: 6;");
-                startBtn.setDisable(false);
-            }
-        });
+        simulationLauncher.setStartButtonCompletedState();
     }
 
     private void setStartButtonCancelState() {
-        isCalculationRunning = true;
-        javafx.application.Platform.runLater(() -> {
-            if (startBtn != null) {
-                startBtn.setText(I18n.getOrDefault("scenario.btn.cancel_gen", "⏹ CANCEL / STOP GENERATION"));
-                startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 6;");
-                startBtn.setDisable(false);
-            }
-        });
+        simulationLauncher.setStartButtonCancelState();
     }
 
     private void handleStartOrCancel() {
-        if (isCalculationRunning) {
-            cancelCalculation();
-        } else {
-            if (isSimulationRunningSupplier != null && Boolean.TRUE.equals(isSimulationRunningSupplier.get())) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle(I18n.getOrDefault("scenario.confirm_restart.title", "Simulation en cours"));
-                alert.setHeaderText(I18n.getOrDefault("scenario.confirm_restart.header", "Une simulation est actuellement active"));
-                alert.setContentText(I18n.getOrDefault("scenario.confirm_restart.content", "Lancer cette nouvelle configuration réinitialisera la simulation en cours. Souhaitez-vous continuer ?"));
-                java.util.Optional<ButtonType> res = alert.showAndWait();
-                if (res.isEmpty() || res.get() != ButtonType.OK) {
-                    return;
-                }
-            }
-            if (isDirty()) {
-                javafx.stage.Window window = getScene() != null ? getScene().getWindow() : null;
-                if (!promptSaveIfDirty(window)) {
-                    return;
-                }
-            }
-            startSimulationDeferred();
-        }
+        simulationLauncher.handleStartOrCancel();
     }
 
     private void cancelCalculation() {
-        cancelRequested = true;
-        updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelling", "🛑 Cancelling computation at user request..."));
-        if (generationThread != null && generationThread.isAlive()) {
-            generationThread.interrupt();
-        }
-        WindowUtils.setBusyCursor(this, false);
-        resetStartButtonState();
+        simulationLauncher.cancelCalculation();
     }
 
     private void startSimulationDeferred() {
-        if (!validateScenarioSetup()) {
-            resetStartButtonState();
-            return;
-        }
-
-        // Capture all parameters safely on the JavaFX UI Thread before background execution
-        final Scenario scenarioToSave = getScenario();
-        PlanetPreset baseCfg = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
-        if (baseCfg == null) baseCfg = PlanetPreset.EARTH_LIKE;
-
-        Integer res = h3ResolutionCombo != null ? h3ResolutionCombo.getValue() : null;
-        if (res != null) {
-            baseCfg = new PlanetPreset(
-                    baseCfg.name(), res, baseCfg.radiusKm(), baseCfg.dayLengthHours(),
-                    baseCfg.axialTiltDegrees(), baseCfg.yearLengthDays(), baseCfg.distanceToSunAU(),
-                    baseCfg.solarLuminosity(), baseCfg.minAltitudeMeters(), baseCfg.maxAltitudeMeters(),
-                    baseCfg.averageTempC(), baseCfg.seed(), baseCfg.noiseFrequency(),
-                    baseCfg.noiseScale(), baseCfg.waterLevel(), baseCfg.temperatureGradient(),
-                    baseCfg.oxygenPercentage(), baseCfg.albedo(), baseCfg.atmospherePressureAtm(),
-                    baseCfg.isSatellite(), baseCfg.parentPlanetMassEarthMasses(),
-                    baseCfg.orbitalDistanceToParentKm(), baseCfg.co2Ppm(),
-                    baseCfg.seismicActivityLevel(), baseCfg.volcanicActivityLevel(),
-                    baseCfg.customElevBase64(), baseCfg.customBiomeBase64(), baseCfg.customResourceBase64(),
-                    baseCfg.customClimateBase64(), baseCfg.customRainfallBase64(), baseCfg.customSeasonalityBase64(),
-                    baseCfg.elevationUseImport(), baseCfg.elevationMapSource(),
-                    baseCfg.tempUseImport(), baseCfg.tempSource(), baseCfg.tempSeed(),
-                    baseCfg.precipUseImport(), baseCfg.precipSource(), baseCfg.precipSeed(),
-                    baseCfg.seasonUseImport(), baseCfg.seasonSource(), baseCfg.seasonSeed()
-            );
-        }
-        final PlanetPreset cfg = baseCfg;
-
-        final boolean isClippingActive = (clippingCheckBox != null && clippingCheckBox.isSelected());
-        final double cMinLat = minLatSpinner != null ? minLatSpinner.getValue() : -90.0;
-        final double cMaxLat = maxLatSpinner != null ? maxLatSpinner.getValue() : 90.0;
-        final double cMinLng = minLngSpinner != null ? minLngSpinner.getValue() : -180.0;
-        final double cMaxLng = maxLngSpinner != null ? maxLngSpinner.getValue() : 180.0;
-
-        if (isResumeFromSnapshotSelected()) {
-            final var selectedMeta = getSelectedSnapshotMetadata();
-            logger.info("Directly resuming simulation from snapshot: {}", selectedMeta != null ? selectedMeta.getName() : "latest");
-            javafx.application.Platform.runLater(() -> {
-                updateProgress(1.0, I18n.getOrDefault("scenario.progress.instant_resume", "⚡ Instant restoration from selected snapshot..."));
-                setStartButtonCompletedState();
-                if (onStartSimulation != null) {
-                    onStartSimulation.accept(scenarioToSave);
-                }
-            });
-            return;
-        }
-
-        cancelRequested = false;
-        setStartButtonCancelState();
-        WindowUtils.setBusyCursor(this, true);
-
-        // Immediately display the progress bar and status on UI thread
-        if (progressBar != null) {
-            progressBar.setVisible(true);
-            progressBar.setManaged(true);
-            progressBar.setProgress(0.02);
-        }
-        if (progressStatusLabel != null) {
-            progressStatusLabel.setVisible(true);
-            progressStatusLabel.setManaged(true);
-            progressStatusLabel.setText(I18n.getOrDefault("scenario.progress.init_prep", "⚡ Scenario initialization & setup..."));
-        }
-        if (externalOverlayContainer != null) {
-            externalOverlayContainer.setVisible(true);
-            externalOverlayContainer.setManaged(true);
-        }
-
-        generationThread = new Thread(() -> {
-            try {
-                updateProgress(0.02, I18n.getOrDefault("scenario.progress.saving_db", "⚡ Saving scenario & preparing H3 grid..."));
-
-                // 1. Cascade Planet and Ecology presets & save Scenario to DB (only when clean/saved)
-                if (!isDirty()) {
-                    try {
-                        scenarioToSave.setPlanetPreset(cfg);
-                        scenarioToSave.setEcologyPreset(ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null);
-                        if (scenarioToSave.getName() == null || scenarioToSave.getName().isBlank()) {
-                            scenarioToSave.setName("Auto_Scenario_" + System.currentTimeMillis());
-                        }
-                        scenarioRepo.saveOrUpdate(scenarioToSave);
-                        logger.info("Scenario '{}' automatically saved to database repository with full cascade before simulation launch.", scenarioToSave.getName());
-                    } catch (Exception ex) {
-                        logger.warn("Could not save scenario to DB prior to simulation launch", ex);
-                    }
-                }
-
-                if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                    throw new java.util.concurrent.CancellationException("Generation cancelled by user");
-                }
-
-                updateProgress(0.05, String.format(I18n.getOrDefault("scenario.progress.ready_h3", "✅ Scenario '%s' ready! ⚡ Generating H3 grid..."), scenarioToSave.getName()));
-
-                logger.info("Generating H3 cells for scenario '{}' at resolution {}", scenarioToSave.getName(), cfg.resolution());
-
-                // Progress-tracked procedural planet generation (5% -> 70%)
-                List<H3Cell> cells = new ProceduralGenerator().generatePlanet(cfg, (done, total) -> {
-                    double progressVal = 0.05 + 0.65 * ((double) done / total);
-                    int percent = (int) (progressVal * 100);
-                    updateProgress(progressVal, String.format(I18n.getOrDefault("scenario.progress.relief_biomes", "ðŸŒ Generating relief & H3 biomes: %d%% (%d / %d cells)"), percent, done, total));
-                }, () -> cancelRequested || Thread.currentThread().isInterrupted());
-
-                if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                    throw new java.util.concurrent.CancellationException("Generation cancelled by user");
-                }
-
-                // Map elevation and biome images corresponding to the selected planet preset
-                applyPresetMapToCells(cells, cfg);
-
-                if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                    throw new java.util.concurrent.CancellationException("Generation cancelled by user");
-                }
-
-                // Hydrography and river basin accumulation (70% -> 78%)
-                updateProgress(0.72, I18n.getOrDefault("scenario.progress.hydrography", "🌊 Computing hydrographic network & river basins (72%)..."));
-
-                // Apply Geographical Clipping if enabled (78% -> 85%)
-                if (isClippingActive) {
-                    updateProgress(0.80, I18n.getOrDefault("scenario.progress.clipping", "✂️ï¸ Applying geographical clipping & boundary conditions (80%)..."));
-
-                    double marginLat = Math.max(1.0, (cMaxLat - cMinLat) * 0.08);
-                    double marginLng = Math.max(1.0, (cMaxLng - cMinLng) * 0.08);
-
-                    List<H3Cell> clippedCells = new ArrayList<>();
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell c : cells) {
-                        if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                            throw new java.util.concurrent.CancellationException("Generation cancelled by user");
-                        }
-                        if (c.getLatitude() >= cMinLat && c.getLatitude() <= cMaxLat &&
-                            c.getLongitude() >= cMinLng && c.getLongitude() <= cMaxLng) {
-                            
-                            // Tag boundary cells for realistic edge condition modeling
-                            if (c.getLatitude() <= cMinLat + marginLat || c.getLatitude() >= cMaxLat - marginLat ||
-                                c.getLongitude() <= cMinLng + marginLng || c.getLongitude() >= cMaxLng - marginLng) {
-                                c.setBoundaryCell(true);
-                            }
-                            clippedCells.add(c);
-                        }
-                    }
-                    cells = clippedCells;
-                    logger.info("Clipping applied: {} cells retained out of global planet grid.", cells.size());
-                }
-
-                if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                    throw new java.util.concurrent.CancellationException("Generation cancelled by user");
-                }
-
-                int totalCellCount = cells.size();
-
-                // Distribute Initial Population (88% -> 94%)
-                updateProgress(0.88, String.format(I18n.getOrDefault("scenario.progress.pop_capital", "👥 Distributing population, ecological footprint & capital K₀: 88%% (%d / %d cells)"), totalCellCount, totalCellCount));
-
-                distributeInitialPopulation(cells);
-                if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                    throw new java.util.concurrent.CancellationException("Generation cancelled by user");
-                }
-
-                updateProgress(0.94, String.format(I18n.getOrDefault("scenario.progress.thermo_sync", "⚡ Synchronizing simulation buffers & thermodynamic pre-computation: 94%% (%d / %d cells)"), totalCellCount, totalCellCount));
-
-                currentPreviewCells = cells;
-
-                final List<H3Cell> finalCells = cells;
-                javafx.application.Platform.runLater(() -> {
-                    updateProgress(1.0, String.format(I18n.getOrDefault("scenario.progress.launching", "✅ %,d H3 cells generated! Launching scenario '%s'..."), finalCells.size(), scenarioToSave.getName()));
-                    drawPreview();
-                    previewStatusLabel.setText(I18n.getOrDefault("scenario.status.generated_prefix", "Generated: ") + finalCells.size() + I18n.getOrDefault("scenario.status.generated_h3_suffix", " H3 cells."));
-
-                    setStartButtonCompletedState();
-                    if (scenarioPresetBar != null) {
-                        scenarioPresetBar.markClean();
-                    }
-
-                    if (onStartSimulation != null) {
-                        onStartSimulation.accept(scenarioToSave);
-                    }
-                });
-            } catch (Exception ex) {
-                boolean isCancel = cancelRequested || ex instanceof java.util.concurrent.CancellationException
-                        || ex instanceof InterruptedException
-                        || (ex.getCause() instanceof java.util.concurrent.CancellationException);
-                if (isCancel) {
-                    logger.info("Deferred H3 calculation cancelled by user.");
-                    updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelled", "🛑 Computation cancelled by user."));
-                } else {
-                    logger.error("Error during deferred H3 cell calculation", ex);
-                    updateProgress(1.0, String.format(I18n.getOrDefault("scenario.progress.error", "❌ Error during computation: %s"), ex.getMessage()));
-                }
-                resetStartButtonState();
-            } finally {
-                generationThread = null;
-                WindowUtils.setBusyCursor(ScenarioSetupPanel.this, false);
-            }
-        }, "H3-Scenario-Generator-Thread");
-        generationThread.setDaemon(true);
-        generationThread.start();
+        simulationLauncher.startSimulationDeferred();
     }
 
     private void applyPresetMapToCells(List<H3Cell> cells, PlanetPreset cfg) {
-        if (cfg == null || cells == null || cells.isEmpty()) return;
-        
-        // If not using imported maps and no custom base64 image provided, keep procedural terrain
-        boolean isImportMode = cfg.elevationUseImport() || (cfg.customElevBase64() != null && !cfg.customElevBase64().isBlank());
-        if (!isImportMode) {
-            return;
-        }
-
-        String mapSource = cfg.elevationMapSource() != null ? cfg.elevationMapSource().toLowerCase() : "";
-        String presetName = cfg.name() != null ? cfg.name().toLowerCase() : "";
-        
-        if (cfg.customElevBase64() != null && !cfg.customElevBase64().isBlank()) {
-            try {
-                Image customElev = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customElevBase64());
-                Image customBiome = org.ether.society.data.ImageMapLoader.base64PngToImage(cfg.customBiomeBase64());
-                if (customElev != null) {
-                    new org.ether.society.data.ImageMapLoader().mapImagesToCells(cells, customElev, customBiome, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
-                }
-            } catch (Exception e) {
-                logger.warn("Could not decode custom Base64 elevation map image for preset {}", cfg.name(), e);
-            }
-        } else {
-            String pKey = "earth";
-            if (mapSource.equals("mars") || presetName.contains("mars") || presetName.contains("ares")) pKey = "mars";
-            else if (mapSource.equals("venus") || presetName.contains("venus") || presetName.contains("vénus") || presetName.contains("hesperos")) pKey = "venus";
-            else if (mapSource.equals("moon") || presetName.contains("lune") || presetName.contains("moon") || presetName.contains("selene")) pKey = "moon";
-            else if (mapSource.equals("mercury") || presetName.contains("mercure") || presetName.contains("mercury") || presetName.contains("hermes")) pKey = "mercury";
-
-            long targetYear = (scenarioPresetBar != null && scenarioPresetBar.getPresetCombo() != null && scenarioPresetBar.getPresetCombo().getValue() != null) 
-                    ? scenarioPresetBar.getPresetCombo().getValue().getStartDateYear() : 2026L;
-            Image elevImg = org.ether.society.data.ImageMapLoader.loadMapImage(pKey, targetYear, "elevation.png");
-            Image biomeImg = org.ether.society.data.ImageMapLoader.loadMapImage(pKey, targetYear, "biomes.png");
-
-            if (elevImg != null || biomeImg != null) {
-                new org.ether.society.data.ImageMapLoader().mapImagesToCells(cells, elevImg, biomeImg, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
-            } else {
-                logger.debug("No precalculated map found for preset {}, using physical terrain generator", pKey);
-            }
-        }
+        simulationLauncher.applyPresetMapToCells(cells, cfg, getScenario());
     }
 
-    // =========================================================================
-    // EVENTS SECTION — Historical Planetary Events
-    // =========================================================================
-
-    @SuppressWarnings("unchecked")
     private VBox createEventsSection() {
         if (eventsSectionBuilder == null) {
             eventsSectionBuilder = new org.ether.society.ui.scenario.ScenarioEventsSectionBuilder(eventsList, this::notifyParamChange);
@@ -3004,76 +2377,21 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
     }
 
     public static double computeAutoCapitalFromYear(long year) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (year <= -50000) return 1.0;   // Early Paleolithic / Out of Africa (~1 kg/hab)
-        if (year <= -10000) return 5.0;   // Late Paleolithic / Early Neolithic (~5 kg/hab)
-        if (year <= -3000)  return 25.0;  // Bronze Age (~25 kg/hab)
-        if (year <= -500)   return 100.0; // Antiquity (~100 kg/hab)
-        if (year <= 1000)   return 200.0; // Early Middle Ages (~200 kg/hab)
-        if (year <= 1500)   return 500.0; // Renaissance / Age of Discovery (~500 kg/hab)
-        if (year <= 1800)   return 2500.0; // Industrial Revolution (~2500 kg/hab)
-        if (year <= 1950)   return 8000.0; // 20th Century (~8000 kg/hab)
-        return 15000.0;                   // Modern / Post-Industrial (>15000 kg/hab)
+        return ScenarioThermodynamicAutocalc.computeAutoCapitalFromYear(year);
     }
 
-    /**
-     * Compute auto energy from year.
-     *
-     * @param year the year parameter (long)
-     * @return the resulting computation or state reference
-     */
     public static double computeAutoEnergyFromYear(long year) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (year <= -10000) return 10.0;    // Firewood (~10 MJ/hab)
-        if (year <= -3000)  return 30.0;    // Wood & fodder (~30 MJ/hab)
-        if (year <= -500)   return 60.0;    // Oil & firewood (~60 MJ/hab)
-        if (year <= 1000)   return 150.0;   // Hydraulic & firewood (~150 MJ/hab)
-        if (year <= 1500)   return 300.0;   // Peat & timber (~300 MJ/hab)
-        if (year <= 1800)   return 2500.0;  // Coal mines (~2500 MJ/hab)
-        if (year <= 1950)   return 10000.0; // Hydrocarbons (~10000 MJ/hab)
-        return 50000.0;                     // Modern/Future (>50000 MJ/hab)
+        return ScenarioThermodynamicAutocalc.computeAutoEnergyFromYear(year);
     }
 
-    /**
-     * Compute auto food from year.
-     *
-     * @param year the year parameter (long)
-     * @return the resulting computation or state reference
-     */
     public static double computeAutoFoodFromYear(long year) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (year <= -10000) return 2.0;  // Foraging (2 months)
-        if (year <= -3000)  return 4.0;  // Early granaries (4 months)
-        if (year <= -500)   return 6.0;  // Roman/Han silos (6 months)
-        if (year <= 1000)   return 6.0;  // Feudal granaries (6 months)
-        if (year <= 1500)   return 8.0;  // Early modern storage (8 months)
-        if (year <= 1800)   return 10.0; // Agricultural revolution (10 months)
-        if (year <= 1950)   return 12.0; // Modern global logistics (12 months)
-        return 18.0;                     // Future/Post-scarcity (18+ months)
+        return ScenarioThermodynamicAutocalc.computeAutoFoodFromYear(year);
     }
 
-    /**
-     * Compute auto info from year.
-     *
-     * @param year the year parameter (long)
-     * @return the resulting computation or state reference
-     */
     public static double computeAutoInfoFromYear(long year) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (year <= -10000) return 5.0;        // Oral tradition (~5 bits/hab)
-        if (year <= -3000)  return 40.0;       // Cuneiform/Hieroglyphs (~40 bits/hab)
-        if (year <= -500)   return 200.0;      // Classical manuscripts (~200 bits/hab)
-        if (year <= 1000)   return 500.0;      // Scriptoriums & block printing (~500 bits/hab)
-        if (year <= 1500)   return 2000.0;     // Printing press (~2000 bits/hab)
-        if (year <= 1800)   return 15000.0;    // Encyclopedias & press (~15000 bits/hab)
-        if (year <= 1950)   return 500000.0;   // Telecommunications & radio (~500000 bits/hab)
-        return 5000000.0;                      // Internet & AI (>5000000 bits/hab)
+        return ScenarioThermodynamicAutocalc.computeAutoInfoFromYear(year);
     }
 
-    /**
-     * Apply earth preset.
-     *
-     */
     public void applyEarthPreset() {
         if (planetPresetCombo != null) {
             planetPresetCombo.setValue(PlanetPreset.EARTH_LIKE);
@@ -3140,6 +2458,8 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
                 snapshotCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("scenario.snapshot.combo.tooltip", "Select an existing checkpoint or full simulation snapshot from the disk to resume execution.")));
                 updateSnapshotDetailsDisplay(snapshotCombo.getValue());
             }
+            spatialBoundsBuilder.updateTexts();
+            bundleManager.updateTexts();
             if (bundleHeader != null) bundleHeader.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.bundle.header", "📦 UNIFIED BUNDLE MULTI-SCENARIO IMPORT/EXPORT (.ETHER)"));
             if (bundleSubtitle != null) bundleSubtitle.setText(org.ether.society.i18n.I18n.getOrDefault("scenario.desc.bundle", "Export or import the complete scenario (planetary context, ecology, active engines, cultural layers, and demographic grid) in unified .ether format for archiving or sharing."));
             if (btnExportBundle != null) {
@@ -3593,158 +2913,42 @@ private void addCustomEngineCheckBoxToUI(String engineKey, String labelText, Str
      * @return the resulting computation or state reference
      */
     public List<String> getScenarioValidationErrors() {
-        List<String> errors = new ArrayList<>();
-        if (planetPanelSupplier != null && planetPanelSupplier.get() != null) {
-            errors.addAll(planetPanelSupplier.get().getValidationErrors());
-        }
-        if (resourcePanelSupplier != null && resourcePanelSupplier.get() != null) {
-            errors.addAll(resourcePanelSupplier.get().getValidationErrors());
-        }
-        if (startYearSpinner != null && endYearSpinner != null) {
-            int startYr = startYearSpinner.getValue();
-            int endYr = endYearSpinner.getValue();
-            if (startYr >= endYr) {
-                errors.add(I18n.getOrDefault("scenario.validation.invalid_years", "Start year must be strictly less than end year (Tab 3)."));
-            }
-        }
-        if (initialHumanCountSpinner != null) {
-            long count = initialHumanCountSpinner.getValue();
-            if (count <= 0) {
-                errors.add(I18n.getOrDefault("scenario.validation.invalid_pop", "Initial human population must be greater than 0 (Tab 3)."));
-            }
-        }
-        if (radioImportDemo != null && radioImportDemo.isSelected()) {
-            if (customDensityImage == null) {
-                errors.add(I18n.getOrDefault("scenario.validation.missing_density_map", "Missing demographic density map in import mode (Tab 3)."));
-            } else {
-                org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage);
-                if (!val.valid()) {
-                    errors.add(String.format(I18n.getOrDefault("scenario.validation.invalid_density_map", "Incompatible demographic density map (Tab 3): %s"), val.message()));
-                }
-            }
-        }
-        if (cultureVectorDimSpinner != null) {
-            int dims = cultureVectorDimSpinner.getValue();
-            if (dims < 0 || dims > 32) {
-                errors.add(I18n.getOrDefault("scenario.validation.invalid_tensor_dim", "Cultural tensor dimension must be between 0 and 32 (Tab 3)."));
-            }
-        }
-        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
-        for (int i = 0; i < dimsCount; i++) {
-            RadioButton importRadio = tensorImportRadios.get(i);
-            if (importRadio != null && importRadio.isSelected()) {
-                Image img = customTensorImages.get(i);
-                if (img == null) {
-                    String tensorName = getCulturalTensorTitle(i);
-                    errors.add(String.format(I18n.getOrDefault("scenario.validation.missing_tensor_map", "Missing external map for %s in import mode (Tab 3)."), tensorName));
-                } else {
-                    org.ether.society.data.ImageMapLoader.ImageValidationResult val = org.ether.society.data.ImageMapLoader.validateMapImage(img);
-                    if (!val.valid()) {
-                        String tensorName = getCulturalTensorTitle(i);
-                        errors.add(String.format(I18n.getOrDefault("scenario.validation.invalid_tensor_map", "Incompatible or unreadable map for %s (Tab 3): %s"), tensorName, val.message()));
-                    }
-                }
-            }
-        }
-        return errors;
+        return ScenarioValidationHelper.getValidationErrors(
+                planetPanelSupplier,
+                resourcePanelSupplier,
+                startYearSpinner,
+                endYearSpinner,
+                initialHumanCountSpinner,
+                radioImportDemo,
+                customDensityImage,
+                cultureVectorDimSpinner,
+                tensorImportRadios,
+                customTensorImages,
+                this::getCulturalTensorTitle
+        );
     }
 
-    /**
-     * Validate scenario setup.
-     *
-     * @return the resulting computation or state reference
-     */
     public boolean validateScenarioSetup() {
-        List<String> errors = getScenarioValidationErrors();
-        boolean isValid = errors.isEmpty();
-
-        // Control border highlights
-        if (startYearSpinner != null && endYearSpinner != null) {
-            int startYr = startYearSpinner.getValue();
-            int endYr = endYearSpinner.getValue();
-            if (startYr >= endYr) {
-                startYearSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-                endYearSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            } else {
-                startYearSpinner.setStyle("");
-                endYearSpinner.setStyle("");
-            }
-        }
-        if (initialHumanCountSpinner != null) {
-            long count = initialHumanCountSpinner.getValue();
-            if (count <= 0) {
-                initialHumanCountSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            } else {
-                initialHumanCountSpinner.setStyle("");
-            }
-        }
-        if (radioImportDemo != null && radioImportDemo.isSelected()) {
-            if (customDensityImage == null || !org.ether.society.data.ImageMapLoader.validateMapImage(customDensityImage).valid()) {
-                if (loadDensityMapBtn != null) loadDensityMapBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            } else if (loadDensityMapBtn != null) {
-                loadDensityMapBtn.setStyle("");
-            }
-        } else if (loadDensityMapBtn != null) {
-            loadDensityMapBtn.setStyle("");
-        }
-        if (cultureVectorDimSpinner != null) {
-            int dims = cultureVectorDimSpinner.getValue();
-            if (dims < 0 || dims > 32) {
-                cultureVectorDimSpinner.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            } else {
-                cultureVectorDimSpinner.setStyle("");
-            }
-        }
-        int dimsCount = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
-        for (int i = 0; i < dimsCount; i++) {
-            RadioButton importRadio = tensorImportRadios.get(i);
-            Button loadBtn = tensorLoadBtns.get(i);
-            if (importRadio != null && importRadio.isSelected()) {
-                Image img = customTensorImages.get(i);
-                if (img == null || !org.ether.society.data.ImageMapLoader.validateMapImage(img).valid()) {
-                    if (loadBtn != null) loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-                } else if (loadBtn != null) {
-                    loadBtn.setStyle("");
-                }
-            } else if (loadBtn != null) {
-                loadBtn.setStyle("");
-            }
-        }
-
-        if (!isValid) {
-            StringBuilder sb = new StringBuilder();
-            // Traverse hexagonal topological neighbor ring for spatial diffusion / flux
-            for (String err : errors) {
-                sb.append("• ").append(err).append("\n");
-            }
-            if (validationErrorLabel != null && validationErrorBanner != null) {
-                if (validationBannerHeaderLabel != null) {
-                    validationBannerHeaderLabel.setText("🛑 " + I18n.getOrDefault("scenario.validation.header_errors", "ERREURS DE CONFIGURATION DU SCÉNARIO (ONGLET 3) :"));
-                    validationBannerHeaderLabel.setStyle("-fx-text-fill: #f87171; -fx-font-weight: bold; -fx-font-size: 13px;");
-                }
-                validationErrorLabel.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
-                validationErrorBanner.setStyle("-fx-background-color: rgba(239, 68, 68, 0.15); -fx-border-color: #ef4444; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
-                validationErrorLabel.setText(sb.toString().trim());
-                validationErrorBanner.setVisible(true);
-                validationErrorBanner.setManaged(true);
-            }
-            if (configScroll != null) {
-                configScroll.setVvalue(0.0);
-            }
-        } else {
-            if (validationErrorBanner != null) {
-                validationErrorBanner.setVisible(false);
-                validationErrorBanner.setManaged(false);
-            }
-        }
-
-        updateLiveDiagnosticBlock();
-        return isValid;
+        return ScenarioValidationHelper.validateAndHighlight(
+                getScenarioValidationErrors(),
+                startYearSpinner,
+                endYearSpinner,
+                initialHumanCountSpinner,
+                radioImportDemo,
+                customDensityImage,
+                loadDensityMapBtn,
+                cultureVectorDimSpinner,
+                tensorImportRadios,
+                customTensorImages,
+                tensorLoadBtns,
+                validationErrorBanner,
+                validationBannerHeaderLabel,
+                validationErrorLabel,
+                configScroll,
+                this::updateLiveDiagnosticBlock
+        );
     }
 
-    /**
-     * Opens the interactive Time-Travel & Automatic Epoch Scenario generation dialog.
-     */
     public void openAutoEpochScenarioDialog() {
         try {
         String currentPlanet = activePlanetPreset != null ? activePlanetPreset.getCanonicalPlanet() : "earth";
