@@ -20,7 +20,6 @@ import org.ether.society.model.Scenario;
 import org.ether.society.ui.CulturalAffinityMatrixDialog;
 import org.ether.society.ui.WindowUtils;
 import org.ether.society.ui.util.DataSourceUIHelper;
-import org.ether.society.ui.util.UIControlsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +66,7 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     private final HostContext context;
+    private final ScenarioCulturalSubBlockBuilder subBlockBuilder;
 
     // Controls
     private Label cultureHeader;
@@ -102,6 +102,14 @@ public class ScenarioCulturalSectionBuilder {
 
     public ScenarioCulturalSectionBuilder(HostContext context) {
         this.context = context;
+        this.subBlockBuilder = new ScenarioCulturalSubBlockBuilder(
+                this, context, customTensorImages, customTensorNames,
+                tensorSubTitles, tensorProcRadios, tensorImportRadios, tensorSourceCombos,
+                tensorSourceLabels, tensorFileLabels, tensorLoadBtns, tensorFormatLabels,
+                tensorSeedFields, tensorParam1Sliders, tensorParam2Sliders, tensorParam3Sliders,
+                tensorParam1ValueLabels, tensorParam2ValueLabels, tensorParam3ValueLabels,
+                tensorGenSingleBtns
+        );
     }
 
     /**
@@ -405,52 +413,10 @@ public class ScenarioCulturalSectionBuilder {
         return ScenarioProceduralTensorRasterizer.evaluateProceduralTensorColor(tIndex, lat, lon, elevation, p1, p2, p3, seed);
     }
 
-    private HBox createTensorParamRow(ScenarioCulturalTensorCatalog.TensorParamDescriptor desc, Slider slider, Label valueLabel, Runnable onChange) {
-        Label label = new Label(I18n.getOrDefault(desc.labelKey, desc.defaultLabel));
-        label.getStyleClass().add("control-label");
-        label.setStyle("-fx-font-size: 10px;");
-        label.setMinWidth(140);
-        label.setMaxWidth(140);
-        label.setWrapText(true);
-
-        slider.setMin(desc.min);
-        slider.setMax(desc.max);
-        slider.setValue(desc.defVal);
-        slider.setBlockIncrement(desc.step);
-        slider.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(slider, Priority.ALWAYS);
-
-        valueLabel.setText(String.format(java.util.Locale.ROOT, desc.format, desc.defVal));
-        valueLabel.getStyleClass().add("value-label");
-        valueLabel.setStyle("-fx-font-size: 10px;");
-        valueLabel.setMinWidth(65);
-        valueLabel.setAlignment(Pos.CENTER_RIGHT);
-
-        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            valueLabel.setText(String.format(java.util.Locale.ROOT, desc.format, newVal.doubleValue()));
-            if (!context.isUpdatingFromPreset()) {
-                onChange.run();
-            }
-        });
-
-        String tip = I18n.getOrDefault(desc.tooltipKey, desc.defaultTooltip);
-        if (tip != null && !tip.isEmpty()) {
-            Tooltip.install(label, new Tooltip(tip));
-            Tooltip.install(slider, new Tooltip(tip));
-        }
-
-        UIControlsHelper.attachDefaultValueHandling(slider, desc.defVal, () -> slider.setValue(desc.defVal));
-
-        HBox row = new HBox(6, label, slider, valueLabel);
-        row.setAlignment(Pos.CENTER_LEFT);
-        return row;
-    }
-
     public void deleteCulturalTensor(int indexToDelete) {
         int curDims = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
         if (indexToDelete < 0 || indexToDelete >= curDims) return;
 
-        // Shift all configurations from indexToDelete up to curDims - 2
         for (int j = indexToDelete; j < curDims - 1; j++) {
             if (customTensorNames.containsKey(j + 1)) {
                 customTensorNames.put(j, customTensorNames.get(j + 1));
@@ -514,9 +480,6 @@ public class ScenarioCulturalSectionBuilder {
         }
     }
 
-    /**
-     * Updates all localized UI texts and tooltips across the cultural section.
-     */
     public void updateTexts() {
         if (cultureHeader != null) {
             cultureHeader.setText(I18n.getOrDefault("scenario.culture_section", "🎭 CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
@@ -577,223 +540,7 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     public void rebuildCulturalTensorSubBlocks(int dimCount) {
-        if (btnGenerateProceduralTensorsSection != null) {
-            btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "⚡ Régénérer les Tenseurs"));
-            btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.regen_tensors",
-                    "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
-        }
-        if (layersDynamicContainer == null) return;
-        layersDynamicContainer.getChildren().clear();
-
-        for (int i = 0; i < dimCount; i++) {
-            final int tensorIdx = i;
-
-            VBox subBlock = new VBox(6);
-            subBlock.setStyle("-fx-padding: 10; -fx-background-color: rgba(167,139,250,0.04); -fx-background-radius: 6; -fx-border-color: rgba(167,139,250,0.15); -fx-border-radius: 6;");
-
-            HBox titleRow = new HBox(8);
-            titleRow.setAlignment(Pos.CENTER_LEFT);
-
-            Label subTitle = new Label(getCulturalTensorTitle(i));
-            subTitle.getStyleClass().add("control-label");
-            subTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;");
-            subTitle.setWrapText(true);
-            HBox.setHgrow(subTitle, Priority.ALWAYS);
-            Tooltip.install(subTitle, new Tooltip(getCulturalTensorTooltip(i)));
-            tensorSubTitles.put(tensorIdx, subTitle);
-
-            Button renameBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.rename", "✏ Renommer"));
-            renameBtn.getStyleClass().add("button-secondary");
-            renameBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 6;");
-            renameBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tensor.btn.rename_tooltip",
-                    "Cliquez pour personnaliser le nom de ce calque de tenseur culturel.")));
-            renameBtn.setOnAction(e -> {
-                String cur = customTensorNames.getOrDefault(tensorIdx, "");
-                TextInputDialog dlg = new TextInputDialog(cur);
-                dlg.setTitle(I18n.getOrDefault("scenario.tensor.rename.title", "Personnaliser le Nom du Tenseur"));
-                dlg.setHeaderText(I18n.getOrDefault("scenario.tensor.rename.prompt", "Nom personnalisé du Tenseur N°{0} :", (tensorIdx + 1)));
-                WindowUtils.applyWindowIcon(dlg);
-                dlg.showAndWait().ifPresent(strVal -> {
-                    if (strVal.isBlank()) {
-                        customTensorNames.remove(tensorIdx);
-                    } else {
-                        customTensorNames.put(tensorIdx, strVal.trim());
-                    }
-                    subTitle.setText(getCulturalTensorTitle(tensorIdx));
-                    context.updatePreviewModesCombo();
-                    context.notifyParamChange();
-                });
-            });
-
-            Button deleteBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.delete", "✕"));
-            deleteBtn.getStyleClass().add("button-secondary");
-            deleteBtn.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px; -fx-padding: 2 6; -fx-font-weight: bold; -fx-cursor: hand;");
-            deleteBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tensor.btn.delete_tooltip",
-                    "Supprimer ce tenseur culturel (décrémente le nombre total de tenseurs).")));
-            deleteBtn.setOnAction(e -> deleteCulturalTensor(tensorIdx));
-
-            titleRow.getChildren().addAll(subTitle, renameBtn, deleteBtn);
-            subBlock.getChildren().add(titleRow);
-
-            ToggleGroup tg = new ToggleGroup();
-            RadioButton radioProc = new RadioButton(I18n.getOrDefault("scenario.mode.procedural_sde", "⚡ Mode Procédural (Paramètres adaptatifs & Graine)"));
-            RadioButton radioImport = new RadioButton(I18n.getOrDefault("scenario.mode.spatial_import", "📁 Importation Carte Spatiale (PNG / GeoJSON)"));
-            radioProc.setToggleGroup(tg);
-            radioImport.setToggleGroup(tg);
-            radioProc.getStyleClass().add("radio-proc");
-            radioImport.getStyleClass().add("radio-import");
-            radioProc.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_radio_proc",
-                    "Génère procéduralement ce tenseur culturel via des équations stochastiques et les paramètres ci-dessous.")));
-            radioImport.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_radio_import",
-                    "Importe une image matricielle ou une couche SIG externe pour modéliser ce tenseur culturel.")));
-
-            boolean hasImage = customTensorImages.containsKey(tensorIdx) && customTensorImages.get(tensorIdx) != null;
-            if (hasImage) {
-                radioImport.setSelected(true);
-            } else {
-                radioProc.setSelected(true);
-            }
-
-            tensorProcRadios.put(tensorIdx, radioProc);
-            tensorImportRadios.put(tensorIdx, radioImport);
-
-            // --- 1. Procedural Configuration Sub-Box ---
-            Label seedLbl = new Label(I18n.getOrDefault("scenario.tensor.seed.label", "Graine :"));
-            seedLbl.getStyleClass().add("control-label");
-            seedLbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
-            seedLbl.setMinWidth(60);
-
-            TextField seedField = tensorSeedFields.computeIfAbsent(tensorIdx, k -> new TextField(getDefaultTensorSeed(tensorIdx)));
-            seedField.setStyle("-fx-font-size: 10px; -fx-pref-width: 80px;");
-            seedField.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.tensor_seed_field",
-                    "Graine stochastique déterministe pour initialiser ce champ de tenseur culturel.")));
-            seedField.textProperty().addListener((obs, o, n) -> {
-                if (!context.isUpdatingFromPreset()) {
-                    context.notifyParamChange();
-                    context.drawPreview();
-                }
-            });
-
-            Button randBtn = new Button("🎲");
-            randBtn.getStyleClass().add("button-secondary");
-            randBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 6;");
-            randBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_tensor_seed", "Tirer une nouvelle graine aléatoire pour ce tenseur.")));
-            randBtn.setOnAction(e -> {
-                seedField.setText(String.valueOf(new Random().nextLong(1000000)));
-                if (radioProc != null) {
-                    radioProc.setSelected(true);
-                }
-                context.selectPreviewMode(tensorIdx + 1);
-                context.notifyParamChange();
-                context.drawPreview();
-            });
-
-            Button exportSingleBtn = new Button(I18n.getOrDefault("scenario.tensor.btn.export_single", "💾 Export"));
-            exportSingleBtn.getStyleClass().add("button-secondary");
-            exportSingleBtn.setStyle("-fx-font-size: 10px; -fx-padding: 2 8; -fx-font-weight: bold;");
-            exportSingleBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tensor.btn.export_single_tooltip",
-                    "Export this cultural tensor raster as a high-resolution PNG or JPEG file.")));
-            tensorGenSingleBtns.put(tensorIdx, exportSingleBtn);
-            exportSingleBtn.setOnAction(e -> exportCulturalTensor(tensorIdx));
-
-            HBox seedRow = new HBox(6, seedLbl, seedField, randBtn, exportSingleBtn);
-            seedRow.setAlignment(Pos.CENTER_LEFT);
-
-            Slider p1Slider = tensorParam1Sliders.computeIfAbsent(tensorIdx, k -> new Slider());
-            Label p1Val = tensorParam1ValueLabels.computeIfAbsent(tensorIdx, k -> new Label());
-            HBox p1Row = createTensorParamRow(getTensorParam1Descriptor(tensorIdx), p1Slider, p1Val, () -> { context.notifyParamChange(); context.drawPreview(); });
-
-            Slider p2Slider = tensorParam2Sliders.computeIfAbsent(tensorIdx, k -> new Slider());
-            Label p2Val = tensorParam2ValueLabels.computeIfAbsent(tensorIdx, k -> new Label());
-            HBox p2Row = createTensorParamRow(getTensorParam2Descriptor(tensorIdx), p2Slider, p2Val, () -> { context.notifyParamChange(); context.drawPreview(); });
-
-            Slider p3Slider = tensorParam3Sliders.computeIfAbsent(tensorIdx, k -> new Slider());
-            Label p3Val = tensorParam3ValueLabels.computeIfAbsent(tensorIdx, k -> new Label());
-            HBox p3Row = createTensorParamRow(getTensorParam3Descriptor(tensorIdx), p3Slider, p3Val, () -> { context.notifyParamChange(); context.drawPreview(); });
-
-            Label procStatusLbl = new Label(I18n.getOrDefault("scenario.status.proc_gen_tensor_prefix", "✔ Modélisation procédurale dynamique active (Tenseur ") + (tensorIdx + 1) + ")");
-            procStatusLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #10b981;");
-
-            VBox procBox = new VBox(5, seedRow, p1Row, p2Row, p3Row, procStatusLbl);
-            procBox.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(56,189,248,0.25); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
-            procBox.setVisible(!hasImage);
-            procBox.setManaged(!hasImage);
-
-            // --- 2. Import Configuration Sub-Box ---
-            Label sourceLbl = new Label(I18n.getOrDefault("resource.label.reference_source", "Reference Source:"));
-            tensorSourceLabels.put(tensorIdx, sourceLbl);
-
-            ComboBox<String> sourceCombo = buildCulturalSourceCombo(tensorIdx);
-            tensorSourceCombos.put(tensorIdx, sourceCombo);
-
-            Button btnLoad = new Button(I18n.getOrDefault("resource.btn.load_map", "Load Map"));
-            btnLoad.getStyleClass().add("button-secondary");
-            btnLoad.setStyle("-fx-font-size: 11px;");
-            btnLoad.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.load_cultural_tensor_map",
-                    "Ouvre un sélecteur de fichier pour importer une carte raster externe (PNG/GeoTIFF) pour ce tenseur.")));
-            tensorLoadBtns.put(tensorIdx, btnLoad);
-
-            Button btnClear = new Button("🗑");
-            btnClear.getStyleClass().add("button-secondary");
-            btnClear.setStyle("-fx-font-size: 11px;");
-            btnClear.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.clear_cultural_tensor_map",
-                    "Efface l'image importée et réinitialise le tenseur au mode procédural par défaut.")));
-
-            HBox btnBox = new HBox(6, btnLoad, btnClear);
-            btnBox.setAlignment(Pos.CENTER_LEFT);
-
-            Label fileLbl = new Label();
-            fileLbl.getStyleClass().add("value-label");
-            fileLbl.setStyle("-fx-font-size: 10px;");
-            tensorFileLabels.put(tensorIdx, fileLbl);
-            updateTensorFileLabel(tensorIdx);
-
-            Label formatHintLbl = new Label(getCulturalFormatHint(tensorIdx));
-            formatHintLbl.getStyleClass().add("card-description-muted");
-            formatHintLbl.setStyle("-fx-font-size: 9px; -fx-font-style: italic;");
-            formatHintLbl.setWrapText(true);
-            tensorFormatLabels.put(tensorIdx, formatHintLbl);
-
-            VBox importBox = new VBox(6, sourceLbl, sourceCombo, btnBox, fileLbl, formatHintLbl);
-            importBox.setStyle("-fx-padding: 6 0 0 12; -fx-border-color: rgba(167,139,250,0.25); -fx-border-width: 0 0 0 3; -fx-border-radius: 4;");
-            importBox.setVisible(hasImage);
-            importBox.setManaged(hasImage);
-
-            tg.selectedToggleProperty().addListener((obs, oldV, sel) -> {
-                boolean isProc = sel == radioProc;
-                procBox.setVisible(isProc);
-                procBox.setManaged(isProc);
-                importBox.setVisible(!isProc);
-                importBox.setManaged(!isProc);
-                updateTensorFileLabel(tensorIdx);
-                context.selectPreviewMode(tensorIdx + 1);
-                if (!context.isUpdatingFromPreset()) {
-                    context.notifyParamChange();
-                    context.drawPreview();
-                }
-            });
-
-            btnLoad.setOnAction(e -> loadCustomCultureLayerForTensor(tensorIdx, img -> {
-                customTensorImages.put(tensorIdx, img);
-                updateTensorFileLabel(tensorIdx);
-                context.selectPreviewMode(tensorIdx + 1);
-                radioImport.setSelected(true);
-                context.notifyParamChange();
-                context.drawPreview();
-            }));
-
-            btnClear.setOnAction(e -> {
-                customTensorImages.remove(tensorIdx);
-                updateTensorFileLabel(tensorIdx);
-                context.selectPreviewMode(tensorIdx + 1);
-                radioProc.setSelected(true);
-                context.notifyParamChange();
-                context.drawPreview();
-            });
-
-            subBlock.getChildren().addAll(subTitle, radioProc, procBox, radioImport, importBox);
-            layersDynamicContainer.getChildren().add(subBlock);
-        }
+        subBlockBuilder.rebuildSubBlocks(layersDynamicContainer, dimCount, btnGenerateProceduralTensorsSection);
     }
 
     public void loadCustomCultureLayerForTensor(int tensorIdx, Consumer<Image> onLoaded) {
@@ -839,7 +586,7 @@ public class ScenarioCulturalSectionBuilder {
         }
         customTensorImages.clear();
 
-        context.selectPreviewMode(1); // Select first cultural tensor (isogloss)
+        context.selectPreviewMode(1);
         if (tensorFileLabels != null) {
             for (Integer idx : tensorFileLabels.keySet()) {
                 updateTensorFileLabel(idx);
@@ -871,11 +618,6 @@ public class ScenarioCulturalSectionBuilder {
         }));
     }
 
-    /**
-     * Applies state from a Scenario entity into UI controls.
-     *
-     * @param s source scenario
-     */
     public void applyScenario(Scenario s) {
         if (s == null) return;
         if (s.getCultureVectorDimensions() > 0 && cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValueFactory() != null) {
@@ -906,7 +648,6 @@ public class ScenarioCulturalSectionBuilder {
 
         rebuildCulturalTensorSubBlocks(dims);
 
-        // Procedural mode flags and parameters
         if (s.getTensorProceduralModes() != null) {
             for (int i = 0; i < Math.min(dims, s.getTensorProceduralModes().size()); i++) {
                 boolean isProc = s.getTensorProceduralModes().get(i);
@@ -951,11 +692,6 @@ public class ScenarioCulturalSectionBuilder {
         }
     }
 
-    /**
-     * Exports cultural section parameters into a Scenario instance.
-     *
-     * @param s target scenario
-     */
     public void exportToScenario(Scenario s) {
         if (s == null) return;
         int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
@@ -980,7 +716,6 @@ public class ScenarioCulturalSectionBuilder {
             }
             s.getTensorProceduralModes().set(i, isProc);
 
-            // Tensor Seeds
             if (tensorSeedFields.containsKey(i) && tensorSeedFields.get(i) != null) {
                 try {
                     tSeeds.put(i, Long.parseLong(tensorSeedFields.get(i).getText().trim()));
@@ -999,7 +734,6 @@ public class ScenarioCulturalSectionBuilder {
                 }
             }
 
-            // Tensor Procedural Parameters
             Map<String, Double> pMap = new HashMap<>();
             ScenarioCulturalTensorCatalog.TensorParamDescriptor d1 = getTensorParam1Descriptor(i);
             ScenarioCulturalTensorCatalog.TensorParamDescriptor d2 = getTensorParam2Descriptor(i);
@@ -1018,8 +752,6 @@ public class ScenarioCulturalSectionBuilder {
         s.setTensorSeeds(tSeeds);
         s.setTensorProceduralParameters(tProcParams);
     }
-
-    // --- Getters & Accessors ---
 
     public int getCultureVectorDimensions() {
         return cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;

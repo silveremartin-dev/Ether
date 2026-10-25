@@ -104,11 +104,8 @@ public class SpatialTensorComparisonPane extends VBox {
     private Timeline popupHideTimer;
 
     // Animation & Concurrency
-    private Timeline timelineAnimation;
-    private boolean isPlayingAnimation = false;
-    private int currentTimelineFrameIndex = 0;
+    private final SpatialTensorTimelineAnimator timelineAnimator = new SpatialTensorTimelineAnimator();
     private final AtomicLong spatialComparisonRequestId = new AtomicLong(0);
-    private final List<Integer> preloadedTimelineYears = new CopyOnWriteArrayList<>();
     private boolean isUpdatingTexts = false;
 
     /**
@@ -168,7 +165,7 @@ public class SpatialTensorComparisonPane extends VBox {
         dateSlider.valueProperty().addListener((obs, oldV, newV) -> {
             int year = newV.intValue();
             currentDateLabel.setText(String.format(I18n.getOrDefault("analytics.label.year_ad_formatted", "📅 Year: %d AD"), year));
-            if (isPlayingAnimation) {
+            if (timelineAnimator.isPlayingAnimation()) {
                 update2DSpatialComparison();
             } else {
                 sliderDebounce.playFromStart();
@@ -721,86 +718,9 @@ public class SpatialTensorComparisonPane extends VBox {
     }
 
     private void preloadAll2DTensorsAsync(ScenarioSelectableItem itemA, ScenarioSelectableItem itemB, int startYear, int endYear) {
-        if (itemA == null && itemB == null) return;
-        if (playTimelineBtn != null) {
-            playTimelineBtn.setDisable(true);
-        }
-        if (mapRegenBox != null) {
-            mapRegenBox.setVisible(true);
-            mapRegenBox.setManaged(true);
-            mapRegenProgress.setProgress(0.0);
-            mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.preloading_frames", "⏳ Preloading 2D temporal frames..."));
-        }
-
-        preloadedTimelineYears.clear();
-        CompletableFuture.runAsync(() -> {
-            try {
-                SimulationRunRecord runA = runResolver != null ? runResolver.apply(itemA) : null;
-                SimulationRunRecord runB = runResolver != null ? runResolver.apply(itemB) : null;
-                int step = Math.max(1, (endYear - startYear) / 12);
-                String channelKey = SpatialTensorDiskCatalog.resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
-
-                int totalFrames = ((endYear - startYear) / step) + 1;
-                int count = 0;
-
-                for (int yr = startYear; yr <= endYear; yr += step) {
-                    preloadedTimelineYears.add(yr);
-                    count++;
-                    final double progress = (double) count / (double) Math.max(1, totalFrames);
-                    final int currentYr = yr;
-                    Platform.runLater(() -> {
-                        if (mapRegenProgress != null) mapRegenProgress.setProgress(progress);
-                        if (mapRegenStatusLabel != null) mapRegenStatusLabel.setText(String.format(I18n.getOrDefault("analytics.status.caching_frame_fmt", "⚡ Caching: Year %d AD (%d%%)"), currentYr, (int) (progress * 100)));
-                    });
-
-                    if (itemA != null) {
-                        String runIdA = itemA.getRunId();
-                        String keyA = runIdA + "_" + yr + "_" + channelKey;
-                        if (!RASTER_IMAGE_CACHE.containsKey(keyA)) {
-                            BufferedImage imgA = null;
-                            List<H3Cell> cellsA = runA != null ? runA.getSpatialSnapshotAt(yr) : null;
-                            if (cellsA != null && !cellsA.isEmpty()) {
-                                int wA = SpatialTensorRasterRenderer.computeOptimalRasterWidth(cellsA.size());
-                                imgA = SpatialTensorRasterRenderer.rasterizeCellsToImage(cellsA, channelKey, wA, wA / 2);
-                            } else {
-                                File diskA = SpatialTensorDiskCatalog.getDiskRasterForChannel(yr, channelKey);
-                                if (diskA != null && diskA.exists()) imgA = ImageIO.read(diskA);
-                            }
-                            if (imgA != null) RASTER_IMAGE_CACHE.put(keyA, imgA);
-                        }
-                    }
-
-                    if (itemB != null) {
-                        String runIdB = itemB.getRunId();
-                        String keyB = runIdB + "_" + yr + "_" + channelKey;
-                        if (!RASTER_IMAGE_CACHE.containsKey(keyB)) {
-                            BufferedImage imgB = null;
-                            List<H3Cell> cellsB = runB != null ? runB.getSpatialSnapshotAt(yr) : null;
-                            if (cellsB != null && !cellsB.isEmpty()) {
-                                int wB = SpatialTensorRasterRenderer.computeOptimalRasterWidth(cellsB.size());
-                                imgB = SpatialTensorRasterRenderer.rasterizeCellsToImage(cellsB, channelKey, wB, wB / 2);
-                            } else {
-                                File diskB = SpatialTensorDiskCatalog.getDiskRasterForChannel(yr, channelKey);
-                                if (diskB != null && diskB.exists()) imgB = ImageIO.read(diskB);
-                            }
-                            if (imgB != null) RASTER_IMAGE_CACHE.put(keyB, imgB);
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                logger.warn("Could not preload 2D frames: {}", ex.getMessage());
-            }
-
-            Platform.runLater(() -> {
-                if (mapRegenBox != null) {
-                    mapRegenBox.setVisible(false);
-                    mapRegenBox.setManaged(false);
-                }
-                if (playTimelineBtn != null) {
-                    playTimelineBtn.setDisable(false);
-                }
-            });
-        });
+        String channelKey = SpatialTensorDiskCatalog.resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
+        timelineAnimator.preloadAll2DTensorsAsync(itemA, itemB, startYear, endYear, channelKey, runResolver,
+                playTimelineBtn, mapRegenBox, mapRegenProgress, mapRegenStatusLabel);
     }
 
     /**
@@ -824,47 +744,14 @@ public class SpatialTensorComparisonPane extends VBox {
     }
 
     private void toggleDateAnimation() {
-        if (isPlayingAnimation) {
-            stopAnimation();
-        } else {
-            if (preloadedTimelineYears.isEmpty() && dateSlider != null) {
-                preloadedTimelineYears.add((int) dateSlider.getValue());
-            }
-            isPlayingAnimation = true;
-            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.pause_timeline", "⏸️ Pause"));
-            currentTimelineFrameIndex = 0;
-            if (dateSlider != null && !preloadedTimelineYears.isEmpty()) {
-                int curVal = (int) dateSlider.getValue();
-                for (int i = 0; i < preloadedTimelineYears.size(); i++) {
-                    if (preloadedTimelineYears.get(i) >= curVal) {
-                        currentTimelineFrameIndex = i;
-                        break;
-                    }
-                }
-            }
-            timelineAnimation = new Timeline(new KeyFrame(Duration.millis(350), evt -> {
-                if (dateSlider != null && !preloadedTimelineYears.isEmpty()) {
-                    currentTimelineFrameIndex = (currentTimelineFrameIndex + 1) % preloadedTimelineYears.size();
-                    int targetYr = preloadedTimelineYears.get(currentTimelineFrameIndex);
-                    dateSlider.setValue(targetYr);
-                }
-            }));
-            timelineAnimation.setCycleCount(Timeline.INDEFINITE);
-            timelineAnimation.play();
-        }
+        timelineAnimator.toggleDateAnimation(playTimelineBtn, dateSlider);
     }
 
     /**
      * Halts timeline playback animation.
      */
     public void stopAnimation() {
-        if (timelineAnimation != null) {
-            timelineAnimation.stop();
-        }
-        isPlayingAnimation = false;
-        if (playTimelineBtn != null) {
-            playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Play Timeline"));
-        }
+        timelineAnimator.stopAnimation(playTimelineBtn);
     }
 
     private void export2DCartographyZip() {
@@ -906,7 +793,7 @@ public class SpatialTensorComparisonPane extends VBox {
             if (scenarioSelectLabelB != null) scenarioSelectLabelB.setText(I18n.getOrDefault("analytics.label.select_b", "Target (B):"));
 
             if (playTimelineBtn != null) {
-                playTimelineBtn.setText(isPlayingAnimation
+                playTimelineBtn.setText(timelineAnimator.isPlayingAnimation()
                         ? I18n.getOrDefault("analytics.btn.pause_timeline", "⏸️ Pause")
                         : I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Play Timeline"));
             }

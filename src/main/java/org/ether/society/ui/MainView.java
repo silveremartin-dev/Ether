@@ -9,17 +9,14 @@ package org.ether.society.ui;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
 import org.ether.society.i18n.I18n;
-
 import org.ether.society.model.Scenario;
+
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -71,23 +68,14 @@ public class MainView extends StackPane {
     /** Internal state: is switching tabs (boolean). */
     private boolean isSwitchingTabs = false;
 
-    // Headless Mode Dashboard Overlay
-    private VBox headlessDashboard;
-    private Label lblHeadlessTitle;
-    private Label lblHeadlessDesc;
-    private Label lblHeadlessYearVal;
-    private Label lblHeadlessTicksVal;
-    private Label lblHeadlessPopVal;
-    private Label lblHeadlessTargetVal;
-    private Label lblHeadlessSpeedVal;
-    private Button btnHeadlessSwitchGui;
+    // Extracted Coordinators
+    private HeadlessDashboardOverlay headlessDashboard;
+    private SimulationTimelineCoordinator timelineCoordinator;
+    private FullScreenMapCoordinator fullScreenCoordinator;
 
-    // Full-Screen Map Mode
+    // Full-Screen & Simulation Layout Nodes
     private BorderPane simulationRoot;
     private StackPane mapStack;
-    /** Internal state: is full screen (boolean). */
-    private boolean isFullScreen = false;
-    private javafx.event.EventHandler<javafx.scene.input.KeyEvent> escapeKeyFilter;
 
     public MainView(H3SimulationEngine engine, ControlPanel controlPanel, H3MapCanvas mapCanvas, MiniMap miniMap,
             PerformanceHUD hud) {
@@ -107,6 +95,7 @@ public class MainView extends StackPane {
             engine.setTimeline(this.timeline);
         }
         this.godModePanel = new GodModePanel(engine, timeline);
+        this.timelineCoordinator = new SimulationTimelineCoordinator(engine, controlPanel, this::refreshViewsAfterSeek);
 
         initUI();
         updateTabTitles();
@@ -117,7 +106,6 @@ public class MainView extends StackPane {
     private void initUI() {
         tabPane = new TabPane();
         tabPane.getStyleClass().add("main-tab-pane");
-        // Transparent tab pane for glass effect
         tabPane.setStyle("-fx-tab-min-height: 40px; -fx-tab-max-height: 40px; -fx-background-color: transparent;");
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
@@ -268,14 +256,14 @@ public class MainView extends StackPane {
         tabPane.getTabs().addAll(planetTab, resourcesTab, setupTab, simulationTab, comparativeAnalyticsTab, executionContextTab, preferencesTab);
 
         getChildren().add(tabPane);
+
+        fullScreenCoordinator = new FullScreenMapCoordinator(this, tabPane, simulationRoot, mapStack, mapCanvas);
     }
 
     /**
      * Update tab titles.
-     *
      */
     public void updateTabTitles() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         planetTab.setText("1. " + org.ether.society.i18n.I18n.get("tab.planet_generator"));
         resourcesTab.setText("2. " + org.ether.society.i18n.I18n.get("tab.resources"));
         setupTab.setText("3. " + org.ether.society.i18n.I18n.get("tab.scenario"));
@@ -292,7 +280,9 @@ public class MainView extends StackPane {
         if (godModeTab != null) {
             godModeTab.setText(org.ether.society.i18n.I18n.getOrDefault("sim.tab.godmode", "⚡ God Mode"));
         }
-        updateHeadlessTexts();
+        if (headlessDashboard != null) {
+            headlessDashboard.updateHeadlessTexts();
+        }
     }
 
     private void onPlanetGenerated(List<H3Cell> cells) {
@@ -326,20 +316,27 @@ public class MainView extends StackPane {
 
     private BorderPane createSimulationView() {
         BorderPane root = new BorderPane();
-        root.getStyleClass().add("glass-panel"); // Apply glass effect base
+        root.getStyleClass().add("glass-panel");
         this.simulationRoot = root;
 
         // Map Container (Layered)
-        StackPane mapStack = new StackPane();
-        this.mapStack = mapStack;
+        mapStack = new StackPane();
 
-        // 1. Direct Map Canvas (Bound to container dimensions to eliminate scrollbars and fill 100% of space)
+        // 1. Direct Map Canvas
         mapCanvas.widthProperty().bind(mapStack.widthProperty());
         mapCanvas.heightProperty().bind(mapStack.heightProperty());
         mapStack.getChildren().add(mapCanvas);
 
-        // 1.b Headless Dashboard (Replaces 2D/3D visual canvas during headless execution)
-        headlessDashboard = createHeadlessDashboard();
+        // 1.b Headless Dashboard
+        headlessDashboard = new HeadlessDashboardOverlay(mode -> {
+            if (executionContextPanel != null) {
+                executionContextPanel.setRenderingMode(mode);
+            }
+        });
+        headlessDashboard.setSuppliers(
+            () -> engine != null ? engine.getTotalPopulation() : 0L,
+            () -> executionContextPanel != null ? executionContextPanel.getTargetYear() : 0
+        );
         mapStack.getChildren().add(headlessDashboard);
 
         // 2. Notification Overlay
@@ -375,7 +372,7 @@ public class MainView extends StackPane {
             setupPanel.setProgressControls(simProgressBar, simStatusLabel, simProgressOverlay);
         }
 
-        // 5. Color Legend Component (Bottom-Right overlay on map StackPane)
+        // 5. Color Legend Component
         colorLegend = new ColorLegend();
         colorLegend.setMaxSize(javafx.scene.layout.Region.USE_PREF_SIZE, javafx.scene.layout.Region.USE_PREF_SIZE);
         colorLegend.updateFromCanvas(mapCanvas);
@@ -391,19 +388,19 @@ public class MainView extends StackPane {
 
         mapCanvas.setTooltipContainer(mapStack);
 
-        // Connect Control Panel callbacks
+        // Connect Control Panel callbacks to timeline coordinator
         controlPanel.setOnSave(this::saveSimulation);
         controlPanel.setOnLoad(this::loadSimulation);
         controlPanel.setOnContourToggle(show -> mapCanvas.toggleContours(show));
-        controlPanel.setOnTimelapseRecord(this::toggleTimelapseRecording);
-        controlPanel.setOnTimelapseSeek(this::seekTimelapse);
-        controlPanel.setOnTimelapseSeekToEnd(this::seekToEndSafe);
-        controlPanel.setOnRewindStart(this::seekToStartSafe);
-        controlPanel.setOnFastRewind(() -> stepBackwardSafe(true));
-        controlPanel.setOnStepBack(() -> stepBackwardSafe(false));
-        controlPanel.setOnStepForward(() -> stepForwardSafe(false));
-        controlPanel.setOnFastForward(() -> stepForwardSafe(true));
-        controlPanel.setOnSeekToEnd(this::seekToEndSafe);
+        controlPanel.setOnTimelapseRecord(timelineCoordinator::toggleTimelapseRecording);
+        controlPanel.setOnTimelapseSeek(timelineCoordinator::seekTimelapse);
+        controlPanel.setOnTimelapseSeekToEnd(timelineCoordinator::seekToEndSafe);
+        controlPanel.setOnRewindStart(timelineCoordinator::seekToStartSafe);
+        controlPanel.setOnFastRewind(() -> timelineCoordinator.stepBackwardSafe(true));
+        controlPanel.setOnStepBack(() -> timelineCoordinator.stepBackwardSafe(false));
+        controlPanel.setOnStepForward(() -> timelineCoordinator.stepForwardSafe(false));
+        controlPanel.setOnFastForward(() -> timelineCoordinator.stepForwardSafe(true));
+        controlPanel.setOnSeekToEnd(timelineCoordinator::seekToEndSafe);
         controlPanel.setOnFullScreen(this::toggleFullScreen);
 
         if (godModePanel != null) {
@@ -471,75 +468,6 @@ public class MainView extends StackPane {
         return root;
     }
 
-    private VBox createHeadlessDashboard() {
-        lblHeadlessTitle = new Label();
-        lblHeadlessTitle.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 20px; -fx-font-weight: bold;");
-
-        lblHeadlessDesc = new Label();
-        lblHeadlessDesc.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-text-alignment: center;");
-        lblHeadlessDesc.setWrapText(true);
-        lblHeadlessDesc.setMaxWidth(680);
-
-        lblHeadlessYearVal = createMetricValLabel("An 0");
-        lblHeadlessTicksVal = createMetricValLabel("0");
-        lblHeadlessPopVal = createMetricValLabel("0");
-        lblHeadlessTargetVal = createMetricValLabel("-");
-        lblHeadlessSpeedVal = createMetricValLabel("0 pas/s");
-
-        VBox cardYear = createMetricCard(I18n.getOrDefault("headless.stat.year", "Année en cours :"), lblHeadlessYearVal);
-        VBox cardTicks = createMetricCard(I18n.getOrDefault("headless.stat.ticks", "Pas de simulation :"), lblHeadlessTicksVal);
-        VBox cardPop = createMetricCard(I18n.getOrDefault("headless.stat.pop", "Population mondiale :"), lblHeadlessPopVal);
-        VBox cardTarget = createMetricCard(I18n.getOrDefault("headless.stat.target", "Horizon cible :"), lblHeadlessTargetVal);
-        VBox cardSpeed = createMetricCard(I18n.getOrDefault("headless.stat.speed", "Vitesse de calcul :"), lblHeadlessSpeedVal);
-
-        HBox grid1 = new HBox(16, cardYear, cardTicks, cardPop);
-        grid1.setAlignment(Pos.CENTER);
-
-        HBox grid2 = new HBox(16, cardTarget, cardSpeed);
-        grid2.setAlignment(Pos.CENTER);
-
-        btnHeadlessSwitchGui = new Button();
-        btnHeadlessSwitchGui.getStyleClass().add("button-secondary");
-        btnHeadlessSwitchGui.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10 22; -fx-cursor: hand;");
-        btnHeadlessSwitchGui.setOnAction(e -> {
-            if (executionContextPanel != null) {
-                executionContextPanel.setRenderingMode(ExecutionContextPanel.RenderingMode.GUI);
-            }
-        });
-
-        VBox dashboard = new VBox(24, lblHeadlessTitle, lblHeadlessDesc, grid1, grid2, btnHeadlessSwitchGui);
-        dashboard.setAlignment(Pos.CENTER);
-        dashboard.setStyle("-fx-background-color: radial-gradient(center 50% 50%, radius 70%, #0f172a, #020617); -fx-padding: 40;");
-        dashboard.setVisible(false);
-        dashboard.setManaged(false);
-
-        updateHeadlessTexts();
-
-        return dashboard;
-    }
-
-    private VBox createMetricCard(String title, Label valLabel) {
-        Label lblT = new Label(title);
-        lblT.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
-        VBox card = new VBox(6, lblT, valLabel);
-        card.setAlignment(Pos.CENTER);
-        card.setStyle("-fx-background-color: rgba(30, 41, 59, 0.85); -fx-padding: 14 20; -fx-background-radius: 8; -fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-radius: 8; -fx-min-width: 170;");
-        return card;
-    }
-
-    private Label createMetricValLabel(String initial) {
-        Label lbl = new Label(initial);
-        lbl.setStyle("-fx-text-fill: #f8fafc; -fx-font-size: 16px; -fx-font-weight: bold;");
-        return lbl;
-    }
-
-    private void updateHeadlessTexts() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (lblHeadlessTitle != null) lblHeadlessTitle.setText(I18n.getOrDefault("headless.banner.title", "🚀 MODE HEADLESS ACTIF (ACCÉLÉRATION MAXIMALE)"));
-        if (lblHeadlessDesc != null) lblHeadlessDesc.setText(I18n.getOrDefault("headless.banner.desc", "L'affichage cartographique 2D/3D temps réel est désactivé pour allouer 100 % de la puissance de calcul CPU/GPU au moteur physique et démographique."));
-        if (btnHeadlessSwitchGui != null) btnHeadlessSwitchGui.setText(I18n.getOrDefault("headless.btn.switch_gui", "🖼️ Réactiver l'affichage visuel (Mode GUI)"));
-    }
-
     private void applyRenderingMode(ExecutionContextPanel.RenderingMode mode) {
         boolean isHeadless = (mode == ExecutionContextPanel.RenderingMode.HEADLESS);
         if (mapCanvas != null) {
@@ -556,166 +484,6 @@ public class MainView extends StackPane {
             mapCanvas.draw();
         }
         logger.info("Simulation visual rendering mode updated: {}", mode);
-    }
-
-    private void updateHeadlessTelemetry(String dateStr, long currentTick) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (lblHeadlessYearVal != null) lblHeadlessYearVal.setText(dateStr);
-        if (lblHeadlessTicksVal != null) lblHeadlessTicksVal.setText(String.format("%,d", currentTick));
-        if (lblHeadlessPopVal != null && engine instanceof org.ether.society.core.H3SimulationEngine h3) {
-            lblHeadlessPopVal.setText(String.format("%,d hab", h3.getTotalPopulation()));
-        }
-        if (lblHeadlessTargetVal != null && executionContextPanel != null) {
-            int targetYear = executionContextPanel.getTargetYear();
-            lblHeadlessTargetVal.setText(targetYear != 0 ? String.format("An %,d", targetYear) : "—");
-        }
-        if (lblHeadlessSpeedVal != null && hud != null) {
-            lblHeadlessSpeedVal.setText(String.format("%.1f it/s", hud.getFps()));
-        }
-    }
-
-    // --- Timelapse Recording State ---
-    /** Internal state: is recording (boolean). */
-    private boolean isRecording = false;
-
-    private void toggleTimelapseRecording() {
-        isRecording = !isRecording;
-        if (isRecording) {
-            logger.info("Timelapse recording STARTED");
-            engine.getHistoryManager().captureWorldSnapshot(engine);
-        } else {
-            logger.info("Timelapse recording STOPPED");
-            var snapshots = engine.getHistoryManager().getWorldSnapshots();
-            if (!snapshots.isEmpty()) {
-                int minYear = (int) (long) snapshots.firstKey();
-                int maxYear = (int) (long) snapshots.lastKey();
-                controlPanel.updateTimelapseSlider(minYear, maxYear, maxYear);
-            }
-        }
-    }
-
-    /** Atomic flag guarding against overlapping async stepping operations */
-    private final java.util.concurrent.atomic.AtomicBoolean isAsyncStepping = new java.util.concurrent.atomic.AtomicBoolean(false);
-
-    private void seekToStartSafe() {
-        if (engine == null) return;
-        engine.pause();
-        if (controlPanel != null) {
-            controlPanel.updatePlayPauseVisuals(false);
-        }
-        var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
-        if (snapshots != null && !snapshots.isEmpty()) {
-            long firstTick = snapshots.firstKey();
-            applySeekToTick(firstTick);
-        } else {
-            applySeekToTick(0);
-        }
-        logger.info("Rewind to start completed");
-    }
-
-    private void seekToEndSafe() {
-        if (engine == null) return;
-        engine.pause();
-        if (controlPanel != null) {
-            controlPanel.updatePlayPauseVisuals(false);
-        }
-        var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
-        if (snapshots != null && !snapshots.isEmpty()) {
-            long lastTick = snapshots.lastKey();
-            applySeekToTick(lastTick);
-        } else {
-            long endYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getEndDateYear() : 2100;
-            seekTimelapse((int) endYear);
-            return;
-        }
-        logger.info("Seek to end completed");
-    }
-
-    private void stepBackwardSafe(boolean fast) {
-        if (engine == null) return;
-        engine.pause();
-        if (controlPanel != null) {
-            controlPanel.updatePlayPauseVisuals(false);
-        }
-        long curTick = engine.getTickCounter();
-        var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
-        if (snapshots != null && !snapshots.isEmpty()) {
-            int jumps = fast ? 5 : 1;
-            Long targetTick = curTick;
-            for (int i = 0; i < jumps; i++) {
-                Long lower = snapshots.lowerKey(targetTick);
-                if (lower != null) {
-                    targetTick = lower;
-                } else {
-                    break;
-                }
-            }
-            if (targetTick != null && !targetTick.equals(curTick)) {
-                applySeekToTick(targetTick);
-                return;
-            }
-        }
-        long stepSize = fast ? 100 : 10;
-        long target = Math.max(0, curTick - stepSize);
-        applySeekToTick(target);
-    }
-
-    private void stepForwardSafe(boolean fast) {
-        if (engine == null) return;
-        engine.pause();
-        if (controlPanel != null) {
-            controlPanel.updatePlayPauseVisuals(false);
-        }
-
-        long curTick = engine.getTickCounter();
-        var snapshots = engine.getHistoryManager() != null ? engine.getHistoryManager().getWorldSnapshots() : null;
-        if (snapshots != null && !snapshots.isEmpty()) {
-            int jumps = fast ? 5 : 1;
-            Long targetTick = curTick;
-            for (int i = 0; i < jumps; i++) {
-                Long higher = snapshots.higherKey(targetTick);
-                if (higher != null) {
-                    targetTick = higher;
-                } else {
-                    break;
-                }
-            }
-            if (targetTick != null && !targetTick.equals(curTick)) {
-                applySeekToTick(targetTick);
-                return;
-            }
-        }
-
-        // If no future snapshot exists, calculate forward asynchronously to never freeze the JavaFX EDT
-        if (!isAsyncStepping.compareAndSet(false, true)) {
-            logger.warn("Step forward already in progress, skipping duplicate request");
-            return;
-        }
-
-        int ticksToRun = fast ? 100 : 10;
-        java.util.concurrent.CompletableFuture.runAsync(() -> {
-            try {
-                engine.stepForward(ticksToRun);
-            } catch (Exception ex) {
-                logger.error("Error during asynchronous step forward", ex);
-            } finally {
-                isAsyncStepping.set(false);
-                javafx.application.Platform.runLater(() -> {
-                    engine.pause();
-                    if (controlPanel != null) {
-                        controlPanel.updatePlayPauseVisuals(false);
-                    }
-                    refreshViewsAfterSeek();
-                });
-            }
-        });
-    }
-
-    private void applySeekToTick(long tick) {
-        if (engine == null) return;
-        engine.pause();
-        engine.seekToTick(tick);
-        refreshViewsAfterSeek();
     }
 
     private void refreshViewsAfterSeek() {
@@ -735,13 +503,6 @@ public class MainView extends StackPane {
         if (statsPanel != null) {
             statsPanel.update();
         }
-    }
-
-    private void seekTimelapse(int year) {
-        long startYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getStartDateYear() : -20000;
-        long targetTicks = Math.max(0, (year - startYear) * 12);
-        applySeekToTick(targetTicks);
-        logger.info("Timelapse seek to year: {} (tick {})", year, targetTicks);
     }
 
     private void onStartSimulation(Scenario scenario) {
@@ -859,7 +620,6 @@ public class MainView extends StackPane {
             }
         }
         
-        // Keep execution context tab enabled for live adjustments
         simulationTab.setDisable(false);
         tabPane.getSelectionModel().select(simulationTab);
         if (statsPanel != null) {
@@ -868,7 +628,6 @@ public class MainView extends StackPane {
         if (mapCanvas != null) {
             mapCanvas.resetView();
         }
-        // Do NOT auto-start the simulation engine: remain in ready/paused mode waiting for user click on Play
         if (engine != null && engine.isRunning()) {
             engine.pause();
         }
@@ -878,137 +637,28 @@ public class MainView extends StackPane {
         logger.info("Simulation initialized from Execution Context Panel and switched to Simulation Tab (4) in ready/paused mode");
     }
 
-    /**
-     * Toggle full screen.
-     *
-     */
     public void toggleFullScreen() {
-        if (isFullScreen) {
-            exitFullScreen();
-        } else {
-            enterFullScreen();
+        if (fullScreenCoordinator != null) {
+            fullScreenCoordinator.toggleFullScreen();
         }
     }
 
-    /**
-     * Enter full screen.
-     *
-     */
     public void enterFullScreen() {
-        if (isFullScreen || mapStack == null || simulationRoot == null) return;
-        isFullScreen = true;
-
-        // 1. Detach mapStack from simulationRoot
-        simulationRoot.setCenter(null);
-
-        // 2. Hide main TabPane so nothing else is visible on screen
-        tabPane.setVisible(false);
-        tabPane.setManaged(false);
-
-        // 3. Add mapStack directly to MainView StackPane to fill 100% of the window
-        if (!getChildren().contains(mapStack)) {
-            getChildren().add(mapStack);
+        if (fullScreenCoordinator != null) {
+            fullScreenCoordinator.enterFullScreen();
         }
-
-        // 4. Set JavaFX Stage to FullScreen if scene is attached
-        if (getScene() != null && getScene().getWindow() instanceof javafx.stage.Stage stage) {
-            stage.setFullScreen(true);
-
-            // Listen to OS-level fullscreen exit (e.g. default Escape handling by JavaFX)
-            stage.fullScreenProperty().addListener(new javafx.beans.value.ChangeListener<Boolean>() {
-                /**
-                 * Changed.
-                 *
-                 * @param obs the obs parameter (Boolean&gt;)
-                 * @param oldVal the old val parameter (Boolean)
-                 * @param newVal the new val parameter (Boolean)
-                 */
-                @Override
-                public void changed(javafx.beans.value.ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
-                    if (!newVal && isFullScreen) {
-                        stage.fullScreenProperty().removeListener(this);
-                        exitFullScreen();
-                    }
-                }
-            });
-        }
-
-        // 5. Add key event filter for Escape key
-        if (escapeKeyFilter == null) {
-            escapeKeyFilter = event -> {
-                if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
-                    exitFullScreen();
-                    event.consume();
-                }
-            };
-        }
-        if (getScene() != null) {
-            getScene().addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, escapeKeyFilter);
-        }
-
-        if (mapCanvas != null) {
-            mapCanvas.draw();
-        }
-        logger.info("Entered Full Screen map view mode");
     }
 
-    /**
-     * Exit full screen.
-     *
-     */
     public void exitFullScreen() {
-        if (!isFullScreen || mapStack == null || simulationRoot == null) return;
-        isFullScreen = false;
-
-        // 1. Remove Escape key filter
-        if (escapeKeyFilter != null && getScene() != null) {
-            getScene().removeEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, escapeKeyFilter);
+        if (fullScreenCoordinator != null) {
+            fullScreenCoordinator.exitFullScreen();
         }
-
-        // 2. Exit OS stage fullscreen if still active
-        if (getScene() != null && getScene().getWindow() instanceof javafx.stage.Stage stage) {
-            if (stage.isFullScreen()) {
-                stage.setFullScreen(false);
-            }
-        }
-
-        // 3. Remove mapStack from MainView StackPane root
-        getChildren().remove(mapStack);
-
-        // 4. Restore tabPane visibility
-        tabPane.setManaged(true);
-        tabPane.setVisible(true);
-
-        // 5. Restore mapStack to simulationRoot center
-        simulationRoot.setCenter(mapStack);
-
-        if (mapCanvas != null) {
-            mapCanvas.resetView();
-        }
-
-        javafx.application.Platform.runLater(() -> {
-            if (mapCanvas != null) {
-                mapCanvas.draw();
-            }
-        });
-
-        logger.info("Exited Full Screen map view mode");
     }
 
-    /**
-     * Is full screen.
-     *
-     * @return the resulting computation or state reference
-     */
     public boolean isFullScreen() {
-        return isFullScreen;
+        return fullScreenCoordinator != null && fullScreenCoordinator.isFullScreen();
     }
 
-    /**
-     * Add legend.
-     *
-     * @param legend the legend parameter (javafx.scene.Node)
-     */
     public void addLegend(javafx.scene.Node legend) {
         if (mapStack != null) {
             StackPane.setAlignment(legend, Pos.BOTTOM_RIGHT);
@@ -1061,8 +711,8 @@ public class MainView extends StackPane {
                     if (renderPending.compareAndSet(false, true)) {
                         javafx.application.Platform.runLater(() -> {
                             try {
-                                if (isHeadless) {
-                                    updateHeadlessTelemetry(dateStr, currentTick);
+                                if (isHeadless && headlessDashboard != null) {
+                                    headlessDashboard.updateHeadlessTelemetry(dateStr, currentTick, hud != null ? hud.getFps() : 0.0);
                                 } else {
                                     if (mapCanvas != null) {
                                         mapCanvas.setCurrentDateStr(dateStr);
@@ -1087,22 +737,14 @@ public class MainView extends StackPane {
         }
 
         AnimationTimer eventLoop = new AnimationTimer() {
-            /** Internal state: last update (long). */
             private long lastUpdate = 0;
 
-            /**
-             * Handle.
-             *
-             * @param now the now parameter (long)
-             */
             @Override
             public void handle(long now) {
                 if (now - lastUpdate >= 250_000_000) {
                     List<String> events = engine.getEventSystem().flushEvents();
                     if (!events.isEmpty()) {
                         long curPas = engine.getTickCounter();
-                        // Events are rendered spatially on the map canvas beacon layer and logged to audit trail.
-                        // Redundant second notification line at screen bottom is removed.
                         for (String event : events) {
                             logger.info("📢 [Pas {}] {}", curPas, event);
                         }
@@ -1152,10 +794,6 @@ public class MainView extends StackPane {
         return I18n.getOrDefault("age.renaissance", "RENAISSANCE");
     }
 
-    /**
-     * Save simulation.
-     *
-     */
     public void saveSimulation() {
         javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog(I18n.getOrDefault("mainview.save.default_name", "Sauvegarde Scenario"));
         dialog.setTitle(I18n.getOrDefault("mainview.save.dialog_title", "Save Simulation"));
@@ -1168,10 +806,6 @@ public class MainView extends StackPane {
         });
     }
 
-    /**
-     * Load simulation.
-     *
-     */
     public void loadSimulation() {
         engine.loadSimulation(null);
         notificationOverlay.showEvent(I18n.getOrDefault("mainview.load.success", "Simulation loaded from database"));
