@@ -51,6 +51,7 @@ logs/
 build_output.txt
 classpath.txt
 saves/
+archives/
 scratch/
 
 # Generated Javadoc (Tracked for docs)
