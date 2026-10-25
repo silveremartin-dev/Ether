@@ -22,7 +22,10 @@ import org.ether.society.core.profiling.SimulationProfiler;
 import org.ether.society.data.DODDataGenerator;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
+import org.ether.society.events.DomainEventBus;
 import org.ether.society.events.EventSystem;
+import org.ether.society.events.SimulationTickEvent;
+import org.ether.society.events.SimulationTickListener;
 import org.ether.society.model.Scenario;
 import org.ether.society.model.ScenarioTimeline;
 import org.ether.society.network.ClusterManager;
@@ -440,8 +443,26 @@ public class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
+    private final List<SimulationTickListener> tickListeners = new CopyOnWriteArrayList<>();
+
     public ClusterManager getClusterManager() { return clusterManager; }
     public void setOnTickCallback(Runnable callback) { this.onTickCallback = callback; }
+
+    public void addTickListener(SimulationTickListener listener) {
+        if (listener != null) {
+            tickListeners.add(listener);
+        }
+    }
+
+    public void removeTickListener(SimulationTickListener listener) {
+        if (listener != null) {
+            tickListeners.remove(listener);
+        }
+    }
+
+    public List<SimulationTickListener> getTickListeners() {
+        return java.util.Collections.unmodifiableList(tickListeners);
+    }
     public SimulationProfiler getProfiler() { return profiler; }
     public long getTickCounter() { return tickCounter; }
 
@@ -548,6 +569,26 @@ public class H3SimulationEngine implements ISimulationEngine {
                 autoSaveCheckpoint();
             }
             tickCounter++;
+
+            SimulationTickEvent tickEvent = new SimulationTickEvent(
+                    tickCounter,
+                    timeManager.getCurrentYear(),
+                    timeManager.getCurrentMonth(),
+                    getTotalPopulation(),
+                    currentTPS,
+                    currentGDP,
+                    currentGini,
+                    yearChanged
+            );
+
+            for (SimulationTickListener listener : tickListeners) {
+                try {
+                    listener.onTick(tickEvent);
+                } catch (Exception ex) {
+                    logger.error("Error notifying SimulationTickListener: {}", ex.getMessage(), ex);
+                }
+            }
+            DomainEventBus.getInstance().publishNow(tickEvent);
 
             long tickDuration = System.nanoTime() - tickStartNanos;
             long renderStartNanos = System.nanoTime();

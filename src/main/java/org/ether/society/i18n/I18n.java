@@ -133,11 +133,7 @@ public class I18n {
         }
     }
 
-    /**
-     * Get the current language property.
-     * Listen to this property to update UI when language changes.
-     */
-    /**
+        /**
      * Registers a headless / pure Java listener for language changes, decoupling callers from JavaFX properties.
      *
      * @param listener consumer receiving the new {@link Language} on change

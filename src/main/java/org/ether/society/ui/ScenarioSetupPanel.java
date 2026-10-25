@@ -92,9 +92,10 @@ public class ScenarioSetupPanel extends BorderPane {
     final ScenarioDemographicSectionBuilder demographicSectionBuilder = new ScenarioDemographicSectionBuilder(ScenarioHostContextFactory.createDemographicHostContext(this));
     final ScenarioCulturalSectionBuilder culturalSectionBuilder = new ScenarioCulturalSectionBuilder(ScenarioHostContextFactory.createCulturalHostContext(this));
     final ScenarioPreviewPaneBuilder previewPaneBuilder = new ScenarioPreviewPaneBuilder(ScenarioHostContextFactory.createPreviewPaneHostContext(this));
-    private ScenarioEngineConfigSectionBuilder engineConfigSectionBuilder;
+    ScenarioEngineConfigSectionBuilder engineConfigSectionBuilder;
     final ScenarioSimulationLauncher simulationLauncher;
     final ScenarioPresetManager presetManager;
+    final ScenarioConfigSyncHandler configSyncHandler = new ScenarioConfigSyncHandler(this);
     private final ScenarioLiveDiagnosticSection liveDiagnosticSection = new ScenarioLiveDiagnosticSection();
     private final ScenarioSnapshotInspector snapshotInspector = new ScenarioSnapshotInspector(meta -> {
         updateStartButtonLabel();
@@ -130,13 +131,13 @@ public class ScenarioSetupPanel extends BorderPane {
     // Seed & Random Events Controls
     TextField demoSeedField;
     TextField cultSeedField;
-    private CheckBox randomEventsCheckBox;
-    private CheckBox earthLeadersCheckBox;
-    private CheckBox proceduralLeadersCheckBox;
+    CheckBox randomEventsCheckBox;
+    CheckBox earthLeadersCheckBox;
+    CheckBox proceduralLeadersCheckBox;
 
     // Events section
     private ScenarioEventsSectionBuilder eventsSectionBuilder;
-    private ObservableList<ClimateEvent> eventsList;
+    ObservableList<ClimateEvent> eventsList;
     private RadioButton radioNewSimulation;
 
     private Supplier<PlanetGeneratorPanel> planetPanelSupplier;
@@ -468,105 +469,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     public void applyScenarioToUI(Scenario s) {
-        if (s == null) return;
-        isUpdatingFromPreset = true;
-        try {
-            if (scenarioPresetBar != null) {
-                scenarioPresetBar.setNameText(s.getName());
-            }
-            if (scenarioDescriptionArea != null) {
-                scenarioDescriptionArea.setText(s.getDescription() != null ? s.getDescription() : "");
-            }
-
-            boolean isEarth = true;
-            if (s.getPlanetPreset() != null) {
-                isEarth = "earth".equalsIgnoreCase(s.getPlanetPreset().getCanonicalPlanet());
-            } else if (activePlanetPreset != null) {
-                isEarth = "earth".equalsIgnoreCase(activePlanetPreset.getCanonicalPlanet());
-            }
-
-            if (isEarth && s.getCustomDensityBase64() == null) {
-                java.util.concurrent.CompletableFuture.runAsync(() -> {
-                    org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(s);
-                });
-            }
-
-            if (s.getEcologyPreset() != null && ecologyPresetCombo != null) {
-                ecologyPresetCombo.setValue(s.getEcologyPreset());
-            } else if (s.getEcologyPresetName() != null && ecologyPresetCombo != null) {
-                for (EcologyPreset eco : ecologyPresetCombo.getItems()) {
-                    if (eco.name().equalsIgnoreCase(s.getEcologyPresetName())) {
-                        ecologyPresetCombo.setValue(eco);
-                        break;
-                    }
-                }
-            }
-
-            EcologyPreset activeEco = ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null;
-            PlanetPreset cascaded = activeEco != null ? findPlanetPresetByName(activeEco.planetPresetName()) : s.getPlanetPreset();
-            if (cascaded != null) {
-                this.activePlanetPreset = cascaded;
-                if (planetPresetCombo != null) {
-                    planetPresetCombo.setValue(cascaded);
-                }
-            }
-            planetSyncManager.updateInheritedContextDisplay(activeEco != null ? activeEco.name() : null);
-
-            spatiotemporalSectionBuilder.applyScenario(s);
-            demographicSectionBuilder.applyScenario(s);
-            culturalSectionBuilder.applyScenario(s);
-            spatialBoundsBuilder.applyScenario(s);
-            if (engineConfigSectionBuilder != null) {
-                engineConfigSectionBuilder.applyScenario(s);
-            }
-
-            if (s.getSeed() != 0 && demoSeedField != null) {
-                demoSeedField.setText(String.valueOf(s.getSeed()));
-            }
-            if (s.getCulturalSeed() != 0 && cultSeedField != null) {
-                cultSeedField.setText(String.valueOf(s.getCulturalSeed()));
-            }
-            if (randomEventsCheckBox != null) {
-                randomEventsCheckBox.setSelected(s.isRandomEventsEnabled());
-            }
-            if (earthLeadersCheckBox != null) {
-                earthLeadersCheckBox.setSelected(s.isEarthHistoricalLeadersEnabled());
-            }
-            if (proceduralLeadersCheckBox != null) {
-                proceduralLeadersCheckBox.setSelected(s.isProceduralLeadersEnabled());
-            }
-
-            if (demographicSectionBuilder != null && demographicSectionBuilder.getDemoSourceCombo() != null) {
-                String autoSrc = demographicSectionBuilder.pickDemoSourceForEpoch(s.getStartDateYear(), this.activePlanetPreset);
-                ScenarioEpochCatalog.selectBestSource(demographicSectionBuilder.getDemoSourceCombo(), autoSrc, "Terre");
-            }
-
-            if (eventsList != null) {
-                eventsList.clear();
-                if (s.getClimateEvents() != null && !s.getClimateEvents().isEmpty()) {
-                    for (org.ether.society.model.ClimateEvent ce : s.getClimateEvents()) {
-                        eventsList.add(new ClimateEvent(ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude()));
-                    }
-                }
-            }
-
-            updatePreviewModesCombo();
-            if (previewModeCombo != null) {
-                previewModeCombo.getSelectionModel().select(0);
-            }
-            currentPreviewCells = null;
-            generatePreview();
-            if (onScenarioLoadedCallback != null) {
-                onScenarioLoadedCallback.accept(this.activePlanetPreset, activeEco != null ? activeEco : s.getEcologyPreset());
-            }
-            updatePerformanceControlsState();
-            if (scenarioPresetBar != null) {
-                scenarioPresetBar.markClean(s);
-            }
-            refreshSnapshotListForScenario(s);
-        } finally {
-            isUpdatingFromPreset = false;
-        }
+        configSyncHandler.applyScenarioToUI(s);
     }
 
     private VBox createOceanOptimizationSection() {
@@ -713,49 +616,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     public Scenario getScenario() {
-        Scenario s = new Scenario();
-        s.setName(scenarioPresetBar != null ? scenarioPresetBar.getCurrentName() : "New Scenario");
-        if (scenarioDescriptionArea != null) {
-            s.setDescription(scenarioDescriptionArea.getText());
-        }
-        spatiotemporalSectionBuilder.exportToScenario(s);
-        demographicSectionBuilder.exportToScenario(s);
-        culturalSectionBuilder.exportToScenario(s);
-        spatialBoundsBuilder.exportToScenario(s);
-        if (engineConfigSectionBuilder != null) {
-            engineConfigSectionBuilder.exportToScenario(s);
-        }
-
-        s.setEcologyPreset(ecologyPresetCombo != null ? ecologyPresetCombo.getValue() : null);
-        if (ecologyPresetCombo != null && ecologyPresetCombo.getValue() != null) {
-            s.setEcologyPresetName(ecologyPresetCombo.getValue().name());
-        }
-        s.setPlanetPreset(activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : null));
-
-        long seedVal = 12345L;
-        try {
-            if (demoSeedField != null) seedVal = Long.parseLong(demoSeedField.getText());
-        } catch (NumberFormatException ignored) {}
-        s.setSeed(seedVal);
-
-        long cultSeedVal = 54321L;
-        try {
-            if (cultSeedField != null) cultSeedVal = Long.parseLong(cultSeedField.getText());
-        } catch (NumberFormatException ignored) {}
-        s.setCulturalSeed(cultSeedVal);
-        s.setRandomEventsEnabled(randomEventsCheckBox == null || randomEventsCheckBox.isSelected());
-        s.setEarthHistoricalLeadersEnabled(earthLeadersCheckBox == null || earthLeadersCheckBox.isSelected());
-        s.setProceduralLeadersEnabled(proceduralLeadersCheckBox == null || proceduralLeadersCheckBox.isSelected());
-
-        if (eventsList != null) {
-            List<org.ether.society.model.ClimateEvent> sEvents = new ArrayList<>();
-            for (ClimateEvent ce : eventsList) {
-                sEvents.add(new org.ether.society.model.ClimateEvent(ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude()));
-            }
-            s.setClimateEvents(sEvents);
-        }
-
-        return s;
+        return configSyncHandler.exportScenario();
     }
 
     public void setOnScenarioLoadedCallback(BiConsumer<PlanetPreset, EcologyPreset> callback) {
@@ -784,7 +645,7 @@ public class ScenarioSetupPanel extends BorderPane {
         return eventsList != null ? new ArrayList<>(eventsList) : new ArrayList<>();
     }
 
-    private void updatePerformanceControlsState() {
+    void updatePerformanceControlsState() {
         if (engineConfigSectionBuilder != null) {
             engineConfigSectionBuilder.updatePerformanceControlsState();
         }
