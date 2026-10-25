@@ -110,12 +110,14 @@ for ITEM in "${SCENARIOS[@]}"; do
     IFS=":" read -r NAME START END DT RUN_ID <<< "$ITEM"
     
     # Check if run already exists in /opt/ether/saves
-    if [ -d "/opt/ether/saves/${RUN_ID}" ] && [ "${FORCE_REGENERATE:-0}" != "1" ]; then
-        echo "--------------------------------------------------------------------------------"
-        echo ">>> [SKIP] Run '${RUN_ID}' already completed on disk. Skipping."
-        echo "--------------------------------------------------------------------------------"
-        SKIPPED_COUNT=$(( SKIPPED_COUNT + 1 ))
-        continue
+    if [ -d "/opt/ether/saves/Headless_${NAME}" ] || [ -d "/opt/ether/saves/${RUN_ID}" ]; then
+        if [ "${FORCE_REGENERATE:-0}" != "1" ]; then
+            echo "--------------------------------------------------------------------------------"
+            echo ">>> [SKIP] Scenario '${NAME}' already completed on disk. Skipping."
+            echo "--------------------------------------------------------------------------------"
+            SKIPPED_COUNT=$(( SKIPPED_COUNT + 1 ))
+            continue
+        fi
     fi
     
     YEARS=$(( END - START ))
@@ -135,7 +137,7 @@ for ITEM in "${SCENARIOS[@]}"; do
     echo "    Snapshots Cap : 24 snapshots max"
     echo "--------------------------------------------------------------------------------"
     
-    java -Xms2g -Xmx8g \
+    java -Xms4g -Xmx24g \
          --add-modules=jdk.incubator.vector \
          -cp /opt/ether/society-simulation.jar \
          org.ether.society.cli.HeadlessRunner \
@@ -163,11 +165,12 @@ echo "==========================================================================
 echo " 🏁 ALL 45 SCENARIOS FINISHED IN RES 3! (${COMPLETED_COUNT} executed, ${SKIPPED_COUNT} skipped)"
 echo "================================================================================"
 echo "Packaging complete campaign archive..."
-tar -czf /opt/ether/logs/master_campaign_res3_archive.tar.gz \
-    /opt/ether/saves/*"(Résolution 3)"* \
-    /opt/ether/logs/ 2>/dev/null || tar -czf /opt/ether/logs/master_campaign_res3_archive.tar.gz /opt/ether/saves/ /opt/ether/logs/
+mkdir -p /opt/ether/archives
+tar -czf /opt/ether/archives/master_campaign_res3_archive.tar.gz \
+    /opt/ether/saves/Headless_* \
+    /opt/ether/logs/ 2>/dev/null || true
 
-echo "Archive created: /opt/ether/logs/master_campaign_res3_archive.tar.gz"
+echo "Archive created: /opt/ether/archives/master_campaign_res3_archive.tar.gz"
 echo "Completed at: $(date -u)"
 
 # Auto-shutdown guard if requested

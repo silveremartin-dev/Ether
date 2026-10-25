@@ -8,7 +8,6 @@ package org.ether.society.analytics;
 
 import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
 import org.ether.society.i18n.I18n;
-import org.ether.society.ui.analytics.ScenarioSelectableItem;
 
 import java.util.*;
 import java.util.function.Function;
@@ -348,9 +347,9 @@ public class GroundTruthAuditGenerator {
     /**
      * Generates a multi-scenario ground truth audit against empirical historical reality.
      */
-    public static AuditResult generateMultiScenarioGroundTruthAudit(List<ScenarioSelectableItem> simulatedSelected,
+    public static <T extends ScenarioBenchmarkItem> AuditResult generateMultiScenarioGroundTruthAudit(List<T> simulatedSelected,
                                                                     HistoricalValidationKernel.InterpolationMethod method,
-                                                                    Function<ScenarioSelectableItem, SimulationRunRecord> runResolver) {
+                                                                    Function<? super T, SimulationRunRecord> runResolver) {
         StringBuilder fullReport = new StringBuilder();
         fullReport.append("# ").append(I18n.getOrDefault("analytics.audit.title_clean", "📊 CLIODYNAMIC AUDIT & CALIBRATION REPORT")).append("\n\n");
         fullReport.append(String.format("**%s** : %s\n\n", I18n.getOrDefault("analytics.report.baseline_label", "Baseline Reference"), I18n.getOrDefault("analytics.audit.ground_truth_ref", "Cliodynamic Historical Reality (-100,000 ➔ 2026 CE)")));
@@ -371,7 +370,7 @@ public class GroundTruthAuditGenerator {
         benchmarkKeys.put("📉 " + I18n.getOrDefault("metric.currency", "Sociopolitical Instability") + " (sociopoliticalInstability)", "sociopoliticalInstability");
 
         record ScenarioAudit(
-                ScenarioSelectableItem item,
+                ScenarioBenchmarkItem item,
                 SimulationRunRecord run,
                 List<VariableDriftAnalysis> drifts,
                 Map<String, Double> mapes,
@@ -382,7 +381,7 @@ public class GroundTruthAuditGenerator {
 
         List<ScenarioAudit> audits = new ArrayList<>();
 
-        for (ScenarioSelectableItem item : simulatedSelected) {
+        for (T item : simulatedSelected) {
             SimulationRunRecord run = runResolver != null ? runResolver.apply(item) : null;
             if (run == null || run.getTimeSeriesData() == null || run.getTimeSeriesData().isEmpty()) {
                 continue;
@@ -515,11 +514,11 @@ public class GroundTruthAuditGenerator {
     /**
      * Generates a comparative report across pairs of simulated scenarios.
      */
-    public static AuditResult generateInterScenarioComparativeReport(List<ScenarioSelectableItem> simulatedSelected,
+    public static <T extends ScenarioBenchmarkItem> AuditResult generateInterScenarioComparativeReport(List<T> simulatedSelected,
                                                                       RootCauseAnalyzer analyzer,
-                                                                      Function<ScenarioSelectableItem, SimulationRunRecord> runResolver,
+                                                                      Function<? super T, SimulationRunRecord> runResolver,
                                                                       SimulationRunRepository runRepository) {
-        ScenarioSelectableItem baselineItem = simulatedSelected.get(0);
+        T baselineItem = simulatedSelected.get(0);
         SimulationRunRecord baseline = runResolver != null ? runResolver.apply(baselineItem) : null;
 
         if (baseline == null) {
@@ -538,7 +537,7 @@ public class GroundTruthAuditGenerator {
         int firstDivergence = -1;
 
         for (int i = 1; i < simulatedSelected.size(); i++) {
-            ScenarioSelectableItem targetItem = simulatedSelected.get(i);
+            T targetItem = simulatedSelected.get(i);
             SimulationRunRecord target = runResolver != null ? runResolver.apply(targetItem) : null;
 
             if (target != null && analyzer != null) {
@@ -556,8 +555,8 @@ public class GroundTruthAuditGenerator {
             multiReport.append("## 🔀 Matrice croisée entre scénarios alternatifs\n\n");
             for (int i = 1; i < simulatedSelected.size(); i++) {
                 for (int j = i + 1; j < simulatedSelected.size(); j++) {
-                    ScenarioSelectableItem itemA = simulatedSelected.get(i);
-                    ScenarioSelectableItem itemB = simulatedSelected.get(j);
+                    ScenarioBenchmarkItem itemA = simulatedSelected.get(i);
+                    ScenarioBenchmarkItem itemB = simulatedSelected.get(j);
                     SimulationRunRecord runA = runRepository.getRun(itemA.getRunId());
                     if (runA == null) runA = runRepository.getRunByScenarioName(itemA.getName()).orElse(null);
                     SimulationRunRecord runB = runRepository.getRun(itemB.getRunId());

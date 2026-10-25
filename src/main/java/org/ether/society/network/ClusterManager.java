@@ -53,128 +53,11 @@ public class ClusterManager {
         DISCONNECTED
     }
 
-    public static class ClusterNodeRecord {
-        /** Internal state: id (String). */
-        private final String id;
-        /** Internal state: host (String). */
-        private final String host;
-        /** Internal state: port (int). */
-        private final int port;
-        private ClusterRole role;
-        private NodeStatus status;
-        /** Internal state: capacity (String). */
-        private String capacity;
-        /** Internal state: assigned chunk start (int). */
-        private int assignedChunkStart;
-        /** Internal state: assigned chunk end (int). */
-        private int assignedChunkEnd;
-        private final AtomicLong lastHeartbeatNanos = new AtomicLong(System.nanoTime());
-
-        /**
-         * Cluster node record.
-         *
-         * @param id the id parameter (String)
-         * @param host the host parameter (String)
-         * @param port the port parameter (int)
-         * @param role the role parameter (ClusterRole)
-         * @param status the status parameter (NodeStatus)
-         * @param capacity the capacity parameter (String)
-         * @return the resulting computation or state reference
-         */
+    public static class ClusterNodeRecord extends org.ether.society.network.cluster.ClusterNodeRecord {
         public ClusterNodeRecord(String id, String host, int port, ClusterRole role, NodeStatus status, String capacity) {
-            this.id = id;
-            this.host = host;
-            this.port = port;
-            this.role = role;
-            this.status = status;
-            this.capacity = capacity;
-        }
-
-        /**
-         * Get id.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getId() { return id; }
-        /**
-         * Get host.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getHost() { return host; }
-        /**
-         * Get port.
-         *
-         * @return the resulting computation or state reference
-         */
-        public int getPort() { return port; }
-        /**
-         * Get role.
-         *
-         * @return the resulting computation or state reference
-         */
-        public ClusterRole getRole() { return role; }
-        public void setRole(ClusterRole role) { this.role = role; }
-        /**
-         * Get status.
-         *
-         * @return the resulting computation or state reference
-         */
-        public NodeStatus getStatus() { return status; }
-        public void setStatus(NodeStatus status) { this.status = status; }
-        /**
-         * Get capacity.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getCapacity() { return capacity; }
-        public void setCapacity(String capacity) { this.capacity = capacity; }
-        /**
-         * Get assigned chunk start.
-         *
-         * @return the resulting computation or state reference
-         */
-        public int getAssignedChunkStart() { return assignedChunkStart; }
-        /**
-         * Get assigned chunk end.
-         *
-         * @return the resulting computation or state reference
-         */
-        public int getAssignedChunkEnd() { return assignedChunkEnd; }
-        /**
-         * Set assigned chunks.
-         *
-         * @param start the start parameter (int)
-         * @param end the end parameter (int)
-         */
-        public void setAssignedChunks(int start, int end) {
-            this.assignedChunkStart = start;
-            this.assignedChunkEnd = end;
-        }
-        /**
-         * Get last heartbeat nanos.
-         *
-         * @return the resulting computation or state reference
-         */
-        public long getLastHeartbeatNanos() { return lastHeartbeatNanos.get(); }
-        /**
-         * Touch heartbeat.
-         *
-         */
-        public void touchHeartbeat() { this.lastHeartbeatNanos.set(System.nanoTime()); }
-
-        /**
-         * To string.
-         *
-         * @return the resulting computation or state reference
-         */
-        @Override
-        public String toString() {
-            return String.format("Node[%s @ %s:%d, role=%s, status=%s, capacity=%s, chunks=%d..%d]",
-                    id, host, port, role, status, capacity, assignedChunkStart, assignedChunkEnd);
+            super(id, host, port, role, status, capacity);
         }
     }
-
     private final ClusterRole localRole;
     /** Internal state: master host (String). */
     private final String masterHost;
@@ -829,27 +712,10 @@ public class ClusterManager {
     }
 
     private static void writeEncryptedFrame(DataOutputStream out, String plainText, EtherSecurityManager sec) throws IOException {
-        try {
-            String encrypted = sec.encrypt(plainText);
-            byte[] bytes = encrypted.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-            out.writeInt(bytes.length);
-            out.write(bytes);
-            out.flush();
-        } catch (Exception e) {
-            throw new IOException("Failed to encrypt frame", e);
-        }
+        org.ether.society.network.codec.ClusterWireCodec.writeEncryptedFrame(out, plainText, sec);
     }
 
     private static String readEncryptedFrame(DataInputStream in, EtherSecurityManager sec) throws IOException {
-        int length = in.readInt();
-        byte[] bytes = new byte[length];
-        in.readFully(bytes);
-        String encrypted = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
-        try {
-            return sec.decrypt(encrypted);
-        } catch (Exception e) {
-            throw new IOException("Failed to decrypt frame", e);
-        }
+        return org.ether.society.network.codec.ClusterWireCodec.readEncryptedFrame(in, sec);
     }
 }
-

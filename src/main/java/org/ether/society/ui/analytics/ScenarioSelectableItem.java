@@ -8,6 +8,7 @@ package org.ether.society.ui.analytics;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import org.ether.society.analytics.ScenarioBenchmarkItem;
 import org.ether.society.i18n.I18n;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.model.Scenario;
@@ -25,7 +26,7 @@ import java.util.Locale;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class ScenarioSelectableItem {
+public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
 
     private final Scenario scenario;
     private final BooleanProperty selected = new SimpleBooleanProperty(false);

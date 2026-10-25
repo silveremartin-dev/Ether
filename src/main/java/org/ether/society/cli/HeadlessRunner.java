@@ -328,6 +328,9 @@ public class HeadlessRunner {
             else if (a.startsWith("--save=")) {
                 customSaveName = arg.substring("--save=".length()).trim();
                 saveEnabled = true;
+            } else if (a.equals("--save") && i + 1 < args.length && !args[i + 1].startsWith("-")) {
+                customSaveName = args[++i].trim();
+                saveEnabled = true;
             } else if (a.equals("--no-save")) {
                 saveEnabled = false;
             } else if (a.equals("--profile") || a.equals("-p")) {

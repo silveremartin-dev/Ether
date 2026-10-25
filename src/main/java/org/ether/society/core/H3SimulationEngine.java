@@ -28,7 +28,6 @@ import org.ether.society.model.ScenarioTimeline;
 import org.ether.society.network.ClusterManager;
 import org.ether.society.network.spatial.H3SpatialPartitioner;
 import org.ether.society.persistence.SimulationSaveManager;
-import org.ether.society.ui.ExecutionContextPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,7 +205,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         this.currentScenario = scenario;
         this.performanceConfig = scenario != null ? scenario.toPerformanceConfig() : new SimulationPerformanceConfig(true);
         try {
-            String hwPref = Preferences.userNodeForPackage(ExecutionContextPanel.class)
+            String hwPref = Preferences.userRoot().node("org/ether/society/ui")
                     .get("ether_hardware_mode", "JAVA_VECTOR_SIMD");
             if ("NATIVE_RUST".equalsIgnoreCase(hwPref) && NativeRustBridge.isNativeAvailable()) {
                 this.performanceConfig.setExecutionEngineMode(SimulationPerformanceConfig.ExecutionEngineMode.RUST_NATIVE);
