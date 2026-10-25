@@ -1,16 +1,18 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2024 Gemini AI Assistant
+ * Copyright (c) 2024 Silvere Martin-Michiellot
+ */
 package org.ether.society.database;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javafx.scene.paint.Color;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
- * <h1>Polity</h1>
  * <p>
  * Represents an autonomous sovereign political entity (Tribe, Chiefdom, City-State, Empire)
  * that administers hexagonal territorial cells.
@@ -27,6 +29,7 @@ public class Polity {
     private final String id;
     /** Name of the sovereign polity. */
     private String name;
+    private int argbColor = 0xFF4488EE;
     @JsonIgnore
     private Color color;
     @JsonIgnore
@@ -53,6 +56,31 @@ public class Polity {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.color = color;
+        if (color != null) {
+            int a = (int) Math.round(color.getOpacity() * 255.0);
+            int r = (int) Math.round(color.getRed() * 255.0);
+            int g = (int) Math.round(color.getGreen() * 255.0);
+            int b = (int) Math.round(color.getBlue() * 255.0);
+            this.argbColor = (a << 24) | (r << 16) | (g << 8) | b;
+        }
+        this.capital = capital;
+        if (capital != null) {
+            addCell(capital);
+        }
+    }
+
+    /**
+     * Constructs a new sovereign Polity with initial capital using 32-bit ARGB integer.
+     * Suitable for pure headless execution without JavaFX.
+     *
+     * @param name Name of the polity
+     * @param argbColor 32-bit ARGB color
+     * @param capital Capital hexagonal cell
+     */
+    public Polity(String name, int argbColor, H3Cell capital) {
+        this.id = UUID.randomUUID().toString();
+        this.name = name;
+        this.argbColor = argbColor;
         this.capital = capital;
         if (capital != null) {
             addCell(capital);
@@ -73,12 +101,49 @@ public class Polity {
 
     @JsonIgnore
     public Color getColor() {
+        if (color == null) {
+            int a = (argbColor >>> 24);
+            int r = (argbColor >> 16) & 0xFF;
+            int g = (argbColor >> 8) & 0xFF;
+            int b = argbColor & 0xFF;
+            color = Color.rgb(r, g, b, a / 255.0);
+        }
         return color;
     }
 
     @JsonIgnore
     public void setColor(Color color) {
         this.color = color;
+        if (color != null) {
+            int a = (int) Math.round(color.getOpacity() * 255.0);
+            int r = (int) Math.round(color.getRed() * 255.0);
+            int g = (int) Math.round(color.getGreen() * 255.0);
+            int b = (int) Math.round(color.getBlue() * 255.0);
+            this.argbColor = (a << 24) | (r << 16) | (g << 8) | b;
+        }
+    }
+
+    public int getArgbColor() {
+        return argbColor;
+    }
+
+    public void setArgbColor(int argbColor) {
+        this.argbColor = argbColor;
+        this.color = null;
+    }
+
+    public String getHexColor() {
+        return String.format("#%06X", (0xFFFFFF & argbColor));
+    }
+
+    public void setHexColor(String hex) {
+        if (hex != null && !hex.isBlank()) {
+            try {
+                String clean = hex.startsWith("#") ? hex.substring(1) : hex;
+                int rgb = Integer.parseInt(clean, 16);
+                setArgbColor(0xFF000000 | rgb);
+            } catch (Exception ignored) {}
+        }
     }
 
     @JsonIgnore
@@ -117,6 +182,8 @@ public class Polity {
     public long getTotalPopulation() {
         return territory.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
     }
+
+    // Cliodynamics Getters & Setters
 
     public double getAsabiyyah() {
         return asabiyyah;
@@ -201,5 +268,29 @@ public class Polity {
 
         // 4. Political Instability Index (PSI) formulation: PSI = (1 - Asabiyyah) * EliteOverproduction * (1 + Gini)
         this.politicalInstability = Math.clamp((1.0 - asabiyyah) * (0.5 + eliteOverproduction) * (1.0 + avgGini + monetaryInflation * 0.5), 0.0, 1.0);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Polity polity = (Polity) o;
+        return Objects.equals(id, polity.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Polity{" +
+                "name='" + name + '\'' +
+                ", cells=" + territory.size() +
+                ", pop=" + getTotalPopulation() +
+                ", asabiyyah=" + String.format(Locale.US, "%.2f", asabiyyah) +
+                ", instability=" + String.format(Locale.US, "%.2f", politicalInstability) +
+                '}';
     }
 }

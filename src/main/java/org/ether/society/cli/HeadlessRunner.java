@@ -16,7 +16,6 @@ import org.ether.society.network.ClusterManager;
 import org.ether.society.network.cluster.ClusterSnapshotManager;
 import org.ether.society.network.cluster.WorkerGPUOffloader;
 import org.ether.society.config.SimulationPerformanceConfig;
-import org.ether.society.ui.ExecutionContextPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +34,10 @@ import java.util.prefs.Preferences;
  */
 public class HeadlessRunner {
     private static final Logger logger = LoggerFactory.getLogger(HeadlessRunner.class);
-    private static final Preferences execPrefs = Preferences.userNodeForPackage(ExecutionContextPanel.class);
-    private static final Preferences prefPrefs = Preferences.userNodeForPackage(org.ether.society.ui.PreferencesPanel.class);
+    private static final Preferences execPrefs = Preferences.userRoot().node("org/ether/society/ui");
+    private static final Preferences prefPrefs = Preferences.userRoot().node("org/ether/society/ui");
     private static final Preferences i18nPrefs = Preferences.userNodeForPackage(org.ether.society.i18n.I18n.class);
-    private static final Preferences themePrefs = Preferences.userNodeForPackage(org.ether.society.ui.Theme.class);
+    private static final Preferences themePrefs = Preferences.userRoot().node("org/ether/society/ui");
 
     public enum CliEngineMode {
         RUST_NATIVE,
@@ -361,19 +360,19 @@ public class HeadlessRunner {
         if (engineMode == CliEngineMode.RUST_NATIVE) {
             execPrefs.putBoolean("ether_gpu_enabled", false);
             prefPrefs.putBoolean("ether_gpu_enabled", false);
-            execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.NATIVE_RUST.name());
+            execPrefs.put("ether_hardware_mode", "NATIVE_RUST");
         } else if (engineMode == CliEngineMode.JAVA_VECTOR_SIMD) {
             execPrefs.putBoolean("ether_gpu_enabled", false);
             prefPrefs.putBoolean("ether_gpu_enabled", false);
-            execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.JAVA_VECTOR_SIMD.name());
+            execPrefs.put("ether_hardware_mode", "JAVA_VECTOR_SIMD");
         } else if (engineMode == CliEngineMode.CPU_JIT) {
             execPrefs.putBoolean("ether_gpu_enabled", false);
             prefPrefs.putBoolean("ether_gpu_enabled", false);
-            execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.CPU_JIT.name());
+            execPrefs.put("ether_hardware_mode", "CPU_JIT");
         } else {
             execPrefs.putBoolean("ether_gpu_enabled", false);
             prefPrefs.putBoolean("ether_gpu_enabled", false);
-            execPrefs.put("ether_hardware_mode", ExecutionContextPanel.HardwareMode.GPU_OFF.name());
+            execPrefs.put("ether_hardware_mode", "GPU_OFF");
         }
 
         try {

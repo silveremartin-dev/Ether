@@ -6,7 +6,6 @@
  */
 package org.ether.society.core;
 
-import javafx.scene.paint.Color;
 import org.ether.society.analytics.HistoryManager;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.core.dod.AgentBuffer;
@@ -123,8 +122,8 @@ public final class H3BufferAndEventCoordinator {
                 .forEach(c -> {
                     if (c.getOwner() == null) {
                         String name = "Realm of Hex " + Long.toHexString(c.getH3Index()).toUpperCase();
-                        Color color = Color.hsb(DeterministicPRNG.nextDouble(c.getH3Index(), 777) * 360.0, 0.8, 0.9);
-                        Polity nation = new Polity(name, color, c);
+                        int argb = java.awt.Color.HSBtoRGB((float) DeterministicPRNG.nextDouble(c.getH3Index(), 777), 0.8f, 0.9f);
+                        Polity nation = new Polity(name, argb, c);
                         nations.add(nation);
                     }
                 });

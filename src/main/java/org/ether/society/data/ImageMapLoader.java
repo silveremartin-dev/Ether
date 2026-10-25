@@ -16,17 +16,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Loads and exports simulation data from/to standard map images (Heightmaps/Biomemaps/Resource maps).
- * Assumes Equirectangular projection (Plate Carrée).
+ * Assumes Equirectangular projection (Plate CarrÃ©e).
  * 
  * Supports:
+ * - Direct headless {@link BufferedImage} mapping for high-throughput batch and CLI runs
+ * - Optimized JavaFX {@link Image} mapping with zero-allocation integer ARGB sampling
  * - PNG / JPEG / GeoTIFF image mapping
  * - ESRI World File (.tfw / .wld) export & import for spatial metadata alignment
  * - Multi-channel Geology & Resource mapping (Red=Metals, Green=Flora, Blue=Water)
@@ -38,7 +42,7 @@ public class ImageMapLoader {
     private static final Logger logger = LoggerFactory.getLogger(ImageMapLoader.class);
 
     /**
-     * Map data to cells.
+     * Map data to cells using input streams.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevationImageStream the elevation image stream parameter (InputStream)
@@ -49,7 +53,7 @@ public class ImageMapLoader {
     }
 
     /**
-     * Map data to cells.
+     * Map data to cells using input streams.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevationImageStream the elevation image stream parameter (InputStream)
@@ -62,6 +66,25 @@ public class ImageMapLoader {
         Image resourceImg = resourceImageStream != null ? new Image(resourceImageStream) : null;
 
         mapImagesToCells(cells, elevImg, biomeImg, resourceImg, -11000.0, 8848.0);
+    }
+
+    /**
+     * Maps headless data streams directly to cells using {@link BufferedImage} and ImageIO.
+     *
+     * @param cells the simulation cells
+     * @param elevationStream input stream of elevation map
+     * @param biomeStream input stream of biome map
+     * @param resourceStream input stream of resource map
+     */
+    public void mapBufferedDataToCells(List<H3Cell> cells, InputStream elevationStream, InputStream biomeStream, InputStream resourceStream) {
+        try {
+            BufferedImage elevImg = elevationStream != null ? ImageIO.read(elevationStream) : null;
+            BufferedImage biomeImg = biomeStream != null ? ImageIO.read(biomeStream) : null;
+            BufferedImage resourceImg = resourceStream != null ? ImageIO.read(resourceStream) : null;
+            mapBufferedImagesToCells(cells, elevImg, biomeImg, resourceImg, null, null, null, -11000.0, 8848.0);
+        } catch (Exception e) {
+            logger.error("Failed to map buffered data streams to cells", e);
+        }
     }
 
     /**
@@ -110,7 +133,7 @@ public class ImageMapLoader {
     }
 
     /**
-     * Map images to cells.
+     * Map images to cells with optimized integer ARGB sampling to prevent heap allocation.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param elevImg the elev img parameter (Image)
@@ -161,15 +184,18 @@ public class ImageMapLoader {
             double u = (lng + 180.0) / 360.0;
             double v = (90.0 - lat) / 180.0;
 
-            u = Math.max(0.0, Math.min(1.0, u));
-            v = Math.max(0.0, Math.min(1.0, v));
+            u = Math.clamp(u, 0.0, 1.0);
+            v = Math.clamp(v, 0.0, 1.0);
 
             // 1. Sample Elevation
             if (elevReader != null) {
                 int x = (int) Math.min(u * wElev, wElev - 1);
                 int y = (int) Math.min(v * hElev, hElev - 1);
-                Color c = elevReader.getColor(x, y);
-                double brightness = c.getBrightness(); // 0..1
+                int argb = elevReader.getArgb(x, y);
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >> 8) & 0xFF;
+                int b = argb & 0xFF;
+                double brightness = Math.max(r, Math.max(g, b)) / 255.0;
                 double elevation = org.ether.society.generation.PlanetPreset.waterLevelToMeters(brightness, minAlt, maxAlt);
                 cell.setElevation(elevation);
             }
@@ -178,8 +204,8 @@ public class ImageMapLoader {
             if (biomeReader != null) {
                 int x = (int) Math.min(u * wBiome, wBiome - 1);
                 int y = (int) Math.min(v * hBiome, hBiome - 1);
-                Color c = biomeReader.getColor(x, y);
-                cell.setBiome(matchBiomeColor(c));
+                int argb = biomeReader.getArgb(x, y);
+                cell.setBiome(matchBiomeArgb(argb));
             } else if (elevReader != null) {
                 double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
                 if (elev < 0) {
@@ -199,33 +225,36 @@ public class ImageMapLoader {
             if (resourceReader != null) {
                 int x = (int) Math.min(u * wRes, wRes - 1);
                 int y = (int) Math.min(v * hRes, hRes - 1);
-                Color c = resourceReader.getColor(x, y);
+                int argb = resourceReader.getArgb(x, y);
+                double r = ((argb >> 16) & 0xFF) / 255.0;
+                double g = ((argb >> 8) & 0xFF) / 255.0;
+                double b = (argb & 0xFF) / 255.0;
 
                 // Red channel -> Metals & Ores
-                cell.setResourceMetal(c.getRed() * 1000.0);
-                cell.setResourceClay((c.getRed() * 0.5 + c.getGreen() * 0.5) * 500.0);
+                cell.setResourceMetal(r * 1000.0);
+                cell.setResourceClay((r * 0.5 + g * 0.5) * 500.0);
 
                 // Green channel -> Wood & Plant Biomass
-                cell.setWoodResource(c.getGreen() * 1000.0);
-                cell.setBiomassNatural(c.getGreen() * 1000.0);
-                cell.setFoodResource(c.getGreen() * 500.0);
+                cell.setWoodResource(g * 1000.0);
+                cell.setBiomassNatural(g * 1000.0);
+                cell.setFoodResource(g * 500.0);
 
                 // Blue channel -> Water & Marine Biomass
-                cell.setWaterResource(c.getBlue() * 1000.0);
-                cell.setBiomassFish(c.getBlue() * 1000.0);
+                cell.setWaterResource(b * 1000.0);
+                cell.setBiomassFish(b * 1000.0);
             }
 
             // 4. Sample Climate / Temperature Map
             if (climateReader != null) {
                 int x = (int) Math.min(u * wClimate, wClimate - 1);
                 int y = (int) Math.min(v * hClimate, hClimate - 1);
-                Color c = climateReader.getColor(x, y);
-                // Red channel or brightness represents temperature (-50°C to +50°C)
-                double tempC = -50.0 + c.getRed() * 100.0;
+                int argb = climateReader.getArgb(x, y);
+                double r = ((argb >> 16) & 0xFF) / 255.0;
+                double tempC = -50.0 + r * 100.0;
                 cell.setTemperature(tempC);
-                // Green channel represents rainfall (0 to 3000 mm/yr) if no separate rainfall map
                 if (rainfallReader == null) {
-                    cell.setRainfall(c.getGreen() * 3000.0);
+                    double g = ((argb >> 8) & 0xFF) / 255.0;
+                    cell.setRainfall(g * 3000.0);
                 }
             }
 
@@ -233,17 +262,23 @@ public class ImageMapLoader {
             if (rainfallReader != null) {
                 int x = (int) Math.min(u * wRain, wRain - 1);
                 int y = (int) Math.min(v * hRain, hRain - 1);
-                Color c = rainfallReader.getColor(x, y);
-                cell.setRainfall(c.getBrightness() * 3000.0);
+                int argb = rainfallReader.getArgb(x, y);
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >> 8) & 0xFF;
+                int b = argb & 0xFF;
+                double brightness = Math.max(r, Math.max(g, b)) / 255.0;
+                cell.setRainfall(brightness * 3000.0);
             }
 
             // 6. Sample Separate Seasonality / Temp Amplitude Map
             if (seasonalityReader != null) {
                 int x = (int) Math.min(u * wSeason, wSeason - 1);
                 int y = (int) Math.min(v * hSeason, hSeason - 1);
-                Color c = seasonalityReader.getColor(x, y);
-                // Brightness represents seasonal temperature delta (0°C to 50°C)
-                double seasonalDelta = c.getBrightness() * 50.0;
+                int argb = seasonalityReader.getArgb(x, y);
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >> 8) & 0xFF;
+                int b = argb & 0xFF;
+                double seasonalDelta = (Math.max(r, Math.max(g, b)) / 255.0) * 50.0;
                 cell.setTemperature(cell.getTemperature() + (Math.sin(Math.toRadians(lat)) * seasonalDelta * 0.5));
             }
         }
@@ -252,11 +287,155 @@ public class ImageMapLoader {
                 elevImg != null, biomeImg != null, resourceImg != null, climateImg != null, rainfallImg != null, seasonalityImg != null, cells.size());
     }
 
+    /**
+     * Maps headless {@link BufferedImage} rasters to simulation cells without requiring JavaFX runtime or Color instances.
+     *
+     * @param cells the target H3 hex cells to populate
+     * @param elevImg the elevation raster
+     * @param biomeImg the categorical biome raster
+     * @param resourceImg the geology &amp; resource raster
+     * @param climateImg the mean annual temperature raster
+     * @param rainfallImg the precipitation raster
+     * @param seasonalityImg the seasonal thermal amplitude raster
+     * @param minAlt the minimum elevation baseline in meters
+     * @param maxAlt the maximum elevation ceiling in meters
+     */
+    public void mapBufferedImagesToCells(List<H3Cell> cells, BufferedImage elevImg, BufferedImage biomeImg, BufferedImage resourceImg,
+                                         BufferedImage climateImg, BufferedImage rainfallImg, BufferedImage seasonalityImg,
+                                         double minAlt, double maxAlt) {
+        if (elevImg == null && biomeImg == null && resourceImg == null && climateImg == null && rainfallImg == null && seasonalityImg == null) {
+            logger.warn("No buffered map images provided for cell mapping");
+            return;
+        }
+
+        int wElev = elevImg != null ? elevImg.getWidth() : 0;
+        int hElev = elevImg != null ? elevImg.getHeight() : 0;
+        int wBiome = biomeImg != null ? biomeImg.getWidth() : 0;
+        int hBiome = biomeImg != null ? biomeImg.getHeight() : 0;
+        int wRes = resourceImg != null ? resourceImg.getWidth() : 0;
+        int hRes = resourceImg != null ? resourceImg.getHeight() : 0;
+        int wClimate = climateImg != null ? climateImg.getWidth() : 0;
+        int hClimate = climateImg != null ? climateImg.getHeight() : 0;
+        int wRain = rainfallImg != null ? rainfallImg.getWidth() : 0;
+        int hRain = rainfallImg != null ? rainfallImg.getHeight() : 0;
+        int wSeason = seasonalityImg != null ? seasonalityImg.getWidth() : 0;
+        int hSeason = seasonalityImg != null ? seasonalityImg.getHeight() : 0;
+
+        for (H3Cell cell : cells) {
+            double lat = cell.getLatitude();
+            double lng = cell.getLongitude();
+
+            // Map Lat/Lng to UV coordinates (0..1)
+            double u = (lng + 180.0) / 360.0;
+            double v = (90.0 - lat) / 180.0;
+            u = Math.clamp(u, 0.0, 1.0);
+            v = Math.clamp(v, 0.0, 1.0);
+
+            // 1. Sample Elevation
+            if (elevImg != null) {
+                int x = (int) Math.min(u * wElev, wElev - 1);
+                int y = (int) Math.min(v * hElev, hElev - 1);
+                int argb = elevImg.getRGB(x, y);
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >> 8) & 0xFF;
+                int b = argb & 0xFF;
+                double brightness = Math.max(r, Math.max(g, b)) / 255.0;
+                double elevation = org.ether.society.generation.PlanetPreset.waterLevelToMeters(brightness, minAlt, maxAlt);
+                cell.setElevation(elevation);
+            }
+
+            // 2. Sample Biome
+            if (biomeImg != null) {
+                int x = (int) Math.min(u * wBiome, wBiome - 1);
+                int y = (int) Math.min(v * hBiome, hBiome - 1);
+                int argb = biomeImg.getRGB(x, y);
+                cell.setBiome(matchBiomeArgb(argb));
+            } else if (elevImg != null) {
+                double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
+                if (elev < 0) {
+                    cell.setBiome(Biome.OCEAN);
+                } else if (elev > 0.85 * maxAlt) {
+                    cell.setBiome(Biome.SNOW);
+                } else if (elev > 0.65 * maxAlt) {
+                    cell.setBiome(Biome.MOUNTAINS);
+                } else if (elev > 0.35 * maxAlt) {
+                    cell.setBiome(Biome.HILLS);
+                } else {
+                    cell.setBiome(Biome.PLAINS);
+                }
+            }
+
+            // 3. Sample Geology & Resources
+            if (resourceImg != null) {
+                int x = (int) Math.min(u * wRes, wRes - 1);
+                int y = (int) Math.min(v * hRes, hRes - 1);
+                int argb = resourceImg.getRGB(x, y);
+                double rNorm = ((argb >> 16) & 0xFF) / 255.0;
+                double gNorm = ((argb >> 8) & 0xFF) / 255.0;
+                double bNorm = (argb & 0xFF) / 255.0;
+
+                // Red channel -> Metals & Ores
+                cell.setResourceMetal(rNorm * 1000.0);
+                cell.setResourceClay((rNorm * 0.5 + gNorm * 0.5) * 500.0);
+
+                // Green channel -> Wood & Plant Biomass
+                cell.setWoodResource(gNorm * 1000.0);
+                cell.setBiomassNatural(gNorm * 1000.0);
+                cell.setFoodResource(gNorm * 500.0);
+
+                // Blue channel -> Water & Marine Biomass
+                cell.setWaterResource(bNorm * 1000.0);
+                cell.setBiomassFish(bNorm * 1000.0);
+            }
+
+            // 4. Sample Climate / Temperature Map
+            if (climateImg != null) {
+                int x = (int) Math.min(u * wClimate, wClimate - 1);
+                int y = (int) Math.min(v * hClimate, hClimate - 1);
+                int argb = climateImg.getRGB(x, y);
+                double rNorm = ((argb >> 16) & 0xFF) / 255.0;
+                double tempC = -50.0 + rNorm * 100.0;
+                cell.setTemperature(tempC);
+                if (rainfallImg == null) {
+                    double gNorm = ((argb >> 8) & 0xFF) / 255.0;
+                    cell.setRainfall(gNorm * 3000.0);
+                }
+            }
+
+            // 5. Sample Separate Rainfall / Moisture Map
+            if (rainfallImg != null) {
+                int x = (int) Math.min(u * wRain, wRain - 1);
+                int y = (int) Math.min(v * hRain, hRain - 1);
+                int argb = rainfallImg.getRGB(x, y);
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >> 8) & 0xFF;
+                int b = argb & 0xFF;
+                double brightness = Math.max(r, Math.max(g, b)) / 255.0;
+                cell.setRainfall(brightness * 3000.0);
+            }
+
+            // 6. Sample Separate Seasonality / Temp Amplitude Map
+            if (seasonalityImg != null) {
+                int x = (int) Math.min(u * wSeason, wSeason - 1);
+                int y = (int) Math.min(v * hSeason, hSeason - 1);
+                int argb = seasonalityImg.getRGB(x, y);
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >> 8) & 0xFF;
+                int b = argb & 0xFF;
+                double seasonalDelta = (Math.max(r, Math.max(g, b)) / 255.0) * 50.0;
+                cell.setTemperature(cell.getTemperature() + (Math.sin(Math.toRadians(lat)) * seasonalDelta * 0.5));
+            }
+        }
+
+        logger.info("Mapped data from BufferedImage maps to {} cells", cells.size());
+    }
+
     private static final Color[] BIOME_TARGET_COLORS = new Color[Biome.VALUES.length];
+    private static final int[] BIOME_TARGET_ARGBS = new int[Biome.VALUES.length];
 
     static {
         for (Biome b : Biome.VALUES) {
-            BIOME_TARGET_COLORS[b.ordinal()] = switch (b) {
+            Color c = switch (b) {
                 case DEEP_OCEAN -> Color.rgb(0, 0, 40);
                 case OCEAN -> Color.rgb(0, 50, 200);
                 case BEACH -> Color.rgb(240, 220, 150);
@@ -272,40 +451,67 @@ public class ImageMapLoader {
                 case SNOW -> Color.rgb(255, 255, 255);
                 case LAKE -> Color.rgb(30, 120, 220);
             };
+            BIOME_TARGET_COLORS[b.ordinal()] = c;
+            int r = (int) Math.round(c.getRed() * 255.0);
+            int g = (int) Math.round(c.getGreen() * 255.0);
+            int bVal = (int) Math.round(c.getBlue() * 255.0);
+            BIOME_TARGET_ARGBS[b.ordinal()] = (255 << 24) | (r << 16) | (g << 8) | bVal;
         }
     }
 
     /**
-     * Match pixel color to nearest Biome.
+     * Matches raw 32-bit ARGB pixel integer to the nearest {@link Biome} based on minimal Euclidean color distance.
+     * Operates completely in primitive integer space with zero heap allocation.
+     *
+     * @param argb the 32-bit ARGB packed integer
+     * @return the closest matching Biome
      */
-    public Biome matchBiomeColor(Color c) {
-        if (c == null) return Biome.OCEAN;
-        if (c.getBrightness() < 0.08) {
+    public static Biome matchBiomeArgb(int argb) {
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        int maxChannel = Math.max(r, Math.max(g, b));
+        if (maxChannel < 20) { // Equivalent to brightness < 0.08
             return Biome.DEEP_OCEAN;
         }
         Biome best = Biome.OCEAN;
-        double minDist = Double.MAX_VALUE;
-
-        for (Biome b : Biome.VALUES) {
-            Color bc = BIOME_TARGET_COLORS[b.ordinal()];
-            double dist = colorDistance(c, bc);
-            if (dist < minDist) {
-                minDist = dist;
-                best = b;
+        int minSqDist = Integer.MAX_VALUE;
+        for (Biome bm : Biome.VALUES) {
+            int target = BIOME_TARGET_ARGBS[bm.ordinal()];
+            int tr = (target >> 16) & 0xFF;
+            int tg = (target >> 8) & 0xFF;
+            int tb = target & 0xFF;
+            int dr = r - tr;
+            int dg = g - tg;
+            int db = b - tb;
+            int sqDist = dr * dr + dg * dg + db * db;
+            if (sqDist < minSqDist) {
+                minSqDist = sqDist;
+                best = bm;
             }
         }
         return best;
     }
 
-    private double colorDistance(Color c1, Color c2) {
-        double dr = c1.getRed() - c2.getRed();
-        double dg = c1.getGreen() - c2.getGreen();
-        double db = c1.getBlue() - c2.getBlue();
-        return dr * dr + dg * dg + db * db;
+    /**
+     * Match pixel color to nearest Biome.
+     *
+     * @param c the color to match
+     * @return the nearest Biome
+     */
+    public Biome matchBiomeColor(Color c) {
+        if (c == null) return Biome.OCEAN;
+        int r = (int) Math.round(c.getRed() * 255.0);
+        int g = (int) Math.round(c.getGreen() * 255.0);
+        int b = (int) Math.round(c.getBlue() * 255.0);
+        return matchBiomeArgb((255 << 24) | (r << 16) | (g << 8) | b);
     }
 
     /**
      * Define expected colors for biomes in the input map.
+     *
+     * @param b the biome
+     * @return the target Color
      */
     public Color getBiomeTargetColor(Biome b) {
         return b != null ? BIOME_TARGET_COLORS[b.ordinal()] : BIOME_TARGET_COLORS[Biome.OCEAN.ordinal()];
@@ -313,6 +519,9 @@ public class ImageMapLoader {
 
     /**
      * Export an image map to a standard PNG file along with a standard ESRI World File (.tfw).
+     *
+     * @param image the JavaFX Image
+     * @param targetPngFile destination file
      */
     public void exportMapToPngAndWorldFile(Image image, File targetPngFile) {
         if (image == null || targetPngFile == null) return;
@@ -320,7 +529,6 @@ public class ImageMapLoader {
             int width = (int) image.getWidth();
             int height = (int) image.getHeight();
 
-            // Save PNG
             java.awt.image.BufferedImage bufferedImage = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB);
             PixelReader reader = image.getPixelReader();
             if (reader != null) {
@@ -330,9 +538,25 @@ public class ImageMapLoader {
                     }
                 }
             }
+            exportMapToPngAndWorldFile(bufferedImage, targetPngFile);
+        } catch (Exception e) {
+            logger.error("Failed to export map image and world file", e);
+        }
+    }
+
+    /**
+     * Export a standard headless {@link BufferedImage} to PNG along with standard ESRI World File (.tfw).
+     *
+     * @param bufferedImage the buffered image
+     * @param targetPngFile destination file
+     */
+    public void exportMapToPngAndWorldFile(BufferedImage bufferedImage, File targetPngFile) {
+        if (bufferedImage == null || targetPngFile == null) return;
+        try {
+            int width = bufferedImage.getWidth();
+            int height = bufferedImage.getHeight();
             ImageIO.write(bufferedImage, "png", targetPngFile);
 
-            // Write matching World File (.tfw) for geospatial alignment
             String baseName = targetPngFile.getAbsolutePath();
             if (baseName.endsWith(".png")) {
                 baseName = baseName.substring(0, baseName.length() - 4);
@@ -345,22 +569,25 @@ public class ImageMapLoader {
             double y0 = 90.0 + (dy / 2.0);
 
             try (PrintWriter pw = new PrintWriter(new FileWriter(worldFile))) {
-                pw.printf("%.8f%n", dx);
+                pw.printf(Locale.US, "%.8f%n", dx);
                 pw.println("0.0");
                 pw.println("0.0");
-                pw.printf("%.8f%n", dy);
-                pw.printf("%.8f%n", x0);
-                pw.printf("%.8f%n", y0);
+                pw.printf(Locale.US, "%.8f%n", dy);
+                pw.printf(Locale.US, "%.8f%n", x0);
+                pw.printf(Locale.US, "%.8f%n", y0);
             }
 
-            logger.info("Exported map image to {} and World File to {}", targetPngFile.getAbsolutePath(), worldFile.getAbsolutePath());
+            logger.info("Exported buffered map image to {} and World File to {}", targetPngFile.getAbsolutePath(), worldFile.getAbsolutePath());
         } catch (Exception e) {
-            logger.error("Failed to export map image and world file", e);
+            logger.error("Failed to export buffered map image and world file", e);
         }
     }
 
     /**
      * Convert a JavaFX Image to a compressed Base64 PNG string for JSON preset persistence.
+     *
+     * @param image the JavaFX Image
+     * @return base64 encoded PNG string
      */
     public static String imageToBase64Png(Image image) {
         if (image == null) return null;
@@ -389,6 +616,9 @@ public class ImageMapLoader {
     /**
      * Loads a map image prioritizing the single canonical location data/maps/ether/<planet>/<year>/
      * using TemporalMapTensorManager with automatic epoch fallback and continuous interpolation.
+     *
+     * @param mapFileName the file name or layer tag
+     * @return the resolved JavaFX Image, or null
      */
     public static Image loadMapImage(String mapFileName) {
         return loadMapImage("earth", 2026L, mapFileName);
@@ -396,25 +626,38 @@ public class ImageMapLoader {
 
     /**
      * Loads a map image for a specific planet, epoch year, and layer.
+     *
+     * @param planet the planet identifier
+     * @param year the epoch year
+     * @param mapFileName the file name or layer tag
+     * @return the resolved JavaFX Image, or null
      */
     public static Image loadMapImage(String planet, long year, String mapFileName) {
         if (mapFileName == null || mapFileName.isBlank()) return null;
         return TemporalMapTensorManager.loadTemporalMapImage(planet, year, mapFileName);
     }
 
-    private static String normalizePresetDir(String dir) {
-        return TemporalMapTensorManager.normalizePlanet(dir);
+    /**
+     * Loads a headless {@link BufferedImage} using the default epoch (2026).
+     *
+     * @param mapFileName the file name or layer tag
+     * @return the resolved BufferedImage, or null
+     */
+    public static BufferedImage loadMapBufferedImage(String mapFileName) {
+        return loadMapBufferedImage("earth", 2026L, mapFileName);
     }
 
-    private static String deducePresetFromFileName(String fileName) {
-        if (fileName == null) return null;
-        String lower = fileName.toLowerCase();
-        if (lower.startsWith("earth_") || lower.startsWith("terre_")) return "earth";
-        if (lower.startsWith("moon_") || lower.startsWith("lune_")) return "moon";
-        if (lower.startsWith("mars_")) return "mars";
-        if (lower.startsWith("venus_")) return "venus";
-        if (lower.startsWith("mercury_") || lower.startsWith("mercure_")) return "mercury";
-        return null;
+    /**
+     * Loads a headless {@link BufferedImage} for a specific planet, epoch year, and layer.
+     *
+     * @param planet the planet identifier
+     * @param year the epoch year
+     * @param mapFileName the file name or layer tag
+     * @return the resolved BufferedImage, or null
+     */
+    public static BufferedImage loadMapBufferedImage(String planet, long year, String mapFileName) {
+        if (mapFileName == null || mapFileName.isBlank()) return null;
+        return TemporalMapTensorManager.loadTemporalMapBufferedImage(planet, year, mapFileName);
     }
 
     private static final int MAX_BASE64_CACHE_SIZE = 120;
@@ -429,6 +672,9 @@ public class ImageMapLoader {
 
     /**
      * Convert a Base64 PNG string back into a JavaFX Image with high-performance caching.
+     *
+     * @param base64 the Base64 PNG string
+     * @return the reconstructed JavaFX Image
      */
     public static Image base64PngToImage(String base64) {
         if (base64 == null || base64.isBlank()) return null;
@@ -449,11 +695,20 @@ public class ImageMapLoader {
 
     /**
      * Validation result for map images.
+     *
+     * @param valid whether the image is valid
+     * @param message descriptive status message
+     * @param width image width in pixels
+     * @param height image height in pixels
+     * @param aspectRatio aspect ratio width / height
      */
     public record ImageValidationResult(boolean valid, String message, int width, int height, double aspectRatio) {}
 
     /**
      * Checks effective raster image loading and verifies dimensions, pixel reader accessibility, and sanity.
+     *
+     * @param image the JavaFX Image to validate
+     * @return the validation result
      */
     public static ImageValidationResult validateMapImage(Image image) {
         if (image == null) {
@@ -473,17 +728,13 @@ public class ImageMapLoader {
             return new ImageValidationResult(false, "Impossible de lire la matrice de pixels (PixelReader null)", w, h, 0.0);
         }
         try {
-            // Sample test pixels
             reader.getColor(0, 0);
             reader.getColor(w / 2, h / 2);
             reader.getColor(w - 1, h - 1);
         } catch (Exception ex) {
-            return new ImageValidationResult(false, "Échec de lecture des pixels raster: " + ex.getMessage(), w, h, 0.0);
+            return new ImageValidationResult(false, "Ã‰chec de lecture des pixels raster: " + ex.getMessage(), w, h, 0.0);
         }
         double ratio = (double) w / (double) h;
         return new ImageValidationResult(true, String.format("Valide (%dx%d, ratio %.2f)", w, h, ratio), w, h, ratio);
     }
 }
-
-
-

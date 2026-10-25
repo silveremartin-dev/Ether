@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -24,6 +26,8 @@ import java.util.concurrent.CompletableFuture;
  * Online Data Fetching Service for real planetary satellite datasets (Earth, Moon, Mars, Venus, Mercury).
  * Connects to USGS Astrogeology WMS, NASA GIBS, and OpenTopography endpoints.
  * Caches retrieved datasets locally under ~/.ether/cache/maps/ for offline reusability.
+ * 
+ * Supports both UI-oriented JavaFX {@link Image} and headless {@link BufferedImage} async pipelines.
  * 
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -143,6 +147,13 @@ public class OnlineMapService {
     }
 
     /**
+     * Fetch elevation map as headless {@link BufferedImage} asynchronously.
+     */
+    public CompletableFuture<BufferedImage> fetchElevationMapBufferedImageAsync(CelestialBody body) {
+        return fetchMapBufferedImageAsync(body.getName().toLowerCase() + "_elevation.png", body.getElevationWmsUrl());
+    }
+
+    /**
      * Fetch biome/color map image asynchronously from USGS / NASA WMS endpoints.
      */
     public CompletableFuture<Image> fetchBiomeMapAsync(CelestialBody body) {
@@ -150,6 +161,16 @@ public class OnlineMapService {
             return CompletableFuture.completedFuture(null);
         }
         return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_biome.png", body.getBiomeWmsUrl());
+    }
+
+    /**
+     * Fetch biome/color map as headless {@link BufferedImage} asynchronously.
+     */
+    public CompletableFuture<BufferedImage> fetchBiomeMapBufferedImageAsync(CelestialBody body) {
+        if (body.getBiomeWmsUrl() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return fetchMapBufferedImageAsync(body.getName().toLowerCase() + "_biome.png", body.getBiomeWmsUrl());
     }
 
     /**
@@ -163,6 +184,16 @@ public class OnlineMapService {
     }
 
     /**
+     * Fetch climate/thermal map as headless {@link BufferedImage} asynchronously.
+     */
+    public CompletableFuture<BufferedImage> fetchClimateMapBufferedImageAsync(CelestialBody body) {
+        if (body.getClimateWmsUrl() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return fetchMapBufferedImageAsync(body.getName().toLowerCase() + "_climate.png", body.getClimateWmsUrl());
+    }
+
+    /**
      * Fetch rainfall/precipitation map image asynchronously from NASA GIBS WMS endpoints.
      */
     public CompletableFuture<Image> fetchRainfallMapAsync(CelestialBody body) {
@@ -170,6 +201,16 @@ public class OnlineMapService {
             return CompletableFuture.completedFuture(null);
         }
         return fetchMapFromUrlAsync(body.getName().toLowerCase() + "_rainfall.png", body.getRainfallWmsUrl());
+    }
+
+    /**
+     * Fetch rainfall/precipitation map as headless {@link BufferedImage} asynchronously.
+     */
+    public CompletableFuture<BufferedImage> fetchRainfallMapBufferedImageAsync(CelestialBody body) {
+        if (body.getRainfallWmsUrl() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return fetchMapBufferedImageAsync(body.getName().toLowerCase() + "_rainfall.png", body.getRainfallWmsUrl());
     }
 
     /**
@@ -183,7 +224,76 @@ public class OnlineMapService {
     }
 
     /**
-     * Downloads an image from a URL, using cache if available.
+     * Fetch hydrographic/river network map as headless {@link BufferedImage} asynchronously.
+     */
+    public CompletableFuture<BufferedImage> fetchHydroMapBufferedImageAsync(CelestialBody body) {
+        if (body.getHydroWmsUrl() == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return fetchMapBufferedImageAsync(body.getName().toLowerCase() + "_hydro.png", body.getHydroWmsUrl());
+    }
+
+    /**
+     * Downloads an image from a URL as a standard headless {@link BufferedImage}, using disk cache if available.
+     *
+     * @param cacheFileName the file name in cache directory
+     * @param urlString the remote WMS URL
+     * @return CompletableFuture yielding the BufferedImage, or null on failure
+     */
+    public CompletableFuture<BufferedImage> fetchMapBufferedImageAsync(String cacheFileName, String urlString) {
+        if (urlString == null || urlString.isBlank()) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        File cacheFile = new File(CACHE_DIR, cacheFileName);
+
+        // Check local disk cache first
+        if (cacheFile.exists() && cacheFile.length() > 0) {
+            logger.info("Loading cached satellite dataset as BufferedImage from {}", cacheFile.getAbsolutePath());
+            try {
+                BufferedImage bImg = ImageIO.read(cacheFile);
+                if (bImg != null) {
+                    return CompletableFuture.completedFuture(bImg);
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to load cached map file as BufferedImage: {}, redownloading...", cacheFile.getName());
+            }
+        }
+
+        logger.info("Fetching remote satellite map from WMS service: {}", urlString);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(urlString))
+                .header("User-Agent", "EtherPlanetGenerator/2.2.0 (Human Society Simulation)")
+                .timeout(Duration.ofSeconds(15))
+                .GET()
+                .build();
+
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofFile(cacheFile.toPath()))
+                .thenApply(response -> {
+                    if (response.statusCode() == 200 && cacheFile.exists() && cacheFile.length() > 0) {
+                        logger.info("Successfully downloaded satellite dataset: {} ({} bytes)", cacheFile.getName(), cacheFile.length());
+                        try {
+                            return ImageIO.read(cacheFile);
+                        } catch (Exception e) {
+                            logger.error("Error decoding downloaded map BufferedImage", e);
+                        }
+                    } else {
+                        logger.warn("WMS fetch returned HTTP status code: {}", response.statusCode());
+                    }
+                    return null;
+                })
+                .exceptionally(ex -> {
+                    logger.error("WMS remote satellite fetch failed: {}", ex.getMessage());
+                    return null;
+                });
+    }
+
+    /**
+     * Downloads an image from a URL as a JavaFX {@link Image}, using cache if available.
+     *
+     * @param cacheFileName the file name in cache directory
+     * @param urlString the remote WMS URL
+     * @return CompletableFuture yielding the JavaFX Image, or null on failure
      */
     public CompletableFuture<Image> fetchMapFromUrlAsync(String cacheFileName, String urlString) {
         if (urlString == null || urlString.isBlank()) {
@@ -234,4 +344,3 @@ public class OnlineMapService {
                 });
     }
 }
-
