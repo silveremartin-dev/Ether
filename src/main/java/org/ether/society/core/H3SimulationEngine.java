@@ -606,13 +606,26 @@ public class H3SimulationEngine implements ISimulationEngine {
     public void stepForward(int ticks) {
         pause();
         for (int i = 0; i < Math.max(1, ticks); i++) {
-            boolean wasRunning = running.getAndSet(true);
+            if (currentScenario != null && timeManager.getCurrentYear() > currentScenario.getEndDateYear()) {
+                logger.info("stepForward terminating early: scenario target end date (Year {}) reached.", currentScenario.getEndDateYear());
+                break;
+            }
+            running.set(true);
             try {
                 tick();
             } finally {
-                running.set(wasRunning);
+                if (!running.get()) {
+                    // tick() triggered pause() (e.g. target end date reached or event trigger)
+                    break;
+                }
+                running.set(false);
+            }
+            if (currentScenario != null && timeManager.getCurrentYear() > currentScenario.getEndDateYear()) {
+                logger.info("stepForward terminating: scenario target end date (Year {}) reached after tick.", currentScenario.getEndDateYear());
+                break;
             }
         }
+        running.set(false);
         if (historyManager != null) {
             historyManager.captureWorldSnapshot(this);
             historyManager.flushSnapshots();

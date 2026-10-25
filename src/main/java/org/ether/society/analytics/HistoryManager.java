@@ -247,9 +247,23 @@ public class HistoryManager {
      *
      * @param engine the simulation engine
      */
+    /**
+     * Checks if a snapshot exists for the given tick in either RAM cache or persistent disk index.
+     *
+     * @param tickIndex tick index to verify
+     * @return true if snapshot exists
+     */
+    public boolean hasSnapshot(long tickIndex) {
+        return ramSnapshotCache.containsKey(tickIndex) || diskSnapshotIndex.containsKey(tickIndex);
+    }
+
     public void captureWorldSnapshot(H3SimulationEngine engine) {
         if (engine.getCells() == null || engine.getCells().isEmpty()) return;
         long tickIndex = engine.getTickCounter();
+        if (hasSnapshot(tickIndex)) {
+            logger.debug("World snapshot for tick {} already captured. Skipping redundant capture.", tickIndex);
+            return;
+        }
 
         // 1. Non-blocking in-memory snapshot clone
         List<H3Cell> snapshot = engine.getCells().parallelStream()

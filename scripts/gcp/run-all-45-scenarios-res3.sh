@@ -168,6 +168,7 @@ echo "Packaging complete campaign archive..."
 mkdir -p /opt/ether/archives
 tar -czf /opt/ether/archives/master_campaign_res3_archive.tar.gz \
     /opt/ether/saves/Headless_* \
+    /opt/ether/saves/RUN-* \
     /opt/ether/logs/ 2>/dev/null || true
 
 echo "Archive created: /opt/ether/archives/master_campaign_res3_archive.tar.gz"
