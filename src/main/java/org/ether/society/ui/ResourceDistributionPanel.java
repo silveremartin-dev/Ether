@@ -4,45 +4,35 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
 package org.ether.society.ui;
+
 import org.ether.society.database.H3Cell;
-import org.ether.society.data.HistoricalMapGenerator;
 import org.ether.society.data.ImageMapLoader;
 import org.ether.society.data.OnlineMapService;
-import org.ether.society.data.ResourceDepositMapReader;
 import org.ether.society.i18n.I18n;
-import org.ether.society.model.Biome;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.generation.SimplexNoise;
+import org.ether.society.ui.resource.ResourcePlanetSectionBuilder;
+import org.ether.society.ui.resource.ResourceMapExportHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.function.Function;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
  * Enhanced UI Panel for editing planet-wide ecological and resource distribution 
  * using real scientific metric variables (GtC, Gt, Mt, mW/m², 10³ km³).
@@ -55,17 +45,16 @@ import java.util.function.Function;
  */
 public class ResourceDistributionPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(ResourceDistributionPanel.class);
-    /** Internal state: active cells (List&lt;H3Cell&gt;). */
+
     private List<H3Cell> activeCells;
     private PlanetPreset activePlanetPreset;
     private final Consumer<List<H3Cell>> onResourcesAppliedCallback;
     private final ImageMapLoader mapLoader = new ImageMapLoader();
     private final OnlineMapService onlineMapService = new OnlineMapService();
     private final ProceduralGenerator generator = new ProceduralGenerator();
-    // Custom Ecology Image Maps
+
     private Image customResourceImage;
-    /** Internal state: active loaded body key (String). */
-    private String activeLoadedBodyKey = null;
+
     // Geological & Energy Tensor Maps (Tab 2 Parity with Tab 1 & Tab 3)
     private final org.ether.society.ui.resource.ResourceGeologySectionBuilder geologySectionBuilder =
             new org.ether.society.ui.resource.ResourceGeologySectionBuilder(new org.ether.society.ui.resource.ResourceGeologySectionBuilder.HostContext() {
@@ -73,7 +62,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
                 @Override public int getGeologyViewComboIndex(int layerIdx) { return ResourceDistributionPanel.this.getGeologyViewComboIndex(layerIdx); }
                 @Override public void selectViewMode(int viewModeIndex) { ResourceDistributionPanel.this.selectViewMode(viewModeIndex); }
-                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE); }
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (getPlanetPresetCombo() != null ? getPlanetPresetCombo().getValue() : PlanetPreset.EARTH_LIKE); }
                 @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
                 @Override public boolean isUpdatingFromPreset() { return presetManager.isUpdatingFromPreset(); }
                 @Override public long getEpochYear() {
@@ -81,19 +70,21 @@ public class ResourceDistributionPanel extends BorderPane {
                             ? ecologyPresetBar.getPresetCombo().getValue().getAssociatedEpochYear() : 2026L;
                 }
             });
+
     // Hydrographic Domain & Freshwater Aquifers (Tab 2 Parity)
     private final org.ether.society.ui.resource.ResourceHydroSectionBuilder hydroSectionBuilder =
             new org.ether.society.ui.resource.ResourceHydroSectionBuilder(new org.ether.society.ui.resource.ResourceHydroSectionBuilder.HostContext() {
                 @Override public void notifyParamChange() { if (!presetManager.isUpdatingFromPreset() && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged(); }
                 @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
                 @Override public void selectViewMode(int viewModeIndex) { ResourceDistributionPanel.this.selectViewMode(viewModeIndex); }
-                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE); }
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (getPlanetPresetCombo() != null ? getPlanetPresetCombo().getValue() : PlanetPreset.EARTH_LIKE); }
                 @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
                 @Override public boolean isUpdatingFromPreset() { return presetManager.isUpdatingFromPreset(); }
                 @Override public OnlineMapService getOnlineMapService() { return onlineMapService; }
                 @Override public String getMapSourceComboValue() { return "earth"; }
                 @Override public void setMapStatus(String status) {}
             });
+
     // Biome & Flora Domain (Tab 2 Parity)
     private final org.ether.society.ui.resource.ResourceBiomeSectionBuilder biomeSectionBuilder =
             new org.ether.society.ui.resource.ResourceBiomeSectionBuilder(new org.ether.society.ui.resource.ResourceBiomeSectionBuilder.HostContext() {
@@ -101,29 +92,31 @@ public class ResourceDistributionPanel extends BorderPane {
                 @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
                 @Override public void updateSummary() { ResourceDistributionPanel.this.updateSummary(); }
                 @Override public void selectViewMode(int viewModeIndex) { ResourceDistributionPanel.this.selectViewMode(viewModeIndex); }
-                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE); }
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (getPlanetPresetCombo() != null ? getPlanetPresetCombo().getValue() : PlanetPreset.EARTH_LIKE); }
                 @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
                 @Override public boolean isUpdatingFromPreset() { return presetManager.isUpdatingFromPreset(); }
                 @Override public OnlineMapService getOnlineMapService() { return onlineMapService; }
                 @Override public String getMapSourceComboValue() { return "earth"; }
                 @Override public void setMapStatus(String status) {}
-                @Override public void applyPresetMapSource(String sourceKey) { ResourceDistributionPanel.this.applyPresetMapSource(sourceKey); }
+                @Override public void applyPresetMapSource(String sourceKey) { planetSectionBuilder.applyPresetMapSource(sourceKey); }
             });
+
     // Climate & Atmosphere Domain Maps (Tab 2 Parity)
     private final org.ether.society.ui.resource.ResourceClimateSectionBuilder climateSectionBuilder =
             new org.ether.society.ui.resource.ResourceClimateSectionBuilder(new org.ether.society.ui.resource.ResourceClimateSectionBuilder.HostContext() {
                 @Override public void notifyParamChange() { if (!presetManager.isUpdatingFromPreset() && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged(); }
                 @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
-                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE); }
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (getPlanetPresetCombo() != null ? getPlanetPresetCombo().getValue() : PlanetPreset.EARTH_LIKE); }
                 @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
                 @Override public boolean isUpdatingFromPreset() { return presetManager.isUpdatingFromPreset(); }
                 @Override public OnlineMapService getOnlineMapService() { return onlineMapService; }
                 @Override public String getMapSourceComboValue() { return "earth"; }
                 @Override public void setMapStatus(String status) {}
             });
+
     private final org.ether.society.ui.resource.ResourcePreviewCanvasBuilder previewCanvasBuilder =
             new org.ether.society.ui.resource.ResourcePreviewCanvasBuilder(new org.ether.society.ui.resource.ResourcePreviewCanvasBuilder.HostContext() {
-                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE); }
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (getPlanetPresetCombo() != null ? getPlanetPresetCombo().getValue() : PlanetPreset.EARTH_LIKE); }
                 @Override public double getSeismicActivityValue() { return seismicActivitySlider != null ? seismicActivitySlider.getValue() : 4.5; }
                 @Override public double getVolcanicActivityValue() { return volcanicActivitySlider != null ? volcanicActivitySlider.getValue() : 2.0; }
                 @Override public boolean isRadioImportBiomeSelected() { return biomeSectionBuilder.isRadioImportBiomeSelected(); }
@@ -136,95 +129,114 @@ public class ResourceDistributionPanel extends BorderPane {
                 @Override public javafx.scene.Node getHostNode() { return ResourceDistributionPanel.this; }
             });
 
-private final org.ether.society.ui.resource.ResourcePresetManager presetManager =
-        new org.ether.society.ui.resource.ResourcePresetManager(new org.ether.society.ui.resource.ResourcePresetManager.HostContext() {
-            @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE); }
-            @Override public void setActivePlanetPreset(PlanetPreset p) { ResourceDistributionPanel.this.activePlanetPreset = p; }
-            @Override public ComboBox<PlanetPreset> getPlanetPresetCombo() { return planetPresetCombo; }
-            @Override public java.util.function.Supplier<PlanetPreset> getPlanetPresetSupplier() { return planetPresetSupplier; }
-            @Override public Consumer<PlanetPreset> getPlanetPresetApplyCallback() { return planetPresetApplyCallback; }
-            @Override public org.ether.society.ui.resource.ResourceBiomeSectionBuilder getBiomeSectionBuilder() { return biomeSectionBuilder; }
-            @Override public org.ether.society.ui.resource.ResourceHydroSectionBuilder getHydroSectionBuilder() { return hydroSectionBuilder; }
-            @Override public org.ether.society.ui.resource.ResourceClimateSectionBuilder getClimateSectionBuilder() { return climateSectionBuilder; }
-            @Override public Slider getCrustalMetalSlider() { return crustalMetalSlider; }
-            @Override public Slider getPreciousMetalSlider() { return preciousMetalSlider; }
-            @Override public Slider getMantleHeatSlider() { return mantleHeatSlider; }
-            @Override public TextField getSeedField() { return seedField; }
-            @Override public Image getCustomResourceImage() { return customResourceImage; }
-            @Override public void setCustomResourceImage(Image img) { ResourceDistributionPanel.this.customResourceImage = img; }
-            @Override public void setResourceFileLabelText(String text) { if (resourceFileLabel != null) resourceFileLabel.setText(text); }
-            @Override public boolean validateResourceSetup() { return ResourceDistributionPanel.this.validateResourceSetup(); }
-            @Override public void selectViewMode(int viewModeIndex) { ResourceDistributionPanel.this.selectViewMode(viewModeIndex); }
-            @Override public void updateSummary() { ResourceDistributionPanel.this.updateSummary(); }
-            @Override public void updateLegend() { ResourceDistributionPanel.this.updateLegend(); }
-            @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
-            @Override public void prepopulateGeologyTensors(String planetKey, long epochYear) { ResourceDistributionPanel.this.prepopulateGeologyTensors(planetKey, epochYear); }
-            @Override public String getGeologySourceDisplayName(String planetKey) { return ResourceDistributionPanel.this.getGeologySourceDisplayName(planetKey); }
-        });
-    // Inherited Planet Preset & Context Controls
-    private Label planetSectionHeader;
-    private ComboBox<PlanetPreset> planetPresetCombo;
-    private Label planetContextLabel;
-    private Label thermoSynthesisBadge;
-    private Button syncPlanetBtn;
-    private Button autoDeriveGeologyBtn;
-    private Label geologyStatusLabel;
-    /** Internal state: is updating from preset (boolean). */
+    private final org.ether.society.ui.resource.ResourcePresetManager presetManager =
+            new org.ether.society.ui.resource.ResourcePresetManager(new org.ether.society.ui.resource.ResourcePresetManager.HostContext() {
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (getPlanetPresetCombo() != null ? getPlanetPresetCombo().getValue() : PlanetPreset.EARTH_LIKE); }
+                @Override public void setActivePlanetPreset(PlanetPreset p) { ResourceDistributionPanel.this.activePlanetPreset = p; }
+                @Override public ComboBox<PlanetPreset> getPlanetPresetCombo() { return ResourceDistributionPanel.this.getPlanetPresetCombo(); }
+                @Override public Supplier<PlanetPreset> getPlanetPresetSupplier() { return planetPresetSupplier; }
+                @Override public Consumer<PlanetPreset> getPlanetPresetApplyCallback() { return planetPresetApplyCallback; }
+                @Override public org.ether.society.ui.resource.ResourceBiomeSectionBuilder getBiomeSectionBuilder() { return biomeSectionBuilder; }
+                @Override public org.ether.society.ui.resource.ResourceHydroSectionBuilder getHydroSectionBuilder() { return hydroSectionBuilder; }
+                @Override public org.ether.society.ui.resource.ResourceClimateSectionBuilder getClimateSectionBuilder() { return climateSectionBuilder; }
+                @Override public Slider getCrustalMetalSlider() { return crustalMetalSlider; }
+                @Override public Slider getPreciousMetalSlider() { return preciousMetalSlider; }
+                @Override public Slider getMantleHeatSlider() { return mantleHeatSlider; }
+                @Override public TextField getSeedField() { return seedField; }
+                @Override public Image getCustomResourceImage() { return customResourceImage; }
+                @Override public void setCustomResourceImage(Image img) { ResourceDistributionPanel.this.customResourceImage = img; }
+                @Override public void setResourceFileLabelText(String text) { if (resourceFileLabel != null) resourceFileLabel.setText(text); }
+                @Override public boolean validateResourceSetup() { return ResourceDistributionPanel.this.validateResourceSetup(); }
+                @Override public void selectViewMode(int viewModeIndex) { ResourceDistributionPanel.this.selectViewMode(viewModeIndex); }
+                @Override public void updateSummary() { ResourceDistributionPanel.this.updateSummary(); }
+                @Override public void updateLegend() { ResourceDistributionPanel.this.updateLegend(); }
+                @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
+                @Override public void prepopulateGeologyTensors(String planetKey, long epochYear) { ResourceDistributionPanel.this.prepopulateGeologyTensors(planetKey, epochYear); }
+                @Override public String getGeologySourceDisplayName(String planetKey) { return ResourceDistributionPanel.this.getGeologySourceDisplayName(planetKey); }
+            });
+
+    private final ResourcePlanetSectionBuilder planetSectionBuilder =
+            new ResourcePlanetSectionBuilder(new ResourcePlanetSectionBuilder.HostContext() {
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset; }
+                @Override public void setActivePlanetPreset(PlanetPreset preset) { ResourceDistributionPanel.this.activePlanetPreset = preset; }
+                @Override public boolean isUpdatingFromPreset() { return presetManager.isUpdatingFromPreset(); }
+                @Override public void setUpdatingFromPreset(boolean updating) { presetManager.setUpdatingFromPreset(updating); }
+                @Override public org.ether.society.ui.resource.ResourceBiomeSectionBuilder getBiomeSectionBuilder() { return biomeSectionBuilder; }
+                @Override public org.ether.society.ui.resource.ResourceHydroSectionBuilder getHydroSectionBuilder() { return hydroSectionBuilder; }
+                @Override public org.ether.society.ui.resource.ResourceClimateSectionBuilder getClimateSectionBuilder() { return climateSectionBuilder; }
+                @Override public org.ether.society.ui.resource.ResourceGeologySectionBuilder getGeologySectionBuilder() { return geologySectionBuilder; }
+                @Override public Slider getCrustalMetalSlider() { return crustalMetalSlider; }
+                @Override public Slider getPreciousMetalSlider() { return preciousMetalSlider; }
+                @Override public Slider getMantleHeatSlider() { return mantleHeatSlider; }
+                @Override public Slider getSeismicActivitySlider() { return seismicActivitySlider; }
+                @Override public Slider getVolcanicActivitySlider() { return volcanicActivitySlider; }
+                @Override public Label getEcoCompatibilityLabel() { return ecoCompatibilityLabel; }
+                @Override public Label getResourceFileLabel() { return resourceFileLabel; }
+                @Override public PresetControlBar<EcologyPreset> getEcologyPresetBar() { return ecologyPresetBar; }
+                @Override public void updateSummary() { ResourceDistributionPanel.this.updateSummary(); }
+                @Override public void updatePreviewCanvas() { ResourceDistributionPanel.this.updatePreviewCanvas(); }
+                @Override public void updateLegend() { ResourceDistributionPanel.this.updateLegend(); }
+                @Override public int getActiveCellCount() { return activeCells != null ? activeCells.size() : 12482; }
+                @Override public String getGeologySourceDisplayName(String body) { return ResourceDistributionPanel.this.getGeologySourceDisplayName(body); }
+                @Override public void prepopulateGeologyTensors(String body) { ResourceDistributionPanel.this.prepopulateGeologyTensors(body); }
+                @Override public Supplier<PlanetPreset> getPlanetPresetSupplier() { return planetPresetSupplier; }
+            });
+
+    private final ResourceMapExportHandler mapExportHandler =
+            new ResourceMapExportHandler(new ResourceMapExportHandler.HostContext() {
+                @Override public javafx.stage.Window getWindow() { return getScene() != null ? getScene().getWindow() : null; }
+                @Override public int getViewModeIndex() { return ResourceDistributionPanel.this.getViewModeIndex(); }
+                @Override public PlanetPreset getActivePlanetPreset() { return activePlanetPreset != null ? activePlanetPreset : (getPlanetPresetCombo() != null ? getPlanetPresetCombo().getValue() : PlanetPreset.EARTH_LIKE); }
+                @Override public Double getSeismicActivityValue() { return seismicActivitySlider != null ? seismicActivitySlider.getValue() : null; }
+                @Override public Double getVolcanicActivityValue() { return volcanicActivitySlider != null ? volcanicActivitySlider.getValue() : null; }
+                @Override public ProceduralGenerator getGenerator() { return generator; }
+                @Override public ImageMapLoader getMapLoader() { return mapLoader; }
+                @Override public org.ether.society.ui.resource.ResourceBiomeSectionBuilder getBiomeSectionBuilder() { return biomeSectionBuilder; }
+                @Override public org.ether.society.ui.resource.ResourceHydroSectionBuilder getHydroSectionBuilder() { return hydroSectionBuilder; }
+                @Override public org.ether.society.ui.resource.ResourceGeologySectionBuilder getGeologySectionBuilder() { return geologySectionBuilder; }
+            });
+
     private final Map<Long, SimplexNoise> noiseCache = new HashMap<>();
     private SimplexNoise getOrCreateNoise(long seed) {
         return noiseCache.computeIfAbsent(seed, SimplexNoise::new);
     }
-    // Presets Bar
+
     private PresetControlBar<EcologyPreset> ecologyPresetBar;
     private TextArea ecologyDescriptionArea;
-    // Scientific Resource Sliders (Metric Units)
-    private Slider crustalMetalSlider;        // Gt (Industrial base metals: Fe, Cu, Al)
-    private Slider preciousMetalSlider;       // Mt (Precious & rare earth ores: Au, Pt, REE)
-    private Slider mantleHeatSlider;          // mW/m² (Mantle heat flow & geothermal/tectonic index)
-    // Legacy resource image & controls
-    private Label resourceFileLabel;
-    private Button loadResourceBtn;
-    // Seismic & Volcanic Activity Sliders for Tab 2
+
+    private Slider crustalMetalSlider;
+    private Slider preciousMetalSlider;
+    private Slider mantleHeatSlider;
     private Slider seismicActivitySlider;
     private Slider volcanicActivitySlider;
-    private Label seismicRowLabel;
-    private Label volcanicRowLabel;
+
+    private Label resourceFileLabel;
+    private Button loadResourceBtn;
     private Label ecoCompatibilityLabel;
     private VBox validationWarningBanner;
     private Label validationWarningLabel;
-    // Section & Row Labels for i18n
+
     private Label headerLabel;
     private Label mineralSecHeader;
     private Label crustalMetalRowLabel;
     private Label preciousMetalRowLabel;
     private Label mantleHeatRowLabel;
-    // Seed & Random Controls
+    private Label seismicRowLabel;
+    private Label volcanicRowLabel;
+
     private TextField seedField;
     private Button applyBtn;
-    private Button autoDeriveMasterBtn;
-    private java.util.function.Supplier<PlanetPreset> planetPresetSupplier;
+    private Supplier<PlanetPreset> planetPresetSupplier;
     private Consumer<PlanetPreset> planetPresetApplyCallback;
-    /**
-     * Set planet preset supplier.
-     *
-     * @param supplier the supplier parameter (java.util.function.Supplier&lt;PlanetPreset&gt;)
-     */
-    public void setPlanetPresetSupplier(java.util.function.Supplier<PlanetPreset> supplier) {
+
+    public void setPlanetPresetSupplier(Supplier<PlanetPreset> supplier) {
         this.planetPresetSupplier = supplier;
     }
-    /**
-     * Set planet preset apply callback.
-     *
-     * @param callback the callback parameter (Consumer&lt;PlanetPreset&gt;)
-     */
+
     public void setPlanetPresetApplyCallback(Consumer<PlanetPreset> callback) {
         this.planetPresetApplyCallback = callback;
     }
-    /**
-     * Resource distribution panel.
-     *
-     * @param onResourcesAppliedCallback the on resources applied callback parameter (Consumer&lt;List&lt;H3Cell&gt;&gt;)
-     */
+
     public ResourceDistributionPanel(Consumer<List<H3Cell>> onResourcesAppliedCallback) {
         this.onResourcesAppliedCallback = onResourcesAppliedCallback;
         getStyleClass().add("glass-panel");
@@ -232,197 +244,51 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
         initUI();
         applyEcologyPreset(EcologyPreset.EARTH_STANDARD);
         updateTexts();
-        I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
+        I18n.addLanguageListener(lang -> updateTexts());
     }
-    /**
-     * Set active planet preset.
-     *
-     * @param planetPreset the planet preset parameter (PlanetPreset)
-     */
+
     public void setActivePlanetPreset(PlanetPreset planetPreset) {
-        this.activePlanetPreset = planetPreset;
-        boolean oldState = presetManager.isUpdatingFromPreset();
-        presetManager.setUpdatingFromPreset(true);
-        try {
-            if (planetPreset != null && planetPresetCombo != null) {
-                PlanetPreset match = planetPresetCombo.getItems().stream()
-                        .filter(p -> p.name() != null && p.name().equalsIgnoreCase(planetPreset.name()))
-                        .findFirst().orElse(null);
-                if (match != null) {
-                    planetPresetCombo.setValue(match);
-                } else {
-                    planetPresetCombo.getItems().add(planetPreset);
-                    planetPresetCombo.setValue(planetPreset);
-                }
-            }
-            String bodyKey = detectBodyKey(planetPreset);
-            if (!bodyKey.equalsIgnoreCase(activeLoadedBodyKey) || biomeSectionBuilder.getCustomBiomeImage() == null) {
-                activeLoadedBodyKey = bodyKey;
-                autoApplyMapsForPreset(planetPreset);
-            }
-            updatePlanetContextDisplay();
-            updatePreviewCanvas();
-        } finally {
-            presetManager.setUpdatingFromPreset(oldState);
-        }
+        planetSectionBuilder.setActivePlanetPreset(planetPreset);
     }
-    private String detectBodyKey(PlanetPreset p) {
-        if (p == null) return "none";
-        boolean isImportMode = p.elevationUseImport() || (p.customElevBase64() != null && !p.customElevBase64().isBlank()) || (p.elevationMapSource() != null && !p.elevationMapSource().isBlank() && !p.elevationMapSource().equalsIgnoreCase("none"));
-        if (!isImportMode) return "none";
-        if (p.elevationMapSource() != null && !p.elevationMapSource().isBlank() && !p.elevationMapSource().equalsIgnoreCase("none")) {
-            return p.elevationMapSource().toLowerCase();
-        }
-        String lower = p.name() != null ? p.name().toLowerCase() : "";
-        if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) return "earth";
-        if (lower.contains("mars") || lower.contains("ares")) return "mars";
-        if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) return "moon";
-        if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) return "venus";
-        if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) return "mercury";
-        return "none";
+
+    public ComboBox<PlanetPreset> getPlanetPresetCombo() {
+        return planetSectionBuilder.getPlanetPresetCombo();
     }
-    /**
-     * Set active cells.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     */
+
     public void setActiveCells(List<H3Cell> cells) {
         this.activeCells = cells;
         updateSummary();
         updatePreviewCanvas();
     }
+
     private void initUI() {
         VBox controlsBox = new VBox(15);
         controlsBox.setPadding(new Insets(10));
+
         headerLabel = new Label();
         headerLabel.getStyleClass().add("label-title");
+
         validationWarningLabel = new Label();
         validationWarningLabel.setWrapText(true);
         validationWarningLabel.setStyle("-fx-text-fill: #f87171; -fx-font-size: 11px;");
+
         validationWarningBanner = new VBox(4,
-                new Label(I18n.getOrDefault("resource.validation.header", "⚠️ï¸ Paramètres ou cartes écologiques requis manquants ou invalides :")),
+                new Label(I18n.getOrDefault("resource.validation.header", "⚠️ Paramètres ou cartes écologiques requis manquants ou invalides :")),
                 validationWarningLabel
         );
         validationWarningBanner.setStyle("-fx-background-color: rgba(239, 68, 68, 0.15); -fx-border-color: #ef4444; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
         validationWarningBanner.getChildren().get(0).setStyle("-fx-text-fill: #f87171; -fx-font-weight: bold; -fx-font-size: 13px;");
         validationWarningBanner.setVisible(false);
         validationWarningBanner.setManaged(false);
+
         ecoCompatibilityLabel = new Label();
         ecoCompatibilityLabel.setWrapText(true);
         ecoCompatibilityLabel.setStyle("-fx-font-size: 11px; -fx-padding: 6 10; -fx-background-radius: 6; -fx-border-radius: 6;");
-        // --- 1. Inherited Planet Preset & Territory Section ---
-        planetSectionHeader = new Label(I18n.getOrDefault("resource.section.planet_preset", "PLANET & SCIENTIFIC DEDUCTION (TAB 1)"));
-        planetPresetCombo = new ComboBox<>();
-        planetPresetCombo.getItems().setAll(PlanetPreset.getPresets());
-        planetPresetCombo.setValue(PlanetPreset.EARTH_LIKE);
-        planetPresetCombo.setMaxWidth(Double.MAX_VALUE);
-        planetPresetCombo.setCellFactory(p -> new ListCell<>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (PlanetPreset)
-             * @param empty the empty parameter (boolean)
-             */
-            @Override
-            protected void updateItem(PlanetPreset item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText("");
-                } else {
-                    setText(I18n.getPlanetPresetDisplayName(item.name()));
-                }
-            }
-        });
-        planetPresetCombo.setButtonCell(new ListCell<PlanetPreset>() {
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (PlanetPreset)
-             * @param empty the empty parameter (boolean)
-             */
-            @Override
-            protected void updateItem(PlanetPreset item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    PlanetPreset current = planetPresetCombo != null ? planetPresetCombo.getValue() : null;
-                    setText(current != null ? I18n.getPlanetPresetDisplayName(current.name()) : I18n.getPlanetPresetDisplayName("Terre (Terran)"));
-                } else {
-                    setText(I18n.getPlanetPresetDisplayName(item.name()));
-                }
-            }
-        });
-        planetPresetCombo.setConverter(new javafx.util.StringConverter<PlanetPreset>() {
-            /**
-             * To string.
-             *
-             * @param item the item parameter (PlanetPreset)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public String toString(PlanetPreset item) {
-                return item == null ? I18n.getPlanetPresetDisplayName("Terre (Terran)") : I18n.getPlanetPresetDisplayName(item.name());
-            }
-            /**
-             * From string.
-             *
-             * @param string the string parameter (String)
-             * @return the resulting computation or state reference
-             */
-            @Override
-            public PlanetPreset fromString(String string) {
-                return null;
-            }
-        });
-        planetPresetCombo.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-opacity: 1.0; -fx-border-color: rgba(56, 189, 248, 0.4); -fx-border-radius: 4px;");
-        planetPresetCombo.setOnAction(e -> {
-            PlanetPreset selected = planetPresetCombo.getValue();
-            if (selected != null) {
-                this.activePlanetPreset = selected;
-                adaptResourceSlidersToPlanet(selected);
-                // Auto-load maps for known celestial bodies (mirrors Tab 1 behaviour)
-                autoApplyMapsForPreset(selected);
-                updatePlanetContextDisplay();
-                updatePreviewCanvas();
-            }
-        });
-        planetContextLabel = new Label(I18n.getOrDefault("resource.territory.earth", "ðŸª Territory: Earth-Like Planet"));
-        planetContextLabel.setWrapText(true);
-        planetContextLabel.getStyleClass().add("planet-context-badge");
-        syncPlanetBtn = new Button(I18n.getOrDefault("resource.btn.sync_planet", "🔄 Synchronize with Tab 1 Planet"));
-        syncPlanetBtn.getStyleClass().add("button-secondary");
-        syncPlanetBtn.setMaxWidth(Double.MAX_VALUE);
-        syncPlanetBtn.setOnAction(e -> {
-            PlanetPreset current = planetPresetSupplier != null ? planetPresetSupplier.get() : activePlanetPreset;
-            if (current != null) {
-                setActivePlanetPreset(current);
-                adaptResourceSlidersToPlanet(current);
-                updatePlanetContextDisplay();
-                updatePreviewCanvas();
-            }
-        });
-        autoDeriveMasterBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_all", "⚡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
-        autoDeriveMasterBtn.getStyleClass().addAll("button-secondary", "button-accent-blue");
-        autoDeriveMasterBtn.setMaxWidth(Double.MAX_VALUE);
-        autoDeriveMasterBtn.setOnAction(e -> {
-            autoDeriveEcologyFromPlanet();
-            autoDeriveHydroFromPlanet();
-            autoDeriveGeologyFromPlanet();
-        });
-        thermoSynthesisBadge = new Label();
-        thermoSynthesisBadge.setWrapText(true);
-        thermoSynthesisBadge.getStyleClass().add("info-badge");
-        VBox planetSection = createSection(planetSectionHeader, new VBox(8,
-                new Label(I18n.getOrDefault("resource.label.planet_preset_select", "Inherited Celestial Body Preset:")),
-                planetPresetCombo,
-                planetContextLabel,
-                ecoCompatibilityLabel,
-                thermoSynthesisBadge,
-                syncPlanetBtn,
-                autoDeriveMasterBtn
-        ));
-        // --- 2. Standardized Preset Control Bar for Ecology ---
+
+        // 1. Inherited Planet Preset & Territory Section
+        VBox planetSection = planetSectionBuilder.buildPlanetSection();
+
+        // 2. Preset Control Bar for Ecology
         ecologyPresetBar = presetManager.getPresetBar();
         ecologyDescriptionArea = presetManager.getDescriptionArea();
 
@@ -432,32 +298,27 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
         loadResourceBtn = new Button(I18n.get("planet.map.btn_load"));
         loadResourceBtn.getStyleClass().add("button-secondary");
         loadResourceBtn.setOnAction(e -> loadCustomResourceMap());
-        // Note: Domain controls are assembled inside their respective domain section builders.
-        // --- 7. Minerals & Underground Geology ---
+
+        // Minerals & Underground Geology
         crustalMetalSlider = createSlider(1.0, 2000.0, 80.0);
         preciousMetalSlider = createSlider(10.0, 50000.0, 1200.0);
         mantleHeatSlider = createSlider(10.0, 400.0, 87.0);
         seismicActivitySlider = createSlider(0.0, 10.0, 2.5);
         volcanicActivitySlider = createSlider(0.0, 8.0, 1.5);
+
         seismicRowLabel = new Label(I18n.getOrDefault("resource.label.seismic", "Seismic & Tectonic Activity (Mag Richter):"));
         volcanicRowLabel = new Label(I18n.getOrDefault("resource.label.volcanic", "Global Volcanic Activity (VEI):"));
         crustalMetalRowLabel = new Label(I18n.getOrDefault("resource.label.industrial_metals", "Industrial Metal Reserves (Iron/Copper):"));
         preciousMetalRowLabel = new Label(I18n.getOrDefault("resource.label.precious_metals", "Precious Ores & REE (Gold/Pt):"));
         mantleHeatRowLabel = new Label(I18n.getOrDefault("resource.param.mantle_heat", "Mantle Heat Flux (mW/m²):"));
-        // ---- DOMAIN SEEDS (one per domain, replacing global seed section) ----
-        // biomeSeedField is also assigned to seedField for EcologyPreset compatibility.
-        // --- DOMAINE 1 : BIOMES & FLORE ---
+
+        // Domain sections
         VBox biomeDomainSection = biomeSectionBuilder.buildBiomeSection();
-        seedField = biomeSectionBuilder.getBiomeSeedField(); // EcologyPreset compat
-        
-        // --- DOMAINE 2 : HYDROGRAPHIE & EAU DOUCE ---
+        seedField = biomeSectionBuilder.getBiomeSeedField();
         VBox hydroDomainSection = hydroSectionBuilder.buildHydroSection();
-        
-        // --- DOMAINE 3 : CLIMAT & ATMOSPHÈRE ---
         VBox climateDomainSection = climateSectionBuilder.buildClimateSection();
-        
-        // --- DOMAIN 4: GEOLOGY, TECTONICS & MINERALS ---
-        VBox geologyDomainSection = createGeologyVectorAndLayersSection();
+        VBox geologyDomainSection = geologySectionBuilder.buildGeologySection();
+
         controlsBox.getChildren().addAll(
                 headerLabel,
                 validationWarningBanner,
@@ -471,6 +332,7 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
         );
         controlsBox.setPrefWidth(460);
         controlsBox.setMinWidth(460);
+
         ScrollPane scrollControls = new ScrollPane(controlsBox);
         scrollControls.setFitToWidth(true);
         scrollControls.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -479,76 +341,23 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
         scrollControls.setPrefWidth(480);
         scrollControls.setMinWidth(480);
         scrollControls.setMaxWidth(480);
-        // --- Center / Right View: Delegated to ResourcePreviewCanvasBuilder ---
+
         VBox centerBox = previewCanvasBuilder.buildPreviewPane();
         setLeft(scrollControls);
         setCenter(centerBox);
-        updatePlanetContextDisplay();
+
+        planetSectionBuilder.updatePlanetContextDisplay();
         updatePreviewCanvas();
     }
-    private void autoDeriveEcologyFromPlanet() {
-        biomeSectionBuilder.autoDeriveEcologyFromPlanet();
-    }
-    private void autoDeriveHydroFromPlanet() {
-        hydroSectionBuilder.autoDeriveHydroFromPlanet();
-        updateSummary();
-    }
-    private void autoDeriveGeologyFromPlanet() {
-        PlanetPreset p = activePlanetPreset != null ? activePlanetPreset : planetPresetCombo.getValue();
-        if (p == null) p = PlanetPreset.EARTH_LIKE;
-        double radiusRatio = p.radiusKm() / 6371.0;
-        double volumeScale = Math.pow(radiusRatio, 3);
-        double crustal = Math.round(80.0 * volumeScale);
-        double precious = Math.round(1200.0 * volumeScale);
-        // Smaller bodies cool faster -> lower mantle heat flow
-        double heat = Math.round(Math.min(300.0, 87.0 * radiusRatio) * 10.0) / 10.0;
-        double seismic = Math.round(Math.min(10.0, Math.max(0.0, p.seismicActivityLevel())) * 10.0) / 10.0;
-        double volcanic = Math.round(Math.min(8.0, Math.max(0.0, p.volcanicActivityLevel())) * 10.0) / 10.0;
-        crustalMetalSlider.setValue(crustal);
-        preciousMetalSlider.setValue(precious);
-        mantleHeatSlider.setValue(heat);
-        if (seismicActivitySlider != null) {
-            seismicActivitySlider.setValue(seismic);
-        }
-        if (volcanicActivitySlider != null) {
-            volcanicActivitySlider.setValue(volcanic);
-        }
-        if (ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
-        updateSummary();
-        updatePreviewCanvas();
-        logger.info("Auto-derived geological parameters for planet {}", p.name());
-    }
-    private void updatePlanetContextDisplay() {
-        if (planetContextLabel == null) return;
-        PlanetPreset preset = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
-        int cellCount = activeCells != null ? activeCells.size() : 12482;
-        planetContextLabel.setText(org.ether.society.ui.resource.ResourcePlanetSyncManager.buildPlanetContextText(preset, cellCount));
-        updateThermodynamicSynthesisBadge(preset);
-    }
-    private void updateThermodynamicSynthesisBadge(PlanetPreset p) {
-        if (thermoSynthesisBadge == null) return;
-        thermoSynthesisBadge.setText(org.ether.society.ui.resource.ResourcePlanetSyncManager.buildThermodynamicSynthesisText(p));
-    }
-    private void adaptResourceSlidersToPlanet(PlanetPreset p) {
-        if (p == null) return;
-        boolean oldState = presetManager.isUpdatingFromPreset();
-        presetManager.setUpdatingFromPreset(true);
-        try {
-            org.ether.society.ui.resource.ResourcePlanetSyncManager.adaptResourceSlidersToPlanet(
-                    p, biomeSectionBuilder, hydroSectionBuilder, crustalMetalSlider,
-                    preciousMetalSlider, mantleHeatSlider, seismicActivitySlider, volcanicActivitySlider
-            );
-        } finally {
-            presetManager.setUpdatingFromPreset(oldState);
-        }
-        updateSummary();
-    }
+
     public EcologyPreset getSelectedEcologyPreset() {
         return presetManager.getSelectedEcologyPreset();
     }
+
     public void applyEcologyPreset(EcologyPreset p) {
         presetManager.applyEcologyPreset(p);
     }
+
     private void loadCustomResourceMap() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("resource.chooser.geology", "Load Geological & Ore Map (PNG/JPEG)"));
@@ -565,88 +374,7 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
             }
         }
     }
-    private boolean validateTerrainMapCompatibility(String sourceKey) {
-        if ("none".equals(sourceKey) || sourceKey == null) return true;
-        PlanetPreset activePreset = activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
-        boolean isCompatible = org.ether.society.ui.resource.ResourcePlanetSyncManager.isTerrainMapCompatible(sourceKey, activePreset);
-        if (!isCompatible) {
-            String activeDisplayName = activePreset != null ? activePreset.name() : "Standard";
-            if (ecoCompatibilityLabel != null) {
-                ecoCompatibilityLabel.setText(String.format(I18n.getOrDefault("resource.status.incompatible_map", "⚠️ Incompatibilité : Carte « %s » sur terrain « %s » (Relief non concordant)"), sourceKey.toUpperCase(), activeDisplayName));
-                ecoCompatibilityLabel.getStyleClass().setAll("compatibility-warning");
-            }
-            return false;
-        }
-        if (ecoCompatibilityLabel != null) {
-            String activeDisplayName = activePreset != null ? activePreset.name() : "Standard";
-            ecoCompatibilityLabel.setText(String.format(I18n.getOrDefault("resource.status.compatible_map", "✅ Carte « %s » vérifiée et compatible avec le terrain « %s »"), sourceKey.toUpperCase(), activeDisplayName));
-            ecoCompatibilityLabel.getStyleClass().setAll("compatibility-success");
-        }
-        return true;
-    }
-    private void autoApplyMapsForPreset(PlanetPreset p) {
-        if (p == null) return;
-        boolean isImportMode = p.elevationUseImport() || (p.customElevBase64() != null && !p.customElevBase64().isBlank()) || (p.elevationMapSource() != null && !p.elevationMapSource().isBlank() && !p.elevationMapSource().equalsIgnoreCase("none"));
-        if (!isImportMode) {
-            applyPresetMapSource("none");
-            return;
-        }
-        String lower = p.name() != null ? p.name().toLowerCase() : "";
-        String sourceKey;
-        if (p.elevationMapSource() != null && !p.elevationMapSource().isBlank() && !p.elevationMapSource().equalsIgnoreCase("none")) {
-            sourceKey = p.elevationMapSource().toLowerCase();
-        } else if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) {
-            sourceKey = "earth";
-        } else if (lower.contains("mars") || lower.contains("ares")) {
-            sourceKey = "mars";
-        } else if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) {
-            sourceKey = "moon";
-        } else if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) {
-            sourceKey = "venus";
-        } else if (lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes")) {
-            sourceKey = "mercury";
-        } else {
-            applyPresetMapSource("none");
-            return;
-        }
-        presetManager.setUpdatingFromPreset(true);
-        if (biomeSectionBuilder.getBiomeSourceCombo() != null) biomeSectionBuilder.getBiomeSourceCombo().setValue(sourceKey);
-        if (hydroSectionBuilder.getHydroSourceCombo() != null) hydroSectionBuilder.getHydroSourceCombo().setValue(sourceKey);
-        if (climateSectionBuilder.getClimateSourceCombo() != null) climateSectionBuilder.getClimateSourceCombo().setValue(sourceKey);
-        presetManager.setUpdatingFromPreset(false);
-        applyPresetMapSource(sourceKey);
-    }
-    private void applyPresetMapSource(String sourceKey) {
-        if ("none".equals(sourceKey)) {
-            customResourceImage = null;
-            biomeSectionBuilder.applyPresetMapSource(sourceKey, "none");
-            if (resourceFileLabel != null) resourceFileLabel.setText(I18n.get("planet.map.none"));
-            hydroSectionBuilder.applyPresetMapSource(sourceKey, "none");
-            climateSectionBuilder.applyPresetMapSource(sourceKey, "none");
-            if (ecoCompatibilityLabel != null) {
-                ecoCompatibilityLabel.setText(I18n.getOrDefault("resource.status.no_map", "🪐 No external map loaded — Procedural mode active"));
-                ecoCompatibilityLabel.getStyleClass().setAll("compatibility-neutral");
-            }
-            updatePreviewCanvas();
-            updateSummary();
-            return;
-        }
-        if (!validateTerrainMapCompatibility(sourceKey)) {
-            return;
-        }
-        String body = sourceKey.toLowerCase();
-        biomeSectionBuilder.applyPresetMapSource(sourceKey, body);
-        hydroSectionBuilder.applyPresetMapSource(sourceKey, body);
-        climateSectionBuilder.applyPresetMapSource(sourceKey, body);
-        if (resourceFileLabel != null) resourceFileLabel.setText(getGeologySourceDisplayName(body));
-        prepopulateGeologyTensors(body);
-        if (ecoCompatibilityLabel != null) {
-            ecoCompatibilityLabel.setText(String.format("🪐 %s authentic maps loaded (Biomes, Hydro, Climate & 9 Geology Tensors)", body.toUpperCase()));
-            ecoCompatibilityLabel.getStyleClass().setAll("compatibility-success");
-        }
-        updatePreviewCanvas();
-        updateSummary();
-    }
+
     public void generateProceduralHydrography() {
         hydroSectionBuilder.generateProceduralHydrography();
         if (!presetManager.isUpdatingFromPreset() && ecologyPresetBar != null) ecologyPresetBar.notifyParametersChanged();
@@ -654,31 +382,15 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
         updatePreviewCanvas();
         updateSummary();
     }
-    private void fetchOnlineSatelliteData() {
-        biomeSectionBuilder.fetchOnlineSatelliteData();
-    }
-    private void exportMapsWithWorldFiles() {
-        org.ether.society.ui.export.ResourceDistributionRasterExporter.exportMapsWithWorldFiles(
-                getScene() != null ? getScene().getWindow() : null,
-                getViewModeIndex(),
-                activePlanetPreset != null ? activePlanetPreset : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE),
-                seismicActivitySlider != null ? seismicActivitySlider.getValue() : null,
-                volcanicActivitySlider != null ? volcanicActivitySlider.getValue() : null,
-                generator,
-                mapLoader,
-                (layerIdx, lon, lat, planet) -> sampleProceduralGeologyTensor(layerIdx, lon, lat, planet),
-                (layerIdx, val) -> getGeologyResourceColor(layerIdx, val)
-        );
-    }
-    private void showEcologyImportFormatHelp() {
-        org.ether.society.ui.export.ResourceDistributionRasterExporter.showEcologyImportFormatHelp();
-    }
+
     public String getBiomeSourceDisplayName(String planetKey) {
         return biomeSectionBuilder.getBiomeSourceDisplayName(planetKey);
     }
+
     public String getHydroSourceDisplayName(String planetKey) {
         return hydroSectionBuilder.getHydroSourceDisplayName(planetKey);
     }
+
     public String getGeologySourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase(java.util.Locale.ROOT)) {
@@ -689,48 +401,49 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
             default -> I18n.getOrDefault("resource.source.earth_geology", "🪨 Earth USGS MRDS / World Minerals");
         };
     }
+
     public void updatePreviewCanvas() {
         if (previewCanvasBuilder != null) {
             previewCanvasBuilder.updatePreviewCanvas();
         }
     }
+
     public void updateLegend() {
         if (previewCanvasBuilder != null) {
             previewCanvasBuilder.updateLegend();
         }
     }
+
     public void selectViewMode(int viewModeIndex) {
         if (previewCanvasBuilder != null) {
             previewCanvasBuilder.selectViewMode(viewModeIndex);
         }
     }
+
     public Color blendColors(Color base, Color overlay, double opacity) {
         return previewCanvasBuilder != null ? previewCanvasBuilder.blendColors(base, overlay, opacity) : overlay;
     }
+
     public Color getReliefShadeColor(double elevation, double waterLevel, double declivity) {
         return previewCanvasBuilder != null ? previewCanvasBuilder.getReliefShadeColor(elevation, waterLevel, declivity) : Color.GRAY;
     }
+
     public int getGeologyViewComboIndex(int layerIdx) {
         return previewCanvasBuilder != null ? previewCanvasBuilder.getGeologyViewComboIndex(layerIdx) : 3;
     }
+
     public int getViewModeIndex() {
         return previewCanvasBuilder != null ? previewCanvasBuilder.getViewModeIndex() : 0;
     }
+
     public ComboBox<String> getViewModeCombo() {
         return previewCanvasBuilder != null ? previewCanvasBuilder.getViewModeCombo() : null;
     }
+
     public Canvas getMapPreviewCanvas() {
         return previewCanvasBuilder != null ? previewCanvasBuilder.getMapPreviewCanvas() : null;
     }
-    private double sampleProceduralGeologyTensor(int layerIdx, double lon, double lat, PlanetPreset planet) {
-        return geologySectionBuilder.sampleProceduralGeologyTensor(layerIdx, lon, lat, planet);
-    }
-    private VBox createSection(Label header, VBox content) {
-        header.getStyleClass().add("label-section-header");
-        VBox box = new VBox(8, header, content);
-        box.getStyleClass().add("card-section");
-        return box;
-    }
+
     private Slider createSlider(double min, double max, double value) {
         Slider slider = new Slider(min, max, value);
         slider.setShowTickMarks(false);
@@ -751,42 +464,14 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
         });
         return slider;
     }
-    private VBox createControlRow(Label label, javafx.scene.Node control, String tooltipText) {
-        label.getStyleClass().add("control-label");
-        if (tooltipText != null && !tooltipText.isBlank()) {
-            Tooltip tt = new Tooltip(tooltipText);
-            label.setTooltip(tt);
-            if (control instanceof Control ctrl) {
-                ctrl.setTooltip(tt);
-            }
-        }
-        return new VBox(4, label, control);
-    }
-    private VBox createControlRow(Label label, Slider slider, String formatPattern, String tooltipText) {
-        label.getStyleClass().add("control-label");
-        Label valLabel = new Label(String.format(formatPattern, slider.getValue()));
-        valLabel.getStyleClass().add("value-label");
-        slider.valueProperty().addListener((obs, old, val) ->
-                valLabel.setText(String.format(formatPattern, val.doubleValue()))
-        );
-        if (tooltipText != null && !tooltipText.isBlank()) {
-            Tooltip tt = new Tooltip(tooltipText);
-            label.setTooltip(tt);
-            slider.setTooltip(tt);
-            valLabel.setTooltip(tt);
-        }
-        HBox header = new HBox(label, new Pane(), valLabel);
-        HBox.setHgrow(header.getChildren().get(1), Priority.ALWAYS);
-        return new VBox(3, header, slider);
-    }
+
     private void updateSummary() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         Label summaryLabel = previewCanvasBuilder != null ? previewCanvasBuilder.getSummaryLabel() : null;
         if (summaryLabel == null) return;
         summaryLabel.setText(String.format(
                 I18n.getOrDefault("resource.summary.format",
                         "🌲 Végétale : %.0f GtC  |  🌾 Sols : %.0f GtC  |  🦌 Faune : %.2f GtC\n" +
-                        "â›ï¸ Métaux : %.0f Gt  |  💎 Précieux : %.0f Mt  |  ðŸŒ‹ Manteau : %.1f mW/m²  |  ðŸ’§ Aquifères : %.0f x10³ km³"),
+                        "⛏️ Métaux : %.0f Gt  |  💎 Précieux : %.0f Mt  |  🌋 Manteau : %.1f mW/m²  |  💧 Aquifères : %.0f x10³ km³"),
                 biomeSectionBuilder.getTerrestrialBiomassSlider() != null ? biomeSectionBuilder.getTerrestrialBiomassSlider().getValue() : 450.0,
                 biomeSectionBuilder.getSoilCarbonSlider() != null ? biomeSectionBuilder.getSoilCarbonSlider().getValue() : 1500.0,
                 biomeSectionBuilder.getFaunaBiomassSlider() != null ? biomeSectionBuilder.getFaunaBiomassSlider().getValue() : 2.0,
@@ -796,12 +481,8 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
                 hydroSectionBuilder.getFreshwaterAquiferSlider() != null ? hydroSectionBuilder.getFreshwaterAquiferSlider().getValue() : 15000.0
         ));
     }
-    /**
-     * Update texts.
-     *
-     */
+
     public void updateTexts() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         boolean oldUpdating = presetManager.isUpdatingFromPreset();
         presetManager.setUpdatingFromPreset(true);
         try {
@@ -809,9 +490,7 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
             if (ecologyDescriptionArea != null && ecologyPresetBar != null && ecologyPresetBar.getPresetCombo() != null && ecologyPresetBar.getPresetCombo().getValue() != null) {
                 ecologyDescriptionArea.setText(ecologyPresetBar.getPresetCombo().getValue().getPresetDescription());
             }
-            if (planetSectionHeader != null) planetSectionHeader.setText(I18n.getOrDefault("resource.section.planet_preset", "PLANETARY PARAMETERS"));
             if (mineralSecHeader != null) mineralSecHeader.setText(I18n.getOrDefault("resource.section.minerals", "GEOLOGY & HYDROLOGY (METRICS)"));
-            if (syncPlanetBtn != null) syncPlanetBtn.setText(I18n.getOrDefault("resource.btn.sync_planet", "🔄 Synchronize with Tab 1 Planet"));
             if (crustalMetalRowLabel != null) crustalMetalRowLabel.setText(I18n.getOrDefault("resource.param.crustal_metal", "Crustal Metal Wealth (Gt):"));
             if (preciousMetalRowLabel != null) preciousMetalRowLabel.setText(I18n.getOrDefault("resource.param.precious_metal", "Precious Metal Concentration (Mt):"));
             if (mantleHeatRowLabel != null) mantleHeatRowLabel.setText(I18n.getOrDefault("resource.param.mantle_heat", "Mantle Heat Flux (mW/m²):"));
@@ -820,20 +499,21 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
             if (loadResourceBtn != null) loadResourceBtn.setText(I18n.get("planet.map.btn_load"));
             if (customResourceImage == null && resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
             if (applyBtn != null) applyBtn.setText(I18n.getOrDefault("resource.btn.apply", "✅ Apply scientific distribution to simulation"));
-            if (autoDeriveMasterBtn != null) autoDeriveMasterBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_all", "⚡ Auto-derive All from Physics (Biomes, Aquifers & Geology)"));
+
+            planetSectionBuilder.updateTexts();
             if (previewCanvasBuilder != null) previewCanvasBuilder.updateTexts();
             if (biomeSectionBuilder != null) biomeSectionBuilder.updateTexts();
             if (hydroSectionBuilder != null) hydroSectionBuilder.updateTexts();
             if (climateSectionBuilder != null) climateSectionBuilder.updateTexts();
             if (geologySectionBuilder != null) geologySectionBuilder.updateTexts();
             updateSummary();
-            updatePlanetContextDisplay();
             updateLegend();
         } finally {
             presetManager.setUpdatingFromPreset(oldUpdating);
         }
     }
-    private void applyResourceDistribution() {
+
+    public void applyResourceDistribution() {
         if (activeCells == null || activeCells.isEmpty()) return;
         org.ether.society.ui.resource.ResourceSimulationCoupler.CouplingParameters params =
                 new org.ether.society.ui.resource.ResourceSimulationCoupler.CouplingParameters(
@@ -854,23 +534,17 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
                 params,
                 generator,
                 mapLoader,
-                (layerIdx, lon, lat, plPreset) -> sampleProceduralGeologyTensor(layerIdx, lon, lat, plPreset)
+                (layerIdx, lon, lat, plPreset) -> geologySectionBuilder.sampleProceduralGeologyTensor(layerIdx, lon, lat, plPreset)
         );
         if (onResourcesAppliedCallback != null) {
             onResourcesAppliedCallback.accept(activeCells);
         }
     }
-    public PlanetPreset getActivePlanetPreset() {
-        return activePlanetPreset;
-    }
-    /**
-     * Validate resource setup.
-     *
-     * @return the resulting computation or state reference
-     */
+
     public boolean validateResourceSetup() {
         return validateResourceSetup(true);
     }
+
     public List<String> getValidationErrors() {
         return org.ether.society.ui.resource.ResourceValidationHelper.getValidationErrors(
                 biomeSectionBuilder,
@@ -881,6 +555,7 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
                 customResourceImage
         );
     }
+
     public boolean validateResourceSetup(boolean showDialog) {
         List<String> errors = getValidationErrors();
         return org.ether.society.ui.resource.ResourceValidationHelper.applyValidationVisuals(
@@ -897,52 +572,68 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
                 validationWarningLabel
         );
     }
+
     public void prepopulateGeologyTensors(String planetKey) {
         geologySectionBuilder.prepopulateGeologyTensors(planetKey, hostEpochYear());
     }
+
     public void prepopulateGeologyTensors(String planetKey, long year) {
         geologySectionBuilder.prepopulateGeologyTensors(planetKey, year);
     }
-    public void prepopulateEarthGeologyTensors() {
-        geologySectionBuilder.prepopulateEarthGeologyTensors();
-    }
+
     private long hostEpochYear() {
         return (ecologyPresetBar != null && ecologyPresetBar.getPresetCombo() != null && ecologyPresetBar.getPresetCombo().getValue() != null)
                 ? ecologyPresetBar.getPresetCombo().getValue().getAssociatedEpochYear() : 2026L;
     }
-    private VBox createGeologyVectorAndLayersSection() {
-        return geologySectionBuilder.buildGeologySection();
-    }
+
     public Color getGeologyResourceColor(int layerIdx, double val) {
         return geologySectionBuilder.getGeologyResourceColor(layerIdx, val);
     }
+
     public Image generateProceduralBiomeRasterImage(int width, int height) {
-        return biomeSectionBuilder.generateProceduralBiomeRasterImage(width, height);
+        return mapExportHandler.generateProceduralBiomeRasterImage(width, height);
     }
+
     public void exportBiomeMap() {
-        biomeSectionBuilder.exportBiomeMap();
+        mapExportHandler.exportBiomeMap();
     }
+
     public Image generateProceduralHydroRasterImage(int width, int height) {
-        return hydroSectionBuilder.generateProceduralHydroRasterImage(width, height);
+        return mapExportHandler.generateProceduralHydroRasterImage(width, height);
     }
+
     public void exportHydroMap() {
-        hydroSectionBuilder.exportHydroMap();
+        mapExportHandler.exportHydroMap();
     }
+
     public Image generateProceduralGeologyRasterImage(int layerIdx, int width, int height) {
-        return geologySectionBuilder.generateProceduralGeologyRasterImage(layerIdx, width, height);
+        return mapExportHandler.generateProceduralGeologyRasterImage(layerIdx, width, height);
     }
+
     public void exportGeologyTensor(int layerIdx) {
-        geologySectionBuilder.exportGeologyTensor(layerIdx);
+        mapExportHandler.exportGeologyTensor(layerIdx);
     }
+
+    public void exportMapsWithWorldFiles() {
+        mapExportHandler.exportMapsWithWorldFiles();
+    }
+
+    public void showEcologyImportFormatHelp() {
+        mapExportHandler.showEcologyImportFormatHelp();
+    }
+
     public boolean isDirty() {
         return presetManager.isDirty();
     }
+
     public boolean promptSaveIfDirty(javafx.stage.Window owner) {
         return presetManager.promptSaveIfDirty(owner);
     }
+
     public PresetControlBar<EcologyPreset> getPresetBar() {
         return presetManager.getPresetBar();
     }
+
     public Image getCustomHydroImage() { return hydroSectionBuilder.getCustomHydroImage(); }
     public void setCustomHydroImage(Image img) { hydroSectionBuilder.setCustomHydroImage(img); }
     public boolean isRadioImportHydroSelected() { return hydroSectionBuilder.isRadioImportHydroSelected(); }
@@ -972,4 +663,5 @@ private final org.ether.society.ui.resource.ResourcePresetManager presetManager 
     public TextField getBiomeSeedField() { return biomeSectionBuilder.getBiomeSeedField(); }
     public ComboBox<String> getBiomeSourceCombo() { return biomeSectionBuilder.getBiomeSourceCombo(); }
     public org.ether.society.ui.resource.ResourceBiomeSectionBuilder getBiomeSectionBuilder() { return biomeSectionBuilder; }
+    public ResourcePlanetSectionBuilder getPlanetSectionBuilder() { return planetSectionBuilder; }
 }

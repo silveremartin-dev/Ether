@@ -534,8 +534,6 @@ public class SpatialTensorComparisonPane extends VBox {
             spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.status.loading_tensors", "ℹ️ Loading cartographic tensors for selected scenarios..."));
         }
 
-        final Scenario finalScA = scA;
-        final Scenario finalScB = scB;
         final ScenarioSelectableItem finalItemA = itemA;
         final ScenarioSelectableItem finalItemB = itemB;
 
@@ -549,172 +547,43 @@ public class SpatialTensorComparisonPane extends VBox {
             mapRegenBox.setVisible(true);
             mapRegenBox.setManaged(true);
             mapRegenProgress.setProgress(-1);
-            mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.loading_tensors", "ℹ️ Loading cartographic tensors..."));
+            mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.loading_tensors", "â„¹ï¸ Loading cartographic tensors..."));
         } else if (alreadyCached && mapRegenBox != null) {
             mapRegenBox.setVisible(false);
             mapRegenBox.setManaged(false);
         }
 
-        CompletableFuture.runAsync(() -> {
-            BufferedImage bufA = null;
-            BufferedImage bufB = null;
-            BufferedImage bufDiff = null;
-
-            try {
-                SimulationRunRecord runA = runResolver != null ? runResolver.apply(finalItemA) : null;
-                SimulationRunRecord runB = runResolver != null ? runResolver.apply(finalItemB) : null;
-
-                List<H3Cell> snapshotCellsA = runA != null ? runA.getSpatialSnapshotAt(targetYear) : null;
-                List<H3Cell> snapshotCellsB = runB != null ? runB.getSpatialSnapshotAt(targetYear) : null;
-
-                String cacheKeyA = checkKeyA;
-                String cacheKeyB = checkKeyB;
-                int mapsToGenerate = 0;
-                if (!RASTER_IMAGE_CACHE.containsKey(cacheKeyA)) mapsToGenerate++;
-                if (!RASTER_IMAGE_CACHE.containsKey(cacheKeyB) && !cacheKeyA.equals(cacheKeyB)) mapsToGenerate++;
-
-                final int totalMapsNeeded = mapsToGenerate;
-                if (totalMapsNeeded > 0) {
-                    Platform.runLater(() -> {
-                        if (mapRegenBox != null && mapRegenStatusLabel != null) {
-                            mapRegenBox.setVisible(true);
-                            mapRegenBox.setManaged(true);
-                            mapRegenProgress.setProgress(0.1);
-                            mapRegenStatusLabel.setText(String.format(I18n.getOrDefault("analytics.status.regen_maps_fmt", "⚡ Regenerating 2D maps: %d / %d"), 1, totalMapsNeeded));
-                        }
-                    });
-                }
-
-                // 1. Channel A Raster Extraction with In-Memory Cache
-                bufA = RASTER_IMAGE_CACHE.get(cacheKeyA);
-                if (bufA == null) {
-                    File diskRasterA = SpatialTensorDiskCatalog.getDiskRasterForChannel(targetYear, channelKey);
-                    if ("HISTORICAL_GROUND_TRUTH".equals(runIdA) && diskRasterA != null && diskRasterA.exists()) {
-                        String filePathKey = "FILE_" + diskRasterA.getAbsolutePath();
-                        bufA = RASTER_IMAGE_CACHE.get(filePathKey);
-                        if (bufA == null) {
-                            bufA = ImageIO.read(diskRasterA);
-                            if (bufA != null) RASTER_IMAGE_CACHE.put(filePathKey, bufA);
-                        }
-                    } else if (snapshotCellsA != null && !snapshotCellsA.isEmpty()) {
-                        bufA = SpatialTensorRasterRenderer.rasterizeCellsToImage(snapshotCellsA, channelKey, 512, 256);
-                    } else if (diskRasterA != null && diskRasterA.exists()) {
-                        String filePathKey = "FILE_" + diskRasterA.getAbsolutePath();
-                        bufA = RASTER_IMAGE_CACHE.get(filePathKey);
-                        if (bufA == null) {
-                            bufA = ImageIO.read(diskRasterA);
-                            if (bufA != null) RASTER_IMAGE_CACHE.put(filePathKey, bufA);
-                        }
-                    } else if ("density".equals(channelKey)) {
-                        bufA = HistoricalMapGenerator.rasterizeDensityMapForYear(finalScA.getPopulationDensityType(), finalScA, targetYear);
-                    } else {
-                        HistoricalMapGenerator.populateScenarioHistoricalMaps(finalScA);
-                        bufA = SpatialTensorRasterRenderer.base64ToBufferedImage(SpatialTensorDiskCatalog.extractChannelBase64(finalScA, channelKey));
+        SpatialTensorDiffEngine.compute2DComparisonAsync(
+                finalItemA,
+                finalItemB,
+                targetYear,
+                channelKey,
+                runResolver,
+                RASTER_IMAGE_CACHE,
+                totalMapsNeeded -> Platform.runLater(() -> {
+                    if (mapRegenBox != null && mapRegenStatusLabel != null) {
+                        mapRegenBox.setVisible(true);
+                        mapRegenBox.setManaged(true);
+                        mapRegenProgress.setProgress(0.1);
+                        mapRegenStatusLabel.setText(String.format(I18n.getOrDefault("analytics.status.regen_maps_fmt", "âš¡ Regenerating 2D maps: %d / %d"), 1, totalMapsNeeded));
                     }
-                    if (bufA != null) {
-                        RASTER_IMAGE_CACHE.put(cacheKeyA, bufA);
-                    }
-                }
-
-                // 2. Channel B Raster Extraction with In-Memory Cache
-                if ("HISTORICAL_GROUND_TRUTH".equals(runIdA) && "HISTORICAL_GROUND_TRUTH".equals(runIdB) && bufA != null) {
-                    bufB = bufA;
-                } else {
-                    bufB = RASTER_IMAGE_CACHE.get(cacheKeyB);
-                    if (bufB == null) {
-                        File diskRasterB = SpatialTensorDiskCatalog.getDiskRasterForChannel(targetYear, channelKey);
-                        if ("HISTORICAL_GROUND_TRUTH".equals(runIdB) && diskRasterB != null && diskRasterB.exists()) {
-                            String filePathKey = "FILE_" + diskRasterB.getAbsolutePath();
-                            bufB = RASTER_IMAGE_CACHE.get(filePathKey);
-                            if (bufB == null) {
-                                bufB = ImageIO.read(diskRasterB);
-                                if (bufB != null) RASTER_IMAGE_CACHE.put(filePathKey, bufB);
-                            }
-                        } else if (snapshotCellsB != null && !snapshotCellsB.isEmpty()) {
-                            int w = SpatialTensorRasterRenderer.computeOptimalRasterWidth(snapshotCellsB.size());
-                            bufB = SpatialTensorRasterRenderer.rasterizeCellsToImage(snapshotCellsB, channelKey, w, w / 2);
-                        } else if (diskRasterB != null && diskRasterB.exists()) {
-                            String filePathKey = "FILE_" + diskRasterB.getAbsolutePath();
-                            bufB = RASTER_IMAGE_CACHE.get(filePathKey);
-                            if (bufB == null) {
-                                bufB = ImageIO.read(diskRasterB);
-                                if (bufB != null) RASTER_IMAGE_CACHE.put(filePathKey, bufB);
-                            }
-                        } else if ("density".equals(channelKey)) {
-                            bufB = HistoricalMapGenerator.rasterizeDensityMapForYear(finalScB.getPopulationDensityType(), finalScB, targetYear);
-                        } else {
-                            HistoricalMapGenerator.populateScenarioHistoricalMaps(finalScB);
-                            bufB = SpatialTensorRasterRenderer.base64ToBufferedImage(SpatialTensorDiskCatalog.extractChannelBase64(finalScB, channelKey));
-                        }
-                        if (bufB != null) {
-                            RASTER_IMAGE_CACHE.put(cacheKeyB, bufB);
-                        }
-                    }
-                }
-
-                if (bufA != null && bufB != null) {
-                    bufDiff = MapComparisonMetrics.generateDiscrepancyHeatmap(bufA, bufB);
-                }
-            } catch (Exception ex) {
-                logger.warn("Could not generate 2D comparison maps for target year {}: {}", targetYear, ex.getMessage());
-            }
-
+                })
+        ).thenAccept(res -> Platform.runLater(() -> {
             if (currentReqId != spatialComparisonRequestId.get()) return;
 
-            final Image imgFxA = SpatialTensorRasterRenderer.bufferedImageToFxImage(bufA);
-            final Image imgFxB = SpatialTensorRasterRenderer.bufferedImageToFxImage(bufB);
-            final Image imgFxDiff = SpatialTensorRasterRenderer.bufferedImageToFxImage(bufDiff);
+            if (mapImageViewA != null) mapImageViewA.setImage(res.imgA());
+            if (mapImageViewB != null) mapImageViewB.setImage(res.imgB());
+            if (mapImageViewDiff != null) mapImageViewDiff.setImage(res.imgDiff());
 
-            final MapComparisonMetrics.MapComparisonResult metrics = (bufA != null && bufB != null)
-                    ? MapComparisonMetrics.compareImages(bufA, bufB) : null;
+            if (spatialMetricsReportArea != null) {
+                spatialMetricsReportArea.setText(res.formattedReport());
+            }
 
-            Platform.runLater(() -> {
-                if (currentReqId != spatialComparisonRequestId.get()) return;
-
-                if (mapImageViewA != null) mapImageViewA.setImage(imgFxA);
-                if (mapImageViewB != null) mapImageViewB.setImage(imgFxB);
-                if (mapImageViewDiff != null) mapImageViewDiff.setImage(imgFxDiff);
-
-                if (metrics != null && spatialMetricsReportArea != null) {
-                    String pearsonEval = metrics.getPearsonR() >= 0.85
-                            ? "✅ (" + I18n.getOrDefault("analytics.spatial.high_fidelity", "High Fidelity") + ")"
-                            : "⚠️ (" + I18n.getOrDefault("analytics.spatial.divergence_detected", "Divergence Detected") + ")";
-
-                    spatialMetricsReportArea.setText(String.format(
-                            "📊 %s (Year %d AD - %s)\n" +
-                            "------------------------------------------------------------------------\n" +
-                            "• %s : %.4f\n" +
-                            "• %s : %.4f %s\n" +
-                            "• %s : %.4f\n" +
-                            "• %s : %.4f\n" +
-                            "• %s : %.4f\n" +
-                            "• %s : %.4f\n" +
-                            "• %s : %.4f (%s)\n" +
-                            "------------------------------------------------------------------------\n" +
-                            "%s",
-                            I18n.getOrDefault("analytics.spatial.metrics_header", "2D CARTOGRAPHIC FIDELITY METRICS"),
-                            targetYear,
-                            channelKey,
-                            I18n.getOrDefault("analytics.spatial.rmse", "Spatial Root Mean Square Error (RMSE)"), metrics.getRmse(),
-                            I18n.getOrDefault("analytics.spatial.pearson", "Spatial Pearson Correlation (r)"), metrics.getPearsonR(), pearsonEval,
-                            I18n.getOrDefault("analytics.spatial.ssim", "2D Structural Similarity (SSIM)"), metrics.getSsim(),
-                            I18n.getOrDefault("analytics.spatial.jaccard", "Categorical Jaccard Overlap Index"), metrics.getJaccardIndex(),
-                            I18n.getOrDefault("analytics.spatial.dice", "Dice Overlap Coefficient"), metrics.getDiceCoefficient(),
-                            I18n.getOrDefault("analytics.spatial.kl", "Spatial Entropy KL Divergence"), metrics.getKlDivergence(),
-                            I18n.getOrDefault("analytics.spatial.max_delta", "Maximum Spatial Discrepancy"), metrics.getMaxDeltaValue(),
-                            String.format(I18n.getOrDefault("analytics.spatial.coords_fmt", "Lat: %.2f°, Lng: %.2f°"), metrics.getMaxDeltaLat(), metrics.getMaxDeltaLng()),
-                            metrics.getFormattedReport()
-                    ));
-                } else if (spatialMetricsReportArea != null) {
-                    spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.status.tensor_unavailable", "⚠️ Cartographic tensor data unavailable for the selected epoch and channel."));
-                }
-
-                if (mapRegenBox != null) {
-                    mapRegenBox.setVisible(false);
-                    mapRegenBox.setManaged(false);
-                }
-            });
-        });
+            if (mapRegenBox != null) {
+                mapRegenBox.setVisible(false);
+                mapRegenBox.setManaged(false);
+            }
+        }));
     }
 
     private void preloadAll2DTensorsAsync(ScenarioSelectableItem itemA, ScenarioSelectableItem itemB, int startYear, int endYear) {

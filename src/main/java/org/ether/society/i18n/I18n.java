@@ -36,6 +36,7 @@ public class I18n {
     private static final String PREF_LANG_KEY = "ether_language";
 
     private static final ObjectProperty<Language> currentLanguage = new SimpleObjectProperty<>();
+    private static final java.util.List<java.util.function.Consumer<Language>> pureListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
     private static ResourceBundle bundle;
     private static ResourceBundle defaultBundle;
 
@@ -109,6 +110,13 @@ public class I18n {
             try {
                 bundle = ResourceBundle.getBundle(BUNDLE_NAME, language.getLocale(), NO_DEFAULT_LOCALE_CONTROL);
                 currentLanguage.set(language);
+                for (java.util.function.Consumer<Language> listener : pureListeners) {
+                    try {
+                        listener.accept(language);
+                    } catch (Exception ex) {
+                        logger.warn("Language listener notification failed", ex);
+                    }
+                }
                 prefs.put(PREF_LANG_KEY, language.getCode());
                 java.util.concurrent.CompletableFuture.runAsync(() -> {
                     try {
@@ -129,6 +137,28 @@ public class I18n {
      * Get the current language property.
      * Listen to this property to update UI when language changes.
      */
+    /**
+     * Registers a headless / pure Java listener for language changes, decoupling callers from JavaFX properties.
+     *
+     * @param listener consumer receiving the new {@link Language} on change
+     */
+    public static void addLanguageListener(java.util.function.Consumer<Language> listener) {
+        if (listener != null) {
+            pureListeners.add(listener);
+        }
+    }
+
+    /**
+     * Unregisters a previously registered headless language listener.
+     *
+     * @param listener consumer to remove
+     */
+    public static void removeLanguageListener(java.util.function.Consumer<Language> listener) {
+        if (listener != null) {
+            pureListeners.remove(listener);
+        }
+    }
+
     public static ObjectProperty<Language> languageProperty() {
         return currentLanguage;
     }

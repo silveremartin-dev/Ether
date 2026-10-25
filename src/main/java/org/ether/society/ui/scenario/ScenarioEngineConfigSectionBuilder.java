@@ -1,15 +1,16 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvere Martin-Michiellot
- * AUTHOR: Silvere Martin-Michiellot
+ * Copyright (c) 2024 Silvere Martin-Michiellot
  */
 package org.ether.society.ui.scenario;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import org.ether.society.config.SimulationPerformanceConfig;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
 import org.ether.society.ui.scenario.ScenarioEngineCatalog.EngineMeta;
@@ -21,15 +22,19 @@ import java.util.*;
 import java.util.function.Consumer;
 
 /**
- * Autonomous UI Controller and Section Builder for Simulation Engines, Determinism & Optimizations.
- *
- * <p>Extracted from {@code ScenarioSetupPanel} to satisfy the Single Responsibility Principle (SRP).
- * Decouples Tier 1 permanent physical conservation laws from Tier 2 pluggable cliodynamic hypotheses,
- * manages strict bit-for-bit reproducibility vs heuristic shortcuts, KaTeX formula inspection,
- * and dynamic Java engine template generation and runtime hot-compilation.</p>
+ * <h2>Scenario Engine Config Section Builder</h2>
+ * <p>
+ * Modular UI builder for configuring simulation engine architecture:
+ * <ul>
+ *   <li>Tier 1: 24 Permanent Core Physical Law Engines (Mass, thermodynamics, hydrology, energetics)</li>
+ *   <li>Tier 2: 68 Optional/Hypothetical Cliodynamic & Macroeconomic Engines (Boserup, Turchin SDT, Smil, Ostrom)</li>
+ *   <li>Performance Optimizations & Strict Determinism (Delegated to {@link ScenarioPerformanceOptionsSection})</li>
+ *   <li>Dynamic Custom Engine Compiler & Import/Export (Delegated to {@link ScenarioCustomEngineHandler})</li>
+ * </ul>
+ * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0
  */
 public class ScenarioEngineConfigSectionBuilder {
 
@@ -38,23 +43,11 @@ public class ScenarioEngineConfigSectionBuilder {
     private final Runnable onParamChangedCallback;
     private final Consumer<String> onEngineHoveredCallback;
 
-    // Master Determinism Control
-    private CheckBox strictDeterminismCheckBox;
-    private Label optSubHeader;
+    // Extracted modules
+    private final ScenarioPerformanceOptionsSection performanceSection;
+    private ScenarioCustomEngineHandler customEngineHandler;
 
-    // 7 Individual Optimizations & Performance Shortcuts
-    private CheckBox sparseCellSkippingCheckBox;
-    private CheckBox oceanMacroAggregationCheckBox;
-    private CheckBox coastalNavigationOnlyCheckBox;
-    private CheckBox oceanMultiRateTickingCheckBox;
-    private Slider climateTickFreqSlider;
-    private Label climateTickFreqValueLabel;
-    private CheckBox parallelExecutionCheckBox;
-    private Slider threadCountSlider;
-    private Label threadCountValueLabel;
-    private CheckBox spatialRangeTruncationCheckBox;
-
-    // Engine Inspector Card Controls
+    // Engine Inspector Card Components
     private Label engineInspectorTitle;
     private Label engineInspectorText;
     private Label engineInspectorEquationsTitle;
@@ -63,9 +56,9 @@ public class ScenarioEngineConfigSectionBuilder {
     private Button exportSelectedEngineBtn;
     private Button exportCoreTemplateBtn;
     private Label coreExplanationLabel;
-    private String selectedEngineClassName;
+    private String selectedEngineClassName = "FrontierAsabiyyahEngine";
 
-    // Core Engines (Tier 1)
+    // Core Tier 1 Engines
     private static class CoreEngineRow {
         final String id;
         final Label descLabel;
@@ -85,11 +78,10 @@ public class ScenarioEngineConfigSectionBuilder {
             this.defaultEq = defaultEq;
         }
     }
-
     private final List<CoreEngineRow> coreEngineRows = new ArrayList<>();
     private TitledPane corePane;
 
-    // Optional Engines (Tier 2)
+    // Optional Tier 2 Engines
     private static class OptionalEngineMeta {
         final String id;
         final CheckBox cb;
@@ -107,14 +99,13 @@ public class ScenarioEngineConfigSectionBuilder {
             this.defaultEq = defaultEq;
         }
     }
-
     private final Map<String, CheckBox> typeBCheckBoxMap = new LinkedHashMap<>();
     private final Map<String, Map<String, Spinner<Double>>> typeBParamSpinnersMap = new LinkedHashMap<>();
     private final List<OptionalEngineMeta> optionalEngineMetas = new ArrayList<>();
     private VBox typeBBoxContainer;
     private TitledPane typeBPane;
 
-    // Toolbar Controls
+    // Custom Engine controls
     private Button autoSelectEnginesForYearBtn;
     private Button exportTemplateBtn;
     private Button importEngineBtn;
@@ -124,227 +115,71 @@ public class ScenarioEngineConfigSectionBuilder {
     private final Map<String, VBox> engineContainers = new LinkedHashMap<>();
 
     /**
-     * Constructs the engine section builder.
+     * Constructs the scenario engine configuration section builder.
      *
-     * @param onParamChangedCallback callback invoked whenever any setting or engine parameter is modified
-     * @param onEngineHoveredCallback callback invoked when an engine is hovered to inspect its formulas
+     * @param onParamChangedCallback callback invoked when parameters change
+     * @param onEngineHoveredCallback callback invoked when an engine card is hovered
      */
     public ScenarioEngineConfigSectionBuilder(Runnable onParamChangedCallback, Consumer<String> onEngineHoveredCallback) {
         this.onParamChangedCallback = onParamChangedCallback;
         this.onEngineHoveredCallback = onEngineHoveredCallback;
+        this.performanceSection = new ScenarioPerformanceOptionsSection(onParamChangedCallback);
     }
 
     /**
-     * Builds and returns the comprehensive engine architecture and optimizations card section.
+     * Builds and returns the entire engine configuration section.
      *
      * @return JavaFX VBox container
      */
     public VBox buildSection() {
         VBox section = new VBox(12);
-        section.getStyleClass().add("card-section");
 
-        Label oceanOptHeader = new Label(I18n.getOrDefault("scenario.ocean_opt.header", "⚙️ 5. ENGINE ARCHITECTURE & OPTIMIZATIONS (ETHER CORE & OPTIONAL)"));
-        oceanOptHeader.getStyleClass().add("label-section-header");
+        // 1. Performance Options & Master Determinism (Extracted)
+        VBox perfBox = performanceSection.buildPerformanceSection();
 
-        Label oceanOptDesc = new Label(I18n.getOrDefault("scenario.ocean_opt.desc", "Definition and configuration of determinism mode, 7 simulation optimizations, and Ether Core and optional procedural engines. Each scenario embeds its optimization setup to guarantee perfect reproducibility."));
-        oceanOptDesc.getStyleClass().add("card-description-muted");
-        oceanOptDesc.setWrapText(true);
+        // 2. Engine Inspector Card
+        engineInspectorTitle = new Label(I18n.getOrDefault("scenario.inspector.default_title", "⚙️ FrontierAsabiyyahEngine (Turchin Structural-Demographic Theory)"));
+        engineInspectorTitle.getStyleClass().add("card-header");
 
-        // --- 🎯 MASTER CONTROL : STRICT DETERMINISM MODE ---
-        strictDeterminismCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.strict_determinism", "🔒 STRICT DETERMINISM MODE (0% Approximation / 100% Bit-to-Bit Reproducibility)"));
-        strictDeterminismCheckBox.setSelected(true);
-        strictDeterminismCheckBox.getStyleClass().add("radio-proc");
-        strictDeterminismCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.strict_determinism",
-            "🎯 STRICT BIT-TO-BIT DETERMINISM (ACADEMIC RESEARCH MODE)\n" +
-            "• Disables ALL optimizations and algorithmic shortcuts.\n" +
-            "• Guarantees 100% bit-identical simulation trajectories on the same seed.\n" +
-            "• Recommended for validation tests, benchmarks, and convergence audits.")));
-        UIControlsHelper.attachDefaultValueHandling(strictDeterminismCheckBox, true, () -> strictDeterminismCheckBox.setSelected(true), onParamChangedCallback);
-
-        Label determinismNote = new Label(I18n.getOrDefault("scenario.note.strict_determinism", "💡 Note: Checking Strict Determinism disables all heuristic approaches and guarantees bit-identical numerical fidelity."));
-        determinismNote.getStyleClass().add("control-note");
-        determinismNote.setWrapText(true);
-
-        VBox masterBox = new VBox(4, strictDeterminismCheckBox, determinismNote);
-        masterBox.getStyleClass().add("opt-master-box");
-
-        // --- ⚡ INDIVIDUAL OPTIMIZATIONS & APPROXIMATIONS ---
-        optSubHeader = new Label(I18n.getOrDefault("scenario.opt.sub_header", "⚡ ALGORITHMIC OPTIMIZATIONS & PERFORMANCE SHORTCUTS:"));
-        optSubHeader.getStyleClass().add("opt-subheader");
-
-        sparseCellSkippingCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.sparse_cell_skipping", "🦗 Sparse / Uninhabited Cell Skipping (Deserts & Abysses)"));
-        sparseCellSkippingCheckBox.setSelected(false);
-        sparseCellSkippingCheckBox.getStyleClass().add("opt-sub-checkbox");
-        sparseCellSkippingCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.sparse_cell_skipping",
-            "⚡ BENEFIT: +40% to +60% TPS speedup across global grid.\n" +
-            "⚠️ PHYSICAL IMPACT: Bypasses evaluation loops on desert/oceanic cells with no human presence or active event.")));
-        UIControlsHelper.attachDefaultValueHandling(sparseCellSkippingCheckBox, false, () -> sparseCellSkippingCheckBox.setSelected(false), onParamChangedCallback);
-
-        oceanMacroAggregationCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Abyssal Ocean Macro-Aggregation (Deep Basins z < -200m in Blocks)"));
-        oceanMacroAggregationCheckBox.setSelected(false);
-        oceanMacroAggregationCheckBox.getStyleClass().add("opt-sub-checkbox");
-        oceanMacroAggregationCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.ocean_macro_aggregation",
-            "⚡ BENEFIT: +25% to +35% TPS speedup by grouping deep water cells.\n" +
-            "⚠️ PHYSICAL IMPACT: Smoothing of abyssal micro-currents without impacting terrestrial civilizations.")));
-        UIControlsHelper.attachDefaultValueHandling(oceanMacroAggregationCheckBox, false, () -> oceanMacroAggregationCheckBox.setSelected(false), onParamChangedCallback);
-
-        coastalNavigationOnlyCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Exclusive Coastal Navigation (Pathfinding Focused on Coasts & Straits)"));
-        coastalNavigationOnlyCheckBox.setSelected(false);
-        coastalNavigationOnlyCheckBox.getStyleClass().add("opt-sub-checkbox");
-        coastalNavigationOnlyCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.coastal_nav",
-            "⚡ BENEFIT: Major CPU savings on naval and commercial trade pathfinding.\n" +
-            "⚠️ PHYSICAL IMPACT: Ships prefer coastal waters; ocean navigation restricted prior to Age of Discovery.")));
-        UIControlsHelper.attachDefaultValueHandling(coastalNavigationOnlyCheckBox, false, () -> coastalNavigationOnlyCheckBox.setSelected(false), onParamChangedCallback);
-
-        oceanMultiRateTickingCheckBox = new CheckBox(I18n.getOrDefault("scenario.ocean_opt.multi_rate_ticking", "⏱ Oceanic & Multi-Rate Climate Ticking (Updated Every N Ticks)"));
-        oceanMultiRateTickingCheckBox.setSelected(false);
-        oceanMultiRateTickingCheckBox.getStyleClass().add("opt-sub-checkbox");
-        oceanMultiRateTickingCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.multi_rate_ticking",
-            "⚡ BENEFIT: +30% throughput by executing thermohaline circulation and fluid inertia at sub-frequency.\n" +
-            "⚠️ PHYSICAL IMPACT: Potential temporal aliasing during ultra-fast atmospheric events.")));
-        UIControlsHelper.attachDefaultValueHandling(oceanMultiRateTickingCheckBox, false, () -> oceanMultiRateTickingCheckBox.setSelected(false), onParamChangedCallback);
-
-        climateTickFreqSlider = new Slider(1, 30, 5);
-        climateTickFreqSlider.setMajorTickUnit(5);
-        climateTickFreqSlider.setMinorTickCount(4);
-        climateTickFreqSlider.setSnapToTicks(true);
-        climateTickFreqSlider.setShowTickMarks(true);
-        climateTickFreqSlider.setStyle("-fx-pref-width: 200px;");
-        climateTickFreqSlider.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.climate_tick_freq", "Adjust climate update frequency ratio")));
-        climateTickFreqValueLabel = new Label(I18n.getOrDefault("scenario.label.climate_freq_default", "Climate Frequency Ratio: 1:5 ticks"));
-        climateTickFreqValueLabel.getStyleClass().add("opt-value-highlight");
-        climateTickFreqSlider.valueProperty().addListener((obs, oldV, newV) -> {
-            int val = newV.intValue();
-            climateTickFreqValueLabel.setText(val == 1 ? I18n.getOrDefault("scenario.climate_freq.strict", "Climate Frequency Ratio: 1:1 (Strict Bit-for-Bit Cadence)") : I18n.getOrDefault("scenario.climate_freq.ratio_prefix", "Climate Frequency Ratio: 1:") + val + " ticks");
-            notifyParamChange();
-        });
-        UIControlsHelper.attachDefaultValueHandling(climateTickFreqSlider, 6.0, () -> climateTickFreqSlider.setValue(6.0), onParamChangedCallback);
-
-        HBox climateSliderBox = new HBox(10, new Label("   └─"), climateTickFreqValueLabel, climateTickFreqSlider);
-        climateSliderBox.setAlignment(Pos.CENTER_LEFT);
-
-        parallelExecutionCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.parallel_execution", "🚀 Async Multi-Thread Parallelization (CompletableFuture / AVX)"));
-        parallelExecutionCheckBox.setSelected(false);
-        parallelExecutionCheckBox.getStyleClass().add("opt-sub-checkbox");
-        parallelExecutionCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.parallel_execution",
-            "⚡ BENEFIT: Full exploitation of all available CPU cores.\n" +
-            "⚠️ PHYSICAL IMPACT: Floating point sum order may slightly vary across executions.")));
-        UIControlsHelper.attachDefaultValueHandling(parallelExecutionCheckBox, false, () -> parallelExecutionCheckBox.setSelected(false), onParamChangedCallback);
-
-        threadCountSlider = new Slider(0, 32, 0);
-        threadCountSlider.setMajorTickUnit(8);
-        threadCountSlider.setMinorTickCount(7);
-        threadCountSlider.setSnapToTicks(true);
-        threadCountSlider.setShowTickMarks(true);
-        threadCountSlider.setStyle("-fx-pref-width: 200px;");
-        threadCountSlider.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.thread_count", "Select number of CPU threads assigned to parallel processing")));
-        threadCountValueLabel = new Label(I18n.getOrDefault("scenario.label.threads_auto", "Threads Multi-Thread : Auto (Tous cœurs CPU)"));
-        threadCountValueLabel.getStyleClass().add("opt-value-highlight");
-        threadCountSlider.valueProperty().addListener((obs, oldV, newV) -> {
-            int val = newV.intValue();
-            if (val == 0) {
-                threadCountValueLabel.setText(String.format(I18n.getOrDefault("scenario.label.threads_auto_cores", "Threads Multi-Thread : Auto (Tous cœurs %d)"), Runtime.getRuntime().availableProcessors()));
-            } else if (val == 1) {
-                threadCountValueLabel.setText(I18n.getOrDefault("scenario.label.threads_single", "Multi-Thread Threads: 1 (Single-threaded Deterministic)"));
-            } else {
-                threadCountValueLabel.setText(String.format(I18n.getOrDefault("scenario.label.threads_count", "Threads Multi-Thread : %d threads"), val));
-            }
-            notifyParamChange();
-        });
-        UIControlsHelper.attachDefaultValueHandling(threadCountSlider, 4.0, () -> threadCountSlider.setValue(4.0), onParamChangedCallback);
-
-        HBox threadSliderBox = new HBox(10, new Label("   └─"), threadCountValueLabel, threadCountSlider);
-        threadSliderBox.setAlignment(Pos.CENTER_LEFT);
-
-        spatialRangeTruncationCheckBox = new CheckBox(I18n.getOrDefault("scenario.opt.spatial_truncation", "💨 Spatial Range Truncation of Plumes & Diffusions (10⁻⁶ Cutoff)"));
-        spatialRangeTruncationCheckBox.setSelected(false);
-        spatialRangeTruncationCheckBox.getStyleClass().add("opt-sub-checkbox");
-        spatialRangeTruncationCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.spatial_truncation",
-            "⚡ BENEFIT: Restricts atmospheric dispersion calculation to affected adjacent cells.\n" +
-            "⚠️ PHYSICAL IMPACT: Discards ultra-diluted aerosol and soot concentrations below 10⁻⁶ ppm.")));
-        UIControlsHelper.attachDefaultValueHandling(spatialRangeTruncationCheckBox, false, () -> spatialRangeTruncationCheckBox.setSelected(false), onParamChangedCallback);
-
-        List<CheckBox> subOpts = List.of(
-            sparseCellSkippingCheckBox,
-            oceanMacroAggregationCheckBox,
-            coastalNavigationOnlyCheckBox,
-            oceanMultiRateTickingCheckBox,
-            parallelExecutionCheckBox,
-            spatialRangeTruncationCheckBox
-        );
-
-        strictDeterminismCheckBox.setOnAction(e -> {
-            boolean strict = strictDeterminismCheckBox.isSelected();
-            if (strict) {
-                for (CheckBox cb : subOpts) {
-                    cb.setSelected(false);
-                }
-            }
-            updatePerformanceControlsState();
-            notifyParamChange();
-        });
-
-        for (CheckBox cb : subOpts) {
-            cb.setOnAction(e -> {
-                if (cb.isSelected() && strictDeterminismCheckBox.isSelected()) {
-                    strictDeterminismCheckBox.setSelected(false);
-                } else if (subOpts.stream().noneMatch(CheckBox::isSelected)) {
-                    strictDeterminismCheckBox.setSelected(true);
-                }
-                updatePerformanceControlsState();
-                notifyParamChange();
-            });
-        }
-
-        VBox optBox = new VBox(5,
-            optSubHeader,
-            sparseCellSkippingCheckBox,
-            oceanMacroAggregationCheckBox,
-            coastalNavigationOnlyCheckBox,
-            oceanMultiRateTickingCheckBox,
-            climateSliderBox,
-            parallelExecutionCheckBox,
-            threadSliderBox,
-            spatialRangeTruncationCheckBox
-        );
-        optBox.setStyle("-fx-padding: 8px 12px; -fx-background-radius: 6px; -fx-border-color: rgba(148, 163, 184, 0.2); -fx-border-radius: 6px; -fx-border-width: 1px;");
-        optBox.visibleProperty().bind(strictDeterminismCheckBox.selectedProperty().not());
-        optBox.managedProperty().bind(strictDeterminismCheckBox.selectedProperty().not());
-
-        // Detail Inspector Card for selected/hovered Engine
-        engineInspectorTitle = new Label(I18n.getOrDefault("scenario.header.engine_inspector", "🔎 Cliodynamic Engine Inspector (Hover an engine to inspect)"));
-        engineInspectorTitle.getStyleClass().add("engine-inspector-title");
-        
-        engineInspectorText = new Label(I18n.getOrDefault("scenario.desc.engine_inspector", "Select or hover a Type A (Core) or Type B (Optional) engine to display its state equations, physical principles, and academic references."));
+        engineInspectorText = new Label(I18n.getOrDefault("scenario.inspector.default_text",
+            "Simulates the expansion, decay, and cyclical collapse of state solidarity and collective capacity (Asabiyyah) along meta-ethnic fault lines."));
         engineInspectorText.setWrapText(true);
-        engineInspectorText.getStyleClass().add("engine-inspector-text");
+        engineInspectorText.getStyleClass().add("card-description");
 
-        engineInspectorEquationsTitle = new Label(I18n.getOrDefault("scenario.label.engine_equations", "📋 Mathematical Equations & Cliodynamic Formulation:"));
-        engineInspectorEquationsTitle.getStyleClass().add("engine-inspector-equations-title");
+        engineInspectorEquationsTitle = new Label(I18n.getOrDefault("scenario.inspector.equations_title", "📐 Formal Cliodynamic Equations:"));
+        engineInspectorEquationsTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-font-size: 11px; -fx-padding: 4 0 0 0;");
 
-        engineInspectorEquations = new Label("• Formulations mathématiques et bilans de conservation affichés dynamiquement.");
+        engineInspectorEquations = new Label("dS/dt = r_s · S · (1 - S/K_s) - δ · S · Instability");
         engineInspectorEquations.setWrapText(true);
-        engineInspectorEquations.getStyleClass().add("engine-inspector-equations");
+        engineInspectorEquations.getStyleClass().add("equation-badge");
 
-        engineInspectorRef = new Label(I18n.getOrDefault("scenario.label.engine_refs", "📚 Scientific references and academic literature."));
+        engineInspectorRef = new Label("📚 Reference: Turchin, P. (2003). Historical Dynamics: Why States Rise and Fall. Princeton University Press.");
         engineInspectorRef.setWrapText(true);
         engineInspectorRef.getStyleClass().add("hint-label");
 
         exportSelectedEngineBtn = new Button(I18n.getOrDefault("scenario.btn.export_engine_template", "📤 Export Custom Engine Template (.java)"));
         exportSelectedEngineBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 10; -fx-background-radius: 4;");
-        exportSelectedEngineBtn.setOnAction(e -> exportCustomEngineTemplate());
+        exportSelectedEngineBtn.setOnAction(e -> {
+            if (customEngineHandler != null) {
+                customEngineHandler.exportCustomEngineTemplate();
+            }
+        });
 
         VBox engineInspectorCard = new VBox(5, engineInspectorTitle, engineInspectorText, engineInspectorEquationsTitle, engineInspectorEquations, engineInspectorRef, exportSelectedEngineBtn);
         engineInspectorCard.getStyleClass().add("engine-inspector-card");
         engineInspectorCard.setMinHeight(160);
 
-        // --- 🔒 ETHER CORE ENGINES SECTION (Tier 1: 24 Permanent Invariant Engines) ---
+        // 3. Tier 1 Core Engines
         VBox typeABox = new VBox(6);
         typeABox.getStyleClass().add("card-section");
 
         exportCoreTemplateBtn = new Button(I18n.getOrDefault("scenario.btn.export_law_engine", "📤 Export Physical Law Engine (.java)"));
         exportCoreTemplateBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 5 10; -fx-background-radius: 4;");
-        exportCoreTemplateBtn.setOnAction(e -> exportPhysicalLawEngineTemplate("PhysicalLawEngine"));
+        exportCoreTemplateBtn.setOnAction(e -> {
+            if (customEngineHandler != null) {
+                customEngineHandler.exportPhysicalLawEngineTemplate(selectedEngineClassName != null ? selectedEngineClassName : "PhysicalLawEngine");
+            }
+        });
 
         coreExplanationLabel = new Label(I18n.getOrDefault("scenario.info.core_engines", "ℹ️ Why are Ether Core engines permanent? They enforce physical conservation laws (mass & energy, thermodynamics, hydrology, H3 insolation, metabolism) required for basic world survival."));
         coreExplanationLabel.getStyleClass().add("control-note");
@@ -388,17 +223,18 @@ public class ScenarioEngineConfigSectionBuilder {
         corePane.setExpanded(false);
         corePane.getStyleClass().add("titled-pane-primary");
 
-        // --- ⚙️ OPTIONAL & CUSTOM ENGINES SECTION (Tier 2: 68 Hypotheses & Extensible Plugins) ---
+        // 4. Tier 2 Optional Engines & Dynamic Compiler
         typeBBoxContainer = new VBox(8);
         typeBBoxContainer.getStyleClass().add("custom-module-card");
+        customEngineHandler = new ScenarioCustomEngineHandler(typeBCheckBoxMap, typeBBoxContainer, onParamChangedCallback);
 
         exportTemplateBtn = new Button(I18n.getOrDefault("scenario.btn.export_java_template", "📤 Export Java Engine Template (.java)"));
         exportTemplateBtn.setStyle("-fx-background-color: #4c1d95; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 6 12; -fx-background-radius: 4;");
-        exportTemplateBtn.setOnAction(e -> exportCustomEngineTemplate());
+        exportTemplateBtn.setOnAction(e -> customEngineHandler.exportCustomEngineTemplate());
 
         importEngineBtn = new Button(I18n.getOrDefault("scenario.btn.import_compile_engine", "📥 Import & Compile Java Engine (.java / .class)"));
         importEngineBtn.setStyle("-fx-background-color: #7c3aed; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 6 12; -fx-background-radius: 4;");
-        importEngineBtn.setOnAction(e -> importCustomEngineFile());
+        importEngineBtn.setOnAction(e -> customEngineHandler.importCustomEngineFile());
 
         autoSelectEnginesForYearBtn = new Button(I18n.getOrDefault("scenario.btn.autoselect_engines", "⚡ Check Engines Based on T₀"));
         autoSelectEnginesForYearBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 6 12; -fx-background-radius: 4;");
@@ -482,7 +318,7 @@ public class ScenarioEngineConfigSectionBuilder {
         this.typeBPane.setExpanded(true);
         this.typeBPane.getStyleClass().add("titled-pane-secondary");
 
-        section.getChildren().addAll(oceanOptHeader, oceanOptDesc, masterBox, optBox, engineInspectorCard, corePane, this.typeBPane);
+        section.getChildren().addAll(perfBox, engineInspectorCard, corePane, this.typeBPane);
         return section;
     }
 
@@ -492,44 +328,19 @@ public class ScenarioEngineConfigSectionBuilder {
         }
     }
 
-    /**
-     * Updates the inspector card display for an engine.
-     *
-     * @param className simple Java class name
-     * @param title localized human-readable engine title
-     * @param description mechanism and biophysical scope
-     * @param references academic references
-     * @param equations KaTeX formulas
-     */
-    public void updateEngineInspector(String className, String title, String description, String references, String equations) {
+    public void updateEngineInspector(String className, String title, String description, String reference, String equations) {
         this.selectedEngineClassName = className;
-        if (engineInspectorTitle != null) {
-            engineInspectorTitle.setText("🔎 " + className + " — " + title);
-        }
-        if (engineInspectorText != null) {
-            engineInspectorText.setText(description);
-        }
-        if (engineInspectorRef != null) {
-            engineInspectorRef.setText("📚 " + references);
-        }
+        if (engineInspectorTitle != null) engineInspectorTitle.setText("⚙️ " + className + " — " + title);
+        if (engineInspectorText != null) engineInspectorText.setText(description);
+        if (engineInspectorRef != null) engineInspectorRef.setText("📚 Reference: " + reference);
         if (engineInspectorEquations != null) {
-            engineInspectorEquations.setText(equations != null && !equations.isBlank() ? equations : "• Formulation mathématique : dX/dt = f(X, t) + Σ F_inter-cellulaire");
-        }
-        if (exportSelectedEngineBtn != null) {
-            exportSelectedEngineBtn.setText(I18n.getOrDefault("scenario.btn.export_prefix", "📤 Export ") + className + ".java");
-            exportSelectedEngineBtn.setVisible(true);
-            exportSelectedEngineBtn.setManaged(true);
+            engineInspectorEquations.setText(equations != null ? equations : "dX/dt = f(X, t) + Σ F_coupled");
         }
         if (onEngineHoveredCallback != null) {
             onEngineHoveredCallback.accept(className);
         }
     }
 
-    /**
-     * Checks or unchecks optional engines according to simulation starting year.
-     *
-     * @param year simulation starting year (BP / CE)
-     */
     public void autoSelectEnginesForYear(long year) {
         for (Map.Entry<String, CheckBox> entry : typeBCheckBoxMap.entrySet()) {
             long appYear = ScenarioEngineCatalog.getEngineApparitionYear(entry.getKey());
@@ -538,19 +349,7 @@ public class ScenarioEngineConfigSectionBuilder {
         notifyParamChange();
     }
 
-    /**
-     * Sorts the Type B engine rows in the UI container.
-     *
-     * @param sortIdx sort mode index (0: Category, 1: Chronological asc, 2: Chronological desc, 3: Alphabetical)
-     */
     public void sortOptionalEngines(int sortIdx) {
-        if (typeBBoxContainer == null) return;
-        List<javafx.scene.Node> headers = new ArrayList<>();
-        if (typeBBoxContainer.getChildren().size() >= 2) {
-            headers.add(typeBBoxContainer.getChildren().get(0));
-            headers.add(typeBBoxContainer.getChildren().get(1));
-        }
-
         List<EngineMeta> sorted = new ArrayList<>(ScenarioEngineCatalog.getOptionalEngines());
         if (sortIdx == 1) { // Chronological (Oldest -> Newest)
             sorted.sort(Comparator.comparingLong(e -> ScenarioEngineCatalog.getEngineApparitionYear(e.id())));
@@ -560,22 +359,15 @@ public class ScenarioEngineConfigSectionBuilder {
             sorted.sort(Comparator.comparing(e -> I18n.getEngineTitle(e.id(), e.defaultTitle())));
         }
 
-        typeBBoxContainer.getChildren().clear();
-        typeBBoxContainer.getChildren().addAll(headers);
         for (EngineMeta eng : sorted) {
             VBox box = engineContainers.get(eng.id());
-            if (box != null) {
+            if (box != null && typeBBoxContainer != null) {
+                typeBBoxContainer.getChildren().remove(box);
                 typeBBoxContainer.getChildren().add(box);
             }
         }
     }
 
-    /**
-     * Creates parameter spinner tuning box for specific cliodynamic engines.
-     *
-     * @param engineKey engine unique key
-     * @return GridPane parameter node or null
-     */
     private javafx.scene.Node createEngineParameterBox(String engineKey) {
         GridPane grid = new GridPane();
         grid.setHgap(8);
@@ -591,19 +383,19 @@ public class ScenarioEngineConfigSectionBuilder {
                     "Multiplicateur de friction sur l'eau");
         } else if ("HydrologicalEngineeringEngine".equals(engineKey)) {
             addDoubleParamSpinner(grid, spinners, 0, "tenochtitlanTech", "Tech Min Drainage Lacs:", 3.5, 1.0, 10.0, 0.5,
-                    "Niveau technique minimum pour assécher un lac urbain");
+                    "Niveau technique minimum pour assÃ©cher un lac urbain");
             addDoubleParamSpinner(grid, spinners, 1, "tenochtitlanCapital", "Capital Min Drainage (kg):", 150.0, 10.0, 1000.0, 50.0,
                     "Capital par habitant requis pour le drainage");
             addDoubleParamSpinner(grid, spinners, 2, "aralRainfallThreshold", "Seuil Pluie Aral (mm):", 300.0, 50.0, 1000.0, 50.0,
-                    "Seuil pluviométrique sous lequel l'assèchement démarre");
+                    "Seuil pluviomÃ©trique sous lequel l'assÃ¨chement dÃ©marre");
             addDoubleParamSpinner(grid, spinners, 3, "damMinElevation", "Altitude Min Barrage (m):", 300.0, 50.0, 2000.0, 50.0,
                     "Altitude minimale pour construire un barrage de montagne");
         } else if ("FertileCrescentSalinizationEngine".equals(engineKey)) {
-            addDoubleParamSpinner(grid, spinners, 0, "salinizationRate", "Taux Salinisation / Siècle:", 0.02, 0.001, 0.10, 0.005,
+            addDoubleParamSpinner(grid, spinners, 0, "salinizationRate", "Taux Salinisation / SiÃ¨cle:", 0.02, 0.001, 0.10, 0.005,
                     "Vitesse d'accumulation des sels par irrigation intensive");
         } else if ("LandReclamationEngine".equals(engineKey)) {
-            addDoubleParamSpinner(grid, spinners, 0, "polderTechThreshold", "Tech Seuil Poldérisation:", 4.0, 1.0, 10.0, 0.5,
-                    "Niveau technique requis pour conquérir des terres sur la mer");
+            addDoubleParamSpinner(grid, spinners, 0, "polderTechThreshold", "Tech Seuil PoldÃ©risation:", 4.0, 1.0, 10.0, 0.5,
+                    "Niveau technique requis pour conquÃ©rir des terres sur la mer");
             addDoubleParamSpinner(grid, spinners, 1, "polderCapitalThreshold", "Capital Seuil Polders (kg):", 100.0, 10.0, 500.0, 20.0,
                     "Capital d'infrastructure minimum requis pour les digues");
         }
@@ -631,25 +423,9 @@ public class ScenarioEngineConfigSectionBuilder {
         spinners.put(paramKey, sp);
     }
 
-    /**
-     * Applies scenario engine architecture and performance parameters to UI controls.
-     *
-     * @param s scenario model
-     */
     public void applyScenario(Scenario s) {
         if (s == null) return;
-
-        if (strictDeterminismCheckBox != null) {
-            strictDeterminismCheckBox.setSelected(s.isStrictDeterminism());
-        }
-        if (sparseCellSkippingCheckBox != null) sparseCellSkippingCheckBox.setSelected(s.isSparseCellSkippingEnabled());
-        if (oceanMacroAggregationCheckBox != null) oceanMacroAggregationCheckBox.setSelected(s.isOceanMacroAggregationEnabled());
-        if (coastalNavigationOnlyCheckBox != null) coastalNavigationOnlyCheckBox.setSelected(s.isCoastalNavigationOnlyEnabled());
-        if (oceanMultiRateTickingCheckBox != null) oceanMultiRateTickingCheckBox.setSelected(s.isOceanMultiRateTickingEnabled());
-        if (climateTickFreqSlider != null) climateTickFreqSlider.setValue(s.getClimateTickFrequency());
-        if (parallelExecutionCheckBox != null) parallelExecutionCheckBox.setSelected(s.isParallelExecutionEnabled());
-        if (threadCountSlider != null) threadCountSlider.setValue(s.getParallelThreadCount());
-        if (spatialRangeTruncationCheckBox != null) spatialRangeTruncationCheckBox.setSelected(s.isSpatialRangeTruncationEnabled());
+        performanceSection.applyScenario(s);
 
         Map<String, Boolean> activeEngines = s.getTypeBEngineStates();
         if (activeEngines != null) {
@@ -674,27 +450,11 @@ public class ScenarioEngineConfigSectionBuilder {
                 }
             }
         }
-        updatePerformanceControlsState();
     }
 
-    /**
-     * Exports active engine configurations and performance settings into target Scenario.
-     *
-     * @param s scenario model to populate
-     */
     public void exportToScenario(Scenario s) {
         if (s == null) return;
-        boolean strict = strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected();
-        s.setStrictDeterminism(strict);
-
-        if (sparseCellSkippingCheckBox != null) s.setSparseCellSkippingEnabled(sparseCellSkippingCheckBox.isSelected());
-        if (oceanMacroAggregationCheckBox != null) s.setOceanMacroAggregationEnabled(oceanMacroAggregationCheckBox.isSelected());
-        if (coastalNavigationOnlyCheckBox != null) s.setCoastalNavigationOnlyEnabled(coastalNavigationOnlyCheckBox.isSelected());
-        if (oceanMultiRateTickingCheckBox != null) s.setOceanMultiRateTickingEnabled(oceanMultiRateTickingCheckBox.isSelected());
-        if (climateTickFreqSlider != null) s.setClimateTickFrequency((int) climateTickFreqSlider.getValue());
-        if (parallelExecutionCheckBox != null) s.setParallelExecutionEnabled(parallelExecutionCheckBox.isSelected());
-        if (threadCountSlider != null) s.setParallelThreadCount((int) threadCountSlider.getValue());
-        if (spatialRangeTruncationCheckBox != null) s.setSpatialRangeTruncationEnabled(spatialRangeTruncationCheckBox.isSelected());
+        performanceSection.exportToScenario(s);
 
         Map<String, Boolean> typeBStates = new HashMap<>();
         for (Map.Entry<String, CheckBox> entry : typeBCheckBoxMap.entrySet()) {
@@ -717,34 +477,8 @@ public class ScenarioEngineConfigSectionBuilder {
         s.setTypeBEngineParameters(engineParams);
     }
 
-    /**
-     * Updates all localized UI texts across the engine architecture section.
-     */
     public void updateTexts() {
-        if (strictDeterminismCheckBox != null) {
-            strictDeterminismCheckBox.setText(I18n.getOrDefault("scenario.opt.strict_determinism", "🔒 STRICT DETERMINISM MODE (0% Approximation / 100% Bit-to-Bit Reproducibility)"));
-        }
-        if (optSubHeader != null) {
-            optSubHeader.setText(I18n.getOrDefault("scenario.opt.sub_header", "⚡ ALGORITHMIC OPTIMIZATIONS & PERFORMANCE SHORTCUTS:"));
-        }
-        if (sparseCellSkippingCheckBox != null) {
-            sparseCellSkippingCheckBox.setText(I18n.getOrDefault("scenario.opt.sparse_cell_skipping", "🦗 Sparse / Uninhabited Cell Skipping (Deserts & Abysses)"));
-        }
-        if (oceanMacroAggregationCheckBox != null) {
-            oceanMacroAggregationCheckBox.setText(I18n.getOrDefault("scenario.ocean_opt.macro_aggregation", "🌊 Abyssal Ocean Macro-Aggregation (Deep Basins z < -200m in Blocks)"));
-        }
-        if (coastalNavigationOnlyCheckBox != null) {
-            coastalNavigationOnlyCheckBox.setText(I18n.getOrDefault("scenario.ocean_opt.coastal_nav", "⚓ Exclusive Coastal Navigation (Pathfinding Focused on Coasts & Straits)"));
-        }
-        if (oceanMultiRateTickingCheckBox != null) {
-            oceanMultiRateTickingCheckBox.setText(I18n.getOrDefault("scenario.ocean_opt.multi_rate_ticking", "⏱ Oceanic & Multi-Rate Climate Ticking (Updated Every N Ticks)"));
-        }
-        if (parallelExecutionCheckBox != null) {
-            parallelExecutionCheckBox.setText(I18n.getOrDefault("scenario.opt.parallel_execution", "🚀 Async Multi-Thread Parallelization (CompletableFuture / AVX)"));
-        }
-        if (spatialRangeTruncationCheckBox != null) {
-            spatialRangeTruncationCheckBox.setText(I18n.getOrDefault("scenario.opt.spatial_truncation", "💨 Spatial Range Truncation of Plumes & Diffusions (10⁻⁶ Cutoff)"));
-        }
+        performanceSection.updateTexts();
 
         // Refresh Core engines
         for (CoreEngineRow row : coreEngineRows) {
@@ -778,137 +512,27 @@ public class ScenarioEngineConfigSectionBuilder {
         if (typeBPane != null) {
             typeBPane.setText(String.format(I18n.getOrDefault("scenario.header.opt_engines_format", "⚙️ MODULES OPTIONNELS (%d MOTEURS EXTENSIBLES & IMPORT/EXPORT)"), optionalEngineMetas.size()));
         }
+        if (exportTemplateBtn != null) exportTemplateBtn.setText(I18n.getOrDefault("scenario.btn.export_java_template", "📤 Export Java Engine Template (.java)"));
+        if (importEngineBtn != null) importEngineBtn.setText(I18n.getOrDefault("scenario.btn.import_compile_engine", "📥 Import & Compile Java Engine (.java / .class)"));
+        if (exportCoreTemplateBtn != null) exportCoreTemplateBtn.setText(I18n.getOrDefault("scenario.btn.export_law_engine", "📤 Export Physical Law Engine (.java)"));
+        if (exportSelectedEngineBtn != null) exportSelectedEngineBtn.setText(I18n.getOrDefault("scenario.btn.export_engine_template", "📤 Export Custom Engine Template (.java)"));
+        if (autoSelectEnginesForYearBtn != null) autoSelectEnginesForYearBtn.setText(I18n.getOrDefault("scenario.btn.autoselect_engines", "⚡ Check Engines Based on T₀"));
+        if (engineSortLabel != null) engineSortLabel.setText(I18n.getOrDefault("scenario.sort.label", "🔀 Engine Sorting:"));
+        if (coreExplanationLabel != null) coreExplanationLabel.setText(I18n.getOrDefault("scenario.info.core_engines", "ℹ️ Why are Ether Core engines permanent? They enforce physical conservation laws (mass & energy, thermodynamics, hydrology, H3 insolation, metabolism) required for basic world survival."));
     }
 
     public void updatePerformanceControlsState() {
-        boolean strict = strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected();
-        if (sparseCellSkippingCheckBox != null) sparseCellSkippingCheckBox.setDisable(strict);
-        if (oceanMacroAggregationCheckBox != null) oceanMacroAggregationCheckBox.setDisable(strict);
-        if (coastalNavigationOnlyCheckBox != null) coastalNavigationOnlyCheckBox.setDisable(strict);
-        if (oceanMultiRateTickingCheckBox != null) oceanMultiRateTickingCheckBox.setDisable(strict);
-        if (climateTickFreqSlider != null) climateTickFreqSlider.setDisable(strict);
-        if (parallelExecutionCheckBox != null) parallelExecutionCheckBox.setDisable(strict);
-        if (threadCountSlider != null) threadCountSlider.setDisable(strict);
-        if (spatialRangeTruncationCheckBox != null) spatialRangeTruncationCheckBox.setDisable(strict);
+        performanceSection.updatePerformanceControlsState();
     }
 
-    /**
-     * Dynamically registers a hot-compiled custom engine into the UI.
-     *
-     * @param engineKey engine class name
-     * @param labelText human-readable label
-     * @param tooltipText description tooltip
-     * @param defaultSelected whether to select immediately
-     */
     public void addCustomEngineCheckBoxToUI(String engineKey, String labelText, String tooltipText, boolean defaultSelected) {
-        if (typeBCheckBoxMap.containsKey(engineKey)) {
-            typeBCheckBoxMap.get(engineKey).setSelected(defaultSelected);
-            return;
-        }
-
-        CheckBox cb = new CheckBox(labelText);
-        cb.setSelected(defaultSelected);
-        cb.getStyleClass().add("custom-engine-checkbox");
-        cb.setTooltip(new Tooltip(tooltipText));
-        cb.setOnAction(e -> notifyParamChange());
-
-        typeBCheckBoxMap.put(engineKey, cb);
-
-        Label badge = new Label(I18n.getOrDefault("scenario.badge.custom", "[🔌 CUSTOM]"));
-        badge.getStyleClass().add("custom-engine-badge");
-
-        HBox row = new HBox(8, badge, cb);
-        row.setAlignment(Pos.CENTER_LEFT);
-
-        if (typeBBoxContainer != null) {
-            typeBBoxContainer.getChildren().add(row);
-        }
-    }
-
-    private void exportPhysicalLawEngineTemplate(String className) {
-        try {
-            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-            fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_law_dialog", "Export Physical Law Engine (.java)"));
-            fileChooser.setInitialFileName(className + ".java");
-            fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Java Source (*.java)", "*.java"));
-            java.io.File file = fileChooser.showSaveDialog(null);
-            if (file != null) {
-                String template = """
-                    package org.ether.society.engines.tier1;
-
-                    import org.ether.society.core.H3SimulationEngine;
-                    import org.ether.society.database.H3Cell;
-
-                    /**
-                     * Physical Law Engine Core: %s
-                     */
-                    public class %s {
-                        public void update(H3SimulationEngine engine, H3Cell cell, double deltaTime) {
-                            // Thermodynamic conservation & physical balance laws
-                        }
-                    }
-                    """.formatted(className, className);
-                java.nio.file.Files.writeString(file.toPath(), template);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                        I18n.getOrDefault("scenario.alert.export_law_success", "Physical Law Engine template exported successfully:\n") + file.getAbsolutePath());
-                alert.show();
-            }
-        } catch (Exception ex) {
-            logger.error("Failed to export physical law engine template", ex);
-        }
-    }
-
-    private void exportCustomEngineTemplate() {
-        try {
-            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-            fileChooser.setTitle(I18n.getOrDefault("scenario.title.export_engine_dialog", "Export Custom Ether Engine Template (.java)"));
-            fileChooser.setInitialFileName("MyCustomOptionalEngine.java");
-            fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Java Source (*.java)", "*.java"));
-            java.io.File file = fileChooser.showSaveDialog(null);
-            if (file != null) {
-                String template = org.ether.society.engines.compiler.DynamicEngineCompiler.generateEngineTemplateCode("MyCustomOptionalEngine");
-                java.nio.file.Files.writeString(file.toPath(), template);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                        I18n.getOrDefault("scenario.alert.export_template_success", "Custom engine template exported successfully:\n") + file.getAbsolutePath());
-                alert.show();
-            }
-        } catch (Exception ex) {
-            logger.error("Error exporting custom engine template", ex);
-        }
-    }
-
-    private void importCustomEngineFile() {
-        try {
-            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
-            fileChooser.setTitle(I18n.getOrDefault("scenario.title.import_engine_dialog", "Import Custom Engine (.java)"));
-            fileChooser.getExtensionFilters().addAll(
-                new javafx.stage.FileChooser.ExtensionFilter("Java Source (*.java)", "*.java")
-            );
-            java.io.File file = fileChooser.showOpenDialog(null);
-            if (file != null) {
-                org.ether.society.engines.compiler.DynamicEngineCompiler.CompilationResult result =
-                        org.ether.society.engines.compiler.DynamicEngineCompiler.compileAndLoadEngine(file);
-
-                if (result.success()) {
-                    String engineKey = result.engineName();
-                    addCustomEngineCheckBoxToUI(engineKey, "🔌 " + engineKey + " (" + I18n.getOrDefault("scenario.engine.custom_badge", "Custom Engine") + ")",
-                            result.message(), true);
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, result.message());
-                    alert.show();
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, result.message());
-                    alert.show();
-                }
-            }
-        } catch (Exception ex) {
-            logger.error("Error importing custom engine file", ex);
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Import error: " + ex.getMessage());
-            alert.show();
+        if (customEngineHandler != null) {
+            customEngineHandler.addCustomEngineCheckBoxToUI(engineKey, labelText, tooltipText, defaultSelected);
         }
     }
 
     public boolean isStrictDeterminism() {
-        return strictDeterminismCheckBox != null && strictDeterminismCheckBox.isSelected();
+        return performanceSection.isStrictDeterminism();
     }
 
     public Map<String, CheckBox> getTypeBCheckBoxMap() {
@@ -920,18 +544,22 @@ public class ScenarioEngineConfigSectionBuilder {
     }
 
     public CheckBox getStrictDeterminismCheckBox() {
-        return strictDeterminismCheckBox;
+        return performanceSection.getStrictDeterminismCheckBox();
     }
 
     public Slider getClimateTickFreqSlider() {
-        return climateTickFreqSlider;
+        return performanceSection.getClimateTickFreqSlider();
     }
 
     public Slider getThreadCountSlider() {
-        return threadCountSlider;
+        return performanceSection.getThreadCountSlider();
     }
 
     public Button getAutoSelectEnginesForYearBtn() {
         return autoSelectEnginesForYearBtn;
+    }
+
+    public ScenarioPerformanceOptionsSection getPerformanceSection() {
+        return performanceSection;
     }
 }
