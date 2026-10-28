@@ -57,6 +57,36 @@ public class RealHistoricalHighResolutionSimulationRunTest {
     }
 
     @Test
+    @DisplayName("Execute Real High-Resolution Simulation Run for Black Death Scenario (1347 CE, dt = 30 days)")
+    public void testBlackDeathHighResolutionSimulationRun() {
+        Scenario blackDeathScenario = null;
+        for (Scenario s : Scenario.getBuiltInScenarios()) {
+            if ("black_death_1347".equals(s.getPresetKey())) {
+                blackDeathScenario = s;
+                break;
+            }
+        }
+        assertNotNull(blackDeathScenario, "Black Death 1347 scenario must exist in built-in scenarios");
+
+        // Bound duration for test execution (1347 to 1353: the 6 critical plague pandemic years)
+        blackDeathScenario.setEndDateYear(1353);
+        blackDeathScenario.setH3Resolution(2);
+        blackDeathScenario.setTargetCohortSize(25000);
+
+        // Execute headless real physics run
+        SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(blackDeathScenario);
+        assertNotNull(record, "Execution record must not be null");
+        assertFalse(record.getTimeSeriesData().isEmpty(), "Telemetry time series must contain sampled data");
+
+        // Verify save persistence
+        Path savesDir = EtherPaths.getSavesDir();
+        assertTrue(Files.exists(savesDir), "Saves directory must exist");
+        File[] matchingSaves = savesDir.toFile().listFiles((dir, name) -> name.contains("BLACK_DEATH") || name.contains("PESTE"));
+        assertNotNull(matchingSaves, "Matching save directories must be listed");
+        assertTrue(matchingSaves.length > 0, "At least one Black Death save run directory must be created in saves/");
+    }
+
+    @Test
     @DisplayName("Execute Real High-Resolution Simulation Run for Earth 2025 BAU Scenario (Planetary Grid, dt = 30 days)")
     public void testEarth2025BAUHighResolutionSimulationRun() {
         Scenario earthBAUScenario = null;
@@ -85,5 +115,33 @@ public class RealHistoricalHighResolutionSimulationRunTest {
         File[] matchingSaves = savesDir.toFile().listFiles((dir, name) -> name.contains("TERRE-2025") || name.contains("BUSINESS-AS-USUAL"));
         assertNotNull(matchingSaves, "Matching save directories must be listed");
         assertTrue(matchingSaves.length > 0, "At least one Earth 2025 BAU save run directory must be created in saves/");
+    }
+
+    @Test
+    @DisplayName("Execute Real High-Resolution Simulation Run for World Wars 1914-1960 Scenario (dt = 30 days)")
+    public void testWorldWars1914SimulationRun() {
+        Scenario ww1Scenario = null;
+        for (Scenario s : Scenario.getBuiltInScenarios()) {
+            if ("world_wars_totalitarian_1914".equals(s.getPresetKey())) {
+                ww1Scenario = s;
+                break;
+            }
+        }
+        assertNotNull(ww1Scenario, "World Wars 1914 scenario must exist in built-in scenarios");
+
+        // Run from 1914 to 1920 (WWI + Spanish Flu peak interval)
+        ww1Scenario.setEndDateYear(1920);
+        ww1Scenario.setH3Resolution(2);
+        ww1Scenario.setTargetCohortSize(50000);
+
+        SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(ww1Scenario);
+        assertNotNull(record, "Execution record must not be null");
+        assertFalse(record.getTimeSeriesData().isEmpty(), "Telemetry time series must contain sampled data");
+
+        Path savesDir = EtherPaths.getSavesDir();
+        assertTrue(Files.exists(savesDir), "Saves directory must exist");
+        File[] matchingSaves = savesDir.toFile().listFiles((dir, name) -> name.contains("1914") || name.contains("TOTALITARIAN") || name.contains("GUERRES"));
+        assertNotNull(matchingSaves, "Matching save directories must be listed");
+        assertTrue(matchingSaves.length > 0, "At least one 1914 save directory must be created in saves/");
     }
 }

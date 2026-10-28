@@ -1,0 +1,9 @@
+{
+  "epoch": 2026,
+  "era": "Hermian Radiative Desolation (2026 CE)",
+  "description": "Extraterrestrial Pioneer Colony Registry for MERCURY at Epoch 2026",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": ["linguisticBranch", "socialStructure", "subsistenceMode", "ritualTradition"],
+  "entities": [
+  ]
+}

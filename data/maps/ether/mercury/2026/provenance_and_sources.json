@@ -1,0 +1,16 @@
+{
+  "epoch": 2026,
+  "era": "Hermian Radiative Desolation (2026 CE)",
+  "planet": "mercury",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_en": "Airless cratered body exposed to extreme solar radiation.",
+    "summary_fr": "Modélisation de colonisation spatiale et habitats pressurisés pour mercury en 2026."
+  },
+  "layers": {
+    "elevation": {"filename": "mercury_2026_elevation.png", "category": "geophysics", "data_sources": ["NASA PDS / MOLA / LOLA / Magellan"]},
+    "density": {"filename": "mercury_2026_density.png", "category": "demography", "data_sources": ["Ether Pioneer Colony Model", "Outpost Coordinates"]},
+    "sovereignty": {"filename": "mercury_2026_sovereignty.png", "category": "sociology", "data_sources": ["Space Treaty Framework / International Consortia"]}
+  }
+}

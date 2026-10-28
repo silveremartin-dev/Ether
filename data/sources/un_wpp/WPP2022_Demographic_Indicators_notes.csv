@@ -1,0 +1,55 @@
+IndicatorNo,Topic,Indicator,IndicatorName,Unit
+1,Population,TPopulation1Jan,"Total Population, as of 1 January",thousands
+2,Population,TPopulation1July,"Total Population, as of 1 July",thousands
+3,Population,TPopulationMale1July,"Male Population, as of 1 July",thousands
+4,Population,TPopulationFemale1July,"Female Population, as of 1 July",thousands
+5,Population,PopDensity,"Population Density, as of 1 July",persons per square km
+6,Population,PopSexRatio,"Population Sex Ratio, as of 1 July",males per 100 females
+7,Population,MedianAgePop,"Median Age, as of 1 July",years
+8,Population,NatChange,"Natural Change, Births minus Deaths",thousands
+9,Population,NatChangeRT,Rate of Natural Change,"per 1,000 population"
+10,Population,PopChange,Population Change,thousands
+11,Population,PopGrowthRate,Population Growth Rate,percentage
+12,Population,DoublingTime,Population Annual Doubling Time,years
+13,Fertility,Births,Births,thousands
+14,Fertility,Births1519,Births by women aged 15 to 19,thousands
+15,Fertility,CBR,Crude Birth Rate,"births per 1,000 population"
+16,Fertility,TFR,Total Fertility Rate,live births per woman
+17,Fertility,NRR,Net Reproduction Rate,surviving daughters per woman
+18,Fertility,MAC,Mean Age Childbearing,years
+19,Fertility,SRB,Sex Ratio at Birth,males per 100 female births
+20,Mortality,Deaths,Total Deaths,thousands
+21,Mortality,DeathsMale,Male Deaths,thousands
+22,Mortality,DeathsFemale,Female Deaths,thousands
+23,Mortality,CDR,Crude Death Rate,"deaths per 1,000 population"
+24,Mortality,LEx,"Life Expectancy at Birth, both sexes",years
+25,Mortality,LExMale,Male Life Expectancy at Birth,years
+26,Mortality,LExFemale,Female Life Expectancy at Birth,years
+27,Mortality,LE15,"Life Expectancy at Age 15, both sexes",years
+28,Mortality,LE15Male,Male Life Expectancy at Age 15,years
+29,Mortality,LE15Female,Female Life Expectancy at Age 15,years
+30,Mortality,LE65,"Life Expectancy at Age 65, both sexes",years
+31,Mortality,LE65Male,Male Life Expectancy at Age 65,years
+32,Mortality,LE65Female,Female Life Expectancy at Age 65,years
+33,Mortality,LE80,"Life Expectancy at Age 80, both sexes",years
+34,Mortality,LE80Male,Male Life Expectancy at Age 80,years
+35,Mortality,LE80Female,Female Life Expectancy at Age 80,years
+36,Mortality,InfantDeaths,"Infant Deaths, under age 1",thousands
+37,Mortality,IMR,Infant Mortality Rate,"infant deaths per 1,000 live births"
+38,Mortality,LBsurvivingAge1,Live births Surviving to Age 1,thousands
+39,Mortality,Under5Deaths,Deaths under age 5,thousands
+40,Mortality,Q5,Under-five Mortality Rate,"deaths under age 5 per 1,000 live births"
+41,Mortality,Q0040,"Mortality before Age 40, both sexes","deaths under age 40 per 1,000 live births"
+42,Mortality,Q0040Male,Male mortality before Age 40,"deaths under age 40 per 1,000 male live births"
+43,Mortality,Q0040Female,Female mortality before Age 40,"deaths under age 40 per 1,000 female live births"
+44,Mortality,Q0060,"Mortality before Age 60, both sexes","deaths under age 60 per 1,000 live births"
+45,Mortality,Q0060Male,Male mortality before Age 60,"deaths under age 60 per 1,000 male live births"
+46,Mortality,Q0060Female,Female mortality before Age 60,"deaths under age 60 per 1,000 female live births"
+47,Mortality,Q1550,"Mortality between Age 15 and 50, both sexes","deaths under age 50 per 1,000 alive at age 15"
+48,Mortality,Q1550Male,Male mortality between Age 15 and 50,"deaths under age 50 per 1,000 males alive at age 15"
+49,Mortality,Q1550Female,Female mortality between Age 15 and 50,"deaths under age 50 per 1,000 females alive at age 15"
+50,Mortality,Q1560,"Mortality between Age 15 and 60, both sexes","deaths under age 60 per 1,000 alive at age 15"
+51,Mortality,Q1560Male,Male mortality between Age 15 and 60,"deaths under age 60 per 1,000 males alive at age 15"
+52,Mortality,Q1560Female,Female mortality between Age 15 and 60,"deaths under age 60 per 1,000 females alive at age 15"
+53,Migration,NetMigrations,Net Number of Migrants,thousands
+54,Migration,CNMR,Net Migration Rate,"per 1,000 population"

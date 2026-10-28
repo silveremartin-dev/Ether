@@ -1,0 +1,1531 @@
+{
+    "metadata":  {
+                     "source":  "UN DESA World Population Prospects (WPP 2022)",
+                     "variant":  "Medium",
+                     "region":  "World",
+                     "start_year":  1950,
+                     "end_year":  2100
+                 },
+    "data":  [
+                 {
+                     "year":  1950,
+                     "population_total_thousands":  2499322.157,
+                     "population_billions":  2.4993,
+                     "total_fertility_rate":  4.8596,
+                     "life_expectancy_years":  46.4643,
+                     "crude_birth_rate_per_1000":  36.837,
+                     "crude_death_rate_per_1000":  19.518,
+                     "median_age_years":  22.2243
+                 },
+                 {
+                     "year":  1951,
+                     "population_total_thousands":  2543130.38,
+                     "population_billions":  2.5431,
+                     "total_fertility_rate":  4.8269,
+                     "life_expectancy_years":  47.144,
+                     "crude_birth_rate_per_1000":  36.502,
+                     "crude_death_rate_per_1000":  19.075,
+                     "median_age_years":  22.1716
+                 },
+                 {
+                     "year":  1952,
+                     "population_total_thousands":  2590270.898,
+                     "population_billions":  2.5903,
+                     "total_fertility_rate":  5.0142,
+                     "life_expectancy_years":  48.2311,
+                     "crude_birth_rate_per_1000":  37.672,
+                     "crude_death_rate_per_1000":  18.389,
+                     "median_age_years":  22.1083
+                 },
+                 {
+                     "year":  1953,
+                     "population_total_thousands":  2640278.797,
+                     "population_billions":  2.6403,
+                     "total_fertility_rate":  4.9366,
+                     "life_expectancy_years":  48.8024,
+                     "crude_birth_rate_per_1000":  36.948,
+                     "crude_death_rate_per_1000":  17.989,
+                     "median_age_years":  22.0364
+                 },
+                 {
+                     "year":  1954,
+                     "population_total_thousands":  2691979.339,
+                     "population_billions":  2.692,
+                     "total_fertility_rate":  5.0098,
+                     "life_expectancy_years":  49.5919,
+                     "crude_birth_rate_per_1000":  37.269,
+                     "crude_death_rate_per_1000":  17.457,
+                     "median_age_years":  21.9524
+                 },
+                 {
+                     "year":  1955,
+                     "population_total_thousands":  2746072.141,
+                     "population_billions":  2.7461,
+                     "total_fertility_rate":  5.0115,
+                     "life_expectancy_years":  50.1229,
+                     "crude_birth_rate_per_1000":  37.069,
+                     "crude_death_rate_per_1000":  17.101,
+                     "median_age_years":  21.8448
+                 },
+                 {
+                     "year":  1956,
+                     "population_total_thousands":  2801002.631,
+                     "population_billions":  2.801,
+                     "total_fertility_rate":  4.9393,
+                     "life_expectancy_years":  50.6425,
+                     "crude_birth_rate_per_1000":  36.353,
+                     "crude_death_rate_per_1000":  16.71,
+                     "median_age_years":  21.7422
+                 },
+                 {
+                     "year":  1957,
+                     "population_total_thousands":  2857866.857,
+                     "population_billions":  2.8579,
+                     "total_fertility_rate":  5.0764,
+                     "life_expectancy_years":  50.9448,
+                     "crude_birth_rate_per_1000":  37.073,
+                     "crude_death_rate_per_1000":  16.536,
+                     "median_age_years":  21.6342
+                 },
+                 {
+                     "year":  1958,
+                     "population_total_thousands":  2916108.097,
+                     "population_billions":  2.9161,
+                     "total_fertility_rate":  4.935,
+                     "life_expectancy_years":  51.537,
+                     "crude_birth_rate_per_1000":  35.858,
+                     "crude_death_rate_per_1000":  16.044,
+                     "median_age_years":  21.5319
+                 },
+                 {
+                     "year":  1959,
+                     "population_total_thousands":  2970292.188,
+                     "population_billions":  2.9703,
+                     "total_fertility_rate":  4.7407,
+                     "life_expectancy_years":  49.3453,
+                     "crude_birth_rate_per_1000":  34.32,
+                     "crude_death_rate_per_1000":  17.284,
+                     "median_age_years":  21.4783
+                 },
+                 {
+                     "year":  1960,
+                     "population_total_thousands":  3019233.434,
+                     "population_billions":  3.0192,
+                     "total_fertility_rate":  4.6955,
+                     "life_expectancy_years":  47.6972,
+                     "crude_birth_rate_per_1000":  33.871,
+                     "crude_death_rate_per_1000":  18.208,
+                     "median_age_years":  21.4613
+                 },
+                 {
+                     "year":  1961,
+                     "population_total_thousands":  3068370.609,
+                     "population_billions":  3.0684,
+                     "total_fertility_rate":  4.5735,
+                     "life_expectancy_years":  50.3587,
+                     "crude_birth_rate_per_1000":  32.914,
+                     "crude_death_rate_per_1000":  16.297,
+                     "median_age_years":  21.4485
+                 },
+                 {
+                     "year":  1962,
+                     "population_total_thousands":  3126686.743,
+                     "population_billions":  3.1267,
+                     "total_fertility_rate":  5.0301,
+                     "life_expectancy_years":  53.1245,
+                     "crude_birth_rate_per_1000":  35.814,
+                     "crude_death_rate_per_1000":  14.832,
+                     "median_age_years":  21.3712
+                 },
+                 {
+                     "year":  1963,
+                     "population_total_thousands":  3195779.247,
+                     "population_billions":  3.1958,
+                     "total_fertility_rate":  5.3169,
+                     "life_expectancy_years":  53.5761,
+                     "crude_birth_rate_per_1000":  37.477,
+                     "crude_death_rate_per_1000":  14.788,
+                     "median_age_years":  21.2035
+                 },
+                 {
+                     "year":  1964,
+                     "population_total_thousands":  3267212.338,
+                     "population_billions":  3.2672,
+                     "total_fertility_rate":  5.1332,
+                     "life_expectancy_years":  54.1638,
+                     "crude_birth_rate_per_1000":  35.936,
+                     "crude_death_rate_per_1000":  14.408,
+                     "median_age_years":  21.0077
+                 },
+                 {
+                     "year":  1965,
+                     "population_total_thousands":  3337111.983,
+                     "population_billions":  3.3371,
+                     "total_fertility_rate":  5.0805,
+                     "life_expectancy_years":  53.8924,
+                     "crude_birth_rate_per_1000":  35.34,
+                     "crude_death_rate_per_1000":  14.522,
+                     "median_age_years":  20.8147
+                 },
+                 {
+                     "year":  1966,
+                     "population_total_thousands":  3406417.036,
+                     "population_billions":  3.4064,
+                     "total_fertility_rate":  4.9634,
+                     "life_expectancy_years":  54.472,
+                     "crude_birth_rate_per_1000":  34.403,
+                     "crude_death_rate_per_1000":  14.105,
+                     "median_age_years":  20.6328
+                 },
+                 {
+                     "year":  1967,
+                     "population_total_thousands":  3475448.166,
+                     "population_billions":  3.4754,
+                     "total_fertility_rate":  4.8557,
+                     "life_expectancy_years":  54.9203,
+                     "crude_birth_rate_per_1000":  33.619,
+                     "crude_death_rate_per_1000":  13.787,
+                     "median_age_years":  20.4915
+                 },
+                 {
+                     "year":  1968,
+                     "population_total_thousands":  3546810.808,
+                     "population_billions":  3.5468,
+                     "total_fertility_rate":  4.9627,
+                     "life_expectancy_years":  55.486,
+                     "crude_birth_rate_per_1000":  34.318,
+                     "crude_death_rate_per_1000":  13.515,
+                     "median_age_years":  20.4009
+                 },
+                 {
+                     "year":  1969,
+                     "population_total_thousands":  3620655.275,
+                     "population_billions":  3.6207,
+                     "total_fertility_rate":  4.8674,
+                     "life_expectancy_years":  55.8286,
+                     "crude_birth_rate_per_1000":  33.729,
+                     "crude_death_rate_per_1000":  13.322,
+                     "median_age_years":  20.3435
+                 },
+                 {
+                     "year":  1970,
+                     "population_total_thousands":  3695390.336,
+                     "population_billions":  3.6954,
+                     "total_fertility_rate":  4.8279,
+                     "life_expectancy_years":  56.112,
+                     "crude_birth_rate_per_1000":  33.583,
+                     "crude_death_rate_per_1000":  13.132,
+                     "median_age_years":  20.3198
+                 },
+                 {
+                     "year":  1971,
+                     "population_total_thousands":  3770163.092,
+                     "population_billions":  3.7702,
+                     "total_fertility_rate":  4.6817,
+                     "life_expectancy_years":  55.8924,
+                     "crude_birth_rate_per_1000":  32.797,
+                     "crude_death_rate_per_1000":  13.178,
+                     "median_age_years":  20.3321
+                 },
+                 {
+                     "year":  1972,
+                     "population_total_thousands":  3844800.885,
+                     "population_billions":  3.8448,
+                     "total_fertility_rate":  4.5468,
+                     "life_expectancy_years":  57.1231,
+                     "crude_birth_rate_per_1000":  32.064,
+                     "crude_death_rate_per_1000":  12.475,
+                     "median_age_years":  20.379
+                 },
+                 {
+                     "year":  1973,
+                     "population_total_thousands":  3920251.504,
+                     "population_billions":  3.9203,
+                     "total_fertility_rate":  4.4206,
+                     "life_expectancy_years":  57.6327,
+                     "crude_birth_rate_per_1000":  31.445,
+                     "crude_death_rate_per_1000":  12.163,
+                     "median_age_years":  20.4569
+                 },
+                 {
+                     "year":  1974,
+                     "population_total_thousands":  3995517.077,
+                     "population_billions":  3.9955,
+                     "total_fertility_rate":  4.2648,
+                     "life_expectancy_years":  58.0422,
+                     "crude_birth_rate_per_1000":  30.645,
+                     "crude_death_rate_per_1000":  11.888,
+                     "median_age_years":  20.5616
+                 },
+                 {
+                     "year":  1975,
+                     "population_total_thousands":  4069437.23,
+                     "population_billions":  4.0694,
+                     "total_fertility_rate":  4.0835,
+                     "life_expectancy_years":  58.2754,
+                     "crude_birth_rate_per_1000":  29.613,
+                     "crude_death_rate_per_1000":  11.697,
+                     "median_age_years":  20.6916
+                 },
+                 {
+                     "year":  1976,
+                     "population_total_thousands":  4142505.882,
+                     "population_billions":  4.1425,
+                     "total_fertility_rate":  3.9774,
+                     "life_expectancy_years":  58.7107,
+                     "crude_birth_rate_per_1000":  29.125,
+                     "crude_death_rate_per_1000":  11.444,
+                     "median_age_years":  20.8402
+                 },
+                 {
+                     "year":  1977,
+                     "population_total_thousands":  4215772.49,
+                     "population_billions":  4.2158,
+                     "total_fertility_rate":  3.8523,
+                     "life_expectancy_years":  59.3652,
+                     "crude_birth_rate_per_1000":  28.476,
+                     "crude_death_rate_per_1000":  11.089,
+                     "median_age_years":  21.0074
+                 },
+                 {
+                     "year":  1978,
+                     "population_total_thousands":  4289657.708,
+                     "population_billions":  4.2897,
+                     "total_fertility_rate":  3.7904,
+                     "life_expectancy_years":  59.7402,
+                     "crude_birth_rate_per_1000":  28.284,
+                     "crude_death_rate_per_1000":  10.923,
+                     "median_age_years":  21.1768
+                 },
+                 {
+                     "year":  1979,
+                     "population_total_thousands":  4365582.871,
+                     "population_billions":  4.3656,
+                     "total_fertility_rate":  3.7763,
+                     "life_expectancy_years":  60.2037,
+                     "crude_birth_rate_per_1000":  28.465,
+                     "crude_death_rate_per_1000":  10.745,
+                     "median_age_years":  21.3447
+                 },
+                 {
+                     "year":  1980,
+                     "population_total_thousands":  4444007.706,
+                     "population_billions":  4.444,
+                     "total_fertility_rate":  3.7498,
+                     "life_expectancy_years":  60.5524,
+                     "crude_birth_rate_per_1000":  28.527,
+                     "crude_death_rate_per_1000":  10.646,
+                     "median_age_years":  21.5047
+                 },
+                 {
+                     "year":  1981,
+                     "population_total_thousands":  4524627.658,
+                     "population_billions":  4.5246,
+                     "total_fertility_rate":  3.7157,
+                     "life_expectancy_years":  60.9915,
+                     "crude_birth_rate_per_1000":  28.541,
+                     "crude_death_rate_per_1000":  10.472,
+                     "median_age_years":  21.6421
+                 },
+                 {
+                     "year":  1982,
+                     "population_total_thousands":  4607984.87,
+                     "population_billions":  4.608,
+                     "total_fertility_rate":  3.7129,
+                     "life_expectancy_years":  61.4165,
+                     "crude_birth_rate_per_1000":  28.752,
+                     "crude_death_rate_per_1000":  10.32,
+                     "median_age_years":  21.7415
+                 },
+                 {
+                     "year":  1983,
+                     "population_total_thousands":  4691884.238,
+                     "population_billions":  4.6919,
+                     "total_fertility_rate":  3.5778,
+                     "life_expectancy_years":  61.5651,
+                     "crude_birth_rate_per_1000":  27.92,
+                     "crude_death_rate_per_1000":  10.26,
+                     "median_age_years":  21.8263
+                 },
+                 {
+                     "year":  1984,
+                     "population_total_thousands":  4775836.074,
+                     "population_billions":  4.7758,
+                     "total_fertility_rate":  3.5516,
+                     "life_expectancy_years":  61.907,
+                     "crude_birth_rate_per_1000":  27.928,
+                     "crude_death_rate_per_1000":  10.121,
+                     "median_age_years":  21.9156
+                 },
+                 {
+                     "year":  1985,
+                     "population_total_thousands":  4861730.613,
+                     "population_billions":  4.8617,
+                     "total_fertility_rate":  3.5151,
+                     "life_expectancy_years":  62.2356,
+                     "crude_birth_rate_per_1000":  27.851,
+                     "crude_death_rate_per_1000":  10.013,
+                     "median_age_years":  22.0403
+                 },
+                 {
+                     "year":  1986,
+                     "population_total_thousands":  4950063.34,
+                     "population_billions":  4.9501,
+                     "total_fertility_rate":  3.505,
+                     "life_expectancy_years":  62.7665,
+                     "crude_birth_rate_per_1000":  27.958,
+                     "crude_death_rate_per_1000":  9.794,
+                     "median_age_years":  22.2237
+                 },
+                 {
+                     "year":  1987,
+                     "population_total_thousands":  5040984.495,
+                     "population_billions":  5.041,
+                     "total_fertility_rate":  3.4802,
+                     "life_expectancy_years":  63.1585,
+                     "crude_birth_rate_per_1000":  27.877,
+                     "crude_death_rate_per_1000":  9.647,
+                     "median_age_years":  22.4167
+                 },
+                 {
+                     "year":  1988,
+                     "population_total_thousands":  5132293.974,
+                     "population_billions":  5.1323,
+                     "total_fertility_rate":  3.3906,
+                     "life_expectancy_years":  63.2806,
+                     "crude_birth_rate_per_1000":  27.278,
+                     "crude_death_rate_per_1000":  9.603,
+                     "median_age_years":  22.6043
+                 },
+                 {
+                     "year":  1989,
+                     "population_total_thousands":  5223704.308,
+                     "population_billions":  5.2237,
+                     "total_fertility_rate":  3.3456,
+                     "life_expectancy_years":  63.7919,
+                     "crude_birth_rate_per_1000":  27.024,
+                     "crude_death_rate_per_1000":  9.392,
+                     "median_age_years":  22.7831
+                 },
+                 {
+                     "year":  1990,
+                     "population_total_thousands":  5316175.862,
+                     "population_billions":  5.3162,
+                     "total_fertility_rate":  3.3078,
+                     "life_expectancy_years":  63.9879,
+                     "crude_birth_rate_per_1000":  26.794,
+                     "crude_death_rate_per_1000":  9.333,
+                     "median_age_years":  22.9596
+                 },
+                 {
+                     "year":  1991,
+                     "population_total_thousands":  5406245.868,
+                     "population_billions":  5.4062,
+                     "total_fertility_rate":  3.1272,
+                     "life_expectancy_years":  64.0583,
+                     "crude_birth_rate_per_1000":  25.421,
+                     "crude_death_rate_per_1000":  9.266,
+                     "median_age_years":  23.1442
+                 },
+                 {
+                     "year":  1992,
+                     "population_total_thousands":  5492686.092,
+                     "population_billions":  5.4927,
+                     "total_fertility_rate":  3.0411,
+                     "life_expectancy_years":  64.3027,
+                     "crude_birth_rate_per_1000":  24.718,
+                     "crude_death_rate_per_1000":  9.137,
+                     "median_age_years":  23.353
+                 },
+                 {
+                     "year":  1993,
+                     "population_total_thousands":  5577433.523,
+                     "population_billions":  5.5774,
+                     "total_fertility_rate":  2.9758,
+                     "life_expectancy_years":  64.4369,
+                     "crude_birth_rate_per_1000":  24.151,
+                     "crude_death_rate_per_1000":  9.103,
+                     "median_age_years":  23.5748
+                 },
+                 {
+                     "year":  1994,
+                     "population_total_thousands":  5660727.993,
+                     "population_billions":  5.6607,
+                     "total_fertility_rate":  2.9262,
+                     "life_expectancy_years":  64.4588,
+                     "crude_birth_rate_per_1000":  23.706,
+                     "crude_death_rate_per_1000":  9.102,
+                     "median_age_years":  23.8102
+                 },
+                 {
+                     "year":  1995,
+                     "population_total_thousands":  5743219.454,
+                     "population_billions":  5.7432,
+                     "total_fertility_rate":  2.8779,
+                     "life_expectancy_years":  64.8766,
+                     "crude_birth_rate_per_1000":  23.276,
+                     "crude_death_rate_per_1000":  8.942,
+                     "median_age_years":  24.0506
+                 },
+                 {
+                     "year":  1996,
+                     "population_total_thousands":  5825145.298,
+                     "population_billions":  5.8251,
+                     "total_fertility_rate":  2.833,
+                     "life_expectancy_years":  65.1429,
+                     "crude_birth_rate_per_1000":  22.842,
+                     "crude_death_rate_per_1000":  8.845,
+                     "median_age_years":  24.2925
+                 },
+                 {
+                     "year":  1997,
+                     "population_total_thousands":  5906481.261,
+                     "population_billions":  5.9065,
+                     "total_fertility_rate":  2.7938,
+                     "life_expectancy_years":  65.5007,
+                     "crude_birth_rate_per_1000":  22.45,
+                     "crude_death_rate_per_1000":  8.713,
+                     "median_age_years":  24.5343
+                 },
+                 {
+                     "year":  1998,
+                     "population_total_thousands":  5987312.48,
+                     "population_billions":  5.9873,
+                     "total_fertility_rate":  2.7578,
+                     "life_expectancy_years":  65.7215,
+                     "crude_birth_rate_per_1000":  22.095,
+                     "crude_death_rate_per_1000":  8.645,
+                     "median_age_years":  24.7775
+                 },
+                 {
+                     "year":  1999,
+                     "population_total_thousands":  6067758.458,
+                     "population_billions":  6.0678,
+                     "total_fertility_rate":  2.7302,
+                     "life_expectancy_years":  66.0735,
+                     "crude_birth_rate_per_1000":  21.814,
+                     "crude_death_rate_per_1000":  8.569,
+                     "median_age_years":  25.018
+                 },
+                 {
+                     "year":  2000,
+                     "population_total_thousands":  6148898.975,
+                     "population_billions":  6.1489,
+                     "total_fertility_rate":  2.7345,
+                     "life_expectancy_years":  66.4525,
+                     "crude_birth_rate_per_1000":  21.793,
+                     "crude_death_rate_per_1000":  8.472,
+                     "median_age_years":  25.2497
+                 },
+                 {
+                     "year":  2001,
+                     "population_total_thousands":  6230746.982,
+                     "population_billions":  6.2307,
+                     "total_fertility_rate":  2.7002,
+                     "life_expectancy_years":  66.8336,
+                     "crude_birth_rate_per_1000":  21.487,
+                     "crude_death_rate_per_1000":  8.361,
+                     "median_age_years":  25.4697
+                 },
+                 {
+                     "year":  2002,
+                     "population_total_thousands":  6312407.36,
+                     "population_billions":  6.3124,
+                     "total_fertility_rate":  2.6722,
+                     "life_expectancy_years":  67.1373,
+                     "crude_birth_rate_per_1000":  21.231,
+                     "crude_death_rate_per_1000":  8.314,
+                     "median_age_years":  25.6795
+                 },
+                 {
+                     "year":  2003,
+                     "population_total_thousands":  6393898.365,
+                     "population_billions":  6.3939,
+                     "total_fertility_rate":  2.6471,
+                     "life_expectancy_years":  67.46,
+                     "crude_birth_rate_per_1000":  21.004,
+                     "crude_death_rate_per_1000":  8.267,
+                     "median_age_years":  25.8816
+                 },
+                 {
+                     "year":  2004,
+                     "population_total_thousands":  6475751.478,
+                     "population_billions":  6.4758,
+                     "total_fertility_rate":  2.6363,
+                     "life_expectancy_years":  67.8074,
+                     "crude_birth_rate_per_1000":  20.881,
+                     "crude_death_rate_per_1000":  8.179,
+                     "median_age_years":  26.0797
+                 },
+                 {
+                     "year":  2005,
+                     "population_total_thousands":  6558176.119,
+                     "population_billions":  6.5582,
+                     "total_fertility_rate":  2.6192,
+                     "life_expectancy_years":  68.2047,
+                     "crude_birth_rate_per_1000":  20.706,
+                     "crude_death_rate_per_1000":  8.114,
+                     "median_age_years":  26.273
+                 },
+                 {
+                     "year":  2006,
+                     "population_total_thousands":  6641416.218,
+                     "population_billions":  6.6414,
+                     "total_fertility_rate":  2.6115,
+                     "life_expectancy_years":  68.7027,
+                     "crude_birth_rate_per_1000":  20.613,
+                     "crude_death_rate_per_1000":  7.982,
+                     "median_age_years":  26.4705
+                 },
+                 {
+                     "year":  2007,
+                     "population_total_thousands":  6725948.544,
+                     "population_billions":  6.7259,
+                     "total_fertility_rate":  2.6123,
+                     "life_expectancy_years":  69.0508,
+                     "crude_birth_rate_per_1000":  20.599,
+                     "crude_death_rate_per_1000":  7.937,
+                     "median_age_years":  26.6754
+                 },
+                 {
+                     "year":  2008,
+                     "population_total_thousands":  6811597.272,
+                     "population_billions":  6.8116,
+                     "total_fertility_rate":  2.6131,
+                     "life_expectancy_years":  69.3014,
+                     "crude_birth_rate_per_1000":  20.575,
+                     "crude_death_rate_per_1000":  7.932,
+                     "median_age_years":  26.886
+                 },
+                 {
+                     "year":  2009,
+                     "population_total_thousands":  6898305.908,
+                     "population_billions":  6.8983,
+                     "total_fertility_rate":  2.605,
+                     "life_expectancy_years":  69.7965,
+                     "crude_birth_rate_per_1000":  20.468,
+                     "crude_death_rate_per_1000":  7.815,
+                     "median_age_years":  27.1019
+                 },
+                 {
+                     "year":  2010,
+                     "population_total_thousands":  6985603.105,
+                     "population_billions":  6.9856,
+                     "total_fertility_rate":  2.5869,
+                     "life_expectancy_years":  70.1088,
+                     "crude_birth_rate_per_1000":  20.274,
+                     "crude_death_rate_per_1000":  7.777,
+                     "median_age_years":  27.3269
+                 },
+                 {
+                     "year":  2011,
+                     "population_total_thousands":  7073125.425,
+                     "population_billions":  7.0731,
+                     "total_fertility_rate":  2.5729,
+                     "life_expectancy_years":  70.5303,
+                     "crude_birth_rate_per_1000":  20.094,
+                     "crude_death_rate_per_1000":  7.69,
+                     "median_age_years":  27.5537
+                 },
+                 {
+                     "year":  2012,
+                     "population_total_thousands":  7161697.921,
+                     "population_billions":  7.1617,
+                     "total_fertility_rate":  2.5904,
+                     "life_expectancy_years":  70.8725,
+                     "crude_birth_rate_per_1000":  20.132,
+                     "crude_death_rate_per_1000":  7.65,
+                     "median_age_years":  27.775
+                 },
+                 {
+                     "year":  2013,
+                     "population_total_thousands":  7250593.37,
+                     "population_billions":  7.2506,
+                     "total_fertility_rate":  2.5604,
+                     "life_expectancy_years":  71.2072,
+                     "crude_birth_rate_per_1000":  19.781,
+                     "crude_death_rate_per_1000":  7.591,
+                     "median_age_years":  27.9926
+                 },
+                 {
+                     "year":  2014,
+                     "population_total_thousands":  7339013.419,
+                     "population_billions":  7.339,
+                     "total_fertility_rate":  2.5529,
+                     "life_expectancy_years":  71.5649,
+                     "crude_birth_rate_per_1000":  19.576,
+                     "crude_death_rate_per_1000":  7.524,
+                     "median_age_years":  28.2197
+                 },
+                 {
+                     "year":  2015,
+                     "population_total_thousands":  7426597.537,
+                     "population_billions":  7.4266,
+                     "total_fertility_rate":  2.524,
+                     "life_expectancy_years":  71.8004,
+                     "crude_birth_rate_per_1000":  19.203,
+                     "crude_death_rate_per_1000":  7.526,
+                     "median_age_years":  28.4558
+                 },
+                 {
+                     "year":  2016,
+                     "population_total_thousands":  7513474.238,
+                     "population_billions":  7.5135,
+                     "total_fertility_rate":  2.5256,
+                     "life_expectancy_years":  72.1102,
+                     "crude_birth_rate_per_1000":  19.064,
+                     "crude_death_rate_per_1000":  7.48,
+                     "median_age_years":  28.6991
+                 },
+                 {
+                     "year":  2017,
+                     "population_total_thousands":  7599822.404,
+                     "population_billions":  7.5998,
+                     "total_fertility_rate":  2.5042,
+                     "life_expectancy_years":  72.3267,
+                     "crude_birth_rate_per_1000":  18.767,
+                     "crude_death_rate_per_1000":  7.496,
+                     "median_age_years":  28.9473
+                 },
+                 {
+                     "year":  2018,
+                     "population_total_thousands":  7683789.828,
+                     "population_billions":  7.6838,
+                     "total_fertility_rate":  2.4433,
+                     "life_expectancy_years":  72.5759,
+                     "crude_birth_rate_per_1000":  18.174,
+                     "crude_death_rate_per_1000":  7.465,
+                     "median_age_years":  29.2039
+                 },
+                 {
+                     "year":  2019,
+                     "population_total_thousands":  7764951.032,
+                     "population_billions":  7.765,
+                     "total_fertility_rate":  2.4062,
+                     "life_expectancy_years":  72.7897,
+                     "crude_birth_rate_per_1000":  17.771,
+                     "crude_death_rate_per_1000":  7.462,
+                     "median_age_years":  29.4692
+                 },
+                 {
+                     "year":  2020,
+                     "population_total_thousands":  7840952.88,
+                     "population_billions":  7.841,
+                     "total_fertility_rate":  2.3485,
+                     "life_expectancy_years":  72.0361,
+                     "crude_birth_rate_per_1000":  17.237,
+                     "crude_death_rate_per_1000":  8.058,
+                     "median_age_years":  29.7362
+                 },
+                 {
+                     "year":  2021,
+                     "population_total_thousands":  7909295.152,
+                     "population_billions":  7.9093,
+                     "total_fertility_rate":  2.3208,
+                     "life_expectancy_years":  71.0479,
+                     "crude_birth_rate_per_1000":  16.94,
+                     "crude_death_rate_per_1000":  8.756,
+                     "median_age_years":  29.9958
+                 },
+                 {
+                     "year":  2022,
+                     "population_total_thousands":  7975105.156,
+                     "population_billions":  7.9751,
+                     "total_fertility_rate":  2.3142,
+                     "life_expectancy_years":  71.7135,
+                     "crude_birth_rate_per_1000":  16.801,
+                     "crude_death_rate_per_1000":  8.413,
+                     "median_age_years":  30.242
+                 },
+                 {
+                     "year":  2023,
+                     "population_total_thousands":  8045311.448,
+                     "population_billions":  8.0453,
+                     "total_fertility_rate":  2.3118,
+                     "life_expectancy_years":  73.357,
+                     "crude_birth_rate_per_1000":  16.69,
+                     "crude_death_rate_per_1000":  7.552,
+                     "median_age_years":  30.4887
+                 },
+                 {
+                     "year":  2024,
+                     "population_total_thousands":  8118836,
+                     "population_billions":  8.1188,
+                     "total_fertility_rate":  2.3075,
+                     "life_expectancy_years":  73.669,
+                     "crude_birth_rate_per_1000":  16.564,
+                     "crude_death_rate_per_1000":  7.508,
+                     "median_age_years":  30.7364
+                 },
+                 {
+                     "year":  2025,
+                     "population_total_thousands":  8191988.453,
+                     "population_billions":  8.192,
+                     "total_fertility_rate":  2.3031,
+                     "life_expectancy_years":  73.7893,
+                     "crude_birth_rate_per_1000":  16.444,
+                     "crude_death_rate_per_1000":  7.561,
+                     "median_age_years":  30.9771
+                 },
+                 {
+                     "year":  2026,
+                     "population_total_thousands":  8264364.51,
+                     "population_billions":  8.2644,
+                     "total_fertility_rate":  2.2975,
+                     "life_expectancy_years":  73.9476,
+                     "crude_birth_rate_per_1000":  16.324,
+                     "crude_death_rate_per_1000":  7.614,
+                     "median_age_years":  31.2111
+                 },
+                 {
+                     "year":  2027,
+                     "population_total_thousands":  8335977.671,
+                     "population_billions":  8.336,
+                     "total_fertility_rate":  2.2929,
+                     "life_expectancy_years":  74.1056,
+                     "crude_birth_rate_per_1000":  16.218,
+                     "crude_death_rate_per_1000":  7.671,
+                     "median_age_years":  31.4395
+                 },
+                 {
+                     "year":  2028,
+                     "population_total_thousands":  8406828.792,
+                     "population_billions":  8.4068,
+                     "total_fertility_rate":  2.2869,
+                     "life_expectancy_years":  74.2598,
+                     "crude_birth_rate_per_1000":  16.112,
+                     "crude_death_rate_per_1000":  7.732,
+                     "median_age_years":  31.6618
+                 },
+                 {
+                     "year":  2029,
+                     "population_total_thousands":  8476889.391,
+                     "population_billions":  8.4769,
+                     "total_fertility_rate":  2.2808,
+                     "life_expectancy_years":  74.4144,
+                     "crude_birth_rate_per_1000":  16.014,
+                     "crude_death_rate_per_1000":  7.795,
+                     "median_age_years":  31.8775
+                 },
+                 {
+                     "year":  2030,
+                     "population_total_thousands":  8546141.327,
+                     "population_billions":  8.5461,
+                     "total_fertility_rate":  2.2734,
+                     "life_expectancy_years":  74.5699,
+                     "crude_birth_rate_per_1000":  15.914,
+                     "crude_death_rate_per_1000":  7.86,
+                     "median_age_years":  32.0861
+                 },
+                 {
+                     "year":  2031,
+                     "population_total_thousands":  8614532.744,
+                     "population_billions":  8.6145,
+                     "total_fertility_rate":  2.2652,
+                     "life_expectancy_years":  74.7213,
+                     "crude_birth_rate_per_1000":  15.817,
+                     "crude_death_rate_per_1000":  7.929,
+                     "median_age_years":  32.2889
+                 },
+                 {
+                     "year":  2032,
+                     "population_total_thousands":  8682091.984,
+                     "population_billions":  8.6821,
+                     "total_fertility_rate":  2.259,
+                     "life_expectancy_years":  74.8706,
+                     "crude_birth_rate_per_1000":  15.739,
+                     "crude_death_rate_per_1000":  8.002,
+                     "median_age_years":  32.4865
+                 },
+                 {
+                     "year":  2033,
+                     "population_total_thousands":  8748798.542,
+                     "population_billions":  8.7488,
+                     "total_fertility_rate":  2.2504,
+                     "life_expectancy_years":  75.0185,
+                     "crude_birth_rate_per_1000":  15.649,
+                     "crude_death_rate_per_1000":  8.078,
+                     "median_age_years":  32.6822
+                 },
+                 {
+                     "year":  2034,
+                     "population_total_thousands":  8814575.171,
+                     "population_billions":  8.8146,
+                     "total_fertility_rate":  2.2424,
+                     "life_expectancy_years":  75.1634,
+                     "crude_birth_rate_per_1000":  15.565,
+                     "crude_death_rate_per_1000":  8.156,
+                     "median_age_years":  32.8784
+                 },
+                 {
+                     "year":  2035,
+                     "population_total_thousands":  8879397.401,
+                     "population_billions":  8.8794,
+                     "total_fertility_rate":  2.2343,
+                     "life_expectancy_years":  75.3068,
+                     "crude_birth_rate_per_1000":  15.482,
+                     "crude_death_rate_per_1000":  8.237,
+                     "median_age_years":  33.0734
+                 },
+                 {
+                     "year":  2036,
+                     "population_total_thousands":  8943206.702,
+                     "population_billions":  8.9432,
+                     "total_fertility_rate":  2.226,
+                     "life_expectancy_years":  75.4506,
+                     "crude_birth_rate_per_1000":  15.394,
+                     "crude_death_rate_per_1000":  8.317,
+                     "median_age_years":  33.2626
+                 },
+                 {
+                     "year":  2037,
+                     "population_total_thousands":  9006026.37,
+                     "population_billions":  9.006,
+                     "total_fertility_rate":  2.2208,
+                     "life_expectancy_years":  75.5925,
+                     "crude_birth_rate_per_1000":  15.323,
+                     "crude_death_rate_per_1000":  8.4,
+                     "median_age_years":  33.4474
+                 },
+                 {
+                     "year":  2038,
+                     "population_total_thousands":  9067889.026,
+                     "population_billions":  9.0679,
+                     "total_fertility_rate":  2.2162,
+                     "life_expectancy_years":  75.7331,
+                     "crude_birth_rate_per_1000":  15.251,
+                     "crude_death_rate_per_1000":  8.483,
+                     "median_age_years":  33.6294
+                 },
+                 {
+                     "year":  2039,
+                     "population_total_thousands":  9128661.215,
+                     "population_billions":  9.1287,
+                     "total_fertility_rate":  2.2094,
+                     "life_expectancy_years":  75.8711,
+                     "crude_birth_rate_per_1000":  15.157,
+                     "crude_death_rate_per_1000":  8.566,
+                     "median_age_years":  33.8104
+                 },
+                 {
+                     "year":  2040,
+                     "population_total_thousands":  9188250.492,
+                     "population_billions":  9.1883,
+                     "total_fertility_rate":  2.2046,
+                     "life_expectancy_years":  76.0074,
+                     "crude_birth_rate_per_1000":  15.071,
+                     "crude_death_rate_per_1000":  8.649,
+                     "median_age_years":  33.9915
+                 },
+                 {
+                     "year":  2041,
+                     "population_total_thousands":  9246673.3,
+                     "population_billions":  9.2467,
+                     "total_fertility_rate":  2.2006,
+                     "life_expectancy_years":  76.1448,
+                     "crude_birth_rate_per_1000":  14.984,
+                     "crude_death_rate_per_1000":  8.729,
+                     "median_age_years":  34.1727
+                 },
+                 {
+                     "year":  2042,
+                     "population_total_thousands":  9303896.851,
+                     "population_billions":  9.3039,
+                     "total_fertility_rate":  2.1968,
+                     "life_expectancy_years":  76.2784,
+                     "crude_birth_rate_per_1000":  14.895,
+                     "crude_death_rate_per_1000":  8.81,
+                     "median_age_years":  34.3568
+                 },
+                 {
+                     "year":  2043,
+                     "population_total_thousands":  9359836.42,
+                     "population_billions":  9.3598,
+                     "total_fertility_rate":  2.1927,
+                     "life_expectancy_years":  76.407,
+                     "crude_birth_rate_per_1000":  14.797,
+                     "crude_death_rate_per_1000":  8.892,
+                     "median_age_years":  34.545
+                 },
+                 {
+                     "year":  2044,
+                     "population_total_thousands":  9414408.423,
+                     "population_billions":  9.4144,
+                     "total_fertility_rate":  2.1882,
+                     "life_expectancy_years":  76.5346,
+                     "crude_birth_rate_per_1000":  14.695,
+                     "crude_death_rate_per_1000":  8.972,
+                     "median_age_years":  34.7372
+                 },
+                 {
+                     "year":  2045,
+                     "population_total_thousands":  9467543.575,
+                     "population_billions":  9.4675,
+                     "total_fertility_rate":  2.1833,
+                     "life_expectancy_years":  76.6612,
+                     "crude_birth_rate_per_1000":  14.585,
+                     "crude_death_rate_per_1000":  9.051,
+                     "median_age_years":  34.9316
+                 },
+                 {
+                     "year":  2046,
+                     "population_total_thousands":  9519190.804,
+                     "population_billions":  9.5192,
+                     "total_fertility_rate":  2.1783,
+                     "life_expectancy_years":  76.7864,
+                     "crude_birth_rate_per_1000":  14.474,
+                     "crude_death_rate_per_1000":  9.127,
+                     "median_age_years":  35.1262
+                 },
+                 {
+                     "year":  2047,
+                     "population_total_thousands":  9569297.886,
+                     "population_billions":  9.5693,
+                     "total_fertility_rate":  2.173,
+                     "life_expectancy_years":  76.9042,
+                     "crude_birth_rate_per_1000":  14.36,
+                     "crude_death_rate_per_1000":  9.206,
+                     "median_age_years":  35.32
+                 },
+                 {
+                     "year":  2048,
+                     "population_total_thousands":  9617774.47,
+                     "population_billions":  9.6178,
+                     "total_fertility_rate":  2.1661,
+                     "life_expectancy_years":  77.0209,
+                     "crude_birth_rate_per_1000":  14.235,
+                     "crude_death_rate_per_1000":  9.282,
+                     "median_age_years":  35.5174
+                 },
+                 {
+                     "year":  2049,
+                     "population_total_thousands":  9664516.146,
+                     "population_billions":  9.6645,
+                     "total_fertility_rate":  2.1573,
+                     "life_expectancy_years":  77.1366,
+                     "crude_birth_rate_per_1000":  14.101,
+                     "crude_death_rate_per_1000":  9.357,
+                     "median_age_years":  35.7181
+                 },
+                 {
+                     "year":  2050,
+                     "population_total_thousands":  9709491.761,
+                     "population_billions":  9.7095,
+                     "total_fertility_rate":  2.1493,
+                     "life_expectancy_years":  77.2484,
+                     "crude_birth_rate_per_1000":  13.975,
+                     "crude_death_rate_per_1000":  9.433,
+                     "median_age_years":  35.919
+                 },
+                 {
+                     "year":  2051,
+                     "population_total_thousands":  9752656.916,
+                     "population_billions":  9.7527,
+                     "total_fertility_rate":  2.1387,
+                     "life_expectancy_years":  77.3581,
+                     "crude_birth_rate_per_1000":  13.837,
+                     "crude_death_rate_per_1000":  9.507,
+                     "median_age_years":  36.117
+                 },
+                 {
+                     "year":  2052,
+                     "population_total_thousands":  9794102.043,
+                     "population_billions":  9.7941,
+                     "total_fertility_rate":  2.1325,
+                     "life_expectancy_years":  77.4687,
+                     "crude_birth_rate_per_1000":  13.733,
+                     "crude_death_rate_per_1000":  9.581,
+                     "median_age_years":  36.3117
+                 },
+                 {
+                     "year":  2053,
+                     "population_total_thousands":  9833861.191,
+                     "population_billions":  9.8339,
+                     "total_fertility_rate":  2.1218,
+                     "life_expectancy_years":  77.5778,
+                     "crude_birth_rate_per_1000":  13.607,
+                     "crude_death_rate_per_1000":  9.656,
+                     "median_age_years":  36.5037
+                 },
+                 {
+                     "year":  2054,
+                     "population_total_thousands":  9871900.602,
+                     "population_billions":  9.8719,
+                     "total_fertility_rate":  2.113,
+                     "life_expectancy_years":  77.6861,
+                     "crude_birth_rate_per_1000":  13.5,
+                     "crude_death_rate_per_1000":  9.729,
+                     "median_age_years":  36.6944
+                 },
+                 {
+                     "year":  2055,
+                     "population_total_thousands":  9908304.869,
+                     "population_billions":  9.9083,
+                     "total_fertility_rate":  2.1034,
+                     "life_expectancy_years":  77.7921,
+                     "crude_birth_rate_per_1000":  13.395,
+                     "crude_death_rate_per_1000":  9.803,
+                     "median_age_years":  36.8819
+                 },
+                 {
+                     "year":  2056,
+                     "population_total_thousands":  9943123.262,
+                     "population_billions":  9.9431,
+                     "total_fertility_rate":  2.0948,
+                     "life_expectancy_years":  77.8947,
+                     "crude_birth_rate_per_1000":  13.303,
+                     "crude_death_rate_per_1000":  9.878,
+                     "median_age_years":  37.0572
+                 },
+                 {
+                     "year":  2057,
+                     "population_total_thousands":  9976440.15,
+                     "population_billions":  9.9764,
+                     "total_fertility_rate":  2.0858,
+                     "life_expectancy_years":  78.0016,
+                     "crude_birth_rate_per_1000":  13.214,
+                     "crude_death_rate_per_1000":  9.948,
+                     "median_age_years":  37.218
+                 },
+                 {
+                     "year":  2058,
+                     "population_total_thousands":  10008310.111,
+                     "population_billions":  10.0083,
+                     "total_fertility_rate":  2.0766,
+                     "life_expectancy_years":  78.1069,
+                     "crude_birth_rate_per_1000":  13.131,
+                     "crude_death_rate_per_1000":  10.018,
+                     "median_age_years":  37.3644
+                 },
+                 {
+                     "year":  2059,
+                     "population_total_thousands":  10038705.861,
+                     "population_billions":  10.0387,
+                     "total_fertility_rate":  2.0648,
+                     "life_expectancy_years":  78.2102,
+                     "crude_birth_rate_per_1000":  13.037,
+                     "crude_death_rate_per_1000":  10.085,
+                     "median_age_years":  37.4961
+                 },
+                 {
+                     "year":  2060,
+                     "population_total_thousands":  10067733.606,
+                     "population_billions":  10.0677,
+                     "total_fertility_rate":  2.0571,
+                     "life_expectancy_years":  78.3141,
+                     "crude_birth_rate_per_1000":  12.974,
+                     "crude_death_rate_per_1000":  10.151,
+                     "median_age_years":  37.6176
+                 },
+                 {
+                     "year":  2061,
+                     "population_total_thousands":  10095573.064,
+                     "population_billions":  10.0956,
+                     "total_fertility_rate":  2.0495,
+                     "life_expectancy_years":  78.4154,
+                     "crude_birth_rate_per_1000":  12.915,
+                     "crude_death_rate_per_1000":  10.215,
+                     "median_age_years":  37.7351
+                 },
+                 {
+                     "year":  2062,
+                     "population_total_thousands":  10122307.679,
+                     "population_billions":  10.1223,
+                     "total_fertility_rate":  2.043,
+                     "life_expectancy_years":  78.5177,
+                     "crude_birth_rate_per_1000":  12.866,
+                     "crude_death_rate_per_1000":  10.276,
+                     "median_age_years":  37.8514
+                 },
+                 {
+                     "year":  2063,
+                     "population_total_thousands":  10147949.115,
+                     "population_billions":  10.1479,
+                     "total_fertility_rate":  2.034,
+                     "life_expectancy_years":  78.6215,
+                     "crude_birth_rate_per_1000":  12.802,
+                     "crude_death_rate_per_1000":  10.332,
+                     "median_age_years":  37.9667
+                 },
+                 {
+                     "year":  2064,
+                     "population_total_thousands":  10172513.775,
+                     "population_billions":  10.1725,
+                     "total_fertility_rate":  2.0271,
+                     "life_expectancy_years":  78.7214,
+                     "crude_birth_rate_per_1000":  12.753,
+                     "crude_death_rate_per_1000":  10.388,
+                     "median_age_years":  38.081
+                 },
+                 {
+                     "year":  2065,
+                     "population_total_thousands":  10195964.9,
+                     "population_billions":  10.196,
+                     "total_fertility_rate":  2.0166,
+                     "life_expectancy_years":  78.8244,
+                     "crude_birth_rate_per_1000":  12.681,
+                     "crude_death_rate_per_1000":  10.441,
+                     "median_age_years":  38.1945
+                 },
+                 {
+                     "year":  2066,
+                     "population_total_thousands":  10218273.016,
+                     "population_billions":  10.2183,
+                     "total_fertility_rate":  2.0088,
+                     "life_expectancy_years":  78.9248,
+                     "crude_birth_rate_per_1000":  12.626,
+                     "crude_death_rate_per_1000":  10.495,
+                     "median_age_years":  38.3077
+                 },
+                 {
+                     "year":  2067,
+                     "population_total_thousands":  10239583.78,
+                     "population_billions":  10.2396,
+                     "total_fertility_rate":  2.0033,
+                     "life_expectancy_years":  79.023,
+                     "crude_birth_rate_per_1000":  12.584,
+                     "crude_death_rate_per_1000":  10.548,
+                     "median_age_years":  38.4204
+                 },
+                 {
+                     "year":  2068,
+                     "population_total_thousands":  10259872.991,
+                     "population_billions":  10.2599,
+                     "total_fertility_rate":  1.9952,
+                     "life_expectancy_years":  79.1218,
+                     "crude_birth_rate_per_1000":  12.523,
+                     "crude_death_rate_per_1000":  10.6,
+                     "median_age_years":  38.5329
+                 },
+                 {
+                     "year":  2069,
+                     "population_total_thousands":  10279074.87,
+                     "population_billions":  10.2791,
+                     "total_fertility_rate":  1.9883,
+                     "life_expectancy_years":  79.2203,
+                     "crude_birth_rate_per_1000":  12.468,
+                     "crude_death_rate_per_1000":  10.651,
+                     "median_age_years":  38.6455
+                 },
+                 {
+                     "year":  2070,
+                     "population_total_thousands":  10297166.711,
+                     "population_billions":  10.2972,
+                     "total_fertility_rate":  1.9805,
+                     "life_expectancy_years":  79.317,
+                     "crude_birth_rate_per_1000":  12.405,
+                     "crude_death_rate_per_1000":  10.704,
+                     "median_age_years":  38.7583
+                 },
+                 {
+                     "year":  2071,
+                     "population_total_thousands":  10314142.303,
+                     "population_billions":  10.3141,
+                     "total_fertility_rate":  1.9743,
+                     "life_expectancy_years":  79.4163,
+                     "crude_birth_rate_per_1000":  12.349,
+                     "crude_death_rate_per_1000":  10.755,
+                     "median_age_years":  38.8714
+                 },
+                 {
+                     "year":  2072,
+                     "population_total_thousands":  10330059.854,
+                     "population_billions":  10.3301,
+                     "total_fertility_rate":  1.9696,
+                     "life_expectancy_years":  79.5092,
+                     "crude_birth_rate_per_1000":  12.3,
+                     "crude_death_rate_per_1000":  10.81,
+                     "median_age_years":  38.985
+                 },
+                 {
+                     "year":  2073,
+                     "population_total_thousands":  10344891.492,
+                     "population_billions":  10.3449,
+                     "total_fertility_rate":  1.9641,
+                     "life_expectancy_years":  79.6054,
+                     "crude_birth_rate_per_1000":  12.243,
+                     "crude_death_rate_per_1000":  10.863,
+                     "median_age_years":  39.0992
+                 },
+                 {
+                     "year":  2074,
+                     "population_total_thousands":  10358552.763,
+                     "population_billions":  10.3586,
+                     "total_fertility_rate":  1.9576,
+                     "life_expectancy_years":  79.6992,
+                     "crude_birth_rate_per_1000":  12.177,
+                     "crude_death_rate_per_1000":  10.917,
+                     "median_age_years":  39.214
+                 },
+                 {
+                     "year":  2075,
+                     "population_total_thousands":  10370994.198,
+                     "population_billions":  10.371,
+                     "total_fertility_rate":  1.9515,
+                     "life_expectancy_years":  79.7938,
+                     "crude_birth_rate_per_1000":  12.112,
+                     "crude_death_rate_per_1000":  10.971,
+                     "median_age_years":  39.3299
+                 },
+                 {
+                     "year":  2076,
+                     "population_total_thousands":  10382180.397,
+                     "population_billions":  10.3822,
+                     "total_fertility_rate":  1.9447,
+                     "life_expectancy_years":  79.8869,
+                     "crude_birth_rate_per_1000":  12.04,
+                     "crude_death_rate_per_1000":  11.025,
+                     "median_age_years":  39.4467
+                 },
+                 {
+                     "year":  2077,
+                     "population_total_thousands":  10392082,
+                     "population_billions":  10.3921,
+                     "total_fertility_rate":  1.938,
+                     "life_expectancy_years":  79.9807,
+                     "crude_birth_rate_per_1000":  11.968,
+                     "crude_death_rate_per_1000":  11.076,
+                     "median_age_years":  39.5649
+                 },
+                 {
+                     "year":  2078,
+                     "population_total_thousands":  10400749.753,
+                     "population_billions":  10.4007,
+                     "total_fertility_rate":  1.9331,
+                     "life_expectancy_years":  80.0721,
+                     "crude_birth_rate_per_1000":  11.905,
+                     "crude_death_rate_per_1000":  11.128,
+                     "median_age_years":  39.6847
+                 },
+                 {
+                     "year":  2079,
+                     "population_total_thousands":  10408266.922,
+                     "population_billions":  10.4083,
+                     "total_fertility_rate":  1.9292,
+                     "life_expectancy_years":  80.1623,
+                     "crude_birth_rate_per_1000":  11.847,
+                     "crude_death_rate_per_1000":  11.178,
+                     "median_age_years":  39.8058
+                 },
+                 {
+                     "year":  2080,
+                     "population_total_thousands":  10414637.189,
+                     "population_billions":  10.4146,
+                     "total_fertility_rate":  1.9238,
+                     "life_expectancy_years":  80.2526,
+                     "crude_birth_rate_per_1000":  11.779,
+                     "crude_death_rate_per_1000":  11.224,
+                     "median_age_years":  39.9278
+                 },
+                 {
+                     "year":  2081,
+                     "population_total_thousands":  10419851.489,
+                     "population_billions":  10.4199,
+                     "total_fertility_rate":  1.9189,
+                     "life_expectancy_years":  80.3421,
+                     "crude_birth_rate_per_1000":  11.715,
+                     "crude_death_rate_per_1000":  11.269,
+                     "median_age_years":  40.0507
+                 },
+                 {
+                     "year":  2082,
+                     "population_total_thousands":  10424022.896,
+                     "population_billions":  10.424,
+                     "total_fertility_rate":  1.916,
+                     "life_expectancy_years":  80.4322,
+                     "crude_birth_rate_per_1000":  11.662,
+                     "crude_death_rate_per_1000":  11.308,
+                     "median_age_years":  40.1745
+                 },
+                 {
+                     "year":  2083,
+                     "population_total_thousands":  10427226.4,
+                     "population_billions":  10.4272,
+                     "total_fertility_rate":  1.9116,
+                     "life_expectancy_years":  80.5252,
+                     "crude_birth_rate_per_1000":  11.601,
+                     "crude_death_rate_per_1000":  11.341,
+                     "median_age_years":  40.2991
+                 },
+                 {
+                     "year":  2084,
+                     "population_total_thousands":  10429447.395,
+                     "population_billions":  10.4294,
+                     "total_fertility_rate":  1.9071,
+                     "life_expectancy_years":  80.6146,
+                     "crude_birth_rate_per_1000":  11.541,
+                     "crude_death_rate_per_1000":  11.375,
+                     "median_age_years":  40.4246
+                 },
+                 {
+                     "year":  2085,
+                     "population_total_thousands":  10430679.101,
+                     "population_billions":  10.4307,
+                     "total_fertility_rate":  1.9013,
+                     "life_expectancy_years":  80.705,
+                     "crude_birth_rate_per_1000":  11.474,
+                     "crude_death_rate_per_1000":  11.404,
+                     "median_age_years":  40.5508
+                 },
+                 {
+                     "year":  2086,
+                     "population_total_thousands":  10430926.281,
+                     "population_billions":  10.4309,
+                     "total_fertility_rate":  1.8951,
+                     "life_expectancy_years":  80.7968,
+                     "crude_birth_rate_per_1000":  11.406,
+                     "crude_death_rate_per_1000":  11.429,
+                     "median_age_years":  40.6777
+                 },
+                 {
+                     "year":  2087,
+                     "population_total_thousands":  10430267.624,
+                     "population_billions":  10.4303,
+                     "total_fertility_rate":  1.8905,
+                     "life_expectancy_years":  80.8856,
+                     "crude_birth_rate_per_1000":  11.35,
+                     "crude_death_rate_per_1000":  11.454,
+                     "median_age_years":  40.8047
+                 },
+                 {
+                     "year":  2088,
+                     "population_total_thousands":  10428830.626,
+                     "population_billions":  10.4288,
+                     "total_fertility_rate":  1.8877,
+                     "life_expectancy_years":  80.9744,
+                     "crude_birth_rate_per_1000":  11.306,
+                     "crude_death_rate_per_1000":  11.478,
+                     "median_age_years":  40.9313
+                 },
+                 {
+                     "year":  2089,
+                     "population_total_thousands":  10426601.147,
+                     "population_billions":  10.4266,
+                     "total_fertility_rate":  1.8816,
+                     "life_expectancy_years":  81.0664,
+                     "crude_birth_rate_per_1000":  11.245,
+                     "crude_death_rate_per_1000":  11.5,
+                     "median_age_years":  41.0573
+                 },
+                 {
+                     "year":  2090,
+                     "population_total_thousands":  10423541.036,
+                     "population_billions":  10.4235,
+                     "total_fertility_rate":  1.8769,
+                     "life_expectancy_years":  81.1562,
+                     "crude_birth_rate_per_1000":  11.193,
+                     "crude_death_rate_per_1000":  11.525,
+                     "median_age_years":  41.1823
+                 },
+                 {
+                     "year":  2091,
+                     "population_total_thousands":  10419647.132,
+                     "population_billions":  10.4196,
+                     "total_fertility_rate":  1.8707,
+                     "life_expectancy_years":  81.246,
+                     "crude_birth_rate_per_1000":  11.134,
+                     "crude_death_rate_per_1000":  11.55,
+                     "median_age_years":  41.3057
+                 },
+                 {
+                     "year":  2092,
+                     "population_total_thousands":  10414959.829,
+                     "population_billions":  10.415,
+                     "total_fertility_rate":  1.8674,
+                     "life_expectancy_years":  81.3351,
+                     "crude_birth_rate_per_1000":  11.095,
+                     "crude_death_rate_per_1000":  11.579,
+                     "median_age_years":  41.4269
+                 },
+                 {
+                     "year":  2093,
+                     "population_total_thousands":  10409491.089,
+                     "population_billions":  10.4095,
+                     "total_fertility_rate":  1.8619,
+                     "life_expectancy_years":  81.4262,
+                     "crude_birth_rate_per_1000":  11.043,
+                     "crude_death_rate_per_1000":  11.609,
+                     "median_age_years":  41.5453
+                 },
+                 {
+                     "year":  2094,
+                     "population_total_thousands":  10403272.149,
+                     "population_billions":  10.4033,
+                     "total_fertility_rate":  1.8597,
+                     "life_expectancy_years":  81.5174,
+                     "crude_birth_rate_per_1000":  11.012,
+                     "crude_death_rate_per_1000":  11.641,
+                     "median_age_years":  41.6609
+                 },
+                 {
+                     "year":  2095,
+                     "population_total_thousands":  10396305.844,
+                     "population_billions":  10.3963,
+                     "total_fertility_rate":  1.8547,
+                     "life_expectancy_years":  81.6087,
+                     "crude_birth_rate_per_1000":  10.965,
+                     "crude_death_rate_per_1000":  11.676,
+                     "median_age_years":  41.7738
+                 },
+                 {
+                     "year":  2096,
+                     "population_total_thousands":  10388517.149,
+                     "population_billions":  10.3885,
+                     "total_fertility_rate":  1.8507,
+                     "life_expectancy_years":  81.6982,
+                     "crude_birth_rate_per_1000":  10.925,
+                     "crude_death_rate_per_1000":  11.713,
+                     "median_age_years":  41.8843
+                 },
+                 {
+                     "year":  2097,
+                     "population_total_thousands":  10379888.448,
+                     "population_billions":  10.3799,
+                     "total_fertility_rate":  1.8456,
+                     "life_expectancy_years":  81.7865,
+                     "crude_birth_rate_per_1000":  10.879,
+                     "crude_death_rate_per_1000":  11.752,
+                     "median_age_years":  41.9919
+                 },
+                 {
+                     "year":  2098,
+                     "population_total_thousands":  10370445.196,
+                     "population_billions":  10.3704,
+                     "total_fertility_rate":  1.8425,
+                     "life_expectancy_years":  81.8772,
+                     "crude_birth_rate_per_1000":  10.844,
+                     "crude_death_rate_per_1000":  11.791,
+                     "median_age_years":  42.097
+                 },
+                 {
+                     "year":  2099,
+                     "population_total_thousands":  10360269.362,
+                     "population_billions":  10.3603,
+                     "total_fertility_rate":  1.8396,
+                     "life_expectancy_years":  81.969,
+                     "crude_birth_rate_per_1000":  10.811,
+                     "crude_death_rate_per_1000":  11.828,
+                     "median_age_years":  42.1997
+                 },
+                 {
+                     "year":  2100,
+                     "population_total_thousands":  10349323.038,
+                     "population_billions":  10.3493,
+                     "total_fertility_rate":  1.8354,
+                     "life_expectancy_years":  82.0582,
+                     "crude_birth_rate_per_1000":  10.769,
+                     "crude_death_rate_per_1000":  11.867,
+                     "median_age_years":  42.3005
+                 },
+                 {
+                     "year":  2101,
+                     "population_total_thousands":  0,
+                     "population_billions":  0,
+                     "total_fertility_rate":  0,
+                     "life_expectancy_years":  0,
+                     "crude_birth_rate_per_1000":  0,
+                     "crude_death_rate_per_1000":  0,
+                     "median_age_years":  0
+                 }
+             ]
+}

@@ -77,21 +77,115 @@ public class ProceduralPopulationEngine {
         double capitalPerCapita = scenario != null ? scenario.getInitialCapitalPerCapita() : Math.pow(10, (techLevel - 0.2) / 2.2);
         long seedVal = scenario != null ? scenario.getSeed() : 12345L;
 
-        distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
+        // Hostile exoplanetary environments (vacuum, near-vacuum, toxic hyperbaric)
+        // require discrete pressurized outpost landing sites rather than diffuse planetary settlement
 
-        // If the planet preset is hostile (Mars, Moon, Venus, etc.), initialize pressurized habitats on all populated cells
         org.ether.society.generation.PlanetPreset preset = scenario != null ? scenario.getPlanetPreset() : null;
-        if (org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(preset)) {
-            // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (H3Cell cell : landCells) {
-                if (cell == null) continue;
-                if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-                    org.ether.society.engines.tier1.PressurizedHabitatEngine.initializePioneerOutpost(cell, preset, cell.getPopulation());
-                }
-            }
+        boolean isHostile = org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(preset);
+
+        if (isHostile) {
+            distributeExtraterrestrialPioneers(landCells, preset, scenario, totalPopulation, capitalPerCapita);
+        } else {
+            distributeProcedural(landCells, totalPopulation, techLevel, pattern, seedVal, capitalPerCapita);
         }
     }
 
+    /**
+     * Concentrates extraterrestrial pioneering populations strictly into 1 to 3 isolated pressurized outposts.
+     * Hostile environments (vacuum, near-vacuum, toxic dense atmospheres) prevent diffuse settlement.
+     * All remaining planetary cells strictly retain zero population.
+     */
+    private static void distributeExtraterrestrialPioneers(List<H3Cell> landCells,
+                                                           org.ether.society.generation.PlanetPreset preset,
+                                                           Scenario scenario,
+                                                           long totalPopulation,
+                                                           double capitalPerCapita) {
+        if (landCells == null || landCells.isEmpty() || totalPopulation <= 0) return;
+
+        // Reset all cells to zero
+        for (H3Cell c : landCells) {
+            c.setPopulation(0);
+            c.setBiomassHuman(0.0);
+            c.setHabitatType(org.ether.society.model.HabitatType.NONE);
+        }
+
+        String presetKey = scenario != null && scenario.getPresetKey() != null ? scenario.getPresetKey().toLowerCase() : "";
+        String scenarioName = scenario != null && scenario.getName() != null ? scenario.getName().toLowerCase() : "";
+
+        record OutpostTarget(double lat, double lng, double popShare, String name) {}
+        List<OutpostTarget> targets = new ArrayList<>();
+
+        if (presetKey.contains("mars") || scenarioName.contains("mars")) {
+            // Chryse Planitia (22.4 N, -49.8 E) and Jezero Crater (18.38 N, 77.58 E)
+            targets.add(new OutpostTarget(22.4, -49.8, 0.60, "Chryse Planitia Outpost"));
+            targets.add(new OutpostTarget(18.38, 77.58, 0.40, "Jezero Crater Science Hub"));
+        } else if (presetKey.contains("moon") || presetKey.contains("shackleton") || scenarioName.contains("lune") || scenarioName.contains("moon")) {
+            // Shackleton Crater (South Pole)
+            targets.add(new OutpostTarget(-89.9, 0.0, 1.0, "Shackleton Crater Base"));
+        } else if (presetKey.contains("venus") || scenarioName.contains("venus") || scenarioName.contains("vu{00e9}nus")) {
+            // Cloud City Flotilla (Equatorial high altitude)
+            targets.add(new OutpostTarget(0.0, 0.0, 0.70, "Aphrodite Cloud Station"));
+            targets.add(new OutpostTarget(0.0, 120.0, 0.30, "Ishtar Aerostat Station"));
+        } else if (presetKey.contains("mercury") || presetKey.contains("caloris") || scenarioName.contains("mercure")) {
+            // Caloris Basin edge
+            targets.add(new OutpostTarget(30.5, -170.0, 1.0, "Caloris Forge Colony"));
+        } else if (presetKey.contains("titan") || scenarioName.contains("titan")) {
+            // Kraken Mare shoreline
+            targets.add(new OutpostTarget(68.0, 50.0, 1.0, "Kraken Mare Hydrocarbon Base"));
+        } else {
+            // Generic hostile exoplanet: pick top 2 lowest elevation / most sheltered cells
+            List<H3Cell> sortedByElev = landCells.stream()
+                    .sorted(Comparator.comparingDouble(c -> c.getElevationOr(0.0)))
+                    .limit(2)
+                    .toList();
+            if (!sortedByElev.isEmpty()) {
+                targets.add(new OutpostTarget(sortedByElev.get(0).getLatitudeOr(0.0), sortedByElev.get(0).getLongitudeOr(0.0), 0.70, "Primary Landing Base"));
+                if (sortedByElev.size() > 1) {
+                    targets.add(new OutpostTarget(sortedByElev.get(1).getLatitudeOr(0.0), sortedByElev.get(1).getLongitudeOr(0.0), 0.30, "Secondary Habitat"));
+                }
+            }
+        }
+
+        long assignedPop = 0;
+        double derivedTech = Math.clamp(Math.log10(Math.max(1.0, capitalPerCapita)) * 2.2 + 0.2, 0.2, 10.0);
+
+        for (int i = 0; i < targets.size(); i++) {
+            OutpostTarget target = targets.get(i);
+            // Find closest cell to target coordinates
+            H3Cell bestCell = null;
+            double minDistSq = Double.MAX_VALUE;
+            for (H3Cell c : landCells) {
+                double dLat = c.getLatitudeOr(0.0) - target.lat();
+                double dLng = c.getLongitudeOr(0.0) - target.lng();
+                double distSq = dLat * dLat + dLng * dLng;
+                if (distSq < minDistSq) {
+                    minDistSq = distSq;
+                    bestCell = c;
+                }
+            }
+
+            if (bestCell != null) {
+                long outpostPop = (i == targets.size() - 1)
+                        ? (totalPopulation - assignedPop)
+                        : Math.round(totalPopulation * target.popShare());
+                assignedPop += outpostPop;
+
+                bestCell.setPopulation((int) outpostPop);
+                bestCell.setBiomassHuman((double) outpostPop);
+                bestCell.setResourceCapital(outpostPop * capitalPerCapita);
+                bestCell.setResourceMetal(outpostPop * capitalPerCapita * 0.20);
+                bestCell.setFoodResource(outpostPop * 36.0 * 10.0); // 36 months baseline ISRU food
+                bestCell.setEnergyFire(outpostPop * 80.0);
+                bestCell.setTechnologyLevel(derivedTech);
+                bestCell.calculateMovementFriction(derivedTech);
+                bestCell.updateAgePyramidFromTotal(derivedTech);
+
+                org.ether.society.engines.tier1.PressurizedHabitatEngine.initializePioneerOutpost(bestCell, preset, outpostPop);
+                logger.info("ðŸ›°ï¸ Placed Extraterrestrial Outpost '{}' at ({}, {}) with {} colonists.",
+                        target.name(), bestCell.getLatitudeOr(0.0), bestCell.getLongitudeOr(0.0), outpostPop);
+            }
+        }
+    }
     /**
      * Earth pre-generated historical population density mapping based on tech suitability.
      */
@@ -358,11 +452,13 @@ public class ProceduralPopulationEngine {
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
         if (isEarth) {
-            double t = (double) startYearBP;
-            double precession = 35.0 * Math.sin(2.0 * Math.PI * t / 23000.0);
-            double obliquity = 15.0 * Math.sin(2.0 * Math.PI * t / 41000.0);
-            double ecc = 10.0 * Math.cos(2.0 * Math.PI * t / 100000.0);
-            return 480.0 + precession + obliquity + ecc;
+
+
+
+
+            org.ether.society.engines.tier1.MilankovitchOrbitalEngine.MilankovitchParameters params =
+                    org.ether.society.engines.tier1.MilankovitchOrbitalEngine.computeOrbitalParameters((double) startYearBP);
+            return org.ether.society.engines.tier1.MilankovitchOrbitalEngine.calculateDailyInsolation(lat, 172, params);
         } else {
             // Celestial Mechanics General Solar Flux Equilibrium
             double solarConstant = 1361.0; // Watts/m² at 1 AU
@@ -427,7 +523,14 @@ public class ProceduralPopulationEngine {
         // Step 3: Apply state transitions and update local cell attributes
         double t = (double) Math.abs(startYearBP);
         double baseMegafauna = 100.0; // Baseline 100% megafauna index
-        if (startYearBP >= -10000) return 5.0; // Post-Holocene remnant megafauna
+        if (startYearBP >= -10000) {
+            // Post-Holocene and Anthropocene continuous megafauna defaunation (Sandom et al. 2014, Barnosky 2004, WWF LPR 2024)
+            if (startYearBP < 1800) {
+                return 9.5 + (20.0 - 9.5) * Math.max(0.0, (1800.0 - startYearBP) / 11800.0);
+            } else {
+                return Math.max(1.0, 9.5 - (8.0 * Math.min(1.0, (startYearBP - 1800.0) / 226.0)));
+            }
+        }
 
         // Human hunting pressure coefficient gamma = 0.05, climate stress mu = 0.4
         double huntingPressure = 0.05 * humanDensity;

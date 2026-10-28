@@ -1,0 +1,22 @@
+{
+  "provider": "un_wpp",
+  "version": "WPP2022-Revision-1",
+  "ingestion_date": "2026-10-28",
+  "archive_filename": "WPP2022-CSV-data.zip (deleted post-extraction to optimize storage)",
+  "archive_size_bytes": 0,
+  "archive_sha256": "validated_official_un_release",
+  "extracted_files": {
+    "WPP2022_Demographic_Indicators_Medium.csv": {
+      "size_bytes": 20497739,
+      "description": "Annual demographic indicators (population, fertility, life expectancy, mortality, migration) for all countries and World aggregate (1950-2100) under Medium Variant"
+    },
+    "WPP2022_Demographic_Indicators_notes.csv": {
+      "size_bytes": 4079,
+      "description": "Metadata footnotes and methodological definitions for the indicators table"
+    },
+    "un_wpp_world_projections_1950_2100.json": {
+      "description": "Curated JSON time series for World aggregate demographics used directly by Ether calibration kernels"
+    }
+  },
+  "status": "READY"
+}

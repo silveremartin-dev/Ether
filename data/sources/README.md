@@ -37,6 +37,7 @@ This directory (`data/sources/`) centralizes all **raw, semi-processed, and exte
 ### E. Demography & Archaeology
 * **`hyde34/`**: History Database of the Global Environment (HYDE 3.4) Holocene demographic density and agricultural land-use rasters (-10,000 BP to present).
 * **`archaeoglobe/`**: Global archaeological land-use synthesis across 146 regional zones.
+* **`un_wpp/`**: United Nations Department of Economic and Social Affairs (UN DESA) World Population Prospects (WPP 2022) global, regional, and national demographic series, age pyramids, fertility, and mortality projections (1950–2100).
 
 ### F. Economics, Institutions & Political Boundaries
 * **`maddison/`**: Maddison Project Database (2020) historical real GDP per capita, population, and real wage indices.
@@ -44,6 +45,7 @@ This directory (`data/sources/`) centralizes all **raw, semi-processed, and exte
 * **`cshapes/`**: CShapes global historical state boundaries and capital coordinates (1886–present).
 * **`dplace/`**: D-PLACE database of places, language, culture, and environmental adaptations.
 * **`naturalearth/`**: Natural Earth GIS vector physical and cultural administrative boundaries.
+* **`iiasa_ssp/`**: International Institute for Applied Systems Analysis (IIASA) Shared Socioeconomic Pathways (SSP) multi-variable energy, emissions, and macroeconomic transition projections (2010–2100).
 
 ---
 

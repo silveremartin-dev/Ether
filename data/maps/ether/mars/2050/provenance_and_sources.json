@@ -1,0 +1,16 @@
+{
+  "epoch": 2050,
+  "era": "Martian Sub-Regolith Colonization & ECLSS Outposts (2050 CE)",
+  "planet": "mars",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_en": "Pioneer human settlement at Chryse Planitia and Jezero Crater using Sabatier methane ISRU and basalt domes.",
+    "summary_fr": "Modélisation de colonisation spatiale et habitats pressurisés pour mars en 2050."
+  },
+  "layers": {
+    "elevation": {"filename": "mars_2050_elevation.png", "category": "geophysics", "data_sources": ["NASA PDS / MOLA / LOLA / Magellan"]},
+    "density": {"filename": "mars_2050_density.png", "category": "demography", "data_sources": ["Ether Pioneer Colony Model", "Outpost Coordinates"]},
+    "sovereignty": {"filename": "mars_2050_sovereignty.png", "category": "sociology", "data_sources": ["Space Treaty Framework / International Consortia"]}
+  }
+}

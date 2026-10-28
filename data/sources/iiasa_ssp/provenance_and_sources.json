@@ -1,0 +1,20 @@
+{
+  "dataset_identifier": "IIASA_SSP_ECE_PLATFORM",
+  "title": "IPCC Sixth Assessment Report (AR6) Shared Socioeconomic Pathways Scenario Database",
+  "custodian": {
+    "organization": "International Institute for Applied Systems Analysis (IIASA)",
+    "program": "Energy, Climate, and Environment (ECE) Program",
+    "location": "Laxenburg, Austria",
+    "contact": "ece.info@iiasa.ac.at"
+  },
+  "epistemic_provenance": {
+    "methodology": "Coupled Integrated Assessment Modeling (IAM) combining macroeconomic general equilibrium models, energy system optimization (MESSAGEix), and agricultural land-use dynamics (GLOBIOM).",
+    "scenarios_framework": "O'Neill, B.C. et al. (2014, 2017) A new scenario framework for climate change research: the concept of shared socioeconomic pathways.",
+    "peer_review_and_ipcc_role": "Core scenario database underlying the Working Group III contribution to the IPCC Sixth Assessment Report (AR6 WG3 Chapter 3)."
+  },
+  "ingestion_interface": {
+    "api_endpoint": "https://ssp.apps.ece.iiasa.ac.at/api",
+    "python_client": "pyam (read_iiasa) and ixmp4 (ixmp4.Platform)",
+    "local_export_target": "data/sources/iiasa_ssp/iiasa_ssp_world_scenarios.json"
+  }
+}

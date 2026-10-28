@@ -1,0 +1,37 @@
+{
+  "epoch": 2080,
+  "era": "Venus High-Altitude Cloud Cities & Aerostat Extraction (2080 CE)",
+  "description": "Extraterrestrial Pioneer Colony Registry for VENUS at Epoch 2080",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": ["linguisticBranch", "socialStructure", "subsistenceMode", "ritualTradition"],
+  "entities": [
+    {
+      "id": "aphrodite",
+      "colorHex": "#EAB308",
+      "colorRgb": [234, 179, 8],
+      "traits": [0.95, 0.90, 0.98, 0.85],
+      "name": {"en": "Aphrodite Aerostat Flotilla", "fr": "Aphrodite Aerostat Flotilla"},
+      "isoA3": "APH",
+      "continent": "VENUS",
+      "fromYear": 2080,
+      "toYear": 2180,
+      "kinshipType": "Scientific Cohort & Expeditionary Team Structure",
+      "lithicTechnocomplex": "Closed-Loop ECLSS, In-Situ Resource Utilization & Automated Robotics",
+      "caloricIntakePerCapitaKcal": 3000
+    },
+    {
+      "id": "ishtar",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.95, 0.90, 0.98, 0.85],
+      "name": {"en": "Ishtar Aerostat Station", "fr": "Ishtar Aerostat Station"},
+      "isoA3": "ISH",
+      "continent": "VENUS",
+      "fromYear": 2080,
+      "toYear": 2180,
+      "kinshipType": "Scientific Cohort & Expeditionary Team Structure",
+      "lithicTechnocomplex": "Closed-Loop ECLSS, In-Situ Resource Utilization & Automated Robotics",
+      "caloricIntakePerCapitaKcal": 3000
+    }
+  ]
+}

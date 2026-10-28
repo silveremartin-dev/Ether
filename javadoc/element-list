@@ -1,5 +1,6 @@
 org.ether.society
 org.ether.society.analytics
+org.ether.society.benchmark
 org.ether.society.cli
 org.ether.society.config
 org.ether.society.core
@@ -9,7 +10,9 @@ org.ether.society.core.integration
 org.ether.society.core.profiling
 org.ether.society.core.vector
 org.ether.society.data
+org.ether.society.data.sync
 org.ether.society.database
+org.ether.society.database.components
 org.ether.society.engines
 org.ether.society.engines.compiler
 org.ether.society.engines.tier1
@@ -28,8 +31,16 @@ org.ether.society.network.spatial
 org.ether.society.persistence
 org.ether.society.security
 org.ether.society.ui
+org.ether.society.ui.analytics
+org.ether.society.ui.control
+org.ether.society.ui.execution
+org.ether.society.ui.export
+org.ether.society.ui.godmode
+org.ether.society.ui.heatmap
+org.ether.society.ui.planet
+org.ether.society.ui.renderers
+org.ether.society.ui.resource
+org.ether.society.ui.scenario
+org.ether.society.ui.stats
 org.ether.society.ui.util
 org.ether.society.util
-uk.ac.manchester.tornado.api
-uk.ac.manchester.tornado.api.annotations
-uk.ac.manchester.tornado.api.enums

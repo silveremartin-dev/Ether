@@ -108,7 +108,7 @@ public class SoilWaterRetentionEngine {
 
             // Modulate agricultural biomass based on van Genuchten plant available water
             double tech = cell.getTechnologyLevelOr(0.0);
-            double potentialBiomass = Math.min(3000.0, Math.max(50.0, pop * (3.0 + tech * 0.5)));
+            double potentialBiomass = Math.max(50.0, pop * (400.0 + 50.0 * Math.min(tech, 10.0)));
             if (agriBiomass <= 0.0) {
                 agriBiomass = potentialBiomass;
             }

@@ -1,0 +1,41 @@
+{
+  "provider_id": "iiasa_ssp",
+  "name": "IIASA Shared Socioeconomic Pathways (SSP) Database",
+  "organization": "International Institute for Applied Systems Analysis (IIASA) & Energy, Climate, and Environment (ECE) Program",
+  "domain": "Long-term Socioeconomic Pathways, Energy Transition, Emissions, and Macroeconomic Projections (2010-2100)",
+  "website": "https://ssp.apps.ece.iiasa.ac.at/",
+  "api_endpoint": "https://ssp.apps.ece.iiasa.ac.at/api",
+  "python_packages": ["pyam-iamc", "ixmp4"],
+  "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+  "spatial_resolution": "Global (World), 5 R5 Regions, 32 National/Macroeconomic Aggregations",
+  "temporal_coverage": "2010 CE - 2100 CE (5-year / 10-year Time-steps)",
+  "scenarios": [
+    "SSP1-Baseline (Sustainability — Taking the Green Road)",
+    "SSP2-Baseline (Middle of the Road — Historical Trend Continuity)",
+    "SSP3-Baseline (Regional Rivalry — A Rocky Road)",
+    "SSP4-Baseline (Inequality — A Road Divided)",
+    "SSP5-Baseline (Fossil-fueled Development — Taking the Highway)"
+  ],
+  "variables": [
+    "Population (million)",
+    "GDP|PPP (billion USD2010/yr)",
+    "Primary Energy (EJ/yr)",
+    "Emissions|CO2 (Mt CO2/yr)",
+    "Carbon Price (USD2010/t CO2)",
+    "Agricultural Demand (Mt/yr)"
+  ],
+  "models": [
+    "MESSAGEix-GLOBIOM (IIASA)",
+    "IMAGE (PBL Netherlands)",
+    "REMIND-MAgPIE (PIK Germany)",
+    "GCAM (PNNL USA)",
+    "AIM/CGE (NIES Japan)",
+    "WITCH (CMCC Italy)"
+  ],
+  "citation": "Riahi, K. et al. (2017). The Shared Socioeconomic Pathways and their energy, land use, and greenhouse gas emissions implications: An overview. Global Environmental Change, 42, 153-168.",
+  "files": [
+    "iiasa_ssp_world_scenarios.json",
+    "iiasa_ssp_ssp2_world.csv"
+  ],
+  "status": "AUTHENTIC"
+}

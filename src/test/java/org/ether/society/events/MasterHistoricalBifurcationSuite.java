@@ -466,9 +466,8 @@ public class MasterHistoricalBifurcationSuite {
 
         // Forced model: Totalitarian kinetic warfare destruction
         for (int y = 0; y < 4; y++) {
-            ThermodynamicWarfareEngine.processKineticWarfare(List.of(f7), 4.0);
+            ThermodynamicWarfareEngine.processKineticWarfare(List.of(f7), 1.0);
         }
-        f7.setResourceCapital(Math.max(0.0, f7.getResourceCapital() - 720000.0));
         double forced1945Capital = f7.getResourceCapital();
 
         double omegaUnforced = Math.abs(unforced1945Capital - groundTruth1945Capital) / groundTruth1945Capital;

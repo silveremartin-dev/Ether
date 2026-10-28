@@ -395,8 +395,11 @@
                 <configuration>
                     <reportOutputDirectory>${project.basedir}/javadoc</reportOutputDirectory>
                     <destDir>javadoc</destDir>
-                    <source>21</source>
-                    <additionalJOption>--add-modules=jdk.incubator.vector</additionalJOption>
+                    <release>25</release>
+                    <additionalJOptions>
+                        <additionalJOption>--add-modules=jdk.incubator.vector</additionalJOption>
+                        <additionalJOption>--enable-preview</additionalJOption>
+                    </additionalJOptions>
                     <doclint>none</doclint>
                     <show>public</show>
                     <nohelp>true</nohelp>

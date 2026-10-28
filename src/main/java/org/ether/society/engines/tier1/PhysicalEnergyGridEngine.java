@@ -175,10 +175,10 @@ public class PhysicalEnergyGridEngine {
             // and intensive capital density (K/N) to prevent unphysical infinite accumulation in pre-industrial eras.
             double curCap = cell.getResourceCapitalOr(0.0);
             double capPerCapita = curCap / pop;
-            double equilibriumCapPerCapita = 8.0 * Math.pow(tech, 1.5) * (powerPerCapitaW / 250.0);
+            double equilibriumCapPerCapita = 45.0 * Math.pow(tech, 1.5) * (powerPerCapitaW / 250.0);
             double saturationFactor = Math.max(0.0, 1.0 - (capPerCapita / Math.max(10.0, equilibriumCapPerCapita)));
 
-            double capitalFormation = pop * (powerPerCapitaW / 400.0) * saturationFactor * dtSafe;
+            double capitalFormation = pop * (powerPerCapitaW * 0.11) * saturationFactor * dtSafe;
             double capitalDepreciation = curCap * 0.02 * dtSafe;
 
             cell.setResourceCapital(Math.max(0.0, curCap + capitalFormation - capitalDepreciation));

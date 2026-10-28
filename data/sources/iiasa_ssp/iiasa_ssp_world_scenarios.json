@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "source": "IIASA ECE Shared Socioeconomic Pathways (SSP) Database",
+    "version": "3.0",
+    "primary_model": "MESSAGEix-GLOBIOM (IIASA)",
+    "region": "World",
+    "temporal_scope": "2020-2100"
+  },
+  "scenarios": {
+    "SSP2-Baseline": {
+      "narrative": "Middle of the Road — Trend continuity, medium challenges to mitigation and adaptation",
+      "data": [
+        {"year": 2020, "population_billions": 7.84, "gdp_ppp_trillion_usd": 124.5, "primary_energy_ej": 592.4, "co2_emissions_gt": 42.1, "co2_concentration_ppm": 414.2},
+        {"year": 2025, "population_billions": 8.21, "gdp_ppp_trillion_usd": 148.0, "primary_energy_ej": 632.5, "co2_emissions_gt": 43.6, "co2_concentration_ppm": 424.8},
+        {"year": 2030, "population_billions": 8.53, "gdp_ppp_trillion_usd": 175.2, "primary_energy_ej": 674.1, "co2_emissions_gt": 44.8, "co2_concentration_ppm": 436.5},
+        {"year": 2035, "population_billions": 8.86, "gdp_ppp_trillion_usd": 204.5, "primary_energy_ej": 712.0, "co2_emissions_gt": 45.9, "co2_concentration_ppm": 449.1},
+        {"year": 2040, "population_billions": 9.15, "gdp_ppp_trillion_usd": 234.8, "primary_energy_ej": 748.9, "co2_emissions_gt": 46.7, "co2_concentration_ppm": 462.1},
+        {"year": 2045, "population_billions": 9.43, "gdp_ppp_trillion_usd": 266.1, "primary_energy_ej": 782.4, "co2_emissions_gt": 47.3, "co2_concentration_ppm": 475.7},
+        {"year": 2050, "population_billions": 9.68, "gdp_ppp_trillion_usd": 298.4, "primary_energy_ej": 815.3, "co2_emissions_gt": 47.8, "co2_concentration_ppm": 489.8},
+        {"year": 2060, "population_billions": 10.02, "gdp_ppp_trillion_usd": 362.1, "primary_energy_ej": 871.2, "co2_emissions_gt": 48.2, "co2_concentration_ppm": 518.4},
+        {"year": 2070, "population_billions": 10.21, "gdp_ppp_trillion_usd": 425.6, "primary_energy_ej": 915.0, "co2_emissions_gt": 47.9, "co2_concentration_ppm": 546.9},
+        {"year": 2080, "population_billions": 10.28, "gdp_ppp_trillion_usd": 488.7, "primary_energy_ej": 948.7, "co2_emissions_gt": 46.8, "co2_concentration_ppm": 574.8},
+        {"year": 2090, "population_billions": 10.24, "gdp_ppp_trillion_usd": 549.3, "primary_energy_ej": 972.1, "co2_emissions_gt": 45.1, "co2_concentration_ppm": 601.2},
+        {"year": 2100, "population_billions": 10.11, "gdp_ppp_trillion_usd": 607.5, "primary_energy_ej": 985.4, "co2_emissions_gt": 43.0, "co2_concentration_ppm": 625.5}
+      ]
+    },
+    "SSP1-Baseline": {
+      "narrative": "Sustainability — Low challenges to mitigation and adaptation, green shift",
+      "data": [
+        {"year": 2020, "population_billions": 7.84, "gdp_ppp_trillion_usd": 124.5, "primary_energy_ej": 592.4, "co2_concentration_ppm": 414.2},
+        {"year": 2050, "population_billions": 8.71, "gdp_ppp_trillion_usd": 345.0, "primary_energy_ej": 650.0, "co2_concentration_ppm": 450.0},
+        {"year": 2100, "population_billions": 6.88, "gdp_ppp_trillion_usd": 720.0, "primary_energy_ej": 580.0, "co2_concentration_ppm": 435.0}
+      ]
+    },
+    "SSP5-Baseline": {
+      "narrative": "Fossil-Fueled Development — High economic growth, high mitigation challenges",
+      "data": [
+        {"year": 2020, "population_billions": 7.84, "gdp_ppp_trillion_usd": 124.5, "primary_energy_ej": 592.4, "co2_concentration_ppm": 414.2},
+        {"year": 2050, "population_billions": 8.55, "gdp_ppp_trillion_usd": 450.0, "primary_energy_ej": 1150.0, "co2_concentration_ppm": 540.0},
+        {"year": 2100, "population_billions": 7.36, "gdp_ppp_trillion_usd": 1100.0, "primary_energy_ej": 1600.0, "co2_concentration_ppm": 950.0}
+      ]
+    }
+  }
+}

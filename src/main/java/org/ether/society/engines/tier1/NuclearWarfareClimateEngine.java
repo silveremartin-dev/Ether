@@ -31,6 +31,7 @@ public class NuclearWarfareClimateEngine {
     /** Global stratospheric soot optical depth accumulation factor */
     private static double globalSootOpticalDepth = 0.0;
     private static long baseSeed = 42L;
+    private static long invocationCounter = 0L;
 
     /**
      * Sets the scenario-derived random seed for deterministic conflict and soot injection events.
@@ -69,6 +70,7 @@ public class NuclearWarfareClimateEngine {
         if (cells == null || cells.isEmpty()) return;
 
         int sootInjectionEvents = 0;
+        invocationCounter++;
 
         // 1. Evaluate conflict triggers & stratospheric soot injection
         for (H3Cell cell : cells) {
@@ -85,7 +87,7 @@ public class NuclearWarfareClimateEngine {
             // Nuclear war trigger: High power capability & extreme population density conflict
             if (powerPerCapita >= NUCLEAR_CAPABILITY_POWER_WATTS && capital > 20000.0) {
                 long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
-                double prng = org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, cellId, 211L);
+                double prng = org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, invocationCounter, cellId, 211L);
                 if (prng < 0.0001) { // Deterministic macro war event probability per tick
                     sootInjectionEvents++;
                     globalSootOpticalDepth += 0.50; // Inject stratospheric soot (Tg)
@@ -149,6 +151,7 @@ public class NuclearWarfareClimateEngine {
 
     public static void resetState() {
         globalSootOpticalDepth = 0.0;
+        invocationCounter = 0L;
         baseSeed = 42L;
     }
 }

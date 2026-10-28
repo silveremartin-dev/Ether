@@ -414,7 +414,10 @@ public class SimulationPipeline {
         // Step 3.3: Transport, Kinetic Warfare & Infrastructure
         PhysicsTransportEngine.processPhysicsTransport(populatedCells, dtYears);
         ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears);
-        NuclearWarfareClimateEngine.processNuclearWarfareClimate(populatedCells);
+        if (scenario != null && scenario.getTypeBEngineStates() != null
+                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("NuclearWarfareClimateEngine"))) {
+            NuclearWarfareClimateEngine.processNuclearWarfareClimate(populatedCells);
+        }
         InfrastructureEnergyEngine.processInfrastructureEnergy(populatedCells);
 
         // Step 3.4: Recombinant Technology, Information Entropy & Ozone

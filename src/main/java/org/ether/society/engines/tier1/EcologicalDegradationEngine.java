@@ -254,7 +254,7 @@ public class EcologicalDegradationEngine {
             if (demoPressure > 0.8 && effectiveTech >= 1.5) {
                 // High density induces gradual agricultural land-use intensification scaled by dtYears and bounded by tech ceiling
                 double annualIntensificationRate = Math.min(0.025, (demoPressure - 0.8) * 0.015 * (1.0 + effectiveTech * 0.1));
-                double techLandCeiling = (360.0 + 550.0 * Math.pow(Math.max(0.0, effectiveTech - 1.4), 1.5)) * areaScale;
+                double techLandCeiling = Math.max(pop * (400.0 + 50.0 * Math.min(effectiveTech, 10.0)) * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, effectiveTech - 1.4), 1.5)) * areaScale);
                 double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
                         ? cell.getBiomassAgriculture()
                         : Math.min(techLandCeiling, Math.max(25.0 * areaScale, pop * 0.5));

@@ -58,11 +58,12 @@ public class SelectiveBreedingEngine {
                 int pop = cell.getPopulationOr(0);
                 double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
                 double breedingFactor = calculateSelectiveBreedingYieldFactor(tech);
-                double techLandCeiling = (360.0 + 550.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale;
-                double maxBreedableBiomass = Math.min(4000.0 * areaScale, techLandCeiling * Math.min(1.5, breedingFactor * 0.85));
+                double laborCultivatedBiomass = pop * (400.0 + 50.0 * Math.min(tech, 10.0));
+                double techLandCeiling = Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale);
+                double maxBreedableBiomass = techLandCeiling * Math.min(1.5, breedingFactor * 0.85);
                 double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
                         ? cell.getBiomassAgriculture()
-                        : Math.min(maxBreedableBiomass, Math.max(25.0 * areaScale, pop * 0.5));
+                        : Math.min(maxBreedableBiomass, Math.max(25.0 * areaScale, laborCultivatedBiomass));
                 cell.setBiomassAgriculture(Math.min(maxBreedableBiomass, currentAgri * (1.0 + (breedingFactor - 1.0) * 0.005 * dtSafe)));
             }
         }

@@ -72,6 +72,7 @@ public class DemographicKernel {
     public void resetState() {
         this.baseSeed = 42L;
         this.nextFreeSlotHint = 0;
+        diagTickCount = 0;
     }
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DemographicKernel.class);
@@ -102,6 +103,7 @@ public class DemographicKernel {
     private float[] cachedCellSatisfaction;
     private int[] activeCellIndices;
     private int activeCellCount = 0;
+    private static int diagTickCount = 0;
 
     /**
      * Executes one complete demographic simulation cycle across all active cohorts.
@@ -199,6 +201,7 @@ public class DemographicKernel {
                 cachedCellSatisfaction[h] = 1.0f;
             }
         }
+
 
         for (int i = 0; i < agents.getCapacity(); i++) {
             int hIdx = hexIds[i];
@@ -302,7 +305,13 @@ public class DemographicKernel {
             float edibleFishBiomassGJ = (world.getBiomassFish() != null ? world.getBiomassFish()[hIdx] : 0.0f) * 0.25f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
             float renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgriBiomassGJ + edibleFishBiomassGJ;
             float annualCellProductivityGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20f, food[hIdx] * 0.15f);
-            float carryingCapacity = Math.max(1.0f, annualCellProductivityGJ / (float) org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
+            // Boserupian agricultural intensification (Boserup 1965) & Haber-Bosch Synthetic Nitrogen Fixation (Smil 2001, 2011)
+            // Relieves Liebig's Law of the Minimum soil reactive nitrogen ceiling for tech >= 3.0
+            float haberBoschMultiplier = (tech >= 3.0f)
+                    ? (1.0f + 3.5f * (float) Math.min(1.0, Math.pow((tech - 3.0f) / 5.0f, 0.80)))
+                    : 1.0f;
+            float boserupMultiplier = (1.0f + 0.12f * Math.max(0.0f, Math.min(3.0f, tech - 1.0f))) * haberBoschMultiplier;
+            float carryingCapacity = Math.max(1.0f, (annualCellProductivityGJ * boserupMultiplier) / (float) org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
             float totalCellPop = Math.max(m, cachedCellHumanPop[hIdx]);
             float malthusianPressure = totalCellPop / carryingCapacity;
             float densityFeedback = 1.0f / (1.0f + malthusianPressure * malthusianPressure);

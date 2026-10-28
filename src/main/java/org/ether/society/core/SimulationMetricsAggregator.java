@@ -52,7 +52,7 @@ public class SimulationMetricsAggregator {
         long pop = engine.getTotalPopulation();
         if (pop <= 0) return 0.0;
         float tech = engine.getAverageTechnology();
-        double wattsPerCapita = 300.0 + Math.pow(Math.max(0.0, tech), 2.2) * 35.0;
+        double wattsPerCapita = 300.0 + Math.pow(Math.max(0.0, tech), 2.2) * 12.0;
         double totalWatts = pop * wattsPerCapita;
         return totalWatts / 1e6;
     }
@@ -699,5 +699,84 @@ public class SimulationMetricsAggregator {
         long initPop = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getInitialHumanCount() : 1_000_000L;
         if (initPop <= 0) return 100.0;
         return Math.min(100.0, Math.max(0.0, ((double) currentPop / initPop) * 100.0));
+    }
+
+    /**
+     * Evaluates global urbanization rate (%) based on population living in urban cluster cells
+     * ($P_i \ge 5000$ or local density $\ge 300\text{ hab/km}^2$).
+     *
+     * @return global urbanization rate in $[0.1, 95.0]$ %
+     */
+    public double getUrbanizationRate() {
+        if (engine.getCells() == null || engine.getCells().isEmpty()) {
+            return Math.clamp(engine.getAverageTechnology() * 7.5, 0.1, 95.0);
+        }
+        double totalPop = 0.0;
+        double urbanPop = 0.0;
+        for (H3Cell c : engine.getCells()) {
+            if (c == null) continue;
+            int p = c.getPopulationOr(0);
+            if (p <= 0) continue;
+            totalPop += p;
+            if (p >= 5000 || (c.getEffectiveSurfaceAreaKm2() > 0 && (p / c.getEffectiveSurfaceAreaKm2()) >= 300.0)) {
+                urbanPop += p;
+            }
+        }
+        return totalPop > 0 ? Math.clamp((urbanPop / totalPop) * 100.0, 0.1, 95.0) : 0.1;
+    }
+
+    /**
+     * Evaluates global literacy rate (%) weighted across active human populations.
+     *
+     * @return global literacy rate in $[1.0, 99.5]$ %
+     */
+    public double getLiteracyRate() {
+        if (engine.getCells() == null || engine.getCells().isEmpty()) {
+            return Math.min(100.0, engine.getAverageTechnology() * 10.0);
+        }
+        double totalPop = 0.0;
+        double weightedLit = 0.0;
+        for (H3Cell c : engine.getCells()) {
+            if (c == null) continue;
+            int p = c.getPopulationOr(0);
+            if (p <= 0) continue;
+            totalPop += p;
+            double cellTech = c.getTechnologyLevelOr(1.0);
+            double cellCapital = c.getResourceCapitalOr(0.0);
+            double cellKpc = p > 0 ? (cellCapital / p) : 0.0;
+            double cellLit = Math.clamp(1.0 + Math.log1p(cellKpc * 0.1) * 15.0 + Math.tanh((cellTech - 1.0) / 3.0) * 60.0, 1.0, 99.5);
+            weightedLit += p * cellLit;
+        }
+        return totalPop > 0 ? Math.clamp(weightedLit / totalPop, 1.0, 99.5) : 1.0;
+    }
+
+    /**
+     * Evaluates global atmospheric CO2 concentration (ppm) endogenously from pre-industrial baseline
+     * and cumulative fossil energy combustion.
+     *
+     * @return atmospheric CO2 concentration in ppm
+     */
+    public double getAtmosphericCO2Ppm() {
+        if (engine.getCurrentScenario() != null && engine.getCurrentScenario().getPlanetPreset() != null
+                && org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(engine.getCurrentScenario().getPlanetPreset())) {
+            return engine.getCurrentScenario().getPlanetPreset().co2Ppm();
+        }
+        long year = engine.getCurrentYear();
+        float avgTech = engine.getAverageTechnology();
+        double fossilShare = avgTech >= 3.0 ? Math.min(0.85, 0.20 + (avgTech - 3.0) * 0.15) : 0.05;
+        double cumulativeEmissionsPpm = (year < 1800) ? 0.0 : Math.min(220.0, (getEnergyCaptured() * 3.15576e-5 * fossilShare * 0.45));
+        return 280.0 + cumulativeEmissionsPpm;
+    }
+
+    /**
+     * Evaluates mean planetary temperature anomaly (°C) relative to pre-industrial baseline
+     * via Arrhenius radiative forcing.
+     *
+     * @return global temperature anomaly in °C
+     */
+    public double getTemperatureAnomaly() {
+        double co2 = getAtmosphericCO2Ppm();
+        double radiativeForcing = 3.0 * (Math.log(co2 / 280.0) / Math.log(2.0));
+        return Math.clamp(radiativeForcing * 0.75, -2.5, 4.5);
     }
 }

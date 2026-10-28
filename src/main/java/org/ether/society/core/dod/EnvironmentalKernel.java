@@ -213,8 +213,9 @@ public class EnvironmentalKernel {
             if (world.getBiomassNatural() != null) {
                 world.getBiomassNatural()[i] = Math.min(10000.0f * areaScale, world.getBiomassNatural()[i] + naturalProd * 0.5f);
             }
-            if (world.getBiomassAgriculture() != null && agProd > 0.0f && tech >= 1.5f && world.getBiomassAgriculture()[i] <= 0.0f) {
-                world.getBiomassAgriculture()[i] = Math.min(250.0f * areaScale, humanPop * 0.6f);
+            if (world.getBiomassAgriculture() != null && tech >= 1.5f) {
+                float annualAgFluxKg = (agProd > 0.0f) ? (agProd / 0.015f) : (humanPop * 420.0f);
+                world.getBiomassAgriculture()[i] = Math.max(world.getBiomassAgriculture()[i] * foodRetentionFactor, annualAgFluxKg);
             }
         }
     }

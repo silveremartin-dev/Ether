@@ -119,7 +119,7 @@ public class ManningStricklerHydrodynamicsEngine {
                         ? cell.getBiomassAgriculture()
                         : Math.min(2000.0, Math.max(50.0, pop * 2.5));
                 double floodplainFertilityBoost = Math.min(25.0, dischargeQ * 0.05 * deltaYears);
-                cell.setBiomassAgriculture(Math.min(3000.0, currentAgri + floodplainFertilityBoost));
+                cell.setBiomassAgriculture(currentAgri + floodplainFertilityBoost);
             }
         }
     }

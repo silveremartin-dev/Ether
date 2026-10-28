@@ -58,6 +58,9 @@ public class PreComputePhase {
 
         long startTime = System.currentTimeMillis();
 
+        // Step 0: Ensure canonical historical disasters (Volcanoes, Pandemics) are registered
+        ensureCanonicalHistoricalEvents(scenario);
+
         // Step 1: Climate computation
         computeClimate(cells);
 
@@ -249,7 +252,7 @@ public class PreComputePhase {
                     int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
                     double t = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
                     double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
-                    cell.setBiomassAgriculture((p > 0 && t >= 1.5) ? Math.min(3000.0 * areaScale, (double) p * 3.5 * areaScale) : 0.0);
+                    cell.setBiomassAgriculture((p > 0 && t >= 1.5) ? (p * 420.0 * (1.0 + 0.05 * Math.max(0.0, t - 1.5))) : 0.0);
                 }
             }
             return;
@@ -286,7 +289,7 @@ public class PreComputePhase {
             int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
             double t = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
             double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
-            cell.setBiomassAgriculture((p > 0 && t >= 1.5) ? Math.min(3000.0 * areaScale, (double) p * 3.5 * areaScale) : 0.0);
+            cell.setBiomassAgriculture((p > 0 && t >= 1.5) ? (p * 420.0 * (1.0 + 0.05 * Math.max(0.0, t - 1.5))) : 0.0);
 
             // Wood resources
             double wood = switch (biome) {
@@ -339,6 +342,7 @@ public class PreComputePhase {
         long totalPop = scenario.getInitialHumanCount();
         double capitalK0 = scenario.getInitialCapitalPerCapita();
         double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
+        double foodReserveMonths = scenario.getInitialFoodReserveMonths() > 0 ? scenario.getInitialFoodReserveMonths() : 6.0;
         String pattern = scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL";
         long startYear = scenario.getStartDateYear();
 
@@ -348,7 +352,7 @@ public class PreComputePhase {
                 && ("earth".equalsIgnoreCase(scenario.getPlanetPreset().getCanonicalPlanet())
                     || "earth".equalsIgnoreCase(scenario.getPlanetPreset().elevationMapSource()));
 
-        if (isEarth) {
+        if (isEarth || (scenario.getCustomDensityBase64() != null && !scenario.getCustomDensityBase64().isBlank())) {
             // Empirical path: sample the epoch density raster (HYDE-derived earth_<year>_density.png).
             distributeEmpiricalEarthPopulation(cells, totalPop, startYear);
             return;
@@ -455,11 +459,13 @@ public class PreComputePhase {
 
         double capitalK0 = scenario.getInitialCapitalPerCapita();
         double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
+        double foodReserveMonths = scenario.getInitialFoodReserveMonths() > 0 ? scenario.getInitialFoodReserveMonths() : 6.0;
 
         for (H3Cell c : cells) {
             if (c == null) continue;
             long pop = c.getPopulation() != null ? c.getPopulation() : 0;
-            double cellCapital = pop * capitalK0;
+            double effectiveK0 = (scenario.getStartDateYear() >= 2000 && capitalK0 > 15000.0) ? (capitalK0 / 1.85) : capitalK0;
+            double cellCapital = pop * effectiveK0;
             if (c.getResourceCapital() == null || c.getResourceCapital() <= 0.0) {
                 c.setResourceCapital(cellCapital);
             }
@@ -471,11 +477,64 @@ public class PreComputePhase {
             c.setTechnologyLevel(effectiveTech);
             if (c.getBiomassAgriculture() == null || c.getBiomassAgriculture() == 0.0) {
                 double areaScale = Math.max(0.05, c.getEffectiveSurfaceAreaKm2() / 1770.0);
-                c.setBiomassAgriculture((pop > 0 && effectiveTech >= 1.5) ? Math.min(3000.0 * areaScale, (double) pop * 3.5 * areaScale) : 0.0);
+                double annualFoodNeedGJ = pop * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
+                double initialFoodGJ = annualFoodNeedGJ * (foodReserveMonths / 12.0);
+                if (c.getFoodResource() == null || c.getFoodResource() < initialFoodGJ) {
+                    c.setFoodResource(initialFoodGJ);
+                }
+                if (c.getBiomassNatural() == null || c.getBiomassNatural() < initialFoodGJ) {
+                    c.setBiomassNatural(initialFoodGJ);
+                }
+                double grainKgPerPerson = 420.0 * (1.0 + 0.05 * Math.max(0.0, effectiveTech - 1.5));
+                double requiredAgriBiomassKg = pop * grainKgPerPerson;
+                c.setBiomassAgriculture((pop > 0 && effectiveTech >= 1.5) ? requiredAgriBiomassKg : 0.0);
             }
 
             c.calculateMovementFriction(effectiveTech);
             c.updateAgePyramidFromTotal(effectiveTech);
+        }
+    }
+
+    /**
+     * Injects canonical empirical historical disasters into the scenario if not already present.
+     * Ensures headless batch runs and unit tests reflect major planetary shocks (volcanoes, pandemics).
+     *
+     * @param scenario the scenario to inspect and populate
+     */
+    public static void ensureCanonicalHistoricalEvents(Scenario scenario) {
+        if (scenario == null) return;
+        boolean isEarth = scenario.getPlanetPreset() == null
+                || "earth".equalsIgnoreCase(scenario.getPlanetPreset().getCanonicalPlanet())
+                || "earth".equalsIgnoreCase(scenario.getPlanetPreset().elevationMapSource());
+        if (!isEarth) return;
+
+        long startYear = scenario.getStartDateYear();
+        long endYear = scenario.getEndDateYear() > 0 ? scenario.getEndDateYear() : startYear + 1000;
+
+        List<ClimateEvent> events = scenario.getClimateEvents();
+        if (events == null) {
+            events = new java.util.ArrayList<>();
+            scenario.setClimateEvents(events);
+        }
+
+        // Canonical major biophysical events within [startYear, endYear]
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 0.90));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 0.98));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 45.0, 35.0, 0.0, 0.90));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 0.88));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, -8.2, 118.0, 10.0, 0.95));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, -6.1, 105.4, 10.0, 0.90));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 0.75));
+    }
+
+    private static void addEventIfInRange(List<ClimateEvent> events, long startYear, long endYear, ClimateEvent ev) {
+        if (ev.getYear() >= startYear && ev.getYear() <= endYear) {
+            boolean exists = events.stream().anyMatch(e -> e.getName().equalsIgnoreCase(ev.getName()) && e.getYear() == ev.getYear());
+            if (!exists) {
+                events.add(ev);
+            }
         }
     }
 }

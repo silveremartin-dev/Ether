@@ -1,0 +1,47 @@
+{
+  "provider_id": "un_wpp",
+  "name": "United Nations World Population Prospects (WPP 2022)",
+  "organization": "United Nations Department of Economic and Social Affairs, Population Division (UN DESA)",
+  "domain": "Global, Regional & National Demographics, Fertility, Mortality, and Life Tables (1950-2100)",
+  "website": "https://population.un.org/wpp/",
+  "download_url": "https://population.un.org/wpp/Download/Standard/CSV/",
+  "license": "Creative Commons Attribution 3.0 IGO (CC BY 3.0 IGO)",
+  "spatial_resolution": "Global (World), 6 Continents, 21 Geographic Regions, 237 Countries & Territories",
+  "temporal_coverage": "1950 CE - 2100 CE (Annual Resolution)",
+  "variants": [
+    "Medium",
+    "High",
+    "Low",
+    "Constant-fertility",
+    "Instant-replacement",
+    "Zero-migration",
+    "Constant-mortality",
+    "No-change",
+    "Momentum"
+  ],
+  "variables": [
+    "TOTAL_POPULATION_1_JANUARY",
+    "TOTAL_POPULATION_1_JULY",
+    "POPULATION_MALE",
+    "POPULATION_FEMALE",
+    "POPULATION_DENSITY",
+    "MEDIAN_AGE",
+    "CRUDE_BIRTH_RATE_CBR",
+    "TOTAL_FERTILITY_RATE_TFR",
+    "NET_REPRODUCTION_RATE_NRR",
+    "CRUDE_DEATH_RATE_CDR",
+    "LIFE_EXPECTANCY_AT_BIRTH_LEX",
+    "LIFE_EXPECTANCY_MALE",
+    "LIFE_EXPECTANCY_FEMALE",
+    "INFANT_MORTALITY_RATE_IMR",
+    "UNDER_FIVE_MORTALITY_Q5",
+    "NET_MIGRATION_RATE"
+  ],
+  "citation": "United Nations, Department of Economic and Social Affairs, Population Division (2022). World Population Prospects 2022, Online Edition.",
+  "files": [
+    "WPP2022_Demographic_Indicators_Medium.csv",
+    "WPP2022_Demographic_Indicators_notes.csv",
+    "un_wpp_world_projections_1950_2100.json"
+  ],
+  "status": "AUTHENTIC"
+}

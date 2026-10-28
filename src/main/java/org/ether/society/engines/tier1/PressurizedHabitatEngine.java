@@ -141,9 +141,14 @@ public class PressurizedHabitatEngine {
         double totalEnergyKw = pop * energyKwPerCapita;
         cell.setHabitatEnergyKw(totalEnergyKw);
 
-        // 5. Vétusté / Critical Degradation Hazard (Integrity < 0.30)
+        // 5. Compartmentalized Structural Breach & Airlock Containment (Integrity < 0.30)
+        // Extraterrestrial habitats are partitioned into N independent modular compartments (domes/modules)
+        // linked by automatic bulkhead seal doors. A localized hull breach vents only one isolated compartment.
         if (integrity < 0.30) {
-            double breachHazard = (0.30 - integrity) * 0.80 * dt;
+            int compartments = Math.max(3, Math.min(50, (int) Math.ceil(pop / 15.0)));
+            double compartmentShare = 1.0 / compartments;
+            // Breach hazard affects only the compromised compartment, preserving adjacent modules
+            double breachHazard = (0.30 - integrity) * 0.80 * compartmentShare * dt;
             int breachDeaths = (int) Math.round(pop * breachHazard);
             if (breachDeaths > 0) {
                 int newPop = Math.max(0, pop - breachDeaths);

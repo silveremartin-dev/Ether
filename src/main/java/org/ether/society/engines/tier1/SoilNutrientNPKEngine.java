@@ -101,11 +101,12 @@ public class SoilNutrientNPKEngine {
                 case TUNDRA, DESERT, SNOW -> 0.15;
                 default -> 1.0;
             };
-            double techLandCeiling = (360.0 + 550.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor;
-            double maxCellBiomass = Math.min(3500.0 * areaScale * arableBiomeFactor, techLandCeiling);
-            double laborCultivatedBiomass = pop * (0.65 + 0.25 * Math.min(tech, 5.0));
+            double laborCultivatedBiomass = pop * (400.0 + 50.0 * Math.min(tech, 10.0));
+            double techLandCeiling = Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor);
+            double maxCellBiomass = techLandCeiling;
+            laborCultivatedBiomass = pop * (400.0 + 50.0 * Math.min(tech, 10.0));
             double potentialBiomass = (tech >= 1.5)
-                    ? Math.min(maxCellBiomass, Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass))
+                    ? Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass)
                     : 0.0;
             if (baseBiomass <= 0.0) {
                 baseBiomass = potentialBiomass;

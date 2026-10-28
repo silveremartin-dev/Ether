@@ -1,0 +1,37 @@
+{
+  "epoch": 2050,
+  "era": "Martian Sub-Regolith Colonization & ECLSS Outposts (2050 CE)",
+  "description": "Extraterrestrial Pioneer Colony Registry for MARS at Epoch 2050",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": ["linguisticBranch", "socialStructure", "subsistenceMode", "ritualTradition"],
+  "entities": [
+    {
+      "id": "chryse",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.95, 0.90, 0.98, 0.85],
+      "name": {"en": "Chryse Planitia Pioneer Outpost", "fr": "Chryse Planitia Pioneer Outpost"},
+      "isoA3": "CHR",
+      "continent": "MARS",
+      "fromYear": 2050,
+      "toYear": 2150,
+      "kinshipType": "Scientific Cohort & Expeditionary Team Structure",
+      "lithicTechnocomplex": "Closed-Loop ECLSS, In-Situ Resource Utilization & Automated Robotics",
+      "caloricIntakePerCapitaKcal": 3000
+    },
+    {
+      "id": "jezero",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.95, 0.90, 0.98, 0.85],
+      "name": {"en": "Jezero Crater Science Hub", "fr": "Jezero Crater Science Hub"},
+      "isoA3": "JEZ",
+      "continent": "MARS",
+      "fromYear": 2050,
+      "toYear": 2150,
+      "kinshipType": "Scientific Cohort & Expeditionary Team Structure",
+      "lithicTechnocomplex": "Closed-Loop ECLSS, In-Situ Resource Utilization & Automated Robotics",
+      "caloricIntakePerCapitaKcal": 3000
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "epoch": 2150,
+  "era": "Titan Cryo-Hydrocarbon Seas & Industrial Port (2150 CE)",
+  "description": "Extraterrestrial Pioneer Colony Registry for TITAN at Epoch 2150",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": ["linguisticBranch", "socialStructure", "subsistenceMode", "ritualTradition"],
+  "entities": [
+    {
+      "id": "kraken",
+      "colorHex": "#06B6D4",
+      "colorRgb": [6, 182, 212],
+      "traits": [0.95, 0.90, 0.98, 0.85],
+      "name": {"en": "Kraken Mare Hydrocarbon Base", "fr": "Kraken Mare Hydrocarbon Base"},
+      "isoA3": "KRA",
+      "continent": "TITAN",
+      "fromYear": 2150,
+      "toYear": 2250,
+      "kinshipType": "Scientific Cohort & Expeditionary Team Structure",
+      "lithicTechnocomplex": "Closed-Loop ECLSS, In-Situ Resource Utilization & Automated Robotics",
+      "caloricIntakePerCapitaKcal": 3000
+    }
+  ]
+}

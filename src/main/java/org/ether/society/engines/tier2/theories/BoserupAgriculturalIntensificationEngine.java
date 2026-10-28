@@ -118,7 +118,7 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
                     ? cell.getBiomassAgriculture()
                     : Math.min(2000.0 * areaScale * arableBiomeFactor, Math.max(50.0 * areaScale * arableBiomeFactor, pop * 2.5));
 
-            double techLandCeiling = (360.0 + 550.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor;
+            double techLandCeiling = Math.max(pop * (400.0 + 50.0 * Math.min(tech, 10.0)) * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor);
 
             if (density > 50.0) {
                 // High density forces multi-cropping / terrace irrigation (Stage 4)

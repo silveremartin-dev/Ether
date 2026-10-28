@@ -129,7 +129,7 @@
   "revolutionPeriodDays" : 365.25,
   "axialTiltDegrees" : 23.5,
   "techPreset" : "AUTO_FROM_YEAR",
-  "initialHumanCount" : 30000,
+  "initialHumanCount" : 150,
   "initialTechLevel" : 0.0,
   "initialCapitalPerCapita" : 180000.0,
   "initialEnergyPerCapita" : 120000.0,

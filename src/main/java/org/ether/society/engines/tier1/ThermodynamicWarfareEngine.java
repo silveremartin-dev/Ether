@@ -57,7 +57,9 @@ public class ThermodynamicWarfareEngine {
                 structuralBreaches++;
                 // Infrastructure damage proportional to delivered kinetic work: E_kinetic = P_kinetic * dt
                 double kineticEnergyDamageMegaJoules = (kineticPowerOutputWatts / 1e6) * dt;
-                cell.setResourceCapital(Math.max(0.0, capital - kineticEnergyDamageMegaJoules));
+                double kineticExcessRatio = kineticPowerOutputWatts / fortificationResistanceJoules;
+                double destructionFraction = Math.min(0.10, 0.011 * kineticExcessRatio) * dt;
+                cell.setResourceCapital(Math.max(0.0, capital * (1.0 - destructionFraction)));
             }
         }
 

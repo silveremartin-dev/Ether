@@ -334,13 +334,13 @@ public final class FutureAndExoplanetScenarioCatalog {
         sMoon.setName("Base Lunaire Shackleton & Tubes de Lave Marius Hills (2035)");
         sMoon.setStartDateYear(2035);
         sMoon.setEndDateYear(2085);
-        sMoon.setInitialHumanCount(25000L);
+        sMoon.setInitialHumanCount(50L);
         sMoon.setInitialCapitalPerCapita(150000.0);
         sMoon.setInitialEnergyPerCapita(100000.0);
         sMoon.setInitialFoodReserveMonths(48.0);
         sMoon.setInitialInformationPerCapita(60000000.0);
         sMoon.setPopulationDensityType("URBAN_CLUSTERS");
-        sMoon.setTargetCohortSize(250);
+        sMoon.setTargetCohortSize(10);
         sMoon.setPlanetPreset(PlanetPreset.MOON_LIKE);
         sMoon.setEcologyPreset(EcologyPreset.MOON_LIKE);
         sMoon.setDescription("""
@@ -367,13 +367,13 @@ public final class FutureAndExoplanetScenarioCatalog {
         sMars.setName("Colonisation Martienne : Dômes Chryse & Cratère Jezero (2050)");
         sMars.setStartDateYear(2050);
         sMars.setEndDateYear(2150);
-        sMars.setInitialHumanCount(50000L);
+        sMars.setInitialHumanCount(500L);
         sMars.setInitialCapitalPerCapita(120000.0);
         sMars.setInitialEnergyPerCapita(80000.0);
         sMars.setInitialFoodReserveMonths(36.0);
         sMars.setInitialInformationPerCapita(50000000.0);
         sMars.setPopulationDensityType("URBAN_CLUSTERS");
-        sMars.setTargetCohortSize(500);
+        sMars.setTargetCohortSize(50);
         sMars.setPlanetPreset(PlanetPreset.MARS_LIKE);
         sMars.setEcologyPreset(EcologyPreset.MARS_LIKE);
         sMars.setDescription("""
@@ -401,13 +401,13 @@ public final class FutureAndExoplanetScenarioCatalog {
         sVenus.setName("Cités Flottantes Vénusiennes : Aérostats de Haute Altitude (2080)");
         sVenus.setStartDateYear(2080);
         sVenus.setEndDateYear(2180);
-        sVenus.setInitialHumanCount(30000L);
+        sVenus.setInitialHumanCount(150L);
         sVenus.setInitialCapitalPerCapita(180000.0);
         sVenus.setInitialEnergyPerCapita(120000.0);
         sVenus.setInitialFoodReserveMonths(36.0);
         sVenus.setInitialInformationPerCapita(70000000.0);
         sVenus.setPopulationDensityType("URBAN_CLUSTERS");
-        sVenus.setTargetCohortSize(300);
+        sVenus.setTargetCohortSize(25);
         sVenus.setPlanetPreset(PlanetPreset.VENUS_LIKE);
         sVenus.setEcologyPreset(EcologyPreset.VENUS_LIKE);
         sVenus.setDescription("""
@@ -433,13 +433,13 @@ public final class FutureAndExoplanetScenarioCatalog {
         sMercury.setName("Forge Solaire de Mercure & Bassin Caloris (2120)");
         sMercury.setStartDateYear(2120);
         sMercury.setEndDateYear(2220);
-        sMercury.setInitialHumanCount(15000L);
+        sMercury.setInitialHumanCount(100L);
         sMercury.setInitialCapitalPerCapita(250000.0);
         sMercury.setInitialEnergyPerCapita(300000.0);
         sMercury.setInitialFoodReserveMonths(48.0);
         sMercury.setInitialInformationPerCapita(80000000.0);
         sMercury.setPopulationDensityType("URBAN_CLUSTERS");
-        sMercury.setTargetCohortSize(200);
+        sMercury.setTargetCohortSize(20);
         sMercury.setPlanetPreset(PlanetPreset.MERCURY_LIKE);
         sMercury.setEcologyPreset(EcologyPreset.MERCURY_LIKE);
         sMercury.setDescription("""
@@ -466,7 +466,7 @@ public final class FutureAndExoplanetScenarioCatalog {
         sTitan.setName("Colonie Cryogénique de Titan & Hydrocarbures Kraken Mare (2150)");
         sTitan.setStartDateYear(2150);
         sTitan.setEndDateYear(2250);
-        sTitan.setInitialHumanCount(20000L);
+        sTitan.setInitialHumanCount(80L);
         sTitan.setInitialCapitalPerCapita(220000.0);
         sTitan.setInitialEnergyPerCapita(150000.0);
         sTitan.setInitialFoodReserveMonths(60.0);

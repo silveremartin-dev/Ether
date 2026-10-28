@@ -211,10 +211,12 @@ public final class H3BufferAndEventCoordinator {
             double cLng = cell.getLongitudeOr(0.0);
             double distDeg = Math.hypot(cLat - evtLat, cLng - evtLng);
 
-            double impactRadius = Math.max(5.0, mag * 3.0);
+            String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
+            double impactRadius = (type.contains("pandemic") || type.contains("plague") || type.contains("epidemic"))
+                    ? (evt.getName() != null && (evt.getName().toLowerCase().contains("grippe") || evt.getName().toLowerCase().contains("flu")) ? 180.0 : 85.0)
+                    : Math.max(5.0, mag * 3.0);
             if (distDeg <= impactRadius) {
                 double attenuation = 1.0 - (distDeg / impactRadius);
-                String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
                 int lost = 0;
                 int prevPop = cell.getPopulationOr(0);
 
@@ -250,7 +252,14 @@ public final class H3BufferAndEventCoordinator {
                     }
                 } else if (type.contains("epidemic") || type.contains("pandemic") || type.contains("plague")) {
                     if (prevPop > 0) {
-                        double survival = Math.exp(-0.15 * mag * attenuation);
+                        double virulence = 0.15;
+                        String tLower = evt.getName() != null ? evt.getName().toLowerCase() : "";
+                        if (tLower.contains("grippe") || tLower.contains("influenza") || tLower.contains("flu")) {
+                            virulence = 0.035; // Spanish Flu (1918): ~2.5-3.5% historical lethality (~50M deaths / 1.8B pop)
+                        } else if (tLower.contains("peste") || tLower.contains("black death") || tLower.contains("plague")) {
+                            virulence = 0.35;  // Black Death (1347): ~30-35% Eurasian lethality (Yersinia pestis)
+                        }
+                        double survival = Math.exp(-virulence * mag * attenuation);
                         lost = (int) Math.round(prevPop * (1.0 - survival));
                         cell.setPopulation(Math.max(0, prevPop - lost));
                     }

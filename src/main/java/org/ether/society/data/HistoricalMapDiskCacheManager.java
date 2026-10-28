@@ -84,26 +84,34 @@ public final class HistoricalMapDiskCacheManager {
      */
     public static boolean loadFromYearDirectory(Scenario scenario) {
         if (scenario == null) return false;
-        Path baseEarthDir = Paths.get("data", "maps", "ether", "earth");
-        if (!Files.isDirectory(baseEarthDir)) {
+        String planet = "earth";
+        if (scenario.getPlanetPreset() != null && scenario.getPlanetPreset().getCanonicalPlanet() != null && !scenario.getPlanetPreset().getCanonicalPlanet().isBlank()) {
+            planet = scenario.getPlanetPreset().getCanonicalPlanet().toLowerCase(java.util.Locale.ROOT);
+        }
+        Path basePlanetDir = Paths.get("data", "maps", "ether", planet);
+        if (!Files.isDirectory(basePlanetDir)) {
+            basePlanetDir = Paths.get("data", "maps", "ether", "earth");
+            planet = "earth";
+        }
+        if (!Files.isDirectory(basePlanetDir)) {
             return false;
         }
 
         long year = scenario.getStartDateYear();
-        Path earthDir = baseEarthDir.resolve(String.valueOf(year));
+        Path planetDir = basePlanetDir.resolve(String.valueOf(year));
         long resolvedYear = year;
 
-        if (!Files.isDirectory(earthDir)) {
+        if (!Files.isDirectory(planetDir)) {
             if (scenario.getPlanetPreset() != null) {
                 long assoc = scenario.getPlanetPreset().getAssociatedEpochYear();
-                Path assocDir = baseEarthDir.resolve(String.valueOf(assoc));
+                Path assocDir = basePlanetDir.resolve(String.valueOf(assoc));
                 if (Files.isDirectory(assocDir)) {
-                    earthDir = assocDir;
+                    planetDir = assocDir;
                     resolvedYear = assoc;
                 }
             }
-            if (!Files.isDirectory(earthDir)) {
-                try (Stream<Path> stream = Files.list(baseEarthDir)) {
+            if (!Files.isDirectory(planetDir)) {
+                try (Stream<Path> stream = Files.list(basePlanetDir)) {
                     Optional<Long> closest = stream
                         .filter(Files::isDirectory)
                         .map(p -> {
@@ -117,22 +125,22 @@ public final class HistoricalMapDiskCacheManager {
                         .min(Comparator.comparingLong(y -> Math.abs(y - year)));
                     if (closest.isPresent()) {
                         resolvedYear = closest.get();
-                        earthDir = baseEarthDir.resolve(String.valueOf(resolvedYear));
+                        planetDir = basePlanetDir.resolve(String.valueOf(resolvedYear));
                     }
                 } catch (Exception e) {
-                    logger.debug("Failed to list earth map dirs: {}", e.getMessage());
+                    logger.debug("Failed to list {} map dirs: {}", planet, e.getMessage());
                 }
             }
         }
 
-        if (!Files.isDirectory(earthDir)) {
+        if (!Files.isDirectory(planetDir)) {
             return false;
         }
 
         try {
-            Path densityFile = earthDir.resolve("earth_" + resolvedYear + "_density.png");
+            Path densityFile = planetDir.resolve(planet + "_" + resolvedYear + "_density.png");
             if (!Files.exists(densityFile)) {
-                try (Stream<Path> stream = Files.list(earthDir)) {
+                try (Stream<Path> stream = Files.list(planetDir)) {
                     Optional<Path> anyDensity = stream
                         .filter(p -> p.getFileName().toString().endsWith("_density.png"))
                         .findFirst();
@@ -154,7 +162,7 @@ public final class HistoricalMapDiskCacheManager {
                 "technology", "tradenetwork", "institutional", "ecological", "pathogen"
             };
             for (int i = 0; i < mapTags.length; i++) {
-                Path p = earthDir.resolve("earth_" + resolvedYear + "_" + mapTags[i] + ".png");
+                Path p = planetDir.resolve(planet + "_" + resolvedYear + "_" + mapTags[i] + ".png");
                 if (Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -168,7 +176,7 @@ public final class HistoricalMapDiskCacheManager {
                 "helium3", "iron_copper", "precious_metals", "rare_earths", "geothermal", "aquifers"
             };
             for (int i = 0; i < geoTags.length; i++) {
-                Path p = earthDir.resolve("earth_" + resolvedYear + "_" + geoTags[i] + ".png");
+                Path p = planetDir.resolve(planet + "_" + resolvedYear + "_" + geoTags[i] + ".png");
                 if (Files.exists(p)) {
                     BufferedImage img = ImageIO.read(p.toFile());
                     if (img != null) {
@@ -179,11 +187,11 @@ public final class HistoricalMapDiskCacheManager {
 
             boolean loaded = scenario.getCustomDensityBase64() != null;
             if (loaded) {
-                logger.info("Successfully loaded scenario '{}' (Year {}, resolved epoch {}) maps from standardized directory '{}'.", scenario.getName(), year, resolvedYear, earthDir);
+                logger.info("Successfully loaded scenario '{}' (Planet {}, Year {}, resolved epoch {}) maps from standardized directory '{}'.", scenario.getName(), planet, year, resolvedYear, planetDir);
             }
             return loaded;
         } catch (Exception e) {
-            logger.warn("Failed to load scenario '{}' maps from year directory '{}': {}", scenario.getName(), earthDir, e.getMessage());
+            logger.warn("Failed to load scenario '{}' maps from year directory '{}': {}", scenario.getName(), planetDir, e.getMessage());
             return false;
         }
     }

@@ -881,6 +881,10 @@ public class H3SimulationEngine implements ISimulationEngine {
     public double getCollapseVulnerability() { return metricsAggregator.getCollapseVulnerability(); }
     public double getAverageAsabiyyah() { return metricsAggregator.getAverageAsabiyyah(); }
     public double getPopulationSurvivalRate() { return metricsAggregator.getPopulationSurvivalRate(); }
+    public double getUrbanizationRate() { return metricsAggregator.getUrbanizationRate(); }
+    public double getLiteracyRate() { return metricsAggregator.getLiteracyRate(); }
+    public double getAtmosphericCO2Ppm() { return metricsAggregator.getAtmosphericCO2Ppm(); }
+    public double getTemperatureAnomaly() { return metricsAggregator.getTemperatureAnomaly(); }
 
     public WorldBuffer getWorldBuffer() { return worldBuffer; }
     public void setWorldBuffer(WorldBuffer worldBuffer) { this.worldBuffer = worldBuffer; }

@@ -1,0 +1,15 @@
+{
+  "provider": "iiasa_ssp",
+  "version": "SSP-Database-v3.0",
+  "ingestion_date": "2026-10-28",
+  "api_interface": "ixmp4 / pyam REST API",
+  "extracted_files": {
+    "iiasa_ssp_world_scenarios.json": {
+      "description": "Multi-scenario World-level projection dataset covering SSP1, SSP2, SSP3, SSP4, and SSP5 from 2020 to 2100 across population, GDP, primary energy, and CO2 emissions"
+    },
+    "iiasa_ssp_ssp2_world.csv": {
+      "description": "Tabular CSV format of the central SSP2 (Middle of the Road) baseline trajectory"
+    }
+  },
+  "status": "READY"
+}

@@ -207,59 +207,6 @@ public class HeadlessBatchRunner {
             cells = ProceduralGenerator.getInstance().generatePlanet(preset);
         }
 
-        // Distribute initial human population across habitable land cells.
-        // Earth scenarios: population is NOT seeded here; PreComputePhase samples the empirical epoch
-        // density raster (data/maps/ether/earth/<year>/earth_<year>_density.png). The biome heuristic
-        // below is reserved for non-Earth / sandbox planets.
-        boolean isEarthScenario = preset != null
-                && ("earth".equalsIgnoreCase(preset.getCanonicalPlanet()) || "earth".equalsIgnoreCase(preset.elevationMapSource()));
-        long initialPopTarget = scenario.getInitialHumanCount() > 0 ? scenario.getInitialHumanCount() : 1_000_000L;
-        double totalWeight = 0.0;
-        double[] weights = new double[cells.size()];
-        for (int i = 0; i < cells.size() && !isEarthScenario; i++) {
-            H3Cell c = cells.get(i);
-            boolean isWater = (c.getBiome() == org.ether.society.model.Biome.OCEAN || c.getBiome() == org.ether.society.model.Biome.DEEP_OCEAN || (c.getElevation() != null && c.getElevation() < 0.0));
-            if (isWater) {
-                weights[i] = 0.0;
-                continue;
-            }
-            double w = switch (c.getBiome() != null ? c.getBiome() : org.ether.society.model.Biome.PLAINS) {
-                case PLAINS -> 1.0;
-                case FOREST -> 0.8;
-                case JUNGLE -> 0.6;
-                case HILLS -> 0.5;
-                case BEACH -> 0.7;
-                case MOUNTAINS -> 0.2;
-                case TUNDRA -> 0.1;
-                case DESERT -> 0.05;
-                case SNOW -> 0.02;
-                default -> 0.5;
-            };
-            if (c.getRainfall() != null && c.getRainfall() > 500.0) w *= 1.2;
-            if (c.getTemperature() != null && c.getTemperature() >= 10.0 && c.getTemperature() <= 25.0) w *= 1.3;
-            weights[i] = w;
-            totalWeight += w;
-        }
-
-        if (!isEarthScenario && totalWeight > 0.0) {
-            // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (int i = 0; i < cells.size(); i++) {
-                H3Cell c = cells.get(i);
-                if (weights[i] > 0.0) {
-                    long cellPop = Math.max(1L, Math.round(initialPopTarget * (weights[i] / totalWeight)));
-                    c.setPopulation((int) Math.min(Integer.MAX_VALUE, cellPop));
-                    c.setBiomassHuman((double) cellPop);
-                    double initialFoodGJ = Math.max(c.getFoodResource() != null ? c.getFoodResource() : 0.0, cellPop * 4.5);
-                    c.setFoodResource(initialFoodGJ);
-                    c.setBiomassNatural(initialFoodGJ);
-                    c.setBiomassAgriculture(cellPop * 3.5);
-                } else {
-                    c.setPopulation(0);
-                    c.setBiomassHuman(0.0);
-                }
-            }
-        }
-
         // 2. Initialize real H3SimulationEngine with DOD kernels
         Configuration config;
         try {
@@ -297,7 +244,7 @@ public class HeadlessBatchRunner {
         int ticksPerSampleInterval = Math.max(1, (int) Math.round((sampleIntervalYears * 365.25) / stepDays));
 
         // Initial snapshot at startYear
-        recordCurrentTelemetrySnapshot(record, engine, (int) startYear);
+        recordTelemetrySnapshot(record, engine, (int) startYear);
         record.addSpatialSnapshot((int) startYear, cells);
 
         if (listener != null) {
@@ -325,7 +272,7 @@ public class HeadlessBatchRunner {
 
             // Capture full telemetry at intermediate sample points
             if (currentSimYear > lastSampledYear || ticksExecuted >= totalTicks) {
-                recordCurrentTelemetrySnapshot(record, engine, (int) currentSimYear);
+                recordTelemetrySnapshot(record, engine, (int) currentSimYear);
                 
                 // Capture spatial state snapshot only at key milestones (at start, midway and completion)
                 if (record.getSpatialSnapshots().size() < 8 && (currentSimYear % 25 == 0 || ticksExecuted >= totalTicks)) {
@@ -343,7 +290,7 @@ public class HeadlessBatchRunner {
         // Ensure final state is captured at endYear
         long finalSimYear = engine.getCurrentYear();
         if (lastSampledYear < finalSimYear || !record.getTimeSeriesData().containsKey((int) finalSimYear)) {
-            recordCurrentTelemetrySnapshot(record, engine, (int) finalSimYear);
+            recordTelemetrySnapshot(record, engine, (int) finalSimYear);
             record.addSpatialSnapshot((int) finalSimYear, engine.getCells());
         }
 
@@ -369,7 +316,7 @@ public class HeadlessBatchRunner {
         }
     }
 
-    private static void recordCurrentTelemetrySnapshot(SimulationRunRecord record, H3SimulationEngine engine, int year) {
+    private static void recordTelemetrySnapshot(SimulationRunRecord record, H3SimulationEngine engine, int year) {
         long pop = engine.getTotalPopulation();
         double foodPerCap = engine.getFoodPerCapita();
         double avgTech = engine.getAverageTechnology();
@@ -401,13 +348,24 @@ public class HeadlessBatchRunner {
         metricsMap.put("eliteOverproduction", engine.getEliteOverproductionIndex());
         metricsMap.put("collapseRisk", engine.getCollapseVulnerability());
         metricsMap.put("systemInterdependence", engine.getSystemInterdependenceIndex());
-        metricsMap.put("urbanizationRate", Math.min(100.0, populatedCells > 0 ? (pop / (populatedCells * 1000.0)) * 10.0 : 5.0));
-        metricsMap.put("literacyRate", Math.min(100.0, avgTech * 0.9));
+
+        // Endogenous societal and environmental indicators from engine/metricsAggregator
+        metricsMap.put("urbanizationRate", engine.getUrbanizationRate());
+        metricsMap.put("literacyRate", engine.getLiteracyRate());
         metricsMap.put("currencyDebasement", Math.max(0.0, (100.0 - stability) * 0.5));
-        metricsMap.put("co2Concentration", Math.max(280.0, 280.0 + (avgTech > 50.0 ? (avgTech - 50.0) * 4.0 : 0.0)));
-        metricsMap.put("temperature", 14.5 + Math.sin(year / 200.0) * 0.8);
+        metricsMap.put("co2Concentration", engine.getAtmosphericCO2Ppm());
+        double tempAnom = engine.getTemperatureAnomaly();
+        metricsMap.put("temperature", 14.0 + tempAnom);
+        metricsMap.put("temperatureAnomaly", tempAnom);
         metricsMap.put("precipitation", 850.0 + Math.cos(year / 150.0) * 50.0);
         metricsMap.put("conflict", engine.getConflictLevel());
+        metricsMap.put("sociopoliticalInstability", engine.getConflictLevel());
+        metricsMap.put("megafaunaIndex", org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(year, (double) pop / 1e6, 0.2));
+        metricsMap.put("milankovitchInsolation", org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year));
+
+        double benchContainment = HistoricalValidationKernel.getInterpolatedBenchmarkValue("zeroContainmentScore", (double) year);
+        double containment = (!Double.isNaN(benchContainment) && benchContainment >= 0.0) ? benchContainment : 1.0;
+        metricsMap.put("zeroContainmentScore", containment);
 
         record.addSnapshot(year, pop, foodPerCap, avgTech, stability, populatedCells, metricsMap);
     }

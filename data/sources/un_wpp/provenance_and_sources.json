@@ -1,0 +1,22 @@
+{
+  "dataset_identifier": "UN_DESA_WPP_2022",
+  "title": "United Nations World Population Prospects: 2022 Revision",
+  "custodian": {
+    "agency": "United Nations Department of Economic and Social Affairs (UN DESA)",
+    "division": "Population Division",
+    "location": "New York, USA",
+    "contact": "population@un.org"
+  },
+  "epistemic_provenance": {
+    "methodology": "Probabilistic demographic projections using Bayesian hierarchical models for total fertility and life expectancy at birth, combined with cohort-component projection methods across 237 distinct countries and areas.",
+    "historical_reconstruction_period": "1950 - 2021 (Empirical vital registration, census data, demographic and health surveys DHS)",
+    "probabilistic_projection_period": "2022 - 2100 (Medium variant median trajectory, 80% and 95% prediction intervals)",
+    "scientific_peer_review": "United Nations Population Division (2022) World Population Prospects 2022: Methodology of the United Nations Population Estimates and Projections, UN DESA/POP/CPD/2022/1."
+  },
+  "ingestion_pipeline": {
+    "drop_location": "in/WPP2022-CSV-data.zip",
+    "target_location": "data/sources/un_wpp/",
+    "extraction_utility": "System.IO.Compression.ZipFileExtensions",
+    "active_matrix": "WPP2022_Demographic_Indicators_Medium.csv (Location = 'World', LocID = 900)"
+  }
+}

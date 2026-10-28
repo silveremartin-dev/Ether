@@ -1643,3 +1643,78 @@ All simulation engines strictly adhere to **spatial, temporal, and planetary uni
 * **Tier 1 (Type A — Universal Invariant Physics)**: Executes unconditionally across every cell on any planet (`MetallurgyEnthalpyEngine`, `OreGradeThermodynamicsEngine`, `EntropicMetalDissipationEngine`, `SoilNutrientNPKEngine`, `DarcyGroundwaterEngine`, `MegafaunaEcosystemEngine`, `TrophicEcosystemEngine`).
 * **Tier 2 (Type B — Pluggable Institutional & Sociological Bifurcations)**: Represents contingent political, institutional, or cultural responses to physical constraints (`EdoJapanIsolationEngine`, `RomanImperialCliodynamicEngine`, `AmerindianEcosystemEngine`, `FertileCrescentSalinizationEngine`, `ProtestantWorkEthicEngine`, `MonasticClergyDemographicEngine`). When enabled, these engines operate solely on **local physical, ecological, and institutional state variables** (such as border trade friction, draft livestock density, or evapotranspiration-to-precipitation balance) rather than geographic coordinates.
 
+---
+
+#### 9. Extraterrestrial Planetary Biomes, Dome ECLSS Life Support & Depressurization Physics
+
+##### A. Environmental Hostility & Armstrong Limit Decompression
+For non-Earth scenarios (Mars, Moon, Venus, Titan, Mercury, and extreme exoplanets), surface biophysical conditions are fundamentally lethal to unshielded human life:
+$$\text{Hostile}(\mathcal{P}) \iff \left( P_{\text{atmo}} < 0.10\text{ atm} \lor P_{\text{atmo}} > 5.0\text{ atm} \lor O_2 < 12\% \lor T < -30^\circ\text{C} \lor T > 55^\circ\text{C} \right)$$
+1. **Unshielded Atmospheric Exposure**:
+   Any population in an unshielded cell ($\text{HabitatType} = \text{NONE}$) or within a catastrophically breached habitat ($\text{Integrity} \le 0.05$) suffers rapid mortality:
+   $$\mu_{\text{exposure}} = 0.95 \cdot \Delta t$$
+   On the Moon ($P \approx 0$) and Mars ($P \approx 610\text{ Pa}$), atmospheric pressure falls below the **Armstrong Limit** ($6.3\text{ kPa} \approx 0.062\text{ atm}$), causing immediate ebullism (spontaneous boiling of blood and bodily fluids at $37^\circ\text{C}$) and fatal hypoxia within 15 seconds.
+2. **Venusian Hyperbaric Acid Furnace**:
+   Surface pressure ($92\text{ atm}$) and temperature ($465^\circ\text{C}$) dissolve conventional metallurgy. Human habitation is physically restricted to high-altitude floating aerostats (`VENUS_AEROSTAT`) at $50\text{--}55\text{ km}$ altitude where $P \approx 1.0\text{ atm}$ and $T \approx 25^\circ\text{C}$.
+
+##### B. Pressurized Habitat Typology & Life Support Economics (`PressurizedHabitatEngine`)
+Populations are protected by four discrete architectural archetypes (`HabitatType`):
+* `SURFACE_DOME`: Geodesic glass/polymer pressurized domes ($70\%$ radiation shielding, $1.20\text{ kW/capita}$ base ECLSS power).
+* `SINTERED_3D_VAULT`: In-situ sintered regolith cut-and-cover structures ($90\%$ radiation shielding, $1.00\text{ kW/capita}$).
+* `LAVA_TUBE`: Subsurface basaltic volcanic cavities ($98\%$ cosmic ray / solar proton event blocking, $0.80\text{ kW/capita}$).
+* `VENUS_AEROSTAT`: Floating fluoropolymer aerostats drifting in the sulfuric cloud deck ($60\%$ radiation shielding, $1.50\text{ kW/capita}$).
+
+1. **Structural Aging & Environmental Harshness**:
+   $$\Delta \text{Integrity} = -\left(\delta_{\text{wear}} + \delta_{\text{env}}\right) \cdot (1 - 0.90 \cdot \mu_{\text{maint}}) \cdot \Delta t + \rho_{\text{repair}} \cdot \Delta t$$
+   where $\delta_{\text{env}}$ accounts for thermal fatigue, micrometeorite impacts in vacuum, and sulfuric acid corrosion.
+2. **Maintenance Resource Costs**:
+   Sustaining habitat integrity requires continuous investment of $5.0\text{ kg capital}$ and $1.0\text{ kg base metal}$ per human per year:
+   $$\mu_{\text{maint}} = \frac{1}{2}\left[\min\left(1.0, \frac{K_{\text{avail}}}{5.0 \cdot N \cdot \Delta t}\right) + \min\left(1.0, \frac{M_{\text{avail}}}{1.0 \cdot N \cdot \Delta t}\right)\right]$$
+3. **ECLSS Power Grid Load**:
+   $$P_{\text{ECLSS}} = N \cdot P_{\text{base}} \cdot \left(1.0 + 0.50 \cdot (1.0 - \text{Integrity})\right)$$
+   Power failure or unmaintained habitat integrity ($\text{Integrity} < 0.30$) triggers catastrophic depressurization and breach mortality.
+
+##### C. Atmospheric Decoupling: Interior Dome Recycling vs. Ambient Planetary Vacuum
+* **Orbital Forcing**: Milankovitch orbital cycles (eccentricity/obliquity/precession resonance with Jupiter/Saturn) are physical properties specific to the Earth-Moon-Sun system. In all extraterrestrial scenarios (Mars, Moon, Titan, Venus, Mercury, Exoplanets), Milankovitch forcing is deactivated ($S_{\text{Milankovitch}} = 0.0$ or N/A).
+* **Atmospheric Carbon Chemistry**: Open-air planetary carbon cycles (Farquhar photosynthetic CO2 fertilization, carbonate-silicate rock weathering) are disabled on vacuum and anoxic planets. Atmospheric CO2 inside domes represents a closed-loop metabolic life-support concentration:
+  $$\text{CO}_{2,\text{interior}} = 800\text{ ppm} + \operatorname{clamp}\left(\frac{N - C_{\text{dome}}}{C_{\text{dome}}}, 0.0, 3.0\right) \times 1200\text{ ppm}$$
+* **Urbanization Baseline**: In extraterrestrial biospheres, open-air rural agriculture is physically impossible. Consequently, $100\%$ of the human population is concentrated within pressurized sealed life-support hubs ($\text{UrbanizationRate} = 100\%$).
+
+---
+
+### 14. Empirical Future Projections (2026–2100) & Dynamic Epoch State Initialization
+
+#### A. Predictive Multi-Variable Benchmark Integration
+To ensure falsification beyond the empirical historical frontier ($t > 2026\text{ CE}$), Ether synchronizes multi-variable benchmark curves with official consensus trajectories generated by integrated assessment models (IAMs) and international agencies:
+
+1. **UN World Population Prospects (WPP 2024 Revision)**:
+   - Median variant global population projections:
+     $$N_{\text{world}}(t) \in [8.16\text{B in 2026}, 9.70\text{B in 2050}, 10.29\text{B peak in 2084}, 10.18\text{B in 2100}]$$
+2. **IPCC AR6 / IIASA Shared Socioeconomic Pathways (SSP2: "Middle of the Road")**:
+   - Integrated across marker models **MESSAGEix-GLOBIOM** and **IMAGE 3.0**:
+     - Gross World Product (GWP): $105\text{T}\ (2026) \to 195\text{T}\ (2050) \to 380\text{T}\ (2100)$ [Billion 1990 Int-$].
+     - Primary Energy Demand: $620\text{ EJ}\ (2026) \to 820\text{ EJ}\ (2050) \to 1\,050\text{ EJ}\ (2100)$.
+     - Atmospheric $\text{CO}_2$ (SSP2-4.5): $424\text{ ppm}\ (2026) \to 480\text{ ppm}\ (2050) \to 540\text{ ppm}\ (2100)$.
+     - Temperature Anomaly (above 1850-1900): $+1.30^\circ\text{C}\ (2026) \to +2.10^\circ\text{C}\ (2050) \to +2.70^\circ\text{C}\ (2100)$.
+     - Global Urbanization Rate: $57.0\%\ (2026) \to 68.6\%\ (2050) \to 80.0\%\ (2100)$.
+3. **Club of Rome World3 Model (BAU2 Empirical Recalibration)**:
+   - System dynamics non-linear overshoot and feedback constraints:
+     - Resource extraction capital requirements escalate non-linearly after 2030:
+       $$C_{\text{extract}} = C_0 \cdot \left(\frac{R_{\text{initial}}}{R(t)}\right)^{\gamma_{\text{ore}}}$$
+     - Peak industrial output per capita (~2035) followed by demographic contraction toward finite carrying capacity.
+
+#### B. Astronomical Milankovitch Empirical Ephemerides vs. Analytical Equations
+The summer insolation at $65^\circ\text{N}$ driving Quaternary glacial-interglacial cycles is derived from the **Laskar et al. (2004) / Berger (1978) numerical celestial mechanics solution** (integration of secular gravitational N-body resonances of the solar system):
+$$S_{65\text{N}}(t) = \mathcal{I}_{\text{Laskar2004}}(t) \quad \text{interpolated via PCHIP monotonically}$$
+This replaces simplified three-term Fourier approximations, eliminating astronomical phase drift and ensuring bit-identical validation against paleoclimate ice core chronologies (EPICA Dome C, Vostok).
+
+#### C. Invariant Zero-Hardcoding Epoch Initialization Directive
+At simulation launch ($t = t_0$), ALL planetary, environmental, and demographic state variables MUST be dynamically seeded from historical benchmarks (`HistoricalValidationKernel.getInterpolatedBenchmarkValue`):
+* $\text{CO}_{2}(t_0) = \text{LawDome}(t_0)$ (e.g. $300\text{ ppm}$ in 1914, $280\text{ ppm}$ in 1800, $190\text{ ppm}$ in LGM).
+* $\text{UrbanizationRate}(t_0) = \text{BairochChandler}(t_0)$ (e.g. $0.1\%$ in -3000 BCE, $5.0\%$ in 1 CE, $16.0\%$ in 1900, $57.0\%$ in 2026).
+* $\Delta T(t_0) = \text{PAGES2kHadCRUT}(t_0)$.
+* $\text{ZeroContainment}(t_0) = \text{BiogeographicalBarrierIndex}(t_0)$.
+This guarantees that any trajectory divergence observed during a simulation run represents purely emergent dynamical simulation mechanics rather than initial calibration offsets.
+
+
+
