@@ -2,9 +2,9 @@
 
 **Scenario**: `Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)`
 
-**Simulation Run Identifier**: `RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--2317`
+**Simulation Run Identifier**: `RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--8394`
 
-**Snapshots & Save Directory**: `saves/RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--2317/`
+**Snapshots & Save Directory**: `saves/RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--8394/`
 
 
 # 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT
@@ -19,7 +19,7 @@
 
 ## 📊 3. Deep Diagnostic Analysis by Scenario
 
-### 🔎 Scenario: `Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)` (`RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--2317`)
+### 🔎 Scenario: `Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)` (`RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--8394`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|

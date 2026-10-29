@@ -80,6 +80,18 @@
           "doi": "10.1016/j.gloenvcha.2016.05.009"
         }
       ]
+    },
+    {
+      "model_id": "PREDICTIVE_UN_WPP_2024",
+      "name": "United Nations World Population Prospects 2024",
+      "sources": [
+        {
+          "name": "UN World Population Prospects (2024 Revision)",
+          "organization": "United Nations Department of Economic and Social Affairs (UN DESA), Population Division",
+          "doi": "10.18356/9789210027137",
+          "url": "https://population.un.org/wpp/"
+        }
+      ]
     }
   ]
 }

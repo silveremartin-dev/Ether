@@ -81,7 +81,8 @@ public final class ComparativeRunListLoader {
             {"PREDICTIVE_SSP2", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp2", "Projection Tendancielle Globale (SSP2 / UN WPP 2024 / IEA STEPS)")},
             {"PREDICTIVE_SSP3_WORLD3", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp3", "Limites à la Croissance & Pénurie (SSP3 / Club de Rome World3 BAU2)")},
             {"PREDICTIVE_SSP4", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp4", "Fracture Sociale & Inégalités Extrêmes (SSP4 / IIASA Inequality)")},
-            {"PREDICTIVE_SSP5", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp5", "Croissance Fossile Intensive (SSP5 / CMIP6 High-Emissions)")}
+            {"PREDICTIVE_SSP5", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp5", "Croissance Fossile Intensive (SSP5 / CMIP6 High-Emissions)")},
+            {"PREDICTIVE_UN_WPP_2024", "🟣 " + I18n.getOrDefault("analytics.predictive.un_wpp", "ONU Perspectives Démographiques Mondiales (UN WPP 2024 / DESA)")}
         };
 
         for (String[] pBase : predictiveBaselines) {

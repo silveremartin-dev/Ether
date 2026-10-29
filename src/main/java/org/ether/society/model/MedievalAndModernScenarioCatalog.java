@@ -232,8 +232,8 @@ public final class MedievalAndModernScenarioCatalog {
         sBlackDeath.setName("La Peste Noire & Inversion Économique Post-Féodale (1347)");
         sBlackDeath.setStartDateYear(1347);
         sBlackDeath.setEndDateYear(1450);
-        sBlackDeath.setInitialHumanCount(375000000);
-        sBlackDeath.setInitialCapitalPerCapita(350.0);
+        sBlackDeath.setInitialHumanCount(440000000L);
+        sBlackDeath.setInitialCapitalPerCapita(680.0);
         sBlackDeath.setInitialEnergyPerCapita(150.0);
         sBlackDeath.setInitialFoodReserveMonths(4.0);
         sBlackDeath.setInitialInformationPerCapita(450.0);

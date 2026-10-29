@@ -169,37 +169,17 @@ public final class ComparativeTelemetryDataLoader {
                 new TypeReference<List<HistorySnapshot>>() {});
             if (snaps != null && !snaps.isEmpty()) {
                 SimulationRunRecord rec = new SimulationRunRecord(saveId, scenarioName, "GCP/Offline Full True Simulation", null);
-                
-                // Spatial Scoping Normalization (Regional vs Global Planetary Projection)
-                double scalingFactor = 1.0;
-                String idLower = (saveId + " " + (scenarioName != null ? scenarioName : "")).toLowerCase(Locale.ROOT);
-                if (idLower.contains("roman") || idLower.contains("rome")) {
-                    scalingFactor = 3.82; // Rome ~55M / World ~210M (0 CE)
-                } else if (idLower.contains("egypt") || idLower.contains("egypte") || idLower.contains("ramesses") || idLower.contains("rams")) {
-                    scalingFactor = 16.834; // Nile basin ~2.42M / World ~40.74M (-1279 BCE)
-                } else if (idLower.contains("mali")) {
-                    scalingFactor = 9.25; // Mali / Sahel ~40M / World ~370M (1324 CE)
-                } else if (idLower.contains("tokugawa") || idLower.contains("japan") || idLower.contains("japon")) {
-                    scalingFactor = 30.5; // Edo Japan ~18M / World ~550M (1639 CE)
-                } else if (idLower.contains("assyrian") || idLower.contains("mesopotam") || idLower.contains("fertile")) {
-                    scalingFactor = 10.8; // Mesopotamia ~2.5M / World ~27M (-1900 BP)
-                } else if (idLower.contains("mesoamerica") || idLower.contains("olmec")) {
-                    scalingFactor = 30.0; // Mesoamerica ~1.0M / World ~30M (-1500 BP)
-                } else if (idLower.contains("sahul")) {
-                    scalingFactor = 10.0; // Sahul ~0.05M / World ~0.5M (-50000 BP)
-                } else if (idLower.contains("iceland") || idLower.contains("islande")) {
-                    scalingFactor = 350.0; // Iceland regional window
-                }
+                final double scalingFactor = 1.0; // Rule 8 AGENTS.MD: Invariant 1.0 factor preserves authentic cellular telemetry
 
                 for (HistorySnapshot snap : snaps) {
                     Map<String, Double> metricsMap = new LinkedHashMap<>();
                     long pop = Math.max(1L, snap.totalPopulation());
                     double popDbl = (double) snap.totalPopulation();
 
-                    // 1. Demographics & Population
+                    // 1. Demographics & Population (Exact raw cellular simulation count)
                     metricsMap.put("regionalPopulation", popDbl);
-                    metricsMap.put("population", popDbl * scalingFactor);
-                    metricsMap.put("worldPopulation", popDbl * scalingFactor);
+                    metricsMap.put("population", popDbl);
+                    metricsMap.put("worldPopulation", popDbl);
                     metricsMap.put("fertilityRate", snap.fertilityRate());
                     metricsMap.put("lifeExpectancy", snap.avgLifespan());
                     metricsMap.put("educationLevel", Math.min(100.0, snap.avgTechnology() * 10.0));
