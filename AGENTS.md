@@ -71,15 +71,19 @@ For every historical epoch (from -100,000 BP to present-day) supported in `data/
 
 ## 📐 8. Zero Arbitrary Hardcoding Directive & Deep-Time Invariant Baselines
 1. **Absolute Ban on Arbitrary Magic Constants & Heuristic Shortcuts**:
-   * ALL simulation parameters, scaling factors, thresholds, and rate constants MUST be derived directly from authentic physical, biological, thermodynamic, or macroeconomic equations documented in literature.
-   * Arbitrary hardcoded numbers (e.g. ad-hoc fallback values, fake constants, arbitrary multiplier tricks) are STRICTLY FORBIDDEN.
-   * If a true empirical formula or differential equation is unknown or missing, it is MANDATORY to pause and discuss the formulation before introducing any working hypothesis.
+   * ALL simulation parameters, scaling factors, thresholds, rates, and equations MUST be authentic, peer-reviewed physical, chemical, biological, thermodynamic, or macroeconomic models.
+   * **Zero tolerance for approximations, shortcuts, fake constants, arbitrary multiplier tricks, or hardcoded magic numbers**.
+   * Every equation must trace to documented scientific literature with its explicit derivation, physical units, and parameters.
+   * **MANDATORY PRIOR CONSULTATION**: If a true empirical formula, closed-form differential equation, or peer-reviewed law is unknown or missing, it is STRICTLY FORBIDDEN to improvise a heuristic formula or hardcoded shortcut. You MUST pause and discuss the formulation directly with the user before introducing any working hypothesis.
 2. **Deep-Time Invariant Boundary Initialization (-3,000,000 BP to -10,000 BP)**:
    * For prehistoric, Pleistocene, and deep Paleolithic epochs (from $-3\,000\,000$ to $-10\,000$ BP) where formal civilizational infrastructure did not exist:
      * **Literacy Rate**: Invariant baseline $\equiv 0.0\%$ (writing emerges only with proto-cuneiform/hieroglyphs $\sim -3400$ BCE).
      * **Urbanization Rate**: Invariant baseline $\equiv 0.0\%$ (permanent agglomerations $> 5\,000$ hab emerge only in Uruk/Eridu/Jericho $\sim -4000$ BCE).
-     * **Institutional Administrative Bureaucracy**: Invariant baseline $\equiv 0.0$.
-   * These variables MUST be strictly anchored at zero and prevented from floating or drifting to arbitrary non-zero baselines.
+     * **Institutional Administrative Bureaucracy & Sovereign Debt**: Invariant baseline $\equiv 0.0$.
+     * **Currency Debasement & Monetary Elite Indices**: Invariant baseline $\equiv 0.0$.
+     * **Anthropogenic Deforestation & Industrial Fossil Energy**: Invariant baseline $\equiv 0.0\%$.
+     * **Extractive Metal Smelting**: Invariant baseline $\equiv 0.0\text{ kg/capita}$ (emerges in Chalcolithic $\sim -5000$ BCE).
+   * All benchmark catalogs, kernels, and simulation initializers MUST enforce these deep-time baselines across the full $-3\,000\,000$ to $-10\,000$ BP horizon. Any variable outside this historical domain must be anchored to its physical or biological baseline, and never allowed to float or drift to arbitrary non-zero values.
 
 
 

@@ -103,5 +103,30 @@ public class ScenarioFalsificationReportTest {
             pw.println(audit.reportMarkdown());
         }
         System.out.println("\n[SUCCESS] Standardized audit report written to: " + outReport.getAbsolutePath());
+
+        // Generate individual dedicated scenario reports
+        for (SimpleBenchmarkItem item : items) {
+            GroundTruthAuditGenerator.AuditResult singleAudit = GroundTruthAuditGenerator.generateMultiScenarioGroundTruthAudit(
+                    List.of(item),
+                    HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC,
+                    it -> repo.getRun(it.getRunId())
+            );
+            String safeName = item.getName().toLowerCase()
+                    .replaceAll("[^a-z0-9]+", "_")
+                    .replaceAll("^_+|_+$", "");
+            if (safeName.contains("1914") || safeName.contains("guerre")) safeName = "guerres_mondiales_1914";
+            else if (safeName.contains("1347") || safeName.contains("peste")) safeName = "peste_noire_1347";
+            else if (safeName.contains("1279") || safeName.contains("rams")) safeName = "ramses_ii_-1279";
+
+            File singleReportFile = new File("scratch/report_" + safeName + ".md");
+            try (PrintWriter pw = new PrintWriter(singleReportFile)) {
+                pw.println("# 📜 RAPPORT COMPLET DE FALSIFICATION HISTORIQUE & AUDIT ÉPISTÉMIQUE\n");
+                pw.println("**Scénario** : `" + item.getName() + "`\n");
+                pw.println("**Identifiant du Run de Simulation** : `" + item.getRunId() + "`\n");
+                pw.println("**Répertoire des Sauvegardes & Snapshots** : `saves/" + item.getRunId() + "/`\n\n");
+                pw.println(singleAudit.reportMarkdown());
+            }
+            System.out.println("[SUCCESS] Individual scenario report written to: " + singleReportFile.getAbsolutePath());
+        }
     }
 }

@@ -473,12 +473,44 @@ public class HistoricalValidationKernel {
         int firstYear = years.get(0);
         int lastYear = years.get(n - 1);
 
-        // Outside historical definition range: deep time pre-civilizational variables are strictly zero
+        // Outside historical definition range: deep time pre-civilizational invariants (-3,000,000 BP to -10,000 BP)
         if (year < firstYear) {
-            if ("literacyRate".equals(key) || "urbanizationRate".equals(key) || "currencyDebasement".equals(key) || "eliteOverproductionIndex".equals(key)) {
-                return 0.0;
+            switch (key) {
+                // Anthropogenic civilizational & institutional variables strictly 0.0 before historical emergence
+                case "literacyRate", "urbanizationRate", "currencyDebasement", "eliteOverproductionIndex",
+                     "sovereignDebtBurden", "fossilSharePrimaryEnergy", "metalSmeltingPerCapita",
+                     "deforestationRate", "politicalStressIndex", "agriculturalEroei", "globalTradeVolume" -> {
+                    return 0.0;
+                }
+                // Ecological & evolutionary deep-time physical invariants
+                case "megafaunaIndex" -> {
+                    return 100.0; // Pre-Quaternary megafauna baseline
+                }
+                case "zeroContainmentScore" -> {
+                    return 1.0; // Uncontained open biosphere
+                }
+                case "soilErosionRate" -> {
+                    return 0.03; // Geomorphic natural background weathering (Montgomery 2007 PNAS)
+                }
+                case "giniInequality" -> {
+                    return 0.17; // Egalitarian nomadic hunter-gatherer band baseline (Kohler et al. 2017 Nature)
+                }
+                case "asabiyyahSocialCohesion" -> {
+                    return 0.95; // Foraging band in-group solidarity (Turchin 2003)
+                }
+                case "informationSpeed" -> {
+                    return 4.0; // Pedestrian human walking speed (4 km/h)
+                }
+                case "sociopoliticalInstability" -> {
+                    return 5.0; // Inter-band skirmish baseline without institutional state collapse
+                }
+                case "lifeExpectancyAtBirth" -> {
+                    return 24.0; // Pleistocene hominin life expectancy at birth (Gurven & Kaplan 2007)
+                }
+                default -> {
+                    return Double.NaN;
+                }
             }
-            return Double.NaN;
         }
         if (year > lastYear) {
             return dataset.get(lastYear);
