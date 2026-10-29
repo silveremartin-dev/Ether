@@ -2,9 +2,9 @@
 
 **Scenario**: `Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)`
 
-**Simulation Run Identifier**: `RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--2255`
+**Simulation Run Identifier**: `RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--1594`
 
-**Snapshots & Save Directory**: `saves/RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--2255/`
+**Snapshots & Save Directory**: `saves/RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--1594/`
 
 
 # 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT
@@ -19,7 +19,7 @@
 
 ## 📊 3. Deep Diagnostic Analysis by Scenario
 
-### 🔎 Scenario: `Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)` (`RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--2255`)
+### 🔎 Scenario: `Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)` (`RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--1594`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|

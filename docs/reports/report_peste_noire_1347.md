@@ -2,9 +2,9 @@
 
 **Scenario**: `La Peste Noire & Inversion Économique Post-Féodale (1347)`
 
-**Simulation Run Identifier**: `RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--8640`
+**Simulation Run Identifier**: `RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--6126`
 
-**Snapshots & Save Directory**: `saves/RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--8640/`
+**Snapshots & Save Directory**: `saves/RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--6126/`
 
 
 # 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT
@@ -19,7 +19,7 @@
 
 ## 📊 3. Deep Diagnostic Analysis by Scenario
 
-### 🔎 Scenario: `La Peste Noire & Inversion Économique Post-Féodale (1347)` (`RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--8640`)
+### 🔎 Scenario: `La Peste Noire & Inversion Économique Post-Féodale (1347)` (`RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--6126`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|

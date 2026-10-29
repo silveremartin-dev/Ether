@@ -593,6 +593,10 @@ public final class PaleoAndAncientScenarioCatalog {
         sBronzeCollapse.setTargetCohortSize(400);
         sBronzeCollapse.setPlanetPreset(PlanetPreset.EARTH_BRONZE_1900BP);
         sBronzeCollapse.setEcologyPreset(EcologyPreset.EARTH_BRONZE_1900BP);
+        sBronzeCollapse.setClippingEnabled(true);
+        sBronzeCollapse.setMinLat(26.0); sBronzeCollapse.setMaxLat(43.0); sBronzeCollapse.setMinLng(18.0); sBronzeCollapse.setMaxLng(45.0);
+        sBronzeCollapse.setH3Resolution(5);
+        sBronzeCollapse.setBoundaryMode("DYNAMIC_RESERVOIR");
         sBronzeCollapse.setDescription("""
             ⚔️ SCÉNARIO HISTORIQUE : La Grande Rupture Systémique de -1200 & Chute des Palais Mycéniens et Hittites
             
@@ -777,6 +781,90 @@ public final class PaleoAndAncientScenarioCatalog {
             • Impact conjugué des chocs climatiques (Optimum Romain vers refroidissement) et des épidémies (Peste Antonine).
             """);
         list.add(sRoman);
+
+        // --- SCÉNARIO DE CONTINUITÉ STABLE SANS RUPTURE : PAX ROMANA D'AUGUSTE (0-50) ---
+        Scenario sAugustus = new Scenario();
+        sAugustus.setPresetKey("pax_romana_augustus_0");
+        sAugustus.setName("Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique");
+        sAugustus.setStartDateYear(0);
+        sAugustus.setEndDateYear(50);
+        sAugustus.setInitialHumanCount(55000000L); // 55M Roman Empire (Beloch, Maddison, Scheidel 2007)
+        sAugustus.setInitialCapitalPerCapita(380.0);
+        sAugustus.setInitialEnergyPerCapita(120.0);
+        sAugustus.setInitialFoodReserveMonths(6.0);
+        sAugustus.setInitialInformationPerCapita(400.0);
+        sAugustus.setPopulationDensityType("ROMAN_EMPIRE");
+        sAugustus.setTargetCohortSize(1000);
+        sAugustus.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sAugustus.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sAugustus.setClippingEnabled(true);
+        sAugustus.setH3Resolution(5);
+        sAugustus.setMinLat(25.0); sAugustus.setMaxLat(55.0); sAugustus.setMinLng(-10.0); sAugustus.setMaxLng(45.0);
+        sAugustus.setBoundaryMode("DYNAMIC_RESERVOIR");
+        Map<String, Boolean> sAugEngines = sAugustus.getTypeBEngineStates();
+        sAugEngines.put("RomanImperialCliodynamicEngine", true);
+        sAugEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sAugEngines.put("MaritimeHighwayEngine", true);
+        sAugEngines.put("DynamicMaritimeRoutingGraph", true);
+        sAugEngines.put("SpatialCityFractalEngine", true);
+        sAugEngines.put("KrugmanCorePeripheryEngine", true);
+        sAugEngines.put("ArthurCombinatorialTechnologyEngine", true);
+        sAugustus.setDescription("""
+            🏛️ SCÉNARIO DE CONTINUITÉ PURE (SANS ACCIDENT MAJEUR) : L'Âge d'Or Augustéen (An 0 -> 50 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE - CALIBRAGE DE CONTINUITÉ]
+            Scénario de référence étalon pour tester la stabilité des moteurs de simulation en l'absence de choc exogène.
+            Modélise 50 ans de paix continue, d'intégration commerciale méditerranéenne et de croissance démographique régulière
+            sous l'Empire romain julio-claudien.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Croissance démographique modérée et régulière sans choc épidémique ni famine.
+            • Stabilité monétaire et fiscale du denier d'argent.
+            • Trajectoire monotone lisse idéale pour le calibrage fin du moteur.
+            """);
+        list.add(sAugustus);
+
+        // --- SCÉNARIO HISTORIQUE COURT : PESTE ANTONINE SOUS MARC AURÈLE (165-180) ---
+        Scenario sAntonine = new Scenario();
+        sAntonine.setPresetKey("antonine_plague_165");
+        sAntonine.setName("Peste Antonine & Crise Impériale sous Marc Aurèle (165-180)");
+        sAntonine.setStartDateYear(165);
+        sAntonine.setEndDateYear(180);
+        sAntonine.setInitialHumanCount(72000000L); // 72M Roman Empire in 165 CE (Harper 2017 / Scheidel 2007)
+        sAntonine.setInitialCapitalPerCapita(420.0);
+        sAntonine.setInitialEnergyPerCapita(140.0);
+        sAntonine.setInitialFoodReserveMonths(5.0);
+        sAntonine.setInitialInformationPerCapita(450.0);
+        sAntonine.setPopulationDensityType("ROMAN_EMPIRE");
+        sAntonine.setTargetCohortSize(1000);
+        sAntonine.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sAntonine.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sAntonine.setClippingEnabled(true);
+        sAntonine.setH3Resolution(5);
+        sAntonine.setMinLat(25.0); sAntonine.setMaxLat(55.0); sAntonine.setMinLng(-10.0); sAntonine.setMaxLng(45.0);
+        sAntonine.setBoundaryMode("DYNAMIC_RESERVOIR");
+        Map<String, Boolean> sAntonineEngines = sAntonine.getTypeBEngineStates();
+        sAntonineEngines.put("BioMolecularEpidemiologyEngine", true);
+        sAntonineEngines.put("SpatialMetapopulationSEIREngine", true);
+        sAntonineEngines.put("RomanImperialCliodynamicEngine", true);
+        sAntonineEngines.put("TurchinGoldstoneSDTEngine", true);
+        sAntonineEngines.put("BoserupAgriculturalIntensificationEngine", true);
+        sAntonineEngines.put("FrontierAsabiyyahEngine", true);
+        sAntonineEngines.put("LanchesterKineticWarfareEngine", true);
+        sAntonine.setDescription("""
+            🏛️ SCÉNARIO HISTORIQUE COURT : La Peste Antonine sous Marc Aurèle (165-180 ap. J.-C.)
+            
+            [CONTEXTE HISTORIQUE & PHYSIQUE]
+            Vague épidémique majeure (variole) frappant l'Empire romain à son apogée démographique (72-75 millions d'habitants).
+            Importée par les légions revenant de Ctésiphon, l'épidémie anéantit 15% à 20% de la population,
+            provoquant une pénurie brutale de main-d'œuvre agricole, l'effondrement des revenus fiscaux et les guerres marcomanes.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Mortalité épidémique rapide et chute de 72M à ~60M sur 15 ans.
+            • Hausse des salaires réels agricoles et contraction fiscale de l'État romain.
+            • Hausse du stress politique impérial (Turchin PSI).
+            """);
+        list.add(sAntonine);
 
         return list;
     }

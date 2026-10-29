@@ -144,4 +144,70 @@ public class RealHistoricalHighResolutionSimulationRunTest {
         assertNotNull(matchingSaves, "Matching save directories must be listed");
         assertTrue(matchingSaves.length > 0, "At least one 1914 save directory must be created in saves/");
     }
+
+    @Test
+    @DisplayName("Execute Real High-Resolution Simulation Run for Bronze Age Collapse (-1200 BCE, dt = 30 days)")
+    public void testBronzeAgeCollapseSimulationRun() {
+        Scenario sc = null;
+        for (Scenario s : Scenario.getBuiltInScenarios()) {
+            if ("bronze_age_collapse_1200bc".equals(s.getPresetKey())) {
+                sc = s;
+                break;
+            }
+        }
+        assertNotNull(sc, "Bronze Age Collapse scenario must exist in built-in scenarios");
+
+        // Run from -1200 to -1198 (2 years covering initial shock)
+        sc.setEndDateYear(-1198);
+        sc.setH3Resolution(3);
+        sc.setTargetCohortSize(10000);
+
+        SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(sc);
+        assertNotNull(record, "Execution record must not be null");
+        assertFalse(record.getTimeSeriesData().isEmpty(), "Telemetry time series must contain sampled data");
+    }
+
+    @Test
+    @DisplayName("Execute Real High-Resolution Simulation Run for Marcus Aurelius Antonine Plague (165 CE, dt = 30 days)")
+    public void testAntoninePlagueSimulationRun() {
+        Scenario sc = null;
+        for (Scenario s : Scenario.getBuiltInScenarios()) {
+            if ("antonine_plague_165".equals(s.getPresetKey())) {
+                sc = s;
+                break;
+            }
+        }
+        assertNotNull(sc, "Antonine Plague scenario must exist in built-in scenarios");
+
+        // Run from 165 to 167 (2 years initial pandemic wave)
+        sc.setEndDateYear(167);
+        sc.setH3Resolution(3);
+        sc.setTargetCohortSize(20000);
+
+        SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(sc);
+        assertNotNull(record, "Execution record must not be null");
+        assertFalse(record.getTimeSeriesData().isEmpty(), "Telemetry time series must contain sampled data");
+    }
+
+    @Test
+    @DisplayName("Execute Real High-Resolution Simulation Run for Augustan Pax Romana Continuity (An 0 - 50 CE, dt = 30 days)")
+    public void testAugustusPaxRomanaContinuitySimulationRun() {
+        Scenario sc = null;
+        for (Scenario s : Scenario.getBuiltInScenarios()) {
+            if ("pax_romana_augustus_0".equals(s.getPresetKey())) {
+                sc = s;
+                break;
+            }
+        }
+        assertNotNull(sc, "Pax Romana Augustus scenario must exist in built-in scenarios");
+
+        // Run from An 0 to An 2 (2 years of stable continuity baseline)
+        sc.setEndDateYear(2);
+        sc.setH3Resolution(3);
+        sc.setTargetCohortSize(20000);
+
+        SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(sc);
+        assertNotNull(record, "Execution record must not be null");
+        assertFalse(record.getTimeSeriesData().isEmpty(), "Telemetry time series must contain sampled data");
+    }
 }

@@ -51,7 +51,10 @@ public class ScenarioFalsificationReportTest {
             List<String> scenarioPrefixes = List.of(
                     "RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914",
                     "RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347",
-                    "RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279"
+                    "RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279",
+                    "RUN-EFFONDREMENT-DE-L--GE-DU-BRONZE-R-CENT---PEUPLES-DE-LA-MER---1200",
+                    "RUN-PESTE-ANTONINE---CRISE-IMP-RIALE-SOUS-MARC-AUR-LE--165",
+                    "RUN-PAX-ROMANA---STABILIT--AUGUST-ENNE--AN-0"
             );
             for (String prefix : scenarioPrefixes) {
                 try (var stream = Files.list(savesDir)) {
@@ -123,8 +126,11 @@ public class ScenarioFalsificationReportTest {
                     .replaceAll("[^a-z0-9]+", "_")
                     .replaceAll("^_+|_+$", "");
             if (safeName.contains("1914") || safeName.contains("guerre")) safeName = "guerres_mondiales_1914";
-            else if (safeName.contains("1347") || safeName.contains("peste")) safeName = "peste_noire_1347";
+            else if (safeName.contains("1347") || safeName.contains("peste") && !safeName.contains("antonin")) safeName = "peste_noire_1347";
             else if (safeName.contains("1279") || safeName.contains("rams")) safeName = "ramses_ii_-1279";
+            else if (safeName.contains("1200") || safeName.contains("bronze")) safeName = "effondrement_age_du_bronze_-1200";
+            else if (safeName.contains("165") || safeName.contains("antonin")) safeName = "peste_antonine_165";
+            else if (safeName.contains("august") || safeName.contains("an_0")) safeName = "pax_romana_auguste_0";
 
             File singleReportFile = new File(reportsDir, "report_" + safeName + ".md");
             try (PrintWriter pw = new PrintWriter(singleReportFile)) {
