@@ -102,7 +102,8 @@ public record PlanetPreset(
                     : lower.contains("mars") || lower.contains("ares") ? "mars"
                     : lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos") ? "venus"
                     : lower.contains("lune") || lower.contains("moon") || lower.contains("selene") ? "moon"
-                    : lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes") ? "mercury" : "none";
+                    : lower.contains("mercure") || lower.contains("mercury") || lower.contains("hermes") ? "mercury"
+                    : lower.contains("titan") ? "titan" : "none";
         }
         if (tempSource == null) tempSource = "";
         if (precipSource == null) precipSource = "";
@@ -243,11 +244,11 @@ public record PlanetPreset(
             true, "⚪ Mercure — MESSENGER Exospheric Vacuum Model", 67666L,
             true, "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model", 68666L);
 
-    /** Titan-like moon settings */
+    /** Titan-like moon settings (Corlies et al. 2017 / Cassini RADAR Topography) */
     public static final PlanetPreset TITAN_LIKE = new PlanetPreset(
-            "Titan (Cryo-Lune)", 4, 2574.0, 382.0, 26.7, 10759.0, 9.5, 1.0, -2000.0, 5000.0, -179.0, 77711L, 0.8, 1.0, 0.2, 25.0, 0.0, 0.22, 1.45,
+            "Titan (Cryo-Lune)", 4, 2574.0, 382.0, 26.7, 10759.0, 9.5, 1.0, -1800.0, 600.0, -179.0, 77711L, 0.8, 1.0, 0.2, 25.0, 0.0, 0.22, 1.45,
             true, 317.8, 1221870.0, 5000.0, 2.5, 1.5, null, null, null, null, null, null,
-            false, "none",
+            true, "titan",
             false, "", 77811L,
             false, "", 78711L,
             false, "", 79711L);

@@ -1,0 +1,42 @@
+{
+  "source_name": "Deep-Time Paleolithic and Pliocene-Pleistocene Reconstruction (-3,000,000 BP to -10,000 BP)",
+  "version": "1.0.0",
+  "spatial_domain": "Planetary Global Grid (Earth)",
+  "temporal_domain": "[-3000000, -10000] BP",
+  "continuity_boundary": {
+    "boundary_year": -10000,
+    "target_dataset": "HYDE 3.4 (History Database of the Global Environment)",
+    "smoothness_class": "C1_continuous_and_differentiable"
+  },
+  "primary_datasets": [
+    {
+      "id": "LR04_BENTHIC_STACK",
+      "citation": "Lisiecki, L. E., & Raymo, M. E. (2005). A Pliocene-Pleistocene stack of 57 globally distributed benthic d18O records. Paleoceanography, 20(1), PA1003.",
+      "variables": ["temperatureAnomaly", "oceanHeatContent", "iceSheetVolume"]
+    },
+    {
+      "id": "LASKAR_LA2004",
+      "citation": "Laskar, J., Robutel, P., Joutel, F., Gastineau, M., Correia, A. C. M., & Levrard, B. (2004). A long-term numerical solution for the insolation quantities of the Earth. Astronomy & Astrophysics, 428(1), 261-285.",
+      "variables": ["milankovitchInsolation65N", "orbitalEccentricity", "orbitalObliquity"]
+    },
+    {
+      "id": "EPICA_DOME_C",
+      "citation": "Lüthi, D., et al. (2008). High-resolution carbon dioxide concentration record 650,000–800,000 years before present. Nature, 453, 379–382; Jouzel, J., et al. (2007). Orbital and millennial Antarctic climate variability over the past 800,000 years. Science, 317(5839), 793-796.",
+      "variables": ["co2Ppm", "ch4Ppb"]
+    },
+    {
+      "id": "PLEISTOCENE_HOMININ_DEMOGRAPHY",
+      "citation": "Bocquet-Appel, J. P., Demars, P. Y., Noiret, L., & Dobrowsky, D. (2005). Estimates of Upper Palaeolithic meta-population size in Europe from archaeological data. Journal of Archaeological Science, 32(11), 1656-1668; Kremer, M. (1993). Population growth and technological change: One million BC to 1990. Quarterly Journal of Economics, 108(3), 681-716.",
+      "variables": ["worldPopulation", "avgTechnology", "lifeExpectancy", "birthRate", "deathRate"]
+    }
+  ],
+  "invariant_baselines": {
+    "literacyRate": 0.0,
+    "urbanizationRate": 0.0,
+    "sovereignDebtGdp": 0.0,
+    "currencyDebasement": 0.0,
+    "metalSmeltingPerCapitaKg": 0.0,
+    "fossilEnergyEJ": 0.0,
+    "bureaucraticAdministrativeIndex": 0.0
+  }
+}

@@ -179,6 +179,7 @@ public class NativeRustBridge {
     public static class NativeWorldArena implements AutoCloseable {
         private final Arena arena;
         private final int capacity;
+        private final int agentCapacity;
         private final MemorySegment worldStructSeg;
         private final MemorySegment agentStructSeg;
 
@@ -229,10 +230,15 @@ public class NativeRustBridge {
         private final MemorySegment cultureSeg;
 
         public NativeWorldArena(int capacity) {
-            this.capacity = capacity;
+            this(capacity, capacity);
+        }
+
+        public NativeWorldArena(int worldCapacity, int agentCapacity) {
+            this.capacity = worldCapacity;
+            this.agentCapacity = agentCapacity;
             this.arena = Arena.ofShared();
 
-            long cap = capacity;
+            long cap = worldCapacity;
             this.h3IndexesSeg = arena.allocate(cap * Long.BYTES, 64);
             this.neighborIndexesSeg = arena.allocate(cap * 6 * Integer.BYTES, 64);
             this.elevationSeg = arena.allocate(cap * Float.BYTES, 64);
@@ -299,22 +305,23 @@ public class NativeRustBridge {
             worldStructSeg.set(ValueLayout.ADDRESS, 240, institutionalComplexitySeg);
 
             // Agent Buffer allocation
-            this.hexIdsSeg = arena.allocate(cap * Integer.BYTES, 64);
-            this.agentH3Seg = arena.allocate(cap * Long.BYTES, 64);
-            this.massSeg = arena.allocate(cap * Float.BYTES, 64);
-            this.energySeg = arena.allocate(cap * Float.BYTES, 64);
-            this.sigmaCostSeg = arena.allocate(cap * Float.BYTES, 64);
-            this.techLevelSeg = arena.allocate(cap * Float.BYTES, 64);
-            this.ageSeg = arena.allocate(cap * Float.BYTES, 64);
-            this.birthsSeg = arena.allocate(cap * Float.BYTES, 64);
-            this.deathsSeg = arena.allocate(cap * Float.BYTES, 64);
-            this.genCountSeg = arena.allocate(cap * Integer.BYTES, 64);
-            this.geneticsSeg = arena.allocate(cap * 4 * Float.BYTES, 64);
-            this.cultureSeg = arena.allocate(cap * 4 * Float.BYTES, 64);
+            long aCap = agentCapacity;
+            this.hexIdsSeg = arena.allocate(aCap * Integer.BYTES, 64);
+            this.agentH3Seg = arena.allocate(aCap * Long.BYTES, 64);
+            this.massSeg = arena.allocate(aCap * Float.BYTES, 64);
+            this.energySeg = arena.allocate(aCap * Float.BYTES, 64);
+            this.sigmaCostSeg = arena.allocate(aCap * Float.BYTES, 64);
+            this.techLevelSeg = arena.allocate(aCap * Float.BYTES, 64);
+            this.ageSeg = arena.allocate(aCap * Float.BYTES, 64);
+            this.birthsSeg = arena.allocate(aCap * Float.BYTES, 64);
+            this.deathsSeg = arena.allocate(aCap * Float.BYTES, 64);
+            this.genCountSeg = arena.allocate(aCap * Integer.BYTES, 64);
+            this.geneticsSeg = arena.allocate(aCap * 4 * Float.BYTES, 64);
+            this.cultureSeg = arena.allocate(aCap * 4 * Float.BYTES, 64);
 
             // Populate AgentBufferRaw struct in native memory (104 bytes)
             this.agentStructSeg = arena.allocate(104, 8);
-            agentStructSeg.set(ValueLayout.JAVA_LONG, 0, cap);
+            agentStructSeg.set(ValueLayout.JAVA_LONG, 0, aCap);
             agentStructSeg.set(ValueLayout.ADDRESS, 8, hexIdsSeg);
             agentStructSeg.set(ValueLayout.ADDRESS, 16, agentH3Seg);
             agentStructSeg.set(ValueLayout.ADDRESS, 24, massSeg);
@@ -363,7 +370,7 @@ public class NativeRustBridge {
             }
 
             if (ab != null) {
-                int aCount = Math.min(capacity, ab.getCapacity());
+                int aCount = Math.min(agentCapacity, ab.getCapacity());
                 if (ab.getHexIds() != null) MemorySegment.copy(ab.getHexIds(), 0, hexIdsSeg, ValueLayout.JAVA_INT, 0, aCount);
                 if (ab.getMass() != null) MemorySegment.copy(ab.getMass(), 0, massSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
                 if (ab.getEnergy() != null) MemorySegment.copy(ab.getEnergy(), 0, energySeg, ValueLayout.JAVA_FLOAT, 0, aCount);
@@ -376,7 +383,7 @@ public class NativeRustBridge {
                     float[][] gen = ab.getGenetics();
                     for (int d = 0; d < Math.min(4, gen.length); d++) {
                         if (gen[d] != null) {
-                            MemorySegment.copy(gen[d], 0, geneticsSeg, ValueLayout.JAVA_FLOAT, (long) d * capacity * Float.BYTES, Math.min(capacity, gen[d].length));
+                            MemorySegment.copy(gen[d], 0, geneticsSeg, ValueLayout.JAVA_FLOAT, (long) d * agentCapacity * Float.BYTES, Math.min(aCount, gen[d].length));
                         }
                     }
                 }
@@ -384,7 +391,7 @@ public class NativeRustBridge {
                     float[][] cul = ab.getCulture();
                     for (int d = 0; d < Math.min(4, cul.length); d++) {
                         if (cul[d] != null) {
-                            MemorySegment.copy(cul[d], 0, cultureSeg, ValueLayout.JAVA_FLOAT, (long) d * capacity * Float.BYTES, Math.min(capacity, cul[d].length));
+                            MemorySegment.copy(cul[d], 0, cultureSeg, ValueLayout.JAVA_FLOAT, (long) d * agentCapacity * Float.BYTES, Math.min(aCount, cul[d].length));
                         }
                     }
                 }
@@ -407,7 +414,7 @@ public class NativeRustBridge {
             if (wb.getEnergyFoodConsumed() != null) MemorySegment.copy(energyFoodConsumedSeg, ValueLayout.JAVA_FLOAT, 0, wb.getEnergyFoodConsumed(), 0, count);
 
             if (ab != null) {
-                int aCount = Math.min(capacity, ab.getCapacity());
+                int aCount = Math.min(agentCapacity, ab.getCapacity());
                 if (ab.getHexIds() != null) MemorySegment.copy(hexIdsSeg, ValueLayout.JAVA_INT, 0, ab.getHexIds(), 0, aCount);
                 if (ab.getMass() != null) MemorySegment.copy(massSeg, ValueLayout.JAVA_FLOAT, 0, ab.getMass(), 0, aCount);
                 if (ab.getEnergy() != null) MemorySegment.copy(energySeg, ValueLayout.JAVA_FLOAT, 0, ab.getEnergy(), 0, aCount);
@@ -420,7 +427,7 @@ public class NativeRustBridge {
                     float[][] gen = ab.getGenetics();
                     for (int d = 0; d < Math.min(4, gen.length); d++) {
                         if (gen[d] != null) {
-                            MemorySegment.copy(geneticsSeg, ValueLayout.JAVA_FLOAT, (long) d * capacity * Float.BYTES, gen[d], 0, Math.min(capacity, gen[d].length));
+                            MemorySegment.copy(geneticsSeg, ValueLayout.JAVA_FLOAT, (long) d * agentCapacity * Float.BYTES, gen[d], 0, Math.min(aCount, gen[d].length));
                         }
                     }
                 }
@@ -428,7 +435,7 @@ public class NativeRustBridge {
                     float[][] cul = ab.getCulture();
                     for (int d = 0; d < Math.min(4, cul.length); d++) {
                         if (cul[d] != null) {
-                            MemorySegment.copy(cultureSeg, ValueLayout.JAVA_FLOAT, (long) d * capacity * Float.BYTES, cul[d], 0, Math.min(capacity, cul[d].length));
+                            MemorySegment.copy(cultureSeg, ValueLayout.JAVA_FLOAT, (long) d * agentCapacity * Float.BYTES, cul[d], 0, Math.min(aCount, cul[d].length));
                         }
                     }
                 }

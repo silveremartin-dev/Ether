@@ -50,6 +50,7 @@ public class SimulationPipeline {
     private List<H3Cell> reusablePopulatedCells = null;
     private org.ether.society.core.dod.NativeRustBridge.NativeWorldArena cachedNativeArena = null;
     private int cachedNativeArenaCapacity = -1;
+    private int cachedNativeArenaAgentCapacity = -1;
 
     public SimulationPipeline(DemographicKernel demographicKernel,
                               UrbanKernel urbanKernel,
@@ -221,11 +222,13 @@ public class SimulationPipeline {
                 && org.ether.society.core.dod.NativeRustBridge.isNativeAvailable() && worldBuffer != null && agentBuffer != null) {
             try {
                 int cap = worldBuffer.getCapacity();
-                if (cachedNativeArena == null || cachedNativeArenaCapacity != cap) {
+                int aCap = agentBuffer.getCapacity();
+                if (cachedNativeArena == null || cachedNativeArenaCapacity != cap || cachedNativeArenaAgentCapacity != aCap) {
                     if (cachedNativeArena != null) {
                         cachedNativeArena.close();
                     }
-                    cachedNativeArena = new org.ether.society.core.dod.NativeRustBridge.NativeWorldArena(cap);
+                    cachedNativeArena = new org.ether.society.core.dod.NativeRustBridge.NativeWorldArena(cap, aCap);
+                    cachedNativeArenaAgentCapacity = aCap;
                     cachedNativeArenaCapacity = cap;
                 }
                 long sSeed = activeScenario != null && activeScenario.getSeed() != 0L ? activeScenario.getSeed() : 42L;
@@ -249,15 +252,24 @@ public class SimulationPipeline {
 
         if (!executedNative) {
             environmentalKernel.tick(worldBuffer, dtSlow);
+
+
             demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
+
+
             urbanKernel.tick(worldBuffer, dtSlow);
+
+
             fluxKernel.tick(worldBuffer, dtSlow);
+
+
             cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
         }
 
         if (engine != null) {
             engine.syncBufferToCells();
         }
+
         profiler.endPhase("3_DemographicsAndCulture");
 
         // --- Phase 2: Core Physicalist & Cliodynamic Sub-Systems (Fused 3-Pass Architecture) ---
@@ -312,6 +324,7 @@ public class SimulationPipeline {
         // Pass 1: Planetary & Atmospheric Fused Pass
         executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, avgTech);
 
+
         // Pass 2: Terrestrial Soil, Water & Ecosystem Fused Pass
         if (!landCells.isEmpty()) {
             executeFusedTerrestrialPass(landCells, dtYears, dtMonthly, avgTech);
@@ -321,8 +334,10 @@ public class SimulationPipeline {
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
         if (runTier2 && !populatedCells.isEmpty()) {
             executeFusedAnthropogenicPass(engine, populatedCells, dtYears, dtMonthly, activeScenario);
+
             // Dynamic Procedural Engine Plugins
             ProceduralEngineRegistry.processPlugins(populatedCells, dtMonthly);
+
         }
 
         if (engine != null) {

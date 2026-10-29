@@ -120,10 +120,10 @@ public class ScenarioFalsificationReportTest {
 
             File singleReportFile = new File("scratch/report_" + safeName + ".md");
             try (PrintWriter pw = new PrintWriter(singleReportFile)) {
-                pw.println("# 📜 RAPPORT COMPLET DE FALSIFICATION HISTORIQUE & AUDIT ÉPISTÉMIQUE\n");
-                pw.println("**Scénario** : `" + item.getName() + "`\n");
-                pw.println("**Identifiant du Run de Simulation** : `" + item.getRunId() + "`\n");
-                pw.println("**Répertoire des Sauvegardes & Snapshots** : `saves/" + item.getRunId() + "/`\n\n");
+                pw.println("# 📜 COMPLETE HISTORICAL FALSIFICATION & EPISTEMIC AUDIT REPORT\n");
+                pw.println("**Scenario**: `" + item.getName() + "`\n");
+                pw.println("**Simulation Run Identifier**: `" + item.getRunId() + "`\n");
+                pw.println("**Snapshots & Save Directory**: `saves/" + item.getRunId() + "/`\n\n");
                 pw.println(singleAudit.reportMarkdown());
             }
             System.out.println("[SUCCESS] Individual scenario report written to: " + singleReportFile.getAbsolutePath());

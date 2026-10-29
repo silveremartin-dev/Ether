@@ -300,10 +300,6 @@ public class GroundTruthAuditGenerator {
                 if (sim < 100.0) {
                     sim = 280.0 + sim;
                 }
-            } else if ("literacyRate".equals(benchKey)) {
-                if (sim <= 10.0 && sim > 0.0) {
-                    sim = sim * 10.0;
-                }
             } else if ("sociopoliticalInstability".equals(benchKey)) {
                 var snap = timeSeries.get(yr);
                 if (snap != null && snap.getMetricsMap().containsKey("conflict")) {
