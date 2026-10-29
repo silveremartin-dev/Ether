@@ -112,10 +112,16 @@ public class ScenarioFalsificationReportRunner {
             // Print report directly to stdout
             System.out.println(audit.reportMarkdown());
 
-            // Also persist to scratch and saves directory
-            File outReport = new File("scratch/scenario_falsification_report.md");
-            outReport.getParentFile().mkdirs();
+            // Also persist to docs/reports and scratch
+            File reportsDir = new File("docs/reports");
+            reportsDir.mkdirs();
+            File outReport = new File(reportsDir, "scenario_falsification_report.md");
             try (PrintWriter pw = new PrintWriter(outReport)) {
+                pw.println(audit.reportMarkdown());
+            }
+            File scratchReport = new File("scratch/scenario_falsification_report.md");
+            scratchReport.getParentFile().mkdirs();
+            try (PrintWriter pw = new PrintWriter(scratchReport)) {
                 pw.println(audit.reportMarkdown());
             }
 

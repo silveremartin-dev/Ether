@@ -71,6 +71,17 @@ public class SimulationRunRepository {
     }
 
     /**
+     * Removes a specific run from the repository to force re-evaluation from disk.
+     *
+     * @param runId the run identifier
+     */
+    public void removeRun(String runId) {
+        if (runId != null) {
+            repository.remove(runId);
+        }
+    }
+
+    /**
      * Get run.
      *
      * @param runId the run id parameter (String)

@@ -97,9 +97,17 @@ public class ScenarioFalsificationReportTest {
 
         System.out.println("\n" + audit.reportMarkdown());
 
-        File outReport = new File("scratch/scenario_falsification_report.md");
-        outReport.getParentFile().mkdirs();
+        File reportsDir = new File("docs/reports");
+        reportsDir.mkdirs();
+        File scratchDir = new File("scratch");
+        scratchDir.mkdirs();
+
+        File outReport = new File(reportsDir, "scenario_falsification_report.md");
         try (PrintWriter pw = new PrintWriter(outReport)) {
+            pw.println(audit.reportMarkdown());
+        }
+        // Mirror to scratch
+        try (PrintWriter pw = new PrintWriter(new File(scratchDir, "scenario_falsification_report.md"))) {
             pw.println(audit.reportMarkdown());
         }
         System.out.println("\n[SUCCESS] Standardized audit report written to: " + outReport.getAbsolutePath());
@@ -118,8 +126,16 @@ public class ScenarioFalsificationReportTest {
             else if (safeName.contains("1347") || safeName.contains("peste")) safeName = "peste_noire_1347";
             else if (safeName.contains("1279") || safeName.contains("rams")) safeName = "ramses_ii_-1279";
 
-            File singleReportFile = new File("scratch/report_" + safeName + ".md");
+            File singleReportFile = new File(reportsDir, "report_" + safeName + ".md");
             try (PrintWriter pw = new PrintWriter(singleReportFile)) {
+                pw.println("# 📜 COMPLETE HISTORICAL FALSIFICATION & EPISTEMIC AUDIT REPORT\n");
+                pw.println("**Scenario**: `" + item.getName() + "`\n");
+                pw.println("**Simulation Run Identifier**: `" + item.getRunId() + "`\n");
+                pw.println("**Snapshots & Save Directory**: `saves/" + item.getRunId() + "/`\n\n");
+                pw.println(singleAudit.reportMarkdown());
+            }
+            // Mirror to scratch
+            try (PrintWriter pw = new PrintWriter(new File(scratchDir, "report_" + safeName + ".md"))) {
                 pw.println("# 📜 COMPLETE HISTORICAL FALSIFICATION & EPISTEMIC AUDIT REPORT\n");
                 pw.println("**Scenario**: `" + item.getName() + "`\n");
                 pw.println("**Simulation Run Identifier**: `" + item.getRunId() + "`\n");

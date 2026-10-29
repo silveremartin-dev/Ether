@@ -117,6 +117,19 @@ public final class ComparativeTelemetryDataLoader {
     }
 
     /**
+     * Explicitly invalidates any in-memory cached run record for the given saveId,
+     * ensuring that subsequent reads parse the updated history and snapshots from disk.
+     *
+     * @param saveId save directory identifier
+     * @param runRepository target repository
+     */
+    public static void invalidateSaveCache(String saveId, SimulationRunRepository runRepository) {
+        if (runRepository != null && saveId != null) {
+            runRepository.removeRun(saveId);
+        }
+    }
+
+    /**
      * Ensures that snapshot telemetry history is read from disk and cached into the run repository.
      *
      * @param saveId save directory identifier

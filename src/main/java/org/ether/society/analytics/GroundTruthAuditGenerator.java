@@ -391,23 +391,23 @@ public class GroundTruthAuditGenerator {
                                                                     HistoricalValidationKernel.InterpolationMethod method,
                                                                     Function<? super T, SimulationRunRecord> runResolver) {
         StringBuilder fullReport = new StringBuilder();
-        fullReport.append("# ").append(I18n.getOrDefault("analytics.audit.title_clean", "📊 CLIODYNAMIC AUDIT & CALIBRATION REPORT")).append("\n\n");
-        fullReport.append(String.format("**%s** : %s\n\n", I18n.getOrDefault("analytics.report.baseline_label", "Baseline Reference"), I18n.getOrDefault("analytics.audit.ground_truth_ref", "Cliodynamic Historical Reality (-100,000 ➔ 2026 CE)")));
+        fullReport.append("# 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT\n\n");
+        fullReport.append("**Reference Baseline**: Empirical Cliodynamic Reality (-100,000 BP ➔ 2026 CE)\n\n");
 
         int earliestDivergence = -1;
         StringBuilder explanationSummary = new StringBuilder();
 
         Map<String, String> benchmarkKeys = new LinkedHashMap<>();
-        benchmarkKeys.put("👥 " + I18n.getOrDefault("analytics.spatial.density", "Global Population") + " (worldPopulation)", "worldPopulation");
-        benchmarkKeys.put("🦣 " + I18n.getOrDefault("metric.megafauna", "Megafauna Abundance Index") + " (megafaunaIndex)", "megafaunaIndex");
-        benchmarkKeys.put("☀️ " + I18n.getOrDefault("metric.milankovitch", "Milankovitch 65°N Insolation") + " (milankovitchInsolation)", "milankovitchInsolation");
-        benchmarkKeys.put("🛡️ " + I18n.getOrDefault("metric.containment", "Biogeographical Zero-Containment") + " (zeroContainmentScore)", "zeroContainmentScore");
-        benchmarkKeys.put("💰 " + I18n.getOrDefault("metric.gdp", "Gross World Product (GWP)") + " (grossWorldProduct)", "grossWorldProduct");
-        benchmarkKeys.put("⚡ " + I18n.getOrDefault("metric.energy", "Primary Energy Consumption") + " (primaryEnergy)", "primaryEnergy");
-        benchmarkKeys.put("🏙️ " + I18n.getOrDefault("metric.urbanization", "Urbanization Rate") + " (urbanizationRate)", "urbanizationRate");
-        benchmarkKeys.put("🌿 " + I18n.getOrDefault("metric.co2", "Atmospheric CO2 Concentration") + " (co2Concentration)", "co2Concentration");
-        benchmarkKeys.put("📖 " + I18n.getOrDefault("metric.literacy", "Global Literacy Rate") + " (literacyRate)", "literacyRate");
-        benchmarkKeys.put("📉 " + I18n.getOrDefault("metric.currency", "Sociopolitical Instability") + " (sociopoliticalInstability)", "sociopoliticalInstability");
+        benchmarkKeys.put("👥 Global Demographic Population (worldPopulation)", "worldPopulation");
+        benchmarkKeys.put("🦣 Megafauna Abundance Index (megafaunaIndex)", "megafaunaIndex");
+        benchmarkKeys.put("☀️ Milankovitch 65°N Insolation (milankovitchInsolation)", "milankovitchInsolation");
+        benchmarkKeys.put("🛡️ Biogeographical Zero-Containment (zeroContainmentScore)", "zeroContainmentScore");
+        benchmarkKeys.put("💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct)", "grossWorldProduct");
+        benchmarkKeys.put("⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy)", "primaryEnergy");
+        benchmarkKeys.put("🏙️ Urbanization Rate (%) (urbanizationRate)", "urbanizationRate");
+        benchmarkKeys.put("🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration)", "co2Concentration");
+        benchmarkKeys.put("📖 Global Literacy Rate (%) (literacyRate)", "literacyRate");
+        benchmarkKeys.put("📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability)", "sociopoliticalInstability");
 
         record ScenarioAudit(
                 ScenarioBenchmarkItem item,
@@ -471,13 +471,8 @@ public class GroundTruthAuditGenerator {
             );
         }
 
-        fullReport.append("## 🏆 1. ").append(I18n.getOrDefault("analytics.audit.ranking_title", "Inter-Scenario Calibration Ranking (Empirical Reality Fitness)")).append("\n\n");
-        fullReport.append("| # | ").append(I18n.getOrDefault("analytics.audit.th_scenario", "Scenario")).append(" | ")
-                .append(I18n.getOrDefault("analytics.audit.th_score", "Score de Fidélité")).append(" | ")
-                .append(I18n.getOrDefault("analytics.audit.th_mape", "MAPE Globale")).append(" | ")
-                .append(I18n.getOrDefault("analytics.audit.th_r2", "R² d'Ajustement")).append(" | ")
-                .append(I18n.getOrDefault("analytics.audit.th_div", "Première Rupture (T_div)")).append(" | ")
-                .append(I18n.getOrDefault("analytics.audit.th_status", "Diagnostic")).append(" |\n");
+        fullReport.append("## 🏆 1. Inter-Scenario Calibration Ranking (Empirical Reality Fitness)\n\n");
+        fullReport.append("| # | Scenario | Fidelity Score | Global MAPE | R² Goodness of Fit | First Rupture (T_div) | Diagnostic Status |\n");
         fullReport.append("|---|---|---|---|---|---|---|\n");
 
         audits.sort(Comparator.comparingDouble(a -> a.avgMape));
@@ -486,8 +481,8 @@ public class GroundTruthAuditGenerator {
         for (ScenarioAudit a : audits) {
             double fidelity = Math.max(0.0, 100.0 - a.avgMape);
             String medal = rank == 1 ? "🥇 " : rank == 2 ? "🥈 " : rank == 3 ? "🥉 " : "• ";
-            String divStr = a.scenarioDivergence != -1 ? String.format("%d AD", a.scenarioDivergence) : "Aucune (> 10%)";
-            String diagStatus = a.avgMape <= 12.0 ? "🟢 Conforme" : a.avgMape <= 25.0 ? "🟡 Dérive Modérée" : "🔴 Divergence Majeure";
+            String divStr = a.scenarioDivergence != -1 ? String.format("%d CE", a.scenarioDivergence) : "None (> 10%)";
+            String diagStatus = a.avgMape <= 12.0 ? "🟢 Calibrated" : a.avgMape <= 25.0 ? "🟡 Moderate Drift" : "🔴 Severe Divergence";
 
             fullReport.append(String.format(Locale.US, "| %s%d | **%s** | **%.1f%%** | %.2f%% | %.3f | %s | %s |\n",
                     medal, rank, a.item.getName(), fidelity, a.avgMape, a.rSquared, divStr, diagStatus));
@@ -496,8 +491,8 @@ public class GroundTruthAuditGenerator {
         fullReport.append("\n");
 
         if (audits.size() >= 2) {
-            fullReport.append("## 🔬 2. ").append(I18n.getOrDefault("analytics.audit.matrix_title", "Multi-Scenario Comparative Gap Matrix")).append("\n\n");
-            fullReport.append("| Variable Historique (Métrique) |");
+            fullReport.append("## 🔬 2. Multi-Scenario Comparative Gap Matrix\n\n");
+            fullReport.append("| Historical Variable (Metric) |");
             for (ScenarioAudit a : audits) {
                 fullReport.append(" ").append(a.item.getName()).append(" |");
             }
@@ -518,10 +513,10 @@ public class GroundTruthAuditGenerator {
             fullReport.append("\n");
         }
 
-        fullReport.append("## 📊 3. ").append(I18n.getOrDefault("analytics.audit.deep_title", "Deep Diagnostic Analysis by Scenario")).append("\n\n");
+        fullReport.append("## 📊 3. Deep Diagnostic Analysis by Scenario\n\n");
         for (ScenarioAudit a : audits) {
-            fullReport.append("### 🔎 Scénario : `").append(a.item.getName()).append("` (`").append(a.item.getRunId()).append("`)\n\n");
-            fullReport.append("| Variable Auditée | MAPE (%) | Statut | Début Dérive | Pic Divergence | Profil Temporel | Moteur Responsable |\n");
+            fullReport.append("### 🔎 Scenario: `").append(a.item.getName()).append("` (`").append(a.item.getRunId()).append("`)\n\n");
+            fullReport.append("| Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |\n");
             fullReport.append("|---|---|---|---|---|---|---|\n");
             for (VariableDriftAnalysis d : a.drifts) {
                 fullReport.append(String.format(Locale.US, "| %s | %.2f%% | %s | %s | %s | %s | `%s` |\n",
@@ -529,8 +524,8 @@ public class GroundTruthAuditGenerator {
             }
             fullReport.append("\n");
 
-            fullReport.append("#### 📐 Statistiques Descriptives & Tests d'Hypothèse (H0 : Modèle = Réalité)\n\n");
-            fullReport.append("| Variable | Échantillons (N) | Moy. Observée (μ_obs) | Moy. Simulée (μ_sim ± σ) | IC 95% Simulée | Médienne [IQR] | Cohen's d | Signif. p-val |\n");
+            fullReport.append("#### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)\n\n");
+            fullReport.append("| Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |\n");
             fullReport.append("|---|---|---|---|---|---|---|---|\n");
             for (VariableDriftAnalysis d : a.drifts) {
                 String obsStr = String.format(Locale.US, "%,.2f", d.meanObs);
@@ -543,9 +538,9 @@ public class GroundTruthAuditGenerator {
         }
 
         for (ScenarioAudit a : audits) {
-            explanationSummary.append(String.format(Locale.US, "• **%s** : Fidélité %.1f%% (MAPE %.1f%%) — %s\n",
+            explanationSummary.append(String.format(Locale.US, "• **%s**: Fidelity %.1f%% (MAPE %.1f%%) — %s\n",
                     a.item.getName(), Math.max(0.0, 100.0 - a.avgMape), a.avgMape,
-                    a.scenarioDivergence != -1 ? String.format("Rupture en %d AD", a.scenarioDivergence) : "Parallèle"));
+                    a.scenarioDivergence != -1 ? String.format("Bifurcation in %d CE", a.scenarioDivergence) : "Calibrated"));
         }
 
         return new AuditResult(fullReport.toString(), earliestDivergence, explanationSummary.toString());

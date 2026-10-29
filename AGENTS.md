@@ -1,7 +1,9 @@
 # AGENT.MD: Project Philosophy & Development Directives for Ether
 
 ## 🎯 1. Core Project Identity & Scope
-**Ether is a Physical-based Cliodynamic & Historical Planetary Simulation Engine.**
+**Ether is a Physical-based Cliodynamic & Historical Planetary Simulation Engine targeting the Highest Level of Academic Precision and Scientific Rigor.**
+
+The overarching directive of Ether is that **the simulation must strictly respect the highest standards of academic excellence and be fundamentally grounded in authentic, peer-reviewed physical, biological, thermodynamic, chemical, and ecological models**.
 
 The primary goal of Ether is to simulate how **geography, physics, thermodynamics, chemistry, and biology shape human/alien civilizational history, demography, technology, trade, and collapse**.
 
