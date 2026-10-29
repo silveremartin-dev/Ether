@@ -1,0 +1,38 @@
+{
+  "provider_id": "nasa_pds_titan",
+  "name": "NASA PDS / USGS Astrogeology / ESA: Titan Geomorphology, Topography & Atmosphere",
+  "organization": "NASA Jet Propulsion Laboratory (JPL-Caltech) / USGS Astrogeology Science Center / European Space Agency (ESA)",
+  "domain": "Cryogenic Planetary Environment, Topography (DEM), Geomorphology, Radiative Balance & Methane Hydrologic Cycle",
+  "website": "https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/Cassini/radar.html",
+  "download_url": "https://astrogeology.usgs.gov/search/map/Titan/Topography/",
+  "alternate_urls": [
+    "https://www.esa.int/ESA_Multimedia/Images/2019/11/Global_geologic_map_of_Titan",
+    "https://www.nasa.gov/image-article/global-topographic-map-of-titan/",
+    "https://astrobiology.com/2018/01/17/new-titan-topographic-map/",
+    "https://www.planetary.org/space-images/global-map-of-titan-topography",
+    "https://doi.org/10.5281/zenodo.1009187"
+  ],
+  "license": "NASA / JPL-Caltech / ESA Public Domain / Creative Commons Attribution-ShareAlike",
+  "spatial_resolution": "Global Mollweide 1:20,000,000 and 1.0 deg Cylindrical Equirectangular Mesh",
+  "temporal_coverage": "Cassini-Huygens Mission Operations (2004-2017)",
+  "variables": [
+    "SURFACE_TOPOGRAPHY_METERS",
+    "GEOMORPHIC_TERRAIN_CLASS",
+    "SURFACE_ATMOSPHERIC_PRESSURE_BAR",
+    "ATMOSPHERIC_SCALE_HEIGHT_KM",
+    "GAS_COMPOSITION_MOLAR_FRACTION",
+    "GREENHOUSE_ANTIGREENHOUSE_OFFSET_KELVIN",
+    "METHANE_EVAPORATION_RATE_CM_YR",
+    "METHANE_ATMOSPHERIC_LIQUID_CAPACITY_M",
+    "SURFACE_WIND_MAX_M_S"
+  ],
+  "citation": "Lopes, R. M. C., et al. (2020). A global geomorphologic map of Titan. Nature Astronomy, 4(3), 228-233; Corlies, P., et al. (2017). Titan's Topography and Shape at the End of the Cassini Mission. Geophysical Research Letters, 44(23), 11,754-11,761.",
+  "files": [
+    "titan_topography_equirectangular_corlies2017.webp",
+    "titan_geologic_map_mollweide_lopes2019.jpg",
+    "titan_topography_polar_projections_corlies2017.webp",
+    "titan_cassini_geomorphology_lopes2019.png",
+    "titan_atmospheric_and_climate_parameters.json"
+  ],
+  "status": "AUTHENTIC"
+}

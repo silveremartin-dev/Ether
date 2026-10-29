@@ -1,0 +1,137 @@
+{
+  "body": "Titan",
+  "system": "Saturnian System",
+  "classification": "Cryogenic Hydrocarbon Moon",
+  "provenance": {
+    "sources": [
+      {
+        "agency": "NASA / JPL-Caltech / ESA / ASI",
+        "missions": ["Cassini-Huygens"],
+        "publications": [
+          {
+            "citation": "Lopes, R. M. C., et al. (2020). A global geomorphologic map of Titan. Nature Astronomy, 4(3), 228-233.",
+            "doi": "10.1038/s41550-019-0917-4",
+            "url": "https://www.esa.int/ESA_Multimedia/Images/2019/11/Global_geologic_map_of_Titan"
+          },
+          {
+            "citation": "Corlies, P., et al. (2017). Titan's Topography and Shape at the End of the Cassini Mission. Geophysical Research Letters, 44(23), 11,754-11,761.",
+            "doi": "10.1002/2017GL075518",
+            "url": "https://www.nasa.gov/image-article/global-topographic-map-of-titan/"
+          },
+          {
+            "citation": "Lorenz, R. D., et al. (2013). A global topographic map of Titan. Icarus, 225(1), 367-377.",
+            "doi": "10.1016/j.icarus.2013.04.004",
+            "url": "https://astrobiology.com/2018/01/17/new-titan-topographic-map/"
+          },
+          {
+            "citation": "McKay, C. P., Pollack, J. B., & Courtin, R. (1991). The greenhouse and antigreenhouse effects on Titan. Science, 253(5024), 1118-1121.",
+            "doi": "10.1126/science.253.5024.1118"
+          },
+          {
+            "citation": "Niemann, H. B., et al. (2010). Composition of Titan's lower atmosphere and simple surface volatiles as measured by the Cassini-Huygens probe GCMS. Journal of Geophysical Research: Planets, 115(E12).",
+            "doi": "10.1029/2010JE003659"
+          }
+        ]
+      }
+    ]
+  },
+  "atmospheric_parameters": {
+    "surface_pressure_bar": 1.467,
+    "surface_pressure_kpa": 146.7,
+    "scale_height_km_range": [15.0, 50.0],
+    "surface_density_kg_m3": 5.4,
+    "composition_molar_fraction": {
+      "nitrogen_N2": 0.942,
+      "methane_CH4": 0.0565,
+      "hydrogen_H2": 0.00099,
+      "argon_40Ar": 0.0000432,
+      "trace_organics": "ethane, propane, acetylene, hydrogen cyanide, carbon monoxide, carbon dioxide"
+    }
+  },
+  "radiative_and_thermal_balance": {
+    "solar_irradiance_fraction_of_earth": 0.0107,
+    "solar_constant_w_m2": 14.9,
+    "effective_radiative_temperature_k": 82.0,
+    "greenhouse_warming_delta_k": 21.0,
+    "antigreenhouse_cooling_haze_delta_k": -9.0,
+    "net_atmospheric_temperature_offset_k": 12.0,
+    "surface_temperature_mean_k": 94.0,
+    "surface_temperature_mean_celsius": -179.15,
+    "water_ice_vapor_pressure": "Practically zero; water ice acts as mechanical bedrock"
+  },
+  "orbital_and_geophysical_mechanics": {
+    "radius_km": 2574.73,
+    "surface_gravity_m_s2": 1.352,
+    "tidal_locking": true,
+    "synchronous_rotation_period_hours": 382.0,
+    "synchronous_rotation_period_days": 15.945,
+    "axial_tilt_to_saturn_orbit_deg": 26.73,
+    "axial_tilt_to_own_orbit_deg": 0.0,
+    "saturn_orbital_period_earth_years": 29.457,
+    "saturn_orbital_period_days": 10759.22,
+    "orbital_eccentricity": 0.05415,
+    "perihelion_distance_au": 9.04,
+    "aphelion_distance_au": 10.12,
+    "solar_flux_asymmetry_southern_summer_vs_northern_summer": 1.25,
+    "coriolis_rossby_deformation_radius_km": 2000.0
+  },
+  "methane_hydrologic_and_weather_cycle": {
+    "working_fluid": "Liquid Methane (CH4) and Ethane (C2H6)",
+    "annual_evaporation_rate_cm_yr": 1.0,
+    "atmospheric_moisture_holding_capacity_liquid_column_m": 10.0,
+    "hydrologic_regime": "Extended multi-decade hyper-arid quiescence punctuated by intense seasonal convective flash floods",
+    "surface_winds_baseline_m_s": 0.8,
+    "equinoctial_storm_downdraft_winds_m_s": 10.0,
+    "polar_summer_cyclonic_winds_m_s": 20.0,
+    "cyclone_duration_days": 10.0,
+    "lake_sea_wave_height_cm": [1.5, 10.0]
+  },
+  "topographic_and_hypsometric_bounds": {
+    "reference_geoid_radius_km": 2575.0,
+    "total_peak_to_trough_relief_m": 2614.0,
+    "maximum_elevation_m": 2014.0,
+    "maximum_elevation_feature": "Mithrim Montes (Icy Bedrock Range)",
+    "minimum_depression_m": -1600.0,
+    "minimum_depression_feature": "Kraken Mare Sub-Sea Trench",
+    "global_map_scale": "1:20,000,000",
+    "projections_available": ["Mollweide", "Equirectangular (Cylindrical)", "Orthographic Polar (North & South)"]
+  },
+  "geomorphologic_terrain_classes": {
+    "plains": {
+      "color_hex": "#50fa7b",
+      "visual_description": "Pale green",
+      "geology": "Broad, relatively flat vast organic lowlands composed of settled aerosol tholins",
+      "areal_coverage_pct": 65.0
+    },
+    "dunes": {
+      "color_hex": "#9b59b6",
+      "visual_description": "Purple",
+      "geology": "Longitudinal equatorial hydrocarbon sand dunes (Belet, Fensal, Shangri-La) shaped by equinoctial wind gusts",
+      "areal_coverage_pct": 17.0
+    },
+    "hummocky": {
+      "color_hex": "#f39c12",
+      "visual_description": "Pale orange",
+      "geology": "Elevated hilly and rugged icy bedrock mountain chains (Mithrim Montes, Xanadu)",
+      "areal_coverage_pct": 14.0
+    },
+    "labyrinths": {
+      "color_hex": "#e91e63",
+      "visual_description": "Pink",
+      "geology": "Tectonically disrupted valley networks dissected by dendritic methane fluvial channels",
+      "areal_coverage_pct": 1.5
+    },
+    "lakes_and_seas": {
+      "color_hex": "#2980b9",
+      "visual_description": "Blue",
+      "geology": "Active liquid methane and ethane seas (Kraken, Ligeia, Punga Mare) and paleolakes",
+      "areal_coverage_pct": 1.5
+    },
+    "craters": {
+      "color_hex": "#e74c3c",
+      "visual_description": "Red",
+      "geology": "Rare hypervelocity impact craters (Menrva, Selk, Sinlap) exposing pristine crystalline water ice",
+      "areal_coverage_pct": 0.4
+    }
+  }
+}

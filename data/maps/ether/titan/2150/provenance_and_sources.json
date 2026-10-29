@@ -9,8 +9,10 @@
     "summary_fr": "Modélisation de colonisation spatiale et habitats pressurisés pour titan en 2150."
   },
   "layers": {
-    "elevation": {"filename": "titan_2150_elevation.png", "category": "geophysics", "data_sources": ["NASA PDS / MOLA / LOLA / Magellan"]},
-    "density": {"filename": "titan_2150_density.png", "category": "demography", "data_sources": ["Ether Pioneer Colony Model", "Outpost Coordinates"]},
-    "sovereignty": {"filename": "titan_2150_sovereignty.png", "category": "sociology", "data_sources": ["Space Treaty Framework / International Consortia"]}
+    "elevation": {"filename": "titan_2150_elevation.png", "category": "geophysics", "data_sources": ["NASA PDS / Cassini RADAR Altimeter / Corlies et al. 2017 & Lorenz et al. 2013"]},
+    "biomes": {"filename": "titan_2150_biomes.png", "category": "ecology", "data_sources": ["USGS Astrogeology / ESA / Lopes et al. 2019/2020 Global Geologic Map"]},
+    "oil": {"filename": "titan_2150_oil.png", "category": "resources", "data_sources": ["Cassini VIMS / RADAR Liquid Methane-Ethane Seas (Kraken Mare, Ligeia Mare, Ontario Lacus)"]},
+    "density": {"filename": "titan_2150_density.png", "category": "demography", "data_sources": ["Ether Pioneer Cryo-Colony & Dome ECLSS Model"]},
+    "sovereignty": {"filename": "titan_2150_sovereignty.png", "category": "sociology", "data_sources": ["Outer Space Treaty & Titan Energy Corporation Consortia"]}
   }
 }

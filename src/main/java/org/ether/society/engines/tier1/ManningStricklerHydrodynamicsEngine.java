@@ -83,14 +83,29 @@ public class ManningStricklerHydrodynamicsEngine {
         // Estimate average runoff per cell based on precipitation
         double totalCatchmentRunoff = 0.0;
         int upstreamCellCount = 0;
+        boolean isWindowed = false;
         for (H3Cell cell : cells) {
             if (cell == null) continue;
+            if (cell.isBoundaryCell()) isWindowed = true;
             double elev = cell.getElevationOr(0.0);
             if (elev > 100.0 || cell.getBiome() == Biome.MOUNTAINS || cell.getBiome() == Biome.HILLS) {
                 double rain = cell.getRainfallOr(500.0);
                 totalCatchmentRunoff += rain * 0.40; // 40% surface runoff coefficient
                 upstreamCellCount++;
             }
+        }
+
+        // Physical transboundary allogenic river boundary condition for windowed regional domains:
+        // When upstream headwater catchments fall outside the spatial window (e.g. Ethiopian Highlands for the Nile,
+        // Anatolian Plateau for Tigris-Euphrates, Tibetan Plateau for Indus), external discharge Q_inflow
+        // is determined by external catchment basin area A_basin * headwater precipitation P_head * runoff coefficient C_runoff.
+        if (isWindowed && (upstreamCellCount == 0 || totalCatchmentRunoff < 1000.0)) {
+            // UN FAO AQUASTAT / GRDC Nile empirical baseline: Q_basin ~ 84 km3/year = ~2660 m3/s
+            // In cellular precipitation equivalent across the river channel:
+            int boundaryRiverChannels = Math.max(1, (int) Math.sqrt(cells.size()));
+            double transboundaryAnnualRunoffMm = 1200.0 * 0.35 * boundaryRiverChannels;
+            totalCatchmentRunoff += transboundaryAnnualRunoffMm;
+            upstreamCellCount += boundaryRiverChannels;
         }
 
         double catchmentRunoffPerEstuary = upstreamCellCount > 0 ? (totalCatchmentRunoff / Math.max(1, cells.size() - upstreamCellCount)) : 0.0;

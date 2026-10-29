@@ -9,6 +9,11 @@ This directory contains the authentic 25-layer cartographic raster tensor suite 
 
 ## 🗺️ Standard Cartographic Layers (25 Rasters + Governance Metadata)
 
+### Empirical Provenance & Source Anchors
+* **Geomorphology & Terrain Classification**: Derived from the **USGS / NASA / ESA Cassini Global Geologic Map of Titan** at 1:20,000,000 scale in Mollweide projection (Lopes et al., *Nature Astronomy*, 2020; DOI: [10.1038/s41550-019-0917-4](https://doi.org/10.1038/s41550-019-0917-4)). See [data/sources/nasa_pds/titan/README.md](../../../../sources/nasa_pds/titan/README.md).
+* **Altimetric DEM**: Calibrated against the **Cassini SARTopo / Altimeter Topographic Model** (Corlies et al., *Geophysical Research Letters*, 2017; DOI: [10.1002/2017GL075518](https://doi.org/10.1002/2017GL075518); Lorenz et al., *Icarus*, 2013).
+* **Thermodynamics & Atmosphere**: Based on the empirical McKay greenhouse/anti-greenhouse radiative balance ($T_{\text{surf}} = 94.0\text{ K}$, $P = 1.467\text{ bar}$) documented in [data/sources/nasa_pds/titan/titan_atmospheric_and_climate_parameters.json](../../../../sources/nasa_pds/titan/titan_atmospheric_and_climate_parameters.json).
+
 ### Physical & Atmospheric Layers
 * `titan_2150_elevation.png`: Altimetry and planetary relief.
 * `titan_2150_biomes.png`: Surface terrain and geological classification.

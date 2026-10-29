@@ -182,12 +182,34 @@ public class StatisticsKernel {
     }
 
     /**
-     * Computes aggregate Gross Domestic Product (sum of resource capital across cells).
+     * Computes aggregate Gross Domestic Product (annual flow output Y derived from capital stock K).
+     *
+     * <p>In macroeconomics (Maddison Project, Solow Growth Model, Piketty 2014), the capital-output
+     * ratio \(\beta = K / Y \approx 4.35\) connects the cumulative capital wealth stock \(K\) to annual output flow \(Y\):
+     * \[ Y = \frac{\sum K}{\beta} \]</p>
      *
      * @param capital array of cellular resource capital
-     * @return total planetary GDP
+     * @return annual planetary GDP flow
      */
     public float calculateGDP(float[] capital) {
+        if (capital == null || capital.length == 0) return 0.0f;
+        double sum = 0;
+        for (float val : capital) {
+            if (!Float.isNaN(val) && !Float.isInfinite(val)) {
+                sum += val;
+            }
+        }
+        // Capital-to-output flow ratio \beta = 4.35
+        return (float) (sum / 4.35);
+    }
+
+    /**
+     * Computes aggregate cumulative capital stock (K).
+     *
+     * @param capital array of cellular resource capital
+     * @return total physical capital stock
+     */
+    public float calculateTotalCapitalStock(float[] capital) {
         if (capital == null || capital.length == 0) return 0.0f;
         double sum = 0;
         for (float val : capital) {

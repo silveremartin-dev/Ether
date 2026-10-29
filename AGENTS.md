@@ -67,5 +67,20 @@ For every historical epoch (from -100,000 BP to present-day) supported in `data/
    * Tests MUST systematically evaluate parameter sweeps, bifurcation thresholds, domain validity bounds, and historical counter-examples.
    * All results and mathematical derivations MUST be fully documented in **`docs/SCIENTIFIC_MODEL_EVALUATION_AND_FALSIFICATION.md`**.
 
+---
+
+## 📐 8. Zero Arbitrary Hardcoding Directive & Deep-Time Invariant Baselines
+1. **Absolute Ban on Arbitrary Magic Constants & Heuristic Shortcuts**:
+   * ALL simulation parameters, scaling factors, thresholds, and rate constants MUST be derived directly from authentic physical, biological, thermodynamic, or macroeconomic equations documented in literature.
+   * Arbitrary hardcoded numbers (e.g. ad-hoc fallback values, fake constants, arbitrary multiplier tricks) are STRICTLY FORBIDDEN.
+   * If a true empirical formula or differential equation is unknown or missing, it is MANDATORY to pause and discuss the formulation before introducing any working hypothesis.
+2. **Deep-Time Invariant Boundary Initialization (-3,000,000 BP to -10,000 BP)**:
+   * For prehistoric, Pleistocene, and deep Paleolithic epochs (from $-3\,000\,000$ to $-10\,000$ BP) where formal civilizational infrastructure did not exist:
+     * **Literacy Rate**: Invariant baseline $\equiv 0.0\%$ (writing emerges only with proto-cuneiform/hieroglyphs $\sim -3400$ BCE).
+     * **Urbanization Rate**: Invariant baseline $\equiv 0.0\%$ (permanent agglomerations $> 5\,000$ hab emerge only in Uruk/Eridu/Jericho $\sim -4000$ BCE).
+     * **Institutional Administrative Bureaucracy**: Invariant baseline $\equiv 0.0$.
+   * These variables MUST be strictly anchored at zero and prevented from floating or drifting to arbitrary non-zero baselines.
+
+
 
 

@@ -165,16 +165,18 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
                         unit = 0; // Plains (Undifferentiated organic plains)
                     }
 
-                    // 1. Altimetry (Grayscale 0-255)
-                    int elevByte = switch (unit) {
-                        case 1 -> 35;  // Lakes: -1000m depression
-                        case 2 -> 65;  // Dunes: -150m
-                        case 0 -> 80;  // Plains: 0m
-                        case 5 -> 95;  // Labyrinth: +250m
-                        case 4 -> 110; // Craters: +400m
-                        case 3 -> 155; // Hummocky/Montes: +1500m (Mithrim Montes)
-                        default -> 80;
+                    // 1. Altimetry (High Dynamic Range Grayscale 0-255 with micro-relief texture)
+                    double microRelief = (Math.sin(x * 0.05) * Math.cos(y * 0.05) + Math.sin(x * 0.12 + y * 0.08)) * 6.0;
+                    int baseElev = switch (unit) {
+                        case 1 -> 15;  // Deep Liquid Hydrocarbon Seas (-1200m to -600m)
+                        case 2 -> 55;  // Organic Tholin Dune Lowlands (-200m to 0m)
+                        case 0 -> 95;  // Plains (0m to +200m mean geoid)
+                        case 5 -> 145; // Dissected Labyrinth Karst Valleys (+300m to +600m)
+                        case 4 -> 175; // Impact Crater Rims (+400m to +800m)
+                        case 3 -> 235; // Hummocky & Mountain Massifs (Mithrim Montes +1500m to +2014m, Xanadu)
+                        default -> 95;
                     };
+                    int elevByte = Math.clamp((int) Math.round(baseElev + microRelief), 0, 255);
                     imgElev.setRGB(x, y, (elevByte << 16) | (elevByte << 8) | elevByte);
 
                     // 2. Biomes (RGB)

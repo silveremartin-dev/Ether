@@ -1,0 +1,38 @@
+{
+  "provider_id": "nasa_pds_titan",
+  "files_count": 5,
+  "manifest": [
+    {
+      "file": "titan_topography_equirectangular_corlies2017.webp",
+      "format": "WEBP",
+      "description": "Global Cylindrical Equirectangular Topographic Map of Titan (-1800 m to +600 m), Corlies et al. (2017) / NASA / JPL-Caltech",
+      "projection": "Equirectangular (Plate Carrée)"
+    },
+    {
+      "file": "titan_geologic_map_mollweide_lopes2019.jpg",
+      "format": "JPEG",
+      "description": "Global Geologic Map of Titan at 1:20,000,000 scale in Mollweide projection, Lopes et al. (2019/2020) / ESA / NASA / JPL-Caltech / ASI",
+      "projection": "Mollweide"
+    },
+    {
+      "file": "titan_topography_polar_projections_corlies2017.webp",
+      "format": "WEBP",
+      "description": "Topographic map with North Pole and South Pole polar stereographic insets and global strip (-1600 m to +700 m), Corlies et al. (2017)",
+      "projection": "Orthographic Polar + Cylindrical Strip"
+    },
+    {
+      "file": "titan_cassini_geomorphology_lopes2019.png",
+      "format": "PNG",
+      "description": "Full-resolution tri-panel geomorphology map with polar projections and unit legend, Lopes et al. (Nature Astronomy, 2019)",
+      "projection": "Equirectangular + Polar Stereographic"
+    },
+    {
+      "file": "titan_atmospheric_and_climate_parameters.json",
+      "format": "JSON",
+      "description": "Complete quantitative dataset of Titan atmospheric pressure, scale height, gas composition, methane hydrologic cycle, and radiative balance",
+      "type": "Physical Metadata"
+    }
+  ],
+  "verification_status": "VERIFIED_AUTHENTIC",
+  "last_audit": "2026-10-29"
+}

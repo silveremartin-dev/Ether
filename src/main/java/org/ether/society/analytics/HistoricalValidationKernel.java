@@ -473,8 +473,11 @@ public class HistoricalValidationKernel {
         int firstYear = years.get(0);
         int lastYear = years.get(n - 1);
 
-        // Outside historical definition range: return Double.NaN so it prints as N/A instead of fake clamping
+        // Outside historical definition range: deep time pre-civilizational variables are strictly zero
         if (year < firstYear) {
+            if ("literacyRate".equals(key) || "urbanizationRate".equals(key) || "currencyDebasement".equals(key) || "eliteOverproductionIndex".equals(key)) {
+                return 0.0;
+            }
             return Double.NaN;
         }
         if (year > lastYear) {

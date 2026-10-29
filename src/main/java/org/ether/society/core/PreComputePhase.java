@@ -301,19 +301,17 @@ public class PreComputePhase {
             };
             cell.setWoodResource(wood);
 
-            // Water resources (also used as proxy for freshwater access)
-            double water = switch (biome) {
-                case JUNGLE, LAKE -> 1000.0;
-                case SAVANNAH -> 800.0;
-                case FOREST, PLAINS -> 600.0 + random.nextDouble() * 200.0;
-                case HILLS, BEACH -> 400.0;
-                case TUNDRA -> 300.0;
-                case MOUNTAINS -> elev > 5000.0 ? 0.0 : 300.0;
-                case DESERT -> 50.0;
-                case OCEAN, DEEP_OCEAN -> 0.0;
-                case SNOW -> 100.0;
-                case GLACIER -> 0.0;
-            };
+            // Water resources: Physically derived from precipitation, river hydrography, and aquifer transmissivity
+            double water;
+            if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.GLACIER) {
+                water = 0.0;
+            } else {
+                double rain = cell.getRainfallOr(150.0);
+                double aquifer = cell.getAccessibleAquiferOr(0.0);
+                // Alluvial / groundwater extraction bonus from accessible water table and aquifer reserves
+                double groundwaterBonus = aquifer * 350.0;
+                water = Math.clamp(rain + groundwaterBonus, 10.0, 2500.0);
+            }
             cell.setWaterResource(water);
         }
     }

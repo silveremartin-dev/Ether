@@ -15,7 +15,7 @@
       "gebco": "GEBCO 2023 Grid Global Bathymetric Model (General Bathymetric Chart of the Oceans)",
       "paleomap": "Scotese PALEOMAP Project Deep-Time Continental Reconstructions",
       "ihfc_davies2013": "International Heat Flow Commission Global Terrestrial Heat Flow Grid",
-      "nasa_pds": "NASA Planetary Data System Topography (MOLA Mars, LOLA Moon, Magellan Venus, MESSENGER Mercury, Cassini Titan RADAR/VIMS Geomorphology Lopes et al. 2019)",
+      "nasa_pds": "NASA Planetary Data System Topography (MOLA Mars, LOLA Moon, Magellan Venus, MESSENGER Mercury, Cassini Titan RADAR/VIMS Geomorphology Lopes et al. 2019/2020 & Topography DEM Corlies et al. 2017)",
       "lpi_lunar": "Lunar and Planetary Institute Cratering and Geologic Databases"
     },
     "hydro_and_pedology": {

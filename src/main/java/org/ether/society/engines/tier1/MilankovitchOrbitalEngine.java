@@ -69,8 +69,10 @@ public class MilankovitchOrbitalEngine {
         // Obliquity Îµ(t) in degrees
         double eps = MEAN_OBLIQUITY_DEG + OBLIQUITY_AMPLITUDE_DEG * Math.sin(2.0 * Math.PI * t / OBLIQUITY_PERIOD_YEARS);
 
-        // Precession longitude of perihelion
-        double varpi = (2.0 * Math.PI * t / PRECESSION_PERIOD_YEARS) % (2.0 * Math.PI);
+        // Precession longitude of perihelion: anchored to J2000 epoch (\varpi_0 = 102.93 deg = 1.7965 rad)
+        double varpi = Math.toRadians(102.93) + (2.0 * Math.PI * (t - 2000.0) / PRECESSION_PERIOD_YEARS);
+        varpi = varpi % (2.0 * Math.PI);
+        if (varpi < 0.0) varpi += 2.0 * Math.PI;
 
         return new MilankovitchParameters(e, eps, varpi);
     }

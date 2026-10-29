@@ -387,10 +387,14 @@ public record PlanetPreset(
 
     /**
      * Converts a normalized waterLevel [0..1] into physical sea level elevation in meters.
-     * Uses the calibrated NOAA ETOPO datum 0.478 corresponding to 0m MSL for Earth topography.
+     * For Earth, uses the calibrated NOAA ETOPO datum 0.478 corresponding to 0m MSL.
+     * For all extraterrestrial bodies (Mars, Moon, Venus, Mercury, Titan, etc.), performs pure linear min-max mapping:
+     * h = minAltMeters + waterLevel * (maxAltMeters - minAltMeters).
      */
     public static double waterLevelToMeters(double waterLevel, double minAltMeters, double maxAltMeters) {
-        if (minAltMeters < 0 && maxAltMeters > 0) {
+        // Earth-specific NOAA ETOPO datum (-11,000m to +8,848m with sea-level at 0.478)
+        boolean isEarthDatum = Math.abs(minAltMeters - (-11000.0)) < 10.0 && Math.abs(maxAltMeters - 8848.0) < 10.0;
+        if (isEarthDatum) {
             double datum = 0.478;
             if (waterLevel <= datum) {
                 return (waterLevel / datum - 1.0) * Math.abs(minAltMeters);
@@ -398,6 +402,7 @@ public record PlanetPreset(
                 return ((waterLevel - datum) / (1.0 - datum)) * maxAltMeters;
             }
         } else {
+            // General Planetary Topography: Linear min-max dynamic mapping across full [0..255] byte space
             return minAltMeters + waterLevel * (maxAltMeters - minAltMeters);
         }
     }
