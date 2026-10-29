@@ -321,7 +321,7 @@ public class ScenarioSanityValidator {
         // D. Extreme Hostile Environment
         double atmoPres = p.atmospherePressureAtm();
         double avgTemp = p.averageTempC();
-        boolean isSpaceBody = planetKey.contains("lune") || planetKey.contains("moon") || planetKey.contains("mercure") || planetKey.contains("mercury") || planetKey.contains("mars") || planetKey.contains("venus") || planetKey.contains("vénus");
+        boolean isSpaceBody = planetKey.contains("lune") || planetKey.contains("moon") || planetKey.contains("mercure") || planetKey.contains("mercury") || planetKey.contains("mars") || planetKey.contains("venus") || planetKey.contains("vénus") || planetKey.contains("titan");
         if (!isSpaceBody && (atmoPres < 0.1 || atmoPres > 5.0 || avgTemp < -50 || avgTemp > 60)) {
             geoItems.add(String.format(java.util.Locale.FRANCE,
                 I18n.getOrDefault("scenario.warning.hostile_environment", "⚠️ Environnement hostile (Onglet 1) : Pression (%.2f atm) ou Température (%.1f °C) extrême — Survie humaine conditionnée à des habitats scellés."),

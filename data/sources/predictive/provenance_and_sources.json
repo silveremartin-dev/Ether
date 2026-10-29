@@ -59,6 +59,18 @@
       ]
     },
     {
+      "model_id": "PREDICTIVE_SSP4",
+      "name": "Inequality - A Road Divided",
+      "sources": [
+        {
+          "name": "IIASA GCAM4 SSP4-3.4 / SSP4-6.0 High Inequality",
+          "organization": "Pacific Northwest National Laboratory (PNNL) & IIASA",
+          "doi": "10.1016/j.gloenvcha.2016.05.009",
+          "url": "https://tntcat.iiasa.ac.at/SspDb/"
+        }
+      ]
+    },
+    {
       "model_id": "PREDICTIVE_SSP5",
       "name": "Fossil-Fueled High Growth",
       "sources": [

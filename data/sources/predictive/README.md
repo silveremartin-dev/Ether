@@ -13,6 +13,7 @@ In the **Ether Cliodynamic Epistemic Falsification Architecture**, these dataset
 | **`PREDICTIVE_SSP1`** | Sustainability & Rapid Decarbonization | IIASA / IPCC AR6 WGIII / IEA Net Zero 2050 | Low challenges to mitigation and adaptation, green technological shift, rapid exergy efficiency, demographic peak then stabilization. |
 | **`PREDICTIVE_SSP2`** | Middle-of-the-Road Trend Continuity | UN WPP 2024 / IIASA SSP2 / IEA STEPS | Historical trend continuity, incremental energy transition, demographic plateauing near 10.3 billion in 2084. |
 | **`PREDICTIVE_SSP3_WORLD3`** | Regional Rivalry & Resource Scarcity | Club of Rome World3 BAU2 / Herrington (2021) / IPCC SSP3 | Declining fossil fuel EROI, supply chain friction, mineral resource degradation, agricultural strain, and industrial contraction post-2045. |
+| **`PREDICTIVE_SSP4`** | Inequality - A Road Divided | IIASA / PNNL GCAM4 / IPCC AR6 WGIII | High international and intra-national stratification: technological elite coexisting with large lower-income populace, unequal education and slower fertility drop. |
 | **`PREDICTIVE_SSP5`** | Fossil-Fueled High Growth | IIASA SSP5-8.5 / REMIND-MAGPIE | Unconstrained fossil resource extraction, heavy industrial expansion, rapid technological innovation, severe climate warming (>4.0°C by 2100). |
 
 ---

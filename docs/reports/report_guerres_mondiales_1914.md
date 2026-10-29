@@ -24,15 +24,15 @@
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|
 | 👥 Global Demographic Population (worldPopulation) | 2.20% | 🟢 Calibrated | — | 3.4% (1920 AD) | 📈 Divergent (compounding) | `DemographicEngine` |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 8.34% | 🟢 Calibrated | — | 8.4% (1914 AD) | 〰️ Oscillating (stable offset) | `H3SimulationEngine` |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1914 AD) | 〰️ Oscillating (stable offset) | `H3SimulationEngine` |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 0.49% | 🟢 Calibrated | — | 1.0% (1920 AD) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 8.15% | 🟢 Calibrated | 1914 AD | 12.9% (1914 AD) | 〰️ Oscillating (stable offset) | `SociologyEngine (Capital)` |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 46.27% | 🔴 Severe drift | 1914 AD | 50.7% (1914 AD) | 〰️ Oscillating (stable offset) | `EcologyEngine (Biomass)` |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 2.91% | 🟢 Calibrated | — | 2.9% (1920 AD) | 〰️ Oscillating (stable offset) | `SettlementEngine` |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 5.48% | 🟢 Calibrated | — | 5.7% (1920 AD) | 〰️ Oscillating (stable offset) | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (%) (literacyRate) | 2.33% | 🟢 Calibrated | — | 2.3% (1920 AD) | 〰️ Oscillating (stable offset) | `CulturalSociologyEngine` |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 39.68% | 🔴 Severe drift | 1914 AD | 39.8% (1914 AD) | 〰️ Oscillating (stable offset) | `InstitutionalEngine` |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 8.34% | 🟢 Calibrated | — | 8.4% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 0.49% | 🟢 Calibrated | — | 1.0% (1920 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 8.15% | 🟢 Calibrated | 1914 AD | 12.9% (1914 AD) | 〰️ Oscillating Cycle | `SociologyEngine (Capital)` |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 46.27% | 🔴 Severe drift | 1914 AD | 50.7% (1914 AD) | ➖ Stable Offset (Uniform) | `EcologyEngine (Biomass)` |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 2.91% | 🟢 Calibrated | — | 2.9% (1920 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 5.48% | 🟢 Calibrated | — | 5.7% (1920 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
+| 📖 Global Literacy Rate (%) (literacyRate) | 2.33% | 🟢 Calibrated | — | 2.3% (1920 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 39.68% | 🔴 Severe drift | 1914 AD | 39.8% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `InstitutionalEngine` |
 
 #### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
 

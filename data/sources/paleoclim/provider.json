@@ -18,11 +18,13 @@
     "BIO4_TEMP_SEASONALITY",
     "BIO15_PRECIP_SEASONALITY"
   ],
-  "citation": "Brown, J.L., Hill, D.J., Yost, A.B. et al. (2018). PaleoCLIM, high-spatial resolution paleoclimate surfaces for global land areas. Scientific Data 5, 180254.",
+  "citation": "Brown, J.L., Hill, D.J., Yost, A.B. et al. (2018). PaleoCLIM, high-spatial resolution paleoclimate surfaces for global land areas. Scientific Data 5, 180254. Mid-Pliocene PRISM4 baseline: Dowsett, H.J., Dolan, A.M., Rowley, D., et al. (2016). The PRISM4 (mid-Piacenzian) paleoenvironmental reconstruction. Climate of the Past, 12, 1519-1538, DOI: 10.5194/cp-12-1519-2016 (USGS Index ID: 70174953).",
   "files": [
     "chelsa_LGM_v1_2B_r2_5m.zip",
     "MH_v1_2_5m.zip",
-    "EH_v1_2_5m.zip"
+    "EH_v1_2_5m.zip",
+    "mPWP_v1_r2_5m.zip",
+    "M2_v1_r2_5m.zip"
   ],
   "status": "AUTHENTIC"
 }

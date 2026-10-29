@@ -228,6 +228,24 @@ public class GroundTruthAuditGenerator {
     public static VariableDriftAnalysis computeVariableDrift(String label, String benchKey, Map<Integer, Double> benchmark,
                                                              Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
                                                              HistoricalValidationKernel.InterpolationMethod method) {
+        return computeVariableDrift(label, benchKey, benchmark, timeSeries, method, 1.0);
+    }
+
+    /**
+     * Computes statistical drift parameters for a single state variable with optional spatial window scaling.
+     *
+     * @param label                        display label
+     * @param benchKey                     canonical benchmark key
+     * @param benchmark                    empirical benchmark map
+     * @param timeSeries                   simulation telemetry snapshots
+     * @param method                       interpolation method
+     * @param regionalExtensiveScaleFactor spatial window extensive scale factor (1.0 for planetary simulations)
+     * @return drift analysis record
+     */
+    public static VariableDriftAnalysis computeVariableDrift(String label, String benchKey, Map<Integer, Double> benchmark,
+                                                             Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
+                                                             HistoricalValidationKernel.InterpolationMethod method,
+                                                             double regionalExtensiveScaleFactor) {
         if (timeSeries == null || timeSeries.isEmpty()) {
             return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
         }
@@ -275,6 +293,14 @@ public class GroundTruthAuditGenerator {
                 }
             }
             if (obs == 0.0) continue;
+
+            // Apply territorial window scaling for extensive variables when the simulation is clipped
+            if (regionalExtensiveScaleFactor > 0.0 && regionalExtensiveScaleFactor < 0.95) {
+                if ("worldPopulation".equals(benchKey) || "grossWorldProduct".equals(benchKey) || "primaryEnergy".equals(benchKey)) {
+                    obs = obs * regionalExtensiveScaleFactor;
+                }
+            }
+
             double sim = extractValue(timeSeries.get(yr), benchKey, yr);
             if ("milankovitchInsolation".equals(benchKey) && sim <= 0.0) {
                 // Orbital Milankovitch cycles are physical invariants of the Earth-Sun system; disabled for extraterrestrial bodies
@@ -340,6 +366,23 @@ public class GroundTruthAuditGenerator {
 
         String pattern;
         if (errorList.size() >= 4) {
+            double minErr = Collections.min(errorList);
+            double maxErr = Collections.max(errorList);
+            double errSpread = maxErr - minErr;
+
+            // Count directional sign changes (true oscillations)
+            int signChanges = 0;
+            double prevDiff = 0.0;
+            for (int i = 1; i < errorList.size(); i++) {
+                double diff = errorList.get(i) - errorList.get(i - 1);
+                if (Math.abs(diff) > 0.05) {
+                    if (prevDiff != 0.0 && (diff * prevDiff < 0)) {
+                        signChanges++;
+                    }
+                    prevDiff = diff;
+                }
+            }
+
             double firstHalfAvg = 0.0;
             int half = errorList.size() / 2;
             for (int i = 0; i < half; i++) firstHalfAvg += errorList.get(i);
@@ -349,12 +392,16 @@ public class GroundTruthAuditGenerator {
             for (int i = half; i < errorList.size(); i++) secondHalfAvg += errorList.get(i);
             secondHalfAvg /= (errorList.size() - half);
 
-            if (secondHalfAvg > firstHalfAvg * 1.5) {
+            if (mape < 2.0 || errSpread < 1.0) {
+                pattern = "🟢 " + I18n.getOrDefault("analytics.pattern.constant", "Stable (Invariant / Calibrated)");
+            } else if (signChanges >= 2) {
+                pattern = "〰️ " + I18n.getOrDefault("analytics.pattern.oscillating", "Oscillating Cycle");
+            } else if (secondHalfAvg > firstHalfAvg * 1.3) {
                 pattern = "📈 " + I18n.getOrDefault("analytics.pattern.divergent", "Divergent (compounding)");
-            } else if (firstHalfAvg > secondHalfAvg * 1.5) {
+            } else if (firstHalfAvg > secondHalfAvg * 1.3) {
                 pattern = "📉 " + I18n.getOrDefault("analytics.pattern.convergent", "Convergent (damping)");
             } else {
-                pattern = "〰️ " + I18n.getOrDefault("analytics.pattern.oscillating", "Oscillating (stable offset)");
+                pattern = "➖ " + I18n.getOrDefault("analytics.pattern.stable_offset", "Stable Offset (Uniform)");
             }
         } else {
             pattern = "—";
@@ -434,11 +481,27 @@ public class GroundTruthAuditGenerator {
             int validVariables = 0;
             int scenarioDiv = -1;
 
+            // Automatically compute territorial scaling for windowed scenarios
+            double regionalExtensiveScaleFactor = 1.0;
+            List<Integer> sortedYears = new ArrayList<>(timeSeries.keySet());
+            Collections.sort(sortedYears);
+            if (!sortedYears.isEmpty()) {
+                int firstYear = sortedYears.get(0);
+                long initialSimPop = timeSeries.get(firstYear).getPopulation();
+                double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", firstYear, method);
+                if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
+                    double globalPop = globalPopM * 1_000_000.0;
+                    if (initialSimPop > 0 && initialSimPop < globalPop * 0.3) {
+                        regionalExtensiveScaleFactor = (double) initialSimPop / globalPop;
+                    }
+                }
+            }
+
             for (Map.Entry<String, String> entry : benchmarkKeys.entrySet()) {
                 String label = entry.getKey();
                 String benchKey = entry.getValue();
                 Map<Integer, Double> benchmark = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
-                VariableDriftAnalysis drift = computeVariableDrift(label, benchKey, benchmark, timeSeries, method);
+                VariableDriftAnalysis drift = computeVariableDrift(label, benchKey, benchmark, timeSeries, method, regionalExtensiveScaleFactor);
                 drifts.add(drift);
                 mapes.put(label, drift.mape);
                 if (drift.mape > 0.0) {

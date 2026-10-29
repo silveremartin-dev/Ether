@@ -397,6 +397,7 @@ public class ScenarioSimulationLauncher {
             else if (mapSource.equals("venus") || presetName.contains("venus") || presetName.contains("vénus") || presetName.contains("hesperos")) pKey = "venus";
             else if (mapSource.equals("moon") || presetName.contains("lune") || presetName.contains("moon") || presetName.contains("selene")) pKey = "moon";
             else if (mapSource.equals("mercury") || presetName.contains("mercure") || presetName.contains("mercury") || presetName.contains("hermes")) pKey = "mercury";
+            else if (mapSource.equals("titan") || presetName.contains("titan")) pKey = "titan";
 
             long targetYear = s != null ? s.getStartDateYear() : 2026L;
             Image elevImg = ImageMapLoader.loadMapImage(pKey, targetYear, "elevation.png");
