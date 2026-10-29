@@ -1,161 +1,136 @@
 {
   "metadata": {
     "title": "Ether Predictive & Future Cliodynamic Projections Suite (2026-2100)",
-    "version": "1.0.0",
-    "description": "Standardized multi-metric predictive trajectories from international integrated assessment models and demographic agencies (UN WPP 2024, IPCC AR6 / IIASA SSP2, Club of Rome World3 recalibrated 2021).",
-    "compiler": "Ether Scientific Epistemic Falsification Kernel",
-    "creationDate": "2026-10-28",
-    "sources": [
-      {
-        "id": "UN_WPP_2024",
-        "name": "United Nations World Population Prospects (2024 Revision)",
-        "agency": "United Nations Department of Economic and Social Affairs (UN DESA), Population Division",
-        "url": "https://population.un.org/wpp/",
-        "doi": "10.18356/9789210027137",
-        "variant": "Medium / Median Variant (with 95% Prediction Interval bounds)"
-      },
-      {
-        "id": "IPCC_AR6_IIASA_SSP2",
-        "name": "Shared Socioeconomic Pathways (SSP2: Middle of the Road)",
-        "agency": "IIASA / IPCC Working Group III (MESSAGEix-GLOBIOM & IMAGE Marker Models)",
-        "url": "https://tntcat.iiasa.ac.at/SspDb/",
+    "version": "2.0.0",
+    "description": "Harmonized multi-variable predictive benchmark trajectories from international integrated assessment models (IAMs), climate intercomparisons, and demographic agencies for comparative future evaluation (2026-2100).",
+    "compiler": "Ether Epistemic Falsification & Predictive Evaluation Kernel",
+    "creationDate": "2026-10-29",
+    "models": {
+      "PREDICTIVE_SSP1": {
+        "id": "PREDICTIVE_SSP1",
+        "name": "Sustainability & Rapid Decarbonization (IIASA SSP1 / IEA NZE 2050)",
+        "agency": "IIASA, IPCC AR6 WGIII, International Energy Agency (IEA)",
+        "scenario": "SSP1-1.9 / SSP1-2.6 & Net Zero Emissions by 2050",
         "doi": "10.1016/j.gloenvcha.2016.05.009",
-        "variant": "SSP2 Baseline & SSP2-4.5 Intermediate Radiative Forcing"
+        "description": "Green growth transition, accelerated electrification, circular economy, resource decoupling, and demographic peak followed by sustainable stabilization."
       },
-      {
-        "id": "CLUB_OF_ROME_WORLD3",
-        "name": "World3 Standard Run (Business-as-Usual / BAU2)",
-        "authors": "Meadows et al. (1972, 2004), Herrington (2021 update, Journal of Industrial Ecology)",
-        "url": "https://doi.org/10.1111/jiec.13084",
-        "variant": "BAU2 (Business As Usual 2) Empirical Recalibration"
+      "PREDICTIVE_SSP2": {
+        "id": "PREDICTIVE_SSP2",
+        "name": "Middle-of-the-Road Trend Continuity (UN WPP 2024 / IIASA SSP2 / IEA STEPS)",
+        "agency": "United Nations DESA Population Division, IIASA, IEA",
+        "scenario": "SSP2-4.5 Intermediate Forcing & UN WPP 2024 Median Variant",
+        "doi": "10.18356/9789210027137",
+        "description": "Historical trend extrapolation: moderate economic growth, gradual energy efficiency improvements, and demographic plateauing near 10.3 billion."
+      },
+      "PREDICTIVE_SSP3_WORLD3": {
+        "id": "PREDICTIVE_SSP3_WORLD3",
+        "name": "Regional Rivalry & Resource Limits (Club of Rome World3 BAU2 / IPCC SSP3)",
+        "agency": "Club of Rome / Herrington (2021) / IIASA SSP3",
+        "scenario": "World3 Business-as-Usual 2 (BAU2) & SSP3-7.0 Regional Rivalry",
+        "doi": "10.1111/jiec.13084",
+        "description": "Declining fossil fuel EROI, supply chain friction, mineral resource degradation, agricultural strain, and industrial contraction post-2045."
+      },
+      "PREDICTIVE_SSP5": {
+        "id": "PREDICTIVE_SSP5",
+        "name": "Fossil-Fueled High Development (IIASA SSP5-8.5 / REMIND-MAGPIE)",
+        "agency": "Potsdam Institute for Climate Impact Research (PIK), IIASA",
+        "scenario": "SSP5-8.5 Extreme Radiative Forcing",
+        "doi": "10.1016/j.gloenvcha.2016.05.009",
+        "description": "Unconstrained fossil energy extraction, heavy industrial expansion, rapid technological innovation, severe climate warming (>4.0°C by 2100)."
       }
-    ]
+    }
   },
-  "projections": {
-    "worldPopulation_UN_WPP_Median": {
-      "variable": "worldPopulation",
-      "model": "UN_WPP_2024",
-      "unit": "Millions of people",
-      "description": "UN DESA 2024 Median Demographic Projection. Peaks around 2084 at ~10.29 billion.",
-      "data": {
-        "2026": 8160.0,
-        "2030": 8520.0,
-        "2035": 8870.0,
-        "2040": 9180.0,
-        "2045": 9470.0,
-        "2050": 9700.0,
-        "2055": 9890.0,
-        "2060": 10020.0,
-        "2065": 10120.0,
-        "2070": 10190.0,
-        "2075": 10250.0,
-        "2080": 10290.0,
-        "2085": 10290.0,
-        "2090": 10270.0,
-        "2095": 10230.0,
-        "2100": 10180.0
+  "datasets": {
+    "PREDICTIVE_SSP1": {
+      "worldPopulation": {
+        "2026": 8160.0, "2030": 8450.0, "2035": 8680.0, "2040": 8800.0, "2045": 8850.0, "2050": 8710.0, "2060": 8350.0, "2070": 7950.0, "2080": 7550.0, "2090": 7200.0, "2100": 6880.0
+      },
+      "grossWorldProduct": {
+        "2026": 108000.0, "2030": 135000.0, "2035": 175000.0, "2040": 225000.0, "2045": 280000.0, "2050": 345000.0, "2060": 420000.0, "2070": 500000.0, "2080": 575000.0, "2090": 650000.0, "2100": 720000.0
+      },
+      "primaryEnergy": {
+        "2026": 605.0, "2030": 620.0, "2035": 635.0, "2040": 645.0, "2045": 650.0, "2050": 650.0, "2060": 640.0, "2070": 625.0, "2080": 610.0, "2090": 595.0, "2100": 580.0
+      },
+      "co2Concentration": {
+        "2026": 423.0, "2030": 430.0, "2035": 438.0, "2040": 444.0, "2045": 448.0, "2050": 450.0, "2060": 447.0, "2070": 443.0, "2080": 440.0, "2090": 437.0, "2100": 435.0
+      },
+      "temperatureAnomaly": {
+        "2026": 1.28, "2030": 1.40, "2035": 1.50, "2040": 1.58, "2045": 1.62, "2050": 1.60, "2060": 1.56, "2070": 1.52, "2080": 1.48, "2090": 1.45, "2100": 1.42
+      },
+      "urbanizationRate": {
+        "2026": 57.5, "2030": 61.2, "2035": 65.5, "2040": 69.5, "2045": 73.0, "2050": 76.0, "2060": 79.5, "2070": 82.0, "2080": 83.8, "2090": 84.8, "2100": 85.5
+      },
+      "fossilSharePrimaryEnergy": {
+        "2026": 78.5, "2030": 68.0, "2035": 54.0, "2040": 40.0, "2045": 28.0, "2050": 18.0, "2060": 10.0, "2070": 7.0, "2080": 5.0, "2090": 4.0, "2100": 3.0
       }
     },
-    "grossWorldProduct_IPCC_SSP2": {
-      "variable": "grossWorldProduct",
-      "model": "IPCC_AR6_IIASA_SSP2",
-      "unit": "Billion 1990 International Dollars",
-      "description": "Global economic output under SSP2 Middle of the Road (MESSAGEix-GLOBIOM).",
-      "data": {
-        "2026": 105000.0,
-        "2030": 125000.0,
-        "2040": 158000.0,
-        "2050": 195000.0,
-        "2060": 235000.0,
-        "2070": 275000.0,
-        "2080": 315000.0,
-        "2090": 350000.0,
-        "2100": 380000.0
+    "PREDICTIVE_SSP2": {
+      "worldPopulation": {
+        "2026": 8160.0, "2030": 8520.0, "2035": 8870.0, "2040": 9180.0, "2045": 9470.0, "2050": 9700.0, "2060": 10020.0, "2070": 10190.0, "2080": 10290.0, "2090": 10270.0, "2100": 10180.0
+      },
+      "grossWorldProduct": {
+        "2026": 105000.0, "2030": 125000.0, "2035": 140000.0, "2040": 158000.0, "2045": 176000.0, "2050": 195000.0, "2060": 235000.0, "2070": 275000.0, "2080": 315000.0, "2090": 350000.0, "2100": 380000.0
+      },
+      "primaryEnergy": {
+        "2026": 620.0, "2030": 670.0, "2035": 710.0, "2040": 745.0, "2045": 780.0, "2050": 820.0, "2060": 890.0, "2070": 950.0, "2080": 990.0, "2090": 1025.0, "2100": 1050.0
+      },
+      "co2Concentration": {
+        "2026": 424.0, "2030": 435.0, "2035": 447.0, "2040": 458.0, "2045": 469.0, "2050": 480.0, "2060": 500.0, "2070": 516.0, "2080": 528.0, "2090": 535.0, "2100": 540.0
+      },
+      "temperatureAnomaly": {
+        "2026": 1.30, "2030": 1.50, "2035": 1.65, "2040": 1.80, "2045": 1.95, "2050": 2.10, "2060": 2.30, "2070": 2.45, "2080": 2.58, "2090": 2.65, "2100": 2.70
+      },
+      "urbanizationRate": {
+        "2026": 57.0, "2030": 60.4, "2035": 62.7, "2040": 64.8, "2045": 66.8, "2050": 68.6, "2060": 72.0, "2070": 74.8, "2080": 77.0, "2090": 78.8, "2100": 80.0
+      },
+      "fossilSharePrimaryEnergy": {
+        "2026": 80.0, "2030": 76.0, "2035": 71.5, "2040": 67.0, "2045": 62.5, "2050": 58.0, "2060": 50.0, "2070": 44.0, "2080": 39.0, "2090": 35.0, "2100": 32.0
       }
     },
-    "primaryEnergy_IPCC_SSP2": {
-      "variable": "primaryEnergy",
-      "model": "IPCC_AR6_IIASA_SSP2",
-      "unit": "Exajoules (EJ)",
-      "description": "Total primary energy demand across all sources under SSP2.",
-      "data": {
-        "2026": 620.0,
-        "2030": 670.0,
-        "2040": 745.0,
-        "2050": 820.0,
-        "2060": 890.0,
-        "2070": 950.0,
-        "2080": 990.0,
-        "2090": 1025.0,
-        "2100": 1050.0
+    "PREDICTIVE_SSP3_WORLD3": {
+      "worldPopulation": {
+        "2026": 8100.0, "2030": 8450.0, "2035": 8750.0, "2040": 8900.0, "2045": 8800.0, "2050": 8500.0, "2060": 7800.0, "2070": 6900.0, "2080": 6100.0, "2090": 5400.0, "2100": 4800.0
+      },
+      "grossWorldProduct": {
+        "2026": 102000.0, "2030": 118000.0, "2035": 128000.0, "2040": 135000.0, "2045": 125000.0, "2050": 110000.0, "2060": 88000.0, "2070": 74000.0, "2080": 65000.0, "2090": 58000.0, "2100": 52000.0
+      },
+      "primaryEnergy": {
+        "2026": 615.0, "2030": 655.0, "2035": 680.0, "2040": 690.0, "2045": 660.0, "2050": 610.0, "2060": 520.0, "2070": 450.0, "2080": 405.0, "2090": 375.0, "2100": 350.0
+      },
+      "co2Concentration": {
+        "2026": 424.0, "2030": 436.0, "2035": 449.0, "2040": 462.0, "2045": 472.0, "2050": 482.0, "2060": 498.0, "2070": 510.0, "2080": 518.0, "2090": 523.0, "2100": 526.0
+      },
+      "temperatureAnomaly": {
+        "2026": 1.30, "2030": 1.50, "2035": 1.70, "2040": 1.90, "2045": 2.10, "2050": 2.30, "2060": 2.55, "2070": 2.75, "2080": 2.90, "2090": 3.00, "2100": 3.05
+      },
+      "urbanizationRate": {
+        "2026": 56.8, "2030": 59.5, "2035": 61.2, "2040": 62.0, "2045": 60.5, "2050": 58.0, "2060": 54.0, "2070": 51.0, "2080": 48.5, "2090": 47.0, "2100": 46.0
+      },
+      "fossilSharePrimaryEnergy": {
+        "2026": 81.0, "2030": 78.5, "2035": 75.0, "2040": 70.0, "2045": 63.0, "2050": 55.0, "2060": 42.0, "2070": 33.0, "2080": 26.0, "2090": 22.0, "2100": 19.0
       }
     },
-    "co2Concentration_IPCC_SSP2_45": {
-      "variable": "co2Concentration",
-      "model": "IPCC_AR6_IIASA_SSP2",
-      "unit": "Parts per million (ppm)",
-      "description": "Atmospheric CO2 mixing ratio under SSP2-4.5 intermediate pathway (MAGICC7 climate model).",
-      "data": {
-        "2026": 424.0,
-        "2030": 435.0,
-        "2040": 458.0,
-        "2050": 480.0,
-        "2060": 500.0,
-        "2070": 516.0,
-        "2080": 528.0,
-        "2090": 535.0,
-        "2100": 540.0
-      }
-    },
-    "temperatureAnomaly_IPCC_SSP2_45": {
-      "variable": "temperatureAnomaly",
-      "model": "IPCC_AR6_IIASA_SSP2",
-      "unit": "Degrees Celsius (°C above 1850-1900 pre-industrial baseline)",
-      "description": "Global mean surface temperature anomaly under SSP2-4.5 intermediate forcing.",
-      "data": {
-        "2026": 1.30,
-        "2030": 1.50,
-        "2040": 1.80,
-        "2050": 2.10,
-        "2060": 2.30,
-        "2070": 2.45,
-        "2080": 2.58,
-        "2090": 2.65,
-        "2100": 2.70
-      }
-    },
-    "urbanizationRate_UN_DESA": {
-      "variable": "urbanizationRate",
-      "model": "UN_WPP_2024",
-      "unit": "Percentage (%)",
-      "description": "Global proportion of urban population projected by UN World Urbanization Prospects.",
-      "data": {
-        "2026": 57.0,
-        "2030": 60.4,
-        "2040": 64.8,
-        "2050": 68.6,
-        "2060": 72.0,
-        "2070": 74.8,
-        "2080": 77.0,
-        "2090": 78.8,
-        "2100": 80.0
-      }
-    },
-    "worldPopulation_World3_BAU2": {
-      "variable": "worldPopulation",
-      "model": "CLUB_OF_ROME_WORLD3",
-      "unit": "Millions of people",
-      "description": "Limits to Growth World3 BAU2 trajectory (Herrington 2021). Overshoot and decline.",
-      "data": {
-        "2026": 8100.0,
-        "2030": 8450.0,
-        "2040": 8900.0,
-        "2050": 8500.0,
-        "2060": 7800.0,
-        "2070": 6900.0,
-        "2080": 6100.0,
-        "2090": 5400.0,
-        "2100": 4800.0
+    "PREDICTIVE_SSP5": {
+      "worldPopulation": {
+        "2026": 8160.0, "2030": 8500.0, "2035": 8700.0, "2040": 8800.0, "2045": 8750.0, "2050": 8550.0, "2060": 8200.0, "2070": 7900.0, "2080": 7650.0, "2090": 7480.0, "2100": 7360.0
+      },
+      "grossWorldProduct": {
+        "2026": 110000.0, "2030": 145000.0, "2035": 195000.0, "2040": 260000.0, "2045": 345000.0, "2050": 450000.0, "2060": 620000.0, "2070": 770000.0, "2080": 900000.0, "2090": 1010000.0, "2100": 1100000.0
+      },
+      "primaryEnergy": {
+        "2026": 640.0, "2030": 730.0, "2035": 840.0, "2040": 970.0, "2045": 1060.0, "2050": 1150.0, "2060": 1320.0, "2070": 1450.0, "2080": 1520.0, "2090": 1570.0, "2100": 1600.0
+      },
+      "co2Concentration": {
+        "2026": 426.0, "2030": 445.0, "2035": 472.0, "2040": 505.0, "2045": 540.0, "2050": 580.0, "2060": 665.0, "2070": 750.0, "2080": 830.0, "2090": 900.0, "2100": 960.0
+      },
+      "temperatureAnomaly": {
+        "2026": 1.32, "2030": 1.58, "2035": 1.88, "2040": 2.20, "2045": 2.55, "2050": 2.90, "2060": 3.40, "2070": 3.85, "2080": 4.20, "2090": 4.45, "2100": 4.65
+      },
+      "urbanizationRate": {
+        "2026": 58.0, "2030": 62.5, "2035": 67.5, "2040": 72.0, "2045": 76.5, "2050": 80.5, "2060": 86.0, "2070": 89.5, "2080": 91.5, "2090": 92.5, "2100": 93.0
+      },
+      "fossilSharePrimaryEnergy": {
+        "2026": 82.5, "2030": 81.0, "2035": 80.0, "2040": 79.0, "2045": 78.0, "2050": 77.0, "2060": 74.0, "2070": 71.0, "2080": 68.0, "2090": 65.0, "2100": 62.0
       }
     }
   }

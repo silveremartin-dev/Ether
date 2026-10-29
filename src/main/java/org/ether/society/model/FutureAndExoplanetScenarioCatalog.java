@@ -72,6 +72,8 @@ public final class FutureAndExoplanetScenarioCatalog {
         if (n.contains("industrial") || n.contains("industrielle")) return "industrial_1800";
         if (n.contains("totalitarian") || n.contains("totalitaire") || n.contains("1914")) return "world_wars_totalitarian_1914";
         if (n.contains("business as usual") || n.contains("tendancielle") || n.contains("2025") || n.contains("zero drilling") || n.contains("sans forage") || n.contains("moratoire")) return "earth_2025_business_as_usual";
+        if (n.contains("ssp1") || n.contains("soutenable") || n.contains("sustainability") || n.contains("net-zero") || n.contains("net zero")) return "earth_2026_ssp1";
+        if (n.contains("ssp3") || n.contains("world3") || n.contains("rivalry") || n.contains("fragmentation") || n.contains("limites")) return "earth_2026_ssp3";
         if (n.contains("ssp5") || n.contains("ssp5-8.5")) return "ssp5_85";
         if (n.contains("hiver nucleaire") || n.contains("hiver nucléaire") || n.contains("nuclear winter")) return "nuclear_winter_2035";
         if (n.contains("singularity") || n.contains("singularite") || n.contains("singularité")) return "singularity_2045";
@@ -125,6 +127,112 @@ public final class FutureAndExoplanetScenarioCatalog {
      */
     public static void appendScenarios(List<Scenario> list) {
         // --- SCÉNARIOS DU FUTUR ---
+
+        // 1. Business-As-Usual & Continuité Tendancielle (SSP2 / UN WPP 2024 / IEA STEPS)
+        Scenario sBau = new Scenario();
+        sBau.setPresetKey("earth_2025_business_as_usual");
+        sBau.setName("Trajectoire Tendancielle Globale (2025-2055) : Continuité Socio-Économique (SSP2)");
+        sBau.setStartDateYear(2025);
+        sBau.setEndDateYear(2055);
+        sBau.setInitialHumanCount(8160000000L);
+        sBau.setInitialCapitalPerCapita(16000.0);
+        sBau.setInitialEnergyPerCapita(24000.0);
+        sBau.setInitialFoodReserveMonths(10.0);
+        sBau.setInitialInformationPerCapita(6000000.0);
+        sBau.setPopulationDensityType("URBAN_CLUSTERS");
+        sBau.setTargetCohortSize(10000);
+        sBau.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sBau.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sBau.setDescription("""
+            📈 SCÉNARIO FUTUR : Trajectoire Tendancielle Globale (SSP2 / Business-As-Usual)
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
+            Continuité socio-économique globale sans catastrophe nucléaire ni effondrement abrupt.
+            Poursuite des tendances historiques d'urbanisation, d'efficacité énergétique incrémentale et de transition progressive.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Plateau démographique mondial atteignant ~9.8 milliards d'habitants vers 2055 (aligné UN WPP 2024).
+            • Mix énergétique diversifié (essor renouvelable modéré avec persistance des hydrocarbures).
+            • Pression hydrique sur les nappes phréatiques agricoles et adaptation progressive des infrastructures côtières.
+            """);
+        Map<String, Boolean> sBauEngines = sBau.getTypeBEngineStates();
+        sBauEngines.put("KummelAyresExergyEngine", true);
+        sBauEngines.put("SmilMaterialTransitionsPureEngine", true);
+        sBauEngines.put("UrbanThermodynamicsEngine", true);
+        sBauEngines.put("HotellingResourceDepletionEngine", true);
+        sBauEngines.put("JevonsParadoxEngine", true);
+        sBauEngines.put("AcemogluRobinsonInstitutionsEngine", true);
+        list.add(sBau);
+
+        // 2. Transition Soutenable & Décarbonation Accélérée (SSP1 / Net-Zero 2050)
+        Scenario sSsp1 = new Scenario();
+        sSsp1.setPresetKey("earth_2026_ssp1");
+        sSsp1.setName("Transition Soutenable & Décarbonation Accélérée (2026-2060) : Objectif Net-Zéro (SSP1)");
+        sSsp1.setStartDateYear(2026);
+        sSsp1.setEndDateYear(2060);
+        sSsp1.setInitialHumanCount(8160000000L);
+        sSsp1.setInitialCapitalPerCapita(18000.0);
+        sSsp1.setInitialEnergyPerCapita(22000.0);
+        sSsp1.setInitialFoodReserveMonths(12.0);
+        sSsp1.setInitialInformationPerCapita(7000000.0);
+        sSsp1.setPopulationDensityType("URBAN_CLUSTERS");
+        sSsp1.setTargetCohortSize(10000);
+        sSsp1.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sSsp1.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sSsp1.setDescription("""
+            🌱 SCÉNARIO FUTUR : Transition Écologique & Objectif Net-Zéro (SSP1)
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
+            Déploiement massif des technologies bas-carbone, électrification accélérée des transports,
+            économie circulaire des métaux critiques et régénération des écosystèmes agricoles.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Pic des émissions mondiales avant 2030 et trajectoire de stabilisation thermique sous 1.8°C.
+            • Baisse rapide de l'intensité énergétique par unité de PIB (efficacité exergétique Kuemmel-Ayres).
+            • Préservation de la biodiversité terrestre et réduction de l'érosion des sols.
+            """);
+        Map<String, Boolean> sSsp1Engines = sSsp1.getTypeBEngineStates();
+        sSsp1Engines.put("GeoengineeringAlbedoFeedbackEngine", true);
+        sSsp1Engines.put("SmilMaterialTransitionsPureEngine", true);
+        sSsp1Engines.put("ArthurCombinatorialTechnologyEngine", true);
+        sSsp1Engines.put("AcemogluRobinsonInstitutionsEngine", true);
+        list.add(sSsp1);
+
+        // 3. Tensions Énergétiques & Fragmentation Régionale (SSP3 / World3 BAU2)
+        Scenario sSsp3 = new Scenario();
+        sSsp3.setPresetKey("earth_2026_ssp3");
+        sSsp3.setName("Tensions Énergétiques & Fragmentation Régionale (2026-2060) : Limites à la Croissance (SSP3 / World3)");
+        sSsp3.setStartDateYear(2026);
+        sSsp3.setEndDateYear(2060);
+        sSsp3.setInitialHumanCount(8160000000L);
+        sSsp3.setInitialCapitalPerCapita(14000.0);
+        sSsp3.setInitialEnergyPerCapita(20000.0);
+        sSsp3.setInitialFoodReserveMonths(6.0);
+        sSsp3.setInitialInformationPerCapita(4000000.0);
+        sSsp3.setPopulationDensityType("URBAN_CLUSTERS");
+        sSsp3.setTargetCohortSize(10000);
+        sSsp3.setPlanetPreset(PlanetPreset.EARTH_LIKE);
+        sSsp3.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
+        sSsp3.setDescription("""
+            ⚠️ SCÉNARIO FUTUR : Fragmentation Régionale & Limites à la Croissance (SSP3 / World3)
+            
+            [DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]
+            Baisse inexorable du rendement énergétique net (EROI) des gisements fossiles conventionnels,
+            tensions géopolitiques sur les chaînes logistiques minérales et repli protectionniste des blocs régionaux.
+            
+            [OBSERVABLES CLÉS DU SCÉNARIO]
+            • Inflation énergétique mondiale et ralentissement de l'investissement dans le capital productif.
+            • Vulnérabilité alimentaire accrue sous contrainte sur les engrais et le transport maritime.
+            • Trajectoire de décélération industrielle alignée sur le modèle World3 (Herrington 2021).
+            """);
+        Map<String, Boolean> sSsp3Engines = sSsp3.getTypeBEngineStates();
+        sSsp3Engines.put("World3HybridEngine", true);
+        sSsp3Engines.put("HotellingResourceDepletionEngine", true);
+        sSsp3Engines.put("OreGradeThermodynamicsEngine", true);
+        sSsp3Engines.put("TainterComplexityCollapseEngine", true);
+        list.add(sSsp3);
+
+        // 4. Intensification Fossile SSP5-8.5
         Scenario s5 = new Scenario();
         s5.setPresetKey("ssp5_85");
         s5.setName("Business As Usual : Fossil Fuel Reliance & Warming (SSP5-8.5)");

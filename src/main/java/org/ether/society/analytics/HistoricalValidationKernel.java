@@ -11,8 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -67,9 +69,45 @@ public class HistoricalValidationKernel {
     /** Multi-Metric Historical Benchmark Time Series (Map of Metric Name -> Time Series Data) */
     private static final Map<String, Map<Integer, Double>> BENCHMARK_DATASETS = new HashMap<>();
     private static final Map<String, BenchmarkVariableMeta> BENCHMARK_METADATA = new LinkedHashMap<>();
+    private static final Map<String, Map<String, Map<Integer, Double>>> PREDICTIVE_BENCHMARK_DATASETS = new ConcurrentHashMap<>();
 
     static {
         loadJsonBenchmarksResource();
+        loadPredictiveBenchmarksResource();
+    }
+
+    private static void loadPredictiveBenchmarksResource() {
+        File predFile = new File("data/sources/predictive/predictive_socioeconomic_projections_2026_2100.json");
+        if (!predFile.exists()) return;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(predFile);
+            JsonNode datasetsNode = root.get("datasets");
+            if (datasetsNode != null && datasetsNode.isObject()) {
+                Iterator<Map.Entry<String, JsonNode>> models = datasetsNode.fields();
+                while (models.hasNext()) {
+                    Map.Entry<String, JsonNode> modelEntry = models.next();
+                    String modelId = modelEntry.getKey();
+                    Map<String, Map<Integer, Double>> metricMap = new ConcurrentHashMap<>();
+                    Iterator<Map.Entry<String, JsonNode>> metrics = modelEntry.getValue().fields();
+                    while (metrics.hasNext()) {
+                        Map.Entry<String, JsonNode> metricEntry = metrics.next();
+                        String metricKey = metricEntry.getKey();
+                        Map<Integer, Double> ts = new TreeMap<>();
+                        Iterator<Map.Entry<String, JsonNode>> pts = metricEntry.getValue().fields();
+                        while (pts.hasNext()) {
+                            Map.Entry<String, JsonNode> pt = pts.next();
+                            ts.put(Integer.parseInt(pt.getKey()), pt.getValue().asDouble());
+                        }
+                        metricMap.put(metricKey, Collections.unmodifiableMap(ts));
+                    }
+                    PREDICTIVE_BENCHMARK_DATASETS.put(modelId, metricMap);
+                }
+                logger.info("✅ Successfully loaded Predictive Projections ({} models) from data/sources/predictive/", PREDICTIVE_BENCHMARK_DATASETS.size());
+            }
+        } catch (Exception e) {
+            logger.error("❌ Failed to parse predictive projections JSON", e);
+        }
     }
 
     private static void loadJsonBenchmarksResource() {
@@ -434,6 +472,43 @@ public class HistoricalValidationKernel {
         PCHIP_MONOTONE_CUBIC,
         CATMULL_ROM_SPLINE,
         LINEAR
+    }
+
+    /**
+     * Retrieves the interpolated predictive benchmark value for a specific predictive model suite
+     * (e.g. PREDICTIVE_SSP1, PREDICTIVE_SSP2, PREDICTIVE_SSP3_WORLD3, PREDICTIVE_SSP5) across the 2026-2100 horizon.
+     *
+     * @param modelId predictive model identifier
+     * @param key metric variable key
+     * @param year projection year
+     * @param method interpolation method
+     * @return interpolated value, connecting smoothly to historical ground truth for years <= 2026
+     */
+    public static double getPredictiveBenchmarkValue(String modelId, String key, double year, InterpolationMethod method) {
+        if (modelId != null && PREDICTIVE_BENCHMARK_DATASETS.containsKey(modelId)) {
+            Map<String, Map<Integer, Double>> modelData = PREDICTIVE_BENCHMARK_DATASETS.get(modelId);
+            if (modelData != null && modelData.containsKey(key)) {
+                Map<Integer, Double> dataset = modelData.get(key);
+                List<Integer> years = new ArrayList<>(dataset.keySet());
+                Collections.sort(years);
+                if (!years.isEmpty()) {
+                    if (year <= years.get(0)) {
+                        return getInterpolatedBenchmarkValue(key, year, method);
+                    }
+                    if (year >= years.get(years.size() - 1)) {
+                        return dataset.get(years.get(years.size() - 1));
+                    }
+                    if (method == InterpolationMethod.LINEAR) {
+                        return linearInterpolate(dataset, years, year);
+                    } else if (method == InterpolationMethod.CATMULL_ROM_SPLINE) {
+                        return catmullRomInterpolate(dataset, years, year);
+                    } else {
+                        return pchipInterpolate(dataset, years, year);
+                    }
+                }
+            }
+        }
+        return getInterpolatedBenchmarkValue(key, year, method);
     }
 
     /**

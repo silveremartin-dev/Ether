@@ -71,6 +71,8 @@ public final class ComparativeScenarioTableCoordinator {
                         setStyle("");
                     } else if ("HISTORICAL_GROUND_TRUTH".equals(item.getRunId())) {
                         setStyle("-fx-border-color: transparent transparent #38bdf8 transparent; -fx-border-width: 0 0 3px 0; -fx-border-style: solid; -fx-background-color: rgba(56, 189, 248, 0.12); -fx-font-weight: bold;");
+                    } else if (item.getRunId() != null && item.getRunId().startsWith("PREDICTIVE_")) {
+                        setStyle("-fx-border-color: transparent transparent #a855f7 transparent; -fx-border-width: 0 0 2px 0; -fx-border-style: solid; -fx-background-color: rgba(168, 85, 247, 0.10); -fx-font-weight: bold;");
                     } else {
                         setStyle("");
                     }
@@ -295,11 +297,13 @@ public final class ComparativeScenarioTableCoordinator {
                 if (a == b) return 0;
                 if (a == null) return 1;
                 if (b == null) return -1;
-                boolean aGround = "HISTORICAL_GROUND_TRUTH".equals(a.getRunId());
-                boolean bGround = "HISTORICAL_GROUND_TRUTH".equals(b.getRunId());
-                if (aGround && bGround) return 0;
-                if (aGround) return -1;
-                if (bGround) return 1;
+                int pA = "HISTORICAL_GROUND_TRUTH".equals(a.getRunId()) ? 0 : (a.getRunId() != null && a.getRunId().startsWith("PREDICTIVE_") ? 1 : 2);
+                int pB = "HISTORICAL_GROUND_TRUTH".equals(b.getRunId()) ? 0 : (b.getRunId() != null && b.getRunId().startsWith("PREDICTIVE_") ? 1 : 2);
+                if (pA != pB) return Integer.compare(pA, pB);
+                if (pA == 1) {
+                    // Stable ordering among predictive baselines
+                    return String.valueOf(a.getRunId()).compareTo(String.valueOf(b.getRunId()));
+                }
                 if (baseComp != null) {
                     return baseComp.compare(a, b);
                 }

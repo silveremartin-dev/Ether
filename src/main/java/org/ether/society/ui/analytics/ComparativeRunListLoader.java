@@ -75,6 +75,27 @@ public final class ComparativeRunListLoader {
         histItem.selectedProperty().addListener((obs, oldV, newV) -> itemSelectionListener.accept(histItem));
         scenarioList.add(histItem);
 
+        // 1b. External Predictive Projections (Post-2025 Multi-Model Benchmarks)
+        String[][] predictiveBaselines = {
+            {"PREDICTIVE_SSP1", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp1", "Transition Soutenable Net-Zéro (SSP1 / IEA NZE 2050)")},
+            {"PREDICTIVE_SSP2", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp2", "Projection Tendancielle Globale (SSP2 / UN WPP 2024 / IEA STEPS)")},
+            {"PREDICTIVE_SSP3_WORLD3", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp3", "Limites à la Croissance & Pénurie (SSP3 / Club de Rome World3 BAU2)")},
+            {"PREDICTIVE_SSP5", "🟣 " + I18n.getOrDefault("analytics.predictive.ssp5", "Croissance Fossile Intensive (SSP5 / CMIP6 High-Emissions)")}
+        };
+
+        for (String[] pBase : predictiveBaselines) {
+            String pRunId = pBase[0];
+            String pName = pBase[1];
+            Scenario predScenario = new Scenario();
+            predScenario.setName(pName);
+            predScenario.setStartDateYear(2026);
+            predScenario.setEndDateYear(2100);
+            boolean wasPredSelected = previousSelectedNames.contains(pRunId) || previousSelectedNames.contains(pName);
+            ScenarioSelectableItem predItem = new ScenarioSelectableItem(predScenario, wasPredSelected, true, pRunId);
+            predItem.selectedProperty().addListener((obs, oldV, newV) -> itemSelectionListener.accept(predItem));
+            scenarioList.add(predItem);
+        }
+
         List<Scenario> allScenarios = scenarioRepository.getAllScenarios();
         List<SaveMetadata> allSaves = Collections.emptyList();
         try {

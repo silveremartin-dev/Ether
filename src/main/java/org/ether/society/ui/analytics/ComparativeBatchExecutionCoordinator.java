@@ -61,7 +61,7 @@ public final class ComparativeBatchExecutionCoordinator {
             .filter(ScenarioSelectableItem::isSelected)
             .toList();
 
-        long unexecutedCount = selected.stream().filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId())).count();
+        long unexecutedCount = selected.stream().filter(i -> !i.isExecuted() && !i.isExternalBaseline()).count();
 
         if (selected.isEmpty()) {
             warningLabel.setText(I18n.getOrDefault("analytics.warning.none_selected", "ℹ️ Aucun scénario sélectionné pour la comparaison."));
@@ -72,11 +72,11 @@ public final class ComparativeBatchExecutionCoordinator {
             cancelBatchBtn.setManaged(false);
         } else if (unexecutedCount > 0) {
             long totalUnexecutedYears = selected.stream()
-                .filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
+                .filter(i -> !i.isExecuted() && !i.isExternalBaseline())
                 .mapToLong(i -> Math.max(1, (long)((1.0 - i.getProgress()) * (i.getScenario().getEndDateYear() - i.getScenario().getStartDateYear()))))
                 .sum();
             double totalEstSeconds = selected.stream()
-                .filter(i -> !i.isExecuted() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
+                .filter(i -> !i.isExecuted() && !i.isExternalBaseline())
                 .mapToDouble(ScenarioSelectableItem::getRemainingDurationSec)
                 .sum();
             String durStr = ExecutionContextPanel.formatDuration(totalEstSeconds);
@@ -101,7 +101,7 @@ public final class ComparativeBatchExecutionCoordinator {
         } else {
             warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.ready", "✅ Tous les scénarios sélectionnés (%d) sont prêts pour l'audit et la comparaison."), selected.size()));
             warningLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #10b981; -fx-padding: 0; -fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: default;");
-            long simulatedCount = selected.stream().filter(i -> !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId())).count();
+            long simulatedCount = selected.stream().filter(i -> !i.isExternalBaseline()).count();
             if (!isBatchRunning.get()) {
                 if (simulatedCount == 0) {
                     executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.reexecute_single", "🔄 Réexécuter le scénario"));
@@ -141,7 +141,7 @@ public final class ComparativeBatchExecutionCoordinator {
         if (isBatchRunning.get()) return;
 
         List<ScenarioSelectableItem> targetItems = scenarioList.stream()
-            .filter(i -> i.isSelected() && !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
+            .filter(i -> i.isSelected() && !i.isExternalBaseline())
             .toList();
 
         if (targetItems.isEmpty()) return;

@@ -98,7 +98,7 @@ public final class ComparativeTimeSeriesChartCoordinator {
         boolean hasSimulatedScenarios = false;
 
         for (ScenarioSelectableItem other : selectedExecuted) {
-            if (!"HISTORICAL_GROUND_TRUTH".equals(other.getRunId()) && other.getScenario() != null) {
+            if (!other.isExternalBaseline() && other.getScenario() != null) {
                 int sStart = (int) other.getScenario().getStartDateYear();
                 int sEnd = (int) other.getScenario().getEndDateYear();
                 minYear = Math.min(minYear, sStart);
@@ -110,10 +110,22 @@ public final class ComparativeTimeSeriesChartCoordinator {
         }
 
         if (!hasSimulatedScenarios) {
-            minYear = -100000;
-            maxYear = 2026;
-        } else if (maxYear <= minYear) {
-            maxYear = minYear + 100;
+            boolean hasOnlyPredictive = selectedExecuted.stream().allMatch(i -> i.getRunId() != null && i.getRunId().startsWith("PREDICTIVE_"));
+            if (hasOnlyPredictive && !selectedExecuted.isEmpty()) {
+                minYear = 2026;
+                maxYear = 2100;
+            } else {
+                minYear = -100000;
+                maxYear = 2026;
+            }
+        } else {
+            boolean hasPredictive = selectedExecuted.stream().anyMatch(i -> i.getRunId() != null && i.getRunId().startsWith("PREDICTIVE_"));
+            if (hasPredictive) {
+                maxYear = Math.max(maxYear, 2100);
+            }
+            if (maxYear <= minYear) {
+                maxYear = minYear + 100;
+            }
         }
 
         boolean temporalDisjoint = hasSimulatedScenarios && (interStartYear > interEndYear);
@@ -213,6 +225,24 @@ public final class ComparativeTimeSeriesChartCoordinator {
                         double valEnd = HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, groundTruthMax, interpMethod);
                         double scaledValEnd = scaleBenchmarkValue(benchKey, metric, valEnd);
                         addChartDataPoint(series, groundTruthMax, scaledValEnd, unitStr);
+                    }
+                }
+            } else if (item.getRunId() != null && item.getRunId().startsWith("PREDICTIVE_")) {
+                String benchKey = mapMetricToBenchmarkKey(metric);
+                int predMin = Math.max(2026, minYear);
+                int predMax = Math.min(2100, maxYear);
+
+                if (predMin <= predMax) {
+                    int step = Math.max(1, (predMax - predMin) / 50);
+                    for (int yr = predMin; yr <= predMax; yr += step) {
+                        double val = HistoricalValidationKernel.getPredictiveBenchmarkValue(item.getRunId(), benchKey, yr, interpMethod);
+                        double scaledVal = scaleBenchmarkValue(benchKey, metric, val);
+                        addChartDataPoint(series, yr, scaledVal, unitStr);
+                    }
+                    if ((predMax - predMin) % step != 0) {
+                        double valEnd = HistoricalValidationKernel.getPredictiveBenchmarkValue(item.getRunId(), benchKey, predMax, interpMethod);
+                        double scaledValEnd = scaleBenchmarkValue(benchKey, metric, valEnd);
+                        addChartDataPoint(series, predMax, scaledValEnd, unitStr);
                     }
                 }
             } else {

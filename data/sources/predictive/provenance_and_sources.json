@@ -1,0 +1,73 @@
+{
+  "source_directory": "data/sources/predictive",
+  "temporal_scope": "2026 to 2100 CE",
+  "domain": "Socioeconomic, Demographic, Climatic and Energy Projections",
+  "datasets": [
+    {
+      "model_id": "PREDICTIVE_SSP1",
+      "name": "Sustainability & Rapid Decarbonization",
+      "sources": [
+        {
+          "name": "IIASA SSP Database v3.0 (SSP1-1.9 / SSP1-2.6)",
+          "organization": "International Institute for Applied Systems Analysis (IIASA)",
+          "doi": "10.1016/j.gloenvcha.2016.05.009",
+          "url": "https://tntcat.iiasa.ac.at/SspDb/"
+        },
+        {
+          "name": "IEA Net Zero by 2050 (NZE) Roadmap",
+          "organization": "International Energy Agency (IEA)",
+          "url": "https://www.iea.org/reports/net-zero-by-2050"
+        }
+      ]
+    },
+    {
+      "model_id": "PREDICTIVE_SSP2",
+      "name": "Middle-of-the-Road Trend Continuity",
+      "sources": [
+        {
+          "name": "UN World Population Prospects (2024 Revision)",
+          "organization": "United Nations Department of Economic and Social Affairs (UN DESA)",
+          "doi": "10.18356/9789210027137",
+          "url": "https://population.un.org/wpp/"
+        },
+        {
+          "name": "IIASA MESSAGEix-GLOBIOM SSP2 Baseline & SSP2-4.5",
+          "organization": "IIASA",
+          "doi": "10.1016/j.gloenvcha.2016.05.009"
+        },
+        {
+          "name": "IEA Stated Policies Scenario (STEPS)",
+          "organization": "International Energy Agency (IEA)",
+          "url": "https://www.iea.org/reports/world-energy-outlook-2023"
+        }
+      ]
+    },
+    {
+      "model_id": "PREDICTIVE_SSP3_WORLD3",
+      "name": "Regional Rivalry & Resource Scarcity",
+      "sources": [
+        {
+          "name": "World3 BAU2 Empirical Calibration (Herrington 2021)",
+          "journal": "Journal of Industrial Ecology",
+          "doi": "10.1111/jiec.13084"
+        },
+        {
+          "name": "IIASA SSP3-7.0 Regional Rivalry",
+          "organization": "IIASA / AIM/CGE Model",
+          "doi": "10.1016/j.gloenvcha.2016.05.009"
+        }
+      ]
+    },
+    {
+      "model_id": "PREDICTIVE_SSP5",
+      "name": "Fossil-Fueled High Growth",
+      "sources": [
+        {
+          "name": "IIASA / PIK REMIND-MAGPIE SSP5-8.5",
+          "organization": "Potsdam Institute for Climate Impact Research & IIASA",
+          "doi": "10.1016/j.gloenvcha.2016.05.009"
+        }
+      ]
+    }
+  ]
+}

@@ -51,7 +51,7 @@ public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
         this.selected.set(isSelected);
         this.executed = executed;
         this.runId = runId;
-        if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
+        if (isExternalBaseline()) {
             this.progress = 1.0;
             this.executed = true;
             this.batchState = BatchState.EXECUTED;
@@ -66,6 +66,16 @@ public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
             this.batchState = BatchState.NOT_EXECUTED;
             recalculateEstimate();
         }
+    }
+
+    /**
+     * Checks whether this item represents an external immutable baseline dataset
+     * (either historical ground truth or an external post-2025 predictive model projection).
+     *
+     * @return {@code true} if external baseline
+     */
+    public boolean isExternalBaseline() {
+        return "HISTORICAL_GROUND_TRUTH".equals(runId) || (runId != null && runId.startsWith("PREDICTIVE_"));
     }
 
     /**
@@ -111,7 +121,7 @@ public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
      * @return planet display string
      */
     public String getPlanetDisplayName() {
-        if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
+        if (isExternalBaseline()) {
             return "🌍 " + I18n.getOrDefault("planet.preset.earth", "Terre");
         }
         if (scenario == null) {
@@ -165,7 +175,7 @@ public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
      * @return bounding box text or "Global"
      */
     public String getClippingDisplay() {
-        if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
+        if (isExternalBaseline()) {
             return "🌐 " + I18n.getOrDefault("analytics.clipping.global", "Global");
         }
         if (scenario == null || !scenario.isClippingEnabled()) {
@@ -202,6 +212,7 @@ public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
 
     public long getStartDateYear() {
         if ("HISTORICAL_GROUND_TRUTH".equals(runId)) return -100000L;
+        if (runId != null && runId.startsWith("PREDICTIVE_")) return 2026L;
         return scenario != null ? scenario.getStartDateYear() : 0L;
     }
 
@@ -288,7 +299,7 @@ public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
      * Recalculates remaining duration estimate based on scenario span and simulation cell count.
      */
     public void recalculateEstimate() {
-        if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
+        if (isExternalBaseline()) {
             this.estimatedDurationSec = 0.0;
             this.remainingDurationSec = 0.0;
             this.progress = 1.0;
@@ -314,13 +325,16 @@ public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
     }
 
     public String getEstimatedDurationDisplay() {
-        if ("HISTORICAL_GROUND_TRUTH".equals(runId) || (progress >= 1.0 && executed)) return "-";
+        if (isExternalBaseline() || (progress >= 1.0 && executed)) return "-";
         return ExecutionContextPanel.formatDuration(remainingDurationSec);
     }
 
     public String getStatusDisplay() {
         if ("HISTORICAL_GROUND_TRUTH".equals(runId)) {
             return I18n.getOrDefault("analytics.status.ground_truth_ready", "🟢 Historical Ground Truth (HYDE / Maddison / Seshat)");
+        }
+        if (runId != null && runId.startsWith("PREDICTIVE_")) {
+            return I18n.getOrDefault("analytics.status.predictive_projection_ready", "🟣 External Model Projection (IIASA / UN / IEA / IPCC)");
         }
         if (progress >= 1.0 || executed) {
             return I18n.getOrDefault("analytics.status.executed_clean", "🟢 Executed");
