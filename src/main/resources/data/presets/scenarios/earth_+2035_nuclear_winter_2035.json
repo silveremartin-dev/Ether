@@ -370,6 +370,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Guerre Thermonucléaire & Hiver Nucléaire (2035)",
+  "displayName" : "Nuclear Winter & Stratospheric Solar Dimming (2035)",
   "displayDescription" : "⚠ SCÉNARIO DE CRISE : Conflit Thermonucléaire Global & Hiver Nucléaire (2035 apr. J.-C.)\n\nInjection de 150 Tg de suie dans la stratosphère, effondrement de l'irradiance solaire, gel mondial, ruine des cultures et effondrement sociétal."
 }

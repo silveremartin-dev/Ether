@@ -541,6 +541,9 @@ public class PreComputePhase {
             double effectiveTech = (c.getTechnologyLevel() != null && c.getTechnologyLevel() > 0.0)
                     ? c.getTechnologyLevel() : techLevel;
             c.setTechnologyLevel(effectiveTech);
+            if (pop > 0 && (c.getWaterResource() == null || c.getWaterResource() < 300.0)) {
+                c.setWaterResource(Math.max(c.getWaterResourceOr(0.0), 500.0));
+            }
             if (c.getBiomassAgriculture() == null || c.getBiomassAgriculture() == 0.0) {
                 double areaScale = Math.max(0.05, c.getEffectiveSurfaceAreaKm2() / 1770.0);
                 double annualFoodNeedGJ = pop * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;

@@ -189,6 +189,6 @@
   "minLng" : -10.0,
   "maxLng" : 45.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique",
+  "displayName" : "Pax Romana & Augustan Stability (0 -> 50 CE): Biophysical Continuity",
   "displayDescription" : "\uD83C\uDFDB SCÉNARIO DE CONTINUITÉ PURE (SANS ACCIDENT MAJEUR) : L'Âge d'Or Augustéen (An 0 -> 50 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE - CALIBRAGE DE CONTINUITÉ]\nScénario de référence étalon pour tester la stabilité des moteurs de simulation en l'absence de choc exogène.\nModélise 50 ans de paix continue, d'intégration commerciale méditerranéenne et de croissance démographique régulière\nsous l'Empire romain julio-claudien.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Croissance démographique modérée et régulière sans choc épidémique ni famine.\n• Stabilité monétaire et fiscale du denier d'argent.\n• Trajectoire monotone lisse idéale pour le calibrage fin du moteur.\n"
 }

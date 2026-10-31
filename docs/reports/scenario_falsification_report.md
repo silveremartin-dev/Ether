@@ -6,220 +6,236 @@
 
 | # | Scenario | Fidelity Score | Global MAPE | R² Goodness of Fit | First Rupture (T_div) | Diagnostic Status |
 |---|---|---|---|---|---|---|
-| 🥇 1 | **Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)** | **87.1%** | 12.87% | 0.871 | 1914 CE | 🟡 Moderate Drift |
-| 🥈 2 | **Peste Antonine & Crise Impériale sous Marc Aurèle (165-180)** | **76.8%** | 23.15% | 0.768 | 165 CE | 🟡 Moderate Drift |
-| 🥉 3 | **La Peste Noire & Inversion Économique Post-Féodale (1347)** | **74.0%** | 26.04% | 0.740 | 1347 CE | 🔴 Severe Divergence |
-| • 4 | **Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)** | **70.3%** | 29.70% | 0.703 | -1279 CE | 🔴 Severe Divergence |
-| • 5 | **Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)** | **67.2%** | 32.84% | 0.672 | -1200 CE | 🔴 Severe Divergence |
-| • 6 | **Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique** | **62.0%** | 37.95% | 0.620 | 0 CE | 🔴 Severe Divergence |
+| 🥇 1 | **La Peste Noire & Inversion Économique Post-Féodale (1347)** | **81.7%** | 18.29% | 0.817 | 1347 CE | 🟡 Moderate Drift |
+| 🥈 2 | **Peste Antonine & Crise Impériale sous Marc Aurèle (165-180)** | **77.6%** | 22.36% | 0.776 | 165 CE | 🟡 Moderate Drift |
+| 🥉 3 | **Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)** | **72.1%** | 27.92% | 0.721 | 1914 CE | 🔴 Severe Divergence |
+| • 4 | **Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)** | **69.6%** | 30.39% | 0.696 | -1200 CE | 🔴 Severe Divergence |
+| • 5 | **Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique** | **61.7%** | 38.28% | 0.617 | 0 CE | 🔴 Severe Divergence |
+| • 6 | **Ramesses II, Pax Aegyptiaca & Monumental Builders (-1279 BCE)** | **0.0%** | 194.37% | 0.000 | -1279 CE | 🔴 Severe Divergence |
 
 ## 🔬 2. Multi-Scenario Comparative Gap Matrix
 
-| Historical Variable (Metric) | Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914) | Peste Antonine & Crise Impériale sous Marc Aurèle (165-180) | La Peste Noire & Inversion Économique Post-Féodale (1347) | Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279) | Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200) | Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique |
+| Historical Variable (Metric) | La Peste Noire & Inversion Économique Post-Féodale (1347) | Peste Antonine & Crise Impériale sous Marc Aurèle (165-180) | Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914) | Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200) | Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique | Ramesses II, Pax Aegyptiaca & Monumental Builders (-1279 BCE) |
 |---|---|---|---|---|---|---|
-| **👥 Global Demographic Population (worldPopulation)** | 🟢 2.2% | 🟢 8.6% | 🟢 6.3% | 🟡 14.7% | 🔴 64.8% | 🟢 9.4% |
-| **🦣 Megafauna Abundance Index (megafaunaIndex)** | 🟢 8.3% | 🟡 14.7% | 🟡 13.1% | 🟡 12.6% | 🟡 13.1% | 🟡 14.6% |
+| **👥 Global Demographic Population (worldPopulation)** | 🟡 15.6% | 🟢 6.7% | 🟡 21.2% | 🟡 13.0% | 🟡 18.4% | 🔴 65.3% |
+| **🦣 Megafauna Abundance Index (megafaunaIndex)** | 🟡 13.1% | 🟡 14.7% | 🟢 8.2% | 🟡 13.1% | 🟡 14.6% | 🟡 12.6% |
 | **☀️ Milankovitch 65°N Insolation (milankovitchInsolation)** | ⚪ N/A | ⚪ N/A | ⚪ N/A | ⚪ N/A | ⚪ N/A | ⚪ N/A |
-| **🛡️ Biogeographical Zero-Containment (zeroContainmentScore)** | 🟢 0.5% | 🟢 7.5% | 🟢 2.9% | 🟡 11.0% | 🟡 10.9% | 🟢 7.9% |
-| **💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct)** | 🟢 8.1% | 🔴 75.5% | 🔴 56.2% | 🔴 89.4% | 🔴 94.5% | 🔴 90.8% |
-| **⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy)** | 🔴 46.3% | 🔴 51.1% | 🔴 101.6% | 🔴 44.5% | 🔴 28.8% | 🔴 47.6% |
-| **🏙️ Urbanization Rate (%) (urbanizationRate)** | 🟢 2.9% | 🟢 0.6% | 🟢 0.8% | 🟢 0.8% | 🟢 0.2% | 🟢 0.6% |
-| **🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration)** | 🟢 5.5% | 🟢 1.5% | 🟢 0.6% | 🟢 3.7% | 🟢 3.7% | 🟢 1.8% |
-| **📖 Global Literacy Rate (%) (literacyRate)** | 🟢 2.3% | 🟢 0.5% | 🟢 0.6% | 🟢 0.7% | 🟢 0.2% | 🟢 0.5% |
-| **📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability)** | 🔴 39.7% | 🔴 48.5% | 🔴 52.3% | 🔴 90.0% | 🔴 79.4% | 🔴 168.3% |
+| **🛡️ Biogeographical Zero-Containment (zeroContainmentScore)** | 🟢 2.9% | 🟢 7.5% | 🟢 0.9% | 🟡 10.9% | 🟢 7.9% | 🟡 11.0% |
+| **💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct)** | 🔴 60.0% | 🔴 93.7% | 🔴 93.5% | 🔴 92.1% | 🔴 93.0% | 🔴 1384.6% |
+| **⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy)** | 🟡 17.5% | 🟡 10.1% | 🔴 60.3% | 🟡 11.2% | 🔴 28.6% | 🔴 66.0% |
+| **🏙️ Urbanization Rate (%) (urbanizationRate)** | 🟢 2.4% | 🟢 2.5% | 🟢 1.4% | 🟢 3.2% | 🟢 2.3% | 🟢 3.3% |
+| **🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration)** | 🟢 0.6% | 🟢 1.5% | 🟢 6.4% | 🟢 3.7% | 🟢 1.8% | 🟢 3.7% |
+| **📖 Global Literacy Rate (%) (literacyRate)** | 🟢 1.9% | 🟢 2.0% | 🟢 1.1% | 🟢 2.5% | 🟢 1.8% | 🟢 2.6% |
+| **📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability)** | 🔴 50.7% | 🔴 62.5% | 🔴 58.3% | 🔴 123.8% | 🔴 176.0% | 🔴 200.3% |
 
 ## 📊 3. Deep Diagnostic Analysis by Scenario
 
-### 🔎 Scenario: `Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)` (`RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--4594`)
+### 🔎 Scenario: `La Peste Noire & Inversion Économique Post-Féodale (1347)` (`RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--3529`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 2.20% | 🟢 Calibrated | — | 3.4% (1920 AD) | 📈 Divergent (compounding) | `DemographicEngine` |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 8.34% | 🟢 Calibrated | — | 8.4% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 0.49% | 🟢 Calibrated | — | 1.0% (1920 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 8.15% | 🟢 Calibrated | 1914 AD | 12.9% (1914 AD) | 〰️ Oscillating Cycle | `SociologyEngine (Capital)` |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 46.27% | 🔴 Severe drift | 1914 AD | 50.7% (1914 AD) | ➖ Stable Offset (Uniform) | `EcologyEngine (Biomass)` |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 2.91% | 🟢 Calibrated | — | 2.9% (1920 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 5.48% | 🟢 Calibrated | — | 5.7% (1920 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (%) (literacyRate) | 2.33% | 🟢 Calibrated | — | 2.3% (1920 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 39.68% | 🔴 Severe drift | 1914 AD | 39.8% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `InstitutionalEngine` |
-
-#### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
-
-| Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
-|---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 7 | 1,820.93 | 1,780.64 ± 13.36 | [1,770.75 ; 1,790.54] | 1,781.53 [1,767.83 - 1,794.11] | 1.879 | *** (p < 0.001) |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 7 | 5.85 | 5.36 ± 0.08 | [5.30 ; 5.42] | 5.36 [5.29 - 5.43] | 5.892 | *** (p < 0.001) |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 7 | 459.84 | 459.84 ± 0.02 | [459.83 ; 459.85] | 459.84 [459.82 - 459.86] | 0.000 | ns |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 7 | 0.19 | 0.18 ± 0.00 | [0.18 ; 0.19] | 0.18 [0.18 - 0.19] | 0.339 | * (p < 0.05) |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 7 | 2,921.07 | 3,055.95 ± 307.23 | [2,828.35 ; 3,283.55] | 3,205.46 [2,901.77 - 3,260.58] | 0.591 | ** (p < 0.01) |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 7 | 56.27 | 82.25 ± 0.64 | [81.78 ; 82.73] | 82.31 [81.64 - 82.90] | 20.236 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 7 | 19.49 | 20.06 ± 0.62 | [19.60 ; 20.52] | 20.04 [19.48 - 20.63] | 0.930 | *** (p < 0.001) |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 7 | 299.00 | 282.61 ± 0.02 | [282.59 ; 282.62] | 282.61 [282.59 - 282.63] | 44.115 | *** (p < 0.001) |
-| 📖 Global Literacy Rate (%) (literacyRate) | 7 | 24.28 | 24.84 ± 0.58 | [24.41 ; 25.27] | 24.83 [24.30 - 25.38] | 0.988 | *** (p < 0.001) |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 7 | 95.43 | 57.57 ± 0.35 | [57.31 ; 57.82] | 57.54 [57.24 - 57.97] | 106.493 | *** (p < 0.001) |
-
----
-
-### 🔎 Scenario: `Peste Antonine & Crise Impériale sous Marc Aurèle (165-180)` (`RUN-PESTE-ANTONINE---CRISE-IMP-RIALE-SOUS-MARC-AUR-LE--165-180--3254`)
-
-| Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
-|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 8.58% | 🟢 Calibrated | 166 AD | 13.6% (167 AD) | — | `DemographicEngine` |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 14.71% | 🟡 Moderate drift | 165 AD | 14.7% (167 AD) | — | `H3SimulationEngine` |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (165 AD) | — | `H3SimulationEngine` |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 7.52% | 🟢 Calibrated | — | 7.5% (165 AD) | — | `H3SimulationEngine` |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 75.46% | 🔴 Severe drift | 165 AD | 78.2% (166 AD) | — | `SociologyEngine (Capital)` |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 51.11% | 🔴 Severe drift | 165 AD | 65.4% (165 AD) | — | `EcologyEngine (Biomass)` |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 0.58% | 🟢 Calibrated | — | 0.6% (166 AD) | — | `SettlementEngine` |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 1.51% | 🟢 Calibrated | — | 1.5% (165 AD) | — | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (%) (literacyRate) | 0.46% | 🟢 Calibrated | — | 0.5% (166 AD) | — | `CulturalSociologyEngine` |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 48.46% | 🔴 Severe drift | 165 AD | 54.1% (165 AD) | — | `InstitutionalEngine` |
-
-#### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
-
-| Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
-|---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 3 | 55.96 | 51.16 ± 4.16 | [46.45 ; 55.87] | 49.18 [48.36 - 55.95] | 1.631 | *** (p < 0.001) |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 3 | 12.84 | 10.95 ± 0.00 | [10.95 ; 10.95] | 10.95 [10.95 - 10.95] | 2105.581 | *** (p < 0.001) |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 3 | 469.16 | 469.16 ± 0.01 | [469.15 ; 469.17] | 469.16 [469.16 - 469.17] | 0.000 | ns |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 3 | 0.84 | 0.78 ± 0.00 | [0.78 ; 0.78] | 0.78 [0.78 - 0.78] | 1788.182 | *** (p < 0.001) |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 3 | 5.61 | 1.38 ± 0.26 | [1.09 ; 1.67] | 1.23 [1.22 - 1.67] | 23.238 | *** (p < 0.001) |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 3 | 0.66 | 0.99 ± 0.08 | [0.90 ; 1.09] | 0.96 [0.94 - 1.09] | 5.855 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 3 | 4.34 | 4.31 ± 0.01 | [4.31 ; 4.32] | 4.31 [4.31 - 4.32] | 3.863 | *** (p < 0.001) |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3 | 275.84 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 1141.420 | *** (p < 0.001) |
-| 📖 Global Literacy Rate (%) (literacyRate) | 3 | 3.17 | 3.15 ± 0.00 | [3.15 ; 3.15] | 3.15 [3.15 - 3.15] | 17.800 | *** (p < 0.001) |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 3 | 72.51 | 37.39 ± 3.76 | [33.13 ; 41.65] | 39.39 [33.04 - 39.73] | 13.096 | *** (p < 0.001) |
-
----
-
-### 🔎 Scenario: `La Peste Noire & Inversion Économique Post-Féodale (1347)` (`RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--6126`)
-
-| Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
-|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 6.27% | 🟢 Calibrated | — | 8.1% (1347 AD) | 📉 Convergent (damping) | `DemographicEngine` |
+| 👥 Global Demographic Population (worldPopulation) | 15.62% | 🟡 Moderate drift | 1349 AD | 22.8% (1353 AD) | 📈 Divergent (compounding) | `DemographicEngine` |
 | 🦣 Megafauna Abundance Index (megafaunaIndex) | 13.08% | 🟡 Moderate drift | 1347 AD | 13.1% (1347 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1347 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 2.88% | 🟢 Calibrated | — | 2.9% (1347 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 56.15% | 🔴 Severe drift | 1347 AD | 68.1% (1353 AD) | 📈 Divergent (compounding) | `SociologyEngine (Capital)` |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 101.61% | 🔴 Severe drift | 1347 AD | 104.6% (1353 AD) | ➖ Stable Offset (Uniform) | `EcologyEngine (Biomass)` |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 0.81% | 🟢 Calibrated | — | 0.8% (1353 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 59.98% | 🔴 Severe drift | 1347 AD | 66.7% (1351 AD) | ➖ Stable Offset (Uniform) | `SociologyEngine (Capital)` |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 17.54% | 🟡 Moderate drift | 1348 AD | 25.2% (1353 AD) | 📈 Divergent (compounding) | `EcologyEngine (Biomass)` |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 2.36% | 🟢 Calibrated | — | 2.4% (1347 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
 | 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 0.61% | 🟢 Calibrated | — | 0.6% (1353 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (%) (literacyRate) | 0.65% | 🟢 Calibrated | — | 0.6% (1353 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 52.32% | 🔴 Severe drift | 1347 AD | 52.6% (1347 AD) | 🟢 Stable (Invariant / Calibrated) | `InstitutionalEngine` |
+| 📖 Global Literacy Rate (%) (literacyRate) | 1.89% | 🟢 Calibrated | — | 1.9% (1347 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 50.65% | 🔴 Severe drift | 1347 AD | 52.5% (1347 AD) | ➖ Stable Offset (Uniform) | `InstitutionalEngine` |
 
 #### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
 
 | Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
 |---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 7 | 439.15 | 411.62 ± 6.01 | [407.17 ; 416.07] | 410.88 [405.83 - 418.41] | 6.415 | *** (p < 0.001) |
+| 👥 Global Demographic Population (worldPopulation) | 7 | 326.11 | 275.21 ± 27.64 | [254.74 ; 295.69] | 266.07 [251.99 - 295.21] | 2.604 | *** (p < 0.001) |
 | 🦣 Megafauna Abundance Index (megafaunaIndex) | 7 | 11.39 | 9.90 ± 0.00 | [9.90 ; 9.90] | 9.90 [9.90 - 9.90] | 399.952 | *** (p < 0.001) |
 | ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 7 | 463.67 | 463.67 ± 0.01 | [463.66 ; 463.68] | 463.67 [463.66 - 463.68] | 0.000 | ns |
 | 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 7 | 0.78 | 0.75 ± 0.00 | [0.75 ; 0.75] | 0.75 [0.75 - 0.75] | 114.943 | *** (p < 0.001) |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 7 | 90.65 | 39.69 ± 15.18 | [28.44 ; 50.94] | 32.87 [29.29 - 47.68] | 4.744 | *** (p < 0.001) |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 7 | 5.64 | 11.37 ± 0.17 | [11.25 ; 11.50] | 11.35 [11.21 - 11.56] | 48.540 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 7 | 5.85 | 5.90 ± 0.02 | [5.89 ; 5.91] | 5.90 [5.88 - 5.91] | 2.809 | *** (p < 0.001) |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 7 | 53.10 | 21.82 ± 9.38 | [14.87 ; 28.78] | 17.82 [15.05 - 27.30] | 3.568 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 7 | 4.19 | 3.45 ± 0.35 | [3.20 ; 3.71] | 3.34 [3.16 - 3.70] | 3.011 | *** (p < 0.001) |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 7 | 5.85 | 5.71 ± 0.02 | [5.70 ; 5.72] | 5.71 [5.70 - 5.73] | 8.333 | *** (p < 0.001) |
 | 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 7 | 281.71 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 311.106 | *** (p < 0.001) |
-| 📖 Global Literacy Rate (%) (literacyRate) | 7 | 6.53 | 6.57 ± 0.02 | [6.55 ; 6.58] | 6.57 [6.55 - 6.58] | 2.266 | *** (p < 0.001) |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 7 | 80.06 | 38.18 ± 0.16 | [38.06 ; 38.30] | 38.19 [38.02 - 38.35] | 346.158 | *** (p < 0.001) |
+| 📖 Global Literacy Rate (%) (literacyRate) | 7 | 6.53 | 6.40 ± 0.02 | [6.39 ; 6.42] | 6.40 [6.39 - 6.42] | 6.705 | *** (p < 0.001) |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 7 | 80.06 | 39.51 ± 1.03 | [38.75 ; 40.27] | 39.63 [38.47 - 40.57] | 55.730 | *** (p < 0.001) |
 
 ---
 
-### 🔎 Scenario: `Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)` (`RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--1594`)
+### 🔎 Scenario: `Peste Antonine & Crise Impériale sous Marc Aurèle (165-180)` (`RUN-PESTE-ANTONINE---CRISE-IMP-RIALE-SOUS-MARC-AUR-LE--165-180--2277`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 14.69% | 🟡 Moderate drift | -1278 AD | 29.4% (-1278 AD) | — | `DemographicEngine` |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 12.58% | 🟡 Moderate drift | -1279 AD | 12.6% (-1278 AD) | — | `H3SimulationEngine` |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (-1279 AD) | — | `H3SimulationEngine` |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 10.96% | 🟡 Moderate drift | -1279 AD | 11.0% (-1279 AD) | — | `H3SimulationEngine` |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 89.38% | 🔴 Severe drift | -1279 AD | 89.8% (-1278 AD) | — | `SociologyEngine (Capital)` |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 44.53% | 🔴 Severe drift | -1279 AD | 69.4% (-1279 AD) | — | `EcologyEngine (Biomass)` |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 0.81% | 🟢 Calibrated | — | 0.8% (-1278 AD) | — | `SettlementEngine` |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3.70% | 🟢 Calibrated | — | 3.7% (-1279 AD) | — | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (%) (literacyRate) | 0.65% | 🟢 Calibrated | — | 0.7% (-1279 AD) | — | `CulturalSociologyEngine` |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 89.95% | 🔴 Severe drift | -1279 AD | 90.9% (-1278 AD) | — | `InstitutionalEngine` |
+| 👥 Global Demographic Population (worldPopulation) | 6.74% | 🟢 Calibrated | 172 AD | 16.3% (175 AD) | 〰️ Oscillating Cycle | `DemographicEngine` |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 14.72% | 🟡 Moderate drift | 165 AD | 14.7% (175 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (165 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 7.51% | 🟢 Calibrated | — | 7.5% (165 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 93.73% | 🔴 Severe drift | 165 AD | 94.6% (166 AD) | ➖ Stable Offset (Uniform) | `SociologyEngine (Capital)` |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 10.07% | 🟡 Moderate drift | 171 AD | 20.2% (175 AD) | 📈 Divergent (compounding) | `EcologyEngine (Biomass)` |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 2.51% | 🟢 Calibrated | — | 2.5% (165 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 1.50% | 🟢 Calibrated | — | 1.5% (165 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
+| 📖 Global Literacy Rate (%) (literacyRate) | 2.01% | 🟢 Calibrated | — | 2.0% (165 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 62.46% | 🔴 Severe drift | 165 AD | 67.2% (165 AD) | ➖ Stable Offset (Uniform) | `InstitutionalEngine` |
 
 #### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
 
 | Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
 |---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 2 | 0.28 | 0.24 ± 0.06 | [0.16 ; 0.32] | 0.28 [0.20 - 0.28] | 1.002 | *** (p < 0.001) |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 2 | 14.00 | 12.24 ± 0.00 | [12.24 ; 12.24] | 12.24 [12.24 - 12.24] | 3957.286 | *** (p < 0.001) |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 2 | 476.39 | 476.39 ± 0.00 | [476.39 ; 476.40] | 476.39 [476.39 - 476.39] | 0.000 | ns |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 2 | 0.91 | 0.81 ± 0.00 | [0.81 ; 0.81] | 0.81 [0.81 - 0.81] | 5411.243 | *** (p < 0.001) |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 2 | 0.13 | 0.01 ± 0.00 | [0.01 ; 0.01] | 0.01 [0.01 - 0.01] | 221.181 | *** (p < 0.001) |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 2 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.01] | 0.01 [0.00 - 0.01] | 1.792 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 2 | 0.80 | 0.79 ± 0.00 | [0.79 ; 0.79] | 0.79 [0.79 - 0.79] | 16.618 | *** (p < 0.001) |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 2 | 270.00 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 0.000 | ns |
-| 📖 Global Literacy Rate (%) (literacyRate) | 2 | 1.00 | 0.99 ± 0.00 | [0.99 ; 0.99] | 0.99 [0.99 - 0.99] | 10.650 | *** (p < 0.001) |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 2 | 14.68 | 27.89 ± 0.21 | [27.60 ; 28.17] | 28.03 [27.74 - 28.03] | 90.163 | *** (p < 0.001) |
+| 👥 Global Demographic Population (worldPopulation) | 11 | 68.93 | 73.52 ± 4.39 | [70.93 ; 76.12] | 72.72 [69.15 - 77.79] | 1.479 | *** (p < 0.001) |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 11 | 12.84 | 10.95 ± 0.00 | [10.95 ; 10.95] | 10.95 [10.95 - 10.95] | 635.379 | *** (p < 0.001) |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 11 | 469.14 | 469.14 ± 0.02 | [469.13 ; 469.15] | 469.14 [469.12 - 469.16] | 0.000 | ns |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 11 | 0.84 | 0.78 ± 0.00 | [0.78 ; 0.78] | 0.78 [0.78 - 0.78] | 539.117 | *** (p < 0.001) |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 11 | 7.32 | 0.46 ± 0.06 | [0.42 ; 0.49] | 0.44 [0.42 - 0.48] | 33.048 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 11 | 0.81 | 0.89 ± 0.05 | [0.86 ; 0.93] | 0.88 [0.84 - 0.95] | 2.109 | *** (p < 0.001) |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 11 | 4.31 | 4.20 ± 0.02 | [4.19 ; 4.22] | 4.20 [4.18 - 4.22] | 5.100 | *** (p < 0.001) |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 11 | 275.86 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 342.279 | *** (p < 0.001) |
+| 📖 Global Literacy Rate (%) (literacyRate) | 11 | 3.17 | 3.10 ± 0.00 | [3.10 ; 3.11] | 3.10 [3.10 - 3.11] | 22.582 | *** (p < 0.001) |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 11 | 74.30 | 27.92 ± 2.27 | [26.58 ; 29.27] | 28.34 [26.09 - 29.99] | 24.180 | *** (p < 0.001) |
 
 ---
 
-### 🔎 Scenario: `Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)` (`RUN-EFFONDREMENT-DE-L--GE-DU-BRONZE-R-CENT---PEUPLES-DE-LA-MER---1200--115`)
+### 🔎 Scenario: `Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)` (`RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--2845`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 64.79% | 🔴 Severe drift | -1200 AD | 67.8% (-1198 AD) | — | `DemographicEngine` |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 13.08% | 🟡 Moderate drift | -1200 AD | 13.1% (-1198 AD) | — | `H3SimulationEngine` |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (-1200 AD) | — | `H3SimulationEngine` |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 10.90% | 🟡 Moderate drift | -1200 AD | 10.9% (-1200 AD) | — | `H3SimulationEngine` |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 94.55% | 🔴 Severe drift | -1200 AD | 94.7% (-1200 AD) | — | `SociologyEngine (Capital)` |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 28.78% | 🔴 Severe drift | -1200 AD | 34.8% (-1198 AD) | — | `EcologyEngine (Biomass)` |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 0.22% | 🟢 Calibrated | — | 0.2% (-1200 AD) | — | `SettlementEngine` |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3.70% | 🟢 Calibrated | — | 3.7% (-1200 AD) | — | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (%) (literacyRate) | 0.18% | 🟢 Calibrated | — | 0.2% (-1200 AD) | — | `CulturalSociologyEngine` |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 79.38% | 🔴 Severe drift | -1200 AD | 85.7% (-1198 AD) | — | `InstitutionalEngine` |
+| 👥 Global Demographic Population (worldPopulation) | 21.22% | 🟡 Moderate drift | 1916 AD | 30.1% (1925 AD) | 📈 Divergent (compounding) | `DemographicEngine` |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 8.23% | 🟢 Calibrated | — | 8.4% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 0.93% | 🟢 Calibrated | — | 1.9% (1925 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 93.50% | 🔴 Severe drift | 1914 AD | 97.0% (1925 AD) | ➖ Stable Offset (Uniform) | `SociologyEngine (Capital)` |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 60.32% | 🔴 Severe drift | 1914 AD | 66.0% (1925 AD) | ➖ Stable Offset (Uniform) | `EcologyEngine (Biomass)` |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 1.40% | 🟢 Calibrated | — | 1.4% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 6.35% | 🟢 Calibrated | — | 6.8% (1925 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
+| 📖 Global Literacy Rate (%) (literacyRate) | 1.12% | 🟢 Calibrated | — | 1.1% (1914 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 58.26% | 🔴 Severe drift | 1914 AD | 60.3% (1914 AD) | ➖ Stable Offset (Uniform) | `InstitutionalEngine` |
 
 #### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
 
 | Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
 |---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 3 | 43.03 | 15.15 ± 1.91 | [12.98 ; 17.31] | 14.23 [13.87 - 17.35] | 20.614 | *** (p < 0.001) |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 3 | 14.00 | 12.17 ± 0.00 | [12.17 ; 12.17] | 12.17 [12.17 - 12.17] | 2910.654 | *** (p < 0.001) |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 3 | 475.99 | 475.99 ± 0.00 | [475.99 ; 476.00] | 475.99 [475.99 - 476.00] | 0.000 | ns |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 3 | 0.91 | 0.81 ± 0.00 | [0.81 ; 0.81] | 0.81 [0.81 - 0.81] | 3486.425 | *** (p < 0.001) |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 3 | 18.50 | 1.01 ± 0.03 | [0.97 ; 1.04] | 1.03 [0.97 - 1.03] | 788.066 | *** (p < 0.001) |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 3 | 0.45 | 0.32 ± 0.04 | [0.28 ; 0.37] | 0.30 [0.30 - 0.37] | 4.533 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 3 | 0.85 | 0.84 ± 0.00 | [0.84 ; 0.84] | 0.84 [0.84 - 0.84] | 3.133 | *** (p < 0.001) |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3 | 270.00 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 0.000 | ns |
-| 📖 Global Literacy Rate (%) (literacyRate) | 3 | 1.11 | 1.11 ± 0.00 | [1.10 ; 1.11] | 1.11 [1.10 - 1.11] | 1.141 | *** (p < 0.001) |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 3 | 14.77 | 26.50 ± 1.34 | [24.98 ; 28.01] | 27.09 [24.96 - 27.44] | 12.367 | *** (p < 0.001) |
+| 👥 Global Demographic Population (worldPopulation) | 12 | 1,494.10 | 1,173.83 ± 106.36 | [1,113.65 ; 1,234.01] | 1,133.44 [1,100.88 - 1,241.70] | 3.952 | *** (p < 0.001) |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 12 | 5.74 | 5.27 ± 0.13 | [5.20 ; 5.34] | 5.29 [5.18 - 5.39] | 3.401 | *** (p < 0.001) |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 12 | 459.82 | 459.82 ± 0.03 | [459.80 ; 459.84] | 459.82 [459.80 - 459.85] | 0.000 | ns |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 12 | 0.18 | 0.18 ± 0.00 | [0.18 ; 0.18] | 0.18 [0.18 - 0.19] | 0.388 | * (p < 0.05) |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 12 | 2,438.39 | 153.04 ± 142.07 | [72.66 ; 233.42] | 93.26 [83.90 - 169.95] | 16.786 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 12 | 46.96 | 18.52 ± 1.66 | [17.58 ; 19.46] | 17.88 [17.38 - 19.57] | 13.583 | *** (p < 0.001) |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 12 | 20.23 | 19.94 ± 1.04 | [19.35 ; 20.53] | 20.06 [19.20 - 20.96] | 0.270 | * (p < 0.05) |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 12 | 299.62 | 280.59 ± 0.05 | [280.56 ; 280.62] | 280.57 [280.55 - 280.62] | 29.723 | *** (p < 0.001) |
+| 📖 Global Literacy Rate (%) (literacyRate) | 12 | 24.96 | 24.69 ± 0.98 | [24.13 ; 25.24] | 24.79 [23.99 - 25.64] | 0.284 | * (p < 0.05) |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 12 | 95.99 | 40.08 ± 1.48 | [39.24 ; 40.92] | 40.66 [39.16 - 41.51] | 47.097 | *** (p < 0.001) |
 
 ---
 
-### 🔎 Scenario: `Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique` (`RUN-PAX-ROMANA---STABILIT--AUGUST-ENNE--AN-0----AN-50----CONTINUIT--BIOPHYSIQUE-7869`)
+### 🔎 Scenario: `Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)` (`RUN-EFFONDREMENT-DE-L--GE-DU-BRONZE-R-CENT---PEUPLES-DE-LA-MER---1200--3151`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 9.42% | 🟢 Calibrated | 1 AD | 15.0% (2 AD) | — | `DemographicEngine` |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 14.61% | 🟡 Moderate drift | 0 AD | 14.6% (2 AD) | — | `H3SimulationEngine` |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (0 AD) | — | `H3SimulationEngine` |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 7.95% | 🟢 Calibrated | — | 8.0% (0 AD) | — | `H3SimulationEngine` |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 90.81% | 🔴 Severe drift | 0 AD | 94.1% (2 AD) | — | `SociologyEngine (Capital)` |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 47.56% | 🔴 Severe drift | 0 AD | 62.8% (0 AD) | — | `EcologyEngine (Biomass)` |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 0.63% | 🟢 Calibrated | — | 0.6% (0 AD) | — | `SettlementEngine` |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 1.82% | 🟢 Calibrated | — | 1.8% (0 AD) | — | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (%) (literacyRate) | 0.51% | 🟢 Calibrated | — | 0.5% (0 AD) | — | `CulturalSociologyEngine` |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 168.26% | 🔴 Severe drift | 0 AD | 185.7% (2 AD) | — | `InstitutionalEngine` |
+| 👥 Global Demographic Population (worldPopulation) | 13.04% | 🟡 Moderate drift | -1198 AD | 16.4% (-1194 AD) | 📈 Divergent (compounding) | `DemographicEngine` |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 13.11% | 🟡 Moderate drift | -1200 AD | 13.1% (-1190 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (-1200 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 10.90% | 🟡 Moderate drift | -1200 AD | 10.9% (-1200 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 92.09% | 🔴 Severe drift | -1200 AD | 93.8% (-1198 AD) | ➖ Stable Offset (Uniform) | `SociologyEngine (Capital)` |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 11.19% | 🟡 Moderate drift | -1198 AD | 13.8% (-1194 AD) | 📈 Divergent (compounding) | `EcologyEngine (Biomass)` |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 3.16% | 🟢 Calibrated | — | 3.3% (-1200 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3.70% | 🟢 Calibrated | — | 3.7% (-1200 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
+| 📖 Global Literacy Rate (%) (literacyRate) | 2.53% | 🟢 Calibrated | — | 2.6% (-1200 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 123.84% | 🔴 Severe drift | -1200 AD | 148.6% (-1190 AD) | 📈 Divergent (compounding) | `InstitutionalEngine` |
 
 #### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
 
 | Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
 |---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 3 | 41.65 | 37.72 ± 3.40 | [33.88 ; 41.56] | 36.10 [35.44 - 41.62] | 1.635 | *** (p < 0.001) |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 3 | 13.00 | 11.10 ± 0.00 | [11.10 ; 11.10] | 11.10 [11.10 - 11.10] | 2006.161 | *** (p < 0.001) |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 3 | 470.00 | 470.00 ± 0.01 | [469.99 ; 470.01] | 470.00 [469.99 - 470.00] | 0.000 | ns |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 3 | 0.85 | 0.78 ± 0.00 | [0.78 ; 0.78] | 0.78 [0.78 - 0.78] | 1752.487 | *** (p < 0.001) |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 3 | 4.53 | 0.42 ± 0.25 | [0.14 ; 0.69] | 0.28 [0.27 - 0.70] | 23.671 | *** (p < 0.001) |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 3 | 0.49 | 0.72 ± 0.06 | [0.65 ; 0.80] | 0.69 [0.68 - 0.80] | 5.095 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 3 | 5.00 | 4.97 ± 0.00 | [4.97 ; 4.97] | 4.97 [4.97 - 4.97] | 310.251 | *** (p < 0.001) |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3 | 275.00 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 1413.422 | *** (p < 0.001) |
-| 📖 Global Literacy Rate (%) (literacyRate) | 3 | 3.00 | 2.98 ± 0.00 | [2.98 ; 2.99] | 2.98 [2.98 - 2.99] | 12.426 | *** (p < 0.001) |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 3 | 10.00 | 26.83 ± 2.63 | [23.86 ; 29.81] | 28.10 [23.81 - 28.58] | 9.054 | *** (p < 0.001) |
+| 👥 Global Demographic Population (worldPopulation) | 11 | 21.76 | 18.92 ± 1.09 | [18.27 ; 19.57] | 18.42 [18.26 - 19.32] | 3.664 | *** (p < 0.001) |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 11 | 14.00 | 12.17 ± 0.00 | [12.16 ; 12.17] | 12.17 [12.16 - 12.17] | 879.301 | *** (p < 0.001) |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 11 | 475.97 | 475.97 ± 0.02 | [475.96 ; 475.98] | 475.97 [475.96 - 475.99] | 0.000 | ns |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 11 | 0.91 | 0.81 ± 0.00 | [0.81 ; 0.81] | 0.81 [0.81 - 0.81] | 1046.728 | *** (p < 0.001) |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 11 | 9.33 | 0.74 ± 0.13 | [0.66 ; 0.81] | 0.75 [0.61 - 0.86] | 97.131 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 11 | 0.23 | 0.20 ± 0.01 | [0.20 ; 0.21] | 0.20 [0.20 - 0.20] | 3.972 | *** (p < 0.001) |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 11 | 0.85 | 0.82 ± 0.00 | [0.82 ; 0.82] | 0.82 [0.82 - 0.82] | 11.357 | *** (p < 0.001) |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 11 | 270.00 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 0.000 | ns |
+| 📖 Global Literacy Rate (%) (literacyRate) | 11 | 1.11 | 1.09 ± 0.01 | [1.08 ; 1.09] | 1.09 [1.08 - 1.09] | 4.562 | *** (p < 0.001) |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 11 | 14.78 | 33.07 ± 3.92 | [30.76 ; 35.39] | 34.75 [29.42 - 36.33] | 6.609 | *** (p < 0.001) |
 
 ---
 
+### 🔎 Scenario: `Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique` (`RUN-PAX-ROMANA---STABILIT--AUGUST-ENNE--AN-0----AN-50----CONTINUIT--BIOPHYSIQUE-2192`)
+
+| Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
+|---|---|---|---|---|---|---|
+| 👥 Global Demographic Population (worldPopulation) | 18.45% | 🟡 Moderate drift | 5 AD | 36.0% (15 AD) | 📈 Divergent (compounding) | `DemographicEngine` |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 14.61% | 🟡 Moderate drift | 0 AD | 14.6% (15 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (0 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 7.93% | 🟢 Calibrated | — | 8.0% (0 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 93.00% | 🔴 Severe drift | 0 AD | 94.2% (1 AD) | 〰️ Oscillating Cycle | `SociologyEngine (Capital)` |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 28.62% | 🔴 Severe drift | 4 AD | 55.3% (15 AD) | 📈 Divergent (compounding) | `EcologyEngine (Biomass)` |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 2.30% | 🟢 Calibrated | — | 2.6% (0 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 1.81% | 🟢 Calibrated | — | 1.8% (0 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
+| 📖 Global Literacy Rate (%) (literacyRate) | 1.84% | 🟢 Calibrated | — | 2.0% (0 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 176.01% | 🔴 Severe drift | 0 AD | 197.1% (8 AD) | 〰️ Oscillating Cycle | `InstitutionalEngine` |
+
+#### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
+
+| Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
+|---|---|---|---|---|---|---|---|
+| 👥 Global Demographic Population (worldPopulation) | 16 | 53.02 | 62.82 ± 7.25 | [59.26 ; 66.37] | 63.89 [56.66 - 70.34] | 1.912 | *** (p < 0.001) |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 16 | 12.99 | 11.10 ± 0.00 | [11.09 ; 11.10] | 11.10 [11.09 - 11.10] | 422.450 | *** (p < 0.001) |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 16 | 469.97 | 469.97 ± 0.02 | [469.96 ; 469.98] | 469.97 [469.95 - 469.99] | 0.000 | ns |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 16 | 0.85 | 0.78 ± 0.00 | [0.78 ; 0.78] | 0.78 [0.78 - 0.78] | 368.633 | *** (p < 0.001) |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 16 | 5.75 | 0.40 ± 0.05 | [0.38 ; 0.43] | 0.40 [0.38 - 0.44] | 163.091 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 16 | 0.62 | 0.80 ± 0.12 | [0.74 ; 0.86] | 0.81 [0.70 - 0.93] | 2.093 | *** (p < 0.001) |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 16 | 5.00 | 4.88 ± 0.01 | [4.88 ; 4.89] | 4.88 [4.88 - 4.89] | 25.303 | *** (p < 0.001) |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 16 | 275.03 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 294.632 | *** (p < 0.001) |
+| 📖 Global Literacy Rate (%) (literacyRate) | 16 | 3.01 | 2.95 ± 0.01 | [2.95 ; 2.96] | 2.95 [2.95 - 2.96] | 7.147 | *** (p < 0.001) |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 16 | 10.25 | 28.30 ± 1.66 | [27.49 ; 29.11] | 28.85 [28.16 - 29.45] | 15.198 | *** (p < 0.001) |
+
+---
+
+### 🔎 Scenario: `Ramesses II, Pax Aegyptiaca & Monumental Builders (-1279 BCE)` (`RUN-RAMESSES-II--PAX-AEGYPTIACA---MONUMENTAL-BUILDERS---1279-BCE--8737`)
+
+| Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
+|---|---|---|---|---|---|---|
+| 👥 Global Demographic Population (worldPopulation) | 65.32% | 🔴 Severe drift | -1278 AD | 71.5% (-1259 AD) | ➖ Stable Offset (Uniform) | `DemographicEngine` |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 12.64% | 🟡 Moderate drift | -1279 AD | 12.7% (-1259 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (-1279 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 10.95% | 🟡 Moderate drift | -1279 AD | 11.0% (-1279 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 1384.56% | 🔴 Severe drift | -1279 AD | 8332.8% (-1259 AD) | 📈 Divergent (compounding) | `SociologyEngine (Capital)` |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 65.97% | 🔴 Severe drift | -1278 AD | 71.9% (-1259 AD) | ➖ Stable Offset (Uniform) | `EcologyEngine (Biomass)` |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 3.25% | 🟢 Calibrated | — | 3.3% (-1279 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3.70% | 🟢 Calibrated | — | 3.7% (-1277 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
+| 📖 Global Literacy Rate (%) (literacyRate) | 2.60% | 🟢 Calibrated | — | 2.6% (-1279 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 200.32% | 🔴 Severe drift | -1279 AD | 204.1% (-1260 AD) | 〰️ Oscillating Cycle | `InstitutionalEngine` |
+
+#### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
+
+| Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
+|---|---|---|---|---|---|---|---|
+| 👥 Global Demographic Population (worldPopulation) | 21 | 0.44 | 0.15 ± 0.07 | [0.12 ; 0.18] | 0.14 [0.13 - 0.14] | 6.174 | *** (p < 0.001) |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 21 | 14.00 | 12.23 ± 0.01 | [12.23 ; 12.23] | 12.23 [12.23 - 12.24] | 453.140 | *** (p < 0.001) |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 21 | 476.34 | 476.34 ± 0.03 | [476.33 ; 476.36] | 476.34 [476.32 - 476.37] | 0.000 | ns |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 21 | 0.91 | 0.81 ± 0.00 | [0.81 ; 0.81] | 0.81 [0.81 - 0.81] | 609.340 | *** (p < 0.001) |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 21 | 0.20 | 2.93 ± 4.80 | [0.88 ; 4.99] | 0.51 [0.23 - 2.88] | 0.806 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 21 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 6.351 | *** (p < 0.001) |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 21 | 0.81 | 0.78 ± 0.00 | [0.78 ; 0.78] | 0.78 [0.78 - 0.78] | 7.676 | *** (p < 0.001) |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 21 | 270.00 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 0.000 | ns |
+| 📖 Global Literacy Rate (%) (literacyRate) | 21 | 1.01 | 0.98 ± 0.01 | [0.98 ; 0.99] | 0.98 [0.98 - 0.99] | 4.292 | *** (p < 0.001) |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 21 | 14.69 | 44.12 ± 0.65 | [43.84 ; 44.40] | 44.43 [43.59 - 44.68] | 64.017 | *** (p < 0.001) |
+
+---
+
+
+
+## 🗺️ 4. 2D Cartographic Fidelity & Spatial Discrepancy Synthesis (Snapshots vs Ground Truth Rasters)
+
+> Direct pixel-to-pixel evaluation between empirical reference rasters (NOAA ETOPO / HYDE 3.4 / Maddison) and projected simulation grids.
+
+| Scenario | Resolution | Historical Epoch | SSIM (Structure) | Pearson Spatial (r) | Jaccard IoU | Peak Delta Coordinates | Cartographic Anomaly Diagnostic |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| **Guerres Mondiales, Rupture Totalitaire & Ère Nucléaire (1914)** | Res 3 | 1914 | **0.3999** | **+0.6168** | 62.3% | 57.0°N, 60.5°E | Ural Mobilization vs Western Front Over-attrition |
+| **La Peste Noire & Inversion Économique Post-Féodale (1347)** | Res 3 | 1347 | **0.3804** | **+0.6113** | 54.1% | 45.7°N, 8.4°E | Northern Italy Maritime Entry Discontinuity |
+| **Ramesses II, Pax Aegyptiaca & Monumental Builders (-1279 BCE)** | Res 6 | -1279 | **0.4495** | **+0.5244** | 48.2% | 33.0°N, 35.2°E | Levant Border Window Discontinuity |
+| **Effondrement de l'Âge du Bronze Récent & Peuples de la Mer (-1200)** | Res 6 | -1200 | **0.3621** | **+0.5110** | 43.5% | 35.3°N, 35.9°E | Ugarit & Levantine Maritime Raid Destruction Horizon |
+| **Peste Antonine & Crise Impériale sous Marc Aurèle (165-180)** | Res 6 | 165 | **0.4210** | **+0.5890** | 51.2% | 36.2°N, 37.1°E | Syrian Limes & Mesopotamia Legionary Vector |
+| **Pax Romana & Stabilité Augustéenne (An 0 -> An 50) : Continuité Biophysique** | Res 6 | 0 | **0.4632** | **+0.6340** | 57.8% | 41.9°N, 12.5°E | Rome Megacity Agglomeration Core |
+
+---
 

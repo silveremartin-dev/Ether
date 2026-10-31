@@ -193,6 +193,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Dernier Maximum Glaciaire & Solutréen (-20000)",
+  "displayName" : "Last Glacial Maximum & Solutrean (-20,000 BP)",
   "displayDescription" : "❄ SCÉNARIO PALÉOLITHIQUE : Apogée Glaciaire & Refuges Solutréens (-20 000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le paroxysme du Dernier Maximum Glaciaire (LGM) avec un niveau marin abaissé de 120 mètres (exposant le Doggerland, le Sundaland, le Sahul et la Béringie), les inlandsis massifs (Laurentide, Fennoscandie) et l'industrie lithique foliacée solutréenne.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Concentration des populations dans les refuges thermiques (péninsule Ibérique, zone franco-cantabrique, Balkans).\n• Maîtrise technologique du froid extrême (vêtements ajustés à l'aiguille à chas, fosses-congélateurs périglaciaires).\n• Réexpansion démographique post-glaciaire rapide lors du réchauffement de Bølling-Allerød.\n"
 }

@@ -191,6 +191,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Début de l'Âge du Fer & Méditerranée Antique (-1000)",
+  "displayName" : "Early Iron Age & Ancient Mediterranean (-1000 BCE)",
   "displayDescription" : "⚔ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n"
 }

@@ -188,6 +188,6 @@
   "minLng" : -20.0,
   "maxLng" : 45.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Le Sahara Vert & Période Humide Africaine (-6000)",
+  "displayName" : "Green Sahara & African Humid Period (-6000 BP)",
   "displayDescription" : "\uD83C\uDF34 SCÉNARIO PALÉOCLIMATIQUE : Le Sahara Vert & Période Humide Africaine (-6000 av. J.-C.)\n\nL'intensification de la mousson africaine transforme le désert du Sahara en une savane verdoyante parsemée de mégalacs (Mégalac Tchad). Les populations de pasteurs prospèrent avant la désertification de l'Holocène moyen."
 }

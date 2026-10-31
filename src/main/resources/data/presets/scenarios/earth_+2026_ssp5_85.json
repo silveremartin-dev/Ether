@@ -191,6 +191,6 @@
   "climateTickFrequency" : 5,
   "parallelThreadCount" : 0,
   "tier2CliodynamicsEnabled" : true,
-  "displayName" : "SSP5-8.5 Développement Fossile & Climat (2026)",
+  "displayName" : "Business As Usual: Fossil Fuel Reliance & Warming (SSP5-8.5)",
   "displayDescription" : "\uD83D\uDD25 SCÉNARIO FUTURISTE : Trajectoire Énergétique SSP5-8.5 (2026 apr. J.-C.)\n\nDéveloppement intensif basé sur les combustibles fossiles, réchauffement climatique accéléré, élévation du niveau de la mer et stress agricole malthusien."
 }

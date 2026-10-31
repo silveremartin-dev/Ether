@@ -193,6 +193,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Projection Prospective Ether (2026-2100) : Dynamique Biophysique Standard",
+  "displayName" : "Ether Prospective Projection (2026-2100): Standard Biophysical Dynamics",
   "displayDescription" : "\uD83C\uDF10 SCÉNARIO FUTUR : Projection Biophysique Standard du Moteur Ether (2026-2100)\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE & ÉCOLOGIQUE (T₀ = 2026)]\nTrajectoire prospective non-contrainte issue de la physique standard du moteur Ether.\nIntègre l'état biophysique réel de 2026 (CO₂ à 423 ppm, température +1.28°C, déplétion pétrolière Hotelling,\nabaissement des teneurs minérales de Bihouix, exergue Kümmel-Ayres et rendements décroissants).\n\n[OBJECTIF SCIENTIFIQUE & FALSIFICATION]\nCe scénario unique sert de base de projection endogène du moteur Ether, comparé ensuite\naux 5 modèles exogènes de référence du GIEC/IIASA (SSP1, SSP2, SSP3, SSP4, SSP5) et aux projections ONU (UN WPP 2024).\n"
 }

@@ -383,6 +383,7 @@ public class SimulationPipeline {
         SoilNutrientNPKEngine.processSoilNutrients(landCells, dtYears);
         DeforestationErosionEngine.processDeforestationErosion(landCells, dtYears);
         AquiferDepletionEngine.processAquiferDepletion(landCells, dtYears);
+        org.ether.society.engines.tier1.ManningStricklerHydrodynamicsEngine.processRiverHydrodynamics(landCells, dtYears);
         EcologicalDegradationEngine.processEcologicalDegradation(landCells, avgTech, dtYears);
         MegafaunaEcosystemEngine.processMegafaunaEcosystem(landCells, dtYears);
 

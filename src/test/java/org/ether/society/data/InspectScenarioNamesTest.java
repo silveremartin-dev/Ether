@@ -89,6 +89,7 @@ public class InspectScenarioNamesTest {
                 if (ENGLISH_NAMES.containsKey(key)) {
                     String enName = ENGLISH_NAMES.get(key);
                     obj.put("name", enName);
+                    obj.put("displayName", enName);
                     // Also clean description header if it starts with SCÉNARIO HISTORIQUE
                     if (obj.has("description")) {
                         String desc = obj.get("description").asText();

@@ -49,38 +49,38 @@ public class ScenarioFalsificationReportTest {
     ) {}
 
     private static final Map<String, SpatialFidelityMetric> SPATIAL_BENCHMARKS = Map.of(
-            "ramses_ii_-1279", new SpatialFidelityMetric(
+            "ramesses_ii_-1279", new SpatialFidelityMetric(
                     "Res 6", -1279, 0.4495, 0.5244, 0.4820, 18.42,
                     33.0, 35.2, 114.5,
                     "Levant Border Window Discontinuity",
                     "The regional simulation bounding box of Ramesses II truncates at Lat 36°N, Lng 42°E. In historical empirical reality of the New Kingdom, Levantine vassal city-states (Byblos, Tyre, Ugarit) exhibited dense populations. In the simulation run, cohorts remain confined to the Nile Delta and alluvial valley, creating an artificial population drop along the Levantine coastline."
             ),
-            "peste_noire_1347", new SpatialFidelityMetric(
+            "black_death_1347", new SpatialFidelityMetric(
                     "Res 3", 1347, 0.3804, 0.6113, 0.5410, 21.15,
                     45.7, 8.4, 138.2,
                     "Northern Italy Maritime Entry Discontinuity",
                     "In October 1347, the Black Death arrived via Genoese galleys in Messina and rapidly struck Genoa and Venice. On the empirical 1347 cartography, Italian population density collapses abruptly while continental Europe remains unaffected. In the Resolution 3 metapopulation model, terrestrial diffusion propagates in overly concentric and smooth waves, underestimating the initial focal shock in Lombardy and Liguria."
             ),
-            "guerres_mondiales_1914", new SpatialFidelityMetric(
+            "world_wars_1914", new SpatialFidelityMetric(
                     "Res 3", 1914, 0.3999, 0.6168, 0.6230, 24.80,
                     57.0, 60.5, 142.1,
                     "Ural Mobilization vs Western Front Over-attrition",
                     "In the 1914 scenario, peak spatial divergence concentrates in the Urals and European Russia. The war engine levied uniform capital depletion across all national cells, excessively depleting the Russian rear relative to historical reality where industrial manufacturing mobilized eastward."
             ),
-            "peste_antonine_165", new SpatialFidelityMetric(
+            "antonine_plague_165", new SpatialFidelityMetric(
                     "Res 6", 165, 0.4210, 0.5890, 0.5120, 19.30,
                     36.2, 37.1, 108.4,
                     "Syrian Limes & Mesopotamia Legionary Vector",
                     "The epidemic imported by legions returning from Ctesiphon struck Syria and Anatolia before reaching Rome. The model diffuses uniformly along imperial trade roads rather than concentrating the initial wave along the Ctesiphon-Antioch legionary axis."
             ),
-            "pax_romana_auguste_0", new SpatialFidelityMetric(
+            "pax_romana_augustus_0", new SpatialFidelityMetric(
                     "Res 6", 0, 0.4632, 0.6340, 0.5780, 17.65,
                     41.9, 12.5, 96.2,
                     "Rome Megacity Agglomeration Core",
                     "Slight underestimation of the steep agglomeration density gradient of Rome (approaching 1 million inhabitants under Augustus), accompanied by minor over-dispersion of agrarian population across central Italian rural cells."
             ),
-            "effondrement_age_du_bronze_-1200", new SpatialFidelityMetric(
-                    "Res 5", -1200, 0.3621, 0.5110, 0.4350, 23.50,
+            "bronze_age_collapse_-1200", new SpatialFidelityMetric(
+                    "Res 6", -1200, 0.3621, 0.5110, 0.4350, 23.50,
                     35.3, 35.9, 122.8,
                     "Ugarit & Levantine Maritime Raid Destruction Horizon",
                     "The Sea Peoples collapse devastated coastal palatial centers heterogeneously (Ugarit razed, Egypt resisting). The simulation produces a smoother regional demographic contraction than the abrupt archaeological destruction horizons."
@@ -89,6 +89,7 @@ public class ScenarioFalsificationReportTest {
 
     @Test
     public void generateFalsificationAuditReport() throws Exception {
+        org.ether.society.i18n.I18n.setLanguage(org.ether.society.i18n.Language.ENGLISH);
         SimulationRunRepository repo = SimulationRunRepository.getInstance();
         repo.clear();
 
@@ -125,18 +126,18 @@ public class ScenarioFalsificationReportTest {
                 if (!part.isBlank()) targetDirNames.add(part.trim());
             }
         } else {
-            // Automatically find the most recent runs for each target scenario
+            // Automatically find the most recent runs for each target scenario by chronological anchor
             List<String> scenarioKeywords = List.of(
-                    "WORLD-WARS",
-                    "BLACK-DEATH",
-                    "RAMESSES-II",
-                    "BRONZE-AGE-COLLAPSE",
-                    "ANTONINE-PLAGUE",
+                    "1914",
+                    "1347",
+                    "1279",
+                    "1200",
+                    "165",
                     "PAX-ROMANA"
             );
             for (String kw : scenarioKeywords) {
                 try (var stream = Files.list(savesDir)) {
-                    stream.filter(p -> Files.isDirectory(p) && p.getFileName().toString().contains(kw))
+                    stream.filter(p -> Files.isDirectory(p) && p.getFileName().toString().toUpperCase().contains(kw))
                             .max(Comparator.comparingLong(p -> p.toFile().lastModified()))
                             .ifPresent(p -> targetDirNames.add(p.getFileName().toString()));
                 }
@@ -263,12 +264,12 @@ public class ScenarioFalsificationReportTest {
         String safeName = name.toLowerCase(Locale.ROOT)
                 .replaceAll("[^a-z0-9]+", "_")
                 .replaceAll("^_+|_+$", "");
-        if (safeName.contains("1914") || safeName.contains("guerre") || safeName.contains("world_war")) return "guerres_mondiales_1914";
-        if (safeName.contains("1347") || (safeName.contains("peste") && !safeName.contains("antonin")) || safeName.contains("black_death")) return "peste_noire_1347";
-        if (safeName.contains("1279") || safeName.contains("rams")) return "ramses_ii_-1279";
-        if (safeName.contains("1200") || safeName.contains("bronze") || safeName.contains("sea_people")) return "effondrement_age_du_bronze_-1200";
-        if (safeName.contains("165") || safeName.contains("antonin")) return "peste_antonine_165";
-        if (safeName.contains("august") || safeName.contains("an_0") || safeName.contains("year_0") || safeName.contains("romana")) return "pax_romana_auguste_0";
+        if (safeName.contains("1914") || safeName.contains("guerre") || safeName.contains("world_war")) return "world_wars_1914";
+        if (safeName.contains("1347") || safeName.contains("black_death") || (safeName.contains("peste") && !safeName.contains("antonin"))) return "black_death_1347";
+        if (safeName.contains("1279") || safeName.contains("ramess") || safeName.contains("rams")) return "ramesses_ii_-1279";
+        if (safeName.contains("1200") || safeName.contains("bronze") || safeName.contains("sea_people")) return "bronze_age_collapse_-1200";
+        if (safeName.contains("165") || safeName.contains("antonin")) return "antonine_plague_165";
+        if (safeName.contains("august") || safeName.contains("an_0") || safeName.contains("year_0") || safeName.contains("romana")) return "pax_romana_augustus_0";
         return safeName;
     }
 }

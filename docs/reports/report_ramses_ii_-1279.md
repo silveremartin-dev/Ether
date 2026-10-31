@@ -2,10 +2,9 @@
 
 **Scenario**: `Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)`
 
-**Simulation Run Identifier**: `RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--1594`
+**Simulation Run Identifier**: `RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--107`
 
-**Snapshots & Save Directory**: `saves/RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--1594/`
-
+**Snapshots & Save Directory**: `saves/RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--107/`
 
 # 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT
 
@@ -15,40 +14,57 @@
 
 | # | Scenario | Fidelity Score | Global MAPE | R² Goodness of Fit | First Rupture (T_div) | Diagnostic Status |
 |---|---|---|---|---|---|---|
-| 🥇 1 | **Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)** | **70.3%** | 29.70% | 0.703 | -1279 CE | 🔴 Severe Divergence |
+| 🥇 1 | **Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)** | **32.0%** | 68.01% | 0.320 | -1279 CE | 🔴 Severe Divergence |
 
 ## 📊 3. Deep Diagnostic Analysis by Scenario
 
-### 🔎 Scenario: `Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)` (`RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--1594`)
+### 🔎 Scenario: `Ramsès II, Pax Aegyptiaca & Bâtisseurs Monumentaux (-1279)` (`RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--107`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 14.69% | 🟡 Moderate drift | -1278 AD | 29.4% (-1278 AD) | — | `DemographicEngine` |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 12.58% | 🟡 Moderate drift | -1279 AD | 12.6% (-1278 AD) | — | `H3SimulationEngine` |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (-1279 AD) | — | `H3SimulationEngine` |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 10.96% | 🟡 Moderate drift | -1279 AD | 11.0% (-1279 AD) | — | `H3SimulationEngine` |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 89.38% | 🔴 Severe drift | -1279 AD | 89.8% (-1278 AD) | — | `SociologyEngine (Capital)` |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 44.53% | 🔴 Severe drift | -1279 AD | 69.4% (-1279 AD) | — | `EcologyEngine (Biomass)` |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 0.81% | 🟢 Calibrated | — | 0.8% (-1278 AD) | — | `SettlementEngine` |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3.70% | 🟢 Calibrated | — | 3.7% (-1279 AD) | — | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (%) (literacyRate) | 0.65% | 🟢 Calibrated | — | 0.7% (-1279 AD) | — | `CulturalSociologyEngine` |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 89.95% | 🔴 Severe drift | -1279 AD | 90.9% (-1278 AD) | — | `InstitutionalEngine` |
+| 👥 Global Demographic Population (worldPopulation) | 46.86% | 🔴 Severe drift | -1278 AD | 54.2% (-1270 AD) | 📈 Divergent (compounding) | `DemographicEngine` |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 12.60% | 🟡 Moderate drift | -1279 AD | 12.6% (-1270 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (-1279 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 0.00% | 🟢 Calibrated | — | 0.0% (-1279 AD) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 97.30% | 🔴 Severe drift | -1279 AD | 100.0% (-1279 AD) | ➖ Stable Offset (Uniform) | `SociologyEngine (Capital)` |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 47.91% | 🔴 Severe drift | -1278 AD | 55.0% (-1270 AD) | ➖ Stable Offset (Uniform) | `EcologyEngine (Biomass)` |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 252.72% | 🔴 Severe drift | -1279 AD | 252.9% (-1273 AD) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 3.70% | 🟢 Calibrated | — | 3.7% (-1277 AD) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
+| 📖 Global Literacy Rate (%) (literacyRate) | 0.92% | 🟢 Calibrated | — | 0.9% (-1279 AD) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 82.08% | 🔴 Severe drift | -1279 AD | 101.5% (-1270 AD) | 〰️ Oscillating Cycle | `InstitutionalEngine` |
 
 #### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)
 
 | Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
 |---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 2 | 0.28 | 0.24 ± 0.06 | [0.16 ; 0.32] | 0.28 [0.20 - 0.28] | 1.002 | *** (p < 0.001) |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 2 | 14.00 | 12.24 ± 0.00 | [12.24 ; 12.24] | 12.24 [12.24 - 12.24] | 3957.286 | *** (p < 0.001) |
-| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 2 | 476.39 | 476.39 ± 0.00 | [476.39 ; 476.40] | 476.39 [476.39 - 476.39] | 0.000 | ns |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 2 | 0.91 | 0.81 ± 0.00 | [0.81 ; 0.81] | 0.81 [0.81 - 0.81] | 5411.243 | *** (p < 0.001) |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 2 | 0.13 | 0.01 ± 0.00 | [0.01 ; 0.01] | 0.01 [0.01 - 0.01] | 221.181 | *** (p < 0.001) |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 2 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.01] | 0.01 [0.00 - 0.01] | 1.792 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (%) (urbanizationRate) | 2 | 0.80 | 0.79 ± 0.00 | [0.79 ; 0.79] | 0.79 [0.79 - 0.79] | 16.618 | *** (p < 0.001) |
-| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 2 | 270.00 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 0.000 | ns |
-| 📖 Global Literacy Rate (%) (literacyRate) | 2 | 1.00 | 0.99 ± 0.00 | [0.99 ; 0.99] | 0.99 [0.99 - 0.99] | 10.650 | *** (p < 0.001) |
-| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 2 | 14.68 | 27.89 ± 0.21 | [27.60 ; 28.17] | 28.03 [27.74 - 28.03] | 90.163 | *** (p < 0.001) |
+| 👥 Global Demographic Population (worldPopulation) | 10 | 3.51 | 1.86 ± 0.58 | [1.51 ; 2.22] | 1.69 [1.64 - 1.74] | 4.033 | *** (p < 0.001) |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 10 | 14.00 | 12.24 ± 0.00 | [12.23 ; 12.24] | 12.24 [12.23 - 12.24] | 926.091 | *** (p < 0.001) |
+| ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 10 | 476.37 | 476.37 ± 0.02 | [476.36 ; 476.38] | 476.37 [476.36 - 476.38] | 0.000 | ns |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 10 | 0.91 | 0.91 ± 0.00 | [0.91 ; 0.91] | 0.91 [0.91 - 0.91] | 0.000 | ns |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 10 | 1.59 | 0.04 ± 0.02 | [0.03 ; 0.05] | 0.05 [0.05 - 0.05] | 144.817 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 10 | 0.04 | 0.02 ± 0.01 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 4.210 | *** (p < 0.001) |
+| 🏙️ Urbanization Rate (%) (urbanizationRate) | 10 | 0.80 | 2.83 ± 0.01 | [2.83 ; 2.83] | 2.83 [2.83 - 2.84] | 414.031 | *** (p < 0.001) |
+| 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 10 | 270.00 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 0.000 | ns |
+| 📖 Global Literacy Rate (%) (literacyRate) | 10 | 1.00 | 0.99 ± 0.00 | [0.99 ; 1.00] | 1.00 [0.99 - 1.00] | 3.286 | *** (p < 0.001) |
+| 📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability) | 10 | 14.68 | 25.30 ± 6.38 | [21.35 ; 29.26] | 27.14 [25.78 - 28.13] | 2.352 | *** (p < 0.001) |
 
 ---
 
+
+
+## 🗺️ 2D Cartographic Fidelity & Spatial Discrepancy Assessment
+
+Direct comparison between simulated 2D density snapshot and empirical ground truth raster (`earth_-1279_density.png`):
+
+| Cartographic Metric | Computed Value | Physical Threshold / Benchmark | Status |
+|---|:---:|:---:|:---:|
+| **SSIM (Structural Similarity Index)** | **0.4495** | $\ge 0.50$ (macro-spatial coherence) | 🟡 Moderate Deviation |
+| **Pearson Spatial Correlation (r)** | **+0.5244** | $\ge +0.60$ (gradient alignment) | 🟡 Imperfect Gradient |
+| **Jaccard Ecumene Overlap (IoU)** | **48.20%** | $\ge 50.0\%$ (inhabited surface area) | 🟡 Dispersed |
+| **RMSE (Spatial Pixel Residual Error)** | **18.42** | $< 25.0$ | 🟢 Conformant |
+| **Peak Spatial Divergence (Δ_max)** | **114.50** | `Lat: 33.0°N, Lng: 35.2°E` | 📍 Hotspot Anomaly |
+
+### 🔍 Detected Cartographic Anomaly Diagnostic
+- **Characterization**: `Levant Border Window Discontinuity`
+- **Rupture Analysis**: The regional simulation bounding box of Ramesses II truncates at Lat 36°N, Lng 42°E. In historical empirical reality of the New Kingdom, Levantine vassal city-states (Byblos, Tyre, Ugarit) exhibited dense populations. In the simulation run, cohorts remain confined to the Nile Delta and alluvial valley, creating an artificial population drop along the Levantine coastline.
 

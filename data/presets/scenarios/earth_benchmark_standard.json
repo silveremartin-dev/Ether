@@ -146,5 +146,6 @@
   "autoExportGeoJson" : false,
   "autoExportCsv" : false,
   "saveDirectory" : "saves",
-  "referenceTrajectoryModel" : "HYDE_MADDISON"
+  "referenceTrajectoryModel" : "HYDE_MADDISON",
+  "displayName" : "Benchmark Standard Planetary Scenario"
 }

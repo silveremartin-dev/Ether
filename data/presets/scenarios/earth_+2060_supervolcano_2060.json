@@ -185,6 +185,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Éruption Supervolcanique & Hiver Volcanique (2060)",
+  "displayName" : "Supervolcano Cataclysm (2060)",
   "displayDescription" : "\uD83C\uDF0B SCÉNARIO CATACLYSMIQUE : Éruption VEI-8 & Refroidissement Décennal (2060 apr. J.-C.)\n\nInjection massive de SO2, hiver volcanique décennal, effondrement des moussons globales et goulot d'étranglement de la population."
 }

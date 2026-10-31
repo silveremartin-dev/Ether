@@ -199,6 +199,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Sortie d'Afrique & Expansion Homo Sapiens (-100000)",
+  "displayName" : "Out of Africa & Homo Sapiens Expansion (-100,000 BP)",
   "displayDescription" : "\uD83C\uDF0D SCÉNARIO PALÉOLITHIQUE : Berceau Africain, Traversée des Continents & Out of Africa (-100 000 av. J.-C.)\n\nModélise la dynamique démographique et l'expansion spatiale des premières populations d'Homo Sapiens depuis l'Afrique de l'Est à travers le Moyen-Orient, l'Eurasie, l'Océanie et les Amériques."
 }

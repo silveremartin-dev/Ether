@@ -195,6 +195,6 @@
   "minLng" : 140.0,
   "maxLng" : -120.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Béringie & Peuplement des Amériques (-25000)",
+  "displayName" : "Beringia & Peopling of the Americas (-25,000 BP)",
   "displayDescription" : "\uD83C\uDFD4 SCÉNARIO PALÉOLITHIQUE : Le Pont Terrestre de Béringie & Incursion Américaine (-25 000 av. J.-C.)\n\nModélise l'isolation des populations paléolithiques sur le pont terrestre de Béringie pendant le Dernier Maximum Glaciaire (LGM), suivie de leur dispersion à travers le corridor libre de glace et la route côtière du Pacifique."
 }

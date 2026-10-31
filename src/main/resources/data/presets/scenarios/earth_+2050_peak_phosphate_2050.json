@@ -188,6 +188,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Pénurie de Phosphate & Crise Malthusienne (2050)",
+  "displayName" : "Mineral Phosphate Cliff & N-P-K Soil Crisis (2050)",
   "displayDescription" : "\uD83C\uDF3E SCÉNARIO DE CRISE : Épuisement des Phosphates & Tension Alimentaire (2050 apr. J.-C.)\n\nÉpuisement des réserves de phosphate minéral, flambée des prix des engrais, baisse des rendements agricoles et crise démographique."
 }

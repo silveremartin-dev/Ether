@@ -190,6 +190,6 @@
   "minLng" : 25.0,
   "maxLng" : 55.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Croissant Fertile & Néolithique (-8000)",
+  "displayName" : "Fertile Crescent & Neolithic Agriculture (-8000 BCE)",
   "displayDescription" : "\uD83C\uDF3E SCÉNARIO HISTORIQUE : L'Aube de l'Agriculture au Croissant Fertile (-8000 av. J.-C.)\n\nCe scénario modélise la transition majeure du Néolithique entre l'économie de subsistance des chasseurs-cueilleurs et l'émergence des premières communautés agricoles sédentaires le long du Tigre, de l'Euphrate, du Nil et de la côte Levantine."
 }
