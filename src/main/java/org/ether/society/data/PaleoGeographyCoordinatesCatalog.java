@@ -148,6 +148,27 @@ public final class PaleoGeographyCoordinatesCatalog {
     /** Beringia mammoth steppe corridor across Siberia, Chukotka and Alaska. */
     public static final double[][] ROUTE_BERINGIA_STEPPE_CORRIDOR = PaleoGeometryCatalog.loadRoute("ROUTE_BERINGIA_STEPPE_CORRIDOR");
 
+    /** Southern coastal dispersal route out of Africa across the Indian Ocean rim to Sahul (~65,000–50,000 BP). */
+    public static final double[][] ROUTE_OUT_OF_AFRICA_SOUTHERN_DISPERSAL = PaleoGeometryCatalog.loadRoute("ROUTE_OUT_OF_AFRICA_SOUTHERN_DISPERSAL");
+
+    /** Levantine & Danubian expansion corridor into Europe (~45,000 BP Aurignacian). */
+    public static final double[][] ROUTE_OUT_OF_AFRICA_NORTHERN_LEVANTINE = PaleoGeometryCatalog.loadRoute("ROUTE_OUT_OF_AFRICA_NORTHERN_LEVANTINE");
+
+    /** Eurasian mammoth steppe highway across Central Asia to Lake Baikal and Yana (~45,000–25,000 BP). */
+    public static final double[][] ROUTE_EURASIAN_STEPPE_MAMMOTH_HIGHWAY = PaleoGeometryCatalog.loadRoute("ROUTE_EURASIAN_STEPPE_MAMMOTH_HIGHWAY");
+
+    /** Mediterranean coastal expansion artery (~45,000–40,000 BP). */
+    public static final double[][] ROUTE_MEDITERRANEAN_COASTAL_EXPANSION = PaleoGeometryCatalog.loadRoute("ROUTE_MEDITERRANEAN_COASTAL_EXPANSION");
+
+    /** East Asian coastal paleolithic expansion artery into Korea and Japan (~38,000 BP). */
+    public static final double[][] ROUTE_EAST_ASIAN_COASTAL_EXPANSION = PaleoGeometryCatalog.loadRoute("ROUTE_EAST_ASIAN_COASTAL_EXPANSION");
+
+    /** Trans-Saharan green paleocorridor across the Lake Mega-Chad and Ahaggar during humid phases. */
+    public static final double[][] ROUTE_SAHARA_GREEN_PALEOCORRIDOR = PaleoGeometryCatalog.loadRoute("ROUTE_SAHARA_GREEN_PALEOCORRIDOR");
+
+    /** Austronesian maritime voyaging expansion across Wallacea, Melanesia, Polynesia and Madagascar. */
+    public static final double[][] ROUTE_AUSTRONESIAN_MARITIME_EXPANSION = PaleoGeometryCatalog.loadRoute("ROUTE_AUSTRONESIAN_MARITIME_EXPANSION");
+
     // =========================================================================
     // GEOMETRIC UTILITIES
     // =========================================================================

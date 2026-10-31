@@ -169,6 +169,46 @@ public class MapComparisonMetrics {
     }
 
     /**
+     * Compares two multi-channel spatial images restricted to a specific geographic bounding box.
+     * Essential for windowed/regional scenarios (e.g. Nile Valley, Mediterranean, Fertile Crescent)
+     * to avoid false divergence against unsimulated regions.
+     *
+     * @param imgA simulated raster
+     * @param imgB empirical ground truth raster
+     * @param minLat minimum latitude (-90 to 90)
+     * @param maxLat maximum latitude (-90 to 90)
+     * @param minLng minimum longitude (-180 to 180)
+     * @param maxLng maximum longitude (-180 to 180)
+     * @return quantitative comparison result over the windowed sub-grid
+     */
+    public static MapComparisonResult compareImagesWindowed(
+            BufferedImage imgA, BufferedImage imgB,
+            double minLat, double maxLat, double minLng, double maxLng) {
+        if (imgA == null || imgB == null) {
+            throw new IllegalArgumentException("Input images must not be null.");
+        }
+
+        int width = Math.min(imgA.getWidth(), imgB.getWidth());
+        int height = Math.min(imgA.getHeight(), imgB.getHeight());
+
+        int minX = (int) Math.max(0, Math.floor(((minLng + 180.0) / 360.0) * width));
+        int maxX = (int) Math.min(width, Math.ceil(((maxLng + 180.0) / 360.0) * width));
+        int minY = (int) Math.max(0, Math.floor(((90.0 - maxLat) / 180.0) * height));
+        int maxY = (int) Math.min(height, Math.ceil(((90.0 - minLat) / 180.0) * height));
+
+        int subW = Math.max(1, maxX - minX);
+        int subH = Math.max(1, maxY - minY);
+
+        double[] gridA = extractLuminanceGridWindowed(imgA, minX, minY, subW, subH, width, height);
+        double[] gridB = extractLuminanceGridWindowed(imgB, minX, minY, subW, subH, width, height);
+
+        int[] catA = extractCategoryGridWindowed(imgA, minX, minY, subW, subH, width, height);
+        int[] catB = extractCategoryGridWindowed(imgB, minX, minY, subW, subH, width, height);
+
+        return compareGridsWindowed(gridA, gridB, catA, catB, subW, subH, minX, minY, width, height);
+    }
+
+    /**
      * Core mathematical comparison logic between two 1D array representations of 2D grids.
      */
     public static MapComparisonResult compareGrids(double[] gridA, double[] gridB, int[] catA, int[] catB, int width, int height) {
@@ -279,12 +319,171 @@ public class MapComparisonMetrics {
         return new MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
     }
 
+    /**
+     * Mathematical comparison logic between two 1D array representations of a windowed sub-grid.
+     */
+    public static MapComparisonResult compareGridsWindowed(
+            double[] gridA, double[] gridB, int[] catA, int[] catB,
+            int subW, int subH, int minX, int minY, int fullW, int fullH) {
+        int n = subW * subH;
+        if (gridA.length < n || gridB.length < n) {
+            throw new IllegalArgumentException("Grid array dimensions smaller than subW * subH.");
+        }
+
+        // 1. Root Mean Square Error (RMSE)
+        double sumSqErr = 0.0;
+        double maxDelta = 0.0;
+        int maxDeltaIdx = 0;
+
+        for (int i = 0; i < n; i++) {
+            double diff = Math.abs(gridA[i] - gridB[i]);
+            sumSqErr += diff * diff;
+            if (diff > maxDelta) {
+                maxDelta = diff;
+                maxDeltaIdx = i;
+            }
+        }
+        double rmse = Math.sqrt(sumSqErr / n);
+
+        // Convert max delta local index to global Lat / Lng
+        int localX = maxDeltaIdx % subW;
+        int localY = maxDeltaIdx / subW;
+        int globalX = minX + localX;
+        int globalY = minY + localY;
+        double maxDeltaLng = -180.0 + ((double) globalX / fullW) * 360.0;
+        double maxDeltaLat = 90.0 - ((double) globalY / fullH) * 180.0;
+
+        // 2. Pearson Spatial Correlation (r)
+        double meanA = calculateMean(gridA, n);
+        double meanB = calculateMean(gridB, n);
+
+        double num = 0.0;
+        double denA = 0.0;
+        double denB = 0.0;
+
+        for (int i = 0; i < n; i++) {
+            double dA = gridA[i] - meanA;
+            double dB = gridB[i] - meanB;
+            num += dA * dB;
+            denA += dA * dA;
+            denB += dB * dB;
+        }
+
+        double pearsonR = (denA > 0 && denB > 0) ? (num / (Math.sqrt(denA) * Math.sqrt(denB))) : 1.0;
+
+        // 3. Structural Similarity Index (SSIM)
+        double varA = denA / n;
+        double varB = denB / n;
+        double covAB = num / n;
+
+        double c1 = 0.01 * 0.01 * 255.0 * 255.0;
+        double c2 = 0.03 * 0.03 * 255.0 * 255.0;
+
+        double ssim = ((2.0 * meanA * meanB + c1) * (2.0 * covAB + c2)) /
+                      ((meanA * meanA + meanB * meanB + c1) * (varA + varB + c2));
+        ssim = Math.max(-1.0, Math.min(1.0, ssim));
+
+        // 4. Categorical Jaccard & Dice Coefficients
+        double jaccardIndex = 1.0;
+        double diceCoeff = 1.0;
+
+        if (catA != null && catB != null && catA.length >= n && catB.length >= n) {
+            int matchCount = 0;
+            int unionCount = 0;
+            for (int i = 0; i < n; i++) {
+                boolean activeA = (catA[i] != 0 && catA[i] != 0xFF000000);
+                boolean activeB = (catB[i] != 0 && catB[i] != 0xFF000000);
+
+                if (activeA || activeB) {
+                    unionCount++;
+                    if (catA[i] == catB[i]) {
+                        matchCount++;
+                    }
+                }
+            }
+            if (unionCount > 0) {
+                jaccardIndex = (double) matchCount / unionCount;
+                diceCoeff = (2.0 * matchCount) / (matchCount + unionCount);
+            }
+        }
+
+        // 5. Kullback-Leibler (KL) Divergence
+        double sumA = 0.0, sumB = 0.0;
+        for (int i = 0; i < n; i++) {
+            sumA += Math.max(1e-6, gridA[i]);
+            sumB += Math.max(1e-6, gridB[i]);
+        }
+
+        double klDiv = 0.0;
+        for (int i = 0; i < n; i++) {
+            double p = Math.max(1e-6, gridA[i]) / sumA;
+            double q = Math.max(1e-6, gridB[i]) / sumB;
+            klDiv += p * Math.log(p / q);
+        }
+
+        // Diagnostic Assessment Summary
+        String summary;
+        if (rmse < 10.0 && pearsonR > 0.85 && ssim > 0.80) {
+            summary = "EXCELLENT CONVERGENCE - Windowed simulated map matches ground truth cartography with high fidelity.";
+        } else if (pearsonR > 0.60 && ssim > 0.50) {
+            summary = "MODERATE FIDELITY - General regional structure is aligned, but localized shifts exist.";
+        } else {
+            summary = "HIGH DIVERGENCE - Significant regional distortion detected. Model parameter re-calibration recommended.";
+        }
+
+        return new MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
+    }
+
+    private static double[] extractLuminanceGridWindowed(
+            BufferedImage img, int minX, int minY, int subW, int subH, int fullW, int fullH) {
+        double[] grid = new double[subW * subH];
+        int imgW = img.getWidth();
+        int imgH = img.getHeight();
+        int idx = 0;
+        for (int y = 0; y < subH; y++) {
+            int globalY = minY + y;
+            int srcY = (int) Math.min(imgH - 1, ((long) globalY * imgH) / fullH);
+            for (int x = 0; x < subW; x++) {
+                int globalX = minX + x;
+                int srcX = (int) Math.min(imgW - 1, ((long) globalX * imgW) / fullW);
+                int rgb = img.getRGB(srcX, srcY);
+                int r = (rgb >> 16) & 0xFF;
+                int g = (rgb >> 8) & 0xFF;
+                int b = rgb & 0xFF;
+                grid[idx++] = 0.299 * r + 0.587 * g + 0.114 * b;
+            }
+        }
+        return grid;
+    }
+
+    private static int[] extractCategoryGridWindowed(
+            BufferedImage img, int minX, int minY, int subW, int subH, int fullW, int fullH) {
+        int[] cat = new int[subW * subH];
+        int imgW = img.getWidth();
+        int imgH = img.getHeight();
+        int idx = 0;
+        for (int y = 0; y < subH; y++) {
+            int globalY = minY + y;
+            int srcY = (int) Math.min(imgH - 1, ((long) globalY * imgH) / fullH);
+            for (int x = 0; x < subW; x++) {
+                int globalX = minX + x;
+                int srcX = (int) Math.min(imgW - 1, ((long) globalX * imgW) / fullW);
+                cat[idx++] = img.getRGB(srcX, srcY);
+            }
+        }
+        return cat;
+    }
+
     private static double[] extractLuminanceGrid(BufferedImage img, int width, int height) {
         double[] grid = new double[width * height];
+        int imgW = img.getWidth();
+        int imgH = img.getHeight();
         int idx = 0;
         for (int y = 0; y < height; y++) {
+            int srcY = (int) Math.min(imgH - 1, ((long) y * imgH) / height);
             for (int x = 0; x < width; x++) {
-                int rgb = img.getRGB(x, y);
+                int srcX = (int) Math.min(imgW - 1, ((long) x * imgW) / width);
+                int rgb = img.getRGB(srcX, srcY);
                 int r = (rgb >> 16) & 0xFF;
                 int g = (rgb >> 8) & 0xFF;
                 int b = rgb & 0xFF;
@@ -297,10 +496,14 @@ public class MapComparisonMetrics {
 
     private static int[] extractCategoryGrid(BufferedImage img, int width, int height) {
         int[] cat = new int[width * height];
+        int imgW = img.getWidth();
+        int imgH = img.getHeight();
         int idx = 0;
         for (int y = 0; y < height; y++) {
+            int srcY = (int) Math.min(imgH - 1, ((long) y * imgH) / height);
             for (int x = 0; x < width; x++) {
-                cat[idx++] = img.getRGB(x, y);
+                int srcX = (int) Math.min(imgW - 1, ((long) x * imgW) / width);
+                cat[idx++] = img.getRGB(srcX, srcY);
             }
         }
         return cat;

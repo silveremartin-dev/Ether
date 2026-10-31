@@ -1,8 +1,9 @@
 {
-  "name" : "Super-Éruption Volcanique Toba/Yellowstone (2060)",
+  "name" : "Supervolcano Cataclysm (2060)",
   "description" : "\uD83C\uDF0B SCÉNARIO FUTUR : Super-Volcan VEI-8 & Refroidissement Vulcanologique\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nÉruption super-volcanique de degré VEI-8 éjectant plus de 1000 km³ de cendres et de dioxyde de soufre (SO₂) dans la haute atmosphère.\n\n[CONDITIONS INITIALES PHYSIQUES (T₀)]\n• Stock Capital Physique (K₀) : 25 000 kg/habitant (infrastructures avancées et serres automatisées).\n• Énergie Stockée (E₀) : 20 000 MJ/habitant (centrales nucléaires et géothermiques).\n• Réserves Alimentaires (F₀) : 3,0 mois (destructions agricoles par cendres).\n• Savoir Archivé (I₀) : 5 000 000 bits/habitant (savoir automatisé & archives).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Hiver volcanique pluriannuel (baisse de 8°C à 12°C des températures globales pendant 5 à 10 ans).\n• Dépôts massifs de téphras toxiques détruisant les sols agricoles, les toitures urbaines et les réseaux électriques.\n• Déploiement d'une logistique de crise alimentaire basée sur les stocks stratégiques et les cultures protégées.\n",
   "id" : null,
   "presetKey" : "supervolcano_2060",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Terre (Terran)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "BifurcationChaosEngine" : true,
     "World3HybridEngine" : true,
@@ -181,9 +185,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Éruption Supervolcanique & Hiver Volcanique (2060)",
   "displayDescription" : "\uD83C\uDF0B SCÉNARIO CATACLYSMIQUE : Éruption VEI-8 & Refroidissement Décennal (2060 apr. J.-C.)\n\nInjection massive de SO2, hiver volcanique décennal, effondrement des moussons globales et goulot d'étranglement de la population."
 }

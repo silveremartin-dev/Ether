@@ -32,7 +32,7 @@ public class InspectMapsTest {
         assertTrue(layers.length == 15, "Standard cartographic layers list must have 15 elements");
         for (String yr : years) {
             System.out.println("=== YEAR " + yr + " ===");
-            File dir = new File("data/maps/ether/earth/" + yr);
+            File dir = new File("data/ether/earth/" + yr);
             if (!dir.exists()) {
                 System.out.println("Directory missing: " + dir);
                 continue;
@@ -63,7 +63,7 @@ public class InspectMapsTest {
      *
      */
     public void inspectYear1800Colors() throws Exception {
-        String dir = "data/maps/ether/earth/1800/";
+        String dir = "data/ether/earth/1800/";
         BufferedImage iso = ImageIO.read(new File(dir + "earth_1800_isogloss.png"));
         BufferedImage kin = ImageIO.read(new File(dir + "earth_1800_kinship.png"));
         BufferedImage sov = ImageIO.read(new File(dir + "earth_1800_sovereignty.png"));
@@ -123,7 +123,7 @@ public class InspectMapsTest {
 
         HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(sc);
 
-        String dir = "data/maps/ether/earth/2026/";
+        String dir = "data/ether/earth/2026/";
         BufferedImage iso = ImageIO.read(new File(dir + "earth_2026_isogloss.png"));
         BufferedImage kin = ImageIO.read(new File(dir + "earth_2026_kinship.png"));
         BufferedImage sov = ImageIO.read(new File(dir + "earth_2026_sovereignty.png"));
@@ -199,7 +199,7 @@ public class InspectMapsTest {
 
         HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(sc);
 
-        String dir = "data/maps/ether/earth/1914/";
+        String dir = "data/ether/earth/1914/";
         BufferedImage sov = ImageIO.read(new File(dir + "earth_1914_sovereignty.png"));
         BufferedImage path = ImageIO.read(new File(dir + "earth_1914_pathogen.png"));
 
@@ -253,7 +253,7 @@ public class InspectMapsTest {
 
         HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(sc);
 
-        String dir = "data/maps/ether/earth/-1000/";
+        String dir = "data/ether/earth/-1000/";
         BufferedImage sov = ImageIO.read(new File(dir + "earth_-1000_sovereignty.png"));
         BufferedImage path = ImageIO.read(new File(dir + "earth_-1000_pathogen.png"));
 
@@ -302,7 +302,7 @@ public class InspectMapsTest {
 
         HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(sc);
 
-        String dir = "data/maps/ether/earth/0/";
+        String dir = "data/ether/earth/0/";
         BufferedImage iso = ImageIO.read(new File(dir + "earth_0_isogloss.png"));
         BufferedImage kin = ImageIO.read(new File(dir + "earth_0_kinship.png"));
         BufferedImage sov = ImageIO.read(new File(dir + "earth_0_sovereignty.png"));
@@ -341,4 +341,5 @@ public class InspectMapsTest {
         assertTrue(iso.getWidth() > 0 && iso.getHeight() > 0, "Year 0 map dimensions must be positive");
     }
 }
+
 

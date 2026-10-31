@@ -329,7 +329,41 @@ public final class HomininPaleoOccupancyCalculator {
             return 0.0;
         }
 
-        if (year <= -85000L) {
+        if (year <= -2500000L) {
+            // -3,000,000 BP (Late Pliocene / Australopithecus): Strictly confined to Sub-Saharan African cradle
+            if (lon < 10.0 || lon > 45.0 || lat > 18.0 || lat < -35.0) return 0.0;
+            // Great Rift Valley (Afar, Turkana, Olduvai) & South African Karst (Cradle of Humankind)
+            boolean inRift = (lat >= -5.0 && lat <= 15.0 && lon >= 32.0 && lon <= 44.0);
+            boolean inSouthAfrica = (lat >= -32.0 && lat <= -23.0 && lon >= 24.0 && lon <= 33.0);
+            boolean inChad = (lat >= 12.0 && lat <= 18.0 && lon >= 15.0 && lon <= 21.0);
+            if (inRift || inSouthAfrica || inChad) return 1.0;
+            return 0.0;
+        } else if (year <= -1500000L) {
+            // -2,000,000 BP (Early Pleistocene / Homo erectus Out of Africa I)
+            // Americas, Australia/Sahul, and northern latitudes strictly 0.0
+            if (lon < -25.0 || (lon > 115.0 && lat < -5.0) || lat > 45.0) return 0.0;
+            // 1. African heartland
+            if (lat >= -35.0 && lat <= 30.0 && lon >= -18.0 && lon <= 45.0) return 1.0;
+            // 2. Levantine Corridor (Sinai, Jordan Rift, Levant towards Dmanisi)
+            if (lat >= 27.0 && lat <= 42.5 && lon >= 33.0 && lon <= 48.0) return 1.0;
+            // 3. Indian Ocean coastal & savanna highway (Arabia, Makran, Indus, India to Sundaland)
+            if (lat >= -9.0 && lat <= 32.0 && lon >= 48.0 && lon <= 112.0) return 0.9;
+            // 4. East Asian river basins (Nihewan, Lantian, Gongwangling in China)
+            if (lat >= 22.0 && lat <= 41.0 && lon >= 100.0 && lon <= 122.0) return 0.8;
+            return 0.0;
+        } else if (year <= -500000L) {
+            // -1,000,000 BP (Early/Mid-Pleistocene Acheulean): Africa, Southern/Western Europe, Southern & Eastern Asia
+            if (lon < -25.0 || (lon > 115.0 && lat < -5.0) || lat > 52.0) return 0.0;
+            // Europe up to 52°N (Atapuerca, Orce, Mauer, Ceprano)
+            if (lat >= 35.0 && lat <= 52.0 && lon >= -10.0 && lon <= 30.0) return 0.85;
+            // Africa & Asia
+            if (lat <= 45.0 && lon >= -18.0 && lon <= 125.0) return 1.0;
+            return 0.0;
+        } else if (year <= -200000L) {
+            // -300,000 BP (Jebel Irhoud, Archaic Sapiens, Pre-Neanderthals, Denisovans)
+            if (lon < -25.0 || (lon > 115.0 && lat < -5.0) || lat > 55.0) return 0.0;
+            return 1.0;
+        } else if (year <= -85000L) {
             // -100,000 BP (MIS 5e Eemian Interglacial): Confined to Africa & Eurasia, Sahul & Americas strictly 0
             if (lon < -25.0 && lon > -170.0) return 0.0;
             if (lon > 110.0 && lat < -5.0) return 0.0;

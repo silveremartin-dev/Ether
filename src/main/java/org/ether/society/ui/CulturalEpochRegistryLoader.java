@@ -33,7 +33,7 @@ public final class CulturalEpochRegistryLoader {
 
     public static List<Long> discoverAllEpochs() {
         List<Long> epochs = new ArrayList<>();
-        Path earthDir = Paths.get("data", "maps", "ether", "earth");
+        Path earthDir = Paths.get("data", "ether", "earth");
         if (Files.exists(earthDir) && Files.isDirectory(earthDir)) {
             try (var stream = Files.list(earthDir)) {
                 stream.filter(Files::isDirectory)
@@ -106,10 +106,10 @@ public final class CulturalEpochRegistryLoader {
 
     public static List<CulturalAffinityMatrixDialog.CulturalEntity> loadEpochRegistry(long epoch) {
         List<CulturalAffinityMatrixDialog.CulturalEntity> activeEntities = new ArrayList<>();
-        Path p = Paths.get("data", "maps", "ether", "earth", String.valueOf(epoch), "cultural_registry.json");
+        Path p = Paths.get("data", "ether", "earth", String.valueOf(epoch), "cultural_registry.json");
         if (!Files.exists(p)) {
             long closest = closestSupportedEpoch(epoch);
-            p = Paths.get("data", "maps", "ether", "earth", String.valueOf(closest), "cultural_registry.json");
+            p = Paths.get("data", "ether", "earth", String.valueOf(closest), "cultural_registry.json");
         }
 
         if (Files.exists(p)) {

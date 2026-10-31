@@ -45,9 +45,9 @@
     "seasonSource" : "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model",
     "seasonSeed" : 68666,
     "canonicalPlanet" : "mercury",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "Mercure (Hermes)",
-    "tidalLocked" : false
+    "presetDescription" : "Mercure (Hermes)"
   },
   "terrestrialBiomassGtC" : 0.0,
   "soilOrganicCarbonGtC" : 0.0,

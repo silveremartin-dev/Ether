@@ -28,11 +28,52 @@ import java.util.stream.Collectors;
 public class HistoricalValidationKernel {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalValidationKernel.class);
 
+    /**
+     * Resolves the canonical reference model key for a given start year.
+     *
+     * @param startYear the epoch start year
+     * @return {@code "PALEO_SOURCES"} if before -10000 BP, {@code "HYDE_MADDISON"} if between -10000 BP and 2024 CE, or {@code "SSP2"} for future.
+     */
+    public static String resolveDefaultReferenceModel(int startYear) {
+        if (startYear < -10000) return "PALEO_SOURCES";
+        if (startYear < 2025) return "HYDE_MADDISON";
+        return "SSP2";
+    }
+
+    /**
+     * Resolves human-readable localized display label for reference models.
+     *
+     * @param modelKey model key
+     * @return human-readable description
+     */
+    public static String getReferenceModelDisplayLabel(String modelKey) {
+        if (modelKey == null) return "HYDE 3.4 & Maddison Project";
+        return switch (modelKey.toUpperCase(Locale.ROOT)) {
+            case "PALEO_SOURCES" -> "Paléo Sources (EPICA Dome C, PaleoClim v1.2, Biraben)";
+            case "HYDE_MADDISON" -> "HYDE 3.4 & Maddison Project (10k BCE - 2024 CE)";
+            case "SSP1", "PREDICTIVE_SSP1" -> "SSP1 - Durabilité & Décarbonation Rapide (IIASA/IEA)";
+            case "SSP2", "PREDICTIVE_SSP2" -> "SSP2 - Tendances Actuelles / Milieu de la Route (UN WPP / IIASA)";
+            case "SSP3", "PREDICTIVE_SSP3_WORLD3" -> "SSP3 - Rivalités Régionales & Limites Ressources (Club de Rome)";
+            case "SSP4", "PREDICTIVE_SSP4" -> "SSP4 - Inégalités & Stratification Sociale (GCAM4)";
+            case "SSP5", "PREDICTIVE_SSP5" -> "SSP5 - Énergies Fossiles & Croissance Forcée (PIK/IIASA)";
+            case "ETHER_CALIBRATED" -> "Ether Biophysique Calibré (ERA5 / Continuité Endogène 2025-2200)";
+            default -> modelKey;
+        };
+    }
+
+    public static final int HYDE_MAX_OBSERVATION_YEAR = 2025;
+    public static final int PALEO_MIN_OBSERVATION_YEAR = -3000000;
+    public static final int PALEO_MAX_OBSERVATION_YEAR = -10000;
+    public static final int PROJECTION_MAX_YEAR = 2100;
+
     public enum EpochWindow {
-        DEEP_HORIZON(-10000, 2026, "Deep Macro-Historical Horizon (-10k BCE - 2026 CE)"),
+        PALEOLITHIC_PLEISTOCENE(-3000000, -10000, "Deep Paleolithic & Pleistocene Era (-3 Ma - 10k BCE)"),
+        DEEP_HORIZON(-10000, 2025, "Deep Macro-Historical Horizon (-10k BCE - 2025 CE)"),
         CLASSICAL_MEDIEVAL(-3000, 1500, "Classical Antiquity & Medieval Era (-3000 BCE - 1500 CE)"),
-        EARLY_MODERN_500YR(1500, 2026, "Early Modern & Industrial Era (1500 CE - 2026 CE, 500-Year Window)"),
-        MODERN_INDUSTRIAL(1900, 2026, "Modern Industrial & Digital Era (1900 CE - 2026 CE, 125-Year Window)");
+        EARLY_MODERN_500YR(1500, 2025, "Early Modern & Industrial Era (1500 CE - 2025 CE, 500-Year Window)"),
+        MODERN_INDUSTRIAL(1900, 2025, "Modern Industrial & Digital Era (1900 CE - 2025 CE, 125-Year Window)"),
+        FUTURE_PROSPECTIVE_2100(2025, 2100, "Future Prospective CMIP6/SSP Scenarios (2025 CE - 2100 CE)"),
+        FUTURE_PROSPECTIVE_2200(2025, 2200, "Long-term Anthropocene Prospective (2025 CE - 2200 CE)");
 
         public final int startYear;
         public final int endYear;
@@ -77,7 +118,13 @@ public class HistoricalValidationKernel {
     }
 
     private static void loadPredictiveBenchmarksResource() {
-        File predFile = new File("data/sources/predictive/predictive_socioeconomic_projections_2026_2100.json");
+        File predFile = new File("data/ether/earth/variables/projections/predictive_socioeconomic_projections_2026_2100.json");
+        if (!predFile.exists()) {
+            predFile = new File("data/variables/projections/predictive_socioeconomic_projections_2026_2100.json");
+        }
+        if (!predFile.exists()) {
+            predFile = new File("data/sources/predictive/predictive_socioeconomic_projections_2026_2100.json");
+        }
         if (!predFile.exists()) return;
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -102,8 +149,42 @@ public class HistoricalValidationKernel {
                         metricMap.put(metricKey, Collections.unmodifiableMap(ts));
                     }
                     PREDICTIVE_BENCHMARK_DATASETS.put(modelId, metricMap);
+                    if ("PREDICTIVE_SSP1".equalsIgnoreCase(modelId)) PREDICTIVE_BENCHMARK_DATASETS.put("SSP1", metricMap);
+                    else if ("PREDICTIVE_SSP2".equalsIgnoreCase(modelId)) PREDICTIVE_BENCHMARK_DATASETS.put("SSP2", metricMap);
+                    else if ("PREDICTIVE_SSP3_WORLD3".equalsIgnoreCase(modelId)) {
+                        PREDICTIVE_BENCHMARK_DATASETS.put("SSP3", metricMap);
+                        PREDICTIVE_BENCHMARK_DATASETS.put("PREDICTIVE_SSP3", metricMap);
+                    }
+                    else if ("PREDICTIVE_SSP4".equalsIgnoreCase(modelId)) PREDICTIVE_BENCHMARK_DATASETS.put("SSP4", metricMap);
+                    else if ("PREDICTIVE_SSP5".equalsIgnoreCase(modelId)) PREDICTIVE_BENCHMARK_DATASETS.put("SSP5", metricMap);
                 }
-                logger.info("✅ Successfully loaded Predictive Projections ({} models) from data/sources/predictive/", PREDICTIVE_BENCHMARK_DATASETS.size());
+
+                File etherCalibFile = new File("data/ether/earth/variables/projections/ether_calibrated_projection_1d.json");
+                if (!etherCalibFile.exists()) {
+                    etherCalibFile = new File("data/variables/projections/ether_calibrated_projection_1d.json");
+                }
+                if (etherCalibFile.exists()) {
+                    JsonNode calibRoot = mapper.readTree(etherCalibFile);
+                    JsonNode varsNode = calibRoot.get("variables");
+                    if (varsNode != null && varsNode.isObject()) {
+                        Map<String, Map<Integer, Double>> etherMetricMap = new ConcurrentHashMap<>();
+                        Iterator<Map.Entry<String, JsonNode>> vFields = varsNode.fields();
+                        while (vFields.hasNext()) {
+                            Map.Entry<String, JsonNode> ve = vFields.next();
+                            Map<Integer, Double> ts = new TreeMap<>();
+                            Iterator<Map.Entry<String, JsonNode>> pts = ve.getValue().fields();
+                            while (pts.hasNext()) {
+                                Map.Entry<String, JsonNode> pt = pts.next();
+                                try {
+                                    ts.put(Integer.parseInt(pt.getKey()), pt.getValue().asDouble());
+                                } catch (NumberFormatException ignored) {}
+                            }
+                            etherMetricMap.put(ve.getKey(), Collections.unmodifiableMap(ts));
+                        }
+                        PREDICTIVE_BENCHMARK_DATASETS.put("ETHER_CALIBRATED", etherMetricMap);
+                    }
+                }
+                logger.info("✅ Successfully loaded Predictive Projections ({} models) from data/variables/projections/", PREDICTIVE_BENCHMARK_DATASETS.size());
             }
         } catch (Exception e) {
             logger.error("❌ Failed to parse predictive projections JSON", e);
@@ -485,6 +566,19 @@ public class HistoricalValidationKernel {
      * @return interpolated value, connecting smoothly to historical ground truth for years <= 2026
      */
     public static double getPredictiveBenchmarkValue(String modelId, String key, double year, InterpolationMethod method) {
+        if (modelId != null) {
+            String norm = modelId.toUpperCase(Locale.ROOT);
+            if (!PREDICTIVE_BENCHMARK_DATASETS.containsKey(norm)) {
+                if (norm.equals("SSP1")) norm = "PREDICTIVE_SSP1";
+                else if (norm.equals("SSP2")) norm = "PREDICTIVE_SSP2";
+                else if (norm.equals("SSP3")) norm = "PREDICTIVE_SSP3_WORLD3";
+                else if (norm.equals("SSP4")) norm = "PREDICTIVE_SSP4";
+                else if (norm.equals("SSP5")) norm = "PREDICTIVE_SSP5";
+            }
+            if (PREDICTIVE_BENCHMARK_DATASETS.containsKey(norm)) {
+                modelId = norm;
+            }
+        }
         if (modelId != null && PREDICTIVE_BENCHMARK_DATASETS.containsKey(modelId)) {
             Map<String, Map<Integer, Double>> modelData = PREDICTIVE_BENCHMARK_DATASETS.get(modelId);
             if (modelData != null && modelData.containsKey(key)) {
@@ -588,6 +682,10 @@ public class HistoricalValidationKernel {
             }
         }
         if (year > lastYear) {
+            // Strictly enforce empirical observation boundary for historical sources (HYDE / Maddison end at 2025)
+            if (lastYear <= HYDE_MAX_OBSERVATION_YEAR && year > HYDE_MAX_OBSERVATION_YEAR) {
+                return Double.NaN;
+            }
             return dataset.get(lastYear);
         }
 

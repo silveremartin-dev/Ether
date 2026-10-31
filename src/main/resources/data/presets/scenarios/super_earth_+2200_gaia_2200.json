@@ -1,8 +1,9 @@
 {
-  "name" : "Arche Interstellaire : Première Colonisation de Gaia Prime (2200)",
+  "name" : "Interstellar Ark: First Settlement of Gaia Prime (2200)",
   "description" : "\uD83C\uDF0D SCÉNARIO EXOPLANÉTAIRE : Colonisation d'une Super-Terre à Forte Gravité (2200 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nArrivée d'une flotte d'arches générationnelles sur une Super-Terre massive (gravité 1,5g, pression 1,5 atm, biosphère foisonnante). Implantation modulaire haute résistance face aux contraintes tectoniques.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Adaptation biomécanique et exosquelettes face à une gravité élevée et une densité atmosphérique supérieure.\n• Exploitation d'une biomasse extraterrestre exubérante et de gisements géologiques super-abondants.\n• Essor de cités-dômes modulaires et émergence de nouvelles institutions coloniales autonomes.\n",
   "id" : null,
   "presetKey" : "super_earth_gaia_2200",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Super-Terre (Gaia Prime)",
     "resolution" : 4,
@@ -47,9 +48,9 @@
     "seasonSource" : "",
     "seasonSeed" : 46444,
     "canonicalPlanet" : "none",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83E\uDE90 SUPER-TERRE (Gaia Prime) : Planète tellurique massive (1,5 rayon terrestre, 2,8 masses terrestres), gravité de surface 1,25g, atmosphère dense (2,2 atm) et vigoureux panaches convectifs mantelliques et volcaniques.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83E\uDE90 SUPER-TERRE (Gaia Prime) : Planète tellurique massive (1,5 rayon terrestre, 2,8 masses terrestres), gravité de surface 1,25g, atmosphère dense (2,2 atm) et vigoureux panaches convectifs mantelliques et volcaniques."
   },
   "ecologyPreset" : {
     "name" : "Super-Terre (Gaia Prime)",
@@ -98,9 +99,9 @@
       "seasonSource" : "",
       "seasonSeed" : 46444,
       "canonicalPlanet" : "none",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83E\uDE90 SUPER-TERRE (Gaia Prime) : Planète tellurique massive (1,5 rayon terrestre, 2,8 masses terrestres), gravité de surface 1,25g, atmosphère dense (2,2 atm) et vigoureux panaches convectifs mantelliques et volcaniques.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83E\uDE90 SUPER-TERRE (Gaia Prime) : Planète tellurique massive (1,5 rayon terrestre, 2,8 masses terrestres), gravité de surface 1,25g, atmosphère dense (2,2 atm) et vigoureux panaches convectifs mantelliques et volcaniques."
     },
     "terrestrialBiomassGtC" : 950.0,
     "soilOrganicCarbonGtC" : 2800.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "KurzweilAcceleratingReturnsEngine" : true,
     "ArthurCombinatorialTechnologyEngine" : true,
@@ -182,9 +186,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Arche Interstellaire : Première Colonisation de Gaia Prime (2200)",
   "displayDescription" : "\uD83C\uDF0D SCÉNARIO EXOPLANÉTAIRE : Colonisation d'une Super-Terre à Forte Gravité (2200 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nArrivée d'une flotte d'arches générationnelles sur une Super-Terre massive (gravité 1,5g, pression 1,5 atm, biosphère foisonnante). Implantation modulaire haute résistance face aux contraintes tectoniques.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Adaptation biomécanique et exosquelettes face à une gravité élevée et une densité atmosphérique supérieure.\n• Exploitation d'une biomasse extraterrestre exubérante et de gisements géologiques super-abondants.\n• Essor de cités-dômes modulaires et émergence de nouvelles institutions coloniales autonomes.\n"
 }

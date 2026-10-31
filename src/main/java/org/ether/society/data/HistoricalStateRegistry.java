@@ -55,7 +55,10 @@ public class HistoricalStateRegistry {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalStateRegistry.class);
 
     /** Primary path relative to the working directory (Maven project root). */
-    private static final String PRIMARY_PATH = "data/history/treaties_and_transitions.json";
+    private static final String PRIMARY_PATH = "data/ether/earth/history/treaties_and_transitions.json";
+
+    /** Legacy fallback path for backward compatibility. */
+    private static final String LEGACY_PATH = "data/history/treaties_and_transitions.json";
 
     /** Fallback for classpath resources during unit tests. */
     private static final String CLASSPATH_RESOURCE = "/treaties_and_transitions.json";
@@ -208,6 +211,9 @@ public class HistoricalStateRegistry {
 
         // 1. Try filesystem path (runtime / Maven execution)
         Path fsPath = Path.of(PRIMARY_PATH);
+        if (!Files.exists(fsPath)) {
+            fsPath = Path.of(LEGACY_PATH);
+        }
         if (Files.exists(fsPath)) {
             try {
                 root = mapper.readTree(fsPath.toFile());

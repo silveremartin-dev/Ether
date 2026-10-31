@@ -34,7 +34,7 @@ public class GenerateEpochMapsTest {
      */
     public void generateEpoch100kOnly() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
-        File rootDir = new File("data/maps/ether/earth");
+        File rootDir = new File("data/ether/earth");
         rootDir.mkdirs();
 
         EpochMeta em = EPOCHS.stream().filter(e -> e.year() == -100000L).findFirst().orElseThrow();
@@ -81,7 +81,7 @@ public class GenerateEpochMapsTest {
      */
     public void generateCanonical36EpochsCulturalData() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
-        File rootDir = new File("data/maps/ether/earth");
+        File rootDir = new File("data/ether/earth");
         rootDir.mkdirs();
 
         List<EpochMeta> canonicalList = EPOCHS.stream()
@@ -139,7 +139,7 @@ public class GenerateEpochMapsTest {
      *
      */
     public void regeneratePrehistoricDensityMapsOnly() throws Exception {
-        File rootDir = new File("data/maps/ether/earth");
+        File rootDir = new File("data/ether/earth");
         rootDir.mkdirs();
 
         List<EpochMeta> prehistoricEpochs = EPOCHS.stream()
@@ -221,7 +221,7 @@ public class GenerateEpochMapsTest {
 
         double tobaTempDelta = WorldClimEmpiricalRasterLoader.computePaleoTemperatureDelta(indiaLat, indiaLon, 200.0, -74000L);
         double eemianTempDelta = WorldClimEmpiricalRasterLoader.computePaleoTemperatureDelta(indiaLat, indiaLon, 200.0, -100000L);
-        org.junit.jupiter.api.Assertions.assertTrue(tobaTempDelta < -4.0, "Toba volcanic winter must have <= -4.0Ã‚Â°C cooling anomaly in South Asia");
+        org.junit.jupiter.api.Assertions.assertTrue(tobaTempDelta < -4.0, "Toba volcanic winter must have <= -4.0Ãƒâ€šÃ‚Â°C cooling anomaly in South Asia");
         org.junit.jupiter.api.Assertions.assertTrue(eemianTempDelta > 0.5, "Eemian must have positive warming anomaly");
 
         // 3. Validate Dynamic Groundwater Aquifer Recharge
@@ -307,7 +307,7 @@ public class GenerateEpochMapsTest {
      */
     public void generateAll36EpochsCulturalData() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
-        File rootDir = new File("data/maps/ether/earth");
+        File rootDir = new File("data/ether/earth");
         rootDir.mkdirs();
 
         System.out.printf("Starting high-throughput parallel cultural data regeneration for %d epochs...%n", EPOCHS.size());
@@ -477,8 +477,8 @@ public class GenerateEpochMapsTest {
                     \"en\": \"East Asian Core (%s)\",
                     \"fr\": \"Foyer Est-Asiatique (%s)\",
                     \"de\": \"Ostasietischer Zivilisationsraum (%s)\",
-                    \"es\": \"NÃƒÂºcleo de Asia Oriental (%s)\",
-                    \"zh\": \"Ã¤Â¸Å“Ã¤ÂºÅ¡Ã¦Â Â¸Ã¥Â¿Æ’Ã¥Å’ÂºÃ¯Â¼Ë†%sÃ¯Â¼â€°\"
+                    \"es\": \"NÃƒÆ’Ã‚Âºcleo de Asia Oriental (%s)\",
+                    \"zh\": \"ÃƒÂ¤Ã‚Â¸Ã…â€œÃƒÂ¤Ã‚ÂºÃ…Â¡ÃƒÂ¦Ã‚Â Ã‚Â¸ÃƒÂ¥Ã‚Â¿Ã†â€™ÃƒÂ¥Ã…â€™Ã‚ÂºÃƒÂ¯Ã‚Â¼Ã‹â€ %sÃƒÂ¯Ã‚Â¼Ã¢â‚¬Â°\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -493,8 +493,8 @@ public class GenerateEpochMapsTest {
                     \"en\": \"Western Eurasian Core (%s)\",
                     \"fr\": \"Foyer Ouest-Eurasien (%s)\",
                     \"de\": \"Westeurasischer Zivilisationsraum (%s)\",
-                    \"es\": \"NÃƒÂºcleo EuroasiÃƒÂ¡tico Occidental (%s)\",
-                    \"zh\": \"Ã¨Â¥Â¿Ã¦Â¬Â§Ã¤ÂºÅ¡Ã¦Â Â¸Ã¥Â¿Æ’Ã¥Å’ÂºÃ¯Â¼Ë†%sÃ¯Â¼â€°\"
+                    \"es\": \"NÃƒÆ’Ã‚Âºcleo EuroasiÃƒÆ’Ã‚Â¡tico Occidental (%s)\",
+                    \"zh\": \"ÃƒÂ¨Ã‚Â¥Ã‚Â¿ÃƒÂ¦Ã‚Â¬Ã‚Â§ÃƒÂ¤Ã‚ÂºÃ…Â¡ÃƒÂ¦Ã‚Â Ã‚Â¸ÃƒÂ¥Ã‚Â¿Ã†â€™ÃƒÂ¥Ã…â€™Ã‚ÂºÃƒÂ¯Ã‚Â¼Ã‹â€ %sÃƒÂ¯Ã‚Â¼Ã¢â‚¬Â°\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -508,9 +508,9 @@ public class GenerateEpochMapsTest {
                   \"name\": {
                     \"en\": \"South Asian Core (%s)\",
                     \"fr\": \"Foyer Sud-Asiatique (%s)\",
-                    \"de\": \"SÃƒÂ¼dasiatischer Zivilisationsraum (%s)\",
-                    \"es\": \"NÃƒÂºcleo de Asia del Sur (%s)\",
-                    \"zh\": \"Ã¥Ââ€”Ã¤ÂºÅ¡Ã¦Â Â¸Ã¥Â¿Æ’Ã¥Å’ÂºÃ¯Â¼Ë†%sÃ¯Â¼â€°\"
+                    \"de\": \"SÃƒÆ’Ã‚Â¼dasiatischer Zivilisationsraum (%s)\",
+                    \"es\": \"NÃƒÆ’Ã‚Âºcleo de Asia del Sur (%s)\",
+                    \"zh\": \"ÃƒÂ¥Ã‚ÂÃ¢â‚¬â€ÃƒÂ¤Ã‚ÂºÃ…Â¡ÃƒÂ¦Ã‚Â Ã‚Â¸ÃƒÂ¥Ã‚Â¿Ã†â€™ÃƒÂ¥Ã…â€™Ã‚ÂºÃƒÂ¯Ã‚Â¼Ã‹â€ %sÃƒÂ¯Ã‚Â¼Ã¢â‚¬Â°\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -523,10 +523,10 @@ public class GenerateEpochMapsTest {
                   \"traits\": [0.55, 0.75, 0.82, 0.88],
                   \"name\": {
                     \"en\": \"Americas Core (%s)\",
-                    \"fr\": \"Foyer des AmÃƒÂ©riques (%s)\",
+                    \"fr\": \"Foyer des AmÃƒÆ’Ã‚Â©riques (%s)\",
                     \"de\": \"Amerikanischer Zivilisationsraum (%s)\",
-                    \"es\": \"NÃƒÂºcleo de las AmÃƒÂ©ricas (%s)\",
-                    \"zh\": \"Ã§Â¾Å½Ã¦Â´Â²Ã¦Â Â¸Ã¥Â¿Æ’Ã¥Å’ÂºÃ¯Â¼Ë†%sÃ¯Â¼â€°\"
+                    \"es\": \"NÃƒÆ’Ã‚Âºcleo de las AmÃƒÆ’Ã‚Â©ricas (%s)\",
+                    \"zh\": \"ÃƒÂ§Ã‚Â¾Ã…Â½ÃƒÂ¦Ã‚Â´Ã‚Â²ÃƒÂ¦Ã‚Â Ã‚Â¸ÃƒÂ¥Ã‚Â¿Ã†â€™ÃƒÂ¥Ã…â€™Ã‚ÂºÃƒÂ¯Ã‚Â¼Ã‹â€ %sÃƒÂ¯Ã‚Â¼Ã¢â‚¬Â°\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -541,8 +541,8 @@ public class GenerateEpochMapsTest {
                     \"en\": \"African Core (%s)\",
                     \"fr\": \"Foyer Africain (%s)\",
                     \"de\": \"Afrikanischer Zivilisationsraum (%s)\",
-                    \"es\": \"NÃƒÂºcleo Africano (%s)\",
-                    \"zh\": \"Ã©ÂÅ¾Ã¦Â´Â²Ã¦Â Â¸Ã¥Â¿Æ’Ã¥Å’ÂºÃ¯Â¼Ë†%sÃ¯Â¼â€°\"
+                    \"es\": \"NÃƒÆ’Ã‚Âºcleo Africano (%s)\",
+                    \"zh\": \"ÃƒÂ©Ã‚ÂÃ…Â¾ÃƒÂ¦Ã‚Â´Ã‚Â²ÃƒÂ¦Ã‚Â Ã‚Â¸ÃƒÂ¥Ã‚Â¿Ã†â€™ÃƒÂ¥Ã…â€™Ã‚ÂºÃƒÂ¯Ã‚Â¼Ã‹â€ %sÃƒÂ¯Ã‚Â¼Ã¢â‚¬Â°\"
                   },
                   \"kinshipType\": \"%s\",
                   \"lithicTechnocomplex\": \"%s\",
@@ -571,7 +571,7 @@ public class GenerateEpochMapsTest {
           "era": "%s",
           "planet": "earth",
           "resolution": "2048x1024",
-          "projection": "Equirectangular (Plate CarrÃƒÂ©e, EPSG:4326)",
+          "projection": "Equirectangular (Plate CarrÃƒÆ’Ã‚Â©e, EPSG:4326)",
           "overview": {
             "summary_en": "%s",
             "summary_fr": "%s"
@@ -695,10 +695,10 @@ public class GenerateEpochMapsTest {
         String md = """
         # Earth Epoch %d: %s
 
-        ## Ã°Å¸Å’Â Overview
+        ## ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â Overview
         This directory contains the standardized 25-layer cartographic raster tensor suite and cliodynamic registries for Earth at epoch **%d** (%s).
 
-        All raster layers are generated in equirectangular projection (Plate CarrÃƒÂ©e, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
+        All raster layers are generated in equirectangular projection (Plate CarrÃƒÆ’Ã‚Â©e, EPSG:4326) at **2048x1024** resolution with bit-identical determinism.
 
         ### Context & Archaeological/Historical Horizon
         * **Era**: %s
@@ -706,14 +706,14 @@ public class GenerateEpochMapsTest {
         * **Social / Family Horizon**: %s
         * **Estimated Caloric Baseline**: %d kcal/capita/day
 
-        ## Ã°Å¸â€”ÂºÃ¯Â¸Â Standard Cartographic Layers (25 PNG Rasters)
+        ## ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã‚ÂºÃƒÂ¯Ã‚Â¸Ã‚Â Standard Cartographic Layers (25 PNG Rasters)
 
         ### Physical & Climate Layers
         * `earth_%d_elevation.png`: NOAA ETOPO 2022 / GEBCO Topography & Bathymetry calibrated to epoch sea level.
         * `earth_%d_biomes.png`: Coupled Holdridge-Whittaker Bioclimatic Ecology.
-        * `earth_%d_temperature.png`: WorldClim v2.1 Annual Mean Temperature (Ã‚Â°C) modulated by epoch paleoclimate anomalies.
+        * `earth_%d_temperature.png`: WorldClim v2.1 Annual Mean Temperature (Ãƒâ€šÃ‚Â°C) modulated by epoch paleoclimate anomalies.
         * `earth_%d_precipitation.png`: WorldClim v2.1 Annual Precipitation (mm/year) with ITCZ/monsoonal shifts.
-        * `earth_%d_seasonality.png`: Temperature Seasonality Amplitude (Ã‚Â°C range) driven by Milankovitch orbital solutions.
+        * `earth_%d_seasonality.png`: Temperature Seasonality Amplitude (Ãƒâ€šÃ‚Â°C range) driven by Milankovitch orbital solutions.
 
         ### Cliodynamic & Cultural Tensors
         * `earth_%d_density.png`: HYDE 3.4 / Seshat Human Demographic Density field.
@@ -739,12 +739,12 @@ public class GenerateEpochMapsTest {
         * `earth_%d_geothermal.png`: Terrestrial Heat Flow & Geothermal Gradients (IHFC).
         * `earth_%d_aquifers.png`: Deep Regional Groundwater Aquifers (UNESCO WHYMAP).
 
-        ## Ã°Å¸â€Â¬ Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
+        ## ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¬ Decoupling Rationale ($t = t_0$ vs Dynamical Ticks $t > t_0$)
         In strict accordance with `AGENTS.md` Directives:
         1. **Initial Conditions ($t = t_0$)**: The 25 raster layers define the empirically calibrated spatial state at initialization.
         2. **Dynamical Simulation Engine ($t > t_0$)**: Once launched, the physical engines (Energy Balance Climate Models, Darcy groundwater flow, Lotka metabolic energetics, and Turchin cliodynamics) dynamically evolve population, technology, culture, and sovereign borders without synthetic lock-in.
 
-        ## Ã°Å¸â€œâ€ž Associated Metadata Files
+        ## ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Å¾ Associated Metadata Files
         * `cultural_registry.json`: Multilingual entity registry (EN, FR, DE, ES, ZH) with trait vectors and kinship metadata.
         * `provenance_and_sources.json`: Exhaustive academic citations, datasets, and physical calibration rationale.
         """.formatted(
@@ -796,3 +796,4 @@ public class GenerateEpochMapsTest {
                 .replace("\t", "\\t");
     }
 }
+

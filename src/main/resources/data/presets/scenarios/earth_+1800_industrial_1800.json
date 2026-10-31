@@ -3,6 +3,7 @@
   "description" : "SCÉNARIO HISTORIQUE : La Machine à Vapeur & L'Émergence du Charbon (1800 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nBasculement énergétique mondial du régime organique vers le régime minéral fossile (charbon de terre, machine à vapeur de Watt).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Rupture du piège malthusien : découplage entre croissance démographique et contrainte surfacique des sols.\n• Paradoxe de Jevons : les gains d'efficacité des machines à vapeur décuplent la consommation globale de charbon.\n• Urbanisation industrielle ultra-rapide (exode rural) et amorce des émissions anthropiques massives de CO₂.\n",
   "id" : null,
   "presetKey" : "industrial_1800",
+  "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
     "name" : "Terre (Terran)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "JevonsParadoxEngine" : true,
     "KummelAyresExergyEngine" : true,
@@ -189,9 +193,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Révolution Industrielle & Énergie Fossile (1800)",
   "displayDescription" : "⚙ SCÉNARIO HISTORIQUE : La Grande Divergence & La Révolution de la Vapeur (1800 apr. J.-C.)\n\nTransition de l'économie organique vers l'énergie fossile (charbon), mécanisation de la vapeur, urbanisation rapide et explosion démographique."
 }

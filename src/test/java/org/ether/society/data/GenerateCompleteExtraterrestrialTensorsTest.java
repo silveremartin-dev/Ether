@@ -103,7 +103,7 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
             int cropW = 500;
             int cropH = 260;
 
-            File titanDir = new File("data/maps/ether/titan/2150");
+            File titanDir = new File("data/ether/titan/2150");
             titanDir.mkdirs();
 
             BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -132,8 +132,8 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
                 for (int x = 0; x < WIDTH; x++) {
                     double uFrac = (double) x / (double) WIDTH;
                     double lon = uFrac * 360.0 - 180.0;
-                    // Source image X maps 0° on left to 360° on right (0° to 360° East)
-                    // Standard equirectangular is -180° to +180° East
+                    // Source image X maps 0Â° on left to 360Â° on right (0Â° to 360Â° East)
+                    // Standard equirectangular is -180Â° to +180Â° East
                     double srcLonDeg = (lon < 0) ? (lon + 360.0) : lon;
                     int srcX = Math.clamp(cropX + (int) Math.round((srcLonDeg / 360.0) * (cropW - 1)), cropX, cropX + cropW - 1);
 
@@ -190,7 +190,7 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
                     };
                     imgBiomes.setRGB(x, y, biomeRGB);
 
-                    // 3. Thermal Gradient (-179°C = 94K baseline)
+                    // 3. Thermal Gradient (-179Â°C = 94K baseline)
                     double tempK = 94.0 - Math.abs(lat) / 90.0 * 4.0;
                     int tempByte = Math.clamp((int) Math.round(((tempK - 70.0) / 40.0) * 255.0), 0, 255);
                     imgTemp.setRGB(x, y, (tempByte << 16) | (tempByte << 8) | tempByte);
@@ -199,7 +199,7 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
                     int precipByte = (unit == 1 || Math.abs(lat) > 60.0) ? 220 : (Math.abs(lat) < 25.0 ? 20 : 60);
                     imgPrecip.setRGB(x, y, (precipByte << 16) | (precipByte << 8) | precipByte);
 
-                    // 5. Seasonality (High due to 26.7° tilt and 29.5-year orbit)
+                    // 5. Seasonality (High due to 26.7Â° tilt and 29.5-year orbit)
                     int seasonByte = Math.clamp((int) Math.round((Math.abs(lat) / 90.0) * 255.0), 0, 255);
                     imgSeason.setRGB(x, y, (seasonByte << 16) | (seasonByte << 8) | seasonByte);
 
@@ -307,7 +307,7 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
             // Write Authenticated Provenance & Sources with full Lopes et al. 2019 citation
             writeTitanProvenanceAndReadme(titanDir, titanOutposts);
 
-            System.out.println("✅ Titan 2150 authentic cartographic tensor suite generated successfully from USGS/Cassini geomorphology!");
+            System.out.println("âœ… Titan 2150 authentic cartographic tensor suite generated successfully from USGS/Cassini geomorphology!");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -322,17 +322,17 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
                   "era": "Titan Cryo-Hydrocarbon Seas & Industrial Port (2150 CE)",
                   "planet": "titan",
                   "resolution": "2048x1024",
-                  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+                  "projection": "Equirectangular (Plate CarrÃ©e, EPSG:4326)",
                   "overview": {
                     "summary_en": "Authentic cartographic reconstruction of Titan based on the USGS / Nature Astronomy global geomorphological map (Lopes et al. 2019) derived from NASA Cassini RADAR and VIMS instruments.",
-                    "summary_fr": "Reconstitution cartographique authentique de Titan basée sur la carte géomorphologique globale USGS / Nature Astronomy (Lopes et al. 2019) issue des instruments RADAR et VIMS de la sonde NASA Cassini."
+                    "summary_fr": "Reconstitution cartographique authentique de Titan basÃ©e sur la carte gÃ©omorphologique globale USGS / Nature Astronomy (Lopes et al. 2019) issue des instruments RADAR et VIMS de la sonde NASA Cassini."
                   },
                   "primary_geological_source": {
                     "title": "The global geomorphologic map of Titan",
                     "authors": "R. M. C. Lopes, M. J. Malaska, A. M. Schoenfeld, A. Le Gall, et al.",
                     "journal": "Nature Astronomy",
                     "volume": "4",
-                    "pages": "228–233",
+                    "pages": "228â€“233",
                     "year": 2020,
                     "doi": "10.1038/s41550-019-0917-4",
                     "instrumentation": ["NASA Cassini RADAR Synthetic Aperture Radar (SAR)", "VIMS (Visual and Infrared Mapping Spectrometer)", "ISS (Imaging Science Subsystem)"]
@@ -352,14 +352,14 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
         String readme = """
                 # TITAN Epoch 2150: Titan Cryo-Hydrocarbon Seas & Industrial Port (2150 CE)
 
-                ## 🌌 Overview & Empirical Provenance
+                ## ðŸŒŒ Overview & Empirical Provenance
                 This directory contains the authentic 25-layer cartographic raster tensor suite and governance metadata for **TITAN** at epoch **2150**, accurately rasterized from the official **USGS / NASA Cassini Global Geomorphological Map of Titan** published in *Nature Astronomy* (Lopes et al. 2019/2020).
 
-                ### 📚 Primary Empirical Source:
-                * **Reference**: R. M. C. Lopes, M. J. Malaska, A. M. Schoenfeld, A. Le Gall, et al., *The global geomorphologic map of Titan*, **Nature Astronomy**, vol. 4, pp. 228–233 (2020). DOI: `10.1038/s41550-019-0917-4`.
+                ### ðŸ“š Primary Empirical Source:
+                * **Reference**: R. M. C. Lopes, M. J. Malaska, A. M. Schoenfeld, A. Le Gall, et al., *The global geomorphologic map of Titan*, **Nature Astronomy**, vol. 4, pp. 228â€“233 (2020). DOI: `10.1038/s41550-019-0917-4`.
                 * **Instruments**: NASA/ESA/ASI Cassini Radar (SAR), VIMS (Visual and Infrared Mapping Spectrometer), and ISS.
 
-                ### 🗺️ Geomorphological & Physical Classification:
+                ### ðŸ—ºï¸ Geomorphological & Physical Classification:
                 1. **Lakes & Seas (`Lakes`)**: Liquid methane ($\text{CH}_4$) and ethane ($\text{C}_2\text{H}_6$) seas (Kraken Mare, Ligeia Mare, Punga Mare in North Polar region; Ontario Lacus in South). Depression depth $-1000\\text{ m}$, maximum oil and gas ISRU potential.
                 2. **Equatorial Dunes (`Dunes`)**: Vast linear tholin dunes covering Belet, Shangri-La, and Fensal ($-30^\\circ$ to $+30^\\circ$ latitude). Rich in solid organic carbonaceous polymers.
                 3. **Organic Plains (`Plains`)**: Broad lowlands covering $\\sim 65\\%$ of the planetary surface.
@@ -367,7 +367,7 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
                 5. **Impact Craters (`Craters`)**: Ancient impact scars (Menrva $\\varnothing 392\\text{ km}$, Selk, Sinlap).
                 6. **Labyrinth Karst (`Labyrinth`)**: Dissected valley networks eroded by methane rainfall.
 
-                ### 🏙️ Colonization Anchor:
+                ### ðŸ™ï¸ Colonization Anchor:
                 * **Kraken Mare Hydrocarbon Marine Port**: $68.0^\\circ\\text{N}, 50.0^\\circ\\text{E}$ ($310^\\circ\\text{W}$), established directly on the coastline of Kraken Mare.
                 * **Population**: 80 pioneers. Closed-loop nuclear/thermal ECLSS, sub-methane drone fleet, and fusion propellant distillation hub.
                 """;
@@ -375,11 +375,11 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
     }
 
     private void generateWorldEpoch(String planet, int epoch, String eraName, String summary, List<OutpostSite> outposts) throws Exception {
-        File dir = new File("data/maps/ether/" + planet + "/" + epoch);
+        File dir = new File("data/ether/" + planet + "/" + epoch);
         dir.mkdirs();
 
         // 1. Resolve or create physical basemaps
-        File refDir = new File("data/maps/ether/" + planet + "/2026");
+        File refDir = new File("data/ether/" + planet + "/2026");
         BufferedImage imgElev = loadOrCreatePhysicalLayer(refDir, planet, "elevation", 0.5);
         BufferedImage imgBiomes = loadOrCreatePhysicalLayer(refDir, planet, "biomes", 0.3);
         BufferedImage imgTemp = loadOrCreatePhysicalLayer(refDir, planet, "temperature", 0.2);
@@ -500,7 +500,7 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
         writeProvenanceAndSources(dir, planet, epoch, eraName, summary, outposts);
         writeReadme(dir, planet, epoch, eraName, summary, outposts);
 
-        System.out.printf("✅ Successfully generated complete 25-layer tensor suite for %s / %d%n", planet, epoch);
+        System.out.printf("âœ… Successfully generated complete 25-layer tensor suite for %s / %d%n", planet, epoch);
     }
 
     private BufferedImage loadOrCreatePhysicalLayer(File refDir, String planet, String layerName, double defaultVal) {
@@ -603,10 +603,10 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
         sb.append(String.format("  \"era\": \"%s\",\n", era));
         sb.append(String.format("  \"planet\": \"%s\",\n", planet));
         sb.append("  \"resolution\": \"2048x1024\",\n");
-        sb.append("  \"projection\": \"Equirectangular (Plate Carrée, EPSG:4326)\",\n");
+        sb.append("  \"projection\": \"Equirectangular (Plate CarrÃ©e, EPSG:4326)\",\n");
         sb.append("  \"overview\": {\n");
         sb.append(String.format("    \"summary_en\": \"%s\",\n", summary));
-        sb.append(String.format("    \"summary_fr\": \"Modélisation de colonisation spatiale et habitats pressurisés pour %s en %d.\"\n", planet, epoch));
+        sb.append(String.format("    \"summary_fr\": \"ModÃ©lisation de colonisation spatiale et habitats pressurisÃ©s pour %s en %d.\"\n", planet, epoch));
         sb.append("  },\n");
         sb.append("  \"layers\": {\n");
         sb.append(String.format("    \"elevation\": {\"filename\": \"%s_%d_elevation.png\", \"category\": \"geophysics\", \"data_sources\": [\"NASA PDS / MOLA / LOLA / Magellan\"]},\n", planet, epoch));
@@ -621,13 +621,13 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
     private void writeReadme(File dir, String planet, int epoch, String era, String summary, List<OutpostSite> outposts) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("# %s Epoch %d: %s\n\n", planet.toUpperCase(), epoch, era));
-        sb.append("## 🌌 Overview\n");
+        sb.append("## ðŸŒŒ Overview\n");
         sb.append(String.format("This directory contains the authentic 25-layer cartographic raster tensor suite and governance metadata for **%s** at epoch **%d**.\n\n", planet.toUpperCase(), epoch));
         sb.append(String.format("* **Summary**: %s\n", summary));
         sb.append(String.format("* **Total Colonist Population**: %d pioneers\n", outposts.stream().mapToInt(o -> o.population).sum()));
         sb.append(String.format("* **Active Outpost Nodes**: %d\n\n", outposts.size()));
 
-        sb.append("## 🗺️ Standard Cartographic Layers (25 Rasters + Governance Metadata)\n\n");
+        sb.append("## ðŸ—ºï¸ Standard Cartographic Layers (25 Rasters + Governance Metadata)\n\n");
         sb.append("### Physical & Atmospheric Layers\n");
         sb.append(String.format("* `%s_%d_elevation.png`: Altimetry and planetary relief.\n", planet, epoch));
         sb.append(String.format("* `%s_%d_biomes.png`: Surface terrain and geological classification.\n", planet, epoch));
@@ -662,3 +662,4 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
         Files.writeString(new File(dir, "README.md").toPath(), sb.toString());
     }
 }
+

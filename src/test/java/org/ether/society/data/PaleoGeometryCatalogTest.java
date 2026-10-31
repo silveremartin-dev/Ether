@@ -40,6 +40,11 @@ public class PaleoGeometryCatalogTest {
         assertNotNull(routes, "Migration routes map must not be null");
         assertTrue(routes.containsKey("ROUTE_PACIFIC_KELP_HIGHWAY"), "Must contain Kelp Highway route");
         assertTrue(routes.containsKey("ROUTE_ICE_FREE_CORRIDOR"), "Must contain Ice Free Corridor route");
+        assertTrue(routes.containsKey("ROUTE_OUT_OF_AFRICA_SOUTHERN_DISPERSAL"), "Must contain Out of Africa Southern Dispersal route");
+        assertTrue(routes.containsKey("ROUTE_OUT_OF_AFRICA_NORTHERN_LEVANTINE"), "Must contain Levantine route");
+        assertTrue(routes.containsKey("ROUTE_EURASIAN_STEPPE_MAMMOTH_HIGHWAY"), "Must contain Eurasian Steppe Mammoth Highway route");
+        assertTrue(routes.containsKey("ROUTE_AUSTRONESIAN_MARITIME_EXPANSION"), "Must contain Austronesian Maritime Expansion route");
+        assertTrue(routes.size() >= 19, "Must contain all 19 global migration corridors");
     }
 
     @Test

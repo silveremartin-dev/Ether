@@ -98,7 +98,10 @@ public class WarDiplomacyEngine {
 
                     // Topographic friction dampens opportunistic border skirmishes, raising the required war threshold
                     double frictionDamping = 1.0 + 0.25 * Math.max(0.0, avgBorderFriction - 1.0);
-                    double warDesire = (baseWarDesire * affinityMultiplier) / frictionDamping;
+                    // War exhaustion penalty: internal sociopolitical instability and war fatigue dampen military adventurism
+                    double warExhaustion = Math.max(0.0, aggressor.getPoliticalInstability() - 0.40) * 1.2
+                            + (aggressor.getTreasuryBullion() <= 1.0 ? 0.25 : 0.0);
+                    double warDesire = ((baseWarDesire * affinityMultiplier) / frictionDamping) - warExhaustion;
 
                     if (warDesire > 0.45) {
                         resolveBorderBattle(aggressor, defender, avgBorderFriction);
@@ -189,12 +192,12 @@ public class WarDiplomacyEngine {
 
         for (H3Cell c : aggressor.getTerritory()) {
             if (c != null && c.getResourceCapital() != null) {
-                c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.97));
+                c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.997));
             }
         }
         for (H3Cell c : defender.getTerritory()) {
             if (c != null && c.getResourceCapital() != null) {
-                c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.96));
+                c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.996));
             }
         }
         logger.info("Battle Resolution: '{}' (power {}) vs '{}' (power {} * 1.25 = {}) -> victory: {}",

@@ -342,12 +342,12 @@ public class HistoricalMapGenerator {
                 }
 
                 BufferedImage elev = null;
-                File f100k = new File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
+                File f100k = new File("data/ether/earth/-100000/earth_-100000_elevation.png");
                 if (f100k.exists()) {
                     try { elev = ImageIO.read(f100k); } catch (Exception ignored) {}
                 }
                 if (elev == null) {
-                    File f2026 = new File("data/maps/ether/earth/2026/earth_2026_elevation.png");
+                    File f2026 = new File("data/ether/earth/2026/earth_2026_elevation.png");
                     if (f2026.exists()) {
                         try { elev = ImageIO.read(f2026); } catch (Exception ignored) {}
                     }
@@ -359,7 +359,7 @@ public class HistoricalMapGenerator {
                     }
                 }
                 if (elev == null) {
-                    logger.warn("earth_elevation.png not found — altimetry coastline mask disabled.");
+                    logger.warn("earth_elevation.png not found â€” altimetry coastline mask disabled.");
                     return null;
                 }
                 for (int y = 0; y < th; y++) {
@@ -375,7 +375,7 @@ public class HistoricalMapGenerator {
                     }
                 }
                 cachedElevationMask = mask;
-                logger.info("Altimetry coastline mask loaded from data/maps/ether/ ({}x{} -> {}x{}).", elev.getWidth(), elev.getHeight(), tw, th);
+                logger.info("Altimetry coastline mask loaded from data/ether/ ({}x{} -> {}x{}).", elev.getWidth(), elev.getHeight(), tw, th);
                 return cachedElevationMask;
             } catch (Exception e) {
                 logger.warn("Failed to load altimetry coastline mask: {}", e.getMessage());
@@ -684,11 +684,11 @@ public class HistoricalMapGenerator {
 
     public static void ensureAllScenarioMapsGenerated(boolean force) {
         List<Scenario> builtIns = Scenario.getBuiltInScenarios();
-        logger.info("Verifying cartographic maps for all {} built-in scenarios in 'data/maps/ether/earth/<year>/' (force={})...", builtIns.size(), force);
+        logger.info("Verifying cartographic maps for all {} built-in scenarios in 'data/ether/earth/<year>/' (force={})...", builtIns.size(), force);
         int generated = 0;
         for (Scenario sc : builtIns) {
             long year = sc.getStartDateYear();
-            java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
+            java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "ether", "earth", String.valueOf(year));
             boolean exists = !force &&
                              java.nio.file.Files.exists(earthDir.resolve("earth_" + year + "_density.png")) &&
                              java.nio.file.Files.exists(earthDir.resolve("earth_" + year + "_isogloss.png")) &&
@@ -698,7 +698,7 @@ public class HistoricalMapGenerator {
                 generated++;
             }
         }
-        logger.info("Batch generation check complete. Generated/updated {} scenarios in data/maps/ether/earth/.", generated);
+        logger.info("Batch generation check complete. Generated/updated {} scenarios in data/ether/earth/.", generated);
     }
 
     public static void precacheAllBuiltInScenarios() {
@@ -720,3 +720,4 @@ public class HistoricalMapGenerator {
         logger.info("Cartographic pre-caching complete.");
     }
 }
+

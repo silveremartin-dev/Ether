@@ -30,8 +30,12 @@ import java.util.List;
 public class BioMolecularEpidemiologyEngine {
     private static final Logger logger = LoggerFactory.getLogger(BioMolecularEpidemiologyEngine.class);
 
-    /** Zoonotic cross-species transmission coefficient. */
-    public static final double ZOONOTIC_KAPPA = 1.5e-6;
+
+    /**
+     * Mammalian cross-species viral/bacterial phylogenetic transmission coefficient (Plowright et al. 2017; Wolfe et al. 2007).
+     * Reflects the molecular compatibility barrier between domestic mammals (ungulates, suids) and human hosts.
+     */
+    public static final double MAMMALIAN_PHYLOGENETIC_SPILLOVER_COEFF = 1.2e-6;
 
     /**
      * Executes one bio-molecular immune response and pathogen tick across cells using default monthly step.
@@ -90,20 +94,23 @@ public class BioMolecularEpidemiologyEngine {
             // --- Improvement 1: Endogenous Zoonotic Spillover ---
             double livestock = cell.getBiomassLivestockOr(0.0);
             if (livestock > 10.0 && pop >= 50) {
-                double exposureProduct = livestock * pop;
+                double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
+                double animalCrowding = livestock / areaKm2;
+                double pathogenSheddingLoad = 1.0 + Math.log(1.0 + animalCrowding * 0.1);
+                double exposureDensity = (livestock * pop) / (areaKm2 * 100.0);
                 double immuneProtection = 1.0 + immunoglobulinSynthesisRate;
-                double exponent = -ZOONOTIC_KAPPA * (exposureProduct / immuneProtection) * dtYears;
+                double exponent = -MAMMALIAN_PHYLOGENETIC_SPILLOVER_COEFF * (exposureDensity * pathogenSheddingLoad / immuneProtection) * dtYears;
                 double pSpillover = 1.0 - Math.exp(Math.max(-10.0, exponent));
 
                 int currentInfected = cell.getEpidemicInfectedOr(0);
 
-                // Deterministic pseudo-random seed based on H3 index, lifespan, and food state
-                double curLifespan = cell.getLifespanOr(40.0);
-                double curFood = cell.getFoodResourceOr(0.0);
-                long seed = (cell.getH3Index() * 6364136223846793005L
-                        + (long)(curLifespan * 1000.0) * 1442695040888963407L
-                        + (long)(curFood * 10.0));
-                double pseudoRand = ((seed >>> 33) & 0x7FFFFFFF) / (double) 0x7FFFFFFF;
+                // Stateless deterministic PRNG keyed to H3 cell index and zoonotic stream (101L)
+                double pseudoRand = org.ether.society.util.DeterministicPRNG.nextDouble(cell.getH3Index(), 101L);
+
+
+
+
+
 
                 if (currentInfected == 0 && pSpillover > 0.005 && (pSpillover > 0.10 || pseudoRand < pSpillover)) {
                     int initialOutbreak = Math.max(5, (int) Math.round(pop * Math.min(0.20, pSpillover * 3.0)));

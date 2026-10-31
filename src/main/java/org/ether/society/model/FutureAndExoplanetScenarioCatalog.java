@@ -23,8 +23,7 @@ import java.util.Map;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see Scenario
- * @see PaleoAndAncientScenarioCatalog
- * @see MedievalAndModernScenarioCatalog
+ * @see org.ether.society.persistence.PresetStorageService
  */
 public final class FutureAndExoplanetScenarioCatalog {
 
@@ -37,58 +36,16 @@ public final class FutureAndExoplanetScenarioCatalog {
      *
      * @param presetKey explicit preset key (may be null)
      * @param name      scenario name (may be null)
-     * @return normalized preset key string, or {@code null} if unrecognized
+     * @return normalized preset key string
      */
     public static String resolvePresetKey(String presetKey, String name) {
-        if (presetKey != null && !presetKey.isBlank()) return presetKey;
-        if (name == null) return null;
-        String n = name.toLowerCase();
-        if (n.contains("out of africa") || n.contains("sortie d'afrique")) return "out_of_africa";
-        if (n.contains("toba")) return "toba_cataclysm_74k";
-        if (n.contains("sahul")) return "sahul";
-        if (n.contains("beringia") || n.contains("béringie")) return "beringia";
-        if (n.contains("solutrean") || n.contains("solutréen") || n.contains("lgm")) return "lgm_solutrean";
-        if (n.contains("dryas")) return "younger_dryas";
-        if (n.contains("fertile crescent") || n.contains("croissant fertile")) return "fertile_crescent";
-        if (n.contains("vert") || n.contains("green sahara")) return "green_sahara";
-        if (n.contains("egypte") || n.contains("égypte") || n.contains("egypt")) return "ancient_egypt";
-        if (n.contains("ramses") || n.contains("ramsès") || n.contains("ramesses")) return "ramesses_ii";
-        if (n.contains("assyrian") || n.contains("assyrien")) return "assyrian_empire";
-        if (n.contains("mesoamerica") || n.contains("mésoamérique") || n.contains("olmeques") || n.contains("olmèques")) return "mesoamerica";
-        if (n.contains("bronze age collapse") || (n.contains("effondrement") && n.contains("bronze"))) return "bronze_age_collapse_1200bc";
-        if (n.contains("early iron age") || n.contains("premier age du fer") || n.contains("premier âge du fer")) return "early_iron_age";
-        if (n.contains("alexander") || n.contains("alexandre")) return "alexander_hellenistic_334bc";
-        if (n.contains("maurya")) return "maurya_empire";
-        if (n.contains("august") || n.contains("auguste")) return "pax_romana_augustus_0";
-        if (n.contains("antonin") || n.contains("antoine") || n.contains("aurele") || n.contains("aurèle")) return "antonine_plague_165";
-        if (n.contains("roman empire") || n.contains("empire romain")) return "roman_empire";
-        if (n.contains("late antique") || n.contains("glaciaire antique") || n.contains("536")) return "late_antique_ice_age";
-        if (n.contains("islamic") || n.contains("islamique")) return "islamic_expansion_632";
-        if (n.contains("song")) return "song_dynasty";
-        if (n.contains("mongol")) return "mongol_conquest_1206";
-        if (n.contains("mali")) return "mali_empire";
-        if (n.contains("black death") || n.contains("peste noire")) return "black_death_1347";
-        if (n.contains("1491") || n.contains("americas") || n.contains("amériques")) return "americas_1491";
-        if (n.contains("columbian") || n.contains("colombien")) return "columbian_contact";
-        if (n.contains("sakoku") || n.contains("tokugawa")) return "tokugawa_japan";
-        if (n.contains("industrial") || n.contains("industrielle")) return "industrial_1800";
-        if (n.contains("totalitarian") || n.contains("totalitaire") || n.contains("1914")) return "world_wars_totalitarian_1914";
-        if (n.contains("future") || n.contains("2026") || n.contains("prospective") || n.contains("ssp")) return "earth_2026_future";
-        if (n.contains("hiver nucleaire") || n.contains("hiver nucléaire") || n.contains("nuclear winter")) return "nuclear_winter_2035";
-        if (n.contains("singularity") || n.contains("singularite") || n.contains("singularité")) return "singularity_2045";
-        if (n.contains("phosphate")) return "peak_phosphate_2050";
-        if (n.contains("supervolcan") || n.contains("supervolcano")) return "supervolcano_2060";
-        if (n.contains("shackleton") || n.contains("marius") || n.contains("lune") || n.contains("moon")) return "moon_shackleton_2035";
-        if (n.contains("mars")) return "mars_colony_2050";
-        if (n.contains("venus") || n.contains("vénus") || n.contains("aerostat") || n.contains("aérostat") || n.contains("hesperos")) return "venus_cloud_cities_2080";
-        if (n.contains("mercure") || n.contains("mercury") || n.contains("caloris") || n.contains("hermes")) return "mercury_caloris_forge_2120";
-        if (n.contains("titan") || n.contains("kraken")) return "titan_cryo_methane_2150";
-        if (n.contains("super-terre") || n.contains("super-earth") || n.contains("gaia")) return "super_earth_gaia_2200";
-        if (n.contains("synchrone") || n.contains("eyeball") || n.contains("crépuscule") || n.contains("twilight")) return "eyeball_world_twilight_2220";
-        if (n.contains("oceania") || n.contains("aquapolis") || n.contains("monde océan") || n.contains("water world")) return "oceania_aquapolis_2100";
-        if (n.contains("boreas") || n.contains("glaciaire") || n.contains("ice world") || n.contains("subglacial")) return "boreas_subglacial_2120";
-        if (n.contains("archipel") || n.contains("archipelago") || n.contains("seasteading")) return "archipelago_seasteading_2055";
-        return null;
+        if (presetKey != null && !presetKey.isBlank()) {
+            return presetKey.trim();
+        }
+        if (name != null && !name.isBlank()) {
+            return org.ether.society.persistence.PresetStorageService.slugify(name);
+        }
+        return "unnamed_scenario";
     }
 
     /**
@@ -97,9 +54,7 @@ public final class FutureAndExoplanetScenarioCatalog {
      * @return chronologically sorted list of built-in {@link Scenario} instances
      */
     public static List<Scenario> getBuiltInScenarios() {
-        List<Scenario> list = new ArrayList<>(PaleoAndAncientScenarioCatalog.createScenarios());
-        MedievalAndModernScenarioCatalog.appendScenarios(list);
-        appendScenarios(list);
+        List<Scenario> list = new ArrayList<>(org.ether.society.persistence.PresetStorageService.loadAllScenarios());
 
         // Sort all canonical presets chronologically by start year
         list.sort(Comparator.comparingLong(Scenario::getStartDateYear));

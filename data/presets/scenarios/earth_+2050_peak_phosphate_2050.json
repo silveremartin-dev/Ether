@@ -1,8 +1,9 @@
 {
-  "name" : "Falaise du Phosphate Minéral & Crise N-P-K (2050)",
-  "description" : "â›ï¸ SCÉNARIO FUTUR : Épuisement du Phosphate de Roche (Peak P 2050)\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nÉpuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute inexorable des rendements agricoles sous déficit de fertilisation phosphatée minérale (stœchiométrie N-P-K).\n• Flambée des prix alimentaires mondiaux, crises de famine urbaine et tensions géopolitiques autour des derniers gisements.\n• Re-localisation agricole d'urgence, baisse de la population vers la capacité de charge organique et recyclage des flux.\n",
+  "name" : "Mineral Phosphate Cliff & N-P-K Soil Crisis (2050)",
+  "description" : "⛏️ SCÉNARIO FUTUR : Épuisement du Phosphate de Roche (Peak P 2050)\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nÉpuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute inexorable des rendements agricoles sous déficit de fertilisation phosphatée minérale (stœchiométrie N-P-K).\n• Flambée des prix alimentaires mondiaux, crises de famine urbaine et tensions géopolitiques autour des derniers gisements.\n• Re-localisation agricole d'urgence, baisse de la population vers la capacité de charge organique et recyclage des flux.\n",
   "id" : null,
   "presetKey" : "peak_phosphate_2050",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Terre (Terran)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "EcotoxicologyFertilityEngine" : true,
     "HotellingResourceDepletionEngine" : true,
@@ -184,9 +188,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Pénurie de Phosphate & Crise Malthusienne (2050)",
   "displayDescription" : "\uD83C\uDF3E SCÉNARIO DE CRISE : Épuisement des Phosphates & Tension Alimentaire (2050 apr. J.-C.)\n\nÉpuisement des réserves de phosphate minéral, flambée des prix des engrais, baisse des rendements agricoles et crise démographique."
 }

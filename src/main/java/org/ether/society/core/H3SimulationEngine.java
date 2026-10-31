@@ -528,7 +528,7 @@ public class H3SimulationEngine implements ISimulationEngine {
 
                 currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
                 densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
-                currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
+                currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
                 float foodPerCapVal = (float) getFoodPerCapita();
                 float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
                 currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds(), getAverageTechnology(), foodSatVal);
@@ -682,7 +682,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (worldBuffer != null && statisticsKernel != null) {
             currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
             densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
-            currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital());
+            currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
             if (agentBuffer != null) {
                 currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds());
                 currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());

@@ -1,6 +1,6 @@
 {
-  "name" : "Benchmark Standard Planétaire (Multi-Résolution & Multi-Moteurs)",
-  "description" : "🌍 SCÉNARIO OFFICIEL DE BENCHMARK PLANÉTAIRE ETHER\n\n[CONTEXTE DE VALIDATION SCIENTIFIQUE]\nScénario étalon servant de référence pour les bancs de tests empiriques multi-axes d'Ether :\n• Axe 1 : Échelonnage spatial multi-résolution (H3 Res 2 à Res 7, plein écran global ou fenêtré régional).\n• Axe 2 : Résolution temporelle multi-fréquence (Journalier 1j, Hebdomadaire 7j, Mensuel 30j, Annuel 365j).\n• Axe 3 : Architectures d'exécution matérielles (Java JIT monocœur, Java 21 SIMD multicœur, Rust natif FFI).\n• Axe 4 : Couplage des théories physiques (Tier 1 lois de conservation seules vs Tier 1 + Tier 2 cliodynamique).\n• Axe 5 : Époques historiques et volume de population (Paléolithique à Anthropocène moderne).\n\n[CONDITIONS INITIALES (T₀)]\n• Population Initiale : 100 000 habitants répartis selon la géographie et la biomasse terrestre.\n• Résolution spatiale H3 par défaut : 3 (modifiable de Res 2 à Res 7).\n• Pas temporel Δt par défaut : 30 jours (1 mois).\n• Déterminisme strict IEEE-754 activé par défaut (strictDeterminism = true).\n",
+  "name" : "Benchmark Standard Planetary Scenario",
+  "description" : "ðŸŒ SCÃ‰NARIO OFFICIEL DE BENCHMARK PLANÃ‰TAIRE ETHER\n\n[CONTEXTE DE VALIDATION SCIENTIFIQUE]\nScÃ©nario Ã©talon servant de rÃ©fÃ©rence pour les bancs de tests empiriques multi-axes d'Ether :\nâ€¢ Axe 1 : Ã‰chelonnage spatial multi-rÃ©solution (H3 Res 2 Ã  Res 7, plein Ã©cran global ou fenÃªtrÃ© rÃ©gional).\nâ€¢ Axe 2 : RÃ©solution temporelle multi-frÃ©quence (Journalier 1j, Hebdomadaire 7j, Mensuel 30j, Annuel 365j).\nâ€¢ Axe 3 : Architectures d'exÃ©cution matÃ©rielles (Java JIT monocÅ“ur, Java 21 SIMD multicÅ“ur, Rust natif FFI).\nâ€¢ Axe 4 : Couplage des thÃ©ories physiques (Tier 1 lois de conservation seules vs Tier 1 + Tier 2 cliodynamique).\nâ€¢ Axe 5 : Ã‰poques historiques et volume de population (PalÃ©olithique Ã  AnthropocÃ¨ne moderne).\n\n[CONDITIONS INITIALES (Tâ‚€)]\nâ€¢ Population Initiale : 100 000 habitants rÃ©partis selon la gÃ©ographie et la biomasse terrestre.\nâ€¢ RÃ©solution spatiale H3 par dÃ©faut : 3 (modifiable de Res 2 Ã  Res 7).\nâ€¢ Pas temporel Î”t par dÃ©faut : 30 jours (1 mois).\nâ€¢ DÃ©terminisme strict IEEE-754 activÃ© par dÃ©faut (strictDeterminism = true).\n",
   "id" : null,
   "presetKey" : "benchmark_standard",
   "planetPreset" : {
@@ -38,17 +38,17 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "🌍 Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "🌍 Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "🌍 Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -10000,
-    "presetDescription" : "🌍 EARTH (Standard Benchmark Reference Planet): Complete geoscientific calibration for multi-resolution benchmarking.",
+    "presetDescription" : "ðŸŒ EARTH (Standard Benchmark Reference Planet): Complete geoscientific calibration for multi-resolution benchmarking.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -73,7 +73,7 @@
     "macroAlbedoFeedbacks" : { },
     "baselineCO2Ppm" : 280.0,
     "baselineGlobalTempC" : 15.0,
-    "historicalAtmosphereEpoch" : "Holocène",
+    "historicalAtmosphereEpoch" : "HolocÃ¨ne",
     "fossilReserveCoalEJ" : 500000.0,
     "fossilReserveOilEJ" : 200000.0,
     "fossilReserveGasEJ" : 150000.0,
@@ -145,5 +145,6 @@
   "retentionStrategy" : "LOGARITHMIC_TIME_DOWNSAMPLING",
   "autoExportGeoJson" : false,
   "autoExportCsv" : false,
-  "saveDirectory" : "saves"
+  "saveDirectory" : "saves",
+  "referenceTrajectoryModel" : "HYDE_MADDISON"
 }

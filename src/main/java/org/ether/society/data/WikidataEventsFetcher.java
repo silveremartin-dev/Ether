@@ -29,8 +29,10 @@ public class WikidataEventsFetcher {
     private static final Logger logger = LoggerFactory.getLogger(WikidataEventsFetcher.class);
     private static final ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
 
-    /** Internal state: catalog file path (String). */
-    public static final String CATALOG_FILE_PATH = "data/events/historical_events_catalog.json";
+    /** Primary Earth catalog file path under data/ether/earth/events/ */
+    public static final String CATALOG_FILE_PATH = "data/ether/earth/events/historical_events_catalog.json";
+    /** Legacy catalog file path for backward compatibility. */
+    public static final String LEGACY_CATALOG_FILE_PATH = "data/events/historical_events_catalog.json";
 
     /**
      * Normalizes event type keys to the standard prefixed naming convention.
@@ -176,6 +178,9 @@ public class WikidataEventsFetcher {
      */
     public static List<ClimateEvent> getOrBuildFullCatalog() {
         File catalogFile = new File(CATALOG_FILE_PATH);
+        if (!catalogFile.exists()) {
+            catalogFile = new File(LEGACY_CATALOG_FILE_PATH);
+        }
         if (catalogFile.exists()) {
             try {
                 JsonNode root = mapper.readTree(catalogFile);

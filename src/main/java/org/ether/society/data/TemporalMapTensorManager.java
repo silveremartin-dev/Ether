@@ -21,7 +21,7 @@ import java.util.*;
  * Resolves, caches, and seamlessly interpolates planetary raster maps across geological,
  * paleoclimatic (-100,000 BP to 0), and historical/industrial epochs (1800 to 2026+).
  *
- * Dedicated storage: data/maps/ether/<planet>/<year>/<layer>.png
+ * Dedicated storage: data/ether/<planet>/<year>/<layer>.png
  */
 public class TemporalMapTensorManager {
     private static final Logger logger = LoggerFactory.getLogger(TemporalMapTensorManager.class);
@@ -30,9 +30,9 @@ public class TemporalMapTensorManager {
      * Data resolution & fallback strategy when exact empirical measurements for a target date are missing.
      */
     public enum DataFallbackStrategy {
-        CONTINUOUS_INTERPOLATION("scenario.fallback.interpolation", "🔄 Interpolation temporelle continue (Fondu barycentrique)"),
-        PREVIOUS_EARLIER_EPOCH("scenario.fallback.earlier_epoch", "⏮️ Repli conservateur sur l'époque antérieure connue (Évite tout anachronisme)"),
-        CLOSEST_ANCHOR_EPOCH("scenario.fallback.closest_anchor", "🎯 Jalon étalonné le plus proche (Distance chronologique minimale)");
+        CONTINUOUS_INTERPOLATION("scenario.fallback.interpolation", "ðŸ”„ Interpolation temporelle continue (Fondu barycentrique)"),
+        PREVIOUS_EARLIER_EPOCH("scenario.fallback.earlier_epoch", "â®ï¸ Repli conservateur sur l'Ã©poque antÃ©rieure connue (Ã‰vite tout anachronisme)"),
+        CLOSEST_ANCHOR_EPOCH("scenario.fallback.closest_anchor", "ðŸŽ¯ Jalon Ã©talonnÃ© le plus proche (Distance chronologique minimale)");
 
         /** Internal state: i18n key (String). */
         private final String i18nKey;
@@ -193,7 +193,7 @@ public class TemporalMapTensorManager {
      */
     public static List<Long> getAvailableEpochYears(String planet) {
         String p = normalizePlanet(planet);
-        File planetDir = new File("data/maps/ether/" + p);
+        File planetDir = new File("data/ether/" + p);
         List<Long> years = new ArrayList<>();
         if (!planetDir.exists() || !planetDir.isDirectory()) {
             return years;
@@ -438,7 +438,7 @@ public class TemporalMapTensorManager {
     public static Image loadExactEpochImage(String planet, long epoch, String layerTag, String cacheKey) {
         String p = normalizePlanet(planet);
         String tag = canonicalLayerTag(layerTag);
-        String dirPath = "data/maps/ether/" + p + "/" + epoch + "/";
+        String dirPath = "data/ether/" + p + "/" + epoch + "/";
 
         String[] candidateNames = {
             p + "_" + epoch + "_" + tag + ".png",
@@ -477,7 +477,7 @@ public class TemporalMapTensorManager {
     public static BufferedImage loadExactEpochBufferedImage(String planet, long epoch, String layerTag, String cacheKey) {
         String p = normalizePlanet(planet);
         String tag = canonicalLayerTag(layerTag);
-        String dirPath = "data/maps/ether/" + p + "/" + epoch + "/";
+        String dirPath = "data/ether/" + p + "/" + epoch + "/";
 
         String[] candidateNames = {
             p + "_" + epoch + "_" + tag + ".png",
@@ -613,3 +613,4 @@ public class TemporalMapTensorManager {
         }
     }
 }
+

@@ -191,16 +191,50 @@ public class StatisticsKernel {
      * @param capital array of cellular resource capital
      * @return annual planetary GDP flow
      */
-    public float calculateGDP(float[] capital) {
-        if (capital == null || capital.length == 0) return 0.0f;
-        double sum = 0;
-        for (float val : capital) {
-            if (!Float.isNaN(val) && !Float.isInfinite(val)) {
-                sum += val;
+    /**
+     * Calculates Gross World Product (GWP) annual flow in 1990 Geary-Khamis USD based on Maddison Project 2020.
+     * Combines biological subsistence baseline ($450 / capita) with capital output contribution ($Y = A K^\alpha L^{1-\alpha}$).
+     *
+     * @param capital array of cellular resource capital (kg)
+     * @param humanBiomass array of human population / biomass per cell
+     * @param avgTech planetary average technology level
+     * @return annual GDP flow in 1990 USD
+     */
+    public float calculateGDP(float[] capital, float[] humanBiomass, float avgTech) {
+        double totalPop = 0;
+        if (humanBiomass != null) {
+            for (float b : humanBiomass) {
+                if (!Float.isNaN(b) && b > 0) totalPop += b;
             }
         }
-        // Capital-to-output flow ratio \beta = 4.35
-        return (float) (sum / 4.35);
+        double totalCapitalKg = 0;
+        if (capital != null) {
+            for (float val : capital) {
+                if (!Float.isNaN(val) && !Float.isInfinite(val) && val > 0) {
+                    totalCapitalKg += val;
+                }
+            }
+        }
+        // Maddison Project 2020: Baseline biological subsistence per capita is ~450 USD 1990 Geary-Khamis
+        // Scaled by technological productivity factor: y_sub(T) = 450 * (1.0 + 0.08 * T)
+        double tech = Math.max(0.1, avgTech);
+        double subsistenceGDP = totalPop * 450.0 * (1.0 + 0.08 * tech);
+
+        // Capital contribution to output flow: manufactured physical capital (kg) converted to 1990 USD value
+        // ($15 / kg of bronze/steel/machinery in 1990 USD) divided by capital-to-output ratio beta = 3.5
+        double capitalGDP = (totalCapitalKg * 15.0) / 3.5;
+
+        return (float) (subsistenceGDP + capitalGDP);
+    }
+
+    /**
+     * Calculates Gross World Product (GWP) with default demographic parameters.
+     *
+     * @param capital array of cellular resource capital
+     * @return annual planetary GDP flow
+     */
+    public float calculateGDP(float[] capital) {
+        return calculateGDP(capital, null, 1.0f);
     }
 
     /**

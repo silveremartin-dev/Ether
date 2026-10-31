@@ -27,7 +27,7 @@ public class PlanetaryGrayscaleVerificationTest {
      *
      */
     public void testAllPlanetaryMapsAreGrayscaleOnBlackBackground() throws IOException {
-        File baseDir = new File("data/maps/ether");
+        File baseDir = new File("data/ether");
         assertTrue(baseDir.exists() && baseDir.isDirectory(), "Maps base folder must exist: " + baseDir.getPath());
 
         for (String planet : PLANETS) {
@@ -108,7 +108,7 @@ public class PlanetaryGrayscaleVerificationTest {
      *
      */
     public void testMarsPrecipitationBackgroundIsBlack() throws IOException {
-        File file = new File("data/maps/ether/mars/2026/mars_2026_precipitation.png");
+        File file = new File("data/ether/mars/2026/mars_2026_precipitation.png");
         if (!file.exists()) return;
         BufferedImage img = ImageIO.read(file);
         assertNotNull(img);
@@ -133,7 +133,7 @@ public class PlanetaryGrayscaleVerificationTest {
      *
      */
     public void testMarsSeasonalityEquatorContinuity() throws IOException {
-        File file = new File("data/maps/ether/mars/2026/mars_2026_seasonality.png");
+        File file = new File("data/ether/mars/2026/mars_2026_seasonality.png");
         if (!file.exists()) return;
         BufferedImage img = ImageIO.read(file);
         assertNotNull(img);
@@ -147,3 +147,4 @@ public class PlanetaryGrayscaleVerificationTest {
         }
     }
 }
+

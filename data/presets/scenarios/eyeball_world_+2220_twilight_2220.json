@@ -1,8 +1,9 @@
 {
-  "name" : "Monde Synchrone : L'Anneau du Crépuscule & Terminateur (2220)",
+  "name" : "Tidally Locked World: Twilight Ring & Terminator (2220)",
   "description" : "\uD83D\uDC41️ SCÉNARIO EXOPLANÉTAIRE : Civilisation de l'Anneau Crépusculaire Synchrone (2220 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nColonisation d'une planète en verrouillage gravitationnel autour d'une naine rouge. Population concentrée exclusivement sur l'étroite bande tempérée du terminateur entre brasier permanent et nuit glacée.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Climat statique hyper-contrasté avec vents catabatiques puissants redistribuant l'énergie de la face éclairée vers la face sombre.\n• Ceinture de mégalopoles thermiquement isolées exploitant l'énergie solaire ininterrompue côté jour et les glaces permanentes côté nuit.\n• Équilibre précaire des flux hydrologiques et gestion rigoureuse de la capacité de charge locale.\n",
   "id" : null,
   "presetKey" : "eyeball_world_twilight_2220",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Monde Synchrone (Eyeball)",
     "resolution" : 4,
@@ -47,9 +48,9 @@
     "seasonSource" : "",
     "seasonSeed" : 35333,
     "canonicalPlanet" : "none",
+    "tidalLocked" : true,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
-    "tidalLocked" : true
+    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
   },
   "ecologyPreset" : {
     "name" : "Monde Synchrone (Eyeball)",
@@ -98,9 +99,9 @@
       "seasonSource" : "",
       "seasonSeed" : 35333,
       "canonicalPlanet" : "none",
+      "tidalLocked" : true,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur.",
-      "tidalLocked" : true
+      "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
     },
     "terrestrialBiomassGtC" : 180.0,
     "soilOrganicCarbonGtC" : 600.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "KurzweilAcceleratingReturnsEngine" : true,
     "World3HybridEngine" : true,
@@ -181,9 +185,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Monde Synchrone : L'Anneau du Crépuscule & Terminateur (2220)",
   "displayDescription" : "\uD83D\uDC41 SCÉNARIO EXOPLANÉTAIRE : Civilisation de l'Anneau Crépusculaire Synchrone (2220 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nColonisation d'une planète en verrouillage gravitationnel autour d'une naine rouge. Population concentrée exclusivement sur l'étroite bande tempérée du terminateur entre brasier permanent et nuit glacée.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Climat statique hyper-contrasté avec vents catabatiques puissants redistribuant l'énergie de la face éclairée vers la face sombre.\n• Ceinture de mégalopoles thermiquement isolées exploitant l'énergie solaire ininterrompue côté jour et les glaces permanentes côté nuit.\n• Équilibre précaire des flux hydrologiques et gestion rigoureuse de la capacité de charge locale.\n"
 }

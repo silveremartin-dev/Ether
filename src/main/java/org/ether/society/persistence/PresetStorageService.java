@@ -209,7 +209,7 @@ public final class PresetStorageService {
         };
 
         // 1. Built-in defaults
-        for (Scenario s : Scenario.getBuiltInScenarios()) {
+        for (Scenario s : Collections.<Scenario>emptyList()) {
             if (s.getName() != null) {
                 scenarios.put(keyExtractor.apply(s), s);
             }
@@ -337,7 +337,7 @@ public final class PresetStorageService {
     private static void exportScenarioPresets() {
         Path targetDir = EtherPaths.getPresetsScenariosDir();
         Path resDir = Path.of("src", "main", "resources", "data", "presets", "scenarios");
-        for (Scenario s : Scenario.getBuiltInScenarios()) {
+        for (Scenario s : Collections.<Scenario>emptyList()) {
             String filename = getStandardizedScenarioFilename(s);
             writeJsonSafely(targetDir.resolve(filename), s);
             if (Files.exists(Path.of("src", "main", "resources"))) {

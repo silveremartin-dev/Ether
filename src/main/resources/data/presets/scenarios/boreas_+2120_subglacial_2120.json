@@ -1,8 +1,9 @@
 {
-  "name" : "Monde Glaciaire Boreas : Havres Géothermiques & Cités Sous Glace (2120)",
+  "name" : "Glacial World Boreas: Geothermal Havens & Subglacial Cities (2120)",
   "description" : "❄️ SCÉNARIO EXOPLANÉTAIRE : Cités Sous-Glaciaires & Puits Géothermiques de Boreas (2120 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nPlanète boule de neige cryogénique où l'humanité s'abrite dans des cavités volcaniques sous-glaciaires chauffées par le flux géothermique du manteau sous des kilomètres de banquise.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation du gradient thermique entre la croûte volcanique profonde et la calotte de surface.\n• Cités troglodytiques taillées dans la glace consolidée et la roche ignée avec biosphères hydroponiques étanches.\n• Économie d'énergie thermique maximale et recyclage thermodynamique intégral.\n",
   "id" : null,
   "presetKey" : "boreas_subglacial_2120",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Monde Glaciaire (Boreas)",
     "resolution" : 4,
@@ -47,9 +48,9 @@
     "seasonSource" : "",
     "seasonSeed" : 13111,
     "canonicalPlanet" : "none",
+    "tidalLocked" : false,
     "associatedEpochYear" : -20000,
-    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte."
   },
   "ecologyPreset" : {
     "name" : "Monde Glaciaire (Boreas)",
@@ -98,9 +99,9 @@
       "seasonSource" : "",
       "seasonSeed" : 13111,
       "canonicalPlanet" : "none",
+      "tidalLocked" : false,
       "associatedEpochYear" : -20000,
-      "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83E\uDDCA MONDE GLACIAIRE (Boreas) : Planète boule de neige en glaciation généralisée. Calottes de glace globales, océans cryogéniques sous banquise épaisse, albédo très élevé (0,65) et biomasse végétale restreinte."
     },
     "terrestrialBiomassGtC" : 30.0,
     "soilOrganicCarbonGtC" : 150.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "HotellingResourceDepletionEngine" : true,
     "ArthurCombinatorialTechnologyEngine" : true,
@@ -181,9 +185,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Monde Glaciaire Boreas : Havres Géothermiques & Cités Sous Glace (2120)",
   "displayDescription" : "❄ SCÉNARIO EXOPLANÉTAIRE : Cités Sous-Glaciaires & Puits Géothermiques de Boreas (2120 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nPlanète boule de neige cryogénique où l'humanité s'abrite dans des cavités volcaniques sous-glaciaires chauffées par le flux géothermique du manteau sous des kilomètres de banquise.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation du gradient thermique entre la croûte volcanique profonde et la calotte de surface.\n• Cités troglodytiques taillées dans la glace consolidée et la roche ignée avec biosphères hydroponiques étanches.\n• Économie d'énergie thermique maximale et recyclage thermodynamique intégral.\n"
 }

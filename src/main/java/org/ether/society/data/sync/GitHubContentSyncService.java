@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvère Martin-Michiellot
+ * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
  */
 package org.ether.society.data.sync;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <ul>
  *   <li>Scenario, planet, and ecology presets ({@code data/presets/**})</li>
  *   <li>Historical events and timeline chronicles ({@code data/events/**}, {@code data/history/**})</li>
- *   <li>Processed planetary cartographic rasters ({@code data/maps/ether/**})</li>
+ *   <li>Processed planetary cartographic rasters ({@code data/ether/**})</li>
  *   <li>Official baseline scenario checkpoints and snapshots ({@code saves/**})</li>
  * </ul>
  * </p>
@@ -232,7 +232,7 @@ public final class GitHubContentSyncService {
         return p.startsWith("data/presets/")
                 || p.startsWith("data/events/")
                 || p.startsWith("data/history/")
-                || p.startsWith("data/maps/ether/")
+                || p.startsWith("data/ether/")
                 || (p.startsWith("saves/") && isOfficialSavePath(p));
     }
 
@@ -450,3 +450,4 @@ public final class GitHubContentSyncService {
      */
     public record ManifestEntry(String sha256, String remoteSha, String syncedAt, long sizeBytes) {}
 }
+

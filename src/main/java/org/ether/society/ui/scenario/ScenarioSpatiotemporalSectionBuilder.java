@@ -66,6 +66,10 @@ public class ScenarioSpatiotemporalSectionBuilder {
     private Label temporalResolutionLabel;
     private Label temporalResolutionHintLabel;
 
+    private ComboBox<String> referenceModelCombo;
+    private Label referenceModelLabel;
+    private Label referenceModelHintLabel;
+
     /**
      * Constructs a spatiotemporal section builder.
      *
@@ -88,11 +92,11 @@ public class ScenarioSpatiotemporalSectionBuilder {
         grid1.setHgap(10);
         grid1.setVgap(10);
 
-        startYearSpinner = new Spinner<>(-100000, 5000, -8000, 100);
+        startYearSpinner = new Spinner<>(-3000000, 2200, -8000, 100);
         startYearSpinner.setEditable(true);
         startYearSpinner.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.start_year", "Chronological marker at T=0 to set the simulation on a standard calendar reference. This value is for reference and does not directly affect physics equations.")));
 
-        endYearSpinner = new Spinner<>(-100000, 5000, 100, 100);
+        endYearSpinner = new Spinner<>(-3000000, 2200, 100, 100);
         endYearSpinner.setEditable(true);
         endYearSpinner.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.end_year", "Target end year of simulation. Determines total campaign duration for headless runs and comparative analytics.")));
         endYearSpinner.valueProperty().addListener((obs, oldV, newV) -> {
@@ -200,11 +204,41 @@ public class ScenarioSpatiotemporalSectionBuilder {
                 host.notifyParamChange();
                 if (newV != null) {
                     host.loadEarthHistoricalEvents();
+                    updateReferenceModelOptions(newV);
                 }
             }
         });
         Tooltip.install(startYearLabel, startYearSpinner.getTooltip());
         Tooltip.install(endYearLabel, endYearSpinner.getTooltip());
+
+        // Reference Baseline Model (Row 5)
+        referenceModelLabel = new Label();
+        referenceModelCombo = new ComboBox<>();
+        referenceModelCombo.setMaxWidth(Double.MAX_VALUE);
+        referenceModelCombo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(String item) {
+                if (item == null) return "";
+                return org.ether.society.analytics.HistoricalValidationKernel.getReferenceModelDisplayLabel(item);
+            }
+
+            @Override
+            public String fromString(String string) {
+                return null;
+            }
+        });
+        Tooltip.install(referenceModelCombo, new Tooltip(I18n.getOrDefault("scenario.tooltip.reference_model", "Reference Model")));
+        Tooltip.install(referenceModelLabel, referenceModelCombo.getTooltip());
+        referenceModelHintLabel = new Label(I18n.getOrDefault("scenario.reference_model.hint",
+                "• < -10k BP : Paléo Sources | -10k à 2024 : HYDE 3.4 & Maddison | 2025+ : SSP1-5 du GIEC ou Calibration Ether."));
+        referenceModelHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+        referenceModelHintLabel.setWrapText(true);
+        referenceModelCombo.valueProperty().addListener((obs, oldV, newV) -> {
+            if (host != null) host.notifyParamChange();
+        });
+        VBox referenceBox = new VBox(2, referenceModelCombo, referenceModelHintLabel);
+
+        updateReferenceModelOptions(startYearSpinner.getValue());
 
         ColumnConstraints col0 = new ColumnConstraints();
         col0.setMinWidth(190);
@@ -220,17 +254,54 @@ public class ScenarioSpatiotemporalSectionBuilder {
         cohortSizeLabel.setWrapText(true);
         startYearLabel.setWrapText(true);
         endYearLabel.setWrapText(true);
+        referenceModelLabel.setWrapText(true);
 
         grid1.addRow(0, h3ResolutionLabel, h3Box);
         grid1.addRow(1, temporalResolutionLabel, tempBox);
         grid1.addRow(2, cohortSizeLabel, cohortBox);
         grid1.addRow(3, startYearLabel, startYearSpinner);
         grid1.addRow(4, endYearLabel, endYearSpinner);
+        grid1.addRow(5, referenceModelLabel, referenceBox);
 
         VBox content = new VBox(10, grid1);
         VBox box = new VBox(8, title1, content);
         box.getStyleClass().add("card-section");
         return box;
+    }
+
+    /**
+     * Dynamically updates the reference model options based on the chosen start year.
+     *
+     * @param startYear the epoch start year
+     */
+    public void updateReferenceModelOptions(int startYear) {
+        if (referenceModelCombo == null) return;
+        String current = referenceModelCombo.getValue();
+        referenceModelCombo.getItems().clear();
+        if (startYear < -10000) {
+            referenceModelCombo.getItems().add("PALEO_SOURCES");
+            referenceModelCombo.setValue("PALEO_SOURCES");
+            referenceModelCombo.setDisable(true);
+        } else if (startYear < 2025) {
+            referenceModelCombo.getItems().add("HYDE_MADDISON");
+            referenceModelCombo.setValue("HYDE_MADDISON");
+            referenceModelCombo.setDisable(true);
+        } else if (startYear < 2100) {
+            referenceModelCombo.getItems().addAll("SSP1", "SSP2", "SSP3", "SSP4", "SSP5", "ETHER_CALIBRATED");
+            referenceModelCombo.setDisable(false);
+            if (current != null && referenceModelCombo.getItems().contains(current)) {
+                referenceModelCombo.setValue(current);
+            } else {
+                referenceModelCombo.setValue("SSP2");
+            }
+        } else if (startYear <= 2200) {
+            // Beyond 2100, official IPCC SSP1-5 projections terminate; only Ether Calibrated continuity extends to 2200
+            referenceModelCombo.getItems().add("ETHER_CALIBRATED");
+            referenceModelCombo.setValue("ETHER_CALIBRATED");
+            referenceModelCombo.setDisable(true);
+        } else {
+            referenceModelCombo.setDisable(true);
+        }
     }
 
     /**
@@ -240,8 +311,9 @@ public class ScenarioSpatiotemporalSectionBuilder {
      */
     public void applyScenario(Scenario s) {
         if (s == null) return;
+        int startYear = (int) s.getStartDateYear();
         if (startYearSpinner != null && startYearSpinner.getValueFactory() != null) {
-            startYearSpinner.getValueFactory().setValue((int) s.getStartDateYear());
+            startYearSpinner.getValueFactory().setValue(startYear);
         }
         if (endYearSpinner != null && endYearSpinner.getValueFactory() != null) {
             endYearSpinner.getValueFactory().setValue((int) s.getEndDateYear());
@@ -254,6 +326,13 @@ public class ScenarioSpatiotemporalSectionBuilder {
         }
         if (h3ResolutionCombo != null) {
             h3ResolutionCombo.setValue(s.getH3Resolution() > 0 ? s.getH3Resolution() : 3);
+        }
+        if (referenceModelCombo != null) {
+            updateReferenceModelOptions(startYear);
+            String refModel = s.getReferenceTrajectoryModel();
+            if (refModel != null && referenceModelCombo.getItems().contains(refModel)) {
+                referenceModelCombo.setValue(refModel);
+            }
         }
     }
 
@@ -279,6 +358,9 @@ public class ScenarioSpatiotemporalSectionBuilder {
         if (h3ResolutionCombo != null && h3ResolutionCombo.getValue() != null) {
             s.setH3Resolution(h3ResolutionCombo.getValue());
         }
+        if (referenceModelCombo != null && referenceModelCombo.getValue() != null) {
+            s.setReferenceTrajectoryModel(referenceModelCombo.getValue());
+        }
     }
 
     /**
@@ -294,12 +376,17 @@ public class ScenarioSpatiotemporalSectionBuilder {
         if (temporalResolutionHintLabel != null) temporalResolutionHintLabel.setText(I18n.getOrDefault("scenario.temporal.hint", "• 1 Mois : Recommandé par défaut (équilibre saisons/vitesse) | 1 Jour/Sem. : Épidémies & météo | 1 An : Multi-millénaire."));
         if (cohortSizeLabel != null) cohortSizeLabel.setText(I18n.getOrDefault("scenario.label.cohort_size", "Cohort Size:"));
         if (cohortSizeHintLabel != null) cohortSizeHintLabel.setText(I18n.getOrDefault("scenario.cohort.hint", "• 1–30 : Micro-tribus nomades | 150 : Recommandé par défaut (Nombre de Dunbar) | 10k–50k : Macro-cohortes."));
+        if (referenceModelLabel != null) referenceModelLabel.setText(I18n.getOrDefault("scenario.label.reference_model", "Prospective / Empirical Baseline Model:"));
+        if (referenceModelHintLabel != null) referenceModelHintLabel.setText(I18n.getOrDefault("scenario.reference_model.hint", "• < -10k BP: Paléo Sources | -10k to 2024: HYDE 3.4 & Maddison | 2025+: IPCC SSP1-5 or Ether Calibrated."));
 
         if (temporalResolutionCombo != null && temporalResolutionCombo.getCellFactory() != null) {
             temporalResolutionCombo.setButtonCell(temporalResolutionCombo.getCellFactory().call(null));
         }
         if (h3ResolutionCombo != null && h3ResolutionCombo.getCellFactory() != null) {
             h3ResolutionCombo.setButtonCell(h3ResolutionCombo.getCellFactory().call(null));
+        }
+        if (referenceModelCombo != null && referenceModelCombo.getCellFactory() != null) {
+            referenceModelCombo.setButtonCell(referenceModelCombo.getCellFactory().call(null));
         }
     }
 
@@ -308,4 +395,5 @@ public class ScenarioSpatiotemporalSectionBuilder {
     public ComboBox<Integer> getH3ResolutionCombo() { return h3ResolutionCombo; }
     public Spinner<Integer> getTargetCohortSizeSpinner() { return targetCohortSizeSpinner; }
     public ComboBox<Double> getTemporalResolutionCombo() { return temporalResolutionCombo; }
+    public ComboBox<String> getReferenceModelCombo() { return referenceModelCombo; }
 }

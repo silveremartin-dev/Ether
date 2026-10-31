@@ -1,8 +1,9 @@
 {
-  "name" : "Arrivée des Européens aux Amériques & Choc Microbiens (1492)",
-  "description" : "⛵ SCÉNARIO HISTORIQUE : Le Choc du Contact d'Échange Colombien & Effondrement Épidémique (1492)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'impact bio-démographique mondial de la rencontre entre l'Ancien et le Nouveau Monde. Trajectoire de choc microbiologique (chute démographique de 80-90% du continent américain) et réorganisation commerciale transatlantique.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute démographique cataclysmique (80 à 90%) des populations amérindiennes sous l'effet de la variole et de la rougeole.\n• Échange colombien global : diffusion mondiale du maïs, de la pomme de terre, du manioc et de l'argent du Potosí.\n• Reforestation spontanée des terres abandonnées et baisse temporaire du CO₂ atmosphérique mondial (Orbis Spike).\n",
+  "name" : "European Arrival in the Americas & Microbial Shock (1492 CE)",
+  "description" : "⛵ HISTORICAL SCENARIO : Le Choc du Contact d'Échange Colombien & Effondrement Épidémique (1492)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModélise l'impact bio-démographique mondial de la rencontre entre l'Ancien et le Nouveau Monde. Trajectoire de choc microbiologique (chute démographique de 80-90% du continent américain) et réorganisation commerciale transatlantique.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute démographique cataclysmique (80 à 90%) des populations amérindiennes sous l'effet de la variole et de la rougeole.\n• Échange colombien global : diffusion mondiale du maïs, de la pomme de terre, du manioc et de l'argent du Potosí.\n• Reforestation spontanée des terres abandonnées et baisse temporaire du CO₂ atmosphérique mondial (Orbis Spike).\n",
   "id" : null,
   "presetKey" : "columbian_contact",
+  "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
     "name" : "Terre (Terran)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "DynamicMaritimeRoutingGraph" : true,
     "MaritimeHighwayEngine" : true,
@@ -185,9 +189,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Échange Colombien & Réseau Commercial Mondial (1500)",
   "displayDescription" : "⛵ SCÉNARIO HISTORIQUE : Le Grand Contact & L'Échange Biologique Mondial (1500 apr. J.-C.)\n\nConvergence des deux hémisphères, transferts de cultures (maïs, pomme de terre), flux d'argent métal et choc épidémiologique dévastateur."
 }

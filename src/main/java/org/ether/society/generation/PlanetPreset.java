@@ -445,6 +445,6 @@ public record PlanetPreset(
 
     @Override
     public String toString() {
-        return name;
+        return org.ether.society.i18n.I18n.getPlanetPresetDisplayName(name);
     }
 }

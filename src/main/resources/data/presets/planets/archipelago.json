@@ -42,7 +42,7 @@
   "seasonSource" : "",
   "seasonSeed" : 79777,
   "canonicalPlanet" : "none",
+  "tidalLocked" : false,
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique.",
-  "tidalLocked" : false
+  "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique."
 }

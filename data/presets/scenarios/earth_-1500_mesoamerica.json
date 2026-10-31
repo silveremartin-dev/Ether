@@ -1,8 +1,9 @@
 {
-  "name" : "Civilisations Mésoaméricaines (Olmèques & Mayas) (-1500)",
-  "description" : "\uD83C\uDF3D SCÉNARIO HISTORIQUE : Culture Mère Olmèque & Cités-États Mayas (-1500 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nÉmergence des centres cérémoniels de San Lorenzo et La Venta, puis essor de la civilisation maya classique. Modélise la maïsiculture intensive, les réservoirs d'eau pluviale et l'astronomie de précision.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Intensification agricole sur terrasses et chinampas sans bêtes de trait ni métallurgie du fer.\n• Cyclicités de sécheresse mésoaméricaines et résilience des réservoirs d'eau (aguadas, chultuns, cénotes).\n• Évolution fractale et dispersion des cités cérémonielles mayas suivies d'effondrements régionaux.\n",
+  "name" : "Mesoamerican Civilizations (Olmecs & Mayas) (-1500 BCE)",
+  "description" : "\uD83C\uDF3D HISTORICAL SCENARIO : Culture Mère Olmèque & Cités-États Mayas (-1500 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nÉmergence des centres cérémoniels de San Lorenzo et La Venta, puis essor de la civilisation maya classique. Modélise la maïsiculture intensive, les réservoirs d'eau pluviale et l'astronomie de précision.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Intensification agricole sur terrasses et chinampas sans bêtes de trait ni métallurgie du fer.\n• Cyclicités de sécheresse mésoaméricaines et résilience des réservoirs d'eau (aguadas, chultuns, cénotes).\n• Évolution fractale et dispersion des cités cérémonielles mayas suivies d'effondrements régionaux.\n",
   "id" : null,
   "presetKey" : "mesoamerica",
+  "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
     "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre (-1900 BP) — Précipitations",
+    "precipSource" : "\uD83C\uDF0D Terre (-1900 BP) — Précipitations",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre (-1900 BP) — Saisonnalité",
+    "seasonSource" : "\uD83C\uDF0D Terre (-1900 BP) — Saisonnalité",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : -1900,
-    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
   },
   "ecologyPreset" : {
     "name" : "Terre (-1 900 / Âge du Bronze Moyen)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre (-1900 BP) — Précipitations",
+      "precipSource" : "\uD83C\uDF0D Terre (-1900 BP) — Précipitations",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre (-1900 BP) — Saisonnalité",
+      "seasonSource" : "\uD83C\uDF0D Terre (-1900 BP) — Saisonnalité",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : -1900,
-      "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
     },
     "terrestrialBiomassGtC" : 590.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -160,7 +161,7 @@
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
-  "h3Resolution" : 5,
+  "h3Resolution" : 6,
   "strictDeterminism" : true,
   "sparseCellSkippingEnabled" : false,
   "oceanMacroAggregationEnabled" : false,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "ScottAgainstTheGrainPureEngine" : true,
     "SpatialCityFractalEngine" : true,
@@ -187,9 +191,6 @@
   "minLng" : -105.0,
   "maxLng" : -85.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Hégémonie Olmèque & Urbanisation Mésoaméricaine (-1200)",
   "displayDescription" : "\uD83C\uDFFA SCÉNARIO HISTORIQUE : Le Cœur Olmèque & L'Urbanisation Mésoaméricaine (-1200 av. J.-C.)\n\nAgriculture de milpa (maïs), monumentalité basaltique, jeu de balle rituel et réseaux de centres cérémoniels dans les terres basses tropicales du Golfe."
 }

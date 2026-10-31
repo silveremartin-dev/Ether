@@ -25,7 +25,7 @@ public class GenerateExoplanetDensityMapsTest {
     }
 
     private void generateMars2050DensityMap() throws Exception {
-        File marsElevFile = new File("data/maps/ether/mars/2026/mars_2026_elevation.png");
+        File marsElevFile = new File("data/ether/mars/2026/mars_2026_elevation.png");
         assertTrue(marsElevFile.exists(), "Mars elevation raster must exist");
         BufferedImage srcElev = ImageIO.read(marsElevFile);
         int w = srcElev.getWidth();
@@ -66,7 +66,7 @@ public class GenerateExoplanetDensityMapsTest {
             gVis.drawLine(x, 0, x, h);
         }
 
-        // Outposts: Chryse (22.4°N, -49.8°E, 300 colons) & Jezero (18.38°N, 77.58°E, 200 colons)
+        // Outposts: Chryse (22.4Â°N, -49.8Â°E, 300 colons) & Jezero (18.38Â°N, 77.58Â°E, 200 colons)
         renderOutpostBeacon(w, h, gGray, gVis, 22.4, -49.8, 300, "Chryse Planitia Outpost (300 hab)", new Color(255, 75, 43));
         renderOutpostBeacon(w, h, gGray, gVis, 18.38, 77.58, 200, "Jezero Crater Science Hub (200 hab)", new Color(0, 230, 246));
 
@@ -77,14 +77,14 @@ public class GenerateExoplanetDensityMapsTest {
         drawFeatureLabel(gVis, w, h, -42.4, 70.5, "Hellas Basin (-8.2 km)", new Color(220, 180, 160, 200));
 
         // Legend & Header
-        drawMapBanner(gVis, w, h, "MARS (2050) — CARTE DE DENSITÉ DÉMOGRAPHIQUE & AVANT-POSTES",
-                "Population Totale: 500 Pionniers | Chryse Planitia (300) • Jezero Crater (200) | Densité globale: 0 hab/km²");
+        drawMapBanner(gVis, w, h, "MARS (2050) â€” CARTE DE DENSITÃ‰ DÃ‰MOGRAPHIQUE & AVANT-POSTES",
+                "Population Totale: 500 Pionniers | Chryse Planitia (300) â€¢ Jezero Crater (200) | DensitÃ© globale: 0 hab/kmÂ²");
 
         gGray.dispose();
         gVis.dispose();
 
         // Save files
-        File outDir = new File("data/maps/ether/mars/2050");
+        File outDir = new File("data/ether/mars/2050");
         outDir.mkdirs();
         File grayFile = new File(outDir, "mars_2050_density.png");
         File visFile = new File(outDir, "mars_2050_density_visual.png");
@@ -94,11 +94,11 @@ public class GenerateExoplanetDensityMapsTest {
         // Copy to brain artifact directory
         File artifactTarget = new File(ARTIFACT_DIR, "mars_2050_density_visual.png");
         Files.copy(visFile.toPath(), artifactTarget.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("✅ Generated Mars 2050 Density Maps: " + visFile.getAbsolutePath() + " and artifact " + artifactTarget.getAbsolutePath());
+        System.out.println("âœ… Generated Mars 2050 Density Maps: " + visFile.getAbsolutePath() + " and artifact " + artifactTarget.getAbsolutePath());
     }
 
     private void generateVenus2080DensityMap() throws Exception {
-        File venusElevFile = new File("data/maps/ether/venus/2026/venus_2026_elevation.png");
+        File venusElevFile = new File("data/ether/venus/2026/venus_2026_elevation.png");
         assertTrue(venusElevFile.exists(), "Venus elevation raster must exist");
         BufferedImage srcElev = ImageIO.read(venusElevFile);
         int w = srcElev.getWidth();
@@ -139,7 +139,7 @@ public class GenerateExoplanetDensityMapsTest {
             gVis.drawLine(x, 0, x, h);
         }
 
-        // Outposts: Aphrodite Cloud Station (0.0°N, 0.0°E, 105 hab) & Ishtar Aerostat (0.0°N, 120.0°E, 45 hab)
+        // Outposts: Aphrodite Cloud Station (0.0Â°N, 0.0Â°E, 105 hab) & Ishtar Aerostat (0.0Â°N, 120.0Â°E, 45 hab)
         renderOutpostBeacon(w, h, gGray, gVis, 0.0, 0.0, 105, "Aphrodite Cloud Station (105 hab / Alt: 55 km)", new Color(250, 204, 21));
         renderOutpostBeacon(w, h, gGray, gVis, 0.0, 120.0, 45, "Ishtar Aerostat Station (45 hab / Alt: 55 km)", new Color(52, 211, 153));
 
@@ -150,14 +150,14 @@ public class GenerateExoplanetDensityMapsTest {
         drawFeatureLabel(gVis, w, h, 25.0, -78.0, "Beta Regio Volcanic Shield", new Color(245, 230, 180, 200));
 
         // Legend & Header
-        drawMapBanner(gVis, w, h, "VÉNUS (2080) — CARTE DE DENSITÉ DES CITÉS AÉROSTATIQUES",
-                "Population Totale: 150 Scientifiques | Aphrodite Flotilla (105) • Ishtar Flotilla (45) | Altitude: 55 km (1 atm, 25°C)");
+        drawMapBanner(gVis, w, h, "VÃ‰NUS (2080) â€” CARTE DE DENSITÃ‰ DES CITÃ‰S AÃ‰ROSTATIQUES",
+                "Population Totale: 150 Scientifiques | Aphrodite Flotilla (105) â€¢ Ishtar Flotilla (45) | Altitude: 55 km (1 atm, 25Â°C)");
 
         gGray.dispose();
         gVis.dispose();
 
         // Save files
-        File outDir = new File("data/maps/ether/venus/2080");
+        File outDir = new File("data/ether/venus/2080");
         outDir.mkdirs();
         File grayFile = new File(outDir, "venus_2080_density.png");
         File visFile = new File(outDir, "venus_2080_density_visual.png");
@@ -167,7 +167,7 @@ public class GenerateExoplanetDensityMapsTest {
         // Copy to brain artifact directory
         File artifactTarget = new File(ARTIFACT_DIR, "venus_2080_density_visual.png");
         Files.copy(visFile.toPath(), artifactTarget.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("✅ Generated Venus 2080 Density Maps: " + visFile.getAbsolutePath() + " and artifact " + artifactTarget.getAbsolutePath());
+        System.out.println("âœ… Generated Venus 2080 Density Maps: " + visFile.getAbsolutePath() + " and artifact " + artifactTarget.getAbsolutePath());
     }
 
     private void renderOutpostBeacon(int w, int h, Graphics2D gGray, Graphics2D gVis,
@@ -231,3 +231,4 @@ public class GenerateExoplanetDensityMapsTest {
         g.drawString(subtitle, 20, 41);
     }
 }
+

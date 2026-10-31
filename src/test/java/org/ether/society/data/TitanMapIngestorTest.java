@@ -14,8 +14,8 @@ public class TitanMapIngestorTest {
 
     @Test
     public void testIngestTitanTopographyAndGeology() throws Exception {
-        File topoRaw = new File("data/maps/ether/titan/2150/titan_topography_raw.png");
-        File geolRaw = new File("data/maps/ether/titan/2150/titan_geology_raw.png");
+        File topoRaw = new File("data/ether/titan/2150/titan_topography_raw.png");
+        File geolRaw = new File("data/ether/titan/2150/titan_geology_raw.png");
         assertTrue(topoRaw.exists(), "Topo raw image must exist");
         assertTrue(geolRaw.exists(), "Geol raw image must exist");
 
@@ -143,7 +143,7 @@ public class TitanMapIngestorTest {
             }
         }
 
-        File elevFile = new File("data/maps/ether/titan/2150/titan_2150_elevation.png");
+        File elevFile = new File("data/ether/titan/2150/titan_2150_elevation.png");
         ImageIO.write(elevOut, "png", elevFile);
         System.out.println("Saved normalized Titan elevation tensor to: " + elevFile.getAbsolutePath());
 
@@ -237,9 +237,9 @@ public class TitanMapIngestorTest {
         System.out.printf("Titan Biome Ingestion Stats: Lakes=%d, Dunes=%d, Plains=%d, Hummocky=%d, Labyrinths=%d, Craters=%d\n",
                 lakePixelCount, dunePixelCount, plainPixelCount, hummockyPixelCount, labyrinthPixelCount, craterPixelCount);
 
-        File biomeFile = new File("data/maps/ether/titan/2150/titan_2150_biomes.png");
-        File oilFile = new File("data/maps/ether/titan/2150/titan_2150_oil.png");
-        File gasFile = new File("data/maps/ether/titan/2150/titan_2150_gas.png");
+        File biomeFile = new File("data/ether/titan/2150/titan_2150_biomes.png");
+        File oilFile = new File("data/ether/titan/2150/titan_2150_oil.png");
+        File gasFile = new File("data/ether/titan/2150/titan_2150_gas.png");
 
         ImageIO.write(biomeOut, "png", biomeFile);
         ImageIO.write(oilOut, "png", oilFile);
@@ -248,3 +248,4 @@ public class TitanMapIngestorTest {
         System.out.println("Ingestion completed successfully!");
     }
 }
+

@@ -1,8 +1,9 @@
 {
-  "name" : "Base Lunaire Shackleton & Tubes de Lave Marius Hills (2035)",
+  "name" : "Shackleton Lunar Base & Marius Hills Lava Tubes (2035)",
   "description" : "⚪ SCÉNARIO EXOPLANÉTAIRE : Base Lunaire Polaire & Tubes de Lave Sous-Terrain (2035 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nImplantation humaine permanente au pôle Sud lunaire (cratère Shackleton) pour l'extraction de glace d'eau et sanctuarisation dans les tunnels de lave de Marius Hills sous vide absolu.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation industrielle de la glace polaire et de l'Hélium-3 pour les réacteurs à fusion.\n• Habitats pressurisés enfouis dans les cavités basaltiques assurant un blindage thermique et radiatif total.\n• Hub logistique pour l'expansion cis-lunaire et les chantiers orbitaux.\n",
   "id" : null,
   "presetKey" : "moon_shackleton_2035",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Lune (Selene)",
     "resolution" : 4,
@@ -47,9 +48,9 @@
     "seasonSource" : "⚪ Lune — Diurnal Insolation Amplitude Model",
     "seasonSeed" : 90888,
     "canonicalPlanet" : "moon",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe.",
-    "tidalLocked" : false
+    "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe."
   },
   "ecologyPreset" : {
     "name" : "Lune (Selene)",
@@ -98,9 +99,9 @@
       "seasonSource" : "⚪ Lune — Diurnal Insolation Amplitude Model",
       "seasonSeed" : 90888,
       "canonicalPlanet" : "moon",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe.",
-      "tidalLocked" : false
+      "presetDescription" : "⚪ LUNE (Selene) : Satellite tellurique sans atmosphère, cratères d'impacts, mers basaltiques riches en titane, hauts plateaux d'anorthosite, variations diurnes extrêmes (-170°C à +120°C) et hélium-3 piégé dans le régolithe."
     },
     "terrestrialBiomassGtC" : 0.0,
     "soilOrganicCarbonGtC" : 0.0,
@@ -137,7 +138,7 @@
   "initialInformationPerCapita" : 6.0E7,
   "populationDensityType" : "URBAN_CLUSTERS",
   "cellSizeKm2" : 100.0,
-  "targetCohortSize" : 250,
+  "targetCohortSize" : 10,
   "temporalResolutionDays" : 30.0,
   "climateHarshness" : 0.5,
   "startDateYear" : 2035,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "KurzweilAcceleratingReturnsEngine" : true,
     "ArthurCombinatorialTechnologyEngine" : true,
@@ -182,9 +186,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Base Lunaire Shackleton & Tubes de Lave Marius Hills (2035)",
   "displayDescription" : "⚪ SCÉNARIO EXOPLANÉTAIRE : Base Lunaire Polaire & Tubes de Lave Sous-Terrain (2035 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nImplantation humaine permanente au pôle Sud lunaire (cratère Shackleton) pour l'extraction de glace d'eau et sanctuarisation dans les tunnels de lave de Marius Hills sous vide absolu.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation industrielle de la glace polaire et de l'Hélium-3 pour les réacteurs à fusion.\n• Habitats pressurisés enfouis dans les cavités basaltiques assurant un blindage thermique et radiatif total.\n• Hub logistique pour l'expansion cis-lunaire et les chantiers orbitaux.\n"
 }

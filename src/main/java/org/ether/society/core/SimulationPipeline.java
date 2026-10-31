@@ -437,7 +437,10 @@ public class SimulationPipeline {
 
         // Step 3.4: Recombinant Technology, Information Entropy & Ozone
         SelectiveBreedingEngine.processSelectiveBreeding(populatedCells, dtYears);
-        TechnologicalSingularityEngine.processTechnologicalSingularity(populatedCells, dtYears);
+        if (scenario != null && scenario.getTypeBEngineStates() != null
+                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("TechnologicalSingularityEngine"))) {
+            TechnologicalSingularityEngine.processTechnologicalSingularity(populatedCells, dtYears);
+        }
         InformationEntropyEngine.processInformationEntropy(populatedCells);
 
         List<TradeNetworkEngine.TradeRoute> tradeRoutes = null;

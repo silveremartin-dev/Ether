@@ -36,13 +36,13 @@
   "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
   "tempSeed" : 12445,
   "precipUseImport" : true,
-  "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+  "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
   "precipSeed" : 13345,
   "seasonUseImport" : true,
-  "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+  "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
   "seasonSeed" : 14345,
   "canonicalPlanet" : "earth",
+  "tidalLocked" : false,
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-  "tidalLocked" : false
+  "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
 }

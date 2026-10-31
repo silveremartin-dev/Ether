@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvère Martin-Michiellot
+ * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
  */
 package org.ether.society.data.sync;
 
@@ -35,7 +35,7 @@ public class GitHubContentSyncServiceTest {
         assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/presets/planets/earth.json"));
         assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/events/historical_events.json"));
         assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/history/timeline_rome.json"));
-        assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/maps/ether/earth/0/elevation.png"));
+        assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/ether/earth/0/elevation.png"));
         assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("saves/run-alexander_hellenistic_334bce_forced/metadata.json"));
 
         // Reject unauthorized paths
@@ -66,3 +66,4 @@ public class GitHubContentSyncServiceTest {
         assertNotEquals(hash, GitHubContentSyncService.computeSha256(testFile3));
     }
 }
+

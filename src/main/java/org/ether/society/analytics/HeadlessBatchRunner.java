@@ -359,7 +359,9 @@ public class HeadlessBatchRunner {
         metricsMap.put("temperatureAnomaly", tempAnom);
         metricsMap.put("precipitation", 850.0 + Math.cos(year / 150.0) * 50.0);
         metricsMap.put("conflict", engine.getConflictLevel());
-        metricsMap.put("sociopoliticalInstability", engine.getConflictLevel());
+        metricsMap.put("sociopoliticalInstability", engine.getMetricsAggregator() != null
+                ? engine.getMetricsAggregator().getSociopoliticalInstabilityIndex()
+                : engine.getConflictLevel());
         metricsMap.put("megafaunaIndex", org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(year, (double) pop / 1e6, 0.2));
         metricsMap.put("milankovitchInsolation", org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year));
 

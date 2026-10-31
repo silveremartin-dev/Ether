@@ -1,8 +1,9 @@
 {
-  "name" : "Hiver Nucléaire & Ombre Stratosphérique (2035)",
-  "description" : "â˜¢ï¸ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nConflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planétaire de -15°C à -25°C.\n• Effondrement total de la photosynthèse et rupture généralisée des chaînes alimentaires en moins de 60 jours.\n• Survie démographique résiduelle restreinte aux refuges souterrains, biomes marins profonds et serres protégées.\n",
+  "name" : "Nuclear Winter & Stratospheric Solar Dimming (2035)",
+  "description" : "☢️ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nConflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planétaire de -15°C à -25°C.\n• Effondrement total de la photosynthèse et rupture généralisée des chaînes alimentaires en moins de 60 jours.\n• Survie démographique résiduelle restreinte aux refuges souterrains, biomes marins profonds et serres protégées.\n",
   "id" : null,
   "presetKey" : "nuclear_winter_2035",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Terre (Terran)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "NuclearSafetyRadiotoxicityEngine" : true,
     "BifurcationChaosEngine" : true,
@@ -366,9 +370,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Guerre Thermonucléaire & Hiver Nucléaire (2035)",
   "displayDescription" : "⚠ SCÉNARIO DE CRISE : Conflit Thermonucléaire Global & Hiver Nucléaire (2035 apr. J.-C.)\n\nInjection de 150 Tg de suie dans la stratosphère, effondrement de l'irradiance solaire, gel mondial, ruine des cultures et effondrement sociétal."
 }

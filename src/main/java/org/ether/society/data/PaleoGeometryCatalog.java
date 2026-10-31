@@ -184,7 +184,17 @@ public final class PaleoGeometryCatalog {
     }
 
     private static JsonNode readJsonResource(String filename) {
-        // 1. Check local file on disk in data/history/paleo/
+        // 1. Check canonical disk path in data/ether/earth/history/paleo/
+        File earthDiskFile = new File("data/ether/earth/history/paleo", filename);
+        if (earthDiskFile.exists() && earthDiskFile.isFile()) {
+            try {
+                return mapper.readTree(earthDiskFile);
+            } catch (Exception ex) {
+                logger.warn("Failed reading paleogeography file from disk '{}': {}", earthDiskFile.getAbsolutePath(), ex.getMessage());
+            }
+        }
+
+        // 2. Check legacy disk path in data/history/paleo/
         File diskFile = new File("data/history/paleo", filename);
         if (diskFile.exists() && diskFile.isFile()) {
             try {

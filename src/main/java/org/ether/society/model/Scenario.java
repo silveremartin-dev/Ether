@@ -26,12 +26,8 @@ import java.util.Map;
  * Tier 2 cliodynamic engine toggles, and determinism settings.
  * </p>
  * <p>
- * Canonical built-in historical, future, and exoplanetary scenarios are modularly cataloged in:
- * <ul>
- *   <li>{@link PaleoAndAncientScenarioCatalog} ($-100\,000\,\text{BCE}$ to $0\,\text{CE}$)</li>
- *   <li>{@link MedievalAndModernScenarioCatalog} ($+536\,\text{CE}$ to $+2025\,\text{CE}$)</li>
- *   <li>{@link FutureAndExoplanetScenarioCatalog} ($+2026\,\text{CE}$ to $+2320\,\text{CE}$ and Exoplanets)</li>
- * </ul>
+ * Canonical built-in historical, future, and exoplanetary scenarios are loaded directly from
+ * {@code data/presets/scenarios/*.json} via {@link org.ether.society.persistence.PresetStorageService}.
  * </p>
  *
  * @author Silvere Martin-Michiellot
@@ -45,6 +41,7 @@ public class Scenario implements Serializable {
     private String description;
     private Long id;
     private String presetKey;
+    private String referenceTrajectoryModel;
 
     // Planet Configuration
     private PlanetPreset planetPreset = PlanetPreset.EARTH_LIKE;
@@ -211,7 +208,12 @@ public class Scenario implements Serializable {
      * @return standardized benchmark scenario instance
      */
     public static Scenario createBenchmarkStandardScenario() {
-        return PaleoAndAncientScenarioCatalog.createBenchmarkStandardScenario();
+        for (Scenario s : getBuiltInScenarios()) {
+            if ("benchmark_standard".equals(s.getPresetKey()) || "out_of_africa".equals(s.getPresetKey())) {
+                return s.copy();
+            }
+        }
+        return createDefaultScenario();
     }
 
     /**
@@ -229,7 +231,42 @@ public class Scenario implements Serializable {
      * @return normalized preset key string
      */
     public String resolvePresetKey() {
-        return FutureAndExoplanetScenarioCatalog.resolvePresetKey(presetKey, name);
+        if (presetKey != null && !presetKey.isBlank()) {
+            return presetKey.trim();
+        }
+        if (name != null && !name.isBlank()) {
+            return org.ether.society.persistence.PresetStorageService.slugify(name);
+        }
+        return "unnamed_scenario";
+    }
+
+    /**
+     * Returns the canonical reference trajectory model key (e.g. {@code "PALEO_SOURCES"},
+     * {@code "HYDE_MADDISON"}, {@code "SSP1"}, {@code "SSP2"}, {@code "SSP3"}, {@code "SSP4"},
+     * {@code "SSP5"}, {@code "ETHER_CALIBRATED"}).
+     *
+     * @return the reference model identifier
+     */
+    public String getReferenceTrajectoryModel() {
+        if (referenceTrajectoryModel != null && !referenceTrajectoryModel.isBlank()) {
+            return referenceTrajectoryModel;
+        }
+        if (startDateYear < -10000) {
+            return "PALEO_SOURCES";
+        }
+        if (startDateYear < 2025) {
+            return "HYDE_MADDISON";
+        }
+        return "SSP2";
+    }
+
+    /**
+     * Sets the reference trajectory model key.
+     *
+     * @param referenceTrajectoryModel reference model identifier
+     */
+    public void setReferenceTrajectoryModel(String referenceTrajectoryModel) {
+        this.referenceTrajectoryModel = referenceTrajectoryModel;
     }
 
     /**
@@ -283,6 +320,7 @@ public class Scenario implements Serializable {
             Scenario copy = new Scenario();
             copy.name = this.name;
             copy.presetKey = this.presetKey;
+            copy.referenceTrajectoryModel = this.referenceTrajectoryModel;
             copy.description = this.description;
             copy.planetPreset = this.planetPreset;
             copy.ecologyPreset = this.ecologyPreset;

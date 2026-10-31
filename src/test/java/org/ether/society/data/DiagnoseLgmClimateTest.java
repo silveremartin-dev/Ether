@@ -20,10 +20,10 @@ public class DiagnoseLgmClimateTest {
      *
      */
     public void testCompareElevAndClimate() throws Exception {
-        File fElev = new File("data/maps/ether/earth/-20000/earth_-20000_elevation.png");
-        File fTemp = new File("data/maps/ether/earth/-20000/earth_-20000_temperature.png");
-        File fRain = new File("data/maps/ether/earth/-20000/earth_-20000_precipitation.png");
-        File fSeas = new File("data/maps/ether/earth/-20000/earth_-20000_seasonality.png");
+        File fElev = new File("data/ether/earth/-20000/earth_-20000_elevation.png");
+        File fTemp = new File("data/ether/earth/-20000/earth_-20000_temperature.png");
+        File fRain = new File("data/ether/earth/-20000/earth_-20000_precipitation.png");
+        File fSeas = new File("data/ether/earth/-20000/earth_-20000_seasonality.png");
 
         BufferedImage imgElev = ImageIO.read(fElev);
         BufferedImage imgTemp = ImageIO.read(fTemp);
@@ -50,11 +50,12 @@ public class DiagnoseLgmClimateTest {
         }
 
         // Compare -100000 temp vs -20000 temp
-        BufferedImage imgTemp100k = ImageIO.read(new File("data/maps/ether/earth/-100000/earth_-100000_temperature.png"));
+        BufferedImage imgTemp100k = ImageIO.read(new File("data/ether/earth/-100000/earth_-100000_temperature.png"));
         System.out.println("-100k temp size: " + imgTemp100k.getWidth() + "x" + imgTemp100k.getHeight());
         assertTrue(pts.length == 5, "All 5 reference test points must be diagnosed");
         assertNotNull(imgTemp100k, "Epoch -100000 temperature map must not be null");
         assertTrue(imgTemp100k.getWidth() > 0 && imgTemp100k.getHeight() > 0, "Epoch -100000 temperature map dimensions must be positive");
     }
 }
+
 

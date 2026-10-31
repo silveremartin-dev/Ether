@@ -1,8 +1,9 @@
 {
   "name" : "Anthropocène & Grande Accélération Mondiale (2000)",
-  "description" : "ðŸŒ SCÉNARIO HISTORIQUE : L'Ère Numérique & La Grande Accélération (2000 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nConsolidation du système économique mondial interconnecté, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Grande Accélération : croissance exponentielle des flux de matière, d'énergie fossile et d'information numérique.\n• Franchissement des limites planétaires (Cycle de l'azote/phosphore, forçage radiatif CO₂, érosion de biodiversité).\n• Rendements décroissants de la complexité institutionnelle et fragilité des chaînes logistiques just-in-time.\n",
+  "description" : "\uD83C\uDF10 SCÉNARIO HISTORIQUE : L'Ère Numérique & La Grande Accélération (2000 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nConsolidation du système économique mondial interconnecté, essor des microprocesseurs en silicium, de l'Internet mondial et de l'urbanisation globale.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Grande Accélération : croissance exponentielle des flux de matière, d'énergie fossile et d'information numérique.\n• Franchissement des limites planétaires (Cycle de l'azote/phosphore, forçage radiatif CO₂, érosion de biodiversité).\n• Rendements décroissants de la complexité institutionnelle et fragilité des chaînes logistiques just-in-time.\n",
   "id" : null,
   "presetKey" : "anthropocene_2000",
+  "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
     "name" : "Terre (Terran)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "KurzweilAcceleratingReturnsEngine" : true,
     "JevonsParadoxEngine" : true,
@@ -193,9 +197,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Grande Accélération & Baseline Anthropocène (2000)",
   "displayDescription" : "\uD83C\uDF10 SCÉNARIO CONTEMPORAIN : La Grande Accélération & L'Anthropocène (2000 apr. J.-C.)\n\nHyper-connectivité mondiale, 6,1 milliards d'humains, engrais de synthèse Haber-Bosch, forçage CO2 et réseaux numériques."
 }

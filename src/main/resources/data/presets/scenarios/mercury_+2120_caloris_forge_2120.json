@@ -1,8 +1,9 @@
 {
-  "name" : "Forge Solaire de Mercure & Bassin Caloris (2120)",
+  "name" : "Solar Forge of Mercury & Caloris Basin (2120)",
   "description" : "⚪ SCÉNARIO EXOPLANÉTAIRE : Forges Héliothermiques de Mercure & Métaux Lourds de Caloris (2120 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nAvant-postes miniers souterrains exploitant les gisements géants de métaux denses du bassin Caloris et la concentration solaire extrême (10 kW/m²) pour faisceaux d'énergie orbitaux.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation du flux solaire paroxystique pour la métallurgie lourde et la synthèse de matériaux ultra-denses.\n• Habitats mobiles de terminateur ou cités souterraines profondes protégées des gradients thermiques jour/nuit extrêmes.\n• Exportation d'énergie et de métaux lourds vers le reste du système solaire par catapultes électromagnétiques.\n",
   "id" : null,
   "presetKey" : "mercury_caloris_forge_2120",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Mercure (Hermes)",
     "resolution" : 4,
@@ -47,9 +48,9 @@
     "seasonSource" : "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model",
     "seasonSeed" : 68666,
     "canonicalPlanet" : "mercury",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "Mercure (Hermes)",
-    "tidalLocked" : false
+    "presetDescription" : "Mercure (Hermes)"
   },
   "ecologyPreset" : {
     "name" : "Mercure (Hermes)",
@@ -98,9 +99,9 @@
       "seasonSource" : "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model",
       "seasonSeed" : 68666,
       "canonicalPlanet" : "mercury",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "Mercure (Hermes)",
-      "tidalLocked" : false
+      "presetDescription" : "Mercure (Hermes)"
     },
     "terrestrialBiomassGtC" : 0.0,
     "soilOrganicCarbonGtC" : 0.0,
@@ -137,7 +138,7 @@
   "initialInformationPerCapita" : 8.0E7,
   "populationDensityType" : "URBAN_CLUSTERS",
   "cellSizeKm2" : 100.0,
-  "targetCohortSize" : 200,
+  "targetCohortSize" : 20,
   "temporalResolutionDays" : 30.0,
   "climateHarshness" : 0.5,
   "startDateYear" : 2120,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "HotellingResourceDepletionEngine" : true,
     "OreGradeThermodynamicsEngine" : true,
@@ -182,9 +186,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Forge Solaire de Mercure & Bassin Caloris (2120)",
   "displayDescription" : "⚪ SCÉNARIO EXOPLANÉTAIRE : Forges Héliothermiques de Mercure & Métaux Lourds de Caloris (2120 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nAvant-postes miniers souterrains exploitant les gisements géants de métaux denses du bassin Caloris et la concentration solaire extrême (10 kW/m²) pour faisceaux d'énergie orbitaux.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation du flux solaire paroxystique pour la métallurgie lourde et la synthèse de matériaux ultra-denses.\n• Habitats mobiles de terminateur ou cités souterraines profondes protégées des gradients thermiques jour/nuit extrêmes.\n• Exportation d'énergie et de métaux lourds vers le reste du système solaire par catapultes électromagnétiques.\n"
 }

@@ -26,7 +26,7 @@ import java.util.Locale;
 
 /**
  * Loads and exports simulation data from/to standard map images (Heightmaps/Biomemaps/Resource maps).
- * Assumes Equirectangular projection (Plate CarrÃ©e).
+ * Assumes Equirectangular projection (Plate CarrÃƒÂ©e).
  * 
  * Supports:
  * - Direct headless {@link BufferedImage} mapping for high-throughput batch and CLI runs
@@ -614,7 +614,7 @@ public class ImageMapLoader {
     }
 
     /**
-     * Loads a map image prioritizing the single canonical location data/maps/ether/<planet>/<year>/
+     * Loads a map image prioritizing the single canonical location data/ether/<planet>/<year>/
      * using TemporalMapTensorManager with automatic epoch fallback and continuous interpolation.
      *
      * @param mapFileName the file name or layer tag
@@ -732,7 +732,7 @@ public class ImageMapLoader {
             reader.getColor(w / 2, h / 2);
             reader.getColor(w - 1, h - 1);
         } catch (Exception ex) {
-            return new ImageValidationResult(false, "Ã‰chec de lecture des pixels raster: " + ex.getMessage(), w, h, 0.0);
+            return new ImageValidationResult(false, "Ãƒâ€°chec de lecture des pixels raster: " + ex.getMessage(), w, h, 0.0);
         }
         double ratio = (double) w / (double) h;
         return new ImageValidationResult(true, String.format("Valide (%dx%d, ratio %.2f)", w, h, ratio), w, h, ratio);

@@ -491,7 +491,8 @@ public class GroundTruthAuditGenerator {
                 double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", firstYear, method);
                 if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
                     double globalPop = globalPopM * 1_000_000.0;
-                    if (initialSimPop > 0 && initialSimPop < globalPop * 0.3) {
+                    boolean isWindowed = (initialSimPop < globalPop * 0.85);
+                    if (initialSimPop > 0 && isWindowed) {
                         regionalExtensiveScaleFactor = (double) initialSimPop / globalPop;
                     }
                 }

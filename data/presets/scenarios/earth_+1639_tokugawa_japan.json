@@ -1,8 +1,9 @@
 {
-  "name" : "Japon Tokugawa & Isolement Sakoku (1639)",
-  "description" : "â›©ï¸ SCÉNARIO HISTORIQUE : L'Ère d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nFermeture des frontières de l'archipel japonais décrétée par le Shogunat Tokugawa. Modélise une économie circulaire hautement autarcique, l'urbanisation géante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extérieurs jusqu'à l'arrivée des bateaux noirs du Commandant Perry en 1853.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Stabilité démographique et gestion rigoureuse des ressources forestières et agricoles en boucle fermée.\n• Modèle de croissance zéro durable sans dépendance aux importations énergétiques ou minérales extérieures.\n• Urbanisation pacifiée d'Edo et floraison artisanale et culturelle sous autarcie stricte.\n",
+  "name" : "Tokugawa Japan & Sakoku Isolation (1639 CE)",
+  "description" : "⛩️ HISTORICAL SCENARIO : L'Ère d'Isolement Autarcique Tokugawa (Sakoku, 1639 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nFermeture des frontières de l'archipel japonais décrétée par le Shogunat Tokugawa. Modélise une économie circulaire hautement autarcique, l'urbanisation géante d'Edo (Tokyo, 1 million d'habitants) et l'absence d'intrants extérieurs jusqu'à l'arrivée des bateaux noirs du Commandant Perry en 1853.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Stabilité démographique et gestion rigoureuse des ressources forestières et agricoles en boucle fermée.\n• Modèle de croissance zéro durable sans dépendance aux importations énergétiques ou minérales extérieures.\n• Urbanisation pacifiée d'Edo et floraison artisanale et culturelle sous autarcie stricte.\n",
   "id" : null,
   "presetKey" : "tokugawa_japan",
+  "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
     "name" : "Terre (Terran)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -160,7 +161,7 @@
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
-  "h3Resolution" : 5,
+  "h3Resolution" : 6,
   "strictDeterminism" : true,
   "sparseCellSkippingEnabled" : false,
   "oceanMacroAggregationEnabled" : false,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "OstromCommonsPureEngine" : true,
     "SpatialCityFractalEngine" : true,
@@ -185,9 +189,6 @@
   "minLng" : 128.0,
   "maxLng" : 146.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Isolation Tokugawa & Stabilité d'Edo (1603)",
   "displayDescription" : "⛩ SCÉNARIO HISTORIQUE : La Pax Tokugawa & Le Régime de Sakoku (1603 apr. J.-C.)\n\nDeux siècles de gestion durable des ressources forestières, stabilité démographique, équilibre urbain d'Edo et fermeture hermétique des frontières maritimes."
 }

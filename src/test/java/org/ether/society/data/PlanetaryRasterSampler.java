@@ -331,13 +331,13 @@ public class PlanetaryRasterSampler {
 
     static void saveMapImage(BufferedImage img, String baseName, String canonicalPreset, long year) {
         try {
-            File etherSubDir = new File("data/maps/ether/" + canonicalPreset + "/" + year);
+            File etherSubDir = new File("data/ether/" + canonicalPreset + "/" + year);
             etherSubDir.mkdirs();
             String stdFileName = TemporalMapTensorManager.buildStandardFilename(canonicalPreset, year, baseName);
             File fEtherSub = new File(etherSubDir, stdFileName);
             ImageIO.write(img, "PNG", fEtherSub);
 
-            logger.info("Saved {} into data/maps/ether/{}/{}/", stdFileName, canonicalPreset, year);
+            logger.info("Saved {} into data/ether/{}/{}/", stdFileName, canonicalPreset, year);
         } catch (Exception e) {
             logger.error("Failed saving {} to {}/{}: {}", baseName, canonicalPreset, year, e.getMessage());
         }
@@ -476,7 +476,7 @@ public class PlanetaryRasterSampler {
         }
         saveMapImage(imgElev, "earth_elevation.png", "earth", epoch);
 
-        // 2. Temperature (-50Ã‚Â°C to +50Ã‚Â°C -> [0..255]) sourced from PaleoClim/CHELSA with globally continuous ocean model
+        // 2. Temperature (-50Ãƒâ€šÃ‚Â°C to +50Ãƒâ€šÃ‚Â°C -> [0..255]) sourced from PaleoClim/CHELSA with globally continuous ocean model
         BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         File tempFile = getPaleoClimFile(epoch, "bio_1.tif");
         BufferedImage srcTemp = null;
@@ -493,7 +493,7 @@ public class PlanetaryRasterSampler {
                 double norm = gridNorm[y][x];
                 boolean isLand = (norm >= 0.478);
 
-                // Continuous global oceanic temperature model (-24Ã‚Â°C at poles to +28.5Ã‚Â°C at equator)
+                // Continuous global oceanic temperature model (-24Ãƒâ€šÃ‚Â°C at poles to +28.5Ãƒâ€šÃ‚Â°C at equator)
                 double absLat = Math.abs(lat);
                 double oceanTemp = -1.8 + 30.3 * Math.pow(Math.cos(Math.toRadians(Math.min(90.0, absLat))), 1.4)
                         - Math.max(0.0, (absLat - 68.0) / 22.0) * 22.0;
@@ -896,7 +896,7 @@ public class PlanetaryRasterSampler {
         rasterizeTieredDensity(imgIronCopper, feCuSpots, 8.0);
         saveMapImage(imgIronCopper, "earth_iron_copper.png", "earth", epoch);
 
-        // 7. Precious Metals (Gold, Silver, Platinum, Las MÃƒÂ©dulas, Rio Tinto, Laurion, Dacia, Nubia, Witwatersrand)
+        // 7. Precious Metals (Gold, Silver, Platinum, Las MÃƒÆ’Ã‚Â©dulas, Rio Tinto, Laurion, Dacia, Nubia, Witwatersrand)
         BufferedImage imgPrecious = HistoricalMapGenerator.rasterizePreciousMetalsMap("EARTH", null);
         if (imgPrecious != null) {
             saveMapImage(imgPrecious, "earth_precious_metals.png", "earth", epoch);

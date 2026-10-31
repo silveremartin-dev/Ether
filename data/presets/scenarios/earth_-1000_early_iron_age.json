@@ -1,8 +1,9 @@
 {
-  "name" : "Début de l'Âge du Fer & Méditerranée Antique (-1000)",
-  "description" : "âš”ï¸ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n",
+  "name" : "Early Iron Age & Ancient Mediterranean (-1000 BCE)",
+  "description" : "⚔️ HISTORICAL SCENARIO : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n",
   "id" : null,
   "presetKey" : "early_iron_age",
+  "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
     "name" : "Terre (-1 000 / Début Âge du Fer)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1000 BP) — Âge du Fer Ancien",
     "tempSeed" : 12444,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre (-1000 BP) — Précipitations",
+    "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) — Précipitations",
     "precipSeed" : 13344,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre (-1000 BP) — Saisonnalité",
+    "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) — Saisonnalité",
     "seasonSeed" : 14344,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : -1000,
-    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-    "tidalLocked" : false
+    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie."
   },
   "ecologyPreset" : {
     "name" : "Terre (-1 000 / Début Âge du Fer)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1000 BP) — Âge du Fer Ancien",
       "tempSeed" : 12444,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre (-1000 BP) — Précipitations",
+      "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) — Précipitations",
       "precipSeed" : 13344,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre (-1000 BP) — Saisonnalité",
+      "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) — Saisonnalité",
       "seasonSeed" : 14344,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : -1000,
-      "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie.",
-      "tidalLocked" : false
+      "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie."
     },
     "terrestrialBiomassGtC" : 580.0,
     "soilOrganicCarbonGtC" : 1780.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "SpatialCityFractalEngine" : true,
     "MaritimeHighwayEngine" : true,
@@ -187,9 +191,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Début de l'Âge du Fer & Méditerranée Antique (-1000)",
-  "displayDescription" : "âš”ï¸ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n"
+  "displayDescription" : "⚔ SCÉNARIO HISTORIQUE : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 av. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n"
 }

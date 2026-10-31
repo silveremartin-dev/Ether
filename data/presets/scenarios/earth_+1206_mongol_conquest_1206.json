@@ -1,8 +1,9 @@
 {
-  "name" : "L'Empire Mongol & la Grande Rupture Eurasienne (1206)",
-  "description" : "ðŸ¹ SCÉNARIO HISTORIQUE : Conquête Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).\n• Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.\n• Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.\n",
+  "name" : "The Mongol Empire & Eurasian Rupture (1206 CE)",
+  "description" : "\uD83C\uDFF9 HISTORICAL SCENARIO : Conquête Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).\n• Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.\n• Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.\n",
   "id" : null,
   "presetKey" : "mongol_conquest_1206",
+  "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
     "name" : "Terre (Terran)",
     "resolution" : 4,
@@ -41,15 +42,15 @@
     "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -92,15 +93,15 @@
       "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "MilitaryTechShockEngine" : true,
     "KrugmanCorePeripheryEngine" : true,
@@ -185,9 +189,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "L'Empire Mongol & la Grande Rupture Eurasienne (1206)",
-  "displayDescription" : "ðŸ¹ SCÉNARIO HISTORIQUE : Conquête Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).\n• Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.\n• Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.\n"
+  "displayDescription" : "\uD83C\uDFF9 SCÉNARIO HISTORIQUE : Conquête Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise le plus grand empire territorial contigu de l'histoire humaine. Choc cinétique et démographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sécurisée de la Route de la Soie (Pax Mongolica) qui servira de vecteur à la Peste Noire.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Projection militaire nomade ultra-rapide (cavalerie légère, réseau de relais de poste Yam).\n• Choc de mortalité urbaine et désertification de certaines oasis irriguées de Perse/Transoxiane.\n• Intégration économique trans-eurasienne de Pékin à Tabriz et la mer Noire.\n"
 }

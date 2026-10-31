@@ -245,7 +245,7 @@ public class HistoricalScenarioCalibrationHarness {
     public static List<ScenarioCalibrationResult> runAllScenarioCalibrations() {
         List<ScenarioCalibrationResult> results = new ArrayList<>();
         for (CalibrationScenarioDefinition scenarioDef : CALIBRATION_SCENARIOS) {
-            logger.info("🎯 Running Calibration Scenario: '{}' (Years {} -> {})",
+            logger.info("ðŸŽ¯ Running Calibration Scenario: '{}' (Years {} -> {})",
                     scenarioDef.displayName(), scenarioDef.startYear(), scenarioDef.endYear());
             ScenarioCalibrationResult res = runScenarioCalibration(scenarioDef);
             results.add(res);
@@ -259,7 +259,7 @@ public class HistoricalScenarioCalibrationHarness {
     public static List<ScenarioCalibrationResult> runAllFalsificationCounterfactuals() {
         List<ScenarioCalibrationResult> results = new ArrayList<>();
         for (CalibrationScenarioDefinition scenarioDef : FALSIFICATION_COUNTERFACTUAL_SCENARIOS) {
-            logger.info("🔬 Running Counterfactual Falsification Twin: '{}' (Years {} -> {})",
+            logger.info("ðŸ”¬ Running Counterfactual Falsification Twin: '{}' (Years {} -> {})",
                     scenarioDef.displayName(), scenarioDef.startYear(), scenarioDef.endYear());
             ScenarioCalibrationResult res = runScenarioCalibration(scenarioDef);
             results.add(res);
@@ -284,7 +284,7 @@ public class HistoricalScenarioCalibrationHarness {
     public static List<ScenarioCalibrationResult> runAllArchaeologicalDetectiveScenarios() {
         List<ScenarioCalibrationResult> results = new ArrayList<>();
         for (CalibrationScenarioDefinition scenarioDef : ARCHAEOLOGICAL_DETECTIVE_SCENARIOS) {
-            logger.info("🕵️ Running Archaeological Detective Scenario: '{}' (Years {} -> {})",
+            logger.info("ðŸ•µï¸ Running Archaeological Detective Scenario: '{}' (Years {} -> {})",
                     scenarioDef.displayName(), scenarioDef.startYear(), scenarioDef.endYear());
             ScenarioCalibrationResult res = runScenarioCalibration(scenarioDef);
             results.add(res);
@@ -298,7 +298,7 @@ public class HistoricalScenarioCalibrationHarness {
     public static List<ScenarioCalibrationResult> runAllMasterNineEpochBlocks() {
         List<ScenarioCalibrationResult> results = new ArrayList<>();
         for (CalibrationScenarioDefinition scenarioDef : MASTER_NINE_EPOCH_BLOCKS) {
-            logger.info("🌍 Running Master Epoch Slice: '{}' (Years {} -> {})",
+            logger.info("ðŸŒ Running Master Epoch Slice: '{}' (Years {} -> {})",
                     scenarioDef.displayName(), scenarioDef.startYear(), scenarioDef.endYear());
             ScenarioCalibrationResult res = runScenarioCalibration(scenarioDef);
             results.add(res);
@@ -379,7 +379,7 @@ public class HistoricalScenarioCalibrationHarness {
      */
     public static List<Integer> discoverAvailableDiskEpochs(int startYear, int endYear) {
         List<Integer> epochs = new ArrayList<>();
-        File earthDir = new File("data/maps/ether/earth/");
+        File earthDir = new File("data/ether/earth/");
         if (earthDir.exists() && earthDir.isDirectory()) {
             File[] dirs = earthDir.listFiles(File::isDirectory);
             if (dirs != null) {
@@ -531,7 +531,7 @@ public class HistoricalScenarioCalibrationHarness {
         // Evaluate dense intermediate checkpoints & Empire Spatial Localization
         HistoricalCalibrationSpatialEvaluator.evaluateDenseIntermediateCheckpoints(def, result, targetEpochs, logisticGrowthRate);
 
-        // Compute Telemetry Fit Metrics (MAPE, RMSE, R²)
+        // Compute Telemetry Fit Metrics (MAPE, RMSE, RÂ²)
         double sumSqErr = 0.0;
         double sumMape = 0.0;
         int count = 0;
@@ -646,7 +646,7 @@ public class HistoricalScenarioCalibrationHarness {
      */
     public static void main(String[] args) {
         logger.info("===============================================================================");
-        logger.info("🚀 STARTING ETHER CLIODYNAMIC ENGINE ACADEMIC CALIBRATION & FALSIFICATION SUITE");
+        logger.info("ðŸš€ STARTING ETHER CLIODYNAMIC ENGINE ACADEMIC CALIBRATION & FALSIFICATION SUITE");
         logger.info("===============================================================================");
 
         List<ScenarioCalibrationResult> steadyResults = runAllScenarioCalibrations();
@@ -670,11 +670,12 @@ public class HistoricalScenarioCalibrationHarness {
                     java.nio.file.Path.of("docs/SCIENTIFIC_CALIBRATION_REPORT.md"),
                     report
             );
-            logger.info("📄 Academic Calibration Report successfully saved to docs/SCIENTIFIC_CALIBRATION_REPORT.md");
+            logger.info("ðŸ“„ Academic Calibration Report successfully saved to docs/SCIENTIFIC_CALIBRATION_REPORT.md");
         } catch (Exception ex) {
             logger.warn("Could not write report to docs/: {}", ex.getMessage());
         }
 
-        logger.info("🏁 Academic Calibration & Epistemic Falsification Suite Completed Successfully.");
+        logger.info("ðŸ Academic Calibration & Epistemic Falsification Suite Completed Successfully.");
     }
 }
+

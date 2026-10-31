@@ -1,8 +1,9 @@
 {
-  "name" : "Archipel : Confédération Océanique & Seasteading Autonome (2055)",
+  "name" : "Archipelago: Oceanic Confederation & Autonomous Seasteading (2055)",
   "description" : "\uD83C\uDFDD️ SCÉNARIO FUTUR : Micro-États Insulaires & Réseaux de Seasteading (2055 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nMonde fragmenté en milliers d'atolls tropicaux et de plates-formes artificielles de seasteading reliées par hydroptères solaires et gouvernance polycentrique décentralisée.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Forte résilience institutionnelle décentralisée et innovation polycentrique (théorie d'Elinor Ostrom).\n• Mix énergétique 100% renouvelable combinant énergie houlomotrice, solaire flottant et biocarburants marins.\n• Équilibre écologique entre préservation des récifs coralliens et densité urbaine insulaire.\n",
   "id" : null,
   "presetKey" : "archipelago_seasteading_2055",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Archipel",
     "resolution" : 4,
@@ -47,9 +48,9 @@
     "seasonSource" : "",
     "seasonSeed" : 79777,
     "canonicalPlanet" : "none",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique."
   },
   "ecologyPreset" : {
     "name" : "Archipel",
@@ -98,9 +99,9 @@
       "seasonSource" : "",
       "seasonSeed" : 79777,
       "canonicalPlanet" : "none",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique."
     },
     "terrestrialBiomassGtC" : 550.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "ArthurCombinatorialTechnologyEngine" : true,
     "AcemogluRobinsonInstitutionsEngine" : true,
@@ -182,9 +186,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Archipel : Confédération Océanique & Seasteading Autonome (2055)",
   "displayDescription" : "\uD83C\uDFDD SCÉNARIO FUTUR : Micro-États Insulaires & Réseaux de Seasteading (2055 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nMonde fragmenté en milliers d'atolls tropicaux et de plates-formes artificielles de seasteading reliées par hydroptères solaires et gouvernance polycentrique décentralisée.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Forte résilience institutionnelle décentralisée et innovation polycentrique (théorie d'Elinor Ostrom).\n• Mix énergétique 100% renouvelable combinant énergie houlomotrice, solaire flottant et biocarburants marins.\n• Équilibre écologique entre préservation des récifs coralliens et densité urbaine insulaire.\n"
 }

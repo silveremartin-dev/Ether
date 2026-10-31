@@ -76,7 +76,7 @@ public final class HistoricalCalibrationSpatialEvaluator {
             snap.observedTech = def.initialTechLevel() + (elapsed * 0.0048);
 
             // Attempt to load authentic raster from disk for this epoch
-            File epochDir = new File("data/maps/ether/earth/" + chkYear);
+            File epochDir = new File("data/ether/earth/" + chkYear);
             File densityImgFile = new File(epochDir, "earth_" + chkYear + "_density.png");
 
             if (densityImgFile.exists()) {
@@ -107,8 +107,8 @@ public final class HistoricalCalibrationSpatialEvaluator {
             double omegaDot = (prevYear == def.startYear() && chkYear == def.startYear()) ? 0.0 : (omega - prevOmega) / deltaT;
 
             String classification = (Math.abs(omegaDot) >= 0.015) 
-                    ? "⚡ Acute Rupture / Bifurcation (Exogenous / Non-linear)" 
-                    : "🔄 Continuous Parametric Drift (Slow)";
+                    ? "âš¡ Acute Rupture / Bifurcation (Exogenous / Non-linear)" 
+                    : "ðŸ”„ Continuous Parametric Drift (Slow)";
 
             result.discrepancySpectra.add(new DiscrepancySpectrum(chkYear, omega, omegaDot, classification));
             prevOmega = omega;
@@ -168,7 +168,7 @@ public final class HistoricalCalibrationSpatialEvaluator {
      * @param result the result parameter (ScenarioCalibrationResult)
      */
     public static void evaluateSpatialMaps(CalibrationScenarioDefinition def, ScenarioCalibrationResult result) {
-        String baseMapDir = "data/maps/ether/earth/";
+        String baseMapDir = "data/ether/earth/";
         File t0Dir = new File(baseMapDir + def.startYear());
         File t1Dir = new File(baseMapDir + def.endYear());
 
@@ -276,3 +276,4 @@ public final class HistoricalCalibrationSpatialEvaluator {
         }
     }
 }
+

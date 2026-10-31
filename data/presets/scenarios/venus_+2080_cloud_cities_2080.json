@@ -1,8 +1,9 @@
 {
-  "name" : "Cités Flottantes Vénusiennes : Aérostats de Haute Altitude (2080)",
+  "name" : "Venusian Floating Cities: High Altitude Aerostats (2080)",
   "description" : "\uD83D\uDFE1 SCÉNARIO EXOPLANÉTAIRE : Aérostats Flottants & Extraction Atmosphérique Vénusienne (2080 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nCités aérostatiques flottantes à 55 km d'altitude où la pression est de 1,0 atm et la température de 25°C. Enveloppes en PTFE résistant à l'acide sulfurique et raffinage du carbone atmosphérique.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation de la flottabilité naturelle de l'air respirable (N₂/O₂) comme gaz sustentateur dans une atmosphère de CO₂ dense.\n• Récolte de vapeur d'eau et de composés soufrés par condensation en haute altitude.\n• Équilibre aérostatique dynamique et résistance à la super-rotation zonale des vents.\n",
   "id" : null,
   "presetKey" : "venus_cloud_cities_2080",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Vénus (Hesperos)",
     "resolution" : 4,
@@ -47,9 +48,9 @@
     "seasonSource" : "\uD83D\uDFE1 Vénus — Super-Rotation Low Variance Model",
     "seasonSeed" : 57555,
     "canonicalPlanet" : "venus",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
   },
   "ecologyPreset" : {
     "name" : "Vénus (Hesperos)",
@@ -98,9 +99,9 @@
       "seasonSource" : "\uD83D\uDFE1 Vénus — Super-Rotation Low Variance Model",
       "seasonSeed" : 57555,
       "canonicalPlanet" : "venus",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
     },
     "terrestrialBiomassGtC" : 0.0,
     "soilOrganicCarbonGtC" : 0.0,
@@ -137,7 +138,7 @@
   "initialInformationPerCapita" : 7.0E7,
   "populationDensityType" : "URBAN_CLUSTERS",
   "cellSizeKm2" : 100.0,
-  "targetCohortSize" : 300,
+  "targetCohortSize" : 25,
   "temporalResolutionDays" : 30.0,
   "climateHarshness" : 0.5,
   "startDateYear" : 2080,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "KurzweilAcceleratingReturnsEngine" : true,
     "ArthurCombinatorialTechnologyEngine" : true,
@@ -181,9 +185,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Cités Flottantes Vénusiennes : Aérostats de Haute Altitude (2080)",
   "displayDescription" : "\uD83D\uDFE1 SCÉNARIO EXOPLANÉTAIRE : Aérostats Flottants & Extraction Atmosphérique Vénusienne (2080 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nCités aérostatiques flottantes à 55 km d'altitude où la pression est de 1,0 atm et la température de 25°C. Enveloppes en PTFE résistant à l'acide sulfurique et raffinage du carbone atmosphérique.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation de la flottabilité naturelle de l'air respirable (N₂/O₂) comme gaz sustentateur dans une atmosphère de CO₂ dense.\n• Récolte de vapeur d'eau et de composés soufrés par condensation en haute altitude.\n• Équilibre aérostatique dynamique et résistance à la super-rotation zonale des vents.\n"
 }

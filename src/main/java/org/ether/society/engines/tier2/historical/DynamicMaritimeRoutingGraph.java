@@ -112,6 +112,7 @@ public class DynamicMaritimeRoutingGraph {
             for (H3Cell target : maritimeNodes) {
                 if (target == null || target.getH3Index() == null) continue;
                 if (source.getH3Index().equals(target.getH3Index())) continue;
+                if (Math.abs(source.getLatitude() - target.getLatitude()) * 111.32 > 3500.0) continue;
 
                 double distKm = calculateGreatCircleDistance(
                         source.getLatitude(), source.getLongitude(),
@@ -144,7 +145,7 @@ public class DynamicMaritimeRoutingGraph {
                 } else if (waveOvertoppingRatio > 1.0 && midElevation < -200.0) {
                     maxRangeKm = 1500.0; // Regional high-seas navigation with moderate swell risk
                 } else {
-                    maxRangeKm = 20000.0; // Deep-sea oceanic transit (hull clearance withstands ocean wave energy)
+                    maxRangeKm = 3500.0; // Deep-sea oceanic transit (hull clearance withstands ocean wave energy)
                 }
 
                 if (distKm <= maxRangeKm) {
@@ -154,6 +155,15 @@ public class DynamicMaritimeRoutingGraph {
             }
 
             if (!neighborCosts.isEmpty()) {
+                if (neighborCosts.size() > 6) { // Spherical Delaunay / Gabriel graph average degree < 6
+                    List<Map.Entry<Long, Double>> sorted = new ArrayList<>(neighborCosts.entrySet());
+                    sorted.sort(Map.Entry.comparingByValue());
+                    Map<Long, Double> pruned = new HashMap<>(6);
+                    for (int i = 0; i < 6; i++) {
+                        pruned.put(sorted.get(i).getKey(), sorted.get(i).getValue());
+                    }
+                    neighborCosts = pruned;
+                }
                 routingGraph.put(source.getH3Index(), neighborCosts);
             }
         }

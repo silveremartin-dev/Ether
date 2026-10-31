@@ -78,7 +78,7 @@ public class GenerateAllScenarioMapsTest {
         // Force regenerate scenario tensors
         HistoricalMapGenerator.forceGenerateScenarioHistoricalMaps(sc100k);
 
-        File yearFolder = new File("data/maps/ether/earth/-100000");
+        File yearFolder = new File("data/ether/earth/-100000");
         assertTrue(yearFolder.exists() && yearFolder.isDirectory());
 
         String[] requiredTensorFiles = {
@@ -116,7 +116,7 @@ public class GenerateAllScenarioMapsTest {
         List<Scenario> scenarios = Scenario.getBuiltInScenarios();
         assertTrue(scenarios.size() >= 20, "Must have all canonical scenarios defined");
 
-        // Ensure all scenario maps in data/maps/ether/earth/<year>/ are generated and present on disk
+        // Ensure all scenario maps in data/ether/earth/<year>/ are generated and present on disk
         HistoricalMapGenerator.ensureAllScenarioMapsGenerated(false);
 
         String[] requiredTensorFiles = {
@@ -127,15 +127,15 @@ public class GenerateAllScenarioMapsTest {
 
         for (Scenario sc : scenarios) {
             long year = sc.getStartDateYear();
-            File yearFolder = new File("data/maps/ether/earth/" + year);
+            File yearFolder = new File("data/ether/earth/" + year);
             assertTrue(yearFolder.exists() && yearFolder.isDirectory(),
-                    "Scenario directory 'data/maps/ether/earth/" + year + "' must exist for scenario '" + sc.getName() + "'");
+                    "Scenario directory 'data/ether/earth/" + year + "' must exist for scenario '" + sc.getName() + "'");
 
             for (String mapFile : requiredTensorFiles) {
                 String stdFile = "earth_" + year + "_" + mapFile;
                 File fStd = new File(yearFolder, stdFile);
                 assertTrue(fStd.exists() && fStd.length() > 500,
-                        "Standard map file '" + stdFile + "' in 'data/maps/ether/earth/" + year + "/' must exist and have content for " + sc.getName());
+                        "Standard map file '" + stdFile + "' in 'data/ether/earth/" + year + "/' must exist and have content for " + sc.getName());
             }
 
             // Verify loading into Scenario instance
@@ -156,5 +156,6 @@ public class GenerateAllScenarioMapsTest {
         logger.info("Successfully verified all {} scenarios with full tensor maps in data/maps/Earth/<year>/", scenarios.size());
     }
 }
+
 
 

@@ -314,7 +314,7 @@ public class ExecutionContextClusterSection extends VBox {
             if (isMasterRunning || isConnectedCluster) {
                 int cores = Runtime.getRuntime().availableProcessors();
                 String randomWorkerId = "node-0" + (nodeList.size() + 1) + "-worker";
-                nodeList.add(new ClusterNode(randomWorkerId, "192.168.1." + (100 + new Random().nextInt(100)) + ":9090", I18n.getOrDefault("exec.cluster.role_worker", "Worker"), "🟢 " + I18n.getOrDefault("exec.cluster.connected", "Connected"), cores + " Cores | Sub-Mesh GPU Active", "H3 Zone Dynamic"));
+                nodeList.add(new ClusterNode(randomWorkerId, "192.168.1." + (100 + nodeList.size() + 1) + ":9090", I18n.getOrDefault("exec.cluster.role_worker", "Worker"), "🟢 " + I18n.getOrDefault("exec.cluster.connected", "Connected"), cores + " Cores | Sub-Mesh GPU Active", "H3 Zone Dynamic"));
                 clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.remote_worker_prefix", "🔄 Remote worker node detected and synchronized (") + nodeList.size() + I18n.getOrDefault("exec.cluster.remote_worker_suffix", " total nodes)."));
             } else {
                 clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.no_workers", "ℹ️ No remote worker nodes connected (Standalone Mode — 1 Local Node)."));

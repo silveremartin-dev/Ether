@@ -29,7 +29,7 @@ import java.util.stream.Stream;
  * Persistence, Disk Caching, and Cartographic Tensor Storage Manager.
  * 
  * <p>Handles reading and writing multi-spectral geographic, demographic, and sociological
- * tensor rasters from standardized epoch directories ({@code data/maps/ether/earth/<year>/})
+ * tensor rasters from standardized epoch directories ({@code data/ether/earth/<year>/})
  * and runtime disk cache storage ({@code data/cache/}).</p>
  *
  * @author Silvere Martin-Michiellot
@@ -88,9 +88,9 @@ public final class HistoricalMapDiskCacheManager {
         if (scenario.getPlanetPreset() != null && scenario.getPlanetPreset().getCanonicalPlanet() != null && !scenario.getPlanetPreset().getCanonicalPlanet().isBlank()) {
             planet = scenario.getPlanetPreset().getCanonicalPlanet().toLowerCase(java.util.Locale.ROOT);
         }
-        Path basePlanetDir = Paths.get("data", "maps", "ether", planet);
+        Path basePlanetDir = Paths.get("data", "ether", planet);
         if (!Files.isDirectory(basePlanetDir)) {
-            basePlanetDir = Paths.get("data", "maps", "ether", "earth");
+            basePlanetDir = Paths.get("data", "ether", "earth");
             planet = "earth";
         }
         if (!Files.isDirectory(basePlanetDir)) {
@@ -265,7 +265,7 @@ public final class HistoricalMapDiskCacheManager {
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas, BufferedImage imgUranium,
             BufferedImage imgHe3, BufferedImage imgIronCopper, BufferedImage imgPreciousMetals, BufferedImage imgRareEarths, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
         try {
-            Path earthDir = Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
+            Path earthDir = Paths.get("data", "ether", "earth", String.valueOf(year));
             Files.createDirectories(earthDir);
 
             writePngFile(imgDensity, earthDir.resolve("earth_" + year + "_density.png").toFile());
@@ -286,8 +286,8 @@ public final class HistoricalMapDiskCacheManager {
                 if (staticImgs[i] != null) {
                     writePngFile(staticImgs[i], minPath.toFile());
                 } else if (!minPath.toFile().exists()) {
-                    File srcMin = new File("data/maps/ether/earth/2026/earth_2026_" + min + ".png");
-                    if (!srcMin.exists()) srcMin = new File("data/maps/ether/earth/-100000/earth_-100000_" + min + ".png");
+                    File srcMin = new File("data/ether/earth/2025/earth_2025_" + min + ".png");
+                    if (!srcMin.exists()) srcMin = new File("data/ether/earth/-100000/earth_-100000_" + min + ".png");
                     if (srcMin.exists()) {
                         Files.copy(srcMin.toPath(), minPath, StandardCopyOption.REPLACE_EXISTING);
                     }
@@ -321,9 +321,9 @@ public final class HistoricalMapDiskCacheManager {
             }
 
             Path elevPath = earthDir.resolve("earth_" + year + "_elevation.png");
-            File srcElev = new File("data/maps/ether/earth/earth_elevation.png");
-            if (!srcElev.exists()) srcElev = new File("data/maps/ether/earth/2026/earth_2026_elevation.png");
-            if (!srcElev.exists()) srcElev = new File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
+            File srcElev = new File("data/ether/earth/earth_elevation.png");
+            if (!srcElev.exists()) srcElev = new File("data/ether/earth/2026/earth_2026_elevation.png");
+            if (!srcElev.exists()) srcElev = new File("data/ether/earth/-100000/earth_-100000_elevation.png");
             if (srcElev.exists()) {
                 Files.copy(srcElev.toPath(), elevPath, StandardCopyOption.REPLACE_EXISTING);
                 elevPath.toFile().setLastModified(System.currentTimeMillis());
@@ -333,9 +333,9 @@ public final class HistoricalMapDiskCacheManager {
             }
 
             HistoricalEpochMetadataGenerator.generateOrUpdateEpochMetadataFiles(earthDir, year);
-            logger.info("Persisted standard scenario cartographic maps and updated documentation into 'data/maps/ether/earth/{}/'", year);
+            logger.info("Persisted standard scenario cartographic maps and updated documentation into 'data/ether/earth/{}/'", year);
         } catch (Exception e) {
-            logger.warn("Failed to persist scenario maps to year directory 'data/maps/ether/earth/{}/': {}", year, e.getMessage());
+            logger.warn("Failed to persist scenario maps to year directory 'data/ether/earth/{}/': {}", year, e.getMessage());
         }
     }
 
@@ -346,7 +346,7 @@ public final class HistoricalMapDiskCacheManager {
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
         try {
-            Path earthDir = Paths.get("data", "maps", "ether", "earth", String.valueOf(year));
+            Path earthDir = Paths.get("data", "ether", "earth", String.valueOf(year));
             Files.createDirectories(earthDir);
 
             if (imgIsogloss != null)        ImageIO.write(imgIsogloss,        "PNG", earthDir.resolve("earth_" + year + "_isogloss.png").toFile());
@@ -359,7 +359,7 @@ public final class HistoricalMapDiskCacheManager {
             if (imgEco != null)             ImageIO.write(imgEco,             "PNG", earthDir.resolve("earth_" + year + "_ecological.png").toFile());
             if (imgPathogen != null)        ImageIO.write(imgPathogen,        "PNG", earthDir.resolve("earth_" + year + "_pathogen.png").toFile());
 
-            logger.info("Persisted 9 authentic cultural tensors into 'data/maps/ether/earth/{}/'", year);
+            logger.info("Persisted 9 authentic cultural tensors into 'data/ether/earth/{}/'", year);
         } catch (Exception e) {
             logger.error("Failed to save cultural tensors for year {}", year, e);
         }
@@ -422,3 +422,4 @@ public final class HistoricalMapDiskCacheManager {
         }
     }
 }
+

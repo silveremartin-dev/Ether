@@ -30,8 +30,13 @@ import java.util.List;
 public class EcologicalDegradationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EcologicalDegradationEngine.class);
 
-    /** Internal state: caloric requirement per capita (double). */
-    private static final double CALORIC_REQUIREMENT_PER_CAPITA = 0.5;
+
+    /**
+     * Standard human annual metabolic energy consumption:
+     * 2,200 kcal/capita/day = 9.2048 MJ/capita/day = 3.362 GJ/capita/year.
+     * (Smil 2008, Energy in Nature and Society; FAO Dietary Energy Requirements).
+     */
+    public static final double HUMAN_ANNUAL_METABOLIC_ENERGY_GJ = org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
 
     public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel) {
         processEcologicalDegradation(cells, techLevel, 1.0 / 12.0);
@@ -138,8 +143,10 @@ public class EcologicalDegradationEngine {
             double curWaterRes = cell.getWaterResourceOr(100.0);
 
             double hydroStress = 0.0;
-            if (rain < 300.0 || temp > 35.0) {
-                hydroStress = Math.min(1.0, (300.0 - rain) / 300.0 + Math.max(0.0, temp - 35.0) * 0.03);
+            // Combines meteoric precipitation and river/alluvial water table irrigation
+            double totalAvailableWater = rain + Math.min(800.0, curWaterRes * 0.50);
+            if (totalAvailableWater < 300.0 || temp > 45.0) {
+                hydroStress = Math.min(1.0, (300.0 - totalAvailableWater) / 300.0 + Math.max(0.0, temp - 45.0) * 0.03);
                 droughtEvents++;
 
                 double aquiferDepletion = hydroStress * 200.0 * dtMonthlyRatio;
@@ -154,11 +161,13 @@ public class EcologicalDegradationEngine {
 
             // 4. Famine Simulation
             double totalFood = (cell.getFoodResourceOr(0.0))
-                    + (cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() * 0.70 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG : 0.0)
-                    + (cell.getBiomassFish() != null ? cell.getBiomassFish() * 0.80 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG : 0.0)
-                    + (cell.getBiomassNatural() != null ? cell.getBiomassNatural() * 0.05 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG : 0.0);
+                    + (cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() * 0.70 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3) : 0.0)
+                    + (cell.getBiomassFish() != null ? cell.getBiomassFish() * 0.80 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3) : 0.0)
+                    + (cell.getBiomassNatural() != null ? cell.getBiomassNatural() * 0.05 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG * 1e-3) : 0.0);
 
-            double foodRequired = pop * (CALORIC_REQUIREMENT_PER_CAPITA * 0.082 * dtMonthlyRatio);
+            // Caloric requirement in GJ over time deltaYears: pop * 3.362 GJ/year * dtYears
+            double safeDtYears = Math.max(1e-4, deltaYears);
+            double foodRequired = pop * HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * safeDtYears;
             double curLife = cell.getLifespanOr(30.0);
             double curFert = cell.getFertilityOr(2.5);
 

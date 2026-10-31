@@ -1,8 +1,9 @@
 {
-  "name" : "Monde Océan : Aquapolis & Cités Abyssales d'Oceania (2100)",
+  "name" : "Ocean World: Aquapolis & Abyssal Cities of Oceania (2100)",
   "description" : "\uD83C\uDF0A SCÉNARIO EXOPLANÉTAIRE : Planète Océan & Mégastructures Flottantes (2100 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nMonde dépourvu de terres émergées couvert d'océans profonds de 10 km. Civilisation organisée en cités flottantes autonomes (Aquapolis), énergie thermique des mers (ETM) et forages hydrothermaux abyssaux.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Mariculture hyper-productive, fermes d'algues génétiquement optimisées et extraction de minéraux dissous.\n• Cités modulaires auto-lestées résistantes aux houles géantes et aux super-tempêtes océaniques.\n• Économie maritime décentralisée et réseaux de transport sous-marin automatisés.\n",
   "id" : null,
   "presetKey" : "oceania_aquapolis_2100",
+  "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
     "name" : "Monde Océan (Oceania)",
     "resolution" : 4,
@@ -47,9 +48,9 @@
     "seasonSource" : "",
     "seasonSeed" : 56321,
     "canonicalPlanet" : "none",
+    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime.",
-    "tidalLocked" : false
+    "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime."
   },
   "ecologyPreset" : {
     "name" : "Monde Océan (Oceania)",
@@ -98,9 +99,9 @@
       "seasonSource" : "",
       "seasonSeed" : 56321,
       "canonicalPlanet" : "none",
+      "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime.",
-      "tidalLocked" : false
+      "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime."
     },
     "terrestrialBiomassGtC" : 80.0,
     "soilOrganicCarbonGtC" : 300.0,
@@ -168,6 +169,9 @@
   "oceanMultiRateTickingEnabled" : false,
   "parallelExecutionEnabled" : false,
   "spatialRangeTruncationEnabled" : false,
+  "climateTickFrequency" : 5,
+  "parallelThreadCount" : 0,
+  "tier2CliodynamicsEnabled" : true,
   "typeBEngineStates" : {
     "ArthurCombinatorialTechnologyEngine" : true,
     "IsruAutarkyAndSpaceColonizationEngine" : true,
@@ -181,9 +185,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "climateTickFrequency" : 5,
-  "parallelThreadCount" : 0,
-  "tier2CliodynamicsEnabled" : true,
   "displayName" : "Monde Océan : Aquapolis & Cités Abyssales d'Oceania (2100)",
   "displayDescription" : "\uD83C\uDF0A SCÉNARIO EXOPLANÉTAIRE : Planète Océan & Mégastructures Flottantes (2100 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nMonde dépourvu de terres émergées couvert d'océans profonds de 10 km. Civilisation organisée en cités flottantes autonomes (Aquapolis), énergie thermique des mers (ETM) et forages hydrothermaux abyssaux.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Mariculture hyper-productive, fermes d'algues génétiquement optimisées et extraction de minéraux dissous.\n• Cités modulaires auto-lestées résistantes aux houles géantes et aux super-tempêtes océaniques.\n• Économie maritime décentralisée et réseaux de transport sous-marin automatisés.\n"
 }
