@@ -2,11 +2,11 @@
 
 **Scenario**: `Last Glacial Maximum & Solutrean (-20,000 BP)`
 
-**Simulation Run Identifier**: `RUN-LAST-GLACIAL-MAXIMUM---SOLUTREAN---20-000-BP--4684`
+**Simulation Run Identifier**: `RUN-LAST-GLACIAL-MAXIMUM---SOLUTREAN---20-000-BP--7799`
 
 **Spatial Domain**: H3 Resolution 4 (Planetary Mesh)
 
-**Execution Duration**: 278.5 s
+**Execution Duration**: 296.4 s
 
 # 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT
 
@@ -20,7 +20,7 @@
 
 ## 📊 3. Deep Diagnostic Analysis by Scenario
 
-### 🔎 Scenario: `Last Glacial Maximum & Solutrean (-20,000 BP)` (`RUN-LAST-GLACIAL-MAXIMUM---SOLUTREAN---20-000-BP--4684`)
+### 🔎 Scenario: `Last Glacial Maximum & Solutrean (-20,000 BP)` (`RUN-LAST-GLACIAL-MAXIMUM---SOLUTREAN---20-000-BP--7799`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|
@@ -39,12 +39,12 @@
 
 | Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |
 |---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 21 | 1.80 | 1.67 ± 0.05 | [1.65 ; 1.69] | 1.66 [1.63 - 1.70] | 3.596 | *** (p < 0.001) |
-| 🦣 Megafauna Abundance Index (megafaunaIndex) | 21 | 60.28 | 56.17 ± 0.05 | [56.15 ; 56.19] | 56.19 [56.15 - 56.21] | 112.665 | *** (p < 0.001) |
+| 👥 Global Demographic Population (worldPopulation) | 21 | 1.80 | 1.67 ± 0.05 | [1.65 ; 1.69] | 1.66 [1.63 - 1.70] | 3.597 | *** (p < 0.001) |
+| 🦣 Megafauna Abundance Index (megafaunaIndex) | 21 | 60.28 | 56.17 ± 0.05 | [56.15 ; 56.19] | 56.19 [56.15 - 56.21] | 112.725 | *** (p < 0.001) |
 | ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 21 | 460.02 | 460.02 ± 0.01 | [460.02 ; 460.03] | 460.02 [460.01 - 460.03] | 0.000 | ns |
 | 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 21 | 0.99 | 0.99 ± 0.00 | [0.99 ; 0.99] | 0.99 [0.99 - 0.99] | 0.000 | ns |
-| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 21 | 0.16 | 0.17 ± 0.00 | [0.17 ; 0.17] | 0.17 [0.16 - 0.17] | 2.371 | *** (p < 0.001) |
-| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 21 | 0.02 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 3.891 | *** (p < 0.001) |
+| 💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct) | 21 | 0.16 | 0.17 ± 0.00 | [0.17 ; 0.17] | 0.17 [0.16 - 0.17] | 2.373 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy) | 21 | 0.02 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 3.892 | *** (p < 0.001) |
 | 🏙️ Urbanization Rate (%) (urbanizationRate) | 0 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
 | 🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration) | 21 | 190.00 | 190.00 ± 0.00 | [190.00 ; 190.00] | 190.00 [190.00 - 190.00] | 1.504 | *** (p < 0.001) |
 | 📖 Global Literacy Rate (%) (literacyRate) | 0 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
@@ -61,7 +61,7 @@ Direct pixel-to-pixel comparison between final simulated 2D density snapshot and
 | Cartographic Metric | Computed Value | Physical Threshold / Benchmark | Status |
 |---|:---:|:---:|:---:|
 | **SSIM (Structural Similarity Index)** | **0.6791** | $\ge 0.50$ (macro-spatial coherence) | 🟢 Conformant |
-| **Pearson Spatial Correlation (r)** | **+0.5876** | $\ge +0.60$ (gradient alignment) | 🟡 Imperfect Gradient |
+| **Pearson Spatial Correlation (r)** | **+0.5877** | $\ge +0.60$ (gradient alignment) | 🟡 Imperfect Gradient |
 | **Jaccard Ecumene Overlap (IoU)** | **45.07%** | $\ge 50.0\%$ (inhabited surface area) | 🟡 Dispersed |
 | **RMSE (Spatial Pixel Residual Error)** | **7.13** | $< 25.0$ | 🟢 Conformant |
 | **Peak Spatial Divergence (Δ_max)** | **237.00** | `Lat: 50.8°N, Lng: 34.5°E` | 📍 Hotspot Anomaly |
