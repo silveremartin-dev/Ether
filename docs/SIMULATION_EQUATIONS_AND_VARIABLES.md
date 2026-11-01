@@ -1938,3 +1938,32 @@ $$\sigma_{\text{power}} = \frac{1}{1.0 + \exp\left(-0.0002 \cdot (P_{\text{capit
 $$\sigma_{\text{tech}} = \frac{1}{1.0 + \exp\left(-2.0 \cdot (T - 5.0)\right)}$$
 $$\theta_{\text{ASI}} = \sigma_{\text{tech}} \cdot \sigma_{\text{throughput}} \cdot \sigma_{\text{power}} \in [0.0, 1.0]$$
 $$\Delta K = K \cdot 0.10 \cdot \theta_{\text{ASI}} \cdot \Delta t$$
+
+### 19.22 Differential Affluence-Frontier Asabiyyah Dynamics
+Balances frontier cohesion against hinterland affluence erosion as continuous coupled differential equations:
+$$r_{\text{affluence}} = \frac{K}{1000.0}$$
+$$\delta_{\text{decay}} = 0.04 \cdot \frac{r_{\text{affluence}}}{1.0 + r_{\text{affluence}}}$$
+$$\gamma_{\text{frontier}} = \frac{0.04}{1.0 + r_{\text{affluence}}}$$
+$$W(t + \Delta t) = \max\left(10.0, W(t) \cdot \left(1.0 + (\gamma_{\text{frontier}} - \delta_{\text{decay}}) \cdot \Delta t\right)\right)$$
+
+### 19.23 Continuous Malthusian Monastic Fertility Buffering
+Routes celibacy demographic buffering continuously through fertility suppression:
+$$D_{\text{malthus}} = \max\left(0.0, 1.0 - \frac{F / N}{0.10}\right)$$
+$$\Delta \text{Fertility} = - f_{\text{monastic}} \cdot D_{\text{malthus}} \cdot 0.20 \cdot \Delta t$$
+$$\text{Fertility} \gets \max(1.0, \text{Fertility} + \Delta \text{Fertility})$$
+
+### 19.24 Continuous Time-Invariant Capital Erosion in Imperial Overstretch
+Implements exponential capital attrition from geographic overstretch:
+$$\kappa_{\text{overstretch}} = 0.02 \cdot \left(\frac{R_{\text{empire}}}{1000.0}\right)^2 + 0.03 \cdot f_{\text{elite}}$$
+$$K(t + \Delta t) = \max\left(10.0, K(t) \cdot \exp(-\kappa_{\text{overstretch}} \cdot \Delta t)\right)$$
+
+### 19.25 Continuous Gaussian Vulnerability Envelope in Early State Formation
+Replaces discrete windows with a continuous Gaussian envelope centered at $T = 2.0$:
+$$\xi_{\text{scott}}(T) = \exp\left(-\frac{(T - 2.0)^2}{2 \cdot (0.35)^2}\right)$$
+$$\Delta \text{Lifespan} = - 0.50 \cdot \xi_{\text{scott}}(T) \cdot \Delta t$$
+$$\Delta \text{Pollution} = + 0.20 \cdot \xi_{\text{scott}}(T) \cdot \Delta t$$
+
+### 19.26 Normalized Logistic Ecological Carrying Capacity & Regeneration (HANDY)
+Normalizes logistic renewal and couples spatial extraction to human density:
+$$\dot{x}_{\text{pure}} = \beta \cdot x \cdot \left(1.0 - \frac{x}{100.0}\right) - \delta \cdot (X_C + X_E) \cdot x$$
+$$\dot{B}_{\text{natural}} = 0.02 \cdot B \cdot \max\left(0, 1.0 - \frac{B}{100.0}\right) - 0.0002 \cdot \min(\rho, 500.0) \cdot \left(\frac{B}{100.0}\right)$$

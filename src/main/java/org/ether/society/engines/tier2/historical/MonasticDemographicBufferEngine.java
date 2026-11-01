@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Celibate Monastic Demographic Buffer Engine Variant B23.1 (Pure) & B23.2 (Hybrid).
+ * Celibate Monastic Demographic Buffer Engine Variant B23.1 (Pure) &amp; B23.2 (Hybrid).
  * Diverts 2% to 10% of adult population into celibate monastic orders (e.g. Medieval Europe 2-4%, Tibet 10%),
- * absorbing Malthusian demographic overpressure without triggering war.
+ * absorbing Malthusian demographic overpressure by dampening fertility without triggering war.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -35,7 +35,7 @@ public class MonasticDemographicBufferEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
@@ -43,12 +43,14 @@ public class MonasticDemographicBufferEngine {
 
             double food = cell.getFoodResourceOr(0.0);
             double pop = cell.getPopulation();
+            double foodPerCapita = food / Math.max(1.0, pop);
 
-            // When food per capita drops below threshold, monastic vocation increases to buffer fertility
-            if ((food / pop) < 0.10) {
-                double celibateCount = pop * monasticFraction;
-                // Reduce net birth rate by dampening fertile population fraction
-                cell.setPopulation((int) Math.max(1, pop - celibateCount * 0.02 * deltaYears));
+            // Continuous Malthusian pressure on monastic vocation (Voigtländer & Voth 2013):
+            // Dampens fertility rate according to demographic conservation rather than unphysical population deletion
+            double malthusianDeficit = Math.max(0.0, 1.0 - foodPerCapita / 0.10);
+            if (malthusianDeficit > 0.0) {
+                double monasticDamping = monasticFraction * malthusianDeficit * 0.20 * deltaYears;
+                cell.setFertility(Math.max(1.0, (cell.getFertilityOr(2.1)) - monasticDamping));
             }
         }
     }
@@ -59,6 +61,7 @@ public class MonasticDemographicBufferEngine {
      * @return the resulting computation or state reference
      */
     public static double getMonasticFraction() { return monasticFraction; }
+
     /**
      * Set monastic fraction operation.
      * <p>
@@ -77,5 +80,3 @@ public class MonasticDemographicBufferEngine {
         monasticFraction = 0.04;
     }
 }
-
-

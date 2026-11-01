@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
@@ -13,11 +13,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Roman Imperial Cliodynamic & Expansion Engine Variant B34.1 (Pure) & B34.2 (Hybrid).
+ * Roman Imperial Cliodynamic &amp; Expansion Engine Variant B34.1 (Pure) &amp; B34.2 (Hybrid).
  * Models ancient imperial dynamics (Rome, Han, Carthage):
- * 1. Territorial expansion increase administrative overhead costs quadratically O(R^2).
- * 2. Elite overproduction & corruption reduce tax extraction efficiency.
- * 3. Urban lead toxicity & plague shocks (Ant Antonine/Justinian plagues) cause periodic demographic collapse.
+ * 1. Territorial expansion increases administrative overhead costs quadratically O(R^2).
+ * 2. Elite overproduction &amp; corruption reduce tax extraction efficiency.
+ * 3. Urban lead toxicity &amp; plague shocks cause periodic demographic collapse.
  * 4. Frontier Asabiyyah mismatch along Limes borders triggers barbarian invasions.
  *
  * @author Silvere Martin-Michiellot
@@ -47,7 +47,7 @@ public class RomanImperialCliodynamicEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
@@ -57,20 +57,14 @@ public class RomanImperialCliodynamicEngine {
             double capital = cell.getResourceCapitalOr(500.0);
             double pop = cell.getPopulation();
 
-            // Administrative friction quadratic penalty O(R^2)
-            double adminFriction = 1.0 + (Math.pow(imperialRadiusKm / 1000.0, 2.0) * 0.05);
-            double netCapital = capital / adminFriction;
-
-            // Elite overproduction diversion
-            netCapital *= (1.0 - eliteOverproductionFactor);
+            // Time-step invariant continuous capital erosion from imperial overstretch (Turchin 2003; Taagepera 1978)
+            double overstretchRate = (0.02 * Math.pow(imperialRadiusKm / 1000.0, 2.0) + 0.03 * eliteOverproductionFactor);
+            double netCapital = capital * Math.exp(-overstretchRate * deltaYears);
             cell.setResourceCapital(Math.max(10.0, netCapital));
 
             // Pre-modern urban mortality sink (crowding + sanitation/water contamination) dampens urban lifespan
             double urbanCrowding = pop / (10000.0 + pop);
             cell.setLifespan(Math.max(25.0, (cell.getLifespanOr(35.0)) - 0.25 * urbanCrowding * deltaYears));
-
-
-
         }
     }
 
@@ -80,6 +74,7 @@ public class RomanImperialCliodynamicEngine {
      * @return the resulting computation or state reference
      */
     public static double getImperialRadiusKm() { return imperialRadiusKm; }
+
     /**
      * Set imperial radius km operation.
      * <p>
@@ -97,6 +92,7 @@ public class RomanImperialCliodynamicEngine {
      * @return the resulting computation or state reference
      */
     public static double getEliteOverproductionFactor() { return eliteOverproductionFactor; }
+
     /**
      * Set elite overproduction factor operation.
      * <p>
@@ -108,5 +104,3 @@ public class RomanImperialCliodynamicEngine {
      */
     public static void setEliteOverproductionFactor(double v) { eliteOverproductionFactor = Math.max(0.0, Math.min(0.50, v)); }
 }
-
-

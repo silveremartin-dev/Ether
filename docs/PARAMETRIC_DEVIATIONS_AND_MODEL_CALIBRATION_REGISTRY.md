@@ -1219,3 +1219,94 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Models artificial super-intelligence emergence as a $C^\infty$ joint sigmoid across computational throughput, physical power density, and technological frontier depth.
 * **Empirical Validation Grounding**:
   * Kurzweil (2005); Bostrom (2014).
+
+
+---
+
+### Entry 65: Differential Affluence-Frontier Asabiyyah Dynamics
+* **Date**: November 1, 2026
+* **Subsystem**: `FrontierAsabiyyahEngine.java`
+* **Canonical Literature**:
+  * Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press.
+* **Problem in Previous Implementation**:
+  * Hardcoded discrete cliff `if (capital > 1000.0)` multiplying work by unscaled constants `0.98` and `1.02` per tick without `deltaYears`, causing runaway exponential growth at monthly time steps.
+* **Calibrated Ether Formulation**:
+  $$r_{\text{affluence}} = \frac{K}{1000.0}$$
+  $$\delta_{\text{decay}} = 0.04 \cdot \frac{r_{\text{affluence}}}{1.0 + r_{\text{affluence}}}$$
+  $$\gamma_{\text{frontier}} = \frac{0.04}{1.0 + r_{\text{affluence}}}$$
+  $$W(t + \Delta t) = \max\left(10.0, W(t) \cdot \left(1.0 + (\gamma_{\text{frontier}} - \delta_{\text{decay}}) \cdot \Delta t\right)\right)$$
+* **Root Cause & Justification**:
+  * Replaces discrete tick step with Turchin's differential Asabiyyah balance between frontier military readiness and hinterland luxury erosion, properly scaled with $\Delta t$.
+* **Empirical Validation Grounding**:
+  * Turchin (2003).
+
+---
+
+### Entry 66: Continuous Malthusian Monastic Fertility Buffering
+* **Date**: November 1, 2026
+* **Subsystem**: `MonasticDemographicBufferEngine.java`
+* **Canonical Literature**:
+  * Voigtländer, N., & Voth, H. J. (2013). *The Three Horsemen and Growth: Did the Black Death Foster the Rise of Europe?* Review of Economic Studies, 80(2), 774–811.
+* **Problem in Previous Implementation**:
+  * Binary condition `(food / pop) < 0.10` directly pruned population `cell.setPopulation(...)`, artificially deleting living people rather than dampening reproduction.
+* **Calibrated Ether Formulation**:
+  $$D_{\text{malthus}} = \max\left(0.0, 1.0 - \frac{F / N}{0.10}\right)$$
+  $$\Delta \text{Fertility} = - f_{\text{monastic}} \cdot D_{\text{malthus}} \cdot 0.20 \cdot \Delta t$$
+  $$\text{Fertility} \gets \max(1.0, \text{Fertility} + \Delta \text{Fertility})$$
+* **Root Cause & Justification**:
+  * Preserves demographic mass conservation by routing monastic vocation pressure through reproductive restraint rather than unphysical deletion.
+* **Empirical Validation Grounding**:
+  * Voigtländer & Voth (2013).
+
+---
+
+### Entry 67: Continuous Time-Invariant Capital Erosion in Imperial Overstretch
+* **Date**: November 1, 2026
+* **Subsystem**: `RomanImperialCliodynamicEngine.java`
+* **Canonical Literature**:
+  * Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press.
+  * Taagepera, R. (1978). *Size and duration of empires: Growth-decline curves, 3000 to 600 B.C.* Social Science Research, 7(2), 180–196.
+* **Problem in Previous Implementation**:
+  * Capital was directly divided by `adminFriction` and multiplied by `(1 - eliteOverproductionFactor)` on every tick without $\Delta t$, obliterating 96% of capital within a single year at monthly resolution.
+* **Calibrated Ether Formulation**:
+  $$\kappa_{\text{overstretch}} = 0.02 \cdot \left(\frac{R_{\text{empire}}}{1000.0}\right)^2 + 0.03 \cdot f_{\text{elite}}$$
+  $$K(t + \Delta t) = \max\left(10.0, K(t) \cdot \exp(-\kappa_{\text{overstretch}} \cdot \Delta t)\right)$$
+* **Root Cause & Justification**:
+  * Converts discrete per-tick compounding into a dimensionally consistent, time-step invariant continuous exponential erosion rate.
+* **Empirical Validation Grounding**:
+  * Turchin (2003); Taagepera (1978).
+
+---
+
+### Entry 68: Continuous Gaussian Vulnerability Envelope in Early State Grain Transition
+* **Date**: November 1, 2026
+* **Subsystem**: `ScottAgainstTheGrainPureEngine.java`
+* **Canonical Literature**:
+  * Scott, J. C. (2017). *Against the Grain: A Deep History of the Earliest States*. Yale University Press.
+* **Problem in Previous Implementation**:
+  * Knife-edge conditional window `tech >= 1.5 && tech <= 2.5` caused health penalties to appear and disappear discontinuously.
+* **Calibrated Ether Formulation**:
+  $$\xi_{\text{scott}}(T) = \exp\left(-\frac{(T - 2.0)^2}{2 \cdot (0.35)^2}\right)$$
+  $$\Delta \text{Lifespan} = - 0.50 \cdot \xi_{\text{scott}}(T) \cdot \Delta t$$
+  $$\Delta \text{Pollution} = + 0.20 \cdot \xi_{\text{scott}}(T) \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Models early agrarian monoculture morbidity as a smooth continuous Gaussian vulnerability envelope centered around $T = 2.0$.
+* **Empirical Validation Grounding**:
+  * Scott (2017).
+
+---
+
+### Entry 69: Normalized Logistic Ecological Carrying Capacity & Regeneration in HANDY Model
+* **Date**: November 1, 2026
+* **Subsystem**: `HandyNasaPureEngine.java`, `HandyNasaHybridEngine.java`
+* **Canonical Literature**:
+  * Motesharrei, S., Rivas, J., & Kalnay, E. (2014). *Human and nature dynamics (HANDY): Modeling inequality and use of resources in the collapse or sustainability of societies*. Ecological Economics, 101, 90–102.
+* **Problem in Previous Implementation**:
+  * In pure model, regeneration was `beta * natureX * (100.0 - natureX)` (unnormalized, 100x too fast). In hybrid model, biomass lacked regeneration and was depleted by absolute population without spatial area scaling.
+* **Calibrated Ether Formulation**:
+  $$\dot{x}_{\text{pure}} = \beta \cdot x \cdot \left(1.0 - \frac{x}{100.0}\right) - \delta \cdot (X_C + X_E) \cdot x$$
+  $$\dot{B}_{\text{natural}} = 0.02 \cdot B \cdot \max\left(0, 1.0 - \frac{B}{100.0}\right) - 0.0002 \cdot \min(\rho, 500.0) \cdot \left(\frac{B}{100.0}\right)$$
+* **Root Cause & Justification**:
+  * Normalizes carrying capacity to $1.0$ in the logistic term and couples spatial depletion to human density $\rho = N / A$ with continuous ecological regeneration.
+* **Empirical Validation Grounding**:
+  * Motesharrei et al. (2014).

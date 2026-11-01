@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * NASA HANDY Model Variant B7.1 (Human and Nature Dynamics - Motesharrei, Rivas & Kalnay 2014).
+ * NASA HANDY Model Variant B7.1 (Human and Nature Dynamics - Motesharrei, Rivas &amp; Kalnay 2014).
  * Pure standalone differential model coupling Elites (Y), Commoners (X), Nature Carrying Capacity (x),
  * and Accumulated Wealth (K).
  *
@@ -47,8 +47,8 @@ public class HandyNasaPureEngine {
         double delta = 0.005; // Depletion rate of nature
         double beta = 0.01;  // Regeneration rate of nature
 
-        // Nature regeneration vs depletion
-        natureX = Math.max(0.0, natureX + (beta * natureX * (100.0 - natureX) - delta * (commonersX + elitesY) * natureX) * deltaYears);
+        // Nature regeneration vs depletion (normalized logistic carrying capacity lambda = 100.0)
+        natureX = Math.max(0.0, natureX + (beta * natureX * (1.0 - natureX / 100.0) - delta * (commonersX + elitesY) * natureX) * deltaYears);
 
         // Wealth production by commoners
         wealthK = Math.max(0.0, wealthK + (delta * commonersX * natureX) * deltaYears);
@@ -97,5 +97,3 @@ public class HandyNasaPureEngine {
         HandyNasaHybridEngine.processPlugin(cells, deltaYears);
     }
 }
-
-

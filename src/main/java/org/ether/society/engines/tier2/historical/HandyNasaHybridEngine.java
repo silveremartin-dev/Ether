@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
@@ -33,7 +33,7 @@ public class HandyNasaHybridEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
@@ -41,12 +41,15 @@ public class HandyNasaHybridEngine {
 
             double pop = cell.getPopulation();
             double biomass = cell.getBiomassNaturalOr(100.0);
+            double areaKm2 = Math.max(1.0, cell.getEffectiveSurfaceAreaKm2());
+            double density = pop / areaKm2;
 
-            // HANDY hypothesis: high population depletes natural biomass carrying capacity
-            double depletionRate = 0.0001 * pop * deltaYears;
-            cell.setBiomassNatural(Math.max(0.0, biomass - depletionRate));
+            // HANDY coupled logistic nature dynamics (Motesharrei, Rivas & Kalnay 2014):
+            // Natural biomass regrows logistically toward 100.0 and is depleted by human density
+            double maxBiomass = 100.0;
+            double regeneration = 0.02 * biomass * Math.max(0.0, 1.0 - biomass / maxBiomass);
+            double depletion = 0.0002 * Math.min(density, 500.0) * (biomass / maxBiomass);
+            cell.setBiomassNatural(Math.max(0.0, biomass + (regeneration - depletion) * deltaYears));
         }
     }
 }
-
-

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * E.O. Wilson & W.D. Hamilton Kin Selection Model Variant B28.1 (Pure) & B28.2 (Hybrid).
- * Hamilton Law (r * B > C): Altruistic cooperation is bounded by genetic/cultural relatedness r.
+ * E.O. Wilson &amp; W.D. Hamilton Kin Selection Model Variant B28.1 (Pure) &amp; B28.2 (Hybrid).
+ * Hamilton Law (r * B &gt; C): Altruistic cooperation is bounded by genetic/cultural relatedness r.
  * Under food scarcity, inter-group hostility increases toward culturally distant outgroups.
  *
  * @author Silvere Martin-Michiellot
@@ -45,23 +45,23 @@ public class KinSelectionHamiltonEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
         for (H3Cell cell : cells) {
             if (cell == null || cell.getFoodResource() == null) continue;
 
             double food = cell.getFoodResource();
-            double pop = cell.getPopulation();
+            int pop = cell.getPopulationOr(0);
+            if (pop <= 0) continue;
 
-            // High food scarcity triggers Hamilton outgroup hostility filter
-            if (pop > 0 && (food / pop) < 0.05) {
-                // Outgroup hostility increases military work expenditure
-                if (cell.getResourceWork() != null) {
-                    cell.setResourceWork(cell.getResourceWork() * (1.0 + 0.08 * deltaYears));
-                }
+            double foodPerCapita = food / pop;
+            // Continuous outgroup hostility response under resource scarcity (Hamilton 1964; Bowles 2006)
+            double scarcityStress = 1.0 / (1.0 + Math.exp(20.0 * (foodPerCapita - 0.05)));
+            if (scarcityStress > 0.01) {
+                // Outgroup hostility increases defensive/military work expenditure
+                double work = cell.getResourceWorkOr(50.0);
+                cell.setResourceWork(work * (1.0 + 0.08 * scarcityStress * deltaYears));
             }
         }
     }
 }
-
-

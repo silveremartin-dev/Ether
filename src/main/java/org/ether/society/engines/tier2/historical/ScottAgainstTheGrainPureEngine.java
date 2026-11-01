@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * James C. Scott Model Variant B17.1 (Pure) & B17.2 (Hybrid).
+ * James C. Scott Model Variant B17.1 (Pure) &amp; B17.2 (Hybrid).
  * Scott Law (Against the Grain): Early grain-based agrarian states suffer initial drops in health,
  * higher epidemic vulnerability, and tax coercion friction compared to mobile foraging populations.
  *
@@ -33,26 +33,27 @@ public class ScottAgainstTheGrainPureEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getTechnologyLevel() == null) continue;
 
             double tech = cell.getTechnologyLevel();
-            // Early agrarian state transition window (Tech 1.5 to 2.5)
-            if (tech >= 1.5 && tech <= 2.5) {
+            // Continuous Gaussian early-agrarian health & epidemic vulnerability envelope (Scott 2017 "Against the Grain")
+            // Peak vulnerability centered at tech 2.0 (early state formation) with standard deviation 0.35
+            double scottVulnerability = Math.exp(-Math.pow(tech - 2.0, 2.0) / (2.0 * 0.35 * 0.35));
+
+            if (scottVulnerability > 0.01) {
                 // Scott penalty: initial health drop from grain monoculture and crowd disease
                 if (cell.getLifespan() != null) {
-                    cell.setLifespan(Math.max(22.0, cell.getLifespan() - 0.5 * deltaYears));
+                    cell.setLifespan(Math.max(22.0, cell.getLifespan() - 0.5 * scottVulnerability * deltaYears));
                 }
                 // Epidemic vulnerability increases in early grain towns
                 if (cell.getPollutionLevel() != null) {
-                    cell.setPollutionLevel(cell.getPollutionLevel() + 0.2 * deltaYears);
+                    cell.setPollutionLevel(cell.getPollutionLevel() + 0.2 * scottVulnerability * deltaYears);
                 }
             }
         }
     }
 }
-
-
