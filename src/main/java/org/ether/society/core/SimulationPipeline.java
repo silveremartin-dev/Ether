@@ -417,18 +417,18 @@ public class SimulationPipeline {
      */
     private void executeFusedAnthropogenicPass(H3SimulationEngine engine, List<H3Cell> populatedCells, double dtYears, double dtMonthly, Scenario scenario) {
         // Step 3.1: Physiological & Bioclimatic Survival
-        WetBulbTemperatureEngine.processWetBulbHyperthermia(populatedCells);
+        WetBulbTemperatureEngine.processWetBulbHyperthermia(populatedCells, dtYears);
         PressurizedHabitatEngine.processPressurizedHabitats(populatedCells, null, dtYears);
         BiologicalDemographicsEngine.processBiologicalDemographics(populatedCells, dtYears);
         BioMolecularEpidemiologyEngine.processBioMolecularImmunity(populatedCells, dtYears);
-        EcotoxicologyFertilityEngine.processEcotoxicologyFertility(populatedCells);
+        EcotoxicologyFertilityEngine.processEcotoxicologyFertility(populatedCells, dtYears);
 
         // Step 3.2: Energy Grid, Metallurgy & Physical Industry
         PhysicalEnergyGridEngine.processPhysicalEnergyGrid(populatedCells, dtYears);
         NetEnergyEROEIEngine.processNetEnergyEROEI(populatedCells, dtYears);
         MetallurgyEnthalpyEngine.processOreSmelting(populatedCells, dtYears);
         ResourceRecyclingEngine.processResourceRecycling(populatedCells, dtYears);
-        NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(populatedCells);
+        NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(populatedCells, engine != null ? engine.getTickCounter() : 0L, dtYears);
 
         // Step 3.3: Transport, Kinetic Warfare & Infrastructure
         PhysicsTransportEngine.processPhysicsTransport(populatedCells, dtYears);

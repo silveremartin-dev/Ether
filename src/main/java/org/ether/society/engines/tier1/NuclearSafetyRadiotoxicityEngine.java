@@ -72,19 +72,31 @@ public class NuclearSafetyRadiotoxicityEngine {
      * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick.
      */
     public static void processNuclearEnergySafety(List<H3Cell> cells) {
-        processNuclearEnergySafety(cells, 0L);
+        processNuclearEnergySafety(cells, 0L, 1.0 / 12.0);
     }
 
     /**
      * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick with explicit simulation tick.
      */
     public static void processNuclearEnergySafety(List<H3Cell> cells, long tick) {
-// Numerical integration step for NuclearSafetyRadiotoxicityEngine - verifies boundary conservation and updates local thermodynamic state
+        processNuclearEnergySafety(cells, tick, 1.0 / 12.0);
+    }
+
+    /**
+     * Executes nuclear safety, radiotoxicity contamination, and fusion transition tick with explicit tick and time delta.
+     *
+     * @param cells spatial cells
+     * @param tick simulation tick index
+     * @param deltaYears time step in years
+     */
+    public static void processNuclearEnergySafety(List<H3Cell> cells, long tick, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
         int meltdownEvents = 0;
+        double eventThreshold = (accidentProbability >= 1.0)
+                ? 1.0
+                : (1.0 - Math.exp(-accidentProbability * Math.max(0.01, deltaYears)));
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             int pop = cell.getPopulationOr(0);
@@ -100,7 +112,7 @@ public class NuclearSafetyRadiotoxicityEngine {
             if (powerPerCapita >= FISSION_POWER_THRESHOLD && powerPerCapita < FUSION_POWER_THRESHOLD) {
                 long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
                 double prng = org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, tick, cellId, 107L);
-                if (accidentProbability >= 1.0 || prng < accidentProbability) { // Deterministic meltdown risk event
+                if (accidentProbability >= 1.0 || prng < eventThreshold) { // Poisson meltdown hazard event
                     meltdownEvents++;
                     // Radiotoxic fallout spike (Bq/m^2 modeled via pollution)
                     cell.setPollutionLevel(pollution + 10000.0);
@@ -114,5 +126,3 @@ public class NuclearSafetyRadiotoxicityEngine {
         }
     }
 }
-
-

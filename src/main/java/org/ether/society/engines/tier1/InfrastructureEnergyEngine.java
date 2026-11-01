@@ -43,10 +43,10 @@ public class InfrastructureEnergyEngine {
             // Effective friction tau(K, T) is a closed-form state function of terrain, technology, and capital density
             if (tech >= 2.0 && capital > 200.0) {
                 pavedCells++;
-                double baseFriction = Math.max(1.0, cell.getMovementFrictionOr(1.0));
+                double baseFriction = cell.getMovementFrictionOr(1.0);
                 double capitalDensity = capital / Math.max(10.0, cell.getEffectiveSurfaceAreaKm2());
                 double infrastructureDiscount = 0.10 + 0.90 / (1.0 + 0.05 * (tech - 1.8) * Math.log1p(capitalDensity));
-                cell.setMovementFriction(Math.max(0.05, baseFriction * infrastructureDiscount));
+                cell.setMovementFriction(Math.max(0.05, Math.min(baseFriction, baseFriction * infrastructureDiscount)));
             }
         }
 

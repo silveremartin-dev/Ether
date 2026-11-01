@@ -28,6 +28,9 @@ public class EcotoxicologyFertilityEngine {
     /** Endocrine toxicity decay constant k */
     public static final double ENDOCRINE_TOXICITY_DECAY_K = 0.0002;
 
+    /** Baseline human crude birth rate (annual, births per capita) */
+    public static final double BASELINE_CRUDE_BIRTH_RATE = 0.035;
+
     /**
      * Calculates effective biological fertility factor based on chemical pollution load.
      *
@@ -35,16 +38,24 @@ public class EcotoxicologyFertilityEngine {
      * @return Fertility multiplier between 0.35 and 1.0
      */
     public static double calculateEcotoxicFertilityFactor(double pollutionLevel) {
-// Numerical integration step for EcotoxicologyFertilityEngine - verifies boundary conservation and updates local thermodynamic state
         if (pollutionLevel <= 0.0) return 1.0;
         return Math.max(0.35, Math.exp(-ENDOCRINE_TOXICITY_DECAY_K * pollutionLevel));
     }
 
     /**
-     * Executes one ecotoxicology fertility stress tick across cells.
+     * Executes one ecotoxicology fertility stress tick across cells (defaults to monthly interval).
      */
     public static void processEcotoxicologyFertility(List<H3Cell> cells) {
-// Numerical integration step for EcotoxicologyFertilityEngine - verifies boundary conservation and updates local thermodynamic state
+        processEcotoxicologyFertility(cells, 1.0 / 12.0);
+    }
+
+    /**
+     * Executes ecotoxicology fertility stress tick across cells with explicit time integration.
+     *
+     * @param cells spatial cells
+     * @param deltaYears time step in years
+     */
+    public static void processEcotoxicologyFertility(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
         int toxicStressCells = 0;
@@ -52,15 +63,16 @@ public class EcotoxicologyFertilityEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             double pollution = cell.getPollutionLevelOr(0.0);
-            if (pollution > 1000.0) {
-                toxicStressCells++;
+            if (pollution > 100.0) {
                 double fertilityFactor = calculateEcotoxicFertilityFactor(pollution);
-
-                // Reduce birth rate / demographic growth factor in polluted cells
-                int pop = cell.getPopulationOr(0);
-                if (pop > 0) {
-                    int suppressedBirths = (int) (pop * (1.0 - fertilityFactor) * 0.02);
-                    cell.setPopulation(Math.max(0, pop - suppressedBirths));
+                if (fertilityFactor < 0.999) {
+                    toxicStressCells++;
+                    int pop = cell.getPopulationOr(0);
+                    if (pop > 0) {
+                        // Endocrine disruption suppresses births proportionally to baseline birth rate and deltaYears
+                        int suppressedBirths = (int) Math.round(pop * BASELINE_CRUDE_BIRTH_RATE * (1.0 - fertilityFactor) * deltaYears);
+                        cell.setPopulation(Math.max(0, pop - suppressedBirths));
+                    }
                 }
             }
         }
@@ -70,5 +82,3 @@ public class EcotoxicologyFertilityEngine {
         }
     }
 }
-
-

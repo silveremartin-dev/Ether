@@ -88,24 +88,29 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
 
             double techLandCeiling = Math.max(pop * (400.0 + 50.0 * Math.min(tech, 10.0)) * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor);
 
-            if (density > 50.0) {
-                // High density forces multi-cropping / terrace irrigation (Stage 4)
-                cell.setBiomassAgriculture(Math.min(techLandCeiling * 1.35, agriBiomass + (agriBiomass * 0.04 * deltaYears)));
-                cell.setTechnologyLevel(Math.min(10.0, tech + 0.005 * deltaYears));
-                // High labor demand absorbs work capacity
-                double work = cell.getResourceWorkOr(50.0);
-                cell.setResourceWork(Math.max(10.0, work * 0.98));
-            } else if (density > 10.0) {
-                // Moderate density: Annual cropping / draft animals (Stage 3)
-                cell.setBiomassAgriculture(Math.min(techLandCeiling * 1.20, agriBiomass + (agriBiomass * 0.025 * deltaYears)));
-                cell.setTechnologyLevel(Math.min(10.0, tech + 0.002 * deltaYears));
-            } else if (density > 0.20 && tech >= 1.5) {
-                // Early agrarian expansion: Forest-Fallow to Bush-Fallow & hydraulic paddy intensification (Stage 2)
-                cell.setBiomassAgriculture(Math.min(techLandCeiling, agriBiomass + (agriBiomass * 0.018 * deltaYears)));
-                cell.setTechnologyLevel(Math.min(3.5, tech + 0.0010 * deltaYears));
-            } else if (tech >= 1.5 && (cell.getBiomassAgriculture() == null || cell.getBiomassAgriculture() <= 0.0)) {
-                cell.setBiomassAgriculture(agriBiomass);
-            }
+            // Continuous Boserupian intensification factor xi in [0, 1] (Hill function with n=1.4, K=20 hab/km2)
+            // Ester Boserup (1965): Population pressure forces transition from extensive fallow to intensive multi-cropping
+            double densityNorm = Math.pow(Math.max(0.0, density), 1.4);
+            double xi = densityNorm / (Math.pow(20.0, 1.4) + densityNorm);
+
+            // Continuous growth rate: from 1.5%/yr (extensive fallow) up to 4.5%/yr (multi-crop terrace irrigation)
+            double growthRate = 0.015 + 0.030 * xi;
+            double ceilingMultiplier = 1.0 + 0.35 * xi;
+            double effectiveCeiling = techLandCeiling * ceilingMultiplier;
+
+            double newAgriBiomass = Math.min(effectiveCeiling, agriBiomass + (agriBiomass * growthRate * deltaYears));
+            cell.setBiomassAgriculture(newAgriBiomass);
+
+            // Boserupian endogenous innovation rate: higher carrying capacity pressure spurs technical adaptations
+            double techIncrement = (0.0010 + 0.0040 * xi) * deltaYears;
+            double techCeiling = (density < 2.0) ? 3.5 : 10.0;
+            cell.setTechnologyLevel(Math.min(techCeiling, tech + techIncrement));
+
+            // Boserup Axiom: Marginal returns to labor decrease under intensive cropping (L_req ∝ Yield^1.4)
+            // Available mechanical/labor work is absorbed as a continuous rate scaled by deltaYears
+            double work = cell.getResourceWorkOr(50.0);
+            double workAbsorptionRate = Math.clamp(0.025 * xi * deltaYears, 0.0, 0.90);
+            cell.setResourceWork(Math.max(10.0, work * (1.0 - workAbsorptionRate)));
         }
     }
 }

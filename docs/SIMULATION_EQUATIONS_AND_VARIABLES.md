@@ -1848,3 +1848,26 @@ $$\frac{d\text{SOC}}{dt} = - 0.06 \cdot \left(\frac{P}{500}\right)^{1.4} \cdot \
 ### 19.6 Analytical Orographic Declivity & Evaporative Salinization
 Local terrain slope is derived analytically from hypsometric elevation $\sigma_{\text{slope}}(z) = 0.02 + 0.38 \frac{z^2}{1200^2 + z^2}$, while topsoil salinization is driven continuously by evaporative capillary pull versus leaching precipitation:
 $$\mathcal{E}_{\text{salin}} = \frac{1}{1 + \exp(-0.35(T - 15.0))} \cdot \frac{1}{1 + \exp((P - 500.0)/100.0)} \cdot \frac{1}{1 + \exp((z - 800.0)/200.0)}$$
+
+### 19.7 Continuous Boserupian Intensification & Labor Drag Integration
+Carrying capacity pressure $\rho = N / A_{\text{cell}}$ induces agricultural intensification via continuous Hill saturation ($\xi(\rho)$) rather than discrete staircase jumps, scaling labor absorption strictly with time step $\Delta t$:
+$$\xi(\rho) = \frac{\rho^{1.4}}{20.0^{1.4} + \rho^{1.4}}$$
+$$\mu_{\text{agri}}(\rho) = 0.015 + 0.030 \cdot \xi(\rho)$$
+$$\Delta \text{Work} = - \text{clamp}(0.025 \cdot \xi(\rho) \cdot \Delta t, 0.0, 0.90) \cdot \text{Work}$$
+
+### 19.8 Differentiated Hydrodynamic vs. Overland Logistics Friction
+Separates sea routes ($\mu_{\text{sea}} = 0.001$) from overland cartage ($\mu_{\text{land}} = 0.05$). Maritime chokepoint blockades penalize sea lanes primarily ($2.5\times$) with secondary rerouting strain on land ($1.25\times$), attenuated by transport capital density:
+$$\mu_{\text{eff}} = (\text{isMaritime} ? \mu_{\text{sea}} : \mu_{\text{land}}) \cdot (\text{blockadeActive} ? (\text{isMaritime} ? 2.5 : 1.25) : 1.0) \cdot \mathcal{D}_{\text{infra}}$$
+
+### 19.9 Institutional Property Rights, Capital Accumulation & Creative Destruction
+Couples institutional inclusiveness $I_{\text{inc}} = \text{clamp}(1 - \text{Gini}, 0.05, 0.95)$ to capital accumulation and creative destruction:
+$$\frac{dK}{dt} = \begin{cases}
++0.02 \cdot (I_{\text{inc}} - 0.35) \cdot K & \text{if } I_{\text{inc}} > 0.35 \quad (\text{Property Rights Security}) \\
+-0.015 \cdot (0.35 - I_{\text{inc}}) \cdot K & \text{if } I_{\text{inc}} \le 0.35 \quad (\text{Extractive Expropriation Drag})
+\end{cases}$$
+$$\frac{d\text{Tech}}{dt} = I_{\text{inc}} \cdot 0.005 \cdot \left(0.5 + 0.5 \frac{K}{K + 100.0}\right)$$
+
+### 19.10 Continuous Endocrine Disruption & Poisson Meltdown Hazards
+Replaces arbitrary population cuts with continuous demographic birth suppression scaled by baseline birth rate $b_0 = 0.035\text{ yr}^{-1}$, and enforces Poisson time integration for nuclear accidents:
+$$\Delta N_{\text{suppressed}} = \lfloor N \cdot b_0 \cdot (1.0 - \max(0.35, e^{-k P})) \cdot \Delta t \rfloor$$
+$$P_{\text{meltdown}}(\Delta t) = 1.0 - \exp(-\lambda_{\text{meltdown}} \cdot \Delta t)$$

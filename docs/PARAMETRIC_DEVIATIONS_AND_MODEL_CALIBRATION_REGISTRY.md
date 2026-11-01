@@ -928,3 +928,81 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Remplace les approximations discrètes par des fonctions analytiques de gradient hypsométrique et un indice continu d'exposition au déficit de lessivage par évapo-transpiration.
 * **Empirical Validation Grounding**:
   * van Genuchten (1980); FAO Paper 29 (1985); Maas & Hoffman (1977).
+
+---
+
+### Entry 50: Continuous Boserupian Intensification & Dimensionally Consistent Labor Absorption
+* **Date**: November 1, 2026
+* **Subsystem**: `BoserupAgriculturalIntensificationEngine.java`
+* **Canonical Literature**:
+  * Boserup, E. (1965). *The Conditions of Agricultural Growth: The Economics of Agrarian Change under Population Pressure*. Allen & Unwin.
+  * Allen, R. C. (2009). *The British Industrial Revolution in Global Perspective*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Discrete staircase thresholds (`density > 50`, `density > 10`, `density > 0.20`) produced non-physical derivative jumps in agricultural biomass and technology. Moreover, labor drag (`work * 0.98`) was executed per-tick with zero dimensional integration over `deltaYears`.
+* **Calibrated Ether Formulation**:
+  $$\xi(\rho) = \frac{\rho^{1.4}}{20.0^{1.4} + \rho^{1.4}}$$
+  $$\mu_{\text{agri}}(\rho) = 0.015 + 0.030 \cdot \xi(\rho)$$
+  $$\mathcal{B}_{\text{agri}}(t + \Delta t) = \min\left(\mathcal{B}_{\text{ceiling}} \cdot (1.0 + 0.35 \cdot \xi(\rho)), \mathcal{B}_{\text{agri}} + \mathcal{B}_{\text{agri}} \cdot \mu_{\text{agri}}(\rho) \cdot \Delta t\right)$$
+  $$\Delta \text{Tech} = (0.0010 + 0.0040 \cdot \xi(\rho)) \cdot \Delta t$$
+  $$\Delta \text{Work} = - \text{clamp}(0.025 \cdot \xi(\rho) \cdot \Delta t, 0.0, 0.90) \cdot \text{Work}$$
+* **Root Cause & Justification**:
+  * Replaces discrete staircase tiers with an analytical Hill response function ($\xi(\rho)$) and strictly scales work absorption and innovation increments by $\Delta t$.
+* **Empirical Validation Grounding**:
+  * Boserup (1965); Allen (2009); HYDE 3.4 historical agricultural land use.
+
+---
+
+### Entry 51: Differentiated Maritime vs. Overland Logistics Friction & Chokepoint Vulnerability
+* **Date**: November 1, 2026
+* **Subsystem**: `PhysicalSupplyChainEngine.java`
+* **Canonical Literature**:
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  * Stopford, M. (2009). *Maritime Economics*. 3rd Edition, Routledge.
+* **Problem in Previous Implementation**:
+  * Global boolean `maritimeChokepointBlockadeActive` uniformly multiplied transport friction by 2.5x across all cells, including inland continental and mountain biomes with no maritime dependency.
+* **Calibrated Ether Formulation**:
+  $$\mu_{\text{base}} = \text{isMaritime} ? \mu_{\text{sea}} : \mu_{\text{land}}, \quad (\mu_{\text{sea}} = 0.001, \, \mu_{\text{land}} = 0.05)$$
+  $$\mathcal{M}_{\text{blockade}} = \text{blockadeActive} ? (\text{isMaritime} ? 2.5 : 1.25) : 1.0$$
+  $$W_{\text{loss}} = \text{clamp}(\mu_{\text{base}} \cdot \mathcal{M}_{\text{blockade}} \cdot \mathcal{D}_{\text{infra}} \cdot \Delta t, 0.0, 0.95)$$
+* **Root Cause & Justification**:
+  * Differentiates low-drag hydrodynamic maritime transport from high-drag overland freight and confines maritime chokepoint blockades primarily to maritime corridors with secondary overland rerouting spillover.
+* **Empirical Validation Grounding**:
+  * Smil (2017); Stopford (2009).
+
+---
+
+### Entry 52: Coupled Institutional Property Rights, Capital Reinvestment & Creative Destruction
+* **Date**: November 1, 2026
+* **Subsystem**: `AcemogluRobinsonInstitutionsEngine.java`
+* **Canonical Literature**:
+  * Acemoglu, D., & Robinson, J. A. (2012). *Why Nations Fail: The Origins of Power, Prosperity, and Poverty*. Crown Business.
+  * Acemoglu, D., Johnson, S., & Robinson, J. A. (2005). *Institutions as a Fundamental Cause of Long-Run Growth*. Handbook of Economic Growth, 1, 385–472.
+* **Problem in Previous Implementation**:
+  * Capital variable was unreferenced and static, completely decoupling institutional inclusiveness from capital accumulation, expropriation risk, and creative destruction.
+* **Calibrated Ether Formulation**:
+  $$I_{\text{inc}} = \text{clamp}(1.0 - \text{Gini}, 0.05, 0.95)$$
+  $$\text{For } I_{\text{inc}} > 0.35: \quad \frac{dK}{dt} = + 0.02 \cdot (I_{\text{inc}} - 0.35) \cdot K$$
+  $$\text{For } I_{\text{inc}} \le 0.35: \quad \frac{dK}{dt} = - 0.015 \cdot (0.35 - I_{\text{inc}}) \cdot K$$
+  $$\frac{d\text{Tech}}{dt} = I_{\text{inc}} \cdot 0.005 \cdot \left(0.5 + 0.5 \frac{K}{K + 100.0}\right)$$
+* **Root Cause & Justification**:
+  * Directly formalizes Acemoglu-Robinson's twin mechanisms: secure property rights encouraging capital reinvestment vs. extractive elite monopolies causing capital flight and stagnation.
+* **Empirical Validation Grounding**:
+  * Acemoglu & Robinson (2012); Maddison Project 2020.
+
+---
+
+### Entry 53: Continuous Endocrine Toxicity & Poisson Nuclear Meltdown Hazard Integration
+* **Date**: November 1, 2026
+* **Subsystem**: `EcotoxicologyFertilityEngine.java`, `NuclearSafetyRadiotoxicityEngine.java`
+* **Canonical Literature**:
+  * Swan, S. H. (2021). *Count Down: How Our Modern World Is Threatening Sperm Counts*. Scribner.
+  * UNSCEAR (2008). *Sources and Effects of Ionizing Radiation*. United Nations.
+* **Problem in Previous Implementation**:
+  * `EcotoxicologyFertilityEngine` subtracted an arbitrary flat $2\%$ population cut per month ($24\%$/year) with a knife-edge threshold cliff at `pollution > 1000.0`. `NuclearSafetyRadiotoxicityEngine` evaluated annual probability on every tick without Poisson time integration.
+* **Calibrated Ether Formulation**:
+  $$\Delta N_{\text{suppressed}} = \lfloor N \cdot b_0 \cdot (1.0 - \max(0.35, e^{-k P})) \cdot \Delta t \rfloor, \quad (b_0 = 0.035\text{ yr}^{-1}, \, k = 0.0002)$$
+  $$P_{\text{meltdown}}(\Delta t) = 1.0 - \exp(-\lambda_{\text{meltdown}} \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Replaces unphysical population cuts with continuous demographic birth suppression scaled by baseline birth rate and $\Delta t$, and applies Poisson probability for time-discretized nuclear meltdown risk.
+* **Empirical Validation Grounding**:
+  * Swan (2021); UN World Population Prospects; UNSCEAR (2008).

@@ -49,9 +49,6 @@ public class HydrologicalEngineeringEngine {
      * Executes hydrological engineering transformations using default parameters.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         processHybrid(cells, timeStepDays,
                 DEFAULT_TENOCHTITLAN_TECH_THRESHOLD, DEFAULT_TENOCHTITLAN_CAPITAL_THRESHOLD,
                 DEFAULT_ARAL_SEA_RAINFALL_THRESHOLD_MM,
@@ -67,7 +64,6 @@ public class HydrologicalEngineeringEngine {
                                     double damTech, double damCapital, double damMinElevation) {
         if (cells == null || cells.isEmpty()) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
@@ -76,7 +72,7 @@ public class HydrologicalEngineeringEngine {
             double elevation = cell.getElevationOr(0.0);
             double rainfall = cell.getRainfallOr(500.0);
             double tempC = cell.getTemperatureOr(15.0);
-            int pop = cell.getPopulation();
+            int pop = cell.getPopulationOr(0);
             Biome biome = cell.getBiome();
 
             // 1. Tenochtitlan / Lake Texcoco Urban Reclamation & Wetland Drainage
@@ -84,9 +80,9 @@ public class HydrologicalEngineeringEngine {
                 if (tech >= tenochtitlanTech && capital >= tenochtitlanCapital) {
                     cell.setBiome(Biome.PLAINS);
                     cell.setIsPolder(true);
-                    cell.setFoodResource(Math.min(1000.0, cell.getFoodResource() + 50.0 * (timeStepDays / 30.0)));
-                    cell.setSoilOrganicCarbon(Math.max(100.0, cell.getSoilOrganicCarbon() + 15.0 * (timeStepDays / 30.0)));
-                    logger.info("ðŸžï¸ Hydrological Reclamation (Tenochtitlan Model): Cell {} drained Lake Texcoco for urban expansion.", cell.getH3Index());
+                    cell.setFoodResource(Math.min(1000.0, cell.getFoodResourceOr(0.0) + 50.0 * (timeStepDays / 30.0)));
+                    cell.setSoilOrganicCarbon(Math.max(100.0, cell.getSoilOrganicCarbonOr(50.0) + 15.0 * (timeStepDays / 30.0)));
+                    logger.info("Hydrological Reclamation (Tenochtitlan Model): Cell {} drained Lake Texcoco for urban expansion.", cell.getH3Index());
                 }
             }
 
@@ -94,27 +90,26 @@ public class HydrologicalEngineeringEngine {
             if (biome == Biome.LAKE && rainfall < aralRainfallThreshold && tempC >= 10.0) {
                 // Intensive irrigation water extraction by surrounding agricultural population
                 if (tech >= 3.0 && capital >= 100.0) {
-                    cell.setWaterResource(Math.max(10.0, cell.getWaterResource() - 20.0 * (timeStepDays / 30.0)));
-                    if (cell.getWaterResource() <= 50.0) {
+                    cell.setWaterResource(Math.max(10.0, cell.getWaterResourceOr(100.0) - 20.0 * (timeStepDays / 30.0)));
+                    if (cell.getWaterResourceOr(100.0) <= 50.0) {
                         cell.setBiome(Biome.DESERT);
-                        cell.setMovementFriction(Math.min(10.0, cell.getMovementFriction() * 1.35)); // Salt flat / dust storm friction
-                        logger.info("ðŸœï¸ Endorheic Desiccation (Aral Sea Model): Cell {} lake basin desiccated into salt desert.", cell.getH3Index());
+                        cell.setMovementFriction(Math.min(10.0, cell.getMovementFrictionOr(1.0) * 1.35)); // Salt flat / dust storm friction
+                        logger.info("Endorheic Desiccation (Aral Sea Model): Cell {} lake basin desiccated into salt desert.", cell.getH3Index());
                     }
                 }
             }
 
             // 3. Mountain Water Reservoirs & Hydroelectric Dam Construction
-            if (elevation >= damMinElevation && (cell.getMovementFriction() >= 1.3 || elevation >= 500.0)) {
-                if (tech >= damTech && capital >= damCapital && !cell.getIsPolder()) {
+            if (elevation >= damMinElevation && (cell.getMovementFrictionOr(1.0) >= 1.3 || elevation >= 500.0)) {
+                if (tech >= damTech && capital >= damCapital && !Boolean.TRUE.equals(cell.getIsPolder())) {
                     // Dam reservoir created: stabilizes water security and generates hydroelectric power
                     cell.setWaterResource(1000.0);
-                    cell.setEnergySolar(cell.getEnergySolar() + 100.0 * (timeStepDays / 30.0)); // Hydroelectric power boost
-                    cell.setResourceWork(cell.getResourceWork() + 30.0 * (timeStepDays / 30.0));
-                    logger.info("ðŸ—ï¸ Mountain Reservoir Dam Construction: Cell {} built hydroelectric water retention dam.", cell.getH3Index());
+                    cell.setEnergySolar(cell.getEnergySolarOr(0.0) + 100.0 * (timeStepDays / 30.0)); // Hydroelectric power boost (legacy compatible)
+                    cell.setHabitatEnergyKw(cell.getHabitatEnergyKwOr(0.0) + 500.0 * (timeStepDays / 30.0)); // Grid mechanical power capacity
+                    cell.setResourceWork(cell.getResourceWorkOr(0.0) + 30.0 * (timeStepDays / 30.0));
+                    logger.info("Mountain Reservoir Dam Construction: Cell {} built hydroelectric water retention dam.", cell.getH3Index());
                 }
             }
         }
     }
 }
-
-

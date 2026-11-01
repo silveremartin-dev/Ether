@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,33 +39,42 @@ public class PhysicalSupplyChainEngine {
     }
 
     /**
-     * Process supply chains.
+     * Process supply chains across spatial cells with physical friction and infrastructure damping.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param deltaYears time step in years (double)
      */
     public static void processSupplyChains(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for PhysicalSupplyChainEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
-
-        double globalFrictionMultiplier = maritimeChokepointBlockadeActive ? 2.5 : 1.0;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            // Energy spent on logistics reduces available labor/work output.
-            // Rather than an arbitrary 0.02 magic constant, logistics friction is derived from
-            // mechanical transport work: W_transport = m * g * (mu_rolling + sin(theta)),
-            // attenuated by paved roads/rail infrastructure capital and modern propulsion efficiency.
+            // Physical logistics friction: differentiate between coastal/maritime corridors vs inland overland freight
+            boolean isMaritime = Boolean.TRUE.equals(cell.getIsCoastal())
+                    || cell.getBiome() == Biome.BEACH
+                    || cell.getBiome() == Biome.OCEAN
+                    || cell.getBiome() == Biome.DEEP_OCEAN
+                    || cell.getBiome() == Biome.LAKE;
+
+            // Hydrodynamic sea transport is an order of magnitude more energy-efficient than overland cartage (Smil 2017)
+            double baseFrictionCoeff = isMaritime ? seaTransportFrictionCoeff : landTransportFrictionCoeff;
+
+            // Maritime chokepoint blockade disproportionately disrupts maritime sea lines of communication (SLOC)
+            // Overland routes experience secondary diversion strain
+            double blockadeMultiplier = maritimeChokepointBlockadeActive ? (isMaritime ? 2.5 : 1.25) : 1.0;
+
+            // Infrastructure capital (paved roads, canals, railroads) dampens mechanical transport resistance
             double work = cell.getResourceWorkOr(0.0);
             double capital = cell.getResourceCapitalOr(0.0);
             int pop = cell.getPopulationOr(1);
             double tech = cell.getTechnologyLevelOr(1.0);
             double capPerCap = capital / Math.max(1.0, pop);
             double infraFrictionDamping = Math.clamp(1.0 / (1.0 + 0.1 * capPerCap + 0.2 * tech), 0.15, 1.0);
-            double baseFriction = (landTransportFrictionCoeff * infraFrictionDamping);
-            double logisticsLossFactor = Math.clamp(baseFriction * globalFrictionMultiplier * deltaYears, 0.0, 0.95);
+
+            double effectiveFriction = baseFrictionCoeff * blockadeMultiplier * infraFrictionDamping;
+            double logisticsLossFactor = Math.clamp(effectiveFriction * deltaYears, 0.0, 0.95);
 
             cell.setResourceWork(Math.max(0.0, work * (1.0 - logisticsLossFactor)));
         }
@@ -77,12 +87,9 @@ public class PhysicalSupplyChainEngine {
      * @return the resulting computation or state reference
      */
     public static boolean isMaritimeChokepointBlockadeActive() { return maritimeChokepointBlockadeActive; }
+
     /**
      * Set maritime chokepoint blockade active operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
      *
      * @param blocked the blocked argument (boolean)
      */
@@ -94,12 +101,9 @@ public class PhysicalSupplyChainEngine {
      * @return the resulting computation or state reference
      */
     public static double getSeaTransportFrictionCoeff() { return seaTransportFrictionCoeff; }
+
     /**
      * Set sea transport friction coeff operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
      *
      * @param coeff the coeff argument (double)
      */
@@ -111,16 +115,11 @@ public class PhysicalSupplyChainEngine {
      * @return the resulting computation or state reference
      */
     public static double getLandTransportFrictionCoeff() { return landTransportFrictionCoeff; }
+
     /**
      * Set land transport friction coeff operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalSupplyChainEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
      *
      * @param coeff the coeff argument (double)
      */
     public static void setLandTransportFrictionCoeff(double coeff) { landTransportFrictionCoeff = Math.max(0.001, coeff); }
 }
-
-

@@ -19,12 +19,13 @@ import java.util.List;
  * <p>Models the long-run divergence of wealth, property rights security, and state capacity:</p>
  * <pre>
  *   dI_inclusive/dt = μ_inst · (BalanceOfPower - MonopolyRents)
+ *   dK/dt = s · Y - δ·K + [Inclusive_Reinvestment_Bonus - Extractive_Expropriation_Drag]
  *   Innovation_Incentive = I_inclusive · Tech_level
  * </pre>
  * where:
  * <ul>
  *   <li><b>Inclusive Institutions</b>: Secure property rights, rule of law, and level playing field empower broad-based investment and creative destruction.</li>
- *   <li><b>Extractive Institutions</b>: Power concentrated in the hands of a narrow elite that extracts wealth from the rest of society, stifling innovation.</li>
+ *   <li><b>Extractive Institutions</b>: Power concentrated in the hands of a narrow elite that extracts wealth from the rest of society, stifling innovation and inducing capital flight.</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
@@ -33,64 +34,36 @@ import java.util.List;
 public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(AcemogluRobinsonInstitutionsEngine.class);
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "Acemoglu-Robinson Inclusive vs Extractive Institutions";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Models the institutional divergence between inclusive property rights (innovation/growth) and extractive elite monopolies (stagnation).";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
                [Acemoglu & Robinson Institutional Divergence Model (2012)]
-               • Inclusiveness Evolution:  dI_inc/dt = μ · (Pluralism_score - Elite_monopoly_rents)
-               • Creative Destruction:     Investment_rate = I_inc · (1.0 - Monopolistic_entry_barriers)
-               • Extractive Trap:          When Elite extractive rents dominate -> Growth stagnation & Capital flight
-               Units: I_inc [indice d'inclusivité institutionnelle [0, 1]], Pluralism [0, 1]
+               • Inclusiveness Index:      I_inc = clamp(1.0 - Gini, 0.05, 0.95)
+               • Property Rights Bonus:    dK_inc/dt = +0.02 · (I_inc - 0.35) · K  (for I_inc > 0.35)
+               • Extractive Capital Drag:  dK_ext/dt = -0.015 · (0.35 - I_inc) · K (for I_inc <= 0.35)
+               • Creative Destruction:     dTech/dt = I_inc · 0.005 · (K / (K + 100.0)) · Tech^0.2
+               Units: I_inc [0, 1], K [capital units], Tech [scalar 0-10]
                Ref: D. Acemoglu & J. A. Robinson (2012) "Why Nations Fail: The Origins of Power, Prosperity, and Poverty"
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Institutional Economics";
     }
 
-    /**
-     * Process.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
@@ -99,15 +72,23 @@ public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugi
             double tech = cell.getTechnologyLevelOr(1.0);
             double capital = cell.getResourceCapitalOr(10.0);
 
-            // Inclusiveness score: low Gini + high pluralism
-            double inclusiveness = Math.clamp(1.0 - gini, 0.1, 0.9);
+            // Inclusiveness score: low Gini + broad-based distribution of economic opportunities
+            double inclusiveness = Math.clamp(1.0 - gini, 0.05, 0.95);
 
-            // Inclusive institutions incentivize capital reinvestment and technological adoption (creative destruction)
-            // Inclusive institutions foster creative destruction and technological adoption (Acemoglu & Robinson 2012)
-            cell.setTechnologyLevel(Math.min(10.0, tech + (inclusiveness * 0.005 * deltaYears)));
+            // Inclusive institutions protect property rights and encourage capital reinvestment
+            // Extractive institutions impose expropriation risk and elite rent-seeking (Acemoglu & Robinson 2012)
+            if (inclusiveness > 0.35) {
+                double reinvestmentRate = 0.02 * (inclusiveness - 0.35) * deltaYears;
+                cell.setResourceCapital(capital + (capital * reinvestmentRate));
+            } else {
+                double expropriationLoss = 0.015 * (0.35 - inclusiveness) * deltaYears;
+                cell.setResourceCapital(Math.max(0.0, capital * (1.0 - expropriationLoss)));
+            }
+
+            // Creative destruction and technological innovation fostered by inclusive property rights
+            double capitalFactor = capital / (capital + 100.0);
+            double techIncrement = inclusiveness * 0.005 * (0.5 + 0.5 * capitalFactor) * deltaYears;
+            cell.setTechnologyLevel(Math.min(10.0, tech + techIncrement));
         }
     }
 }
-
-
-
