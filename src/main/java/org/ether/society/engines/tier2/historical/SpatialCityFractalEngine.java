@@ -55,13 +55,21 @@ public class SpatialCityFractalEngine {
             shapeSum += 1.0 / Math.pow(rank, 1.05);
         }
         if (totalPop <= 0L || shapeSum <= 0.0 || topCityPop <= 0.0) return;
-        double relax = Math.min(1.0, 0.01 * deltaYears);
+        boolean isMacroPlanetaryGrid = sortedCells.size() > 50;
+        double relax = isMacroPlanetaryGrid
+                ? Math.min(0.002, 0.0001 * deltaYears)
+                : Math.min(1.0, 0.01 * deltaYears);
         long assigned = 0L;
         for (int rank = 1; rank <= sortedCells.size(); rank++) {
             H3Cell cell = sortedCells.get(rank - 1);
             double targetPop = totalPop * (1.0 / Math.pow(rank, 1.05)) / shapeSum;
             double currentPop = cell.getPopulation();
-            int newPop = (int) Math.round(currentPop + (targetPop - currentPop) * relax);
+            double delta = (targetPop - currentPop) * relax;
+            if (isMacroPlanetaryGrid) {
+                double maxShift = Math.max(1.0, currentPop * 0.005 * Math.min(1.0, deltaYears));
+                delta = Math.clamp(delta, -maxShift, maxShift);
+            }
+            int newPop = (int) Math.round(currentPop + delta);
             if (rank == sortedCells.size()) {
                 newPop = (int) Math.max(0L, totalPop - assigned); // absorb rounding residue to conserve the total
             }

@@ -165,12 +165,19 @@ public class ThermodynamicMigrationEngine {
                 int popOrigin = origin.getPopulationOr(0);
                 if (popOrigin < 10) continue;
 
-                double foodOrigin = origin.getFoodResourceOr(0.0);
+                double foodOrigin = origin.getFoodResourceOr(0.0)
+                        + origin.getBiomassAgricultureOr(0.0) * 0.0105
+                        + origin.getBiomassNaturalOr(0.0) * 0.12;
                 double waterOrigin = origin.getWaterResourceOr(0.0);
-                double phiOrigin = (foodOrigin + waterOrigin) / (popOrigin + 1.0);
+                double phiOrigin = (foodOrigin + waterOrigin * 0.2) / (popOrigin + 1.0);
+
+                // Sedentism constraint: well-provisioned cells above metabolic subsistence do not undergo mass exodus
+                if (phiOrigin >= PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 1.15) {
+                    continue;
+                }
 
                 int bestDestIdx = -1;
-                double maxDeltaPhi = 0.05; // Minimum potential gradient threshold
+                double maxDeltaPhi = 0.25; // Minimum potential gradient threshold
 
                 int[] neighbors = adj.getNeighborIndices(i);
                 for (int k = 0; k < 6; k++) {
@@ -178,11 +185,20 @@ public class ThermodynamicMigrationEngine {
                     if (destIdx < 0) continue;
                     H3Cell destination = cells.get(destIdx);
                     if (destination == null) continue;
+                    org.ether.society.model.Biome destBiome = destination.getBiome();
+                    if (destBiome == org.ether.society.model.Biome.OCEAN
+                            || destBiome == org.ether.society.model.Biome.DEEP_OCEAN
+                            || destBiome == org.ether.society.model.Biome.GLACIER
+                            || (destination.getElevation() != null && destination.getElevation() < 0.0)) {
+                        continue;
+                    }
 
                     int popDest = destination.getPopulationOr(0);
-                    double foodDest = destination.getFoodResourceOr(0.0);
+                    double foodDest = destination.getFoodResourceOr(0.0)
+                            + destination.getBiomassAgricultureOr(0.0) * 0.0105
+                            + destination.getBiomassNaturalOr(0.0) * 0.12;
                     double waterDest = destination.getWaterResourceOr(0.0);
-                    double phiDest = (foodDest + waterDest) / (popDest + 1.0);
+                    double phiDest = (foodDest + waterDest * 0.2) / Math.max(10.0, popDest + 1.0);
 
                     double deltaPhi = phiDest - phiOrigin;
                     if (deltaPhi > maxDeltaPhi) {
@@ -195,8 +211,8 @@ public class ThermodynamicMigrationEngine {
                     H3Cell bestDestination = cells.get(bestDestIdx);
                     migrationEvents++;
 
-                    double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi, 0.01, 0.20);
-                    int migrants = Math.clamp((int) (popOrigin * fluxFraction), 1, popOrigin / 2);
+                    double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi * 0.05, 0.001, 0.015);
+                    int migrants = Math.clamp((int) (popOrigin * fluxFraction), 1, popOrigin / 10);
 
                     origin.setPopulation(popOrigin - migrants);
                     origin.setBiomassHuman((double) (popOrigin - migrants));

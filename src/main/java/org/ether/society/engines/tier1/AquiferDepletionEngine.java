@@ -63,7 +63,9 @@ public class AquiferDepletionEngine {
 
         java.util.function.Consumer<H3Cell> rechargeProcessor = cell -> {
             if (cell == null) return;
-            double aquifer = cell.getAccessibleAquiferOr(1000.0);
+            double rawAquifer = cell.getAccessibleAquiferOr(1000.0);
+            // Convert normalized [0.0, 1.0] WHYMAP raster fractions into piezometric storage depth (mm)
+            double aquifer = (rawAquifer <= 2.0) ? (400.0 + Math.max(0.0, rawAquifer) * 1000.0) : rawAquifer;
             double rain = cell.getRainfallOr(500.0);
             int pop = cell.getPopulationOr(0);
 
@@ -75,10 +77,11 @@ public class AquiferDepletionEngine {
             double newAquifer = Math.clamp(aquifer + netAquiferChange, 0.0, 2000.0);
             cell.setAccessibleAquifer(newAquifer);
 
-            if (newAquifer < 100.0 && pop > 300) {
+            // Groundwater depletion only constrains crop yields in arid irrigation-dependent basins (rain < 350 mm/yr)
+            if (newAquifer < 100.0 && rain < 350.0 && pop > 300) {
                 depletedCounter.incrementAndGet();
                 double currentAgri = cell.getBiomassAgricultureOr(0.0);
-                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * Math.exp(-0.30 * dt)));
+                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * Math.exp(-0.15 * dt)));
             }
         };
 

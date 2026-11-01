@@ -129,15 +129,13 @@ public class GroundTruthAuditGenerator {
         }
         if (lower.contains("literacy") || lower.contains("alphabet")) {
             val = snap.getValue("literacyRate");
-            if (val != 0.0) return val;
-            double tech = snap.getAvgTech();
-            return year < -3000 ? 0.0 : (tech > 0.0 ? Math.min(99.0, Math.max(0.5, Math.pow(tech, 1.5) * 2.0)) : 1.0);
+            if (!Double.isNaN(val)) return val;
+            return 0.0;
         }
         if (lower.contains("urban")) {
             val = snap.getValue("urbanizationRate");
-            if (val != 0.0) return val;
-            double tech = snap.getAvgTech();
-            return year < -3000 ? 0.0 : (tech > 0.0 ? Math.min(90.0, Math.max(1.0, Math.pow(tech, 1.3) * 1.5)) : 2.5);
+            if (!Double.isNaN(val)) return val;
+            return 0.0;
         }
         if (lower.contains("food") || lower.contains("alim")) {
             val = snap.getValue("foodPerCapita");
@@ -280,22 +278,10 @@ public class GroundTruthAuditGenerator {
 
         for (int yr : sampleYears) {
             double obs = HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, yr, method);
-            if (Double.isNaN(obs)) {
-                if (benchmark != null && !benchmark.isEmpty()) {
-                    int nearestY = benchmark.keySet().stream().min(Comparator.comparingInt(y -> Math.abs(y - yr))).orElse(yr);
-                    if (Math.abs(nearestY - yr) <= 10000) {
-                        obs = benchmark.get(nearestY);
-                    } else {
-                        continue;
-                    }
-                } else {
-                    continue;
-                }
-            }
-            if (obs == 0.0) continue;
+            if (Double.isNaN(obs) || obs == 0.0) continue;
 
             // Apply territorial window scaling for extensive variables when the simulation is clipped
-            if (regionalExtensiveScaleFactor > 0.0 && regionalExtensiveScaleFactor < 0.95) {
+            if (regionalExtensiveScaleFactor > 0.0 && regionalExtensiveScaleFactor < 0.50) {
                 if ("worldPopulation".equals(benchKey) || "grossWorldProduct".equals(benchKey) || "primaryEnergy".equals(benchKey)) {
                     obs = obs * regionalExtensiveScaleFactor;
                 }
@@ -306,7 +292,7 @@ public class GroundTruthAuditGenerator {
                 // Orbital Milankovitch cycles are physical invariants of the Earth-Sun system; disabled for extraterrestrial bodies
                 continue;
             }
-            if ("worldPopulation".equals(benchKey) && sim > 10000.0) {
+            if ("worldPopulation".equals(benchKey) && sim > 100.0) {
                 sim = sim / 1_000_000.0;
             } else if ("grossWorldProduct".equals(benchKey)) {
                 if (sim > 1e6) {
@@ -325,11 +311,6 @@ public class GroundTruthAuditGenerator {
             } else if ("co2Concentration".equals(benchKey)) {
                 if (sim < 100.0) {
                     sim = 280.0 + sim;
-                }
-            } else if ("sociopoliticalInstability".equals(benchKey)) {
-                var snap = timeSeries.get(yr);
-                if (snap != null && snap.getMetricsMap().containsKey("conflict")) {
-                    sim = snap.getValue("conflict");
                 }
             }
 

@@ -1,6 +1,6 @@
 {
-  "name" : "Révolution Industrielle & Transition Charbonnière (1800)",
-  "description" : "SCÉNARIO HISTORIQUE : La Machine à Vapeur & L'Émergence du Charbon (1800 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nBasculement énergétique mondial du régime organique vers le régime minéral fossile (charbon de terre, machine à vapeur de Watt).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Rupture du piège malthusien : découplage entre croissance démographique et contrainte surfacique des sols.\n• Paradoxe de Jevons : les gains d'efficacité des machines à vapeur décuplent la consommation globale de charbon.\n• Urbanisation industrielle ultra-rapide (exode rural) et amorce des émissions anthropiques massives de CO₂.\n",
+  "name" : "Industrial Revolution & Fossil Energy (1800 CE)",
+  "description" : "HISTORICAL SCENARIO: The Steam Engine & Emergence of Coal (1800 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nGlobal energetic transition from organic economy to mineral fossil regime (coal extraction, Watt steam engine).\n\n[KEY SCENARIO OBSERVABLES]\n  Breaking the Malthusian trap: decoupling of demographic growth from land surface carrying capacity constraints.\n  Jevons Paradox: efficiency gains in steam power exponentially expand aggregate coal consumption.\n  Rapid industrial urbanization (rural exodus) and onset of anthropogenic atmospheric CO2 accumulation.",
   "id" : null,
   "presetKey" : "industrial_1800",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
@@ -131,8 +131,8 @@
   "axialTiltDegrees" : 23.5,
   "techPreset" : "AUTO_FROM_YEAR",
   "initialHumanCount" : 900000000,
-  "initialTechLevel" : 0.0,
-  "initialCapitalPerCapita" : 1200.0,
+  "initialTechLevel" : 3.65,
+  "initialCapitalPerCapita" : 680.0,
   "initialEnergyPerCapita" : 1500.0,
   "initialFoodReserveMonths" : 6.0,
   "initialInformationPerCapita" : 15000.0,
@@ -193,6 +193,6 @@
   "minLng" : -180.0,
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
-  "displayName" : "Révolution Industrielle & Énergie Fossile (1800)",
-  "displayDescription" : "⚙ SCÉNARIO HISTORIQUE : La Grande Divergence & La Révolution de la Vapeur (1800 apr. J.-C.)\n\nTransition de l'économie organique vers l'énergie fossile (charbon), mécanisation de la vapeur, urbanisation rapide et explosion démographique."
+  "displayName" : "Industrial Revolution & Fossil Energy (1800 CE)",
+  "displayDescription" : "HISTORICAL SCENARIO: The Great Divergence & Steam Revolution (1800 CE)\n\nTransition from organic economy to fossil fuel (coal), steam mechanization, rapid urbanization, and demographic acceleration."
 }

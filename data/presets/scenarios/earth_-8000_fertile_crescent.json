@@ -1,6 +1,6 @@
 {
   "name" : "Fertile Crescent & Neolithic Agriculture (-8000 BCE)",
-  "description" : "\uD83C\uDF3E HISTORICAL SCENARIO : L'Aube de l'Agriculture au Croissant Fertile (-8000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nCe scénario modélise la transition majeure du Néolithique entre l'économie de subsistance des chasseurs-cueilleurs et l'émergence des premières communautés agricoles sédentaires le long du Tigre, de l'Euphrate, du Nil et de la côte Levantine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Explosion démographique liée aux surplus agricoles céréaliers (engrain, amidonnier, orge).\n• Émergence des premières cités-États mésopotamiennes, chefferies et différenciation sociale.\n• Dégradation environnementale précoce (déforestation des piémonts, érosion des sols, début de salinisation).\n",
+  "description" : "HISTORICAL SCENARIO: Dawn of Agriculture in the Fertile Crescent (-8000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nThis scenario models the transformative Neolithic transition from nomadic hunter-gatherer foraging to sedentary agricultural farming communities along the Tigris, Euphrates, Jordan, and Levantine corridors.\n\n[KEY SCENARIO OBSERVABLES]\n  Demographic expansion driven by cereal crop domesticates (einkorn, emmer wheat, barley).\n  Emergence of early nucleated proto-urban agglomerations, chiefdoms, and labor specialization.\n  Early anthropogenic environmental impacts (clearing of piedmont woodlands, soil turnover, initial salinization).",
   "id" : null,
   "presetKey" : "fertile_crescent",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
@@ -191,5 +191,5 @@
   "maxLng" : 55.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "displayName" : "Fertile Crescent & Neolithic Agriculture (-8000 BCE)",
-  "displayDescription" : "\uD83C\uDF3E SCÉNARIO HISTORIQUE : L'Aube de l'Agriculture au Croissant Fertile (-8000 av. J.-C.)\n\nCe scénario modélise la transition majeure du Néolithique entre l'économie de subsistance des chasseurs-cueilleurs et l'émergence des premières communautés agricoles sédentaires le long du Tigre, de l'Euphrate, du Nil et de la côte Levantine."
+  "displayDescription" : "HISTORICAL SCENARIO: Neolithic Agriculture in the Fertile Crescent (-8000 BCE)\n\nTransition to sedentary farming, domestication of founder crops (wheat, barley, legumes), proto-urban agglomerations, and early storage technology."
 }

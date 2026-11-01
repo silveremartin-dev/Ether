@@ -99,7 +99,7 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
 
             // Combinatorial innovation rate scales super-linearly with existing tech primitives (Arthur 2009)
             double rAndDIntensity = Math.clamp(capital / Math.max(10.0, pop * 0.05), 0.0, 5.0);
-            double innovationRate = 0.008 * Math.pow(tech, 1.25) * Math.sqrt(rAndDIntensity) * deltaYears;
+            double innovationRate = 0.0008 * Math.pow(tech, 1.25) * Math.sqrt(rAndDIntensity) * deltaYears;
             cell.setTechnologyLevel(tech + innovationRate);
         }
     }

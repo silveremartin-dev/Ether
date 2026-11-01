@@ -131,7 +131,7 @@
   "axialTiltDegrees" : 23.5,
   "techPreset" : "AUTO_FROM_YEAR",
   "initialHumanCount" : 72000000,
-  "initialTechLevel" : 0.0,
+  "initialTechLevel" : 2.29,
   "initialCapitalPerCapita" : 420.0,
   "initialEnergyPerCapita" : 140.0,
   "initialFoodReserveMonths" : 5.0,

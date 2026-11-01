@@ -115,8 +115,8 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
             double accessibilityIndex = (pop * 0.001) / Math.max(0.2, friction);
             if (capital > meanCapital && accessibilityIndex > 1.0) {
                 // Agglomeration feedback (centripetal force)
-                double capitalGrowth = (capital - meanCapital) * 0.03 * deltaYears;
-                cell.setResourceCapital(capital + capitalGrowth);
+                // Agglomeration core: enhances local market potential and reduces transport friction
+                cell.setMovementFriction(Math.max(0.1, friction * (1.0 - 0.02 * deltaYears)));
             }
         }
     }

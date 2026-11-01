@@ -178,9 +178,9 @@ public class DemographicKernel {
             int h = activeCellIndices[k];
             if (cachedCellDemand[h] > 0.0001f) {
                 float cellTech = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[h] : 1.0f;
-                float edibleAgriFluxAnnual = world.getBiomassAgriculture()[h] * 0.70f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
+                float edibleAgriFluxAnnual = world.getBiomassAgriculture()[h] * 0.70f * (float) (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
                 float edibleNaturalFluxAnnual = world.getBiomassNatural()[h] * (cellTech < 1.5f ? 0.008f : 0.005f) * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
-                float edibleFishFluxAnnual = (world.getBiomassFish() != null ? world.getBiomassFish()[h] : 0.0f) * 0.25f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
+                float edibleFishFluxAnnual = (world.getBiomassFish() != null ? world.getBiomassFish()[h] : 0.0f) * 0.25f * (float) (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3);
                 float totalAnnualFoodFluxGJ = edibleAgriFluxAnnual + edibleNaturalFluxAnnual + edibleFishFluxAnnual;
 
                 // Food produced during this time step dt
@@ -301,8 +301,8 @@ public class DemographicKernel {
             // Hunter-gatherers can only forage edible flora/fauna (~0.5-0.8% of standing biomass per year, Binford/Kelly).
             // Cultivated agricultural biomass yields ~70% net caloric grain/edible food; marine fisheries yield ~25% annual MSY (Schaefer).
             float edibleNaturalBiomassGJ = world.getBiomassNatural()[hIdx] * (tech < 1.5f ? 0.008f : 0.005f) * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
-            float edibleAgriBiomassGJ = world.getBiomassAgriculture()[hIdx] * 0.70f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
-            float edibleFishBiomassGJ = (world.getBiomassFish() != null ? world.getBiomassFish()[hIdx] : 0.0f) * 0.25f * (float) org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
+            float edibleAgriBiomassGJ = world.getBiomassAgriculture()[hIdx] * 0.70f * (float) (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
+            float edibleFishBiomassGJ = (world.getBiomassFish() != null ? world.getBiomassFish()[hIdx] : 0.0f) * 0.25f * (float) (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3);
             float renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgriBiomassGJ + edibleFishBiomassGJ;
             float annualCellProductivityGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20f, food[hIdx] * 0.15f);
             // Boserupian agricultural intensification (Boserup 1965) & Haber-Bosch Synthetic Nitrogen Fixation (Smil 2001, 2011)
@@ -334,11 +334,16 @@ public class DemographicKernel {
             food[hIdx] -= reproductionFoodTaken;
             world.getEnergyFoodConsumed()[hIdx] += reproductionFoodTaken;
 
-            // 7. Biophysical infant and child mortality (function of physical capital K/m, sanitation, clean water, and nutrition)
-            float capitalPerCapita = m > 0.001f ? (world.getResourceCapital()[hIdx] / m) : 0.0f;
+            // 7. Biophysical infant and child mortality (Omran 1971 Epidemiological Transition; Preston 1975)
+            // Pre-industrial societies (tech < 3.5) face high baseline infectious infant mortality (25-40%).
+            // The epidemiological transition to modern low infant mortality (<3%) requires germ theory,
+            // municipal chlorination/sewers, and sterile clinical obstetrics (tech >= 3.6).
             float waterSecurity = world.getWaterResource()[hIdx] > 10.0f ? 1.0f : 0.3f;
-            float hygieneFactor = (float) Math.exp(-capitalPerCapita / 50.0f); // 1.0 (Paleolithic baseline) -> 0.0 (Modern public sanitation)
-            float infantMortalityRate = Math.clamp(0.015f + 0.20f * hygieneFactor * (1.5f - 0.5f * foodSatisfaction) * (1.5f - 0.5f * waterSecurity), 0.015f, 0.50f);
+            float modernSanitationTransition = (float) (1.0 / (1.0 + Math.exp(Math.max(-10.0, Math.min(10.0, (tech - 3.6f) * 2.2f)))));
+            float baselineInfantMortality = 0.018f + 0.30f * modernSanitationTransition;
+            float nutritionalStress = (1.5f - 0.5f * foodSatisfaction);
+            float waterStress = (1.5f - 0.5f * waterSecurity);
+            float infantMortalityRate = Math.clamp(baselineInfantMortality * nutritionalStress * waterStress, 0.015f, 0.55f);
 
             // Coupling infant mortality to environmental/epidemiological life expectancy
             float lifespanRatio = 1.0f;

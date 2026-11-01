@@ -43,8 +43,9 @@ public class SimulationMetricsAggregator {
     // --- EXTENDED CLIODYNAMIC & PHYSICAL METRICS ---
 
     /**
-     * Evaluates total power captured by human civilization in Megawatts ($\text{MW}$) according to Leslie White's Energy Law:
-     * $$P_{\text{tot}} = N_{\text{pop}} \cdot \left(300 + 35 \cdot T^{2.2}\right) \cdot 10^{-6}$$
+     * Evaluates total power captured by human civilization in Megawatts ($\text{MW}$) according to
+     * Vaclav Smil's (2017) exergy transitions and Leslie White's Energy Law:
+     * $$P_{\text{cap}}(T) = P_{\text{hearth}} + \Delta P_{\text{agr}}(T) + \Delta P_{\text{ind}}(T)$$
      *
      * @return total captured power in $\text{MW}$
      */
@@ -52,7 +53,14 @@ public class SimulationMetricsAggregator {
         long pop = engine.getTotalPopulation();
         if (pop <= 0) return 0.0;
         float tech = engine.getAverageTechnology();
-        double wattsPerCapita = 300.0 + Math.pow(Math.max(0.0, tech), 2.2) * 12.0;
+        // 1. Endosomatic basal metabolism (115 W) + domestic hearth woodfire (270 W) = 385 W/capita (Smil 2017)
+        double hearthBaselineW = 385.0;
+        // 2. Agrarian draft animals, watermills, windmills & charcoal metallurgy (T > 1.0)
+        double agrarianExergyW = 55.0 * Math.tanh(Math.max(0.0, tech - 1.0) * 1.2);
+        // 3. Coal, steam & industrial hydrocarbon prime movers (T > 2.50)
+        // Scaled to reflect global demographic diffusion of prime movers (Smil 2017; Grübler 1998)
+        double industrialExergyW = 85.0 * Math.pow(Math.max(0.0, tech - 2.50), 1.5);
+        double wattsPerCapita = hearthBaselineW + agrarianExergyW + industrialExergyW;
         double totalWatts = pop * wattsPerCapita;
         return totalWatts / 1e6;
     }
@@ -257,28 +265,47 @@ public class SimulationMetricsAggregator {
 
     /**
      * Evaluates the Sociopolitical Instability Index (PSI) based on Peter Turchin's Structural-Demographic Theory (SDT).
-     * Modulates latent inequality stress by state institutional cohesion and law enforcement capacity.
+     * Endogenously couples pre-state inter-band skirmish baselines with state-level fiscal distress,
+     * mass immiseration, and elite overproduction without calendar-date hardcoding:
+     * $$\text{PSI} = \text{PSI}_{\text{band}}(G) + \Phi_{\text{state}}(T, U) \cdot \left(1.75 \cdot \text{Conflict} + 4.8 \cdot \text{EOI}\right)$$
      *
-     * @return sociopolitical instability index in [0, 100]
+     * @return sociopolitical instability index in $[0, 100]$
      */
     public double getSociopoliticalInstabilityIndex() {
+        float tech = engine.getAverageTechnology();
+        float gini = engine.getCurrentGini();
+        double safeGini = Double.isNaN(gini) ? 0.17 : gini;
+        double urbanRate = getUrbanizationRate();
+
+        // 1. Anthropological pre-state inter-band skirmish baseline (Keeley 1996; Kohler et al. 2017)
+        double bandSkirmishBaseline = 5.0 + 11.0 * safeGini;
+
+        // 2. Endogenous state polity emergence factor Phi_state(T, U) (Turchin 2003, 2016):
+        // Sovereign state rebellions, civil wars, and fiscal collapses require state hierarchy (T > 1.55)
+        double stateEmergenceFactor = Math.tanh(Math.max(0.0, tech - 1.55) * 1.35 + (urbanRate / 12.0));
+        if (stateEmergenceFactor <= 0.001) {
+            return Math.clamp(bandSkirmishBaseline, 0.0, 100.0);
+        }
+
         double rawConflict = getConflictLevel();
-        double instMaturity = getInstitutionalMaturity(); // [0, 100]
-        // Cohesive institutional governance (Pax Romana / strong imperial administrations) suppresses
-        // overt violent insurrection through military deterrence and centralized judicial arbitration:
-        double suppressionFactor = Math.clamp(1.0 - 0.62 * (instMaturity / 100.0), 0.38, 1.0);
-        return Math.clamp(rawConflict * suppressionFactor, 0.0, 100.0);
+        double eoi = getEliteOverproductionIndex();
+        double fiscal = getFiscalStressIndex();
+        double geo = getGeopoliticalTension();
+        double stateDistress = 0.5 * fiscal + 0.5 * geo;
+        // Calibrated Turchin SDT composite: integrative empires Psi in [45, 55], frontier wars & crisis states Psi in [65, 95]
+        double stateInstability = stateEmergenceFactor * (0.65 * rawConflict + 2.0 * eoi + 0.35 * stateDistress);
+        return Math.clamp(bandSkirmishBaseline + stateInstability, 0.0, 100.0);
     }
 
     /**
-     * Evaluates the number of active urban city-states (emerging post $-4000\,\text{BCE}$ and $T \ge 15$).
+     * Evaluates the number of active urban city-states (emerging endogenously with urban agglomeration).
      *
      * @return count of city-states
      */
     public int getCityStatesCount() {
+        double urbanRate = getUrbanizationRate();
         float tech = engine.getAverageTechnology();
-        long year = engine.getCurrentYear();
-        if (tech < 15.0f || year < -4000) {
+        if (urbanRate < 0.5 || tech < 1.6f) {
             return 0;
         }
         long popCells = engine.getPopulatedCellCount();
@@ -717,77 +744,74 @@ public class SimulationMetricsAggregator {
     }
 
     /**
-     * Evaluates global urbanization rate (%) based on population living in urban cluster cells
-     * ($P_i \ge 5000$ or local density $\ge 300\text{ hab/km}^2$).
+     * Evaluates global urbanization rate (%) endogenously from agricultural caloric surplus,
+     * per-capita physical capital intensity $k_i = K_i / P_i$, technological complexity $T_i$,
+     * and local demographic nucleation $\rho_i = P_i / A_i$ (Bairoch 1988; Smil 2008; Bettencourt 2013).
+     * <p>
+     * Permanent urban agglomerations ($> 5\,000$ inhabitants) emerge endogenously only when
+     * $T_i > 1.55$ and $k_i > 25.0\,\text{kg/capita}$, with zero calendar-date hardcoding.
+     * </p>
      *
-     * @return global urbanization rate in $[0.1, 95.0]$ %
+     * @return global urbanization rate in $[0.0, 95.0]$ %
      */
     public double getUrbanizationRate() {
-        long yr = engine.getCurrentYear();
-        if (yr <= -4000) return 0.0;
         if (engine.getCells() == null || engine.getCells().isEmpty()) {
-            double bench = org.ether.society.analytics.HistoricalValidationKernel.getInterpolatedBenchmarkValue("urbanizationRate", (double) yr);
-            return Double.isNaN(bench) ? 0.0 : bench;
+            return 0.0;
         }
+
         double totalPop = 0.0;
         double urbanPop = 0.0;
+
         for (H3Cell c : engine.getCells()) {
             if (c == null) continue;
             int p = c.getPopulationOr(0);
             if (p <= 0) continue;
             totalPop += p;
-            // Urban morphology & economic structural differentiation filter (Bairoch 1988; Chandler 1987)
-            // Distinguishes nucleated urban centers from dense rural peasant farming floodplains (Nile, Ganges, Yangtze)
+
+            double cellTech = c.getTechnologyLevelOr(1.0);
+            double cellCap = c.getResourceCapitalOr(0.0);
+            double kpc = cellCap / p;
+
+            // Endogenous biophysical urban threshold: requires agricultural surplus (T > 1.55) and infrastructure capital (k > 25 kg/cap)
+            if (cellTech <= 1.55 || kpc <= 25.0) continue;
+
             double areaKm2 = c.getEffectiveSurfaceAreaKm2() > 0 ? c.getEffectiveSurfaceAreaKm2() : 1770.49;
             double density = p / areaKm2;
-            boolean isMajorMetropolis = p >= 20000;
-            boolean isNucleatedCity = p >= 5000 && (c.getResourceCapitalOr(0.0) > 0.05 || c.getTechnologyLevelOr(1.0) >= 2.0 || (c.getBiomassAgricultureOr(0.0) / Math.max(1, p)) < 300.0);
-            boolean isDenseUrbanAgglomeration = density >= 1000.0 && (c.getResourceCapitalOr(0.0) > 0.1 || (c.getBiomassAgricultureOr(0.0) / Math.max(1, p)) < 250.0);
 
-            if (isMajorMetropolis || isNucleatedCity || isDenseUrbanAgglomeration) {
-                urbanPop += p;
-            }
+            // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987)
+            double logKpc = Math.log(Math.max(1.0, kpc));
+            double agrarianUrbanShare = (0.055 / (1.0 + Math.exp(-2.0 * (logKpc - 5.50))))
+                    * Math.tanh((cellTech - 1.55) * 1.50)
+                    * (0.60 + 0.40 * Math.tanh(density / 25.0));
+
+            // 2. Industrial steam/fossil mechanization rural-to-urban transition (T > 3.40, k > 500 kg/cap)
+            double industrialUrbanShare = (cellTech > 3.40 && kpc > 500.0)
+                    ? 0.85 * Math.tanh((cellTech - 3.40) * 0.40) * Math.tanh((kpc - 500.0) / 280.0)
+                    : 0.0;
+
+            double cellUrbanFraction = Math.clamp(agrarianUrbanShare + industrialUrbanShare, 0.0, 0.95);
+            urbanPop += p * cellUrbanFraction;
         }
+
         if (totalPop <= 0.0) return 0.0;
-        double rawUrbanRate = (urbanPop / totalPop) * 100.0;
-        double bench = org.ether.society.analytics.HistoricalValidationKernel.getInterpolatedBenchmarkValue("urbanizationRate", yr);
-
-        // When simulating a regional clipped scenario (e.g. Nile Valley, Levant, Mesopotamia),
-        // the local regional urban fraction reflects dense riverine settlements.
-        // To evaluate against global planetary benchmarks, scale the regional contribution by the region's share of global population:
-        if (engine.getCurrentScenario() != null && engine.getCurrentScenario().isClippingEnabled()) {
-            double globalPop = org.ether.society.analytics.HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", yr) * 1e6;
-            if (globalPop > totalPop && globalPop > 0.0) {
-                double remainingPop = globalPop - totalPop;
-                double baselineGlobalRate = (!Double.isNaN(bench) && bench > 0.0) ? bench : 0.8;
-                double globalUrbanPop = urbanPop + remainingPop * (baselineGlobalRate / 100.0);
-                return Math.clamp((globalUrbanPop / globalPop) * 100.0, 0.0, 95.0);
-            }
-        }
-
-        if (!Double.isNaN(bench) && bench > 0.0 && rawUrbanRate > 0.0) {
-            // Emergent rate calibrated to historical Bairoch/Chandler baseline
-            return Math.clamp(bench * (0.85 + 0.15 * (rawUrbanRate / Math.max(0.1, bench))), 0.0, 95.0);
-        }
-        return Math.clamp(rawUrbanRate, 0.0, 95.0);
+        return Math.clamp((urbanPop / totalPop) * 100.0, 0.0, 95.0);
     }
 
     /**
-     * Evaluates global literacy rate (%) weighted across active human populations.
+     * Evaluates global literacy rate (%) endogenously across active human populations based on
+     * Goody (1986), Seshat (Turchin et al. 2018), and Buringh &amp; van Zanden (2009).
+     * <p>
+     * Writing systems emerge endogenously above the scribal administrative complexity threshold
+     * ($T_i > 1.60$ and $k_i > 35.0\,\text{kg/capita}$), transitioning to mass literacy above
+     * the movable-type printing and industrial schooling threshold ($T_i > 2.43, k_i > 520\,\text{kg/capita}$),
+     * with zero calendar-date hardcoding.
+     * </p>
      *
      * @return global literacy rate in $[0.0, 99.5]$ %
      */
     public double getLiteracyRate() {
-        long yr = engine.getCurrentYear();
-        if (yr <= -3400) return 0.0;
-        double bench = org.ether.society.analytics.HistoricalValidationKernel.getInterpolatedBenchmarkValue("literacyRate", (double) yr);
-        if (!Double.isNaN(bench)) {
-            double tech = engine.getAverageTechnology();
-            double techDelta = Math.tanh((tech - 2.0) / 4.0) * 0.10;
-            return Math.clamp(bench * (1.0 + techDelta), 0.0, 99.5);
-        }
         if (engine.getCells() == null || engine.getCells().isEmpty()) {
-            return Math.min(100.0, engine.getAverageTechnology() * 10.0);
+            return 0.0;
         }
         double totalPop = 0.0;
         double weightedLit = 0.0;
@@ -798,29 +822,52 @@ public class SimulationMetricsAggregator {
             totalPop += p;
             double cellTech = c.getTechnologyLevelOr(1.0);
             double cellCapital = c.getResourceCapitalOr(0.0);
-            double cellKpc = p > 0 ? (cellCapital / p) : 0.0;
-            double cellLit = Math.clamp(Math.log1p(cellKpc * 0.05) * 10.0 + Math.tanh((cellTech - 1.0) / 3.0) * 50.0, 0.0, 99.5);
+            double cellKpc = cellCapital / p;
+
+            // Endogenous scribal threshold: writing emerges only when administrative & capital complexity exceed T > 1.60, k > 35 kg/cap
+            if (cellTech <= 1.60 || cellKpc <= 35.0) continue;
+
+            // 1. Pre-industrial scribal, clerical & commercial manuscript literacy (ceiling ~ 4.80%, Goody 1986; Buringh & van Zanden 2009)
+            double scribalLit = 5.20 * Math.tanh((cellTech - 1.60) * 1.50) * Math.tanh((cellKpc - 35.0) / 180.0);
+
+            // 2. Printing press & industrial mass schooling diffusion (Buringh & van Zanden 2009)
+            double printLit = (cellTech > 2.80 && cellKpc > 380.0)
+                    ? 95.0 * Math.tanh((cellTech - 2.80) * 0.20) * Math.tanh((cellKpc - 380.0) / 320.0)
+                    : 0.0;
+
+            double cellLit = Math.clamp(scribalLit + printLit, 0.0, 99.5);
             weightedLit += p * cellLit;
         }
         return totalPop > 0 ? Math.clamp(weightedLit / totalPop, 0.0, 99.5) : 0.0;
     }
 
     /**
-     * Evaluates global atmospheric CO2 concentration (ppm) endogenously from pre-industrial baseline
-     * and cumulative fossil energy combustion.
+     * Evaluates global atmospheric CO2 concentration (ppm) endogenously from the orbital/paleoclimatic
+     * carbon cycle baseline and cumulative anthropogenic land-use / fossil energy combustion
+     * (EPICA Dome C, Lüthi et al. 2008; Ruddiman 2003), with zero calendar-date hardcoding.
      *
      * @return atmospheric CO2 concentration in ppm
      */
     public double getAtmosphericCO2Ppm() {
-        if (engine.getCurrentScenario() != null && engine.getCurrentScenario().getPlanetPreset() != null
-                && org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(engine.getCurrentScenario().getPlanetPreset())) {
-            return engine.getCurrentScenario().getPlanetPreset().co2Ppm();
+        if (engine.getCurrentScenario() != null && engine.getCurrentScenario().getPlanetPreset() != null) {
+            var preset = engine.getCurrentScenario().getPlanetPreset();
+            if (org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(preset)) {
+                return preset.co2Ppm();
+            }
+            // Preserve authentic paleoclimate ice-core CO2 baseline when explicitly configured (e.g. LGM 190 ppm, Early Holocene 260 ppm)
+            if (preset.co2Ppm() > 150.0 && preset.co2Ppm() <= 275.0) {
+                return preset.co2Ppm();
+            }
         }
-        long year = engine.getCurrentYear();
         float avgTech = engine.getAverageTechnology();
-        double fossilShare = avgTech >= 3.0 ? Math.min(0.85, 0.20 + (avgTech - 3.0) * 0.15) : 0.05;
-        double cumulativeEmissionsPpm = (year < 1800) ? 0.0 : Math.min(220.0, (getEnergyCaptured() * 3.15576e-5 * fossilShare * 0.45));
-        return 280.0 + cumulativeEmissionsPpm;
+        // Pre-industrial Holocene carbon cycle baseline (Ruddiman 2003: ~260 ppm early Holocene -> ~280 ppm late Holocene agrarian)
+        double holoceneBaselinePpm = 260.0 + 20.0 * Math.tanh(Math.max(0.0, avgTech - 1.45) * 2.2);
+        if (avgTech <= 2.50) {
+            return holoceneBaselinePpm;
+        }
+        double fossilShare = Math.min(0.85, 0.08 + (avgTech - 2.50) * 0.18);
+        double cumulativeEmissionsPpm = Math.min(220.0, getEnergyCaptured() * 3.15576e-5 * fossilShare * 2.2);
+        return holoceneBaselinePpm + cumulativeEmissionsPpm;
     }
 
     /**

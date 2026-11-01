@@ -250,7 +250,7 @@ public class DynamicMaritimeRoutingGraph {
                 // Capital boost scales with connectivity degree and route efficiency
                 double connectivityFactor = Math.min(2.0, 1.0 + 0.05 * routes.size());
                 double currentCap = cell.getResourceCapitalOr(0.0);
-                cell.setResourceCapital(currentCap * (1.0 + 0.02 * connectivityFactor * (timeStepDays / 30.0)));
+                // Maritime connectivity facilitates commercial exchange without unbound capital minting
 
                 // Hydrodynamic friction reduction over active sea lanes
                 double friction = cell.getMovementFrictionOr(1.0);

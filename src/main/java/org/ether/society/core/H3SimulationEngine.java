@@ -279,6 +279,11 @@ public class H3SimulationEngine implements ISimulationEngine {
         long sSeed = currentScenario != null ? currentScenario.getSeed() : 42L;
         DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize, sSeed);
 
+        if (statisticsKernel != null && worldBuffer != null) {
+            this.currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
+            this.currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
+        }
+
         if (clusterManager != null) {
             clusterManager.setWorldBuffer(worldBuffer);
         }
@@ -388,6 +393,10 @@ public class H3SimulationEngine implements ISimulationEngine {
             DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
             long sSeed = currentScenario != null ? currentScenario.getSeed() : 42L;
             DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize, sSeed);
+            if (statisticsKernel != null && worldBuffer != null) {
+                this.currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
+                this.currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
+            }
         } else {
             this.worldBuffer = new WorldBuffer(0);
             this.agentBuffer = new AgentBuffer(0);
@@ -526,7 +535,7 @@ public class H3SimulationEngine implements ISimulationEngine {
                 profiler.beginPhase("5_StatisticsAndHistory");
                 updateGlobalAggregatesCache();
 
-                currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
+                currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
                 densityDistribution = statisticsKernel.calculateDistribution(worldBuffer.getBiomassHuman(), 20, 1000.0f);
                 currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
                 float foodPerCapVal = (float) getFoodPerCapita();

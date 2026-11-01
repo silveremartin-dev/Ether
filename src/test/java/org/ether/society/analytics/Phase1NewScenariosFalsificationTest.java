@@ -1,0 +1,235 @@
+package org.ether.society.analytics;
+
+import org.ether.society.analytics.MapComparisonMetrics.MapComparisonResult;
+import org.ether.society.database.H3Cell;
+import org.ether.society.model.Scenario;
+import org.ether.society.ui.analytics.SpatialTensorRasterRenderer;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Phase 1 Falsification Suite for the 6 new candidate scenarios:
+ * 1. Song Dynasty (1000 CE)
+ * 2. Fertile Crescent (-8000 BCE)
+ * 3. Industrial Revolution (1800 CE)
+ * 4. Islamic Expansion (632 CE)
+ * 5. Last Glacial Maximum (-20,000 BP)
+ * 6. Late Antique Little Ice Age (536 CE)
+ *
+ * Runs headless simulations at resolution >= 4 (and >= 6 for regional windows),
+ * measures 1D telemetry errors against HYDE 3.4 / Maddison benchmarks via GroundTruthAuditGenerator,
+ * compares 2D spatial density distributions against historical rasters via MapComparisonMetrics,
+ * and automatically produces comprehensive academic audit reports.
+ */
+public class Phase1NewScenariosFalsificationTest {
+
+    public record SimpleBenchmarkItem(String name, String runId) implements ScenarioBenchmarkItem {
+        @Override
+        public String getName() { return name; }
+        @Override
+        public String getRunId() { return runId; }
+    }
+
+    public record ScenarioRunConfig(
+            String presetKey,
+            String displayName,
+            int startYear,
+            int endYear,
+            int resolution,
+            boolean windowed,
+            String targetRasterPath
+    ) {}
+
+    private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
+            new ScenarioRunConfig("song_dynasty", "Song Dynasty & Hydraulic Pre-Industrialization (1000 CE)",
+                    1000, 1020, 4, false, "data/ether/earth/1000/earth_1000_density.png"),
+            new ScenarioRunConfig("fertile_crescent", "Fertile Crescent & Neolithic Agriculture (-8000 BCE)",
+                    -8000, -7980, 6, true, "data/ether/earth/-8000/earth_-8000_density.png"),
+            new ScenarioRunConfig("industrial_1800", "Industrial Revolution & Fossil Energy (1800 CE)",
+                    1800, 1820, 4, false, "data/ether/earth/1800/earth_1800_density.png"),
+            new ScenarioRunConfig("islamic_expansion_632", "Islamic Expansion & Caliphal Commercial Revolution (632 CE)",
+                    632, 652, 4, false, "data/ether/earth/632/earth_632_density.png"),
+            new ScenarioRunConfig("lgm_solutrean", "Last Glacial Maximum & Solutrean (-20,000 BP)",
+                    -20000, -19980, 4, false, "data/ether/earth/-20000/earth_-20000_density.png"),
+            new ScenarioRunConfig("late_antique_ice_age", "Late Antique Little Ice Age & Justinian Plague (536 CE)",
+                    536, 556, 4, false, "data/ether/earth/536/earth_536_density.png")
+    );
+
+    @Test
+    @DisplayName("Execute Phase 1 Benchmark Runs on GCP VM or Local Headless")
+    public void testExecutePhase1Scenarios() {
+        org.ether.society.i18n.I18n.setLanguage(org.ether.society.i18n.Language.ENGLISH);
+        SimulationRunRepository repo = SimulationRunRepository.getInstance();
+
+        List<Scenario> allScenarios = Scenario.getBuiltInScenarios();
+        List<SimpleBenchmarkItem> benchmarkItems = new ArrayList<>();
+        Map<String, MapComparisonResult> spatialResults = new LinkedHashMap<>();
+        Map<String, ScenarioRunConfig> configMap = new LinkedHashMap<>();
+
+        File reportsDir = new File("docs/reports");
+        reportsDir.mkdirs();
+
+        for (ScenarioRunConfig cfg : TARGET_CONFIGS) {
+            String filter = System.getProperty("phase1.scenario");
+            if (filter != null && !filter.isBlank() && !cfg.presetKey().equalsIgnoreCase(filter)) {
+                continue;
+            }
+            System.out.println("================================================================================");
+            System.out.printf("🚀 RUNNING PHASE 1 BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
+                    cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
+            System.out.println("================================================================================");
+
+            Scenario s = allScenarios.stream()
+                    .filter(sc -> cfg.presetKey().equalsIgnoreCase(sc.getPresetKey()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (s == null) {
+                System.err.println("Scenario not found in built-ins: " + cfg.presetKey());
+                continue;
+            }
+
+            s.setStartDateYear(cfg.startYear());
+            s.setEndDateYear(cfg.endYear());
+            s.setH3Resolution(cfg.resolution());
+
+            long startMs = System.currentTimeMillis();
+            SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(s);
+            long elapsedMs = System.currentTimeMillis() - startMs;
+
+            assertNotNull(record, "Record must not be null for " + cfg.displayName());
+            repo.registerRun(record);
+
+            SimpleBenchmarkItem item = new SimpleBenchmarkItem(cfg.displayName(), record.getRunId());
+            benchmarkItems.add(item);
+            configMap.put(record.getRunId(), cfg);
+
+            // Real 2D spatial comparison between simulation snapshot raster and ground truth raster
+            MapComparisonResult spatialResult = evaluateSpatialFidelity(record, s, cfg);
+            spatialResults.put(record.getRunId(), spatialResult);
+            // Release heavy 2D cell lists after computing spatial metrics to prevent heap exhaustion across 6 runs
+            if (record.getSpatialSnapshots() != null) {
+                record.getSpatialSnapshots().clear();
+            }
+
+            // Generate authentic individual audit report via GroundTruthAuditGenerator
+            GroundTruthAuditGenerator.AuditResult singleAudit = GroundTruthAuditGenerator.generateMultiScenarioGroundTruthAudit(
+                    List.of(item),
+                    HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC,
+                    it -> repo.getRun(it.getRunId())
+            );
+
+            StringBuilder singleReport = new StringBuilder();
+            singleReport.append("# 📜 COMPLETE HISTORICAL FALSIFICATION & EPISTEMIC AUDIT REPORT\n\n");
+            singleReport.append("**Scenario**: `").append(cfg.displayName()).append("`\n\n");
+            singleReport.append("**Simulation Run Identifier**: `").append(record.getRunId()).append("`\n\n");
+            singleReport.append("**Spatial Domain**: H3 Resolution ").append(cfg.resolution())
+                    .append(cfg.windowed() ? " (Regional Window)\n\n" : " (Planetary Mesh)\n\n");
+            singleReport.append("**Execution Duration**: ").append(String.format(Locale.US, "%.1f s\n\n", elapsedMs / 1000.0));
+            singleReport.append(singleAudit.reportMarkdown()).append("\n\n");
+
+            singleReport.append("## 🗺️ 2D Cartographic Fidelity & Spatial Discrepancy Assessment\n\n");
+            singleReport.append("Direct pixel-to-pixel comparison between final simulated 2D density snapshot and empirical ground truth raster (`")
+                    .append(cfg.targetRasterPath()).append("`):\n\n");
+            singleReport.append("| Cartographic Metric | Computed Value | Physical Threshold / Benchmark | Status |\n");
+            singleReport.append("|---|:---:|:---:|:---:|\n");
+            singleReport.append(String.format(Locale.US, "| **SSIM (Structural Similarity Index)** | **%.4f** | $\\ge 0.50$ (macro-spatial coherence) | %s |\n",
+                    spatialResult.getSsim(), spatialResult.getSsim() >= 0.50 ? "🟢 Conformant" : "🟡 Moderate Deviation"));
+            singleReport.append(String.format(Locale.US, "| **Pearson Spatial Correlation (r)** | **%+.4f** | $\\ge +0.60$ (gradient alignment) | %s |\n",
+                    spatialResult.getPearsonR(), spatialResult.getPearsonR() >= 0.60 ? "🟢 Conformant" : "🟡 Imperfect Gradient"));
+            singleReport.append(String.format(Locale.US, "| **Jaccard Ecumene Overlap (IoU)** | **%.2f%%** | $\\ge 50.0\\%%$ (inhabited surface area) | %s |\n",
+                    spatialResult.getJaccardIndex() * 100.0, spatialResult.getJaccardIndex() >= 0.50 ? "🟢 Conformant" : "🟡 Dispersed"));
+            singleReport.append(String.format(Locale.US, "| **RMSE (Spatial Pixel Residual Error)** | **%.2f** | $< 25.0$ | %s |\n",
+                    spatialResult.getRmse(), spatialResult.getRmse() < 25.0 ? "🟢 Conformant" : "🔴 Divergent"));
+            singleReport.append(String.format(Locale.US, "| **Peak Spatial Divergence (Δ_max)** | **%.2f** | `Lat: %.1f°N, Lng: %.1f°E` | 📍 Hotspot Anomaly |\n\n",
+                    spatialResult.getMaxDeltaValue(), spatialResult.getMaxDeltaLat(), spatialResult.getMaxDeltaLng()));
+            singleReport.append("### 🔍 Detected Cartographic Anomaly Diagnostic\n");
+            singleReport.append("- **Characterization**: `").append(spatialResult.getDiagnosticSummary()).append("`\n\n");
+
+            File singleReportFile = new File(reportsDir, "report_phase1_" + cfg.presetKey() + ".md");
+            try (PrintWriter pw = new PrintWriter(singleReportFile)) {
+                pw.print(singleReport.toString());
+            } catch (Exception ex) {
+                System.err.println("Failed to write single report: " + ex.getMessage());
+            }
+            System.out.println("[SUCCESS] Individual audit report generated: " + singleReportFile.getAbsolutePath());
+
+            System.gc();
+        }
+
+        // If all scenarios (or filtered batch) ran, generate Master Global Synthesis Report
+        if (!benchmarkItems.isEmpty()) {
+            GroundTruthAuditGenerator.AuditResult globalAudit = GroundTruthAuditGenerator.generateMultiScenarioGroundTruthAudit(
+                    benchmarkItems,
+                    HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC,
+                    it -> repo.getRun(it.getRunId())
+            );
+
+            StringBuilder synthesis = new StringBuilder();
+            synthesis.append(globalAudit.reportMarkdown()).append("\n\n");
+            synthesis.append("## 🗺️ 2D Cartographic Fidelity & Spatial Discrepancy Synthesis\n\n");
+            synthesis.append("> Direct pixel-to-pixel evaluation between empirical reference rasters and projected simulation grids.\n\n");
+            synthesis.append("| Scenario | Spatial Resolution | Historical Epoch | SSIM (Structure) | Pearson Spatial (r) | Jaccard IoU | Peak Delta Coordinates | Cartographic Anomaly Diagnostic |\n");
+            synthesis.append("|---|:---:|:---:|:---:|:---:|:---:|:---:|---|\n");
+
+            for (SimpleBenchmarkItem it : benchmarkItems) {
+                ScenarioRunConfig cfg = configMap.get(it.getRunId());
+                MapComparisonResult sf = spatialResults.get(it.getRunId());
+                if (cfg != null && sf != null) {
+                    synthesis.append(String.format(Locale.US,
+                            "| **%s** | Res %d%s | %d | **%.4f** | **%+.4f** | %.1f%% | %.1f°N, %.1f°E | %s |\n",
+                            it.getName(), cfg.resolution(), cfg.windowed() ? " (Win)" : "", cfg.startYear(),
+                            sf.getSsim(), sf.getPearsonR(), sf.getJaccardIndex() * 100.0,
+                            sf.getMaxDeltaLat(), sf.getMaxDeltaLng(), sf.getDiagnosticSummary()
+                    ));
+                }
+            }
+            synthesis.append("\n---\n");
+
+            File synthesisFile = new File(reportsDir, "scenario_phase1_falsification_synthesis.md");
+            try (PrintWriter pw = new PrintWriter(synthesisFile)) {
+                pw.print(synthesis.toString());
+            } catch (Exception ex) {
+                System.err.println("Failed to write synthesis report: " + ex.getMessage());
+            }
+            System.out.println("[SUCCESS] Global synthesis report generated: " + synthesisFile.getAbsolutePath());
+        }
+    }
+
+    private static MapComparisonResult evaluateSpatialFidelity(SimulationRunRecord record, Scenario s, ScenarioRunConfig cfg) {
+        String rasterPath = cfg.targetRasterPath();
+        int finalYear = cfg.endYear();
+        File f = new File(rasterPath);
+        if (!f.exists()) {
+            return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Missing Raster: " + rasterPath);
+        }
+        try {
+            BufferedImage groundTruth = ImageIO.read(f);
+            List<H3Cell> cells = record.getSpatialSnapshotAt(finalYear);
+            if (cells == null || cells.isEmpty()) {
+                return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "No Spatial Cells Captured");
+            }
+            BufferedImage simRaster = SpatialTensorRasterRenderer.rasterizeCellsToGrayscaleDensityImage(
+                    cells, groundTruth, groundTruth.getWidth(), groundTruth.getHeight());
+            if (simRaster == null) {
+                return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Rasterization Failed");
+            }
+            if (cfg.windowed() && s != null && s.isClippingEnabled()) {
+                return MapComparisonMetrics.compareImagesWindowed(
+                        simRaster, groundTruth,
+                        s.getMinLat(), s.getMaxLat(), s.getMinLng(), s.getMaxLng());
+            }
+            return MapComparisonMetrics.compareImages(simRaster, groundTruth);
+        } catch (Exception e) {
+            return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Comparison Error: " + e.getMessage());
+        }
+    }
+}

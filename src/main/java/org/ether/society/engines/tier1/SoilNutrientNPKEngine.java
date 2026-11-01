@@ -80,8 +80,9 @@ public class SoilNutrientNPKEngine {
             double totalMinedOre = (extractedMiningP + extractedMiningK) * dtFactor;
             cell.setResourceMetal(Math.max(0.0, metalOre - totalMinedOre));
 
-            // 2. Haber-Bosch Industrial Nitrogen Fixation
-            double synthesizedN = baselineN;
+            // 2. Biological & Haber-Bosch Industrial Nitrogen Fixation (Smil 2001, Enriching the Earth)
+            // Pre-industrial organic agroecosystems maintain baseline N=1.0 via legume rotation, manure, and alluvial silt
+            double synthesizedN = (tech < 3.5) ? (nNorm - soilNBase) : baselineN;
             if (tech >= 3.5 && powerPerCapita >= HABER_BOSCH_POWER_WATTS) {
                 haberBoschCounter.incrementAndGet();
                 synthesizedN += industrialBonusN;
@@ -89,8 +90,8 @@ public class SoilNutrientNPKEngine {
 
             // 3. Liebig's Law of the Minimum Yield Bound
             double effectiveSoilN = soilNBase + synthesizedN;
-            double effectiveSoilP = soilPBase + extractedMiningP;
-            double effectiveSoilK = soilKBase + extractedMiningK;
+            double effectiveSoilP = Math.max(pNorm, soilPBase + extractedMiningP);
+            double effectiveSoilK = Math.max(kNorm, soilKBase + extractedMiningK);
 
             double liebigFactor = Math.min(effectiveSoilN / nNorm, Math.min(effectiveSoilP / pNorm, effectiveSoilK / kNorm));
 
@@ -101,12 +102,15 @@ public class SoilNutrientNPKEngine {
                 case TUNDRA, DESERT, SNOW -> 0.15;
                 default -> 1.0;
             };
-            double laborCultivatedBiomass = pop * (400.0 + 50.0 * Math.min(tech, 10.0));
-            double techLandCeiling = Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor);
+            double laborCultivatedBiomass = pop * (580.0 + 50.0 * Math.min(tech, 10.0));
+            double techLandCeiling = (planarCellAreaKm2 < 5.0)
+                    ? (25.0 * areaScale * arableBiomeFactor)
+                    : Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor);
             double maxCellBiomass = techLandCeiling;
-            laborCultivatedBiomass = pop * (400.0 + 50.0 * Math.min(tech, 10.0));
             double potentialBiomass = (tech >= 1.5)
-                    ? Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass)
+                    ? ((planarCellAreaKm2 < 5.0)
+                        ? (25.0 * areaScale * arableBiomeFactor)
+                        : Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass))
                     : 0.0;
             if (baseBiomass <= 0.0) {
                 baseBiomass = potentialBiomass;

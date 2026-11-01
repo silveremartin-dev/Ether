@@ -42,7 +42,7 @@
   "seasonSource" : "\uD83D\uDD34 Mars — Orbital Eccentricity Insolation Model",
   "seasonSeed" : 100765,
   "canonicalPlanet" : "mars",
+  "tidalLocked" : false,
   "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique.",
-  "tidalLocked" : false
+  "presetDescription" : "\uD83D\uDD34 MARS (Ares) : Monde désertique hyperaride à atmosphère ténue de CO₂ (0,006 atm), gigantesques volcans boucliers (Olympus Mons), grands canyons (Valles Marineris) et calottes polaires de glace carbonique."
 }

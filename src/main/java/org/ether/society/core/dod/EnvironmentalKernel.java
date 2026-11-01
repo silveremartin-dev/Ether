@@ -178,12 +178,13 @@ public class EnvironmentalKernel {
             if (i < 0 || i >= world.getCapacity()) continue;
             Biome biome = Biome.fromOrdinal(biomes[i] & 0xFF);
             
-            // Primary production based on biome, Farquhar bioenergetics, irrigation/moisture availability, and cell surface area
-            float baseProd = getBiomeProductionRate(biome) * areaScale;
-            float fvcbFactor = evaluateFarquharYield(temp[i], baselineCO2);
-            float pet = calculatePriestleyTaylorPET(temp[i]);
+            // Primary production derived analytically from Miami NPP model (Lieth 1975), Farquhar bioenergetics,
+            // Priestley-Taylor moisture balance, and cell surface area (Zero discrete biome switch tables per AGENTS.md §3)
             float waterAvail = world.getWaterResource() != null ? world.getWaterResource()[i] : 0.0f;
             float effectiveMoisture = Math.max(rain[i], Math.min(1500.0f, rain[i] + waterAvail * 0.8f));
+            float baseProd = calculateAnalyticalNaturalProductionGJ(biome, temp[i], effectiveMoisture) * areaScale;
+            float fvcbFactor = evaluateFarquharYield(temp[i], baselineCO2);
+            float pet = calculatePriestleyTaylorPET(temp[i]);
             float moistureAridityRatio = Math.clamp(effectiveMoisture / Math.max(100.0f, pet), 0.40f, 1.25f);
             
             float tech = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[i] : 0.0f;
@@ -195,68 +196,78 @@ public class EnvironmentalKernel {
             float agroClimaticFactor = Math.clamp(fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost, 0.40f, 2.0f);
             float humanPop = world.getBiomassHuman() != null ? world.getBiomassHuman()[i] : 0.0f;
             
-            // Biophysical agricultural ceiling (Boserup-Geertz involution on finite arable land scaled by areaScale):
-            // Diminishing returns Michaelis-Menten response bounds total agricultural caloric output per cell
-            float maxAgPotential = getBiomeAgriculturalPotential(biome) * areaScale * agroClimaticFactor * (1.0f + 0.05f * Math.min(100.0f, tech));
-            float agDemandPotential = humanPop * 4.6f;
-            float agProd = (humanPop > 0.0f)
-                    ? (maxAgPotential * (agDemandPotential / (maxAgPotential + agDemandPotential)) * dtInYears)
+            // Biophysical agricultural yield response (Mitscherlich 1909; Spillman 1923; Boserup 1965):
+            // Diminishing returns asymptotic response bounds total agricultural caloric output per cell by arable potential
+            float maxAgPotential = calculateAnalyticalAgriculturalPotentialGJ(biome, temp[i], effectiveMoisture)
+                    * areaScale * agroClimaticFactor * (1.0f + 0.05f * Math.min(100.0f, tech));
+            float agDemandPotential = humanPop * 6.5f;
+            float agRatio = (maxAgPotential > 0.0f) ? (agDemandPotential / maxAgPotential) : 0.0f;
+            float agProd = (humanPop > 0.0f && maxAgPotential > 0.0f)
+                    ? (maxAgPotential * (1.0f - (float) Math.exp(-2.0f * agRatio)) * dtInYears)
                     : 0.0f;
             float naturalProd = baseProd * agroClimaticFactor * dtInYears;
 
             float growth = naturalProd + agProd;
             float retainedFood = food[i] * foodRetentionFactor;
             
-            food[i] = Math.max(0.0f, Math.min(2000000.0f * areaScale, retainedFood + growth));
+            food[i] = Math.max(0.0f, Math.min(50000.0f * areaScale, retainedFood + growth));
             
             // Biomass regeneration coupled to Primary Productivity (bounded by area-scaled ecological carrying capacity)
             if (world.getBiomassNatural() != null) {
-                world.getBiomassNatural()[i] = Math.min(10000.0f * areaScale, world.getBiomassNatural()[i] + naturalProd * 0.5f);
+                float minForagerBiomassTons = (tech < 1.5f && humanPop > 0.0f) ? (humanPop * 48.0f) : (10000.0f * areaScale);
+                float natCeiling = Math.max(10000.0f * areaScale, minForagerBiomassTons);
+                world.getBiomassNatural()[i] = Math.min(natCeiling, world.getBiomassNatural()[i] + naturalProd * 0.5f);
             }
             if (world.getBiomassAgriculture() != null && tech >= 1.5f) {
-                float annualAgFluxKg = (agProd > 0.0f) ? (agProd / 0.015f) : (humanPop * 420.0f);
+                float annualAgFluxKg = (agProd > 0.0f)
+                        ? Math.max(humanPop * 620.0f, (agProd / Math.max(0.0001f, dtInYears)) / 0.0105f)
+                        : (humanPop * 620.0f);
                 world.getBiomassAgriculture()[i] = Math.max(world.getBiomassAgriculture()[i] * foodRetentionFactor, annualAgFluxKg);
             }
         }
     }
 
     /**
-     * Net primary photosynthetic & trophic energy production rate per biome in Gigajoules per year (GJ/yr).
-     * Scaled for macro-hexagonal cells (1,250 to 11,000 km²) supporting preindustrial & historical bands.
+     * Computes Net Primary Productivity (NPP in g DM/m²/yr = metric tons DM/km²/yr)
+     * analytically via the Lieth (1975) Miami Climate Model:
+     * $$NPP(T, P) = \min\!\left(\frac{3000}{1 + \exp(1.315 - 0.119\,T)},\; 3000\,(1 - \exp(-0.000664\,P))\right)$$
+     *
+     * @param tempC            mean surface temperature (°C)
+     * @param effectivePrecipMm effective moisture / precipitation (mm/yr)
+     * @return analytical NPP in metric tons of dry matter per km² per year
      */
-    private float getBiomeProductionRate(Biome biome) {
-        return switch (biome) {
-            case JUNGLE -> 3500.0f;
-            case FOREST -> 2800.0f;
-            case SAVANNAH -> 3000.0f;
-            case PLAINS -> 2500.0f;
-            case HILLS -> 1800.0f;
-            case BEACH, LAKE -> 1500.0f;
-            case MOUNTAINS -> 800.0f;
-            case OCEAN, DEEP_OCEAN -> 1200.0f;
-            case TUNDRA -> 600.0f;
-            case DESERT -> 150.0f;
-            default -> 300.0f;
-        };
+    public static float calculateMiamiNPP(float tempC, float effectivePrecipMm) {
+        double nppTemp = 3000.0 / (1.0 + Math.exp(1.315 - 0.119 * tempC));
+        double nppPrecip = 3000.0 * (1.0 - Math.exp(-0.000664 * Math.max(0.0, effectivePrecipMm)));
+        return (float) Math.clamp(Math.min(nppTemp, nppPrecip), 15.0, 3000.0);
     }
 
     /**
-     * Maximum annual agricultural caloric potential per macro-cell in Gigajoules per year (GJ/yr).
-     * Represents arable soil carrying capacity and photosynthetic limits for preindustrial/early agrarian regimes.
+     * Analytical closed-form natural trophic energy production rate in GJ/yr for a reference macro-cell,
+     * derived from the Lieth (1975) Miami NPP model ($f(T, P)$).
      */
-    private float getBiomeAgriculturalPotential(Biome biome) {
-        return switch (biome) {
-            case PLAINS -> 150000.0f;
-            case SAVANNAH -> 120000.0f;
-            case FOREST -> 80000.0f;
-            case JUNGLE -> 70000.0f;
-            case HILLS -> 40000.0f;
-            case BEACH, LAKE -> 25000.0f;
-            case MOUNTAINS -> 15000.0f;
-            case TUNDRA -> 5000.0f;
-            case DESERT -> 2000.0f;
-            default -> 1000.0f;
-        };
+    private float calculateAnalyticalNaturalProductionGJ(Biome biome, float tempC, float effectivePrecipMm) {
+        if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN) {
+            return 1200.0f;
+        }
+        if (biome == Biome.GLACIER || biome == Biome.SNOW) {
+            return 150.0f;
+        }
+        float npp = calculateMiamiNPP(tempC, effectivePrecipMm);
+        return Math.clamp(150.0f + npp * 1.95f, 150.0f, 3800.0f);
+    }
+
+    /**
+     * Analytical closed-form maximum agricultural caloric potential in GJ/yr for a reference macro-cell,
+     * derived from Miami NPP ($f(T, P)$) and Smil (2000) cereal harvest index stoichiometry.
+     */
+    private float calculateAnalyticalAgriculturalPotentialGJ(Biome biome, float tempC, float effectivePrecipMm) {
+        if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.GLACIER || biome == Biome.SNOW) {
+            return 500.0f;
+        }
+        float npp = calculateMiamiNPP(tempC, effectivePrecipMm);
+        float slopeRetention = (biome == Biome.MOUNTAINS) ? 0.25f : ((biome == Biome.HILLS) ? 0.55f : 1.0f);
+        return Math.clamp(npp * 85.0f * slopeRetention, 2000.0f, 180000.0f);
     }
 }
 

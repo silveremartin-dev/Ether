@@ -468,7 +468,15 @@ public class MapComparisonMetrics {
             for (int x = 0; x < subW; x++) {
                 int globalX = minX + x;
                 int srcX = (int) Math.min(imgW - 1, ((long) globalX * imgW) / fullW);
-                cat[idx++] = img.getRGB(srcX, srcY);
+                int rgb = img.getRGB(srcX, srcY);
+                int r = (rgb >> 16) & 0xFF;
+                int g = (rgb >> 8) & 0xFF;
+                int b = rgb & 0xFF;
+                if (r == g && g == b) {
+                    cat[idx++] = (r >= 2) ? 1 : 0;
+                } else {
+                    cat[idx++] = rgb;
+                }
             }
         }
         return cat;
@@ -503,7 +511,15 @@ public class MapComparisonMetrics {
             int srcY = (int) Math.min(imgH - 1, ((long) y * imgH) / height);
             for (int x = 0; x < width; x++) {
                 int srcX = (int) Math.min(imgW - 1, ((long) x * imgW) / width);
-                cat[idx++] = img.getRGB(srcX, srcY);
+                int rgb = img.getRGB(srcX, srcY);
+                int r = (rgb >> 16) & 0xFF;
+                int g = (rgb >> 8) & 0xFF;
+                int b = rgb & 0xFF;
+                if (r == g && g == b) {
+                    cat[idx++] = (r >= 2) ? 1 : 0;
+                } else {
+                    cat[idx++] = rgb;
+                }
             }
         }
         return cat;

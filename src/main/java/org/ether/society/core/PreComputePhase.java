@@ -265,9 +265,13 @@ public class PreComputePhase {
                 if (cell.getBiomassNatural() == null && cell.getFoodResource() != null) {
                     cell.setBiomassNatural(cell.getFoodResource());
                 }
-                if (cell.getBiomassLivestock() == null) {
+                if (cell.getBiomassLivestock() == null || cell.getBiomassLivestock() <= 0.0) {
                     Biome b = cell.getBiome();
-                    cell.setBiomassLivestock(b == Biome.SAVANNAH || b == Biome.PLAINS ? 400.0 : (b == Biome.TUNDRA ? 200.0 : 0.0));
+                    double wildPasture = b == Biome.SAVANNAH || b == Biome.PLAINS ? 400.0 : (b == Biome.TUNDRA ? 200.0 : 0.0);
+                    int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
+                    double t = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+                    double domesticLivestock = (p > 0 && t >= 1.5) ? (p * 0.25) : 0.0;
+                    cell.setBiomassLivestock(Math.max(wildPasture, domesticLivestock));
                 }
                 if (cell.getBiomassAgriculture() == null || cell.getBiomassAgriculture() == 0.0) {
                     int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -299,24 +303,28 @@ public class PreComputePhase {
             if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.GLACIER) {
                 wildFood = 0.0;
             } else {
-                double totalPrimaryEnergyGJ = npp * areaKm2 * 17.5e-3; // metric tons * GJ/ton
-                wildFood = Math.clamp(totalPrimaryEnergyGJ * 0.08, 10.0, 4500.0 * areaScale);
+                double totalPrimaryEnergyGJ = npp * areaKm2 * 17.5; // metric tons * GJ/ton (17.5 GJ/t dry matter)
+                wildFood = Math.clamp(totalPrimaryEnergyGJ * 0.008, 10.0, 4500.0 * areaScale);
                 if (biome == Biome.DESERT) wildFood = Math.min(wildFood, 60.0 * areaScale);
             }
 
             cell.setFoodResource(wildFood);
-            cell.setBiomassNatural(wildFood);
+            double standingWildBiomassTons = (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.GLACIER)
+                    ? 0.0
+                    : Math.clamp(npp * areaKm2 * 0.12, 150.0 * areaScale, 9000.0 * areaScale);
+            cell.setBiomassNatural(standingWildBiomassTons);
 
-            // Livestock carrying capacity in herbaceous grasslands/savannahs/tundras
-            double livestockBiomass = switch (biome) {
+            // Livestock carrying capacity in herbaceous grasslands/savannahs/tundras & domestic agrarian herds
+            double wildLivestock = switch (biome) {
                 case SAVANNAH, PLAINS -> Math.clamp(npp * 0.35 * areaScale, 50.0, 600.0 * areaScale);
                 case TUNDRA -> Math.clamp(npp * 0.15 * areaScale, 10.0, 250.0 * areaScale);
                 default -> 0.0;
             };
-            cell.setBiomassLivestock(livestockBiomass);
-
             int p = cell.getPopulationOr(0);
             double t = cell.getTechnologyLevelOr(1.0);
+            double domesticLivestock = (p > 0 && t >= 1.5) ? (p * 0.25) : 0.0;
+            cell.setBiomassLivestock(Math.max(wildLivestock, domesticLivestock));
+
             cell.setBiomassAgriculture((p > 0 && t >= 1.5) ? (p * 420.0 * (1.0 + 0.05 * Math.max(0.0, t - 1.5))) : 0.0);
 
             // Wood resources: Woody biomass residence time (Olson et al. 1983; Whittaker & Likens 1973)
@@ -368,7 +376,11 @@ public class PreComputePhase {
         // 2. Otherwise: empirical raster for Earth, procedural engine for non-Earth planets only
         long totalPop = scenario.getInitialHumanCount();
         double capitalK0 = scenario.getInitialCapitalPerCapita();
-        double techLevel = Math.clamp(1.0 + Math.log10(Math.max(1.0, capitalK0 / 50.0)) * 1.4, 0.2, 10.0);
+        double techLevel = scenario.getInitialTechLevel() > 0.0
+                ? scenario.getInitialTechLevel()
+                : ((capitalK0 >= 5.0 && capitalK0 < 50.0)
+                ? (1.50 + 0.30 * Math.log10(capitalK0 / 4.0))
+                : Math.clamp(1.0 + Math.log10(Math.max(1.0, capitalK0 / 50.0)) * 1.4, 0.2, 10.0));
         double foodReserveMonths = scenario.getInitialFoodReserveMonths() > 0 ? scenario.getInitialFoodReserveMonths() : 6.0;
         String pattern = scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL";
         long startYear = scenario.getStartDateYear();
@@ -524,13 +536,17 @@ public class PreComputePhase {
         if (cells == null || cells.isEmpty()) return;
 
         double capitalK0 = scenario.getInitialCapitalPerCapita();
-        double techLevel = Math.clamp(1.0 + Math.log10(Math.max(1.0, capitalK0 / 50.0)) * 1.4, 0.2, 10.0);
+        double techLevel = scenario.getInitialTechLevel() > 0.0
+                ? scenario.getInitialTechLevel()
+                : ((capitalK0 >= 5.0 && capitalK0 < 50.0)
+                ? (1.50 + 0.30 * Math.log10(capitalK0 / 4.0))
+                : Math.clamp(1.0 + Math.log10(Math.max(1.0, capitalK0 / 50.0)) * 1.4, 0.2, 10.0));
         double foodReserveMonths = scenario.getInitialFoodReserveMonths() > 0 ? scenario.getInitialFoodReserveMonths() : 6.0;
 
         for (H3Cell c : cells) {
             if (c == null) continue;
             long pop = c.getPopulation() != null ? c.getPopulation() : 0;
-            double effectiveK0 = (scenario.getStartDateYear() >= 2000 && capitalK0 > 15000.0) ? (capitalK0 / 1.85) : capitalK0;
+            double effectiveK0 = (capitalK0 > 15000.0) ? (capitalK0 / 1.85) : capitalK0;
             double cellCapital = pop * effectiveK0;
             if (c.getResourceCapital() == null || c.getResourceCapital() <= 0.0) {
                 c.setResourceCapital(cellCapital);
@@ -538,23 +554,27 @@ public class PreComputePhase {
             if (c.getResourceMetal() == null || c.getResourceMetal() <= 0.0) {
                 c.setResourceMetal(cellCapital * 0.15);
             }
-            double effectiveTech = (c.getTechnologyLevel() != null && c.getTechnologyLevel() > 0.0)
-                    ? c.getTechnologyLevel() : techLevel;
+            double effectiveTech = (scenario.getInitialTechLevel() > 0.0)
+                    ? scenario.getInitialTechLevel()
+                    : ((c.getTechnologyLevel() != null && c.getTechnologyLevel() > 0.0) ? c.getTechnologyLevel() : techLevel);
             c.setTechnologyLevel(effectiveTech);
             if (pop > 0 && (c.getWaterResource() == null || c.getWaterResource() < 300.0)) {
                 c.setWaterResource(Math.max(c.getWaterResourceOr(0.0), 500.0));
             }
+            if (c.getBiomassLivestock() == null || c.getBiomassLivestock() <= 0.0) {
+                c.setBiomassLivestock((pop > 0 && effectiveTech >= 1.5) ? (pop * 0.25) : 0.0);
+            }
             if (c.getBiomassAgriculture() == null || c.getBiomassAgriculture() == 0.0) {
-                double areaScale = Math.max(0.05, c.getEffectiveSurfaceAreaKm2() / 1770.0);
                 double annualFoodNeedGJ = pop * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
                 double initialFoodGJ = annualFoodNeedGJ * (foodReserveMonths / 12.0);
                 if (c.getFoodResource() == null || c.getFoodResource() < initialFoodGJ) {
                     c.setFoodResource(initialFoodGJ);
                 }
-                if (c.getBiomassNatural() == null || c.getBiomassNatural() < initialFoodGJ) {
-                    c.setBiomassNatural(initialFoodGJ);
+                double minNaturalBiomassTons = (effectiveTech < 1.5) ? (pop * 48.0) : initialFoodGJ;
+                if (c.getBiomassNatural() == null || c.getBiomassNatural() < minNaturalBiomassTons) {
+                    c.setBiomassNatural(minNaturalBiomassTons);
                 }
-                double grainKgPerPerson = 420.0 * (1.0 + 0.05 * Math.max(0.0, effectiveTech - 1.5));
+                double grainKgPerPerson = 620.0 * (1.0 + 0.05 * Math.max(0.0, effectiveTech - 1.5));
                 double requiredAgriBiomassKg = pop * grainKgPerPerson;
                 c.setBiomassAgriculture((pop > 0 && effectiveTech >= 1.5) ? requiredAgriBiomassKg : 0.0);
             }
@@ -587,10 +607,12 @@ public class PreComputePhase {
         }
 
         // Canonical major biophysical events within [startYear, endYear]
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Ã‰ruption Minoenne de ThÃ©ra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Ã‰ruption du VÃ©suve (PompÃ©i & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "AnnÃ©e sans Ã©tÃ© (Ã‰ruption mystÃ¨re de 536)", 536, 64.0, -18.0, 10.0, 0.90));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Ã‰ruption du Samalas (Lombok, IndonÃ©sie)", 1257, -8.4, 116.4, 12.0, 0.98));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Antonine (Variole dans l'Empire Romain)", 165, 41.9, 12.5, 0.0, 0.85));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 0.90));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste de Justinien (Yersinia Pestis)", 541, 41.0, 29.0, 0.0, 0.90));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 0.98));
         addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 45.0, 35.0, 0.0, 0.90));
         addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Ã‰ruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 0.88));
         addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Ã‰ruption du Tambora (AnnÃ©e sans Ã©tÃ©)", 1815, -8.2, 118.0, 10.0, 0.95));

@@ -33,16 +33,16 @@
   "elevationUseImport" : true,
   "elevationMapSource" : "earth",
   "tempUseImport" : true,
-  "tempSource" : "ðŸŒ Terre (-100000 BP) — Dernier Interglaciaire Eémien",
+  "tempSource" : "\uD83C\uDF0D Terre (-100000 BP) — Dernier Interglaciaire Eémien",
   "tempSeed" : 12450,
   "precipUseImport" : true,
-  "precipSource" : "ðŸŒ Terre (-100000 BP) — Humidité & Savane Trans-saharienne",
+  "precipSource" : "\uD83C\uDF0D Terre (-100000 BP) — Humidité & Savane Trans-saharienne",
   "precipSeed" : 13350,
   "seasonUseImport" : true,
-  "seasonSource" : "ðŸŒ Terre (-100000 BP) — Saisonnalité Eémienne",
+  "seasonSource" : "\uD83C\uDF0D Terre (-100000 BP) — Saisonnalité Eémienne",
   "seasonSeed" : 14350,
   "canonicalPlanet" : "earth",
+  "tidalLocked" : false,
   "associatedEpochYear" : -100000,
-  "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique.",
-  "tidalLocked" : false
+  "presetDescription" : "\uD83C\uDF0D TERRE (-100 000 / Dernier Interglaciaire / Éémien) : Climat interglaciaire chaud (+1 à +2°C au-dessus de l'ère préindustrielle), niveau marin à +6/+9m. Corridors sahéliens verts et premières expansions d'Homo Sapiens hors d'Afrique."
 }

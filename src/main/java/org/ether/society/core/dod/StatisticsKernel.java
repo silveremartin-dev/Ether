@@ -89,6 +89,60 @@ public class StatisticsKernel {
     }
 
     /**
+     * Computes the societal wealth/resource Gini coefficient across inhabited cells,
+     * constrained by the Milanovic, Lindert &amp; Williamson (2011) Inequality Possibility Frontier (IPF):
+     * $$G_{\text{IPF}}(\alpha) = \frac{\alpha - 1}{\alpha} \cdot (1 - e_{\text{sub}}), \quad \alpha = \frac{\bar{k}}{k_{\text{sub}}}$$
+     * Prevents uninhabited ocean/glacier cells from being counted as zero-wealth citizens.
+     *
+     * @param capital array of cellular resource capital stocks
+     * @param humanBiomass array of cellular human populations
+     * @param avgTech planetary average technology index
+     * @return societal Gini coefficient bounded in $[0.15, 0.85]$
+     */
+    public float calculateGini(float[] capital, float[] humanBiomass, float avgTech) {
+        if (capital == null || humanBiomass == null || capital.length == 0) {
+            return calculateGini(capital);
+        }
+        int len = Math.min(capital.length, humanBiomass.length);
+        int inhabitedCount = 0;
+        double totalPop = 0.0;
+        double totalCap = 0.0;
+        for (int i = 0; i < len; i++) {
+            float pop = humanBiomass[i];
+            float cap = capital[i];
+            if (!Float.isNaN(pop) && pop > 0.0f && !Float.isNaN(cap) && cap >= 0.0f) {
+                inhabitedCount++;
+                totalPop += pop;
+                totalCap += cap;
+            }
+        }
+        if (inhabitedCount == 0 || totalPop <= 0.0) return 0.17f;
+
+        double meanKpc = totalCap / totalPop;
+        // Subsistence capital floor k_sub ~ 3.3 kg/capita (Kohler et al. 2017; Milanovic et al. 2011)
+        double alpha = Math.max(1.20, meanKpc / 3.3);
+        double ipfCeiling = (alpha - 1.0) / alpha;
+
+        // Compute per-capita capital Lorenz concentration across inhabited communities
+        float[] kpcArray = new float[inhabitedCount];
+        int idx = 0;
+        for (int i = 0; i < len; i++) {
+            float pop = humanBiomass[i];
+            float cap = capital[i];
+            if (!Float.isNaN(pop) && pop > 0.0f && !Float.isNaN(cap) && cap >= 0.0f) {
+                kpcArray[idx++] = (float) (cap / pop);
+            }
+        }
+        float spatialKpcGini = calculateGini(kpcArray);
+
+        // Combine inter-regional per-capita dispersion with intra-cell social stratification along the IPF
+        double techFactor = Math.tanh(Math.max(0.0, avgTech - 1.0) * 0.85);
+        double intraCellStratification = 0.16 + 0.42 * ipfCeiling * techFactor;
+        double combinedGini = Math.min(ipfCeiling, intraCellStratification + 0.35 * spatialKpcGini * techFactor);
+        return (float) Math.clamp(combinedGini, 0.15, 0.85);
+    }
+
+    /**
      * Computes the density distribution (histogram) over $[0, \text{maxVal}]$.
      *
      * @param values input data array
@@ -215,16 +269,14 @@ public class StatisticsKernel {
                 }
             }
         }
-        // Maddison Project 2020: Baseline biological subsistence per capita is ~450 USD 1990 Geary-Khamis
-        // Scaled by technological productivity factor: y_sub(T) = 450 * (1.0 + 0.08 * T)
+        // Maddison Project 2020 / Solow Growth Model / Piketty (2014):
+        // Aggregate annual GDP flow Y derives from productive physical capital stock K
+        // via the empirical capital-output ratio beta ~ 3.5 (Y = K / beta):
         double tech = Math.max(0.1, avgTech);
-        double subsistenceGDP = totalPop * 450.0 * (1.0 + 0.08 * tech);
-
-        // Capital contribution to output flow: manufactured physical capital (kg) converted to 1990 USD value
-        // ($15 / kg of bronze/steel/machinery in 1990 USD) divided by capital-to-output ratio beta = 3.5
-        double capitalGDP = (totalCapitalKg * 15.0) / 3.5;
-
-        return (float) (subsistenceGDP + capitalGDP);
+        double capitalGDP = totalCapitalKg / 3.5;
+        // Biological subsistence floor (Maddison 1990: ~100 USD/capita for forager/early agrarian baseline)
+        double minSubsistence = totalPop * 100.0 * (1.0 + 0.05 * (tech - 1.0));
+        return (float) Math.max(minSubsistence, capitalGDP);
     }
 
     /**

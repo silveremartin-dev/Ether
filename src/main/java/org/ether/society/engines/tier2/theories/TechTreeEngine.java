@@ -182,6 +182,7 @@ public class TechTreeEngine {
             latentSubstitutePotential = Math.min(1.0, Math.log1p(oilGas + uranium * 10.0) / 5.0);
         }
 
-        return 0.12 * organicScarcityStress * latentSubstitutePotential * Math.max(0.0001, dtYears);
+        // Historical innovation rate under bottleneck stress (Allen 2009; Clark 2007: max ~0.003/yr)
+        return 0.003 * organicScarcityStress * latentSubstitutePotential * Math.max(0.0001, dtYears);
     }
 }

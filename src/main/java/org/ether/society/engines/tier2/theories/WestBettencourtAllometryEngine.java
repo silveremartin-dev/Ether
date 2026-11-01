@@ -103,8 +103,8 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
 
             // Super-linear capital & innovation output
             double superlinearFactor = Math.pow(normalizedPop, SUPERLINEAR_EXPONENT - 1.0); // N^0.15 boost per capita
-            double currentCapital = cell.getResourceCapitalOr(10.0);
-            cell.setResourceCapital(currentCapital + (currentCapital * 0.02 * superlinearFactor * deltaYears));
+            double currentTech = cell.getTechnologyLevelOr(1.0);
+            cell.setTechnologyLevel(Math.min(10.0, currentTech + 0.002 * (superlinearFactor - 1.0) * deltaYears));
 
             // Sub-linear infrastructure maintenance cost efficiency
             double sublinearFactor = Math.pow(normalizedPop, SUBLINEAR_EXPONENT - 1.0); // N^-0.15 savings per capita

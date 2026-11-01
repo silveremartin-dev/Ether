@@ -369,7 +369,7 @@ public class SimulationPipeline {
         ThermohalineOceanEngine.processThermohalineCirculation(allCells, 0.0);
         OceanAcidificationEngine.processOceanAcidification(allCells, 415.0);
 
-        ThermodynamicMigrationEngine.processThermodynamicMigration(allCells, perfConfig);
+        ThermodynamicMigrationEngine.processThermodynamicMigration(allCells, perfConfig, worldBuffer, agentBuffer);
     }
 
     /**
@@ -429,7 +429,7 @@ public class SimulationPipeline {
 
         // Step 3.3: Transport, Kinetic Warfare & Infrastructure
         PhysicsTransportEngine.processPhysicsTransport(populatedCells, dtYears);
-        ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears);
+        if (scenario != null && scenario.getTypeBEngineStates() != null && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("ThermodynamicWarfareEngine"))) { ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears); }
         if (scenario != null && scenario.getTypeBEngineStates() != null
                 && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("NuclearWarfareClimateEngine"))) {
             NuclearWarfareClimateEngine.processNuclearWarfareClimate(populatedCells);

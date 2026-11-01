@@ -52,19 +52,20 @@ public class UrbanKernel {
                 complexity[i] = (float) Math.log1p(capitalPerCapita * 0.25f + Math.log1p(pop[i] * 0.005f));
 
                 // 2. Institutional Maintenance Overhead (Tainter Law of Diminishing Marginal Returns):
-                // Baseline institutional depreciation (2%/yr, paired with 2%/yr physical grid depreciation = 4%/yr total)
-                // + non-linear institutional complexity overhead + intensive capital maintenance
+                // Baseline institutional depreciation + non-linear institutional complexity overhead
                 float baselineDepreciation = 0.02f;
-                float complexityOverhead = 0.012f * (float) Math.pow(complexity[i], PhysicalConstants.TAINTER_COMPLEXITY_EXPONENT);
-                float intensiveMaintenanceDrag = 0.0015f * (capitalPerCapita / Math.max(1.0f, effectiveTech));
-                float depreciationRate = Math.min(0.85f, baselineDepreciation + complexityOverhead + intensiveMaintenanceDrag);
+                float complexityOverhead = 0.001f * (float) Math.pow(Math.min(5.0f, complexity[i]), 1.5);
+                float depreciationRate = Math.min(0.08f, baselineDepreciation + complexityOverhead);
                 float maintenanceCost = capital[i] * depreciationRate;
 
                 // 3. Gross Capital Formation (Solow-Swan / Smil exergy surplus mobilized by labor):
-                // Pre-industrial societies (tech < 3.0) have low surplus fraction; industrial societies scale higher
-                float priceFactor = prices != null ? Math.clamp(prices[i], 0.5f, 2.0f) : 1.0f;
+                // Replaces physical & institutional depreciation at steady-state equilibrium k* while allowing
+                // modest intensive growth proportional to technological efficiency and local trade terms.
+                float priceFactor = (prices != null && prices[i] > 0.01f) ? Math.clamp(prices[i], 0.95f, 1.15f) : 1.0f;
                 float surplusCoefficient = (effectiveTech < 3.0f) ? 0.06f : 0.12f;
-                float grossProduction = priceFactor * pop[i] * surplusCoefficient * (float) Math.pow(effectiveTech, 0.85);
+                float laborSurplus = pop[i] * surplusCoefficient * (float) Math.pow(effectiveTech, 0.85) * priceFactor;
+                float solowReplacement = capital[i] * depreciationRate;
+                float grossProduction = Math.max(laborSurplus, solowReplacement);
                 float netAccumulation = (grossProduction - maintenanceCost) * dtInYears;
 
                 capital[i] = Math.max(0.0f, capital[i] + netAccumulation);

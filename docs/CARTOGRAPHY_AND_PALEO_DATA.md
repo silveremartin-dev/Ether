@@ -1,4 +1,4 @@
-# 🗺️ Planetary Cartography, Paleoclimate & Empirical GIS Data Pipeline
+# ðŸ—ºï¸ Planetary Cartography, Paleoclimate & Empirical GIS Data Pipeline
 
 **Document Version:** 2.0.0-unified  
 **Classification:** Geospatial Data Pipeline, Paleoclimate Forcing & Scientific Provenance  
@@ -7,7 +7,7 @@
 
 ---
 
-## 📋 Table of Contents
+## ðŸ“‹ Table of Contents
 1. [Geospatial Ingestion Architecture & Uber H3 Mapping](#1-geospatial-ingestion-architecture--uber-h3-mapping)
 2. [The 25 Cartographic Simulation Tensor Layers](#2-the-25-cartographic-simulation-tensor-layers)
 3. [Empirical Datasets & Academic Source Attributions](#3-empirical-datasets--academic-source-attributions)
@@ -21,23 +21,23 @@
 Ether ingests global geophysical, paleoclimatic, mineralogical, and demographic datasets across Earth, the Moon, and Mars, normalizing them onto a continuous **Uber H3 hexagonal discrete global grid system (DGGS)**:
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    PLANETARY GIS INGESTION PIPELINE                         │
-│                                                                             │
-│  Raw External Repositories                                                  │
-│  (USGS, NOAA, GEBCO, NASA PDS, IAEA, BGR, Seshat, HYDE 3.4, PANGAEA, WHYMAP)│
-│                                   │                                         │
-│                                   ▼                                         │
-│  Ingestion & Format Normalization                                           │
-│  (GeoTIFF, ESRI ASCII Grid, NetCDF, GeoJSON, CSV, Excel, NASA PDS .lbl)     │
-│                                   │                                         │
-│                                   ▼                                         │
-│  Coordinate & Spatial Reprojection (WGS84 EPSG:4326 -> Uber H3 Mesh)        │
-│                                   │                                         │
-│                                   ▼                                         │
-│  Multidimensional Simulation Tensors & Raster Pre-Cache                     │
-│  (`WorldBuffer` SoA, Packed Double Buffers, `data/cache/*.png`)              │
-└─────────────────────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                    PLANETARY GIS INGESTION PIPELINE                         â”‚
+â”‚                                                                             â”‚
+â”‚  Raw External Repositories                                                  â”‚
+â”‚  (USGS, NOAA, GEBCO, NASA PDS, IAEA, BGR, Seshat, HYDE 3.4, PANGAEA, WHYMAP)â”‚
+â”‚                                   â”‚                                         â”‚
+â”‚                                   â–¼                                         â”‚
+â”‚  Ingestion & Format Normalization                                           â”‚
+â”‚  (GeoTIFF, ESRI ASCII Grid, NetCDF, GeoJSON, CSV, Excel, NASA PDS .lbl)     â”‚
+â”‚                                   â”‚                                         â”‚
+â”‚                                   â–¼                                         â”‚
+â”‚  Coordinate & Spatial Reprojection (WGS84 EPSG:4326 -> Uber H3 Mesh)        â”‚
+â”‚                                   â”‚                                         â”‚
+â”‚                                   â–¼                                         â”‚
+â”‚  Multidimensional Simulation Tensors & Raster Pre-Cache                     â”‚
+â”‚  (`WorldBuffer` SoA, Packed Double Buffers, `data/cache/*.png`)              â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
@@ -51,7 +51,7 @@ Every historical epoch (from -100,000 BP to present-day) is encoded across 25 st
 | **Geophysical** | `elevation` | Meters ($m$) | NOAA ETOPO 2022, GEBCO 2023 |
 | | `bathymetry` | Meters ($m$) | GEBCO Gridded Bathymetry Data |
 | | `heat_flux` | $mW / m^2$ | International Heat Flow Commission (IHFC) |
-| | `crustal_age` | Million years ($Myr$) | Müller et al. (2019) Oceanic Lithosphere |
+| | `crustal_age` | Million years ($Myr$) | MÃ¼ller et al. (2019) Oceanic Lithosphere |
 | **Hydrological** | `aquifer_volume` | Cubic kilometers ($km^3$) | UNESCO WHYMAP, BGR Global Groundwater |
 | | `water_table_depth`| Meters ($m$) | Fan et al. (Science 2013) Global Water Table |
 | | `river_discharge` | $m^3 / s$ | Global Runoff Data Centre (GRDC) |
@@ -63,7 +63,7 @@ Every historical epoch (from -100,000 BP to present-day) is encoded across 25 st
 | | `coal_reserves` | Million tons ($Mt$) | World Energy Council, BGR Energy Study |
 | | `hydrocarbon_reserves`| Barrels oil equiv. | USGS World Petroleum Assessment |
 | | `uranium_thorium`| ppm mass concentration| IAEA World Distribution of Uranium (NFCIS) |
-| **Bioclimatic** | `temperature` | °Celsius (°C) | ERA5-Land (ECMWF), PMIP4 Paleoclimate |
+| **Bioclimatic** | `temperature` | Â°Celsius (Â°C) | ERA5-Land (ECMWF), PMIP4 Paleoclimate |
 | | `rainfall` | $mm / year$ | GPCC Global Precipitation, WorldClim 2.1 |
 | | `biomes` | Discrete Biome Enum | Olson et al. (WWF Terrestrial Ecoregions) |
 | | `natural_vegetation`| Fractional Cover (0-1)| Copernicus Land Cover (100m) |
@@ -82,7 +82,7 @@ Ether strictly decouples speculative heuristics from empirical foundations by an
 
 1. **HYDE 3.4 (History Database of the Global Environment)**:
    * *Citation*: Klein Goldewijk, K., et al. (2017). *Anthropogenic land use estimates for the Holocene – HYDE 3.2*. Earth System Science Data, 9(2), 927-953.
-   * *Coverage*: Spatially explicit historical population, cropland, and grazing land from 10,000 BCE to 2026 CE.
+   * *Coverage*: Spatially explicit historical population, cropland, and grazing land from 10,000 BCE to 2025 CE.
 2. **Maddison Project Database 2020**:
    * *Citation*: Bolt, J., & van Zanden, J. L. (2020). *Maddison Style Estimates of the Evolution of the World Economy*.
    * *Coverage*: Historical Gross Domestic Product (GDP), real wages, and population densities across millennia.
@@ -97,7 +97,7 @@ Ether strictly decouples speculative heuristics from empirical foundations by an
 
 ## 4. Paleoclimate Forcing & Quaternary Reconstructions
 
-During deep-time simulations (e.g. `out_of_africa_100k` or `younger_dryas_10900bce`), climate is driven by astronomical orbital parameters and ice sheet boundaries:
+During deep-time simulations (e.g. `out_of_africa_100k` or `younger_dryas_10900bce`), climate is driven by astronomical orbital parameters, ice sheet boundaries, and topological migration vectors:
 
 1. **Milankovitch Orbital Cycles**:
    * **Eccentricity** ($e$, $\sim 100\,000\text{ yr}$ and $\sim 405\,000\text{ yr}$): Modulates seasonal insolation extremes.
@@ -109,6 +109,14 @@ During deep-time simulations (e.g. `out_of_africa_100k` or `younger_dryas_10900b
      * **Sundaland**: Submerged shelf connecting Indochina, Sumatra, Java, and Borneo.
      * **Doggerland**: Dry land bridge across the North Sea connecting Britain to continental Europe.
    * In Ether, when global sea levels fluctuate, H3 hexagonal cells dynamically toggle between terrestrial (`elevation >= 0`) and maritime (`elevation < 0`), shifting friction and carrying capacities accordingly.
+3. **Vector Geometries & Paleolithic Dispersal Corridors (`data/ether/earth/history/paleo/`)**:
+   * **19 Global Migration Corridors (`migration_routes.json`)**:
+     * *Out of Africa*: Southern Coastal Dispersal (Bab-el-Mandeb $\to$ South Arabian Coast $\to$ India $\to$ Sunda $\to$ Sahul) and Northern Levantine Route (Nile $\to$ Sinai $\to$ Levant $\to$ Balkans $\to$ Aurignacian Europe).
+     * *Eurasia & Sahul*: Eurasian Steppe Mammoth Highway, Mediterranean Coastal Expansion, East Asian Coastal Expansion, and Austronesian Maritime Expansion.
+     * *Sahara Paleoclimatic Corridor*: Green Sahara humid corridor connecting East Africa, Lake Mega-Chad, Ahaggar, and Maghreb.
+     * *Americas Colonization*: Pacific Coastal Route (Kelp Highway), Ice-Free Corridor (McKenzie/Yukon), Clovis Interior Dispersal, Amazonian Riverine Basin, Andean Highland Spine, South American Atlantic Coastal Highway, and Fuegian Magellanic Terminal Route.
+   * **Hominin Hearths (`hominin_hearths.json`)**: Georeferenced archaeological base camps and fossil sites across Africa (Omo Kibish, Florisbad), the Levant (Skhul, Qafzeh), Europe (Atapuerca, Neanderthal refugia), and Asia (Denisova Cave, Zhoukoudian).
+   * **Quaternary Continental Ice Sheets (`ice_sheets.json`)**: Polygons defining the Laurentide, Cordilleran, Fennoscandian, Barents-Kara, and Patagonian ice caps.
 
 ---
 
@@ -118,6 +126,7 @@ To guarantee scientific falsifiability, Ether enforces a strict ontological sepa
 
 $$\text{Simulation State at } t = \underbrace{\mathbf{X}(t_0)}_{\text{Empirical Archaeological Tensor}} + \int_{t_0}^{t} \underbrace{\mathbf{F}\left(\mathbf{X}(\tau), \mathbf{u}(\tau)\right)}_{\text{Coupled Physical & Cliodynamic ODEs}} d\tau$$
 
-1. **Initial Conditions ($t = t_0$)**: Formed exclusively from archaeological, geological, and historical data manifests stored in `data/maps/ether/<planet>/<year>/`. No speculative forward-extrapolations are mixed into $t_0$.
+1. **Planetary Encapsulation & Initial Conditions ($t = t_0$)**: Formed exclusively from archaeological, geological, and historical data manifests stored in `data/ether/<planet>/` (with 2D rasters in `<year>/`, event chronicles in `events/`, treaties and paleo corridors in `history/`, and leadership catalysts in `leaders/`). No speculative forward-extrapolations are mixed into $t_0$.
 2. **Dynamical Trajectory ($t > t_0$)**: Governed entirely by invariant conservation laws (Tier 1) and pluggable cliodynamic hypotheses (Tier 2).
 3. **Falsification Protocol**: Any divergence between the simulated state $\mathbf{X}_{\text{sim}}(t)$ and the target empirical benchmark $\mathbf{X}_{\text{obs}}(t)$ is objectively quantified via Normalized Root Mean Square Error (NRMSE) and Kolmogorov-Smirnov distance ($D_{\text{KS}}$), allowing flawed sociological theories to be definitively falsified.
+

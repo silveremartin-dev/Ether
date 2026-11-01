@@ -533,10 +533,36 @@ public final class H3BufferAndEventCoordinator {
                         }
                         if (cellPopModified[h]) {
                             float sum = currentCohortSum[h];
-                            if (sum > 0.001f && Math.abs(pop[h] - sum) > 0.01f) {
+                            if (pop[h] <= 0.001f) {
+                                mass[a] = 0.0f;
+                                hexIds[a] = -1;
+                            } else if (sum > 0.001f && Math.abs(pop[h] - sum) > 0.01f) {
                                 float ratio = Math.max(0.0f, pop[h] / sum);
                                 mass[a] *= ratio;
                             }
+                        }
+                    }
+                }
+                // Spawn cohorts for previously uninhabited cells that received migrated population
+                int freeSearchStart = 0;
+                for (int h = 0; h < limit; h++) {
+                    if (cellPopModified[h] && currentCohortSum[h] <= 0.001f && pop[h] > 0.001f) {
+                        while (freeSearchStart < agentCap && hexIds[freeSearchStart] != -1) {
+                            freeSearchStart++;
+                        }
+                        if (freeSearchStart < agentCap) {
+                            hexIds[freeSearchStart] = h;
+                            if (worldBuffer.getH3Indexes() != null && h < worldBuffer.getH3Indexes().length) {
+                                agentBuffer.getH3Indexes()[freeSearchStart] = worldBuffer.getH3Indexes()[h];
+                            }
+                            mass[freeSearchStart] = pop[h];
+                            agentBuffer.getEnergy()[freeSearchStart] = 85.0f;
+                            agentBuffer.getAge()[freeSearchStart] = 24.5f;
+                            if (tech != null && h < tech.length) {
+                                agentTech[freeSearchStart] = tech[h];
+                            }
+                            currentCohortSum[h] = pop[h];
+                            freeSearchStart++;
                         }
                     }
                 }

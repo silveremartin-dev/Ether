@@ -23,9 +23,19 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 
 ---
 
-## 🔒 3. Determinism & Performance Options
-* All performance shortcuts (sparse cell skips, multi-frequency climate ticks, spatial range truncations) MUST be toggleable via `SimulationPerformanceConfig`.
-* When `strictDeterminism = true`, simulation trajectories MUST be 100% bit-identical for identical initial conditions.
+## 🔒 3. Determinism, Seeded PRNG & Randomness Directives
+* **Strict Bitwise Determinism**: When `strictDeterminism = true`, simulation trajectories MUST be 100% bit-identical for identical initial conditions.
+* **Empirical Data Sources are Invariant & Authoritative**:
+  * Empirical rasters and historical cartographic layers (NOAA ETOPO, GEBCO, WorldClim, HYDE 3.4, UNESCO WHYMAP, USGS MRDS, mineral databases) define the physical ground truth at $t = t_0$.
+  * **Strict Ban on Random Variables in Data Ingestion**: It is STRICTLY FORBIDDEN to inject pseudo-random noise (`Random`, `Math.random()`, stochastic jitter) into raw empirical data sources, pre-loaded rasters, or historical boundary conditions.
+* **Prohibition of Unseeded Random & Heuristic Noise**:
+  * The use of unseeded `new Random()` or `Math.random()` is **STRICTLY PROHIBITED** across all simulation engines, kernels, and procedural generation pipelines.
+  * In UI screens (e.g., Planet Creation, Climate, Geology, Scenario Setup), `new Random()` is permitted ONLY on explicit user button click actions to roll a new seed value into a text field.
+* **Mandatory Seed Anchor & `DeterministicPRNG`**:
+  * All procedural generation and simulation engines MUST systematically anchor their stochastic variables to the scenario seed (`scenario.getSeed()`) or screen-specific seed.
+  * Spatial stochastic evaluations across cells MUST use the stateless, order-independent `DeterministicPRNG` (SplitMix64) keyed to `(seed, tick, cellIndex, streamId)`. This prevents cell iteration order or multi-threaded execution from causing trajectory divergence.
+* **Biophysical State Variables are Analytical Closed-Form Equations**:
+  * Fundamental physical and biological state variables (NPP, biomass stocks, edible forage, timber reserves, temperature, precipitation, evaporation) MUST derive analytically from peer-reviewed closed-form physical equations (e.g., Lieth/Miami NPP model $f(T, P)$). They must NEVER be computed using discrete `switch(biome)` tables with pseudo-random jitter.
 
 ---
 
@@ -47,14 +57,24 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 
 ---
 
-## 🗺️ 6. Cartographic Tensor Provenance & Historical Epoch Standards
-For every historical epoch (from -100,000 BP to present-day) supported in `data/maps/ether/<planet>/<year>/`:
-1. **Exhaustive Layer Documentation**:
-   * Every directory MUST contain `provenance_and_sources.json` and `README.md` detailing the exact geophysical, ecological, demographic, and sociological sources for all 25 map layers.
-   * Empirical raster layers (Elevation, Bathymetry, Water tables, Minerals) MUST cite exact global geological datasets (e.g. NOAA ETOPO 2022, GEBCO 2023, UNESCO WHYMAP, USGS MRDS, IAEA NFCIS).
-2. **Reconstitution Rationale & Physical Decoupling**:
-   * Reconstructed cliodynamic layers (Cultural tensors, Kinship, Isogloss, Carrying capacity, Demographic density) MUST document all underlying physiological, metabolic, and archaeological formulas.
-   * Documentation MUST explicitly decouple the static initial conditions ($t = t_0$) from the dynamical simulation engines running per tick ($t > t_0$), enabling transparent diagnostic, calibration, and scientific falsification.
+## 🗺️ 6. Cartographic Tensor Provenance & Planetary Encapsulation Architecture
+* **Planetary Encapsulation (`data/ether/<planet>/`)**:
+  * All planet-specific physical datasets, rasters, historical catalogs, and state variables are strictly encapsulated within their respective planetary root `data/ether/<planet>/` (e.g., `data/ether/earth/`).
+  * **2D Spatial Rasters (`data/ether/<planet>/<year>/`)**:
+    * For every historical epoch (from -100,000 BP to present-day 2025 CE), rasters are stored as 2D spatial layers (Elevation, Density, Biomes, Aquifers, etc.).
+    * Every directory contains `provenance_and_sources.json` and `README.md` detailing geophysical and demographic sources.
+  * **Discrete Catalogs & Vector Geometries**:
+    * `events/historical_events_catalog.json`: Historical event records (chronological shocks, wars, scientific milestones).
+    * `history/treaties_and_transitions.json`: Gapless epoch transitions and geopolitical boundaries.
+    * `history/paleo/`: Paleolithic vector geometries (`hominin_hearths.json`, `ice_sheets.json`, `migration_routes.json` with 19 global migration corridors).
+    * `leaders/earth_historical_leaders.json`: Historical figures and catalytic leadership interventions.
+  * **1D Continuous Variables & State Baselines (`data/ether/<planet>/variables/`)**:
+    * Stores scalar time-series trajectories and epoch state initialization vectors in 1 dimension ($t \to \text{value}$).
+    * `variables/historical/paleo_sources_1d.json`: Deep Paleolithic ($t_0 < -10\,000\,\text{BP}$) initialized to **`PALEO_SOURCES`** (EPICA Dome C ice cores, PaleoClim v1.2, Biraben 1979 / Kremer 1993).
+    * `variables/historical/hyde_maddison_historical_1d.json`: Historical eras ($-10\,000\,\text{BP} \le t_0 \le 2025\,\text{CE}$) initialized to **`HYDE_MADDISON`** (HYDE 3.4, Maddison Project 2020, ECMWF ERA5).
+    * `variables/projections/`: Future trajectories ($t_0 \ge 2025\,\text{CE}$) selectable via UI ComboBox between **`SSP1`**, **`SSP2`** (default), **`SSP3`**, **`SSP4`**, **`SSP5`**, and **`ETHER_CALIBRATED`**.
+  * **Legacy Compatibility**: Root-level directories (`data/variables/`, `data/history/`, `data/historical_events_catalog/`, `data/presets/leaders/`) are maintained as secondary fallbacks, with canonical priority given to `data/ether/<planet>/`.
+* **Zero Double Transition Invariant**: ERA5 observational data governs the recent past until the end of real observations (2024/2025), switching directly to the chosen prospective trajectory with zero ad-hoc intermediate approximations. Monotone cubic Hermite spline interpolation (PCHIP, Fritsch & Carlson 1980) guarantees monotonicity and eliminates Runge overshoot around volcanic and demographic crises (e.g., 1816 Tambora, 536 volcanic winter, 1347 Black Death).
 
 ---
 
@@ -71,7 +91,7 @@ For every historical epoch (from -100,000 BP to present-day) supported in `data/
 
 ---
 
-## 📐 8. Zero Arbitrary Hardcoding Directive & Deep-Time Invariant Baselines
+## 📏 8. Zero Arbitrary Hardcoding Directive & Deep-Time Invariant Baselines
 1. **Absolute Ban on Arbitrary Magic Constants & Heuristic Shortcuts**:
    * ALL simulation parameters, scaling factors, thresholds, rates, and equations MUST be authentic, peer-reviewed physical, chemical, biological, thermodynamic, or macroeconomic models.
    * **Zero tolerance for approximations, shortcuts, fake constants, arbitrary multiplier tricks, or hardcoded magic numbers**.
@@ -88,5 +108,22 @@ For every historical epoch (from -100,000 BP to present-day) supported in `data/
    * All benchmark catalogs, kernels, and simulation initializers MUST enforce these deep-time baselines across the full $-3\,000\,000$ to $-10\,000$ BP horizon. Any variable outside this historical domain must be anchored to its physical or biological baseline, and never allowed to float or drift to arbitrary non-zero values.
 
 
+---
 
-
+## ⚖️ 9. Scientific Parametric Deviation Registry & Epistemic Calibration Provenance
+1. **Universal Validity & Invariance Across Epochs**:
+   * Any mathematical adjustment, scaling factor, or parameter revision made to a published academic model (e.g., Turchin's SDT, Solow-Swan capital growth, Omran's epidemiological transition, Sandom/Barnosky megafauna, Buringh & van Zanden literacy) MUST possess **universal structural validity across all historical epochs and spatial locations**.
+   * Epoch-specific ad-hoc hacks, local conditional tweaks, or calendar-dependent magic coefficients are strictly prohibited.
+2. **Mandatory Documentation of Every Departure from Canonical Literature**:
+   * Academic authors developed their models with great empirical rigor; any divergence between an author's canonical model and simulation results is a profound epistemic signal that demands deep scrutiny.
+   * Whenever a canonical author constant $k_{\text{canonical}}$ is revised or adapted to $k_{\text{ether}}$ (for instance, due to spatial grid discretization, unit translation, or non-linear aggregation over the contiguous H3 mesh), this deviation MUST:
+     1. Be explicitly commented in the source code Javadoc with `@see`, original literature citation, and derivation.
+     2. Be documented with its mathematical justification in **`docs/SIMULATION_EQUATIONS_AND_VARIABLES.md`**.
+     3. Be systematically registered in the dedicated central synthesis document: **`docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md`**.
+3. **Parametric Deviation Registry Structure**:
+   * Every entry in `docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md` must detail:
+     * **Model & Author**: Original publication (e.g., Peter Turchin 2016 *Ages of Discord*).
+     * **Original Canonical Formulation & Parameter Value**: The theoretical equation and published constant.
+     * **Calibrated Simulation Formulation & Value**: The exact formula used in Ether.
+     * **Academic Justification / Root Cause of Divergence**: Why the canonical form required spatial/temporal adaptation (e.g., transition from discrete national index to local continuous cellular tensor).
+     * **Empirical Validation Grounding**: Empirical historical datasets (Seshat, Maddison, HYDE 3.4, EPICA) confirming the accuracy of the calibrated formulation.

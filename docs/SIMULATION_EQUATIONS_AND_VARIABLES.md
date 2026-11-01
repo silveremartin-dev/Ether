@@ -1,4 +1,4 @@
-# Ether Simulation — Differential Equations & State Variable Specification
+# Ether Simulation â€” Differential Equations & State Variable Specification
 
 > **Master Technical, Physical & Mathematical Specification**  
 > *Strict Separation between Core Model Physics (Tier 1) and Optional Cliodynamic / Phenomenological Modules (Tier 2)*
@@ -10,56 +10,56 @@
 The **Ether Engine** strictly partitions its computational mathematical models into two ontological tiers:
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│             TIER 1 : CORE MODEL PHYSICS (Fundamental Invariant Physics)                │
-│    • Universal Conservation Laws (Mass, Energy, Momentum, Entropy)                     │
-│    • Celestial Mechanics & Orbital Forcing (Milankovitch Cycles 100k/41k/23k)          │
-│    • Thermodynamics, Radiation & Ice (Stefan-Boltzmann, Clausius, PDD Cryosphere)      │
-│    • Geophysical Fluid Dynamics (Coriolis, 3-Cell Hadley/Ferrel/Polar Circulation)    │
-│    • Porous Hydrogeology (2D Darcy), Free-Surface Hydraulics (Manning-Strickler)       │
-│    • Solid Geophysics & Isostasy (Viscoelastic GIA, Airy Crustal Roots)                │
-│    • Hydraulic Pedology (van Genuchten AWC) & Alluvial Sedimentation (Stokes)          │
-│    • Vegetative Radiative Transfer (Beer-Lambert LAI) & Photosynthesis (Farquhar FvCB) │
-│    • Metabolic Biophysics (Kleiber 3/4, Gompertz-Makeham, Stull Wet-Bulb)             │
-│    • Genetics & Radiochronology (Kimura SDE Diffusion, C-14 Decay, δ13C Fractionation) │
-│    • Mechanical Friction (Coulomb/Navier) & Chemical Enthalpy of Smelting (Smelt)      │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │ Biophysical Forcings & Feedback Loops
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│         TIER 2 : OPTIONAL PLUGINS & CLIODYNAMICS (Phenomenological & Debated)          │
-│    • Biophysical Exergy Economics (Kümmel / Ayres-Warr)                                │
-│    • Urban Allometric Power Scaling Laws (West-Bettencourt N^1.15)                     │
-│    • Cultural Evolution & Price Equation (Multi-Level Selection of Altruism)          │
-│    • Demographic Agricultural Intensification (Boserup Model)                          │
-│    • Combinatorial Technological Evolution (W. Brian Arthur Model)                     │
-│    • Non-Renewable Resource Depletion Rent (Hotelling Rule)                            │
-│    • Institutional Dynamics & Complexity Collapse (Tainter)                           │
-│    • Socio-Ecological Predator-Prey Dynamics (NASA HANDY, Limits to Growth World3)     │
-│    • Structural-Demographic Theory SDT & Frontier Cohesion (Turchin Asabiyyah)        │
-│    • Inclusive vs. Extractive Institutions (Acemoglu-Robinson)                        │
-│    • Collective Riot & Revolution Threshold Cascades (Granovetter)                    │
-│    • Spatial Metapopulation SEIR-V Epidemic Diffusion                                  │
-│    • New Economic Geography (Krugman NEG Core-Periphery)                              │
-│    • Cultural Segregation & Spatial Homophily (Schelling-Axelrod)                      │
-│    • Stochastic Memetic Drift (4D Langevin SDE on Cultural Tensors)                    │
-└────────────────────────────────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚             TIER 1 : CORE MODEL PHYSICS (Fundamental Invariant Physics)                â”‚
+â”‚    â€¢ Universal Conservation Laws (Mass, Energy, Momentum, Entropy)                     â”‚
+â”‚    â€¢ Celestial Mechanics & Orbital Forcing (Milankovitch Cycles 100k/41k/23k)          â”‚
+â”‚    â€¢ Thermodynamics, Radiation & Ice (Stefan-Boltzmann, Clausius, PDD Cryosphere)      â”‚
+â”‚    â€¢ Geophysical Fluid Dynamics (Coriolis, 3-Cell Hadley/Ferrel/Polar Circulation)    â”‚
+â”‚    â€¢ Porous Hydrogeology (2D Darcy), Free-Surface Hydraulics (Manning-Strickler)       â”‚
+â”‚    â€¢ Solid Geophysics & Isostasy (Viscoelastic GIA, Airy Crustal Roots)                â”‚
+â”‚    â€¢ Hydraulic Pedology (van Genuchten AWC) & Alluvial Sedimentation (Stokes)          â”‚
+â”‚    â€¢ Vegetative Radiative Transfer (Beer-Lambert LAI) & Photosynthesis (Farquhar FvCB) â”‚
+â”‚    â€¢ Metabolic Biophysics (Kleiber 3/4, Gompertz-Makeham, Stull Wet-Bulb)             â”‚
+â”‚    â€¢ Genetics & Radiochronology (Kimura SDE Diffusion, C-14 Decay, Î´13C Fractionation) â”‚
+â”‚    â€¢ Mechanical Friction (Coulomb/Navier) & Chemical Enthalpy of Smelting (Smelt)      â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                            â”‚ Biophysical Forcings & Feedback Loops
+                                            â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚         TIER 2 : OPTIONAL PLUGINS & CLIODYNAMICS (Phenomenological & Debated)          â”‚
+â”‚    â€¢ Biophysical Exergy Economics (KÃ¼mmel / Ayres-Warr)                                â”‚
+â”‚    â€¢ Urban Allometric Power Scaling Laws (West-Bettencourt N^1.15)                     â”‚
+â”‚    â€¢ Cultural Evolution & Price Equation (Multi-Level Selection of Altruism)          â”‚
+â”‚    â€¢ Demographic Agricultural Intensification (Boserup Model)                          â”‚
+â”‚    â€¢ Combinatorial Technological Evolution (W. Brian Arthur Model)                     â”‚
+â”‚    â€¢ Non-Renewable Resource Depletion Rent (Hotelling Rule)                            â”‚
+â”‚    â€¢ Institutional Dynamics & Complexity Collapse (Tainter)                           â”‚
+â”‚    â€¢ Socio-Ecological Predator-Prey Dynamics (NASA HANDY, Limits to Growth World3)     â”‚
+â”‚    â€¢ Structural-Demographic Theory SDT & Frontier Cohesion (Turchin Asabiyyah)        â”‚
+â”‚    â€¢ Inclusive vs. Extractive Institutions (Acemoglu-Robinson)                        â”‚
+â”‚    â€¢ Collective Riot & Revolution Threshold Cascades (Granovetter)                    â”‚
+â”‚    â€¢ Spatial Metapopulation SEIR-V Epidemic Diffusion                                  â”‚
+â”‚    â€¢ New Economic Geography (Krugman NEG Core-Periphery)                              â”‚
+â”‚    â€¢ Cultural Segregation & Spatial Homophily (Schelling-Axelrod)                      â”‚
+â”‚    â€¢ Stochastic Memetic Drift (4D Langevin SDE on Cultural Tensors)                    â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
 
 ## 2. 3-Tier Multi-Scale Temporal Decoupling
 
-Ether decouples numerical integration across three discrete physical time scales on the Uber H3 hexagonal grid ($175,000+$ cells at Resolution 6–8) via the `MultiScaleSymplecticIntegrator`:
+Ether decouples numerical integration across three discrete physical time scales on the Uber H3 hexagonal grid ($175,000+$ cells at Resolution 6â€“8) via the `MultiScaleSymplecticIntegrator`:
 
-- **Tier 1 — Fast Daily Scale ($\Delta t_{\text{daily}} = 1 \text{ day} = 86,400 \text{ s}$)**:
+- **Tier 1 â€” Fast Daily Scale ($\Delta t_{\text{daily}} = 1 \text{ day} = 86,400 \text{ s}$)**:
   - Resolves symmetric finite-volume mass and logistics fluxes under Courant-Friedrichs-Lewy (CFL) limits (`FluxEngine`).
   - Evaluates instantaneous wet-bulb temperature and hyperthermia thresholds (`WetBulbTemperatureEngine`).
   - Computes zonal wind vectors under Coriolis parameter $f = 2\Omega \sin\phi$ (`AtmosphericCirculationHadleyEngine`).
   - Resolves active localized epidemiological transmissions via sparse active sets (`SpatialMetapopulationSEIREngine`).
   - Updates tactical political borders, legitimacy pressure, and military maneuvers (`PoliticalSimulationEngine`).
 
-- **Tier 2 — Monthly Biophysical Sub-Step Scale ($\Delta t_{\text{monthly}} = 30 \text{ days} \approx 2.592 \times 10^6 \text{ s}$)**:
+- **Tier 2 â€” Monthly Biophysical Sub-Step Scale ($\Delta t_{\text{monthly}} = 30 \text{ days} \approx 2.592 \times 10^6 \text{ s}$)**:
   - Updates Milankovitch astronomical orbital parameters ($e$, $\varepsilon$, $\varpi$) and TOA solar insolation (`MilankovitchOrbitalEngine`).
   - Solves 2D lateral piezometric aquifer diffusion (Darcy flux in `AquiferDepletionEngine`).
   - Integrates cryospheric thermodynamic melt ($L_f = 333.55\text{ kJ/kg}$) and eustatic sea level adjustments (`GlacialThermodynamicMeltEngine`).
@@ -68,7 +68,7 @@ Ether decouples numerical integration across three discrete physical time scales
   - Updates cohort demographic aging, Gompertz-Makeham senescence, and Kimura genetic drift.
   - Evaluates registered Type B cliodynamic plugins (`ProceduralEngineRegistry`).
 
-- **Tier 3 — Annual Macro Physics Scale ($\Delta t_{\text{annual}} = 365 \text{ days} \approx 31.5576 \times 10^6 \text{ s}$)**:
+- **Tier 3 â€” Annual Macro Physics Scale ($\Delta t_{\text{annual}} = 365 \text{ days} \approx 31.5576 \times 10^6 \text{ s}$)**:
   - Deep mineral ore grade degradation and Hotelling depletion dynamics (`OreGradeThermodynamicsEngine`).
   - Vaclav Smil primary energy transition inertia (35-year turnover time for physical infrastructure).
   - Integrates Viscoelastic Glacial Isostatic Adjustment (GIA, $\tau \approx 4000\text{ yr}$).
@@ -78,7 +78,7 @@ Ether decouples numerical integration across three discrete physical time scales
 
 ---
 
-## 3. Tier 1 — Core Model Physics Specifications (One-by-One)
+## 3. Tier 1 â€” Core Model Physics Specifications (One-by-One)
 
 ### Section A: Celestial Mechanics, Radiation & Global Thermodynamics
 
@@ -190,7 +190,7 @@ Ether decouples numerical integration across three discrete physical time scales
 - **Governing Equations**:
   $$\frac{dN}{dt} = R_{\text{fixation}} + F_{\text{manure}} - Y_{\text{crop}} \cdot \kappa_N - \lambda_{\text{leach}} N$$
   $$\frac{dP}{dt} = W_{\text{weathering}} - Y_{\text{crop}} \cdot \kappa_P, \quad \frac{dK}{dt} = W_K - Y_{\text{crop}} \cdot \kappa_K$$
-  Von Liebig’s Law of the Minimum governs maximum harvest yield: $Y_{\text{actual}} = Y_{\text{pot}} \cdot \min\left( \frac{N}{N_0}, \frac{P}{P_0}, \frac{K}{K_0}, \frac{\theta}{\theta_0} \right)$.
+  Von Liebigâ€™s Law of the Minimum governs maximum harvest yield: $Y_{\text{actual}} = Y_{\text{pot}} \cdot \min\left( \frac{N}{N_0}, \frac{P}{P_0}, \frac{K}{K_0}, \frac{\theta}{\theta_0} \right)$.
 - **Complexity**: $O(1)$ per cell.
 
 #### 18. Deforestation & USLE Soil Erosion Kinetics (`DeforestationErosionEngine`)
@@ -242,7 +242,7 @@ Ether decouples numerical integration across three discrete physical time scales
   - **Metabolic Baseline**: $B = B_0 M^{3/4}$ with standard human metabolic consumption $E_{\text{metabolic}} = 3.362\text{ GJ/capita/yr}$.
   - **Age at First Child (Primiparity)**:
     $$a_{\text{primiparity}} = 14.0 + 10.0 \cdot (1.0 - C_{\text{kinship}}) + 6.0 \cdot \tanh\left(\frac{T}{80.0}\right)$$
-    Ranges from 14–16 years in traditional high-natalist pioneer societies to 30+ years in delayed-marriage or high-tech societies.
+    Ranges from 14â€“16 years in traditional high-natalist pioneer societies to 30+ years in delayed-marriage or high-tech societies.
   - **Lotka Reproductive Structure**:
     $$\Phi_{\text{age}}(\bar{a}) = \begin{cases} 0 & \text{if } \bar{a} < a_{\text{primiparity}} - 1.5 \\ \exp\left( - \frac{(\bar{a} - (a_{\text{primiparity}} + 8.0))^2}{2 \cdot 13.0^2} \right) & \text{otherwise} \end{cases}$$
   - **Crude Birth Rate**:
@@ -371,11 +371,11 @@ Ether decouples numerical integration across three discrete physical time scales
 
 ---
 
-## 4. Tier 2 — Optional Cliodynamic & Phenomenological Engines (One-by-One)
+## 4. Tier 2 â€” Optional Cliodynamic & Phenomenological Engines (One-by-One)
 
 ### Subsection A: Macro-Theoretical Cliodynamic Plugins (`org.ether.society.procedural.tier2`)
 
-#### 43. Kümmel-Ayres-Warr Biophysical Exergy Growth (`KummelAyresExergyEngine`)
+#### 43. KÃ¼mmel-Ayres-Warr Biophysical Exergy Growth (`KummelAyresExergyEngine`)
 - **Governing Equations**:
   $$Y = A \cdot K^\alpha L^\beta E^\gamma, \quad \alpha + \beta + \gamma = 1$$
   $$\alpha = a \frac{K}{Y}, \quad \beta = b \frac{L}{Y}, \quad \gamma = 1 - \alpha - \beta$$
@@ -428,7 +428,7 @@ Ether decouples numerical integration across three discrete physical time scales
 #### 52. Turchin-Goldstone Structural-Demographic Theory (`TurchinGoldstoneSDTEngine`)
 - **Governing Equations**:
   $$\text{PSI} = N_{\text{pop}} \times \left(\frac{E}{E_0}\right) \times \left(\frac{W_{\text{wage}}}{W_0}\right)^{-1} \times \left(\frac{\text{Debt}_{\text{state}}}{\text{GDP}}\right)$$
-  Tracks the 200–300 year secular cycles of elite overproduction and sociopolitical instability.
+  Tracks the 200â€“300 year secular cycles of elite overproduction and sociopolitical instability.
 - **Complexity**: $O(1)$ per polity.
 
 #### 53. Acemoglu-Robinson Inclusive vs Extractive Institutions (`AcemogluRobinsonInstitutionsEngine`)
@@ -655,7 +655,11 @@ Ether decouples numerical integration across three discrete physical time scales
 #### 94. Thermodynamic Migration & Spatial Gravitation (`ThermodynamicMigrationEngine`)
 - **Governing Equations**:
   $$M_{ij} = G \cdot \frac{P_i P_j}{d_{ij}^\gamma} \cdot \exp\left( \frac{\text{Utility}_j - \text{Utility}_i}{k_B T_{\text{friction}}} \right)$$
-- **Complexity**: $O(6)$ per cell.
+- **Algorithmic Topology & Resolution 2 to 7 Implementation**:
+  1. **Topological Adjacency $O(1)$ (Ring-1)**: For all valid H3 grids (resolutions 2 to 7), neighbor retrieval is flattened into a precomputed contiguous adjacency table (`DeterministicSpatialAdjacencyTable`), eliminating all spherical trigonometry calls and reducing pairwise comparisons from 42.4 billion to 1.88 million per tick ($O(1)$ strict).
+  2. **Dynamic Adaptive Spatial Binning Fallback**: For synthetic or non-H3 test environments, the spatial binning box size dynamically adapts to the search radius ($\text{binSizeDeg} = \max(0.5, \text{radiusKm} / 111.32)$) without combinatorial explosion.
+  3. **Courant-Friedrichs-Lewy (CFL) Numerical Stability**: Since migration displacement is topologically restricted to immediate Ring-1 neighbors ($\Delta x = 1 \text{ cell}$ per $\Delta t$) and the Onsager flux fraction is bounded by $\text{fluxFraction} \le 0.20$, the Courant condition $C = \frac{v \Delta t}{\Delta x} \le 1.0$ is strictly respected across all resolutions, preventing numerical dispersion or unphysical supra-luminal population hopping.
+- **Complexity**: $O(1)$ per cell ($6 \text{ lookups}$).
 
 #### 95. Jevons Paradox & Rebound Efficiency (`JevonsParadoxEngine`)
 - **Governing Equations**:
@@ -712,14 +716,14 @@ Ether decouples numerical integration across three discrete physical time scales
 
 ## 6. Spatiotemporal Cartographic Tensors & Cultural Affinity Matrix
 
-### 6.1 Multi-Channel Cartographic Tensor Architecture (2048 × 1024, 2:1 Equirectangular)
+### 6.1 Multi-Channel Cartographic Tensor Architecture (2048 Ã— 1024, 2:1 Equirectangular)
 The simulation state at $T_0$ is initialized from a coupled tensor stack:
 
 1. **24-bit Categorical RGB Entity Tensors**:
    - **Tensor 0 (Isoglosses / Languages)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Language Family / Glottolog Clade ID}$.
    - **Tensor 1 (Kinship & Clan Structures)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Lineage System (Patrilineal, Matrilineal, Bilateral Foraging Band)}$.
    - **Tensor 3 (Politico-Military Sovereignty & Polities)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Polity ID / Sovereign Capital Jurisdiction}$.
-   - Linked to `data/maps/ether/earth/<epoch>/cultural_registry.json`.
+   - Linked to `data/ether/earth/<epoch>/cultural_registry.json`.
 
 2. **8-bit Continuous Intensity Grayscale Tensors ($[0, 255]$)**:
    - **Demographic Density**: $\rho(\mathbf{x}) = \rho_{\max} \cdot \left(\frac{G(\mathbf{x})}{255}\right)^\gamma$.
@@ -820,19 +824,19 @@ Ether functions as an epistemic laboratory designed to quantitatively evaluate, 
 The automated suite (`ScientificModelFalsificationAndValidationSuite`) benchmarks 7 fundamental cliodynamic debates:
 
 ```
-┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                          ETHER SCIENTIFIC MODEL FALSIFICATION MATRIX                                  │
-├───────────────────────────────┬───────────────────────────────┬───────────────────────────────────────┤
-│ Domain & Debate               │ Competing Paradigm A          │ Competing Paradigm B                  │
-├───────────────────────────────┼───────────────────────────────┼───────────────────────────────────────┤
-│ 1. Carrying Capacity          │ Malthus / World3 Limits       │ Ester Boserup Intensification         │
-│ 2. Sociology of Violence      │ Steven Pinker Pacification    │ Peter Turchin Secular Cycles (SDT)    │
-│ 3. Energy Economics           │ William Nordhaus DICE (Price) │ Vaclav Smil / Kümmel-Ayres Exergy     │
-│ 4. Governance of Commons      │ Garrett Hardin Commons Tragedy│ Elinor Ostrom Polycentric CPR         │
-│ 5. Economic Divergence        │ Acemoglu-Robinson Institutions│ Sachs-Diamond Geographic Determinism  │
-│ 6. State Formation            │ James C. Scott Coercive Cages │ Co-Governance Coordination Multiplier │
-│ 7. Cultural Evolution         │ Joseph Henrich Tasmanian Loss │ Static Repertoire Retention           │
-└───────────────────────────────┴───────────────────────────────┴───────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                          ETHER SCIENTIFIC MODEL FALSIFICATION MATRIX                                  â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ Domain & Debate               â”‚ Competing Paradigm A          â”‚ Competing Paradigm B                  â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ 1. Carrying Capacity          â”‚ Malthus / World3 Limits       â”‚ Ester Boserup Intensification         â”‚
+â”‚ 2. Sociology of Violence      â”‚ Steven Pinker Pacification    â”‚ Peter Turchin Secular Cycles (SDT)    â”‚
+â”‚ 3. Energy Economics           â”‚ William Nordhaus DICE (Price) â”‚ Vaclav Smil / KÃ¼mmel-Ayres Exergy     â”‚
+â”‚ 4. Governance of Commons      â”‚ Garrett Hardin Commons Tragedyâ”‚ Elinor Ostrom Polycentric CPR         â”‚
+â”‚ 5. Economic Divergence        â”‚ Acemoglu-Robinson Institutionsâ”‚ Sachs-Diamond Geographic Determinism  â”‚
+â”‚ 6. State Formation            â”‚ James C. Scott Coercive Cages â”‚ Co-Governance Coordination Multiplier â”‚
+â”‚ 7. Cultural Evolution         â”‚ Joseph Henrich Tasmanian Loss â”‚ Static Repertoire Retention           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### 8.1 Scenario 1: Malthusian Bounds vs. Boserupian Agricultural Intensification
@@ -850,7 +854,7 @@ The automated suite (`ScientificModelFalsificationAndValidationSuite`) benchmark
 ### 8.3 Scenario 3: Nordhaus Neoclassical Substitution vs. Smil Thermodynamic Inertia
 - **Competing Hypotheses**:
   - *Nordhaus (DICE)*: Energy forms are fungible and substitute instantaneously based on carbon price elasticity ($\varepsilon_{\text{subst}}$).
-  - *Vaclav Smil / Kümmel-Ayres*: Primary energy transitions are constrained by physical exergy turnover and heavy infrastructural capital replacement lifetimes ($\tau \approx 35\text{--}50\text{ years}$):
+  - *Vaclav Smil / KÃ¼mmel-Ayres*: Primary energy transitions are constrained by physical exergy turnover and heavy infrastructural capital replacement lifetimes ($\tau \approx 35\text{--}50\text{ years}$):
     $$\frac{d F_{\text{fossil}}}{dt} = -\frac{F_{\text{fossil}} - F_{\text{target}}}{\tau}$$
 - **Empirical Falsification**: The 150-year global energy history (wood $\to$ coal $\to$ petroleum $\to$ gas $\to$ nuclear $\to$ solar) confirms Smil's physical infrastructure inertia and refutes instantaneous market clearing.
 
@@ -858,7 +862,7 @@ The automated suite (`ScientificModelFalsificationAndValidationSuite`) benchmark
 - **Competing Hypotheses**:
   - *Hardin (1968)*: Unmanaged common-pool resources inevitably collapse due to individual rational utility maximization (Nash defect equilibrium).
   - *Ostrom (1990)*: Self-organized community institutions with clear boundaries, local monitoring, and graduated sanctions maintain stable equilibrium harvest $H \le \text{MSY}$.
-- **Empirical Falsification**: Long-enduring CPR institutions (Swiss alpine pastures of Törbel, Spanish Huerta irrigation canals) falsify Hardin's inevitability theorem in favor of Ostrom's 8 design principles.
+- **Empirical Falsification**: Long-enduring CPR institutions (Swiss alpine pastures of TÃ¶rbel, Spanish Huerta irrigation canals) falsify Hardin's inevitability theorem in favor of Ostrom's 8 design principles.
 
 ### 8.5 Scenario 5: Institutional Primacy vs. Geographic Friction
 - **Competing Hypotheses**:
@@ -877,6 +881,31 @@ The automated suite (`ScientificModelFalsificationAndValidationSuite`) benchmark
   - *Joseph Henrich (Tasmanian Effect)*: Complex cultural repertoire size ($C$) requires a critical effective population size ($N_{\text{crit}} \approx 5000$). Below this threshold, stochastic transmission errors exceed discovery rates ($\frac{dC}{dt} = \alpha N C - \beta C < 0$).
   - *Static Cognitive Model*: Technologies once invented remain permanent regardless of demographic scale.
 - **Empirical Falsification**: Archaeological evidence from post-glacial Tasmania (loss of bone points, spearthrowers, and marine fishing over 8000 years of isolation) validates Henrich's demographic-cultural coevolution model.
+
+### 8.8 Monotone Cubic Hermite Interpolation (PCHIP) & Cataclysmic Shock Preservation
+To eliminate artificial oscillations when ingesting empirical historical and prospective benchmarks, the validation kernel (`HistoricalValidationKernel`) rejects standard natural cubic splines in favor of **Monotone Piecewise Cubic Hermite Interpolating Polynomials (PCHIP, Fritsch & Carlson 1980)**:
+
+1. **Failure of Natural Cubic Splines ($C^2$) on Historical Ruptures**:
+   Natural cubic splines enforce continuous second derivatives ($f'' \in C^0$), minimizing total curvature $\int (f''(t))^2 dt$. However, when an abrupt historical shock occurs (such as the **1816 Tambora eruption / Year Without a Summer**, the **536 CE volcanic winter**, or the **1347 Black Death**), natural splines suffer from **Runge's phenomenon**:
+   - Severe non-physical overshoot before and after the shock.
+   - Spurious negative values for strictly non-negative physical variables (population $N < 0$, energy $E < 0$, GDP $Y < 0$).
+   - False artificial peaks in tranquil adjacent years (e.g., an unhistorical boom in 1812 or 1818).
+
+2. **PCHIP Mathematical Formulation ($C^1$ Shape-Preserving)**:
+   Given $N$ empirical coordinate knots $(t_k, y_k)$ with sub-interval widths $h_k = t_{k+1} - t_k > 0$ and secants $\Delta_k = \frac{y_{k+1} - y_k}{h_k}$:
+   * **Monotone Derivatives ($d_k = f'(t_k)$)**:
+     - If $\text{sign}(\Delta_{k-1}) \ne \text{sign}(\Delta_k)$ or $\Delta_{k-1}\Delta_k = 0$ (local extremum or flat region, such as the 1816 Tambora trough):
+       $$d_k = 0$$
+     - Otherwise (monotonic segment), the derivative is computed as the weighted harmonic mean of adjacent secants:
+       $$d_k = \frac{w_1 + w_2}{\frac{w_1}{\Delta_{k-1}} + \frac{w_2}{\Delta_k}} \quad \text{where } w_1 = 2h_k + h_{k-1}, \; w_2 = h_k + 2h_{k-1}$$
+   * **Evaluation on $[t_k, t_{k+1}]$ with normalized coordinate $s = \frac{t - t_k}{h_k} \in [0, 1]$**:
+     $$P(t) = y_k (2s^3 - 3s^2 + 1) + y_{k+1} (-2s^3 + 3s^2) + h_k d_k (s^3 - 2s^2 + s) + h_k d_{k+1} (s^3 - s^2)$$
+
+3. **Physical & Cliodynamic Invariants Guaranteed by PCHIP**:
+   * **Strict Monotonicity**: $P(t)$ is strictly monotonic on $[t_k, t_{k+1}]$ if and only if $y_k \le y_{k+1}$ (or $y_k \ge y_{k+1}$).
+   * **Strict Positivity Preservation**: If $y_k \ge 0$ for all $k$, then $P(t) \ge 0$ for all $t$.
+   * **Localized Shocks**: An isolated shock at $t_k$ (e.g. 1816 CE) induces zero ringing or oscillatory perturbation in surrounding eras $[t_{k-2}, t_{k-1}]$ or $[t_{k+1}, t_{k+2}]$.
+   * **Pre-Industrial Thermal Anchor**: Couples with the pre-industrial global mean surface temperature (GMST) baseline $1850\text{–}1900 \equiv +13.70^\circ\text{C}$ ($286.85\text{ K}$) for continuous CMIP6 prospective climate forcing.
 
 ---
 
@@ -1147,7 +1176,7 @@ This yields an immediate **$75\times$ memory reduction**, allowing global simula
 
 ```
 OOP Java Heap (Dispersed, Pointers, Cache Misses ~200 cycles):
-[Object Header | Ptr -> Temp | Ptr -> Pop | Ptr -> Resources] ───> [Dispersed Memory Locations]
+[Object Header | Ptr -> Temp | Ptr -> Pop | Ptr -> Resources] â”€â”€â”€> [Dispersed Memory Locations]
 
 DOD Flat Buffer (Contiguous 64-byte Cache Line Aligned ~1 cycle L1):
 [ Temp_0, Temp_1, ... Temp_N ][ Pop_0, Pop_1, ... Pop_N ][ Food_0, Food_1, ... Food_N ]
@@ -1172,24 +1201,24 @@ $$\mathbb{E}[\|\text{MemoryAddress}(i) - \text{MemoryAddress}(j)\|] \propto \sqr
 The native simulation kernel (`native/ether-core-native`) communicates with the Java orchestrator via zero-copy direct memory segment passing:
 
 ```
-┌────────────────────────────────────────────────────────┐
-│               JAVA 21 CONTROL & ORCHESTRATION          │
-│   • GeoTIFF & NetCDF Ingestion (ETOPO 2022, HYDE 3.4)   │
-│   • Scenario Setup & Temporal Timeline Branching       │
-│   • PostGIS Spatial Persistence & JavaFX 60fps UI      │
-└───────────────────────────┬────────────────────────────┘
-                            │ MemorySegment.address() (Zero Copy, 0 ns overhead)
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│               NATIVE RUST DOD COMPUTE KERNEL           │
-│   • ether_demographic_tick(world_ptr, agents_ptr, dt)  │
-│   • ether_environmental_tick(world_ptr, dt)            │
-│   • ether_urban_tick(world_ptr, dt)                    │
-│   • ether_flux_tick(world_ptr, dt)                     │
-│   • ether_culture_tick(world_ptr, agents_ptr, dt)      │
-│   • Multi-Threaded Rayon Work-Stealing Pool            │
-│   • AVX-512 / AVX2 / ARM NEON Vectorized Math          │
-└────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚               JAVA 21 CONTROL & ORCHESTRATION          â”‚
+â”‚   â€¢ GeoTIFF & NetCDF Ingestion (ETOPO 2022, HYDE 3.4)   â”‚
+â”‚   â€¢ Scenario Setup & Temporal Timeline Branching       â”‚
+â”‚   â€¢ PostGIS Spatial Persistence & JavaFX 60fps UI      â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                            â”‚ MemorySegment.address() (Zero Copy, 0 ns overhead)
+                            â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚               NATIVE RUST DOD COMPUTE KERNEL           â”‚
+â”‚   â€¢ ether_demographic_tick(world_ptr, agents_ptr, dt)  â”‚
+â”‚   â€¢ ether_environmental_tick(world_ptr, dt)            â”‚
+â”‚   â€¢ ether_urban_tick(world_ptr, dt)                    â”‚
+â”‚   â€¢ ether_flux_tick(world_ptr, dt)                     â”‚
+â”‚   â€¢ ether_culture_tick(world_ptr, agents_ptr, dt)      â”‚
+â”‚   â€¢ Multi-Threaded Rayon Work-Stealing Pool            â”‚
+â”‚   â€¢ AVX-512 / AVX2 / ARM NEON Vectorized Math          â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
@@ -1264,8 +1293,8 @@ where $w_{\text{occ}}(\mathbf{x}, t) \in [0.0, 1.0]$ is the hominin bioclimatic 
 * **Sparse Mobile Foragers** (Eurasian Mammoth Steppe, African Savanna, Amazonia): $\rho \in [0.01, 0.04]\text{ hab/km}^2$.
 * **Resource-Dense Refugia & Coasts** (Franco-Cantabrian Solutrean, Klasies River, Sahul Coastal Rivers): $\rho \in [0.10, 0.35]\text{ hab/km}^2$.
 * **Late Epipaleolithic Sedentary Foragers** (Natufian Hamlets, Ain Mallaha, Hayonim, Shubayqa 1): $\rho \in [1.5, 4.5]\text{ hab/km}^2$.
-* **Pre-Pottery Neolithic A Monumental Cores** (Göbekli Tepe, Karahan Tepe, Jericho PPNA): $\rho \in [4.0, 7.5]\text{ hab/km}^2$.
-* **Early Agricultural Mega-Villages** (Çatalhöyük, Jiahu, Mehrgarh): $\rho \in [8.0, 15.0]\text{ hab/km}^2$.
+* **Pre-Pottery Neolithic A Monumental Cores** (GÃ¶bekli Tepe, Karahan Tepe, Jericho PPNA): $\rho \in [4.0, 7.5]\text{ hab/km}^2$.
+* **Early Agricultural Mega-Villages** (Ã‡atalhÃ¶yÃ¼k, Jiahu, Mehrgarh): $\rho \in [8.0, 15.0]\text{ hab/km}^2$.
 * **Proto-Urban Irrigation Hubs** (Ubaid Eridu, Predynastic Hierakonpolis, Banpo Yangshao): $\rho \in [15.0, 35.0]\text{ hab/km}^2$.
 
 #### Calibrated Logarithmic Transfer Function:
@@ -1362,7 +1391,7 @@ $$\rho_{\text{SouthAsia}}(\mathbf{x}) \in [0.12, 0.30]\text{ hab/km}^2 \quad \gg
 Replaces discrete Gaussian points with continuous polyline distance metrics along major continental waterways and savannas:
 - **North America**: Ice-Free Corridor ($\mathcal{L}_{\text{IFC}}$), Columbia-Snake ($\mathcal{L}_{\text{Columbia}}$), Missouri River ($\mathcal{L}_{\text{Missouri}}$), Mississippi-Ohio ($\mathcal{L}_{\text{Mississippi}}$), Lower Mississippi Delta ($\mathcal{L}_{\text{LowMiss}}$), Southeast/Florida Gulf Coast ($\mathcal{L}_{\text{Florida}}$).
 - **South America**: Pacific Kelp Highway ($\mathcal{L}_{\text{Pacific}}$), Andean Mountain Corridor ($\mathcal{L}_{\text{Andes}}$), Amazon River Mainstem ($\mathcal{L}_{\text{Amazon}}$), Madeira Basin ($\mathcal{L}_{\text{Madeira}}$), Brazilian Cerrado/Caatinga Corridor ($\mathcal{L}_{\text{Savanna}}$).
-- **Remote Oceanic Island Exclusion**: Explicit coordinates filter (`isRemoteOceanicIsland`) prevents uninhabited oceanic islands (Cocos, Malpelo, Clipperton, Revillagigedo, Juan Fernández, Desventuradas, Fernando de Noronha, Trindade) from receiving spurious distance hits or forming floating circular artifacts in the Pacific and Atlantic.
+- **Remote Oceanic Island Exclusion**: Explicit coordinates filter (`isRemoteOceanicIsland`) prevents uninhabited oceanic islands (Cocos, Malpelo, Clipperton, Revillagigedo, Juan FernÃ¡ndez, Desventuradas, Fernando de Noronha, Trindade) from receiving spurious distance hits or forming floating circular artifacts in the Pacific and Atlantic.
 
 ---
 
@@ -1481,7 +1510,7 @@ where $\Pi_{\text{choke}} = 2.5$ if strategic maritime straits are blockaded.
 ### 15.6 Precious Bullion Flows, Critical Minerals, and the Universal 4-Flux Metabolic Architecture
 
 #### 1. Precious Metal Extraction & Cupellation (`MetallurgyEnthalpyEngine`)
-Precious ore reserves (`resourcePreciousMetal`, kg/km²) are mined via placer panning ($T \ge 1.2$) or deep-vein shaft mining and cupellation ($T \ge 1.8$):
+Precious ore reserves (`resourcePreciousMetal`, kg/kmÂ²) are mined via placer panning ($T \ge 1.2$) or deep-vein shaft mining and cupellation ($T \ge 1.8$):
 $$\dot{M}_{\text{precious}} = \min\left(\text{Ore}_{\text{precious}}, N_{\text{miners}} \cdot Y_{\text{worker}}(T) \cdot \Delta t, \frac{E_{\text{cupel}}}{12.0\text{ MJ/kg}}\right)$$
 $$\frac{d(\text{resourcePreciousMetal})}{dt} = -\dot{M}_{\text{precious}}$$
 Extracted bullion increases local durable and liquid monetary capital stock:
@@ -1507,16 +1536,16 @@ flowchart TD
     end
 
     subgraph CellMetabolism["Cellular Thermodynamic Engine O(1)"]
-        PhiE["Flux 1: Active Exergy Flow Φ_E<br>(Mechanical Work, Process Heat, Electricity)"]
-        PhiM["Flux 2: Structural Mass Flow Φ_M<br>(Formed, Smelted, Assembled Matter)"]
-        PhiK["Flux 3: Productive Capital Stock Φ_K<br>(Tools, Furnaces, Transport Assets, Machinery)"]
-        PhiS["Flux 4: Biological Metabolic Subsistence Φ_S<br>(Demographic Caloric & Hydric Maintenance)"]
+        PhiE["Flux 1: Active Exergy Flow Î¦_E<br>(Mechanical Work, Process Heat, Electricity)"]
+        PhiM["Flux 2: Structural Mass Flow Î¦_M<br>(Formed, Smelted, Assembled Matter)"]
+        PhiK["Flux 3: Productive Capital Stock Î¦_K<br>(Tools, Furnaces, Transport Assets, Machinery)"]
+        PhiS["Flux 4: Biological Metabolic Subsistence Î¦_S<br>(Demographic Caloric & Hydric Maintenance)"]
     end
 
-    GE -->|Harvest Efficiency η_E| PhiE
-    GM -->|Extraction & Reduction η_M| PhiM
+    GE -->|Harvest Efficiency Î·_E| PhiE
+    GM -->|Extraction & Reduction Î·_M| PhiM
     PhiE & PhiM -->|Coupled Assembly K| PhiK
-    PhiK -->|Mechanical Wear & Rust δ_K| Entropie["Entropic Decay"]
+    PhiK -->|Mechanical Wear & Rust Î´_K| Entropie["Entropic Decay"]
     PhiS -->|Physiological Maintenance| Labor["Active Human Labor Pool L"]
     Labor -->|Allocated Work Effort| PhiE & PhiM & PhiK
 ```
@@ -1611,10 +1640,10 @@ Precious metals (`resourcePreciousMetal`: Gold, Silver, Platinum) obey two disti
 1. **Pre-Industrial Monetary & Bullion Regime ($T < 3.8$)**:
    - Gold and silver possess high malleability ($\text{Mohs } 2.5\text{--}3.0$) and cannot fabricate agricultural plows or structural machinery.
    - Instead, refined bullion accumulates into the **Sovereign Bullion Treasury (`Nation.treasuryBullion`)**, lubricating long-distance market conductance ($\sigma_{\text{trade}}$) and paying professional standing armies (`WarDiplomacyEngine`).
-   - **Fisher Equation of Exchange ($M \cdot V = P \cdot Y$) & Dutch Disease (Maladie Hollandaise / Révolution des Prix)**:
+   - **Fisher Equation of Exchange ($M \cdot V = P \cdot Y$) & Dutch Disease (Maladie Hollandaise / RÃ©volution des Prix)**:
      When a nation extracts or imports massive bullion ($M = \text{treasuryBullion}$) without proportionate real physical capital and agricultural output ($Y = K + \text{Food}$), the bullion-to-real-output ratio surges:
      $$\mathcal{I}_{\text{bullion}} = \frac{M_{\text{bullion}}}{10.0 + K + 0.5 \cdot \text{Food}}$$
-     When $\mathcal{I}_{\text{bullion}} > 0.35$, monetary inflation (`Nation.monetaryInflation`) triggers domestic manufacturing hollow-out ($\Delta K < 0$), elevates wealth inequality (`giniIndex`), and amplifies elite overproduction instability (modeling 16th-century Imperial Spain after Potosí and Mansa Musa's gold shock).
+     When $\mathcal{I}_{\text{bullion}} > 0.35$, monetary inflation (`Nation.monetaryInflation`) triggers domestic manufacturing hollow-out ($\Delta K < 0$), elevates wealth inequality (`giniIndex`), and amplifies elite overproduction instability (modeling 16th-century Imperial Spain after PotosÃ­ and Mansa Musa's gold shock).
 
 2. **Modern High-Tech Industrial & Catalytic Regime ($T \ge 3.8$)**:
    - Gold, silver, and platinum-group metals become **irreplaceable physical inputs** (non-corroding microelectronic interconnects, photovoltaic silver paste, chemical and hydrogen catalysts).
@@ -1640,8 +1669,8 @@ Precious metals (`resourcePreciousMetal`: Gold, Silver, Platinum) obey two disti
 #### 8. Epistemological Universality Principle: Zero Geographic Bounding Boxes & Tier 1 vs. Tier 2 (Type B) Bifurcations
 
 All simulation engines strictly adhere to **spatial, temporal, and planetary universality** (no hardcoded GPS latitude/longitude bounding boxes or calendar-date triggers):
-* **Tier 1 (Type A — Universal Invariant Physics)**: Executes unconditionally across every cell on any planet (`MetallurgyEnthalpyEngine`, `OreGradeThermodynamicsEngine`, `EntropicMetalDissipationEngine`, `SoilNutrientNPKEngine`, `DarcyGroundwaterEngine`, `MegafaunaEcosystemEngine`, `TrophicEcosystemEngine`).
-* **Tier 2 (Type B — Pluggable Institutional & Sociological Bifurcations)**: Represents contingent political, institutional, or cultural responses to physical constraints (`EdoJapanIsolationEngine`, `RomanImperialCliodynamicEngine`, `AmerindianEcosystemEngine`, `FertileCrescentSalinizationEngine`, `ProtestantWorkEthicEngine`, `MonasticClergyDemographicEngine`). When enabled, these engines operate solely on **local physical, ecological, and institutional state variables** (such as border trade friction, draft livestock density, or evapotranspiration-to-precipitation balance) rather than geographic coordinates.
+* **Tier 1 (Type A â€” Universal Invariant Physics)**: Executes unconditionally across every cell on any planet (`MetallurgyEnthalpyEngine`, `OreGradeThermodynamicsEngine`, `EntropicMetalDissipationEngine`, `SoilNutrientNPKEngine`, `DarcyGroundwaterEngine`, `MegafaunaEcosystemEngine`, `TrophicEcosystemEngine`).
+* **Tier 2 (Type B â€” Pluggable Institutional & Sociological Bifurcations)**: Represents contingent political, institutional, or cultural responses to physical constraints (`EdoJapanIsolationEngine`, `RomanImperialCliodynamicEngine`, `AmerindianEcosystemEngine`, `FertileCrescentSalinizationEngine`, `ProtestantWorkEthicEngine`, `MonasticClergyDemographicEngine`). When enabled, these engines operate solely on **local physical, ecological, and institutional state variables** (such as border trade friction, draft livestock density, or evapotranspiration-to-precipitation balance) rather than geographic coordinates.
 
 ---
 
@@ -1682,7 +1711,7 @@ Populations are protected by four discrete architectural archetypes (`HabitatTyp
 
 ---
 
-### 14. Empirical Future Projections (2026–2100) & Dynamic Epoch State Initialization
+### 14. Empirical Future Projections (2026â€“2100) & Dynamic Epoch State Initialization
 
 #### A. Predictive Multi-Variable Benchmark Integration
 To ensure falsification beyond the empirical historical frontier ($t > 2026\text{ CE}$), Ether synchronizes multi-variable benchmark curves with official consensus trajectories generated by integrated assessment models (IAMs) and international agencies:
@@ -1747,6 +1776,7 @@ $$E_{\text{potential}} \approx 1.0\text{ cm/year} \quad (\approx 1\% \text{ of E
 However, the atmospheric moisture capacity of the cold, dense nitrogen column allows storing up to $W_{\text{column}} \approx 10.0\text{ meters}$ of liquid equivalent before convective breakdown. Consequently, Titan's hydrologic cycle does not produce daily drizzle, but operates in a **bimodal flash-flood regime**:
 1. **Quiescent Multi-Decadal Drought**: Decades with negligible precipitation, gentle surface winds ($v < 1\text{ m/s}$).
 2. **Seasonal Convective Deluges**: Triggered during equinoxes (equatorial desert downdrafts $v \sim 10\text{ m/s}$) and polar summer (cyclonic gale-force winds $v \sim 20\text{ m/s}$), dumping meters of liquid methane in intense flash floods that carve labyrinthine karst canyons and replenish northern hydrocarbon seas (Kraken, Ligeia, Punga Mare).
+
 
 
 

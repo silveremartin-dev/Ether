@@ -159,11 +159,12 @@ public class EcologicalDegradationEngine {
                 cell.setWaterResource(Math.min(1000.0, curWaterRes + (rain / 100.0) * 10.0 * dtMonthlyRatio));
             }
 
-            // 4. Famine Simulation
+            // 4. Famine & Nutritional Stress Telemetry
+            // Ownership split (no double-counting): Caloric deduction and starvation mortality are owned by DemographicKernel.
             double totalFood = (cell.getFoodResourceOr(0.0))
                     + (cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() * 0.70 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3) : 0.0)
                     + (cell.getBiomassFish() != null ? cell.getBiomassFish() * 0.80 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3) : 0.0)
-                    + (cell.getBiomassNatural() != null ? cell.getBiomassNatural() * 0.05 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG * 1e-3) : 0.0);
+                    + (cell.getBiomassNatural() != null ? cell.getBiomassNatural() * (effectiveTech < 1.5 ? 0.008 : 0.005) * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG : 0.0);
 
             // Caloric requirement in GJ over time deltaYears: pop * 3.362 GJ/year * dtYears
             double safeDtYears = Math.max(1e-4, deltaYears);
@@ -175,15 +176,8 @@ public class EcologicalDegradationEngine {
                 famineEvents++;
                 double foodDeficitRatio = Math.min(1.0, (foodRequired - totalFood) / foodRequired);
 
-                cell.setLifespan(Math.max(15.0, curLife - 1.0 * foodDeficitRatio * dtMonthlyRatio));
-                cell.setFertility(Math.max(0.5, curFert - 0.5 * foodDeficitRatio * dtMonthlyRatio));
-
-                int mortality = (int) Math.ceil(pop * 0.03 * foodDeficitRatio * dtMonthlyRatio);
-                cell.setPopulation(Math.max(0, pop - mortality));
-                double curFood = cell.getFoodResourceOr(0.0);
-                cell.setFoodResource(Math.max(0.0, curFood - foodRequired));
-
-                cell.updateAgePyramidFromTotal(effectiveTech);
+                cell.setLifespan(Math.max(15.0, curLife - 0.5 * foodDeficitRatio * dtMonthlyRatio));
+                cell.setFertility(Math.max(0.5, curFert - 0.25 * foodDeficitRatio * dtMonthlyRatio));
             } else {
                 cell.setLifespan(Math.min(85.0, curLife + 0.02 * dtMonthlyRatio));
                 cell.setFertility(Math.min(7.0, curFert + 0.01 * dtMonthlyRatio));
@@ -230,7 +224,8 @@ public class EcologicalDegradationEngine {
             cell.setWoodResource(nextWood);
             // Dynamic natural ecological biomass (wild fauna, understory flora, roots, berries, game animals)
             double currentNat = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : (3000.0 * areaScale);
-            double maxNatCap = (biome == Biome.JUNGLE ? 9000.0 : (biome == Biome.FOREST ? 7500.0 : (biome == Biome.SAVANNAH ? 5000.0 : (biome == Biome.PLAINS ? 4000.0 : 2000.0)))) * areaScale;
+            double baseNatCap = (biome == Biome.JUNGLE ? 9000.0 : (biome == Biome.FOREST ? 7500.0 : (biome == Biome.SAVANNAH ? 5000.0 : (biome == Biome.PLAINS ? 4000.0 : 2000.0)))) * areaScale;
+            double maxNatCap = (effectiveTech < 1.5 && pop > 0) ? Math.max(baseNatCap, pop * 48.0) : baseNatCap;
             double rNat = (biome == Biome.PLAINS || biome == Biome.SAVANNAH) ? 0.15 : 0.10;
             double natRegrowth = (currentNat < maxNatCap)
                     ? rNat * currentNat * (1.0 - currentNat / maxNatCap) * dtYears
@@ -355,7 +350,9 @@ public class EcologicalDegradationEngine {
                     : 3;
             double areaScale = Math.max(0.05, H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3) / 1770.49);
 
-            double food = c.getFoodResourceOr(0.0);
+            double food = c.getFoodResourceOr(0.0)
+                    + c.getBiomassAgricultureOr(0.0) * 0.0105
+                    + c.getBiomassNaturalOr(0.0) * 0.12;
             double water = c.getWaterResourceOr(0.0);
             double temp = c.getTemperatureOr(15.0);
             double friction = c.getMovementFrictionOr(1.0);

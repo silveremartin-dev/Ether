@@ -103,8 +103,7 @@ public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugi
             double inclusiveness = Math.clamp(1.0 - gini, 0.1, 0.9);
 
             // Inclusive institutions incentivize capital reinvestment and technological adoption (creative destruction)
-            double institutionalGrowthBonus = inclusiveness * 0.02 * Math.log(1.0 + tech) * deltaYears;
-            cell.setResourceCapital(capital * (1.0 + institutionalGrowthBonus));
+            // Inclusive institutions foster creative destruction and technological adoption (Acemoglu & Robinson 2012)
             cell.setTechnologyLevel(Math.min(10.0, tech + (inclusiveness * 0.005 * deltaYears)));
         }
     }

@@ -188,8 +188,8 @@ public class MetallurgyEnthalpyEngine {
                     // Expand cell physical capital (tools, weapons, plows, machinery) minus mechanical wear & rust
                     curCap = cell.getResourceCapitalOr(0.0);
                     double durableToolInvestment = actualRefinedMetal * alloyQuality;
-                    double materialWearRate = Math.max(0.01, 0.05 / Math.max(0.5, tech * 0.4)) * dtSafe;
-                    double newCapital = Math.max(0.0, (curCap + durableToolInvestment) * (1.0 - materialWearRate));
+                    double materialWearRate = Math.max(0.001, 0.004 / Math.max(0.5, tech * 0.4)) * dtSafe;
+                    double newCapital = Math.max(0.0, curCap * (1.0 - materialWearRate) + durableToolInvestment);
                     cell.setResourceCapital(newCapital);
                 }
             }

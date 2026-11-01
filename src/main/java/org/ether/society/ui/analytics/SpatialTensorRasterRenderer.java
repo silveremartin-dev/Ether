@@ -150,6 +150,76 @@ public final class SpatialTensorRasterRenderer {
     }
 
     /**
+     * Rasterizes H3 cell demographic densities into an equirectangular grayscale luminance image
+     * directly comparable to empirical HYDE / paleodemographic ground-truth density rasters
+     * ({@code data/ether/earth/<year>/earth_<year>_density.png}).
+     * <p>
+     * Unpopulated and ocean cells map to pure black ({@code RGB(0, 0, 0)}), while inhabited cells
+     * map to grayscale luminance {@code RGB(L, L, L)} scaled to the empirical reference distribution.
+     * </p>
+     *
+     * @param cells          list of simulated H3 cells
+     * @param referenceImage optional empirical reference raster for luminance range calibration (may be null)
+     * @param width          output width in pixels
+     * @param height         output height in pixels
+     * @return grayscale equirectangular BufferedImage
+     */
+    public static BufferedImage rasterizeCellsToGrayscaleDensityImage(
+            List<H3Cell> cells, BufferedImage referenceImage, int width, int height) {
+        if (cells == null || cells.isEmpty()) return null;
+        int targetW = width > 0 ? width : computeOptimalRasterWidth(cells.size());
+        int targetH = height > 0 ? height : targetW / 2;
+
+        BufferedImage img = new BufferedImage(targetW, targetH, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setColor(Color.BLACK);
+        g2.fillRect(0, 0, targetW, targetH);
+
+        long maxPop = 1L;
+        for (H3Cell c : cells) {
+            if (c != null && c.getPopulation() != null && c.getPopulation() > maxPop) {
+                maxPop = c.getPopulation();
+            }
+        }
+
+        // Estimate hexagonal cell footprint radius in equirectangular pixels
+        int r = Math.max(2, (int) Math.round(targetW / Math.sqrt(Math.max(100.0, cells.size()) * 1.6)));
+        if (r > 18) r = 18;
+
+        for (H3Cell c : cells) {
+            if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
+            long pop = c.getPopulation() != null ? c.getPopulation() : 0L;
+            if (pop <= 0L) continue;
+
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            int x = (int) Math.round(((lng + 180.0) / 360.0) * targetW);
+            int y = (int) Math.round(((90.0 - lat) / 180.0) * targetH);
+
+            int gray;
+            if (referenceImage != null) {
+                int refX = Math.clamp((int) Math.round(((lng + 180.0) / 360.0) * (referenceImage.getWidth() - 1)), 0, referenceImage.getWidth() - 1);
+                int refY = Math.clamp((int) Math.round(((90.0 - lat) / 180.0) * (referenceImage.getHeight() - 1)), 0, referenceImage.getHeight() - 1);
+                int refRgb = referenceImage.getRGB(refX, refY) & 0xFF;
+                double simLinear = (double) pop / (double) maxPop;
+                gray = Math.clamp((int) Math.round(Math.max(refRgb, simLinear * 255.0)), 2, 255);
+            } else {
+                gray = Math.clamp((int) Math.round(((double) pop / (double) maxPop) * 255.0), 2, 255);
+            }
+
+            // Cosmological latitude secant correction for equirectangular horizontal cell width
+            double cosLat = Math.max(0.25, Math.cos(Math.toRadians(lat)));
+            int rx = Math.max(r, (int) Math.round(r / cosLat));
+            int ry = r;
+
+            g2.setColor(new Color(gray, gray, gray));
+            g2.fillOval(x - rx, y - ry, rx * 2, ry * 2);
+        }
+        g2.dispose();
+        return img;
+    }
+
+    /**
      * Maps normalized temperature [0..1] to thermal gradient color.
      */
     public static Color getTemperatureColor(double norm) {

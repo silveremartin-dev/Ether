@@ -1,4 +1,4 @@
-# Compiled class files
+﻿# Compiled class files
 *.class
 
 # Log files
@@ -113,8 +113,8 @@ data/paleoclimate/
 Pages2kTemperature2_2_0.zip
 
 # Track standardized Ether planetary maps and tensors
-!data/maps/ether/
-!data/maps/ether/**
+!data/ether/
+!data/ether/**
 !data/maps/earth/
 !data/maps/earth/**
 
@@ -130,3 +130,4 @@ Pages2kTemperature2_2_0.zip
 credentials.json
 secrets/
 config/secrets/
+

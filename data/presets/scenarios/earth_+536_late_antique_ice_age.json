@@ -1,6 +1,6 @@
 {
   "name" : "Late Antique Little Ice Age & Justinian Plague (536 CE)",
-  "description" : "\uD83C\uDF0B HISTORICAL SCENARIO : L'Anomalie Climatique Volcanique de 536 & Choc Sanitaire\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nL'année 536 est considérée par les historiens du climat comme \"la pire année de l'histoire humaine\". Deux éruptions volcaniques super-massives consécutives ont injecté un voile d'aérosols stratosphériques occultant le Soleil pendant 18 mois.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute brutale des températures estivales (-2°C à -3°C) et effondrement des récoltes céréalières eurasiennes.\n• Propagation fulgurante de la Peste de Justinien (Yersinia pestis) le long des routes de commerce maritime.\n• Déstabilisation militaire des frontières impériales byzantines et grandes migrations de peuples des steppes.\n",
+  "description" : "HISTORICAL SCENARIO: The Volcanic Climate Anomaly of 536 & Epidemiological Shock\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nThe year 536 is considered by climate historians as one of the most severe abrupt cooling events in human history. Consecutive massive volcanic eruptions injected a dense stratospheric aerosol veil obscuring sunlight for 18 months.\n\n[KEY SCENARIO OBSERVABLES]\n  Abrupt drop in summer temperatures (-2°C to -3°C) and Eurasian cereal crop failures.\n  Rapid diffusion of the Justinian Plague (Yersinia pestis) along Mediterranean maritime trade routes.\n  Geopolitical destabilization of imperial frontiers and Eurasian steppe migrations.",
   "id" : null,
   "presetKey" : "late_antique_ice_age",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
@@ -132,7 +132,7 @@
   "techPreset" : "AUTO_FROM_YEAR",
   "initialHumanCount" : 180000000,
   "initialTechLevel" : 0.0,
-  "initialCapitalPerCapita" : 250.0,
+  "initialCapitalPerCapita" : 505.0,
   "initialEnergyPerCapita" : 100.0,
   "initialFoodReserveMonths" : 1.5,
   "initialInformationPerCapita" : 300.0,
@@ -192,5 +192,5 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "displayName" : "Late Antique Little Ice Age & Justinian Plague (536 CE)",
-  "displayDescription" : "❄ SCÉNARIO PALÉOCLIMATIQUE : L'Hiver Volcanique de 536 & La Crise de l'Antiquité Tardive (536 apr. J.-C.)\n\nRefroidissement mondial brutal déclenché par une série d'éruptions volcaniques majeures. Effondrement des récoltes, peste de Justinien et grandes migrations eurasiennes."
+  "displayDescription" : "HISTORICAL SCENARIO: The 536 Volcanic Winter & Justinian Plague (536 CE)\n\nStratospheric aerosol cooling, Late Antique Little Ice Age (LALIA), pandemic spread of Yersinia pestis, and Eurasian geopolitical reorganization."
 }

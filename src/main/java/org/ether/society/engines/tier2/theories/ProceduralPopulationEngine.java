@@ -207,7 +207,7 @@ public class ProceduralPopulationEngine {
             totalWeight += weights[i];
         }
 
-        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation, capitalPerCapita);
+        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation, capitalPerCapita, techLevel);
         logger.info("Distributed {} humans on Earth map (Tech: {}, Capital: {} kg/capita)", totalPopulation, techLevel, capitalPerCapita);
     }
 
@@ -371,7 +371,7 @@ public class ProceduralPopulationEngine {
             for (double w : weights) totalWeight += w;
         }
 
-        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation, capitalPerCapita);
+        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation, capitalPerCapita, techLevel);
         logger.info("Procedurally distributed {} humans across {} cells (Capital: {} kg/capita, Pattern: {})", totalPopulation, landCells.size(), capitalPerCapita, pattern);
     }
 
@@ -535,13 +535,14 @@ public class ProceduralPopulationEngine {
             }
         }
 
-        // Human hunting pressure coefficient gamma = 0.05, climate stress mu = 0.4
-        double huntingPressure = 0.05 * humanDensity;
-        double totalStress = huntingPressure + (0.4 * climateStress);
-
-        // Exponential decay of megafauna index under synergistic stress
-        double abundance = baseMegafauna * Math.exp(-totalStress * (t / 50000.0));
-        return Math.clamp(abundance, 2.0, 100.0);
+        // Late Pleistocene cumulative megafaunal defaunation (-100,000 BP to -10,000 BP)
+        // Canonical empirical fossil record (Sandom et al. 2014; Barnosky et al. 2004):
+        // Pristine baseline = 100% at -100k BP; ~80% at -30k BP; ~60% at LGM -20k BP; ~20% at -10k BP
+        double tKya = t / 1000.0;
+        double baselinePleistoceneAbundance = 20.0 + 80.0 / (1.0 + Math.exp((20.0 - tKya) / 8.5));
+        double huntingPressure = 0.02 * humanDensity;
+        double stressModulation = 1.0 - Math.clamp(huntingPressure + 0.15 * climateStress, 0.0, 0.35);
+        return Math.clamp(baselinePleistoceneAbundance * stressModulation, 2.0, 100.0);
     }
 
 
@@ -696,10 +697,12 @@ public class ProceduralPopulationEngine {
      * Normalizes weights so sum of cell populations exactly matches totalPopulation.
      * Computes cell terrain friction matrix, spatializes K(x), E(x), F(x), I(x), and populates age pyramid cohorts.
      */
-    private static void applyNormalizedPopulation(List<H3Cell> landCells, double[] weights, double totalWeight, long totalPopulation, double capitalPerCapita) {
+    private static void applyNormalizedPopulation(List<H3Cell> landCells, double[] weights, double totalWeight, long totalPopulation, double capitalPerCapita, double techLevel) {
         if (totalWeight <= 0) return;
 
-        double derivedTech = Math.clamp(Math.log10(Math.max(1.0, capitalPerCapita)) * 2.2 + 0.2, 0.2, 10.0);
+        double derivedTech = (techLevel > 0.0)
+                ? techLevel
+                : Math.clamp(1.0 + Math.log10(Math.max(1.0, capitalPerCapita / 50.0)) * 1.4, 0.2, 10.0);
 
         // First pass: calculate populations
         long assigned = 0;
@@ -744,10 +747,13 @@ public class ProceduralPopulationEngine {
             cell.setResourceCapital(cellCapitalTotal);
             cell.setResourceMetal(cellCapitalTotal * 0.15);
 
-            // 2. Spatial Food Reserves F(x)
+            // 2. Spatial Food Reserves F(x) & Agricultural Biomass
             double foodBiomeFactor = cell.getFoodResource() != null && cell.getFoodResource() > 0 ? Math.clamp(cell.getFoodResource() / 1000.0, 0.2, 2.0) : 1.0;
             double soilNPK = cell.getSoilOrganicCarbon() != null && cell.getSoilOrganicCarbon() > 0 ? Math.clamp(cell.getSoilOrganicCarbon() / 100.0, 0.2, 2.5) : 1.0;
             cell.setFoodResource(pop * 6.0 * foodBiomeFactor * soilNPK * 10.0);
+            if (derivedTech >= 1.2) {
+                cell.setBiomassAgriculture(pop * 420.0 * foodBiomeFactor);
+            }
 
             // 3. Spatial Energy Stock E(x)
             double energyBiomePot = (cell.getWoodResource() != null ? cell.getWoodResource() / 1000.0 : 0.5) * 0.5 + (cell.getMantleHeatFlow() != null ? cell.getMantleHeatFlow() / 100.0 : 0.8) * 0.5;

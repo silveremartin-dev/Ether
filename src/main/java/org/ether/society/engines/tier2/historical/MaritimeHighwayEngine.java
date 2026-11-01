@@ -63,9 +63,16 @@ public class MaritimeHighwayEngine {
             double tempC = cell.getTemperatureOr(15.0);
 
             if (isMaritimeBasin && tempC > 0.0) {
-                // Coastal & maritime trade acceleration: buoyancy eliminates solid dry friction
+                // Coastal & maritime trade acceleration: buoyancy eliminates solid dry friction,
+                // scaled by integration step dtYears and bounded by Solow maritime capital saturation
                 double currentCap = cell.getResourceCapitalOr(0.0);
-                cell.setResourceCapital(currentCap * (1.0 + capitalBoostRate));
+                int pop = cell.getPopulationOr(1);
+                double tech = cell.getTechnologyLevelOr(1.5);
+                double capPerCapita = currentCap / Math.max(1.0, (double) pop);
+                double maritimeEquilibriumCap = 65.0 * Math.pow(Math.max(1.0, tech), 1.6);
+                double saturation = Math.clamp(1.0 - (capPerCapita / maritimeEquilibriumCap), 0.02, 1.0);
+                double dtYears = Math.clamp(timeStepDays / 365.25, 0.002, 1.0);
+                cell.setResourceCapital(currentCap * (1.0 + capitalBoostRate * dtYears * saturation));
 
                 // Hydrodynamic friction reduction over open ice-free water
                 double friction = cell.getMovementFrictionOr(1.0);

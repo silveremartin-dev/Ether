@@ -1,6 +1,6 @@
 {
   "name" : "Islamic Expansion & Caliphal Commercial Revolution (632 CE)",
-  "description" : "\uD83C\uDF19 HISTORICAL SCENARIO : Unification Califale & Révolution Agricole Arabe (632 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModélise l'expansion foudroyante des Califats Omeyyade et Abbasside de l'Espagne à l'Indus. Effondrement de l'Empire Sassanide, diffusion massive des techniques d'irrigation (qanats, norias) et des cultures tropicales (canne à sucre, coton, agrumes), essor des réseaux maritimes de l'Océan Indien.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse d'unification géopolitique portée par la haute Asabiyyah bédouine et la doctrine califale.\n• Révolution agricole arabe : diversification agronomique et maîtrise hydraulique des zones arides.\n• Essor de Bagdad comme métropole mondiale (Maison de la Sagesse) et intégration commerciale transcontinentale.\n",
+  "description" : "HISTORICAL SCENARIO: Caliphal Unification & Arab Agricultural Revolution (632 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the rapid expansion of the Umayyad and Abbasid Caliphates from Iberia to the Indus. Collapse of the Sasanian Empire, widespread diffusion of advanced irrigation systems (qanats, norias) and new tropical cultivars (sugar cane, cotton, citrus), and flowering of Indian Ocean maritime commercial corridors.\n\n[KEY SCENARIO OBSERVABLES]\n  Rapid geopolitical consolidation driven by high Bedouin Asabiyyah and caliphal doctrine.\n  Arab Agricultural Revolution: crop diversification and hydrological mastery across arid frontiers.\n  Growth of Baghdad as a premier global metropolis (House of Wisdom) and transcontinental market integration.",
   "id" : null,
   "presetKey" : "islamic_expansion_632",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
@@ -130,9 +130,9 @@
   "revolutionPeriodDays" : 365.25,
   "axialTiltDegrees" : 23.5,
   "techPreset" : "AUTO_FROM_YEAR",
-  "initialHumanCount" : 70000000,
+  "initialHumanCount" : 205000000,
   "initialTechLevel" : 0.0,
-  "initialCapitalPerCapita" : 320.0,
+  "initialCapitalPerCapita" : 478.0,
   "initialEnergyPerCapita" : 140.0,
   "initialFoodReserveMonths" : 6.0,
   "initialInformationPerCapita" : 500.0,
@@ -192,5 +192,5 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "displayName" : "Islamic Expansion & Caliphal Commercial Revolution (632 CE)",
-  "displayDescription" : "\uD83C\uDF19 SCÉNARIO HISTORIQUE : Unification Califale & Révolution Agricole Arabe (632 ap. J.-C.)\n\n[CONTEXTE HISTORIQUE & PHYSIQUE]\nModélise l'expansion foudroyante des Califats Omeyyade et Abbasside de l'Espagne à l'Indus. Effondrement de l'Empire Sassanide, diffusion massive des techniques d'irrigation (qanats, norias) et des cultures tropicales (canne à sucre, coton, agrumes), essor des réseaux maritimes de l'Océan Indien.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse d'unification géopolitique portée par la haute Asabiyyah bédouine et la doctrine califale.\n• Révolution agricole arabe : diversification agronomique et maîtrise hydraulique des zones arides.\n• Essor de Bagdad comme métropole mondiale (Maison de la Sagesse) et intégration commerciale transcontinentale.\n"
+  "displayDescription" : "HISTORICAL SCENARIO: Islamic Expansion & Commercial Revolution (632 CE)\n\nCaliphal unification across the Middle East, agricultural and irrigation diffusion (qanats, norias), maritime Indian Ocean trade routes, and high Bedouin Asabiyyah."
 }
