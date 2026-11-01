@@ -433,7 +433,15 @@ public class AutoEpochScenarioGenerator {
         if (year <= -3000L) return PlanetPreset.EARTH_LH_3000BP;
         if (year <= -1900L) return PlanetPreset.EARTH_BRONZE_1900BP;
         if (year <= -1000L) return PlanetPreset.EARTH_IRON_1000BP;
-        return PlanetPreset.EARTH_MODERN;
+        // Continuous PCHIP CO2 concentration from historical ice cores / HYDE / SSP projections
+        double co2 = org.ether.society.analytics.HistoricalValidationKernel.getInterpolatedBenchmarkValue("co2Concentration", (double) year);
+        if (Double.isNaN(co2) || co2 < 180.0) {
+            co2 = (year < 1800) ? 280.0 : ((year < 1914) ? 295.0 : 420.0);
+        }
+        String epochLabel = formatEpochName(year);
+        return PlanetPreset.EARTH_MODERN
+                .withName("Terre (" + epochLabel + ")")
+                .withCo2Ppm(co2);
     }
 
     /**

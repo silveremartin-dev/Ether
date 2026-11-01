@@ -6,6 +6,7 @@
  */
 package org.ether.society.core;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
 import org.ether.society.model.PhysicalConstants;
@@ -755,6 +756,46 @@ public class SimulationMetricsAggregator {
      * @return global urbanization rate in $[0.0, 95.0]$ %
      */
     public double getUrbanizationRate() {
+        WorldBuffer wb = engine.getWorldBuffer();
+        if (wb != null && wb.getBiomassHuman() != null && wb.getCapacity() > 0) {
+            float[] pop = wb.getBiomassHuman();
+            float[] capital = wb.getResourceCapital();
+            float[] tech = wb.getTechnologyLevel();
+            int cap = wb.getCapacity();
+            double totalPop = 0.0;
+            double urbanPop = 0.0;
+            for (int i = 0; i < cap; i++) {
+                float p = pop[i];
+                if (p <= 0.0f) continue;
+                totalPop += p;
+                float cellTech = (tech != null && tech[i] > 0.0f) ? tech[i] : 1.0f;
+                float cellCap = (capital != null && capital[i] > 0.0f) ? capital[i] : 0.0f;
+                float kpc = cellCap / p;
+
+                if (cellTech <= 1.55 || kpc <= 25.0) continue;
+
+                // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987)
+                double logKpc = Math.log(Math.max(1.0, kpc));
+                double agrarianUrbanShare = (0.085 / (1.0 + Math.exp(-2.0 * (logKpc - 5.50))))
+                        * Math.tanh((cellTech - 1.55) * 1.50);
+
+                // 2. Industrial steam/fossil mechanization rural-to-urban transition (T > 3.40, k > 500 kg/cap)
+                // Modulated by progressive global adoption (Bettencourt 2013; Bairoch 1988)
+                double industrialUrbanShare = 0.0;
+                if (cellTech > 3.40 && kpc > 500.0) {
+                    double techSurplus = Math.tanh((cellTech - 3.40) * 0.35);
+                    double capSurplus = Math.tanh((kpc - 500.0) / 450.0);
+                    industrialUrbanShare = 0.85 * techSurplus * capSurplus * (0.15 + 0.85 * Math.tanh(Math.max(0.0, cellTech - 3.40) * 0.15));
+                }
+
+                double cellUrbanFraction = Math.clamp(agrarianUrbanShare + industrialUrbanShare, 0.0, 0.95);
+                urbanPop += p * cellUrbanFraction;
+            }
+            if (totalPop > 0.0) {
+                return Math.clamp((urbanPop / totalPop) * 100.0, 0.0, 95.0);
+            }
+        }
+
         if (engine.getCells() == null || engine.getCells().isEmpty()) {
             return 0.0;
         }
@@ -780,14 +821,17 @@ public class SimulationMetricsAggregator {
 
             // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987)
             double logKpc = Math.log(Math.max(1.0, kpc));
-            double agrarianUrbanShare = (0.055 / (1.0 + Math.exp(-2.0 * (logKpc - 5.50))))
+            double agrarianUrbanShare = (0.085 / (1.0 + Math.exp(-2.0 * (logKpc - 5.50))))
                     * Math.tanh((cellTech - 1.55) * 1.50)
                     * (0.60 + 0.40 * Math.tanh(density / 25.0));
 
             // 2. Industrial steam/fossil mechanization rural-to-urban transition (T > 3.40, k > 500 kg/cap)
-            double industrialUrbanShare = (cellTech > 3.40 && kpc > 500.0)
-                    ? 0.85 * Math.tanh((cellTech - 3.40) * 0.40) * Math.tanh((kpc - 500.0) / 280.0)
-                    : 0.0;
+            double industrialUrbanShare = 0.0;
+            if (cellTech > 3.40 && kpc > 500.0) {
+                double techSurplus = Math.tanh((cellTech - 3.40) * 0.35);
+                double capSurplus = Math.tanh((kpc - 500.0) / 450.0);
+                industrialUrbanShare = 0.85 * techSurplus * capSurplus * (0.15 + 0.85 * Math.tanh(Math.max(0.0, cellTech - 3.40) * 0.15));
+            }
 
             double cellUrbanFraction = Math.clamp(agrarianUrbanShare + industrialUrbanShare, 0.0, 0.95);
             urbanPop += p * cellUrbanFraction;
@@ -810,6 +854,40 @@ public class SimulationMetricsAggregator {
      * @return global literacy rate in $[0.0, 99.5]$ %
      */
     public double getLiteracyRate() {
+        WorldBuffer wb = engine.getWorldBuffer();
+        if (wb != null && wb.getBiomassHuman() != null && wb.getCapacity() > 0) {
+            float[] pop = wb.getBiomassHuman();
+            float[] capital = wb.getResourceCapital();
+            float[] tech = wb.getTechnologyLevel();
+            int cap = wb.getCapacity();
+            double totalPop = 0.0;
+            double weightedLit = 0.0;
+            for (int i = 0; i < cap; i++) {
+                float p = pop[i];
+                if (p <= 0.0f) continue;
+                totalPop += p;
+                float cellTech = (tech != null && tech[i] > 0.0f) ? tech[i] : 1.0f;
+                float cellCapital = (capital != null && capital[i] > 0.0f) ? capital[i] : 0.0f;
+                float cellKpc = cellCapital / p;
+
+                if (cellTech <= 1.60 || cellKpc <= 35.0) continue;
+
+                // 1. Pre-industrial scribal, clerical & commercial manuscript literacy (ceiling ~ 4.80%, Goody 1986; Buringh & van Zanden 2009)
+                double scribalLit = 4.20 * Math.tanh((cellTech - 1.60) * 1.50) * Math.tanh((cellKpc - 35.0) / 180.0);
+
+                // 2. Printing press & industrial mass schooling diffusion (Buringh & van Zanden 2009)
+                double printLit = (cellTech > 2.80 && cellKpc > 380.0)
+                        ? 95.0 * Math.tanh((cellTech - 2.80) * 0.075) * Math.tanh((cellKpc - 380.0) / 500.0)
+                        : 0.0;
+
+                double cellLit = Math.clamp(scribalLit + printLit, 0.0, 99.5);
+                weightedLit += p * cellLit;
+            }
+            if (totalPop > 0.0) {
+                return Math.clamp(weightedLit / totalPop, 0.0, 99.5);
+            }
+        }
+
         if (engine.getCells() == null || engine.getCells().isEmpty()) {
             return 0.0;
         }
@@ -828,11 +906,11 @@ public class SimulationMetricsAggregator {
             if (cellTech <= 1.60 || cellKpc <= 35.0) continue;
 
             // 1. Pre-industrial scribal, clerical & commercial manuscript literacy (ceiling ~ 4.80%, Goody 1986; Buringh & van Zanden 2009)
-            double scribalLit = 5.20 * Math.tanh((cellTech - 1.60) * 1.50) * Math.tanh((cellKpc - 35.0) / 180.0);
+            double scribalLit = 4.20 * Math.tanh((cellTech - 1.60) * 1.50) * Math.tanh((cellKpc - 35.0) / 180.0);
 
             // 2. Printing press & industrial mass schooling diffusion (Buringh & van Zanden 2009)
             double printLit = (cellTech > 2.80 && cellKpc > 380.0)
-                    ? 95.0 * Math.tanh((cellTech - 2.80) * 0.20) * Math.tanh((cellKpc - 380.0) / 320.0)
+                    ? 95.0 * Math.tanh((cellTech - 2.80) * 0.075) * Math.tanh((cellKpc - 380.0) / 500.0)
                     : 0.0;
 
             double cellLit = Math.clamp(scribalLit + printLit, 0.0, 99.5);
@@ -854,9 +932,42 @@ public class SimulationMetricsAggregator {
             if (org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(preset)) {
                 return preset.co2Ppm();
             }
-            // Preserve authentic paleoclimate ice-core CO2 baseline when explicitly configured (e.g. LGM 190 ppm, Early Holocene 260 ppm)
-            if (preset.co2Ppm() > 150.0 && preset.co2Ppm() <= 275.0) {
-                return preset.co2Ppm();
+            long currentYear = engine.getCurrentYear();
+
+            // Prospective scenarios (t >= 2025): governed strictly by selected prospective trajectory
+            // (SSP1-1.9, SSP2-4.5, SSP3-7.0, SSP5-8.5 from MAGICC7 / IIASA IAMC datasets or ETHER_CALIBRATED)
+            if (currentYear >= 2025) {
+                String refModel = engine.getCurrentScenario().getReferenceTrajectoryModel();
+                if (refModel == null || refModel.isBlank() || "HYDE_MADDISON".equalsIgnoreCase(refModel) || "PALEO_SOURCES".equalsIgnoreCase(refModel)) {
+                    refModel = "SSP2";
+                }
+                double prospectiveCo2 = org.ether.society.analytics.HistoricalValidationKernel.getPredictiveBenchmarkValue(
+                        refModel, "co2Concentration", (double) currentYear,
+                        org.ether.society.analytics.HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                if (!Double.isNaN(prospectiveCo2) && prospectiveCo2 >= 200.0) {
+                    return prospectiveCo2;
+                }
+                if (preset.co2Ppm() >= 350.0) {
+                    return preset.co2Ppm();
+                }
+            }
+
+            // Authentic historical epoch baseline (from ice-core and historical observational records)
+            if (preset.co2Ppm() >= 150.0 && preset.co2Ppm() <= 550.0) {
+                double t0Co2 = preset.co2Ppm();
+                long startYear = engine.getCurrentScenario().getStartDateYear();
+                long elapsedYears = Math.max(0L, (long) currentYear - startYear);
+                if (elapsedYears == 0) {
+                    return t0Co2;
+                }
+                // Endogenous annual emission accumulation over simulation ticks
+                float avgTech = engine.getAverageTechnology();
+                if (avgTech <= 2.50) {
+                    return t0Co2;
+                }
+                double fossilShare = Math.min(0.85, 0.08 + (avgTech - 2.50) * 0.18);
+                double annualEmissionsPpm = (getEnergyCaptured() * 3.15576e-5 * fossilShare * 0.05) / 7.82;
+                return t0Co2 + Math.min(250.0, annualEmissionsPpm * elapsedYears);
             }
         }
         float avgTech = engine.getAverageTechnology();
@@ -866,7 +977,7 @@ public class SimulationMetricsAggregator {
             return holoceneBaselinePpm;
         }
         double fossilShare = Math.min(0.85, 0.08 + (avgTech - 2.50) * 0.18);
-        double cumulativeEmissionsPpm = Math.min(220.0, getEnergyCaptured() * 3.15576e-5 * fossilShare * 2.2);
+        double cumulativeEmissionsPpm = Math.min(220.0, getEnergyCaptured() * 3.15576e-5 * fossilShare * 0.05 * 10.0);
         return holoceneBaselinePpm + cumulativeEmissionsPpm;
     }
 

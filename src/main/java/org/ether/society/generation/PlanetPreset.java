@@ -311,6 +311,20 @@ public record PlanetPreset(
         );
     }
 
+    public PlanetPreset withCo2Ppm(double newCo2Ppm) {
+        return new PlanetPreset(
+                name, resolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays,
+                distanceToSunAU, solarLuminosity, minAltitudeMeters, maxAltitudeMeters, averageTempC,
+                seed, noiseFrequency, noiseScale, waterLevel, temperatureGradient, oxygenPercentage,
+                albedo, atmospherePressureAtm, isSatellite, parentPlanetMassEarthMasses,
+                orbitalDistanceToParentKm, newCo2Ppm, seismicActivityLevel, volcanicActivityLevel,
+                customElevBase64, customBiomeBase64, customResourceBase64, customClimateBase64,
+                customRainfallBase64, customSeasonalityBase64, elevationUseImport, elevationMapSource,
+                tempUseImport, tempSource, tempSeed, precipUseImport, precipSource, precipSeed,
+                seasonUseImport, seasonSource, seasonSeed
+        );
+    }
+
     public PlanetPreset withSeismicAndVolcanic(double sVal, double vVal) {
         return new PlanetPreset(
                 name, resolution, radiusKm, dayLengthHours, axialTiltDegrees, yearLengthDays,
@@ -360,6 +374,17 @@ public record PlanetPreset(
         if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) return -3000L;
         if (lower.contains("-1900") || lower.contains("bronze")) return -1900L;
         if (lower.contains("-1000") || lower.contains("iron") || lower.contains("fer")) return -1000L;
+        
+        // Match specific historical year anchors in name (e.g. "1914", "1800", "1347", "1000", "632", "536", "165")
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?<!\\w)([+-]?\\d{1,6})(?!\\w)").matcher(lower);
+        while (m.find()) {
+            try {
+                long yr = Long.parseLong(m.group(1));
+                if (yr >= -3000000L && yr <= 2200L && yr != 4 && yr != 1) { // exclude resolution 4
+                    return yr;
+                }
+            } catch (NumberFormatException ignored) {}
+        }
         return 2026L;
     }
 

@@ -62,12 +62,23 @@ public class UrbanKernel {
                 // Replaces physical & institutional depreciation at steady-state equilibrium k* while allowing
                 // modest intensive growth proportional to technological efficiency and local trade terms.
                 float priceFactor = (prices != null && prices[i] > 0.01f) ? Math.clamp(prices[i], 0.95f, 1.15f) : 1.0f;
-                float surplusCoefficient = (effectiveTech < 3.0f) ? 0.06f : 0.12f;
-                float laborSurplus = pop[i] * surplusCoefficient * (float) Math.pow(effectiveTech, 0.85) * priceFactor;
-                float solowReplacement = capital[i] * depreciationRate;
-                float grossProduction = Math.max(laborSurplus, solowReplacement);
-                float netAccumulation = (grossProduction - maintenanceCost) * dtInYears;
+                float tfp = (float) Math.pow(effectiveTech, 0.65) * priceFactor;
+                float intensiveKpc = Math.max(1.0f, capitalPerCapita);
+                float cobbDouglasOutputPerCapita = 12.0f * tfp * (float) Math.pow(intensiveKpc, 0.30);
+                float savingsRate = (effectiveTech < 3.0f) ? 0.08f : 0.14f;
+                float grossInvestment = pop[i] * savingsRate * cobbDouglasOutputPerCapita;
 
+                // Crisis & warfare capital destruction / disinvestment (Broadberry & Harrison 2005)
+                float warDamageRate = (complexity[i] > 3.8f) ? 0.012f * (complexity[i] - 3.8f) : 0.0f;
+                float totalDepreciationRate = Math.min(0.09f, depreciationRate + warDamageRate);
+                float actualMaintenanceCost = capital[i] * totalDepreciationRate;
+
+                float netAccumulation = (grossInvestment - actualMaintenanceCost) * dtInYears;
+                // Bound annual capital growth to historical macroscopic macro-frontier (+2.0%/yr max, Maddison 2020)
+                float maxGrowthRate = 0.020f * capital[i] * dtInYears;
+                if (netAccumulation > maxGrowthRate) {
+                    netAccumulation = maxGrowthRate;
+                }
                 capital[i] = Math.max(0.0f, capital[i] + netAccumulation);
 
                 // 4. Endogenous Urban Agglomeration Innovation (Romer 1990 / Bairoch 1988):
@@ -83,7 +94,7 @@ public class UrbanKernel {
                 }
 
                 // 5. Tainter Simplification: when maintenance cost exceeds gross surplus, complexity contracts
-                if (maintenanceCost > grossProduction) {
+                if (actualMaintenanceCost > grossInvestment) {
                     complexity[i] *= decayCapital;
                 }
             } else {
