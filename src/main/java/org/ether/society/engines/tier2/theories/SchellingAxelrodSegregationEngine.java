@@ -16,10 +16,10 @@ import java.util.List;
 /**
  * Cultural Homophily & Spatial Segregation Engine (Schelling, 1971 / Axelrod, 1997).
  *
- * <p>Models macro-spatial enclave segregation emerging from mild micro-preferences for cultural homophily:</p>
+ * <p>Models macro-spatial enclave segregation emerging from micro-preferences for cultural homophily:</p>
  * <pre>
- *   U_i = 1  if  [ Σ_{j ∈ N(i)} 1(C_j == C_i) / |N(i)| ] ≥ τ_tolerance
- *   U_i = 0  otherwise (triggers relocation / social tension friction)
+ *   s_i = Σ_{j ∈ N(i)} δ(C_i, C_j) / |N(i)|
+ *   ΔFriction_i = (1 - U(s_i)) · 0.05 · (Gini - 0.35) · Δt
  * </pre>
  *
  * @author Silvere Martin-Michiellot
@@ -30,64 +30,35 @@ public class SchellingAxelrodSegregationEngine implements ProceduralEnginePlugin
 
     public static final double HOMOPHILY_TOLERANCE_THRESHOLD = 0.40; // 40% neighborhood threshold
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "Schelling-Axelrod Cultural Spatial Segregation";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Models micro-motives driving macro-segregation enclaves and cultural polarization across territorial boundaries.";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
                [Schelling-Axelrod Cultural Homophily Model]
                • Neighborhood Similarity:  s_i = Σ_{j ∈ N(i)} δ(C_i, C_j) / |N(i)|
-               • Satisfaction Utility:     U_i = 1 if s_i ≥ τ_tol (0.40), else 0
-               • Spatial Tension Friction: ΔFriction_i = (1 - U_i) · 0.10 · (1 - s_i)
-               Units: s_i [0.0, 1.0], τ_tol [seuil de tolérance homophile], U_i [utilité booléenne]
+               • Polarization Activation:  P_act = 1 / (1 + exp(-12.0 · (Gini - 0.45)))
+               • Spatial Tension Friction: ΔFriction_i = 0.05 · P_act · max(0, Gini - 0.35) · Δt
+               Units: Gini [0.0, 1.0], Friction [0.05, 10.0]
                Ref: T. Schelling (1971) "Dynamic Models of Segregation", R. Axelrod (1997) "Dissemination of Culture"
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Cultural Cliodynamics";
     }
 
-    /**
-     * Process.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
@@ -96,14 +67,14 @@ public class SchellingAxelrodSegregationEngine implements ProceduralEnginePlugin
             if (pop <= 0) continue;
 
             double gini = cell.getGiniIndexOr(0.35);
-            // High internal inequality / segregation increases movement friction and civil tension
-            if (gini > 0.50) {
+            // Continuous polarization friction: smooth logistic activation around Gini=0.45
+            // High internal inequality and social segregation induce micro-motives for enclave territorialization
+            double polarizationActivation = 1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)));
+            if (polarizationActivation > 0.02) {
                 double friction = cell.getMovementFrictionOr(1.0);
-                cell.setMovementFriction(Math.min(10.0, friction + (0.05 * (gini - 0.50) * deltaYears)));
+                double frictionIncrement = 0.05 * polarizationActivation * Math.max(0.0, gini - 0.35) * deltaYears;
+                cell.setMovementFriction(Math.min(10.0, friction + frictionIncrement));
             }
         }
     }
 }
-
-
-

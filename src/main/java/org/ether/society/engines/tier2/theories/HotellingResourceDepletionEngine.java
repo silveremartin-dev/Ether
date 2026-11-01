@@ -35,88 +35,58 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
 
     public static final double DISCOUNT_RATE_R = 0.03; // Real interest rate (3% per year)
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "Hotelling Resource Depletion & Scarcity Rent";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Models the depletion economics and escalating scarcity rents of non-renewable mineral/fossil assets.";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
                [Hotelling Exhaustible Resource Valuation Rule (JPE 1931)]
                • Scarcity Rent:     [P(t) - MC] = [P_0 - MC] · exp(r · t)
                • Marginal Cost:     MC(Q) = MC_0 / (1 - Q_extracted / Q_initial)^1.5
-               • Depletion Flow:    dQ/dt = -min(Q_remaining, Demand · (P / P_substitute)^-ε)
+               • Depletion Flow:    dQ/dt = -min(Q_remaining · 0.05, Demand · (P / P_substitute)^-ε) · Δt
                Units: P, MC [$/tonne], Q [tonnes minerais/pétrole], r [%/an]
                Ref: H. Hotelling (1931) "The Economics of Exhaustible Resources"
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Resource Economics";
     }
 
-    /**
-     * Process.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             double metalDeposit = cell.getResourceMetalOr(0.0);
-            if (metalDeposit <= 5.0) continue;
+            if (metalDeposit <= 1.0) continue;
 
             int pop = cell.getPopulationOr(0);
             double industrialDemand = Math.max(1.0, pop * 0.02);
 
-            // Deplete ore deposit based on extraction demand
-            double extraction = Math.min(metalDeposit * 0.05, industrialDemand * deltaYears);
+            // Deplete ore deposit based on extraction demand, strictly scaling with deltaYears
+            double maxExtraction = metalDeposit * 0.05 * deltaYears;
+            double extractionDemand = industrialDemand * deltaYears;
+            double extraction = Math.min(metalDeposit, Math.min(maxExtraction, extractionDemand));
             cell.setResourceMetal(Math.max(0.0, metalDeposit - extraction));
 
-            // Scarcity rent escalates infrastructure cost
+            // Scarcity rent escalates infrastructure/capital creation as remaining reserves dwindle
             double remainingFraction = Math.max(0.01, (metalDeposit - extraction) / (metalDeposit + 100.0));
-            double costMultiplier = Math.pow(1.0 / remainingFraction, 0.5);
+            double costMultiplier = Math.clamp(Math.pow(1.0 / remainingFraction, 0.5), 1.0, 5.0);
 
             double currentCapital = cell.getResourceCapitalOr(10.0);
-            // High resource rents increase local capital accumulation in mining hub
+            // Resource scarcity rents flow into local extraction capital accumulation
             cell.setResourceCapital(currentCapital + (extraction * 2.0 * costMultiplier));
         }
     }
 }
-
-
-

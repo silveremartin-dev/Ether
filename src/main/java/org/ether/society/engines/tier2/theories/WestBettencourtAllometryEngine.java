@@ -33,63 +33,34 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
     public static final double SUPERLINEAR_EXPONENT = 1.15; // Socioeconomic returns
     public static final double SUBLINEAR_EXPONENT = 0.85;   // Infrastructure efficiency
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "West-Bettencourt Urban Allometry";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Models urban scaling laws: super-linear innovation/output (N^1.15) and sub-linear infrastructure network economy (N^0.85).";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
                [West-Bettencourt Urban Scaling Laws (PNAS 2007)]
                • Super-Linear Output:  Y_i = Y_0 · (N_i / N_ref)^1.15  (GDP, Patents, Wages)
                • Sub-Linear Network:  I_i = I_0 · (N_i / N_ref)^0.85  (Roads, Cables, Energy Grid)
-               • Metabolic Pace:      v_pace âˆ N_i^0.15 (Pace of urban life & interactions)
+               • Metabolic Pace:      v_pace ∝ N_i^0.15 (Pace of urban life & interactions)
                Units: N [hab], Y [$/an, brevets], I [km réseau, J/hab]
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Cliodynamics & Urban Scaling";
     }
 
-    /**
-     * Process.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         double refPop = 1000.0;
@@ -101,19 +72,18 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
 
             double normalizedPop = Math.max(1.0, (double) pop / refPop);
 
-            // Super-linear capital & innovation output
+            // Super-linear capital & innovation output (West & Bettencourt 2007: Y ∝ N^1.15)
             double superlinearFactor = Math.pow(normalizedPop, SUPERLINEAR_EXPONENT - 1.0); // N^0.15 boost per capita
+            double currentCapital = cell.getResourceCapitalOr(10.0);
+            cell.setResourceCapital(currentCapital + (currentCapital * 0.02 * superlinearFactor * deltaYears));
+
             double currentTech = cell.getTechnologyLevelOr(1.0);
             cell.setTechnologyLevel(Math.min(10.0, currentTech + 0.002 * (superlinearFactor - 1.0) * deltaYears));
 
-            // Sub-linear infrastructure maintenance cost efficiency
-            double sublinearFactor = Math.pow(normalizedPop, SUBLINEAR_EXPONENT - 1.0); // N^-0.15 savings per capita
+            // Sub-linear infrastructure maintenance cost efficiency (N^-0.15 savings per capita)
+            double sublinearFactor = Math.pow(normalizedPop, SUBLINEAR_EXPONENT - 1.0);
             double friction = cell.getMovementFrictionOr(1.0);
-            // High density reduces relative movement friction due to denser transport networks
             cell.setMovementFriction(Math.max(0.5, friction * (1.0 - 0.01 * sublinearFactor * deltaYears)));
         }
     }
 }
-
-
-

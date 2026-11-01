@@ -23,8 +23,8 @@ import java.util.List;
  * </pre>
  * where:
  * <ul>
- *   <li><b>Cov(w_i, z_i) / w̄</b>: Between-group selection term (prosocial/altruistic groups win inter-polity wars).</li>
- *   <li><b>E[w_i · Δz_i] / w̄</b>: Within-group individual selection term (free-riders / selfish agents outcompete altruists internally).</li>
+ *   <li><b>Cov(w_i, z_i) / w̄</b>: Between-group selection term (prosocial/altruistic groups win inter-polity competition).</li>
+ *   <li><b>E[w_i · Δz_i] / w̄</b>: Within-group individual selection term (free-riders / selfish rent-seekers erode civic solidarity).</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
@@ -33,31 +33,16 @@ import java.util.List;
 public class PriceMultilevelSelectionEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(PriceMultilevelSelectionEngine.class);
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "Price Equation Multilevel Cultural Selection";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Models the evolution of prosocial cooperation, military solidarity, and altruism via Price's multilevel cultural selection theorem.";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
@@ -71,27 +56,13 @@ public class PriceMultilevelSelectionEngine implements ProceduralEnginePlugin {
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Evolutionary Cliodynamics";
     }
 
-    /**
-     * Process.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         double meanWealth = cells.stream()
@@ -107,20 +78,26 @@ public class PriceMultilevelSelectionEngine implements ProceduralEnginePlugin {
             double gini = cell.getGiniIndexOr(0.35);
             double capital = cell.getResourceCapitalOr(10.0);
 
-            // Group-level prosociality / cohesion index z = (1.0 - gini)
+            // Group-level prosociality / civic solidarity index z = (1.0 - Gini)
             double prosociality = Math.clamp(1.0 - gini, 0.0, 1.0);
 
-            // Between-group selective advantage: high cooperation increases collective labor output
-            double betweenGroupAdvantage = prosociality * 0.03 * (capital / Math.max(1.0, meanWealth));
-            // Within-group free-rider erosion: high luxury/inequality erodes civic solidarity
-            double withinGroupErosion = (gini > 0.45) ? (gini - 0.45) * 0.02 : 0.0;
+            // Between-group selective advantage: high cooperation increases collective labor and capital output
+            // Normalized saturation ratio ensures stable bounds [0.0, 2.0]
+            double relativeCapital = (2.0 * capital) / (capital + Math.max(1.0, meanWealth));
+            double betweenGroupAdvantage = prosociality * 0.03 * relativeCapital;
 
-            double netAltruismShift = (betweenGroupAdvantage - withinGroupErosion) * deltaYears;
+            // Within-group free-rider erosion: smooth continuous softplus penalty for elite inequality / rent extraction
+            double withinGroupErosion = 0.02 * (1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)))) * Math.max(0.0, gini - 0.35);
+
+            double netAltruismShift = Math.clamp((betweenGroupAdvantage - withinGroupErosion) * deltaYears, -0.50, 0.50);
+
             double currentWork = cell.getResourceWorkOr(50.0);
             cell.setResourceWork(Math.max(10.0, currentWork * (1.0 + netAltruismShift)));
+
+            // Civic prosociality compounds into productive capital accumulation
+            if (netAltruismShift > 0.0) {
+                cell.setResourceCapital(capital + (capital * netAltruismShift * 0.10));
+            }
         }
     }
 }
-
-
-

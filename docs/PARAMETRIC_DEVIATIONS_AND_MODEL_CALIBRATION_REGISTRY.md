@@ -1006,3 +1006,78 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Replaces unphysical population cuts with continuous demographic birth suppression scaled by baseline birth rate and $\Delta t$, and applies Poisson probability for time-discretized nuclear meltdown risk.
 * **Empirical Validation Grounding**:
   * Swan (2021); UN World Population Prospects; UNSCEAR (2008).
+
+---
+
+### Entry 54: Non-Compounding Bounded Agrarian Draft Animal Transition
+* **Date**: November 1, 2026
+* **Subsystem**: `DraftAnimalFodderAllocationEngine.java`
+* **Canonical Literature**:
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  * Wrigley, E. A. (2010). *Energy and the English Industrial Revolution*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Multiplicative compounding `food * (1.0 + 0.05 * (tech - 4.5) * deltaYears)` on the stock variable `foodResource` at every tick caused catastrophic unbounded food divergence ($> 10^{15}$) in industrial eras.
+* **Calibrated Ether Formulation**:
+  $$\phi_{\text{draft}}(T) = \frac{1}{1 + \exp(-3.0(T - 1.5))} \cdot \frac{1}{1 + \exp(3.0(T - 4.5))}$$
+  $$F_{\text{net}} = F_0 \cdot \exp(-0.20 \cdot \text{ratio} \cdot \phi_{\text{draft}}(T) \cdot \Delta t \cdot 0.1)$$
+  $$\Delta \mathcal{B}_{\text{agri}} = \min\left(0.02 \mathcal{B}, 0.005 \mathcal{B} (T - 4.0) \Delta t\right)$$
+* **Root Cause & Justification**:
+  * Formalizes the draft animal transition as an analytical presence envelope $\phi_{\text{draft}}(T)$ and routes mechanization gains to bounded agricultural biomass rather than compounding the food stock.
+* **Empirical Validation Grounding**:
+  * Smil (2017); Wrigley (2010); FAO Historical Statistics.
+
+---
+
+### Entry 55: Dimensionally Consistent Hotelling Mineral Depletion Rate
+* **Date**: November 1, 2026
+* **Subsystem**: `HotellingResourceDepletionEngine.java`
+* **Canonical Literature**:
+  * Hotelling, H. (1931). *The Economics of Exhaustible Resources*. Journal of Political Economy, 39(2), 137–175.
+* **Problem in Previous Implementation**:
+  * Mineral deposit extraction ceiling `metalDeposit * 0.05` was executed per tick without dimensional scaling by `deltaYears`, causing severe over-depletion on monthly time steps (5% per month = 60%/year).
+* **Calibrated Ether Formulation**:
+  $$Q_{\text{extract}} = \min\left(Q_{\text{remaining}}, \min(0.05 \cdot Q_{\text{remaining}} \cdot \Delta t, D_{\text{ind}} \cdot \Delta t)\right)$$
+  $$\text{ScarcityRent} = \text{clamp}\left(\sqrt{\frac{100.0 + Q_{\text{remaining}}}{\max(1.0, Q_{\text{remaining}})}}, 1.0, 5.0\right)$$
+* **Root Cause & Justification**:
+  * Scales maximum physical extraction throughput with $\Delta t$ and bounds the scarcity rent escalation.
+* **Empirical Validation Grounding**:
+  * Hotelling (1931); USGS Mineral Commodity Summaries.
+
+---
+
+### Entry 56: Continuous Physical Exergy Rebound in Jevons Paradox
+* **Date**: November 1, 2026
+* **Subsystem**: `JevonsParadoxEngine.java`
+* **Canonical Literature**:
+  * Jevons, W. S. (1865). *The Coal Question*. Macmillan and Co.
+  * Alcott, B. (2005). *Jevons' paradox*. Ecological Economics, 54(1), 9–21.
+* **Problem in Previous Implementation**:
+  * Discrete threshold `tech > 2.0` and mapping of energy rebound strictly to `energyFoodConsumed` (human metabolic calories) rather than physical power/exergy.
+* **Calibrated Ether Formulation**:
+  $$\eta_{\text{eff}}(T) = \frac{T^2}{4.0 + T^2}$$
+  $$\Delta P_{\text{rebound}} = T \cdot \epsilon_{\text{rebound}} \cdot \eta_{\text{eff}}(T) \cdot 0.005 \cdot \Delta t$$
+  $$P_{\text{grid}} \gets P_{\text{grid}} + 100.0 \cdot \Delta P_{\text{rebound}} \quad [\text{kW}]$$
+* **Root Cause & Justification**:
+  * Couples technological efficiency continuously via a Hill function and routes rebound expansion into grid power capacity (`habitatEnergyKw`).
+* **Empirical Validation Grounding**:
+  * Jevons (1865); Alcott (2005).
+
+---
+
+### Entry 57: Bounded Multilevel Price Selection & Continuous Cultural Segregation
+* **Date**: November 1, 2026
+* **Subsystem**: `PriceMultilevelSelectionEngine.java`, `SchellingAxelrodSegregationEngine.java`
+* **Canonical Literature**:
+  * Price, G. R. (1970). *Selection and covariance*. Nature, 227, 520–521.
+  * Schelling, T. C. (1971). *Dynamic models of segregation*. Journal of Mathematical Sociology, 1(2), 143–186.
+* **Problem in Previous Implementation**:
+  * Discrete threshold `gini > 0.45` and unbounded relative wealth ratio `capital / meanWealth` in Price engine; discrete `if (gini > 0.50)` in Schelling engine.
+* **Calibrated Ether Formulation**:
+  $$\mathcal{R}_K = \frac{2 K}{K + \bar{K}} \in [0.0, 2.0]$$
+  $$\text{Erosion}_{\text{internal}} = 0.02 \cdot \frac{1}{1 + \exp(-12.0(\text{Gini} - 0.45))} \cdot \max(0, \text{Gini} - 0.35)$$
+  $$\Delta \mu_{\text{segregation}} = 0.05 \cdot \frac{1}{1 + \exp(-12.0(\text{Gini} - 0.45))} \cdot \max(0, \text{Gini} - 0.35) \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Saturates relative capital influence smoothly and enforces $C^1$-continuous activation of internal defection and segregation friction.
+* **Empirical Validation Grounding**:
+  * Price (1970); Bowles & Gintis (2011); Schelling (1971).
+

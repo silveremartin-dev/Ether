@@ -1871,3 +1871,26 @@ $$\frac{d\text{Tech}}{dt} = I_{\text{inc}} \cdot 0.005 \cdot \left(0.5 + 0.5 \fr
 Replaces arbitrary population cuts with continuous demographic birth suppression scaled by baseline birth rate $b_0 = 0.035\text{ yr}^{-1}$, and enforces Poisson time integration for nuclear accidents:
 $$\Delta N_{\text{suppressed}} = \lfloor N \cdot b_0 \cdot (1.0 - \max(0.35, e^{-k P})) \cdot \Delta t \rfloor$$
 $$P_{\text{meltdown}}(\Delta t) = 1.0 - \exp(-\lambda_{\text{meltdown}} \cdot \Delta t)$$
+
+### 19.11 Analytical Draft Animal Presence & Bounded Mechanization Yield
+Replaces unbounded food multiplication with an analytical presence envelope $\phi_{\text{draft}}(T)$ and bounded agricultural biomass recovery:
+$$\phi_{\text{draft}}(T) = \frac{1}{1 + \exp(-3.0(T - 1.5))} \cdot \frac{1}{1 + \exp(3.0(T - 4.5))}$$
+$$F_{\text{net}} = F_0 \cdot \exp(-0.20 \cdot \text{ratio} \cdot \phi_{\text{draft}}(T) \cdot \Delta t \cdot 0.1)$$
+$$\Delta \mathcal{B}_{\text{agri}} = \min\left(0.02 \mathcal{B}, \, 0.005 \mathcal{B} (T - 4.0) \Delta t\right)$$
+
+### 19.12 Dimensionally Consistent Hotelling Mineral Extraction
+Ensures all extraction rates scale with time step $\Delta t$, avoiding monthly over-depletion:
+$$Q_{\text{extract}} = \min\left(Q_{\text{remaining}}, \, \min(0.05 \cdot Q_{\text{remaining}} \cdot \Delta t, \, D_{\text{ind}} \cdot \Delta t)\right)$$
+$$\text{ScarcityRent} = \text{clamp}\left(\sqrt{\frac{100.0 + Q_{\text{remaining}}}{\max(1.0, Q_{\text{remaining}})}}, \, 1.0, \, 5.0\right)$$
+
+### 19.13 Continuous Physical Exergy Rebound in Jevons Paradox
+Technological efficiency turns on continuously via a Hill function $\eta_{\text{eff}}(T) = T^2 / (4.0 + T^2)$, driving electrical and mechanical power capacity expansion:
+$$\Delta P_{\text{rebound}} = T \cdot \epsilon_{\text{rebound}} \cdot \eta_{\text{eff}}(T) \cdot 0.005 \cdot \Delta t$$
+$$P_{\text{grid}} \gets P_{\text{grid}} + 100.0 \cdot \Delta P_{\text{rebound}} \quad [\text{kW}]$$
+
+### 19.14 Multilevel Selection & Continuous Segregation Friction
+Saturates inter-group capital influence on $[0.0, 2.0]$ and couples intra-group defection and spatial segregation to continuous logistic functions of Gini inequality:
+$$\mathcal{R}_K = \frac{2 K}{K + \bar{K}} \in [0.0, 2.0]$$
+$$\text{Erosion}_{\text{internal}} = 0.02 \cdot \frac{1}{1 + \exp(-12.0(\text{Gini} - 0.45))} \cdot \max(0, \text{Gini} - 0.35)$$
+$$\Delta \mu_{\text{segregation}} = 0.05 \cdot \frac{1}{1 + \exp(-12.0(\text{Gini} - 0.45))} \cdot \max(0, \text{Gini} - 0.35) \cdot \Delta t$$
+

@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Jevons Paradox & Rebound Effect Engine (Jancovici & Bihouix Rebound Law).
- * Models how technological efficiency gains increase total aggregate resource consumption.
+ * Models how technological efficiency gains increase total aggregate resource consumption (William Stanley Jevons, 1865; Alcott, 2005).
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -25,28 +25,32 @@ public class JevonsParadoxEngine {
     private static double reboundCoefficient = 0.80; // 80% rebound effect
 
     /**
-     * Process jevons rebound.
+     * Process Jevons rebound across spatial cells with continuous efficiency activation.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
      */
     public static void processJevonsRebound(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getTechnologyLevel() == null) continue;
+            if (cell == null) continue;
 
-            double tech = cell.getTechnologyLevel();
-            if (tech > 2.0) {
-                // High technology efficiency drives expanded energy demand
-                double reboundDemand = tech * reboundCoefficient * 0.005 * deltaYears;
-                if (cell.getEnergyFoodConsumed() != null) {
-                    cell.setEnergyFoodConsumed(cell.getEnergyFoodConsumed() + reboundDemand);
-                }
+            double tech = cell.getTechnologyLevelOr(0.0);
+            // Continuous technology efficiency factor eta_eff in [0, 1]
+            // Replaces knife-edge `tech > 2.0` with continuous Hill function (K=2.0, n=2)
+            double techEfficiencyFactor = (tech * tech) / (4.0 + tech * tech);
+            if (techEfficiencyFactor > 0.05) {
+                // High technology efficiency drives expanded aggregate physical energy demand
+                double reboundDemand = tech * reboundCoefficient * techEfficiencyFactor * 0.005 * deltaYears;
+
+                // Boost electrical/mechanical capacity in the cell
+                double habitatKw = cell.getHabitatEnergyKwOr(0.0);
+                cell.setHabitatEnergyKw(habitatKw + reboundDemand * 100.0);
+
+                // Maintain legacy metric compatibility for unit test suites
+                double currentFoodEnergy = cell.getEnergyFoodConsumedOr(0.0);
+                cell.setEnergyFoodConsumed(currentFoodEnergy + reboundDemand);
             }
         }
     }
@@ -57,12 +61,9 @@ public class JevonsParadoxEngine {
      * @return the resulting computation or state reference
      */
     public static double getReboundCoefficient() { return reboundCoefficient; }
+
     /**
      * Set rebound coefficient operation.
-     * <p>
-     * Executes operational logic for {@code JevonsParadoxEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
      *
      * @param coeff the coeff argument (double)
      */
@@ -75,5 +76,3 @@ public class JevonsParadoxEngine {
         reboundCoefficient = 0.80;
     }
 }
-
-
