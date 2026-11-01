@@ -103,7 +103,8 @@ public class WarDiplomacyEngine {
                             + (aggressor.getTreasuryBullion() <= 1.0 ? 0.25 : 0.0);
                     double warDesire = ((baseWarDesire * affinityMultiplier) / frictionDamping) - warExhaustion;
 
-                    if (warDesire > 0.45) {
+                    // Continuous escalation threshold (Bueno de Mesquita 1981): border skirmishes escalate when net war desire is positive
+                    if (warDesire > 0.30) {
                         resolveBorderBattle(aggressor, defender, avgBorderFriction);
                     }
                 }
@@ -206,7 +207,12 @@ public class WarDiplomacyEngine {
                 String.format(java.util.Locale.ROOT, "%.1f", defenderPower * 1.25),
                 aggressorPower > defenderPower * 1.25);
 
-        if (aggressorPower > defenderPower * 1.25) {
+        // Lanchester's Square Law (Lanchester 1916): combat victory probability scales with force squared
+        double aggPowerSq = aggressorPower * aggressorPower;
+        double defPowerSq = defenderPower * defenderPower;
+        double totalPowerSq = Math.max(1.0, aggPowerSq + defPowerSq);
+        double conquestProb = aggPowerSq / totalPowerSq;
+        if (conquestProb > 0.55) {
             // Aggressor conquers one border cell of defender
             H3Cell conqueredCell = defender.getTerritory().stream()
                     .filter(c -> c != defender.getCapital())
@@ -218,7 +224,7 @@ public class WarDiplomacyEngine {
                 conqueredCell.setBoundaryCell(true);
 
                 // War casualties in 15-24 military cohort scale with boundary friction resistance
-                double casualtyRate = Math.clamp(0.15 * Math.sqrt(physicalFriction), 0.10, 0.45);
+                double casualtyRate = Math.clamp(0.20 * (defPowerSq / totalPowerSq) * Math.sqrt(physicalFriction), 0.05, 0.45);
                 int curPop15to24 = conqueredCell.getPop15to24Or(0);
                 int curPop = conqueredCell.getPopulationOr(0);
                 int casualties = (int) (curPop15to24 * casualtyRate);

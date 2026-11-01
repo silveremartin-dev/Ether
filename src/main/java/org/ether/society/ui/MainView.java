@@ -786,12 +786,15 @@ public class MainView extends StackPane {
     }
 
     private String getAgeName(float techLevel) {
-        if (techLevel < 10) return I18n.getOrDefault("age.stone", "STONE AGE");
-        if (techLevel < 30) return I18n.getOrDefault("age.bronze", "BRONZE AGE");
-        if (techLevel < 60) return I18n.getOrDefault("age.iron", "IRON AGE");
-        if (techLevel < 100) return I18n.getOrDefault("age.classical", "CLASSICAL AGE");
-        if (techLevel < 200) return I18n.getOrDefault("age.medieval", "MEDIEVAL AGE");
-        return I18n.getOrDefault("age.renaissance", "RENAISSANCE");
+        if (techLevel < 1.5f) return I18n.getOrDefault("age.stone", "STONE AGE");
+        if (techLevel < 2.0f) return I18n.getOrDefault("age.bronze", "BRONZE AGE");
+        if (techLevel < 2.5f) return I18n.getOrDefault("age.iron", "IRON AGE");
+        if (techLevel < 3.2f) return I18n.getOrDefault("age.classical", "CLASSICAL AGE");
+        if (techLevel < 4.2f) return I18n.getOrDefault("age.medieval", "MEDIEVAL AGE");
+        if (techLevel < 5.0f) return I18n.getOrDefault("age.renaissance", "RENAISSANCE");
+        if (techLevel < 6.5f) return I18n.getOrDefault("age.industrial", "INDUSTRIAL AGE");
+        if (techLevel < 8.0f) return I18n.getOrDefault("age.atomic", "ATOMIC & INFORMATION AGE");
+        return I18n.getOrDefault("age.future", "SPACE & FUSION AGE");
     }
 
     public void saveSimulation() {

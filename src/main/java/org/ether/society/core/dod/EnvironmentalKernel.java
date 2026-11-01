@@ -188,10 +188,12 @@ public class EnvironmentalKernel {
             float moistureAridityRatio = Math.clamp(effectiveMoisture / Math.max(100.0f, pet), 0.40f, 1.25f);
             
             float tech = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[i] : 0.0f;
-            float fodderFactor = (tech >= 4.0f && tech < 50.0f)
-                    ? (float) (1.0 - PhysicalConstants.PREINDUSTRIAL_FODDER_LAND_FRACTION)
-                    : 1.0f;
-            float industrialBoost = (tech >= 50.0f) ? Math.min(3.5f, 1.0f + (tech - 50.0f) * 0.03f) : 1.0f;
+            // Pre-industrial draft animal traction requires land dedication to draft animal fodder (Wrigley 1988, Smil 2008).
+            // Continuous draft animal usage bell-curve peaking in mature agrarian era (T ~ 3.2), phasing out with mechanization (T >= 4.5).
+            float draftAnimalShare = (float) Math.exp(-Math.pow(tech - 3.2f, 2.0f) / (2.0f * 0.8f * 0.8f));
+            float fodderFactor = 1.0f - (float) PhysicalConstants.PREINDUSTRIAL_FODDER_LAND_FRACTION * draftAnimalShare;
+            // Continuous industrial green revolution agricultural boost (Borlaug 1970, Smil 2001 Haber-Bosch + mechanization)
+            float industrialBoost = 1.0f + 2.5f / (1.0f + (float) Math.exp(-2.2 * (tech - 4.5)));
             
             float agroClimaticFactor = Math.clamp(fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost, 0.40f, 2.0f);
             float humanPop = world.getBiomassHuman() != null ? world.getBiomassHuman()[i] : 0.0f;
@@ -199,7 +201,7 @@ public class EnvironmentalKernel {
             // Biophysical agricultural yield response (Mitscherlich 1909; Spillman 1923; Boserup 1965):
             // Diminishing returns asymptotic response bounds total agricultural caloric output per cell by arable potential
             float maxAgPotential = calculateAnalyticalAgriculturalPotentialGJ(biome, temp[i], effectiveMoisture)
-                    * areaScale * agroClimaticFactor * (1.0f + 0.05f * Math.min(100.0f, tech));
+                    * areaScale * agroClimaticFactor * (1.0f + 0.25f * Math.min(10.0f, tech));
             float agDemandPotential = humanPop * 6.5f;
             float agRatio = (maxAgPotential > 0.0f) ? (agDemandPotential / maxAgPotential) : 0.0f;
             float agProd = (humanPop > 0.0f && maxAgPotential > 0.0f)

@@ -100,14 +100,20 @@ public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin
             double food = cell.getFoodResourceOr(500.0);
 
             // Environmental grievance driver: high inequality + acute hunger
-            double grievance = (gini > 0.45 ? (gini - 0.45) * 2.0 : 0.0) + (food < 300.0 ? (300.0 - food) / 300.0 : 0.0);
+            // Continuous environmental grievance driver (Granovetter 1978, Gurr 1970 "Why Men Rebel"):
+            // Grievance arises smoothly from income inequality (Gini > 0.35) and caloric scarcity (food < 500)
+            double giniGrievance = 1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)));
+            double caloricGrievance = 1.0 / (1.0 + Math.exp(0.015 * (food - 350.0)));
+            double grievance = 0.5 * (giniGrievance + caloricGrievance);
 
-            // Granovetter threshold shift: grievances lower the mobilization threshold
-            if (grievance > 0.5) {
-                double work = cell.getResourceWorkOr(50.0);
-                // Strike / civil defiance reallocates labor away from standard production
-                cell.setResourceWork(Math.max(10.0, work * (1.0 - 0.05 * grievance * deltaYears)));
-            }
+            // Continuous Granovetter collective action mobilization CDF (Granovetter 1978):
+            // Mobilization fraction Phi(g) reallocates labor away from standard economic production toward defiance
+            double mobilizationFraction = 1.0 / (1.0 + Math.exp(-8.0 * (grievance - 0.40)));
+
+            double work = cell.getResourceWorkOr(50.0);
+            // Strike / civil defiance reallocates labor away from standard production
+            cell.setResourceWork(Math.max(10.0, work * (1.0 - 0.08 * mobilizationFraction * deltaYears)));
+
         }
     }
 }

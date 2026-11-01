@@ -234,15 +234,15 @@ public class DemographicKernel {
                     trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER;
                     eroi = 7.0;
                 }
-            } else if (tech < 4.0f) {
+            } else if (tech < 2.5f) {
                 // Early Neolithic Agrarian
                 trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN;
                 eroi = 6.5;
-            } else if (tech < 50.0f) {
+            } else if (tech < 4.5f) {
                 // Advanced Preindustrial Agrarian with Draft Animal Traction
                 trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_PREINDUSTRIAL_ADVANCED_AGRARIAN;
                 eroi = 2.8;
-            } else if (tech < 120.0f) {
+            } else if (tech < 6.5f) {
                 // Industrial Era
                 trophicMultiplier = org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_INDUSTRIAL_WORKER;
                 eroi = 0.5; // Thermodynamic inversion
@@ -279,7 +279,7 @@ public class DemographicKernel {
             float kinshipNatalism = (culture != null && culture.length > 1 && culture[1] != null) ? Math.clamp(culture[1][i], 0.0f, 1.0f) : 0.5f;
             float primiparityAge = (float) (org.ether.society.model.PhysicalConstants.HUMAN_MIN_PRIMIPARITY_AGE_YEARS 
                     + 10.0f * (1.0f - kinshipNatalism) 
-                    + 6.0f * Math.tanh(tech / 80.0f));
+                    + 6.0f * Math.tanh(Math.max(0.0f, tech - 1.5f) / 3.5f));
             float peakFertilityAge = primiparityAge + 8.0f;
 
             float fecundityAgeFactor;
@@ -306,9 +306,9 @@ public class DemographicKernel {
             float renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgriBiomassGJ + edibleFishBiomassGJ;
             float annualCellProductivityGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20f, food[hIdx] * 0.15f);
             // Boserupian agricultural intensification (Boserup 1965) & Haber-Bosch Synthetic Nitrogen Fixation (Smil 2001, 2011)
-            // Relieves Liebig's Law of the Minimum soil reactive nitrogen ceiling for tech >= 3.0
-            float haberBoschMultiplier = (tech >= 3.0f)
-                    ? (1.0f + 3.5f * (float) Math.min(1.0, Math.pow((tech - 3.0f) / 5.0f, 0.80)))
+            // Relieves Liebig's Law of the Minimum soil reactive nitrogen ceiling for tech >= 4.5 (early 20th century)
+            float haberBoschMultiplier = (tech >= 4.5f)
+                    ? (1.0f + 3.5f * (float) Math.min(1.0, Math.pow((tech - 4.5f) / 2.5f, 0.80)))
                     : 1.0f;
             float boserupMultiplier = (1.0f + 0.12f * Math.max(0.0f, Math.min(3.0f, tech - 1.0f))) * haberBoschMultiplier;
             float carryingCapacity = Math.max(1.0f, (annualCellProductivityGJ * boserupMultiplier) / (float) org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
@@ -392,7 +392,7 @@ public class DemographicKernel {
 
                 // Lotka stable population theory (Lotka 1907): Stable age pyramid equilibrium
                 // Pre-industrial baseline A* ~ 24.5 yrs; modern high-tech demographic transition A* ~ 36.0 yrs
-                float targetEquilibriumAge = 24.5f + 12.0f * (float) Math.tanh(tech / 80.0f);
+                float targetEquilibriumAge = 24.5f + 12.0f * (float) Math.tanh(Math.max(0.0f, tech - 1.5f) / 3.5f);
                 float generationalTurnoverRate = Math.min(1.0f, 0.08f * dtInYears);
                 updatedMeanAge += (targetEquilibriumAge - updatedMeanAge) * generationalTurnoverRate;
                 age[i] = Math.clamp(updatedMeanAge, 18.0f, 50.0f);

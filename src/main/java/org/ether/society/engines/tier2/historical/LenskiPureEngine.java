@@ -23,15 +23,20 @@ public class LenskiPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(LenskiPureEngine.class);
 
     /**
-     * Computes theoretical Lenski Gini coefficient based on technology stage (1.0 = Hunter-Gatherer, 3.0 = Agrarian, 5.0 = Informational).
+     * Computes theoretical Lenski Gini coefficient based on continuous technology stage
+     * (Milanovic, Lindert & Williamson 2011 "Pre-Industrial Inequality"; Gerhard Lenski 1966 "Power and Privilege").
+     *
+     * @param techStage continuous technology stage (0.0=Paleolithic, 1.5=Neolithic, 2.8=Agrarian Empire, 5.0=Industrial, 7.0=Information)
+     * @return theoretical Gini index in range [0.18, 0.70]
      */
     public static double calculateLenskiGini(double techStage) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (techStage <= 1.5) return 0.15; // Low inequality in Hunter-Gatherer societies
-        if (techStage <= 3.5) return 0.65; // Peak inequality in Agrarian / Feudal societies
-        return 0.35; // Redistribution in Industrial / Informational societies
+        // Continuous Inverted-U Kuznets-Lenski curve:
+        // Baseline egalitarian hunter-gatherer / early horticulturalist floor G ~ 0.18 (Bowles et al. 2010),
+        // peaking during the agrarian imperial extraction peak G ~ 0.68 at T ~ 2.8 (feudal Rome/Middle Ages),
+        // compressing through modern welfare institutions and democratic tax redistribution to G ~ 0.32-0.38 at T > 5.0.
+        double agrarianPeak = 0.48 * Math.exp(-Math.pow(techStage - 2.8, 2.0) / (2.0 * 1.21));
+        double modernFloor = 0.14 / (1.0 + Math.exp(-2.2 * (techStage - 4.5)));
+        return Math.clamp(0.18 + agrarianPeak + modernFloor, 0.18, 0.70);
     }
 
     /**

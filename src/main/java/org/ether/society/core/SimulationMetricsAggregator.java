@@ -159,7 +159,10 @@ public class SimulationMetricsAggregator {
     public double getPollutionLevel() {
         float tech = engine.getAverageTechnology();
         long pop = engine.getTotalPopulation();
-        return Math.max(0, (tech > 50 ? (tech - 50) * 1.5 * (pop / 100000.0) : 0));
+        if (tech < 3.0f || pop <= 0) return 0.0;
+        // Continuous logistic industrial emissions response (Smil 2008)
+        double industrialIntensity = 1.0 / (1.0 + Math.exp(-2.5 * (tech - 4.5)));
+        return (pop / 100000.0) * industrialIntensity * 50.0;
     }
 
     /**
@@ -347,11 +350,11 @@ public class SimulationMetricsAggregator {
      */
     public double getEroiAlimentaire() {
         float tech = engine.getAverageTechnology();
-        if (tech < 1.5f) return 7.0;
-        if (tech < 4.0f) return 6.5;
-        if (tech < 50.0f) return 2.8;
-        if (tech < 120.0f) return 0.50;
-        return 0.12;
+        if (tech < 1.5f) return 7.0; // Hunter-gatherers (foraged wild harvest)
+        if (tech < 2.5f) return 6.5; // Early Neolithic agrarian (manual hoe/swidden)
+        if (tech < 3.8f) return 2.8; // Advanced pre-industrial agrarian (animal traction, manure)
+        if (tech < 6.0f) return 0.50; // Industrialized agriculture (fossil energy subsidy, Haber-Bosch)
+        return 0.12; // Hyper-intensive modern food supply chain
     }
 
     /**
@@ -372,9 +375,9 @@ public class SimulationMetricsAggregator {
     public double getTrophicMultiplier() {
         float tech = engine.getAverageTechnology();
         if (tech < 1.5f) return PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER;
-        if (tech < 4.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN;
-        if (tech < 50.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_PREINDUSTRIAL_ADVANCED_AGRARIAN;
-        if (tech < 120.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_INDUSTRIAL_WORKER;
+        if (tech < 2.5f) return PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN;
+        if (tech < 3.8f) return PhysicalConstants.TROPHIC_MULTIPLIER_PREINDUSTRIAL_ADVANCED_AGRARIAN;
+        if (tech < 6.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_INDUSTRIAL_WORKER;
         return PhysicalConstants.TROPHIC_MULTIPLIER_POST_INDUSTRIAL;
     }
 
@@ -387,7 +390,7 @@ public class SimulationMetricsAggregator {
         double trophicMul = getTrophicMultiplier();
         float tech = engine.getAverageTechnology();
         double energyDensity = (tech < 1.5f) ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG
-                : (tech < 50.0f ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG : 14.0);
+                : (tech < 3.8f ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG : 14.0);
         return (PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_MJ * trophicMul) / energyDensity;
     }
 
@@ -398,12 +401,12 @@ public class SimulationMetricsAggregator {
      */
     public int getMaxHierarchyLevel() {
         float tech = engine.getAverageTechnology();
-        if (tech < 10) return 1;
-        if (tech < 30) return 2;
-        if (tech < 60) return 3;
-        if (tech < 100) return 4;
-        if (tech < 200) return 5;
-        return 6;
+        if (tech < 1.5f) return 1; // Band
+        if (tech < 2.2f) return 2; // Tribe / Segmentary lineage
+        if (tech < 3.0f) return 3; // Simple Chiefdom / Archaic State
+        if (tech < 4.0f) return 4; // Complex State / Agrarian Empire
+        if (tech < 5.5f) return 5; // Fiscal-Military State / Nation State
+        return 6; // Transnational / Globalized Bureaucracy
     }
 
     /**
@@ -659,11 +662,15 @@ public class SimulationMetricsAggregator {
         return Math.max(5.0, 100.0 - (resDep * 0.6) + Math.min(15.0, tech * 0.1));
     }
 
-    /** @return anthropogenic carbon footprint index */
+    /** @return anthropogenic carbon footprint index (Smil 2017 energy transition lifecycle) */
     public double getCarbonFootprint() {
         double energy = getEnergyCaptured();
         float tech = engine.getAverageTechnology();
-        return (energy * (tech > 40 && tech < 180 ? 0.85 : 0.2)) / 1000.0;
+        // Continuous fossil share curve: logistic ramp during industrialization, logistic phase-out at high tech
+        double fossilAscent = 0.85 / (1.0 + Math.exp(-2.5 * (tech - 4.2)));
+        double cleanTransition = 1.0 / (1.0 + Math.exp(1.8 * (tech - 7.5)));
+        double fossilShare = Math.max(0.05, fossilAscent * cleanTransition);
+        return (energy * fossilShare) / 1000.0;
     }
 
     /** @return wild biosphere share versus domesticated biomass ($0\%$ to $100\%$) */

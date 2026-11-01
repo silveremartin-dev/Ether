@@ -460,3 +460,82 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Replaces discrete array truncation with continuous economic gravity modeling, enabling trade corridors to form organically based on population mass and distance friction.
 * **Empirical Validation Grounding**:
   * Anderson (1979); Head & Mayer (2014); Maddison Project 2020.
+
+---
+
+### Entry 25: Unified Continuous Technological Scale ($0.0 - 10.0$) and Elimination of Legacy $0-200$ Scale Residuals
+* **Date**: November 1, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java`, `EnvironmentalKernel.java`, `DemographicKernel.java`, `MainView.java`
+* **Canonical Literature**:
+  * Morris, I. (2013). *The Measure of Civilization: How Social Development Decides the Fate of Nations*. Princeton University Press.
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+* **Problem in Previous Implementation**:
+  * Residual legacy checks from an obsolete $0-200$ integer scale (`tech > 40`, `tech >= 50.0f`, `tech / 80.0f`, `techLevel < 10` for Stone Age) caused simulation metrics to register zero industrial pollution, locked modern food systems into medieval draft-animal EROI, prevented the Haber-Bosch green revolution crop yield boost, and labeled modern societies as "STONE AGE" in the UI.
+* **Calibrated Ether Formulation**:
+  * Complete unification across all simulation modules to the continuous $T \in [0.0, 10.0]$ scale:
+    * $T < 1.5$: Paleolithic & Mesolithic (Hunter-Gatherer)
+    * $1.5 \le T < 2.5$: Early Neolithic Agrarian
+    * $2.5 \le T < 4.5$: Advanced Pre-Industrial Agrarian (Bronze, Iron, Classical, Medieval, Early Modern)
+    * $4.5 \le T < 6.5$: Industrial Revolution & Early Modern Era
+    * $T \ge 6.5$: Post-Industrial, Information, & Space Era
+  * Fossil energy share $s_{\text{fossil}}(T)$ derived from continuous Smil transition envelope:
+    $$s_{\text{fossil}}(T) = \max\left(0.05, \frac{0.85}{1 + \exp(-2.5 \cdot (T - 4.2))} \cdot \frac{1}{1 + \exp(1.8 \cdot (T - 7.5))}\right)$$
+* **Root Cause & Justification**:
+  * Eliminates scale divergence between continuous simulation kernels and UI/metric evaluators, restoring accurate demographic transitions, EROI degradation, and industrial yield dynamics.
+* **Empirical Validation Grounding**:
+  * Morris (2013); Smil (2017); Maddison Project (2020).
+
+---
+
+### Entry 26: Continuous Inverted-U Kuznets-Lenski Inequality Curve
+* **Date**: November 1, 2026
+* **Subsystem**: `LenskiPureEngine.java`
+* **Canonical Literature**:
+  * Lenski, G. (1966). *Power and Privilege: A Theory of Social Stratification*. McGraw-Hill.
+  * Milanovic, B., Lindert, P. H., & Williamson, J. G. (2011). *Pre-Industrial Inequality*. The Economic Journal, 121(551), 255–272.
+* **Problem in Previous Implementation**:
+  * Discrete 3-step staircase (`if (tech <= 1.5) return 0.15; if (tech <= 3.5) return 0.65; return 0.35;`) violated `AGENTS.md §8`.
+* **Calibrated Ether Formulation**:
+  $$G(T) = \text{clamp}\left(0.18 + 0.48 \cdot \exp\left(-\frac{(T - 2.8)^2}{2 \cdot 1.1^2}\right) + \frac{0.14}{1 + \exp(-2.2 \cdot (T - 4.5))}, 0.18, 0.70\right)$$
+* **Root Cause & Justification**:
+  * Models continuous inequality trajectories from egalitarian foraging bands through peak imperial extraction in agrarian states, transitioning smoothly to fiscal-democratic welfare compression.
+* **Empirical Validation Grounding**:
+  * Milanovic et al. (2011); Bowles, Choi & Hopfensitz (2003); World Inequality Database (WID).
+
+---
+
+### Entry 27: Continuous Granovetter Collective Action Mobilization CDF
+* **Date**: November 1, 2026
+* **Subsystem**: `GranovetterThresholdCascadeEngine.java`
+* **Canonical Literature**:
+  * Granovetter, M. (1978). *Threshold Models of Collective Behavior*. American Journal of Sociology, 83(6), 1420–1443.
+  * Gurr, T. R. (1970). *Why Men Rebel*. Princeton University Press.
+* **Problem in Previous Implementation**:
+  * Arbitrary binary cliff `if (grievance > 0.5)` for civil defiance.
+* **Calibrated Ether Formulation**:
+  $$g = 0.5 \cdot \left(\frac{1}{1 + \exp(-12.0 \cdot (G - 0.45))} + \frac{1}{1 + \exp(0.015 \cdot (F - 350))}\right)$$
+  $$\Phi(g) = \frac{1}{1 + \exp(-8.0 \cdot (g - 0.40))}$$
+  $$W(t + \Delta t) = \max(10.0, W(t) \cdot (1 - 0.08 \cdot \Phi(g) \cdot \Delta t))$$
+* **Root Cause & Justification**:
+  * Aggregates heterogeneous individual riot thresholds into a continuous cumulative normal mobilization response.
+* **Empirical Validation Grounding**:
+  * Granovetter (1978); Tilly (1978) *From Mobilization to Revolution*.
+
+---
+
+### Entry 28: Continuous Lanchester Square-Law Combat Resolution
+* **Date**: November 1, 2026
+* **Subsystem**: `WarDiplomacyEngine.java`
+* **Canonical Literature**:
+  * Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Co.
+  * Bueno de Mesquita, B. (1981). *The War Trap*. Yale University Press.
+* **Problem in Previous Implementation**:
+  * Binary combat check `aggressorPower > defenderPower * 1.25` ignored continuous force attrition ratios.
+* **Calibrated Ether Formulation**:
+  $$P_{\text{conquest}} = \frac{P_{\text{agg}}^2}{P_{\text{agg}}^2 + P_{\text{def}}^2}$$
+  $$\text{Casualty Rate} = \text{clamp}\left(0.20 \cdot \frac{P_{\text{def}}^2}{P_{\text{agg}}^2 + P_{\text{def}}^2} \cdot \sqrt{\sigma_{\text{friction}}}, 0.05, 0.45\right)$$
+  * Breakthrough occurs when tactical dominance exceeds $P_{\text{conquest}} > 0.55$.
+* **Root Cause & Justification**:
+  * Replaces discrete rules of thumb with Lanchester square-law combat mechanics, coupling military casualties to defender firepower and topographic friction.
+* **Empirical Validation Grounding**:
+  * Lanchester (1916); Dupuy (1987) *Understanding War: History and Theory of Combat*.
