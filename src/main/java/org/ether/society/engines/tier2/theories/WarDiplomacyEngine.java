@@ -8,6 +8,7 @@ package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
+import org.ether.society.h3.H3Service;
 import org.ether.society.engines.tier1.ThermodynamicMigrationEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

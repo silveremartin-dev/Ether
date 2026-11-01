@@ -88,12 +88,12 @@ public class CliodynamicsEngine {
             // peripheral border cells assert local autonomy smoothly over time with geodesic Haversine distance.
             if (nation.getTerritory().size() > 1) {
                 double stressDelta = psi - stateCap;
-                // Continuous C^1 Softplus activation: smooth transition around stress delta = 0
-                double excessStress = (stressDelta > -2.0)
-                        ? (Math.log(1.0 + Math.exp(Math.min(20.0, 5.0 * stressDelta))) / 5.0) * dtYears
+                // Continuous C^1 Softplus activation: active only when instability challenges state capacity (Psi > C_state)
+                double excessStress = (stressDelta > -0.05)
+                        ? (Math.log(1.0 + Math.exp(Math.min(20.0, 25.0 * stressDelta))) / 25.0) * dtYears
                         : 0.0;
                 H3Cell capital = nation.getCapital();
-                if (excessStress > 0.0001 && capital != null) {
+                if (excessStress > 0.0005 && capital != null) {
                     List<H3Cell> territory = new ArrayList<>(nation.getTerritory());
                     for (H3Cell cell : territory) {
                         if (cell == null || cell == capital) continue;
