@@ -613,24 +613,24 @@ public class ProceduralPopulationEngine {
 
         return switch (pattern) {
             case "UNBIASED_NATURAL", "UNBIASED", "NONE", "NATURAL_EQUILIBRIUM" -> 1.0;
-            case "COASTAL_MARITIME" -> (b == Biome.BEACH || elev < 50.0) ? 3.5 : 0.6;
-            case "RIVER_VALLEYS" -> (water > 400.0 || (b == Biome.PLAINS && cell.getRainfall() != null && cell.getRainfall() > 0.4)) ? 4.0 : 0.6;
-            case "HIGHLAND_MOUNTAIN" -> (b == Biome.HILLS || b == Biome.MOUNTAINS || elev > 800.0) ? 3.5 : 0.6;
-            case "INLAND_OASIS" -> (aquifer > 2000.0) ? 4.0 : 0.6;
-            case "EQUATORIAL_BELT" -> (Math.abs(lat) <= 25.0) ? 3.0 : 0.6;
-            case "EGYPT_NILE" -> ((water > 300.0 || aquifer > 1500.0 || (lat >= 20.0 && lat <= 35.0)) ? 4.0 : 1.0);
-            case "GREEN_SAHARA" -> ((b == Biome.SAVANNAH || aquifer > 1500.0 || (lat >= 10.0 && lat <= 32.0)) ? 4.0 : 1.0);
-            case "MESOAMERICA" -> ((b == Biome.JUNGLE || b == Biome.HILLS || (lat >= 10.0 && lat <= 25.0)) ? 3.5 : 1.0);
-            case "ROMAN_EMPIRE" -> ((b == Biome.BEACH || elev < 150.0 || (lat >= 25.0 && lat <= 55.0)) ? 3.5 : 1.0);
-            case "AUSTRALIA_SAHUL" -> ((b == Biome.BEACH || aquifer > 1500.0 || lat < -10.0) ? 3.5 : 1.0);
-            case "INDIA_MAURYA" -> ((water > 300.0 || b == Biome.PLAINS || (lat >= 8.0 && lat <= 35.0)) ? 4.0 : 1.0);
-            case "FERTILE_CRESCENT", "MESOPOTAMIA_ASSYRIA" -> ((water > 300.0 || b == Biome.PLAINS || (lat >= 25.0 && lat <= 42.0)) ? 4.0 : 1.0);
-            case "BERINGIA_AMERICAS", "LGM_REFUGIA", "YOUNGER_DRYAS" -> ((b == Biome.BEACH || b == Biome.TUNDRA || b == Biome.PLAINS || lat >= 35.0) ? 3.5 : 1.0);
-            case "WEST_AFRICA_MALI" -> ((b == Biome.SAVANNAH || aquifer > 1500.0 || (lat >= 5.0 && lat <= 25.0)) ? 3.5 : 1.0);
-            case "JAPAN_SAKOKU" -> ((b == Biome.BEACH || elev < 300.0 || (lat >= 30.0 && lat <= 45.0)) ? 3.5 : 1.0);
-            case "AMERICAS_1491", "COLUMBIAN_CONTACT" -> ((b == Biome.JUNGLE || b == Biome.PLAINS || b == Biome.HILLS) ? 3.0 : 1.0);
-            case "ONE_CONTINENT" -> ((Math.abs(lat) <= 35.0) ? 3.0 : 1.0);
-            case "INDUSTRIAL_1800" -> ((lat >= 30.0 && lat <= 60.0) ? 3.0 : 1.0);
+            case "COASTAL_MARITIME" -> 0.6 + 2.9 / (1.0 + Math.exp(0.05 * (elev - 40.0)));
+            case "RIVER_VALLEYS" -> 0.6 + 3.4 / (1.0 + Math.exp(-0.01 * (water - 300.0)));
+            case "HIGHLAND_MOUNTAIN" -> 0.6 + 2.9 / (1.0 + Math.exp(-0.005 * (elev - 700.0)));
+            case "INLAND_OASIS" -> 0.6 + 3.4 / (1.0 + Math.exp(-0.003 * (aquifer - 1500.0)));
+            case "EQUATORIAL_BELT" -> 0.6 + 2.4 * Math.exp(-Math.pow(lat / 18.0, 2.0));
+            case "EGYPT_NILE" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 27.0, 2.0) / 50.0 - Math.pow(lng - 31.0, 2.0) / 18.0);
+            case "GREEN_SAHARA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 22.0, 2.0) / 72.0 - Math.pow(lng - 10.0, 2.0) / 200.0);
+            case "MESOAMERICA" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 18.0, 2.0) / 32.0 - Math.pow(lng + 95.0, 2.0) / 72.0);
+            case "ROMAN_EMPIRE" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 38.0, 2.0) / 72.0 - Math.pow(lng - 15.0, 2.0) / 200.0);
+            case "AUSTRALIA_SAHUL" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat + 25.0, 2.0) / 100.0 - Math.pow(lng - 135.0, 2.0) / 200.0);
+            case "INDIA_MAURYA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 22.0, 2.0) / 50.0 - Math.pow(lng - 78.0, 2.0) / 72.0);
+            case "FERTILE_CRESCENT", "MESOPOTAMIA_ASSYRIA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 33.0, 2.0) / 32.0 - Math.pow(lng - 43.0, 2.0) / 50.0);
+            case "BERINGIA_AMERICAS", "LGM_REFUGIA", "YOUNGER_DRYAS" -> 1.0 + 2.5 / (1.0 + Math.exp(-0.2 * (lat - 35.0)));
+            case "WEST_AFRICA_MALI" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 14.0, 2.0) / 32.0 - Math.pow(lng + 4.0, 2.0) / 72.0);
+            case "JAPAN_SAKOKU" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 36.0, 2.0) / 32.0 - Math.pow(lng - 138.0, 2.0) / 32.0);
+            case "AMERICAS_1491", "COLUMBIAN_CONTACT" -> 1.0 + 2.0 * Math.exp(-Math.pow(lng + 75.0, 2.0) / 450.0);
+            case "ONE_CONTINENT" -> 1.0 + 2.0 * Math.exp(-Math.pow(lat / 25.0, 2.0));
+            case "INDUSTRIAL_1800" -> 1.0 + 2.0 * Math.exp(-Math.pow(lat - 50.0, 2.0) / 72.0);
             case "URBAN_CLUSTERS" -> 1.0;
             case "SPARSE_NOMADIC" -> 0.8;
             case "UNIFORM" -> 1.0;
@@ -640,22 +640,23 @@ public class ProceduralPopulationEngine {
     }
 
     /**
-     * Creates high-density urban clusters on top suitable cells when tech permits cities.
+     * Applies continuous Zipf's law agglomeration scaling across cell weights (Zipf 1949, Gabaix 1999).
      */
     private static void applyUrbanClustering(List<H3Cell> landCells, double[] weights, double techLevel) {
         int cellCount = landCells.size();
-        int cityCount = Math.min(30, Math.max(2, (int) (cellCount * 0.03)));
+        if (cellCount == 0) return;
 
-        // Find top indices
-        List<Integer> indices = new ArrayList<>();
-        for (int i = 0; i < cellCount; i++) indices.add(i);
-        indices.sort((i1, i2) -> Double.compare(weights[i2], weights[i1]));
+        double sum = 0.0;
+        for (int i = 0; i < cellCount; i++) sum += weights[i];
+        double meanWeight = sum / cellCount;
+        if (meanWeight <= 0.0) return;
 
-        // Boost top city centers
-        double cityBoost = 5.0 + (techLevel * 2.0);
-        for (int k = 0; k < cityCount && k < indices.size(); k++) {
-            int idx = indices.get(k);
-            weights[idx] *= cityBoost;
+        // Zipf scaling exponent alpha increases continuously with technological development (urbanization transition)
+        double alphaUrban = 0.35 * Math.min(1.0, Math.max(0.0, techLevel / 10.0));
+        for (int i = 0; i < cellCount; i++) {
+            if (weights[i] > meanWeight) {
+                weights[i] *= Math.pow(weights[i] / meanWeight, alphaUrban);
+            }
         }
     }
 

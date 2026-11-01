@@ -256,14 +256,16 @@ public class CultureKernel {
                 return Math.max(0.0f, Math.min(1.0f, 0.5f + (elevation / 4000.0f) * 0.3f));
             case 1: // Kinship & Clan structure
                 return Math.max(0.0f, Math.min(1.0f, 0.8f - (tech / 10.0f) * 0.4f));
-            case 2: // Rituals & Asabiyyah (Sacred social cohesion)
-                return Math.max(0.0f, Math.min(1.0f, 0.6f + (elevation > 1000 ? 0.2f : 0.0f)));
+            case 2: // Rituals & Asabiyyah (Sacred social cohesion: highland ruggedness boost, Turchin 2003)
+                float asabiyyahRuggedness = (float) (1.0 / (1.0 + Math.exp(-0.003 * (elevation - 1000.0f))));
+                return Math.max(0.0f, Math.min(1.0f, 0.6f + 0.2f * asabiyyahRuggedness));
             case 3: // Sovereignty & Political alignment
                 return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.7f + 0.2f));
             case 4: // Technology & Materiality
                 return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.9f + 0.1f));
-            case 5: // Trade networks (Coastal and lowland centrality)
-                return Math.max(0.0f, Math.min(1.0f, elevation < 500 ? 0.7f : 0.3f));
+            case 5: // Trade networks (Coastal and lowland accessibility gradient, Krugman 1991)
+                float lowlandAccess = (float) (1.0 / (1.0 + Math.exp(0.004 * (elevation - 600.0f))));
+                return Math.max(0.0f, Math.min(1.0f, 0.3f + 0.4f * lowlandAccess));
             case 6: // Institutional complexity (Seshat)
                 return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.8f + 0.1f));
             case 7: // Ecological footprint / Malthusian stress

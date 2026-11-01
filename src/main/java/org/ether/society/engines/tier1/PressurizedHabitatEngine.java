@@ -175,13 +175,7 @@ public class PressurizedHabitatEngine {
         if (pop >= 0.80 * capacity && availableCapital >= 1000.0 && availableMetal >= 200.0) {
             int currentTier = cell.getHabitatTierOr(1);
             int newTier = Math.min(4, currentTier + 1);
-            double newCapacity = switch (newTier) {
-                case 1 -> 500.0;
-                case 2 -> 5_000.0;
-                case 3 -> 50_000.0;
-                case 4 -> 500_000.0;
-                default -> capacity * 2.0;
-            };
+            double newCapacity = 500.0 * Math.pow(10.0, newTier - 1);
             if (newCapacity > capacity) {
                 cell.setHabitatTier(newTier);
                 cell.setHabitatCapacity(newCapacity);

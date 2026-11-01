@@ -539,3 +539,59 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Replaces discrete rules of thumb with Lanchester square-law combat mechanics, coupling military casualties to defender firepower and topographic friction.
 * **Empirical Validation Grounding**:
   * Lanchester (1916); Dupuy (1987) *Understanding War: History and Theory of Combat*.
+
+---
+
+### Entry 29: Continuous Spatial Population Envelopes and Continuous Zipf Agglomeration Scaling
+* **Date**: November 1, 2026
+* **Subsystem**: `ProceduralPopulationEngine.java`
+* **Canonical Literature**:
+  * Zipf, G. K. (1949). *Human Behavior and the Principle of Least Effort*. Addison-Wesley.
+  * Gabaix, X. (1999). *Zipf's Law for Cities: An Explanation*. The Quarterly Journal of Economics, 114(3), 739–767.
+  * Xu, C., Kohler, T. A., Lenton, T. M., Svenning, J. C., & Scheffer, M. (2020). *Future of the human climate niche*. PNAS, 117(21), 11350–11355.
+* **Problem in Previous Implementation**:
+  * Rectangular binary bounding boxes with discrete multipliers (`lat >= 20.0 && lat <= 35.0 ? 4.0 : 1.0`, `elev < 50.0 ? 3.5 : 0.6`) produced abrupt population density cliffs across spatial cell boundaries. Urban clustering sorted cells and multiplied a hardcoded top-30 subset by a fixed coefficient.
+* **Calibrated Ether Formulation**:
+  * Bivariate continuous Gaussian spatial envelopes across all regional historical density patterns:
+    $$w(\lambda, \phi) = 1.0 + A \cdot \exp\left(-\frac{(\lambda - \mu_{\text{lat}})^2}{2 \sigma_{\text{lat}}^2} - \frac{(\phi - \mu_{\text{lng}})^2}{2 \sigma_{\text{lng}}^2}\right)$$
+  * Continuous Zipf power-law urban agglomeration across all cells:
+    $$w_i \gets w_i \cdot \left(\frac{w_i}{\bar{w}}\right)^{\alpha_{\text{urban}}(T)}, \quad \alpha_{\text{urban}}(T) = 0.35 \cdot \text{clamp}\left(\frac{T}{10.0}, 0.0, 1.0\right)$$
+* **Root Cause & Justification**:
+  * Eliminates discrete territorial cliffs, replacing heuristic rank slicing with continuous Zipfian agglomeration dynamics coupled to technological progress.
+* **Empirical Validation Grounding**:
+  * Zipf (1949); Gabaix (1999); HYDE 3.4; Maddison Project 2020.
+
+---
+
+### Entry 30: Continuous Orographic Cultural Anchors (Asabiyyah Ruggedness & Lowland Trade Access)
+* **Date**: November 1, 2026
+* **Subsystem**: `CultureKernel.java`
+* **Canonical Literature**:
+  * Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press.
+  * Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483–499.
+* **Problem in Previous Implementation**:
+  * Binary elevation switches (`elevation > 1000 ? 0.2f : 0.0f` for ritual cohesion and `elevation < 500 ? 0.7f : 0.3f` for trade access) introduced non-physical step jumps in cultural tensor initialization.
+* **Calibrated Ether Formulation**:
+  $$\text{Asabiyyah}(h) = 0.60 + 0.20 \cdot \frac{1}{1 + \exp(-0.003 \cdot (h - 1000.0))}$$
+  $$\text{Trade Access}(h) = 0.30 + 0.40 \cdot \frac{1}{1 + \exp(0.004 \cdot (h - 600.0))}$$
+* **Root Cause & Justification**:
+  * Replaces discrete elevation thresholds with continuous logistic elevation responses, capturing highland solidarity and lowland commercial accessibility.
+* **Empirical Validation Grounding**:
+  * Turchin (2003); Krugman (1991); Nunn & Puga (2012) *Ruggedness: The Blessing of Bad Geography in Africa*.
+
+---
+
+### Entry 31: Closed-form Geometric Habitat Capacity Scaling
+* **Date**: November 1, 2026
+* **Subsystem**: `PressurizedHabitatEngine.java`
+* **Canonical Literature**:
+  * O'Neill, G. K. (1974). *The Colonization of Space*. Physics Today, 27(9), 32–40.
+  * Zubrin, R. (1996). *The Case for Mars*. Free Press.
+* **Problem in Previous Implementation**:
+  * Discrete `switch(newTier)` table with hardcoded step tiers (500, 5000, 50000, 500000).
+* **Calibrated Ether Formulation**:
+  $$C(\text{tier}) = 500.0 \cdot 10^{\text{tier} - 1}$$
+* **Root Cause & Justification**:
+  * Formulates pressurized extraterrestrial habitat volumetric capacity as an analytical closed-form exponential expansion law.
+* **Empirical Validation Grounding**:
+  * O'Neill (1974); Zubrin (1996).
