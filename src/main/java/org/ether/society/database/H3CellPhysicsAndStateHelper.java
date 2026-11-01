@@ -38,69 +38,81 @@ public final class H3CellPhysicsAndStateHelper {
      * @param techLevel technology level ($1.0$ = ancient, $10.0$ = modern)
      * @return movement friction multiplier ($1.0$ = flat plain, $>10.0$ = extreme mountain/desert/swamp)
      */
+    /**
+     * Calculates continuous movement friction based on topographic relief (Minetti et al. 2002),
+     * standing vegetation impedance, cryospheric snow resistance, and technological transport mitigation.
+     *
+     * @param cell target H3 cell
+     * @param techLevel technology era level (continuous $\text{Tech} \in [0.0, 10.0]$)
+     * @return updated movement friction
+     */
     public static double calculateMovementFriction(H3Cell cell, double techLevel) {
-        double baseFriction = 1.0;
-
+        if (cell == null) return 1.0;
         double elev = cell.getElevationOr(0.0);
-        if (elev > 3000) baseFriction += 8.0;
-        else if (elev > 1500) baseFriction += 4.0;
-        else if (elev > 500) baseFriction += 1.5;
-        else if (elev < 0) {
-            return techLevel >= 3.0 ? Math.max(0.5, 3.0 - (techLevel * 0.25)) : 25.0;
+
+        // Seafaring navigation friction across marine cells
+        if (elev < 0.0) {
+            double seaFriction = Math.clamp(25.0 * Math.exp(-0.35 * techLevel), 0.40, 25.0);
+            cell.setMovementFriction(seaFriction);
+            return seaFriction;
         }
 
-        Biome biome = cell.getBiome();
-        if (biome != null) {
-            switch (biome) {
-                case TUNDRA, SNOW -> baseFriction += 3.5;
-                case GLACIER -> baseFriction += 8.0;
-                case FOREST -> baseFriction += 1.5;
-                case SAVANNAH -> baseFriction += 0.8;
-                case JUNGLE -> baseFriction += 4.5;
-                case DESERT -> baseFriction += 4.0;
-                case MOUNTAINS -> baseFriction += 6.0;
-                case HILLS -> baseFriction += 2.0;
-                case BEACH -> baseFriction += 1.2;
-                default -> {}
-            }
-        }
+        // 1. Topographic relief friction (Minetti et al. 2002 metabolic cost of incline)
+        double fRelief = 1.0 + 4.0 * Math.pow(Math.max(0.0, elev) / 2500.0, 1.35);
 
-        double techMitigation = Math.max(0.2, 1.0 - (techLevel * 0.08));
-        double computed = Math.max(0.3, baseFriction * techMitigation);
+        // 2. Standing vegetation impedance (canopy undergrowth resistance)
+        double biomassNat = cell.getBiomassNaturalOr(0.0);
+        double fVeg = 2.5 * Math.clamp(biomassNat / 4000.0, 0.0, 1.0);
+
+        // 3. Cryospheric snow / permafrost impedance below freezing point
+        double tempC = cell.getTemperatureOr(15.0);
+        double fSnow = 4.5 / (1.0 + Math.exp(0.50 * (tempC - 0.0)));
+
+        double baseFriction = fRelief + fVeg + fSnow;
+
+        // 4. Continuous technological infrastructure and vehicle mitigation
+        double techMitigation = Math.max(0.15, Math.exp(-0.12 * techLevel));
+        double computed = Math.max(0.30, baseFriction * techMitigation);
         cell.setMovementFriction(computed);
         return computed;
     }
 
     /**
-     * Calculates dynamic surface albedo $\alpha \in [0.06, 0.85]$ based on snow/ice cover, biome,
-     * and natural vegetation density:
-     * $$\alpha = \alpha_{\text{biome}} \cdot v_{\text{veg}} + 0.30 \cdot (1 - v_{\text{veg}})$$
+     * Calculates dynamic surface albedo $\alpha \in [0.06, 0.85]$ continuously using the
+     * Sellers (1969) / Dickinson et al. (1993, BATS) thermodynamic surface energy balance model.
+     *
+     * <p>Modeled as continuous functions of snow cover fraction $f_{\text{snow}}(T)$,
+     * soil moisture, and vegetative canopy density:
+     * $$\alpha = (1 - f_{\text{snow}}) [f_{\text{veg}} \alpha_{\text{veg}} + (1 - f_{\text{veg}}) \alpha_{\text{soil}}] + f_{\text{snow}} \alpha_{\text{snow}}$$
      *
      * @param cell target H3 cell
      * @return updated surface albedo $\alpha$
      */
     public static double calculateDynamicAlbedo(H3Cell cell) {
-        if (cell.getElevation() != null && cell.getElevation() < 0) {
+        if (cell == null) return 0.22;
+        double elev = cell.getElevationOr(0.0);
+        if (elev < 0.0) {
             cell.setDynamicAlbedo(0.06);
             return 0.06;
         }
 
-        double baseAlbedo = 0.22;
-        Biome biome = cell.getBiome();
-        if (biome != null) {
-            switch (biome) {
-                case SNOW, TUNDRA -> baseAlbedo = 0.78;
-                case GLACIER -> baseAlbedo = 0.85;
-                case SAVANNAH -> baseAlbedo = 0.25;
-                case DESERT -> baseAlbedo = 0.40;
-                case FOREST, JUNGLE -> baseAlbedo = 0.12;
-                case MOUNTAINS -> baseAlbedo = 0.35;
-                default -> baseAlbedo = 0.22;
-            }
-        }
+        double tempC = cell.getTemperatureOr(15.0);
+        double rainMm = cell.getRainfallOr(500.0);
+        double biomassNat = cell.getBiomassNaturalOr(0.0);
 
-        double vegDensity = Math.clamp(cell.getBiomassNaturalOr(0.0) / 1000.0, 0.0, 1.0);
-        double computed = (baseAlbedo * vegDensity) + (0.30 * (1.0 - vegDensity));
+        // Continuous snow cover fraction around freezing point
+        double fSnow = 1.0 / (1.0 + Math.exp(0.80 * (tempC - 0.0)));
+
+        // Continuous vegetative canopy cover fraction
+        double fVeg = Math.clamp(biomassNat / 3000.0, 0.0, 0.90);
+
+        // Bare soil albedo: dry soil/sand is reflective (~0.40), moist soil is darker (~0.15) (Idso et al. 1975)
+        double alphaSoil = 0.15 + 0.25 * Math.exp(-0.003 * rainMm);
+        double alphaVeg = 0.14;
+        double alphaSnow = 0.80;
+
+        double alphaLand = (1.0 - fSnow) * (fVeg * alphaVeg + (1.0 - fVeg) * alphaSoil) + fSnow * alphaSnow;
+        double computed = Math.clamp(alphaLand, 0.06, 0.85);
         cell.setDynamicAlbedo(computed);
         return computed;
     }

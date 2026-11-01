@@ -243,13 +243,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         PreComputePhase preCompute = new PreComputePhase(scenario);
         preCompute.execute(cells);
 
-        int populatedCount = 0;
-        for (H3Cell c : cells) {
-            if (c != null && c.getPopulation() != null && c.getPopulation() > 0) {
-                populatedCount++;
-            }
-        }
-        H3BufferAndEventCoordinator.initializePoliticalSeeding(cells, nations, populatedCount);
+        H3BufferAndEventCoordinator.initializePoliticalEntities(cells, nations, scenario);
 
         int cohortSize = scenario != null && scenario.getTargetCohortSize() > 0 ? scenario.getTargetCohortSize() : 150;
         if (demographicKernel != null) {

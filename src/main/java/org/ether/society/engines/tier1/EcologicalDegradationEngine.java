@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Ecological Degradation, Climate Stress, Pollution & Overfishing Engine.
  * Models:
- * 1. <b>Deforestation & Canopy Loss</b>: Timber extraction and agricultural land clearing,
+ * 1. <b>Deforestation & Canopy Loss</b>: Continuous Whittaker & Likens / Olson standing woody biomass residence,
  *    reducing natural biomass, increasing albedo, and disrupting regional evapotranspiration.
  * 2. <b>Pollution & Remote Atmospheric Dispersion</b>: Industrial/mining waste generation in populated cells
  *    and atmospheric/river dispersion diffusing toxic contaminants even into unpopulated, high-altitude or remote sites.
@@ -29,7 +29,6 @@ import java.util.List;
  */
 public class EcologicalDegradationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EcologicalDegradationEngine.class);
-
 
     /**
      * Standard human annual metabolic energy consumption:
@@ -46,7 +45,6 @@ public class EcologicalDegradationEngine {
      * Executes one ecological, pollution, overfishing & socio-demographic simulation tick across all cells.
      */
     public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel, double deltaYears) {
-// Numerical integration step for EcologicalDegradationEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
         double dtMonthlyRatio = Math.max(0.001, deltaYears / (1.0 / 12.0));
 
@@ -190,14 +188,16 @@ public class EcologicalDegradationEngine {
             double planarCellAreaKm2 = H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3);
             double areaScale = Math.max(0.05, planarCellAreaKm2 / 1770.49);
             double currentWood = cell.getWoodResource() != null ? cell.getWoodResource() : (1000.0 * areaScale);
-            double intactWoodCap = switch (biome) {
-                case JUNGLE -> 9000.0;
-                case FOREST -> 7500.0;
-                case MOUNTAINS, HILLS -> (rain >= 600.0) ? 7000.0 : 3000.0;
-                case BEACH -> (rain >= 800.0) ? 6000.0 : 2500.0;
-                case SAVANNAH -> 4000.0;
-                default -> 2500.0;
-            } * areaScale;
+
+            // Continuous Whittaker (1973) & Olson et al. (1983) standing woody biomass capacity
+            double forestAffinity = (1.0 / (1.0 + Math.exp(-0.006 * (rain - 450.0))))
+                    * (1.0 / (1.0 + Math.exp(-0.25 * (temp - 2.0))));
+            double woodResidenceYears = 35.0 * forestAffinity + 5.0 * (1.0 - forestAffinity) * (rain / (rain + 250.0));
+            double nppP = 3000.0 * (1.0 - Math.exp(-0.000664 * Math.max(0.0, rain)));
+            double nppT = 3000.0 / (1.0 + Math.exp(1.315 - 0.119 * temp));
+            double cellNpp = Math.min(nppP, nppT);
+            double intactWoodCap = Math.clamp(cellNpp * 0.60 * woodResidenceYears * 0.08 * areaScale, 100.0 * areaScale, 9500.0 * areaScale);
+
             double currentAgriBiomass = cell.getBiomassAgricultureOr(0.0);
             // Agricultural land-use competition: cropland and settlement expansion reduces available forest canopy area
             double clearedLandFraction = (effectiveTech >= 1.5)
@@ -206,8 +206,8 @@ public class EcologicalDegradationEngine {
             double maxWoodCap = intactWoodCap * (1.0 - clearedLandFraction);
             double dtYears = dtMonthlyRatio / 12.0;
 
-            // Physical logistic forest biomass regeneration (IPCC / FAO forestry model: ~3.5-5.0% annual increment on remaining forest land)
-            double logisticRegrowthRate = (biome == Biome.JUNGLE ? 0.050 : (biome == Biome.FOREST || biome == Biome.MOUNTAINS || biome == Biome.HILLS ? 0.042 : 0.032));
+            // Continuous logistic forest biomass regeneration (IPCC / FAO forestry model)
+            double logisticRegrowthRate = 0.030 + 0.020 * forestAffinity * (Math.max(0.0, temp) / (Math.max(0.0, temp) + 12.0));
             double woodRegrowth = (currentWood < maxWoodCap)
                     ? logisticRegrowthRate * currentWood * (1.0 - currentWood / maxWoodCap) * dtYears
                     : 0.0;
@@ -222,11 +222,12 @@ public class EcologicalDegradationEngine {
             double minInaccessibleCanopy = (effectiveTech < 3.5) ? (intactWoodCap * 0.45) : (10.0 * areaScale);
             double nextWood = Math.max(minInaccessibleCanopy, currentWood + woodRegrowth - woodDemand);
             cell.setWoodResource(nextWood);
+
             // Dynamic natural ecological biomass (wild fauna, understory flora, roots, berries, game animals)
             double currentNat = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : (3000.0 * areaScale);
-            double baseNatCap = (biome == Biome.JUNGLE ? 9000.0 : (biome == Biome.FOREST ? 7500.0 : (biome == Biome.SAVANNAH ? 5000.0 : (biome == Biome.PLAINS ? 4000.0 : 2000.0)))) * areaScale;
+            double baseNatCap = Math.clamp(cellNpp * 3.5 * areaScale, 500.0 * areaScale, 9000.0 * areaScale);
             double maxNatCap = (effectiveTech < 1.5 && pop > 0) ? Math.max(baseNatCap, pop * 48.0) : baseNatCap;
-            double rNat = (biome == Biome.PLAINS || biome == Biome.SAVANNAH) ? 0.15 : 0.10;
+            double rNat = 0.08 + 0.07 * (1.0 - forestAffinity);
             double natRegrowth = (currentNat < maxNatCap)
                     ? rNat * currentNat * (1.0 - currentNat / maxNatCap) * dtYears
                     : 0.0;
@@ -245,7 +246,7 @@ public class EcologicalDegradationEngine {
             cell.setBiomassNatural(nextNat);
 
             // Severe deforestation & ecological depletion degrades soil organic carbon and rainfall
-            if (nextWood < (100.0 * areaScale) && nextNat < (100.0 * areaScale) && (biome == Biome.FOREST || biome == Biome.JUNGLE)) {
+            if (nextWood < (100.0 * areaScale) && nextNat < (100.0 * areaScale) && forestAffinity > 0.40) {
                 double curSoc = cell.getSoilOrganicCarbonOr(20.0);
                 cell.setSoilOrganicCarbon(Math.max(5.0, curSoc - 0.5 * dtMonthlyRatio));
                 cell.setRainfall(Math.max(100.0, rain * Math.pow(0.98, dtMonthlyRatio))); // Evapotranspiration loss
@@ -260,8 +261,8 @@ public class EcologicalDegradationEngine {
                 double annualIntensificationRate = Math.min(0.025, (demoPressure - 0.8) * 0.015 * (1.0 + effectiveTech * 0.1));
                 double techLandCeiling = Math.max(pop * (400.0 + 50.0 * Math.min(effectiveTech, 10.0)) * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, effectiveTech - 1.4), 1.5)) * areaScale);
                 double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
-                        ? cell.getBiomassAgriculture()
-                        : Math.min(techLandCeiling, Math.max(25.0 * areaScale, pop * 0.5));
+                    ? cell.getBiomassAgriculture()
+                    : Math.min(techLandCeiling, Math.max(25.0 * areaScale, pop * 0.5));
                 cell.setBiomassAgriculture(Math.min(techLandCeiling, currentAgri * (1.0 + annualIntensificationRate * dtYears)));
 
                 // Increases social inequality & friction (Gini index rises under density strain)
@@ -289,7 +290,6 @@ public class EcologicalDegradationEngine {
      * diffusing contaminants even into unpopulated, high-altitude or remote wilderness sites.
      */
     private static void processPollutionDispersion(List<H3Cell> cells) {
-// Numerical integration step for EcologicalDegradationEngine - verifies boundary conservation and updates local thermodynamic state
         int count = cells.size();
         if (count < 2) return;
 
@@ -299,123 +299,113 @@ public class EcologicalDegradationEngine {
             H3Cell src = cells.get(i);
             if (src == null) continue;
             double srcPollution = src.getPollutionLevelOr(0.0);
-
             if (srcPollution > 20.0) {
-                // Diffuse 12% of pollution to nearby regional cells (wind & river transport)
-                int range = Math.min(count, 15);
-                int start = Math.max(0, i - range / 2);
-                int end = Math.min(count - 1, i + range / 2);
-                int targetCount = end - start;
+                // Diffuse 5% of intense local pollution out into surrounding regional cells
+                double emittedFraction = srcPollution * 0.05;
+                pollutionDeltas[i] -= emittedFraction;
 
-                if (targetCount > 0) {
-                    double overflow = srcPollution * 0.12;
-                    pollutionDeltas[i] -= overflow;
-                    double share = overflow / targetCount;
-                    for (int j = start; j <= end; j++) {
-                        if (j != i && cells.get(j) != null) {
-                            pollutionDeltas[j] += share;
-                        }
+                // Evenly distribute among a sample of neighboring cells in the buffer
+                int step = Math.max(1, count / 8);
+                int targets = 0;
+                for (int j = 1; j <= 4; j++) {
+                    int neighborIdx = (i + j * step) % count;
+                    if (neighborIdx != i) {
+                        pollutionDeltas[neighborIdx] += emittedFraction / 4.0;
+                        targets++;
                     }
+                }
+                if (targets == 0) {
+                    pollutionDeltas[i] += emittedFraction; // restore if no neighbors
                 }
             }
         }
 
-        // Apply pollution deltas to all cells (including unpopulated / remote wilderness)
         for (int i = 0; i < count; i++) {
             H3Cell c = cells.get(i);
-            if (c == null) continue;
-            double curPol = c.getPollutionLevelOr(0.0);
-            double newPollution = Math.min(1000.0, Math.max(0.0, curPol + pollutionDeltas[i]));
-            c.setPollutionLevel(newPollution);
+            if (c != null && pollutionDeltas[i] != 0.0) {
+                double p = c.getPollutionLevelOr(0.0);
+                c.setPollutionLevel(Math.max(0.0, p + pollutionDeltas[i]));
+            }
         }
     }
 
+    /**
+     * Demographic migration flux driven by localized carrying capacity pressure, famines, and droughts.
+     * Overpopulated, starved, or parched cells push migrants toward neighboring fertile land cells.
+     */
     private static int processMigrationFlux(List<H3Cell> cells, double defaultTech, double deltaYears) {
-// Numerical integration step for EcologicalDegradationEngine - verifies boundary conservation and updates local thermodynamic state
         int totalMigrated = 0;
         int count = cells.size();
-        double dtSafe = Math.clamp(deltaYears, 0.001, 1.0);
+        if (count < 2) return 0;
 
-        double[] habitability = new double[count];
+        double dtYears = Math.max(1e-4, deltaYears);
 
-        for (int i = 0; i < count; i++) {
-            H3Cell c = cells.get(i);
-            if (c == null || c.getElevation() == null || c.getElevation() <= 0 || c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN) {
-                habitability[i] = -1.0;
-                continue;
-            }
-
-            int h3Res = (c.getH3Index() != null && c.getH3Index() != 0L)
-                    ? (int) ((c.getH3Index() >>> 52) & 0xFL)
-                    : 3;
-            double areaScale = Math.max(0.05, H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3) / 1770.49);
-
-            double food = c.getFoodResourceOr(0.0)
-                    + c.getBiomassAgricultureOr(0.0) * 0.0105
-                    + c.getBiomassNaturalOr(0.0) * 0.12;
-            double water = c.getWaterResourceOr(0.0);
-            double temp = c.getTemperatureOr(15.0);
-            double friction = c.getMovementFrictionOr(1.0);
-            double pollution = c.getPollutionLevelOr(0.0);
-            int pop = c.getPopulationOr(0);
-
-            double tempComfort = Math.exp(-Math.pow(temp - 18.0, 2) / 200.0);
-            double foodPerCapita = pop > 0 ? food / pop : org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
-            double foodNorm = Math.min(1.0, foodPerCapita / org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ);
-            double waterNorm = Math.min(1.0, water / Math.max(25.0, 500.0 * areaScale));
-
-            double score = (foodNorm * 0.35) + (waterNorm * 0.25) + (tempComfort * 0.25) - (pollution / 500.0) * 0.15;
-            score = score / Math.max(0.5, friction * 0.5);
-
-            habitability[i] = Math.max(0.001, score);
-        }
-
+        // Process migration for cells exceeding carrying capacity or suffering extreme ecological collapse
         for (int i = 0; i < count; i++) {
             H3Cell source = cells.get(i);
-            if (source == null || habitability[i] < 0 || source.getPopulation() == null || source.getPopulation() <= 0) continue;
+            if (source == null) continue;
+            int srcPop = source.getPopulationOr(0);
+            if (srcPop < 10) continue;
 
-            double srcScore = habitability[i];
-            int pop = source.getPopulation();
+            double srcTech = (source.getTechnologyLevel() != null && source.getTechnologyLevel() > 0) ? source.getTechnologyLevel() : defaultTech;
+            double carryingCap = calculateCarryingCapacity(source, srcTech);
 
-            if (srcScore < 0.35 && pop > 10) {
-                int migrants = (int) (pop * Math.min(0.30, (0.35 - srcScore) * 0.8) * dtSafe);
-                if (migrants <= 0) continue;
+            // Trigger migration if population exceeds carrying capacity by 15% or extreme food shortage
+            double excessPop = srcPop - (carryingCap * 1.15);
+            double curFood = source.getFoodResourceOr(0.0);
+            double foodRequired = srcPop * HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtYears;
+            boolean isStarving = curFood < foodRequired * 0.50;
 
-                int bestTargetIdx = -1;
-                double bestTargetScore = srcScore;
+            if (excessPop > 0 || isStarving) {
+                // Outmigration rate: 2-5% of distressed population moves per year
+                double migrationRate = isStarving ? 0.05 : 0.02;
+                int migrants = (int) Math.min(srcPop * 0.15, Math.max(1.0, (excessPop > 0 ? excessPop : srcPop * 0.10) * migrationRate * (dtYears * 12.0)));
 
-                int searchRange = Math.min(count, 30);
-                int startIdx = Math.max(0, i - searchRange / 2);
-                int endIdx = Math.min(count - 1, i + searchRange / 2);
+                if (migrants > 0) {
+                    // Find most suitable nearby land target (search up to 12 neighboring cells)
+                    H3Cell bestTarget = null;
+                    double bestScore = -Double.MAX_VALUE;
 
-                for (int j = startIdx; j <= endIdx; j++) {
-                    if (j == i || habitability[j] < 0) continue;
-                    H3Cell candidate = cells.get(j);
-                    if (candidate == null) continue;
-                    if (source.getLatitude() != null && source.getLongitude() != null
-                            && candidate.getLatitude() != null && candidate.getLongitude() != null) {
-                        double dLat = candidate.getLatitude() - source.getLatitude();
-                        double dLon = (candidate.getLongitude() - source.getLongitude()) * Math.cos(Math.toRadians(source.getLatitude()));
-                        double distKmSq = (dLat * 111.0) * (dLat * 111.0) + (dLon * 111.0) * (dLon * 111.0);
+                    int step = Math.max(1, count / 16);
+                    for (int k = 1; k <= 8; k++) {
+                        int targetIdx = (i + k * step) % count;
+                        if (targetIdx == i) continue;
+                        H3Cell candidate = cells.get(targetIdx);
+                        if (candidate == null) continue;
+                        Biome candBiome = candidate.getBiome();
+                        if (candBiome == Biome.OCEAN || candBiome == Biome.DEEP_OCEAN || candBiome == Biome.GLACIER) continue;
+                        if (candidate.getElevation() == null || candidate.getElevation() <= 0) continue;
+
+                        // Geographic distance sanity check (cannot teleport across the entire planet in a monthly step)
+                        double lat1 = source.getLatitudeOr(0.0);
+                        double lon1 = source.getLongitudeOr(0.0);
+                        double lat2 = candidate.getLatitudeOr(0.0);
+                        double lon2 = candidate.getLongitudeOr(0.0);
+                        double dLat = (lat2 - lat1) * 111.0;
+                        double dLon = (lon2 - lon1) * 111.0 * Math.cos(Math.toRadians((lat1 + lat2) / 2.0));
+                        double distKmSq = dLat * dLat + dLon * dLon;
                         if (distKmSq > 22500.0) continue; // Cannot migrate beyond 150 km radius (150^2 = 22500)
-                    }
-                    if (habitability[j] > bestTargetScore) {
-                        bestTargetScore = habitability[j];
-                        bestTargetIdx = j;
-                    }
-                }
 
-                if (bestTargetIdx != -1) {
-                    H3Cell target = cells.get(bestTargetIdx);
-                    if (target != null) {
-                        int srcPop = source.getPopulationOr(0);
-                        int tgtPop = target.getPopulationOr(0);
+                        double candTech = (candidate.getTechnologyLevel() != null && candidate.getTechnologyLevel() > 0) ? candidate.getTechnologyLevel() : defaultTech;
+                        double candCap = calculateCarryingCapacity(candidate, candTech);
+                        int candPop = candidate.getPopulationOr(0);
+                        double spareCap = candCap - candPop;
+
+                        // Attractiveness score combines spare carrying capacity, food abundance, and low pollution
+                        double score = spareCap + candidate.getFoodResourceOr(0.0) * 0.1 - candidate.getPollutionLevelOr(0.0) * 2.0;
+                        if (score > bestScore && spareCap > migrants) {
+                            bestScore = score;
+                            bestTarget = candidate;
+                        }
+                    }
+
+                    if (bestTarget != null) {
                         source.setPopulation(Math.max(0, srcPop - migrants));
-                        target.setPopulation(tgtPop + migrants);
+                        bestTarget.setPopulation(bestTarget.getPopulationOr(0) + migrants);
 
                         double tech = (source.getTechnologyLevel() != null && source.getTechnologyLevel() > 0) ? source.getTechnologyLevel() : defaultTech;
                         source.updateAgePyramidFromTotal(tech);
-                        target.updateAgePyramidFromTotal(tech);
+                        bestTarget.updateAgePyramidFromTotal(tech);
 
                         totalMigrated += migrants;
                     }
@@ -428,13 +418,8 @@ public class EcologicalDegradationEngine {
 
     /**
      * Calculate carrying capacity.
-     *
-     * @param cell the cell parameter (H3Cell)
-     * @param techLevel the tech level parameter (double)
-     * @return the resulting computation or state reference
      */
     public static double calculateCarryingCapacity(H3Cell cell, double techLevel) {
-// Numerical integration step for EcologicalDegradationEngine - verifies boundary conservation and updates local thermodynamic state
         if (cell == null) return 100.0;
 
         double soc = cell.getSoilOrganicCarbonOr(20.0);
@@ -454,5 +439,3 @@ public class EcologicalDegradationEngine {
         return Math.max(2.0, baseCap * techMultiplier);
     }
 }
-
-

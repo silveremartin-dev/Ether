@@ -59,8 +59,17 @@ public final class H3BufferAndEventCoordinator {
      * @param currentScenario active scenario (may be null)
      * @param nations         mutable list of active polities
      */
+    /**
+     * Seeds initial population across cells when no raster map or pre-computed population exists.
+     * Derives carrying capacity analytically from Miami Net Primary Production (Lieth 1975)
+     * and hunter-gatherer / Neolithic density scaling (Tallavaara et al. 2015, PNAS).
+     *
+     * @param cells           H3 cell list
+     * @param currentScenario active scenario (may be null)
+     * @param nations         mutable list of active polities
+     */
     public static void initializePopulation(List<H3Cell> cells, Scenario currentScenario, List<Polity> nations) {
-        if (cells == null) return;
+        if (cells == null || cells.isEmpty()) return;
         int existingCount = 0;
         for (H3Cell c : cells) {
             if (c != null && c.getPopulation() != null && c.getPopulation() > 0) {
@@ -69,64 +78,121 @@ public final class H3BufferAndEventCoordinator {
         }
 
         if (existingCount > 0) {
-            initializePoliticalSeeding(cells, nations, existingCount);
+            initializePoliticalEntities(cells, nations, currentScenario);
             return;
         }
 
-        int populatedCells = 0;
+        // Fallback continuous population initialization (Zero Random, Zero switch(biome))
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            Biome biome = cell.getBiome();
-            if (biome == null || biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN) {
-                continue;
-            }
+            double elev = cell.getElevationOr(0.0);
+            if (elev < 0.0) continue; // Terrestrial only
 
-            int basePop = switch (biome) {
-                case PLAINS -> 50;
-                case FOREST -> 30;
-                case JUNGLE -> 40;
-                case HILLS -> 20;
-                case BEACH -> 25;
-                case MOUNTAINS -> 10;
-                case TUNDRA -> 5;
-                case DESERT -> 3;
-                case SNOW -> 2;
-                default -> 0;
-            };
+            double temp = cell.getTemperatureOr(15.0);
+            double rain = cell.getRainfallOr(500.0);
+            if (temp < -20.0 || rain < 25.0) continue;
 
-            long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
-            long sSeed = currentScenario != null && currentScenario.getSeed() != 0L ? currentScenario.getSeed() : 42L;
-            if (DeterministicPRNG.nextDouble(sSeed, 0L, cellId, 503L) < 0.1 && basePop > 0) {
-                cell.setPopulation(basePop);
-                populatedCells++;
+            double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
+            double npp = PreComputePhase.calculateMiamiNPP(temp, rain);
+
+            // Hunter-gatherer carrying capacity density (Tallavaara et al. 2015, PNAS)
+            // rho_HG ~ 0.0012 * NPP^0.75 hab/km2
+            double densityHg = 0.0012 * Math.pow(Math.max(10.0, npp), 0.75);
+            int pop = (int) Math.round(densityHg * areaKm2);
+            if (pop > 0) {
+                cell.setPopulation(pop);
             }
         }
 
-        initializePoliticalSeeding(cells, nations, populatedCells);
+        initializePoliticalEntities(cells, nations, currentScenario);
     }
 
     /**
-     * Initializes the top populated cells as founding political entities ({@link Polity}).
+     * Initializes sovereign geopolitical polities ({@link Polity}) from authentic historical transitions
+     * ({@link org.ether.society.data.HistoricalStateRegistry}) for the active scenario year.
      *
-     * @param cells          H3 cell list
-     * @param nations        mutable list of polities
-     * @param populatedCount number of populated cells
+     * <p>In prehistoric / Pleistocene epochs (before -4000 BCE), per {@code AGENTS.md §8}, formal civilizational
+     * and administrative state apparatus does not exist, and the nation list remains strictly empty.
+     *
+     * @param cells           H3 cell list
+     * @param nations         mutable list of polities
+     * @param currentScenario active scenario
      */
-    public static void initializePoliticalSeeding(List<H3Cell> cells, List<Polity> nations, int populatedCount) {
-        if (populatedCount < 3 || cells == null || cells.isEmpty()) return;
+    public static void initializePoliticalEntities(List<H3Cell> cells, List<Polity> nations, Scenario currentScenario) {
+        if (cells == null || cells.isEmpty() || nations == null) return;
         nations.clear();
-        cells.stream()
-                .filter(c -> c.getPopulation() != null && c.getPopulation() > 0)
-                .sorted(Comparator.comparingInt(H3Cell::getPopulation).reversed())
-                .limit(3)
-                .forEach(c -> {
-                    if (c.getOwner() == null) {
-                        String name = "Realm of Hex " + Long.toHexString(c.getH3Index()).toUpperCase();
-                        int argb = java.awt.Color.HSBtoRGB((float) DeterministicPRNG.nextDouble(c.getH3Index(), 777), 0.8f, 0.9f);
-                        Polity nation = new Polity(name, argb, c);
-                        nations.add(nation);
+
+        if (currentScenario == null) return;
+        long year = currentScenario.getStartDateYear();
+        // Deep-Time Invariant (AGENTS.md §8): no sovereign states before 4000 BCE
+        if (year < -4000L) {
+            logger.info("Deep prehistory (Year {} BCE): Sovereign administrative polities baseline == 0.", Math.abs(year));
+            return;
+        }
+
+        try {
+            org.ether.society.data.HistoricalStateRegistry.HistoricalEpoch epoch =
+                    org.ether.society.data.HistoricalStateRegistry.getActiveEpoch(year);
+            if (epoch == null || epoch.polities() == null || epoch.polities().isEmpty()) {
+                logger.info("No formal polities cataloged for year {} CE in HistoricalStateRegistry.", year);
+                return;
+            }
+
+            for (org.ether.society.data.HistoricalStateRegistry.PolityState ps : epoch.polities()) {
+                // Find closest land cell to core coordinates
+                H3Cell coreCell = null;
+                double minDistanceSq = Double.MAX_VALUE;
+                for (H3Cell c : cells) {
+                    if (c == null) continue;
+                    double elev = c.getElevationOr(0.0);
+                    if (elev < 0.0) continue; // Only land cells can be capitals
+
+                    double lat = c.getLatitudeOr(0.0);
+                    double lon = c.getLongitudeOr(0.0);
+                    double dLat = lat - ps.coreLat();
+                    double dLon = (lon - ps.coreLon()) * Math.cos(Math.toRadians(ps.coreLat()));
+                    double distSq = dLat * dLat + dLon * dLon;
+                    if (distSq < minDistanceSq) {
+                        minDistanceSq = distSq;
+                        coreCell = c;
                     }
-                });
+                }
+
+                if (coreCell != null) {
+                    Polity polity = new Polity(ps.name(), ps.colorRgb(), coreCell);
+                    double maxRadiusSq = ps.radiusDeg() * ps.radiusDeg();
+
+                    // Attach surrounding cells within polity territory radius
+                    for (H3Cell c : cells) {
+                        if (c == null || c.getOwner() != null) continue;
+                        double elev = c.getElevationOr(0.0);
+                        if (elev < 0.0) continue;
+
+                        double dLat = c.getLatitudeOr(0.0) - ps.coreLat();
+                        double dLon = (c.getLongitudeOr(0.0) - ps.coreLon()) * Math.cos(Math.toRadians(ps.coreLat()));
+                        double distSq = dLat * dLat + dLon * dLon;
+                        if (distSq <= maxRadiusSq) {
+                            polity.addCell(c);
+                        }
+                    }
+                    nations.add(polity);
+                }
+            }
+            logger.info("Initialized {} authentic historical polities for epoch '{}' (Year {} CE).",
+                    nations.size(), epoch.label(), year);
+        } catch (Exception e) {
+            logger.warn("HistoricalStateRegistry query skipped for year {}: {}", year, e.getMessage());
+        }
+    }
+
+    /**
+     * Legacy backward-compatibility method.
+     *
+     * @deprecated Replaced by {@link #initializePoliticalEntities(List, List, Scenario)}
+     */
+    @Deprecated
+    public static void initializePoliticalSeeding(List<H3Cell> cells, List<Polity> nations, int populatedCount) {
+        // Intentionally deprecated: do not seed dummy 1-cell 'Realm of Hex' nations
     }
 
     /**

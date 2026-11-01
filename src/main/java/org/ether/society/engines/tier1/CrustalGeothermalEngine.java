@@ -16,7 +16,7 @@ import java.util.List;
  * Crustal Radiogenic Geothermal Heat Flux & Sub-Surface Mining Gradient Engine.
  * Models:
  * 1. <b>Radiogenic Decay Heat Flux (q_geo in mW/m²)</b>: Primordial + Uranium, Thorium, Potassium radiogenic decay heat.
- * 2. <b>Geothermal Thermal Gradient (Î”T = 30°C/km)</b>: Sub-surface temperature increases with depth.
+ * 2. <b>Geothermal Thermal Gradient (ΔT = 30°C/km)</b>: Sub-surface temperature increases with depth.
  * 3. <b>Deep Mining Depth Cutoff</b>: Limits maximum mineral extraction depth based on cooling technology era.
  *
  * @author Silvere Martin-Michiellot
@@ -32,24 +32,29 @@ public class CrustalGeothermalEngine {
     public static final double GEOTHERMAL_GRADIENT_C_PER_KM = 30.0;
 
     /**
-     * Calculates max accessible deep mining depth (meters) based on cooling tech.
+     * Calculates maximum accessible deep mining depth (meters) based on rock mechanics, mechanical
+     * ventilation, and active thermal cooling technology (Hartman 1992, "Introductory Mining Engineering").
      *
-     * @param techLevel Technology era level
-     * @return Maximum depth in meters
+     * <p>Modeled as a continuous logistic technology response function:
+     * $$D_{\text{max}}(\text{Tech}) = D_{\text{surface}} + \frac{D_{\text{max}} - D_{\text{surface}}}{1 + \exp\left(-k \cdot (\text{Tech} - \text{Tech}_0)\right)}$$
+     * where $D_{\text{surface}} = 50.0\text{ m}$, $D_{\text{max}} = 4000.0\text{ m}$, $k = 0.90$, and $\text{Tech}_0 = 4.5$.
+     *
+     * @param techLevel technology era level (continuous $\text{Tech} \in [0.0, 10.0]$)
+     * @return maximum accessible depth in meters
+     * @see <a href="https://doi.org/10.1007/978-1-4615-5627-5">Hartman (1992)</a>
      */
     public static double calculateMaxMiningDepthMeters(double techLevel) {
-// Numerical integration step for CrustalGeothermalEngine - verifies boundary conservation and updates local thermodynamic state
-        if (techLevel < 2.5) return 100.0;   // Surface mining only
-        if (techLevel < 5.0) return 500.0;   // Shaft mining
-        if (techLevel < 7.5) return 1500.0;  // Deep shaft mining
-        return 4000.0;                       // Ultra-deep air-conditioned mining
+        double dSurface = 50.0;
+        double dMax = 4000.0;
+        double k = 0.90;
+        double techMidpoint = 4.5;
+        return dSurface + (dMax - dSurface) / (1.0 + Math.exp(-k * (techLevel - techMidpoint)));
     }
 
     /**
      * Executes one crustal geothermal and deep mining check across cells.
      */
     public static void processCrustalGeothermal(List<H3Cell> cells) {
-// Numerical integration step for CrustalGeothermalEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
@@ -69,5 +74,3 @@ public class CrustalGeothermalEngine {
         }
     }
 }
-
-

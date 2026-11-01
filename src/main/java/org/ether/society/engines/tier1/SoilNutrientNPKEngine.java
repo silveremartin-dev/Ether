@@ -18,6 +18,7 @@ import java.util.List;
  * 1. <b>Liebig's Law of the Minimum</b>: Agricultural yield = min(N, P, K).
  * 2. <b>Rock Phosphate (P) & Potash (K) Geological Mining</b>: Mineral fertilizer extraction from crustal deposits.
  * 3. <b>Haber-Bosch Nitrogen (N) Synthesis</b>: High-pressure ammonia synthesis from atmospheric N2 requiring thermal power (P_capita >= 5000W).
+ * 4. <b>Continuous FAO GAEZ Arability Suitability</b>: Closed-form physical function of topographic slope, growing season temperature, and SOC.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -28,6 +29,40 @@ public class SoilNutrientNPKEngine {
     /** Haber-Bosch power requirement in Watts per capita */
     public static final double HABER_BOSCH_POWER_WATTS = 5000.0;
 
+    /**
+     * Calculates continuous agro-ecological arability suitability $S_{\text{arable}} \in [0.05, 1.0]$
+     * based on the FAO GAEZ framework (Fischer et al. 2002; Ramankutty et al. 2002).
+     *
+     * <p>Modeled as the continuous analytical product of relief, thermal growing-season limit, moisture, and SOC:
+     * $$S_{\text{arable}} = S_{\text{relief}} \cdot S_{\text{thermal}} \cdot S_{\text{moisture}} \cdot S_{\text{edaphic}}$$
+     *
+     * @param cell H3 cell
+     * @return arable suitability factor in $[0.05, 1.0]$
+     */
+    public static double calculateContinuousArableSuitability(H3Cell cell) {
+        if (cell == null) return 0.50;
+        double elev = cell.getElevationOr(0.0);
+        if (elev < 0.0) return 0.0; // Open water
+
+        double tempC = cell.getTemperatureOr(15.0);
+        double rainMm = cell.getRainfallOr(600.0);
+        double soc = cell.getSoilOrganicCarbonOr(40.0);
+
+        // 1. Relief suitability (declining exponentially on steep mountain topography)
+        double sRelief = 1.0 / (1.0 + Math.exp(0.0018 * (elev - 1400.0)));
+
+        // 2. Thermal suitability (growing season GDD response above base temperature T_base = 5°C)
+        double sThermal = 1.0 / (1.0 + Math.exp(-0.35 * (tempC - 7.5)));
+
+        // 3. Moisture suitability (effective rain vs evapotranspiration)
+        double sMoisture = (rainMm / (rainMm + 250.0)) * (1.0 - (0.40 / (1.0 + Math.exp(-0.003 * (rainMm - 2800.0)))));
+
+        // 4. Edaphic suitability (soil organic carbon fertility)
+        double sEdaphic = Math.clamp(soc / 35.0, 0.20, 1.0);
+
+        return Math.clamp(sRelief * sThermal * sMoisture * sEdaphic, 0.05, 1.0);
+    }
+
     public static void processSoilNutrients(List<H3Cell> cells) {
         processSoilNutrients(cells, 1.0 / 12.0);
     }
@@ -36,7 +71,6 @@ public class SoilNutrientNPKEngine {
      * Executes N-P-K stoichiometry, mineral mining extraction, and Haber-Bosch synthesis tick.
      */
     public static void processSoilNutrients(List<H3Cell> cells, double dtYears) {
-// Numerical integration step for SoilNutrientNPKEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         int size = cells.size();
@@ -81,7 +115,6 @@ public class SoilNutrientNPKEngine {
             cell.setResourceMetal(Math.max(0.0, metalOre - totalMinedOre));
 
             // 2. Biological & Haber-Bosch Industrial Nitrogen Fixation (Smil 2001, Enriching the Earth)
-            // Pre-industrial organic agroecosystems maintain baseline N=1.0 via legume rotation, manure, and alluvial silt
             double synthesizedN = (tech < 3.5) ? (nNorm - soilNBase) : baselineN;
             if (tech >= 3.5 && powerPerCapita >= HABER_BOSCH_POWER_WATTS) {
                 haberBoschCounter.incrementAndGet();
@@ -95,13 +128,8 @@ public class SoilNutrientNPKEngine {
 
             double liebigFactor = Math.min(effectiveSoilN / nNorm, Math.min(effectiveSoilP / pNorm, effectiveSoilK / kNorm));
 
-            org.ether.society.model.Biome biome = cell.getBiome() != null ? cell.getBiome() : org.ether.society.model.Biome.PLAINS;
-            double arableBiomeFactor = switch (biome) {
-                case MOUNTAINS -> 0.35;
-                case HILLS, BEACH -> 0.55;
-                case TUNDRA, DESERT, SNOW -> 0.15;
-                default -> 1.0;
-            };
+            // Continuous arability suitability replaces discrete switch(biome)
+            double arableBiomeFactor = calculateContinuousArableSuitability(cell);
             double laborCultivatedBiomass = pop * (580.0 + 50.0 * Math.min(tech, 10.0));
             double techLandCeiling = (planarCellAreaKm2 < 5.0)
                     ? (25.0 * areaScale * arableBiomeFactor)
@@ -142,5 +170,3 @@ public class SoilNutrientNPKEngine {
         }
     }
 }
-
-

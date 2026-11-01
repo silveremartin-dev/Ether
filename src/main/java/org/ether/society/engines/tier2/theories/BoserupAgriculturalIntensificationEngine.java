@@ -8,6 +8,7 @@ package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.ProceduralEnginePlugin;
+import org.ether.society.engines.tier1.SoilNutrientNPKEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ import java.util.List;
  * <p>Models endogenous technological shifts driven by demographic carrying capacity pressure:</p>
  * <pre>
  *   Stage: Foraging → Forest-Fallow → Bush-Fallow → Short-Fallow → Multi-Cropping Irrigation
- *   Labor_req âˆ Yield^1.40
+ *   Labor_req ∝ Yield^1.40
  *   Trigger: Density = Population / Habitable_Area ≥ Threshold_k
  * </pre>
  *
@@ -29,31 +30,16 @@ import java.util.List;
 public class BoserupAgriculturalIntensificationEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(BoserupAgriculturalIntensificationEngine.class);
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "Boserup Agricultural Intensification";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Models population pressure forcing technological transitions to higher-yield, higher-labor intensive agricultural systems.";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
@@ -67,27 +53,13 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Agrarian Cliodynamics";
     }
 
-    /**
-     * Process.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
@@ -107,13 +79,9 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
                 // Stage 1 Foraging (D < 2 hab/km², tech < 1.5): no crop cultivation
                 continue;
             }
-            org.ether.society.model.Biome biome = cell.getBiome() != null ? cell.getBiome() : org.ether.society.model.Biome.PLAINS;
-            double arableBiomeFactor = switch (biome) {
-                case MOUNTAINS -> 0.35;
-                case HILLS, BEACH -> 0.55;
-                case TUNDRA, DESERT, SNOW -> 0.15;
-                default -> 1.0;
-            };
+
+            // Continuous arability suitability replaces discrete switch(biome)
+            double arableBiomeFactor = SoilNutrientNPKEngine.calculateContinuousArableSuitability(cell);
             double agriBiomass = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
                     ? cell.getBiomassAgriculture()
                     : Math.min(2000.0 * areaScale * arableBiomeFactor, Math.max(50.0 * areaScale * arableBiomeFactor, pop * 2.5));
@@ -141,6 +109,3 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
         }
     }
 }
-
-
-

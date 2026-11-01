@@ -133,15 +133,18 @@ public class ProceduralPopulationEngine {
             // Kraken Mare shoreline
             targets.add(new OutpostTarget(68.0, 50.0, 1.0, "Kraken Mare Hydrocarbon Base"));
         } else {
-            // Generic hostile exoplanet: pick top 2 lowest elevation / most sheltered cells
-            List<H3Cell> sortedByElev = landCells.stream()
+            // Generic hostile exoplanet: select sheltered landing cells with continuous population share distribution
+            List<H3Cell> sortedByShelter = landCells.stream()
                     .sorted(Comparator.comparingDouble(c -> c.getElevationOr(0.0)))
-                    .limit(2)
                     .toList();
-            if (!sortedByElev.isEmpty()) {
-                targets.add(new OutpostTarget(sortedByElev.get(0).getLatitudeOr(0.0), sortedByElev.get(0).getLongitudeOr(0.0), 0.70, "Primary Landing Base"));
-                if (sortedByElev.size() > 1) {
-                    targets.add(new OutpostTarget(sortedByElev.get(1).getLatitudeOr(0.0), sortedByElev.get(1).getLongitudeOr(0.0), 0.30, "Secondary Habitat"));
+            if (!sortedByShelter.isEmpty()) {
+                int outpostCount = Math.clamp(landCells.size() / 200, 1, 5);
+                double remainingShare = 1.0;
+                for (int idx = 0; idx < outpostCount; idx++) {
+                    double share = (idx == outpostCount - 1) ? remainingShare : (0.50 / Math.pow(2.0, idx));
+                    remainingShare -= share;
+                    H3Cell c = sortedByShelter.get(idx % sortedByShelter.size());
+                    targets.add(new OutpostTarget(c.getLatitudeOr(0.0), c.getLongitudeOr(0.0), share, "Outpost Habitat #" + (idx + 1)));
                 }
             }
         }
@@ -389,39 +392,31 @@ public class ProceduralPopulationEngine {
             return 0.8 + Math.min(1.0, techLevel * 0.1); // Seasteading floating habitat
         }
 
-        Biome b = cell.getBiome();
         double elev = cell.getElevationOr(0.0);
+        if (elev < 0.0) {
+            // Marine cells: unpopulated unless advanced seasteading technology (tech >= 8.5)
+            return techLevel >= 8.5 ? Math.clamp(0.40 + (techLevel - 8.5) * 0.15, 0.0001, 1.0) : 0.0001;
+        }
 
-        // Biome base score
-        if (b == null) return 0.1;
-        double biomeScore = switch (b) {
-            case PLAINS -> 1.0;
-            case FOREST -> 0.85;
-            case BEACH -> 0.90;
-            case HILLS -> 0.65;
-            case JUNGLE -> 0.45;
-            case TUNDRA -> 0.10 + (techLevel * 0.05); // High tech improves survival in cold
-            case DESERT -> 0.05 + (techLevel * 0.06); // High tech allows irrigation/air-cond/wells
-            case MOUNTAINS -> 0.02 + (techLevel * 0.04);
-            case SNOW -> 0.005 + (techLevel * 0.01);
-            case OCEAN, DEEP_OCEAN -> techLevel >= 8.5 ? 0.4 + (techLevel - 8.5) * 0.15 : 0.0001;
-            default -> 0.1;
-        };
+        double tempC = cell.getTemperatureOr(15.0);
+        double rainMm = cell.getRainfallOr(500.0);
+
+        // Continuous human climate niche (Xu et al. 2020, PNAS)
+        double sigmaT = 6.5 * (1.0 + 0.10 * techLevel);
+        double thermalNiche = Math.exp(-Math.pow(tempC - 13.5, 2.0) / (2.0 * sigmaT * sigmaT));
+        double moistureNiche = (rainMm / (rainMm + 300.0)) * Math.exp(-rainMm / 4000.0);
 
         // Altitude suitability
-        // Low tech (Neolithic): people cannot settle high altitudes (>800m).
-        // High tech (Industrial): terrace farming, roads, heating allow living up to 3000m.
-        double maxHabitableElev = 500.0 + (techLevel * 300.0); // e.g. Tech 0 = 500m, Tech 5 = 2000m, Tech 10 = 3500m
-        double elevFactor = 1.0;
-
+        double maxHabitableElev = 500.0 + (techLevel * 300.0);
+        double elevFactor;
         if (elev > maxHabitableElev) {
             double overflow = (elev - maxHabitableElev) / 1000.0;
             elevFactor = Math.max(0.001, Math.exp(-overflow * (3.5 - techLevel * 0.25)));
-        } else if (elev > 0) {
+        } else {
             elevFactor = 1.0 - (elev / (maxHabitableElev * 2.0));
         }
 
-        return biomeScore * Math.max(0.01, elevFactor);
+        return Math.clamp(thermalNiche * moistureNiche * Math.max(0.01, elevFactor), 0.001, 2.0);
     }
 
     /**

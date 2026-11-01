@@ -301,3 +301,162 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Restricts urban classification to cells possessing sufficient population mass to form genuine nucleated historical cities, aligning simulated urban shares with empirical historical baselines ($2.5\%$ in Antiquity, $6.6\%$ in Late Middle Ages).
 * **Empirical Validation Grounding**:
   * Bairoch (1988); Chandler (1987); HYDE 3.4 (Klein Goldewijk et al. 2017).
+
+
+---
+
+### 17. Elimination of Test Seeding Mocks and Authentic Historical State Initialization
+* **Subsystem**: `H3BufferAndEventCoordinator.java`, `H3SimulationEngine.java`
+* **Canonical Literature**:
+  * Carneiro, R. L. (1970). *A Theory of the Origin of the State*. Science, 169(3947), 733–738.
+  * Turchin, P., et al. (2018). *Quantitative historical analysis uncovers a single dimension of complexity that structures global variation in human social organization*. PNAS, 115(2), E144–E151.
+  * Seshat Global History Databank (Turchin et al. 2015).
+* **Problem in Previous Implementation**:
+  * An unconditional legacy test method `initializePoliticalSeeding` checked `if (populatedCount < 3)` and called `.limit(3)` to generate three 1-cell dummy nations named `"Realm of Hex " + Long.toHexString(...)`.
+  * Because real historical states from `HistoricalStateRegistry` were ignored, these three dummy entities were the sole polities evaluated by `CliodynamicsEngine`. At monthly frequency, their Asabiyyah collapsed and their 1-cell population was decimated.
+* **Calibrated Ether Formulation**:
+  * In deep prehistory (year $t < -4000\,\text{BCE}$), per `AGENTS.md §8`, formal administrative state infrastructure $\equiv 0$, and `nations` remains empty.
+  * In historical eras ($t \ge -4000\,\text{BCE}$), sovereign polities are loaded directly from `HistoricalStateRegistry.getActiveEpoch(year)`.
+  * For unpopulated fallback grids, population carrying capacity derives analytically from Miami NPP and hunter-gatherer density scaling (Tallavaara et al. 2015):
+    $$\rho_{\text{HG}} = 0.0012 \cdot (\text{NPP})^{0.75} \quad [\text{hab/km}^2]$$
+    with zero pseudo-random jitter and zero `switch(biome)` tables.
+* **Root Cause & Justification**:
+  * Eliminates legacy hardcoded mock seeding and guarantees that sovereign states reflect historical borders from cartographic data and peer-reviewed cliodynamic state registries.
+* **Empirical Validation Grounding**:
+  * Seshat Global History Databank; HYDE 3.4; Tallavaara et al. (2015).
+
+---
+
+### 18. Continuous Agro-Ecological Arability Suitability (FAO GAEZ Framework)
+* **Subsystem**: `SoilNutrientNPKEngine.java`, `BoserupAgriculturalIntensificationEngine.java`
+* **Canonical Literature**:
+  * Fischer, G., et al. (2002). *Global Agro-ecological Assessment for Agriculture in the 21st Century: Methodology and Results*. FAO / IIASA Research Report.
+  * Ramankutty, N., et al. (2002). *The global distribution of cultivable lands: current patterns and sensitivity to possible climate change*. Global Ecology and Biogeography, 11(5), 377–392.
+* **Problem in Previous Implementation**:
+  * Both agricultural engines used discrete `switch (biome)` tables assigning hardcoded coefficients (`MOUNTAINS -> 0.35, HILLS -> 0.55, TUNDRA/DESERT -> 0.15, default -> 1.0`), violating `AGENTS.md §3`.
+* **Calibrated Ether Formulation**:
+  $$S_{\text{arable}} = \text{clamp}(S_{\text{relief}} \cdot S_{\text{thermal}} \cdot S_{\text{moisture}} \cdot S_{\text{edaphic}}, 0.05, 1.0)$$
+  * Relief slope suitability: $S_{\text{relief}} = \frac{1}{1 + \exp(0.0018 \cdot (E - 1400.0))}$
+  * Thermal growing season suitability: $S_{\text{thermal}} = \frac{1}{1 + \exp(-0.35 \cdot (T - 7.5))}$
+  * Moisture suitability: $S_{\text{moisture}} = \left(\frac{P}{P + 250}\right) \cdot \left[1 - \frac{0.40}{1 + \exp(-0.003 \cdot (P - 2800))}\right]$
+  * Edaphic SOC fertility: $S_{\text{edaphic}} = \text{clamp}\left(\frac{\text{SOC}}{35.0}, 0.20, 1.0\right)$
+* **Root Cause & Justification**:
+  * Replaces discrete string-based biome matching with continuous thermodynamic and topographic suitability functions valid universally across all grid cells.
+* **Empirical Validation Grounding**:
+  * FAO GAEZ v4; HWSD (Harmonized World Soil Database); Ramankutty et al. (2002).
+
+---
+
+### 19. Continuous Standing Woody Biomass Residence & Deforestation Dynamics
+* **Subsystem**: `EcologicalDegradationEngine.java`
+* **Canonical Literature**:
+  * Whittaker, R. H., & Likens, G. E. (1973). *Carbon in the biota*. Carbon and the Biosphere, 281–302.
+  * Olson, J. S., Watts, J. A., & Allison, L. J. (1983). *Carbon in live vegetation of major world ecosystems*. Oak Ridge National Laboratory Report ORNL-5862.
+* **Problem in Previous Implementation**:
+  * Intact wood capacity and forest regrowth rate were derived from `switch (biome)` tables (`JUNGLE -> 9000, FOREST -> 7500, default -> 2500`).
+* **Calibrated Ether Formulation**:
+  $$f_{\text{canopy}}(P, T) = \frac{1}{1 + \exp(-0.006 \cdot (P - 450))} \cdot \frac{1}{1 + \exp(-0.25 \cdot (T - 2))}$$
+  $$\tau_{\text{wood}} = 35.0 \cdot f_{\text{canopy}} + 5.0 \cdot (1 - f_{\text{canopy}}) \cdot \frac{P}{P + 250} \quad [\text{years}]$$
+  $$B_{\text{wood, intact}} = \text{clamp}(\text{NPP} \cdot 0.60 \cdot \tau_{\text{wood}} \cdot 0.08 \cdot A_{\text{scale}}, 100 \cdot A_{\text{scale}}, 9500 \cdot A_{\text{scale}})$$
+  $$r_{\text{regrowth}} = 0.030 + 0.020 \cdot f_{\text{canopy}} \cdot \left(\frac{\max(0, T)}{\max(0, T) + 12}\right)$$
+* **Root Cause & Justification**:
+  * Derives forest standing stock and ecological regrowth rates continuously from local climatic variables (temperature, precipitation, NPP).
+* **Empirical Validation Grounding**:
+  * IPCC (2006) Guidelines for National Greenhouse Gas Inventories: Agriculture, Forestry and Other Land Use; Olson et al. (1983).
+
+---
+
+### 20. Continuous Herbaceous Pasture & Wild Herbivore Carrying Capacity
+* **Subsystem**: `PreComputePhase.java`
+* **Canonical Literature**:
+  * McNaughton, S. J. (1985). *Ecology of a grazing ecosystem: the Serengeti*. Ecological Monographs, 55(3), 259–294.
+  * Sala, O. E., et al. (1988). *Primary production of the central grassland region of the United States*. Ecology, 69(1), 40–45.
+* **Problem in Previous Implementation**:
+  * Wild pasture and livestock biomass used `switch (biome) { case SAVANNAH, PLAINS -> ... case TUNDRA -> ... }`.
+* **Calibrated Ether Formulation**:
+  $$f_{\text{herb}} = (1 - f_{\text{canopy}}(P, T)) \cdot \left(\frac{P}{P + 100}\right)$$
+  $$K_{\text{wildLivestock}} = \text{clamp}(\text{NPP} \cdot 0.35 \cdot f_{\text{herb}} \cdot A_{\text{scale}}, 0.0, 600.0 \cdot A_{\text{scale}})$$
+* **Root Cause & Justification**:
+  * Grassland grazing capacity is physically proportional to aboveground herbaceous NPP (ANPP_herb), which represents unshaded understory production.
+* **Empirical Validation Grounding**:
+  * Sala et al. (1988); Oesterheld et al. (1992); McNaughton (1985).
+
+---
+
+### 21. Continuous Photosynthetic $\delta^{13}\text{C}$ Isotopic Crossover
+* **Subsystem**: `RadiocarbonIsotopeEngine.java`
+* **Canonical Literature**:
+  * Ehleringer, J. R., Cerling, T. E., & Helliker, B. R. (1997). *C4 photosynthesis, atmospheric CO2, and climate*. Oecologia, 112(3), 285–299.
+  * Still, C. J., et al. (2003). *Global distribution of C3 and C4 vegetation: Carbon cycle implications*. Global Biogeochemical Cycles, 17(1).
+* **Problem in Previous Implementation**:
+  * Stable carbon isotope signature $\delta^{13}\text{C}$ was determined by `switch (biome) { case SAVANNAH -> -12.0; case FOREST -> -28.0; }`.
+* **Calibrated Ether Formulation**:
+  $$f_{\text{C4}}(T, P) = \frac{1}{1 + \exp(-0.35 \cdot (T - 22.0))} \cdot \frac{1}{1 + \exp(0.003 \cdot (P - 1200.0))}$$
+  $$\delta^{13}\text{C} = f_{\text{C4}} \cdot (-12.0) + (1.0 - f_{\text{C4}}) \cdot (-28.0) \quad [\text{‰ vs VPDB}]$$
+  * Marine cells retain invariant $\delta^{13}\text{C} = -1.5\text{ ‰}$ (dissolved inorganic carbon).
+* **Root Cause & Justification**:
+  * Reflects quantum yield crossover kinetics between C3 Rubisco and C4 PEP carboxylase enzymes at growing-season temperatures $T \ge 22^\circ\text{C}$.
+* **Empirical Validation Grounding**:
+  * Ehleringer et al. (1997); Still et al. (2003).
+
+---
+
+### 22. Continuous Human Climate Niche & Spatial Habitability
+* **Subsystem**: `ProceduralPopulationEngine.java`
+* **Canonical Literature**:
+  * Xu, C., Kohler, T. A., Lenton, T. M., Svenning, J. C., & Scheffer, M. (2020). *Future of the human climate niche*. PNAS, 117(21), 11350–11355.
+* **Problem in Previous Implementation**:
+  * Habitability scores used `switch (b) { case PLAINS -> 1.0; case BEACH -> 0.90; case MOUNTAINS -> 0.02; ... }` and `.limit(2)` for landing targets.
+* **Calibrated Ether Formulation**:
+  $$\sigma_T(\text{Tech}) = 6.5 \cdot (1.0 + 0.10 \cdot \text{Tech})$$
+  $$\mathcal{H}_{\text{thermal}}(T) = \exp\left(-\frac{(T - 13.5)^2}{2 \cdot \sigma_T^2}\right)$$
+  $$\mathcal{H}_{\text{moisture}}(P) = \left(\frac{P}{P + 300}\right) \cdot \exp\left(-\frac{P}{4000}\right)$$
+  $$\mathcal{H}_{\text{elev}}(E) = \exp\left(-\frac{\max(0, E - 500 - 300 \cdot \text{Tech})}{1000} \cdot (3.5 - 0.25 \cdot \text{Tech})\right)$$
+  $$\mathcal{H}_{\text{total}} = \text{clamp}(\mathcal{H}_{\text{thermal}} \cdot \mathcal{H}_{\text{moisture}} \cdot \mathcal{H}_{\text{elev}}, 0.001, 2.0)$$
+* **Root Cause & Justification**:
+  * Replaces discrete biome multipliers with the 6,000-year historical human climate niche documented by Xu et al. (2020).
+* **Empirical Validation Grounding**:
+  * HYDE 3.4; Xu et al. (2020).
+
+---
+
+### 23. Continuous Locomotion Transport Friction & Thermodynamic Surface Albedo
+* **Subsystem**: `H3CellPhysicsAndStateHelper.java`
+* **Canonical Literature**:
+  * Minetti, A. E., et al. (2002). *Energy cost of walking and running at extreme uphill and downhill slopes*. Journal of Applied Physiology, 93(3), 1039–1046.
+  * Sellers, W. D. (1969). *A Global Climatic Model Based on the Energy Balance of the Earth-Atmosphere System*. Journal of Applied Meteorology, 8(3), 392–400.
+  * Dickinson, R. E., et al. (1993). *Biosphere-Atmosphere Transfer Scheme (BATS) Version 1e as Coupled to the NCAR Community Climate Model*. NCAR Technical Note TN-387+STR.
+* **Problem in Previous Implementation**:
+  * Movement friction used an arbitrary elevation step ladder (`elev > 3000 -> +8, elev > 1500 -> +4, elev > 500 -> +1.5`) and `switch (biome)`.
+  * Dynamic surface albedo used a discrete `switch (biome)` (`SNOW -> 0.78, GLACIER -> 0.85, DESERT -> 0.40, FOREST -> 0.12`).
+* **Calibrated Ether Formulation**:
+  * Continuous transport friction:
+    $$f_{\text{relief}} = 1.0 + 4.0 \cdot \left(\frac{\max(0, E)}{2500}\right)^{1.35}$$
+    $$f_{\text{veg}} = 2.5 \cdot \text{clamp}\left(\frac{B_{\text{nat}}}{4000}, 0.0, 1.0\right)$$
+    $$f_{\text{snow}} = \frac{4.5}{1 + \exp(0.50 \cdot (T - 0.0))}$$
+    $$\mu = \max\left(0.30, \; (f_{\text{relief}} + f_{\text{veg}} + f_{\text{snow}}) \cdot \max(0.15, e^{-0.12 \cdot \text{Tech}})\right)$$
+  * Continuous thermodynamic surface albedo:
+    $$f_{\text{snow}} = \frac{1}{1 + \exp(0.80 \cdot (T - 0.0))}, \quad f_{\text{veg}} = \text{clamp}\left(\frac{B_{\text{nat}}}{3000}, 0.0, 0.90\right)$$
+    $$\alpha_{\text{soil}} = 0.15 + 0.25 \cdot \exp(-0.003 \cdot P)$$
+    $$\alpha_{\text{surface}} = (1 - f_{\text{snow}}) \cdot [f_{\text{veg}} \cdot 0.14 + (1 - f_{\text{veg}}) \cdot \alpha_{\text{soil}}] + f_{\text{snow}} \cdot 0.80$$
+* **Root Cause & Justification**:
+  * Replaces discrete elevation ladders and lookup tables with continuous biomechanical locomotion costs and thermodynamic energy balance equations.
+* **Empirical Validation Grounding**:
+  * Minetti et al. (2002); Sellers (1969); Dickinson et al. (1993); MODIS MCD43 Albedo dataset.
+
+---
+
+### 24. Continuous Gravity Trade Network Potential
+* **Subsystem**: `TradeNetworkEngine.java`
+* **Canonical Literature**:
+  * Anderson, J. E. (1979). *A Theoretical Foundation for the Gravity Equation*. American Economic Review, 69(1), 106–116.
+  * Head, K., & Mayer, T. (2014). *Gravity Equations: Workhorse,Toolkit, and Cookbook*. Handbook of International Economics, Vol. 4, 131–195.
+* **Problem in Previous Implementation**:
+  * Hardcoded limits `hubs.size() >= 20`, `.limit(10)`, and `Math.min(i + 5, hubs.size())` constrained trade network emergence artificially.
+* **Calibrated Ether Formulation**:
+  $$V_{ij} = \frac{\sqrt{P_i \cdot P_j}}{1.0 + (D_{ij} / 15.0)^2}$$
+  * Bilateral trade corridors are formed dynamically whenever economic gravity potential exceeds the viability threshold $V_{ij} \ge 15.0$ and direct distance $D_{ij} \le 60^\circ$.
+* **Root Cause & Justification**:
+  * Replaces discrete array truncation with continuous economic gravity modeling, enabling trade corridors to form organically based on population mass and distance friction.
+* **Empirical Validation Grounding**:
+  * Anderson (1979); Head & Mayer (2014); Maddison Project 2020.

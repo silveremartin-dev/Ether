@@ -25,9 +25,8 @@ import java.util.List;
  *     $$t_{\text{BP}} = -\frac{1}{\lambda_{14}} \ln\left(\frac{A}{A_0}\right) = -8033 \ln\left(\frac{A}{A_0}\right)$$
  *   </li>
  *   <li><b>Photosynthetic Fractionation ($\delta^{13}\text{C}$)</b>:
- *     - C3 plants (forest, temperate crops like wheat, rice): $\delta^{13}\text{C} \approx -28\text{ ‰}$.
- *     - C4 plants (savannah grasses, maize, millet, sugarcane): $\delta^{13}\text{C} \approx -12\text{ ‰}$.
- *     - Marine carbon (carbonate, coastal fish): $\delta^{13}\text{C} \approx 0\text{ ‰}$ to $-2\text{ ‰}$.
+ *     Continuous ecophysiological crossover between C3 and C4 pathways (Ehleringer, Cerling & Helliker 1997; Still et al. 2003)
+ *     based on growing season thermal crossover ($T_{\text{cross}} \approx 22^\circ\text{C}$) and precipitation.
  *   </li>
  * </ul>
  *
@@ -53,7 +52,6 @@ public class RadiocarbonIsotopeEngine {
      * @return Remaining activity fraction A / A_0
      */
     public static double calculateRemainingC14Activity(double elapsedYears) {
-// Numerical integration step for RadiocarbonIsotopeEngine - verifies boundary conservation and updates local thermodynamic state
         if (elapsedYears <= 0.0) return 1.0;
         return Math.exp(-LAMBDA_14 * elapsedYears);
     }
@@ -65,29 +63,63 @@ public class RadiocarbonIsotopeEngine {
      * @return Age in radiocarbon years BP
      */
     public static double calculateRadiocarbonAgeBP(double activityFraction) {
-// Numerical integration step for RadiocarbonIsotopeEngine - verifies boundary conservation and updates local thermodynamic state
         if (activityFraction <= 0.0) return Double.POSITIVE_INFINITY;
         return -LIBBY_MEAN_LIFETIME_YEARS * Math.log(activityFraction);
     }
 
     /**
-     * Determines characteristic $\delta^{13}\text{C}$ isotopic signature (in ‰ vs VPDB) based on biome and flora.
+     * Determines characteristic $\delta^{13}\text{C}$ isotopic signature (in ‰ vs VPDB) continuously
+     * based on thermodynamic temperature and precipitation crossover (Ehleringer et al. 1997, Still et al. 2003).
+     *
+     * @param cell target cell with biophysical state variables
+     * @return isotopic signature in ‰ vs VPDB
+     */
+    public static double determineIsotopicSignatureDelta13C(H3Cell cell) {
+        if (cell == null) return -26.0;
+        double elev = cell.getElevationOr(0.0);
+        Biome biome = cell.getBiome();
+        if (elev < 0.0 || biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH) {
+            return -1.5; // Marine dissolved inorganic carbon
+        }
+
+        double tempC = cell.getTemperatureOr(15.0);
+        double rainMm = cell.getRainfallOr(600.0);
+        return calculateContinuousDelta13C(tempC, rainMm);
+    }
+
+    /**
+     * Continuous analytical calculation of $\delta^{13}\text{C}$ from climatic parameters.
+     *
+     * @param tempC mean annual surface temperature in °C
+     * @param rainMm mean annual precipitation in mm
+     * @return isotopic signature in ‰ vs VPDB
+     */
+    public static double calculateContinuousDelta13C(double tempC, double rainMm) {
+        // C4 quantum yield crossover occurs at T >= 22°C with moderate-to-low rainfall (Ehleringer 1997)
+        double thermalAffinity = 1.0 / (1.0 + Math.exp(-0.35 * (tempC - 22.0)));
+        double moistureAffinity = 1.0 / (1.0 + Math.exp(0.003 * (rainMm - 1200.0)));
+        double c4Fraction = Math.clamp(thermalAffinity * moistureAffinity, 0.0, 1.0);
+
+        double delta13C_C4 = -12.0; // C4 photosynthetic pathway (maize, sorghum, warm savannah grasses)
+        double delta13C_C3 = -28.0; // C3 photosynthetic pathway (temperate forest canopy, wheat, rice)
+        return c4Fraction * delta13C_C4 + (1.0 - c4Fraction) * delta13C_C3;
+    }
+
+    /**
+     * Fallback overload for legacy calls using {@link Biome}.
      */
     public static double determineIsotopicSignatureDelta13C(Biome biome) {
         if (biome == null) return -26.0;
-        return switch (biome) {
-            case SAVANNAH, PLAINS -> -12.0; // Dominant C4 grasses
-            case JUNGLE, FOREST -> -28.0;   // Dominant C3 canopy
-            case OCEAN, DEEP_OCEAN, BEACH -> -1.5; // Marine dissolved inorganic carbon
-            default -> -25.0; // Mixed temperate C3/C4
-        };
+        if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH) return -1.5;
+        if (biome == Biome.SAVANNAH || biome == Biome.PLAINS) return calculateContinuousDelta13C(25.0, 600.0);
+        if (biome == Biome.JUNGLE || biome == Biome.FOREST) return calculateContinuousDelta13C(18.0, 1500.0);
+        return calculateContinuousDelta13C(14.0, 800.0);
     }
 
     /**
      * Processes radiocarbon tracking and soil organic carbon isotopic signatures across cells.
      */
     public static void processIsotopicDecay(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for RadiocarbonIsotopeEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
@@ -99,5 +131,3 @@ public class RadiocarbonIsotopeEngine {
         }
     }
 }
-
-

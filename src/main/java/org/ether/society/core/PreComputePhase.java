@@ -228,6 +228,30 @@ public class PreComputePhase {
     }
 
     /**
+     * Calculates herbaceous pasture carrying capacity for wild grazing herbivores based on
+     * the ecological models of McNaughton (1985) and Sala et al. (1988).
+     *
+     * <p>Aboveground herbaceous NPP derives continuously from Miami NPP and unshaded canopy:
+     * $$f_{\text{canopy}} = \frac{1}{1 + \exp(-0.006 \cdot (P - 450))} \cdot \frac{1}{1 + \exp(-0.25 \cdot (T - 2))}$$
+     * $$f_{\text{herb}} = (1 - f_{\text{canopy}}) \cdot \frac{P}{P + 100}$$
+     * $$\text{wildLivestock} = \text{clamp}(\text{NPP} \cdot 0.35 \cdot f_{\text{herb}} \cdot \text{areaScale}, 0.0, 600.0 \cdot \text{areaScale})$$
+     *
+     * @param temp surface temperature in °C
+     * @param rain precipitation in mm
+     * @param elev elevation in meters
+     * @param areaScale spatial scaling factor relative to base H3 resolution 3
+     * @return wild livestock carrying capacity in metric tons
+     */
+    public static double calculateHerbaceousPastureCarryingCapacity(double temp, double rain, double elev, double areaScale) {
+        if (elev < 0.0 || temp < -20.0 || rain < 20.0) return 0.0;
+        double npp = calculateMiamiNPP(temp, rain);
+        double forestCanopy = (1.0 / (1.0 + Math.exp(-0.006 * (rain - 450.0))))
+                * (1.0 / (1.0 + Math.exp(-0.25 * (temp - 2.0))));
+        double herbaceousFraction = (1.0 - forestCanopy) * (rain / (rain + 100.0));
+        return Math.clamp(npp * 0.35 * herbaceousFraction * areaScale, 0.0, 600.0 * areaScale);
+    }
+
+    /**
      * Initialize resource stockpiles based on biome type and coastal marine abundance.
      * Preserves existing resources if already populated by Tab 2.
      */
@@ -266,8 +290,13 @@ public class PreComputePhase {
                     cell.setBiomassNatural(cell.getFoodResource());
                 }
                 if (cell.getBiomassLivestock() == null || cell.getBiomassLivestock() <= 0.0) {
-                    Biome b = cell.getBiome();
-                    double wildPasture = b == Biome.SAVANNAH || b == Biome.PLAINS ? 400.0 : (b == Biome.TUNDRA ? 200.0 : 0.0);
+                    double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
+                    double areaScale = Math.max(0.05, areaKm2 / 1770.49);
+                    double wildPasture = calculateHerbaceousPastureCarryingCapacity(
+                            cell.getTemperatureOr(15.0),
+                            cell.getRainfallOr(500.0),
+                            cell.getElevationOr(0.0),
+                            areaScale);
                     int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
                     double t = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
                     double domesticLivestock = (p > 0 && t >= 1.5) ? (p * 0.25) : 0.0;
@@ -315,11 +344,7 @@ public class PreComputePhase {
             cell.setBiomassNatural(standingWildBiomassTons);
 
             // Livestock carrying capacity in herbaceous grasslands/savannahs/tundras & domestic agrarian herds
-            double wildLivestock = switch (biome) {
-                case SAVANNAH, PLAINS -> Math.clamp(npp * 0.35 * areaScale, 50.0, 600.0 * areaScale);
-                case TUNDRA -> Math.clamp(npp * 0.15 * areaScale, 10.0, 250.0 * areaScale);
-                default -> 0.0;
-            };
+            double wildLivestock = calculateHerbaceousPastureCarryingCapacity(temp, rain, elev, areaScale);
             int p = cell.getPopulationOr(0);
             double t = cell.getTechnologyLevelOr(1.0);
             double domesticLivestock = (p > 0 && t >= 1.5) ? (p * 0.25) : 0.0;

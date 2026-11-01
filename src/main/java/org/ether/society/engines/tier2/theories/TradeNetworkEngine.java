@@ -2,7 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2024 Silvere Martin-Michiellot
-  * AUTHOR: Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.theories;
 
@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * Trade & Infrastructure Network Engine.
  * Models historical trade routes (e.g. Silk Road, Trans-Saharan, Maritime Corridors)
- * based on H3 terrain movement friction and population hubs.
+ * based on H3 terrain movement friction and population hubs using continuous gravity models (Anderson 1979).
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -76,7 +76,7 @@ public class TradeNetworkEngine {
     public static List<TradeRoute> generateTradeNetworks(List<H3Cell> cells, double techLevel, double dtYears) {
         if (cells == null || cells.isEmpty()) return Collections.emptyList();
 
-        // 1. Identify geographically distributed trade hubs (spatial non-maximum suppression across islands)
+        // 1. Identify geographically distributed trade hubs (spatial non-maximum suppression across clusters)
         List<H3Cell> sortedCells = cells.stream()
                 .filter(c -> c != null && c.getPopulation() != null && c.getPopulation() >= 150)
                 .sorted(Comparator.comparingInt(H3Cell::getPopulation).reversed())
@@ -93,11 +93,7 @@ public class TradeNetworkEngine {
             }
             if (!tooClose) {
                 hubs.add(c);
-                if (hubs.size() >= 20) break;
             }
-        }
-        if (hubs.size() < 2) {
-            hubs = sortedCells.stream().limit(10).toList();
         }
 
         if (hubs.size() < 2) return Collections.emptyList();
@@ -111,11 +107,21 @@ public class TradeNetworkEngine {
 
         List<TradeRoute> activeRoutes = new ArrayList<>();
 
-        // 2. Pair hubs and find minimal friction pathways
+        // 2. Continuous Gravity Model for bilateral trade corridor establishment (Anderson 1979; Head & Mayer 2014)
+        // Gravitational viability V_ij = sqrt(P_i * P_j) / (1 + (distance_deg / 15)^2)
         for (int i = 0; i < hubs.size() - 1; i++) {
             H3Cell origin = hubs.get(i);
-            for (int j = i + 1; j < Math.min(i + 5, hubs.size()); j++) {
+            double popOrigin = origin.getPopulationOr(150);
+
+            for (int j = i + 1; j < hubs.size(); j++) {
                 H3Cell destination = hubs.get(j);
+                double popDest = destination.getPopulationOr(150);
+                double distDeg = Math.hypot(origin.getLatitude() - destination.getLatitude(),
+                        origin.getLongitude() - destination.getLongitude());
+
+                double gravityPotential = Math.sqrt(popOrigin * popDest) / (1.0 + Math.pow(distDeg / 15.0, 2.0));
+                // Only establish active bilateral trade routes above economic profitability threshold
+                if (gravityPotential < 15.0 || distDeg > 60.0) continue;
 
                 TradeRoute route = computeFrictionPath(origin, destination, cells, cellMap, techLevel);
                 if (route != null) {
@@ -333,7 +339,6 @@ public class TradeNetworkEngine {
             }
 
             // B3. Physical Precious Metal / Specie Arbitrage (Gold, Silver, Bullion; tech >= 1.5)
-            // Long-distance high-value settlement with minimal physical transport attrition
             if (techLevel >= 1.5) {
                 if (origPrecious > destPrecious + 0.2) {
                     double preciousTrade = Math.min(origPrecious * 0.25, (origPrecious - destPrecious) * 0.30) * conductance * dtYears;
@@ -502,5 +507,3 @@ public class TradeNetworkEngine {
         }
     }
 }
-
-
