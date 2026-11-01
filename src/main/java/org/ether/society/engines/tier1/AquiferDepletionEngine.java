@@ -68,10 +68,14 @@ public class AquiferDepletionEngine {
             double aquifer = (rawAquifer <= 2.0) ? (400.0 + Math.max(0.0, rawAquifer) * 1000.0) : rawAquifer;
             double rain = cell.getRainfallOr(500.0);
             int pop = cell.getPopulationOr(0);
+            double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
+            double humanDensity = pop / areaKm2;
 
             double naturalRecharge = (rain * 0.15) * dt;
-            double perCapitaGroundwaterDemand = (rain >= 800.0) ? 0.05 : (rain >= 400.0 ? 0.35 : 0.80);
-            double irrigationExtraction = (pop * perCapitaGroundwaterDemand) * dt;
+            // Agricultural groundwater withdrawal depth in mm/year based on FAO Aquastat / Hoekstra (2012):
+            // Withdrawal_mm = density_hab_km2 * (V_perCapita_m3 / 1000) * groundwater_fraction
+            double groundwaterFraction = (rain >= 800.0) ? 0.05 : (rain >= 400.0 ? 0.35 : 0.80);
+            double irrigationExtraction = (humanDensity * 0.80 * groundwaterFraction) * dt;
 
             double netAquiferChange = naturalRecharge - irrigationExtraction;
             double newAquifer = Math.clamp(aquifer + netAquiferChange, 0.0, 2000.0);

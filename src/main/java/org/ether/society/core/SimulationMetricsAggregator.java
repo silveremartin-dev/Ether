@@ -309,8 +309,13 @@ public class SimulationMetricsAggregator {
         if (urbanRate < 0.5 || tech < 1.6f) {
             return 0;
         }
+        if (engine.getNations() != null && !engine.getNations().isEmpty()) {
+            return (int) engine.getNations().stream().filter(p -> p.getTerritory() != null && !p.getTerritory().isEmpty()).count();
+        }
+        // Taagepera (1978) & Seshat (Turchin 2018): empirical distribution of sovereign polities
+        // in agrarian civilizations scales between 20 and 80 macro-polities globally
         long popCells = engine.getPopulatedCellCount();
-        return (int) Math.max(0, popCells / 12);
+        return (int) Math.min(80, Math.max(1, popCells / 350));
     }
 
     /**
@@ -703,7 +708,9 @@ public class SimulationMetricsAggregator {
     public double getGeopoliticalTension() {
         int cityStates = getCityStatesCount();
         double conflict = getConflictLevel();
-        double val = (cityStates * 2.5) + (conflict * 0.7);
+        // Geopolitical tension scales with system fragmentation (interstate anarchic competition)
+        // and localized conflict level, bounded smoothly in [0.0, 100.0]
+        double val = (Math.min(50.0, cityStates * 0.8)) + (conflict * 0.5);
         return Double.isNaN(val) ? 0.0 : Math.max(0.0, Math.min(100.0, val));
     }
 
@@ -775,9 +782,13 @@ public class SimulationMetricsAggregator {
                 if (cellTech <= 1.55 || kpc <= 25.0) continue;
 
                 // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987)
+                // Physical agglomeration requirement: pre-industrial cities required a minimum nucleated population
+                // of ~5,000 inhabitants. Dispersed rural hamlets (p < 3,000) cannot contain an urban core.
                 double logKpc = Math.log(Math.max(1.0, kpc));
+                double preIndustrialNucleation = Math.tanh(Math.max(0.0, p - 3000.0) / 12000.0);
                 double agrarianUrbanShare = (0.085 / (1.0 + Math.exp(-2.0 * (logKpc - 5.50))))
-                        * Math.tanh((cellTech - 1.55) * 1.50);
+                        * Math.tanh((cellTech - 1.55) * 1.50)
+                        * preIndustrialNucleation;
 
                 // 2. Industrial steam/fossil mechanization rural-to-urban transition (T > 3.40, k > 500 kg/cap)
                 // Modulated by progressive global adoption (Bettencourt 2013; Bairoch 1988)
@@ -822,9 +833,11 @@ public class SimulationMetricsAggregator {
 
             // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987)
             double logKpc = Math.log(Math.max(1.0, kpc));
+            double preIndustrialNucleation = Math.tanh(Math.max(0.0, p - 3000.0) / 12000.0);
             double agrarianUrbanShare = (0.085 / (1.0 + Math.exp(-2.0 * (logKpc - 5.50))))
                     * Math.tanh((cellTech - 1.55) * 1.50)
-                    * (0.60 + 0.40 * Math.tanh(density / 25.0));
+                    * (0.60 + 0.40 * Math.tanh(density / 25.0))
+                    * preIndustrialNucleation;
 
             // 2. Industrial steam/fossil mechanization rural-to-urban transition (T > 3.40, k > 500 kg/cap)
             double industrialUrbanShare = 0.0;

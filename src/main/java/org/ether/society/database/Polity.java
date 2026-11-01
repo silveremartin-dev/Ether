@@ -239,7 +239,16 @@ public class Polity {
      * population density, and sovereign bullion reserves.
      */
     public void updateCliodynamicsCycle() {
-        if (territory.isEmpty()) return;
+        updateCliodynamicsCycle(1.0 / 12.0);
+    }
+
+    /**
+     * Updates Peter Turchin's Secular Cycle differential state transitions over explicit time step {@code dtYears}.
+     *
+     * @param dtYears simulation time step in years
+     */
+    public void updateCliodynamicsCycle(double dtYears) {
+        if (territory.isEmpty() || dtYears <= 0.0) return;
 
         double avgGini = territory.stream().mapToDouble(c -> c.getGiniIndex() != null ? c.getGiniIndex() : 0.35).average().orElse(0.35);
         long totalPop = getTotalPopulation();
@@ -255,13 +264,15 @@ public class Polity {
         this.monetaryInflation = Math.clamp(Math.max(0.0, bullionToRealOutputRatio - 0.35) * 0.50, 0.0, 1.0);
         double fiscalMonetizationBonus = Math.min(0.15, Math.log1p(treasuryBullion) * 0.02) * (1.0 - monetaryInflation);
 
-        // 1. Asabiyyah decays with large imperial size and high inequality, but grows during existential hardship
-        double sizePenalty = Math.log10(Math.max(1, territory.size())) * 0.02;
-        double inequalityPenalty = avgGini * 0.05;
-        this.asabiyyah = Math.clamp(this.asabiyyah - sizePenalty - inequalityPenalty + 0.01, 0.05, 1.0);
+        // 1. Asabiyyah secular cycle: decays with large imperial radius and high inequality, replenished on frontier (Turchin 2003)
+        double sizePenalty = Math.log10(Math.max(1, territory.size())) * 0.015;
+        double inequalityPenalty = avgGini * 0.03;
+        double netAsabiyyahDerivative = (0.008 - sizePenalty - inequalityPenalty);
+        this.asabiyyah = Math.clamp(this.asabiyyah + netAsabiyyahDerivative * dtYears, 0.05, 1.0);
 
-        // 2. Elite Overproduction increases with total wealth, high Gini inequality, and bullion inflation
-        this.eliteOverproduction = Math.clamp(avgGini * 1.2 + (totalPop > 1_000_000 ? 0.2 : 0.0) + monetaryInflation * 0.25, 0.0, 1.0);
+        // 2. Elite Overproduction: smooth secular relaxation towards structural demographic target (Turchin 2016)
+        double targetEliteOverproduction = Math.clamp(avgGini * 1.2 + (totalPop > 1_000_000 ? 0.2 : 0.0) + monetaryInflation * 0.25, 0.0, 1.0);
+        this.eliteOverproduction = Math.clamp(this.eliteOverproduction + (targetEliteOverproduction - this.eliteOverproduction) * Math.min(1.0, 0.20 * dtYears), 0.0, 1.0);
 
         // 3. State Capacity scales with administrative stability, Asabiyyah, and monetized tax collection (minus inflation erosion)
         this.stateCapacity = Math.clamp((0.4 * asabiyyah) + (0.6 * (1.0 - eliteOverproduction)) + fiscalMonetizationBonus - (monetaryInflation * 0.20), 0.1, 1.0);

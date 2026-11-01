@@ -459,7 +459,7 @@ public class SimulationPipeline {
         TechTreeEngine.processTechnologyDiffusion(populatedCells, tradeRoutes, dtYears);
         LanguageLinguisticEngine.processLinguisticDrift(populatedCells, tradeRoutes);
         if (engine != null && engine.getNations() != null && !engine.getNations().isEmpty()) {
-            CliodynamicsEngine.updateCliodynamics(engine.getNations(), populatedCells);
+            CliodynamicsEngine.updateCliodynamics(engine.getNations(), populatedCells, dtYears);
             WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), populatedCells, scenario);
         }
         OzoneLayerDepletionEngine.processOzoneLayerDepletion(populatedCells);
