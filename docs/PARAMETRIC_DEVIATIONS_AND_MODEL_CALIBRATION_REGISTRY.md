@@ -1081,3 +1081,141 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Empirical Validation Grounding**:
   * Price (1970); Bowles & Gintis (2011); Schelling (1971).
 
+
+
+---
+
+### Entry 58: Continuous Logistic State Fiscal Distress & Order-Independent Poisson Jump Hazard in SDT
+* **Date**: November 1, 2026
+* **Subsystem**: `StructuralDemographicBifurcationEngine.java`
+* **Canonical Literature**:
+  * Turchin, P. (2016). *Ages of Discord: A Structural-Demographic Analysis of American History*. Beresta Books.
+  * Goldstone, J. A. (1991). *Revolution and Rebellion in the Early Modern World*. University of California Press.
+  * Scheidel, W. (2017). *The Great Leveler: Violence and the History of Inequality from the Stone Age to the Twenty-First Century*. Princeton University Press.
+* **Problem in Previous Implementation**:
+  * Step jump in state fiscal distress `(capital > 500.0 ? 1.5 : 0.0)` created discontinuous jumps in Political Stress Index (PSI).
+  * Stateful random number generator `random.nextDouble()` introduced thread and iteration order sensitivity.
+* **Calibrated Ether Formulation**:
+  $$\text{SF}(K) = 1.0 + \frac{1.5}{1.0 + \exp\left(-0.01 \cdot (K - 500.0)\right)}$$
+  $$\lambda(\text{PSI}) = \lambda_0 \cdot \exp\left(0.4 \cdot \max(0, \text{PSI} - \text{PSI}_{\text{crit}})\right)$$
+  $$P(\Delta t) = 1.0 - \exp\left(-\lambda \cdot \Delta t\right)$$
+  Evaluated with stateless `DeterministicPRNG.nextDouble(baseSeed, 0L, cellId, 105L)`.
+* **Root Cause & Justification**:
+  * Replaces binary fiscal cliff with a $C^\infty$ continuous logistic debt distress index and guarantees strict order-independent reproducibility.
+* **Empirical Validation Grounding**:
+  * Turchin (2016); Goldstone (1991); Scheidel (2017).
+
+---
+
+### Entry 59: Continuous Logistic Headroom in Accelerating Returns
+* **Date**: November 1, 2026
+* **Subsystem**: `KurzweilAcceleratingReturnsEngine.java`
+* **Canonical Literature**:
+  * Kurzweil, R. (2001). *The Law of Accelerating Returns*. KurzweilAI.
+  * Marchetti, C. (1980). *Society as a learning system: Discovery, invention, and innovation cycles revisited*. Technological Forecasting and Social Change, 18(4), 267–282.
+* **Problem in Previous Implementation**:
+  * Discontinuous knife-edge cutoff `if (currentTech < paradigmCapacity)` abruptly halted innovation when capacity was met, ignoring asymptotic saturation.
+* **Calibrated Ether Formulation**:
+  $$\text{Headroom} = \max\left(0.0, 1.0 - \frac{T}{T_{\text{paradigm}}}\right)$$
+  $$\Delta T = \min\left(10.0, T + dW \cdot 0.10 \cdot \text{Headroom}\right)$$
+* **Root Cause & Justification**:
+  * Replaces discrete condition with smooth logistic S-curve headroom saturation, reflecting diminishing innovation returns as physical paradigm limits are approached.
+* **Empirical Validation Grounding**:
+  * Kurzweil (2001); Marchetti (1980).
+
+---
+
+### Entry 60: Continuous Centripetal Agglomeration Potential in New Economic Geography
+* **Date**: November 1, 2026
+* **Subsystem**: `KrugmanCorePeripheryEngine.java`
+* **Canonical Literature**:
+  * Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483–499.
+  * Fujita, M., Krugman, P. R., & Venables, A. (1999). *The Spatial Economy: Cities, Regions, and International Trade*. MIT Press.
+* **Problem in Previous Implementation**:
+  * Binary conjunction `if (capital > meanCapital && accessibilityIndex > 1.0)` created discontinuous boundary jumps in transport network investment.
+* **Calibrated Ether Formulation**:
+  $$\mathcal{A}_K = \frac{1}{1.0 + \exp\left(-2.0 \cdot \left(\frac{K}{\bar{K}} - 1.0\right)\right)}$$
+  $$\mathcal{A}_{\text{access}} = \frac{\Omega}{1.0 + \Omega}, \quad \Omega = \frac{\rho \cdot 0.001}{\max(0.2, \mu)}$$
+  $$\mathcal{C}_{\text{centripetal}} = 2.0 \cdot \mathcal{A}_K \cdot \mathcal{A}_{\text{access}}$$
+  $$\Delta \mu = -0.02 \cdot \mathcal{C}_{\text{centripetal}} \cdot \mu \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Aggregates capital concentration and market accessibility into a smooth $[0, 2]$ centripetal potential function.
+* **Empirical Validation Grounding**:
+  * Krugman (1991); Fujita et al. (1999).
+
+---
+
+### Entry 61: Dimensional Scaling of Surplus vs Institutional Maintenance in Complexity Collapse
+* **Date**: November 1, 2026
+* **Subsystem**: `TainterComplexityCollapseEngine.java`
+* **Canonical Literature**:
+  * Tainter, J. A. (1988). *The Collapse of Complex Societies*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Dimensional mismatch: `surplus = pop * 0.05` was an unscaled annual rate, whereas `maintenanceCost` was scaled by `deltaYears`, causing 12x distortion at monthly time steps.
+* **Calibrated Ether Formulation**:
+  $$\dot{S}_{\text{flow}} = (P \cdot 0.05) \cdot \Delta t$$
+  $$\dot{M}_{\text{cost}} = \left(0.015 K + \ln(1 + 0.02 K)^{1.5} \cdot 5.0\right) \cdot \Delta t$$
+  $$\text{Erosion} = (\dot{M}_{\text{cost}} - \dot{S}_{\text{flow}}) \cdot 0.8 \quad \text{when } \dot{M}_{\text{cost}} > \dot{S}_{\text{flow}}$$
+* **Root Cause & Justification**:
+  * Restores dimensional consistency across time steps $\Delta t$, ensuring surplus flows and maintenance burdens are commensurable.
+* **Empirical Validation Grounding**:
+  * Tainter (1988).
+
+---
+
+### Entry 62: Continuous Sigmoidal Drainage Mitigation of Salinization
+* **Date**: November 1, 2026
+* **Subsystem**: `FertileCrescentSalinizationEngine.java`
+* **Canonical Literature**:
+  * Jacobsen, T., & Adams, R. M. (1958). *Salt and Silt in Ancient Mesopotamian Agriculture*. Science, 128(3334), 1251–1258.
+  * Gelburd, D. E. (1985). *Managing salinization: Soil and water management in arid zones*. Soil Science Society of America Journal.
+* **Problem in Previous Implementation**:
+  * Discrete tech bounds `tech >= 1.0 && tech <= 3.5` caused topsoil sodium accumulation to vanish abruptly at tech 3.501.
+* **Calibrated Ether Formulation**:
+  $$\eta_{\text{drainage}}(T) = \frac{1}{1.0 + \exp\left(2.0 \cdot (T - 3.5)\right)}$$
+  $$\eta_{\text{canal}}(T) = \frac{1}{1.0 + \exp\left(-3.0 \cdot (T - 0.8)\right)}$$
+  $$\xi_{\text{salinization}}(T) = \eta_{\text{canal}}(T) \cdot \eta_{\text{drainage}}(T)$$
+* **Root Cause & Justification**:
+  * Replaces discrete conditional window with a smooth bell-shaped susceptibility envelope modeling the historical emergence of canal irrigation and subsequent development of sub-surface drainage engineering.
+* **Empirical Validation Grounding**:
+  * Jacobsen & Adams (1958); Gelburd (1985).
+
+---
+
+### Entry 63: Demographic Conservation in Edo Stationary-State Homeostasis
+* **Date**: November 1, 2026
+* **Subsystem**: `EdoJapanIsolationEngine.java`
+* **Canonical Literature**:
+  * Hanley, S. B., & Yamamura, K. (1977). *Economic and Demographic Change in Preindustrial Japan, 1600–1868*. Princeton University Press.
+  * Totman, C. (1989). *The Green Archipelago: Forestry in Pre-Industrial Japan*. University of California Press.
+* **Problem in Previous Implementation**:
+  * Direct population trimming `cell.setPopulation(Math.max(cellEquilibriumCap, pop - damping))` deleted individuals without mortality or migration, violating demographic conservation.
+* **Calibrated Ether Formulation**:
+  $$\text{PopExcess} = \frac{P - P_{\text{cap}}}{P_{\text{cap}}}$$
+  $$\Delta \text{Fertility} = -0.30 \cdot \frac{\text{PopExcess}}{1.0 + \text{PopExcess}} \cdot \Delta t$$
+  $$\text{Fertility} \gets \max(1.2, \text{Fertility} + \Delta \text{Fertility})$$
+* **Root Cause & Justification**:
+  * Enforces demographic mass conservation by routing carrying-capacity pressure through fertility restraint (delayed marriage, cultural spacing) rather than artificial population truncation.
+* **Empirical Validation Grounding**:
+  * Hanley & Yamamura (1977); Totman (1989).
+
+---
+
+### Entry 64: Continuous Sigmoidal ASI Emergence in Technological Singularity
+* **Date**: November 1, 2026
+* **Subsystem**: `TechnologicalSingularityEngine.java`
+* **Canonical Literature**:
+  * Kurzweil, R. (2005). *The Singularity is Near: When Humans Transcend Biology*. Viking.
+  * Bostrom, N. (2014). *Superintelligence: Paths, Dangers, Strategies*. Oxford University Press.
+* **Problem in Previous Implementation**:
+  * Double knife-edge boolean check `throughputBitsPerSec >= 1e16 && powerPerCapita >= 50000 && tech >= 5.0` produced discontinuous jumps in capital gain and pollution remediation.
+* **Calibrated Ether Formulation**:
+  $$\sigma_{\text{throughput}} = \frac{1}{1.0 + \exp\left(-1.5 \cdot (\log_{10}(\Phi) - 16.0)\right)}$$
+  $$\sigma_{\text{power}} = \frac{1}{1.0 + \exp\left(-0.0002 \cdot (P_{\text{capita}} - 50000.0)\right)}$$
+  $$\sigma_{\text{tech}} = \frac{1}{1.0 + \exp\left(-2.0 \cdot (T - 5.0)\right)}$$
+  $$\theta_{\text{ASI}} = \sigma_{\text{tech}} \cdot \sigma_{\text{throughput}} \cdot \sigma_{\text{power}} \in [0.0, 1.0]$$
+  $$\Delta K = K \cdot 0.10 \cdot \theta_{\text{ASI}} \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Models artificial super-intelligence emergence as a $C^\infty$ joint sigmoid across computational throughput, physical power density, and technological frontier depth.
+* **Empirical Validation Grounding**:
+  * Kurzweil (2005); Bostrom (2014).

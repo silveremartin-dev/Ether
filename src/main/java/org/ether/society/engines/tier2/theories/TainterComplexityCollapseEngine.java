@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.theories;
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Institutional Complexity & Declining Marginal Returns Engine (Joseph Tainter, 1988).
+ * Institutional Complexity &amp; Declining Marginal Returns Engine (Joseph Tainter, 1988).
  *
  * <p>Models the diminishing marginal returns to bureaucratic and technological complexity,
  * and the vulnerability of over-complex societies to catastrophic fiscal/energetic collapse:</p>
@@ -89,7 +89,7 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
@@ -97,21 +97,19 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
             if (capital < 50.0) continue;
 
             int pop = cell.getPopulationOr(0);
-            double surplus = pop * 0.05;
+            // Consistent dimension: annual surplus flow scaled by deltaYears
+            double surplusFlow = (pop * 0.05) * deltaYears;
 
             // Complexity index derived from institutional capital depth
             double complexity = Math.log(1.0 + 0.02 * capital);
             // Institutional & infrastructural maintenance overhead scales with capital stock and bureaucratic depth
             double maintenanceCost = (0.015 * capital + Math.pow(complexity, 1.5) * 5.0) * deltaYears;
 
-            if (maintenanceCost > surplus) {
+            if (maintenanceCost > surplusFlow) {
                 // Diminishing returns trap (Tainter 1988): complexity maintenance exceeds surplus -> capital collapse
-                double erosion = (maintenanceCost - surplus) * 0.8;
+                double erosion = (maintenanceCost - surplusFlow) * 0.8;
                 cell.setResourceCapital(Math.max(10.0, capital - erosion));
             }
         }
     }
 }
-
-
-

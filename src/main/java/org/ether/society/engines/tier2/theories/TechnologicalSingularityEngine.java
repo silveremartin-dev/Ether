@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.theories;
@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Technological Singularity & Algorithmic Self-Improvement Engine.
+ * Technological Singularity &amp; Algorithmic Self-Improvement Engine.
  * Models:
- * 1. <b>Shannon Information Throughput & Artificial Super-Intelligence (ASI)</b>: Algorithmic processing throughput (bits/sec) exceeds human cognitive capacity (>= 10^16 bits/sec).
- * 2. <b>Carnot Thermodynamic Limit Optimization</b>: ASI optimizes thermal energy converter efficiency (Î· -> 0.98), approaching physical Carnot limits.
- * 3. <b>Post-Scarcity & Trans-Human Energy Grid</b>: Ultra-high EROEI (>= 100:1) with automated molecular assembly, zero pollution generation, and trans-biological demographic stability.
+ * 1. <b>Shannon Information Throughput &amp; Artificial Super-Intelligence (ASI)</b>: Algorithmic processing throughput (bits/sec) exceeds human cognitive capacity (&gt;= 10^16 bits/sec).
+ * 2. <b>Carnot Thermodynamic Limit Optimization</b>: ASI optimizes thermal energy converter efficiency (η -&gt; 0.98), approaching physical Carnot limits.
+ * 3. <b>Post-Scarcity &amp; Trans-Human Energy Grid</b>: Ultra-high EROEI (&gt;= 100:1) with automated molecular assembly, zero pollution generation, and trans-biological demographic stability.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -70,26 +70,30 @@ public class TechnologicalSingularityEngine {
             if (pop <= 0) continue;
 
             double tech = cell.getTechnologyLevelOr(0.0);
-            if (tech < 5.0) continue; // Singularity requires trans-human technological tier (tech >= 5.0 and P_capita >= 50,000 W)
-
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double capital = cell.getResourceCapitalOr(0.0);
 
             double throughputBitsPerSec = calculateAlgorithmicThroughputBitsPerSec(powerPerCapita, capital);
 
-            // Singularity threshold: Throughput >= 10^16 bits/sec & P_capita >= 50,000 W
-            if (throughputBitsPerSec >= 1e16 && powerPerCapita >= SINGULARITY_POWER_THRESHOLD_WATTS) {
+            // Continuous sigmoidal ASI emergence envelope (Kurzweil 2005; Bostrom 2014)
+            double logThroughput = Math.log10(Math.max(1.0, throughputBitsPerSec));
+            double throughputFactor = 1.0 / (1.0 + Math.exp(-1.5 * (logThroughput - 16.0)));
+            double powerFactor = 1.0 / (1.0 + Math.exp(-0.0002 * (powerPerCapita - SINGULARITY_POWER_THRESHOLD_WATTS)));
+            double techFactor = 1.0 / (1.0 + Math.exp(-2.0 * (tech - 5.0)));
+            double asiFactor = techFactor * throughputFactor * powerFactor;
+
+            if (asiFactor > 0.001) {
                 singularityActiveCells++;
 
-                // 1. Post-scarcity capital gain from molecular nanotech assembly scaled by dtYears
-                cell.setResourceCapital(capital + (capital * 0.10 * dtSafe));
+                // 1. Post-scarcity capital gain from molecular nanotech assembly scaled by dtSafe
+                cell.setResourceCapital(capital + (capital * 0.10 * asiFactor * dtSafe));
 
                 // 2. Pollution elimination via automated molecular remediation
                 double pollution = cell.getPollutionLevelOr(0.0);
-                cell.setPollutionLevel(Math.max(0.0, pollution * Math.pow(0.50, dtSafe)));
+                cell.setPollutionLevel(Math.max(0.0, pollution * Math.pow(Math.max(0.01, 1.0 - 0.50 * asiFactor), dtSafe)));
 
                 // 3. Trans-human health & lifespan expansion
-                cell.setLifespan(Math.min(150.0, (cell.getLifespanOr(70.0)) + 1.0 * dtSafe));
+                cell.setLifespan(Math.min(150.0, (cell.getLifespanOr(70.0)) + 1.0 * asiFactor * dtSafe));
             }
         }
 
@@ -98,5 +102,3 @@ public class TechnologicalSingularityEngine {
         }
     }
 }
-
-

@@ -1894,3 +1894,47 @@ $$\mathcal{R}_K = \frac{2 K}{K + \bar{K}} \in [0.0, 2.0]$$
 $$\text{Erosion}_{\text{internal}} = 0.02 \cdot \frac{1}{1 + \exp(-12.0(\text{Gini} - 0.45))} \cdot \max(0, \text{Gini} - 0.35)$$
 $$\Delta \mu_{\text{segregation}} = 0.05 \cdot \frac{1}{1 + \exp(-12.0(\text{Gini} - 0.45))} \cdot \max(0, \text{Gini} - 0.35) \cdot \Delta t$$
 
+
+### 19.15 Continuous State Fiscal Distress & Order-Independent Poisson Jump Hazard (SDT)
+Replaces step jumps with a smooth logistic fiscal overextension index and order-independent SplitMix64 PRNG evaluation:
+$$\text{SF}(K) = 1.0 + \frac{1.5}{1.0 + \exp\left(-0.01 \cdot (K - 500.0)\right)}$$
+$$\lambda(\text{PSI}) = \lambda_0 \cdot \exp\left(0.4 \cdot \max(0, \text{PSI} - \text{PSI}_{\text{crit}})\right)$$
+$$P(\Delta t) = 1.0 - \exp\left(-\lambda \cdot \Delta t\right)$$
+
+### 19.16 Continuous Logistic Headroom in Accelerating Returns
+Eliminates abrupt innovation halt at paradigm boundary via continuous headroom saturation:
+$$\text{Headroom} = \max\left(0.0, 1.0 - \frac{T}{T_{\text{paradigm}}}\right)$$
+$$\Delta T = \min\left(10.0, T + dW \cdot 0.10 \cdot \text{Headroom}\right)$$
+
+### 19.17 Continuous Centripetal Agglomeration Potential (NEG)
+Unifies capital concentration and market accessibility into a smooth centripetal potential function:
+$$\mathcal{A}_K = \frac{1}{1.0 + \exp\left(-2.0 \cdot \left(\frac{K}{\bar{K}} - 1.0\right)\right)}$$
+$$\mathcal{A}_{\text{access}} = \frac{\Omega}{1.0 + \Omega}, \quad \Omega = \frac{\rho \cdot 0.001}{\max(0.2, \mu)}$$
+$$\mathcal{C}_{\text{centripetal}} = 2.0 \cdot \mathcal{A}_K \cdot \mathcal{A}_{\text{access}}$$
+$$\Delta \mu = -0.02 \cdot \mathcal{C}_{\text{centripetal}} \cdot \mu \cdot \Delta t$$
+
+### 19.18 Dimensional Scaling of Surplus vs Institutional Maintenance
+Enforces dimensional consistency between surplus flow and institutional maintenance burden across time steps:
+$$\dot{S}_{\text{flow}} = (P \cdot 0.05) \cdot \Delta t$$
+$$\dot{M}_{\text{cost}} = \left(0.015 K + \ln(1 + 0.02 K)^{1.5} \cdot 5.0\right) \cdot \Delta t$$
+$$\text{Erosion} = (\dot{M}_{\text{cost}} - \dot{S}_{\text{flow}}) \cdot 0.8 \quad \text{when } \dot{M}_{\text{cost}} > \dot{S}_{\text{flow}}$$
+
+### 19.19 Continuous Sigmoidal Drainage Mitigation of Salinization
+Replaces discrete technology windows with a smooth bell-shaped susceptibility envelope:
+$$\eta_{\text{drainage}}(T) = \frac{1}{1.0 + \exp\left(2.0 \cdot (T - 3.5)\right)}$$
+$$\eta_{\text{canal}}(T) = \frac{1}{1.0 + \exp\left(-3.0 \cdot (T - 0.8)\right)}$$
+$$\xi_{\text{salinization}}(T) = \eta_{\text{canal}}(T) \cdot \eta_{\text{drainage}}(T)$$
+
+### 19.20 Demographic Mass Conservation in Stationary-State Homeostasis
+Eliminates artificial population deletion in stationary-state autarky by routing carrying-capacity pressure through continuous fertility restraint:
+$$\text{PopExcess} = \frac{P - P_{\text{cap}}}{P_{\text{cap}}}$$
+$$\Delta \text{Fertility} = -0.30 \cdot \frac{\text{PopExcess}}{1.0 + \text{PopExcess}} \cdot \Delta t$$
+$$\text{Fertility} \gets \max(1.2, \text{Fertility} + \Delta \text{Fertility})$$
+
+### 19.21 Continuous Sigmoidal ASI Emergence in Technological Singularity
+Replaces knife-edge multi-threshold conjunctions with a $C^\infty$ joint sigmoid across computational throughput, power density, and technological depth:
+$$\sigma_{\text{throughput}} = \frac{1}{1.0 + \exp\left(-1.5 \cdot (\log_{10}(\Phi) - 16.0)\right)}$$
+$$\sigma_{\text{power}} = \frac{1}{1.0 + \exp\left(-0.0002 \cdot (P_{\text{capita}} - 50000.0)\right)}$$
+$$\sigma_{\text{tech}} = \frac{1}{1.0 + \exp\left(-2.0 \cdot (T - 5.0)\right)}$$
+$$\theta_{\text{ASI}} = \sigma_{\text{tech}} \cdot \sigma_{\text{throughput}} \cdot \sigma_{\text{power}} \in [0.0, 1.0]$$
+$$\Delta K = K \cdot 0.10 \cdot \theta_{\text{ASI}} \cdot \Delta t$$

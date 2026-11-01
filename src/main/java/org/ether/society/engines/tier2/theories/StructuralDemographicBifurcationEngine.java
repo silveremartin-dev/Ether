@@ -8,6 +8,7 @@ package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.ProceduralEnginePlugin;
+import org.ether.society.util.DeterministicPRNG;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Structural-Demographic Bifurcation & Poisson Catastrophe Jump Engine.
+ * Structural-Demographic Bifurcation &amp; Poisson Catastrophe Jump Engine.
  *
  * <p>Formalizes Peter Turchin's Secular Cycles and Jack Goldstone's Structural-Demographic Theory (SDT)
  * without resorting to ad-hoc individual agent minds. Continuously evaluates structural tension tensors
@@ -30,8 +31,8 @@ import java.util.Random;
  * </ul>
  *
  * <p>Upon crisis jump occurrence, the system executes structural dissipative resets:
- * wealth inequality collapse ($\Delta \text{Gini} < 0$, Scheidel's Great Leveler),
- * capital destruction ($\Delta K < 0$), and fiscal debt repudiation.</p>
+ * wealth inequality collapse ($\Delta \text{Gini} &lt; 0$, Scheidel's Great Leveler),
+ * capital destruction ($\Delta K &lt; 0$), and fiscal debt repudiation.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -43,7 +44,8 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
     private final double psiThreshold;
     /** Internal state: base jump intensity (double). */
     private final double baseJumpIntensity;
-    private final Random random;
+    /** Internal state: scenario seed for deterministic PRNG. */
+    private long baseSeed = 42L;
 
     /** Internal state: total crises triggered (long). */
     private long totalCrisesTriggered = 0;
@@ -55,7 +57,7 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
      *
      */
     public StructuralDemographicBifurcationEngine() {
-        this(5.0, 0.02, new Random(42));
+        this(5.0, 0.02, 42L);
     }
 
     /**
@@ -63,12 +65,23 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
      *
      * @param psiThreshold the psi threshold parameter (double)
      * @param baseJumpIntensity the base jump intensity parameter (double)
-     * @param random the random parameter (Random)
+     * @param baseSeed the scenario base seed parameter (long)
      */
-    public StructuralDemographicBifurcationEngine(double psiThreshold, double baseJumpIntensity, Random random) {
+    public StructuralDemographicBifurcationEngine(double psiThreshold, double baseJumpIntensity, long baseSeed) {
         this.psiThreshold = Math.max(1.0, psiThreshold);
         this.baseJumpIntensity = Math.max(1e-4, baseJumpIntensity);
-        this.random = random != null ? random : new Random(42);
+        this.baseSeed = baseSeed;
+    }
+
+    /**
+     * Legacy constructor accepting Random.
+     *
+     * @param psiThreshold the psi threshold parameter
+     * @param baseJumpIntensity base jump intensity
+     * @param random legacy random (ignored in favor of DeterministicPRNG)
+     */
+    public StructuralDemographicBifurcationEngine(double psiThreshold, double baseJumpIntensity, Random random) {
+        this(psiThreshold, baseJumpIntensity, 42L);
     }
 
     /**
@@ -77,7 +90,7 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
      * @param seed the scenario seed (long)
      */
     public void setSeed(long seed) {
-        this.random.setSeed(seed);
+        this.baseSeed = seed;
     }
 
     /**
@@ -112,7 +125,7 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
                • Political Stress Index:  PSI = MMP · EMP · SF
                • Mass Immiseration:       MMP = (Food_req / Food_avail) · (P / CarryingCapacity)
                • Elite Overproduction:    EMP = (Capital / BaseCapital) · Gini²
-               • State Fiscal Distress:   SF  = 1.0 + max(0, (Debt - Revenue) / Revenue)
+               • State Fiscal Distress:   SF  = 1.0 + 1.5 / (1.0 + exp(-0.01 · (Capital - 500)))
                • Poisson Jump Hazard:     λ_crisis = λ₀ · exp(κ · max(0, PSI - PSI_crit))
                • Crisis Dissipation:      ΔGini = -30%, ΔCapital = -25%, ΔMortality = +15%
                Ref: P. Turchin (2016) "Ages of Discord", W. Scheidel (2017) "The Great Leveler"
@@ -162,20 +175,22 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
             // 2. Elite Mobilization Potential (EMP): Wealth concentration and elite surplus
             double emp = Math.max(0.5, (capital / 100.0) * (gini * gini * 3.0));
 
-            // 3. State Fiscal Distress (SF): Overextension relative to taxable base
-            double sf = 1.0 + Math.max(0.0, (capital > 500.0 ? 1.5 : 0.0));
+            // 3. State Fiscal Distress (SF): Continuous logistic overextension relative to taxable base
+            double sf = 1.0 + 1.5 / (1.0 + Math.exp(-0.01 * (capital - 500.0)));
 
             // Composite PSI
             double psi = mmp * emp * sf;
             sumPSI += psi;
 
-            // 4. Poisson Jump Hazard Rate: λ(t) = λ₀ · exp(0.5 · max(0, PSI - PSI_crit))
+            // 4. Poisson Jump Hazard Rate: λ(t) = λ₀ · exp(0.4 · max(0, PSI - PSI_crit))
             if (psi > psiThreshold) {
                 double excessPsi = psi - psiThreshold;
                 double hazardRate = baseJumpIntensity * Math.exp(0.4 * excessPsi);
                 double jumpProbability = 1.0 - Math.exp(-hazardRate * deltaYears);
 
-                if (random.nextDouble() < jumpProbability) {
+                // Deterministic order-independent PRNG keyed to (baseSeed, 0, cellId, streamId)
+                double prng = DeterministicPRNG.nextDouble(baseSeed, 0L, cell.getH3Index(), 105L);
+                if (prng < jumpProbability) {
                     // Execute structural dissipation jump (The Great Leveler)
                     totalCrisesTriggered++;
 
@@ -216,5 +231,3 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
      */
     public double getPsiThreshold() { return psiThreshold; }
 }
-
-

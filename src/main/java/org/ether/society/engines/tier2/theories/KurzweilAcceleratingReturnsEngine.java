@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.theories;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Kurzweil Law of Accelerating Returns (LOAR) & Paradigm Shift S-Curve Engine.
+ * Kurzweil Law of Accelerating Returns (LOAR) &amp; Paradigm Shift S-Curve Engine.
  * Formally models:
  * 1. Double Exponential Knowledge Growth: W(t) = exp(e^(c * t))
  * 2. Nested S-Curve Paradigm Shifts: Logistic envelope transition when physical silicon/lithography limits are reached.
@@ -39,7 +39,7 @@ public class KurzweilAcceleratingReturnsEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
 
         // Double-exponential growth rate dW/dt = c * W * log(W + 1), bounded by Bekenstein-Landauer physical bound
         double dW = accelerationRate * Math.min(1e6, globalKnowledgeStock) * Math.log(globalKnowledgeStock + 1.0) * deltaYears;
@@ -53,9 +53,9 @@ public class KurzweilAcceleratingReturnsEngine {
             // S-Curve Paradigm Shift Envelope: P(t) = K / (1 + exp(-beta * t))
             double paradigmCapacity = 10.0 / (1.0 + Math.exp(-0.1 * globalKnowledgeStock));
 
-            if (currentTech < paradigmCapacity) {
-                cell.setTechnologyLevel(Math.min(10.0, currentTech + dW * 0.1));
-            }
+            // Continuous logistic headroom saturation (Kurzweil 2001, Marchetti 1980)
+            double headroom = Math.max(0.0, 1.0 - currentTech / paradigmCapacity);
+            cell.setTechnologyLevel(Math.min(10.0, currentTech + dW * 0.1 * headroom));
         }
     }
 
@@ -65,6 +65,7 @@ public class KurzweilAcceleratingReturnsEngine {
      * @return the resulting computation or state reference
      */
     public static double getGlobalKnowledgeStock() { return globalKnowledgeStock; }
+
     /**
      * Set global knowledge stock operation.
      * <p>
@@ -81,5 +82,3 @@ public class KurzweilAcceleratingReturnsEngine {
         accelerationRate = 0.05;
     }
 }
-
-

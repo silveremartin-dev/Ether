@@ -17,13 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Cliodynamics Engine (Peter Turchin Secular Cycles & Structural-Demographic Theory).
+ * Cliodynamics Engine (Peter Turchin Secular Cycles &amp; Structural-Demographic Theory).
  * Simulates:
  * 1. Asabiyyah (Social Cohesion / Solidarity Dynamics via coupled differential equations)
- * 2. Elite Overproduction & Intra-Elite Competition
+ * 2. Elite Overproduction &amp; Intra-Elite Competition
  * 3. Continuous Political Instability Index (PSI)
  * 4. Continuous Civil Strife Mortality ($\mu_{\text{strife}} = \mu_0 \cdot \Psi^2$)
- * 5. Continuous Peripheral Border Defection via Distance-Decay of Imperial Power ($\Psi > \mathcal{C}_{\text{state}}$).
+ * 5. Continuous Peripheral Border Defection via Distance-Decay of Imperial Power ($\Psi &gt; \mathcal{C}_{\text{state}}$).
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -32,7 +32,7 @@ public class CliodynamicsEngine {
     private static final Logger logger = LoggerFactory.getLogger(CliodynamicsEngine.class);
 
     /**
-     * Characteristic annual civil strife mortality coefficient (Turchin & Nefedov 2009; Turchin 2016).
+     * Characteristic annual civil strife mortality coefficient (Turchin &amp; Nefedov 2009; Turchin 2016).
      * At peak instability ($\Psi = 1.0$), excess mortality is $\sim 1.5\%$ per year across afflicted populations.
      */
     public static final double STRIFE_MORTALITY_COEFF_PER_YEAR = 0.015;
@@ -105,11 +105,12 @@ public class CliodynamicsEngine {
                         double distanceEffect = (normDist * normDist) / (1.0 + normDist * normDist);
                         // Annual defection probability scales continuously with geodesic distance and excess stress
                         double defectionProb = 0.03 * excessStress * distanceEffect;
-                        if (DeterministicPRNG.nextDouble(cell.getH3Index(), 4321) < defectionProb) {
+                        double prng = DeterministicPRNG.nextDouble(capital.getH3Index(), 0L, cell.getH3Index(), 4321L);
+                        if (prng < defectionProb) {
                             nation.removeCell(cell);
                             cell.setOwner(null);
                             logger.info("Cliodynamic Peripheral Autonomy: Cell {} detached from polity '{}' (PSI: {}, StateCap: {}).",
-                                    cell.getH3Index(), nation.getName(), String.format("%.2f", psi), String.format("%.2f", stateCap));
+                                    cell.getH3Index(), nation.getName(), String.format(java.util.Locale.ROOT, "%.2f", psi), String.format(java.util.Locale.ROOT, "%.2f", stateCap));
                         }
                     }
                 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Sakoku Edo Japan Isolationism & Forest Conservation Engine Variant B35.1 (Pure) & B35.2 (Hybrid).
+ * Sakoku Edo Japan Isolationism &amp; Forest Conservation Engine Variant B35.1 (Pure) &amp; B35.2 (Hybrid).
  * Models Edo Period Japan (1603-1868):
  * 1. Sakoku isolationism prevents external trade contagion and resource drain.
- * 2. Tokugawa forest conservation & organic recycling establish a zero-growth ecological equilibrium.
+ * 2. Tokugawa forest conservation &amp; organic recycling establish a zero-growth ecological equilibrium.
  * 3. High population density sustained at steady state (~30 million) with high social stability.
  * 4. Ended by external military tech shock (Perry Black Ships 1853).
  *
@@ -30,6 +30,15 @@ public class EdoJapanIsolationEngine {
     private static boolean sakokuIsolationActive = true;
     private static double sustainableEquilibriumCap = 30.0; // 30M population equilibrium cap
 
+    /** Logistic regrowth rate of managed sugi/hinoki plantations, yr<sup>-1</sup> (Totman 1989). */
+    private static final double PLANTATION_REGROWTH_RATE = 0.025;
+    /** Night-soil soil-organic-carbon return per unit population density, (g/kg) km<sup>2</sup> hab<sup>-1</sup> yr<sup>-1</sup>. */
+    private static final double NIGHT_SOIL_SOC_COEFF = 0.002;
+    /** Soil organic carbon saturation level for paddy soils (g/kg). */
+    private static final double SOC_SATURATION = 40.0;
+    /** First-observed standing wood stock per H3 cell, used as the logistic carrying capacity W0. */
+    private static final java.util.Map<Long, Double> initialWoodStock = new java.util.concurrent.ConcurrentHashMap<>();
+
     /**
      * Resets mutable static state between scenario executions to guarantee isolation.
      */
@@ -42,11 +51,8 @@ public class EdoJapanIsolationEngine {
     /**
      * Applies the Sakoku / Tokugawa institutional package to Japanese cells through physical drivers only.
      * <p>
-     * Earlier versions relaxed each cell's population toward a hard-coded 30-million historical equilibrium,
-     * which created or destroyed people without births, deaths or food (a teleological calibration that
-     * violated demographic mass conservation). Population is now left entirely to the Tier 1 demographic
-     * kernels; this engine only modifies the ecological drivers documented by Totman (1989) and
-     * Hanley &amp; Yamamura (1977):
+     * Population is left to the Tier 1 demographic kernels; this engine modifies the ecological and
+     * fertility drivers documented by Totman (1989) and Hanley &amp; Yamamura (1977):
      * </p>
      * <ol>
      *   <li><b>Tomeyama silviculture</b>: logging bans and sugi/hinoki plantations regrow standing wood
@@ -55,6 +61,8 @@ public class EdoJapanIsolationEngine {
      *   <li><b>Night-soil recycling</b>: human excreta returned to paddies add soil organic carbon in
      *       proportion to population density, \(\dot{SOC} = k_{\text{ns}} \rho\,(1 - SOC/SOC_{\text{sat}})\),
      *       with \(k_{\text{ns}} = 0.002\,\text{(g/kg)}\,\text{km}^2\,\text{hab}^{-1}\,\text{yr}^{-1}\), \(SOC_{\text{sat}} = 40\).</li>
+     *   <li><b>Stationary-state fertility regulation</b>: late marriage and cultural reproductive restraint
+     *       dampen fertility toward replacement level when density exceeds sustainable equilibrium.</li>
      *   <li><b>Organic waste recycling</b>: pollution decays at 1 unit/yr.</li>
      * </ol>
      *
@@ -93,10 +101,12 @@ public class EdoJapanIsolationEngine {
 
             // 3. Preventive stationary-state demographic homeostasis (late marriage, monastic/institutional checks
             // when population exceeds local stationary carrying capacity cap, Hanley & Yamamura 1977)
+            // Enforces demographic conservation by moderating fertility rather than artificial mass deletion
             double cellEquilibriumCap = sustainableEquilibriumCap * 1000.0;
             if (pop > cellEquilibriumCap) {
-                double damping = (pop - cellEquilibriumCap) * Math.min(0.5, 0.10 * dt);
-                cell.setPopulation((int) Math.max(cellEquilibriumCap, pop - damping));
+                double popExcess = (pop - cellEquilibriumCap) / cellEquilibriumCap;
+                double fertilityDamping = 0.3 * (popExcess / (1.0 + popExcess)) * dt;
+                cell.setFertility(Math.max(1.2, (cell.getFertilityOr(2.1)) - fertilityDamping));
             }
 
             // 4. Zero pollution accumulation due to closed-loop organic waste recycling
@@ -104,21 +114,13 @@ public class EdoJapanIsolationEngine {
         }
     }
 
-    /** Logistic regrowth rate of managed sugi/hinoki plantations, yr<sup>-1</sup> (Totman 1989). */
-    private static final double PLANTATION_REGROWTH_RATE = 0.025;
-    /** Night-soil soil-organic-carbon return per unit population density, (g/kg) km<sup>2</sup> hab<sup>-1</sup> yr<sup>-1</sup>. */
-    private static final double NIGHT_SOIL_SOC_COEFF = 0.002;
-    /** Soil organic carbon saturation level for paddy soils (g/kg). */
-    private static final double SOC_SATURATION = 40.0;
-    /** First-observed standing wood stock per H3 cell, used as the logistic carrying capacity W0. */
-    private static final java.util.Map<Long, Double> initialWoodStock = new java.util.concurrent.ConcurrentHashMap<>();
-
     /**
      * Is sakoku isolation active.
      *
      * @return the resulting computation or state reference
      */
     public static boolean isSakokuIsolationActive() { return sakokuIsolationActive; }
+
     /**
      * Set sakoku isolation active operation.
      * <p>
@@ -136,6 +138,7 @@ public class EdoJapanIsolationEngine {
      * @return the resulting computation or state reference
      */
     public static double getSustainableEquilibriumCap() { return sustainableEquilibriumCap; }
+
     /**
      * Set sustainable equilibrium cap operation.
      * <p>
@@ -147,5 +150,3 @@ public class EdoJapanIsolationEngine {
      */
     public static void setSustainableEquilibriumCap(double cap) { sustainableEquilibriumCap = Math.max(1.0, cap); }
 }
-
-

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Mesopotamian Irrigation & Fertile Crescent Salinization Engine Variant B33.1 (Pure) & B33.2 (Hybrid).
+ * Mesopotamian Irrigation &amp; Fertile Crescent Salinization Engine Variant B33.1 (Pure) &amp; B33.2 (Hybrid).
  * Models progressive topsoil salinization in canal-irrigated alluvial river basins (Tigris/Euphrates):
  * 1. High evaporation deposits sodium salts (Na+) in topsoil.
  * 2. Crop yield degradation forces shift from salt-sensitive wheat to salt-tolerant barley.
@@ -37,7 +37,7 @@ public class FertileCrescentSalinizationEngine {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
@@ -54,10 +54,15 @@ public class FertileCrescentSalinizationEngine {
             double food = cell.getFoodResourceOr(1000.0);
             double tech = cell.getTechnologyLevelOr(1.0);
 
-            // Pre-modern canal irrigation without subsurface tile drainage (Tech level 1.0 to 3.5)
-            if (tech >= 1.0 && tech <= 3.5) {
+            // Continuous sigmoidal drainage technology envelope (Jacobsen & Adams 1958; Gelburd 1985)
+            // Canal irrigation susceptibility emerges around tech 1.0 and is alleviated by subsurface tile drainage post-tech 3.5
+            double drainageAttenuation = 1.0 / (1.0 + Math.exp(2.0 * (tech - 3.5)));
+            double techEncounter = 1.0 / (1.0 + Math.exp(-3.0 * (tech - 0.8)));
+            double techSusceptibility = techEncounter * drainageAttenuation;
+
+            if (techSusceptibility > 0.05) {
                 double aridityMultiplier = Math.clamp((650.0 - rainfall) / 400.0, 0.25, 1.5);
-                double effectiveRate = salinizationRatePerCentury * aridityMultiplier;
+                double effectiveRate = salinizationRatePerCentury * aridityMultiplier * techSusceptibility;
                 double salinizationFactor = Math.max(0.20, Math.exp(-effectiveRate * (deltaYears / 100.0)));
                 cell.setFoodResource(food * salinizationFactor);
                 double curSalinity = cell.getSoilSalinityOr(0.0);
@@ -72,6 +77,7 @@ public class FertileCrescentSalinizationEngine {
      * @return the resulting computation or state reference
      */
     public static double getSalinizationRatePerCentury() { return salinizationRatePerCentury; }
+
     /**
      * Set salinization rate per century operation.
      * <p>
@@ -90,5 +96,3 @@ public class FertileCrescentSalinizationEngine {
         salinizationRatePerCentury = 0.05;
     }
 }
-
-

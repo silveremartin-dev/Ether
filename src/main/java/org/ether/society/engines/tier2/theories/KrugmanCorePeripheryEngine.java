@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.theories;
@@ -14,19 +14,18 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * New Economic Geography (NEG) Core-Periphery Agglomeration Engine (Paul Krugman, 1991).
+ * Krugman Core-Periphery &amp; New Economic Geography Engine (Paul Krugman, Nobel 1991).
  *
- * <p>Models endogenous industrial clustering driven by increasing returns to scale,
- * Dixit-Stiglitz monopolistic competition, and iceberg transport costs:</p>
+ * <p>Models endogenous spatial agglomeration, trade costs, and forward-backward linkages:</p>
  * <pre>
- *   ω_i = [ Σ_j Y_j · P_j^(σ - 1) · exp(-τ_ij · (σ - 1)) ]^(1 / σ)
+ *   Ω_i = Σ_j [ Y_j · exp(-τ · d_ij) ]
+ *   dK_i/dt = Centripetal_Force(Ω_i) - Centrifugal_Congestion(K_i / Area_i)
  * </pre>
  * where:
  * <ul>
- *   <li><b>σ > 1</b>: Elasticity of substitution among manufacturing varieties (~4.0).</li>
- *   <li><b>τ_ij</b>: Iceberg transport cost between regions $i$ and $j$.</li>
- *   <li><b>Centripetal forces</b> (market size effect & thick labor markets) pull capital towards core hubs.</li>
- *   <li><b>Centrifugal forces</b> (immobile agricultural demand & land rent competition) disperse activity.</li>
+ *   <li><b>Centripetal Forces</b>: Increasing returns in manufacturing, labor market pooling, low transport costs.</li>
+ *   <li><b>Centrifugal Forces</b>: Agricultural dispersion, land rents, transport congestion.</li>
+ *   <li><b>Bifurcation Point</b>: Below critical transport friction $\tau &lt; \tau^*$, symmetrical distribution collapses into core-periphery clustering.</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
@@ -35,9 +34,6 @@ import java.util.List;
 public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(KrugmanCorePeripheryEngine.class);
 
-    /** Internal state: sigma elasticity (double). */
-    public static final double SIGMA_ELASTICITY = 4.0;
-
     /**
      * Get name.
      *
@@ -45,7 +41,7 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
      */
     @Override
     public String getName() {
-        return "Krugman New Economic Geography Core-Periphery";
+        return "Krugman Core-Periphery Spatial Agglomeration (NEG)";
     }
 
     /**
@@ -55,7 +51,7 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
      */
     @Override
     public String getDescription() {
-        return "Models endogenous spatial economic concentration, manufacturing core-periphery bifurcations, and iceberg transport friction.";
+        return "Models endogenous industrial clustering, forward/backward linkages, and bifurcation from dispersed to core-periphery geography.";
     }
 
     /**
@@ -66,11 +62,12 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
     @Override
     public String getEquationsTooltip() {
         return """
-               [Krugman Core-Periphery NEG Formulation (JPE 1991)]
-               • Nominal Wage Index:  ω_i = [ Σ_j Y_j · P_j^(σ - 1) · exp(-τ_ij · (σ - 1)) ]^(1 / σ)
-               • Price Index:         P_i = [ Σ_j λ_j · (w_j · exp(τ_ij))^(1 - σ) ]^(1 / (1 - σ))
-               • Manufacturing Share: dλ_i/dt = γ_mob · (ω_i / P_i^μ - RealWage_mean) · λ_i
-               Units: ω, w [$/h], P [indice de prix], τ [friction transport iceberg], σ [élasticité CES]
+               [Krugman New Economic Geography (JPE 1991)]
+               • Market Potential:      Ω_i = Σ_j [ Income_j · exp(-τ · dist_ij) ]
+               • Agglomeration Factor:  A_i = σ(2.0 · (K_i / K_mean - 1)) · (Access_i / (1 + Access_i))
+               • Friction Reduction:    Δμ = -2% · A_i · Δt
+               • Bifurcation Threshold: Symmetrical distribution destabilizes when τ falls below critical value.
+               Units: Ω [potentiel de marché sans dimension], τ [coefficient de friction transport km^-1]
                Ref: P. Krugman (1991) "Increasing Returns and Economic Geography", Journal of Political Economy
                """;
     }
@@ -96,7 +93,7 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
 
         double meanCapital = cells.stream()
                 .filter(java.util.Objects::nonNull)
@@ -113,14 +110,15 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
 
             // Core hub advantage: high local market access + low transport friction -> capital inflow
             double accessibilityIndex = (pop * 0.001) / Math.max(0.2, friction);
-            if (capital > meanCapital && accessibilityIndex > 1.0) {
-                // Agglomeration feedback (centripetal force)
-                // Agglomeration core: enhances local market potential and reduces transport friction
-                cell.setMovementFriction(Math.max(0.1, friction * (1.0 - 0.02 * deltaYears)));
-            }
+
+            // Continuous centripetal agglomeration potential (Krugman 1991, Fujita et al. 1999)
+            double relCapital = capital / Math.max(1.0, meanCapital);
+            double capitalAdvantage = 1.0 / (1.0 + Math.exp(-2.0 * (relCapital - 1.0)));
+            double accessAdvantage = accessibilityIndex / (1.0 + accessibilityIndex);
+            double centripetalFactor = 2.0 * capitalAdvantage * accessAdvantage;
+
+            // Agglomeration feedback (centripetal force): enhances local market potential and reduces transport friction
+            cell.setMovementFriction(Math.max(0.1, friction * (1.0 - 0.02 * centripetalFactor * deltaYears)));
         }
     }
 }
-
-
-
