@@ -65,8 +65,9 @@ public class TerraformingEngine {
 
             // Asteroid mining influx boosts local metal/mineral density
             int pop = cell.getPopulationOr(0);
-            if (asteroidMiningFluxTonnesPerYear > 0 && pop > 1000) {
-                double mineralBoost = (asteroidMiningFluxTonnesPerYear / cells.size()) * 0.0001;
+            double popWeight = pop / (500.0 + pop);
+            if (asteroidMiningFluxTonnesPerYear > 0 && pop > 0) {
+                double mineralBoost = (asteroidMiningFluxTonnesPerYear / cells.size()) * 0.0001 * popWeight;
                 cell.setResourceMetal((cell.getResourceMetalOr(0.0)) + mineralBoost);
             }
         }

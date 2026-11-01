@@ -66,9 +66,11 @@ public class RomanImperialCliodynamicEngine {
             cell.setResourceCapital(Math.max(10.0, netCapital));
 
             // Pre-modern urban mortality sink (crowding + sanitation/water contamination) dampens urban lifespan
-            if (pop > 20000) {
-                cell.setLifespan(Math.max(25.0, (cell.getLifespanOr(35.0)) - 0.2 * deltaYears));
-            }
+            double urbanCrowding = pop / (10000.0 + pop);
+            cell.setLifespan(Math.max(25.0, (cell.getLifespanOr(35.0)) - 0.25 * urbanCrowding * deltaYears));
+
+
+
         }
     }
 
