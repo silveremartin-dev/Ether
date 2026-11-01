@@ -103,8 +103,9 @@ public class LanguageLinguisticEngine {
             if (cell.getOwner() != null && cell.getOwner().getCapital() != null) {
                 H3Cell capital = cell.getOwner().getCapital();
                 if (capital.getLanguageGroup() != null && !capital.getLanguageGroup().equals(cell.getLanguageGroup())) {
-                    // Isolated cells resist foreign assimilation (lower chance)
-                    double assimilationChance = isIslandOrIsolated ? 0.03 : 0.15;
+                    // Continuous political language assimilation inversely scaling with terrain friction (Cavalli-Sforza & Feldman 1981):
+                    double frict = cell.getMovementFrictionOr(1.0);
+                    double assimilationChance = 0.02 + 0.13 / (1.0 + 0.6 * frict * frict);
                     long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
                     if (org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, cellId, 311L) < assimilationChance) {
                         cell.setLanguageGroup(capital.getLanguageGroup());
@@ -125,8 +126,8 @@ public class LanguageLinguisticEngine {
                 for (H3Cell routeCell : route.pathCells()) {
                     if (routeCell == null) continue;
                     double rFriction = routeCell.getMovementFrictionOr(1.0);
-                    boolean isIsolated = routeCell.getBiome() == Biome.BEACH || rFriction > 3.5;
-                    double diffusionChance = isIsolated ? 0.05 : 0.25;
+                    // Continuous lingua franca diffusion along trade routes scaling with route conductance (Nichols 1992):
+                    double diffusionChance = 0.04 + 0.21 / (1.0 + 0.4 * rFriction * rFriction);
 
                     long routeCellId = routeCell.getH3Index() != null ? routeCell.getH3Index() : 0L;
                     if (org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, 0L, routeCellId, 313L) < diffusionChance) {

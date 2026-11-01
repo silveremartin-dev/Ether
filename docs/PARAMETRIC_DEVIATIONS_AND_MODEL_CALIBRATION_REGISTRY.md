@@ -595,3 +595,147 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Formulates pressurized extraterrestrial habitat volumetric capacity as an analytical closed-form exponential expansion law.
 * **Empirical Validation Grounding**:
   * O'Neill (1974); Zubrin (1996).
+
+---
+
+### Entry 32: Continuous Groundwater Irrigation Dependency Logistic Curve
+* **Date**: November 1, 2026
+* **Subsystem**: `AquiferDepletionEngine.java`
+* **Canonical Literature**:
+  * Siebert, S., Burke, J., Faures, J. M., Frenken, K., Hoogeveen, J., Döll, P., & Portmann, F. T. (2010). *Groundwater use for irrigation - a global inventory*. Hydrology and Earth System Sciences, 14(10), 1863–1880.
+  * Wada, Y., van Beek, L. P., & Bierkens, M. F. (2012). *Nonsustainable groundwater sustaining irrigation: A global assessment*. Water Resources Research, 48(6).
+* **Problem in Previous Implementation**:
+  * Discrete 3-step staircase `(rain >= 800.0) ? 0.05 : (rain >= 400.0 ? 0.35 : 0.80)` created non-physical 700% jumps across 800mm and 400mm rainfall boundaries.
+* **Calibrated Ether Formulation**:
+  $$f_{\text{gw}}(P) = 0.05 + \frac{0.75}{1 + \exp\left(\frac{P - 550.0}{120.0}\right)}$$
+* **Root Cause & Justification**:
+  * Formulates agricultural groundwater reliance as a continuous analytical response to climatological precipitation deficit.
+* **Empirical Validation Grounding**:
+  * Siebert et al. (2010); Wada et al. (2012); FAO AQUASTAT.
+
+---
+
+### Entry 33: Continuous Dietary Foraging Neolithic Transition
+* **Date**: November 1, 2026
+* **Subsystem**: `BiologicalDemographicsEngine.java`
+* **Canonical Literature**:
+  * Kelly, R. L. (2013). *The Lifeways of Hunter-Gatherers: The Foraging Spectrum*. Cambridge University Press.
+  * Bocquet-Appel, J. P. (2011). *When the world’s population took off: the springboard of the Neolithic Demographic Transition*. Science, 333(6042), 560–561.
+* **Problem in Previous Implementation**:
+  * Binary conditional `tech < 1.5 ? 0.008 : 0.005` caused an abrupt drop in natural carrying capacity at the Neolithic boundary.
+* **Calibrated Ether Formulation**:
+  $$f_{\text{forage}}(T) = 0.005 + \frac{0.003}{1 + \exp(4.0 \cdot (T - 1.5))}$$
+* **Root Cause & Justification**:
+  * Replaces discrete jump with continuous dietary transition reflecting gradual transition from wild gatherable biomass to domesticated cereal cultivation.
+* **Empirical Validation Grounding**:
+  * Kelly (2013); Bocquet-Appel (2011).
+
+---
+
+### Entry 34: Continuous Preston Longevity Curve & Fogel Nutritional Modulation
+* **Date**: November 1, 2026
+* **Subsystem**: `BioMolecularEpidemiologyEngine.java`
+* **Canonical Literature**:
+  * Preston, S. H. (1975). *The Changing Relation between Mortality and Level of Economic Development*. Population Studies, 29(2), 231–248.
+  * Fogel, R. W. (1994). *Economic Growth, Population Theory, and Physiology: The Bearing of Long-Term Processes on the Making of Economic Policy*. American Economic Review, 84(3), 369–395.
+  * Omran, A. R. (1971). *The Epidemiologic Transition: A Theory of the Epidemiology of Population Change*. The Milbank Memorial Fund Quarterly, 49(4), 509–538.
+* **Problem in Previous Implementation**:
+  * Binary step `tech >= 1.5 ? 48.0 : 38.0` with lifetime cap at 48 years, preventing modern epidemiological transition to 75-80+ years.
+* **Calibrated Ether Formulation**:
+  $$L_0(T) = 32.0 + \frac{50.0}{1 + \exp(-0.85 \cdot (T - 4.0))}$$
+  $$\frac{dL}{dt} = \left(1.5 \cdot (\text{IgRate} - 0.55) + 0.08 \cdot (L_0 - L)\right) \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Continuous representation of Preston curve and nutritional physiological resilience, capturing the full trajectory from Paleolithic (~36 yrs) to modern clinical sanitation (~80 yrs).
+* **Empirical Validation Grounding**:
+  * Preston (1975); UN WPP (2024); Human Mortality Database.
+
+---
+
+### Entry 35: Continuous Industrial Mechanization Emissions and Concave Pollution Dose-Response
+* **Date**: November 1, 2026
+* **Subsystem**: `EcologicalDegradationEngine.java`
+* **Canonical Literature**:
+  * Pope, C. A., et al. (2002). *Lung Cancer, Cardiopulmonary Mortality, and Long-Term Exposure to Fine Particulate Air Pollution*. JAMA, 287(9), 1132–1141.
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+* **Problem in Previous Implementation**:
+  * Binary condition `effectiveTech >= 3.0` and knife-edge thresholds `pLevel > 100.0` and `pLevel > 50.0`.
+* **Calibrated Ether Formulation**:
+  $$E_{\text{ind}}(T) = N \cdot \left(0.002 + \frac{0.068}{1 + \exp(-2.2 \cdot (T - 4.2))}\right) + \text{Mining}$$
+  $$\tau_{\text{pollution}}(p) = \frac{p}{150.0 + p}$$
+* **Root Cause & Justification**:
+  * Continuous mechanization emission transition and saturating Michaelis-Menten dose-response toxicity curve for biological organs and ecosystems.
+* **Empirical Validation Grounding**:
+  * Pope et al. (2002); WHO Global Air Quality Guidelines (2021).
+
+---
+
+### Entry 36: Continuous Solid-Solution Bronze Strengthening and Logistic Blast Furnace Enthalpy
+* **Date**: November 1, 2026
+* **Subsystem**: `MetallurgyEnthalpyEngine.java`
+* **Canonical Literature**:
+  * Tylecote, R. F. (1992). *A History of Metallurgy*. The Institute of Materials.
+  * Allen, R. C. (2009). *The British Industrial Revolution in Global Perspective*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Binary checks for tin availability and coking coal blast furnace enthalpy transition.
+* **Calibrated Ether Formulation**:
+  $$Q_{\text{alloy}}(\text{Sn}) = 0.18 + 0.47 \cdot \left(1 - \exp\left(-\frac{\text{Sn}_{\text{eff}}}{1.5}\right)\right)$$
+  $$H(T, C) = H_{\text{iron}} - (H_{\text{iron}} - 19.5) \cdot \frac{1}{1 + \exp(-3.0 \cdot (T - 3.5))} \cdot \frac{C}{1 + C}$$
+* **Root Cause & Justification**:
+  * Replaces binary checks with continuous solid-solution metallurgy and logistic coking coal adoption.
+* **Empirical Validation Grounding**:
+  * Tylecote (1992); Allen (2009).
+
+---
+
+### Entry 37: Continuous Kinetic Capture Scaling and Marchetti-Nakicenovic Energy Transition Shares
+* **Date**: November 1, 2026
+* **Subsystem**: `PhysicalEnergyGridEngine.java`
+* **Canonical Literature**:
+  * Marchetti, C., & Nakicenovic, N. (1979). *The Dynamics of Energy Systems and the Logistic Substitution Model*. IIASA Research Report RR-79-13.
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+* **Problem in Previous Implementation**:
+  * 5x binary jump in kinetic harness at $T=4.5$, 3-step staircase for wind/hydro cap, and premature uranium fission consumption at $T=4.0$ (steam era).
+* **Calibrated Ether Formulation**:
+  $$k_{\text{kinetic}}(T) = 1.0 + \frac{4.0}{1 + \exp(-2.5 \cdot (T - 4.5))}$$
+  $$s_{\text{fossil}}(T) = \text{Marchetti-Nakicenovic Logistic Substitution System}$$
+  * Uranium fission consumption anchored strictly to the atomic era ($T \ge 6.0$).
+* **Root Cause & Justification**:
+  * Aligns technological energy transitions with peer-reviewed IIASA logistic substitution curves, eliminating chronological anachronisms.
+* **Empirical Validation Grounding**:
+  * Marchetti & Nakicenovic (1979); Smil (2017).
+
+---
+
+### Entry 38: Continuous Lotka-Volterra SDT Political Instability Dynamics
+* **Date**: November 1, 2026
+* **Subsystem**: `TurchinGoldstoneSDTEngine.java`
+* **Canonical Literature**:
+  * Turchin, P. (2016). *Ages of Discord: A Structural-Demographic Analysis of American History*. Beresta Books.
+  * Turchin, P., & Nefedov, S. A. (2009). *Secular Cycles*. Princeton University Press.
+* **Problem in Previous Implementation**:
+  * Binary knife-edge thresholds `if (psi > 5.0)` and `if (psi > 8.0)` triggered sudden capital destruction and Gini resets.
+* **Calibrated Ether Formulation**:
+  $$\frac{dK}{dt} = - \kappa \cdot \frac{\Psi^2}{25.0 + \Psi^2} \cdot K$$
+  $$\frac{dG}{dt} = - \delta \cdot \frac{\Psi^3}{200.0 + \Psi^3} \cdot (G - 0.25)$$
+* **Root Cause & Justification**:
+  * Replaces discrete conditional branches with coupled non-linear differential equations where sociopolitical stress acts continuously on capital stocks and wealth distribution.
+* **Empirical Validation Grounding**:
+  * Turchin (2016); Turchin & Nefedov (2009); Seshat Global History Databank.
+
+---
+
+### Entry 39: Continuous Topographic Friction Conductance for Linguistic Diffusion
+* **Date**: November 1, 2026
+* **Subsystem**: `LanguageLinguisticEngine.java`
+* **Canonical Literature**:
+  * Cavalli-Sforza, L. L., & Feldman, M. W. (1981). *Cultural Transmission and Evolution: A Quantitative Approach*. Princeton University Press.
+  * Nichols, J. (1992). *Linguistic Diversity in Space and Time*. University of Chicago Press.
+* **Problem in Previous Implementation**:
+  * Binary threshold at `friction > 3.5` causing a 5-fold jump in language diffusion and assimilation probabilities.
+* **Calibrated Ether Formulation**:
+  $$P_{\text{assim}}(\sigma) = 0.02 + \frac{0.13}{1 + 0.6 \cdot \sigma^2}$$
+  $$P_{\text{diff}}(\sigma) = 0.04 + \frac{0.21}{1 + 0.4 \cdot \sigma^2}$$
+* **Root Cause & Justification**:
+  * Formulates linguistic spatial transmission as a continuous inverse-conductance physical decay law.
+* **Empirical Validation Grounding**:
+  * Cavalli-Sforza & Feldman (1981); Nichols (1992).

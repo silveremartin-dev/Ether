@@ -78,8 +78,10 @@ public class PhysicalEnergyGridEngine {
         if (tech >= 2.0) {
             double windEnergyW = cell.getEnergyWindOr(0.0);
             double millFactor = Math.min(3.0, Math.max(0.5, tech - 1.5) + Math.min(1.0, capitalPerCapita * 0.05));
-            double kineticHarness = (windEnergyW * 0.05 + 400.0 * millFactor) * (tech >= 4.5 ? 5.0 : 1.0);
-            double maxPerCapitaWindHydro = (tech < 3.0) ? 250.0 : ((tech < 4.0) ? 1200.0 : 2500.0);
+            // Continuous kinetic capture scaling (Smil 2017; Allen 2009):
+            double kineticTechMultiplier = 1.0 + 4.0 / (1.0 + Math.exp(-2.5 * (tech - 4.5)));
+            double kineticHarness = (windEnergyW * 0.05 + 400.0 * millFactor) * kineticTechMultiplier;
+            double maxPerCapitaWindHydro = 250.0 + 2250.0 / (1.0 + Math.exp(-1.8 * (tech - 3.8)));
             mechanicalPowerWatts += 120.0 * millFactor + Math.min(maxPerCapitaWindHydro, kineticHarness / Math.max(1.0, pop));
         }
 
@@ -145,28 +147,36 @@ public class PhysicalEnergyGridEngine {
             // Set active productive labor capacity (person-years equivalent, ~60% working-age labor participation)
             cell.setResourceWork(pop * 0.60);
 
-            // Deplete consumed geological fuels (Coal, Oil, Gas, Uranium, Rare Earths) according to power generation
-            if (tech >= 3.0) {
+            // Continuous Marchetti-Nakicenovic (1979) logistic energy transition shares:
+            double coalShare = (0.80 / (1.0 + Math.exp(-2.5 * (tech - 3.8)))) * (1.0 / (1.0 + Math.exp(1.5 * (tech - 6.0))));
+            double oilShare = (0.50 / (1.0 + Math.exp(-2.2 * (tech - 4.8)))) * (1.0 / (1.0 + Math.exp(1.2 * (tech - 7.0))));
+            double gasShare = 0.40 / (1.0 + Math.exp(-2.0 * (tech - 5.2)));
+            double nuclearShare = 0.25 / (1.0 + Math.exp(-2.5 * (tech - 6.0))); // Atomic era (1945+)
+            double reeShare = 0.20 / (1.0 + Math.exp(-2.5 * (tech - 6.5)));
+
+            if (coalShare > 0.001) {
                 double coalStock = cell.getResourceCoalOr(0.0);
-                double oilStock = cell.getResourceOilOr(0.0);
-                double gasStock = cell.getResourceGasOr(0.0);
-                // Specific energy consumption: 1 W-year = 3.1536e7 J ~ 1.3 kg Coal (at 24 MJ/kg)
-                double coalBurnTons = (pop * (powerPerCapitaW * 0.4) * 0.0013 * dtSafe) / 1000.0;
-                double oilBurnTons = (tech >= 3.5) ? (pop * (powerPerCapitaW * 0.3) * 0.0008 * dtSafe) / 1000.0 : 0.0;
-                double gasBurnTons = (tech >= 3.5) ? (pop * (powerPerCapitaW * 0.2) * 0.0006 * dtSafe) / 1000.0 : 0.0;
+                double coalBurnTons = (pop * (powerPerCapitaW * coalShare) * 0.0013 * dtSafe) / 1000.0;
                 cell.setResourceCoal(Math.max(0.0, coalStock - coalBurnTons));
+            }
+            if (oilShare > 0.001) {
+                double oilStock = cell.getResourceOilOr(0.0);
+                double oilBurnTons = (pop * (powerPerCapitaW * oilShare) * 0.0008 * dtSafe) / 1000.0;
                 cell.setResourceOil(Math.max(0.0, oilStock - oilBurnTons));
+            }
+            if (gasShare > 0.001) {
+                double gasStock = cell.getResourceGasOr(0.0);
+                double gasBurnTons = (pop * (powerPerCapitaW * gasShare) * 0.0006 * dtSafe) / 1000.0;
                 cell.setResourceGas(Math.max(0.0, gasStock - gasBurnTons));
             }
-            if (tech >= 4.0) {
+            if (nuclearShare > 0.001) {
                 double uStock = cell.getResourceUraniumOr(0.0);
-                // 1 kg U-235 provides ~8e13 J (fission), minimal mass burn rate
-                double uBurnTons = (pop * (powerPerCapitaW * 0.3) * 1e-8 * dtSafe) / 1000.0;
+                double uBurnTons = (pop * (powerPerCapitaW * nuclearShare) * 1e-8 * dtSafe) / 1000.0;
                 cell.setResourceUranium(Math.max(0.0, uStock - uBurnTons));
-
-                // Advanced electro-nuclear grid, wind turbines, and semiconductors consume critical rare earth elements
+            }
+            if (reeShare > 0.001) {
                 double reeStock = cell.getResourceRareEarthsOr(0.0);
-                double reeBurnTons = (pop * (powerPerCapitaW * 0.1) * 2e-7 * dtSafe) / 1000.0;
+                double reeBurnTons = (pop * (powerPerCapitaW * reeShare) * 2e-7 * dtSafe) / 1000.0;
                 cell.setResourceRareEarths(Math.max(0.0, reeStock - reeBurnTons));
             }
 

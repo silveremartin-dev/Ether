@@ -66,7 +66,9 @@ public class BiologicalDemographicsEngine {
             double agBiomass = cell.getBiomassAgricultureOr(0.0);
             double fishBiomass = cell.getBiomassFishOr(0.0);
             double tech = cell.getTechnologyLevelOr(1.0);
-            double edibleNaturalBiomassGJ = naturalBiomass * (tech < 1.5 ? 0.008 : 0.005) * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+            // Continuous dietary transition from wild foraging to agricultural staples (Kelly 2013; Bocquet-Appel 2011)
+            double foragingFraction = 0.005 + 0.003 / (1.0 + Math.exp(4.0 * (tech - 1.5)));
+            double edibleNaturalBiomassGJ = naturalBiomass * foragingFraction * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
             double edibleAgBiomassGJ = agBiomass * 0.70 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
             double edibleFishBiomassGJ = fishBiomass * 0.25 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
             double renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgBiomassGJ + edibleFishBiomassGJ;

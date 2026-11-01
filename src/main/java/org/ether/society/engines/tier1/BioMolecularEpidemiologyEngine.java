@@ -78,18 +78,22 @@ public class BioMolecularEpidemiologyEngine {
             double immunoglobulinSynthesisRate = Math.clamp(energyRatio, 0.05, 1.0);
 
             double curLife = cell.getLifespanOr(40.0);
-            double targetBaselineLife = (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() >= 1.5) ? 48.0 : 38.0;
+            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            // Continuous Preston curve (Preston 1975; Omran 1971 Epidemiological Transition):
+            // Baseline life expectancy transitions smoothly from forager/early agrarian baseline (~36-40 yrs)
+            // to modern clinical obstetrics and antibiotics (~80.5 yrs at T >= 7.0)
+            double targetBaselineLife = 32.0 + 50.0 / (1.0 + Math.exp(-0.85 * (tech - 4.0)));
 
             // Malnutrition-induced immune collapse
             if (immunoglobulinSynthesisRate < 0.40) {
                 immuneCollapseCells++;
-                double penalty = 1.5 * (0.40 - immunoglobulinSynthesisRate) * dtMonthlyRatio;
-                cell.setLifespan(Math.max(15.0, curLife - penalty));
-            } else if (immunoglobulinSynthesisRate >= 0.80 && curLife < targetBaselineLife) {
-                // Immune recovery and longevity restoration under adequate nutrition
-                double recovery = 0.5 * dtMonthlyRatio;
-                cell.setLifespan(Math.min(targetBaselineLife, curLife + recovery));
+
+
             }
+            double nutritionDelta = (immunoglobulinSynthesisRate - 0.55) * 1.5 * dtMonthlyRatio;
+            double baselineRestoration = 0.08 * (targetBaselineLife - curLife) * dtMonthlyRatio;
+            cell.setLifespan(Math.clamp(curLife + nutritionDelta + baselineRestoration, 15.0, targetBaselineLife));
+
 
             // --- Improvement 1: Endogenous Zoonotic Spillover ---
             double livestock = cell.getBiomassLivestockOr(0.0);

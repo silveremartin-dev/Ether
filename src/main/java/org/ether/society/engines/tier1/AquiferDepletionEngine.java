@@ -74,18 +74,23 @@ public class AquiferDepletionEngine {
             double naturalRecharge = (rain * 0.15) * dt;
             // Agricultural groundwater withdrawal depth in mm/year based on FAO Aquastat / Hoekstra (2012):
             // Withdrawal_mm = density_hab_km2 * (V_perCapita_m3 / 1000) * groundwater_fraction
-            double groundwaterFraction = (rain >= 800.0) ? 0.05 : (rain >= 400.0 ? 0.35 : 0.80);
+            // Continuous irrigation groundwater dependency fraction (Siebert et al. 2010; Wada et al. 2012):
+            // Arid regions depend heavily on groundwater (~80%), declining continuously as rainfall increases
+            double groundwaterFraction = 0.05 + 0.75 / (1.0 + Math.exp((rain - 550.0) / 120.0));
             double irrigationExtraction = (humanDensity * 0.80 * groundwaterFraction) * dt;
 
             double netAquiferChange = naturalRecharge - irrigationExtraction;
             double newAquifer = Math.clamp(aquifer + netAquiferChange, 0.0, 2000.0);
             cell.setAccessibleAquifer(newAquifer);
 
-            // Groundwater depletion only constrains crop yields in arid irrigation-dependent basins (rain < 350 mm/yr)
-            if (newAquifer < 100.0 && rain < 350.0 && pop > 300) {
-                depletedCounter.incrementAndGet();
+            // Continuous water stress on crop yield when aquifer is depleted in arid basins (Allen et al. 1998 FAO-56):
+            double aquiferStress = 1.0 / (1.0 + Math.exp((newAquifer - 80.0) / 25.0));
+            double aridityStress = 1.0 / (1.0 + Math.exp((rain - 400.0) / 60.0));
+            double irrigationStress = aquiferStress * aridityStress;
+            if (irrigationStress > 0.05 && pop > 0) {
+                if (irrigationStress > 0.5) depletedCounter.incrementAndGet();
                 double currentAgri = cell.getBiomassAgricultureOr(0.0);
-                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * Math.exp(-0.15 * dt)));
+                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * Math.exp(-0.15 * irrigationStress * dt)));
             }
         };
 

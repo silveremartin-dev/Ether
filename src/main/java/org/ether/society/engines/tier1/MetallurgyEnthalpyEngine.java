@@ -98,13 +98,16 @@ public class MetallurgyEnthalpyEngine {
                             + (cell.getResourcePreciousMetalOr(0.0)) * 2.0;
                     double tradeAccess = (cell.getChokePointScoreOr(0.0))
                             + (cell.getTransitTollRevenueOr(0.0));
-                    boolean hasTinSupply = (localPolymetallicTin > 1.0) || (tradeAccess > 0.01);
-                    // Late Bronze Age Collapse bottleneck: if trade is severed and no local tin exists,
-                    // bronze alloying fails and metallurgy reverts to brittle/soft unalloyed copper (Q = 0.18)!
-                    alloyQuality = hasTinSupply ? 0.65 : 0.18;
+                    // Continuous solid-solution strengthening of bronze via tin supply (Tylecote 1992):
+                    // Native copper baseline (Q = 0.18) smoothly strengthens to optimal bronze (Q = 0.65)
+                    double effectiveTinSupply = localPolymetallicTin + tradeAccess * 50.0;
+                    alloyQuality = 0.18 + 0.47 * (1.0 - Math.exp(-effectiveTinSupply / 1.5));
                 } else {
                     // Iron, Steel & Superalloy Ages (T >= 1538 C)
-                    enthalpyMJPerKg = (tech >= 3.2 && coalReserve > 1.0) ? 19.5 : IRON_SMELTING_ENTHALPY_MJ_PER_KG;
+                    // Continuous blast furnace enthalpy reduction via coking coal (Smil 2017; Allen 2009):
+                    double blastFurnaceTransition = 1.0 / (1.0 + Math.exp(-3.0 * (tech - 3.5)));
+                    double coalAvailability = coalReserve / (1.0 + coalReserve);
+                    enthalpyMJPerKg = IRON_SMELTING_ENTHALPY_MJ_PER_KG - (IRON_SMELTING_ENTHALPY_MJ_PER_KG - 19.5) * blastFurnaceTransition * coalAvailability;
                     alloyQuality = Math.clamp(0.4 + 0.2 * (tech - 2.5), 0.4, 1.2);
 
                     // Modern High-Tech Metallurgy (tech >= 3.8): Liebig bottleneck on Rare Earths & Precious Catalysts

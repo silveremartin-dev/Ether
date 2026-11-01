@@ -68,23 +68,24 @@ public class EcologicalDegradationEngine {
                 double miningActivity = (effectiveTech >= 3.0 && cell.getResourceMetal() != null)
                         ? Math.min(25.0, cell.getResourceMetal() * 0.02 * (effectiveTech / 4.0))
                         : 0.0;
-                double industrialEmission = (effectiveTech >= 3.0)
-                        ? pop * (0.01 + 0.06 * Math.pow(effectiveTech / 10.0, 1.5)) + miningActivity
-                        : Math.max(0.0, (pop - 500.0) * 0.002); // Pre-industrial pollution limited to dense urban sewage/smoke
+                // Continuous industrial emission curve (Smil 2017): gradual transition from organic smoke to fossil effluent
+                double mechanizationFactor = 0.002 + 0.068 / (1.0 + Math.exp(-2.2 * (effectiveTech - 4.2)));
+                double industrialEmission = pop * mechanizationFactor + miningActivity;
                 cell.setPollutionLevel(Math.min(1000.0, attenuatedPollution + industrialEmission * dtMonthlyRatio));
             } else {
                 cell.setPollutionLevel(attenuatedPollution);
             }
 
-            // Pollution impact on health, lifespan, and natural biomass (scaled by dtMonthlyRatio)
+            // Continuous concave dose-response curve for pollution health and environmental impacts (Pope et al. 2002; WHO):
             double pLevel = cell.getPollutionLevelOr(0.0);
-            if (pLevel > 100.0) {
+            if (pLevel > 0.0) {
+                double pollutionToxicity = pLevel / (150.0 + pLevel);
                 double curLifespan = cell.getLifespanOr(30.0);
                 double curFertility = cell.getFertilityOr(2.5);
                 double curBioNat = cell.getBiomassNaturalOr(0.0);
-                cell.setLifespan(Math.max(15.0, curLifespan - (pLevel / 200.0) * dtMonthlyRatio));
-                cell.setFertility(Math.max(0.5, curFertility - (pLevel / 400.0) * dtMonthlyRatio));
-                cell.setBiomassNatural(Math.max(0.0, curBioNat - (pLevel * 0.1 * dtMonthlyRatio)));
+                cell.setLifespan(Math.max(15.0, curLifespan - 1.2 * pollutionToxicity * dtMonthlyRatio));
+                cell.setFertility(Math.max(0.5, curFertility - 0.5 * pollutionToxicity * dtMonthlyRatio));
+                cell.setBiomassNatural(Math.max(0.0, curBioNat - 5.0 * pollutionToxicity * dtMonthlyRatio));
             }
 
             // 2. Overfishing & Marine Harvest Dynamics in Ocean & Coastal Biomes
@@ -111,10 +112,9 @@ public class EcologicalDegradationEngine {
                 }
 
                 double updatedStock = currentFishStock + regeneration + pelagicLarvalSeed - fishingHarvest;
-                // Impact of water pollution on marine stock
-                if (pLevel > 50.0) {
-                    updatedStock -= (pLevel - 50.0) * 0.1 * dtYears;
-                }
+                // Continuous ecotoxicological impact of water pollution on marine fish biomass (NRC 2005)
+                double ecotoxicity = (pLevel / (100.0 + pLevel)) * 8.0 * dtYears;
+                updatedStock = Math.max(0.0, updatedStock - ecotoxicity);
 
                 cell.setBiomassFish(Math.max(pelagicLarvalSeed, Math.min(maxStockCapacity, updatedStock)));
                 if (biome != Biome.BEACH) {

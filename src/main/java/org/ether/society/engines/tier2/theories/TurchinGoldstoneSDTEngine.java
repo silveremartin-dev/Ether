@@ -125,20 +125,19 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
 
             double psi = mmp * emp * sf;
 
-            // When PSI exceeds critical threshold (PSI >= 5.0), political unrest causes capital destruction
-            if (psi > 5.0) {
-                double unrestDamage = Math.min(capital * 0.15, (psi - 5.0) * 5.0 * deltaYears);
-                cell.setResourceCapital(Math.max(5.0, capital - unrestDamage));
+            // Continuous political instability capital attrition and friction dynamics (Turchin 2016 "Ages of Discord"):
+            // Destruction scales continuously with PSI^2 without artificial threshold jumps
+            double psiStress = (psi * psi) / (25.0 + psi * psi); // Smooth saturation normalized at PSI=5.0
+            double unrestDamage = capital * 0.08 * psiStress * deltaYears;
+            cell.setResourceCapital(Math.max(5.0, capital - unrestDamage));
 
-                // Increases local friction due to riots and civil breakdown
-                double friction = cell.getMovementFrictionOr(1.0);
-                cell.setMovementFriction(Math.min(10.0, friction + (0.1 * deltaYears)));
+            // Continuous local friction increase from civil breakdown
+            double friction = cell.getMovementFrictionOr(1.0);
+            cell.setMovementFriction(Math.min(10.0, friction + (0.15 * psiStress * deltaYears)));
 
-                // Post-crisis elite purge: structural breakdown purges excessive elite fortunes, resetting Gini
-                if (psi > 8.0) {
-                    cell.setGiniIndex(Math.max(0.30, gini - (0.02 * deltaYears)));
-                }
-            }
+            // Continuous elite overproduction fortune compression / Gini reset (Turchin & Nefedov 2009):
+            double purgeIntensity = Math.pow(psi, 3.0) / (200.0 + Math.pow(psi, 3.0));
+            cell.setGiniIndex(Math.max(0.25, gini - (0.04 * purgeIntensity * (gini - 0.25) * deltaYears)));
         }
     }
 }
