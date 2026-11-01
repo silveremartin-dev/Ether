@@ -1781,3 +1781,36 @@ However, the atmospheric moisture capacity of the cold, dense nitrogen column al
 
 
 
+
+---
+
+## 18. Continuous Dynamics, Geodesic Metric Invariance & Cultural Orthogonality (Calibration v1.0.0-beta.2)
+
+### 18.1 Continuous Starvation Hazard & Neolithic Demographic Transition
+Biological adult mortality and reproductive fecundity follow continuous $C^\infty$ sigmoidal functions of nutritional deficit and technology, eliminating discrete threshold kinks:
+$$\mu_{\text{starvation}} = \frac{0.35}{1.0 + \exp\left(-\frac{\Delta_{\text{food}} - 0.40}{0.08}\right)} + \frac{0.45}{1.0 + \exp\left(\frac{E_{\text{reserve}} - 15.0}{4.0}\right)}$$
+$$\text{CBR}(T) = (1 - w_{\text{agr}}(T)) \cdot \text{CBR}_{\text{forager}}(T) + w_{\text{agr}}(T) \cdot \text{CBR}_{\text{agrarian}}(T), \quad w_{\text{agr}}(T) = \frac{1.0}{1.0 + \exp(-4.0 (T - 1.5))}$$
+
+### 18.2 Geodesic Metric Invariance ($D_{\text{km}}$ via Haversine)
+Planar Cartesian approximations ($\sqrt{\Delta \phi^2 + \Delta \lambda^2}$) are replaced across all cliodynamic and economic routines by spherical Haversine geodesic metrics:
+$$D_{\text{km}}(\mathbf{x}_1, \mathbf{x}_2) = 2 R_{\text{Earth}} \arcsin \left( \sqrt{ \sin^2\left(\frac{\Delta \phi}{2}\right) + \cos \phi_1 \cos \phi_2 \sin^2\left(\frac{\Delta \lambda}{2}\right) } \right)$$
+Imperial administrative decay and bilateral trade gravitational potentials are scaled continuously against the characteristic imperial reach horizon $D_0 = 1,600.0\text{ km}$:
+$$\mathcal{P}_{\text{defection}} = 0.03 \cdot \text{softplus}_5(\Psi - \mathcal{C}_{\text{state}}) \cdot \frac{(D_{\text{km}} / 1600.0)^2}{1.0 + (D_{\text{km}} / 1600.0)^2} \cdot \Delta t$$
+$$V_{ij} = \frac{\sqrt{P_i \cdot P_j}}{1.0 + (D_{\text{km}} / 1600.0)^2}$$
+
+### 18.3 Continuous Catalytic Haber-Bosch Nitrogen Fixation
+Replaces discrete era jumps with an authentic thermodynamic power-coupled logistic curve for synthetic ammonia synthesis ($N_2 + 3H_2 \rightleftharpoons 2NH_3$ at $20\text{ MPa}$, $450^\circ\text{C}$, Fritz Haber 1909):
+$$S_{\text{HB}} = \frac{1.0}{1.0 + \exp(-3.0(T - 4.5))} \cdot \frac{1.0}{1.0 + \exp(-0.02(P_{\text{cap}} - 350.0\text{ W}))}$$
+$$N_{\text{synth}} = N_{\text{base}} + N_{\text{bio}} \cdot \frac{1.0}{1.0 + \exp(2.0(T - 3.8))} + N_{\text{ind}} \cdot S_{\text{HB}}$$
+
+### 18.4 Orthogonal 9-Dimensional Cultural Manifold
+Eliminates collinear collapse by anchoring each of the 9 cultural tensor dimensions to distinct, authentic physical, demographic, epidemiological, and institutional state variables:
+1. **Dim 0 (Isogloss Fragmentation)**: Topographic roughness and elevation gradient (Nichols 1992): $A_0 = 0.50 + 0.35 \tanh(z / 3500\text{ m})$.
+2. **Dim 1 (Kinship & Clan Structure)**: Social transition from extended kinship to nuclear contracts (Goody 1983; Henrich 2020): $A_1 = 0.20 + 0.60 / (1 + \exp(1.2(T - 3.2)))$.
+3. **Dim 2 (Rituals & Asabiyyah)**: Frontier ruggedness and sacred solidarity (Turchin 2003): $A_2 = 0.50 + 0.30 / (1 + \exp(-0.003(z - 1000\text{ m})))$.
+4. **Dim 3 (Sovereignty & State Integration)**: Fiscal and coercive state extraction capacity (Tilly 1990): $A_3 = 0.15 + 0.70 \cdot \frac{I_{\text{comp}}}{15.0 + I_{\text{comp}}}$.
+5. **Dim 4 (Technology & Materiality)**: Physical capital and energetic mastery: $A_4 = 0.10 + 0.80 \tanh(T / 5.5)$.
+6. **Dim 5 (Trade & Market Accessibility)**: Lowland and coastal accessibility plus agglomeration density (Krugman 1991): $A_5 = 0.25 + 0.40 / (1 + \exp(0.004(z - 600\text{ m}))) + 0.25 \tanh(P / 5000)$.
+7. **Dim 6 (Institutional Complexity)**: Seshat administrative hierarchy levels (Turchin et al. 2018): $A_6 = 0.10 + 0.80 \cdot \frac{I_{\text{comp}}}{25.0 + I_{\text{comp}}}$.
+8. **Dim 7 (Malthusian Ecological Footprint)**: Demographic load relative to natural biomass capacity (Boserup 1965): $A_7 = 0.15 + 0.75 \cdot \frac{M_{\text{load}}}{0.60 + M_{\text{load}}}$.
+9. **Dim 8 (Pathogen Memory & Sanitary Barrier)**: Epidemiological transition and life expectancy barrier (Omran 1971; Preston 1975): $A_8 = 0.20 + 0.65 / (1 + \exp(-0.12(L - 45\text{ yrs})))$.

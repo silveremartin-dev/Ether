@@ -275,14 +275,15 @@ public final class H3BufferAndEventCoordinator {
             if (cell == null) continue;
             double cLat = cell.getLatitudeOr(0.0);
             double cLng = cell.getLongitudeOr(0.0);
-            double distDeg = Math.hypot(cLat - evtLat, cLng - evtLng);
+            double distKm = org.ether.society.engines.tier1.ThermodynamicMigrationEngine.calculateHaversineDistance(cLat, cLng, evtLat, evtLng);
 
             String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
-            double impactRadius = (type.contains("pandemic") || type.contains("plague") || type.contains("epidemic"))
+            double impactRadiusDeg = (type.contains("pandemic") || type.contains("plague") || type.contains("epidemic"))
                     ? (evt.getName() != null && (evt.getName().toLowerCase().contains("grippe") || evt.getName().toLowerCase().contains("flu")) ? 180.0 : 85.0)
                     : Math.max(5.0, mag * 3.0);
-            if (distDeg <= impactRadius) {
-                double attenuation = 1.0 - (distDeg / impactRadius);
+            double impactRadiusKm = impactRadiusDeg * 111.32;
+            if (distKm <= impactRadiusKm) {
+                double attenuation = 1.0 - (distKm / impactRadiusKm);
                 int lost = 0;
                 int prevPop = cell.getPopulationOr(0);
 

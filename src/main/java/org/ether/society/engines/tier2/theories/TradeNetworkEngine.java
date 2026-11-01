@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.engines.tier1.ThermodynamicMigrationEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +87,10 @@ public class TradeNetworkEngine {
         for (H3Cell c : sortedCells) {
             boolean tooClose = false;
             for (H3Cell h : hubs) {
-                if (Math.hypot(c.getLatitude() - h.getLatitude(), c.getLongitude() - h.getLongitude()) < 1.0) {
+                double distKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
+                        c.getLatitudeOr(0.0), c.getLongitudeOr(0.0),
+                        h.getLatitudeOr(0.0), h.getLongitudeOr(0.0));
+                if (distKm < 110.0) {
                     tooClose = true;
                     break;
                 }
@@ -116,12 +120,14 @@ public class TradeNetworkEngine {
             for (int j = i + 1; j < hubs.size(); j++) {
                 H3Cell destination = hubs.get(j);
                 double popDest = destination.getPopulationOr(150);
-                double distDeg = Math.hypot(origin.getLatitude() - destination.getLatitude(),
-                        origin.getLongitude() - destination.getLongitude());
+                double distKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
+                        origin.getLatitudeOr(0.0), origin.getLongitudeOr(0.0),
+                        destination.getLatitudeOr(0.0), destination.getLongitudeOr(0.0));
 
-                double gravityPotential = Math.sqrt(popOrigin * popDest) / (1.0 + Math.pow(distDeg / 15.0, 2.0));
-                // Only establish active bilateral trade routes above economic profitability threshold
-                if (gravityPotential < 15.0 || distDeg > 60.0) continue;
+                // Characteristic economic gravity radius D_0 = 1600.0 km (Anderson 1979; Head & Mayer 2014)
+                double gravityPotential = Math.sqrt(popOrigin * popDest) / (1.0 + Math.pow(distKm / 1600.0, 2.0));
+                // Only establish active bilateral trade routes above economic profitability threshold and within maximum reach
+                if (gravityPotential < 15.0 || distKm > 6600.0) continue;
 
                 TradeRoute route = computeFrictionPath(origin, destination, cells, cellMap, techLevel);
                 if (route != null) {
@@ -182,8 +188,10 @@ public class TradeNetworkEngine {
             if (candidates.isEmpty()) {
                 for (H3Cell neighbor : cells) {
                     if (neighbor == current) continue;
-                    double stepDist = Math.hypot(neighbor.getLatitude() - current.getLatitude(), neighbor.getLongitude() - current.getLongitude());
-                    if (stepDist <= 6.0) {
+                    double stepDistKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
+                            neighbor.getLatitudeOr(0.0), neighbor.getLongitudeOr(0.0),
+                            current.getLatitudeOr(0.0), current.getLongitudeOr(0.0));
+                    if (stepDistKm <= 660.0) {
                         candidates.add(neighbor);
                     }
                 }
@@ -192,10 +200,13 @@ public class TradeNetworkEngine {
             for (H3Cell neighbor : candidates) {
                 if (visited.contains(neighbor)) continue;
 
-                double remainingDist = Math.hypot(end.getLatitude() - neighbor.getLatitude(), end.getLongitude() - neighbor.getLongitude());
+                double remainingDistKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
+                        end.getLatitudeOr(0.0), end.getLongitudeOr(0.0),
+                        neighbor.getLatitudeOr(0.0), neighbor.getLongitudeOr(0.0));
                 double friction = neighbor.calculateMovementFriction(techLevel);
 
-                double costScore = (friction * 2.0) + remainingDist;
+                // Geodesic distance normalized to degree equivalent (~111.32 km) for cost heuristic
+                double costScore = (friction * 2.0) + (remainingDistKm / 111.32);
                 if (costScore < bestScore) {
                     bestScore = costScore;
                     nextBest = neighbor;
@@ -209,7 +220,10 @@ public class TradeNetworkEngine {
             totalCost += current.getMovementFriction();
             steps++;
 
-            if (Math.hypot(current.getLatitude() - end.getLatitude(), current.getLongitude() - end.getLongitude()) < 1.5) {
+            double arrivalDistKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
+                    current.getLatitudeOr(0.0), current.getLongitudeOr(0.0),
+                    end.getLatitudeOr(0.0), end.getLongitudeOr(0.0));
+            if (arrivalDistKm < 165.0) {
                 path.add(end);
                 break;
             }

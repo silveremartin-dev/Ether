@@ -8,6 +8,7 @@ package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
+import org.ether.society.engines.tier1.ThermodynamicMigrationEngine;
 import org.ether.society.util.DeterministicPRNG;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,15 @@ public class CliodynamicsEngine {
 
     /**
      * Characteristic imperial administrative projection radius in degrees ($\sim 1,600$ km).
+     * @deprecated use {@link #IMPERIAL_CORE_HORIZON_KM} for geodesic accuracy.
      */
+    @Deprecated
     public static final double IMPERIAL_CORE_HORIZON_DEG = 15.0;
+
+    /**
+     * Characteristic imperial administrative projection radius in kilometers ($\sim 1,600$ km; Taagepera 1978; Turchin 2003).
+     */
+    public static final double IMPERIAL_CORE_HORIZON_KM = 1600.0;
 
     /**
      * Executes one tick of Cliodynamics update across all nations and territory cells with explicit time step.
@@ -75,27 +83,33 @@ public class CliodynamicsEngine {
                 }
             }
 
-            // 2. Continuous peripheral erosion / centrifugal border defection (Turchin 2003, Ch. 4):
-            // Distance-decay of imperial administrative reach: only when Instability exceeds State Capacity (Psi > C_state)
-            // peripheral border cells assert local autonomy smoothly over time.
-            if (psi > stateCap && nation.getTerritory().size() > 1) {
-                double excessStress = (psi - stateCap) * dtYears;
+            // 2. Continuous peripheral erosion / centrifugal border defection (Turchin 2003, Ch. 4; Taagepera 1978):
+            // Distance-decay of imperial administrative reach: continuous Softplus activation when Instability exceeds State Capacity (Psi > C_state)
+            // peripheral border cells assert local autonomy smoothly over time with geodesic Haversine distance.
+            if (nation.getTerritory().size() > 1) {
+                double stressDelta = psi - stateCap;
+                // Continuous C^1 Softplus activation: smooth transition around stress delta = 0
+                double excessStress = (stressDelta > -2.0)
+                        ? (Math.log(1.0 + Math.exp(Math.min(20.0, 5.0 * stressDelta))) / 5.0) * dtYears
+                        : 0.0;
                 H3Cell capital = nation.getCapital();
-                if (capital != null) {
+                if (excessStress > 0.0001 && capital != null) {
                     List<H3Cell> territory = new ArrayList<>(nation.getTerritory());
                     for (H3Cell cell : territory) {
                         if (cell == null || cell == capital) continue;
-                        double distDeg = Math.hypot(cell.getLatitude() - capital.getLatitude(), cell.getLongitude() - capital.getLongitude());
-                        double distanceRatio = distDeg / IMPERIAL_CORE_HORIZON_DEG;
-                        if (distanceRatio > 1.0) {
-                            // Annual defection rate scales continuously with distance and excess stress
-                            double defectionProb = 0.02 * excessStress * distanceRatio;
-                            if (DeterministicPRNG.nextDouble(cell.getH3Index(), 4321) < defectionProb) {
-                                nation.removeCell(cell);
-                                cell.setOwner(null);
-                                logger.info("Cliodynamic Peripheral Autonomy: Cell {} detached from polity '{}' (PSI: {}, StateCap: {}).",
-                                        cell.getH3Index(), nation.getName(), String.format("%.2f", psi), String.format("%.2f", stateCap));
-                            }
+                        double distKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
+                                cell.getLatitudeOr(0.0), cell.getLongitudeOr(0.0),
+                                capital.getLatitudeOr(0.0), capital.getLongitudeOr(0.0));
+                        double normDist = distKm / IMPERIAL_CORE_HORIZON_KM;
+                        // Continuous sigmoidal/Hill distance effect on administrative reach attenuation
+                        double distanceEffect = (normDist * normDist) / (1.0 + normDist * normDist);
+                        // Annual defection probability scales continuously with geodesic distance and excess stress
+                        double defectionProb = 0.03 * excessStress * distanceEffect;
+                        if (DeterministicPRNG.nextDouble(cell.getH3Index(), 4321) < defectionProb) {
+                            nation.removeCell(cell);
+                            cell.setOwner(null);
+                            logger.info("Cliodynamic Peripheral Autonomy: Cell {} detached from polity '{}' (PSI: {}, StateCap: {}).",
+                                    cell.getH3Index(), nation.getName(), String.format("%.2f", psi), String.format("%.2f", stateCap));
                         }
                     }
                 }

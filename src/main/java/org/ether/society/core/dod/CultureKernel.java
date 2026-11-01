@@ -247,31 +247,43 @@ public class CultureKernel {
      */
     private float getSpatialTensorAnchor(WorldBuffer world, int hexIdx, int dimension) {
         if (world == null || hexIdx < 0 || hexIdx >= world.getCapacity()) return 0.5f;
-        
+
         float tech = world.getTechnologyLevel() != null && hexIdx < world.getTechnologyLevel().length ? world.getTechnologyLevel()[hexIdx] : 1.0f;
         float elevation = world.getElevation() != null && hexIdx < world.getElevation().length ? world.getElevation()[hexIdx] : 0.0f;
-        
+        float instComp = world.getInstitutionalComplexity() != null && hexIdx < world.getInstitutionalComplexity().length ? world.getInstitutionalComplexity()[hexIdx] : 0.0f;
+        float humanPop = world.getBiomassHuman() != null && hexIdx < world.getBiomassHuman().length ? world.getBiomassHuman()[hexIdx] : 0.0f;
+        float lifespan = world.getLifespan() != null && hexIdx < world.getLifespan().length ? world.getLifespan()[hexIdx] : 35.0f;
+        float natBiomass = (world.getBiomassNatural() != null && hexIdx < world.getBiomassNatural().length ? world.getBiomassNatural()[hexIdx] : 0.0f)
+                + (world.getBiomassAgriculture() != null && hexIdx < world.getBiomassAgriculture().length ? world.getBiomassAgriculture()[hexIdx] : 0.0f);
+
         switch (dimension) {
-            case 0: // Isogloss (Linguistic variability driven by topographic elevation roughness)
-                return Math.max(0.0f, Math.min(1.0f, 0.5f + (elevation / 4000.0f) * 0.3f));
-            case 1: // Kinship & Clan structure
-                return Math.max(0.0f, Math.min(1.0f, 0.8f - (tech / 10.0f) * 0.4f));
-            case 2: // Rituals & Asabiyyah (Sacred social cohesion: highland ruggedness boost, Turchin 2003)
+            case 0: // Isogloss (Linguistic variability driven by topographic elevation roughness, Nichols 1992)
+                return Math.clamp(0.5f + (float) Math.tanh(elevation / 3500.0) * 0.35f, 0.0f, 1.0f);
+            case 1: // Kinship & Clan structure vs. Nuclear family (Henrich 2020; Goody 1983)
+                float clanDecay = (float) (1.0 / (1.0 + Math.exp(1.2 * (tech - 3.2))));
+                return Math.clamp(0.20f + 0.60f * clanDecay, 0.0f, 1.0f);
+            case 2: // Rituals & Asabiyyah (Sacred social cohesion / frontier solidarity, Turchin 2003)
                 float asabiyyahRuggedness = (float) (1.0 / (1.0 + Math.exp(-0.003 * (elevation - 1000.0f))));
-                return Math.max(0.0f, Math.min(1.0f, 0.6f + 0.2f * asabiyyahRuggedness));
-            case 3: // Sovereignty & Political alignment
-                return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.7f + 0.2f));
-            case 4: // Technology & Materiality
-                return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.9f + 0.1f));
-            case 5: // Trade networks (Coastal and lowland accessibility gradient, Krugman 1991)
+                return Math.clamp(0.50f + 0.30f * asabiyyahRuggedness, 0.0f, 1.0f);
+            case 3: // Sovereignty & State Integration (Tilly 1990; coercive centralization)
+                float stateCentralization = instComp / (15.0f + instComp);
+                return Math.clamp(0.15f + 0.70f * stateCentralization, 0.0f, 1.0f);
+            case 4: // Technology & Materiality (Solow 1956; physical capitalization)
+                return Math.clamp(0.10f + 0.80f * (float) Math.tanh(tech / 5.5), 0.0f, 1.0f);
+            case 5: // Trade networks & Market integration (Krugman 1991; lowland coastal accessibility and urban density)
                 float lowlandAccess = (float) (1.0 / (1.0 + Math.exp(0.004 * (elevation - 600.0f))));
-                return Math.max(0.0f, Math.min(1.0f, 0.3f + 0.4f * lowlandAccess));
-            case 6: // Institutional complexity (Seshat)
-                return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.8f + 0.1f));
-            case 7: // Ecological footprint / Malthusian stress
-                return Math.max(0.0f, Math.min(1.0f, (tech / 10.0f) * 0.5f + 0.2f));
-            case 8: // Pathogen memory & Sanitary barrier
-                return Math.max(0.0f, Math.min(1.0f, 0.5f));
+                float popDensityScale = (float) Math.tanh(humanPop / 5000.0f);
+                return Math.clamp(0.25f + 0.40f * lowlandAccess + 0.25f * popDensityScale, 0.0f, 1.0f);
+            case 6: // Institutional complexity (Seshat scale, Turchin et al. 2018; hierarchical administrative levels)
+                float seshatHierarchy = instComp / (25.0f + instComp);
+                return Math.clamp(0.10f + 0.80f * seshatHierarchy, 0.0f, 1.0f);
+            case 7: // Ecological footprint / Malthusian stress (Boserup 1965; human load vs biomass base)
+                float malthusianLoad = humanPop / (100.0f + natBiomass);
+                float footprintScale = malthusianLoad / (0.6f + malthusianLoad);
+                return Math.clamp(0.15f + 0.75f * footprintScale, 0.0f, 1.0f);
+            case 8: // Pathogen memory & Sanitary barrier (Omran 1971; Preston 1975; epidemiological transition)
+                float sanitaryTransition = (float) (1.0 / (1.0 + Math.exp(-0.12 * (lifespan - 45.0f))));
+                return Math.clamp(0.20f + 0.65f * sanitaryTransition, 0.0f, 1.0f);
             default:
                 // Neutral anchor for custom higher dimensions
                 return 0.5f;

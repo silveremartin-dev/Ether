@@ -319,9 +319,10 @@ public class DemographicKernel {
             // 5. Effective annual crude birth rate (Bocquet-Appel 2002, 2011 Neolithic Demographic Transition)
             // Pre-agricultural (tech < 1.5): nomadic foragers with 3.5-4.5 yrs lactation amenorrhea (CBR ~ 25-28 / 1000)
             // Neolithic/Agrarian (tech >= 1.5): sedentism & cereal weaning foods allow inter-birth intervals ~ 2 yrs (CBR ~ 38-46 / 1000)
-            float maxBiologicalFertility = (tech < 1.5f)
-                    ? (float) (0.024f + 0.004f * Math.tanh(tech))
-                    : (float) (0.0375f + 0.012f * Math.tanh((tech - 1.5f) / 1.5f));
+            float foragerFertility = (float) (0.024f + 0.004f * Math.tanh(tech));
+            float agrarianFertility = (float) (0.0375f + 0.012f * Math.tanh((tech - 1.5f) / 1.5f));
+            float neolithicTransitionWeight = (float) (1.0 / (1.0 + Math.exp(-4.0 * (tech - 1.5f))));
+            float maxBiologicalFertility = (1.0f - neolithicTransitionWeight) * foragerFertility + neolithicTransitionWeight * agrarianFertility;
             float fertilityModulation = fecundityAgeFactor * Math.min(1.0f, nutritionalFactor) * culturalFertilityMultiplier * densityFeedback;
 
             float birthRate = maxBiologicalFertility * Math.clamp(fertilityModulation, 0.0f, 1.25f);
@@ -338,7 +339,8 @@ public class DemographicKernel {
             // Pre-industrial societies (tech < 3.5) face high baseline infectious infant mortality (25-40%).
             // The epidemiological transition to modern low infant mortality (<3%) requires germ theory,
             // municipal chlorination/sewers, and sterile clinical obstetrics (tech >= 3.6).
-            float waterSecurity = world.getWaterResource()[hIdx] > 10.0f ? 1.0f : 0.3f;
+            float cellWater = world.getWaterResource() != null && hIdx < world.getWaterResource().length ? world.getWaterResource()[hIdx] : 10.0f;
+            float waterSecurity = 0.30f + 0.70f * (cellWater / (10.0f + cellWater));
             float modernSanitationTransition = (float) (1.0 / (1.0 + Math.exp(Math.max(-10.0, Math.min(10.0, (tech - 3.6f) * 2.2f)))));
             float baselineInfantMortality = 0.018f + 0.30f * modernSanitationTransition;
             float nutritionalStress = (1.5f - 0.5f * foodSatisfaction);
@@ -350,9 +352,7 @@ public class DemographicKernel {
             if (world.getLifespan() != null && world.getLifespan()[hIdx] > 5.0f) {
                 // Baseline pre-industrial life expectancy reference = 40.0 years
                 lifespanRatio = Math.clamp(40.0f / world.getLifespan()[hIdx], 0.40f, 2.50f);
-                if (lifespanRatio > 1.0f) {
-                    infantMortalityRate = Math.clamp(infantMortalityRate * (0.85f + 0.15f * lifespanRatio), 0.015f, 0.55f);
-                }
+                infantMortalityRate = Math.clamp(infantMortalityRate * (0.85f + 0.15f * lifespanRatio), 0.015f, 0.55f);
             }
 
             float survivingNewborns = newBirths * (1.0f - infantMortalityRate);
@@ -361,8 +361,9 @@ public class DemographicKernel {
             // 8. Adult and senescent mortality (Gompertz-Makeham hazard law: cellular senescence beta=0.08 + extrinsic Makeham hazard gamma)
             float gompertzSenescence = (float) (0.0001f * Math.exp(0.08f * ageYears));
             float acuteDeficit = Math.max(0.0f, 1.0f - foodSatisfaction);
-            float starvationMortality = (acuteDeficit > 0.3f ? 0.35f * (acuteDeficit - 0.3f) : 0.0f)
-                    + (energy[i] < 25.0f ? 0.45f * (1.0f - energy[i] / 25.0f) : 0.0f);
+            float deficitMortality = (float) (0.35 / (1.0 + Math.exp(-(acuteDeficit - 0.40f) / 0.08f)));
+            float energyMortality = (float) (0.45 / (1.0 + Math.exp((energy[i] - 15.0f) / 4.0f)));
+            float starvationMortality = deficitMortality + energyMortality;
             float baselineHazard = 0.010f * lifespanRatio;
             float adultHazardRate = Math.max(0.008f, baselineHazard + gompertzSenescence + starvationMortality);
             

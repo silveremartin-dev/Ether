@@ -8,6 +8,7 @@ package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
+import org.ether.society.engines.tier1.ThermodynamicMigrationEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,8 +126,8 @@ public class WarDiplomacyEngine {
             // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell c2 : n2.getTerritory()) {
                 if (c2 == null) continue;
-                double dist = Math.hypot(c1.getLatitude() - c2.getLatitude(), c1.getLongitude() - c2.getLongitude());
-                if (dist < 2.5) {
+                double distKm = ThermodynamicMigrationEngine.calculateHaversineDistance(c1.getLatitudeOr(0.0), c1.getLongitudeOr(0.0), c2.getLatitudeOr(0.0), c2.getLongitudeOr(0.0));
+                if (distKm <= 150.0) {
                     totalFriction += calculateBoundaryFriction(c1, c2);
                     count++;
                 }

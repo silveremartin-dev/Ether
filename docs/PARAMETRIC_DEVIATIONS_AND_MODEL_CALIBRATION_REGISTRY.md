@@ -739,3 +739,83 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Formulates linguistic spatial transmission as a continuous inverse-conductance physical decay law.
 * **Empirical Validation Grounding**:
   * Cavalli-Sforza & Feldman (1981); Nichols (1992).
+
+---
+
+### Entry 40: Geodesic Metric Invariance & Elimination of Planar Coordinate Distortions
+* **Date**: November 1, 2026
+* **Subsystem**: `CliodynamicsEngine.java`, `WarDiplomacyEngine.java`, `TradeNetworkEngine.java`, `H3BufferAndEventCoordinator.java`
+* **Canonical Literature**:
+  * Vincenty, T. (1975). *Direct and inverse solutions of geodesics on the ellipsoid with application of nested equations*. Survey Review, 23(176), 88-93.
+  * Sinnott, R. W. (1984). *Virtues of the Haversine*. Sky and Telescope, 68(2), 158.
+  * Taagepera, R. (1978). *Size and duration of empires: Growth-decline curves, 600 B.C. to 600 A.D.* Social Science Research, 7(2), 180-196.
+  * Anderson, J. E. (1979). *A theoretical foundation for the gravity equation*. American Economic Review, 69(1), 106-116.
+* **Problem in Previous Implementation**:
+  * Planar Euclidean approximations `Math.hypot(lat1 - lat2, lng1 - lng2)` in degrees produced distortions of over 200% at high latitudes ($60^\circ$N), causing imperial reach, border battles, trade corridors, and catastrophe shockwaves to skew elliptically.
+* **Calibrated Ether Formulation**:
+  $$D_{\text{km}}(\phi_1, \lambda_1, \phi_2, \lambda_2) = 2 R_{\text{Earth}} \arcsin \left( \sqrt{ \sin^2\left(\frac{\Delta \phi}{2}\right) + \cos \phi_1 \cos \phi_2 \sin^2\left(\frac{\Delta \lambda}{2}\right) } \right)$$
+  $$\text{Cliodynamic reach decay: } \quad \text{Effect}(D) = \frac{(D / 1600.0)^2}{1.0 + (D / 1600.0)^2}$$
+  $$\text{Trade gravity potential: } \quad V_{ij} = \frac{\sqrt{P_i P_j}}{1.0 + (D_{ij} / 1600.0)^2}$$
+* **Root Cause & Justification**:
+  * Enforces spherical geodesic metric invariance across all latitudes and eliminates artificial polar distortion in spatial mechanics.
+* **Empirical Validation Grounding**:
+  * Taagepera (1978); Anderson (1979); Seshat Global History Databank.
+
+---
+
+### Entry 41: Continuous Starvation Hazard & Neolithic Demographic Transition
+* **Date**: November 1, 2026
+* **Subsystem**: `DemographicKernel.java`
+* **Canonical Literature**:
+  * Keys, A., et al. (1950). *The Biology of Human Starvation*. University of Minnesota Press.
+  * Fogel, R. W. (1994). *Economic growth, the body, and the duration of life*. Nobel Lecture, Journal of Economic Literature.
+  * Bocquet-Appel, J. P. (2002). *Paleoanthropological traces of a Neolithic demographic transition*. Current Anthropology, 43(4), 637-650.
+* **Problem in Previous Implementation**:
+  * ReLU hinge thresholds at `acuteDeficit > 0.3f` and `energy < 25.0f` caused derivative discontinuities in adult mortality. Binary step `tech < 1.5f` caused an instantaneous 35% jump in CBR between foraging and farming.
+* **Calibrated Ether Formulation**:
+  $$\mu_{\text{starv}} = \frac{0.35}{1 + \exp\left(-\frac{\text{acuteDeficit} - 0.40}{0.08}\right)} + \frac{0.45}{1 + \exp\left(\frac{E - 15.0}{4.0}\right)}$$
+  $$w_{\text{agr}}(T) = \frac{1}{1 + \exp(-4.0 (T - 1.5))}, \quad \text{CBR}_{\text{bio}} = (1 - w_{\text{agr}}) \cdot \text{CBR}_{\text{forager}} + w_{\text{agr}} \cdot \text{CBR}_{\text{agrarian}}$$
+* **Root Cause & Justification**:
+  * Replaces piecewise derivative kinks with smooth $C^\infty$ sigmoidal dose-response curves derived from clinical starvation studies and gradual Neolithic sedentism diffusion.
+* **Empirical Validation Grounding**:
+  * Keys et al. (1950); Fogel (1994); Bocquet-Appel (2002).
+
+---
+
+### Entry 42: Continuous Haber-Bosch Catalytic Fixation & Neolithic Arable Transition
+* **Date**: November 1, 2026
+* **Subsystem**: `SoilNutrientNPKEngine.java`
+* **Canonical Literature**:
+  * Smil, V. (2001). *Enriching the Earth: Fritz Haber, Carl Bosch, and the Transformation of World Food Production*. MIT Press.
+  * Liebig, J. von (1840). *Organic Chemistry in its Applications to Agriculture and Physiology*.
+* **Problem in Previous Implementation**:
+  * Haber-Bosch industrial synthesis had a knife-edge threshold at `tech >= 3.5 && power >= 350.0`, prematurely introducing modern high-pressure synthesis into the Renaissance and creating step discontinuities.
+* **Calibrated Ether Formulation**:
+  $$S_{\text{HB}} = \frac{1}{1 + \exp(-3.0 (T - 4.5))} \cdot \frac{1}{1 + \exp(-0.02 (P_{\text{cap}} - P_0))}$$
+  $$N_{\text{synth}} = N_{\text{base}} + N_{\text{bio}} \cdot \frac{1}{1 + \exp(2.0(T - 3.8))} + N_{\text{ind}} \cdot S_{\text{HB}}$$
+* **Root Cause & Justification**:
+  * Anchors the Haber-Bosch transition to its historical Industrial Revolution epoch ($T \ge 4.5$, 1909-1913 CE) with continuous logistic power coupling, while smoothly conserving pre-industrial legume rotations.
+* **Empirical Validation Grounding**:
+  * Smil (2001); FAO World Fertilizer Statistics.
+
+---
+
+### Entry 43: Orthogonal Cultural Tensor Dynamics & Multidimensional Decoupling
+* **Date**: November 1, 2026
+* **Subsystem**: `CultureKernel.java`
+* **Canonical Literature**:
+  * Turchin, P., et al. (2018). *Quantitative analysis of world history: The Seshat project*. Cliodynamics, 9(2).
+  * Tilly, C. (1990). *Coercion, Capital, and European States, AD 990-1992*. Blackwell.
+  * Henrich, J. (2020). *The WEIRDest People in the World: How the West Became Psychologically Peculiar and Particularly Prosperous*. Farrar, Straus and Giroux.
+  * Omran, A. R. (1971). *The Epidemiological Transition*. Milbank Memorial Fund Quarterly, 49(4), 509-538.
+* **Problem in Previous Implementation**:
+  * Cultural dimensions 3, 4, 6, and 7 were all parameterized as identical linear functions of $(T / 10.0)$, collapsing the 9-dimensional cultural manifold into a collinear subspace ($r = 1.0$), while dimension 8 was frozen to $0.5$.
+* **Calibrated Ether Formulation**:
+  $$\text{Dim 3 (State Integration): } \quad A_3 = 0.15 + 0.70 \cdot \frac{I_{\text{comp}}}{15.0 + I_{\text{comp}}}$$
+  $$\text{Dim 6 (Seshat Hierarchy): } \quad A_6 = 0.10 + 0.80 \cdot \frac{I_{\text{comp}}}{25.0 + I_{\text{comp}}}$$
+  $$\text{Dim 7 (Malthusian Footprint): } \quad A_7 = 0.15 + 0.75 \cdot \frac{M_{\text{load}}}{0.60 + M_{\text{load}}}, \quad M_{\text{load}} = \frac{P_{\text{human}}}{100 + B_{\text{nat}}}$$
+  $$\text{Dim 8 (Sanitary Barrier): } \quad A_8 = 0.20 + 0.65 \cdot \frac{1}{1 + \exp(-0.12 (L_{\text{life}} - 45.0))}$$
+* **Root Cause & Justification**:
+  * Decouples the 9 cultural tensor axes onto distinct physical, demographic, epidemiological, and institutional observables, restoring full rank and semantic orthogonality to the cultural manifold.
+* **Empirical Validation Grounding**:
+  * Seshat Global History Databank; Tilly (1990); Henrich (2020); Omran (1971).

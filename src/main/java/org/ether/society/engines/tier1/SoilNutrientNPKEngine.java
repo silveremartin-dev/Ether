@@ -115,11 +115,17 @@ public class SoilNutrientNPKEngine {
             cell.setResourceMetal(Math.max(0.0, metalOre - totalMinedOre));
 
             // 2. Biological & Haber-Bosch Industrial Nitrogen Fixation (Smil 2001, Enriching the Earth)
-            double synthesizedN = (tech < 3.5) ? (nNorm - soilNBase) : baselineN;
-            if (tech >= 3.5 && powerPerCapita >= HABER_BOSCH_POWER_WATTS) {
+            // Pre-industrial biological fixation (rhizobia legumes / crop rotations) smoothly transitions to
+            // catalytic high-pressure Haber-Bosch synthesis (N2 + 3H2 <=> 2NH3 at 20 MPa, 450 C, Fritz Haber 1909)
+            // requiring modern industrial technology (T >= 4.5) and electrical/mechanical power capacity.
+            double bioFixationN = Math.max(0.0, nNorm - soilNBase) * (1.0 / (1.0 + Math.exp(2.0 * (tech - 3.8))));
+            double haberBoschTechFactor = 1.0 / (1.0 + Math.exp(-3.0 * (tech - 4.5)));
+            double haberBoschPowerFactor = 1.0 / (1.0 + Math.exp(-0.02 * (powerPerCapita - HABER_BOSCH_POWER_WATTS)));
+            double haberBoschShare = haberBoschTechFactor * haberBoschPowerFactor;
+            if (haberBoschShare > 0.5) {
                 haberBoschCounter.incrementAndGet();
-                synthesizedN += industrialBonusN;
             }
+            double synthesizedN = baselineN + bioFixationN + (industrialBonusN * haberBoschShare);
 
             // 3. Liebig's Law of the Minimum Yield Bound
             double effectiveSoilN = soilNBase + synthesizedN;
@@ -135,11 +141,10 @@ public class SoilNutrientNPKEngine {
                     ? (25.0 * areaScale * arableBiomeFactor)
                     : Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor);
             double maxCellBiomass = techLandCeiling;
-            double potentialBiomass = (tech >= 1.5)
-                    ? ((planarCellAreaKm2 < 5.0)
-                        ? (25.0 * areaScale * arableBiomeFactor)
-                        : Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass))
-                    : 0.0;
+            double neolithicTransition = 1.0 / (1.0 + Math.exp(-4.0 * (tech - 1.5)));
+            double potentialBiomass = neolithicTransition * ((planarCellAreaKm2 < 5.0)
+                    ? (25.0 * areaScale * arableBiomeFactor)
+                    : Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass));
             if (baseBiomass <= 0.0) {
                 baseBiomass = potentialBiomass;
             }
