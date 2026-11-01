@@ -322,7 +322,10 @@ public class SimulationPipeline {
         }
 
         // Pass 1: Planetary & Atmospheric Fused Pass
-        executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, avgTech);
+        double currentCo2Ppm = (engine != null && engine.getMetricsAggregator() != null)
+                ? engine.getMetricsAggregator().getAtmosphericCO2Ppm()
+                : 280.0;
+        executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, avgTech, currentCo2Ppm);
 
 
         // Pass 2: Terrestrial Soil, Water & Ecosystem Fused Pass
@@ -355,7 +358,7 @@ public class SimulationPipeline {
                                              AgentBuffer agentBuffer,
                                              double dtYears, double dtMonthly,
                                              SimulationPerformanceConfig perfConfig,
-                                             double avgTech) {
+                                             double avgTech, double co2Ppm) {
         RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(allCells);
         AtmosphericOxygenEngine.processAtmosphericOxygen(allCells, 0.21, 1.0);
         AlbedoClimateEngine.processAlbedoFeedback(allCells, dtYears);
@@ -367,7 +370,7 @@ public class SimulationPipeline {
         PhysicalLawEngine.applyPhysicalLaws(allCells, dtMonthly);
         GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(allCells, dtMonthly);
         ThermohalineOceanEngine.processThermohalineCirculation(allCells, 0.0);
-        OceanAcidificationEngine.processOceanAcidification(allCells, 415.0);
+        OceanAcidificationEngine.processOceanAcidification(allCells, co2Ppm);
 
         ThermodynamicMigrationEngine.processThermodynamicMigration(allCells, perfConfig, worldBuffer, agentBuffer);
     }

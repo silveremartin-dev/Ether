@@ -75,7 +75,8 @@ public class UrbanKernel {
 
                 float netAccumulation = (grossInvestment - actualMaintenanceCost) * dtInYears;
                 // Bound annual capital growth to historical macroscopic macro-frontier (+2.0%/yr max, Maddison 2020)
-                float maxGrowthRate = 0.020f * capital[i] * dtInYears;
+                float warDrag = (complexity[i] > 3.8f) ? Math.min(0.016f, 0.008f * (complexity[i] - 3.8f)) : 0.0f;
+                float maxGrowthRate = Math.max(0.004f, 0.020f - warDrag) * capital[i] * dtInYears;
                 if (netAccumulation > maxGrowthRate) {
                     netAccumulation = maxGrowthRate;
                 }

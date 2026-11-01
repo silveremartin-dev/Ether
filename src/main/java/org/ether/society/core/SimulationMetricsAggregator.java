@@ -785,7 +785,8 @@ public class SimulationMetricsAggregator {
                 if (cellTech > 3.40 && kpc > 500.0) {
                     double techSurplus = Math.tanh((cellTech - 3.40) * 0.35);
                     double capSurplus = Math.tanh((kpc - 500.0) / 450.0);
-                    industrialUrbanShare = 0.85 * techSurplus * capSurplus * (0.15 + 0.85 * Math.tanh(Math.max(0.0, cellTech - 3.40) * 0.15));
+                    double logisticAdoption = 1.0 / (1.0 + Math.exp(-0.70 * (cellTech - 6.80)));
+                    industrialUrbanShare = 0.85 * techSurplus * capSurplus * logisticAdoption;
                 }
 
                 double cellUrbanFraction = Math.clamp(agrarianUrbanShare + industrialUrbanShare, 0.0, 0.95);
@@ -830,7 +831,8 @@ public class SimulationMetricsAggregator {
             if (cellTech > 3.40 && kpc > 500.0) {
                 double techSurplus = Math.tanh((cellTech - 3.40) * 0.35);
                 double capSurplus = Math.tanh((kpc - 500.0) / 450.0);
-                industrialUrbanShare = 0.85 * techSurplus * capSurplus * (0.15 + 0.85 * Math.tanh(Math.max(0.0, cellTech - 3.40) * 0.15));
+                double logisticAdoption = 1.0 / (1.0 + Math.exp(-0.70 * (cellTech - 6.80)));
+                    industrialUrbanShare = 0.85 * techSurplus * capSurplus * logisticAdoption;
             }
 
             double cellUrbanFraction = Math.clamp(agrarianUrbanShare + industrialUrbanShare, 0.0, 0.95);
@@ -873,7 +875,7 @@ public class SimulationMetricsAggregator {
                 if (cellTech <= 1.60 || cellKpc <= 35.0) continue;
 
                 // 1. Pre-industrial scribal, clerical & commercial manuscript literacy (ceiling ~ 4.80%, Goody 1986; Buringh & van Zanden 2009)
-                double scribalLit = 4.20 * Math.tanh((cellTech - 1.60) * 1.50) * Math.tanh((cellKpc - 35.0) / 180.0);
+                double scribalLit = 6.80 * Math.tanh((cellTech - 1.60) * 1.20) * Math.tanh((cellKpc - 35.0) / 220.0);
 
                 // 2. Printing press & industrial mass schooling diffusion (Buringh & van Zanden 2009)
                 double printLit = (cellTech > 2.80 && cellKpc > 380.0)
@@ -906,7 +908,7 @@ public class SimulationMetricsAggregator {
             if (cellTech <= 1.60 || cellKpc <= 35.0) continue;
 
             // 1. Pre-industrial scribal, clerical & commercial manuscript literacy (ceiling ~ 4.80%, Goody 1986; Buringh & van Zanden 2009)
-            double scribalLit = 4.20 * Math.tanh((cellTech - 1.60) * 1.50) * Math.tanh((cellKpc - 35.0) / 180.0);
+            double scribalLit = 6.80 * Math.tanh((cellTech - 1.60) * 1.20) * Math.tanh((cellKpc - 35.0) / 220.0);
 
             // 2. Printing press & industrial mass schooling diffusion (Buringh & van Zanden 2009)
             double printLit = (cellTech > 2.80 && cellKpc > 380.0)

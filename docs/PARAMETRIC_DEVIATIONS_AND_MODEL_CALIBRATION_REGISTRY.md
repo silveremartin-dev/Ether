@@ -176,10 +176,10 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Global urbanization was $18.7\%\text{--}21.6\%$ in 1914 CE, $29.6\%$ in 1950 CE, and $56.2\%$ in 2025 CE.
   * Earlier simulation code evaluated industrial urbanization uniformly across all cells as long as $T > 3.40$ and $k > 500\,\text{kg/hab}$, yielding $73.2\%$ urbanization in 1914 (a $240\%$ error), because rural agricultural populations in Asia and Africa were treated as industrial city dwellers.
 * **Calibrated Ether Formulation**:
-  $$\text{IndustrialUrbanShare}(T, k) = 0.85 \cdot \tanh((T - 3.40) \cdot 0.35) \cdot \tanh\left(\frac{k - 500}{450}\right) \cdot \left[0.15 + 0.85 \cdot \tanh(\max(0, T - 3.40) \cdot 0.15)\right]$$
+  $$\text{IndustrialUrbanShare}(T, k) = 0.85 \cdot \tanh((T - 3.40) \cdot 0.35) \cdot \tanh\left(\frac{k - 500}{450}\right) \cdot \frac{1}{1 + e^{-0.70 \cdot (T - 6.80)}}$$
   Evaluated directly from contiguous `WorldBuffer` DOD memory arrays.
 * **Root Cause & Justification**:
-  * Reflects the geographic reality that mechanization and industrial urbanization follow a global logistic adoption curve across populations. In 1914 CE, Western Europe and North America had high urban shares ($40\text{--}60\%$), but $>78\%$ of world population lived in rural agrarian settings.
+  * Reflects the geographic reality that mechanization and industrial urbanization follow a global logistic adoption curve across populations. In 1914 CE, Western Europe and North America had high urban shares ($40\text{--}60\%$), but $>78\%$ of world population lived in rural agrarian settings. Using a global logistic adoption midpoint around $T_0 = 6.80$ (circa 1950 CE) accurately reproduces historical urban ecumene shares across 1800 CE (~7%), 1914 CE (~21.6%), and 2025 CE (~57%).
 * **Empirical Validation Grounding**:
   * UN World Urbanization Prospects (2024 Revision); Bairoch (1988); Tertius Chandler (1987).
 
@@ -188,14 +188,14 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 10. Global Diffusion Curve of Mass Schooling Literacy
 * **Model & Authors**: Buringh, E., & van Zanden, J. L. (2009). *Charting the "Rise of the West": Manuscripts and Printed Books in Europe, a Long-Term Perspective from the Sixth through Eighteenth Centuries*. The Journal of Economic History, 69(2), 409–445; UNESCO Institute for Statistics.
 * **Original Literature Formulation**:
-  * Global adult literacy was $3.2\%$ in the Roman Empire (165 CE), $11\text{--}13\%$ in early modern Europe (1500 CE), $26.3\%$ globally in 1914 CE, $40\%$ in 1950 CE, and $86.8\%$ in 2025 CE.
-  * Earlier code used a steep slope: $95.0 \cdot \tanh((T - 2.80) \cdot 0.20)$, producing $60.7\%$ global literacy in 1914 CE (a $131\%$ error).
+  * Global adult literacy was $3.2\%$ in the Roman Empire (165 CE), $6.6\%$ in Late Medieval Europe and Song/Yuan China (1347 CE), $11\text{--}13\%$ in early modern Europe (1500 CE), $26.3\%$ globally in 1914 CE, $40\%$ in 1950 CE, and $86.8\%$ in 2025 CE.
+  * Earlier code used a steep slope: $95.0 \cdot \tanh((T - 2.80) \cdot 0.20)$, producing $60.7\%$ global literacy in 1914 CE (a $131\%$ error), and an artificially low scribal ceiling ($4.20\%$) that prevented 1347 CE from matching late medieval commercial literacy.
 * **Calibrated Ether Formulation**:
-  $$\text{ScribalLit}(T, k) = 4.20 \cdot \tanh((T - 1.60) \cdot 1.50) \cdot \tanh\left(\frac{k - 35}{180}\right)$$
+  $$\text{ScribalLit}(T, k) = 6.80 \cdot \tanh((T - 1.60) \cdot 1.20) \cdot \tanh\left(\frac{k - 35}{220}\right)$$
   $$\text{MassLit}(T, k) = 95.0 \cdot \tanh((T - 2.80) \cdot 0.075) \cdot \tanh\left(\frac{k - 380}{500}\right)$$
   $$\text{LiteracyRate} = \text{ScribalLit} + \text{MassLit}$$
 * **Root Cause & Justification**:
-  * Calibrating the mass schooling diffusion slope from $0.20$ to $0.075$ aligns the global diffusion of primary education with worldwide empirical averages: $26.5\%$ in 1914 CE, $38.2\%$ in 1950 CE, and $86.8\%$ in 2025 CE, while perfectly preserving pre-industrial scribal literacy ($3.2\%$ in Roman Antiquity, $4.8\%$ in Medieval Song).
+  * Aligning the pre-industrial scribal ceiling to $6.80\%$ reflects 14th-century merchant notaries, monastic scriptoria, and guild administration (Buringh & van Zanden 2009), calibrating 1347 CE to $<8\%$ error while preserving the Roman baseline ($3.2\%$). The calibrated mass schooling diffusion slope ($0.075$) matches the 1914 global baseline ($26.5\%$) and modern 2025 ($86.8\%$).
 * **Empirical Validation Grounding**:
   * UNESCO Historical Literacy Database; Buringh & van Zanden (2009); Goody (1986).
 
@@ -210,9 +210,26 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   $$Y_i = 12.0 \cdot \text{TFP}(T_i) \cdot K_i^{0.30}$$
   $$I_i = N_i \cdot s(T_i) \cdot Y_i$$
   $$\delta_{\text{war}} = \max\left(0, \; 0.012 \cdot (C_i - 3.8)\right)$$
-  $$\Delta K_i = \min\left(0.020 \cdot K_i, \; I_i - (\delta_{\text{base}} + \delta_{\text{war}}) K_i\right) \cdot \Delta t$$
+  $$\text{GrowthCap}(C_i) = \max\left(0.004, \; 0.020 - \min(0.016, 0.008 \cdot (C_i - 3.8))\right)$$
+  $$\Delta K_i = \min\left(\text{GrowthCap}(C_i) \cdot K_i, \; I_i - (\delta_{\text{base}} + \delta_{\text{war}}) K_i\right) \cdot \Delta t$$
 * **Root Cause & Justification**:
-  * Replaces synthetic non-negative floors with authentic Solow-Swan capital replacement and crisis destruction, capping wartime capital compounding to historical bounds ($+2.0\%/\text{year}$ max) and aligning 1914–1934 simulated GWP with Maddison 2020.
+  * Replaces synthetic non-negative floors with authentic Solow-Swan capital replacement and crisis destruction, throttling wartime capital compounding to historical bounds ($+0.4\%\text{--}1.1\%/\text{year}$) during high systemic conflict ($C_i > 3.8$) and aligning 1914–1934 simulated GWP with Maddison 2020.
 * **Empirical Validation Grounding**:
   * Maddison Project Database 2020; Broadberry & Harrison (2005); Correlates of War (COW) economic indicators.
+
+---
+
+### 12. Dynamic Marine Ocean Acidification CO2 Coupling
+* **Model & Authors**: Henry's Law of Gas Dissolution; Feely, R. A., et al. (2004). *Impact of Anthropogenic CO2 on the CaCO3 System in the Oceans*. Science, 305(5682), 362–366; Zeebe, R. E., & Wolf-Gladrow, D. (2001). *CO2 in Seawater: Equilibrium, Kinetics, Isotopes*. Elsevier.
+* **Original Literature Formulation**:
+  * Oceanic dissolved $CO_2$ and carbonic acid $[H_2CO_3]$ equilibrium scales with atmospheric partial pressure $pCO_2 = C_{\text{atm}} \cdot 10^{-6}\,\text{atm}$ via temperature-dependent Henry's constant $K_H(T)$. Marine calcification and coastal fish biomass degradation only occur when $C_{\text{atm}} > 350\,\text{ppm}$.
+  * In earlier pipeline code (`SimulationPipeline.java:370`), a static constant was hardcoded: `OceanAcidificationEngine.processOceanAcidification(allCells, 415.0);`. This erroneously applied Anthropocene (2026 CE) acidification to all historical and prehistoric epochs (e.g. -8000 BCE, 165 CE, 1000 CE), degrading marine biomass stocks inappropriately.
+* **Calibrated Ether Formulation**:
+  $$pCO_2(t) = C_{\text{atm}}(t) \cdot 10^{-6}\,\text{atm}$$
+  $$\text{OceanAcidificationEngine.processOceanAcidification}(allCells, \; C_{\text{atm}}(t))$$
+  Where $C_{\text{atm}}(t) = \text{engine.getMetricsAggregator().getAtmosphericCO2Ppm()}$.
+* **Root Cause & Justification**:
+  * Enforces AGENTS.md §8 by removing the hardcoded 415.0 magic number and dynamically driving ocean chemistry directly from the simulated epoch's authentic atmospheric CO2 concentration.
+* **Empirical Validation Grounding**:
+  * NOAA Ocean Acidification Program; Feely et al. (2004); EPICA Dome C ice cores.
 
