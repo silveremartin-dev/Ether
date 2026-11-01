@@ -44,21 +44,26 @@ public class ThermodynamicWarfareEngine {
             double tech = cell.getTechnologyLevelOr(0.0);
             double capital = cell.getResourceCapitalOr(0.0);
 
-            // Material Yield Strength (Ïƒ_yield in MPa): Wood (20 MPa) -> Bronze (200 MPa) -> Steel (500 MPa) -> Composites (1200+ MPa)
-            double materialYieldStrengthMPa = Math.clamp(20.0 + tech * 15.0, 20.0, 2000.0);
+            // Material Yield Strength (sigma_yield in MPa): Wood/Earth (20-40 MPa) -> Bronze/Iron (100-300 MPa) -> Steel/Composites (500-1500 MPa)
+            double normTech = Math.min(10.0, Math.max(0.0, tech));
+            double materialYieldStrengthMPa = Math.clamp(25.0 + Math.pow(normTech, 2.3) * 12.0, 20.0, 2000.0);
 
-            // Kinetic & Chemical Energy Output (Joules/sec = Watts) per mobilized force
-            double kineticPowerOutputWatts = pop * (50.0 + Math.pow(Math.min(tech, 150.0), 2.2) * 200.0);
+            // Kinetic & Chemical Mechanical Power (Watts = Joules/sec) delivering offensive work
+            double kineticPowerWatts = pop * (50.0 + Math.pow(normTech, 3.0) * 100.0);
 
-            // Fortification structural resistance in Joules (Yield Strength * Thickness * Reference Cross Section)
-            double fortificationResistanceJoules = materialYieldStrengthMPa * 1e6 * 0.5; // 0.5m barrier thickness
+            // Total kinetic energy work delivered over time step dt (in Joules, accounting for 1% conflict mobilization duty cycle)
+            double deliveredKineticJoules = kineticPowerWatts * (dt * 315576.0);
 
-            if (kineticPowerOutputWatts > fortificationResistanceJoules && capital > 100.0) {
+            // Fortification plastic deformation resistance energy in Joules (Yield Strength * Reference Volume * Capital Depth)
+            double capitalFactor = Math.max(1.0, capital / 100.0);
+            double fortificationCapacityJoules = materialYieldStrengthMPa * 1e6 * 0.5 * 100.0 * capitalFactor;
+
+            // Continuous mechanical rupture ratio (Joules vs Joules)
+            double mechanicalStressRatio = deliveredKineticJoules / Math.max(1.0, fortificationCapacityJoules);
+            if (mechanicalStressRatio > 0.05 && capital > 0.0) {
                 structuralBreaches++;
-                // Infrastructure damage proportional to delivered kinetic work: E_kinetic = P_kinetic * dt
-                double kineticEnergyDamageMegaJoules = (kineticPowerOutputWatts / 1e6) * dt;
-                double kineticExcessRatio = kineticPowerOutputWatts / fortificationResistanceJoules;
-                double destructionFraction = Math.min(0.10, 0.011 * kineticExcessRatio) * dt;
+                // Continuous Hill-function infrastructural damage fraction
+                double destructionFraction = 0.12 * ((mechanicalStressRatio * mechanicalStressRatio) / (1.0 + mechanicalStressRatio * mechanicalStressRatio)) * dt;
                 cell.setResourceCapital(Math.max(0.0, capital * (1.0 - destructionFraction)));
             }
         }

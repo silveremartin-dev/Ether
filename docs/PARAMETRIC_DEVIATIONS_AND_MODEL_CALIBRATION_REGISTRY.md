@@ -819,3 +819,112 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Decouples the 9 cultural tensor axes onto distinct physical, demographic, epidemiological, and institutional observables, restoring full rank and semantic orthogonality to the cultural manifold.
 * **Empirical Validation Grounding**:
   * Seshat Global History Databank; Tilly (1990); Henrich (2020); Omran (1971).
+---
+
+### Entry 44: Dimensionally Homogeneous Solow-Tainter Complexity Collapse
+* **Date**: November 1, 2026
+* **Subsystem**: `TainterComplexityCollapseEngine.java`
+* **Canonical Literature**:
+  * Tainter, J. A. (1988). *The Collapse of Complex Societies*. Cambridge University Press.
+  * Solow, R. M. (1956). *A contribution to the theory of economic growth*. Quarterly Journal of Economics, 70(1), 65-94.
+* **Problem in Previous Implementation**:
+  * Incohérence dimensionnelle temporelle : `maintenanceCost` était multiplié par `deltaYears`, mais `surplus` était annuel, empêchant le déclenchement au pas mensuel. De plus, `capital < 50.0` et `0.05` constituaient des seuils et constantes arbitraires.
+* **Calibrated Ether Formulation**:
+  $$\frac{dK}{dt} = \dot{S}(K, L, T) - \dot{M}(K)$$
+  $$\dot{S} = L \cdot (0.05 + 0.015 \cdot \min(T, 10.0)) \cdot \frac{K}{150.0 + K}$$
+  $$\dot{M} = 0.025 \cdot K + 5.0 \cdot \ln(1 + 0.02 K)^{1.5}$$
+* **Root Cause & Justification**:
+  * Garantit l'invariance par rapport au pas de temps ($\Delta t$) et fonde le surplus fiscal sur une fonction de production Cobb-Douglas continue.
+* **Empirical Validation Grounding**:
+  * Tainter (1988); Solow (1956); Seshat Global History Databank.
+
+---
+
+### Entry 45: Continuous Net Energy Cliff & Discretionary Exergy Deficit
+* **Date**: November 1, 2026
+* **Subsystem**: `NetEnergyEROEIEngine.java`
+* **Canonical Literature**:
+  * Hall, C. A., Lambert, J. G., & Balogh, S. B. (2014). *EROI of different fuels and the implications for society*. Energy Policy, 64, 141-152.
+  * Murphy, D. J., & Hall, C. A. (2010). *Year in review—EROI or energy return on (energy) invested*. Annals of the New York Academy of Sciences, 1185(1), 102-118.
+* **Problem in Previous Implementation**:
+  * Falaise binaire à `eroei < 1.0` et `pop > 50`, avec `Math.clamp(..., 1, ...)` forçant au moins 1 décès par pas de temps même pour de micro-populations.
+* **Calibrated Ether Formulation**:
+  $$\mu_{\text{EROEI}} = 0.15 \cdot \frac{1.0}{1.0 + \exp\left(\frac{\text{EROEI} - 1.15}{0.18}\right)}$$
+  $$\Delta L = - 3.0 \cdot \frac{1.0}{1.0 + \exp\left(\frac{\text{EROEI} - 1.15}{0.18}\right)} \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Remplace un déclencheur binaire par la courbe continue du "Net Energy Cliff" où la contraction de l'exergie discrétionnaire engendre un stress sociétal progressif.
+* **Empirical Validation Grounding**:
+  * Hall, Lambert & Balogh (2014); Murphy & Hall (2010).
+
+---
+
+### Entry 46: Physiological Wet-Bulb Hyperthermia & Labor Capacity Attenuation
+* **Date**: November 1, 2026
+* **Subsystem**: `WetBulbTemperatureEngine.java`
+* **Canonical Literature**:
+  * Sherwood, S. C., & Huber, M. (2010). *An adaptability limit to climate change due to heat stress*. PNAS, 107(21), 9552-9555.
+  * Dunne, J. P., Stouffer, R. J., & John, J. G. (2013). *Reductions in labour capacity from heat stress under climate warming*. Nature Climate Change, 3(6), 563-566.
+  * Vecellio, D. J., et al. (2022). *Evaluating the 35°C wet-bulb temperature adaptability threshold for young, healthy subjects*. Journal of Applied Physiology, 132(2), 340-345.
+* **Problem in Previous Implementation**:
+  * Seuil binaire létal à $35.0^\circ\text{C}$ non pondéré par $\Delta t$ (15 % de mortalité fixe par pas de temps), ignorant l'incompensabilité thermique dès $31^\circ\text{C}$ et la baisse de productivité du travail.
+* **Calibrated Ether Formulation**:
+  $$\mu_{\text{heat}}(T_{\text{wb}}) = \frac{0.60}{1.0 + \exp\left(-\frac{T_{\text{wb}} - 34.5}{0.8}\right)}$$
+  $$\Delta \text{Biomass}_{\text{agri}} = - 0.15 \cdot \frac{1.0}{1.0 + \exp\left(-\frac{T_{\text{wb}} - 29.0}{1.5}\right)} \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Intègre la courbe d'adaptation physiologique humaine et couple la contrainte thermique à la perte d'heures de travail agricole en extérieur.
+* **Empirical Validation Grounding**:
+  * Sherwood & Huber (2010); Dunne et al. (2013); Vecellio et al. (2022).
+
+---
+
+### Entry 47: Dimensionally Homogeneous Kinetic Armor Breaching & Unified Tech Scaling
+* **Date**: November 1, 2026
+* **Subsystem**: `ThermodynamicWarfareEngine.java`
+* **Canonical Literature**:
+  * Ashby, M. F. (2011). *Materials Selection in Mechanical Design*. Butterworth-Heinemann.
+  * Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Company.
+* **Problem in Previous Implementation**:
+  * Comparaison dimensionnellement erronée entre des Watts (puissance) et des Joules (énergie/résistance), vestige de l'ancienne échelle technologique `Math.min(tech, 150.0)`, et seuil binaire `capital > 100.0`.
+* **Calibrated Ether Formulation**:
+  $$E_{\text{kinetic}} = P_{\text{kinetic}} \cdot (\Delta t \cdot 315\,576.0\text{ s}) \quad [\text{Joules}]$$
+  $$\mathcal{R} = \frac{E_{\text{kinetic}}}{E_{\text{rupture}}}, \quad \mathcal{D}_{\text{breach}} = 0.12 \cdot \frac{\mathcal{R}^2}{1.0 + \mathcal{R}^2} \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Rétablit l'homogénéité dimensionnelle (Joules vs. Joules), unifie la variable technologique sur $[0, 10]$ et applique une fonction de Hill continue pour l'attrition des fortifications.
+* **Empirical Validation Grounding**:
+  * Ashby (2011); Lanchester (1916).
+
+---
+
+### Entry 48: Continuous RUSLE Soil Loss & Elimination of Discrete Biome Mutations
+* **Date**: November 1, 2026
+* **Subsystem**: `DeforestationErosionEngine.java`
+* **Canonical Literature**:
+  * Renard, K. G., et al. (1997). *Predicting soil erosion by water: a guide to conservation planning with the Revised Universal Soil Loss Equation (RUSLE)*. USDA Agricultural Handbook No. 703.
+  * Wischmeier, W. H., & Smith, D. D. (1978). *Predicting rainfall erosion losses*. USDA Agricultural Handbook No. 537.
+* **Problem in Previous Implementation**:
+  * Triple condition seuil (`canopy < 100 && elev > 200 && rain > 400`) et mutation discrète `setBiome(Biome.DESERT)` dès que le SOC passait sous 5.0.
+* **Calibrated Ether Formulation**:
+  $$\frac{d\text{SOC}}{dt} = - 0.06 \cdot \left(\frac{P}{500}\right)^{1.4} \cdot \left(0.20 + 0.80 \frac{z}{800 + z}\right) \cdot \exp(-0.025 \cdot \text{Canopy}) \cdot \text{SOC}$$
+* **Root Cause & Justification**:
+  * Remplace les seuils binaires et les mutations discrètes de biome par l'équation différentielle RUSLE de dégradation continue du carbone organique du sol sous l'effet du ruissellement.
+* **Empirical Validation Grounding**:
+  * Renard et al. (1997); Wischmeier & Smith (1978); FAO Soil Degradation Database.
+
+---
+
+### Entry 49: Continuous Topographic Declivity & Evaporative Salinization Leaching
+* **Date**: November 1, 2026
+* **Subsystem**: `SoilWaterRetentionEngine.java`, `FertileCrescentSalinizationEngine.java`
+* **Canonical Literature**:
+  * van Genuchten, M. T. (1980). *A closed-form equation for predicting the hydraulic conductivity of unsaturated soils*. Soil Science Society of America Journal, 44(5), 892-898.
+  * Ayers, R. S., & Westcot, D. W. (1985). *Water quality for agriculture*. FAO Irrigation and Drainage Paper 29 Rev. 1.
+  * Maas, E. V., & Hoffman, G. J. (1977). *Crop salt tolerance—current assessment*. Journal of the Irrigation and Drainage Division, 103(2), 115-134.
+* **Problem in Previous Implementation**:
+  * `SoilWaterRetentionEngine` utilisait un `switch(biome)` discret avec des constantes magiques (`0.35, 0.15, 0.03`) pour la pente. `FertileCrescentSalinizationEngine` utilisait des filtres climatiques binaires stricts (`rainfall >= 650.0 || temp < 12.0 || elev > 1200.0`).
+* **Calibrated Ether Formulation**:
+  $$\sigma_{\text{slope}}(z) = 0.02 + 0.38 \cdot \frac{z^2}{1200.0^2 + z^2}$$
+  $$\mathcal{E}_{\text{salin}} = \frac{1}{1 + \exp(-0.35(T - 15.0))} \cdot \frac{1}{1 + \exp((P - 500.0)/100.0)} \cdot \frac{1}{1 + \exp((z - 800.0)/200.0)}$$
+* **Root Cause & Justification**:
+  * Remplace les approximations discrètes par des fonctions analytiques de gradient hypsométrique et un indice continu d'exposition au déficit de lessivage par évapo-transpiration.
+* **Empirical Validation Grounding**:
+  * van Genuchten (1980); FAO Paper 29 (1985); Maas & Hoffman (1977).

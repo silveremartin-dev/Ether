@@ -1814,3 +1814,37 @@ Eliminates collinear collapse by anchoring each of the 9 cultural tensor dimensi
 7. **Dim 6 (Institutional Complexity)**: Seshat administrative hierarchy levels (Turchin et al. 2018): $A_6 = 0.10 + 0.80 \cdot \frac{I_{\text{comp}}}{25.0 + I_{\text{comp}}}$.
 8. **Dim 7 (Malthusian Ecological Footprint)**: Demographic load relative to natural biomass capacity (Boserup 1965): $A_7 = 0.15 + 0.75 \cdot \frac{M_{\text{load}}}{0.60 + M_{\text{load}}}$.
 9. **Dim 8 (Pathogen Memory & Sanitary Barrier)**: Epidemiological transition and life expectancy barrier (Omran 1971; Preston 1975): $A_8 = 0.20 + 0.65 / (1 + \exp(-0.12(L - 45\text{ yrs})))$.
+---
+
+## 19. Dimensional Homogeneity, Net Energy Thermodynamics & Biophysical Boundaries (Calibration v1.0.0-beta.2)
+
+### 19.1 Solow-Tainter Complexity Collapse Differential Equations
+Replaces ad-hoc discrete thresholds with a dimensionally consistent, time-step invariant continuous capital flow model:
+$$\frac{dK}{dt} = \dot{S}(K, L, T) - \dot{M}(K)$$
+$$\dot{S} = L \cdot \left(0.05 + 0.015 \min(T, 10.0)\right) \cdot \frac{K}{150.0 + K} \quad \left[\frac{\text{Capital}}{\text{year}}\right]$$
+$$\dot{M} = 0.025 \cdot K + 5.0 \cdot \ln(1 + 0.02 K)^{1.5} \quad \left[\frac{\text{Capital}}{\text{year}}\right]$$
+$$\Delta K = (\dot{S} - \dot{M}) \cdot \Delta t$$
+
+### 19.2 Continuous Net Energy Cliff (EROEI)
+Discretionary exergy surplus $E_{\text{net}} = 1 - 1/\text{EROEI}$ governs society-wide carrying capacity and demographic stress without discrete step thresholds:
+$$\mu_{\text{EROEI}} = 0.15 \cdot \frac{1.0}{1.0 + \exp\left(\frac{\text{EROEI} - 1.15}{0.18}\right)}$$
+$$\Delta L = - 3.0 \cdot \frac{1.0}{1.0 + \exp\left(\frac{\text{EROEI} - 1.15}{0.18}\right)} \cdot \Delta t$$
+
+### 19.3 Biophysical Wet-Bulb Hyperthermia & Labor Capacity Loss
+Couples ambient dry-bulb temperature and relative humidity (Stull 2011) to physiological core heat dissipation:
+$$\mu_{\text{heat}}(T_{\text{wb}}) = \frac{0.60}{1.0 + \exp\left(-\frac{T_{\text{wb}} - 34.5}{0.8}\right)}$$
+$$\Delta \text{Biomass}_{\text{agri}} = - 0.15 \cdot \frac{1.0}{1.0 + \exp\left(-\frac{T_{\text{wb}} - 29.0}{1.5}\right)} \cdot \Delta t$$
+
+### 19.4 Homogeneous Kinetic Warfare Work & Fortification Rupture
+Offensive mechanical power output $P_{\text{kinetic}}$ delivers physical work in Joules over conflict time step $\Delta t$:
+$$E_{\text{kinetic}} = P_{\text{kinetic}} \cdot (\Delta t \cdot 315\,576.0\text{ s}) \quad [\text{Joules}]$$
+$$E_{\text{rupture}} = \sigma_{\text{yield}} \cdot 10^6 \cdot 0.5 \cdot 100.0 \cdot \max(1.0, K / 100.0) \quad [\text{Joules}]$$
+$$\mathcal{D}_{\text{breach}} = 0.12 \cdot \frac{\mathcal{R}^2}{1.0 + \mathcal{R}^2} \cdot \Delta t, \quad \mathcal{R} = \frac{E_{\text{kinetic}}}{E_{\text{rupture}}}$$
+
+### 19.5 Continuous RUSLE Topographic Soil Loss
+Replaces discrete biome desertification with differential soil organic carbon (SOC) loss:
+$$\frac{d\text{SOC}}{dt} = - 0.06 \cdot \left(\frac{P}{500}\right)^{1.4} \cdot \left(0.20 + 0.80 \frac{z}{800 + z}\right) \cdot \exp(-0.025 \cdot \text{Canopy}) \cdot \text{SOC}$$
+
+### 19.6 Analytical Orographic Declivity & Evaporative Salinization
+Local terrain slope is derived analytically from hypsometric elevation $\sigma_{\text{slope}}(z) = 0.02 + 0.38 \frac{z^2}{1200^2 + z^2}$, while topsoil salinization is driven continuously by evaporative capillary pull versus leaching precipitation:
+$$\mathcal{E}_{\text{salin}} = \frac{1}{1 + \exp(-0.35(T - 15.0))} \cdot \frac{1}{1 + \exp((P - 500.0)/100.0)} \cdot \frac{1}{1 + \exp((z - 800.0)/200.0)}$$
