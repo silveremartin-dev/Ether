@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +87,8 @@ public class WetBulbTemperatureEngine {
                 double mortalityHazard = 1.0 - Math.exp(-0.25 * (wetBulbTempC - 35.0));
                 double exposureScale = Math.clamp(deltaYears * 12.0, 0.05, 1.0);
                 int deaths = (int) Math.round(pop * mortalityHazard * exposureScale);
-                cell.setPopulation(Math.max(0, pop - deaths));
+                int targetPop = Math.max(0, pop - deaths);
+                H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, targetPop);
             }
         }
 

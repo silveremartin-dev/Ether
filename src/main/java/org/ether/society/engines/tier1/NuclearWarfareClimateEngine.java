@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +92,8 @@ public class NuclearWarfareClimateEngine {
                     globalSootOpticalDepth += 0.50; // Inject stratospheric soot (Tg)
 
                     // Immediate local destruction
-                    cell.setPopulation((int) (pop * 0.20));
+                    int targetPop = (int) (pop * 0.20);
+                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, targetPop);
                     cell.setResourceCapital(capital * 0.10);
                     cell.setPollutionLevel((cell.getPollutionLevelOr(0.0)) + 25000.0);
                 }

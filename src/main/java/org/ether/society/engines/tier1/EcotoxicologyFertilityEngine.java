@@ -71,7 +71,8 @@ public class EcotoxicologyFertilityEngine {
                     if (pop > 0) {
                         // Endocrine disruption suppresses births proportionally to baseline birth rate and deltaYears
                         int suppressedBirths = (int) Math.round(pop * BASELINE_CRUDE_BIRTH_RATE * (1.0 - fertilityFactor) * deltaYears);
-                        cell.setPopulation(Math.max(0, pop - suppressedBirths));
+                        int targetPop = Math.max(0, pop - suppressedBirths);
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, targetPop);
                     }
                 }
             }

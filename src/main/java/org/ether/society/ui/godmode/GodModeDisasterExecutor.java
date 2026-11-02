@@ -89,7 +89,7 @@ public final class GodModeDisasterExecutor {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 1.5) {
                             double blastFactor = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
-                            c.setPopulation((int) (c.getPopulation() * (1.0 - 0.90 * blastFactor)));
+                            org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, (int) (c.getPopulation() * (1.0 - 0.90 * blastFactor)));
                             c.setFoodResource(Math.max(0.0, (c.getFoodResource() != null ? c.getFoodResource() : 0.0) * (1.0 - 0.80 * blastFactor)));
                             c.setTechnologyLevel(Math.max(0.0, (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0) * (1.0 - 0.70 * blastFactor)));
                             c.setPollutionLevel(Math.min(1.0, (c.getPollutionLevel() != null ? c.getPollutionLevel() : 0.0) + 0.9 * blastFactor));
@@ -121,7 +121,7 @@ public final class GodModeDisasterExecutor {
                         if (dist < mag * 1.5) {
                             double blast = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
                             if (c.getPopulation() != null && c.getPopulation() > 0) {
-                                c.setPopulation((int) (c.getPopulation() * (1.0 - 0.20 * blast)));
+                                org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, (int) (c.getPopulation() * (1.0 - 0.20 * blast)));
                             }
                             if (c.getFoodResource() != null) {
                                 c.setFoodResource(Math.max(0.0, c.getFoodResource() * (1.0 - 0.50 * blast)));
@@ -152,7 +152,7 @@ public final class GodModeDisasterExecutor {
                         double dist = Math.hypot(c.getLatitude() - lat, c.getLongitude() - lng);
                         if (dist < mag * 2.0) {
                             int pop = c.getPopulation();
-                            c.setPopulation((int) (pop * Math.max(0.1, 1.0 - (mag * 0.15))));
+                            org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, (int) (pop * Math.max(0.1, 1.0 - (mag * 0.15))));
                         }
                     }
                 }
@@ -161,7 +161,7 @@ public final class GodModeDisasterExecutor {
                 if (engine != null && engine.getCells() != null) {
                     for (H3Cell c : engine.getCells()) {
                         int pop = c.getPopulation();
-                        c.setPopulation((int) (pop * Math.max(0.2, 1.0 - (mag * 0.05))));
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, (int) (pop * Math.max(0.2, 1.0 - (mag * 0.05))));
                     }
                 }
             }
@@ -188,7 +188,7 @@ public final class GodModeDisasterExecutor {
                             c.setHabitatIntegrity(0.0);
                             int pop = c.getPopulation() != null ? c.getPopulation() : 0;
                             int survivors = (int) Math.round(pop * (1.0 - 0.90 * blast));
-                            c.setPopulation(survivors);
+                            org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, survivors);
                             c.setBiomassHuman((double) survivors);
                             if (c.getFoodResource() != null) {
                                 c.setFoodResource(c.getFoodResource() * (1.0 - 0.95 * blast));
@@ -207,7 +207,7 @@ public final class GodModeDisasterExecutor {
                             c.setHabitatIntegrity(Math.max(0.05, curIntegrity - 0.70 * blast));
                             int pop = c.getPopulation() != null ? c.getPopulation() : 0;
                             int survivors = (int) Math.round(pop * (1.0 - 0.65 * blast));
-                            c.setPopulation(survivors);
+                            org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, survivors);
                             c.setBiomassHuman((double) survivors);
                             if (c.getFoodResource() != null) {
                                 c.setFoodResource(c.getFoodResource() * (1.0 - 0.80 * blast));
@@ -226,7 +226,7 @@ public final class GodModeDisasterExecutor {
                             c.setHabitatType(HabitatType.NONE);
                             int pop = c.getPopulation() != null ? c.getPopulation() : 0;
                             int survivors = (int) Math.round(pop * (1.0 - 0.95 * blast));
-                            c.setPopulation(survivors);
+                            org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, survivors);
                             c.setBiomassHuman((double) survivors);
                         }
                     }
@@ -241,7 +241,7 @@ public final class GodModeDisasterExecutor {
                             c.setHabitatIntegrity(0.0);
                             int pop = c.getPopulation() != null ? c.getPopulation() : 0;
                             int survivors = (int) Math.round(pop * (1.0 - 0.80 * blast));
-                            c.setPopulation(survivors);
+                            org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, survivors);
                             c.setBiomassHuman((double) survivors);
                             if (c.getResourceCapital() != null) {
                                 c.setResourceCapital(c.getResourceCapital() * (1.0 - 0.90 * blast));

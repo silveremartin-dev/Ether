@@ -71,14 +71,7 @@ public class AmerindianEcosystemEngine {
             if (oldWorldContactTriggered && livestock < 5.0) {
                 double survivalRate = Math.max(0.01, 1.0 - epidemicMortalityRate * Math.min(1.0, 0.10 * deltaYears));
                 int newPop = (int) Math.max(10, Math.round(pop * survivalRate));
-                cell.setPopulation(newPop);
-                cell.setPop0to4((int) Math.round(cell.getPop0to4Or(0) * survivalRate));
-                cell.setPop5to14((int) Math.round(cell.getPop5to14Or(0) * survivalRate));
-                cell.setPop15to24((int) Math.round(cell.getPop15to24Or(0) * survivalRate));
-                cell.setPop25to49((int) Math.round(cell.getPop25to49Or(0) * survivalRate));
-                cell.setPop50to64((int) Math.round(cell.getPop50to64Or(0) * survivalRate));
-                cell.setPop65to79((int) Math.round(cell.getPop65to79Or(0) * survivalRate));
-                cell.setPop80Plus((int) Math.round(cell.getPop80PlusOr(0) * survivalRate));
+                org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, newPop);
             }
         }
     }

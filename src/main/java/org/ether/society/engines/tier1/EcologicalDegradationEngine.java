@@ -400,12 +400,10 @@ public class EcologicalDegradationEngine {
                     }
 
                     if (bestTarget != null) {
-                        source.setPopulation(Math.max(0, srcPop - migrants));
-                        bestTarget.setPopulation(bestTarget.getPopulationOr(0) + migrants);
-
-                        double tech = (source.getTechnologyLevel() != null && source.getTechnologyLevel() > 0) ? source.getTechnologyLevel() : defaultTech;
-                        source.updateAgePyramidFromTotal(tech);
-                        bestTarget.updateAgePyramidFromTotal(tech);
+                        int newSrcPop = Math.max(0, srcPop - migrants);
+                        int newTargetPop = bestTarget.getPopulationOr(0) + migrants;
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(source, newSrcPop);
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(bestTarget, newTargetPop);
 
                         totalMigrated += migrants;
                     }

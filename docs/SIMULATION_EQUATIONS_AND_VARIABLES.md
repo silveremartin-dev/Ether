@@ -256,6 +256,14 @@ Ether decouples numerical integration across three discrete physical time scales
     $$\bar{a}_{t+dt} = \frac{\bar{a}_t \cdot (M - D_{\text{adult}}) + 0 \cdot B_{\text{surviving}}}{M + B_{\text{surviving}} - D_{\text{total}}} + dt$$
 - **Complexity**: $O(\text{cohorts}) = O(1)$ per cell.
 
+#### 25.1. Ecotoxicological Endocrine Disruption & Fertility Attenuation (`EcotoxicologyFertilityEngine`)
+- **Governing Equations**:
+  - **Endocrine Disruptor Toxicity**: Industrial chemical pollution accumulation (microplastics, synthetic pollutants, heavy metal effluents) induces biological endocrine stress.
+  - **Fertility Attenuation Law**: Effective biological crude birth rate $b_{\text{eff}}$ decays exponentially as a function of environmental pollutant load:
+    $$b_{\text{eff}} = b_{\text{base}} \cdot \max\left(0.35, \; \exp\left(-k_{\text{endocrine}} \cdot [\text{Pollution}]\right)\right)$$
+    where $k_{\text{endocrine}} = 0.0002\text{ ppm}^{-1}$, and the physiological floor is bounded at $35\%$ of baseline fecundity.
+- **Complexity**: $O(1)$ per cell.
+
 #### 26. Kimura Neutral Genetic Drift & Wright-Fisher SDE (`GeneticAdaptationEngine`)
 - **Governing Equations**:
   $$dp = \left( s p (1-p) + \mu (1-2p) \right) dt + \sqrt{\frac{p(1-p)}{2 N_e}} dW_t$$
@@ -333,6 +341,15 @@ Ether decouples numerical integration across three discrete physical time scales
   $$W_{\text{transport}} = \mu_{\text{coulomb}} m g d \cos\theta + m g d \sin\theta + \frac{1}{2} C_d \rho A v^2 d$$
 - **Complexity**: $O(1)$ per flux link.
 
+#### 35.1. Transport Infrastructure Capital & Spatial Friction Attenuation (`InfrastructureEnergyEngine`)
+- **Governing Equations**:
+  - **Capital Density Metric**: Transport infrastructure capital per unit effective surface area:
+    $$k_{\text{infra}} = \frac{K_{\text{infra}}}{\max(10.0, A_{\text{cell}})} \quad [\text{capital}/\text{km}^2]$$
+  - **Continuous Friction Attenuation Function** (Allen & Arkolakis 2014; Donaldson 2018):
+    $$\tau_{\text{eff}}(K, T) = \tau_0 \cdot \left[ 0.10 + \frac{0.90}{1.0 + 0.05 \cdot (T - 1.8) \cdot \ln(1 + k_{\text{infra}})} \right]$$
+    bounded by $\tau_{\text{eff}} \ge 0.05$, replacing multiplicative degradation loops with closed-form thermodynamic state functions.
+- **Complexity**: $O(1)$ per paved cell.
+
 #### 36. Metallurgy Enthalpy of Smelting (`MetallurgyEnthalpyEngine`)
 - **Governing Equations**:
   $$\Delta H_{\text{smelt}} = \Delta H^\circ_{f}(\text{products}) - \Delta H^\circ_{f}(\text{reactants}) + \int_{T_{\text{ambient}}}^{T_{\text{melt}}} C_p dT$$
@@ -369,6 +386,15 @@ Ether decouples numerical integration across three discrete physical time scales
   $$A(t) = A_0 \cdot \sum_i f_i \exp(-\lambda_i t), \quad \Delta T_{\text{nuclear\_winter}} = -T_{\text{drop}} \cdot (1 - \exp(-\kappa M_{\text{soot}}))$$
 - **Complexity**: $O(1)$ per cell.
 
+#### 42.1. Fundamental Physical Constants & Alternate Laws Engine (`PhysicalLawEngine`)
+- **Governing Equations**:
+  - **Photosynthetic Efficiency Scaling**: Modulates biological biomass accumulation rate:
+    $$B_{\text{nat}}(t + \Delta t) = B_{\text{nat}}(t) \cdot \left(1 + (\gamma_{\text{photo}} - 1.0) \cdot 0.02 \cdot \Delta t\right)$$
+  - **Room-Temperature Superconductivity ($T_c \ge 300\text{ K}$)**: Eliminates Joule heating dissipation in conductor grids ($I^2 R \equiv 0$), boosting effective deliverable work capacity:
+    $$W_{\text{eff}}(t + \Delta t) = W_{\text{eff}}(t) \cdot (1 + 0.05 \cdot \Delta t)$$
+  - **Entropy Generation Scale $\sigma_{\text{entropy}}$**: Regulates thermodynamic waste heat generation.
+- **Complexity**: $O(1)$ per cell.
+
 ---
 
 ## 4. Tier 2 â€” Optional Cliodynamic & Phenomenological Engines (One-by-One)
@@ -392,6 +418,15 @@ Ether decouples numerical integration across three discrete physical time scales
   $$\Delta \bar{z} = \frac{1}{\bar{w}} \text{Cov}(w_g, z_g) + \frac{1}{\bar{w}} \mathbb{E}[w_g \Delta z_g]$$
   Between-group competition ($\text{Cov}(w_g, z_g) > 0$) selects for within-group self-sacrifice and altruism despite individual evolutionary cost.
 - **Complexity**: $O(\text{groups})$ per monthly tick.
+
+#### 45.1. Kin Selection & Hamilton Rule Inclusive Fitness (`KinSelectionHamiltonEngine`)
+- **Governing Equations**:
+  - **Hamilton's Rule**: Altruistic cooperation is evolutionarily stable if and only if:
+    $$r \cdot B > C$$
+    where $r \in [0, 1]$ is the genetic/cultural relatedness between agents, $B$ is the reproductive benefit to the recipient, and $C$ is the fitness cost to the actor.
+  - **Outgroup Scarcity Hostility**: Under severe caloric stress ($E_{\text{cal}} < E_{\text{req}}$), inter-group hospitality collapses and cross-boundary friction spikes as an inverse function of cultural relatedness:
+    $$\Delta F_{\text{hostility}} = \kappa_{\text{scarcity}} \cdot (1.0 - r_{\text{cultural}}) \cdot \max\left(0, 1 - \frac{E_{\text{cal}}}{E_{\text{req}}}\right)$$
+- **Complexity**: $O(1)$ per cell.
 
 #### 46. Boserup Agricultural Intensification (`BoserupAgriculturalIntensificationEngine`)
 - **Governing Equations**:
@@ -429,6 +464,17 @@ Ether decouples numerical integration across three discrete physical time scales
 - **Governing Equations**:
   $$\text{PSI} = N_{\text{pop}} \times \left(\frac{E}{E_0}\right) \times \left(\frac{W_{\text{wage}}}{W_0}\right)^{-1} \times \left(\frac{\text{Debt}_{\text{state}}}{\text{GDP}}\right)$$
   Tracks the 200â€“300 year secular cycles of elite overproduction and sociopolitical instability.
+- **Complexity**: $O(1)$ per polity.
+
+#### 52.1. Turchin Secular Cycles, Asabiyyah & Structural-Demographic Strife (`CliodynamicsEngine`)
+- **Governing Equations**:
+  - **Asabiyyah Differential Dynamics**: Group solidarity $S$ decays in imperial cores and regenerates on harsh conflict frontiers:
+    $$\frac{dS}{dt} = r_{\text{front}} \cdot (1 - S) \cdot \mathbb{I}_{\text{frontier}} - \delta_{\text{core}} \cdot S \cdot \mathbb{I}_{\text{core}}$$
+  - **Civil Strife Mortality Function**:
+    $$\mu_{\text{strife}} = \mu_0 \cdot \Psi^2 \cdot \Delta t$$
+    where $\mu_0 = 0.015\text{ yr}^{-1}$, producing up to $+1.5\%$ annual mortality at peak revolutionary crisis ($\Psi = 1.0$).
+  - **Imperial Core Projection Horizon**: Geographic power decays beyond administrative reach $R_{\text{core}} = 1600\text{ km}$ (Taagepera 1978; Turchin 2003):
+    $$\mathcal{P}(d) = \mathcal{P}_0 \cdot \exp\left(-\frac{d}{R_{\text{core}}}\right)$$
 - **Complexity**: $O(1)$ per polity.
 
 #### 53. Acemoglu-Robinson Inclusive vs Extractive Institutions (`AcemogluRobinsonInstitutionsEngine`)
@@ -599,6 +645,13 @@ Ether decouples numerical integration across three discrete physical time scales
   $$\mathbf{u}^*(t) = \arg\min_{\mathbf{u}} \int_t^{t+H} \left( \|\mathbf{x}(\tau) - \mathbf{x}_{\text{safe}}\|^2_Q + \|\mathbf{u}(\tau)\|^2_R \right) d\tau$$
 - **Complexity**: $O(H \cdot (\text{states} + \text{controls}))$.
 
+#### 85.1. Multi-Hazard Thermodynamic & Sociopolitical Early Warning Advisor (`CliodynamicAdvisorEngine`)
+- **Governing Equations**:
+  - **Predictive Hazard Multi-Criteria Threshold Vector**:
+    $$\mathbf{\Omega}_{\text{risk}} = \left[ \mathbb{I}(T_w \ge 31.0), \; \mathbb{I}([\text{NPK}] \le 0.15), \; \mathbb{I}(h_{\text{piezo}} \le 5\text{ m}), \; \mathbb{I}(\Psi \ge 0.70), \; \mathbb{I}(D_{\text{sovereign}} \ge 1.5 \cdot Y) \right]$$
+  - Real-time cell telemetry streaming generates localized prescriptive advice and mitigates catastrophic bifurcations.
+- **Complexity**: $O(1)$ per cell.
+
 #### 86. Kurzweil Accelerating Returns & Singularity (`KurzweilAcceleratingReturnsEngine`, `TechnologicalSingularityEngine`)
 - **Governing Equations**:
   $$\frac{dC}{dt} = \kappa \cdot C(t) \cdot \exp(\alpha t)$$
@@ -613,6 +666,17 @@ Ether decouples numerical integration across three discrete physical time scales
 - **Governing Equations**:
   $$\frac{d O_2}{dt} = P_{\text{hydroponics}} - C_{\text{human}} - \text{Leakage}(P_{\text{ambient}}, P_{\text{dome}})$$
 - **Complexity**: $O(1)$ per dome facility.
+
+#### 88.1. In-Situ Resource Utilization (ISRU) & Space Colonization Autarky (`IsruAutarkyAndSpaceColonizationEngine`)
+- **Governing Equations**:
+  - **Local Regolith Sintering & Volatile Extraction Rate**:
+    $$\frac{d K_{\text{isru}}}{dt} = \eta_{\text{sinter}} \cdot P_{\text{energy}} \cdot \left(\frac{\text{Ore}_{\text{local}}}{\text{Ore}_0}\right) \cdot \Delta t$$
+  - **Metropolitan Independence / Autarky Ratio**:
+    $$R_{\text{autarky}} = \frac{K_{\text{isru}}}{K_{\text{isru}} + M_{\text{import\_Earth}}}$$
+    Transition from colonial supply-line vulnerability ($R_{\text{autarky}} \approx 0$) to complete self-sustaining planetary autonomy ($R_{\text{autarky}} \to 1.0$).
+  - **Pioneer Asabiyyah Hardening**: Extreme environmental constraints amplify within-group solidarity:
+    $$\Delta S_{\text{pioneer}} = \kappa_{\text{harshness}} \cdot (1.0 - S) \cdot \frac{P_{\text{radiation}} + \Delta P_{\text{vacuum}}}{P_{\text{safe}}}$$
+- **Complexity**: $O(1)$ per off-world habitat cell.
 
 #### 89. Cultural Sociology, Memetic Drift & Information Entropy (`CulturalSociologyEngine`, `InformationEntropyEngine`, `CultureEngine`)
 - **Governing Equations**:

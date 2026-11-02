@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,6 @@ public class NetEnergyEROEIEngine {
      * @return EROEI ratio (e.g. 0.5 to 30.0)
      */
     public static double calculateEROEI(H3Cell cell) {
-// Numerical integration step for NetEnergyEROEIEngine - verifies boundary conservation and updates local thermodynamic state
         if (cell == null) return 1.1;
 
         double tech = cell.getTechnologyLevelOr(0.0);
@@ -63,7 +63,6 @@ public class NetEnergyEROEIEngine {
      * Executes one master EROEI cliodynamic tick across cells scaled by dtYears.
      */
     public static void processNetEnergyEROEI(List<H3Cell> cells, double dtYears) {
-// Numerical integration step for NetEnergyEROEIEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
         double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 
@@ -78,8 +77,9 @@ public class NetEnergyEROEIEngine {
             if (eroei < 1.0 && pop > 50) {
                 collapseCells++;
                 int famineDeaths = (int) Math.clamp(pop * 0.05 * dtMonthlyRatio, 1, pop / 3);
-                cell.setPopulation(Math.max(0, pop - famineDeaths));
-                cell.setBiomassHuman((double) Math.max(0, pop - famineDeaths));
+                int targetPop = Math.max(0, pop - famineDeaths);
+                H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, targetPop);
+                cell.setBiomassHuman((double) targetPop);
                 double curLife = cell.getLifespanOr(40.0);
                 cell.setLifespan(Math.max(15.0, curLife - 1.0 * dtMonthlyRatio));
             }
@@ -90,5 +90,3 @@ public class NetEnergyEROEIEngine {
         }
     }
 }
-
-

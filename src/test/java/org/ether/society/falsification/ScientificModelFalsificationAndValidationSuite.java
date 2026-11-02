@@ -706,6 +706,7 @@ public class ScientificModelFalsificationAndValidationSuite {
             H3Cell romeCapital = grid.get(0); // Gaul lowland hub
             romeCapital.setPopulation(80000);
             romeCapital.setPop15to24(16000);
+            romeCapital.updateAgePyramidFromTotal(2.5);
             romeCapital.setResourceCapital(15000.0);
 
             H3Cell alpinePassCell = grid.get(10); // Transalpine crest pass (2200m)
@@ -795,6 +796,7 @@ public class ScientificModelFalsificationAndValidationSuite {
             mountainCellA.setMovementFriction(1.5);
             mountainCellA.setPopulation(8500);
             mountainCellA.setPop15to24(1700);
+            mountainCellA.updateAgePyramidFromTotal(2.5);
             mountainCellA.setResourceCapital(1500.0);
             mountainCellA.setGiniIndex(0.35);
 
@@ -895,8 +897,8 @@ public class ScientificModelFalsificationAndValidationSuite {
         for (int i = 0; i < 10; i++) {
             H3Cell c = new H3Cell(0x882830828100000L + i, 43.6 + (i * 0.15), 0.5 + ((i % 3) * 0.2));
             c.setPopulation(8000 + (i * 600));
-            c.setPop15to24((int) ((8000 + (i * 600)) * 0.20));
             c.setTechnologyLevel(2.5);
+            c.updateAgePyramidFromTotal(2.5);
             c.setFoodResource(25000.0);
             c.setResourceCapital(1500.0);
             c.setElevation(80.0 + (i * 10.0));
@@ -909,8 +911,8 @@ public class ScientificModelFalsificationAndValidationSuite {
         for (int i = 0; i < 8; i++) {
             H3Cell c = new H3Cell(0x882830828200000L + i, 42.8 + (i * 0.05), 0.5 + ((i % 2) * 0.2));
             c.setPopulation(900 + (i * 70));
-            c.setPop15to24((int) ((900 + (i * 70)) * 0.18));
             c.setTechnologyLevel(2.0);
+            c.updateAgePyramidFromTotal(2.0);
             c.setFoodResource(4000.0);
             c.setResourceCapital(200.0);
             c.setElevation(2200.0 + (i * 50.0));
@@ -923,8 +925,8 @@ public class ScientificModelFalsificationAndValidationSuite {
         for (int i = 0; i < 12; i++) {
             H3Cell c = new H3Cell(0x882830828300000L + i, 42.1 - (i * 0.15), 0.5 + ((i % 3) * 0.2));
             c.setPopulation(7500 + (i * 400));
-            c.setPop15to24((int) ((7500 + (i * 400)) * 0.20));
             c.setTechnologyLevel(2.4);
+            c.updateAgePyramidFromTotal(2.4);
             c.setFoodResource(22000.0);
             c.setResourceCapital(1200.0);
             c.setElevation(450.0 + (i * 15.0));

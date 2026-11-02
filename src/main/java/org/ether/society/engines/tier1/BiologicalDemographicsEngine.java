@@ -113,7 +113,7 @@ public class BiologicalDemographicsEngine {
             if (environmentalHazard > 0.0) {
                 double survivalRate = Math.exp(-environmentalHazard * dt);
                 int survivingPop = (int) Math.round(pop * survivalRate);
-                cell.setPopulation(Math.max(0, survivingPop));
+                org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, survivingPop));
                 pop = cell.getPopulation();
             }
 

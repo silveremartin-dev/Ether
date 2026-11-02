@@ -293,7 +293,7 @@ public final class H3BufferAndEventCoordinator {
                     if (prevPop > 0) {
                         double mortalityFrac = Math.min(0.95, 0.85 * attenuation);
                         lost = (int) Math.round(prevPop * mortalityFrac);
-                        cell.setPopulation(Math.max(0, prevPop - lost));
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, prevPop - lost));
                     }
                     if (cell.getResourceCapital() != null) {
                         cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-1.2 * attenuation)));
@@ -315,7 +315,7 @@ public final class H3BufferAndEventCoordinator {
                     if (prevPop > 0) {
                         double survival = Math.exp(-0.04 * mag * attenuation);
                         lost = (int) Math.round(prevPop * (1.0 - survival));
-                        cell.setPopulation(Math.max(0, prevPop - lost));
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, prevPop - lost));
                     }
                 } else if (type.contains("epidemic") || type.contains("pandemic") || type.contains("plague")) {
                     if (prevPop > 0) {
@@ -328,7 +328,7 @@ public final class H3BufferAndEventCoordinator {
                         }
                         double survival = Math.exp(-virulence * mag * attenuation);
                         lost = (int) Math.round(prevPop * (1.0 - survival));
-                        cell.setPopulation(Math.max(0, prevPop - lost));
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, prevPop - lost));
                     }
                     if (cell.getResourceCapital() != null) {
                         cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.05 * mag * attenuation)));
@@ -340,7 +340,7 @@ public final class H3BufferAndEventCoordinator {
                     if (prevPop > 0) {
                         double survival = Math.exp(-0.05 * mag * attenuation);
                         lost = (int) Math.round(prevPop * (1.0 - survival));
-                        cell.setPopulation(Math.max(0, prevPop - lost));
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, prevPop - lost));
                     }
                 } else if (type.contains("famine") || type.contains("drought")) {
                     if (cell.getFoodResource() != null) {

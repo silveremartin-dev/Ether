@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +117,8 @@ public class NuclearSafetyRadiotoxicityEngine {
                     meltdownEvents++;
                     // Radiotoxic fallout spike (Bq/m^2 modeled via pollution)
                     cell.setPollutionLevel(pollution + 10000.0);
-                    cell.setPopulation((int) (pop * 0.70)); // Evacuation & acute radiation syndrome
+                    int targetPop = (int) (pop * 0.70);
+                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, targetPop); // Evacuation & acute radiation syndrome
                 }
             }
         }

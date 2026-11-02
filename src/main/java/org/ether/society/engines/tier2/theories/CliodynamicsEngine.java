@@ -76,7 +76,7 @@ public class CliodynamicsEngine {
                         if (curPop > 0) {
                             int deaths = (int) Math.round(curPop * strifeMortalityFraction);
                             if (deaths > 0) {
-                                cell.setPopulation(Math.max(0, curPop - deaths));
+                                org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, curPop - deaths));
                             }
                         }
                     }

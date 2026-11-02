@@ -111,7 +111,7 @@ public class CompiledEngineKernel {
 
             if (popExpr != null && cell.getPopulation() != null && cell.getPopulation() > 0) {
                 double newPop = popExpr.evaluate(cell.getPopulation());
-                cell.setPopulation((int) Math.max(0, newPop));
+                org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, (int) Math.max(0, newPop));
             }
 
             if (tempExpr != null && cell.getTemperature() != null) {

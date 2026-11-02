@@ -500,7 +500,7 @@ public final class H3CellPhysicsAndStateHelper {
         int cur65 = cell.getPop65to79Or(0);
         int cur80 = cell.getPop80PlusOr(0);
         long currentSum = (long) cur0 + cur5 + cur15 + cur25 + cur50 + cur65 + cur80;
-        if (currentSum <= 0) {
+        if (currentSum <= 0 || (currentSum < targetPop * 0.50 && (cur0 == 0 || cur25 == 0))) {
             int c0 = (int) Math.round(targetPop * 0.08);
             int c5 = (int) Math.round(targetPop * 0.17);
             int c15 = (int) Math.round(targetPop * 0.16);

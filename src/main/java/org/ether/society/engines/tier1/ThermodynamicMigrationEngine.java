@@ -11,6 +11,7 @@ import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.h3.DeterministicSpatialAdjacencyTable;
 import org.ether.society.model.PhysicalConstants;
 import org.slf4j.Logger;
@@ -214,10 +215,10 @@ public class ThermodynamicMigrationEngine {
                     double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi * 0.05, 0.001, 0.015);
                     int migrants = Math.clamp((int) (popOrigin * fluxFraction), 1, popOrigin / 10);
 
-                    origin.setPopulation(popOrigin - migrants);
+                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(origin, popOrigin - migrants);
                     origin.setBiomassHuman((double) (popOrigin - migrants));
                     int destPop = (bestDestination.getPopulationOr(0)) + migrants;
-                    bestDestination.setPopulation(destPop);
+                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(bestDestination, destPop);
                     bestDestination.setBiomassHuman((double) destPop);
 
                     if (agentBuffer != null && worldBuffer != null) {
@@ -309,10 +310,10 @@ public class ThermodynamicMigrationEngine {
                     double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi, 0.01, 0.20);
                     int migrants = Math.clamp((int) (popOrigin * fluxFraction), 1, popOrigin / 2);
 
-                    origin.setPopulation(popOrigin - migrants);
+                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(origin, popOrigin - migrants);
                     origin.setBiomassHuman((double) (popOrigin - migrants));
                     int destPop = (bestDestination.getPopulationOr(0)) + migrants;
-                    bestDestination.setPopulation(destPop);
+                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(bestDestination, destPop);
                     bestDestination.setBiomassHuman((double) destPop);
 
                     if (agentBuffer != null && worldBuffer != null) {

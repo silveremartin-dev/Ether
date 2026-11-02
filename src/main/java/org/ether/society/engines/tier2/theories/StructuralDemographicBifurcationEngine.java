@@ -204,7 +204,7 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
 
                     // C. Excess crisis mortality shock
                     int survivingPop = (int) Math.max(20, pop * 0.85);
-                    cell.setPopulation(survivingPop);
+                    org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, survivingPop);
                 }
             }
         }

@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +146,7 @@ public class BioMolecularEpidemiologyEngine {
                 cell.setEpidemicInfected(remainingInfected);
 
                 if (deaths > 0) {
-                    cell.setPopulation(Math.max(1, pop - deaths));
+                    org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(1, pop - deaths));
                 }
 
                 // Acute epidemiological lifespan depression

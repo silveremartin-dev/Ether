@@ -5,6 +5,7 @@
 package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.model.HabitatType;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public class PressurizedHabitatEngine {
                         if (surviving != pop) {
                             logger.warn("💀 Severe atmospheric/vacuum exposure mortality at H3 cell {} (Pop: {} -> {})",
                                     cell.getH3Index(), pop, surviving);
-                            cell.setPopulation(surviving);
+                            H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, surviving);
                             cell.setBiomassHuman((double) surviving);
                         }
                         continue;
@@ -152,7 +153,7 @@ public class PressurizedHabitatEngine {
             int breachDeaths = (int) Math.round(pop * breachHazard);
             if (breachDeaths > 0) {
                 int newPop = Math.max(0, pop - breachDeaths);
-                cell.setPopulation(newPop);
+                H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, newPop);
                 cell.setBiomassHuman((double) newPop);
                 pop = newPop;
             }
@@ -165,7 +166,7 @@ public class PressurizedHabitatEngine {
             int hypoxiaDeaths = (int) Math.round(excess * (1.0 - Math.exp(-2.5 * dt)));
             if (hypoxiaDeaths > 0) {
                 int newPop = Math.max(0, pop - hypoxiaDeaths);
-                cell.setPopulation(newPop);
+                H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, newPop);
                 cell.setBiomassHuman((double) newPop);
                 pop = newPop;
             }
