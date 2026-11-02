@@ -140,6 +140,11 @@ public class DODDataGenerator {
                 float ageRnd = (float) DeterministicPRNG.nextDouble(seedH3, 101);
                 float initialAge = 22.0f + ageRnd * 6.0f; // Stable community mean age (22-28 yrs)
                 agents.getAge()[agentIndex] = initialAge;
+                float cohortTech = agents.getTechLevel()[agentIndex];
+                float initialAnnualCbr = (cohortTech < 1.3f) ? 0.028f : (cohortTech < 4.5f ? 0.038f : 0.020f);
+                if (agents.getBirths() != null) {
+                    agents.getBirths()[agentIndex] = cohortMass * initialAnnualCbr;
+                }
                 
                 // Initialize identity tensors with baseline/noise across all dynamic dimensions
                 int genDims = agents.getGenetics() != null ? agents.getGenetics().length : 4;

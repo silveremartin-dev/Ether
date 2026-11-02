@@ -159,9 +159,9 @@ public class SimulationMetricsAggregator {
     public double getPollutionLevel() {
         float tech = engine.getAverageTechnology();
         long pop = engine.getTotalPopulation();
-        if (tech < 3.0f || pop <= 0) return 0.0;
-        // Continuous logistic industrial emissions response (Smil 2008)
-        double industrialIntensity = 1.0 / (1.0 + Math.exp(-2.5 * (tech - 4.5)));
+        if (pop <= 0) return 0.0;
+        // Continuous logistic industrial emissions response (Smil 2008) with smooth activation
+        double industrialIntensity = Math.tanh(Math.max(0.0, tech - 2.5) * 0.8) / (1.0 + Math.exp(-2.5 * (tech - 4.5)));
         return (pop / 100000.0) * industrialIntensity * 50.0;
     }
 
@@ -180,19 +180,15 @@ public class SimulationMetricsAggregator {
         float tech = engine.getAverageTechnology();
         double physicalGridArea = populatedCells * baseCellArea;
 
-        if (tech < 1.5f) {
-            double temp = 15.0;
-            if (engine.getWorldBuffer() != null && engine.getWorldBuffer().getTemperature().length > 0) {
-                temp = engine.getWorldBuffer().getTemperature()[0];
-            }
-            double km2PerCapita = (temp < 5.0) ? 85.0 : Math.max(12.0, 45.0 - (temp * 1.2));
-            double ecologicalHomeRange = pop * km2PerCapita;
-            return Math.max(physicalGridArea, ecologicalHomeRange);
-        } else if (tech < 5.0f) {
-            double km2PerCapita = Math.max(0.05, 2.0 - (tech - 1.5) * 0.55);
-            return Math.max(physicalGridArea, pop * km2PerCapita);
+        double temp = 15.0;
+        if (engine.getWorldBuffer() != null && engine.getWorldBuffer().getTemperature().length > 0) {
+            temp = engine.getWorldBuffer().getTemperature()[0];
         }
-        return physicalGridArea;
+        double foragingKm2 = (temp < 5.0) ? 85.0 : Math.max(12.0, 45.0 - (temp * 1.2));
+        double agrarianKm2 = Math.max(0.05, 2.0 - Math.max(0.0, tech - 1.5) * 0.55);
+        double agrarianWeight = 1.0 / (1.0 + Math.exp(-2.5 * (tech - 1.50)));
+        double effectiveKm2PerCapita = (1.0 - agrarianWeight) * foragingKm2 + agrarianWeight * agrarianKm2;
+        return Math.max(physicalGridArea, pop * effectiveKm2PerCapita);
     }
 
     /**
@@ -344,17 +340,17 @@ public class SimulationMetricsAggregator {
     }
 
     /**
-     * Evaluates Energy Return on Investment for the food/subsistence system ($\text{EROI}_{\text{alim}} = E_{\text{out}} / E_{\text{in}}$).
+     * Evaluates Energy Return on Investment for the food/subsistence system ($\text{EROI}_{\text{alim}} = E_{\text{out}} / E_{\text{in}}$)
+     * using an authentic continuous inverse logistic response (Boserup 1965; Hall et al. 2014; Giampietro 2013).
      *
-     * @return food system EROI ratio
+     * @return food system EROI ratio in $[0.12, 7.5]$
      */
     public double getEroiAlimentaire() {
         float tech = engine.getAverageTechnology();
-        if (tech < 1.5f) return 7.0; // Hunter-gatherers (foraged wild harvest)
-        if (tech < 2.5f) return 6.5; // Early Neolithic agrarian (manual hoe/swidden)
-        if (tech < 3.8f) return 2.8; // Advanced pre-industrial agrarian (animal traction, manure)
-        if (tech < 6.0f) return 0.50; // Industrialized agriculture (fossil energy subsidy, Haber-Bosch)
-        return 0.12; // Hyper-intensive modern food supply chain
+        // Boserupian agricultural intensification: EROI decreases smoothly from foraged wild harvest (~7.0)
+        // to pre-industrial animal traction (~2.5) down to modern industrial fossil-fuel subsidized agriculture (< 0.5)
+        double eroi = 0.12 + 6.88 / (1.0 + Math.exp(1.35 * (tech - 2.80)));
+        return Math.clamp(eroi, 0.12, 7.50);
     }
 
     /**
@@ -368,17 +364,15 @@ public class SimulationMetricsAggregator {
     }
 
     /**
-     * Evaluates trophic footprint multiplier $\mu = \text{Mobilized Raw Biomass} / \text{Ingested Energy}$.
+     * Evaluates trophic footprint multiplier $\mu = \text{Mobilized Raw Biomass} / \text{Ingested Energy}$
+     * as a continuous dietary transition function across technological stages.
      *
-     * @return trophic multiplier
+     * @return continuous trophic multiplier in $[1.05, 3.20]$
      */
     public double getTrophicMultiplier() {
         float tech = engine.getAverageTechnology();
-        if (tech < 1.5f) return PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER;
-        if (tech < 2.5f) return PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN;
-        if (tech < 3.8f) return PhysicalConstants.TROPHIC_MULTIPLIER_PREINDUSTRIAL_ADVANCED_AGRARIAN;
-        if (tech < 6.0f) return PhysicalConstants.TROPHIC_MULTIPLIER_INDUSTRIAL_WORKER;
-        return PhysicalConstants.TROPHIC_MULTIPLIER_POST_INDUSTRIAL;
+        double mu = 1.05 + 2.15 / (1.0 + Math.exp(-1.25 * (tech - 2.80)));
+        return Math.clamp(mu, 1.05, 3.20);
     }
 
     /**
@@ -389,24 +383,21 @@ public class SimulationMetricsAggregator {
     public double getBiomassMobilizedPerCapitaKg() {
         double trophicMul = getTrophicMultiplier();
         float tech = engine.getAverageTechnology();
-        double energyDensity = (tech < 1.5f) ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG
-                : (tech < 3.8f ? PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG : 14.0);
+        // Continuous caloric density transition from wild game/tubers (17.5 MJ/kg) to domestic grains/fats (14.0 MJ/kg)
+        double energyDensity = 17.5 - 3.5 / (1.0 + Math.exp(-1.50 * (tech - 2.20)));
         return (PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_MJ * trophicMul) / energyDensity;
     }
 
     /**
-     * Evaluates maximum Seshat administrative hierarchy level ($1$ to $6$).
+     * Evaluates Seshat administrative hierarchy complexity level ($1.0$ to $6.0$) as a continuous scalar
+     * (Turchin et al. 2018).
      *
-     * @return hierarchy level
+     * @return hierarchy level score in $[1, 6]$
      */
     public int getMaxHierarchyLevel() {
         float tech = engine.getAverageTechnology();
-        if (tech < 1.5f) return 1; // Band
-        if (tech < 2.2f) return 2; // Tribe / Segmentary lineage
-        if (tech < 3.0f) return 3; // Simple Chiefdom / Archaic State
-        if (tech < 4.0f) return 4; // Complex State / Agrarian Empire
-        if (tech < 5.5f) return 5; // Fiscal-Military State / Nation State
-        return 6; // Transnational / Globalized Bureaucracy
+        double h = 1.0 + 5.0 / (1.0 + Math.exp(-1.35 * (tech - 2.90)));
+        return (int) Math.round(Math.clamp(h, 1.0, 6.0));
     }
 
     /**
@@ -513,8 +504,10 @@ public class SimulationMetricsAggregator {
     public double getLandRentIndex() {
         long pop = engine.getTotalPopulation();
         long populatedCells = engine.getPopulatedCellCount();
-        double density = populatedCells > 0 ? (double) pop / populatedCells : 0;
-        return density * 1.5 + engine.getAverageTechnology() * 0.8;
+        double cellAreaKm2 = (engine.getCurrentScenario() != null && engine.getCurrentScenario().getCellSizeKm2() > 0)
+                ? engine.getCurrentScenario().getCellSizeKm2() : 36.12906216;
+        double densityPerKm2 = populatedCells > 0 ? (double) pop / (populatedCells * Math.max(1.0, cellAreaKm2)) : 0.0;
+        return Math.min(100.0, densityPerKm2 * 1.2 + engine.getAverageTechnology() * 2.5);
     }
 
     /**
@@ -695,12 +688,15 @@ public class SimulationMetricsAggregator {
 
     // --- CLIODYNAMICS & SYSTEMIC RISKS ---
 
-    /** @return Turchin elite overproduction index ($0.0$ to $10.0$) */
+    /** @return Turchin elite overproduction index ($0.0$ in Deep-Time pre-state to $4.5$ crisis peak) with smooth continuous activation */
     public double getEliteOverproductionIndex() {
-        double eliteForm = getEliteFormationRatio();
+        float tech = engine.getAverageTechnology();
+        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.45);
+        if (stateActivation <= 0.0) return 0.0;
         float gini = engine.getCurrentGini();
-        double val = (eliteForm / 5.0) * (1.0 + (Double.isNaN(gini) ? 0.0 : gini) * 2.0);
-        return Double.isNaN(val) ? 1.0 : Math.max(0.0, Math.min(10.0, val));
+        double safeGini = Double.isNaN(gini) ? 0.40 : gini;
+        double eoi = stateActivation * (1.0 + 1.45 * Math.max(0.0, safeGini - 0.30) + 0.25 * Math.tanh(Math.max(0.0, tech - 2.50)));
+        return Double.isNaN(eoi) ? 0.0 : Math.clamp(eoi, 0.0, 4.5);
     }
 
     /** @return Goldstone/Turchin state fiscal stress index ($0.0$ to $100.0$) */
@@ -776,6 +772,17 @@ public class SimulationMetricsAggregator {
             float[] capital = wb.getResourceCapital();
             float[] tech = wb.getTechnologyLevel();
             int cap = wb.getCapacity();
+
+            double cellAreaKm2 = 1770.49;
+            long[] h3Idx = wb.getH3Indexes();
+            if (h3Idx != null && h3Idx.length > 0 && h3Idx[0] != 0L) {
+                int res = (int) ((h3Idx[0] >>> 52) & 0x0FL);
+                if (res >= 0 && res <= 15) {
+                    cellAreaKm2 = org.ether.society.database.H3Cell.getAvgHexagonAreaKm2(res);
+                }
+            }
+            double macroScale = 1770.49 / Math.max(0.1, cellAreaKm2);
+
             double totalPop = 0.0;
             double urbanPop = 0.0;
             for (int i = 0; i < cap; i++) {
@@ -786,32 +793,38 @@ public class SimulationMetricsAggregator {
                 float cellCap = (capital != null && capital[i] > 0.0f) ? capital[i] : 0.0f;
                 float kpc = cellCap / p;
 
-                if (cellTech <= 1.55 || kpc <= 25.0) continue;
+                // Continuous biophysical activation: urban agglomeration emerges endogenously when
+                // technological complexity T exceeds the proto-urban threshold (T_0 = 1.55, corresponding to
+                // Seshat Uruk-period monumental aggregation; Turchin et al. 2018; Buringh & van Zanden 2009)
+                // and intensive capital per capita exceeds durable storage requirements (k_0 = 25 kg/capita).
+                double techActivation = Math.tanh(Math.max(0.0, cellTech - 1.55) * 1.15);
+                double capActivation = Math.tanh(Math.max(0.0, kpc - 25.0) / 50.0);
+                if (techActivation <= 0.0 || capActivation <= 0.0) continue;
 
-                // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987)
-                // Physical agglomeration requirement: pre-industrial cities required a minimum nucleated population
-                // of ~5,000 inhabitants. Dispersed rural hamlets (p < 3,000) cannot contain an urban core.
+                // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987; De Vries 1984)
+                // H3 Resolution-Invariant nucleation using macro-equivalent catchment population pEq = p * (1770.49 / A_cell)
+                double pEq = p * macroScale;
                 double logKpc = Math.log(Math.max(1.0, kpc));
-                double preIndustrialNucleation = Math.tanh(Math.max(0.0, p - 3000.0) / 12000.0);
-                double agrarianUrbanShare = (0.085 / (1.0 + Math.exp(-2.0 * (logKpc - 5.50))))
-                        * Math.tanh((cellTech - 1.55) * 1.50)
-                        * preIndustrialNucleation;
+                double preIndustrialNucleation = Math.tanh(Math.max(0.0, pEq - 1500.0) / 8000.0);
+                double agrarianUrbanShare = (0.115 / (1.0 + Math.exp(-1.65 * (logKpc - 4.35))))
+                        * techActivation * capActivation
+                        * (0.50 + 0.50 * preIndustrialNucleation);
 
-                // 2. Industrial steam/fossil mechanization rural-to-urban transition (T > 3.40, k > 500 kg/cap)
-                // Modulated by progressive global adoption (Bettencourt 2013; Bairoch 1988)
+                // 2. Industrial steam/fossil mechanization rural-to-urban transition (Crafts 1985; Wrigley 1988)
                 double industrialUrbanShare = 0.0;
-                if (cellTech > 3.40 && kpc > 500.0) {
-                    double techSurplus = Math.tanh((cellTech - 3.40) * 0.35);
-                    double capSurplus = Math.tanh((kpc - 500.0) / 450.0);
-                    double logisticAdoption = 1.0 / (1.0 + Math.exp(-0.70 * (cellTech - 6.80)));
-                    industrialUrbanShare = 0.85 * techSurplus * capSurplus * logisticAdoption;
+                if (cellTech > 3.20 && kpc > 120.0) {
+                    double techSurplus = Math.tanh((cellTech - 3.20) * 0.55);
+                    double capSurplus = Math.tanh((kpc - 120.0) / 400.0);
+                    double logisticAdoption = 1.0 / (1.0 + Math.exp(-1.50 * (cellTech - 4.50)));
+                    industrialUrbanShare = 0.60 * techSurplus * capSurplus * logisticAdoption;
                 }
 
-                double cellUrbanFraction = Math.clamp(agrarianUrbanShare + industrialUrbanShare, 0.0, 0.95);
+                // Industrialization transforms agrarian settlements rather than purely adding on top of them
+                double cellUrbanFraction = Math.clamp(Math.max(agrarianUrbanShare, industrialUrbanShare), 0.0, 0.92);
                 urbanPop += p * cellUrbanFraction;
             }
             if (totalPop > 0.0) {
-                return Math.clamp((urbanPop / totalPop) * 100.0, 0.0, 95.0);
+                return Math.clamp((urbanPop / totalPop) * 100.0, 0.0, 92.0);
             }
         }
 
@@ -832,35 +845,35 @@ public class SimulationMetricsAggregator {
             double cellCap = c.getResourceCapitalOr(0.0);
             double kpc = cellCap / p;
 
-            // Endogenous biophysical urban threshold: requires agricultural surplus (T > 1.55) and infrastructure capital (k > 25 kg/cap)
-            if (cellTech <= 1.55 || kpc <= 25.0) continue;
+            double techActivation = Math.tanh(Math.max(0.0, cellTech - 1.55) * 1.15);
+            double capActivation = Math.tanh(Math.max(0.0, kpc - 25.0) / 50.0);
+            if (techActivation <= 0.0 || capActivation <= 0.0) continue;
 
             double areaKm2 = c.getEffectiveSurfaceAreaKm2() > 0 ? c.getEffectiveSurfaceAreaKm2() : 1770.49;
-            double density = p / areaKm2;
+            double pEq = p * (1770.49 / Math.max(0.1, areaKm2));
 
-            // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987)
+            // 1. Pre-industrial agrarian & commercial urbanization (Bairoch 1988; Chandler 1987; De Vries 1984)
             double logKpc = Math.log(Math.max(1.0, kpc));
-            double preIndustrialNucleation = Math.tanh(Math.max(0.0, p - 3000.0) / 12000.0);
-            double agrarianUrbanShare = (0.085 / (1.0 + Math.exp(-2.0 * (logKpc - 5.50))))
-                    * Math.tanh((cellTech - 1.55) * 1.50)
-                    * (0.60 + 0.40 * Math.tanh(density / 25.0))
-                    * preIndustrialNucleation;
+            double preIndustrialNucleation = Math.tanh(Math.max(0.0, pEq - 1500.0) / 8000.0);
+            double agrarianUrbanShare = (0.115 / (1.0 + Math.exp(-1.65 * (logKpc - 4.35))))
+                    * techActivation * capActivation
+                    * (0.50 + 0.50 * preIndustrialNucleation);
 
-            // 2. Industrial steam/fossil mechanization rural-to-urban transition (T > 3.40, k > 500 kg/cap)
+            // 2. Industrial steam/fossil mechanization rural-to-urban transition (Crafts 1985; Wrigley 1988)
             double industrialUrbanShare = 0.0;
-            if (cellTech > 3.40 && kpc > 500.0) {
-                double techSurplus = Math.tanh((cellTech - 3.40) * 0.35);
-                double capSurplus = Math.tanh((kpc - 500.0) / 450.0);
-                double logisticAdoption = 1.0 / (1.0 + Math.exp(-0.70 * (cellTech - 6.80)));
-                    industrialUrbanShare = 0.85 * techSurplus * capSurplus * logisticAdoption;
+            if (cellTech > 3.20 && kpc > 120.0) {
+                double techSurplus = Math.tanh((cellTech - 3.20) * 0.55);
+                double capSurplus = Math.tanh((kpc - 120.0) / 400.0);
+                double logisticAdoption = 1.0 / (1.0 + Math.exp(-1.50 * (cellTech - 4.50)));
+                industrialUrbanShare = 0.60 * techSurplus * capSurplus * logisticAdoption;
             }
 
-            double cellUrbanFraction = Math.clamp(agrarianUrbanShare + industrialUrbanShare, 0.0, 0.95);
+            double cellUrbanFraction = Math.clamp(Math.max(agrarianUrbanShare, industrialUrbanShare), 0.0, 0.92);
             urbanPop += p * cellUrbanFraction;
         }
 
         if (totalPop <= 0.0) return 0.0;
-        return Math.clamp((urbanPop / totalPop) * 100.0, 0.0, 95.0);
+        return Math.clamp((urbanPop / totalPop) * 100.0, 0.0, 92.0);
     }
 
     /**
@@ -868,8 +881,8 @@ public class SimulationMetricsAggregator {
      * Goody (1986), Seshat (Turchin et al. 2018), and Buringh &amp; van Zanden (2009).
      * <p>
      * Writing systems emerge endogenously above the scribal administrative complexity threshold
-     * ($T_i > 1.60$ and $k_i > 35.0\,\text{kg/capita}$), transitioning to mass literacy above
-     * the movable-type printing and industrial schooling threshold ($T_i > 2.43, k_i > 520\,\text{kg/capita}$),
+     * ($T_i > 1.60$ and $k_i > 25.0\,\text{kg/capita}$), transitioning to mass literacy above
+     * the movable-type printing and industrial schooling threshold ($T_i > 2.98, k_i > 105\,\text{kg/capita}$),
      * with zero calendar-date hardcoding.
      * </p>
      *
@@ -892,17 +905,28 @@ public class SimulationMetricsAggregator {
                 float cellCapital = (capital != null && capital[i] > 0.0f) ? capital[i] : 0.0f;
                 float cellKpc = cellCapital / p;
 
-                if (cellTech <= 1.60 || cellKpc <= 35.0) continue;
+                // Continuous scribal activation: writing systems emerge endogenously above the
+                // Seshat proto-literacy threshold (T_0 = 1.55; Goody 1986; Turchin et al. 2018)
+                // and administrative record-keeping capital (k_0 = 20 kg/capita).
+                double techActivation = Math.tanh(Math.max(0.0, cellTech - 1.55) * 1.25);
+                double capFactor = Math.tanh(Math.max(0.0, cellKpc - 20.0) / 40.0);
+                if (techActivation <= 0.0 || capFactor <= 0.0) continue;
 
-                // 1. Pre-industrial scribal, clerical & commercial manuscript literacy (ceiling ~ 4.80%, Goody 1986; Buringh & van Zanden 2009)
-                double scribalLit = 6.80 * Math.tanh((cellTech - 1.60) * 1.20) * Math.tanh((cellKpc - 35.0) / 220.0);
+                // 1. Pre-industrial scribal, scriptural & commercial manuscript literacy (Goody 1986; Bulliet 1979; Buringh & van Zanden 2009)
+                double scribalLit = (1.5 + 7.5 * Math.pow(Math.min(1.0, Math.max(0.0, cellTech - 1.55) / 1.60), 0.85)) * capFactor * techActivation;
 
-                // 2. Printing press & industrial mass schooling diffusion (Buringh & van Zanden 2009)
-                double printLit = (cellTech > 2.80 && cellKpc > 380.0)
-                        ? 95.0 * Math.tanh((cellTech - 2.80) * 0.075) * Math.tanh((cellKpc - 380.0) / 500.0)
+                // 2. Early print, xylography & vernacular printing diffusion (Song dynasty, Gutenberg press; T > 2.50)
+                double vernacularLit = (cellTech > 2.50 && cellKpc > 35.0)
+                        ? 16.0 * Math.pow(Math.min(1.0, (cellTech - 2.50) / 1.50), 1.20) * capFactor
                         : 0.0;
 
-                double cellLit = Math.clamp(scribalLit + printLit, 0.0, 99.5);
+                // 3. Industrial mass public schooling transition (T > 3.80, midpoint T = 5.20; Graff 1987)
+                double massEduLit = (cellTech > 3.80 && cellKpc > 75.0)
+                        ? 82.0 / (1.0 + Math.exp(-1.5 * (cellTech - 5.20)))
+                        : 0.0;
+
+                // Unified historical literacy transition: mass schooling encompasses vernacular & scribal literacy
+                double cellLit = Math.clamp(Math.max(scribalLit, Math.max(vernacularLit, massEduLit)), 0.0, 99.5);
                 weightedLit += p * cellLit;
             }
             if (totalPop > 0.0) {
@@ -924,18 +948,20 @@ public class SimulationMetricsAggregator {
             double cellCapital = c.getResourceCapitalOr(0.0);
             double cellKpc = cellCapital / p;
 
-            // Endogenous scribal threshold: writing emerges only when administrative & capital complexity exceed T > 1.60, k > 35 kg/cap
-            if (cellTech <= 1.60 || cellKpc <= 35.0) continue;
+            double techActivation = Math.tanh(Math.max(0.0, cellTech - 1.55) * 1.25);
+            double capFactor = Math.tanh(Math.max(0.0, cellKpc - 20.0) / 40.0);
+            if (techActivation <= 0.0 || capFactor <= 0.0) continue;
 
-            // 1. Pre-industrial scribal, clerical & commercial manuscript literacy (ceiling ~ 4.80%, Goody 1986; Buringh & van Zanden 2009)
-            double scribalLit = 6.80 * Math.tanh((cellTech - 1.60) * 1.20) * Math.tanh((cellKpc - 35.0) / 220.0);
-
-            // 2. Printing press & industrial mass schooling diffusion (Buringh & van Zanden 2009)
-            double printLit = (cellTech > 2.80 && cellKpc > 380.0)
-                    ? 95.0 * Math.tanh((cellTech - 2.80) * 0.075) * Math.tanh((cellKpc - 380.0) / 500.0)
+            double scribalLit = (1.5 + 7.5 * Math.pow(Math.min(1.0, Math.max(0.0, cellTech - 1.55) / 1.60), 0.85)) * capFactor * techActivation;
+            double vernacularLit = (cellTech > 2.50 && cellKpc > 35.0)
+                    ? 16.0 * Math.pow(Math.min(1.0, (cellTech - 2.50) / 1.50), 1.20) * capFactor
+                    : 0.0;
+            double massEduLit = (cellTech > 3.80 && cellKpc > 75.0)
+                    ? 82.0 / (1.0 + Math.exp(-1.5 * (cellTech - 5.20)))
                     : 0.0;
 
-            double cellLit = Math.clamp(scribalLit + printLit, 0.0, 99.5);
+            // Unified historical literacy transition: mass schooling encompasses vernacular & scribal literacy
+            double cellLit = Math.clamp(Math.max(scribalLit, Math.max(vernacularLit, massEduLit)), 0.0, 99.5);
             weightedLit += p * cellLit;
         }
         return totalPop > 0 ? Math.clamp(weightedLit / totalPop, 0.0, 99.5) : 0.0;
@@ -1004,14 +1030,212 @@ public class SimulationMetricsAggregator {
     }
 
     /**
-     * Evaluates mean planetary temperature anomaly (°C) relative to pre-industrial baseline
-     * via Arrhenius radiative forcing.
+     * Evaluates mean planetary temperature anomaly (°C) relative to 1850-1900 pre-industrial baseline
+     * via Arrhenius CO2 radiative forcing and cryospheric ice-albedo amplification (EPICA / PAGES 2k / IPCC AR6).
      *
      * @return global temperature anomaly in °C
      */
     public double getTemperatureAnomaly() {
         double co2 = getAtmosphericCO2Ppm();
-        double radiativeForcing = 3.0 * (Math.log(co2 / 280.0) / Math.log(2.0));
-        return Math.clamp(radiativeForcing * 0.75, -2.5, 4.5);
+        double radiativeForcing = 3.0 * (Math.log(Math.max(150.0, co2) / 280.0) / Math.log(2.0));
+        // Glacial ice-albedo feedback amplifies cooling when CO2 drops below 240 ppm (LGM ~ 190 ppm -> -6.0 C)
+        double cryosphereAmplification = co2 < 240.0 ? (1.0 + (240.0 - co2) / 25.0) : 1.0;
+        return Math.clamp(radiativeForcing * 0.85 * cryosphereAmplification, -6.5, 5.5);
+    }
+
+    /**
+     * Evaluates silver coinage purity (%) based on metallurgical minting technology and state fiscal stress
+     * (Butcher &amp; Ponting 2014) using continuous smooth activation.
+     * Enforces Deep-Time Invariant ($0.0\%$) prior to coinage emergence ($T \le 1.80$).
+     *
+     * @return coinage silver purity in $[0.0, 99.0]$ %
+     */
+    public double getCurrencyDebasement() {
+        float tech = engine.getAverageTechnology();
+        double mintActivation = Math.tanh(Math.max(0.0, tech - 1.80) * 1.25);
+        if (mintActivation <= 0.0) return 0.0;
+        float gini = engine.getCurrentGini();
+        double safeGini = Double.isNaN(gini) ? 0.42 : gini;
+        double basePurity = 48.0 + 18.0 * Math.exp(-12.0 * Math.pow(tech - 2.60, 2.0))
+                + 8.0 * Math.tanh(tech - 3.30) - 10.0 * Math.max(0.0, safeGini - 0.50);
+        double fiatTransition = 1.0 / (1.0 + Math.exp(1.8 * (tech - 7.00)));
+        return Math.clamp(mintActivation * basePurity * fiatTransition, 0.0, 98.0);
+    }
+
+    /**
+     * Evaluates Robert C. Allen (2001) Real Unskilled Worker Purchasing Power (Welfare Ratio Index, $100 = \text{Subsistence}$)
+     * using continuous analytical transition between Malthusian subsistence and Solow-Kummel industrial breakout.
+     *
+     * @return real unskilled wage index
+     */
+    public double getRealUnskilledWageIndex() {
+        float tech = engine.getAverageTechnology();
+        float gini = engine.getCurrentGini();
+        double safeGini = Double.isNaN(gini) ? 0.35 : gini;
+        // Pre-industrial Malthusian regime oscillates smoothly around 100
+        double preIndustrialWage = 100.0 + 18.0 * Math.tanh(tech - 1.50) - 20.0 * Math.max(0.0, safeGini - 0.45);
+        double industrialSurplusFactor = Math.tanh(Math.max(0.0, tech - 3.60) * 0.85);
+        double industrialProductivity = 65.0 * industrialSurplusFactor * Math.exp(Math.min(3.0, industrialSurplusFactor * 2.2));
+        return Math.clamp(preIndustrialWage + industrialProductivity, 60.0, 2500.0);
+    }
+
+    /**
+     * Evaluates Turchin &amp; Nefedov (2009) Political Stress Index ($\text{PSI} \in [0, 100]$).
+     * Enforces Deep-Time Invariant ($0.0$) prior to state emergence ($T \le 1.55$) via smooth continuous activation.
+     *
+     * @return political stress index in $[0.0, 100.0]$
+     */
+    public double getPoliticalStressIndex() {
+        float tech = engine.getAverageTechnology();
+        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.35);
+        if (stateActivation <= 0.0) return 0.0;
+        return Math.clamp(stateActivation * getSociopoliticalInstabilityIndex(), 0.0, 100.0);
+    }
+
+    /**
+     * Evaluates Ibn Khaldun (1377) normalized Asabiyyah / Collective Solidarity Score in $[0.0, 1.0]$
+     * as a continuous function of technological complexity and income inequality (Gini).
+     *
+     * @return normalized social cohesion score in $[0.0, 1.0]$
+     */
+    public double getAsabiyyahSocialCohesionScore() {
+        float tech = engine.getAverageTechnology();
+        float gini = engine.getCurrentGini();
+        double safeGini = Double.isNaN(gini) ? 0.25 : gini;
+        double baseline = 1.02 - 0.35 * Math.tanh(Math.max(0.0, tech - 1.55) * 0.65);
+        double asabiyyah = baseline - 0.65 * safeGini;
+        return Math.clamp(asabiyyah, 0.10, 0.98);
+    }
+
+    /**
+     * Evaluates Reinhart &amp; Rogoff (2009) Sovereign Debt Burden (% of GWP)
+     * using continuous analytical fiscal state emergence ($T_0 = 1.65$).
+     *
+     * @return sovereign debt burden in $[0.0, 250.0]$ %
+     */
+    public double getSovereignDebtBurdenPct() {
+        float tech = engine.getAverageTechnology();
+        double fiscalStateActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 1.15);
+        if (fiscalStateActivation <= 0.0) return 0.0;
+        double earlyDebt = 8.0 + 18.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 1.10);
+        double modernFiscalState = 80.0 / (1.0 + Math.exp(-2.20 * (tech - 3.85)));
+        return Math.clamp(fiscalStateActivation * Math.max(earlyDebt, modernFiscalState), 0.0, 250.0);
+    }
+
+    /**
+     * Evaluates Federico &amp; Tena-Junguito (2017) Global Trade Volume Index ($100 = 1913\text{ Level}$)
+     * using continuous analytical long-distance exchange network emergence ($T_0 = 1.55$).
+     *
+     * @return global trade volume index
+     */
+    public double getGlobalTradeVolumeIndex() {
+        float tech = engine.getAverageTechnology();
+        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.20);
+        if (tradeActivation <= 0.0) return 0.0;
+        double preIndustrialTrade = 1.0 + 22.0 * Math.tanh(Math.max(0.0, tech - 2.00) * 0.90);
+        double globalShippingBoom = 250.0 / (1.0 + Math.exp(-2.40 * (tech - 4.15)));
+        double hyperGlobalization = (tech > 4.5) ? 2200.0 / (1.0 + Math.exp(-2.80 * (tech - 5.20))) : 0.0;
+        return Math.clamp(tradeActivation * (preIndustrialTrade + globalShippingBoom + hyperGlobalization), 0.0, 3000.0);
+    }
+
+    /**
+     * Evaluates Montgomery (2007) Cumulative Topsoil Erosion &amp; Salinization Loss (% of Holocene baseline)
+     * as an authentic continuous sigmoid response to mechanized agriculture.
+     *
+     * @return topsoil loss percentage in $[0.03, 85.0]$ %
+     */
+    public double getTopsoilErosionLossPct() {
+        float tech = engine.getAverageTechnology();
+        double lossActivation = Math.tanh(Math.max(0.0, tech - 1.25) * 0.65);
+        double mechanizedAcceleration = 1.0 / (1.0 + Math.exp(-1.20 * (tech - 3.50)));
+        double soilLoss = 0.03 + 32.0 * lossActivation * mechanizedAcceleration;
+        return Math.clamp(soilLoss, 0.03, 80.0);
+    }
+
+    /**
+     * Evaluates Vaclav Smil (2008) / Giampietro (2013) Agricultural EROEI Ratio
+     * using continuous analytical food system energetics.
+     *
+     * @return agricultural EROEI ratio
+     */
+    public double getAgriculturalEroeiRatio() {
+        return getEroiAlimentaire();
+    }
+
+    /**
+     * Evaluates HYDE 3.2 / FAO Global Forest Cover Remaining (% of post-glacial Holocene forest).
+     *
+     * @return forest retention percentage in $[0.0, 100.0]$ %
+     */
+    public double getForestCoverRemainingPct() {
+        float tech = engine.getAverageTechnology();
+        double clearingActivation = Math.tanh(Math.max(0.0, tech - 1.25) * 0.70);
+        double industrialDeforestation = 1.0 / (1.0 + Math.exp(-1.10 * (tech - 3.40)));
+        double clearing = 36.0 * clearingActivation * industrialDeforestation;
+        double postGlacialFactor = Math.tanh(Math.max(0.0, tech - 1.15) * 2.0);
+        return Math.clamp(postGlacialFactor * (99.0 - clearing), 0.0, 100.0);
+    }
+
+    /**
+     * Evaluates Scheidel (2014) ORBIS Information Travel Speed ($\text{km/day}$)
+     * as a continuous transport network expansion from pedestrian to courier to telecommunications.
+     *
+     * @return information transmission speed in $\text{km/day}$
+     */
+    public double getInformationTravelSpeedKmPerDay() {
+        float tech = engine.getAverageTechnology();
+        double courierSpeed = 4.0 + 76.0 * Math.tanh(Math.max(0.0, tech - 1.55) * 0.80);
+        double railSteamSpeed = 2400.0 / (1.0 + Math.exp(-2.50 * (tech - 3.90)));
+        double telecomSpeed = (tech > 4.15) ? 3.0e8 / (1.0 + Math.exp(-3.50 * (tech - 4.45))) : 0.0;
+        return Math.clamp(courierSpeed + railSteamSpeed + telecomSpeed, 4.0, 3.0e8);
+    }
+
+    /**
+     * Evaluates Malandra (1990) / USGS Per-Capita Metal Smelting Output ($\text{kg/capita/yr}$)
+     * using continuous Chalcolithic smelting activation ($T_0 = 1.65$).
+     *
+     * @return metal smelting output in $\text{kg/capita/yr}$
+     */
+    public double getMetalSmeltingPerCapitaKg() {
+        float tech = engine.getAverageTechnology();
+        double smeltActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 1.30);
+        if (smeltActivation <= 0.0) return 0.0;
+        // Malandra (1990) / USGS (2023): Antiquity (~1.5 kg) -> Medieval (~3.0 kg)
+        // -> 1800 CE (~10 kg) -> 1914 CE (~57 kg) -> 2026 CE (~255 kg)
+        double preIndustrial = 1.2 + 6.0 * Math.tanh(Math.max(0.0, tech - 2.00) * 0.80);
+        double industrialBessemer = 250.0 / (1.0 + Math.exp(-2.20 * (tech - 4.60)));
+        return Math.clamp(smeltActivation * (preIndustrial + industrialBessemer), 0.0, 350.0);
+    }
+
+    /**
+     * Evaluates Vaclav Smil (2017) / Marchetti &amp; Nakicenovic (1979) Fossil Fuel Share in Primary Energy (%)
+     * using an authentic continuous logistic substitution model with zero pre-industrial leakage.
+     *
+     * @return fossil energy share in $[0.0, 90.0]$ %
+     */
+    public double getFossilSharePrimaryEnergyPct() {
+        float tech = engine.getAverageTechnology();
+        // Strict continuous modern activation: fossil exploitation begins only above steam threshold T_0 = 3.40 (1750 CE)
+        double modernActivation = Math.tanh(Math.max(0.0, tech - 3.40) * 1.80);
+        if (modernActivation <= 0.0) return 0.0;
+        double logisticCoalOil = 88.0 / (1.0 + Math.exp(-2.80 * (tech - 4.25)));
+        return Math.clamp(modernActivation * logisticCoalOil, 0.0, 90.0);
+    }
+
+    /**
+     * Evaluates Harley (1988) / Mohammed &amp; Williamson (2004) Real Maritime Shipping Freight Cost Index ($100 = 1913\text{ Level}$)
+     * using continuous smooth maritime trade activation ($T_0 = 1.55$).
+     *
+     * @return real maritime freight cost index
+     */
+    public double getShippingFreightCostIndex() {
+        float tech = engine.getAverageTechnology();
+        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.50);
+        if (tradeActivation <= 0.0) return 0.0;
+        // Harley (1988): Antiquity/Rome (~1420) -> Renaissance lateen/caravel/fluyt (~930 in 1347, ~450 in 1700)
+        // -> 19th Century Steam (~250 in 1800, ~56 in 1914, ~20 modern)
+        double preModernDecline = 1450.0 - 800.0 * Math.tanh(Math.max(0.0, tech - 2.50) * 0.85);
+        double steamRevolution = 600.0 / (1.0 + Math.exp(-2.20 * (tech - 4.10)));
+        return Math.clamp(tradeActivation * (preModernDecline - steamRevolution), 20.0, 1600.0);
     }
 }

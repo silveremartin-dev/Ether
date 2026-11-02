@@ -182,7 +182,93 @@ The automated benchmark harness executed the complete multi-scale campaign on Go
 
 ---
 
-## 1.5 Comparative Boundary Mode Decision Framework: When to Adopt Which Regime
+## 1.6 Scientific Discretization Protocol: Spatial & Temporal Nyquist-Shannon Sampling Criteria
+
+A major risk in multi-scale macro-simulations is the arbitrary choice of mesh resolution and time stepping. In Ether, the discretization scales are strictly governed by the **Nyquist-Shannon Spatial Sampling Theorem** and the **Courant-Friedrichs-Lewy (CFL) Stability Condition**.
+
+### 1.6.1 The Spatial Nyquist-Shannon Theorem in Ecological Landscape Modeling
+To resolve a continuous biophysical corridor (such as an alluvial floodplain, river oasis, or narrow island) without suffering from non-physical sub-grid dilution, the spatial sampling step $\Delta x_{\text{cell}}$ (inter-hexagon distance $d$) must satisfy:
+
+$$d \le \frac{W_{\text{corridor}}}{2} \iff f_{\text{spatial}} \ge 2 \cdot f_{\text{landscape, max}}$$
+
+Where:
+* $W_{\text{corridor}}$ is the physical width of the fertile ecological or transport corridor (km).
+* $f_{\text{spatial}} = 1 / d$ is the spatial sampling frequency of the discrete hexagonal mesh.
+
+If $d > W_{\text{corridor}} / 2$, sub-Nyquist aliasing occurs: fertile riverbanks are mathematically averaged with surrounding hyper-arid deserts or mountains, depressing the local carrying capacity $K_{\text{food}}$ below human subsistence thresholds and triggering artificial demographic collapse or preventing proto-urban nucleation.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   SPATIAL NYQUIST-SHANNON DISCRETIZATION TAXONOMY ACROSS SCENARIOS                                     │
+├────────────────────┬───────────┬──────────────┬──────────────┬───────────────────────────────────┬─────────────────────────────────────┤
+│ Terrain Domain     │ Min Width │ Required Res │ Hex Area / d │ Target Scenarios                  │ Physical Justification & Pathology  │
+├────────────────────┼───────────┼──────────────┼──────────────┼───────────────────────────────────┼─────────────────────────────────────┤
+│ 1. Alluvial River  │ 2 – 5 km  │ **Res 7**    │ 5.16 km²     │ • Fertile Crescent (-8000 BCE)    │ Narrow floodplain & oasis corridors │
+│    & Fluvial Oasis │           │ (Hyper-Fine) │ d ≈ 2.59 km  │ • Ancient Egypt (-3000 BCE)       │ (Nile, Jordan, Tigris, Euphrates).  │
+│    Corridors       │           │              │              │ • Ramesses II (-1279 BCE)         │ *Pathology avoided*: Sub-grid desert│
+│                    │           │              │              │ • Assyrian Empire (-1900 BCE)     │ dilution & hamlet extinction.       │
+├────────────────────┼───────────┼──────────────┼──────────────┼───────────────────────────────────┼─────────────────────────────────────┤
+│ 2. Mountain Passes │ 4 – 8 km  │ **Res 7**    │ 5.16 km²     │ • Tokugawa Japan (1639 CE)        │ Topographic barrier friction and    │
+│    & Island Coasts │           │ (Hyper-Fine) │ d ≈ 2.59 km  │ • Mesoamerica (-1500 BCE)         │ narrow coastal valleys (Kanto plain,│
+│                    │           │              │              │                                   │ Valley of Mexico chinampas).        │
+├────────────────────┼───────────┼──────────────┼──────────────┼───────────────────────────────────┼─────────────────────────────────────┤
+│ 3. Sub-Continental │ 12 – 25 km│ **Res 6**    │ 36.13 km²    │ • Pax Romana / Augustus (0 CE)    │ Regional provincial networks across │
+│    Macro-Regions   │           │ (Fine)       │ d ≈ 6.85 km  │ • Antonine Plague (165 CE)        │ the Mediterranean basin, Ganges     │
+│                    │           │              │              │ • Bronze Age Collapse (-1200 BCE) │ valley, and West African Sahel.     │
+│                    │           │              │              │ • Maurya Empire (-300 BCE)        │ Captures inter-city road travel.    │
+│                    │           │              │              │ • Mali Empire (1324 CE)           │                                     │
+├────────────────────┼───────────┼──────────────┼──────────────┼───────────────────────────────────┼─────────────────────────────────────┤
+│ 4. Continental &   │ 35 – 80 km│ **Res 5**    │ 252.9 km²    │ • Americas Pre-Columbian (1491 CE)│ Trans-continental demographic wave  │
+│    Ice Age Steppes │           │ (Medium)     │ d ≈ 18.1 km  │ • Green Sahara (-6000 BCE)        │ expansion and megafauna ranges      │
+│                    │           │              │              │ • Sahul Colonization (-50,000 BP) │ across vast unconstrained plains    │
+│                    │           │              │              │ • Beringia Corridor (-25,000 BP)  │ and glaciated land bridges.         │
+├────────────────────┼───────────┼──────────────┼──────────────┼───────────────────────────────────┼─────────────────────────────────────┤
+│ 5. Full Planetary  │ > 80 km   │ **Res 3 / 4**│ 1,770 km²    │ • Global Paleolithic (-100k BP)   │ Global macro-trajectories where     │
+│    Earth Spheres   │           │ (Global Macro│ d ≈ 47.9 km  │ • Black Death (1347 CE)           │ planetary climate teleconnections   │
+│                    │           │   Grid)      │              │ • Industrial Revolution (1800 CE) │ and hemispheric trade dominate      │
+│                    │           │              │              │ • World Wars & Modern (1914-2026) │ localized terrain friction.         │
+└────────────────────┴───────────┴──────────────┴──────────────┴───────────────────────────────────┴─────────────────────────────────────┘
+```
+
+### 1.6.2 The Temporal Discretization Criterion: CFL Condition & Characteristic Societal Time Constants
+Parallel to spatial discretization, the numerical stepping interval $\Delta t$ must resolve the highest-frequency physical or demographic process without triggering numerical instability:
+
+$$\Delta t \le \min \left( \Delta t_{\text{CFL}}, \, \Delta t_{\text{bio}}, \, \Delta t_{\text{dem}}, \, \Delta t_{\text{macro}} \right)$$
+
+1. **Advective CFL Condition**: For spatial demic diffusion at velocity $v_{\text{migr}}$ and trade transport velocity $v_{\text{trade}}$:
+   $$\Delta t_{\text{CFL}} = C_{\text{CFL}} \cdot \frac{d}{v_{\text{max}}}, \quad C_{\text{CFL}} \le 0.5$$
+2. **Biological & Crop Seasonality Constraint ($\Delta t_{\text{bio}}$)**: Agricultural cereal harvests, monsoon wet-dry cycles, and pastoral seasonal migrations operate on a strict annual cycle ($\tau_{\text{season}} \approx 1\text{ to }3\text{ months}$). Stepping larger than 1 year completely erases crop failure shocks.
+3. **Epidemic SEIR Relaxation Time ($\Delta t_{\text{epi}}$)**: Virulent pathogen propagation (e.g. Antonine Smallpox, Justinian or Black Death plague) has an infectious period $\gamma^{-1} \approx 14\text{ to }30\text{ days}$. Integrating with annual steps ($\Delta t = 365\text{ d}$) artificially damps epidemic peak mortality by $> 60\%$.
+4. **Structural-Demographic Relaxation Time ($\Delta t_{\text{SDT}}$)**: Turchin secular cycles, elite overproduction accumulation, and state fiscal crises operate over generational cohorts ($\tau_{\text{cohort}} \approx 20\text{ to }50\text{ years}$).
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   TEMPORAL DISCRETIZATION TAXONOMY ACROSS SIMULATION WINDOWS                                           │
+├────────────────────┬───────────┬──────────────┬───────────────────────────────────┬────────────────────────────────────────────────────┤
+│ Temporal Regime    │ Step Size │ Ticks / Year │ Historical Scenarios & Targets    │ Physical & Algorithmic Justification               │
+├────────────────────┼───────────┼──────────────┼───────────────────────────────────┼────────────────────────────────────────────────────┤
+│ 1. High-Frequency  │ 30 Days   │ **12 Ticks** │ • Black Death (1347–1353 CE)      │ Captures acute epidemic mortality waves, seasonal  │
+│    Biophysical     │ (Monthly) │ / Year       │ • Antonine Plague (165–185 CE)    │ harvest failure, and monthly river flood discharge.│
+│    & Epidemic      │           │              │ • Justinian Plague (536–556 CE)   │ Required for all acute epidemiological shocks.     │
+├────────────────────┼───────────┼──────────────┼───────────────────────────────────┼────────────────────────────────────────────────────┤
+│ 2. Standard        │ 90 Days   │ **4 Ticks**  │ • Fertile Crescent (-8000 BCE)    │ Resolves quarterly agricultural seasons (sowing,   │
+│    Agrarian &      │(Quarterly)│ / Year       │ • Ancient Egypt (-3000 BCE)       │ ripening, harvest, fallow) and quarterly market    │
+│    Seasonal        │           │              │ • Song Dynasty (1000–1020 CE)     │ grain stockpile turnover. High computational ROI.  │
+│                    │           │              │ • Industrial Rev. (1800–1820 CE)  │                                                    │
+├────────────────────┼───────────┼──────────────┼───────────────────────────────────┼────────────────────────────────────────────────────┤
+│ 3. Macro-Historical│ 365 Days  │ **1 Tick**   │ • Classical Antiquity (-500 ➔ 100)│ Suitable for long secular transitions where        │
+│    Secular Cycles  │ (Annual)  │ / Year       │ • Pre-Industrial (1500 ➔ 1750 CE) │ inter-annual weather shocks average out and        │
+│                    │           │              │ • Pax Romana Centuries (0 ➔ 200)  │ generational capital/demographic growth dominates. │
+├────────────────────┼───────────┼──────────────┼───────────────────────────────────┼────────────────────────────────────────────────────┤
+│ 4. Deep-Time       │ 5 Years   │ **0.2 Ticks**│ • LGM & Solutrean (-50k ➔ -10k BP)│ Multi-millennial ice age transitions where orbital │
+│    Paleolithic     │ (Lustrum) │ / Year       │ • Out-of-Africa (-100k ➔ -50k BP) │ Milankovitch forcing ($20\,000\text{ yr}$) and slow│
+│    Epochs          │           │              │ • Younger Dryas (-10.9k ➔ -8k BP) │ demic migration ($1\text{ km/yr}$) dominate.       │
+└────────────────────┴───────────┴──────────────┴───────────────────────────────────┴────────────────────────────────────────────────────┘
+```
+
+---
+
+## 1.7 Comparative Boundary Mode Decision Framework: When to Adopt Which Regime
 
 ```
                       BOUNDARY CONDITION DECISION TREE FOR HISTORICAL WINDOWS

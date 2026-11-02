@@ -1,0 +1,318 @@
+{
+  "epoch": -800,
+  "era": "Iron Age 800 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -800 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "tabal_kingdom",
+      "colorHex": "#2346C4",
+      "colorRgb": [35, 70, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tabal Kingdom",
+        "fr": "Tabal Kingdom",
+        "de": "Tabal Kingdom",
+        "es": "Tabal Kingdom",
+        "zh": "Tabal Kingdom"
+      },
+      "seshatId": "tr_tabal_k",
+      "fromYear": -900,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "philistia",
+      "colorHex": "#742BD9",
+      "colorRgb": [116, 43, 217],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Philistia",
+        "fr": "Philistia",
+        "de": "Philistia",
+        "es": "Philistia",
+        "zh": "Philistia"
+      },
+      "seshatId": "",
+      "fromYear": -900,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "phrygia",
+      "colorHex": "#1DDE84",
+      "colorRgb": [29, 222, 132],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Phrygia",
+        "fr": "Phrygia",
+        "de": "Phrygia",
+        "es": "Phrygia",
+        "zh": "Phrygia"
+      },
+      "seshatId": "tr_phrygian_k",
+      "fromYear": -900,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "zhou_dynasty",
+      "colorHex": "#B8A218",
+      "colorRgb": [184, 162, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zhou Dynasty",
+        "fr": "Zhou Dynasty",
+        "de": "Zhou Dynasty",
+        "es": "Zhou Dynasty",
+        "zh": "Zhou Dynasty"
+      },
+      "seshatId": "cn_western_zhou_dyn",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "kingdom_of_urartu",
+      "colorHex": "#6B1EBD",
+      "colorRgb": [107, 30, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Urartu",
+        "fr": "Kingdom of Urartu",
+        "de": "Kingdom of Urartu",
+        "es": "Kingdom of Urartu",
+        "zh": "Kingdom of Urartu"
+      },
+      "seshatId": "tr_urartu_k",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "kingdom_of_judah",
+      "colorHex": "#BA6820",
+      "colorRgb": [186, 104, 32],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Judah",
+        "fr": "Kingdom of Judah",
+        "de": "Kingdom of Judah",
+        "es": "Kingdom of Judah",
+        "zh": "Kingdom of Judah"
+      },
+      "seshatId": "",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "sabaeans",
+      "colorHex": "#2CE83F",
+      "colorRgb": [44, 232, 63],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sabaeans",
+        "fr": "Sabaeans",
+        "de": "Sabaeans",
+        "es": "Sabaeans",
+        "zh": "Sabaeans"
+      },
+      "seshatId": "ye_sabaean_commonwealth",
+      "fromYear": -800,
+      "toYear": -701,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "phoenicia",
+      "colorHex": "#22B562",
+      "colorRgb": [34, 181, 98],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Phoenicia",
+        "fr": "Phoenicia",
+        "de": "Phoenicia",
+        "es": "Phoenicia",
+        "zh": "Phoenicia"
+      },
+      "seshatId": "lb_phoenician_emp",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "greek_city-states",
+      "colorHex": "#B51089",
+      "colorRgb": [181, 16, 137],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Greek City-States",
+        "fr": "Greek City-States",
+        "de": "Greek City-States",
+        "es": "Greek City-States",
+        "zh": "Greek City-States"
+      },
+      "seshatId": "",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "kingdom_of_kush",
+      "colorHex": "#31E03A",
+      "colorRgb": [49, 224, 58],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Kush",
+        "fr": "Kingdom of Kush",
+        "de": "Kingdom of Kush",
+        "es": "Kingdom of Kush",
+        "zh": "Kingdom of Kush"
+      },
+      "seshatId": "",
+      "fromYear": -800,
+      "toYear": -701,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "neo-assyrian_empire",
+      "colorHex": "#B51965",
+      "colorRgb": [181, 25, 101],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Neo-Assyrian Empire",
+        "fr": "Neo-Assyrian Empire",
+        "de": "Neo-Assyrian Empire",
+        "es": "Neo-Assyrian Empire",
+        "zh": "Neo-Assyrian Empire"
+      },
+      "seshatId": "iq_neo_assyrian_emp",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "kingdom_of_israel",
+      "colorHex": "#2AC935",
+      "colorRgb": [42, 201, 53],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Israel",
+        "fr": "Kingdom of Israel",
+        "de": "Kingdom of Israel",
+        "es": "Kingdom of Israel",
+        "zh": "Kingdom of Israel"
+      },
+      "seshatId": "il_yisrael",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "elam",
+      "colorHex": "#C72C8B",
+      "colorRgb": [199, 44, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Elam",
+        "fr": "Elam",
+        "de": "Elam",
+        "es": "Elam",
+        "zh": "Elam"
+      },
+      "seshatId": "ir_neo_elam_1",
+      "fromYear": -800,
+      "toYear": -701,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "_phoenician_empire_",
+      "colorHex": "#D46E2F",
+      "colorRgb": [212, 110, 47],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Phoenician Empire)",
+        "fr": "(Phoenician Empire)",
+        "de": "(Phoenician Empire)",
+        "es": "(Phoenician Empire)",
+        "zh": "(Phoenician Empire)"
+      },
+      "seshatId": "",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "twenty-third_dynasty_of_egypt",
+      "colorHex": "#AAE838",
+      "colorRgb": [170, 232, 56],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Twenty-third Dynasty of Egypt",
+        "fr": "Twenty-third Dynasty of Egypt",
+        "de": "Twenty-third Dynasty of Egypt",
+        "es": "Twenty-third Dynasty of Egypt",
+        "zh": "Twenty-third Dynasty of Egypt"
+      },
+      "seshatId": "eg_thebes_libyan",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "twenty-second_dynasty_of_egypt",
+      "colorHex": "#B59322",
+      "colorRgb": [181, 147, 34],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Twenty-second Dynasty of Egypt",
+        "fr": "Twenty-second Dynasty of Egypt",
+        "de": "Twenty-second Dynasty of Egypt",
+        "es": "Twenty-second Dynasty of Egypt",
+        "zh": "Twenty-second Dynasty of Egypt"
+      },
+      "seshatId": "eg_thebes_libyan",
+      "fromYear": -800,
+      "toYear": -751,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

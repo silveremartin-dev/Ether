@@ -1,0 +1,109 @@
+{
+  "epoch": -2200,
+  "era": "Bronze Age 2 200 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -2200 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "indus_valley_civilization",
+      "colorHex": "#B324A7",
+      "colorRgb": [179, 36, 167],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Indus Valley Civilization",
+        "fr": "Indus Valley Civilization",
+        "de": "Indus Valley Civilization",
+        "es": "Indus Valley Civilization",
+        "zh": "Indus Valley Civilization"
+      },
+      "seshatId": "pk_kachi_urban_1",
+      "fromYear": -2300,
+      "toYear": -2001,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "lower_egypt",
+      "colorHex": "#1AC43C",
+      "colorRgb": [26, 196, 60],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lower Egypt",
+        "fr": "Lower Egypt",
+        "de": "Lower Egypt",
+        "es": "Lower Egypt",
+        "zh": "Lower Egypt"
+      },
+      "seshatId": "eg_old_k_2",
+      "fromYear": -2200,
+      "toYear": -2101,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "upper_egypt",
+      "colorHex": "#1B6CC2",
+      "colorRgb": [27, 108, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Upper Egypt",
+        "fr": "Upper Egypt",
+        "de": "Upper Egypt",
+        "es": "Upper Egypt",
+        "zh": "Upper Egypt"
+      },
+      "seshatId": "eg_old_k_2",
+      "fromYear": -2200,
+      "toYear": -2101,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "elam",
+      "colorHex": "#C72C8B",
+      "colorRgb": [199, 44, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Elam",
+        "fr": "Elam",
+        "de": "Elam",
+        "es": "Elam",
+        "zh": "Elam"
+      },
+      "seshatId": "",
+      "fromYear": -2200,
+      "toYear": -2101,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "akkadian_empire",
+      "colorHex": "#BFA41D",
+      "colorRgb": [191, 164, 29],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Akkadian Empire",
+        "fr": "Akkadian Empire",
+        "de": "Akkadian Empire",
+        "es": "Akkadian Empire",
+        "zh": "Akkadian Empire"
+      },
+      "seshatId": "iq_akkad_emp",
+      "fromYear": -2200,
+      "toYear": -2101,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

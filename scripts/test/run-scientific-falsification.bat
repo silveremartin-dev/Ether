@@ -12,7 +12,7 @@ echo [INFO] Executing all 24 cliodynamic and epistemic debate benchmarks...
 echo.
 
 set MAVEN_OPTS=--add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED
-call mvn test "-Dtest=ScientificModelFalsificationAndValidationSuite" %*
+call mvn test -Pacademic-paper "-Dtest=ScientificModelFalsificationAndValidationSuite" %*
 
 if %ERRORLEVEL% equ 0 (
     echo.

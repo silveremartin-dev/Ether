@@ -1,0 +1,622 @@
+{
+  "epoch": -334,
+  "era": "Classical Antiquity & Alexander's Hellenistic Expansion (-334 BC)",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -334 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "kingdom_of_kush",
+      "colorHex": "#31E03A",
+      "colorRgb": [49, 224, 58],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Kush",
+        "fr": "Kingdom of Kush",
+        "de": "Kingdom of Kush",
+        "es": "Kingdom of Kush",
+        "zh": "Kingdom of Kush"
+      },
+      "seshatId": "",
+      "fromYear": -630,
+      "toYear": 337,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "zapotec_civilization",
+      "colorHex": "#1091C4",
+      "colorRgb": [16, 145, 196],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zapotec Civilization",
+        "fr": "Zapotec Civilization",
+        "de": "Zapotec Civilization",
+        "es": "Zapotec Civilization",
+        "zh": "Zapotec Civilization"
+      },
+      "seshatId": "mx_monte_alban_1_early",
+      "fromYear": -500,
+      "toYear": -292,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "xu",
+      "colorHex": "#E62E99",
+      "colorRgb": [230, 46, 153],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Xu",
+        "fr": "Xu",
+        "de": "Xu",
+        "es": "Xu",
+        "zh": "Xu"
+      },
+      "seshatId": "",
+      "fromYear": -404,
+      "toYear": -292,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "yan",
+      "colorHex": "#97E82C",
+      "colorRgb": [151, 232, 44],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yan",
+        "fr": "Yan",
+        "de": "Yan",
+        "es": "Yan",
+        "zh": "Yan"
+      },
+      "seshatId": "",
+      "fromYear": -404,
+      "toYear": -292,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "lu",
+      "colorHex": "#ED1CC0",
+      "colorRgb": [237, 28, 192],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lu",
+        "fr": "Lu",
+        "de": "Lu",
+        "es": "Lu",
+        "zh": "Lu"
+      },
+      "seshatId": "",
+      "fromYear": -404,
+      "toYear": -285,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "minaeans",
+      "colorHex": "#28B3BD",
+      "colorRgb": [40, 179, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Minaeans",
+        "fr": "Minaeans",
+        "de": "Minaeans",
+        "es": "Minaeans",
+        "zh": "Minaeans"
+      },
+      "seshatId": "",
+      "fromYear": -383,
+      "toYear": -189,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "yuezhi",
+      "colorHex": "#D48B0F",
+      "colorRgb": [212, 139, 15],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yuezhi",
+        "fr": "Yuezhi",
+        "de": "Yuezhi",
+        "es": "Yuezhi",
+        "zh": "Yuezhi"
+      },
+      "seshatId": "",
+      "fromYear": -383,
+      "toYear": -332,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "cimmerian_bosporus",
+      "colorHex": "#C7227A",
+      "colorRgb": [199, 34, 122],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Cimmerian Bosporus",
+        "fr": "Cimmerian Bosporus",
+        "de": "Cimmerian Bosporus",
+        "es": "Cimmerian Bosporus",
+        "zh": "Cimmerian Bosporus"
+      },
+      "seshatId": "",
+      "fromYear": -366,
+      "toYear": -231,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "zhongshan",
+      "colorHex": "#1EEBCF",
+      "colorRgb": [30, 235, 207],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zhongshan",
+        "fr": "Zhongshan",
+        "de": "Zhongshan",
+        "es": "Zhongshan",
+        "zh": "Zhongshan"
+      },
+      "seshatId": "",
+      "fromYear": -366,
+      "toYear": -302,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "later_zhou",
+      "colorHex": "#F07E32",
+      "colorRgb": [240, 126, 50],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Later Zhou",
+        "fr": "Later Zhou",
+        "de": "Later Zhou",
+        "es": "Later Zhou",
+        "zh": "Later Zhou"
+      },
+      "seshatId": "cn_eastern_zhou_warring_states",
+      "fromYear": -350,
+      "toYear": -257,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "sabaeans",
+      "colorHex": "#2CE83F",
+      "colorRgb": [44, 232, 63],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sabaeans",
+        "fr": "Sabaeans",
+        "de": "Sabaeans",
+        "es": "Sabaeans",
+        "zh": "Sabaeans"
+      },
+      "seshatId": "",
+      "fromYear": -350,
+      "toYear": -111,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "wey",
+      "colorHex": "#4EC90C",
+      "colorRgb": [78, 201, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Wey",
+        "fr": "Wey",
+        "de": "Wey",
+        "es": "Wey",
+        "zh": "Wey"
+      },
+      "seshatId": "",
+      "fromYear": -350,
+      "toYear": -285,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "hadhramaut",
+      "colorHex": "#DBA735",
+      "colorRgb": [219, 167, 53],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hadhramaut",
+        "fr": "Hadhramaut",
+        "de": "Hadhramaut",
+        "es": "Hadhramaut",
+        "zh": "Hadhramaut"
+      },
+      "seshatId": "",
+      "fromYear": -350,
+      "toYear": 183,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "scythia",
+      "colorHex": "#D4A52F",
+      "colorRgb": [212, 165, 47],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Scythia",
+        "fr": "Scythia",
+        "de": "Scythia",
+        "es": "Scythia",
+        "zh": "Scythia"
+      },
+      "seshatId": "ua_skythian_k_3",
+      "fromYear": -350,
+      "toYear": -226,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "song",
+      "colorHex": "#119BD1",
+      "colorRgb": [17, 155, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Song",
+        "fr": "Song",
+        "de": "Song",
+        "es": "Song",
+        "zh": "Song"
+      },
+      "seshatId": "",
+      "fromYear": -350,
+      "toYear": -292,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "qi",
+      "colorHex": "#64DB14",
+      "colorRgb": [100, 219, 20],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qi",
+        "fr": "Qi",
+        "de": "Qi",
+        "es": "Qi",
+        "zh": "Qi"
+      },
+      "seshatId": "cn_qi_warring_states",
+      "fromYear": -350,
+      "toYear": -292,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "qataban",
+      "colorHex": "#C97C16",
+      "colorRgb": [201, 124, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qataban",
+        "fr": "Qataban",
+        "de": "Qataban",
+        "es": "Qataban",
+        "zh": "Qataban"
+      },
+      "seshatId": "ye_qatabanian_commonwealth",
+      "fromYear": -350,
+      "toYear": -111,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "greek_city-states",
+      "colorHex": "#B51089",
+      "colorRgb": [181, 16, 137],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Greek City-States",
+        "fr": "Greek City-States",
+        "de": "Greek City-States",
+        "es": "Greek City-States",
+        "zh": "Greek City-States"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -334,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "yue",
+      "colorHex": "#C41055",
+      "colorRgb": [196, 16, 85],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yue",
+        "fr": "Yue",
+        "de": "Yue",
+        "es": "Yue",
+        "zh": "Yue"
+      },
+      "seshatId": "cn_yue_dyn",
+      "fromYear": -337,
+      "toYear": -334,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "roman_republic",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Roman Republic",
+        "fr": "Roman Republic",
+        "de": "Roman Republic",
+        "es": "Roman Republic",
+        "zh": "Roman Republic"
+      },
+      "seshatId": "it_roman_rep_1",
+      "fromYear": -337,
+      "toYear": -327,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "carthage",
+      "colorHex": "#9FE30E",
+      "colorRgb": [159, 227, 14],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Carthage",
+        "fr": "Carthage",
+        "de": "Carthage",
+        "es": "Carthage",
+        "zh": "Carthage"
+      },
+      "seshatId": "tn_carthage_emp",
+      "fromYear": -337,
+      "toYear": -332,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "han",
+      "colorHex": "#C920B0",
+      "colorRgb": [201, 32, 176],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Han",
+        "fr": "Han",
+        "de": "Han",
+        "es": "Han",
+        "zh": "Han"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -257,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "zhao",
+      "colorHex": "#B83818",
+      "colorRgb": [184, 56, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zhao",
+        "fr": "Zhao",
+        "de": "Zhao",
+        "es": "Zhao",
+        "zh": "Zhao"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -257,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_macedonian_empire_",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Macedonian Empire)",
+        "fr": "(Macedonian Empire)",
+        "de": "(Macedonian Empire)",
+        "es": "(Macedonian Empire)",
+        "zh": "(Macedonian Empire)"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -334,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "etruscans",
+      "colorHex": "#28ED84",
+      "colorRgb": [40, 237, 132],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Etruscans",
+        "fr": "Etruscans",
+        "de": "Etruscans",
+        "es": "Etruscans",
+        "zh": "Etruscans"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -327,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "magadha_-_shaishunaga_dynasty",
+      "colorHex": "#60BF30",
+      "colorRgb": [96, 191, 48],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Magadha - Shaishunaga dynasty",
+        "fr": "Magadha - Shaishunaga dynasty",
+        "de": "Magadha - Shaishunaga dynasty",
+        "es": "Magadha - Shaishunaga dynasty",
+        "zh": "Magadha - Shaishunaga dynasty"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -334,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "_warring_states_china_",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Warring States China)",
+        "fr": "(Warring States China)",
+        "de": "(Warring States China)",
+        "es": "(Warring States China)",
+        "zh": "(Warring States China)"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -334,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "macedonian_empire",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Macedonian Empire",
+        "fr": "Macedonian Empire",
+        "de": "Macedonian Empire",
+        "es": "Macedonian Empire",
+        "zh": "Macedonian Empire"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -334,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "achaemenid_empire",
+      "colorHex": "#7220C9",
+      "colorRgb": [114, 32, 201],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Achaemenid Empire",
+        "fr": "Achaemenid Empire",
+        "de": "Achaemenid Empire",
+        "es": "Achaemenid Empire",
+        "zh": "Achaemenid Empire"
+      },
+      "seshatId": "ir_achaemenid_emp",
+      "fromYear": -337,
+      "toYear": -334,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "wei",
+      "colorHex": "#9DE031",
+      "colorRgb": [157, 224, 49],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Wei",
+        "fr": "Wei",
+        "de": "Wei",
+        "es": "Wei",
+        "zh": "Wei"
+      },
+      "seshatId": "cn_wei_dyn_warring_states",
+      "fromYear": -337,
+      "toYear": -327,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "qin",
+      "colorHex": "#257EC2",
+      "colorRgb": [37, 126, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qin",
+        "fr": "Qin",
+        "de": "Qin",
+        "es": "Qin",
+        "zh": "Qin"
+      },
+      "seshatId": "",
+      "fromYear": -337,
+      "toYear": -327,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    },
+    {
+      "id": "chu",
+      "colorHex": "#BA9B20",
+      "colorRgb": [186, 155, 32],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chu",
+        "fr": "Chu",
+        "de": "Chu",
+        "es": "Chu",
+        "zh": "Chu"
+      },
+      "seshatId": "cn_chu_k_warring_states",
+      "fromYear": -337,
+      "toYear": -334,
+      "kinshipType": "Civic Polis Citizen Assemblies & Imperial Administrative Bureaucracy",
+      "lithicTechnocomplex": "Iron Pikes (Sarissa), Siege Catapults, Hellenistic Urban Grid Planning & Monetal Coinage",
+      "caloricIntakePerCapitaKcal": 2750
+    }
+  ]
+}

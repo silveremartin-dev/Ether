@@ -1,0 +1,94 @@
+{
+  "epoch": -8400,
+  "era": "Early Holocene 8 400 BP",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -8400 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "core_polity_east_asia",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.70, 0.85, 0.90, 0.85],
+      "name": {
+        "en": "East Asian Core (Early Holocene 8 400 BP)",
+        "fr": "Foyer Est-Asiatique (Early Holocene 8 400 BP)",
+        "de": "Ostasietischer Zivilisationsraum (Early Holocene 8 400 BP)",
+        "es": "Núcleo de Asia Oriental (Early Holocene 8 400 BP)",
+        "zh": "东亚核心区（Early Holocene 8 400 BP）"
+      },
+      "kinshipType": "Patrilocal Extended Peasant Households",
+      "lithicTechnocomplex": "PPNA/PPNB Ground Stone Axes & Mudbrick Settlements",
+      "caloricIntakePerCapitaKcal": 2400
+    },
+    {
+      "id": "core_polity_west_eurasia",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.75, 0.80, 0.88, 0.80],
+      "name": {
+        "en": "Western Eurasian Core (Early Holocene 8 400 BP)",
+        "fr": "Foyer Ouest-Eurasien (Early Holocene 8 400 BP)",
+        "de": "Westeurasischer Zivilisationsraum (Early Holocene 8 400 BP)",
+        "es": "Núcleo Euroasiático Occidental (Early Holocene 8 400 BP)",
+        "zh": "西欧亚核心区（Early Holocene 8 400 BP）"
+      },
+      "kinshipType": "Patrilocal Extended Peasant Households",
+      "lithicTechnocomplex": "PPNA/PPNB Ground Stone Axes & Mudbrick Settlements",
+      "caloricIntakePerCapitaKcal": 2400
+    },
+    {
+      "id": "core_polity_south_asia",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.65, 0.85, 0.92, 0.90],
+      "name": {
+        "en": "South Asian Core (Early Holocene 8 400 BP)",
+        "fr": "Foyer Sud-Asiatique (Early Holocene 8 400 BP)",
+        "de": "Südasiatischer Zivilisationsraum (Early Holocene 8 400 BP)",
+        "es": "Núcleo de Asia del Sur (Early Holocene 8 400 BP)",
+        "zh": "南亚核心区（Early Holocene 8 400 BP）"
+      },
+      "kinshipType": "Patrilocal Extended Peasant Households",
+      "lithicTechnocomplex": "PPNA/PPNB Ground Stone Axes & Mudbrick Settlements",
+      "caloricIntakePerCapitaKcal": 2400
+    },
+    {
+      "id": "core_polity_americas",
+      "colorHex": "#06B6D4",
+      "colorRgb": [6, 182, 212],
+      "traits": [0.55, 0.75, 0.82, 0.88],
+      "name": {
+        "en": "Americas Core (Early Holocene 8 400 BP)",
+        "fr": "Foyer des Amériques (Early Holocene 8 400 BP)",
+        "de": "Amerikanischer Zivilisationsraum (Early Holocene 8 400 BP)",
+        "es": "Núcleo de las Américas (Early Holocene 8 400 BP)",
+        "zh": "美洲核心区（Early Holocene 8 400 BP）"
+      },
+      "kinshipType": "Patrilocal Extended Peasant Households",
+      "lithicTechnocomplex": "PPNA/PPNB Ground Stone Axes & Mudbrick Settlements",
+      "caloricIntakePerCapitaKcal": 2400
+    },
+    {
+      "id": "core_polity_africa",
+      "colorHex": "#22C55E",
+      "colorRgb": [34, 197, 94],
+      "traits": [0.60, 0.70, 0.75, 0.80],
+      "name": {
+        "en": "African Core (Early Holocene 8 400 BP)",
+        "fr": "Foyer Africain (Early Holocene 8 400 BP)",
+        "de": "Afrikanischer Zivilisationsraum (Early Holocene 8 400 BP)",
+        "es": "Núcleo Africano (Early Holocene 8 400 BP)",
+        "zh": "非洲核心区（Early Holocene 8 400 BP）"
+      },
+      "kinshipType": "Patrilocal Extended Peasant Households",
+      "lithicTechnocomplex": "PPNA/PPNB Ground Stone Axes & Mudbrick Settlements",
+      "caloricIntakePerCapitaKcal": 2400
+    }
+  ]
+}

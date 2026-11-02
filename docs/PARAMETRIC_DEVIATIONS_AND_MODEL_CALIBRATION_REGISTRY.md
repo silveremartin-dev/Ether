@@ -2,14 +2,14 @@
 
 > **Ether Cliodynamic & Planetary Epistemic Laboratory**  
 > *Author: Silvere Martin-Michiellot*  
-> *Standard: AGENTS.md �8 & �9 � Full Epistemic Provenance and Literature Accountability*  
+> *Standard: AGENTS.md §8 & §9 — Full Epistemic Provenance and Literature Accountability*  
 > *Ontological Separation Note: All canonical peer-reviewed physical, chemical, and biological conservation laws are exhaustively documented in docs/SIMULATION_EQUATIONS_AND_VARIABLES.md. This registry documents EXCLUSIVELY the calibrated parametric scalings, continuous discrete-to-mesh translations, and numerical boundary conditions adapted for execution on the continuous hexagonal H3 tensor grid.*
 
 ---
 
 ## ?? 1. Purpose & Epistemic Directive
 
-In strict compliance with **AGENTS.md �9**, this registry catalogs every instance where a parameter, scaling factor, or equation from published academic literature (Turchin, Solow-Swan, Omran, Sandom, Buringh & van Zanden, etc.) has been adapted, rescaled, or calibrated for execution within Ether.
+In strict compliance with **AGENTS.md §9**, this registry catalogs every instance where a parameter, scaling factor, or equation from published academic literature (Turchin, Solow-Swan, Omran, Sandom, Buringh & van Zanden, etc.) has been adapted, rescaled, or calibrated for execution within Ether.
 
 Academic authors developed their models with rigorous empirical grounding. Any divergence between a canonical published model and Ether's simulated trajectories is a critical epistemic signal. This document explains:
 1. **The Canonical Academic Formulation**: The exact peer-reviewed equation and original published parameter values.
@@ -25,9 +25,9 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### Entry 1: Pre-Industrial Infant & Child Mortality (Epidemiological Transition)
 * **Subsystem**: `DemographicKernel.java`
 * **Canonical Literature**:
-  * Omran, A. R. (1971). *The Epidemiological Transition: A Theory of the Epidemiology of Population Change*. The Milbank Memorial Fund Quarterly, 49(4), 509–538.
-  * Preston, S. H. (1975). *The Changing Relation between Mortality and Level of Economic Development*. Population Studies, 29(2), 231–248.
-  * Wrigley, E. A., & Schofield, R. S. (1989). *The Population History of England 1541–1871*. Cambridge University Press.
+  * Omran, A. R. (1971). *The Epidemiological Transition: A Theory of the Epidemiology of Population Change*. The Milbank Memorial Fund Quarterly, 49(4), 509â€“538.
+  * Preston, S. H. (1975). *The Changing Relation between Mortality and Level of Economic Development*. Population Studies, 29(2), 231â€“248.
+  * Wrigley, E. A., & Schofield, R. S. (1989). *The Population History of England 1541â€“1871*. Cambridge University Press.
   * Livi-Bacci, M. (2007). *A Concise History of World Population* (4th ed.). Blackwell.
 * **Canonical Published Value**:
   * Pre-industrial child mortality ($q_5$): $25\%$ to $45\%$ of all newborns fail to reach age 5, driven by waterborne and airborne infectious pathogens (cholera, dysentery, smallpox, measles).
@@ -66,7 +66,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Subsystem**: `ProceduralPopulationEngine.java` / `HeadlessBatchRunner.java`
 * **Canonical Literature**:
   * Sandom, C., Faurby, S., Sandel, B., & Svenning, J. C. (2014). *Global late Quaternary megafauna extinctions linked to humans, not climate change*. Proceedings of the Royal Society B, 281(1787), 20133254.
-  * Barnosky, A. D., et al. (2004). *Assessing the Causes of Late Pleistocene Extinctions on the Continents*. Science, 306(5693), 70–75.
+  * Barnosky, A. D., et al. (2004). *Assessing the Causes of Late Pleistocene Extinctions on the Continents*. Science, 306(5693), 70â€“75.
 * **Canonical Published Value**:
   * Late Pleistocene retention: $100\%$ at $-100\,000$ BP; $95\%$ at $-50\,000$ BP; $80\%$ at $-30\,000$ BP; $60\%$ at LGM $-20\,000$ BP; $20\%$ at Holocene boundary $-10\,000$ BP.
 * **Problem in Previous Implementation**:
@@ -82,7 +82,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### Entry 4: Solow-Swan Capital Steady-State Replacement
 * **Subsystem**: `UrbanKernel.java`
 * **Canonical Literature**:
-  * Solow, R. M. (1956). *A Contribution to the Theory of Economic Growth*. The Quarterly Journal of Economics, 70(1), 65–94.
+  * Solow, R. M. (1956). *A Contribution to the Theory of Economic Growth*. The Quarterly Journal of Economics, 70(1), 65â€“94.
   * Piketty, T. (2014). *Capital in the Twenty-First Century*. Harvard University Press.
 * **Canonical Published Value**:
   * Capital accumulation equation: $\dot{K} = s Y - \delta K$.
@@ -96,7 +96,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Root Cause & Epistemic Justification**:
   * Guarantees that at steady-state equilibrium, net capital drift is identically zero ($\Delta K = 0$), eliminating artificial compound growth and preserving pre-industrial stability.
 ### 5. Vaclav Smil Primary Exergy & Leslie White Energy Law (Prime Mover Diffusion)
-* **Model & Authors**: Vaclav Smil (2017) *Energy Transitions: Global and National Perspectives*; Grübler (1998) *Technology and Global Change*; Leslie White (1943) *Energy and the Evolution of Culture*.
+* **Model & Authors**: Vaclav Smil (2017) *Energy Transitions: Global and National Perspectives*; GrÃ¼bler (1998) *Technology and Global Change*; Leslie White (1943) *Energy and the Evolution of Culture*.
 * **Original Literature Formulation**:
   * In canonical historical exergy literature, world per-capita primary energy was $\approx 538\,\text{W/capita}$ in 1800 CE ($16.29\,\text{EJ/yr}$ across 960M humans), rising to $\approx 996\,\text{W/capita}$ in 1914 CE ($55\,\text{EJ/yr}$ across 1.78B humans), and $\approx 2400\,\text{W/capita}$ in 2020 CE.
   * Earlier simulation code used a steep step formula: $380 \cdot (T - 2.35)^{1.15} + 45 \cdot (T - 2.80)^{2.3}$, which attributed $545\,\text{W/capita}$ of industrial coal/steam exergy to the *entire global population* at $T = 3.65$, resulting in $30.51\,\text{EJ/yr}$ (an $87.1\%$ error).
@@ -104,7 +104,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   $$\Delta P_{\text{ind}}(T) = 85.0 \cdot \max(0, T - 2.50)^{1.5}\,\text{W/capita}$$
   $$P_{\text{capita}}(T) = P_{\text{hearth}} (385\,\text{W}) + \Delta P_{\text{agr}}(T) (55\,\text{W}) + \Delta P_{\text{ind}}(T)$$
 * **Root Cause & Justification**:
-  * In 1800 CE, prime movers (steam engines) were geographically concentrated in Great Britain and NW Europe (representing $< 2\%$ of world population). When calculating a globally aggregated extensive metric, the global adoption fraction follows a logistic innovation S-curve (Mansfield 1961, Grübler 1998).
+  * In 1800 CE, prime movers (steam engines) were geographically concentrated in Great Britain and NW Europe (representing $< 2\%$ of world population). When calculating a globally aggregated extensive metric, the global adoption fraction follows a logistic innovation S-curve (Mansfield 1961, GrÃ¼bler 1998).
   * The calibrated continuous exponent $1.5$ with threshold $T_0 = 2.50$ yields $105\,\text{W/capita}$ in 1800 CE (yielding $545\,\text{W/capita}$ total $\implies 16.5\,\text{EJ/yr}$, error $1.3\%$), while strictly maintaining $0\,\text{W}$ in pre-industrial epochs ($T \le 2.50$) and scaling authentically to $556\,\text{W/capita}$ in 1914 CE ($56\,\text{EJ/yr}$).
 * **Empirical Validation Grounding**:
   * Vaclav Smil (2017) global energy transition time series; Maddison & Ward (2008); UN World Energy Statistics.
@@ -137,7 +137,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Empirical Validation Grounding**:
   * Smil (2017) Draft animal energetics; FAO Global Livestock Datasets; Diamond (1997) *Guns, Germs, and Steel* (domestic animal pathogen evolutionary origin).
 ### 8. Atmospheric CO2 Initialization & Prospective SSP Trajectory Governance
-* **Model & Authors**: Ruddiman (2003) *The Anthropogenic Greenhouse Era Began Thousands of Years Ago*, Climatic Change; Lüthi et al. (2008) *EPICA Dome C 800,000-year carbon dioxide record*, Nature; IPCC AR6 WG1 (2021) Climate Change: The Physical Science Basis (MAGICC7 / SSP1-SSP5 projections).
+* **Model & Authors**: Ruddiman (2003) *The Anthropogenic Greenhouse Era Began Thousands of Years Ago*, Climatic Change; LÃ¼thi et al. (2008) *EPICA Dome C 800,000-year carbon dioxide record*, Nature; IPCC AR6 WG1 (2021) Climate Change: The Physical Science Basis (MAGICC7 / SSP1-SSP5 projections).
 * **Original Literature Formulation**:
   * Pre-industrial Holocene CO2: $260\,\text{ppm}$ (early Holocene $8000\,\text{BCE}$) to $280\,\text{ppm}$ ($1750\,\text{CE}$).
   * Industrial transition: $283\,\text{ppm}$ ($1800\,\text{CE}$), $300\,\text{ppm}$ ($1914\,\text{CE}$), $369\,\text{ppm}$ ($2000\,\text{CE}$), $423\,\text{ppm}$ ($2025\,\text{CE}$).
@@ -156,7 +156,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Empirical Validation Grounding**:
   * Law Dome Ice Core (Etheridge et al. 1996); NOAA ESRL Mauna Loa observational record (1958-2025); IPCC AR6 Scenarios Database.
 ### 9. Spatial Density Agglomeration in Industrial Urbanization (Bettencourt-Bairoch Law)
-* **Model & Authors**: Bettencourt, L. M. (2013). *The origins of scaling in cities*. Science, 340(6139), 1438–1441; Paul Bairoch (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press.
+* **Model & Authors**: Bettencourt, L. M. (2013). *The origins of scaling in cities*. Science, 340(6139), 1438â€“1441; Paul Bairoch (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press.
 * **Original Literature Formulation**:
   * Global urbanization was $18.7\%\text{--}21.6\%$ in 1914 CE, $29.6\%$ in 1950 CE, and $56.2\%$ in 2025 CE.
   * Earlier simulation code evaluated industrial urbanization uniformly across all cells as long as $T > 3.40$ and $k > 500\,\text{kg/hab}$, yielding $73.2\%$ urbanization in 1914 (a $240\%$ error), because rural agricultural populations in Asia and Africa were treated as industrial city dwellers.
@@ -168,7 +168,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Empirical Validation Grounding**:
   * UN World Urbanization Prospects (2024 Revision); Bairoch (1988); Tertius Chandler (1987).
 ### 10. Global Diffusion Curve of Mass Schooling Literacy
-* **Model & Authors**: Buringh, E., & van Zanden, J. L. (2009). *Charting the "Rise of the West": Manuscripts and Printed Books in Europe, a Long-Term Perspective from the Sixth through Eighteenth Centuries*. The Journal of Economic History, 69(2), 409–445; UNESCO Institute for Statistics.
+* **Model & Authors**: Buringh, E., & van Zanden, J. L. (2009). *Charting the "Rise of the West": Manuscripts and Printed Books in Europe, a Long-Term Perspective from the Sixth through Eighteenth Centuries*. The Journal of Economic History, 69(2), 409â€“445; UNESCO Institute for Statistics.
 * **Original Literature Formulation**:
   * Global adult literacy was $3.2\%$ in the Roman Empire (165 CE), $6.6\%$ in Late Medieval Europe and Song/Yuan China (1347 CE), $11\text{--}13\%$ in early modern Europe (1500 CE), $26.3\%$ globally in 1914 CE, $40\%$ in 1950 CE, and $86.8\%$ in 2025 CE.
   * Earlier code used a steep slope: $95.0 \cdot \tanh((T - 2.80) \cdot 0.20)$, producing $60.7\%$ global literacy in 1914 CE (a $131\%$ error), and an artificially low scribal ceiling ($4.20\%$) that prevented 1347 CE from matching late medieval commercial literacy.
@@ -192,11 +192,11 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   $$\text{GrowthCap}(C_i) = \max\left(0.004, \; 0.020 - \min(0.016, 0.008 \cdot (C_i - 3.8))\right)$$
   $$\Delta K_i = \min\left(\text{GrowthCap}(C_i) \cdot K_i, \; I_i - (\delta_{\text{base}} + \delta_{\text{war}}) K_i\right) \cdot \Delta t$$
 * **Root Cause & Justification**:
-  * Replaces synthetic non-negative floors with authentic Solow-Swan capital replacement and crisis destruction, throttling wartime capital compounding to historical bounds ($+0.4\%\text{--}1.1\%/\text{year}$) during high systemic conflict ($C_i > 3.8$) and aligning 1914–1934 simulated GWP with Maddison 2020.
+  * Replaces synthetic non-negative floors with authentic Solow-Swan capital replacement and crisis destruction, throttling wartime capital compounding to historical bounds ($+0.4\%\text{--}1.1\%/\text{year}$) during high systemic conflict ($C_i > 3.8$) and aligning 1914â€“1934 simulated GWP with Maddison 2020.
 * **Empirical Validation Grounding**:
   * Maddison Project Database 2020; Broadberry & Harrison (2005); Correlates of War (COW) economic indicators.
 ### 12. Dynamic Marine Ocean Acidification CO2 Coupling
-* **Model & Authors**: Henry's Law of Gas Dissolution; Feely, R. A., et al. (2004). *Impact of Anthropogenic CO2 on the CaCO3 System in the Oceans*. Science, 305(5682), 362–366; Zeebe, R. E., & Wolf-Gladrow, D. (2001). *CO2 in Seawater: Equilibrium, Kinetics, Isotopes*. Elsevier.
+* **Model & Authors**: Henry's Law of Gas Dissolution; Feely, R. A., et al. (2004). *Impact of Anthropogenic CO2 on the CaCO3 System in the Oceans*. Science, 305(5682), 362â€“366; Zeebe, R. E., & Wolf-Gladrow, D. (2001). *CO2 in Seawater: Equilibrium, Kinetics, Isotopes*. Elsevier.
 * **Original Literature Formulation**:
   * Oceanic dissolved $CO_2$ and carbonic acid $[H_2CO_3]$ equilibrium scales with atmospheric partial pressure $pCO_2 = C_{\text{atm}} \cdot 10^{-6}\,\text{atm}$ via temperature-dependent Henry's constant $K_H(T)$. Marine calcification and coastal fish biomass degradation only occur when $C_{\text{atm}} > 350\,\text{ppm}$.
   * In earlier pipeline code (`SimulationPipeline.java:370`), a static constant was hardcoded: `OceanAcidificationEngine.processOceanAcidification(allCells, 415.0);`. This erroneously applied Anthropocene (2026 CE) acidification to all historical and prehistoric epochs (e.g. -8000 BCE, 165 CE, 1000 CE), degrading marine biomass stocks inappropriately.
@@ -205,7 +205,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   $$\text{OceanAcidificationEngine.processOceanAcidification}(allCells, \; C_{\text{atm}}(t))$$
   Where $C_{\text{atm}}(t) = \text{engine.getMetricsAggregator().getAtmosphericCO2Ppm()}$.
 * **Root Cause & Justification**:
-  * Enforces AGENTS.md §8 by removing the hardcoded 415.0 magic number and dynamically driving ocean chemistry directly from the simulated epoch's authentic atmospheric CO2 concentration.
+  * Enforces AGENTS.md Â§8 by removing the hardcoded 415.0 magic number and dynamically driving ocean chemistry directly from the simulated epoch's authentic atmospheric CO2 concentration.
 * **Empirical Validation Grounding**:
   * NOAA Ocean Acidification Program; Feely et al. (2004); EPICA Dome C ice cores.
 ### 13. Continuous Structural-Demographic Strife Mortality & Distance-Decay Defection
@@ -225,7 +225,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Empirical Validation Grounding**:
   * Seshat Global History Databank; Turchin & Nefedov (2009); Goldstone (1991).
 ### 14. Agricultural Groundwater Depth Withdrawal Dimensional Scaling
-* **Model & Authors**: Wada, Y., et al. (2010). *Global depletion of groundwater resources*. Geophysical Research Letters, 37(20); Hoekstra, A. Y., & Mekonnen, M. M. (2012). *The water footprint of humanity*. PNAS, 109(9), 3232–3237; FAO AQUASTAT (2012).
+* **Model & Authors**: Wada, Y., et al. (2010). *Global depletion of groundwater resources*. Geophysical Research Letters, 37(20); Hoekstra, A. Y., & Mekonnen, M. M. (2012). *The water footprint of humanity*. PNAS, 109(9), 3232â€“3237; FAO AQUASTAT (2012).
 * **Original Literature Formulation**:
   * Human agricultural water consumption is $V_{\text{water}} \approx 800\,\text{m}^3/\text{capita/year}$.
   * Across a spatial grid cell of surface area $A_{\text{cell}}\,\text{km}^2$, the equivalent irrigation withdrawal depth in millimeters ($mm$) per unit time is:
@@ -240,7 +240,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Empirical Validation Grounding**:
   * UNESCO WHYMAP; USGS Global Groundwater Monitoring; Wada et al. (2010).
 ### 15. Closed-Form Transport Infrastructure Friction Attenuation
-* **Model & Authors**: Allen, T., & Arkolakis, C. (2014). *Trade and the Topography of the Spatial Economy*. The Quarterly Journal of Economics, 129(3), 1085–1140; Donaldson, D. (2018). *Railroads of the Raj: Estimating the Impact of Transportation Infrastructure*. American Economic Review, 108(4-5), 899–934.
+* **Model & Authors**: Allen, T., & Arkolakis, C. (2014). *Trade and the Topography of the Spatial Economy*. The Quarterly Journal of Economics, 129(3), 1085â€“1140; Donaldson, D. (2018). *Railroads of the Raj: Estimating the Impact of Transportation Infrastructure*. American Economic Review, 108(4-5), 899â€“934.
 * **Original Literature Formulation**:
   * Effective transport friction $\tau$ between regions is a deterministic continuous function of terrain topography ($\tau_{\text{terrain}}$) and paved road/rail capital stock per unit area $k_{\text{infra}} = K_{\text{infra}} / A_{\text{cell}}$:
     $$\tau(K, T) = \tau_{\text{terrain}} \cdot \left[ \alpha_{\text{min}} + \frac{1 - \alpha_{\text{min}}}{1 + \kappa \cdot (T - T_0) \cdot \ln(1 + K / A_{\text{cell}})} \right]$$
@@ -254,7 +254,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 16. Pre-Industrial Urban Nucleation Agglomeration Threshold
 * **Model & Authors**: Bairoch, P. (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press; Chandler, T. (1987). *Four Thousand Years of Urban Growth: An Historical Census*. St. David's University Press; HYDE 3.4 Urban Ecumene Database.
 * **Original Literature Formulation**:
-  * In historical demographics (HYDE 3.4, Bairoch 1988, de Vries 1984), an urban settlement is formally defined by an agglomération of $\ge 5\,000$ inhabitants. Dispersed rural populations (hamlets, isolated farms, villages $< 2\,000$) do not constitute cities.
+  * In historical demographics (HYDE 3.4, Bairoch 1988, de Vries 1984), an urban settlement is formally defined by an agglomÃ©ration of $\ge 5\,000$ inhabitants. Dispersed rural populations (hamlets, isolated farms, villages $< 2\,000$) do not constitute cities.
   * In an H3 hexagonal grid cell covering $\sim 1,500\text{--}11,000\,\text{km}^2$, if total cell population is $P_i < 3\,000$, it is physically impossible for a nucleated city of $5,000$ people to exist.
   * Earlier code computed pre-industrial urban share on every cell with $T > 1.55$ and $k > 25$, attributing urban percentages to remote rural cells with 50 or 200 people. This inflated simulated global urbanization in 536 CE and 632 CE from the empirical $2.5\%$ up to $4.8\%$ ($+88\%$ relative error).
 * **Calibrated Ether Formulation**:
@@ -267,14 +267,14 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 17. Elimination of Test Seeding Mocks and Authentic Historical State Initialization
 * **Subsystem**: `H3BufferAndEventCoordinator.java`, `H3SimulationEngine.java`
 * **Canonical Literature**:
-  * Carneiro, R. L. (1970). *A Theory of the Origin of the State*. Science, 169(3947), 733–738.
-  * Turchin, P., et al. (2018). *Quantitative historical analysis uncovers a single dimension of complexity that structures global variation in human social organization*. PNAS, 115(2), E144–E151.
+  * Carneiro, R. L. (1970). *A Theory of the Origin of the State*. Science, 169(3947), 733â€“738.
+  * Turchin, P., et al. (2018). *Quantitative historical analysis uncovers a single dimension of complexity that structures global variation in human social organization*. PNAS, 115(2), E144â€“E151.
   * Seshat Global History Databank (Turchin et al. 2015).
 * **Problem in Previous Implementation**:
   * An unconditional legacy test method `initializePoliticalSeeding` checked `if (populatedCount < 3)` and called `.limit(3)` to generate three 1-cell dummy nations named `"Realm of Hex " + Long.toHexString(...)`.
   * Because real historical states from `HistoricalStateRegistry` were ignored, these three dummy entities were the sole polities evaluated by `CliodynamicsEngine`. At monthly frequency, their Asabiyyah collapsed and their 1-cell population was decimated.
 * **Calibrated Ether Formulation**:
-  * In deep prehistory (year $t < -4000\,\text{BCE}$), per `AGENTS.md §8`, formal administrative state infrastructure $\equiv 0$, and `nations` remains empty.
+  * In deep prehistory (year $t < -4000\,\text{BCE}$), per `AGENTS.md Â§8`, formal administrative state infrastructure $\equiv 0$, and `nations` remains empty.
   * In historical eras ($t \ge -4000\,\text{BCE}$), sovereign polities are loaded directly from `HistoricalStateRegistry.getActiveEpoch(year)`.
   * For unpopulated fallback grids, population carrying capacity derives analytically from Miami NPP and hunter-gatherer density scaling (Tallavaara et al. 2015):
     $$\rho_{\text{HG}} = 0.0012 \cdot (\text{NPP})^{0.75} \quad [\text{hab/km}^2]$$
@@ -287,9 +287,9 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Subsystem**: `SoilNutrientNPKEngine.java`, `BoserupAgriculturalIntensificationEngine.java`
 * **Canonical Literature**:
   * Fischer, G., et al. (2002). *Global Agro-ecological Assessment for Agriculture in the 21st Century: Methodology and Results*. FAO / IIASA Research Report.
-  * Ramankutty, N., et al. (2002). *The global distribution of cultivable lands: current patterns and sensitivity to possible climate change*. Global Ecology and Biogeography, 11(5), 377–392.
+  * Ramankutty, N., et al. (2002). *The global distribution of cultivable lands: current patterns and sensitivity to possible climate change*. Global Ecology and Biogeography, 11(5), 377â€“392.
 * **Problem in Previous Implementation**:
-  * Both agricultural engines used discrete `switch (biome)` tables assigning hardcoded coefficients (`MOUNTAINS -> 0.35, HILLS -> 0.55, TUNDRA/DESERT -> 0.15, default -> 1.0`), violating `AGENTS.md §3`.
+  * Both agricultural engines used discrete `switch (biome)` tables assigning hardcoded coefficients (`MOUNTAINS -> 0.35, HILLS -> 0.55, TUNDRA/DESERT -> 0.15, default -> 1.0`), violating `AGENTS.md Â§3`.
 * **Calibrated Ether Formulation**:
   $$S_{\text{arable}} = \text{clamp}(S_{\text{relief}} \cdot S_{\text{thermal}} \cdot S_{\text{moisture}} \cdot S_{\text{edaphic}}, 0.05, 1.0)$$
   * Relief slope suitability: $S_{\text{relief}} = \frac{1}{1 + \exp(0.0018 \cdot (E - 1400.0))}$
@@ -303,7 +303,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 19. Continuous Standing Woody Biomass Residence & Deforestation Dynamics
 * **Subsystem**: `EcologicalDegradationEngine.java`
 * **Canonical Literature**:
-  * Whittaker, R. H., & Likens, G. E. (1973). *Carbon in the biota*. Carbon and the Biosphere, 281–302.
+  * Whittaker, R. H., & Likens, G. E. (1973). *Carbon in the biota*. Carbon and the Biosphere, 281â€“302.
   * Olson, J. S., Watts, J. A., & Allison, L. J. (1983). *Carbon in live vegetation of major world ecosystems*. Oak Ridge National Laboratory Report ORNL-5862.
 * **Problem in Previous Implementation**:
   * Intact wood capacity and forest regrowth rate were derived from `switch (biome)` tables (`JUNGLE -> 9000, FOREST -> 7500, default -> 2500`).
@@ -319,8 +319,8 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 20. Continuous Herbaceous Pasture & Wild Herbivore Carrying Capacity
 * **Subsystem**: `PreComputePhase.java`
 * **Canonical Literature**:
-  * McNaughton, S. J. (1985). *Ecology of a grazing ecosystem: the Serengeti*. Ecological Monographs, 55(3), 259–294.
-  * Sala, O. E., et al. (1988). *Primary production of the central grassland region of the United States*. Ecology, 69(1), 40–45.
+  * McNaughton, S. J. (1985). *Ecology of a grazing ecosystem: the Serengeti*. Ecological Monographs, 55(3), 259â€“294.
+  * Sala, O. E., et al. (1988). *Primary production of the central grassland region of the United States*. Ecology, 69(1), 40â€“45.
 * **Problem in Previous Implementation**:
   * Wild pasture and livestock biomass used `switch (biome) { case SAVANNAH, PLAINS -> ... case TUNDRA -> ... }`.
 * **Calibrated Ether Formulation**:
@@ -333,14 +333,14 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 21. Continuous Photosynthetic $\delta^{13}\text{C}$ Isotopic Crossover
 * **Subsystem**: `RadiocarbonIsotopeEngine.java`
 * **Canonical Literature**:
-  * Ehleringer, J. R., Cerling, T. E., & Helliker, B. R. (1997). *C4 photosynthesis, atmospheric CO2, and climate*. Oecologia, 112(3), 285–299.
+  * Ehleringer, J. R., Cerling, T. E., & Helliker, B. R. (1997). *C4 photosynthesis, atmospheric CO2, and climate*. Oecologia, 112(3), 285â€“299.
   * Still, C. J., et al. (2003). *Global distribution of C3 and C4 vegetation: Carbon cycle implications*. Global Biogeochemical Cycles, 17(1).
 * **Problem in Previous Implementation**:
   * Stable carbon isotope signature $\delta^{13}\text{C}$ was determined by `switch (biome) { case SAVANNAH -> -12.0; case FOREST -> -28.0; }`.
 * **Calibrated Ether Formulation**:
   $$f_{\text{C4}}(T, P) = \frac{1}{1 + \exp(-0.35 \cdot (T - 22.0))} \cdot \frac{1}{1 + \exp(0.003 \cdot (P - 1200.0))}$$
-  $$\delta^{13}\text{C} = f_{\text{C4}} \cdot (-12.0) + (1.0 - f_{\text{C4}}) \cdot (-28.0) \quad [\text{‰ vs VPDB}]$$
-  * Marine cells retain invariant $\delta^{13}\text{C} = -1.5\text{ ‰}$ (dissolved inorganic carbon).
+  $$\delta^{13}\text{C} = f_{\text{C4}} \cdot (-12.0) + (1.0 - f_{\text{C4}}) \cdot (-28.0) \quad [\text{â€° vs VPDB}]$$
+  * Marine cells retain invariant $\delta^{13}\text{C} = -1.5\text{ â€°}$ (dissolved inorganic carbon).
 * **Root Cause & Justification**:
   * Reflects quantum yield crossover kinetics between C3 Rubisco and C4 PEP carboxylase enzymes at growing-season temperatures $T \ge 22^\circ\text{C}$.
 * **Empirical Validation Grounding**:
@@ -348,7 +348,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 22. Continuous Human Climate Niche & Spatial Habitability
 * **Subsystem**: `ProceduralPopulationEngine.java`
 * **Canonical Literature**:
-  * Xu, C., Kohler, T. A., Lenton, T. M., Svenning, J. C., & Scheffer, M. (2020). *Future of the human climate niche*. PNAS, 117(21), 11350–11355.
+  * Xu, C., Kohler, T. A., Lenton, T. M., Svenning, J. C., & Scheffer, M. (2020). *Future of the human climate niche*. PNAS, 117(21), 11350â€“11355.
 * **Problem in Previous Implementation**:
   * Habitability scores used `switch (b) { case PLAINS -> 1.0; case BEACH -> 0.90; case MOUNTAINS -> 0.02; ... }` and `.limit(2)` for landing targets.
 * **Calibrated Ether Formulation**:
@@ -364,8 +364,8 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 23. Continuous Locomotion Transport Friction & Thermodynamic Surface Albedo
 * **Subsystem**: `H3CellPhysicsAndStateHelper.java`
 * **Canonical Literature**:
-  * Minetti, A. E., et al. (2002). *Energy cost of walking and running at extreme uphill and downhill slopes*. Journal of Applied Physiology, 93(3), 1039–1046.
-  * Sellers, W. D. (1969). *A Global Climatic Model Based on the Energy Balance of the Earth-Atmosphere System*. Journal of Applied Meteorology, 8(3), 392–400.
+  * Minetti, A. E., et al. (2002). *Energy cost of walking and running at extreme uphill and downhill slopes*. Journal of Applied Physiology, 93(3), 1039â€“1046.
+  * Sellers, W. D. (1969). *A Global Climatic Model Based on the Energy Balance of the Earth-Atmosphere System*. Journal of Applied Meteorology, 8(3), 392â€“400.
   * Dickinson, R. E., et al. (1993). *Biosphere-Atmosphere Transfer Scheme (BATS) Version 1e as Coupled to the NCAR Community Climate Model*. NCAR Technical Note TN-387+STR.
 * **Problem in Previous Implementation**:
   * Movement friction used an arbitrary elevation step ladder (`elev > 3000 -> +8, elev > 1500 -> +4, elev > 500 -> +1.5`) and `switch (biome)`.
@@ -387,8 +387,8 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ### 24. Continuous Gravity Trade Network Potential
 * **Subsystem**: `TradeNetworkEngine.java`
 * **Canonical Literature**:
-  * Anderson, J. E. (1979). *A Theoretical Foundation for the Gravity Equation*. American Economic Review, 69(1), 106–116.
-  * Head, K., & Mayer, T. (2014). *Gravity Equations: Workhorse,Toolkit, and Cookbook*. Handbook of International Economics, Vol. 4, 131–195.
+  * Anderson, J. E. (1979). *A Theoretical Foundation for the Gravity Equation*. American Economic Review, 69(1), 106â€“116.
+  * Head, K., & Mayer, T. (2014). *Gravity Equations: Workhorse,Toolkit, and Cookbook*. Handbook of International Economics, Vol. 4, 131â€“195.
 * **Problem in Previous Implementation**:
   * Hardcoded limits `hubs.size() >= 20`, `.limit(10)`, and `Math.min(i + 5, hubs.size())` constrained trade network emergence artificially.
 * **Calibrated Ether Formulation**:
@@ -430,9 +430,9 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Subsystem**: `LenskiPureEngine.java`
 * **Canonical Literature**:
   * Lenski, G. (1966). *Power and Privilege: A Theory of Social Stratification*. McGraw-Hill.
-  * Milanovic, B., Lindert, P. H., & Williamson, J. G. (2011). *Pre-Industrial Inequality*. The Economic Journal, 121(551), 255–272.
+  * Milanovic, B., Lindert, P. H., & Williamson, J. G. (2011). *Pre-Industrial Inequality*. The Economic Journal, 121(551), 255â€“272.
 * **Problem in Previous Implementation**:
-  * Discrete 3-step staircase (`if (tech <= 1.5) return 0.15; if (tech <= 3.5) return 0.65; return 0.35;`) violated `AGENTS.md §8`.
+  * Discrete 3-step staircase (`if (tech <= 1.5) return 0.15; if (tech <= 3.5) return 0.65; return 0.35;`) violated `AGENTS.md Â§8`.
 * **Calibrated Ether Formulation**:
   $$G(T) = \text{clamp}\left(0.18 + 0.48 \cdot \exp\left(-\frac{(T - 2.8)^2}{2 \cdot 1.1^2}\right) + \frac{0.14}{1 + \exp(-2.2 \cdot (T - 4.5))}, 0.18, 0.70\right)$$
 * **Root Cause & Justification**:
@@ -446,7 +446,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Date**: November 1, 2026
 * **Subsystem**: `GranovetterThresholdCascadeEngine.java`
 * **Canonical Literature**:
-  * Granovetter, M. (1978). *Threshold Models of Collective Behavior*. American Journal of Sociology, 83(6), 1420–1443.
+  * Granovetter, M. (1978). *Threshold Models of Collective Behavior*. American Journal of Sociology, 83(6), 1420â€“1443.
   * Gurr, T. R. (1970). *Why Men Rebel*. Princeton University Press.
 * **Problem in Previous Implementation**:
   * Arbitrary binary cliff `if (grievance > 0.5)` for civil defiance.
@@ -485,8 +485,8 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Subsystem**: `ProceduralPopulationEngine.java`
 * **Canonical Literature**:
   * Zipf, G. K. (1949). *Human Behavior and the Principle of Least Effort*. Addison-Wesley.
-  * Gabaix, X. (1999). *Zipf's Law for Cities: An Explanation*. The Quarterly Journal of Economics, 114(3), 739–767.
-  * Xu, C., Kohler, T. A., Lenton, T. M., Svenning, J. C., & Scheffer, M. (2020). *Future of the human climate niche*. PNAS, 117(21), 11350–11355.
+  * Gabaix, X. (1999). *Zipf's Law for Cities: An Explanation*. The Quarterly Journal of Economics, 114(3), 739â€“767.
+  * Xu, C., Kohler, T. A., Lenton, T. M., Svenning, J. C., & Scheffer, M. (2020). *Future of the human climate niche*. PNAS, 117(21), 11350â€“11355.
 * **Problem in Previous Implementation**:
   * Rectangular binary bounding boxes with discrete multipliers (`lat >= 20.0 && lat <= 35.0 ? 4.0 : 1.0`, `elev < 50.0 ? 3.5 : 0.6`) produced abrupt population density cliffs across spatial cell boundaries. Urban clustering sorted cells and multiplied a hardcoded top-30 subset by a fixed coefficient.
 * **Calibrated Ether Formulation**:
@@ -506,7 +506,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Subsystem**: `CultureKernel.java`
 * **Canonical Literature**:
   * Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press.
-  * Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483–499.
+  * Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483â€“499.
 * **Problem in Previous Implementation**:
   * Binary elevation switches (`elevation > 1000 ? 0.2f : 0.0f` for ritual cohesion and `elevation < 500 ? 0.7f : 0.3f` for trade access) introduced non-physical step jumps in cultural tensor initialization.
 * **Calibrated Ether Formulation**:
@@ -523,9 +523,9 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Date**: November 1, 2026
 * **Subsystem**: `BioMolecularEpidemiologyEngine.java`
 * **Canonical Literature**:
-  * Preston, S. H. (1975). *The Changing Relation between Mortality and Level of Economic Development*. Population Studies, 29(2), 231–248.
-  * Fogel, R. W. (1994). *Economic Growth, Population Theory, and Physiology: The Bearing of Long-Term Processes on the Making of Economic Policy*. American Economic Review, 84(3), 369–395.
-  * Omran, A. R. (1971). *The Epidemiologic Transition: A Theory of the Epidemiology of Population Change*. The Milbank Memorial Fund Quarterly, 49(4), 509–538.
+  * Preston, S. H. (1975). *The Changing Relation between Mortality and Level of Economic Development*. Population Studies, 29(2), 231â€“248.
+  * Fogel, R. W. (1994). *Economic Growth, Population Theory, and Physiology: The Bearing of Long-Term Processes on the Making of Economic Policy*. American Economic Review, 84(3), 369â€“395.
+  * Omran, A. R. (1971). *The Epidemiologic Transition: A Theory of the Epidemiology of Population Change*. The Milbank Memorial Fund Quarterly, 49(4), 509â€“538.
 * **Problem in Previous Implementation**:
   * Binary step `tech >= 1.5 ? 48.0 : 38.0` with lifetime cap at 48 years, preventing modern epidemiological transition to 75-80+ years.
 * **Calibrated Ether Formulation**:
@@ -563,7 +563,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Tainter, J. A. (1988). *The Collapse of Complex Societies*. Cambridge University Press.
   * Solow, R. M. (1956). *A contribution to the theory of economic growth*. Quarterly Journal of Economics, 70(1), 65-94.
 * **Problem in Previous Implementation**:
-  * Incohérence dimensionnelle temporelle : `maintenanceCost` était multiplié par `deltaYears`, mais `surplus` était annuel, empêchant le déclenchement au pas mensuel. De plus, `capital < 50.0` et `0.05` constituaient des seuils et constantes arbitraires.
+  * IncohÃ©rence dimensionnelle temporelle : `maintenanceCost` Ã©tait multipliÃ© par `deltaYears`, mais `surplus` Ã©tait annuel, empÃªchant le dÃ©clenchement au pas mensuel. De plus, `capital < 50.0` et `0.05` constituaient des seuils et constantes arbitraires.
 * **Calibrated Ether Formulation**:
   $$\frac{dK}{dt} = \dot{S}(K, L, T) - \dot{M}(K)$$
   $$\dot{S} = L \cdot (0.05 + 0.015 \cdot \min(T, 10.0)) \cdot \frac{K}{150.0 + K}$$
@@ -581,14 +581,14 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Canonical Literature**:
   * Sherwood, S. C., & Huber, M. (2010). *An adaptability limit to climate change due to heat stress*. PNAS, 107(21), 9552-9555.
   * Dunne, J. P., Stouffer, R. J., & John, J. G. (2013). *Reductions in labour capacity from heat stress under climate warming*. Nature Climate Change, 3(6), 563-566.
-  * Vecellio, D. J., et al. (2022). *Evaluating the 35°C wet-bulb temperature adaptability threshold for young, healthy subjects*. Journal of Applied Physiology, 132(2), 340-345.
+  * Vecellio, D. J., et al. (2022). *Evaluating the 35Â°C wet-bulb temperature adaptability threshold for young, healthy subjects*. Journal of Applied Physiology, 132(2), 340-345.
 * **Problem in Previous Implementation**:
-  * Seuil binaire létal à $35.0^\circ\text{C}$ non pondéré par $\Delta t$ (15 % de mortalité fixe par pas de temps), ignorant l'incompensabilité thermique dès $31^\circ\text{C}$ et la baisse de productivité du travail.
+  * Seuil binaire lÃ©tal Ã  $35.0^\circ\text{C}$ non pondÃ©rÃ© par $\Delta t$ (15 % de mortalitÃ© fixe par pas de temps), ignorant l'incompensabilitÃ© thermique dÃ¨s $31^\circ\text{C}$ et la baisse de productivitÃ© du travail.
 * **Calibrated Ether Formulation**:
   $$\mu_{\text{heat}}(T_{\text{wb}}) = \frac{0.60}{1.0 + \exp\left(-\frac{T_{\text{wb}} - 34.5}{0.8}\right)}$$
   $$\Delta \text{Biomass}_{\text{agri}} = - 0.15 \cdot \frac{1.0}{1.0 + \exp\left(-\frac{T_{\text{wb}} - 29.0}{1.5}\right)} \cdot \Delta t$$
 * **Root Cause & Justification**:
-  * Intègre la courbe d'adaptation physiologique humaine et couple la contrainte thermique à la perte d'heures de travail agricole en extérieur.
+  * IntÃ¨gre la courbe d'adaptation physiologique humaine et couple la contrainte thermique Ã  la perte d'heures de travail agricole en extÃ©rieur.
 * **Empirical Validation Grounding**:
   * Sherwood & Huber (2010); Dunne et al. (2013); Vecellio et al. (2022).
 
@@ -619,7 +619,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Date**: November 1, 2026
 * **Subsystem**: `HotellingResourceDepletionEngine.java`
 * **Canonical Literature**:
-  * Hotelling, H. (1931). *The Economics of Exhaustible Resources*. Journal of Political Economy, 39(2), 137–175.
+  * Hotelling, H. (1931). *The Economics of Exhaustible Resources*. Journal of Political Economy, 39(2), 137â€“175.
 * **Problem in Previous Implementation**:
   * Mineral deposit extraction ceiling `metalDeposit * 0.05` was executed per tick without dimensional scaling by `deltaYears`, causing severe over-depletion on monthly time steps (5% per month = 60%/year).
 * **Calibrated Ether Formulation**:
@@ -636,8 +636,8 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Date**: November 1, 2026
 * **Subsystem**: `PriceMultilevelSelectionEngine.java`, `SchellingAxelrodSegregationEngine.java`
 * **Canonical Literature**:
-  * Price, G. R. (1970). *Selection and covariance*. Nature, 227, 520–521.
-  * Schelling, T. C. (1971). *Dynamic models of segregation*. Journal of Mathematical Sociology, 1(2), 143–186.
+  * Price, G. R. (1970). *Selection and covariance*. Nature, 227, 520â€“521.
+  * Schelling, T. C. (1971). *Dynamic models of segregation*. Journal of Mathematical Sociology, 1(2), 143â€“186.
 * **Problem in Previous Implementation**:
   * Discrete threshold `gini > 0.45` and unbounded relative wealth ratio `capital / meanWealth` in Price engine; discrete `if (gini > 0.50)` in Schelling engine.
 * **Calibrated Ether Formulation**:
@@ -677,7 +677,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Date**: November 1, 2026
 * **Subsystem**: `KrugmanCorePeripheryEngine.java`
 * **Canonical Literature**:
-  * Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483–499.
+  * Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483â€“499.
   * Fujita, M., Krugman, P. R., & Venables, A. (1999). *The Spatial Economy: Cities, Regions, and International Trade*. MIT Press.
 * **Problem in Previous Implementation**:
   * Binary conjunction `if (capital > meanCapital && accessibilityIndex > 1.0)` created discontinuous boundary jumps in transport network investment.
@@ -698,7 +698,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Subsystem**: `RomanImperialCliodynamicEngine.java`
 * **Canonical Literature**:
   * Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press.
-  * Taagepera, R. (1978). *Size and duration of empires: Growth-decline curves, 3000 to 600 B.C.* Social Science Research, 7(2), 180–196.
+  * Taagepera, R. (1978). *Size and duration of empires: Growth-decline curves, 3000 to 600 B.C.* Social Science Research, 7(2), 180â€“196.
 * **Problem in Previous Implementation**:
   * Capital was directly divided by `adminFriction` and multiplied by `(1 - eliteOverproductionFactor)` on every tick without $\Delta t$, obliterating 96% of capital within a single year at monthly resolution.
 * **Calibrated Ether Formulation**:
@@ -715,7 +715,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Date**: November 1, 2026
 * **Subsystem**: `HandyNasaPureEngine.java`, `HandyNasaHybridEngine.java`
 * **Canonical Literature**:
-  * Motesharrei, S., Rivas, J., & Kalnay, E. (2014). *Human and nature dynamics (HANDY): Modeling inequality and use of resources in the collapse or sustainability of societies*. Ecological Economics, 101, 90–102.
+  * Motesharrei, S., Rivas, J., & Kalnay, E. (2014). *Human and nature dynamics (HANDY): Modeling inequality and use of resources in the collapse or sustainability of societies*. Ecological Economics, 101, 90â€“102.
 * **Problem in Previous Implementation**:
   * In pure model, regeneration was `beta * natureX * (100.0 - natureX)` (unnormalized, 100x too fast). In hybrid model, biomass lacked regeneration and was depleted by absolute population without spatial area scaling.
 * **Calibrated Ether Formulation**:
@@ -732,8 +732,8 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Date**: November 2, 2026
 * **Subsystem**: `AmerindianEcosystemEngine.java`
 * **Canonical Literature**:
-  * Crosby, A. W. (1976). *Virgin Soil Epidemics as a Factor in the Aboriginal Depopulation in America*. The William and Mary Quarterly, 33(2), 289–299.
-  * Koch, A., Brierley, C., Maslin, M. M., & Lewis, S. L. (2019). *Earth system impacts of the European arrival and Great Dying in the Americas after 1492*. Quaternary Science Reviews, 207, 13–36.
+  * Crosby, A. W. (1976). *Virgin Soil Epidemics as a Factor in the Aboriginal Depopulation in America*. The William and Mary Quarterly, 33(2), 289â€“299.
+  * Koch, A., Brierley, C., Maslin, M. M., & Lewis, S. L. (2019). *Earth system impacts of the European arrival and Great Dying in the Americas after 1492*. Quaternary Science Reviews, 207, 13â€“36.
 * **Problem in Previous Implementation**:
   * Direct mutation of `cell.setPopulation((int) newPop)` broke mass conservation and desynchronized the 7-cohort demographic age pyramid (`pop0to4`, `pop5to14`, `pop15to24`, etc.).
 * **Calibrated Ether Formulation**:
@@ -794,11 +794,11 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 
 ---
 
-### Entry 25: Physical Capital Depreciation in Kümmel-Ayres Useful Exergy Production
+### Entry 25: Physical Capital Depreciation in KÃ¼mmel-Ayres Useful Exergy Production
 * **Date**: November 2, 2026
 * **Subsystem**: `KummelAyresExergyEngine.java`
 * **Canonical Literature**:
-  * Kümmel, R. (1982). *The impact of energy on industrial growth*. Energy, 7(2), 189-203.
+  * KÃ¼mmel, R. (1982). *The impact of energy on industrial growth*. Energy, 7(2), 189-203.
   * Ayres, R. U., & Warr, B. (2009). *The Economic Growth Engine: How Energy and Work Drive Material Prosperity*. Edward Elgar Publishing.
 * **Problem in Previous Implementation**:
   * Reinvestment lacked physical capital depreciation ($\delta = 0$), driving runaway capital accumulation to infinity.
@@ -816,7 +816,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Date**: November 2, 2026
 * **Subsystem**: `WarDiplomacyEngine.java`
 * **Canonical Literature**:
-  * Grataloup, C. (2020). *Géohistoire de la mondialisation*. Armand Colin.
+  * Grataloup, C. (2020). *GÃ©ohistoire de la mondialisation*. Armand Colin.
   * Marshall, T. (2015). *Prisoners of Geography: Ten Maps That Explain Everything About the World*. Scribner.
 * **Problem in Previous Implementation**:
   * Topographic boundary friction applied a 38.7x penalty regardless of imperial state capacity or bullion war chests, freezing imperial legions at mountain passes.
@@ -885,3 +885,382 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 ---
 
 
+### Entry 30: Pre-Industrial & Industrial Continuous Urban Agglomeration Dynamics
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getUrbanizationRate()`)
+* **Canonical Literature**:
+  * Bairoch, P. (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press.
+  * De Vries, J. (1984). *European Urbanization: 1500â€“1800*. Harvard University Press.
+  * Chandler, T. (1987). *Four Thousand Years of Urban Growth: An Historical Census*. St. David's University Press.
+  * Crafts, N. F. R. (1985). *British Economic Growth during the Industrial Revolution*. Oxford University Press.
+* **Problem in Previous Implementation**:
+  * The pre-industrial agrarian urban share asymptote was capped at $u_{\max} = 0.068$ (6.8%), which, after compounding with nucleation and technology dampening, yielded simulated pre-industrial urbanization rates of only $2.5\% - 3.0\%$. This produced a systematic $25\% - 40\%$ under-agglomeration drift against Maddison and HYDE 3.4 benchmarks in Antiquity (Rome 100 CE), Song Dynasty China (1000 CE), and the High Middle Ages. Additionally, a discontinuous cutoff step `if (cellTech <= 1.55) continue;` acted as an unphysical step cliff.
+* **Calibrated Ether Formulation**:
+  $$u_{\text{agrarian}} = \frac{0.115}{1.0 + \exp\left(-1.65 (\ln(k_{\text{pc}}) - 4.35)\right)} \cdot \tanh(\max(0, T - 1.55) \cdot 1.15) \cdot \tanh\left(\frac{\max(0, k_{\text{pc}} - 25)}{50}\right) \cdot \left(0.50 + 0.50 \cdot u_{\text{nucleation}}\right)$$
+  $$u_{\text{industrial}} = 0.75 \cdot \tanh(\max(0, T - 3.20) \cdot 0.55) \cdot \tanh\left(\frac{\max(0, k_{\text{pc}} - 120)}{500}\right) \cdot \frac{1.0}{1.0 + \exp\left(-1.35 (T - 4.25)\right)}$$
+  $$u_{\text{cell}} = \text{clamp}(u_{\text{agrarian}} + u_{\text{industrial}}, \, 0.0, \, 0.95)$$
+* **Root Cause & Justification**:
+  * The maximum pre-industrial agrarian urban ceiling $u_{\max} = 0.115$ (11.5%) accurately reflects Bairoch's empirical carrying capacity of solar/biomass agricultural regimes supporting non-agrarian specialists. The Seshat threshold $T_0 = 1.55$ corresponds to the historical Uruk emergence of permanent monumental urban agglomerations ($> 5\,000$ inhabitants), formulated here as a continuous, smooth analytical activation rather than a hard discontinuous step cutoff. The industrial transition midpoint is recalibrated from $T = 4.75$ to $T = 4.25$ (Crafts 1985), capturing the steam-driven urban migration of the 19th century.
+* **Empirical Validation Grounding**:
+  * Maddison Project Database (2020); HYDE 3.4 (Klein Goldewijk et al. 2017); Bairoch (1988).
+
+---
+
+### Entry 31: Multi-Epoch Continuous Literacy & Scriptural Transmission Function
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getLiteracyRate()`)
+* **Canonical Literature**:
+  * Goody, J. (1986). *The Logic of Writing and the Organization of Society*. Cambridge University Press.
+  * Buringh, E., & van Zanden, J. L. (2009). "Charting the 'Rise of the West': Manuscripts and Printed Books in Europe, a Long-Run Approach from the Sixth through Eighteenth Centuries." *The Journal of Economic History*, 69(2), 409â€“445.
+  * Bulliet, R. W. (1979). *Conversion to Islam in the Medieval Period: An Essay in Quantitative History*. Harvard University Press.
+  * Graff, H. J. (1987). *The Legacies of Literacy: Continuities and Contradictions in Western Culture and Society*. Indiana University Press.
+* **Problem in Previous Implementation**:
+  * Pre-industrial manuscript literacy was strictly bounded between $1.2\%$ and $4.0\%$, preventing the simulation from reproducing the expansion of scriptural, administrative, and mercantile literacy in Classical Antiquity, the Islamic Golden Age (632 CE madrasas/kuttÄ�b), and High Medieval commercial leagues ($8\% - 14\%$). Furthermore, woodblock printing (xylography) was gated behind $T > 3.15$, excluding Song China (1000 CE) where printing flourished at $T \approx 2.6 - 2.8$, while modern mass schooling had an excessively late midpoint ($T = 6.72$).
+* **Calibrated Ether Formulation**:
+  $$\Lambda_{\text{scribal}} = \left(1.5 + 7.5 \cdot \left(\min\left(1.0, \, \frac{\max(0, T - 1.55)}{1.60}\right)\right)^{0.85}\right) \cdot \tanh\left(\frac{\max(0, k_{\text{pc}} - 20)}{40}\right) \cdot \tanh(\max(0, T - 1.55) \cdot 1.25)$$
+  $$\Lambda_{\text{vernacular}} = \mathbb{I}_{T > 2.50 \land k_{\text{pc}} > 35} \cdot 16.0 \cdot \left(\min\left(1.0, \, \frac{T - 2.50}{1.50}\right)\right)^{1.20} \cdot \tanh\left(\frac{k_{\text{pc}} - 20}{40}\right)$$
+  $$\Lambda_{\text{massEdu}} = \mathbb{I}_{T > 3.80 \land k_{\text{pc}} > 75} \cdot \frac{82.0}{1.0 + \exp\left(-1.5 (T - 5.20)\right)}$$
+  $$\Lambda_{\text{cell}} = \text{clamp}(\Lambda_{\text{scribal}} + \Lambda_{\text{vernacular}} + \Lambda_{\text{massEdu}}, \, 0.0, \, 99.5)$$
+* **Root Cause & Justification**:
+  * Reflects the true historical three-stage cognitive transition: (1) scribal/scriptural manuscript literacy spreading from proto-cuneiform ($T_0 = 1.55$) up to $9\%$ in mature imperial networks; (2) xylographic/typographic vernacular diffusion active from Song China and early European printing ($T > 2.50$) elevating urban literacy to $15\% - 25\%$; (3) industrial compulsory state schooling ($T > 3.80$, midpoint $T = 5.20$, Graff 1987) transitioning modern literacy to $80\% - 99\%$.
+* **Empirical Validation Grounding**:
+  * Buringh & van Zanden (2009); Maddison Project (2020); Seshat Global History Databank (Turchin et al. 2018).
+
+---
+
+
+### Entry 32: Continuous Agricultural Intensification & Food EROEI Function
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getEroiAlimentaire()`, `getAgriculturalEroeiRatio()`)
+* **Canonical Literature**:
+  * Boserup, E. (1965). *The Conditions of Agricultural Growth: The Economics of Agrarian Change under Population Pressure*. Allen & Unwin.
+  * Hall, C. A. S., Lambert, J. G., & Balogh, S. B. (2014). "EROI of different fuels and the implications for society." *Energy Policy*, 64, 141–152.
+  * Giampietro, M., Mayumi, K., & Sorman, A. H. (2013). *Energy Analysis for a Sustainable Future: Multi-Scale Integrated Analysis of Societal and Ecosystem Metabolism*. Routledge.
+* **Problem in Previous Implementation**:
+  * Piecewise step-staircase (`if (tech < 1.5) return 7.0; if (tech < 2.5) return 6.5; if (tech < 3.8) return 2.8; ...`) creating unphysical abrupt jumps across epochs.
+* **Calibrated Ether Formulation**:
+  $$\text{EROEI}_{\text{alim}}(T) = 0.12 + \frac{6.88}{1.0 + \exp\left(1.35 \cdot (T - 2.80)\right)}$$
+* **Root Cause & Justification**:
+  * Reflects Boserupian agricultural intensification: returns per hour of invested human/animal labor decline smoothly from high-return wild harvesting (~7.0) to multi-cropping agrarian systems (~2.5), down to modern industrial fossil-subsidized agriculture (< 0.50).
+* **Empirical Validation Grounding**:
+  * Hall et al. (2014); Giampietro (2013); Boserup (1965).
+
+---
+
+### Entry 33: Continuous Dietary Trophic Multiplier & Mobilized Biomass
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getTrophicMultiplier()`, `getBiomassMobilizedPerCapitaKg()`)
+* **Canonical Literature**:
+  * Smil, V. (2008). *Energy in Nature and Society: General Energetics of Complex Systems*. MIT Press.
+* **Problem in Previous Implementation**:
+  * Hardcoded discrete constant switches (`PhysicalConstants.TROPHIC_MULTIPLIER_*`) producing discontinuities at epoch boundaries.
+* **Calibrated Ether Formulation**:
+  $$\mu(T) = 1.05 + \frac{2.15}{1.0 + \exp\left(-1.25 \cdot (T - 2.80)\right)}$$
+  $$\text{EnergyDensity}(T) = 17.5 - \frac{3.5}{1.0 + \exp\left(-1.50 \cdot (T - 2.20)\right)} \quad [\text{MJ/kg}]$$
+  $$\text{BiomassMobilized}(T) = \frac{E_{\text{metabolic}} \cdot \mu(T)}{\text{EnergyDensity}(T)} \quad [\text{kg/capita/year}]$$
+* **Root Cause & Justification**:
+  * Replaces discrete trophic categories with continuous dietary transitions between wild foraging, agrarian grain regimes, and industrial meat consumption.
+* **Empirical Validation Grounding**:
+  * Smil (2008); FAO Food Balance Sheets.
+
+---
+
+### Entry 34: Continuous Elite Overproduction Index (EOI)
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getEliteOverproductionIndex()`)
+* **Canonical Literature**:
+  * Turchin, P. (2016). *Ages of Discord: A Structural-Demographic Analysis of American History*. Beresta Books.
+  * Turchin, P., & Nefedov, S. A. (2009). *Secular Cycles*. Princeton University Press.
+* **Problem in Previous Implementation**:
+  * Step cutoff `if (tech <= 1.55) return 0.0;` created an instantaneous cliff from 0.0 to 1.15 at the state emergence boundary.
+* **Calibrated Ether Formulation**:
+  $$\text{stateActivation} = \tanh(\max(0, T - 1.55) \cdot 1.45)$$
+  $$\text{EOI} = \text{stateActivation} \cdot \left[1.0 + 1.45 \cdot \max(0, \text{Gini} - 0.30) + 0.25 \cdot \tanh(\max(0, T - 2.50))\right]$$
+* **Root Cause & Justification**:
+  * Guarantees strict adherence to the Deep-Time Invariant ($\text{EOI} \equiv 0.0$ for $T \le 1.55$) while ensuring smooth continuous emergence of elite competition during state formation.
+* **Empirical Validation Grounding**:
+  * Seshat Global History Databank; Turchin & Nefedov (2009).
+
+---
+
+### Entry 35: Continuous Currency Minting & Debasement Function
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getCurrencyDebasement()`)
+* **Canonical Literature**:
+  * Butcher, K., & Ponting, M. (2014). *The Metallurgy of Roman Silver Coinage: From the Accession of Nero to the Reform of Trajan*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Abrupt step guard `if (tech <= 2.00) return 0.0;` with discontinuous coinage appearance.
+* **Calibrated Ether Formulation**:
+  $$\text{mintActivation} = \tanh(\max(0, T - 1.80) \cdot 1.25)$$
+  $$\text{Purity} = \text{mintActivation} \cdot \left[48.0 + 18.0 \cdot \exp(-12.0 (T - 2.60)^2) + 8.0 \tanh(T - 3.30) - 10.0 \max(0, \text{Gini} - 0.50)\right] \cdot \frac{1.0}{1.0 + \exp(1.8 (T - 7.00))}$$
+* **Root Cause & Justification**:
+  * Metallurgical coinage emerges smoothly from archaic bullion weighing ($T > 1.80$, Lydian electrum), capturing imperial debasement crises (Roman denarius under Septimius Severus) and the eventual fiat transition.
+* **Empirical Validation Grounding**:
+  * Butcher & Ponting (2014); Harl (1996).
+
+---
+
+### Entry 36: Continuous Real Unskilled Wage Welfare Ratio
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getRealUnskilledWageIndex()`)
+* **Canonical Literature**:
+  * Allen, R. C. (2001). "The Great Divergence in European Wages and Prices from the Middle Ages to the First World War." *Explorations in Economic History*, 38(4), 411–447.
+* **Problem in Previous Implementation**:
+  * Piecewise guard `if (tech <= 1.20) return 100.0;` with discontinuous derivative.
+* **Calibrated Ether Formulation**:
+  $$W_{\text{malthusian}} = 100.0 + 18.0 \cdot \tanh(T - 1.50) - 20.0 \cdot \max(0, \text{Gini} - 0.45)$$
+  $$W_{\text{industrial}} = 65.0 \cdot \tanh(\max(0, T - 3.60) \cdot 0.85) \cdot \exp\left(\min(3.0, \tanh(\max(0, T - 3.60) \cdot 0.85) \cdot 2.2)\right)$$
+  $$W = \text{clamp}(W_{\text{malthusian}} + W_{\text{industrial}}, \, 60.0, \, 2500.0)$$
+* **Root Cause & Justification**:
+  * Reconciles Malthusian wage stability around subsistence ($W \approx 100$) with Allen's post-1800 real wage divergence and Kuznets capital accumulation.
+* **Empirical Validation Grounding**:
+  * Allen (2001); Maddison Project Database (2020).
+
+---
+
+### Entry 37: Continuous Sovereign Debt Dynamics
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getSovereignDebtBurdenPct()`)
+* **Canonical Literature**:
+  * Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different: Eight Centuries of Financial Folly*. Princeton University Press.
+* **Problem in Previous Implementation**:
+  * Discrete piecewise conditions `if (tech <= 1.65) return 0.0; if (tech <= 3.30) ...`
+* **Calibrated Ether Formulation**:
+  $$\text{fiscalStateFactor} = \tanh(\max(0, T - 1.65) \cdot 1.15)$$
+  $$\text{DebtPct} = \text{fiscalStateFactor} \cdot \left[4.0 + 12.0 \cdot \tanh(T - 2.20) + \frac{65.0}{1.0 + \exp(-1.40 (T - 4.20))}\right]$$
+* **Root Cause & Justification**:
+  * Public borrowing scales smoothly from ancient credit tallies to modern secondary bond markets without calendar triggers.
+* **Empirical Validation Grounding**:
+  * Reinhart & Rogoff (2009).
+
+---
+
+### Entry 38: Continuous Global Trade Volume Expansion
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getGlobalTradeVolumeIndex()`)
+* **Canonical Literature**:
+  * Federico, G., & Tena-Junguito, A. (2017). "A Tale of Two Globalizations: Gains from Trade and Openness 1800–2010." *Review of World Economics*, 153(3), 601–626.
+* **Problem in Previous Implementation**:
+  * Discrete staircases at $T = 1.55$ and $T = 3.30$.
+* **Calibrated Ether Formulation**:
+  $$\text{tradeActivation} = \tanh(\max(0, T - 1.55) \cdot 1.20)$$
+  $$\text{TradeVolume} = \text{tradeActivation} \cdot \left[1.5 \cdot \exp(1.35 \cdot \min(3.5, \max(0, T - 1.55))) + \frac{1500.0}{1.0 + \exp(-2.20 (T - 4.30))}\right]$$
+* **Root Cause & Justification**:
+  * Captures pre-industrial Silk Road / Indian Ocean trade networks followed by the 19th-century steamship globalization boom.
+* **Empirical Validation Grounding**:
+  * Federico & Tena-Junguito (2017).
+
+---
+
+### Entry 39: Continuous Topsoil Loss & Agricultural Erosion
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getTopsoilErosionLossPct()`)
+* **Canonical Literature**:
+  * Montgomery, D. R. (2007). "Soil erosion and agricultural sustainability." *Proceedings of the National Academy of Sciences*, 104(33), 13268–13272.
+* **Problem in Previous Implementation**:
+  * Discrete thresholds `if (tech <= 1.15) return 0.03; if (tech <= 1.55) return 0.50;`
+* **Calibrated Ether Formulation**:
+  $$\text{soilLoss} = 0.03 + \frac{32.0 \cdot \tanh(\max(0, T - 1.25) \cdot 0.65)}{1.0 + \exp(-1.20 (T - 3.50))}$$
+* **Root Cause & Justification**:
+  * Smooth universal curve connecting Holocene baseline weathering (0.03%) with mechanized deep plowing degradation (30–40%).
+* **Empirical Validation Grounding**:
+  * Montgomery (2007); UN FAO Global Soil Degradation Database.
+
+---
+
+### Entry 40: Continuous Information Transmission Velocity
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getInformationTravelSpeedKmPerDay()`)
+* **Canonical Literature**:
+  * Scheidel, W. (2014). "The shape of the Roman world: modelling imperial connectivity." *Journal of Roman Archaeology*, 27, 7–32.
+  * Innis, H. A. (1950). *Empire and Communications*. Oxford University Press.
+* **Problem in Previous Implementation**:
+  * Discontinuous speed cliff jumping from $4.0\text{ km/day}$ to $65.0\text{ km/day}$ at $T = 1.55$.
+* **Calibrated Ether Formulation**:
+  $$v_{\text{info}} = 30.0 + 60.0 \cdot \tanh(\max(0, T - 1.55) \cdot 0.80) + \frac{1200.0}{1.0 + \exp(-2.50 (T - 4.10))} \quad [\text{km/day}]$$
+* **Root Cause & Justification**:
+  * Connects foot runner baseline ($30\text{ km/day}$), imperial relay courier networks (Roman *cursus publicus* $90\text{ km/day}$), and modern telecommunications/railways.
+* **Empirical Validation Grounding**:
+  * Scheidel (2014) ORBIS; Innis (1950).
+
+---
+
+### Entry 41: Continuous Per-Capita Metal Smelting Output
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getMetalSmeltingPerCapitaKg()`)
+* **Canonical Literature**:
+  * Gale, N. H. (2000). *Metals in Antiquity*. BAR Publishing.
+  * USGS National Minerals Information Center (2023).
+* **Problem in Previous Implementation**:
+  * Step cutoff `if (tech <= 1.65) return 0.0;` with piecewise jumps.
+* **Calibrated Ether Formulation**:
+  $$\text{smeltActivation} = \tanh(\max(0, T - 1.65) \cdot 1.30)$$
+  $$\text{SmeltKg} = \text{smeltActivation} \cdot \left[0.8 + 2.5 \cdot \tanh(T - 2.20) + \frac{450.0}{1.0 + \exp(-2.20 (T - 4.20))}\right]$$
+* **Root Cause & Justification**:
+  * Chalcolithic smelting emerges smoothly at $T_0 = 1.65$, expanding through the Bronze/Iron Ages before the Bessemer industrial inflection.
+* **Empirical Validation Grounding**:
+  * Gale (2000); USGS Historical Statistics for Mineral Commodities.
+
+---
+
+### Entry 42: Continuous Fossil Energy Transition & Shipping Freight Dynamics
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getFossilSharePrimaryEnergyPct()`, `getShippingFreightCostIndex()`)
+* **Canonical Literature**:
+  * Marchetti, C., & Nakicenovic, N. (1979). *The Dynamics of Energy Systems and the Logistic Substitution Model*. IIASA Research Report RR-79-13.
+  * Harley, C. K. (1988). "Ocean Freight Rates and New World Agriculture." *The Journal of Economic History*, 48(4), 851–876.
+* **Problem in Previous Implementation**:
+  * Step threshold `if (tech <= 3.30) return 0.0;` for fossil share, and arbitrary piecewise freight brackets.
+* **Calibrated Ether Formulation**:
+  $$\text{FossilShare} = \frac{88.0}{1.0 + \exp(-2.80 (T - 4.25))} \quad [\%]$$
+  $$\text{FreightIndex} = \tanh(\max(0, T - 1.55) \cdot 1.50) \cdot \left[1600.0 - \frac{1450.0}{1.0 + \exp(-1.80 (T - 3.80))}\right]$$
+* **Root Cause & Justification**:
+  * Classical Marchetti-Nakicenovic logistic substitution for primary energy, paired with Harley's empirical transport revolution curve.
+* **Empirical Validation Grounding**:
+  * Smil (2017); Marchetti & Nakicenovic (1979); Harley (1988).
+
+---
+
+
+### Entry 43: Non-Additive Unified Urbanization Envelope
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getUrbanizationRatePct()`), `PostHocCliodynamicMetricsExtractor.java` (`computeUrbanizationRate()`)
+* **Canonical Literature**:
+  * Bairoch, P. (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press.
+  * De Vries, J. (1984). *European Urbanization, 1500–1800*. Harvard University Press.
+  * Goldewijk, K. K., Beusen, A., & Janssen, P. (2010). "Long-term dynamic modeling of global population and built-up area in a spatially explicit way: HYDE 3.1." *The Holocene*, 20(4), 565–573.
+* **Problem in Previous Implementation**:
+  * The simulation engine summed `agrarianUrbanShare` and `industrialUrbanShare` additively, artificially doubling simulated urbanization across historical epochs (simulating 18.3% vs 10.4% observed in 1800 CE; and >70% vs ~30% observed in 1914 CE).
+* **Calibrated Ether Formulation**:
+  $$U(T) = \tanh(\max(0, T - 1.55) \cdot 1.15) \cdot \max\left(\frac{9.5}{1 + e^{-1.5(T - 2.80)}}, \, \frac{55.0}{1 + e^{-2.2(T - 4.60)}}\right) \quad [\%]$$
+* **Root Cause & Academic Justification**:
+  * Human urban settlements represent a single continuous agglomeration continuum. Industrial urbanization does not stack on top of agrarian urban centers as an independent population pool; rather, industrial factory agglomerations expand and transform pre-existing agrarian market towns and administrative capitals. Using a non-additive $\max()$ envelope prevents demographic double-counting.
+* **Empirical Validation Grounding**:
+  * Bairoch (1988); HYDE 3.4; Maddison Project (2020).
+
+---
+
+### Entry 44: Non-Additive Unified Literacy Transition
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getLiteracyRatePct()`), `PostHocCliodynamicMetricsExtractor.java` (`computeLiteracyRate()`)
+* **Canonical Literature**:
+  * Buringh, E., & van Zanden, J. L. (2009). "Charting the ‘Rise of the West’: Manuscripts and Printed Books in Europe, 6th to 18th Centuries." *The Journal of Economic History*, 69(2), 409–445.
+  * Graff, H. J. (1987). *The Legacies of Literacy: Continuities and Contradictions in Western Culture and Society*. Indiana University Press.
+  * Cipolla, C. M. (1969). *Literacy and Development in the West*. Penguin Books.
+* **Problem in Previous Implementation**:
+  * The engine computed literacy by summing three disjoint cohorts (scribal, print vernacular, and universal mass schooling), which inflated global literacy to 31% in 1800 (observed 15.6%) and over 80% in 1914 (observed ~40%).
+* **Calibrated Ether Formulation**:
+  $$L(T) = \tanh(\max(0, T - 1.55) \cdot 1.25) \cdot \max\left(\frac{18.0}{1 + e^{-1.4(T - 3.10)}}, \, \frac{82.0}{1 + e^{-2.1(T - 4.65)}}\right) \quad [\%]$$
+* **Root Cause & Academic Justification**:
+  * Scribes, print readers, and public elementary school students belong to the same literate proportion of the population. Universal state schooling supersedes early modern guild-level vernacular literacy rather than accumulating alongside it.
+* **Empirical Validation Grounding**:
+  * Buringh & van Zanden (2009); Our World in Data (2024); UNESCO Historical Literacy Database.
+
+---
+
+### Entry 45: Zero-Leakage Pre-Industrial Fossil Energy Logistic Activation
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getFossilSharePrimaryEnergyPct()`), `PostHocCliodynamicMetricsExtractor.java` (`computeFossilSharePrimaryEnergy()`)
+* **Canonical Literature**:
+  * Marchetti, C., & Nakicenovic, N. (1979). *The Dynamics of Energy Systems and the Logistic Substitution Model*. IIASA Research Report RR-79-13.
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  * Allen, R. C. (2009). *The British Industrial Revolution in Global Perspective*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * The pure unconstrained logistic substitution curve $1 / (1 + e^{-k(T - T_0)})$ possessed an asymptotic non-zero tail at $T \in [2.0, 3.2]$ (~2.5% fossil energy under Rome and Song China). In historical eras where observed fossil energy was $0.0\%$, this leakage produced near-zero division blowups exceeding $1\,000\,000\%$ MAPE.
+* **Calibrated Ether Formulation**:
+  $$s_{\text{fossil}}(T) = \tanh(\max(0, T - 3.40) \cdot 1.80) \cdot \frac{88.0}{1.0 + \exp(-2.80(T - 4.25))} \quad [\%]$$
+* **Root Cause & Academic Justification**:
+  * Coal and oil extraction require mechanical drainage pumps (Newcomen/Watt atmospheric steam engines) and high-strength metallurgy that only emerged after $T_0 = 3.40$ ($\sim 1750$ CE). Before this critical technological threshold, primary energy was exclusively biomass, human/draft animal muscle, wind, and water flow ($0.0\%$ fossil).
+* **Empirical Validation Grounding**:
+  * Smil (2017); Our World in Data (2024); Etemad & Luciani (1991).
+
+---
+
+### Entry 46: Relativistic & High-Frequency Telecommunications Velocity Scaling
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getInformationTravelSpeedKmPerDay()`), `PostHocCliodynamicMetricsExtractor.java` (`computeInformationTravelSpeed()`)
+* **Canonical Literature**:
+  * Innis, H. A. (1950). *Empire and Communications*. Oxford University Press.
+  * Scheidel, W. (2014). "The shape of the Roman world: modelling imperial connectivity." *Journal of Roman Archaeology*, 27, 7–32.
+  * Standage, T. (1998). *The Victorian Internet: The Remarkable Story of the Telegraph and the Nineteenth Century's On-line Pioneers*. Walker & Company.
+* **Problem in Previous Implementation**:
+  * Information transmission speed was hardcoded with a physical ceiling of $1\,200\text{ km/day}$, which accurately matched steam locomotives but completely truncated 20th-century electromagnetic telecommunications (electric telegraph, transatlantic submarine cables, Marconi wireless radio, and digital networks), creating a $2\,460\%$ MAPE error in 1914.
+* **Calibrated Ether Formulation**:
+  $$v_{\text{info}}(T) = 4.0 + 76.0 \cdot \tanh(\max(0, T - 1.55) \cdot 0.80) + \frac{2400.0}{1 + e^{-2.50(T - 3.90)}} + \frac{3 \times 10^8 \cdot \mathbb{I}_{T > 4.15}}{1 + e^{-3.50(T - 4.45)}} \quad [\text{km/day}]$$
+* **Root Cause & Academic Justification**:
+  * Information propagation transitioned from biological couriers ($\sim 30\text{--}90\text{ km/day}$) to mechanical transport ($\sim 2\,400\text{ km/day}$) and finally to electromagnetic radiation traveling at speed $c = 3 \times 10^8\text{ km/day}$ following the deployment of telegraphic and radio networks ($T > 4.15$).
+* **Empirical Validation Grounding**:
+  * Scheidel (2014) ORBIS; Standage (1998); Innis (1950).
+
+---
+
+### Entry 47: Two-Stage Maritime Shipping Freight Transition
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getShippingFreightCostIndex()`), `PostHocCliodynamicMetricsExtractor.java` (`computeShippingFreightCostIndex()`)
+* **Canonical Literature**:
+  * Harley, C. K. (1988). "Ocean Freight Rates and New World Agriculture." *The Journal of Economic History*, 48(4), 851–876.
+  * Mohammed, S. I., & Williamson, J. G. (2004). "Freight Rates and Productivity Gains in British Tramp Shipping 1869–1950." *Explorations in Economic History*, 41(2), 172–203.
+  * Unger, R. W. (1980). *The Ship in the Medieval Economy 600–1600*. Croom Helm.
+* **Problem in Previous Implementation**:
+  * A single generic sigmoid failed to distinguish between the Renaissance naval design revolution (lateen rigging, sternpost rudders, caravel, Dutch fluyt) and the 19th-century steam turbine revolution, resulting in a $242\%$ MAPE divergence in 1800 and $56\%$ in 1914.
+* **Calibrated Ether Formulation**:
+  $$F_{\text{freight}}(T) = \tanh(\max(0, T - 1.55) \cdot 1.50) \cdot \left[1450.0 - 800.0 \cdot \tanh(\max(0, T - 2.50) \cdot 0.85) - \frac{600.0}{1.0 + \exp(-2.20(T - 4.10))}\right]$$
+* **Root Cause & Academic Justification**:
+  * Maritime productivity evolved in two well-documented phases: first, early modern naval architectural efficiency gains reduced freight costs from $\sim 1400$ to $\sim 450$ ($100 = 1913$ level); second, iron/steel steamships with compound engines further drove freight down to $56$ in 1914 and $\sim 20$ in modern container shipping.
+* **Empirical Validation Grounding**:
+  * Harley (1988); Mohammed & Williamson (2004); Unger (1980).
+
+---
+
+### Entry 48: Continuous Structural Metallurgy Scaling
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getMetalSmeltingPerCapitaKg()`), `PostHocCliodynamicMetricsExtractor.java` (`computeMetalSmeltingPerCapita()`)
+* **Canonical Literature**:
+  * Malandra, W. W. (1990). *The Metal Industry of the Bronze and Iron Ages*. University of Minnesota.
+  * USGS National Minerals Information Center (2023). *Historical Statistics for Mineral and Material Commodities in the United States*.
+  * Gale, N. H. (2000). *Metals in Antiquity*. BAR Publishing.
+* **Problem in Previous Implementation**:
+  * Pre-industrial metal production was anchored to an overly low value ($0.8\text{ kg/capita}$), creating a $68\%$ error in 1800, while industrial steel scaling overshot the 1914 benchmark ($500\text{ kg}$ vs $57\text{ kg}$ observed).
+* **Calibrated Ether Formulation**:
+  $$M_{\text{smelt}}(T) = \tanh(\max(0, T - 1.65) \cdot 1.30) \cdot \left[1.2 + 6.0 \cdot \tanh(\max(0, T - 2.00) \cdot 0.80) + \frac{250.0}{1.0 + \exp(-2.20(T - 4.60))}\right] \quad [\text{kg/capita/yr}]$$
+* **Root Cause & Academic Justification**:
+  * Metal output progresses continuously through bloomery smelting ($\sim 1.5\text{ kg}$ in Antiquity), water-powered blast furnaces ($\sim 3.0\text{ kg}$ in medieval Europe and Song China, $\sim 10\text{ kg}$ in 1800), and Bessemer/Siemens-Martin industrial metallurgy ($\sim 57\text{ kg}$ in 1914, $\sim 255\text{ kg}$ modern).
+* **Empirical Validation Grounding**:
+  * Malandra (1990); USGS Minerals Yearbook (2023); Gale (2000).
+
+---
+
+### Entry 49: Continuous Fiscal State Sovereign Debt Expansion
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getSovereignDebtBurdenPct()`), `PostHocCliodynamicMetricsExtractor.java` (`computeSovereignDebtBurden()`)
+* **Canonical Literature**:
+  * Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different: Eight Centuries of Financial Folly*. Princeton University Press.
+  * Dickson, P. G. M. (1967). *The Financial Revolution in England: A Study in the Development of Public Credit, 1688–1756*. Macmillan.
+  * Ferguson, N. (2001). *The Cash Nexus: Money and Power in the Modern World, 1700–2000*. Basic Books.
+* **Problem in Previous Implementation**:
+  * Additive baseline caused debt burden to hover unrealistically low in medieval/renaissance commercial states and jump erratically, yielding $69\%$ MAPE in 1347 and $51\%$ in 1800.
+* **Calibrated Ether Formulation**:
+  $$D_{\text{sovereign}}(T) = \tanh(\max(0, T - 1.65) \cdot 1.15) \cdot \max\left(8.0 + 18.0 \cdot \tanh(\max(0, T - 2.20) \cdot 1.10), \, \frac{80.0}{1.0 + \exp(-2.20(T - 3.85))}\right) \quad [\%]$$
+* **Root Cause & Academic Justification**:
+  * Public credit systems transitioned from high-interest personalized merchant loans in medieval city-states ($\sim 10\text{--}30\%$ of fiscal revenue) into institutionalized, tradable sovereign annuities following the Financial Revolution ($\sim 75\text{--}100\%$ around the Napoleonic Wars and WWI).
+* **Empirical Validation Grounding**:
+  * Reinhart & Rogoff (2009); Dickson (1967); Ferguson (2001).
+
+---
+
+### Entry 50: Multi-Phase Global Trade Volume Integration
+* **Date**: November 2, 2026
+* **Subsystem**: `SimulationMetricsAggregator.java` (`getGlobalTradeVolumeIndex()`), `PostHocCliodynamicMetricsExtractor.java` (`computeGlobalTradeVolume()`)
+* **Canonical Literature**:
+  * Federico, G., & Tena-Junguito, A. (2017). "A Tale of Two Globalizations: Gains from Trade and Openness 1800–2010." *Review of World Economics*, 153(2), 253–282.
+  * Findlay, R., & O'Rourke, K. H. (2007). *Power and Plenty: Trade, War, and the World Economy in the Second Millennium*. Princeton University Press.
+* **Problem in Previous Implementation**:
+  * A single exponential pre-industrial curve produced severe trade inflation in modern scenarios ($257\%$ MAPE in 1914) while failing to match the inflection points of 14th-century Mediterranean trade and 18th-century Atlantic mercantilism.
+* **Calibrated Ether Formulation**:
+  $$V_{\text{trade}}(T) = \tanh(\max(0, T - 1.55) \cdot 1.20) \cdot \left[1.0 + 22.0 \cdot \tanh(\max(0, T - 2.00) \cdot 0.90) + \frac{250.0}{1.0 + \exp(-2.40(T - 4.15))} + \frac{2200.0 \cdot \mathbb{I}_{T > 4.5}}{1.0 + \exp(-2.80(T - 5.20))}\right]$$
+* **Root Cause & Academic Justification**:
+  * Empirical global trade exhibits three distinct growth waves: pre-modern long-distance luxury routes (Antiquity to late medieval, index $\sim 3\text{--}12$), early modern oceanic mercantilism (index $\sim 45$ in 1800), first globalization (steam tramp shipping, index $\sim 265$ in 1914), and hyperglobalization (post-1950 containerization, index $\sim 2\,500$).
+* **Empirical Validation Grounding**:
+  * Federico & Tena-Junguito (2017); Findlay & O'Rourke (2007); Maddison Project (2020).
+
+---

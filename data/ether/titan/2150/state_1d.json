@@ -1,0 +1,51 @@
+{
+  "metadata" : {
+    "planet" : "titan",
+    "year" : 2150,
+    "temporalWindow" : "2150 CE",
+    "referenceModel" : "MISSION_PIONEER_SPECS",
+    "modelDescription" : "MISSION_PIONEER_SPECS"
+  },
+  "variables" : {
+    "regionalPopulation" : {
+      "value" : 800.0,
+      "name" : "Colony Population",
+      "unit" : "people"
+    },
+    "capitalPerCapita" : {
+      "value" : 110000.0,
+      "name" : "Initial Physical Capital",
+      "unit" : "2011 US$ PPP"
+    },
+    "energyPerCapita" : {
+      "value" : 400000.0,
+      "name" : "Primary Energy Allocation",
+      "unit" : "MJ/capita/year"
+    },
+    "technologyLevel" : {
+      "value" : 9.6,
+      "name" : "Technological Level",
+      "unit" : "index (0-10)"
+    },
+    "potableWaterPerCapita" : {
+      "value" : 150.0,
+      "name" : "Recycled Potable Water",
+      "unit" : "m3/capita/year"
+    },
+    "lifeExpectancy" : {
+      "value" : 84.0,
+      "name" : "Life Expectancy",
+      "unit" : "years"
+    },
+    "urbanizationRate" : {
+      "value" : 100.0,
+      "name" : "Enclosed Urbanization Rate",
+      "unit" : "%"
+    },
+    "literacyRate" : {
+      "value" : 100.0,
+      "name" : "Mission Crew Literacy",
+      "unit" : "%"
+    }
+  }
+}

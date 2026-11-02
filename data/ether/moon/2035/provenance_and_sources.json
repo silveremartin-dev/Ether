@@ -1,0 +1,16 @@
+{
+  "epoch": 2035,
+  "era": "Shackleton Crater Lunar Base & ISRU Ice Mining (2035 CE)",
+  "planet": "moon",
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "overview": {
+    "summary_en": "Permanent scientific outpost at the Lunar South Pole exploiting ice traps and peaks of eternal light.",
+    "summary_fr": "Modélisation de colonisation spatiale et habitats pressurisés pour moon en 2035."
+  },
+  "layers": {
+    "elevation": {"filename": "moon_2035_elevation.png", "category": "geophysics", "data_sources": ["NASA PDS / MOLA / LOLA / Magellan"]},
+    "density": {"filename": "moon_2035_density.png", "category": "demography", "data_sources": ["Ether Pioneer Colony Model", "Outpost Coordinates"]},
+    "sovereignty": {"filename": "moon_2035_sovereignty.png", "category": "sociology", "data_sources": ["Space Treaty Framework / International Consortia"]}
+  }
+}

@@ -31,6 +31,7 @@ import org.ether.society.database.Polity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>All benchmarks directly invoke production engines on genuine H3Cell spatial structures,
  * eliminating detached ad-hoc arithmetic loops and enforcing physical conservation.</p>
  */
+@Tag("academic")
+@Tag("scientific")
 public class ScientificModelFalsificationAndValidationSuite {
     private static final Logger logger = LoggerFactory.getLogger(ScientificModelFalsificationAndValidationSuite.class);
 

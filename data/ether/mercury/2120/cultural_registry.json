@@ -1,0 +1,23 @@
+{
+  "epoch": 2120,
+  "era": "Caloris Basin Solar Forge & Smelting Base (2120 CE)",
+  "description": "Extraterrestrial Pioneer Colony Registry for MERCURY at Epoch 2120",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": ["linguisticBranch", "socialStructure", "subsistenceMode", "ritualTradition"],
+  "entities": [
+    {
+      "id": "caloris",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.95, 0.90, 0.98, 0.85],
+      "name": {"en": "Caloris Forge Colony", "fr": "Caloris Forge Colony"},
+      "isoA3": "CAL",
+      "continent": "MERCURY",
+      "fromYear": 2120,
+      "toYear": 2220,
+      "kinshipType": "Scientific Cohort & Expeditionary Team Structure",
+      "lithicTechnocomplex": "Closed-Loop ECLSS, In-Situ Resource Utilization & Automated Robotics",
+      "caloricIntakePerCapitaKcal": 3000
+    }
+  ]
+}

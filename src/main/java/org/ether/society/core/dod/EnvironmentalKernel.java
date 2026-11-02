@@ -214,16 +214,23 @@ public class EnvironmentalKernel {
             
             food[i] = Math.max(0.0f, Math.min(50000.0f * areaScale, retainedFood + growth));
             
-            // Biomass regeneration coupled to Primary Productivity (bounded by area-scaled ecological carrying capacity)
+            // Biomass regeneration coupled to Primary Productivity (bounded by analytical Whittaker & Likens 1975 standing phytomass capacity)
             if (world.getBiomassNatural() != null) {
-                float minForagerBiomassTons = (tech < 1.5f && humanPop > 0.0f) ? (humanPop * 48.0f) : (10000.0f * areaScale);
-                float natCeiling = Math.max(10000.0f * areaScale, minForagerBiomassTons);
+                float npp = calculateMiamiNPP(temp[i], effectiveMoisture);
+                double forestAffinity = (1.0 / (1.0 + Math.exp(-0.006 * (effectiveMoisture - 450.0))))
+                        * (1.0 / (1.0 + Math.exp(-0.25 * (temp[i] - 2.0))));
+                float residenceYears = (float) (25.0 * forestAffinity + 4.0 * (1.0 - forestAffinity));
+                float analyticalCapacityTons = Math.max(10000.0f * areaScale, npp * 1770.49f * areaScale * residenceYears * 0.025f);
+                float minForagerBiomassTons = (tech < 1.6f && humanPop > 0.0f) ? (humanPop * 48.0f) : 0.0f;
+                float natCeiling = Math.max(world.getBiomassNatural()[i], Math.max(analyticalCapacityTons, minForagerBiomassTons));
                 world.getBiomassNatural()[i] = Math.min(natCeiling, world.getBiomassNatural()[i] + naturalProd * 0.5f);
             }
-            if (world.getBiomassAgriculture() != null && tech >= 1.5f) {
+            if (world.getBiomassAgriculture() != null && tech >= 1.25f) {
+                float neolithicShare = (float) (1.0 / (1.0 + Math.exp(-6.0 * (tech - 1.30f))));
+                float perCapitaAgTarget = humanPop * (250.0f + 370.0f * neolithicShare);
                 float annualAgFluxKg = (agProd > 0.0f)
-                        ? Math.max(humanPop * 620.0f, (agProd / Math.max(0.0001f, dtInYears)) / 0.0105f)
-                        : (humanPop * 620.0f);
+                        ? Math.max(perCapitaAgTarget, (agProd / Math.max(0.0001f, dtInYears)) / 0.0105f * neolithicShare)
+                        : perCapitaAgTarget;
                 world.getBiomassAgriculture()[i] = Math.max(world.getBiomassAgriculture()[i] * foodRetentionFactor, annualAgFluxKg);
             }
         }

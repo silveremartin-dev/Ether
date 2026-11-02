@@ -1,0 +1,2313 @@
+{
+  "epoch": 1640,
+  "era": "Early Modern 1640 AD",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch 1640 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "kathmandu",
+      "colorHex": "#A735DB",
+      "colorRgb": [167, 53, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kathmandu",
+        "fr": "Kathmandu",
+        "de": "Kathmandu",
+        "es": "Kathmandu",
+        "zh": "Kathmandu"
+      },
+      "seshatId": "",
+      "fromYear": 1202,
+      "toYear": 1743,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "republic_of_ragusa",
+      "colorHex": "#14B8A6",
+      "colorRgb": [20, 184, 166],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Ragusa",
+        "fr": "Republic of Ragusa",
+        "de": "Republic of Ragusa",
+        "es": "Republic of Ragusa",
+        "zh": "Republic of Ragusa"
+      },
+      "seshatId": "",
+      "fromYear": 1429,
+      "toYear": 1771,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "comtat_venaissin",
+      "colorHex": "#A41DBF",
+      "colorRgb": [164, 29, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Comtat Venaissin",
+        "fr": "Comtat Venaissin",
+        "de": "Comtat Venaissin",
+        "es": "Comtat Venaissin",
+        "zh": "Comtat Venaissin"
+      },
+      "seshatId": "",
+      "fromYear": 1482,
+      "toYear": 1672,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_kongo",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Kongo",
+        "fr": "Kingdom of Kongo",
+        "de": "Kingdom of Kongo",
+        "es": "Kingdom of Kongo",
+        "zh": "Kingdom of Kongo"
+      },
+      "seshatId": "ao_kongo_2",
+      "fromYear": 1492,
+      "toYear": 1661,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_gowa",
+      "colorHex": "#86CF27",
+      "colorRgb": [134, 207, 39],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Gowa",
+        "fr": "Sultanate of Gowa",
+        "de": "Sultanate of Gowa",
+        "es": "Sultanate of Gowa",
+        "zh": "Sultanate of Gowa"
+      },
+      "seshatId": "",
+      "fromYear": 1512,
+      "toYear": 1661,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_bone",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Bone",
+        "fr": "Sultanate of Bone",
+        "de": "Sultanate of Bone",
+        "es": "Sultanate of Bone",
+        "zh": "Sultanate of Bone"
+      },
+      "seshatId": "",
+      "fromYear": 1512,
+      "toYear": 1669,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_banjar",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Banjar",
+        "fr": "Sultanate of Banjar",
+        "de": "Sultanate of Banjar",
+        "es": "Sultanate of Banjar",
+        "zh": "Sultanate of Banjar"
+      },
+      "seshatId": "",
+      "fromYear": 1526,
+      "toYear": 1858,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_sulu",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Sulu",
+        "fr": "Sultanate of Sulu",
+        "de": "Sultanate of Sulu",
+        "es": "Sultanate of Sulu",
+        "zh": "Sultanate of Sulu"
+      },
+      "seshatId": "",
+      "fromYear": 1529,
+      "toYear": 1672,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ch_mpa",
+      "colorHex": "#2DE319",
+      "colorRgb": [45, 227, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chámpa",
+        "fr": "Chámpa",
+        "de": "Chámpa",
+        "es": "Chámpa",
+        "zh": "Chámpa"
+      },
+      "seshatId": "",
+      "fromYear": 1540,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_palembang",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Palembang",
+        "fr": "Sultanate of Palembang",
+        "de": "Sultanate of Palembang",
+        "es": "Sultanate of Palembang",
+        "zh": "Sultanate of Palembang"
+      },
+      "seshatId": "",
+      "fromYear": 1556,
+      "toYear": 1669,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "itza_mayans",
+      "colorHex": "#DEB628",
+      "colorRgb": [222, 182, 40],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Itza Mayans",
+        "fr": "Itza Mayans",
+        "de": "Itza Mayans",
+        "es": "Itza Mayans",
+        "zh": "Itza Mayans"
+      },
+      "seshatId": "",
+      "fromYear": 1564,
+      "toYear": 1669,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "nayaks_of_madurai",
+      "colorHex": "#4FB80F",
+      "colorRgb": [79, 184, 15],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nayaks of Madurai",
+        "fr": "Nayaks of Madurai",
+        "de": "Nayaks of Madurai",
+        "es": "Nayaks of Madurai",
+        "zh": "Nayaks of Madurai"
+      },
+      "seshatId": "in_madurai_nayaks",
+      "fromYear": 1572,
+      "toYear": 1712,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_mysore",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Mysore",
+        "fr": "Kingdom of Mysore",
+        "de": "Kingdom of Mysore",
+        "es": "Kingdom of Mysore",
+        "zh": "Kingdom of Mysore"
+      },
+      "seshatId": "in_mysore_k",
+      "fromYear": 1572,
+      "toYear": 1672,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "nguy_n_lords",
+      "colorHex": "#16A085",
+      "colorRgb": [22, 160, 133],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nguyễn lords",
+        "fr": "Nguyễn lords",
+        "de": "Nguyễn lords",
+        "es": "Nguyễn lords",
+        "zh": "Nguyễn lords"
+      },
+      "seshatId": "",
+      "fromYear": 1572,
+      "toYear": 1652,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "nayaks_of_thanjavur",
+      "colorHex": "#0B0EBD",
+      "colorRgb": [11, 14, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Nayaks of Thanjavur",
+        "fr": "Nayaks of Thanjavur",
+        "de": "Nayaks of Thanjavur",
+        "es": "Nayaks of Thanjavur",
+        "zh": "Nayaks of Thanjavur"
+      },
+      "seshatId": "in_thanjavur_nayaks",
+      "fromYear": 1572,
+      "toYear": 1672,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "gorkha_kingdom",
+      "colorHex": "#91C410",
+      "colorRgb": [145, 196, 16],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Gorkha Kingdom",
+        "fr": "Gorkha Kingdom",
+        "de": "Gorkha Kingdom",
+        "es": "Gorkha Kingdom",
+        "zh": "Gorkha Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1588,
+      "toYear": 1717,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "khmer_empire",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khmer Empire",
+        "fr": "Khmer Empire",
+        "de": "Khmer Empire",
+        "es": "Khmer Empire",
+        "zh": "Khmer Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1588,
+      "toYear": 1652,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_mrauk_u",
+      "colorHex": "#CC2988",
+      "colorRgb": [204, 41, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Mrauk U",
+        "fr": "Kingdom of Mrauk U",
+        "de": "Kingdom of Mrauk U",
+        "es": "Kingdom of Mrauk U",
+        "zh": "Kingdom of Mrauk U"
+      },
+      "seshatId": "",
+      "fromYear": 1588,
+      "toYear": 1669,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "khanate_of_khiva",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khanate of Khiva",
+        "fr": "Khanate of Khiva",
+        "de": "Khanate of Khiva",
+        "es": "Khanate of Khiva",
+        "zh": "Khanate of Khiva"
+      },
+      "seshatId": "",
+      "fromYear": 1588,
+      "toYear": 1717,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_kedah",
+      "colorHex": "#67C718",
+      "colorRgb": [103, 199, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Kedah",
+        "fr": "Sultanate of Kedah",
+        "de": "Sultanate of Kedah",
+        "es": "Sultanate of Kedah",
+        "zh": "Sultanate of Kedah"
+      },
+      "seshatId": "",
+      "fromYear": 1588,
+      "toYear": 1690,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "__i_vi_t",
+      "colorHex": "#16A085",
+      "colorRgb": [22, 160, 133],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Đại Việt",
+        "fr": "Đại Việt",
+        "de": "Đại Việt",
+        "es": "Đại Việt",
+        "zh": "Đại Việt"
+      },
+      "seshatId": "",
+      "fromYear": 1595,
+      "toYear": 1652,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "crimean_khanate",
+      "colorHex": "#7431E0",
+      "colorRgb": [116, 49, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Crimean Khanate",
+        "fr": "Crimean Khanate",
+        "de": "Crimean Khanate",
+        "es": "Crimean Khanate",
+        "zh": "Crimean Khanate"
+      },
+      "seshatId": "ru_crimean_khanate",
+      "fromYear": 1595,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "tr_nh_lords",
+      "colorHex": "#121FB3",
+      "colorRgb": [18, 31, 179],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Trịnh lords",
+        "fr": "Trịnh lords",
+        "de": "Trịnh lords",
+        "es": "Trịnh lords",
+        "zh": "Trịnh lords"
+      },
+      "seshatId": "",
+      "fromYear": 1595,
+      "toYear": 1644,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "republic_of_venice",
+      "colorHex": "#14CCBD",
+      "colorRgb": [20, 204, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Venice",
+        "fr": "Republic of Venice",
+        "de": "Republic of Venice",
+        "es": "Republic of Venice",
+        "zh": "Republic of Venice"
+      },
+      "seshatId": "it_venetian_rep_4",
+      "fromYear": 1600,
+      "toYear": 1644,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "republic_of_florence",
+      "colorHex": "#2487E3",
+      "colorRgb": [36, 135, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Florence",
+        "fr": "Republic of Florence",
+        "de": "Republic of Florence",
+        "es": "Republic of Florence",
+        "zh": "Republic of Florence"
+      },
+      "seshatId": "it_tuscany_grand_duc",
+      "fromYear": 1600,
+      "toYear": 1708,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "papal_states",
+      "colorHex": "#EAB308",
+      "colorRgb": [234, 179, 8],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Papal States",
+        "fr": "Papal States",
+        "de": "Papal States",
+        "es": "Papal States",
+        "zh": "Papal States"
+      },
+      "seshatId": "it_papal_state_3",
+      "fromYear": 1600,
+      "toYear": 1652,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "lan_xang",
+      "colorHex": "#135BBF",
+      "colorRgb": [19, 91, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lan Xang",
+        "fr": "Lan Xang",
+        "de": "Lan Xang",
+        "es": "Lan Xang",
+        "zh": "Lan Xang"
+      },
+      "seshatId": "la_lan_xang_k",
+      "fromYear": 1600,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_wallachia",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Wallachia",
+        "fr": "Principality of Wallachia",
+        "de": "Principality of Wallachia",
+        "es": "Principality of Wallachia",
+        "zh": "Principality of Wallachia"
+      },
+      "seshatId": "ro_wallachia_principality_2",
+      "fromYear": 1602,
+      "toYear": 1690,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_moldavia",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Moldavia",
+        "fr": "Principality of Moldavia",
+        "de": "Principality of Moldavia",
+        "es": "Principality of Moldavia",
+        "zh": "Principality of Moldavia"
+      },
+      "seshatId": "md_moldavia_principality_2",
+      "fromYear": 1602,
+      "toYear": 1658,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "balinese_kingdom",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Balinese Kingdom",
+        "fr": "Balinese Kingdom",
+        "de": "Balinese Kingdom",
+        "es": "Balinese Kingdom",
+        "zh": "Balinese Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1609,
+      "toYear": 1682,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "t_med",
+      "colorHex": "#B51089",
+      "colorRgb": [181, 16, 137],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tümed",
+        "fr": "Tümed",
+        "de": "Tümed",
+        "es": "Tümed",
+        "zh": "Tümed"
+      },
+      "seshatId": "",
+      "fromYear": 1609,
+      "toYear": 1644,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "oyo_empire",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Oyo Empire",
+        "fr": "Oyo Empire",
+        "de": "Oyo Empire",
+        "es": "Oyo Empire",
+        "zh": "Oyo Empire"
+      },
+      "seshatId": "ni_oyo_emp_2",
+      "fromYear": 1609,
+      "toYear": 1669,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "tokugawa_shogunate",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tokugawa Shogunate",
+        "fr": "Tokugawa Shogunate",
+        "de": "Tokugawa Shogunate",
+        "es": "Tokugawa Shogunate",
+        "zh": "Tokugawa Shogunate"
+      },
+      "seshatId": "jp_tokugawa_shogunate",
+      "fromYear": 1609,
+      "toYear": 1798,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "patani_kingdom",
+      "colorHex": "#7EEB1E",
+      "colorRgb": [126, 235, 30],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Patani Kingdom",
+        "fr": "Patani Kingdom",
+        "de": "Patani Kingdom",
+        "es": "Patani Kingdom",
+        "zh": "Patani Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1609,
+      "toYear": 1686,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_perak",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Perak",
+        "fr": "Sultanate of Perak",
+        "de": "Sultanate of Perak",
+        "es": "Sultanate of Perak",
+        "zh": "Sultanate of Perak"
+      },
+      "seshatId": "",
+      "fromYear": 1609,
+      "toYear": 1821,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_guria",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Guria",
+        "fr": "Principality of Guria",
+        "de": "Principality of Guria",
+        "es": "Principality of Guria",
+        "zh": "Principality of Guria"
+      },
+      "seshatId": "",
+      "fromYear": 1612,
+      "toYear": 1726,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_maguindanao",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Maguindanao",
+        "fr": "Sultanate of Maguindanao",
+        "de": "Sultanate of Maguindanao",
+        "es": "Sultanate of Maguindanao",
+        "zh": "Sultanate of Maguindanao"
+      },
+      "seshatId": "",
+      "fromYear": 1612,
+      "toYear": 1848,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_kartli",
+      "colorHex": "#84D126",
+      "colorRgb": [132, 209, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Kartli",
+        "fr": "Kingdom of Kartli",
+        "de": "Kingdom of Kartli",
+        "es": "Kingdom of Kartli",
+        "zh": "Kingdom of Kartli"
+      },
+      "seshatId": "",
+      "fromYear": 1612,
+      "toYear": 1701,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_mingrelia",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Mingrelia",
+        "fr": "Principality of Mingrelia",
+        "de": "Principality of Mingrelia",
+        "es": "Principality of Mingrelia",
+        "zh": "Principality of Mingrelia"
+      },
+      "seshatId": "",
+      "fromYear": 1612,
+      "toYear": 1699,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_abkhazia",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Abkhazia",
+        "fr": "Principality of Abkhazia",
+        "de": "Principality of Abkhazia",
+        "es": "Principality of Abkhazia",
+        "zh": "Principality of Abkhazia"
+      },
+      "seshatId": "",
+      "fromYear": 1612,
+      "toYear": 1699,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_imereti",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Imereti",
+        "fr": "Kingdom of Imereti",
+        "de": "Kingdom of Imereti",
+        "es": "Kingdom of Imereti",
+        "zh": "Kingdom of Imereti"
+      },
+      "seshatId": "",
+      "fromYear": 1612,
+      "toYear": 1699,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "first_toungoo_empire",
+      "colorHex": "#2684D1",
+      "colorRgb": [38, 132, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "First Toungoo Empire",
+        "fr": "First Toungoo Empire",
+        "de": "First Toungoo Empire",
+        "es": "First Toungoo Empire",
+        "zh": "First Toungoo Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1619,
+      "toYear": 1652,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_sukadana",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Sukadana",
+        "fr": "Sultanate of Sukadana",
+        "de": "Sultanate of Sukadana",
+        "es": "Sultanate of Sukadana",
+        "zh": "Sultanate of Sukadana"
+      },
+      "seshatId": "",
+      "fromYear": 1619,
+      "toYear": 1829,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_sambas",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Sambas",
+        "fr": "Sultanate of Sambas",
+        "de": "Sultanate of Sambas",
+        "es": "Sultanate of Sambas",
+        "zh": "Sultanate of Sambas"
+      },
+      "seshatId": "",
+      "fromYear": 1619,
+      "toYear": 1819,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_mempawah",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Mempawah",
+        "fr": "Sultanate of Mempawah",
+        "de": "Sultanate of Mempawah",
+        "es": "Sultanate of Mempawah",
+        "zh": "Sultanate of Mempawah"
+      },
+      "seshatId": "",
+      "fromYear": 1619,
+      "toYear": 1824,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_cirebon",
+      "colorHex": "#CF1EEB",
+      "colorRgb": [207, 30, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Cirebon",
+        "fr": "Sultanate of Cirebon",
+        "de": "Sultanate of Cirebon",
+        "es": "Sultanate of Cirebon",
+        "zh": "Sultanate of Cirebon"
+      },
+      "seshatId": "",
+      "fromYear": 1619,
+      "toYear": 1672,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ayutthaya_kingdom",
+      "colorHex": "#DE3D28",
+      "colorRgb": [222, 61, 40],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ayutthaya Kingdom",
+        "fr": "Ayutthaya Kingdom",
+        "de": "Ayutthaya Kingdom",
+        "es": "Ayutthaya Kingdom",
+        "zh": "Ayutthaya Kingdom"
+      },
+      "seshatId": "th_ayutthaya",
+      "fromYear": 1619,
+      "toYear": 1661,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_banten",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Banten",
+        "fr": "Sultanate of Banten",
+        "de": "Sultanate of Banten",
+        "es": "Sultanate of Banten",
+        "zh": "Sultanate of Banten"
+      },
+      "seshatId": "",
+      "fromYear": 1619,
+      "toYear": 1676,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "blambangan_kingdom",
+      "colorHex": "#19E38B",
+      "colorRgb": [25, 227, 139],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Blambangan Kingdom",
+        "fr": "Blambangan Kingdom",
+        "de": "Blambangan Kingdom",
+        "es": "Blambangan Kingdom",
+        "zh": "Blambangan Kingdom"
+      },
+      "seshatId": "",
+      "fromYear": 1622,
+      "toYear": 1740,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "principality_of_transylvania",
+      "colorHex": "#EB412A",
+      "colorRgb": [235, 65, 42],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Principality of Transylvania",
+        "fr": "Principality of Transylvania",
+        "de": "Principality of Transylvania",
+        "es": "Principality of Transylvania",
+        "zh": "Principality of Transylvania"
+      },
+      "seshatId": "ro_transylvania_principality",
+      "fromYear": 1622,
+      "toYear": 1661,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_johor",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Johor",
+        "fr": "Sultanate of Johor",
+        "de": "Sultanate of Johor",
+        "es": "Sultanate of Johor",
+        "zh": "Sultanate of Johor"
+      },
+      "seshatId": "",
+      "fromYear": 1626,
+      "toYear": 1669,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_bima",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Bima",
+        "fr": "Sultanate of Bima",
+        "de": "Sultanate of Bima",
+        "es": "Sultanate of Bima",
+        "zh": "Sultanate of Bima"
+      },
+      "seshatId": "",
+      "fromYear": 1626,
+      "toYear": 1865,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "mataram_sultanate",
+      "colorHex": "#C4751A",
+      "colorRgb": [196, 117, 26],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mataram Sultanate",
+        "fr": "Mataram Sultanate",
+        "de": "Mataram Sultanate",
+        "es": "Mataram Sultanate",
+        "zh": "Mataram Sultanate"
+      },
+      "seshatId": "id_mataram_k",
+      "fromYear": 1626,
+      "toYear": 1676,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "yarubid_dynasty",
+      "colorHex": "#84B82A",
+      "colorRgb": [132, 184, 42],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yarubid dynasty",
+        "fr": "Yarubid dynasty",
+        "de": "Yarubid dynasty",
+        "es": "Yarubid dynasty",
+        "zh": "Yarubid dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1626,
+      "toYear": 1652,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_brunei",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Brunei",
+        "fr": "Sultanate of Brunei",
+        "de": "Sultanate of Brunei",
+        "es": "Sultanate of Brunei",
+        "zh": "Sultanate of Brunei"
+      },
+      "seshatId": "",
+      "fromYear": 1629,
+      "toYear": 1672,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "denmark-norway",
+      "colorHex": "#B91C1C",
+      "colorRgb": [185, 28, 28],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Denmark-Norway",
+        "fr": "Denmark-Norway",
+        "de": "Denmark-Norway",
+        "es": "Denmark-Norway",
+        "zh": "Denmark-Norway"
+      },
+      "seshatId": "dk_denmark_norway",
+      "fromYear": 1632,
+      "toYear": 1644,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "house_of_savoy",
+      "colorHex": "#0EA8F0",
+      "colorRgb": [14, 168, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "House of Savoy",
+        "fr": "House of Savoy",
+        "de": "House of Savoy",
+        "es": "House of Savoy",
+        "zh": "House of Savoy"
+      },
+      "seshatId": "",
+      "fromYear": 1632,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "republic_of_genoa",
+      "colorHex": "#D622BB",
+      "colorRgb": [214, 34, 187],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Republic of Genoa",
+        "fr": "Republic of Genoa",
+        "de": "Republic of Genoa",
+        "es": "Republic of Genoa",
+        "zh": "Republic of Genoa"
+      },
+      "seshatId": "it_genoa_rep_3",
+      "fromYear": 1632,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "eastern_moghulistan",
+      "colorHex": "#C77818",
+      "colorRgb": [199, 120, 24],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Eastern Moghulistan",
+        "fr": "Eastern Moghulistan",
+        "de": "Eastern Moghulistan",
+        "es": "Eastern Moghulistan",
+        "zh": "Eastern Moghulistan"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1682,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_bhutan",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Bhutan",
+        "fr": "Kingdom of Bhutan",
+        "de": "Kingdom of Bhutan",
+        "es": "Kingdom of Bhutan",
+        "zh": "Kingdom of Bhutan"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1682,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "oirat_confederation",
+      "colorHex": "#13CFC2",
+      "colorRgb": [19, 207, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Oirat Confederation",
+        "fr": "Oirat Confederation",
+        "de": "Oirat Confederation",
+        "es": "Oirat Confederation",
+        "zh": "Oirat Confederation"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1658,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kalmyk_khanate",
+      "colorHex": "#CC4214",
+      "colorRgb": [204, 66, 20],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kalmyk Khanate",
+        "fr": "Kalmyk Khanate",
+        "de": "Kalmyk Khanate",
+        "es": "Kalmyk Khanate",
+        "zh": "Kalmyk Khanate"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1737,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kazakh_khanate",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kazakh Khanate",
+        "fr": "Kazakh Khanate",
+        "de": "Kazakh Khanate",
+        "es": "Kazakh Khanate",
+        "zh": "Kazakh Khanate"
+      },
+      "seshatId": "kz_kazakh_khanate_1",
+      "fromYear": 1636,
+      "toYear": 1658,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "li_zicheng",
+      "colorHex": "#1C35ED",
+      "colorRgb": [28, 53, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Li Zicheng",
+        "fr": "Li Zicheng",
+        "de": "Li Zicheng",
+        "es": "Li Zicheng",
+        "zh": "Li Zicheng"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "tibet",
+      "colorHex": "#E3309B",
+      "colorRgb": [227, 48, 155],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tibet",
+        "fr": "Tibet",
+        "de": "Tibet",
+        "es": "Tibet",
+        "zh": "Tibet"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1644,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "duchy_of_bavaria",
+      "colorHex": "#38BDF8",
+      "colorRgb": [56, 189, 248],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Duchy of Bavaria",
+        "fr": "Duchy of Bavaria",
+        "de": "Duchy of Bavaria",
+        "es": "Duchy of Bavaria",
+        "zh": "Duchy of Bavaria"
+      },
+      "seshatId": "de_bavaria_1",
+      "fromYear": 1636,
+      "toYear": 1701,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "wadai_empire",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Wadai Empire",
+        "fr": "Wadai Empire",
+        "de": "Wadai Empire",
+        "es": "Wadai Empire",
+        "zh": "Wadai Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1889,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "golden_horde",
+      "colorHex": "#3029BA",
+      "colorRgb": [48, 41, 186],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Golden Horde",
+        "fr": "Golden Horde",
+        "de": "Golden Horde",
+        "es": "Golden Horde",
+        "zh": "Golden Horde"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "small_horde",
+      "colorHex": "#622FC2",
+      "colorRgb": [98, 47, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Small Horde",
+        "fr": "Small Horde",
+        "de": "Small Horde",
+        "es": "Small Horde",
+        "zh": "Small Horde"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1669,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "funj_sultanate",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Funj Sultanate",
+        "fr": "Funj Sultanate",
+        "de": "Funj Sultanate",
+        "es": "Funj Sultanate",
+        "zh": "Funj Sultanate"
+      },
+      "seshatId": "et_funj_sultanate",
+      "fromYear": 1636,
+      "toYear": 1768,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "khanate_of_bukhara",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khanate of Bukhara",
+        "fr": "Khanate of Bukhara",
+        "de": "Khanate of Bukhara",
+        "es": "Khanate of Bukhara",
+        "zh": "Khanate of Bukhara"
+      },
+      "seshatId": "uz_janid_dyn",
+      "fromYear": 1636,
+      "toYear": 1686,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "khoshut_khanate",
+      "colorHex": "#7B0DBA",
+      "colorRgb": [123, 13, 186],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Khoshut Khanate",
+        "fr": "Khoshut Khanate",
+        "de": "Khoshut Khanate",
+        "es": "Khoshut Khanate",
+        "zh": "Khoshut Khanate"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1644,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "bornu_empire",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Bornu Empire",
+        "fr": "Bornu Empire",
+        "de": "Bornu Empire",
+        "es": "Bornu Empire",
+        "zh": "Bornu Empire"
+      },
+      "seshatId": "ni_bornu_emp",
+      "fromYear": 1636,
+      "toYear": 1804,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_darfur",
+      "colorHex": "#15803D",
+      "colorRgb": [21, 128, 61],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Darfur",
+        "fr": "Sultanate of Darfur",
+        "de": "Sultanate of Darfur",
+        "es": "Sultanate of Darfur",
+        "zh": "Sultanate of Darfur"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1821,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "portuguese_ceylon",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Portuguese Ceylon",
+        "fr": "Portuguese Ceylon",
+        "de": "Portuguese Ceylon",
+        "es": "Portuguese Ceylon",
+        "zh": "Portuguese Ceylon"
+      },
+      "seshatId": "pt_portuguese_emp_2",
+      "fromYear": 1636,
+      "toYear": 1658,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ethiopian_empire",
+      "colorHex": "#84CC16",
+      "colorRgb": [132, 204, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ethiopian Empire",
+        "fr": "Ethiopian Empire",
+        "de": "Ethiopian Empire",
+        "es": "Ethiopian Empire",
+        "zh": "Ethiopian Empire"
+      },
+      "seshatId": "",
+      "fromYear": 1636,
+      "toYear": 1768,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "swiss_confederation",
+      "colorHex": "#EF4444",
+      "colorRgb": [239, 68, 68],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Swiss Confederation",
+        "fr": "Swiss Confederation",
+        "de": "Swiss Confederation",
+        "es": "Swiss Confederation",
+        "zh": "Swiss Confederation"
+      },
+      "seshatId": "ch_swiss_conf_2",
+      "fromYear": 1636,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_france",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of France",
+        "fr": "Kingdom of France",
+        "de": "Kingdom of France",
+        "es": "Kingdom of France",
+        "zh": "Kingdom of France"
+      },
+      "seshatId": "fr_bourbon_k_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_england",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of England",
+        "fr": "Kingdom of England",
+        "de": "Kingdom of England",
+        "es": "Kingdom of England",
+        "zh": "Kingdom of England"
+      },
+      "seshatId": "gb_tudor_stuart",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "new_france",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "New France",
+        "fr": "New France",
+        "de": "New France",
+        "es": "New France",
+        "zh": "New France"
+      },
+      "seshatId": "fr_bourbon_k_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "new_sweden",
+      "colorHex": "#0284C7",
+      "colorRgb": [2, 132, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "New Sweden",
+        "fr": "New Sweden",
+        "de": "New Sweden",
+        "es": "New Sweden",
+        "zh": "New Sweden"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1652,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "later_jin_dynasty",
+      "colorHex": "#560EF0",
+      "colorRgb": [86, 14, 240],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Later Jin Dynasty",
+        "fr": "Later Jin Dynasty",
+        "de": "Later Jin Dynasty",
+        "es": "Later Jin Dynasty",
+        "zh": "Later Jin Dynasty"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "saadi_sultanate",
+      "colorHex": "#B2E617",
+      "colorRgb": [178, 230, 23],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Saadi Sultanate",
+        "fr": "Saadi Sultanate",
+        "de": "Saadi Sultanate",
+        "es": "Saadi Sultanate",
+        "zh": "Saadi Sultanate"
+      },
+      "seshatId": "ma_saadi_sultanate",
+      "fromYear": 1640,
+      "toYear": 1669,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "bijapur_sultanate",
+      "colorHex": "#15BD74",
+      "colorRgb": [21, 189, 116],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Bijapur Sultanate",
+        "fr": "Bijapur Sultanate",
+        "de": "Bijapur Sultanate",
+        "es": "Bijapur Sultanate",
+        "zh": "Bijapur Sultanate"
+      },
+      "seshatId": "in_bijapur_sultanate",
+      "fromYear": 1640,
+      "toYear": 1652,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "portuguese_empire",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Portuguese Empire",
+        "fr": "Portuguese Empire",
+        "de": "Portuguese Empire",
+        "es": "Portuguese Empire",
+        "zh": "Portuguese Empire"
+      },
+      "seshatId": "pt_portuguese_emp_2",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ming_dynasty",
+      "colorHex": "#B53619",
+      "colorRgb": [181, 54, 25],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ming Dynasty",
+        "fr": "Ming Dynasty",
+        "de": "Ming Dynasty",
+        "es": "Ming Dynasty",
+        "zh": "Ming Dynasty"
+      },
+      "seshatId": "cn_ming_dyn",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "swedish_empire",
+      "colorHex": "#87E324",
+      "colorRgb": [135, 227, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Swedish Empire",
+        "fr": "Swedish Empire",
+        "de": "Swedish Empire",
+        "es": "Swedish Empire",
+        "zh": "Swedish Empire"
+      },
+      "seshatId": "sv_swedish_emp",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "new_netherland",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "New Netherland",
+        "fr": "New Netherland",
+        "de": "New Netherland",
+        "es": "New Netherland",
+        "zh": "New Netherland"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "safavid_dynasty",
+      "colorHex": "#7C1BD1",
+      "colorRgb": [124, 27, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Safavid Dynasty",
+        "fr": "Safavid Dynasty",
+        "de": "Safavid Dynasty",
+        "es": "Safavid Dynasty",
+        "zh": "Safavid Dynasty"
+      },
+      "seshatId": "ir_safavid_emp",
+      "fromYear": 1640,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "holy_roman_empire_minor_states",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Holy Roman Empire Minor States",
+        "fr": "Holy Roman Empire Minor States",
+        "de": "Holy Roman Empire Minor States",
+        "es": "Holy Roman Empire Minor States",
+        "zh": "Holy Roman Empire Minor States"
+      },
+      "seshatId": "de_empire_minor_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "don_cossacks",
+      "colorHex": "#31E03A",
+      "colorRgb": [49, 224, 58],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Don Cossacks",
+        "fr": "Don Cossacks",
+        "de": "Don Cossacks",
+        "es": "Don Cossacks",
+        "zh": "Don Cossacks"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "spanish_empire",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Spanish Empire",
+        "fr": "Spanish Empire",
+        "de": "Spanish Empire",
+        "es": "Spanish Empire",
+        "zh": "Spanish Empire"
+      },
+      "seshatId": "es_spanish_emp_1",
+      "fromYear": 1640,
+      "toYear": 1658,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_kingdom_of_england_",
+      "colorHex": "#DC2626",
+      "colorRgb": [220, 38, 38],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of England)",
+        "fr": "(Kingdom of England)",
+        "de": "(Kingdom of England)",
+        "es": "(Kingdom of England)",
+        "zh": "(Kingdom of England)"
+      },
+      "seshatId": "gb_tudor_stuart",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_aceh",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Aceh",
+        "fr": "Sultanate of Aceh",
+        "de": "Sultanate of Aceh",
+        "es": "Sultanate of Aceh",
+        "zh": "Sultanate of Aceh"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1861,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ahmadnagar_sultanate",
+      "colorHex": "#980EE3",
+      "colorRgb": [152, 14, 227],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ahmadnagar Sultanate",
+        "fr": "Ahmadnagar Sultanate",
+        "de": "Ahmadnagar Sultanate",
+        "es": "Ahmadnagar Sultanate",
+        "zh": "Ahmadnagar Sultanate"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "county_of_urgell",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "County of Urgell",
+        "fr": "County of Urgell",
+        "de": "County of Urgell",
+        "es": "County of Urgell",
+        "zh": "County of Urgell"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "sultanate_of_malacca",
+      "colorHex": "#047857",
+      "colorRgb": [4, 120, 87],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sultanate of Malacca",
+        "fr": "Sultanate of Malacca",
+        "de": "Sultanate of Malacca",
+        "es": "Sultanate of Malacca",
+        "zh": "Sultanate of Malacca"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1676,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "qasimids",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qasimids",
+        "fr": "Qasimids",
+        "de": "Qasimids",
+        "es": "Qasimids",
+        "zh": "Qasimids"
+      },
+      "seshatId": "ye_qasimid_dyn",
+      "fromYear": 1640,
+      "toYear": 1644,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_portuguese_empire_",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Portuguese Empire)",
+        "fr": "(Portuguese Empire)",
+        "de": "(Portuguese Empire)",
+        "es": "(Portuguese Empire)",
+        "zh": "(Portuguese Empire)"
+      },
+      "seshatId": "pt_portuguese_emp_2",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "ottoman_empire",
+      "colorHex": "#059669",
+      "colorRgb": [5, 150, 105],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Ottoman Empire",
+        "fr": "Ottoman Empire",
+        "de": "Ottoman Empire",
+        "es": "Ottoman Empire",
+        "zh": "Ottoman Empire"
+      },
+      "seshatId": "tr_ottoman_emp_2",
+      "fromYear": 1640,
+      "toYear": 1644,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "joseon",
+      "colorHex": "#8B5CF6",
+      "colorRgb": [139, 92, 246],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Joseon",
+        "fr": "Joseon",
+        "de": "Joseon",
+        "es": "Joseon",
+        "zh": "Joseon"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1859,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "english_colonial_empire",
+      "colorHex": "#932FC2",
+      "colorRgb": [147, 47, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "English Colonial Empire",
+        "fr": "English Colonial Empire",
+        "de": "English Colonial Empire",
+        "es": "English Colonial Empire",
+        "zh": "English Colonial Empire"
+      },
+      "seshatId": "gb_tudor_stuart",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "mughal_empire",
+      "colorHex": "#D97706",
+      "colorRgb": [217, 119, 6],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Mughal Empire",
+        "fr": "Mughal Empire",
+        "de": "Mughal Empire",
+        "es": "Mughal Empire",
+        "zh": "Mughal Empire"
+      },
+      "seshatId": "in_mughal_emp",
+      "fromYear": 1640,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "golconda_sultanate",
+      "colorHex": "#257EC2",
+      "colorRgb": [37, 126, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Golconda Sultanate",
+        "fr": "Golconda Sultanate",
+        "de": "Golconda Sultanate",
+        "es": "Golconda Sultanate",
+        "zh": "Golconda Sultanate"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1658,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "habsburg_monarchy",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Habsburg Monarchy",
+        "fr": "Habsburg Monarchy",
+        "de": "Habsburg Monarchy",
+        "es": "Habsburg Monarchy",
+        "zh": "Habsburg Monarchy"
+      },
+      "seshatId": "at_habsburg_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "brandenburg-prussia",
+      "colorHex": "#1E293B",
+      "colorRgb": [30, 41, 59],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Brandenburg-Prussia",
+        "fr": "Brandenburg-Prussia",
+        "de": "Brandenburg-Prussia",
+        "es": "Brandenburg-Prussia",
+        "zh": "Brandenburg-Prussia"
+      },
+      "seshatId": "de_hohenzollern_2",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "electorate_of_saxony",
+      "colorHex": "#4ADE80",
+      "colorRgb": [74, 222, 128],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Electorate of Saxony",
+        "fr": "Electorate of Saxony",
+        "de": "Electorate of Saxony",
+        "es": "Electorate of Saxony",
+        "zh": "Electorate of Saxony"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_portugal",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Portugal",
+        "fr": "Kingdom of Portugal",
+        "de": "Kingdom of Portugal",
+        "es": "Kingdom of Portugal",
+        "zh": "Kingdom of Portugal"
+      },
+      "seshatId": "pt_portuguese_emp_2",
+      "fromYear": 1640,
+      "toYear": 1705,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "haudenosaunee",
+      "colorHex": "#CC3629",
+      "colorRgb": [204, 54, 41],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Haudenosaunee",
+        "fr": "Haudenosaunee",
+        "de": "Haudenosaunee",
+        "es": "Haudenosaunee",
+        "zh": "Haudenosaunee"
+      },
+      "seshatId": "us_haudenosaunee_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "tsardom_of_russia",
+      "colorHex": "#7C3AED",
+      "colorRgb": [124, 58, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Tsardom of Russia",
+        "fr": "Tsardom of Russia",
+        "de": "Tsardom of Russia",
+        "es": "Tsardom of Russia",
+        "zh": "Tsardom of Russia"
+      },
+      "seshatId": "ru_romanov_dyn_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "jesuit_reducciones",
+      "colorHex": "#2ADB77",
+      "colorRgb": [42, 219, 119],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Jesuit Reducciones",
+        "fr": "Jesuit Reducciones",
+        "de": "Jesuit Reducciones",
+        "es": "Jesuit Reducciones",
+        "zh": "Jesuit Reducciones"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1737,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "catalonia",
+      "colorHex": "#3822C7",
+      "colorRgb": [56, 34, 199],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Catalonia",
+        "fr": "Catalonia",
+        "de": "Catalonia",
+        "es": "Catalonia",
+        "zh": "Catalonia"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "portuguese_colonies",
+      "colorHex": "#10B981",
+      "colorRgb": [16, 185, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Portuguese Colonies",
+        "fr": "Portuguese Colonies",
+        "de": "Portuguese Colonies",
+        "es": "Portuguese Colonies",
+        "zh": "Portuguese Colonies"
+      },
+      "seshatId": "pt_portuguese_emp_2",
+      "fromYear": 1640,
+      "toYear": 1647,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_dutch_republic_",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Dutch Republic)",
+        "fr": "(Dutch Republic)",
+        "de": "(Dutch Republic)",
+        "es": "(Dutch Republic)",
+        "zh": "(Dutch Republic)"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "polish-lithuanian_commonwealth",
+      "colorHex": "#E62E5C",
+      "colorRgb": [230, 46, 92],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Polish-Lithuanian Commonwealth",
+        "fr": "Polish-Lithuanian Commonwealth",
+        "de": "Polish-Lithuanian Commonwealth",
+        "es": "Polish-Lithuanian Commonwealth",
+        "zh": "Polish-Lithuanian Commonwealth"
+      },
+      "seshatId": "pl_poland_lithuania_commonwealth",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "kingdom_of_spain",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Spain",
+        "fr": "Kingdom of Spain",
+        "de": "Kingdom of Spain",
+        "es": "Kingdom of Spain",
+        "zh": "Kingdom of Spain"
+      },
+      "seshatId": "es_spanish_emp_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_holy_roman_empire_",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Holy Roman Empire)",
+        "fr": "(Holy Roman Empire)",
+        "de": "(Holy Roman Empire)",
+        "es": "(Holy Roman Empire)",
+        "zh": "(Holy Roman Empire)"
+      },
+      "seshatId": "de_empire_minor_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "dutch_republic",
+      "colorHex": "#F97316",
+      "colorRgb": [249, 115, 22],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Dutch Republic",
+        "fr": "Dutch Republic",
+        "de": "Dutch Republic",
+        "es": "Dutch Republic",
+        "zh": "Dutch Republic"
+      },
+      "seshatId": "",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_spanish_empire_",
+      "colorHex": "#EA580C",
+      "colorRgb": [234, 88, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Spanish Empire)",
+        "fr": "(Spanish Empire)",
+        "de": "(Spanish Empire)",
+        "es": "(Spanish Empire)",
+        "zh": "(Spanish Empire)"
+      },
+      "seshatId": "es_spanish_emp_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_kingdom_of_france_",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Kingdom of France)",
+        "fr": "(Kingdom of France)",
+        "de": "(Kingdom of France)",
+        "es": "(Kingdom of France)",
+        "zh": "(Kingdom of France)"
+      },
+      "seshatId": "fr_bourbon_k_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    },
+    {
+      "id": "_habsburg_monarchy_",
+      "colorHex": "#F59E0B",
+      "colorRgb": [245, 158, 11],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Habsburg Monarchy)",
+        "fr": "(Habsburg Monarchy)",
+        "de": "(Habsburg Monarchy)",
+        "es": "(Habsburg Monarchy)",
+        "zh": "(Habsburg Monarchy)"
+      },
+      "seshatId": "at_habsburg_1",
+      "fromYear": 1640,
+      "toYear": 1641,
+      "kinshipType": "Early Modern Nuclear & Stem Families",
+      "lithicTechnocomplex": "Flintlock Arms, Galleons & Scientific Revolution Instruments",
+      "caloricIntakePerCapitaKcal": 2900
+    }
+  ]
+}

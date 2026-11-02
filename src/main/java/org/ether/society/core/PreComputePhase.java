@@ -299,13 +299,15 @@ public class PreComputePhase {
                             areaScale);
                     int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
                     double t = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-                    double domesticLivestock = (p > 0 && t >= 1.5) ? (p * 0.25) : 0.0;
+                    double neolithicShare = (t >= 1.25) ? (1.0 / (1.0 + Math.exp(-6.0 * (t - 1.30)))) : 0.0;
+                    double domesticLivestock = (p > 0 && t >= 1.25) ? (p * 0.25 * neolithicShare) : 0.0;
                     cell.setBiomassLivestock(Math.max(wildPasture, domesticLivestock));
                 }
                 if (cell.getBiomassAgriculture() == null || cell.getBiomassAgriculture() == 0.0) {
                     int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
                     double t = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-                    cell.setBiomassAgriculture((p > 0 && t >= 1.5) ? (p * 420.0 * (1.0 + 0.05 * Math.max(0.0, t - 1.5))) : 0.0);
+                    double neolithicShare = (t >= 1.25) ? (1.0 / (1.0 + Math.exp(-6.0 * (t - 1.30)))) : 0.0;
+                    cell.setBiomassAgriculture((p > 0 && t >= 1.25) ? (p * 420.0 * neolithicShare * (1.0 + 0.05 * Math.max(0.0, t - 1.3))) : 0.0);
                 }
             }
             return;
@@ -347,10 +349,11 @@ public class PreComputePhase {
             double wildLivestock = calculateHerbaceousPastureCarryingCapacity(temp, rain, elev, areaScale);
             int p = cell.getPopulationOr(0);
             double t = cell.getTechnologyLevelOr(1.0);
-            double domesticLivestock = (p > 0 && t >= 1.5) ? (p * 0.25) : 0.0;
+            double neolithicShare = (t >= 1.25) ? (1.0 / (1.0 + Math.exp(-6.0 * (t - 1.30)))) : 0.0;
+            double domesticLivestock = (p > 0 && t >= 1.25) ? (p * 0.25 * neolithicShare) : 0.0;
             cell.setBiomassLivestock(Math.max(wildLivestock, domesticLivestock));
 
-            cell.setBiomassAgriculture((p > 0 && t >= 1.5) ? (p * 420.0 * (1.0 + 0.05 * Math.max(0.0, t - 1.5))) : 0.0);
+            cell.setBiomassAgriculture((p > 0 && t >= 1.25) ? (p * 420.0 * neolithicShare * (1.0 + 0.05 * Math.max(0.0, t - 1.3))) : 0.0);
 
             // Wood resources: Woody biomass residence time (Olson et al. 1983; Whittaker & Likens 1973)
             double wood;
@@ -505,10 +508,43 @@ public class PreComputePhase {
                 }
             }
         }
+        // Ethnographic minimum viable band/hamlet nucleation (Dunbar 1993; Binford 2001; Kelly 2013):
+        // Prevents sub-band fractional dispersion (p = 1) when distributing small prehistoric populations across high-resolution grids,
+        // while strictly preserving empirical raster ranking and exact total population conservation.
+        int nonZeroCount = 0;
+        for (double w : weights) {
+            if (w > 0.0) nonZeroCount++;
+        }
+        int minBandSize = totalPop >= 500L ? 25 : 1;
+        if (nonZeroCount > 1 && totalPop > 0L && (totalPop / nonZeroCount) < minBandSize) {
+            int maxActiveCells = (int) Math.max(1L, Math.min((long) nonZeroCount, totalPop / minBandSize));
+            Integer[] order = new Integer[cells.size()];
+            for (int i = 0; i < cells.size(); i++) order[i] = i;
+            java.util.Arrays.sort(order, (a, b) -> Double.compare(weights[b], weights[a]));
+            double newTotal = 0.0;
+            for (int rank = 0; rank < cells.size(); rank++) {
+                int idx = order[rank];
+                if (rank < maxActiveCells && weights[idx] > 0.0) {
+                    newTotal += weights[idx];
+                } else {
+                    weights[idx] = 0.0;
+                }
+            }
+            if (newTotal > 0.0) {
+                total = newTotal;
+            }
+        }
+
         long assigned = 0;
         int populated = 0;
+        int topCellIdx = -1;
+        double topWeight = -1.0;
         for (int i = 0; i < cells.size(); i++) {
             if (weights[i] <= 0.0) continue;
+            if (weights[i] > topWeight) {
+                topWeight = weights[i];
+                topCellIdx = i;
+            }
             long p = Math.round(totalPop * (weights[i] / total));
             if (p <= 0) continue;
             H3Cell c = cells.get(i);
@@ -516,6 +552,15 @@ public class PreComputePhase {
             c.setBiomassHuman((double) p);
             assigned += p;
             populated++;
+        }
+        if (topCellIdx >= 0 && assigned != totalPop && totalPop > 0) {
+            H3Cell topCell = cells.get(topCellIdx);
+            long diff = totalPop - assigned;
+            long adjusted = Math.max(1L, (long) topCell.getPopulationOr(0) + diff);
+            if (topCell.getPopulationOr(0) == 0 && adjusted > 0) populated++;
+            topCell.setPopulation((int) Math.min(Integer.MAX_VALUE, adjusted));
+            topCell.setBiomassHuman((double) adjusted);
+            assigned = totalPop;
         }
         logger.info("Empirical Earth density raster applied: {} humans across {} cells (year {}, no procedural generation)",
                 assigned, populated, startYear);
@@ -586,8 +631,9 @@ public class PreComputePhase {
             if (pop > 0 && (c.getWaterResource() == null || c.getWaterResource() < 300.0)) {
                 c.setWaterResource(Math.max(c.getWaterResourceOr(0.0), 500.0));
             }
+            double neolithicShare = (effectiveTech >= 1.25) ? (1.0 / (1.0 + Math.exp(-6.0 * (effectiveTech - 1.30)))) : 0.0;
             if (c.getBiomassLivestock() == null || c.getBiomassLivestock() <= 0.0) {
-                c.setBiomassLivestock((pop > 0 && effectiveTech >= 1.5) ? (pop * 0.25) : 0.0);
+                c.setBiomassLivestock((pop > 0 && effectiveTech >= 1.25) ? (pop * 0.25 * neolithicShare) : 0.0);
             }
             if (c.getBiomassAgriculture() == null || c.getBiomassAgriculture() == 0.0) {
                 double annualFoodNeedGJ = pop * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
@@ -595,13 +641,13 @@ public class PreComputePhase {
                 if (c.getFoodResource() == null || c.getFoodResource() < initialFoodGJ) {
                     c.setFoodResource(initialFoodGJ);
                 }
-                double minNaturalBiomassTons = (effectiveTech < 1.5) ? (pop * 48.0) : initialFoodGJ;
+                double minNaturalBiomassTons = (effectiveTech < 1.6) ? (pop * 48.0) : initialFoodGJ;
                 if (c.getBiomassNatural() == null || c.getBiomassNatural() < minNaturalBiomassTons) {
                     c.setBiomassNatural(minNaturalBiomassTons);
                 }
-                double grainKgPerPerson = 620.0 * (1.0 + 0.05 * Math.max(0.0, effectiveTech - 1.5));
+                double grainKgPerPerson = 620.0 * neolithicShare * (1.0 + 0.05 * Math.max(0.0, effectiveTech - 1.3));
                 double requiredAgriBiomassKg = pop * grainKgPerPerson;
-                c.setBiomassAgriculture((pop > 0 && effectiveTech >= 1.5) ? requiredAgriBiomassKg : 0.0);
+                c.setBiomassAgriculture((pop > 0 && effectiveTech >= 1.25) ? requiredAgriBiomassKg : 0.0);
             }
 
             c.calculateMovementFriction(effectiveTech);

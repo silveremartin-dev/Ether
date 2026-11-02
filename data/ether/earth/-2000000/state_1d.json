@@ -1,0 +1,89 @@
+{
+  "metadata" : {
+    "planet" : "earth",
+    "year" : -2000000,
+    "temporalWindow" : "2000000 BP",
+    "referenceModel" : "PALEO_SOURCES",
+    "modelDescription" : "Paléo Sources (EPICA Dome C, PaleoClim v1.2, Jouzel 2007, Biraben 1979)"
+  },
+  "variables" : {
+    "urbanizationRate" : {
+      "value" : 0.0,
+      "unit" : "%",
+      "name" : "Urbanization Rate",
+      "source" : "Zero baseline for Pleistocene prehistory"
+    },
+    "literacyRate" : {
+      "value" : 0.0,
+      "unit" : "%",
+      "name" : "Literacy Rate",
+      "source" : "Zero baseline: Writing emerges c. -3400 BCE"
+    },
+    "sovereignDebtBurden" : {
+      "value" : 0.0,
+      "unit" : "% of GDP",
+      "name" : "Sovereign Debt",
+      "source" : "Zero baseline for non-state societies"
+    },
+    "eliteOverproductionIndex" : {
+      "value" : 0.0,
+      "unit" : "Index",
+      "name" : "Elite Overproduction",
+      "source" : "Zero baseline"
+    },
+    "currencyDebasement" : {
+      "value" : 0.0,
+      "unit" : "%",
+      "name" : "Currency Debasement",
+      "source" : "Zero baseline: Coinage emerges c. -650 BCE"
+    },
+    "deforestationRate" : {
+      "value" : 0.0,
+      "unit" : "%",
+      "name" : "Anthropogenic Deforestation",
+      "source" : "Zero baseline"
+    },
+    "metalSmeltingPerCapita" : {
+      "value" : 0.0,
+      "unit" : "kg/capita",
+      "name" : "Metal Smelting",
+      "source" : "Zero baseline: Metallurgy emerges c. -5000 BCE"
+    },
+    "agriculturalEroei" : {
+      "value" : 0.0,
+      "unit" : "Ratio",
+      "name" : "Agricultural EROEI",
+      "source" : "Zero baseline: Pre-agricultural foraging"
+    },
+    "worldPopulation" : {
+      "value" : 0.002,
+      "unit" : "Millions of people",
+      "name" : "World Population",
+      "source" : "Biraben (1979), Kremer (1993)"
+    },
+    "co2Concentration" : {
+      "value" : 280.0,
+      "unit" : "ppm",
+      "name" : "Atmospheric CO2",
+      "source" : "EPICA Dome C, Jouzel et al. (2007), Lüthi et al. (2008)"
+    },
+    "giniInequality" : {
+      "value" : 0.17,
+      "unit" : "Gini Index",
+      "name" : "Wealth & Land Gini",
+      "source" : "Kohler et al. (2017) Nature nomadic foraging baseline"
+    },
+    "lifeExpectancyAtBirth" : {
+      "value" : 22.0,
+      "unit" : "Years",
+      "name" : "Life Expectancy at Birth",
+      "source" : "Gurven & Kaplan (2007) Pleistocene hominin mortality"
+    },
+    "sociopoliticalInstability" : {
+      "value" : 5.0,
+      "unit" : "Index",
+      "name" : "Inter-group Instability",
+      "source" : "Inter-band skirmish background"
+    }
+  }
+}

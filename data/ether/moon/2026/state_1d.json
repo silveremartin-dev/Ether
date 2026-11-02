@@ -1,0 +1,51 @@
+{
+  "metadata" : {
+    "planet" : "moon",
+    "year" : 2026,
+    "temporalWindow" : "2026 CE",
+    "referenceModel" : "MISSION_PIONEER_SPECS",
+    "modelDescription" : "MISSION_PIONEER_SPECS"
+  },
+  "variables" : {
+    "regionalPopulation" : {
+      "value" : 24.0,
+      "name" : "Colony Population",
+      "unit" : "people"
+    },
+    "capitalPerCapita" : {
+      "value" : 65000.0,
+      "name" : "Initial Physical Capital",
+      "unit" : "2011 US$ PPP"
+    },
+    "energyPerCapita" : {
+      "value" : 220000.0,
+      "name" : "Primary Energy Allocation",
+      "unit" : "MJ/capita/year"
+    },
+    "technologyLevel" : {
+      "value" : 8.2,
+      "name" : "Technological Level",
+      "unit" : "index (0-10)"
+    },
+    "potableWaterPerCapita" : {
+      "value" : 150.0,
+      "name" : "Recycled Potable Water",
+      "unit" : "m3/capita/year"
+    },
+    "lifeExpectancy" : {
+      "value" : 84.0,
+      "name" : "Life Expectancy",
+      "unit" : "years"
+    },
+    "urbanizationRate" : {
+      "value" : 100.0,
+      "name" : "Enclosed Urbanization Rate",
+      "unit" : "%"
+    },
+    "literacyRate" : {
+      "value" : 100.0,
+      "name" : "Mission Crew Literacy",
+      "unit" : "%"
+    }
+  }
+}

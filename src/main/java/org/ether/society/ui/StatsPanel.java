@@ -29,8 +29,10 @@ import org.ether.society.ui.stats.StatsCsvExporter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -54,7 +56,9 @@ public class StatsPanel extends VBox {
     private final Label cpuNoticeLabel;
     private final ToggleButton btnLiveCollection;
     private final ComboBox<String> samplingCombo;
+    private final Button btnConfigureTelemetry;
     private final Button btnFormulaEditor;
+    private final Set<String> activeTelemetryVariables = new LinkedHashSet<>(org.ether.society.ui.analytics.TelemetryVariableSelectorDialog.getDefaultActiveVariableIds());
 
     // Charts Section
     private final StatsChartsSection chartsSection;
@@ -169,6 +173,19 @@ public class StatsPanel extends VBox {
             };
         });
 
+        btnConfigureTelemetry = new Button();
+        btnConfigureTelemetry.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
+        btnConfigureTelemetry.setText("⚙️ Variables");
+        btnConfigureTelemetry.setTooltip(new Tooltip("Choisir les variables calculées et affichées en direct"));
+        btnConfigureTelemetry.setOnAction(e -> {
+            var dlg = new org.ether.society.ui.analytics.TelemetryVariableSelectorDialog(activeTelemetryVariables);
+            dlg.showAndWait().ifPresent(selected -> {
+                activeTelemetryVariables.clear();
+                activeTelemetryVariables.addAll(selected);
+                update();
+            });
+        });
+
         btnFormulaEditor = new Button();
         btnFormulaEditor.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
         btnFormulaEditor.setOnAction(e -> {
@@ -177,7 +194,7 @@ public class StatsPanel extends VBox {
             update();
         });
 
-        HBox perfToolbar = new HBox(8, btnLiveCollection, samplingCombo, btnFormulaEditor);
+        HBox perfToolbar = new HBox(8, btnLiveCollection, samplingCombo, btnConfigureTelemetry, btnFormulaEditor);
         perfToolbar.setAlignment(Pos.CENTER_LEFT);
 
         VBox topControlsBox = new VBox(6, headerTitle, cpuNoticeLabel, perfToolbar);
@@ -688,6 +705,12 @@ public class StatsPanel extends VBox {
     private void setCardVal(String key, String val, double ratio) {
         MetricCard c = metricCards.get(key);
         if (c != null) {
+            if (activeTelemetryVariables != null && !activeTelemetryVariables.isEmpty() && !activeTelemetryVariables.contains(key)) {
+                c.updateValue("— (Désactivé)", 0.0);
+                c.setOpacity(0.4);
+                return;
+            }
+            c.setOpacity(1.0);
             c.updateValue(val, ratio);
         }
     }

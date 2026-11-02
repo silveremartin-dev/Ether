@@ -1,0 +1,7 @@
+{
+  "epoch": -3000000,
+  "planet": "earth",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": ["linguisticBranch", "socialStructure", "subsistenceMode", "ritualTradition"],
+  "entities": []
+}

@@ -271,7 +271,7 @@
                     <forkCount>1</forkCount>
                     <reuseForks>true</reuseForks>
                     <argLine>@{argLine} -Xmx6g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
-                    <excludedGroups>manual,benchmark</excludedGroups>
+                    <excludedGroups>manual,benchmark,scientific,academic</excludedGroups>
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*TestCase.java</include>
@@ -407,4 +407,25 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>academic-paper</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven-surefire-plugin.version}</version>
+                        <configuration>
+                            <forkCount>1</forkCount>
+                            <reuseForks>true</reuseForks>
+                            <argLine>-Xms2g -Xmx8g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
+                            <groups>scientific,academic</groups>
+                            <excludedGroups>none</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

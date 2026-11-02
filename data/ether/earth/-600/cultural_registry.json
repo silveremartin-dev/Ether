@@ -1,0 +1,1021 @@
+{
+  "epoch": -600,
+  "era": "Iron Age 600 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -600 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "jin",
+      "colorHex": "#BD0B85",
+      "colorRgb": [189, 11, 133],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Jin",
+        "fr": "Jin",
+        "de": "Jin",
+        "es": "Jin",
+        "zh": "Jin"
+      },
+      "seshatId": "cn_jin_spring_and_autumn",
+      "fromYear": -750,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "qin",
+      "colorHex": "#257EC2",
+      "colorRgb": [37, 126, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qin",
+        "fr": "Qin",
+        "de": "Qin",
+        "es": "Qin",
+        "zh": "Qin"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "_spring_and_autumn_states_",
+      "colorHex": "#1FB9DB",
+      "colorRgb": [31, 185, 219],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Spring and Autumn States)",
+        "fr": "(Spring and Autumn States)",
+        "de": "(Spring and Autumn States)",
+        "es": "(Spring and Autumn States)",
+        "zh": "(Spring and Autumn States)"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "qi",
+      "colorHex": "#64DB14",
+      "colorRgb": [100, 219, 20],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Qi",
+        "fr": "Qi",
+        "de": "Qi",
+        "es": "Qi",
+        "zh": "Qi"
+      },
+      "seshatId": "cn_qi_spring_autumn",
+      "fromYear": -750,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "song",
+      "colorHex": "#119BD1",
+      "colorRgb": [17, 155, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Song",
+        "fr": "Song",
+        "de": "Song",
+        "es": "Song",
+        "zh": "Song"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "teng",
+      "colorHex": "#105CE0",
+      "colorRgb": [16, 92, 224],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Teng",
+        "fr": "Teng",
+        "de": "Teng",
+        "es": "Teng",
+        "zh": "Teng"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "chen",
+      "colorHex": "#C4652D",
+      "colorRgb": [196, 101, 45],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chen",
+        "fr": "Chen",
+        "de": "Chen",
+        "es": "Chen",
+        "zh": "Chen"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "wey",
+      "colorHex": "#4EC90C",
+      "colorRgb": [78, 201, 12],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Wey",
+        "fr": "Wey",
+        "de": "Wey",
+        "es": "Wey",
+        "zh": "Wey"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "cao",
+      "colorHex": "#26B2BF",
+      "colorRgb": [38, 178, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Cao",
+        "fr": "Cao",
+        "de": "Cao",
+        "es": "Cao",
+        "zh": "Cao"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "lu",
+      "colorHex": "#ED1CC0",
+      "colorRgb": [237, 28, 192],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lu",
+        "fr": "Lu",
+        "de": "Lu",
+        "es": "Lu",
+        "zh": "Lu"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "zheng",
+      "colorHex": "#BA2072",
+      "colorRgb": [186, 32, 114],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zheng",
+        "fr": "Zheng",
+        "de": "Zheng",
+        "es": "Zheng",
+        "zh": "Zheng"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "cai",
+      "colorHex": "#0EF0EC",
+      "colorRgb": [14, 240, 236],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Cai",
+        "fr": "Cai",
+        "de": "Cai",
+        "es": "Cai",
+        "zh": "Cai"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "zhu",
+      "colorHex": "#1BA3C2",
+      "colorRgb": [27, 163, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Zhu",
+        "fr": "Zhu",
+        "de": "Zhu",
+        "es": "Zhu",
+        "zh": "Zhu"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "yan",
+      "colorHex": "#97E82C",
+      "colorRgb": [151, 232, 44],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Yan",
+        "fr": "Yan",
+        "de": "Yan",
+        "es": "Yan",
+        "zh": "Yan"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -405,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "later_zhou",
+      "colorHex": "#F07E32",
+      "colorRgb": [240, 126, 50],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Later Zhou",
+        "fr": "Later Zhou",
+        "de": "Later Zhou",
+        "es": "Later Zhou",
+        "zh": "Later Zhou"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "xu",
+      "colorHex": "#E62E99",
+      "colorRgb": [230, 46, 153],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Xu",
+        "fr": "Xu",
+        "de": "Xu",
+        "es": "Xu",
+        "zh": "Xu"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "wu",
+      "colorHex": "#C318D6",
+      "colorRgb": [195, 24, 214],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Wu",
+        "fr": "Wu",
+        "de": "Wu",
+        "es": "Wu",
+        "zh": "Wu"
+      },
+      "seshatId": "",
+      "fromYear": -750,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "chu",
+      "colorHex": "#BA9B20",
+      "colorRgb": [186, 155, 32],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Chu",
+        "fr": "Chu",
+        "de": "Chu",
+        "es": "Chu",
+        "zh": "Chu"
+      },
+      "seshatId": "cn_chu_dyn_spring_autumn",
+      "fromYear": -700,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "roman_kingdom",
+      "colorHex": "#0D9488",
+      "colorRgb": [13, 148, 136],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Roman Kingdom",
+        "fr": "Roman Kingdom",
+        "de": "Roman Kingdom",
+        "es": "Roman Kingdom",
+        "zh": "Roman Kingdom"
+      },
+      "seshatId": "it_roman_k",
+      "fromYear": -700,
+      "toYear": -501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "hadhramaut",
+      "colorHex": "#DBA735",
+      "colorRgb": [219, 167, 53],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Hadhramaut",
+        "fr": "Hadhramaut",
+        "de": "Hadhramaut",
+        "es": "Hadhramaut",
+        "zh": "Hadhramaut"
+      },
+      "seshatId": "",
+      "fromYear": -700,
+      "toYear": -351,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "sabaeans",
+      "colorHex": "#2CE83F",
+      "colorRgb": [44, 232, 63],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sabaeans",
+        "fr": "Sabaeans",
+        "de": "Sabaeans",
+        "es": "Sabaeans",
+        "zh": "Sabaeans"
+      },
+      "seshatId": "ye_sabaean_commonwealth",
+      "fromYear": -675,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "_macedonian_empire_",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Macedonian Empire)",
+        "fr": "(Macedonian Empire)",
+        "de": "(Macedonian Empire)",
+        "es": "(Macedonian Empire)",
+        "zh": "(Macedonian Empire)"
+      },
+      "seshatId": "",
+      "fromYear": -675,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "macedonian_empire",
+      "colorHex": "#E11D48",
+      "colorRgb": [225, 29, 72],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Macedonian Empire",
+        "fr": "Macedonian Empire",
+        "de": "Macedonian Empire",
+        "es": "Macedonian Empire",
+        "zh": "Macedonian Empire"
+      },
+      "seshatId": "",
+      "fromYear": -675,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "olmec_civilization",
+      "colorHex": "#3A1BC2",
+      "colorRgb": [58, 27, 194],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Olmec Civilization",
+        "fr": "Olmec Civilization",
+        "de": "Olmec Civilization",
+        "es": "Olmec Civilization",
+        "zh": "Olmec Civilization"
+      },
+      "seshatId": "",
+      "fromYear": -650,
+      "toYear": -367,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "scythia",
+      "colorHex": "#D4A52F",
+      "colorRgb": [212, 165, 47],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Scythia",
+        "fr": "Scythia",
+        "de": "Scythia",
+        "es": "Scythia",
+        "zh": "Scythia"
+      },
+      "seshatId": "",
+      "fromYear": -650,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "kingdom_of_kush",
+      "colorHex": "#31E03A",
+      "colorRgb": [49, 224, 58],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Kush",
+        "fr": "Kingdom of Kush",
+        "de": "Kingdom of Kush",
+        "es": "Kingdom of Kush",
+        "zh": "Kingdom of Kush"
+      },
+      "seshatId": "",
+      "fromYear": -630,
+      "toYear": 337,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "carthage",
+      "colorHex": "#9FE30E",
+      "colorRgb": [159, 227, 14],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Carthage",
+        "fr": "Carthage",
+        "de": "Carthage",
+        "es": "Carthage",
+        "zh": "Carthage"
+      },
+      "seshatId": "tn_carthage_emp",
+      "fromYear": -630,
+      "toYear": -501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "twenty-sixth_dynasty_of_egypt",
+      "colorHex": "#36D9A3",
+      "colorRgb": [54, 217, 163],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Twenty-sixth Dynasty of Egypt",
+        "fr": "Twenty-sixth Dynasty of Egypt",
+        "de": "Twenty-sixth Dynasty of Egypt",
+        "es": "Twenty-sixth Dynasty of Egypt",
+        "zh": "Twenty-sixth Dynasty of Egypt"
+      },
+      "seshatId": "",
+      "fromYear": -615,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "phoenicia",
+      "colorHex": "#22B562",
+      "colorRgb": [34, 181, 98],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Phoenicia",
+        "fr": "Phoenicia",
+        "de": "Phoenicia",
+        "es": "Phoenicia",
+        "zh": "Phoenicia"
+      },
+      "seshatId": "lb_phoenician_emp",
+      "fromYear": -615,
+      "toYear": -531,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "_phoenician_empire_",
+      "colorHex": "#D46E2F",
+      "colorRgb": [212, 110, 47],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Phoenician Empire)",
+        "fr": "(Phoenician Empire)",
+        "de": "(Phoenician Empire)",
+        "es": "(Phoenician Empire)",
+        "zh": "(Phoenician Empire)"
+      },
+      "seshatId": "",
+      "fromYear": -615,
+      "toYear": -531,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_avanti",
+      "colorHex": "#13CF45",
+      "colorRgb": [19, 207, 69],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Avanti",
+        "fr": "Janapada of Avanti",
+        "de": "Janapada of Avanti",
+        "es": "Janapada of Avanti",
+        "zh": "Janapada of Avanti"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_anga",
+      "colorHex": "#E6AC39",
+      "colorRgb": [230, 172, 57],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Anga",
+        "fr": "Janapada of Anga",
+        "de": "Janapada of Anga",
+        "es": "Janapada of Anga",
+        "zh": "Janapada of Anga"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -531,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "_mahajanapadas_",
+      "colorHex": "#3BBD1E",
+      "colorRgb": [59, 189, 30],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "(Mahajanapadas)",
+        "fr": "(Mahajanapadas)",
+        "de": "(Mahajanapadas)",
+        "es": "(Mahajanapadas)",
+        "zh": "(Mahajanapadas)"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "neo-babylonian_empire",
+      "colorHex": "#1FCC75",
+      "colorRgb": [31, 204, 117],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Neo-Babylonian Empire",
+        "fr": "Neo-Babylonian Empire",
+        "de": "Neo-Babylonian Empire",
+        "es": "Neo-Babylonian Empire",
+        "zh": "Neo-Babylonian Empire"
+      },
+      "seshatId": "iq_neo_babylonian_emp",
+      "fromYear": -600,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_magadha",
+      "colorHex": "#21BAD9",
+      "colorRgb": [33, 186, 217],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Magadha",
+        "fr": "Janapada of Magadha",
+        "de": "Janapada of Magadha",
+        "es": "Janapada of Magadha",
+        "zh": "Janapada of Magadha"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -531,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "etruscans",
+      "colorHex": "#28ED84",
+      "colorRgb": [40, 237, 132],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Etruscans",
+        "fr": "Etruscans",
+        "de": "Etruscans",
+        "es": "Etruscans",
+        "zh": "Etruscans"
+      },
+      "seshatId": "",
+      "fromYear": -600,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_malla",
+      "colorHex": "#28D3ED",
+      "colorRgb": [40, 211, 237],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Malla",
+        "fr": "Janapada of Malla",
+        "de": "Janapada of Malla",
+        "es": "Janapada of Malla",
+        "zh": "Janapada of Malla"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_a_maka",
+      "colorHex": "#C41091",
+      "colorRgb": [196, 16, 145],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Aśmaka",
+        "fr": "Janapada of Aśmaka",
+        "de": "Janapada of Aśmaka",
+        "es": "Janapada of Aśmaka",
+        "zh": "Janapada of Aśmaka"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_vajji",
+      "colorHex": "#CC1424",
+      "colorRgb": [204, 20, 36],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Vajji",
+        "fr": "Janapada of Vajji",
+        "de": "Janapada of Vajji",
+        "es": "Janapada of Vajji",
+        "zh": "Janapada of Vajji"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_ced_",
+      "colorHex": "#13BA0D",
+      "colorRgb": [19, 186, 13],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Cedī",
+        "fr": "Janapada of Cedī",
+        "de": "Janapada of Cedī",
+        "es": "Janapada of Cedī",
+        "zh": "Janapada of Cedī"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_kuru",
+      "colorHex": "#EB36A8",
+      "colorRgb": [235, 54, 168],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Kuru",
+        "fr": "Janapada of Kuru",
+        "de": "Janapada of Kuru",
+        "es": "Janapada of Kuru",
+        "zh": "Janapada of Kuru"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_kosala",
+      "colorHex": "#24D43B",
+      "colorRgb": [36, 212, 59],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Kosala",
+        "fr": "Janapada of Kosala",
+        "de": "Janapada of Kosala",
+        "es": "Janapada of Kosala",
+        "zh": "Janapada of Kosala"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_matsya",
+      "colorHex": "#24D476",
+      "colorRgb": [36, 212, 118],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Matsya",
+        "fr": "Janapada of Matsya",
+        "de": "Janapada of Matsya",
+        "es": "Janapada of Matsya",
+        "zh": "Janapada of Matsya"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "lydia",
+      "colorHex": "#C90C8D",
+      "colorRgb": [201, 12, 141],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Lydia",
+        "fr": "Lydia",
+        "de": "Lydia",
+        "es": "Lydia",
+        "zh": "Lydia"
+      },
+      "seshatId": "tr_lydia_k",
+      "fromYear": -600,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_surasena",
+      "colorHex": "#16D946",
+      "colorRgb": [22, 217, 70],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Surasena",
+        "fr": "Janapada of Surasena",
+        "de": "Janapada of Surasena",
+        "es": "Janapada of Surasena",
+        "zh": "Janapada of Surasena"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_pa_c_la",
+      "colorHex": "#C42DBF",
+      "colorRgb": [196, 45, 191],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Pañcāla",
+        "fr": "Janapada of Pañcāla",
+        "de": "Janapada of Pañcāla",
+        "es": "Janapada of Pañcāla",
+        "zh": "Janapada of Pañcāla"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -451,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_vatsa",
+      "colorHex": "#1596BD",
+      "colorRgb": [21, 150, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Vatsa",
+        "fr": "Janapada of Vatsa",
+        "de": "Janapada of Vatsa",
+        "es": "Janapada of Vatsa",
+        "zh": "Janapada of Vatsa"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "kingdom_of_urartu",
+      "colorHex": "#6B1EBD",
+      "colorRgb": [107, 30, 189],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Kingdom of Urartu",
+        "fr": "Kingdom of Urartu",
+        "de": "Kingdom of Urartu",
+        "es": "Kingdom of Urartu",
+        "zh": "Kingdom of Urartu"
+      },
+      "seshatId": "",
+      "fromYear": -600,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_gandh_ra",
+      "colorHex": "#4711D1",
+      "colorRgb": [71, 17, 209],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Gandhāra",
+        "fr": "Janapada of Gandhāra",
+        "de": "Janapada of Gandhāra",
+        "es": "Janapada of Gandhāra",
+        "zh": "Janapada of Gandhāra"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -531,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_k___",
+      "colorHex": "#0F4FB8",
+      "colorRgb": [15, 79, 184],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Kāśī",
+        "fr": "Janapada of Kāśī",
+        "de": "Janapada of Kāśī",
+        "es": "Janapada of Kāśī",
+        "zh": "Janapada of Kāśī"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -481,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "median_kingdom",
+      "colorHex": "#E82081",
+      "colorRgb": [232, 32, 129],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Median Kingdom",
+        "fr": "Median Kingdom",
+        "de": "Median Kingdom",
+        "es": "Median Kingdom",
+        "zh": "Median Kingdom"
+      },
+      "seshatId": "ir_median_emp",
+      "fromYear": -600,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "greek_city-states",
+      "colorHex": "#B51089",
+      "colorRgb": [181, 16, 137],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Greek City-States",
+        "fr": "Greek City-States",
+        "de": "Greek City-States",
+        "es": "Greek City-States",
+        "zh": "Greek City-States"
+      },
+      "seshatId": "",
+      "fromYear": -600,
+      "toYear": -551,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "janapada_of_kamboja",
+      "colorHex": "#E5EB36",
+      "colorRgb": [229, 235, 54],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Janapada of Kamboja",
+        "fr": "Janapada of Kamboja",
+        "de": "Janapada of Kamboja",
+        "es": "Janapada of Kamboja",
+        "zh": "Janapada of Kamboja"
+      },
+      "seshatId": "in_mahajanapada",
+      "fromYear": -600,
+      "toYear": -531,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Iron Weapons, Ashlar Fortifications & Alphabetic Writing",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

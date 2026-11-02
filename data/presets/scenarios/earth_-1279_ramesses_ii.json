@@ -1,11 +1,11 @@
-﻿{
+{
     "name":  "Ramesses II, Pax Aegyptiaca \u0026 Monumental Builders (-1279 BCE)",
-    "description":  "🏛ï¸ HISTORICAL SCENARIO : RÃ¨gne de RamsÃ¨s II, TraitÃ© de Qadesh \u0026 Architecture Monumentale (-1279 BCE)\n\n[HISTORICAL \u0026 BIOPHYSICAL CONTEXT]\nModÃ©lise le long rÃ¨gne de 66 ans de RamsÃ¨s II (XIXe dynastie), le traitÃ© de paix de Qadesh (-1259) avec l\u0027Empire Hittite, et les chantiers monumentaux majeurs (Abou Simbel, Ramesseum, Pi-RamsÃ¨s).\n\n[GREAT MAN THEORY \u0026 OBSERVABLE STATE DYNAMICS]\nâ€¢ Effet transitoire mais puissant d\u0027un leadership exceptionnellement long : centralisation de la capacitÃ© Ã©tatique et sur-accumulation de capital physique (canaux, temples, greniers).\nâ€¢ StabilitÃ© gÃ©opolitique rÃ©gionale et commerce mÃ©diterranÃ©en sÃ©curisÃ© (Pax Aegyptiaca).\nâ€¢ VulnÃ©rabilitÃ© de succession post-recul du grand rÃ¨gne Ã  l\u0027approche de la crise systÃ©mique de l\u0027Ã‚ge du Bronze (-1200).\n",
+    "description":  "??️ HISTORICAL SCENARIO : Règne de Ramsès II, Traité de Qadesh \u0026 Architecture Monumentale (-1279 BCE)\n\n[HISTORICAL \u0026 BIOPHYSICAL CONTEXT]\nModélise le long règne de 66 ans de Ramsès II (XIXe dynastie), le traité de paix de Qadesh (-1259) avec l\u0027Empire Hittite, et les chantiers monumentaux majeurs (Abou Simbel, Ramesseum, Pi-Ramsès).\n\n[GREAT MAN THEORY \u0026 OBSERVABLE STATE DYNAMICS]\n• Effet transitoire mais puissant d\u0027un leadership exceptionnellement long : centralisation de la capacité étatique et sur-accumulation de capital physique (canaux, temples, greniers).\n• Stabilité géopolitique régionale et commerce méditerranéen sécurisé (Pax Aegyptiaca).\n• Vulnérabilité de succession post-recul du grand règne à l\u0027approche de la crise systémique de l\u0027Âge du Bronze (-1200).\n",
     "id":  null,
     "presetKey":  "ramesses_ii",
     "referenceTrajectoryModel":  "HYDE_MADDISON",
     "planetPreset":  {
-                         "name":  "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+                         "name":  "Terre (-1 900 / Âge du Bronze Moyen)",
                          "resolution":  4,
                          "radiusKm":  6371.0,
                          "dayLengthHours":  24.0,
@@ -39,24 +39,24 @@
                          "elevationUseImport":  true,
                          "elevationMapSource":  "earth",
                          "tempUseImport":  true,
-                         "tempSource":  "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+                         "tempSource":  "Terre (-1900 BP) — Âge du Bronze Moyen",
                          "tempSeed":  12445,
                          "precipUseImport":  true,
-                         "precipSource":  "🌍 Terre (-1900 BP) â€” PrÃ©cipitations",
+                         "precipSource":  "?? Terre (-1900 BP) — Précipitations",
                          "precipSeed":  13345,
                          "seasonUseImport":  true,
-                         "seasonSource":  "🌍 Terre (-1900 BP) â€” SaisonnalitÃ©",
+                         "seasonSource":  "?? Terre (-1900 BP) — Saisonnalité",
                          "seasonSeed":  14345,
                          "canonicalPlanet":  "earth",
                          "tidalLocked":  false,
                          "associatedEpochYear":  -1279,
-                         "presetDescription":  "🏺 TERRE (-1 900 / Ã‚ge du Bronze Moyen) : RÃ©seaux commerciaux transcontinentaux Ã©tablis (cuivre, Ã©tain, ambre), codification des lois, citÃ©s-Ã‰tats hydrauliques et architecture monumentale de temple."
+                         "presetDescription":  "?? TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
                      },
     "ecologyPreset":  {
-                          "name":  "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
-                          "planetPresetName":  "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+                          "name":  "Terre (-1 900 / Âge du Bronze Moyen)",
+                          "planetPresetName":  "Terre (-1 900 / Âge du Bronze Moyen)",
                           "embeddedPlanetPreset":  {
-                                                       "name":  "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+                                                       "name":  "Terre (-1 900 / Âge du Bronze Moyen)",
                                                        "resolution":  4,
                                                        "radiusKm":  6371.0,
                                                        "dayLengthHours":  24.0,
@@ -90,18 +90,18 @@
                                                        "elevationUseImport":  true,
                                                        "elevationMapSource":  "earth",
                                                        "tempUseImport":  true,
-                                                       "tempSource":  "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+                                                       "tempSource":  "Terre (-1900 BP) — Âge du Bronze Moyen",
                                                        "tempSeed":  12445,
                                                        "precipUseImport":  true,
-                                                       "precipSource":  "🌍 Terre (-1900 BP) â€” PrÃ©cipitations",
+                                                       "precipSource":  "?? Terre (-1900 BP) — Précipitations",
                                                        "precipSeed":  13345,
                                                        "seasonUseImport":  true,
-                                                       "seasonSource":  "🌍 Terre (-1900 BP) â€” SaisonnalitÃ©",
+                                                       "seasonSource":  "?? Terre (-1900 BP) — Saisonnalité",
                                                        "seasonSeed":  14345,
                                                        "canonicalPlanet":  "earth",
                                                        "tidalLocked":  false,
                                                        "associatedEpochYear":  -1279,
-                                                       "presetDescription":  "🏺 TERRE (-1 900 / Ã‚ge du Bronze Moyen) : RÃ©seaux commerciaux transcontinentaux Ã©tablis (cuivre, Ã©tain, ambre), codification des lois, citÃ©s-Ã‰tats hydrauliques et architecture monumentale de temple."
+                                                       "presetDescription":  "?? TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
                                                    },
                           "terrestrialBiomassGtC":  590.0,
                           "soilOrganicCarbonGtC":  1800.0,
@@ -121,7 +121,7 @@
                           "customGeologyTensorMapsBase64":  null,
                           "canonicalPlanet":  "earth",
                           "associatedEpochYear":  -1900,
-                          "presetDescription":  "🏺 TERRE (-1 900 / Ã‚ge du Bronze Moyen) : RÃ©seaux commerciaux transcontinentaux Ã©tablis (cuivre, Ã©tain, ambre), codification des lois, citÃ©s-Ã‰tats hydrauliques et architecture monumentale de temple."
+                          "presetDescription":  "?? TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
                       },
     "ecologyPresetName":  "Terre (Terran)",
     "useRealEarthData":  false,
@@ -185,7 +185,7 @@
     "geologyTensorProceduralModes":  [
 
                                      ],
-    "h3Resolution":  6,
+    "h3Resolution":  7,
     "strictDeterminism":  true,
     "sparseCellSkippingEnabled":  false,
     "oceanMacroAggregationEnabled":  false,
@@ -221,5 +221,5 @@
     "maxLng":  42.0,
     "boundaryMode":  "DYNAMIC_RESERVOIR",
     "displayName":  "Ramesses II, Pax Aegyptiaca \u0026 Monumental Builders (-1279 BCE)",
-    "displayDescription":  "🏛 SCÃ‰NARIO HISTORIQUE : RÃ¨gne de RamsÃ¨s II, TraitÃ© de Qadesh \u0026 Architecture Monumentale (-1279 av. J.-C.)\n\n[CONTEXTE HISTORIQUE \u0026 PHYSIQUE]\nModÃ©lise le long rÃ¨gne de 66 ans de RamsÃ¨s II (XIXe dynastie), le traitÃ© de paix de Qadesh (-1259) avec l\u0027Empire Hittite, et les chantiers monumentaux majeurs (Abou Simbel, Ramesseum, Pi-RamsÃ¨s).\n\n[THÃ‰ORIE DE L\u0027INFLUENCE DES GRANDS HOMMES \u0026 OBSERVABLES]\nâ€¢ Effet transitoire mais puissant d\u0027un leadership exceptionnellement long : centralisation de la capacitÃ© Ã©tatique et sur-accumulation de capital physique (canaux, temples, greniers).\nâ€¢ StabilitÃ© gÃ©opolitique rÃ©gionale et commerce mÃ©diterranÃ©en sÃ©curisÃ© (Pax Aegyptiaca).\nâ€¢ VulnÃ©rabilitÃ© de succession post-recul du grand rÃ¨gne Ã  l\u0027approche de la crise systÃ©mique de l\u0027Ã‚ge du Bronze (-1200).\n"
+    "displayDescription":  "?? SCÉNARIO HISTORIQUE : Règne de Ramsès II, Traité de Qadesh \u0026 Architecture Monumentale (-1279 av. J.-C.)\n\n[CONTEXTE HISTORIQUE \u0026 PHYSIQUE]\nModélise le long règne de 66 ans de Ramsès II (XIXe dynastie), le traité de paix de Qadesh (-1259) avec l\u0027Empire Hittite, et les chantiers monumentaux majeurs (Abou Simbel, Ramesseum, Pi-Ramsès).\n\n[THÉORIE DE L\u0027INFLUENCE DES GRANDS HOMMES \u0026 OBSERVABLES]\n• Effet transitoire mais puissant d\u0027un leadership exceptionnellement long : centralisation de la capacité étatique et sur-accumulation de capital physique (canaux, temples, greniers).\n• Stabilité géopolitique régionale et commerce méditerranéen sécurisé (Pax Aegyptiaca).\n• Vulnérabilité de succession post-recul du grand règne à l\u0027approche de la crise systémique de l\u0027Âge du Bronze (-1200).\n"
 }

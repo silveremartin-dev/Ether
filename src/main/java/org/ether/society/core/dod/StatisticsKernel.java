@@ -136,10 +136,12 @@ public class StatisticsKernel {
         float spatialKpcGini = calculateGini(kpcArray);
 
         // Combine inter-regional per-capita dispersion with intra-cell social stratification along the IPF
-        double techFactor = Math.tanh(Math.max(0.0, avgTech - 1.0) * 0.85);
-        double intraCellStratification = 0.16 + 0.42 * ipfCeiling * techFactor;
-        double combinedGini = Math.min(ipfCeiling, intraCellStratification + 0.35 * spatialKpcGini * techFactor);
-        return (float) Math.clamp(combinedGini, 0.15, 0.85);
+        // (Milanovic, Lindert & Williamson 2011; Scheidel 2017 'The Great Leveler')
+        double techFactor = Math.tanh(Math.max(0.0, avgTech - 0.95) * 0.52);
+        double intraCellStratification = 0.17 + 0.45 * ipfCeiling * techFactor;
+        double boundedSpatialTerm = Math.min(0.14, 0.16 * spatialKpcGini) * techFactor;
+        double combinedGini = Math.min(ipfCeiling, intraCellStratification + boundedSpatialTerm);
+        return (float) Math.clamp(combinedGini, 0.15, 0.78);
     }
 
     /**

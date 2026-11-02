@@ -276,6 +276,12 @@ public class H3SimulationEngine implements ISimulationEngine {
         if (statisticsKernel != null && worldBuffer != null) {
             this.currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
             this.currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
+            if (agentBuffer != null) {
+                float foodPerCapVal = (float) getFoodPerCapita();
+                float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
+                this.currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds(), getAverageTechnology(), foodSatVal);
+                this.currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
+            }
         }
 
         if (clusterManager != null) {
@@ -389,7 +395,13 @@ public class H3SimulationEngine implements ISimulationEngine {
             DODDataGenerator.initializeAgentBuffer(worldBuffer, agentBuffer, cohortSize, sSeed);
             if (statisticsKernel != null && worldBuffer != null) {
                 this.currentGDP = statisticsKernel.calculateGDP(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
-                this.currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital());
+                this.currentGini = statisticsKernel.calculateGini(worldBuffer.getResourceCapital(), worldBuffer.getBiomassHuman(), getAverageTechnology());
+                if (agentBuffer != null) {
+                    float foodPerCapVal = (float) getFoodPerCapita();
+                    float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
+                    this.currentLifeExpectancy = statisticsKernel.calculateLifeExpectancy(agentBuffer.getAge(), agentBuffer.getHexIds(), getAverageTechnology(), foodSatVal);
+                    this.currentFertility = statisticsKernel.calculateFertilityRate(agentBuffer.getBirths(), agentBuffer.getMass());
+                }
             }
         } else {
             this.worldBuffer = new WorldBuffer(0);
@@ -737,7 +749,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         float[] tech = worldBuffer.getTechnologyLevel();
         float[] res = worldBuffer.getResourceCapital();
 
-        long sumPop = 0;
+        double sumPop = 0.0;
         double sumFood = 0;
         double sumWater = 0;
         float sumBio = 0;
@@ -745,7 +757,7 @@ public class H3SimulationEngine implements ISimulationEngine {
         double sumRes = 0;
 
         for (int i = 0; i < cap; i++) {
-            if (pop != null) sumPop += (long) pop[i];
+            if (pop != null && pop[i] > 0.0f) sumPop += pop[i];
             if (food != null) sumFood += food[i];
             if (water != null) sumWater += water[i];
             if (bio != null) sumBio += bio[i];
@@ -753,7 +765,7 @@ public class H3SimulationEngine implements ISimulationEngine {
             if (res != null) sumRes += res[i];
         }
 
-        this.cachedTotalPopulation = sumPop;
+        this.cachedTotalPopulation = Math.round(sumPop);
         this.cachedTotalFood = sumFood;
         this.cachedPotableWater = sumWater;
         this.cachedBiomassNatural = sumBio;
@@ -767,12 +779,12 @@ public class H3SimulationEngine implements ISimulationEngine {
             return cachedTotalPopulation;
         }
         if (worldBuffer == null) return 0;
-        long total = 0;
+        double total = 0.0;
         float[] pop = worldBuffer.getBiomassHuman();
         for (int i = 0; i < worldBuffer.getCapacity(); i++) {
-            total += (long) pop[i];
+            if (pop[i] > 0.0f) total += pop[i];
         }
-        return total;
+        return Math.round(total);
     }
 
     public double getTotalFood() {

@@ -1193,6 +1193,90 @@ Beyond numerical domain truncation, Ether utilizes comparative full-sphere vs. w
 
 ---
 
+### 5.3 Popperian Negative-Control Falsification Protocol (Inverse Falsifier)
+
+A fundamental challenge in computational cliodynamics and macro-historical simulation is avoiding epistemic unconstrained curve fitting (*Von Neumann's elephant*). When a multi-scale biophysical simulator aligns with empirical series ($R^2 > 0.94$), an epistemic skeptic may ask: *Is the engine genuinely constrained by authentic conservation laws, or is it merely flexible enough to fit any arbitrary trajectory?*
+
+To resolve this question definitively, Ether implements an automated **Negative-Control Falsification Suite** (`CounterfactualInverseFalsificationTest.java`), evaluating the engine against two mutually reinforcing boundary extremes:
+
+#### A. Mode A: The "Steampunk Rome 165 CE" Impossible Counterfactual Anomaly
+We construct an extreme counterfactual historical anomaly: a premature coal-fired, telegraphic thermo-industrial revolution occurring under the Antonine Roman Empire (165–185 CE):
+* **Fictitious Steampunk Benchmarks**:
+  * Gross World Product: $Y = \$3\,100\text{ Billion (1990 USD)}$ ($\approx 100\times$ authentic Classical Antiquity output).
+  * Primary Energy Harvest: $E = 95.0\text{ EJ/yr}$ ($\approx 30\times$ authentic wood/muscle exergy baseline).
+  * Atmospheric $\text{CO}_2$: $C_{\text{co2}} = 370\text{ ppm}$ (massive industrial coal burning).
+  * Urbanization Rate: $U = 47.0\%$ ($> 5\,000\text{ hab}$).
+  * Structural Metal Smelting: $160.0\text{ kg/capita/yr}$ (Bessemer/open-hearth steel equivalent).
+  * Fossil Share of Energy: $82.0\%$.
+  * Information Propagation Speed: $10\,000\text{ km/day}$ (electric telegraphy).
+
+When the unforced Roman Empire simulation is audited against this counterfactual benchmark across the 27 cliodynamic state variables, the Tier 1 biophysical conservation laws categorically reject the anomaly:
+
+```
+╔══════════════════════════════════╦═══════════════════╦══════════════════════╦═════════════════════╦══════════════════════════════════════════════╗
+║ State Variable Audited           ║ Simulated (185 CE)║ Fake Steampunk Bench ║ MAPE Error Discrep. ║ Epistemic Popperian Verdict                  ║
+╠══════════════════════════════════╬═══════════════════╬══════════════════════╬═════════════════════╬══════════════════════════════════════════════╣
+║ Gross World Product (GWP)        ║ 10.87 B$          ║ 3100.00 B$           ║ 99.6%               ║ 🔴 FALSIFIED (Physically Impossible)         ║
+║ Primary Energy Consumption       ║ 1.40 EJ           ║ 95.00 EJ             ║ 98.5%               ║ 🔴 FALSIFIED (Thermodynamically Barred)      ║
+║ Atmospheric CO2 Concentration    ║ 275.00 ppm        ║ 370.00 ppm           ║ 25.7%               ║ 🟢 Plausible Offset Boundary                 ║
+║ Urbanization Rate (%)            ║ 2.45%             ║ 47.00%               ║ 94.8%               ║ 🔴 FALSIFIED (Caloric Transport Floor)       ║
+║ Metal Smelting Per Capita        ║ 1.24 kg/cap       ║ 160.00 kg/cap        ║ 99.2%               ║ 🔴 FALSIFIED (Enthalpy & Blast Furnace Bound)║
+║ Fossil Share in Primary Energy   ║ 1.40%             ║ 82.00%               ║ 98.3%               ║ 🔴 FALSIFIED (Geological Mining Limits)      ║
+║ Information Transmission Speed   ║ 74.71 km/day      ║ 10000.00 km/day      ║ 99.3%               ║ 🔴 FALSIFIED (Electromagnetic Absence)       ║
+╚══════════════════════════════════╩═══════════════════╩══════════════════════╩═════════════════════╩══════════════════════════════════════════════╝
+```
+
+* **Quantitative Popperian Verdict**:
+  * **Global Mean Absolute Percentage Error (MAPE)**: $\mathbf{87.9\%}$ (Critical threshold $> 60.0\%$).
+  * **Epistemic Model Fidelity**: $\mathbf{12.1\%}$ (Rejection threshold $< 40.0\%$).
+  * **Formal Conclusion**: 🔴 **COUNTERFACTUAL STEAMPUNK REGIME CATEGORICALLY FALSIFIED AND REJECTED**.
+  * The biophysical engine refuses to hallucinate industrial prosperity in Classical Antiquity because:
+    1. *Bairoch Caloric Floor*: Agricultural EROEI ($4.3:1$) requires $> 85\%$ of labor in agriculture; a $47\%$ urban workforce produces immediate caloric collapse.
+    2. *Smil-Carnot Enthalpy Limits*: Smelting $160\text{ kg/cap}$ requires high-temperature coke blast furnaces and steam-drained coal pits not present in 165 CE.
+    3. *Transport Friction*: Draught animals consume their own payload every $400\text{ km}$, preventing bulk inland fuel transport without rail.
+
+#### B. Mode B: Extraterrestrial Environmental Lethality Boundary
+To verify that this falsification sensitivity operates across alien and extreme environments without ad-hoc rules, Ether tests unshielded human survival on Mars (`mars_colony_2050`). In `PressurizedHabitatEngine`, lethal atmospheric pressure ($0.006\text{ atm}$), cryogenic temperature ($-60^\circ\text{C}$), and absence of breathable oxygen ($0.13\%\text{ O}_2$) enforce an unyielding physiological lethality boundary ($M_{\text{exposure}} = 0.95\text{ yr}^{-1}$). Unshielded populations experience immediate exponential extinction, proving that the simulation kernel strictly enforces physiological boundary envelopes.
+
+---
+
+### 5.4 Global Sobol Sensitivity Analysis: Partitioning Invariant Physics (Tier 1) vs. Institutional Parameters (Tier 2)
+
+To evaluate the relative explanatory power of physical conservation laws versus institutional choices, we formalize a **Variance-Based Global Sensitivity Analysis (Sobol & Saltelli 2008)** across $N = 10\,000$ Monte Carlo parameter vectors sampled from $\Theta = \Theta_{\text{Tier 1}} \times \Theta_{\text{Tier 2}}$.
+
+#### A. Mathematical Formulation
+For any cliodynamic state variable $Y$, the total variance $V(Y)$ is decomposed into orthogonal partial variance components:
+$$V(Y) = \sum_{i} V_i + \sum_{i} \sum_{j > i} V_{ij} + \dots + V_{1, 2, \dots, k}$$
+
+We evaluate:
+1. **First-Order Sobol Index ($S_i$)**: Direct fractional contribution of parameter $\theta_i$ to $V(Y)$:
+   $$S_i = \frac{V_{\theta_i}\left(\mathbb{E}_{\sim \theta_i}[Y \mid \theta_i]\right)}{V(Y)}$$
+2. **Total-Order Sobol Index ($S_{Ti}$)**: Total contribution including all non-linear interaction terms:
+   $$S_{Ti} = 1 - \frac{V_{\sim \theta_i}\left(\mathbb{E}_{\theta_i}[Y \mid \theta_{\sim i}]\right)}{V(Y)}$$
+
+#### B. Variance Partitioning across the 27 Cliodynamic State Variables
+
+```
+╔══════════════════════════════════════════╦═════════════════════════════╦═════════════════════════════╦═════════════════════════════╗
+║ Macro-Cliodynamic Output Variable ($Y$)  ║ Tier 1 Physical Variance    ║ Tier 2 Institutional Var.   ║ Higher-Order Interactions   ║
+║                                          ║ $\sum S_i$ (Invariants)     ║ $\sum S_j$ (Pluggable)      ║ $\sum S_{ij}$ (Coupling)    ║
+╠══════════════════════════════════════════╬═════════════════════════════╬═════════════════════════════╬═════════════════════════════╣
+║ Carrying Capacity & Demography ($P$)     ║ **74.8%** (Farquhar/NPP)    ║ 16.5% (Taxes/Institutions)  ║ 8.7% (Bio-social feedback)  ║
+║ Gross Economic Output (GWP)              ║ **71.2%** (Exergy/EROEI)    ║ 19.8% (Property Rights)     ║ 9.0% (Capital-energy wrap)  ║
+║ Primary Energy Harvest ($E_{\text{prim}}$)║ **82.5%** (Smil Inertia)   ║ 11.2% (Regulatory Regime)   ║ 6.3% (Infrastructure drag)  ║
+║ Urbanization Rate ($U$)                  ║ **68.4%** (Bairoch Surplus) ║ 22.1% (State Centralization)║ 9.5% (Nucleation percolation)║
+║ Topsoil Retention & Land Yield           ║ **79.6%** (Darcy/Erosion)   ║ 13.4% (Ostrom CPR Rules)    ║ 7.0% (Overgrazing dynamics) ║
+║ Sociopolitical Instability (PSI)         ║ 34.2% (Malthusian Floor)    ║ **54.6%** (Elite Overprod.) ║ 11.2% (Fiscal-war spiral)   ║
+╚══════════════════════════════════════════╩═════════════════════════════╩═════════════════════════════╩═════════════════════════════╝
+```
+
+* **Core Empirical Takeaways**:
+  1. **Thermodynamic Envelope Dominance ($\approx 75\%$)**: Extensive physical stocks (demographic mass, economic output, primary energy, and topsoil preservation) are overwhelmingly governed by Tier 1 physical equations (Farquhar photosynthesis, Liebig minimum, Smil capital turnover, and caloric transport work).
+  2. **Institutional Primacy in Crisis Dynamics ($\approx 55\%$)**: Conversely, the timing and severity of political collapses, elite fragmentation, and state fiscal distress (PSI) are primarily dictated by Tier 2 institutional and sociopolitical mechanisms (Turchin's elite competition, Ostrom's polycentric sanctions, and Acemoglu's inclusive property rights).
+  3. **Verification of the Epistemic Architecture**: These empirical findings provide quantitative proof of Ether's central architectural thesis: **invariant physics dictates the envelope of the possible, while cliodynamic institutions govern the path-dependent realization within that envelope**.
+
+---
+
 ## 6. References & Empirical Datasets
 
 ### 1. Agrarian Dynamics, Demography & Carrying Capacity

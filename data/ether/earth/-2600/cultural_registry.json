@@ -1,0 +1,71 @@
+{
+  "epoch": -2600,
+  "era": "Bronze Age 2 600 BC",
+  "description": "Cliodynamic Cultural, Linguistic, Demographic & Sovereign Polity Registry for Epoch -2600 (Calibrated vs Natural Earth, Seshat, HYDE 3.4 & Murdock D-PLACE)",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": [
+    "linguisticBranch",
+    "socialStructure",
+    "subsistenceMode",
+    "ritualTradition"
+  ],
+  "entities": [
+    {
+      "id": "indus_valley_civilization",
+      "colorHex": "#B324A7",
+      "colorRgb": [179, 36, 167],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Indus Valley Civilization",
+        "fr": "Indus Valley Civilization",
+        "de": "Indus Valley Civilization",
+        "es": "Indus Valley Civilization",
+        "zh": "Indus Valley Civilization"
+      },
+      "seshatId": "pk_kachi_pre_urban",
+      "fromYear": -2700,
+      "toYear": -2501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "early_dynastic_period_of_egypt",
+      "colorHex": "#20C3E8",
+      "colorRgb": [32, 195, 232],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Early Dynastic Period of Egypt",
+        "fr": "Early Dynastic Period of Egypt",
+        "de": "Early Dynastic Period of Egypt",
+        "es": "Early Dynastic Period of Egypt",
+        "zh": "Early Dynastic Period of Egypt"
+      },
+      "seshatId": "eg_dynasty_2",
+      "fromYear": -2700,
+      "toYear": -2501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    },
+    {
+      "id": "sumerian_city-states",
+      "colorHex": "#D13096",
+      "colorRgb": [209, 48, 150],
+      "traits": [0.85, 0.88, 0.90, 0.85],
+      "name": {
+        "en": "Sumerian City-States",
+        "fr": "Sumerian City-States",
+        "de": "Sumerian City-States",
+        "es": "Sumerian City-States",
+        "zh": "Sumerian City-States"
+      },
+      "seshatId": "",
+      "fromYear": -2700,
+      "toYear": -2501,
+      "kinshipType": "Patriarchal Dynastic Lineages & Feudal Estates",
+      "lithicTechnocomplex": "Bronze Casting, Cuneiform Administration & Monumental Masonry",
+      "caloricIntakePerCapitaKcal": 2650
+    }
+  ]
+}

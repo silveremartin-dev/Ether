@@ -1,11 +1,11 @@
-﻿{
+{
     "name":  "Ancient Egypt \u0026 Nile Valley (-3000 BCE)",
-    "description":  "𓀀 HISTORICAL SCENARIO : Unification Thinite \u0026 Crues du Nil (-3000 BCE)\n\n[HISTORICAL \u0026 BIOPHYSICAL CONTEXT]\nModÃ©lise l\u0027Ã©mergence de la premiÃ¨re civilisation pharaonique unifiÃ©e. DÃ©pendance absolue vis-Ã -vis du rythme annuel du Nil, de la gestion du bassin d\u0027irrigation et de l\u0027administration hiÃ©roglyphique.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Gestion hydraulique Ã©tatique centralisÃ©e des crues annuelles et du limon fertile.\nâ€¢ Accumulation monumentale de capital physique et symbolique (pyramides, canaux, greniers d\u0027Ã‰tat).\nâ€¢ VulnÃ©rabilitÃ© systÃ©mique aux sÃ©cheresses prolongÃ©es (chute de l\u0027Ancien Empire / 1Ã¨re PÃ©riode IntermÃ©diaire).\n",
+    "description":  "?? HISTORICAL SCENARIO : Unification Thinite \u0026 Crues du Nil (-3000 BCE)\n\n[HISTORICAL \u0026 BIOPHYSICAL CONTEXT]\nModélise l\u0027émergence de la première civilisation pharaonique unifiée. Dépendance absolue vis-à-vis du rythme annuel du Nil, de la gestion du bassin d\u0027irrigation et de l\u0027administration hiéroglyphique.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Gestion hydraulique étatique centralisée des crues annuelles et du limon fertile.\n• Accumulation monumentale de capital physique et symbolique (pyramides, canaux, greniers d\u0027État).\n• Vulnérabilité systémique aux sécheresses prolongées (chute de l\u0027Ancien Empire / 1ère Période Intermédiaire).\n",
     "id":  null,
     "presetKey":  "ancient_egypt",
     "referenceTrajectoryModel":  "HYDE_MADDISON",
     "planetPreset":  {
-                         "name":  "Terre (-3 000 / HolocÃ¨ne Tardif)",
+                         "name":  "Terre (-3 000 / Holocène Tardif)",
                          "resolution":  4,
                          "radiusKm":  6371.0,
                          "dayLengthHours":  24.0,
@@ -39,24 +39,24 @@
                          "elevationUseImport":  true,
                          "elevationMapSource":  "earth",
                          "tempUseImport":  true,
-                         "tempSource":  "🌍 Terre (-3000 BP) â€” PalÃ©oclimat Tardif",
+                         "tempSource":  "?? Terre (-3000 BP) — Paléoclimat Tardif",
                          "tempSeed":  12446,
                          "precipUseImport":  true,
-                         "precipSource":  "🌍 Terre (-3000 BP) â€” PrÃ©cipitations NÃ©oglaciaires",
+                         "precipSource":  "?? Terre (-3000 BP) — Précipitations Néoglaciaires",
                          "precipSeed":  13346,
                          "seasonUseImport":  true,
-                         "seasonSource":  "🌍 Terre (-3000 BP) â€” SaisonnalitÃ©",
+                         "seasonSource":  "?? Terre (-3000 BP) — Saisonnalité",
                          "seasonSeed":  14346,
                          "canonicalPlanet":  "earth",
                          "tidalLocked":  false,
                          "associatedEpochYear":  -3000,
-                         "presetDescription":  "🏛 TERRE (-3 000 / HolocÃ¨ne Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et Ã©mergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l\u0027Indus et du Fleuve Jaune."
+                         "presetDescription":  "?? TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l\u0027Indus et du Fleuve Jaune."
                      },
     "ecologyPreset":  {
-                          "name":  "Terre (-3 000 / HolocÃ¨ne Tardif)",
-                          "planetPresetName":  "Terre (-3 000 / HolocÃ¨ne Tardif)",
+                          "name":  "Terre (-3 000 / Holocène Tardif)",
+                          "planetPresetName":  "Terre (-3 000 / Holocène Tardif)",
                           "embeddedPlanetPreset":  {
-                                                       "name":  "Terre (-3 000 / HolocÃ¨ne Tardif)",
+                                                       "name":  "Terre (-3 000 / Holocène Tardif)",
                                                        "resolution":  4,
                                                        "radiusKm":  6371.0,
                                                        "dayLengthHours":  24.0,
@@ -90,18 +90,18 @@
                                                        "elevationUseImport":  true,
                                                        "elevationMapSource":  "earth",
                                                        "tempUseImport":  true,
-                                                       "tempSource":  "🌍 Terre (-3000 BP) â€” PalÃ©oclimat Tardif",
+                                                       "tempSource":  "?? Terre (-3000 BP) — Paléoclimat Tardif",
                                                        "tempSeed":  12446,
                                                        "precipUseImport":  true,
-                                                       "precipSource":  "🌍 Terre (-3000 BP) â€” PrÃ©cipitations NÃ©oglaciaires",
+                                                       "precipSource":  "?? Terre (-3000 BP) — Précipitations Néoglaciaires",
                                                        "precipSeed":  13346,
                                                        "seasonUseImport":  true,
-                                                       "seasonSource":  "🌍 Terre (-3000 BP) â€” SaisonnalitÃ©",
+                                                       "seasonSource":  "?? Terre (-3000 BP) — Saisonnalité",
                                                        "seasonSeed":  14346,
                                                        "canonicalPlanet":  "earth",
                                                        "tidalLocked":  false,
                                                        "associatedEpochYear":  -3000,
-                                                       "presetDescription":  "🏛 TERRE (-3 000 / HolocÃ¨ne Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et Ã©mergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l\u0027Indus et du Fleuve Jaune."
+                                                       "presetDescription":  "?? TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l\u0027Indus et du Fleuve Jaune."
                                                    },
                           "terrestrialBiomassGtC":  560.0,
                           "soilOrganicCarbonGtC":  1750.0,
@@ -121,7 +121,7 @@
                           "customGeologyTensorMapsBase64":  null,
                           "canonicalPlanet":  "earth",
                           "associatedEpochYear":  -3000,
-                          "presetDescription":  "🏛 TERRE (-3 000 / HolocÃ¨ne Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et Ã©mergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l\u0027Indus et du Fleuve Jaune."
+                          "presetDescription":  "?? TERRE (-3 000 / Holocène Tardif) : Stabilisation des littoraux maritimes modernes, aridification progressive du Sahara et émergence des grands empires hydrauliques agricoles du Nil, du Tigre-Euphrate, de l\u0027Indus et du Fleuve Jaune."
                       },
     "ecologyPresetName":  "Terre (Terran)",
     "useRealEarthData":  false,
@@ -185,7 +185,7 @@
     "geologyTensorProceduralModes":  [
 
                                      ],
-    "h3Resolution":  6,
+    "h3Resolution":  7,
     "strictDeterminism":  true,
     "sparseCellSkippingEnabled":  false,
     "oceanMacroAggregationEnabled":  false,
@@ -221,5 +221,5 @@
     "maxLng":  36.0,
     "boundaryMode":  "DYNAMIC_RESERVOIR",
     "displayName":  "Ancient Egypt \u0026 Nile Valley (-3000 BCE)",
-    "displayDescription":  "🏛 SCÃ‰NARIO HISTORIQUE : L\u0027Unification de la Haute et Basse Ã‰gypte par Narmer (-3100 av. J.-C.)\n\nÃ‰mergence du premier Ã‰tat territorial le long du couloir du Nil. Structuration des premiÃ¨res dynasties autour de l\u0027agriculture de crue, du stockage centralisÃ© et de la royautÃ© divine."
+    "displayDescription":  "?? SCÉNARIO HISTORIQUE : L\u0027Unification de la Haute et Basse Égypte par Narmer (-3100 av. J.-C.)\n\nÉmergence du premier État territorial le long du couloir du Nil. Structuration des premières dynasties autour de l\u0027agriculture de crue, du stockage centralisé et de la royauté divine."
 }

@@ -191,9 +191,10 @@ public class DemographicKernel {
                 float consumed = Math.min(totalAvailableFoodGJ, cachedCellDemand[h]);
                 float surplus = Math.max(0.0f, totalAvailableFoodGJ - consumed);
 
-                // Granary storage capacity: up to 1.5 years of metabolic demand for agrarians (tech >= 1.5),
-                // or 1 month for nomadic foragers (tech < 1.5, mobility & spoilage constraints)
-                float storageYears = (cellTech < 1.5f) ? 0.083f : 1.5f;
+                // Granary storage capacity: continuous logistic transition from 1 month (0.083 yr) for mobile Paleolithic foragers
+                // through Epipaleolithic/PPNA stone & mudbrick silos (tech >= 1.25) up to 1.5 years for full agrarians
+                float storageLogistic = (float) (1.0 / (1.0 + Math.exp(-8.0 * (cellTech - 1.30f))));
+                float storageYears = 0.083f + 1.417f * storageLogistic;
                 float maxGranaryCapacity = cachedCellDemand[h] * (storageYears / dtInYears);
                 food[h] = Math.min(maxGranaryCapacity, surplus);
                 world.getEnergyFoodConsumed()[h] += consumed;
@@ -320,14 +321,14 @@ public class DemographicKernel {
             // Pre-agricultural (tech < 1.5): nomadic foragers with 3.5-4.5 yrs lactation amenorrhea (CBR ~ 25-28 / 1000)
             // Neolithic/Agrarian (tech >= 1.5): sedentism & cereal weaning foods allow inter-birth intervals ~ 2 yrs (CBR ~ 38-46 / 1000)
             float foragerFertility = (float) (0.024f + 0.004f * Math.tanh(tech));
-            float agrarianFertility = (float) (0.0375f + 0.012f * Math.tanh((tech - 1.5f) / 1.5f));
-            float neolithicTransitionWeight = (float) (1.0 / (1.0 + Math.exp(-4.0 * (tech - 1.5f))));
+            float agrarianFertility = (float) (0.0375f + 0.012f * Math.tanh((tech - 1.30f) / 1.5f));
+            float neolithicTransitionWeight = (float) (1.0 / (1.0 + Math.exp(-6.0 * (tech - 1.30f))));
             float maxBiologicalFertility = (1.0f - neolithicTransitionWeight) * foragerFertility + neolithicTransitionWeight * agrarianFertility;
             float fertilityModulation = fecundityAgeFactor * Math.min(1.0f, nutritionalFactor) * culturalFertilityMultiplier * densityFeedback;
 
             float birthRate = maxBiologicalFertility * Math.clamp(fertilityModulation, 0.0f, 1.25f);
             float newBirths = m * birthRate * dtInYears;
-            births[i] = newBirths;
+            births[i] = m * birthRate; // Annualized birth flow for TFR calculation in StatisticsKernel
 
             // 6. Maternal bioenergetic reproductive burden (Gestation + Lactation: ~0.80 GJ per live birth)
             float reproductionMetabolicLoad = (float) (newBirths * org.ether.society.model.PhysicalConstants.HUMAN_GESTATION_LACTATION_ENERGY_GJ);

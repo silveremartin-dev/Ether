@@ -16,7 +16,7 @@ echo "[INFO] Executing all 24 cliodynamic and epistemic debate benchmarks..."
 echo ""
 
 export MAVEN_OPTS="--add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED"
-mvn test -Dtest=ScientificModelFalsificationAndValidationSuite "$@"
+mvn test -Pacademic-paper -Dtest=ScientificModelFalsificationAndValidationSuite "$@"
 
 echo ""
 echo "=============================================================="

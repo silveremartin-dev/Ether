@@ -316,6 +316,10 @@ public class HeadlessBatchRunner {
         }
     }
 
+    public static void recordTelemetrySnapshotPublic(SimulationRunRecord record, H3SimulationEngine engine, int year) {
+        recordTelemetrySnapshot(record, engine, year);
+    }
+
     private static void recordTelemetrySnapshot(SimulationRunRecord record, H3SimulationEngine engine, int year) {
         long pop = engine.getTotalPopulation();
         double foodPerCap = engine.getFoodPerCapita();
@@ -323,6 +327,9 @@ public class HeadlessBatchRunner {
         double stability = engine.getHappinessIndex();
         int populatedCells = (int) engine.getPopulatedCellCount();
 
+        // Purely minimal physical baseline in headless mode: zero heavy cliodynamic monitoring during the simulation loop.
+        // All academic cliodynamic indicators (urbanization, literacy, PSI, debt, trade, EROEI, etc.)
+        // are computed strictly a posteriori on demand by PostHocCliodynamicMetricsExtractor.
         Map<String, Double> metricsMap = new LinkedHashMap<>();
         metricsMap.put("population", (double) pop);
         metricsMap.put("worldPopulation", (double) pop);
@@ -330,44 +337,6 @@ public class HeadlessBatchRunner {
         metricsMap.put("avgTechLevel", avgTech);
         metricsMap.put("asabiyyah", stability);
         metricsMap.put("populatedCellCount", (double) populatedCells);
-
-        // Extract complete physical & cliodynamic indicators from engine (SI & Standard Cliodynamic Units)
-        metricsMap.put("gdp", (double) engine.getCurrentGDP());
-        metricsMap.put("grossWorldProduct", (double) engine.getCurrentGDP() / 1e9); // Billion USD 1990
-        metricsMap.put("gini", (double) engine.getCurrentGini());
-        metricsMap.put("lifeExpectancy", (double) engine.getCurrentLifeExpectancy());
-        metricsMap.put("fertilityRate", (double) engine.getCurrentFertility());
-        metricsMap.put("energyCaptured", engine.getEnergyCaptured()); // Instantaneous MW
-        metricsMap.put("primaryEnergy", engine.getEnergyCaptured() * 3.15576e-5); // Exajoules (EJ/year)
-        metricsMap.put("energyPerCapita", engine.getEnergyPerCapita());
-        metricsMap.put("potableWater", engine.getPotableWaterTotal());
-        metricsMap.put("resourceDepletion", engine.getResourceDepletionRate());
-        metricsMap.put("kardashev", engine.getKardashevScale());
-        metricsMap.put("builtCapital", engine.getBuiltCapitalTotal());
-        metricsMap.put("collectiveMemory", engine.getCollectiveMemoryStock());
-        metricsMap.put("eliteOverproduction", engine.getEliteOverproductionIndex());
-        metricsMap.put("collapseRisk", engine.getCollapseVulnerability());
-        metricsMap.put("systemInterdependence", engine.getSystemInterdependenceIndex());
-
-        // Endogenous societal and environmental indicators from engine/metricsAggregator
-        metricsMap.put("urbanizationRate", engine.getUrbanizationRate());
-        metricsMap.put("literacyRate", engine.getLiteracyRate());
-        metricsMap.put("currencyDebasement", Math.max(0.0, (100.0 - stability) * 0.5));
-        metricsMap.put("co2Concentration", engine.getAtmosphericCO2Ppm());
-        double tempAnom = engine.getTemperatureAnomaly();
-        metricsMap.put("temperature", 14.0 + tempAnom);
-        metricsMap.put("temperatureAnomaly", tempAnom);
-        metricsMap.put("precipitation", 850.0 + Math.cos(year / 150.0) * 50.0);
-        metricsMap.put("conflict", engine.getConflictLevel());
-        metricsMap.put("sociopoliticalInstability", engine.getMetricsAggregator() != null
-                ? engine.getMetricsAggregator().getSociopoliticalInstabilityIndex()
-                : engine.getConflictLevel());
-        metricsMap.put("megafaunaIndex", org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(year, (double) pop / 1e6, 0.2));
-        metricsMap.put("milankovitchInsolation", org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year));
-
-        double benchContainment = HistoricalValidationKernel.getInterpolatedBenchmarkValue("zeroContainmentScore", (double) year);
-        double containment = (!Double.isNaN(benchContainment) && benchContainment >= 0.0) ? benchContainment : 1.0;
-        metricsMap.put("zeroContainmentScore", containment);
 
         record.addSnapshot(year, pop, foodPerCap, avgTech, stability, populatedCells, metricsMap);
     }

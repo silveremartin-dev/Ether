@@ -92,7 +92,7 @@ public class PressurizedHabitatEngine {
         double age = cell.getHabitatAgeYearsOr(0.0);
 
         // Ensure minimum capacity baseline if uninitialized
-        if (capacity < pop) {
+        if (capacity <= 0.0) {
             capacity = Math.max(500.0, pop * 1.25);
             cell.setHabitatCapacity(capacity);
         }
@@ -149,8 +149,11 @@ public class PressurizedHabitatEngine {
             int compartments = Math.max(3, Math.min(50, (int) Math.ceil(pop / 15.0)));
             double compartmentShare = 1.0 / compartments;
             // Breach hazard affects only the compromised compartment, preserving adjacent modules
-            double breachHazard = (0.30 - integrity) * 0.80 * compartmentShare * dt;
+            double breachHazard = ((0.30 - integrity) / 0.30) * compartmentShare * Math.min(1.0, 12.0 * dt);
             int breachDeaths = (int) Math.round(pop * breachHazard);
+            if (breachDeaths == 0 && (0.30 - integrity) >= 0.05) {
+                breachDeaths = 1;
+            }
             if (breachDeaths > 0) {
                 int newPop = Math.max(0, pop - breachDeaths);
                 H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, newPop);

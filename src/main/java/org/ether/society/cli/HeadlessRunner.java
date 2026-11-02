@@ -107,7 +107,6 @@ public class HeadlessRunner {
         Integer cliClimateTickFrequency = null;
         Boolean cliParallelExecution = null;
         Boolean cliSpatialRangeTruncation = null;
-        Boolean cliTier2Cliodynamics = null;
         Boolean cliWindowed = null;
 
         // Scenario & Spatial Overrides
@@ -280,10 +279,6 @@ public class HeadlessRunner {
                 cliWindowed = !a.endsWith("=false");
             } else if (a.equals("--fullscreen") || a.equals("--global") || a.equals("--no-windowed")) {
                 cliWindowed = false;
-            } else if (a.equals("--tier1") || a.equals("--tier1-only")) {
-                cliTier2Cliodynamics = false;
-            } else if (a.equals("--tier2") || a.equals("--all-tiers")) {
-                cliTier2Cliodynamics = true;
             }
 
             // Scenario, Spatiotemporal & Historical Presets
@@ -559,16 +554,10 @@ public class HeadlessRunner {
                     scenario.setMaxLng(45.0);
                 }
             }
-            if (cliTier2Cliodynamics != null) {
-                scenario.setTier2CliodynamicsEnabled(cliTier2Cliodynamics);
-            }
 
-            // Convert scenario to effective runtime performance configuration
+            // Convert scenario to effective runtime performance configuration directly derived from scenario definition
             SimulationPerformanceConfig effectivePerfConfig = scenario.toPerformanceConfig();
             effectivePerfConfig.setParallelThreadCount(threadCount);
-            if (cliTier2Cliodynamics != null) {
-                effectivePerfConfig.setEnableTier2Cliodynamics(cliTier2Cliodynamics);
-            }
 
             if (!ticksExplicitlySet) {
                 ticksToRun = scenario.calculateScenarioTicks();

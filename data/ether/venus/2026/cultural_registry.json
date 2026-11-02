@@ -1,0 +1,9 @@
+{
+  "epoch": 2026,
+  "era": "Venus Hyper-Thermal Acid Furnace (2026 CE)",
+  "description": "Extraterrestrial Pioneer Colony Registry for VENUS at Epoch 2026",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": ["linguisticBranch", "socialStructure", "subsistenceMode", "ritualTradition"],
+  "entities": [
+  ]
+}

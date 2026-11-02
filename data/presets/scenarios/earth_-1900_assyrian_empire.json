@@ -1,11 +1,11 @@
-﻿{
+{
     "name":  "Middle Bronze Age \u0026 Mesopotamia (-1900 BCE)",
-    "description":  "HISTORICAL SCENARIO : Hydraulique, Salinisation \u0026 CitÃ©s-Ã‰tats de l\u0027Ã‚ge du Bronze (-1900 BCE)\n\n[HISTORICAL \u0026 BIOPHYSICAL CONTEXT]\nModÃ©lise l\u0027apogÃ©e du Bronze Moyen (Code d\u0027Hammurabi, premiÃ¨re dynastie de Babylone, dynastie Shang en Chine, fin de la civilisation de l\u0027Indus) et les vulnÃ©rabilitÃ©s Ã©cologiques d\u0027irrigation intensive.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Salinisation progressive des sols irriguÃ©s de basse MÃ©sopotamie (baisse du blÃ© au profit de l\u0027orge).\nâ€¢ Dynamique d\u0027Asabiyyah des peuples pÃ©riphÃ©riques et militarisation de l\u0027Empire NÃ©o-Assyrien.\nâ€¢ RÃ©seaux urbains denses le long des canaux et dÃ©pendance au commerce du cuivre et de l\u0027Ã©tain.\n",
+    "description":  "HISTORICAL SCENARIO : Hydraulique, Salinisation \u0026 Cités-États de l\u0027Âge du Bronze (-1900 BCE)\n\n[HISTORICAL \u0026 BIOPHYSICAL CONTEXT]\nModélise l\u0027apogée du Bronze Moyen (Code d\u0027Hammurabi, première dynastie de Babylone, dynastie Shang en Chine, fin de la civilisation de l\u0027Indus) et les vulnérabilités écologiques d\u0027irrigation intensive.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Salinisation progressive des sols irrigués de basse Mésopotamie (baisse du blé au profit de l\u0027orge).\n• Dynamique d\u0027Asabiyyah des peuples périphériques et militarisation de l\u0027Empire Néo-Assyrien.\n• Réseaux urbains denses le long des canaux et dépendance au commerce du cuivre et de l\u0027étain.\n",
     "id":  null,
     "presetKey":  "assyrian_empire",
     "referenceTrajectoryModel":  "HYDE_MADDISON",
     "planetPreset":  {
-                         "name":  "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+                         "name":  "Terre (-1 900 / Âge du Bronze Moyen)",
                          "resolution":  4,
                          "radiusKm":  6371.0,
                          "dayLengthHours":  24.0,
@@ -39,24 +39,24 @@
                          "elevationUseImport":  true,
                          "elevationMapSource":  "earth",
                          "tempUseImport":  true,
-                         "tempSource":  "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+                         "tempSource":  "Terre (-1900 BP) — Âge du Bronze Moyen",
                          "tempSeed":  12445,
                          "precipUseImport":  true,
-                         "precipSource":  "🌍 Terre (-1900 BP) â€” PrÃ©cipitations",
+                         "precipSource":  "?? Terre (-1900 BP) — Précipitations",
                          "precipSeed":  13345,
                          "seasonUseImport":  true,
-                         "seasonSource":  "🌍 Terre (-1900 BP) â€” SaisonnalitÃ©",
+                         "seasonSource":  "?? Terre (-1900 BP) — Saisonnalité",
                          "seasonSeed":  14345,
                          "canonicalPlanet":  "earth",
                          "tidalLocked":  false,
                          "associatedEpochYear":  -1900,
-                         "presetDescription":  "🏺 TERRE (-1 900 / Ã‚ge du Bronze Moyen) : RÃ©seaux commerciaux transcontinentaux Ã©tablis (cuivre, Ã©tain, ambre), codification des lois, citÃ©s-Ã‰tats hydrauliques et architecture monumentale de temple."
+                         "presetDescription":  "?? TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
                      },
     "ecologyPreset":  {
-                          "name":  "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
-                          "planetPresetName":  "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+                          "name":  "Terre (-1 900 / Âge du Bronze Moyen)",
+                          "planetPresetName":  "Terre (-1 900 / Âge du Bronze Moyen)",
                           "embeddedPlanetPreset":  {
-                                                       "name":  "Terre (-1 900 / Ã‚ge du Bronze Moyen)",
+                                                       "name":  "Terre (-1 900 / Âge du Bronze Moyen)",
                                                        "resolution":  4,
                                                        "radiusKm":  6371.0,
                                                        "dayLengthHours":  24.0,
@@ -90,18 +90,18 @@
                                                        "elevationUseImport":  true,
                                                        "elevationMapSource":  "earth",
                                                        "tempUseImport":  true,
-                                                       "tempSource":  "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+                                                       "tempSource":  "Terre (-1900 BP) — Âge du Bronze Moyen",
                                                        "tempSeed":  12445,
                                                        "precipUseImport":  true,
-                                                       "precipSource":  "🌍 Terre (-1900 BP) â€” PrÃ©cipitations",
+                                                       "precipSource":  "?? Terre (-1900 BP) — Précipitations",
                                                        "precipSeed":  13345,
                                                        "seasonUseImport":  true,
-                                                       "seasonSource":  "🌍 Terre (-1900 BP) â€” SaisonnalitÃ©",
+                                                       "seasonSource":  "?? Terre (-1900 BP) — Saisonnalité",
                                                        "seasonSeed":  14345,
                                                        "canonicalPlanet":  "earth",
                                                        "tidalLocked":  false,
                                                        "associatedEpochYear":  -1900,
-                                                       "presetDescription":  "🏺 TERRE (-1 900 / Ã‚ge du Bronze Moyen) : RÃ©seaux commerciaux transcontinentaux Ã©tablis (cuivre, Ã©tain, ambre), codification des lois, citÃ©s-Ã‰tats hydrauliques et architecture monumentale de temple."
+                                                       "presetDescription":  "?? TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
                                                    },
                           "terrestrialBiomassGtC":  590.0,
                           "soilOrganicCarbonGtC":  1800.0,
@@ -121,7 +121,7 @@
                           "customGeologyTensorMapsBase64":  null,
                           "canonicalPlanet":  "earth",
                           "associatedEpochYear":  -1900,
-                          "presetDescription":  "🏺 TERRE (-1 900 / Ã‚ge du Bronze Moyen) : RÃ©seaux commerciaux transcontinentaux Ã©tablis (cuivre, Ã©tain, ambre), codification des lois, citÃ©s-Ã‰tats hydrauliques et architecture monumentale de temple."
+                          "presetDescription":  "?? TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
                       },
     "ecologyPresetName":  "Terre (Terran)",
     "useRealEarthData":  false,
@@ -185,7 +185,7 @@
     "geologyTensorProceduralModes":  [
 
                                      ],
-    "h3Resolution":  6,
+    "h3Resolution":  7,
     "strictDeterminism":  true,
     "sparseCellSkippingEnabled":  false,
     "oceanMacroAggregationEnabled":  false,
@@ -220,5 +220,5 @@
     "maxLng":  52.0,
     "boundaryMode":  "DYNAMIC_RESERVOIR",
     "displayName":  "Middle Bronze Age \u0026 Mesopotamia (-1900 BCE)",
-    "displayDescription":  "âš” SCÃ‰NARIO HISTORIQUE : L\u0027Effondrement de l\u0027Ã‚ge du Bronze \u0026 l\u0027Expansion Assyrienne (-1200 av. J.-C.)\n\nModÃ©lise la rupture systÃ©mique des rÃ©seaux commerciaux de MÃ©diterranÃ©e orientale, les Ã©pisodes de sÃ©cheresse et l\u0027essor de la mÃ©tallurgie du fer et des structures impÃ©riales militarisÃ©es."
+    "displayDescription":  "⚔ SCÉNARIO HISTORIQUE : L\u0027Effondrement de l\u0027Âge du Bronze \u0026 l\u0027Expansion Assyrienne (-1200 av. J.-C.)\n\nModélise la rupture systémique des réseaux commerciaux de Méditerranée orientale, les épisodes de sécheresse et l\u0027essor de la métallurgie du fer et des structures impériales militarisées."
 }

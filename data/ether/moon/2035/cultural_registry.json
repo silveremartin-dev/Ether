@@ -1,0 +1,23 @@
+{
+  "epoch": 2035,
+  "era": "Shackleton Crater Lunar Base & ISRU Ice Mining (2035 CE)",
+  "description": "Extraterrestrial Pioneer Colony Registry for MOON at Epoch 2035",
+  "encoding": "ID_RGB_24BIT",
+  "traitDimensions": ["linguisticBranch", "socialStructure", "subsistenceMode", "ritualTradition"],
+  "entities": [
+    {
+      "id": "shackleton",
+      "colorHex": "#2563EB",
+      "colorRgb": [37, 99, 235],
+      "traits": [0.95, 0.90, 0.98, 0.85],
+      "name": {"en": "Shackleton Crater International Outpost", "fr": "Shackleton Crater International Outpost"},
+      "isoA3": "SHA",
+      "continent": "MOON",
+      "fromYear": 2035,
+      "toYear": 2135,
+      "kinshipType": "Scientific Cohort & Expeditionary Team Structure",
+      "lithicTechnocomplex": "Closed-Loop ECLSS, In-Situ Resource Utilization & Automated Robotics",
+      "caloricIntakePerCapitaKcal": 3000
+    }
+  ]
+}

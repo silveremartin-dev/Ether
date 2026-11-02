@@ -1,0 +1,51 @@
+{
+  "metadata" : {
+    "planet" : "mars",
+    "year" : 2050,
+    "temporalWindow" : "2050 CE",
+    "referenceModel" : "MISSION_PIONEER_SPECS",
+    "modelDescription" : "MISSION_PIONEER_SPECS"
+  },
+  "variables" : {
+    "regionalPopulation" : {
+      "value" : 5000.0,
+      "name" : "Colony Population",
+      "unit" : "people"
+    },
+    "capitalPerCapita" : {
+      "value" : 45000.0,
+      "name" : "Initial Physical Capital",
+      "unit" : "2011 US$ PPP"
+    },
+    "energyPerCapita" : {
+      "value" : 180000.0,
+      "name" : "Primary Energy Allocation",
+      "unit" : "MJ/capita/year"
+    },
+    "technologyLevel" : {
+      "value" : 8.5,
+      "name" : "Technological Level",
+      "unit" : "index (0-10)"
+    },
+    "potableWaterPerCapita" : {
+      "value" : 150.0,
+      "name" : "Recycled Potable Water",
+      "unit" : "m3/capita/year"
+    },
+    "lifeExpectancy" : {
+      "value" : 84.0,
+      "name" : "Life Expectancy",
+      "unit" : "years"
+    },
+    "urbanizationRate" : {
+      "value" : 100.0,
+      "name" : "Enclosed Urbanization Rate",
+      "unit" : "%"
+    },
+    "literacyRate" : {
+      "value" : 100.0,
+      "name" : "Mission Crew Literacy",
+      "unit" : "%"
+    }
+  }
+}

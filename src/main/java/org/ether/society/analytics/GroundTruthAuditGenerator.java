@@ -192,16 +192,82 @@ public class GroundTruthAuditGenerator {
             return val;
         }
         if (lower.contains("gini") || lower.contains("inégal")) {
-            val = snap.getValue("gini");
+            val = snap.getValue("giniInequality");
+            if (val == 0.0) val = snap.getValue("gini");
             if (val == 0.0) val = snap.getValue("giniIndex");
             if (val != 0.0) return val;
+        }
+        if (lower.contains("currency") || lower.contains("debasement")) {
+            val = snap.getValue("currencyDebasement");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("elite") || lower.contains("overproduction")) {
+            val = snap.getValue("eliteOverproductionIndex");
+            if (val == 0.0) val = snap.getValue("eliteOverproduction");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("wage") || lower.contains("salaire")) {
+            val = snap.getValue("realUnskilledWage");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("politicalstress") || lower.contains("psi")) {
+            val = snap.getValue("politicalStressIndex");
+            if (val == 0.0) val = snap.getValue("psiStressIndex");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("sovereigndebt") || lower.contains("debt") || lower.contains("dette")) {
+            val = snap.getValue("sovereignDebtBurden");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("trade") || lower.contains("commerce")) {
+            val = snap.getValue("globalTradeVolume");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("soil") || lower.contains("erosion")) {
+            val = snap.getValue("soilErosionRate");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("eroei") || lower.contains("eroi")) {
+            val = snap.getValue("agriculturalEroei");
+            if (val == 0.0) val = snap.getValue("eroiAlim");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("deforest") || lower.contains("forest")) {
+            val = snap.getValue("deforestationRate");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("speed") || lower.contains("vitesse")) {
+            val = snap.getValue("informationSpeed");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("smelt") || lower.contains("metal")) {
+            val = snap.getValue("metalSmeltingPerCapita");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("fossil")) {
+            val = snap.getValue("fossilSharePrimaryEnergy");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("freight") || lower.contains("shipping")) {
+            val = snap.getValue("shippingFreightCostIndex");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("life") || lower.contains("expectancy") || lower.contains("esperance")) {
+            val = snap.getValue("lifeExpectancyAtBirth");
+            if (val == 0.0) val = snap.getValue("lifeExpectancy");
+            if (val == 0.0) val = snap.getValue("avgLifespan");
+            if (!Double.isNaN(val)) return val;
+        }
+        if (lower.contains("temperature") || lower.contains("anom")) {
+            val = snap.getValue("temperatureAnomaly");
+            if (!Double.isNaN(val)) return val;
         }
         if (lower.contains("bonheur") || lower.contains("happiness")) {
             val = snap.getValue("happiness");
             if (val == 0.0) val = snap.getValue("avgHappiness");
             if (val != 0.0) return val;
         }
-        return 0.0;
+        return PostHocCliodynamicMetricsExtractor.computeMetric(snap, id, year);
     }
 
     /**
@@ -278,7 +344,7 @@ public class GroundTruthAuditGenerator {
 
         for (int yr : sampleYears) {
             double obs = HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, yr, method);
-            if (Double.isNaN(obs) || obs == 0.0) continue;
+            if (Double.isNaN(obs)) continue;
 
             // Apply territorial window scaling for extensive variables when the simulation is clipped
             if (regionalExtensiveScaleFactor > 0.0 && regionalExtensiveScaleFactor < 0.50) {
@@ -314,21 +380,35 @@ public class GroundTruthAuditGenerator {
                 }
             }
 
-            if (obs != 0.0) {
-                double errPct = Math.abs(sim - obs) / Math.abs(obs) * 100.0;
-                sumAbsError += errPct;
-                count++;
-                errorList.add(errPct);
-                obsList.add(obs);
-                simList.add(sim);
+            boolean isPercentageVariable = "temperatureAnomaly".equals(benchKey)
+                    || "fossilSharePrimaryEnergy".equals(benchKey)
+                    || "urbanizationRate".equals(benchKey)
+                    || "literacyRate".equals(benchKey)
+                    || "currencyDebasement".equals(benchKey)
+                    || "sovereignDebtBurden".equals(benchKey)
+                    || "soilErosionRate".equals(benchKey)
+                    || "deforestationRate".equals(benchKey);
+            double denom = isPercentageVariable ? Math.max(Math.abs(obs), 1.0) : Math.abs(obs);
+            double errPct;
+            if (denom < 1e-6) {
+                // Deep-Time Invariant: when empirical ground truth is exactly 0.0
+                errPct = (Math.abs(sim) < 1e-3) ? 0.0 : Math.min(100.0, Math.abs(sim) * 100.0);
+            } else {
+                errPct = Math.abs(sim - obs) / denom * 100.0;
+            }
 
-                if (errPct > 10.0 && driftYear == null) {
-                    driftYear = yr;
-                }
-                if (errPct > maxError) {
-                    maxError = errPct;
-                    peakYear = yr;
-                }
+            sumAbsError += errPct;
+            count++;
+            errorList.add(errPct);
+            obsList.add(obs);
+            simList.add(sim);
+
+            if (errPct > 10.0 && driftYear == null) {
+                driftYear = yr;
+            }
+            if (errPct > maxError) {
+                maxError = errPct;
+                peakYear = yr;
             }
         }
 
@@ -427,15 +507,32 @@ public class GroundTruthAuditGenerator {
 
         Map<String, String> benchmarkKeys = new LinkedHashMap<>();
         benchmarkKeys.put("👥 Global Demographic Population (worldPopulation)", "worldPopulation");
+        benchmarkKeys.put("💰 Gross World Product (grossWorldProduct)", "grossWorldProduct");
+        benchmarkKeys.put("⚡ Primary Energy Consumption (primaryEnergy)", "primaryEnergy");
+        benchmarkKeys.put("🏙️ Urbanization Rate (urbanizationRate)", "urbanizationRate");
+        benchmarkKeys.put("🌿 Atmospheric CO2 Concentration (co2Concentration)", "co2Concentration");
+        benchmarkKeys.put("📖 Global Literacy Rate (literacyRate)", "literacyRate");
+        benchmarkKeys.put("🪙 Currency Debasement / Coinage Purity (currencyDebasement)", "currencyDebasement");
+        benchmarkKeys.put("👑 Elite Overproduction Index (eliteOverproductionIndex)", "eliteOverproductionIndex");
+        benchmarkKeys.put("🍞 Real Unskilled Wage (realUnskilledWage)", "realUnskilledWage");
+        benchmarkKeys.put("🏛️ Political Stress Index (politicalStressIndex)", "politicalStressIndex");
+        benchmarkKeys.put("🤝 Asabiyyah Social Cohesion (asabiyyahSocialCohesion)", "asabiyyahSocialCohesion");
+        benchmarkKeys.put("📉 Sociopolitical Instability (sociopoliticalInstability)", "sociopoliticalInstability");
+        benchmarkKeys.put("⚖️ Gini Inequality (giniInequality)", "giniInequality");
+        benchmarkKeys.put("📜 Sovereign Debt Burden (sovereignDebtBurden)", "sovereignDebtBurden");
+        benchmarkKeys.put("🚢 Global Trade Volume (globalTradeVolume)", "globalTradeVolume");
+        benchmarkKeys.put("🌡️ Temperature Anomaly (temperatureAnomaly)", "temperatureAnomaly");
+        benchmarkKeys.put("🌱 Topsoil Erosion Loss (soilErosionRate)", "soilErosionRate");
+        benchmarkKeys.put("🌾 Agricultural EROEI (agriculturalEroei)", "agriculturalEroei");
+        benchmarkKeys.put("🌲 Forest Cover Remaining (deforestationRate)", "deforestationRate");
+        benchmarkKeys.put("⚡ Information Travel Speed (informationSpeed)", "informationSpeed");
         benchmarkKeys.put("🦣 Megafauna Abundance Index (megafaunaIndex)", "megafaunaIndex");
         benchmarkKeys.put("☀️ Milankovitch 65°N Insolation (milankovitchInsolation)", "milankovitchInsolation");
         benchmarkKeys.put("🛡️ Biogeographical Zero-Containment (zeroContainmentScore)", "zeroContainmentScore");
-        benchmarkKeys.put("💰 Gross World Product (GWP, Billions 1990 USD) (grossWorldProduct)", "grossWorldProduct");
-        benchmarkKeys.put("⚡ Primary Energy Consumption (EJ/yr) (primaryEnergy)", "primaryEnergy");
-        benchmarkKeys.put("🏙️ Urbanization Rate (%) (urbanizationRate)", "urbanizationRate");
-        benchmarkKeys.put("🌿 Atmospheric CO2 Concentration (ppm) (co2Concentration)", "co2Concentration");
-        benchmarkKeys.put("📖 Global Literacy Rate (%) (literacyRate)", "literacyRate");
-        benchmarkKeys.put("📉 Sociopolitical Instability (PSI Index) (sociopoliticalInstability)", "sociopoliticalInstability");
+        benchmarkKeys.put("👶 Life Expectancy at Birth (lifeExpectancyAtBirth)", "lifeExpectancyAtBirth");
+        benchmarkKeys.put("⚒️ Metal Smelting Per Capita (metalSmeltingPerCapita)", "metalSmeltingPerCapita");
+        benchmarkKeys.put("⛏️ Fossil Share Primary Energy (fossilSharePrimaryEnergy)", "fossilSharePrimaryEnergy");
+        benchmarkKeys.put("⚓ Shipping Freight Cost Index (shippingFreightCostIndex)", "shippingFreightCostIndex");
 
         record ScenarioAudit(
                 ScenarioBenchmarkItem item,
