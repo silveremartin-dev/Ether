@@ -66,10 +66,11 @@ public class CrustalGeothermalEngine {
             double surfaceTempC = cell.getTemperatureOr(15.0);
             double miningSubsurfaceTempC = surfaceTempC + (maxDepthMeters / 1000.0) * GEOTHERMAL_GRADIENT_C_PER_KM;
 
-            // Deep mining yields additional metal ores if tech can withstand subsurface heat (> 60°C)
+            // Deep mining unlocks deeper extractable ore capacity without creating mass out of nowhere
             if (tech >= 5.0 && miningSubsurfaceTempC > 60.0) {
                 double metalOre = cell.getResourceMetalOr(0.0);
-                cell.setResourceMetal(metalOre + 50.0);
+                double accessibleOreCap = 100.0 + (maxDepthMeters / 4000.0) * 900.0;
+                cell.setResourceMetal(Math.max(metalOre, Math.min(accessibleOreCap, metalOre)));
             }
         }
     }

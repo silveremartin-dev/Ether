@@ -43,9 +43,6 @@ public class LandReclamationEngine {
      * @param timeStepDays the time step days parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         processHybrid(cells, timeStepDays,
                 DEFAULT_POLDER_TECH_THRESHOLD, DEFAULT_POLDER_CAPITAL_THRESHOLD,
                 DEFAULT_SEASTEADING_TECH_THRESHOLD, DEFAULT_SEASTEADING_CAPITAL_THRESHOLD);
@@ -55,6 +52,8 @@ public class LandReclamationEngine {
                                     double polderTechThreshold, double polderCapitalThreshold,
                                     double seasteadingTechThreshold, double seasteadingCapitalThreshold) {
         if (cells == null || cells.isEmpty()) return;
+
+        double dtYears = Math.clamp(timeStepDays / 365.25, 0.001, 1.0);
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
@@ -73,7 +72,7 @@ public class LandReclamationEngine {
                         cell.setBiome(Biome.PLAINS);
                     }
                     double soc = cell.getSoilOrganicCarbonOr(0.0);
-                    cell.setSoilOrganicCarbon(Math.max(100.0, soc + 20.0 * timeStepDays));
+                    cell.setSoilOrganicCarbon(Math.min(120.0, soc + 20.0 * dtYears));
                 }
             }
 
@@ -81,13 +80,11 @@ public class LandReclamationEngine {
             if (!hasFloating && (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN)) {
                 if (tech >= seasteadingTechThreshold && capital >= seasteadingCapitalThreshold) {
                     cell.setHasFloatingInfrastructure(true);
-                    // Floating energy & water collection bonus
+                    // Floating energy & water collection bonus bounded by physical insolation
                     double solar = cell.getEnergySolarOr(0.0);
-                    cell.setEnergySolar(solar + 50.0 * timeStepDays);
+                    cell.setEnergySolar(Math.min(1000.0, solar + 50.0 * dtYears));
                 }
             }
         }
     }
 }
-
-

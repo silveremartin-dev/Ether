@@ -139,6 +139,7 @@ public class H3Cell {
     // --- Dynamic Climate & Surface Physics ---
     @Column(nullable = false) private Double dynamicAlbedo = 0.30;
     @Column(nullable = false) private Double iceSheetThicknessMeters = 0.0;
+    @Column(nullable = false) private Double crustalDeflectionMeters = 0.0;
     @Column(nullable = false) private Double seaLevelOffsetMeters = 0.0;
     @Column(nullable = false) private Boolean isCoastal = false;
     @Column(nullable = false) private Double coastalMarineResource = 0.0;
@@ -541,6 +542,9 @@ public class H3Cell {
     public Double getIceSheetThicknessMeters() { return iceSheetThicknessMeters != null ? iceSheetThicknessMeters : 0.0; }
     public void setIceSheetThicknessMeters(Double iceSheetThicknessMeters) { this.iceSheetThicknessMeters = iceSheetThicknessMeters; }
 
+    public Double getCrustalDeflectionMeters() { return crustalDeflectionMeters != null ? crustalDeflectionMeters : 0.0; }
+    public void setCrustalDeflectionMeters(Double crustalDeflectionMeters) { this.crustalDeflectionMeters = crustalDeflectionMeters; }
+
     public Double getSeaLevelOffsetMeters() { return seaLevelOffsetMeters != null ? seaLevelOffsetMeters : 0.0; }
     public void setSeaLevelOffsetMeters(Double seaLevelOffsetMeters) { this.seaLevelOffsetMeters = seaLevelOffsetMeters; }
 
@@ -626,6 +630,7 @@ public class H3Cell {
     public double getTransitTollRevenueOr(double defaultValue) { return transitTollRevenue != null ? transitTollRevenue : defaultValue; }
     public double getDynamicAlbedoOr(double defaultValue) { return dynamicAlbedo != null ? dynamicAlbedo : defaultValue; }
     public double getIceSheetThicknessMetersOr(double defaultValue) { return iceSheetThicknessMeters != null ? iceSheetThicknessMeters : defaultValue; }
+    public double getCrustalDeflectionMetersOr(double defaultValue) { return crustalDeflectionMeters != null ? crustalDeflectionMeters : defaultValue; }
     public double getSeaLevelOffsetMetersOr(double defaultValue) { return seaLevelOffsetMeters != null ? seaLevelOffsetMeters : defaultValue; }
     public double getCoastalMarineResourceOr(double defaultValue) { return coastalMarineResource != null ? coastalMarineResource : defaultValue; }
     public double getHabitatCapacityOr(double defaultValue) { return habitatCapacity != null ? habitatCapacity : defaultValue; }

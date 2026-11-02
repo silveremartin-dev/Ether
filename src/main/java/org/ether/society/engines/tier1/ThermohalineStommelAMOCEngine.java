@@ -59,7 +59,6 @@ public class ThermohalineStommelAMOCEngine {
      * Calculates seawater density anomaly (kg/m³) as a function of temperature (°C) and practical salinity (PSU).
      */
     public static double calculateSeawaterDensity(double tempC, double salinityPsu) {
-// Numerical integration step for ThermohalineStommelAMOCEngine - verifies boundary conservation and updates local thermodynamic state
         double deltaT = tempC - 15.0;
         double deltaS = salinityPsu - 35.0;
         return SEAWATER_REF_DENSITY_KG_M3 * (1.0 - ALPHA_THERMAL * deltaT + BETA_HALINE * deltaS);
@@ -92,10 +91,16 @@ public class ThermohalineStommelAMOCEngine {
     }
 
     /**
-     * Processes thermohaline ocean circulation and applies regional temperature shifts across oceanic/coastal cells.
+     * Processes thermohaline ocean circulation and applies regional temperature shifts with default monthly step.
      */
     public static void processThermohalineCirculation(List<H3Cell> cells, double freshwaterMeltwaterAnomalySv) {
-// Numerical integration step for ThermohalineStommelAMOCEngine - verifies boundary conservation and updates local thermodynamic state
+        processThermohalineCirculation(cells, freshwaterMeltwaterAnomalySv, 1.0 / 12.0);
+    }
+
+    /**
+     * Processes thermohaline ocean circulation and applies regional temperature shifts across oceanic/coastal cells scaled by dtYears.
+     */
+    public static void processThermohalineCirculation(List<H3Cell> cells, double freshwaterMeltwaterAnomalySv, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
         // Freshwater meltwater pulse reduces polar North Atlantic salinity
@@ -103,12 +108,15 @@ public class ThermohalineStommelAMOCEngine {
         StommelState state = calculateStommelAMOC(28.0, 2.0, 36.5, polarSalinity);
 
         if (state.isCollapsed()) {
-            logger.info("⚠️ï¸ AMOC Thermohaline Circulation COLLAPSED! Flow = {} Sv, Cooling = {}°C",
+            logger.info("⚠️ AMOC Thermohaline Circulation COLLAPSED! Flow = {} Sv, Cooling = {}°C",
                     String.format(java.util.Locale.ROOT, "%.2f", state.amocFlowSv()),
                     String.format(java.util.Locale.ROOT, "%.2f", state.northAtlanticCoolingShiftC()));
         }
 
-        // Apply high-latitude North Atlantic / European cooling anomaly
+        double dtSafe = Math.max(0.0001, deltaYears);
+        double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
+
+        // Apply high-latitude North Atlantic / European cooling anomaly relaxed towards target
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             double lat = cell.getLatitude();
@@ -116,12 +124,13 @@ public class ThermohalineStommelAMOCEngine {
 
             // North Atlantic & Europe region: Lat 40°N to 75°N, Lng -60° to +40°
             if (lat >= 40.0 && lat <= 75.0 && lng >= -60.0 && lng <= 40.0) {
-                double baseTemp = cell.getTemperatureOr(10.0);
+                double curTemp = cell.getTemperatureOr(10.0);
+                double elev = cell.getElevationOr(0.0);
+                double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
                 double regionalShift = state.northAtlanticCoolingShiftC() * Math.min(1.0, (lat - 35.0) / 25.0);
-                cell.setTemperature(baseTemp + regionalShift * 0.05);
+                double targetTemp = baselineTemp + regionalShift;
+                cell.setTemperature(curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
             }
         }
     }
 }
-
-

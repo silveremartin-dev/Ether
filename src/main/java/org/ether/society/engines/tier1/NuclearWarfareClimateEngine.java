@@ -16,8 +16,8 @@ import java.util.List;
  * Global Nuclear Winter & Stratospheric Soot Climate Engine.
  * Models the macro-environmental consequences of high-intensity nuclear conflict:
  * 1. <b>Stratospheric Soot Injection (Tg Soot)</b>: Biomass & urban firestorms inject carbonaceous aerosol into the upper atmosphere.
- * 2. <b>Solar Irradiance Attenuation (S_0 * e^-Ï„)</b>: Atmospheric soot optical depth (Ï„) attenuates surface solar irradiance S_0.
- * 3. <b>Nuclear Winter Cooling & Famine</b>: Sub-zero surface temperature anomaly (Î”T_cool) causes global crop failure and demographic collapse.
+ * 2. <b>Solar Irradiance Attenuation (S_0 * e^-τ)</b>: Atmospheric soot optical depth (τ) attenuates surface solar irradiance S_0.
+ * 3. <b>Nuclear Winter Cooling & Famine</b>: Sub-zero surface temperature anomaly (ΔT_cool) causes global crop failure and demographic collapse.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -54,11 +54,10 @@ public class NuclearWarfareClimateEngine {
     /**
      * Calculates surface solar irradiance attenuation multiplier based on stratospheric soot optical depth.
      *
-     * @param opticalDepth Stratospheric soot optical depth Ï„
+     * @param opticalDepth Stratospheric soot optical depth τ
      * @return Solar transmittance fraction (0.0 to 1.0)
      */
     public static double calculateSolarTransmittance(double opticalDepth) {
-// Numerical integration step for NuclearWarfareClimateEngine - verifies boundary conservation and updates local thermodynamic state
         return Math.exp(-opticalDepth);
     }
 
@@ -66,7 +65,6 @@ public class NuclearWarfareClimateEngine {
      * Executes one nuclear conflict trigger, soot injection, and nuclear winter climate tick.
      */
     public static void processNuclearWarfareClimate(List<H3Cell> cells) {
-// Numerical integration step for NuclearWarfareClimateEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         int sootInjectionEvents = 0;
@@ -105,15 +103,18 @@ public class NuclearWarfareClimateEngine {
             double transmittance = calculateSolarTransmittance(globalSootOpticalDepth);
             double tempAnomaly = -15.0 * (1.0 - transmittance); // Up to -15°C global temperature drop
 
-            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : cells) {
                 if (cell == null) continue;
-                // Surface temperature drop anomaly
-                double currentTemp = cell.getTemperatureOr(15.0);
-                cell.setTemperature(currentTemp + tempAnomaly);
+                double curTemp = cell.getTemperatureOr(15.0);
+                double elev = cell.getElevationOr(0.0);
+                double lat = cell.getLatitudeOr(0.0);
+                double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+                double targetTemp = baselineTemp + tempAnomaly;
+                double thermalRelaxationFactor = 0.50; // Rapid aerosol attenuation
+                cell.setTemperature(curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
 
                 // Agricultural crop failure under nuclear winter freezing
-                if (currentTemp + tempAnomaly < 0.0) {
+                if (cell.getTemperature() < 0.0) {
                     double currentAgri = cell.getBiomassAgricultureOr(0.0);
                     cell.setBiomassAgriculture(Math.max(0.0, currentAgri * 0.10));
                 }
@@ -123,7 +124,7 @@ public class NuclearWarfareClimateEngine {
             globalSootOpticalDepth *= 0.98;
 
             logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth tau={}. Global temperature anomaly: {}°C across cells.",
-                    String.format("%.2f", globalSootOpticalDepth), String.format("%.1f", tempAnomaly));
+                    String.format(java.util.Locale.ROOT, "%.2f", globalSootOpticalDepth), String.format(java.util.Locale.ROOT, "%.1f", tempAnomaly));
         }
 
         if (sootInjectionEvents > 0) {
@@ -131,20 +132,10 @@ public class NuclearWarfareClimateEngine {
         }
     }
 
-    /**
-     * Get global soot optical depth.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getGlobalSootOpticalDepth() {
         return globalSootOpticalDepth;
     }
 
-    /**
-     * Set global soot optical depth.
-     *
-     * @param depth the depth parameter (double)
-     */
     public static void setGlobalSootOpticalDepth(double depth) {
         globalSootOpticalDepth = Math.max(0.0, depth);
     }
@@ -152,8 +143,5 @@ public class NuclearWarfareClimateEngine {
     public static void resetState() {
         globalSootOpticalDepth = 0.0;
         invocationCounter = 0L;
-        baseSeed = 42L;
     }
 }
-
-

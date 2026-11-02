@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +109,7 @@ public class BifurcationChaosEngine {
                     if (gini > 0.6) {
                         // Bifurcation cascade: High inequality + chaos -> accelerated demographic friction
                         int lostPop = (int) Math.round(cell.getPopulation() * 0.02 * deltaYears);
-                        cell.setPopulation(Math.max(0, cell.getPopulation() - lostPop));
+                        H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, cell.getPopulation() - lostPop));
                     }
                 }
             }

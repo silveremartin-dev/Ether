@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.h3.H3Service;
 import org.ether.society.engines.ProceduralEnginePlugin;
 import org.slf4j.Logger;
@@ -140,7 +141,7 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
 
             int netInfected = Math.clamp(infected + newInfectious - totalRemovals, 0, pop);
             cell.setEpidemicInfected(netInfected);
-            cell.setPopulation(Math.max(0, pop - deaths));
+            H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, pop - deaths));
 
             // Spatial propagation to immediate H3 neighbors
             if (netInfected > 50 && cell.getH3Index() != null) {

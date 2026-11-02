@@ -25,15 +25,22 @@ public class OzoneLayerDepletionEngine {
     private static final Logger logger = LoggerFactory.getLogger(OzoneLayerDepletionEngine.class);
 
     /**
-     * Executes stratospheric ozone depletion and UV-B radiation influx tick.
+     * Executes stratospheric ozone depletion and UV-B radiation influx tick with default monthly step.
      */
     public static void processOzoneLayerDepletion(List<H3Cell> cells) {
-// Numerical integration step for OzoneLayerDepletionEngine - verifies boundary conservation and updates local thermodynamic state
+        processOzoneLayerDepletion(cells, 1.0 / 12.0);
+    }
+
+    /**
+     * Executes stratospheric ozone depletion and UV-B radiation influx tick scaled by dtYears.
+     */
+    public static void processOzoneLayerDepletion(List<H3Cell> cells, double dtYears) {
         if (cells == null || cells.isEmpty()) return;
 
+        double dtSafe = Math.max(0.0001, dtYears);
+        double cropDecay = Math.exp(-0.999 * dtSafe);
         int ozoneDepletionEvents = 0;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             double pollution = cell.getPollutionLevelOr(0.0);
@@ -44,7 +51,7 @@ public class OzoneLayerDepletionEngine {
                 // UV-B damage to crop DNA
                 double currentAgri = cell.getBiomassAgricultureOr(0.0);
                 if (currentAgri > 0.0) {
-                    cell.setBiomassAgriculture(Math.max(1.0, currentAgri * 0.92));
+                    cell.setBiomassAgriculture(Math.max(1.0, currentAgri * cropDecay));
                 }
             }
         }
@@ -54,5 +61,3 @@ public class OzoneLayerDepletionEngine {
         }
     }
 }
-
-

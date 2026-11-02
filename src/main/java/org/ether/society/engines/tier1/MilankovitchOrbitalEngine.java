@@ -60,13 +60,12 @@ public class MilankovitchOrbitalEngine {
      * @return MilankovitchParameters instance
      */
     public static MilankovitchParameters computeOrbitalParameters(double year) {
-// Numerical integration step for MilankovitchOrbitalEngine - verifies boundary conservation and updates local thermodynamic state
         double t = year;
         // Eccentricity e(t)
         double e = MEAN_ECCENTRICITY + ECCENTRICITY_AMPLITUDE * Math.sin(2.0 * Math.PI * t / ECCENTRICITY_PERIOD_YEARS);
         e = Math.clamp(e, 0.005, 0.060);
 
-        // Obliquity Îµ(t) in degrees
+        // Obliquity ε(t) in degrees
         double eps = MEAN_OBLIQUITY_DEG + OBLIQUITY_AMPLITUDE_DEG * Math.sin(2.0 * Math.PI * t / OBLIQUITY_PERIOD_YEARS);
 
         // Precession longitude of perihelion: anchored to J2000 epoch (\varpi_0 = 102.93 deg = 1.7965 rad)
@@ -86,11 +85,10 @@ public class MilankovitchOrbitalEngine {
      * @return Daily average insolation in W/m²
      */
     public static double calculateDailyInsolation(double latDeg, int dayOfYear, MilankovitchParameters params) {
-// Numerical integration step for MilankovitchOrbitalEngine - verifies boundary conservation and updates local thermodynamic state
         double phi = Math.toRadians(latDeg);
         double eps = Math.toRadians(params.obliquityDeg());
 
-        // Solar true anomaly / longitude Î»_s
+        // Solar true anomaly / longitude λ_s
         double lambdaS = 2.0 * Math.PI * ((double) (dayOfYear - 80) / 365.25);
         double sinDelta = Math.sin(eps) * Math.sin(lambdaS);
         double delta = Math.asin(sinDelta); // Solar declination
@@ -111,12 +109,23 @@ public class MilankovitchOrbitalEngine {
     }
 
     /**
-     * Applies Milankovitch insolation forcing anomaly to surface temperatures across all planetary cells.
+     * Applies Milankovitch insolation forcing anomaly to surface temperatures across all planetary cells with default monthly step.
      *
      * @param cells Simulation H3 cells
      * @param currentYear Simulation year
      */
     public static void applyMilankovitchForcing(List<H3Cell> cells, double currentYear) {
+        applyMilankovitchForcing(cells, currentYear, 1.0 / 12.0);
+    }
+
+    /**
+     * Applies Milankovitch insolation forcing anomaly to surface temperatures across all planetary cells scaled by dtYears.
+     *
+     * @param cells Simulation H3 cells
+     * @param currentYear Simulation year
+     * @param deltaYears Simulation time step in years
+     */
+    public static void applyMilankovitchForcing(List<H3Cell> cells, double currentYear, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
         MilankovitchParameters params = computeOrbitalParameters(currentYear);
@@ -128,16 +137,20 @@ public class MilankovitchOrbitalEngine {
 
         // Radiative forcing scaling: ~0.08 °C per W/m² of 65°N summer insolation anomaly
         double globalTempShiftC = anomalyW_M2 * 0.08;
+        double dtSafe = Math.max(0.0001, deltaYears);
+        double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double baseTemp = cell.getTemperatureOr(15.0);
-            double latFactor = Math.cos(Math.toRadians(cell.getLatitude()));
+            double curTemp = cell.getTemperatureOr(15.0);
+            double lat = cell.getLatitudeOr(0.0);
+            double elev = cell.getElevationOr(0.0);
+            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+            double latFactor = Math.cos(Math.toRadians(lat));
             // Polar amplification: higher latitudes experience greater orbital temperature shifts
             double localShift = globalTempShiftC * (0.5 + 1.0 * (1.0 - latFactor));
-            cell.setTemperature(baseTemp + localShift * 0.01);
+            double targetTemp = baselineTemp + localShift;
+            cell.setTemperature(curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
         }
     }
 }
-
-

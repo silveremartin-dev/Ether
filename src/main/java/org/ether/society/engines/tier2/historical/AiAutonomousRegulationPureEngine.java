@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * AI Autonomous Planetary Regulation Model Variant B18.1 (Pure) & B18.2 (Hybrid).
  * Closed-loop AI planetary management eliminates supply chain bullwhip friction, balances carbon budgets,
- * and optimizes resource allocation efficiency (eta -> 0.99).
+ * and optimizes resource allocation efficiency (eta -> 0.99), bounded by production capacity.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -30,28 +30,29 @@ public class AiAutonomousRegulationPureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
+        double dtSafe = Math.max(0.0001, deltaYears);
+
         for (H3Cell cell : cells) {
             if (cell == null || cell.getTechnologyLevel() == null) continue;
 
             double tech = cell.getTechnologyLevel();
             if (tech >= 6.0) { // High technology threshold for AI Autonomous Planetary Governance
-                // 1. Frictionless resource work output optimization
+                // 1. Resource work output optimization bounded by physical capital and labor
                 if (cell.getResourceWork() != null) {
-                    cell.setResourceWork(cell.getResourceWork() * (1.0 + 0.05 * deltaYears));
+                    double currentWork = cell.getResourceWork();
+                    int pop = cell.getPopulationOr(0);
+                    double capital = cell.getResourceCapitalOr(0.0);
+                    double maxProductiveWork = (pop * 1.5) + (capital * 0.8);
+                    double optimizedWork = currentWork + (maxProductiveWork - currentWork) * (1.0 - Math.exp(-0.05 * dtSafe));
+                    cell.setResourceWork(Math.min(maxProductiveWork, Math.max(currentWork, optimizedWork)));
                 }
                 // 2. Automated pollution remediation
                 if (cell.getPollutionLevel() != null) {
-                    cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() * Math.max(0.0, 1.0 - 0.20 * deltaYears)));
+                    cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() * Math.exp(-0.20 * dtSafe)));
                 }
             }
         }
     }
 }
-
-

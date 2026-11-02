@@ -20,7 +20,7 @@ import java.util.List;
  *   <li><b>Archimedean Hydrostatic Deflection</b>: At isostatic equilibrium, lithospheric depression
  *       equals $\Delta z_{eq} = -\frac{\rho_{ice}}{\rho_{mantle}} h_{ice} \approx -\frac{917}{3300} h_{ice} \approx -0.278 h_{ice}$.</li>
  *   <li><b>Viscoelastic Maxwell Mantle Relaxation</b>:
- *     $$\tau_{gia} \frac{\partial z}{\partial t} = -(z - z_{eq}) \implies z(t + \Delta t) = z_{eq} + (z(t) - z_{eq}) \cdot \exp\left(-\frac{\Delta t}{\tau_{gia}}\right)$$
+ *     $$\tau_{gia} \frac{\partial \Delta z}{\partial t} = -(\Delta z - \Delta z_{eq}) \implies \Delta z(t + \Delta t) = \Delta z_{eq} + (\Delta z(t) - \Delta z_{eq}) \cdot \exp\left(-\frac{\Delta t}{\tau_{gia}}\right)$$
  *     with characteristic relaxation timescale $\tau_{gia} \approx 4\,000\text{ years}$.
  *   </li>
  *   <li><b>Paleogeographic Consequences</b>: Post-glacial emergence of land bridges (Beringia, Doggerland)
@@ -39,14 +39,13 @@ public class GlacialIsostaticAdjustmentEngine {
     /** Glacial ice density in kg/m³ */
     public static final double ICE_DENSITY_KG_M3 = 917.0;
 
-    /** Viscoelastic relaxation time constant Ï„ in years (~4,000 yr for upper mantle) */
+    /** Viscoelastic relaxation time constant τ in years (~4,000 yr for upper mantle) */
     public static final double GIA_RELAXATION_TIME_YEARS = 4000.0;
 
     /**
      * Calculates isostatic equilibrium elevation depression (in meters) for an ice sheet thickness h_ice.
      */
     public static double calculateEquilibriumDeflectionMeters(double iceThicknessMeters) {
-// Numerical integration step for GlacialIsostaticAdjustmentEngine - verifies boundary conservation and updates local thermodynamic state
         if (iceThicknessMeters <= 0.0) return 0.0;
         return -(ICE_DENSITY_KG_M3 / MANTLE_DENSITY_KG_M3) * iceThicknessMeters;
     }
@@ -58,10 +57,9 @@ public class GlacialIsostaticAdjustmentEngine {
      * @param deltaYears Simulation time step in years
      */
     public static void processGlacialIsostasy(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for GlacialIsostaticAdjustmentEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
-        double dt = Math.max(0.1, deltaYears);
+        double dt = Math.max(0.001, deltaYears);
         double decayFactor = Math.exp(-dt / GIA_RELAXATION_TIME_YEARS);
 
         int adjustingCells = 0;
@@ -74,13 +72,15 @@ public class GlacialIsostaticAdjustmentEngine {
             double iceThickness = cell.getIceSheetThicknessMetersOr(0.0);
             double targetDeflection = calculateEquilibriumDeflectionMeters(iceThickness);
 
-            // Isostatic relaxation towards target equilibrium
-            double currentElevation = elevation;
-            // Elevation drift towards equilibrium isostatic state
-            double deltaDeflection = (targetDeflection * (1.0 - decayFactor));
-            if (Math.abs(deltaDeflection) > 1e-4) {
+            // Viscoelastic relaxation of crustal deflection towards equilibrium target
+            double currentDeflection = cell.getCrustalDeflectionMetersOr(targetDeflection);
+            double newDeflection = targetDeflection + (currentDeflection - targetDeflection) * decayFactor;
+            double deltaElevation = newDeflection - currentDeflection;
+
+            if (Math.abs(deltaElevation) > 1e-5) {
                 adjustingCells++;
-                cell.setElevation(currentElevation + deltaDeflection);
+                cell.setElevation(elevation + deltaElevation);
+                cell.setCrustalDeflectionMeters(newDeflection);
             }
         }
 
@@ -89,5 +89,3 @@ public class GlacialIsostaticAdjustmentEngine {
         }
     }
 }
-
-

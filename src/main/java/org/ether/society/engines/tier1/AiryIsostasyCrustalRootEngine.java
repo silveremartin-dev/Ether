@@ -43,7 +43,7 @@ public class AiryIsostasyCrustalRootEngine {
     /** Baseline sea-level continental crust thickness in meters (35 km) */
     public static final double BASELINE_CRUST_THICKNESS_METERS = 35_000.0;
 
-    /** Airy buoyancy ratio = Ï_crust / (Ï_mantle - Ï_crust) = 4.5 */
+    /** Airy buoyancy ratio = ρ_crust / (ρ_mantle - ρ_crust) = 4.5 */
     public static final double AIRY_ROOT_RATIO = CRUST_DENSITY_KG_M3 / (MANTLE_DENSITY_KG_M3 - CRUST_DENSITY_KG_M3);
 
     /**
@@ -53,7 +53,6 @@ public class AiryIsostasyCrustalRootEngine {
      * @return Crustal root depth in meters
      */
     public static double calculateMountainRootDepthMeters(double elevationMeters) {
-// Numerical integration step for AiryIsostasyCrustalRootEngine - verifies boundary conservation and updates local thermodynamic state
         if (elevationMeters <= 0.0) return 0.0;
         return elevationMeters * AIRY_ROOT_RATIO;
     }
@@ -62,7 +61,6 @@ public class AiryIsostasyCrustalRootEngine {
      * Calculates total lithospheric crustal thickness (in km) at a given topographic elevation.
      */
     public static double calculateTotalCrustThicknessKm(double elevationMeters) {
-// Numerical integration step for AiryIsostasyCrustalRootEngine - verifies boundary conservation and updates local thermodynamic state
         double rootMeters = calculateMountainRootDepthMeters(elevationMeters);
         double topoMeters = Math.max(0.0, elevationMeters);
         return (BASELINE_CRUST_THICKNESS_METERS + topoMeters + rootMeters) / 1000.0;
@@ -72,7 +70,6 @@ public class AiryIsostasyCrustalRootEngine {
      * Processes Airy crustal roots and updates geothermal heat flow and metal concentration across cells.
      */
     public static void processAiryIsostasy(List<H3Cell> cells) {
-// Numerical integration step for AiryIsostasyCrustalRootEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
@@ -87,14 +84,12 @@ public class AiryIsostasyCrustalRootEngine {
             double heatFlowMW_M2 = 65.0 * (35.0 / Math.max(20.0, crustThicknessKm));
             cell.setMantleHeatFlow(heatFlowMW_M2);
 
-            // Porphyry hydrothermal metallogeny: high orogenic root concentration yields metal ores
+            // Porphyry hydrothermal metallogeny: high orogenic root concentration defines geological metal ore endowment ceiling
             if (elevation > 1500.0) {
                 double currentMetal = cell.getResourceMetalOr(100.0);
-                double oreEnrichment = (elevation / 1000.0) * 5.0;
-                cell.setResourceMetal(Math.min(1000.0, currentMetal + oreEnrichment));
+                double orogenicOreCap = 100.0 + (elevation / 1000.0) * 150.0;
+                cell.setResourceMetal(Math.max(currentMetal, Math.min(1000.0, orogenicOreCap)));
             }
         }
     }
 }
-
-

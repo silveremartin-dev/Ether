@@ -31,10 +31,16 @@ public class ThermohalineOceanEngine {
     public static final double STANDARD_OCEAN_SALINITY_PSU = 35.0;
 
     /**
-     * Executes one thermohaline circulation and ocean salinity tick across cells.
+     * Executes one thermohaline circulation and ocean salinity tick across cells with default monthly step.
      */
     public static void processThermohalineCirculation(List<H3Cell> cells, double globalTemperatureAnomaly) {
-// Numerical integration step for ThermohalineOceanEngine - verifies boundary conservation and updates local thermodynamic state
+        processThermohalineCirculation(cells, globalTemperatureAnomaly, 1.0 / 12.0);
+    }
+
+    /**
+     * Executes one thermohaline circulation and ocean salinity tick across cells scaled by dtYears.
+     */
+    public static void processThermohalineCirculation(List<H3Cell> cells, double globalTemperatureAnomaly, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
         // Polar ice meltwater dilution (high temperature anomaly -> lower PSU)
@@ -46,7 +52,9 @@ public class ThermohalineOceanEngine {
             logger.warn("Thermohaline Engine: AMOC circulation collapse triggered (Ocean Salinity = {} PSU). Mid-latitude thermal drop active.", oceanSalinityPSU);
         }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
+        double dtSafe = Math.max(0.0001, deltaYears);
+        double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
+
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             if (cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) {
@@ -54,13 +62,15 @@ public class ThermohalineOceanEngine {
                 continue;
             }
 
-            // AMOC collapse cooling shock on high latitude cells (> 45° latitude)
+            // AMOC collapse cooling shock on high latitude cells (> 45° latitude) relaxed towards equilibrium
             if (amocCollapsed && cell.getLatitude() != null && Math.abs(cell.getLatitude()) > 45.0) {
                 double currentTemp = cell.getTemperatureOr(10.0);
-                cell.setTemperature(currentTemp - 8.0); // 8°C thermal drop
+                double elev = cell.getElevationOr(0.0);
+                double lat = cell.getLatitude();
+                double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+                double targetTemp = baselineTemp - 8.0; // 8°C thermal drop at equilibrium
+                cell.setTemperature(currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor);
             }
         }
     }
 }
-
-

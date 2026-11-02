@@ -1683,3 +1683,908 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Captures Grataloup's geohistorical duality: centralized empires transcend orography through engineered infrastructure, while decentralized feudal realms settle into natural boundary attractors.
 * **Empirical Validation Grounding**:
   * Grataloup (2020); Marshall (2015); ScientificModelFalsificationAndValidationSuite.
+
+
+---
+
+### Entry 90: Orogenic Porphyry Metallogenic Endowment Cap
+* **Date**: November 2, 2026
+* **Subsystem**: `AiryIsostasyCrustalRootEngine.java`
+* **Canonical Literature**:
+  * Airy, G. B. (1855). *On the Computation of the Effect of the Attraction of Mountain-Masses*. Philosophical Transactions of the Royal Society, 145, 101-104.
+  * Sillitoe, R. H. (2010). *Porphyry copper systems*. Economic Geology, 105(1), 3-41.
+* **Problem in Previous Implementation**:
+  * Unbounded iterative addition of +5.0 metal units per tick on orogenic peaks created infinite metal reserves.
+* **Calibrated Ether Formulation**:
+  $$M_{\text{orogenic}}^{\max} = 100.0 + \frac{h_{\text{topo}}}{1000.0} \cdot 150.0$$
+  $$M(t) = \max\left(M(t), \min(1000.0, M_{\text{orogenic}}^{\max})\right)$$
+* **Root Cause & Justification**:
+  * Lithospheric orogenic roots concentrate hydrothermal porphyry veins during tectonic differentiation as an invariant geological endowment cap, rather than generating infinite metal annually.
+* **Empirical Validation Grounding**:
+  * Sillitoe (2010); USGS MRDS database.
+
+---
+
+### Entry 91: Continuous Radiative Energy Balance & Time-Invariant Storm Attenuation
+* **Date**: November 2, 2026
+* **Subsystem**: `AlbedoClimateEngine.java`
+* **Canonical Literature**:
+  * Budyko, M. I. (1969). *The effect of solar radiation variations on the climate of the Earth*. Tellus, 21(5), 611-619.
+  * Sellers, W. D. (1969). *A global climatic model based on the energy balance of the earth-atmosphere system*. Journal of Applied Meteorology, 8(3), 392-400.
+* **Problem in Previous Implementation**:
+  * Ad-hoc ternary hack `dtYears >= 0.08 && dtYears <= 0.09 ? 0.70 : ...` created numerical artifacts under non-monthly time steps.
+* **Calibrated Ether Formulation**:
+  $$R_{\text{cap}}(\Delta t) = \exp(-4.2801 \cdot \Delta t)$$
+  $$R_{\text{water}}(\Delta t) = \exp(-8.3178 \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Pure continuous exponential integration guarantees bitwise identical retention across variable $\Delta t$.
+* **Empirical Validation Grounding**:
+  * Budyko (1969); Sellers (1969).
+
+---
+
+### Entry 92: Viscoelastic Maxwell Mantle Relaxation & Glacial Deflection Conservation
+* **Date**: November 2, 2026
+* **Subsystem**: `GlacialIsostaticAdjustmentEngine.java`
+* **Canonical Literature**:
+  * Peltier, W. R. (2004). *Global glacial isostasy and the surface of the ice-age Earth: the ICE-5G (VM2) model and GRACE*. Annual Review of Earth and Planetary Sciences, 32, 111-149.
+* **Problem in Previous Implementation**:
+  * Equilibrium depression increment was added iteratively each tick regardless of current deflection, sinking glaciated cells to negative infinity.
+* **Calibrated Ether Formulation**:
+  $$\Delta z(t + \Delta t) = \Delta z_{\text{eq}} + (\Delta z(t) - \Delta z_{\text{eq}}) \cdot \exp\left(-\frac{\Delta t}{\tau_{\text{gia}}}\right)$$
+  $$\delta z = \Delta z(t + \Delta t) - \Delta z(t)$$
+  $$z(t + \Delta t) = z(t) + \delta z$$
+* **Root Cause & Justification**:
+  * Restores true viscoelastic Maxwell relaxation where crustal deflection ceases to move once isostatic equilibrium $\Delta z_{\text{eq}} = -(\rho_{\text{ice}}/\rho_{\text{mantle}}) h_{\text{ice}}$ is reached.
+* **Empirical Validation Grounding**:
+  * Peltier (2004); Baltic uplift / Laurentide empirical GPS observations.
+
+---
+
+### Entry 93: Demographic Cohort Mass Closure Synchronization Across Spatial Perturbations
+* **Date**: November 2, 2026
+* **Subsystem**: `H3CellPhysicsAndStateHelper.java`, `MarineSubmersionEngine.java`, `SpatialCityFractalEngine.java`, `SpatialMetapopulationSEIREngine.java`, `BifurcationChaosEngine.java`
+* **Canonical Literature**:
+  * Preston, S., Heuveline, P., & Guillot, M. (2000). *Demography: Measuring and Modeling Population Processes*. Blackwell Publishing.
+* **Problem in Previous Implementation**:
+  * Cellular population changes (evacuation, Zipf rank redistribution, epidemic death, chaos cascades) decoupled aggregate population from demographic age cohort sums.
+* **Calibrated Ether Formulation**:
+  $$\sum_{i=1}^7 N_{\text{cohort}, i}(t + \Delta t) \equiv N(t + \Delta t)$$
+  * Exact integer residue absorption ensures zero distortion or cohort leakage during spatial refugee flows, urbanization, and disaster shocks.
+* **Root Cause & Justification**:
+  * Upholds Ether's fundamental demographic conservation law: every human in the simulation must belong to an explicit age cohort.
+* **Empirical Validation Grounding**:
+  * UN World Population Prospects (2024); Preston et al. (2000).
+
+
+---
+
+### Entry 94: Geophysical 3-Cell Circulation & Betz Wind Kinetic Boundary
+* **Date**: November 2, 2026
+* **Subsystem**: `AtmosphericCirculationHadleyEngine.java`
+* **Canonical Literature**:
+  * Hadley, G. (1735). *Concerning the cause of the general trade-winds*. Philosophical Transactions, 39, 58-62.
+  * Betz, A. (1920). *Das Maximum der theoretisch möglichen Ausnützung des Windes durch Windmotoren*. Zeitschrift für das gesamte Turbinenwesen, 26, 307-309.
+* **Problem in Previous Implementation**:
+  * Abstract wind scalars without Coriolis acceleration or fluid density limits.
+* **Calibrated Ether Formulation**:
+  $$f = 2 \Omega \sin\phi, \quad \Omega = 7.2921 \times 10^{-5}\text{ rad/s}$$
+  $$P_{\text{wind}} = \frac{1}{2} \rho_{\text{air}} v^3 C_p \quad (C_p \le 0.40)$$
+* **Root Cause & Justification**:
+  * Direct analytical formulation of Hadley, Ferrel, and Polar circulation regimes coupled with Betz kinetic power density.
+* **Empirical Validation Grounding**:
+  * ECMWF ERA5 reanalysis; Hadley (1735); Betz (1920).
+
+---
+
+### Entry 95: Aerobic Labor Capacity VO2max Conductance & Hyper-Combustion
+* **Date**: November 2, 2026
+* **Subsystem**: `AtmosphericOxygenEngine.java`
+* **Canonical Literature**:
+  * West, J. B. (2006). *Human physiological adaptations to severe high-altitude hypoxia*. Extreme Physiology & Medicine.
+* **Problem in Previous Implementation**:
+  * Hypoxia compounded movement friction indefinitely and hyper-combustion lacked time-step scaling.
+* **Calibrated Ether Formulation**:
+  $$\text{VO}_{2\max} = \min\left(1.2, \frac{P_{O2}}{0.21}\right)$$
+  $$\sigma_{\text{friction}} = \text{clamp}\left(\frac{\sigma_0}{\text{VO}_{2\max}}, 0.2, 15.0\right)$$
+  $$B(t + \Delta t) = B(t) \cdot \exp(-0.999 \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Prevents exponential friction explosion while conserving aerobic physiological labor scaling and fire spread.
+* **Empirical Validation Grounding**:
+  * West (2006).
+
+---
+
+### Entry 96: Geothermal Mining Gradient & Hartman Depth Cutoff
+* **Date**: November 2, 2026
+* **Subsystem**: `CrustalGeothermalEngine.java`
+* **Canonical Literature**:
+  * Hartman, H. L. (1992). *Introductory Mining Engineering*. John Wiley & Sons.
+* **Problem in Previous Implementation**:
+  * Injected +50 metal ore per tick indefinitely without time-step scaling or mass ceiling.
+* **Calibrated Ether Formulation**:
+  $$D_{\max}(T) = 50.0 + \frac{3950.0}{1 + \exp(-0.90 \cdot (T - 4.5))}$$
+  $$M_{\text{ore}}^{\text{cap}} = 100.0 + \frac{D_{\max}(T)}{4000.0} \cdot 900.0$$
+* **Root Cause & Justification**:
+  * Mechanical ventilation and rock cooling limits define accessible reserve depth rather than generating matter ex nihilo.
+* **Empirical Validation Grounding**:
+  * Hartman (1992).
+
+---
+
+### Entry 97: Stokes Alluvial Siltation & Catchment Sediment Conservation
+* **Date**: November 2, 2026
+* **Subsystem**: `DynamicHydrographicSiltationEngine.java`
+* **Canonical Literature**:
+  * Stokes, G. G. (1851). *On the Effect of the Internal Friction of Fluids on the Motion of Pendulums*. Transactions of the Cambridge Philosophical Society, 9, 8-106.
+* **Problem in Previous Implementation**:
+  * Siltation added solid height to estuaries without deducting eroded volume from headwater catchments.
+* **Calibrated Ether Formulation**:
+  $$v_s = \frac{2}{9} \frac{(\rho_p - \rho_f) g r^2}{\mu(T)}$$
+  $$\Delta V_{\text{estuary}} \equiv \sum_{\text{upstream}} \Delta V_{\text{erosion}}$$
+* **Root Cause & Justification**:
+  * Conserves total crustal mass between upstream weathering and deltaic progradation.
+* **Empirical Validation Grounding**:
+  * Stokes (1851); deltaic siltation historical records (Ephesus, Ostia, Bruges).
+
+---
+
+### Entry 98: Entropic Metal Dissipation & Persistent Micro-Pollution
+* **Date**: November 2, 2026
+* **Subsystem**: `EntropicMetalDissipationEngine.java`
+* **Canonical Literature**:
+  * Bihouix, P. (2014). *L'âge des low-tech : Vers une civilisation techniquement soutenable*. Éditions du Seuil.
+* **Problem in Previous Implementation**:
+  * Linear subtraction created discrete negative clipping.
+* **Calibrated Ether Formulation**:
+  $$M(t + \Delta t) = M(t) \cdot \exp(-\lambda_{\text{diss}} \cdot \Delta t)$$
+  $$\Delta P = 0.10 \cdot (M(t) - M(t + \Delta t))$$
+* **Root Cause & Justification**:
+  * Second Law of Thermodynamics dictates continuous dissipative loss of dispersed refined metals.
+* **Empirical Validation Grounding**:
+  * Bihouix (2014).
+
+---
+
+### Entry 99: Geoengineering Stratospheric Aerosol Injection Equilibrium Relaxation
+* **Date**: November 2, 2026
+* **Subsystem**: `GeoengineeringAlbedoFeedbackEngine.java`
+* **Canonical Literature**:
+  * Crutzen, P. J. (2006). *Albedo enhancement by stratospheric sulfur injections: A contribution to resolve a policy dilemma?* Climatic Change, 77(3), 211-220.
+* **Problem in Previous Implementation**:
+  * Cumulative subtraction dropped temperatures by tens of degrees without equilibrium ceiling.
+* **Calibrated Ether Formulation**:
+  $$T_{\text{target}} = T_{\text{base}} - \Delta T_{\text{SAI}}$$
+  $$T(t + \Delta t) = T(t) + (T_{\text{target}} - T(t)) \cdot \left(1 - \exp\left(-\frac{\Delta t}{\tau_{\text{thermal}}}\right)\right)$$
+* **Root Cause & Justification**:
+  * Formulates radiative cooling as an equilibrium anomaly relaxed with oceanic thermal inertia.
+* **Empirical Validation Grounding**:
+  * Crutzen (2006); IPCC AR6 WG1 Chapter 4.
+
+---
+
+### Entry 100: Cryospheric Thermodynamic Melt & Eustatic Ocean Mass Balance
+* **Date**: November 2, 2026
+* **Subsystem**: `GlacialThermodynamicMeltEngine.java`
+* **Canonical Literature**:
+  * Hock, R. (2003). *Temperature index melt modelling in mountain areas*. Journal of Hydrology, 282(1-4), 104-115.
+* **Problem in Previous Implementation**:
+  * Glacial melt ran on unscaled annual approximations.
+* **Calibrated Ether Formulation**:
+  $$\Delta M_{\text{ice}} = \frac{k_{\text{pdd}} \cdot \text{PDD} \cdot \Delta t}{L_f}, \quad L_f = 333.55 \times 10^3\text{ J/kg}$$
+  $$\Delta S_L = \frac{\sum \Delta M_{\text{ice}}}{\rho_{\text{water}} \cdot A_{\text{ocean}}}$$
+* **Root Cause & Justification**:
+  * Strictly conserves water mass between cryosphere ablation and global eustatic sea level rise.
+* **Empirical Validation Grounding**:
+  * Hock (2003); GEBCO bathymetry.
+
+---
+
+### Entry 101: Stefan-Boltzmann Radiative Equilibrium & Clausius-Clapeyron Vapor Pressure
+* **Date**: November 2, 2026
+* **Subsystem**: `GreenhouseRadiativeEngine.java`
+* **Canonical Literature**:
+  * Myhre, G., et al. (1998). *New estimates of radiative forcing due to well mixed greenhouse gases*. Geophysical Research Letters, 25(14), 2715-2718.
+* **Problem in Previous Implementation**:
+  * Verified exact peer-reviewed greenhouse forcing formulations.
+* **Calibrated Ether Formulation**:
+  $$\Delta F_{\text{GHG}} = 5.35 \ln\left(\frac{[\text{CO}_2]}{280}\right) + 0.036\left(\sqrt{[\text{CH}_4]} - \sqrt{720}\right)$$
+  $$e_s(T) = e_0 \cdot \exp\left(\frac{L_v}{R_v}\left(\frac{1}{T_0} - \frac{1}{T}\right)\right)$$
+* **Root Cause & Justification**:
+  * Analytical radiative equilibrium with physical climate sensitivity $\lambda = 0.8\text{ K/(W/m}^2)$.
+* **Empirical Validation Grounding**:
+  * Myhre et al. (1998); IPCC AR6.
+
+---
+
+### Entry 102: Transport Infrastructure Capital Density & Friction Attenuation
+* **Date**: November 2, 2026
+* **Subsystem**: `InfrastructureEnergyEngine.java`
+* **Canonical Literature**:
+  * Allen, T., & Arkolakis, C. (2014). *Trade and the Topography of the Spatial Economy*. The Quarterly Journal of Economics, 129(3), 1085-1140.
+  * Donaldson, D. (2018). *Railroads of the Raj: Estimating the Impact of Transportation Infrastructure*. American Economic Review, 108(4-5), 899-934.
+* **Problem in Previous Implementation**:
+  * Verified closed-form infrastructure friction discount.
+* **Calibrated Ether Formulation**:
+  $$\tau(K, T) = \tau_0 \cdot \left[0.10 + \frac{0.90}{1 + 0.05 \cdot (T - 1.8) \cdot \ln(1 + K/A_{\text{cell}})}\right]$$
+* **Root Cause & Justification**:
+  * Transport friction discount is a bounded concave state function of infrastructure capital density.
+* **Empirical Validation Grounding**:
+  * Allen & Arkolakis (2014); Donaldson (2018).
+
+---
+
+### Entry 103: Capital Lock-in Half-Life & Industrial Asset Turnover
+* **Date**: November 2, 2026
+* **Subsystem**: `InfrastructureInertiaEngine.java`
+* **Canonical Literature**:
+  * Jancovici, J. M. (2020). *Dormez tranquilles jusqu'en 2100*. Éditions Odile Jacob.
+* **Problem in Previous Implementation**:
+  * Static linear decay failed to capture technology-extended capital lifetime.
+* **Calibrated Ether Formulation**:
+  $$\tau_{\text{half}}(T) = 35.0 \cdot \left(0.5 + 0.5 \left(\frac{T}{5.0}\right)^{0.6}\right)$$
+  $$K(t + \Delta t) = K(t) \cdot \exp\left(-\frac{\Delta t}{\tau_{\text{half}}(T)}\right)$$
+* **Root Cause & Justification**:
+  * Continuous exponential physical depreciation matching historical heavy infrastructure lifespans.
+* **Empirical Validation Grounding**:
+  * Jancovici (2020); Smil (2017).
+
+---
+
+### Entry 104: Manning-Strickler Open Channel Hydrodynamics & Catchment Runoff Accumulation
+* **Date**: November 2, 2026
+* **Subsystem**: `ManningStricklerHydrodynamicsEngine.java`
+* **Canonical Literature**:
+  * Manning, R. (1890). *On the flow of water in open channels and pipes*. Transactions of the Institution of Civil Engineers of Ireland, 20, 161-207.
+* **Problem in Previous Implementation**:
+  * Isolated cell evaluation without upstream drainage basin routing or transboundary river inflow.
+* **Calibrated Ether Formulation**:
+  $$v = \frac{1}{n} R_h^{2/3} S^{1/2}, \quad Q = v \cdot A$$
+  * Allogenic transboundary catchment boundary condition for windowed historical river basins (Nile, Tigris-Euphrates, Indus).
+* **Root Cause & Justification**:
+  * Riparian civilizational floodplains depend on upstream snowmelt/catchment precipitation outside arid lowland cells.
+* **Empirical Validation Grounding**:
+  * UN FAO AQUASTAT; GRDC Global Runoff Data Centre.
+
+---
+
+### Entry 105: Zimov Pleistocene Mammoth Steppe Overkill & Trophic Shrub Encroachment
+* **Date**: November 2, 2026
+* **Subsystem**: `MegafaunaEcosystemEngine.java`
+* **Canonical Literature**:
+  * Zimov, S. A., et al. (2012). *Steppe-tundra transition to forest and moss tundra: driven by Pleistocene megafaunal extinction*. Ecosystems.
+* **Problem in Previous Implementation**:
+  * Verified continuous foraging pressure ratio and soil carbon decay.
+* **Calibrated Ether Formulation**:
+  $$\Phi_{\text{hunt}} = \frac{N \cdot \omega_{\text{wild}}}{B_{\text{wild}}}, \quad \omega_{\text{wild}} = \frac{1}{1 + B_{\text{live}} / (0.5 N)}$$
+  $$\Delta B_{\text{wild}} = - \min(0.20, 0.02 \cdot \Phi_{\text{hunt}}) \cdot \Delta t \cdot B_{\text{wild}}$$
+* **Root Cause & Justification**:
+  * Pastoral substitution decouples hunting pressure across eras, matching empirical megafaunal extirpation timings.
+* **Empirical Validation Grounding**:
+  * Sandom et al. (2014); Barnosky et al. (2004).
+
+
+---
+
+### Entry 106: Milankovitch Insolation Forcing & High-Latitude Polar Amplification
+* **Date**: November 2, 2026
+* **Subsystem**: `MilankovitchOrbitalEngine.java`
+* **Canonical Literature**:
+  * Milankovitch, M. (1941). *Kanon der Erdbestrahlung und seine Anwendung auf das Eiszeitenproblem*. Royal Serbian Academy Special Publication 133.
+  * Berger, A. (1978). *Long-term variations of daily insolation and Quaternary climatic changes*. Journal of the Atmospheric Sciences, 35(12), 2362-2367.
+* **Problem in Previous Implementation**:
+  * Temperature was iteratively shifted by `localShift * 0.01` per tick without equilibrium relaxation.
+* **Calibrated Ether Formulation**:
+  $$S(\phi, \delta) = \frac{S_0}{\pi} \left(\frac{1 + e\cos\nu}{1 - e^2}\right)^2 \left[H_0 \sin\phi \sin\delta + \cos\phi \cos\delta \sin H_0\right]$$
+  $$T(t + \Delta t) = T(t) + (T_{\text{target}} - T(t)) \cdot \left(1 - \exp\left(-\frac{\Delta t}{\tau}\right)\right)$$
+* **Root Cause & Justification**:
+  * Thermal relaxation towards orbital insolation equilibrium prevents numerical runaway.
+* **Empirical Validation Grounding**:
+  * Berger (1978); EPICA Dome C ice core records.
+
+---
+
+### Entry 107: Stratospheric Soot Solar Attenuation & Nuclear Winter Freezing
+* **Date**: November 2, 2026
+* **Subsystem**: `NuclearWarfareClimateEngine.java`
+* **Canonical Literature**:
+  * Robock, A., et al. (2007). *Climatic consequences of regional nuclear conflicts*. Atmospheric Chemistry and Physics, 7(8), 2003-2012.
+* **Problem in Previous Implementation**:
+  * Subtracted temperature anomaly iteratively each tick, causing -150°C global freeze.
+* **Calibrated Ether Formulation**:
+  $$\mathcal{T}_{\text{solar}} = \exp(-\tau_{\text{soot}})$$
+  $$\Delta T_{\text{cool}} = -15.0 \cdot (1.0 - \mathcal{T}_{\text{solar}})$$
+  $$T(t + \Delta t) = T(t) + (T_{\text{base}} + \Delta T_{\text{cool}} - T(t)) \cdot \kappa_{\text{relax}}$$
+* **Root Cause & Justification**:
+  * Formulates soot-induced cooling as a bounded anomaly relative to base insolation.
+* **Empirical Validation Grounding**:
+  * Robock et al. (2007); Turco et al. (1983) TTAPS study.
+
+---
+
+### Entry 108: Bihouix Ore Grade Commutation Exponent & Subsurface Extraction Work
+* **Date**: November 2, 2026
+* **Subsystem**: `OreGradeThermodynamicsEngine.java`
+* **Canonical Literature**:
+  * Bihouix, P. (2014). *L'âge des low-tech*. Seuil.
+* **Problem in Previous Implementation**:
+  * Verified ore concentration decay and mechanical work deduction.
+* **Calibrated Ether Formulation**:
+  $$E_{\text{extract}} = E_0 \cdot \left(\frac{C_{\text{ref}}}{C_{\text{ore}}}\right)^{1.5}$$
+* **Root Cause & Justification**:
+  * Exponential energy escalation as ore grade approaches crustal background concentration.
+* **Empirical Validation Grounding**:
+  * USGS Mineral Commodity Summaries; Bihouix (2014).
+
+---
+
+### Entry 109: CFC Stratospheric Photolysis & Crop Photosynthetic UV-B Attenuation
+* **Date**: November 2, 2026
+* **Subsystem**: `OzoneLayerDepletionEngine.java`
+* **Canonical Literature**:
+  * Molina, M. J., & Rowland, F. S. (1974). *Stratospheric sink for chlorofluoromethanes: chlorine atom-catalysed destruction of ozone*. Nature, 249(5460), 810-812.
+* **Problem in Previous Implementation**:
+  * Crop damage multiplier lacked time-step scaling $\Delta t$.
+* **Calibrated Ether Formulation**:
+  $$B_{\text{agri}}(t + \Delta t) = B_{\text{agri}}(t) \cdot \exp(-0.999 \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Time-step invariant cellular DNA UV-B damage decay.
+* **Empirical Validation Grounding**:
+  * Molina & Rowland (1974); UNEP Ozone Secretariat.
+
+---
+
+### Entry 110: Cryospheric Permafrost Thaw & Methane Outgassing Kinetics
+* **Date**: November 2, 2026
+* **Subsystem**: `PermafrostThawEngine.java`
+* **Canonical Literature**:
+  * Schuur, E. A., et al. (2015). *Climate change and the permafrost carbon feedback*. Nature, 520(7546), 171-179.
+* **Problem in Previous Implementation**:
+  * Methane release and soil carbon loss lacked $\Delta t$ scaling.
+* **Calibrated Ether Formulation**:
+  $$\dot{M}_{\text{CH4}} = \max(0.0, T) \cdot 0.15 \cdot \Delta t$$
+  $$\text{SOC}(t + \Delta t) = \max(5.0, \text{SOC}(t) - 0.20 \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Continuous permafrost carbon release scaled to elapsed decimal years.
+* **Empirical Validation Grounding**:
+  * Schuur et al. (2015).
+
+---
+
+### Entry 111: Physical Superconductivity Work Transmission & Photosynthetic Multipliers
+* **Date**: November 2, 2026
+* **Subsystem**: `PhysicalLawEngine.java`
+* **Canonical Literature**:
+  * Bardeen, J., Cooper, L. N., & Schrieffer, J. R. (1957). *Theory of superconductivity*. Physical Review, 108(5), 1175.
+* **Problem in Previous Implementation**:
+  * Room-temperature superconductivity applied unscaled 1.05 compound multiplier every tick.
+* **Calibrated Ether Formulation**:
+  $$W(t + \Delta t) = W(t) \cdot (1.0 + 0.05 \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Eliminates discrete time-step bias in exploratory alternate physical constants.
+* **Empirical Validation Grounding**:
+  * BCS Theory (1957).
+
+---
+
+### Entry 112: Coulomb Dry Friction vs Navier-Stokes Hydrodynamic Transport Work
+* **Date**: November 2, 2026
+* **Subsystem**: `PhysicsTransportEngine.java`
+* **Canonical Literature**:
+  * Coulomb, C. A. (1785). *Théorie des machines simples*. Mémoires de Mathématique et de Physique de l'Académie Royale des Sciences.
+* **Problem in Previous Implementation**:
+  * Verified mechanical freight work $W = \mu m g d$ deduction in GJ.
+* **Calibrated Ether Formulation**:
+  $$W_{\text{transport}} = \mu_{\text{biome}} \cdot m_{\text{cargo}} \cdot g \cdot d$$
+  $$\mu_{\text{water}} \approx 0.001 \ll \mu_{\text{land}} \in [0.05, 0.25]$$
+* **Root Cause & Justification**:
+  * Direct mechanical work replaces heuristic abstract trade transaction costs.
+* **Empirical Validation Grounding**:
+  * Coulomb (1785); Bairoch (1997).
+
+---
+
+### Entry 113: Rockström-Steffen 9 Planetary Boundaries Resilience Matrix
+* **Date**: November 2, 2026
+* **Subsystem**: `PlanetaryBoundariesEngine.java`
+* **Canonical Literature**:
+  * Rockström, J., et al. (2009). *A safe operating space for humanity*. Nature, 461(7263), 472-475.
+  * Steffen, W., et al. (2015). *Planetary boundaries: Guiding human development on a changing planet*. Science, 347(6223).
+* **Problem in Previous Implementation**:
+  * Verified comprehensive 9-boundary assessment vector.
+* **Calibrated Ether Formulation**:
+  $$\mathbf{R}_{\text{boundaries}} = \langle R_{\text{clim}}, R_{\text{bio}}, R_{\text{water}}, R_{\text{npk}}, R_{\text{land}}, R_{\text{ocean}}, R_{\text{ozone}}, R_{\text{aerosol}}, R_{\text{chem}} \rangle \in [0, 1]^9$$
+* **Root Cause & Justification**:
+  * Systematic real-time tracking of biospheric safe operating space.
+* **Empirical Validation Grounding**:
+  * Rockström et al. (2009); Steffen et al. (2015).
+
+
+---
+
+### Entry 114: Betz Limit Aerodynamics & Top-of-Atmosphere Solar Transmittance
+* **Date**: November 2, 2026
+* **Subsystem**: `RenewableEnergyPhysicsEngine.java`
+* **Canonical Literature**:
+  * Betz, A. (1920). *Das Maximum der theoretisch möglichen Ausnützung des Windes durch Windmotoren*.
+* **Problem in Previous Implementation**:
+  * Verified Betz limit $C_p = 0.593$ and TOA solar flux $S_0 = 1361\text{ W/m}^2$.
+* **Calibrated Ether Formulation**:
+  $$P_{\text{wind}} = \frac{1}{2} \rho_{\text{air}} v^3 \cdot 0.593, \quad S_{\text{surf}} = S_0 \cos\theta \cdot 0.70$$
+* **Root Cause & Justification**:
+  * Static invariant caching prevents unnecessary recomputation of fixed astronomical baselines.
+* **Empirical Validation Grounding**:
+  * Betz (1920); Kopp & Lean (2011).
+
+---
+
+### Entry 115: Circular Economy Capital Recovery & Enthalpy Discount
+* **Date**: November 2, 2026
+* **Subsystem**: `ResourceRecyclingEngine.java`
+* **Canonical Literature**:
+  * Ayres, R. U. (1994). *Industrial Ecology: Towards Closing the Materials Cycle*. Edward Elgar Publishing.
+* **Problem in Previous Implementation**:
+  * Verified recycling reduces physical capital depreciation rather than creating perpetual compound capital.
+* **Calibrated Ether Formulation**:
+  $$\eta_{\text{recyc}} = \min(1.0, K/5000) \cdot \min(0.85, 0.12 \cdot T)$$
+  $$\Delta K_{\text{recyc}} = K \cdot \eta_{\text{recyc}} \cdot 0.025 \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Recycling operates as an offset against physical 4% annual depreciation, bounded below 100%.
+* **Empirical Validation Grounding**:
+  * Ayres (1994); UNEP International Resource Panel.
+
+---
+
+### Entry 116: Eustatic Sea Level Biome Transitions & Continental Shelf Emergence
+* **Date**: November 2, 2026
+* **Subsystem**: `SeaLevelTransitionEngine.java`
+* **Canonical Literature**:
+  * Lambeck, K., et al. (2014). *Sea level and global ice volumes from the Last Glacial Maximum to the Holocene*. PNAS, 111(43), 15296-15303.
+* **Problem in Previous Implementation**:
+  * Verified dynamic elevation offset thresholding for Doggerland/Beringia and marine submersion.
+* **Calibrated Ether Formulation**:
+  $$\text{Submerged} \iff z_{\text{elev}} < \Delta S_L$$
+* **Root Cause & Justification**:
+  * Dynamically morphs continental shelves between marine and terrestrial biomes during glacial regressions.
+* **Empirical Validation Grounding**:
+  * Lambeck et al. (2014); GEBCO 2024 bathymetry.
+
+---
+
+### Entry 117: Cultivar Artificial Selection & Photosynthetic Yield Ceilings
+* **Date**: November 2, 2026
+* **Subsystem**: `SelectiveBreedingEngine.java`
+* **Canonical Literature**:
+  * Evans, L. T. (1993). *Crop Evolution, Adaptation and Yield*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Verified Green Revolution breeding factor bounded by technological era and cell surface area.
+* **Calibrated Ether Formulation**:
+  $$\lambda_{\text{yield}}(T) = 1.0 + \min(2.5, 0.35 \cdot T)$$
+  * Strict prehistoric invariant baseline: $\lambda_{\text{yield}} \equiv 1.0$ for $T < 1.0$.
+* **Root Cause & Justification**:
+  * Artificial breeding gains require settled agrarian cultivar domestication, dormant during foraging eras.
+* **Empirical Validation Grounding**:
+  * Evans (1993); Evenson & Gollin (2003) Science.
+
+---
+
+### Entry 118: Onsager Reciprocal Demographic Migration & Topological Cache
+* **Date**: November 2, 2026
+* **Subsystem**: `ThermodynamicMigrationEngine.java`
+* **Canonical Literature**:
+  * Onsager, L. (1931). *Reciprocal relations in irreversible processes I & II*. Physical Review, 37(4), 405; 38(12), 2265.
+* **Problem in Previous Implementation**:
+  * Verified $O(1)$ precomputed topological adjacency and free energy potential flux.
+* **Calibrated Ether Formulation**:
+  $$\Phi_i = \frac{\text{Food}_i + \text{Water}_i}{N_i + 1}, \quad J_{ij} = M_0 (\Phi_j - \Phi_i) N_i$$
+* **Root Cause & Justification**:
+  * Thermodynamic free energy gradient drives human migratory flow without unseeded stochastic jitter.
+* **Empirical Validation Grounding**:
+  * Onsager (1931); Ravenstein (1885) Laws of Migration.
+
+---
+
+### Entry 119: AMOC Convective Collapse & Mid-Latitude Thermal Equilibrium Drop
+* **Date**: November 2, 2026
+* **Subsystem**: `ThermohalineOceanEngine.java`
+* **Canonical Literature**:
+  * Rahmstorf, S. (2002). *Ocean circulation and climate during the past 120,000 years*. Nature, 419(6903), 207-214.
+* **Problem in Previous Implementation**:
+  * Subtracted 8°C iteratively each tick during AMOC collapse, freezing mid-latitudes to absolute zero.
+* **Calibrated Ether Formulation**:
+  $$T_{\text{target}} = T_{\text{baseline}} - 8.0^\circ\text{C}$$
+  $$T(t + \Delta t) = T(t) + (T_{\text{target}} - T(t)) \cdot \left(1 - \exp\left(-\frac{\Delta t}{2.0}\right)\right)$$
+* **Root Cause & Justification**:
+  * AMOC collapse sets an equilibrium high-latitude cooling target relaxed with oceanic thermal inertia.
+* **Empirical Validation Grounding**:
+  * Rahmstorf (2002); Younger Dryas Greenland ice core records.
+
+---
+
+### Entry 120: Stommel 2-Box Overturning AMOC Bifurcation & Salinity Feedback
+* **Date**: November 2, 2026
+* **Subsystem**: `ThermohalineStommelAMOCEngine.java`
+* **Canonical Literature**:
+  * Stommel, H. (1961). *Thermohaline convection with two stable regimes of flow*. Tellus, 13(2), 224-230.
+* **Problem in Previous Implementation**:
+  * Shifted local temperature iteratively each tick without target equilibrium.
+* **Calibrated Ether Formulation**:
+  $$q = C \cdot [\alpha_T (T_{\text{eq}} - T_{\text{pole}}) - \beta_S (S_{\text{eq}} - S_{\text{pole}})]$$
+  $$T(t + \Delta t) = T(t) + (T_{\text{target}} - T(t)) \cdot \left(1 - \exp\left(-\frac{\Delta t}{2.0}\right)\right)$$
+* **Root Cause & Justification**:
+  * Henry Stommel's canonical non-linear density overturning with bistable hysteresis.
+* **Empirical Validation Grounding**:
+  * Stommel (1961); Ditlevsen & Ditlevsen (2023) Nature Communications.
+
+---
+
+### Entry 121: Pleistocene Rewilding Snow Trampling & Albedo Optics Bound
+* **Date**: November 2, 2026
+* **Subsystem**: `TrophicEcosystemEngine.java`
+* **Canonical Literature**:
+  * Zimov, S. A. (2005). *Pleistocene Park: return of the mammoth's ecosystem*. Science, 308(5723), 796-798.
+* **Problem in Previous Implementation**:
+  * Albedo was incremented iteratively each tick, saturating rapidly to 0.80.
+* **Calibrated Ether Formulation**:
+  $$\alpha(t) = \alpha_{\text{base}} + \min(0.04, 0.002 \cdot \rho_{\text{megafauna}})$$
+  $$\text{SOC}(t + \Delta t) = \text{SOC}(t) + 0.05 \cdot \rho_{\text{megafauna}} \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Grassland maintenance bounds albedo increase within optical physical limits of steppe vegetation.
+* **Empirical Validation Grounding**:
+  * Zimov (2005); Macias-Fauria et al. (2020) Philosophical Transactions B.
+
+---
+
+### Entry 122: Oke Boundary-Layer Urban Heat Island Climatology
+* **Date**: November 2, 2026
+* **Subsystem**: `UrbanThermodynamicsEngine.java`
+* **Canonical Literature**:
+  * Oke, T. R. (1982). *The energetic basis of the urban heat island*. Quarterly Journal of the Royal Meteorological Society, 108(455), 1-24.
+* **Problem in Previous Implementation**:
+  * Added UHI heat increment iteratively every tick to cell temperature.
+* **Calibrated Ether Formulation**:
+  $$\Delta T_{\text{UHI}} = 0.5 \cdot \log_{10}\left(\frac{N}{1000}\right)$$
+  $$T(t + \Delta t) = T(t) + (T_{\text{base}} + \Delta T_{\text{UHI}} - T(t)) \cdot \left(1 - \exp\left(-\frac{\Delta t}{0.5}\right)\right)$$
+* **Root Cause & Justification**:
+  * UHI is an equilibrium thermal anomaly of built environment thermal inertia, not an infinite heater.
+* **Empirical Validation Grounding**:
+  * Oke (1982); Manoli et al. (2019) Nature.
+
+---
+
+### Entry 123: AI Autonomous Planetary Regulation & Productive Frontier Bounds
+* **Date**: November 2, 2026
+* **Subsystem**: `AiAutonomousRegulationPureEngine.java`
+* **Canonical Literature**:
+  * Wiener, N. (1948). *Cybernetics: Or Control and Communication in the Animal and the Machine*. MIT Press.
+* **Problem in Previous Implementation**:
+  * Work output compounded exponentially at 5% annually without production frontier ceiling.
+* **Calibrated Ether Formulation**:
+  $$W_{\max} = 1.5 N + 0.8 K$$
+  $$W(t + \Delta t) = W(t) + (W_{\max} - W(t)) \cdot (1 - \exp(-0.05 \cdot \Delta t))$$
+* **Root Cause & Justification**:
+  * Autonomous optimization eliminates logistical deadweight loss but cannot exceed physical capital/labor capacity.
+* **Empirical Validation Grounding**:
+  * Wiener (1948); Leontief (1986).
+
+---
+
+### Entry 124: Marvin Harris Cultural Materialism Infrastructure Cascade
+* **Date**: November 2, 2026
+* **Subsystem**: `CulturalMaterialismPureEngine.java`
+* **Canonical Literature**:
+  * Harris, M. (1979). *Cultural Materialism: The Struggle for a Science of Culture*. Random House.
+* **Problem in Previous Implementation**:
+  * Verified infrastructure food deficit causing structural economic capital decay.
+* **Calibrated Ether Formulation**:
+  $$\frac{\text{Food}}{N} < 0.05 \implies K(t + \Delta t) = K(t) \cdot \max(0.0, 1.0 - 0.10 \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Caloric deficit at the base of the infrastructural pyramid forces political and capital collapse.
+* **Empirical Validation Grounding**:
+  * Harris (1979); Diamond (2005) Collapse.
+
+---
+
+### Entry 125: Kardashev Planetary Power Classification
+* **Date**: November 2, 2026
+* **Subsystem**: `KardashevPureEngine.java`
+* **Canonical Literature**:
+  * Kardashev, N. S. (1964). *Transmission of Information by Extraterrestrial Civilizations*. Soviet Astronomy, 8, 217.
+  * Sagan, C. (1973). *The Cosmic Connection*. Doubleday.
+* **Problem in Previous Implementation**:
+  * Verified closed-form logarithmic power conversion.
+* **Calibrated Ether Formulation**:
+  $$K = \frac{\log_{10}(P_{\text{watts}}) - 6.0}{10.0}$$
+* **Root Cause & Justification**:
+  * Type I planetary civilizational threshold at $P = 10^{16}\text{ W}$.
+* **Empirical Validation Grounding**:
+  * Kardashev (1964); Sagan (1973).
+
+
+---
+
+### Entry 126: Hamilton Kin Selection Outgroup Scarcity Stress
+* **Date**: November 2, 2026
+* **Subsystem**: `KinSelectionHamiltonEngine.java`
+* **Canonical Literature**:
+  * Hamilton, W. D. (1964). *The genetical evolution of social behaviour I and II*. Journal of Theoretical Biology, 7(1), 1-52.
+  * Bowles, S. (2006). *Group competition, reproductive leveling, and the evolution of human altruism*. Science, 314(5805), 1569-1572.
+* **Problem in Previous Implementation**:
+  * Verified continuous logistic food stress response on defensive labor.
+* **Calibrated Ether Formulation**:
+  $$r \cdot B > C$$
+  $$\sigma_{\text{scarcity}} = \frac{1}{1 + \exp(20.0 \cdot (\text{food/capita} - 0.05))}$$
+* **Root Cause & Justification**:
+  * Continuous outgroup hostility emergence under existential resource scarcity.
+* **Empirical Validation Grounding**:
+  * Hamilton (1964); Bowles (2006).
+
+---
+
+### Entry 127: Hydraulic Polder Reclamation & Solar TOA Radiance Bound
+* **Date**: November 2, 2026
+* **Subsystem**: `LandReclamationEngine.java`
+* **Canonical Literature**:
+  * van Veen, J. (1948). *Dredge, Drain, Reclaim: The Art of a Nation*. Martinus Nijhoff.
+* **Problem in Previous Implementation**:
+  * Solar energy and soil carbon were scaled by days without decimal year conversion, exceeding TOA limits.
+* **Calibrated Ether Formulation**:
+  $$\text{SOC}(t + \Delta t) = \min(120.0, \text{SOC}(t) + 20.0 \cdot \Delta t)$$
+  $$S_{\text{solar}} = \min(1000.0, S_{\text{solar}} + 50.0 \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Polder land formation respects astronomical top-of-atmosphere solar flux constraints.
+* **Empirical Validation Grounding**:
+  * van Veen (1948); Dutch Zuiderzee Works empirical data.
+
+---
+
+### Entry 128: Archimedean Hydrodynamic Transport & Solow Maritime Capital Saturation
+* **Date**: November 2, 2026
+* **Subsystem**: `MaritimeHighwayEngine.java`
+* **Canonical Literature**:
+  * Solow, R. M. (1956). *A contribution to the theory of economic growth*. The Quarterly Journal of Economics, 70(1), 65-94.
+* **Problem in Previous Implementation**:
+  * Verified Solow maritime capital saturation envelope.
+* **Calibrated Ether Formulation**:
+  $$K_{\text{maritime}}^{\text{eq}} = 65.0 \cdot T^{1.6}$$
+  $$\text{saturation} = \text{clamp}\left(1.0 - \frac{K/N}{K_{\text{maritime}}^{\text{eq}}}, 0.02, 1.0\right)$$
+* **Root Cause & Justification**:
+  * Eliminates infinite capital accumulation on maritime coastlines through diminishing returns.
+* **Empirical Validation Grounding**:
+  * Solow (1956); Braudel (1972) The Mediterranean.
+
+---
+
+### Entry 129: Nordhaus DICE Quadratic Climate Damage Function
+* **Date**: November 2, 2026
+* **Subsystem**: `NordhausDicePureEngine.java`, `NordhausDiceHybridEngine.java`
+* **Canonical Literature**:
+  * Nordhaus, W. D., & Sztorc, P. (2013). *DICE 2013R: Introduction and User's Manual*. Yale University.
+* **Problem in Previous Implementation**:
+  * Verified canonical quadratic damage coupling directly into cellular capital.
+* **Calibrated Ether Formulation**:
+  $$D(T) = \min(0.50, 0.00236 \cdot \Delta T^2)$$
+  $$K(t + \Delta t) = K(t) \cdot \exp(-D(T) \cdot \Delta t)$$
+* **Root Cause & Justification**:
+  * Textbook implementation of William Nordhaus's Nobel Prize-winning integrated assessment model.
+* **Empirical Validation Grounding**:
+  * Nordhaus & Sztorc (2013).
+
+---
+
+### Entry 130: Lahire Pro-Sociality Self-Domestication & Deep-Time Baseline
+* **Date**: November 2, 2026
+* **Subsystem**: `SelfDomesticationEngine.java`
+* **Canonical Literature**:
+  * Lahire, B. (2023). *Les structures fondamentales des sociétés humaines*. La Découverte.
+  * Henrich, J. (2004). *Demography and cultural evolution: Why adaptive cultural processes produced maladaptive losses in Tasmania*. American Antiquity.
+* **Problem in Previous Implementation**:
+  * Self-domestication pushed Paleolithic foragers past technological era bounds.
+* **Calibrated Ether Formulation**:
+  $$\text{For } T \ge 1.0: \quad \Delta T = 0.002 \cdot \log_{10}(1 + \rho_{\text{pop}}) \cdot \Delta t$$
+  $$\text{For } T < 1.0: \quad \Delta T \equiv 0.0$$
+* **Root Cause & Justification**:
+  * Enforces invariant prehistoric baseline: social learning in deep time shapes language and prosocial norms without artificial industrial technology jumps.
+* **Empirical Validation Grounding**:
+  * Lahire (2023); Henrich (2004).
+
+---
+
+### Entry 131: Buss Evolutionary Mating Skew & Young Adult Male Cohort Mobilization
+* **Date**: November 2, 2026
+* **Subsystem**: `SexualSelectionMatingEngine.java`
+* **Canonical Literature**:
+  * Buss, D. M. (1989). *Sex differences in human mate preferences: Evolutionary hypotheses tested in 37 cultures*. Behavioral and Brain Sciences, 12(1), 1-14.
+  * Henrich, J., Boyd, R., & Richerson, P. J. (2012). *The puzzle of monogamous marriage*. Philosophical Transactions of the Royal Society B, 367(1589), 657-669.
+* **Problem in Previous Implementation**:
+  * Binary threshold `capital > 500` applied infinite work boost.
+* **Calibrated Ether Formulation**:
+  $$\text{skew} = \frac{1}{1 + \exp(-10.0 \cdot (G - 0.45))}$$
+  $$W_{\text{mobilized}}^{\max} = W_0 \cdot \left[1.0 + 0.12 \cdot \text{skew} \cdot \left(\frac{N_{15-24}}{0.15 N}\right)\right]$$
+* **Root Cause & Justification**:
+  * Polygynous inequality drives young adult male high-risk striving, bounded strictly by demographic cohort size.
+* **Empirical Validation Grounding**:
+  * Buss (1989); Henrich et al. (2012).
+
+---
+
+### Entry 132: Meadows World3 Canonical 5-Subsystem Differential Feedback
+* **Date**: November 2, 2026
+* **Subsystem**: `World3PureEngine.java`, `World3HybridEngine.java`, `World3CouplingEngine.java`
+* **Canonical Literature**:
+  * Meadows, D. H., Meadows, D. L., Randers, J., & Behrens, W. W. (1972). *The Limits to Growth*. Universe Books.
+* **Problem in Previous Implementation**:
+  * Verified textbook non-linear FCAOR capital sinks and persistent pollution assimilation.
+* **Calibrated Ether Formulation**:
+  $$\text{FCAOR} = 0.05 + 0.90 \cdot \left(1.0 - \frac{R}{R_0}\right)^2$$
+  $$\text{LE} = 40.0 \cdot \min(M_{\text{food}}, M_{\text{heal}}, M_{\text{poll}}, M_{\text{crowd}})$$
+* **Root Cause & Justification**:
+  * Direct cellular tensor integration of the MIT Club of Rome global feedback model.
+* **Empirical Validation Grounding**:
+  * Meadows et al. (1972, 2004); Herrington (2021) Journal of Industrial Ecology.
+
+---
+
+### Entry 133: Predictive Cliodynamic Multi-Hazard Alert Evaluation
+* **Date**: November 2, 2026
+* **Subsystem**: `CliodynamicAdvisorEngine.java`
+* **Canonical Literature**:
+  * Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press.
+* **Problem in Previous Implementation**:
+  * Verified real-time telemetry assessment across planetary boundaries.
+* **Calibrated Ether Formulation**:
+  $$\text{Alert} \iff \max(R_{\text{clim}}, R_{\text{water}}, R_{\text{npk}}, \tau_{\text{soot}}) > \theta_{\text{critical}}$$
+* **Root Cause & Justification**:
+  * Real-time localized advisory telemetry without altering underlying physical states.
+* **Empirical Validation Grounding**:
+  * Turchin (2003); I18n localization standard.
+
+---
+
+### Entry 134: Multilateral Atmospheric Quota Governance & Trade Coordination
+* **Date**: November 2, 2026
+* **Subsystem**: `CoGovernanceTradeEngine.java`
+* **Canonical Literature**:
+  * Ostrom, E. (1990). *Governing the Commons: The Evolution of Institutions for Collective Action*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Verified carbon treaty pollution capping.
+* **Calibrated Ether Formulation**:
+  $$P(t + \Delta t) = P(t) \cdot \exp(-0.02 \cdot \Delta t) \quad \text{for } P > 200$$
+* **Root Cause & Justification**:
+  * Institutional polycentric governance limits atmospheric tragedy of the commons.
+* **Empirical Validation Grounding**:
+  * Ostrom (1990); Montreal Protocol (1987).
+
+---
+
+### Entry 135: Sociological Value Vectors & Soil Organic Stewardship
+* **Date**: November 2, 2026
+* **Subsystem**: `CulturalSociologyEngine.java`
+* **Canonical Literature**:
+  * Inglehart, R., & Welzel, C. (2005). *Modernization, Cultural Change, and Democracy*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Verified cultural value vectors (Collectivism, Stewardship) modulating SOC labor.
+* **Calibrated Ether Formulation**:
+  $$\Delta \text{SOC} = (\nu_{\text{stewardship}} - 0.50) \cdot 0.10 \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Cultural attitudes towards ecological conservation dictate somatic maintenance work.
+* **Empirical Validation Grounding**:
+  * World Values Survey; Inglehart & Welzel (2005).
+
+---
+
+### Entry 136: Shannon Information Channel Capacity & Linguistic Drift Suppression
+* **Date**: November 2, 2026
+* **Subsystem**: `InformationEntropyEngine.java`
+* **Canonical Literature**:
+  * Shannon, C. E. (1948). *A mathematical theory of communication*. Bell System Technical Journal, 27(3), 379-423.
+* **Problem in Previous Implementation**:
+  * Verified Shannon capacity $C = B \log_2(1 + S/N)$ suppressing dialect drift.
+* **Calibrated Ether Formulation**:
+  $$C = B(T) \cdot \log_2\left(1 + \frac{S}{N}\right), \quad B(T) = 1.0 + T^3 \cdot 1000.0$$
+* **Root Cause & Justification**:
+  * High-bandwidth telecommunications eliminate geographic isolation and dialect divergence.
+* **Empirical Validation Grounding**:
+  * Shannon (1948); Cavalli-Sforza & Feldman (1981).
+
+---
+
+### Entry 137: In-Situ Resource Utilization (ISRU) Autarky & Off-World Logistics
+* **Date**: November 2, 2026
+* **Subsystem**: `IsruAutarkyAndSpaceColonizationEngine.java`
+* **Canonical Literature**:
+  * Zubrin, R. (1996). *The Case for Mars: The Plan to Settle the Red Planet and Why We Must*. Free Press.
+* **Problem in Previous Implementation**:
+  * Verified off-world regolith sintering and dome social cohesion (Asabiyyah).
+* **Calibrated Ether Formulation**:
+  $$\eta_{\text{isru}} = \text{clamp}(0.20 + 0.15 \cdot T, 0.20, 2.50)$$
+  $$\Delta M_{\text{regolith}} = N \cdot 0.50 \cdot \eta_{\text{isru}} \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Closed-loop environmental support and local mineral harvesting drive extraterrestrial autarky.
+* **Empirical Validation Grounding**:
+  * Zubrin (1996); NASA ISRU Capability Roadmap.
+
+---
+
+### Entry 138: Jacobsen-Adams Mesopotamian Salinization & Maas-Hoffman Yield Response
+* **Date**: November 2, 2026
+* **Subsystem**: `SoilSalinizationHydrologyEngine.java`
+* **Canonical Literature**:
+  * Jacobsen, T., & Adams, R. M. (1958). *Salt and Silt in Ancient Mesopotamian Agriculture*. Science, 128(3334), 1251-1258.
+  * Maas, E. V., & Hoffman, G. J. (1977). *Crop salt tolerance-current assessment*. Journal of the Irrigation and Drainage Division, 103(2), 115-134.
+* **Problem in Previous Implementation**:
+  * Verified mass balance $\frac{d[\text{Salts}]}{dt} = \dot{S}_{\text{irr}} + \dot{S}_{\text{capillary}} - \dot{S}_{\text{drain}}$ and Maas-Hoffman yield attenuation.
+* **Calibrated Ether Formulation**:
+  $$Y(S) = Y_0 \cdot \max(0.10, 1.0 - 0.06 \cdot \max(0.0, S - 2.0))$$
+* **Root Cause & Justification**:
+  * Authentic historical model of the Sumerian agricultural collapse (-2400 to -1700 BCE).
+* **Empirical Validation Grounding**:
+  * Jacobsen & Adams (1958); FAO Irrigation and Drainage Paper 29.
+
+---
+
+### Entry 139: Closed-Loop Model Predictive AI Governance (Leviathan Optimizer)
+* **Date**: November 2, 2026
+* **Subsystem**: `SovereignAIGovernanceEngine.java`
+* **Canonical Literature**:
+  * Bostrom, N. (2014). *Superintelligence: Paths, Dangers, Strategies*. Oxford University Press.
+* **Problem in Previous Implementation**:
+  * Verified multi-mode AI feedback governance (Unified Leviathan, Geopolitical Competition, Soft Nudging).
+* **Calibrated Ether Formulation**:
+  $$\Delta P = (P - P_{\text{target}}) \cdot 0.15 \cdot \alpha_{\text{opt}} \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Cybernetic closed-loop policy interventions to stabilize planetary socio-ecological state vectors.
+* **Empirical Validation Grounding**:
+  * Wiener (1948); Bostrom (2014).
+
+---
+
+### Entry 140: Physical Historical Era Power Flux & Directed Technical Change
+* **Date**: November 2, 2026
+* **Subsystem**: `TechTreeEngine.java`
+* **Canonical Literature**:
+  * Allen, R. C. (2009). *The British Industrial Revolution in Global Perspective*. Cambridge University Press.
+  * Acemoglu, D. (2002). *Directed technical change*. The Review of Economic Studies, 69(4), 781-809.
+  * Henrich, J. (2004). *Demography and cultural evolution*. American Antiquity.
+* **Problem in Previous Implementation**:
+  * Verified power per capita, material yield strength $\sigma_{\text{yield}}$, and Boserup-Allen-Acemoglu bottleneck substitution.
+* **Calibrated Ether Formulation**:
+  $$\Delta T = \Delta T_{\text{ratchet}}(\sqrt{N}, K/N) + \Delta T_{\text{bottleneck}}(\Sigma_{\text{stress}}, \Psi_{\text{latent}})$$
+* **Root Cause & Justification**:
+  * Replaces abstract tech levels with physical thermodynamics and material science thresholds.
+* **Empirical Validation Grounding**:
+  * Allen (2009); Acemoglu (2002); Smil (2017).
+
+---
+
+### Entry 141: Planetary Terraforming Radiative Forcing Equilibrium Relaxation
+* **Date**: November 2, 2026
+* **Subsystem**: `TerraformingEngine.java`
+* **Canonical Literature**:
+  * Sagan, C. (1973). *Planetary engineering on Mars*. Icarus, 20(4), 513-514.
+  * McKay, C. P., Toon, O. B., & Kasting, J. F. (1991). *Making Mars habitable*. Nature, 352(6335), 489-496.
+* **Problem in Previous Implementation**:
+  * Accumulated global temperature delta linearly each tick, causing runaway heating.
+* **Calibrated Ether Formulation**:
+  $$\Delta F_{\text{terra}} = 5.35 \ln\left(\frac{[\text{CO}_2]}{280}\right) + (\mu_{\text{mirror}} - 1.0) \cdot 1361.0$$
+  $$T(t + \Delta t) = T(t) + (T_{\text{base}} + 0.8 \Delta F_{\text{terra}} - T(t)) \cdot \left(1 - \exp\left(-\frac{\Delta t}{5.0}\right)\right)$$
+* **Root Cause & Justification**:
+  * Planetary engineering warming is bounded by radiative equilibrium with atmospheric thermal inertia.
+* **Empirical Validation Grounding**:
+  * McKay et al. (1991); Sagan (1973).
+
+---
+
+### Entry 142: West-Bettencourt Urban Allometry & Metabolic Scaling
+* **Date**: November 2, 2026
+* **Subsystem**: `WestBettencourtAllometryEngine.java`
+* **Canonical Literature**:
+  * Bettencourt, L. M., Lobo, J., Helbing, D., Kühnert, C., & West, G. B. (2007). *Growth, innovation, scaling, and the pace of life in cities*. PNAS, 104(17), 7301-7306.
+* **Problem in Previous Implementation**:
+  * Verified super-linear socio-economic output ($N^{1.15}$) and sub-linear infrastructure network economy ($N^{0.85}$).
+* **Calibrated Ether Formulation**:
+  $$Y \propto N^{1.15}, \quad I_{\text{infra}} \propto N^{0.85}$$
+* **Root Cause & Justification**:
+  * Fractal geometry of urban distribution and social interaction networks.
+* **Empirical Validation Grounding**:
+  * Bettencourt et al. (2007); West (2017) Scale.

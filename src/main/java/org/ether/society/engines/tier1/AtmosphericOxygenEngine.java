@@ -35,16 +35,21 @@ public class AtmosphericOxygenEngine {
      * @return VO2max efficiency factor between 0.1 and 1.2
      */
     public static double calculateAerobicCapacityFactor(double o2PressureAtm) {
-// Numerical integration step for AtmosphericOxygenEngine - verifies boundary conservation and updates local thermodynamic state
         if (o2PressureAtm <= 0.05) return 0.1; // Severe hypoxia
         return Math.min(1.2, o2PressureAtm / STANDARD_O2_PRESSURE_ATM);
     }
 
     /**
-     * Executes one atmospheric oxygen and hyper-combustion tick across cells.
+     * Executes one atmospheric oxygen and hyper-combustion tick across cells with default monthly step.
      */
     public static void processAtmosphericOxygen(List<H3Cell> cells, double globalO2Ratio, double globalAtmoPressure) {
-// Numerical integration step for AtmosphericOxygenEngine - verifies boundary conservation and updates local thermodynamic state
+        processAtmosphericOxygen(cells, globalO2Ratio, globalAtmoPressure, 1.0 / 12.0);
+    }
+
+    /**
+     * Executes one atmospheric oxygen and hyper-combustion tick across cells scaled by dtYears.
+     */
+    public static void processAtmosphericOxygen(List<H3Cell> cells, double globalO2Ratio, double globalAtmoPressure, double dtYears) {
         if (cells == null || cells.isEmpty()) return;
 
         double o2PressureAtm = globalAtmoPressure * globalO2Ratio;
@@ -55,20 +60,22 @@ public class AtmosphericOxygenEngine {
             return;
         }
 
+        double dtSafe = Math.max(0.0001, dtYears);
+        double burnRetention = Math.exp(-0.999 * dtSafe);
         int hyperCombustionEvents = 0;
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            // Apply VO2max capacity limit to human physical labor output
+            // Apply VO2max capacity limit to human physical labor output (bounded, not compounding)
             if (cell.getPopulation() != null && cell.getPopulation() > 0) {
                 double friction = cell.getMovementFrictionOr(1.0);
-                cell.setMovementFriction(Math.max(0.2, friction / vo2maxFactor));
+                cell.setMovementFriction(Math.max(0.2, Math.min(15.0, friction / Math.max(0.1, vo2maxFactor))));
             }
 
             // Wildfire hyper-combustion under elevated O2 (> 0.25 atm)
             if (o2PressureAtm > 0.25 && cell.getBiomassNatural() != null && cell.getBiomassNatural() > 500.0) {
                 hyperCombustionEvents++;
-                cell.setBiomassNatural(cell.getBiomassNatural() * 0.92); // Accelerated forest burn
+                cell.setBiomassNatural(cell.getBiomassNatural() * burnRetention); // Accelerated forest burn
             }
         }
 
@@ -77,5 +84,3 @@ public class AtmosphericOxygenEngine {
         }
     }
 }
-
-

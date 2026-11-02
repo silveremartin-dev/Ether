@@ -39,6 +39,8 @@ public class PhysicalLawEngine {
             return;
         }
 
+        double dtSafe = Math.max(0.0001, deltaYears);
+
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
@@ -46,66 +48,24 @@ public class PhysicalLawEngine {
             // Photosynthetic efficiency boost to natural biomass
             if (photosyntheticEfficiencyMultiplier != 1.0) {
                 double naturalBiomass = cell.getBiomassNaturalOr(0.0);
-                cell.setBiomassNatural(naturalBiomass * (1.0 + (photosyntheticEfficiencyMultiplier - 1.0) * 0.02 * deltaYears));
+                cell.setBiomassNatural(naturalBiomass * (1.0 + (photosyntheticEfficiencyMultiplier - 1.0) * 0.02 * dtSafe));
             }
 
             // Room-temperature superconductivity eliminates energy transmission loss and boosts work output
             if (roomTemperatureSuperconductivity && cell.getResourceWork() != null) {
-                cell.setResourceWork(cell.getResourceWork() * 1.05);
+                cell.setResourceWork(cell.getResourceWork() * (1.0 + 0.05 * dtSafe));
             }
         }
     }
 
     // Getters and Setters
-    /**
-     * Get photosynthetic efficiency multiplier.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getPhotosyntheticEfficiencyMultiplier() { return photosyntheticEfficiencyMultiplier; }
-    /**
-     * Set photosynthetic efficiency multiplier operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalLawEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param mult the mult argument (double)
-     */
     public static void setPhotosyntheticEfficiencyMultiplier(double mult) { photosyntheticEfficiencyMultiplier = Math.max(0.1, mult); }
 
-    /**
-     * Is room temperature superconductivity.
-     *
-     * @return the resulting computation or state reference
-     */
     public static boolean isRoomTemperatureSuperconductivity() { return roomTemperatureSuperconductivity; }
-    /**
-     * Set room temperature superconductivity operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalLawEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param active the active argument (boolean)
-     */
     public static void setRoomTemperatureSuperconductivity(boolean active) { roomTemperatureSuperconductivity = active; }
 
-    /**
-     * Get entropy generation scale.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getEntropyGenerationScale() { return entropyGenerationScale; }
-    /**
-     * Set entropy generation scale operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalLawEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param scale the scale argument (double)
-     */
     public static void setEntropyGenerationScale(double scale) { entropyGenerationScale = Math.max(0.01, scale); }
 
     public static void resetState() {
@@ -114,5 +74,3 @@ public class PhysicalLawEngine {
         entropyGenerationScale = 1.0;
     }
 }
-
-

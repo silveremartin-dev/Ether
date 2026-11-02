@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier2.historical;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
  * Spatial City Fractal Power Law Engine Variant B21.1 (Pure) & B21.2 (Hybrid).
  * Mori, Smith & Hsu (2020) Law: City-size distributions follow recursive spatial fractal power laws
  * (N_i proportional to Rank^-alpha) across spatial hierarchies.
+ * Preserves exact demographic mass closure across all 7 age cohorts.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -32,9 +34,6 @@ public class SpatialCityFractalEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.size() < 2) return;
 
         // Sort cells by population descending to compute spatial power law hierarchy
@@ -73,10 +72,8 @@ public class SpatialCityFractalEngine {
             if (rank == sortedCells.size()) {
                 newPop = (int) Math.max(0L, totalPop - assigned); // absorb rounding residue to conserve the total
             }
-            cell.setPopulation(Math.max(0, newPop));
+            H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, newPop));
             assigned += cell.getPopulation();
         }
     }
 }
-
-

@@ -30,24 +30,20 @@ public class SelfDomesticationEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double popDensity = cell.getPopulation() / 1000.0;
-            // High social density accelerates self-domestication, reducing internal violence
-            if (popDensity > 1.0) {
-                double tech = cell.getTechnologyLevelOr(1.0);
+            double tech = cell.getTechnologyLevelOr(0.5);
+
+            // High social density accelerates self-domestication
+            // Deep-time invariant baseline: For prehistoric foragers (T < 1.0), technology remains bounded
+            if (popDensity > 1.0 && tech >= 1.0) {
                 // Boost technological/linguistic learning rate via grandmother effect & prolonged childhood
-                cell.setTechnologyLevel(tech + 0.002 * Math.log10(1.0 + popDensity) * deltaYears);
+                cell.setTechnologyLevel(Math.min(10.0, tech + 0.002 * Math.log10(1.0 + popDensity) * deltaYears));
             }
         }
     }
 }
-
-

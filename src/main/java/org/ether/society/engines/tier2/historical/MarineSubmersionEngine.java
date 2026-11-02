@@ -6,6 +6,7 @@
 package org.ether.society.engines.tier2.historical;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,8 @@ import java.util.HashMap;
  *    up to 95-98% of vulnerable populations to neighboring higher-elevation cells.
  * 2. Population Relocation & Refugee Flux: Displaced populations and moveable capital are physically
  *    transferred to safe adjacent cells rather than suffering unrealistic sudden mass extinction.
- * 3. Partial Loss & Infrastructure Immersion: Fixed capital infrastructure suffers water immersion damage,
+ * 3. Demographic Mass Closure: Rescales cohorts proportionally on arrival and departure.
+ * 4. Partial Loss & Infrastructure Immersion: Fixed capital infrastructure suffers water immersion damage,
  *    while human life is prioritized through technological foresight and emergency response.
  *
  * @author Silvere Martin-Michiellot
@@ -41,9 +43,6 @@ public class MarineSubmersionEngine {
      * Executes marine submersion and evacuation using default parameters.
      */
     public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         processHybrid(cells, timeStepDays, DEFAULT_DIKE_MAINTENANCE_BASE_CAPITAL, DEFAULT_EVACUATION_TECH_EFFICIENCY);
     }
 
@@ -55,14 +54,12 @@ public class MarineSubmersionEngine {
         if (cells == null || cells.isEmpty()) return;
 
         Map<Long, H3Cell> cellMap = new HashMap<>();
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell c : cells) {
             if (c != null && c.getH3Index() != null) {
                 cellMap.put(c.getH3Index(), c);
             }
         }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             double elevation = cell.getElevationOr(0.0);
@@ -86,7 +83,6 @@ public class MarineSubmersionEngine {
 
             if (isSubmerged && pop > 0) {
                 // 1. Calculate Physically Realistic Evacuation Ratio (Foresight & Warning Systems)
-                // Modern/high-tech societies with accumulated capital predict flooding and evacuate early.
                 double capitalFactor = 1.0 + Math.min(5.0, capital / 500.0);
                 double evacuationRatio = 1.0 - Math.exp(-evacuationTechEfficiency * tech * capitalFactor);
                 evacuationRatio = Math.clamp(evacuationRatio, 0.0, 0.98); // Max 98% evacuated cleanly
@@ -129,21 +125,20 @@ public class MarineSubmersionEngine {
                     double curCap = cell.getResourceCapitalOr(0.0);
                     double capitalToTransfer = (curCap * 0.50) / safeNeighbors.size();
 
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
                     for (H3Cell target : safeNeighbors) {
                         if (target == null) continue;
                         int targetPop = target.getPopulationOr(0);
                         double targetCap = target.getResourceCapitalOr(0.0);
-                        target.setPopulation(targetPop + popPerNeighbor);
+                        H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(target, targetPop + popPerNeighbor);
                         target.setResourceCapital(targetCap + capitalToTransfer);
                     }
 
                     // Update flooded cell population and capital after evacuation
-                    cell.setPopulation(remainingPop);
+                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, remainingPop);
                     cell.setResourceCapital(curCap * 0.50); // 50% fixed capital submerged
 
                     logger.info("🌊 Marine Submersion Evacuation: Cell {} evacuated {} humans ({}) to {} safe neighbor cells.",
-                            cell.getH3Index(), evacuatedPop, String.format("%.1f%%", evacuationRatio * 100), safeNeighbors.size());
+                            cell.getH3Index(), evacuatedPop, String.format(java.util.Locale.ROOT, "%.1f%%", evacuationRatio * 100), safeNeighbors.size());
                 }
 
                 // 3. Partial Mortality on Un-evacuated Population (Flood depth proportional)
@@ -151,7 +146,7 @@ public class MarineSubmersionEngine {
                     double floodDepth = seaLevelOffset - elevation;
                     double mortalityRate = Math.clamp(0.05 * floodDepth, 0.01, 0.30); // 1% to 30% max mortality on unprepared residual
                     int casualtyCount = (int) (remainingPop * mortalityRate);
-                    cell.setPopulation(remainingPop - casualtyCount);
+                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, remainingPop - casualtyCount));
                 }
 
                 // 4. Biome update if permanently flooded
@@ -163,5 +158,3 @@ public class MarineSubmersionEngine {
         }
     }
 }
-
-

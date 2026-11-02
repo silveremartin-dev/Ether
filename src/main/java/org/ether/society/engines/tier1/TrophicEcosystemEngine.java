@@ -37,12 +37,13 @@ public class TrophicEcosystemEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processTrophicEcosystem(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for TrophicEcosystemEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         if (!pleistoceneRewildingActive && globalBiodiversityIndex >= 0.5) {
             return;
         }
+
+        double dtSafe = Math.max(0.0001, deltaYears);
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
@@ -55,71 +56,30 @@ public class TrophicEcosystemEngine {
             double temp = cell.getTemperatureOr(10.0);
             double absLat = cell.getLatitude() != null ? Math.abs(cell.getLatitude()) : 0.0;
             if (pleistoceneRewildingActive && (temp <= 4.0 || absLat > 45.0)) {
-                double SOC = cell.getSoilOrganicCarbonOr(0.0);
-                cell.setSoilOrganicCarbon(SOC + megafaunaDensityPerKm2 * 0.05 * deltaYears);
+                double soc = cell.getSoilOrganicCarbonOr(0.0);
+                cell.setSoilOrganicCarbon(soc + megafaunaDensityPerKm2 * 0.05 * dtSafe);
 
-                // Slight albedo increase due to grassland maintenance vs dark shrub encroachment
-                double albedo = cell.getDynamicAlbedoOr(0.30);
-                cell.setDynamicAlbedo(Math.min(0.80, albedo + 0.001 * megafaunaDensityPerKm2));
+                // Grassland albedo maintenance vs dark shrub encroachment, bounded by physical optics
+                double baseAlbedo = cell.calculateDynamicAlbedo();
+                double rewildingAlbedoBonus = Math.min(0.04, 0.002 * megafaunaDensityPerKm2);
+                cell.setDynamicAlbedo(Math.min(0.80, baseAlbedo + rewildingAlbedoBonus));
             }
 
             // Biodiversity loss degrades natural ecosystem resilience
             if (globalBiodiversityIndex < 0.5) {
-                cell.setBiomassNatural(Math.max(0.0, naturalBiomass * (1.0 - (0.5 - globalBiodiversityIndex) * 0.1 * deltaYears)));
+                cell.setBiomassNatural(Math.max(0.0, naturalBiomass * (1.0 - (0.5 - globalBiodiversityIndex) * 0.1 * dtSafe)));
             }
         }
     }
 
     // Getters and Setters
-    /**
-     * Is pleistocene rewilding active.
-     *
-     * @return the resulting computation or state reference
-     */
     public static boolean isPleistoceneRewildingActive() { return pleistoceneRewildingActive; }
-    /**
-     * Set pleistocene rewilding active operation.
-     * <p>
-     * Executes operational logic for {@code TrophicEcosystemEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param active the active argument (boolean)
-     */
     public static void setPleistoceneRewildingActive(boolean active) { pleistoceneRewildingActive = active; }
 
-    /**
-     * Get megafauna density per km2.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getMegafaunaDensityPerKm2() { return megafaunaDensityPerKm2; }
-    /**
-     * Set megafauna density per km2 operation.
-     * <p>
-     * Executes operational logic for {@code TrophicEcosystemEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param density the density argument (double)
-     */
     public static void setMegafaunaDensityPerKm2(double density) { megafaunaDensityPerKm2 = Math.max(0.0, density); }
 
-    /**
-     * Get global biodiversity index.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getGlobalBiodiversityIndex() { return globalBiodiversityIndex; }
-    /**
-     * Set global biodiversity index operation.
-     * <p>
-     * Executes operational logic for {@code TrophicEcosystemEngine} within the Tier 1 physical conservation solver.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param index the index argument (double)
-     */
     public static void setGlobalBiodiversityIndex(double index) { globalBiodiversityIndex = Math.max(0.0, Math.min(1.0, index)); }
 
     public static void resetState() {
@@ -128,5 +88,3 @@ public class TrophicEcosystemEngine {
         globalBiodiversityIndex = 1.0;
     }
 }
-
-

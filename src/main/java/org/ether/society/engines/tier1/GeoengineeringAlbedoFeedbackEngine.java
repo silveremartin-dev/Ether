@@ -36,12 +36,12 @@ public class GeoengineeringAlbedoFeedbackEngine {
      * @param deltaYears step size in years
      */
     public static void processGeoengineeringAlbedo(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for GeoengineeringAlbedoFeedbackEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
+
+        double dtSafe = Math.max(0.0001, deltaYears);
 
         // Calculate active geoengineering deployment based on global high-tech cells
         double totalTech5Plus = 0;
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             int pop = cell.getPopulationOr(0);
@@ -56,22 +56,27 @@ public class GeoengineeringAlbedoFeedbackEngine {
             // 5 Tg SO2 ~ -0.5°C cooling
             globalCoolingEffectCelsius = globalSaiAerosolLoadingTg * 0.10;
         } else {
-            globalSaiAerosolLoadingTg = Math.max(0.0, globalSaiAerosolLoadingTg - (1.0 * deltaYears)); // Aerosol decay ~1-2 yr lifetime
+            globalSaiAerosolLoadingTg = Math.max(0.0, globalSaiAerosolLoadingTg - (1.0 * dtSafe)); // Aerosol decay ~1-2 yr lifetime
             globalCoolingEffectCelsius = globalSaiAerosolLoadingTg * 0.10;
         }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
+        double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 1.5);
+
         for (H3Cell cell : cells) {
             if (cell == null || cell.getTemperature() == null) continue;
 
-            // Apply global aerosol cooling offset
+            // Apply global aerosol cooling offset relaxed towards equilibrium
             if (globalCoolingEffectCelsius > 0.0) {
-                cell.setTemperature(cell.getTemperature() - (globalCoolingEffectCelsius * deltaYears));
+                double curTemp = cell.getTemperatureOr(15.0);
+                double elev = cell.getElevationOr(0.0);
+                double lat = cell.getLatitudeOr(0.0);
+                double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+                double targetTemp = baselineTemp - globalCoolingEffectCelsius;
+                cell.setTemperature(curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
 
-                // Side effect of SAI: Disruption of monsoon precipitation (-2% to -8% rainfall)
+                // Side effect of SAI: Disruption of monsoon precipitation
                 if (cell.getRainfall() != null) {
-                    double rainfallDisruption = Math.max(0.1, 1.0 - (globalSaiAerosolLoadingTg * 0.003));
-                    cell.setRainfall(Math.max(50.0, cell.getRainfall() * rainfallDisruption));
+                    cell.setRainfall(Math.max(50.0, cell.getRainfall() * Math.exp(-0.02 * globalSaiAerosolLoadingTg * dtSafe)));
                 }
             }
 
@@ -80,20 +85,10 @@ public class GeoengineeringAlbedoFeedbackEngine {
         }
     }
 
-    /**
-     * Get global sai aerosol loading tg.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getGlobalSaiAerosolLoadingTg() {
         return globalSaiAerosolLoadingTg;
     }
 
-    /**
-     * Get global cooling effect celsius.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getGlobalCoolingEffectCelsius() {
         return globalCoolingEffectCelsius;
     }
@@ -103,5 +98,3 @@ public class GeoengineeringAlbedoFeedbackEngine {
         globalCoolingEffectCelsius = 0.0;
     }
 }
-
-

@@ -72,7 +72,6 @@ public class AlbedoClimateEngine {
      * @param dtYears               Time step in years
      */
     public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset, double dtYears) {
-// Numerical integration step for AlbedoClimateEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         // 1. Calculate Orbital Precession Phase (21,000-year Milankovitch cycle)
@@ -137,11 +136,11 @@ public class AlbedoClimateEngine {
             if (rain > 900.0 && elev < 30.0 && cell.getBiome() == Biome.BEACH) {
                 floodDisasterCounter.incrementAndGet();
                 double curCap = cell.getResourceCapitalOr(0.0);
-                // Continuous exponential storm damage calibrated so 1/12 yr equals 0.70 retention if unscaled, or bounded continuous rate
-                double capRetention = dtYears >= 0.08 && dtYears <= 0.09 ? 0.70 : Math.exp(-0.356675 * (dtSafe * 12.0));
+                // Continuous exponential storm damage: retention = exp(-lambda * dt)
+                double capRetention = Math.exp(-4.2801 * dtSafe);
                 cell.setResourceCapital(curCap * capRetention);
                 double curWater = cell.getWaterResourceOr(100.0);
-                double waterRetention = dtYears >= 0.08 && dtYears <= 0.09 ? 0.50 : Math.exp(-0.693147 * (dtSafe * 12.0));
+                double waterRetention = Math.exp(-8.3178 * dtSafe);
                 cell.setWaterResource(Math.max(50.0, curWater * waterRetention));
             }
         };
@@ -163,5 +162,3 @@ public class AlbedoClimateEngine {
         }
     }
 }
-
-

@@ -42,9 +42,6 @@ public class TerraformingEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processTerraforming(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
         if (!terraformingActive && asteroidMiningFluxTonnesPerYear <= 0.0 && solarMirrorInsolationMultiplier == 1.0) {
             return;
@@ -53,21 +50,27 @@ public class TerraformingEngine {
         // Apply orbital mirror solar forcing & greenhouse atmospheric warming
         double safeCo2 = Math.max(1.0, co2Ppm);
         double radiativeForcingWm2 = 5.35 * Math.log(safeCo2 / 280.0) + (solarMirrorInsolationMultiplier - 1.0) * 1361.0;
-        double globalTempDelta = radiativeForcingWm2 * 0.8 * deltaYears;
+        double globalTempAnomaly = radiativeForcingWm2 * 0.8; // Equilibrium temperature anomaly in °C
+        double dtSafe = Math.max(0.0001, deltaYears);
+        double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 5.0);
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
-            // Update cell temperature based on global terraforming radiative forcing
-            double currentTemp = cell.getTemperatureOr(15.0);
-            cell.setTemperature(currentTemp + globalTempDelta);
+            // Update cell temperature based on global terraforming radiative forcing relaxed towards equilibrium
+            double curTemp = cell.getTemperatureOr(15.0);
+            double elev = cell.getElevationOr(0.0);
+            double lat = cell.getLatitudeOr(0.0);
+            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+            double targetTemp = baselineTemp + globalTempAnomaly;
+            cell.setTemperature(curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
 
             // Asteroid mining influx boosts local metal/mineral density
             int pop = cell.getPopulationOr(0);
             double popWeight = pop / (500.0 + pop);
             if (asteroidMiningFluxTonnesPerYear > 0 && pop > 0) {
-                double mineralBoost = (asteroidMiningFluxTonnesPerYear / cells.size()) * 0.0001 * popWeight;
+                double mineralBoost = (asteroidMiningFluxTonnesPerYear / cells.size()) * 0.0001 * popWeight * dtSafe;
                 cell.setResourceMetal((cell.getResourceMetalOr(0.0)) + mineralBoost);
             }
         }
@@ -77,89 +80,19 @@ public class TerraformingEngine {
     public static boolean isTerraformingActive() { return terraformingActive; }
     public static void setTerraformingActive(boolean active) { terraformingActive = active; }
 
-    /**
-     * Get atmospheric pressure atm.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getAtmosphericPressureAtm() { return atmosphericPressureAtm; }
-    /**
-     * Set atmospheric pressure atm operation.
-     * <p>
-     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param pressure the pressure argument (double)
-     */
     public static void setAtmosphericPressureAtm(double pressure) { atmosphericPressureAtm = Math.max(0.01, pressure); }
 
-    /**
-     * Get co2ppm.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getCo2Ppm() { return co2Ppm; }
-    /**
-     * Set co2ppm operation.
-     * <p>
-     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param ppm the ppm argument (double)
-     */
     public static void setCo2Ppm(double ppm) { co2Ppm = Math.max(10.0, ppm); }
 
-    /**
-     * Get solar mirror insolation multiplier.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getSolarMirrorInsolationMultiplier() { return solarMirrorInsolationMultiplier; }
-    /**
-     * Set solar mirror insolation multiplier operation.
-     * <p>
-     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param mult the mult argument (double)
-     */
     public static void setSolarMirrorInsolationMultiplier(double mult) { solarMirrorInsolationMultiplier = Math.max(0.5, Math.min(5.0, mult)); }
 
-    /**
-     * Get asteroid mining flux tonnes per year.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getAsteroidMiningFluxTonnesPerYear() { return asteroidMiningFluxTonnesPerYear; }
-    /**
-     * Set asteroid mining flux tonnes per year operation.
-     * <p>
-     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param flux the flux argument (double)
-     */
     public static void setAsteroidMiningFluxTonnesPerYear(double flux) { asteroidMiningFluxTonnesPerYear = Math.max(0.0, flux); }
 
-    /**
-     * Get off world eroei ratio.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getOffWorldEroeiRatio() { return offWorldEroeiRatio; }
-    /**
-     * Set off world eroei ratio operation.
-     * <p>
-     * Executes operational logic for {@code TerraformingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param eroei the eroei argument (double)
-     */
     public static void setOffWorldEroeiRatio(double eroei) { offWorldEroeiRatio = Math.max(0.1, eroei); }
 
     public static void resetState() {
@@ -171,5 +104,3 @@ public class TerraformingEngine {
         offWorldEroeiRatio = 15.0;
     }
 }
-
-

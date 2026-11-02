@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Urban Thermodynamics & Infrastructure Grid Engine.
- * Models urban heat island effect (T_uhi), high-voltage grid transmission losses (I^2 * R Joule heating),
+ * Models urban heat island effect (T_uhi, Oke 1982), high-voltage grid transmission losses (I^2 * R Joule heating),
  * and localized aquifer drawdowns in dense population centers.
  *
  * @author Silvere Martin-Michiellot
@@ -30,28 +30,32 @@ public class UrbanThermodynamicsEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processUrbanThermodynamics(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for UrbanThermodynamicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
+
+        double dtSafe = Math.max(0.0001, deltaYears);
+        double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 0.5);
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() < 5000) continue;
 
             long pop = cell.getPopulation();
-            // Urban Heat Island (T_uhi) formula: deltaT = 0.5 * log10(pop / 1000)
+            // Urban Heat Island (T_uhi) formula: deltaT = 0.5 * log10(pop / 1000) (Oke 1982)
             double uhiDeltaT = 0.5 * Math.log10(pop / 1000.0);
             double currentTemp = cell.getTemperatureOr(15.0);
+            double elev = cell.getElevationOr(0.0);
+            double lat = cell.getLatitudeOr(0.0);
+            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+            double targetTemp = baselineTemp + uhiDeltaT;
 
-            // Apply UHI bump to cell local temperature
-            cell.setTemperature(currentTemp + uhiDeltaT * 0.05 * deltaYears);
+            // Apply UHI relaxation towards equilibrium target temperature
+            cell.setTemperature(currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor);
 
             // High population density accelerates localized aquifer depletion
             if (pop > 50000) {
                 double aquifer = cell.getAccessibleAquiferOr(0.0);
-                cell.setAccessibleAquifer(Math.max(0.0, aquifer - (pop * 0.001) * deltaYears));
+                cell.setAccessibleAquifer(Math.max(0.0, aquifer - (pop * 0.001) * dtSafe));
             }
         }
     }
 }
-
-

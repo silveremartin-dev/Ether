@@ -471,4 +471,69 @@ public final class H3CellPhysicsAndStateHelper {
         cell.setFreshwaterAquifer(state.freshwaterAquifer());
         cell.setAccessibleAquifer(state.accessibleAquifer());
     }
+
+    /**
+     * Rescales all 7 demographic cohorts proportionally to match target total population,
+     * maintaining strict demographic mass closure: sum(cohort_i) == targetPop.
+     *
+     * @param cell target H3 cell
+     * @param targetPop new total population
+     */
+    public static void synchronizeCohortsToPopulation(H3Cell cell, int targetPop) {
+        if (cell == null) return;
+        if (targetPop <= 0) {
+            cell.setPopulation(0);
+            cell.setPop0to4(0);
+            cell.setPop5to14(0);
+            cell.setPop15to24(0);
+            cell.setPop25to49(0);
+            cell.setPop50to64(0);
+            cell.setPop65to79(0);
+            cell.setPop80Plus(0);
+            return;
+        }
+        int cur0 = cell.getPop0to4Or(0);
+        int cur5 = cell.getPop5to14Or(0);
+        int cur15 = cell.getPop15to24Or(0);
+        int cur25 = cell.getPop25to49Or(0);
+        int cur50 = cell.getPop50to64Or(0);
+        int cur65 = cell.getPop65to79Or(0);
+        int cur80 = cell.getPop80PlusOr(0);
+        long currentSum = (long) cur0 + cur5 + cur15 + cur25 + cur50 + cur65 + cur80;
+        if (currentSum <= 0) {
+            int c0 = (int) Math.round(targetPop * 0.08);
+            int c5 = (int) Math.round(targetPop * 0.17);
+            int c15 = (int) Math.round(targetPop * 0.16);
+            int c25 = (int) Math.round(targetPop * 0.35);
+            int c50 = (int) Math.round(targetPop * 0.14);
+            int c65 = (int) Math.round(targetPop * 0.07);
+            int c80 = Math.max(0, targetPop - (c0 + c5 + c15 + c25 + c50 + c65));
+            cell.setPop0to4(c0);
+            cell.setPop5to14(c5);
+            cell.setPop15to24(c15);
+            cell.setPop25to49(c25);
+            cell.setPop50to64(c50);
+            cell.setPop65to79(c65);
+            cell.setPop80Plus(c80);
+            cell.setPopulation(targetPop);
+            return;
+        }
+        double ratio = (double) targetPop / currentSum;
+        int n0 = (int) Math.round(cur0 * ratio);
+        int n5 = (int) Math.round(cur5 * ratio);
+        int n15 = (int) Math.round(cur15 * ratio);
+        int n25 = (int) Math.round(cur25 * ratio);
+        int n50 = (int) Math.round(cur50 * ratio);
+        int n65 = (int) Math.round(cur65 * ratio);
+        int allocated = n0 + n5 + n15 + n25 + n50 + n65;
+        int n80 = Math.max(0, targetPop - allocated);
+        cell.setPop0to4(n0);
+        cell.setPop5to14(n5);
+        cell.setPop15to24(n15);
+        cell.setPop25to49(n25);
+        cell.setPop50to64(n50);
+        cell.setPop65to79(n65);
+        cell.setPop80Plus(n80);
+        cell.setPopulation(targetPop);
+    }
 }
