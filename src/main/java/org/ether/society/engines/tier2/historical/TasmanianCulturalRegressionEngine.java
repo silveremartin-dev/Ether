@@ -42,10 +42,11 @@ public class TasmanianCulturalRegressionEngine {
             }
         }
 
-        // Henrich (2004) loss condition: small isolated populations below critical meta-demographic threshold
-        // suffer technology regression due to finite transmission fidelity and stochastic learner loss
-        if (totalPop < isolationPopulationThreshold) {
-            double lossRate = 0.04 * (1.0 - totalPop / isolationPopulationThreshold) * deltaYears;
+        // Henrich (2004) law: demographic connectivity determines cumulative technological retention
+        // Continuous sigmoidal transmission fidelity loss replacing piecewise linear cutoff at N = 5000
+        double lossIntensity = 1.0 / (1.0 + Math.exp((totalPop - 2500.0) / 800.0));
+        double lossRate = 0.04 * lossIntensity * deltaYears;
+        if (lossRate > 1e-6) {
             for (H3Cell cell : cells) {
                 if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
                 double tech = cell.getTechnologyLevelOr(1.0);

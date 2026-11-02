@@ -42,10 +42,14 @@ public class AsymmetricColonialTradeEngine {
             double metal = cell.getResourceMetal(); // Bullion stock
             double capital = cell.getResourceCapitalOr(0.0);
 
-            // Asymmetric trade bullion drain: silver exchanged for perishable spices
-            if (metal > 10.0) {
-                cell.setResourceMetal(Math.max(0.0, metal - 0.5 * deltaYears)); // Bullion outflow
-                cell.setResourceCapital(capital + 0.2 * deltaYears); // Temporary capital gain before monopoly decay
+            // Asymmetric trade bullion drain: silver exchanged for perishable spices (Flynn & GirÃ¡ldez 1995)
+            // Continuous Michaelis-Menten / Hill extraction envelope replacing discrete jump at metal > 10.0
+            if (metal > 0.0) {
+                double drainFactor = metal / (metal + 15.0);
+                double bullionOutflow = 0.5 * drainFactor * deltaYears;
+                double capitalGain = 0.2 * drainFactor * deltaYears;
+                cell.setResourceMetal(Math.max(0.0, metal - bullionOutflow));
+                cell.setResourceCapital(capital + capitalGain);
             }
         }
     }

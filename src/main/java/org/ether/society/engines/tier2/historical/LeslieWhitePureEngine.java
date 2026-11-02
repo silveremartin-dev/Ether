@@ -51,12 +51,22 @@ public class LeslieWhitePureEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double energy = cell.getEnergyFoodConsumedOr(1.0);
+            // Total per capita energy includes somatic (food) and exosomatic energy (fire, livestock, coal, oil)
+            // (Leslie White 1949 "The Science of Culture"; Vaclav Smil 2017 "Energy and Civilization")
+            double foodEnergy = cell.getEnergyFoodConsumedOr(3.5 * cell.getPopulation());
+            double exosomaticEnergy = cell.getEnergyFireOr(0.0)
+                    + cell.getEnergyWindOr(0.0)
+                    + cell.getEnergySolarOr(0.0)
+                    + (cell.getBiomassLivestockOr(0.0) * 15.0)
+                    + (cell.getResourceCoalOr(0.0) * 24.0)
+                    + (cell.getResourceOilOr(0.0) * 42.0);
+            double totalEnergy = foodEnergy + exosomaticEnergy;
+            double energyPerCapita = totalEnergy / Math.max(1, cell.getPopulation());
             double tech = cell.getTechnologyLevelOr(1.0);
 
-            double culturalComplexity = calculateCulturalComplexity(energy / cell.getPopulation(), tech);
-            // Cultural complexity boosts technological progress speed
-            cell.setTechnologyLevel(tech + culturalComplexity * 0.0001 * deltaYears);
+            double culturalComplexity = calculateCulturalComplexity(energyPerCapita, tech);
+            // Cultural complexity boosts technological progress speed (C = E * T)
+            cell.setTechnologyLevel(tech + (culturalComplexity * 0.00005) * deltaYears);
         }
     }
 }

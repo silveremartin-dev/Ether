@@ -1967,3 +1967,63 @@ $$\Delta \text{Pollution} = + 0.20 \cdot \xi_{\text{scott}}(T) \cdot \Delta t$$
 Normalizes logistic renewal and couples spatial extraction to human density:
 $$\dot{x}_{\text{pure}} = \beta \cdot x \cdot \left(1.0 - \frac{x}{100.0}\right) - \delta \cdot (X_C + X_E) \cdot x$$
 $$\dot{B}_{\text{natural}} = 0.02 \cdot B \cdot \max\left(0, 1.0 - \frac{B}{100.0}\right) - 0.0002 \cdot \min(\rho, 500.0) \cdot \left(\frac{B}{100.0}\right)$$
+
+### 19.27. Asymmetric Colonial Trade & Bullion Outflow Engine (`AsymmetricColonialTradeEngine.java`)
+* **Core Model**: Flynn & Giráldez (1995) *Born with a "Silver Spoon"*, Pomeranz (2000) *The Great Divergence*.
+* **Continuous Michaelis-Menten Extraction Envelope**:
+  $$\Phi_{\text{drain}}(M) = \frac{M}{M + 15.0}$$
+  $$\dot{M}_{\text{bullion}} = - 0.50 \cdot \Phi_{\text{drain}}(M) \cdot \Delta t$$
+  $$\dot{K} = + 0.20 \cdot \Phi_{\text{drain}}(M) \cdot \Delta t$$
+* **Physical & Thermodynamic State Variables**:
+  * $M$: Cell bullion / precious metal inventory (kg).
+  * $K$: Domestic reproducible capital stock.
+  * Replaces discrete knife-edge cutoff `metal > 10.0` with $C^\infty$ continuous saturation.
+
+### 19.28. Joseph Henrich Tasmanian Cultural Loss Engine (`TasmanianCulturalRegressionEngine.java`)
+* **Core Model**: Henrich (2004) *Demography and Cultural Evolution*, Kline & Boyd (2010).
+* **Continuous Sigmoidal Transmission Fidelity Law**:
+  $$\Lambda(N) = \frac{1}{1 + \exp\left(\frac{N - 2500}{800}\right)}$$
+  $$\Delta T = - 0.04 \cdot \Lambda(N) \cdot \Delta t$$
+* **Variables & Invariants**:
+  * $N$: Total demographic population across contiguous isolated ecumene.
+  * $T$: Local technological complexity stage ($0.0 \le T \le 10.0$).
+  * Eliminates sharp derivative discontinuity at $N = 5000$.
+
+### 19.29. Pre-Columbian Amerindian & Virgin-Soil Epidemics Engine (`AmerindianEcosystemEngine.java`)
+* **Core Model**: Crosby (1976) *Virgin Soil Epidemics*, Koch et al. (2019) *Great Dying in the Americas*.
+* **Demographic Mass Conservation & Age Cohort Consistency**:
+  $$S_{\text{epidemic}} = \max\left(0.01, 1.0 - \mu_{\text{mortality}} \cdot \min(1.0, 0.10 \cdot \Delta t)\right)$$
+  $$N_i(t + \Delta t) = \text{round}(N_i(t) \cdot S_{\text{epidemic}}), \quad \forall i \in \{0-4, 5-14, 15-24, 25-49, 50-64, 65-79, 80+\}$$
+  $$N_{\text{total}}(t + \Delta t) = \max\left(10, \sum_i N_i(t + \Delta t)\right)$$
+* **Invariants**: Guarantees exact closure of the 7-cohort demographic age pyramid.
+
+### 19.30. Weberian Protestant Work Ethic Engine (`ProtestantWorkEthicEngine.java`)
+* **Core Model**: Weber (1905), Becker & Woessmann (2009) *Was Weber Wrong? A Human Capital Theory*.
+* **Human Capital & Literacy-Weighted Accumulation**:
+  $$\omega_{\text{literacy}} = \text{clamp}\left(\frac{T}{6.0}, 0.10, 1.00\right)$$
+  $$\Delta K = N \cdot 0.05 \cdot \left(1.0 + (\kappa_{\text{savings}} - 1.0) \cdot \omega_{\text{literacy}}\right) \cdot \Delta t$$
+  $$\Delta T = 0.01 \cdot \left(1.0 + (\kappa_{\text{tech}} - 1.0) \cdot \omega_{\text{literacy}}\right) \cdot \Delta t$$
+* **Invariants**: Replaces exogenous flat drift with endogenous human capital scaling.
+
+### 19.31. Psychohistory & Structural Seldon Crisis Engine (`PsychohistoryPureEngine.java`)
+* **Core Model**: Asimov (1951), Turchin (2003) *Historical Dynamics*.
+* **Continuous Logistic Mass Inertia & Spatial Gini Bifurcation Probability**:
+  $$I_{\text{mass}}(N) = \frac{1}{1 + \exp\left(-1.5 \cdot (\log_{10}(N) - 6.0)\right)}$$
+  $$P(\text{Crisis}) = \text{clamp}\left(I_{\text{mass}}(N) \cdot \bar{G}, 0.001, 0.990\right)$$
+* **Invariants**: Eliminates knife-edge threshold at $10^6$ and couples bifurcation risk to the live spatial mean Gini $\bar{G}$.
+
+### 19.32. Leslie White Thermodynamic Cultural Evolution Engine (`LeslieWhitePureEngine.java`)
+* **Core Model**: Leslie White (1949) *The Science of Culture*, Vaclav Smil (2017) *Energy and Civilization*.
+* **Coupled Exosomatic & Somatic Energy Formulation ($C = E \cdot T$)**:
+  $$E_{\text{total}} = E_{\text{food}} + E_{\text{fire}} + E_{\text{wind}} + E_{\text{solar}} + 15.0 \cdot B_{\text{livestock}} + 24.0 \cdot R_{\text{coal}} + 42.0 \cdot R_{\text{oil}}$$
+  $$\mathcal{C} = \max\left(1.0, \frac{E_{\text{total}}}{N} \cdot T\right)$$
+  $$\Delta T = \mathcal{C} \cdot 5 \times 10^{-5} \cdot \Delta t$$
+* **Physical Units**: $E_{\text{total}}$ in Gigajoules ($\text{GJ}$), $\mathcal{C}$ dimensionless cultural complexity index.
+
+### 19.33. Geopolitical Boundary Friction & Accelerated Spatial War Engine (`WarDiplomacyEngine.java`)
+* **Core Model**: Bueno de Mesquita (1981) *The War Trap*, Lanchester (1916) *Square Law*.
+* **Three-Tier Spatial Acceleration**:
+  $$\text{Complexity: } O(N_1 \times N_2) \implies O(N_1)$$
+  * Tier 1: Latitudinal Bounding Box culling with $1.45^\circ$ ($\approx 160\text{ km}$) safety margin.
+  * Tier 2: Spatial Hash Grid Binning ($1.5^\circ \times 1.5^\circ$) for defender polity territory.
+  * Tier 3: Localized 9-Neighbor Bin traversal with equirectangular rejection before full Haversine geodesic evaluation.

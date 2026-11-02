@@ -49,12 +49,14 @@ public class ProtestantWorkEthicEngine {
             double tech = cell.getTechnologyLevelOr(1.0);
             double pop = cell.getPopulation();
 
-            // Accelerated capital formation via frugal savings
-            double capitalGain = (pop * 0.05 * capitalSavingsMultiplier) * deltaYears;
+            // Accelerated capital formation via frugal savings (Weber 1905; Becker & Woessmann 2009)
+            // Continuous human capital weighting via technology/literacy state rather than flat global drift
+            double literacyWeight = Math.clamp(tech / 6.0, 0.10, 1.0);
+            double capitalGain = (pop * 0.05 * (1.0 + (capitalSavingsMultiplier - 1.0) * literacyWeight)) * deltaYears;
             cell.setResourceCapital(capital + capitalGain);
 
-            // Accelerated technology adoption rate
-            double techGain = (0.01 * techAccelerationMultiplier) * deltaYears;
+            // Accelerated technology adoption rate weighted by human capital
+            double techGain = (0.01 * (1.0 + (techAccelerationMultiplier - 1.0) * literacyWeight)) * deltaYears;
             cell.setTechnologyLevel(tech + techGain);
 
             // Population is NOT modified here: the former "+0.1%/yr" multiplication created people without
