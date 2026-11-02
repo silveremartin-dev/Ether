@@ -40,13 +40,15 @@ public class MilitaryTechShockEngine {
             if (cell == null || cell.getTechnologyLevel() == null) continue;
 
             double tech = cell.getTechnologyLevel();
-            // Transition window of revolutionary military shock (e.g. gunpowder / arquebus introduction at Tech 3.5)
-            if (tech >= 3.4 && tech <= 3.8) {
-                // Accelerate technology consolidation & military work output
+            // Continuous Gaussian envelope of revolutionary military shock (e.g. gunpowder / arquebus introduction around Tech 3.6)
+            // Eliminates knife-edge box filter boundaries in favor of C-infinity continuity
+            double shockIntensity = Math.exp(-Math.pow(tech - 3.6, 2.0) / (2.0 * 0.20 * 0.20));
+            if (shockIntensity > 0.005) {
+                // Accelerate technology consolidation & military work output proportionally to shock intensity
                 if (cell.getResourceWork() != null) {
-                    cell.setResourceWork(cell.getResourceWork() * (1.0 + 0.15 * deltaYears));
+                    cell.setResourceWork(cell.getResourceWork() * (1.0 + 0.15 * shockIntensity * deltaYears));
                 }
-                cell.setTechnologyLevel(tech + 0.05 * deltaYears);
+                cell.setTechnologyLevel(Math.min(10.0, tech + 0.05 * shockIntensity * deltaYears));
             }
         }
     }

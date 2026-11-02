@@ -41,8 +41,8 @@ public class ScottAgainstTheGrainPureEngine {
 
             double tech = cell.getTechnologyLevel();
             // Continuous Gaussian early-agrarian health & epidemic vulnerability envelope (Scott 2017 "Against the Grain")
-            // Peak vulnerability centered at tech 2.0 (early state formation) with standard deviation 0.35
-            double scottVulnerability = Math.exp(-Math.pow(tech - 2.0, 2.0) / (2.0 * 0.35 * 0.35));
+            // Peak vulnerability centered at tech 2.0 (early state formation) with standard deviation 0.25
+            double scottVulnerability = Math.exp(-Math.pow(tech - 2.0, 2.0) / (2.0 * 0.25 * 0.25));
 
             if (scottVulnerability > 0.01) {
                 // Scott penalty: initial health drop from grain monoculture and crowd disease

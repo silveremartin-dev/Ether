@@ -143,6 +143,7 @@ public class H3Cell {
     @Column(nullable = false) private Boolean isCoastal = false;
     @Column(nullable = false) private Double coastalMarineResource = 0.0;
     @Column(nullable = false) private Boolean isPolder = false;
+    @Column(nullable = false) private Boolean hasDam = false;
     @Column(nullable = false) private Boolean hasFloatingInfrastructure = false;
 
     // --- Extraterrestrial Pressurized Habitats & Infrastructure ---
@@ -551,6 +552,9 @@ public class H3Cell {
 
     public Boolean getIsPolder() { return isPolder != null ? isPolder : false; }
     public void setIsPolder(Boolean isPolder) { this.isPolder = isPolder; }
+
+    public Boolean getHasDam() { return hasDam != null ? hasDam : false; }
+    public void setHasDam(Boolean hasDam) { this.hasDam = hasDam; }
 
     public Boolean getHasFloatingInfrastructure() { return hasFloatingInfrastructure != null ? hasFloatingInfrastructure : false; }
     public void setHasFloatingInfrastructure(Boolean hasFloatingInfrastructure) { this.hasFloatingInfrastructure = hasFloatingInfrastructure; }

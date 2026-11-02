@@ -1443,3 +1443,243 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Accurately reflects Leslie White's law ($C = E \cdot T$) by integrating somatic and exosomatic energy streams, capturing historical expansion from $5\text{ GJ/cap}$ (hunter-gatherers) to $> 300\text{ GJ/cap}$ (industrial era).
 * **Empirical Validation Grounding**:
   * White (1949); Smil (2017).
+
+---
+
+### Entry 77: Continuous Era-Dependent & Urban-Vulnerability Warfare Demographics with Post-Battle Camp Epidemics
+* **Date**: November 2, 2026
+* **Subsystem**: `WarDiplomacyEngine.java`
+* **Canonical Literature**:
+  * Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Company.
+  * Eckhardt, W. (1989). *Civilian deaths in wartime*. Bulletin of Peace Proposals, 20(1), 89-98.
+  * Valentino, B. A. (2004). *Final Solutions: Mass Killing and Genocide in the 20th Century*. Cornell University Press.
+  * Zinsser, H. (1935). *Rats, Lice and History*. Little, Brown and Co.
+  * Smallman-Raynor, M., & Cliff, A. D. (2004). *War Epidemics: An Historical Geography of Infectious Diseases in Military Conflicts and Civil Strife, 1850-2000*. Oxford University Press.
+* **Problem in Previous Implementation**:
+  * Combat losses were uniformly distributed across age cohorts, civilian collateral was fixed at an ad-hoc 5% regardless of historical period, post-battle military epidemics were unmodeled, and fertility did not reflect male reproductive deficit.
+* **Calibrated Ether Formulation**:
+  * Combat casualties target young adult male cohorts (`pop15to24` 75%, `pop25to49` 25%).
+  * Era-dependent continuous civilian collateral envelope:
+    $$\psi_{\text{base}}(T) = \text{clamp}\left(0.06 + 0.28 \cdot \exp\left(-\frac{(T - 3.4)^2}{2 \cdot 0.5^2}\right) + \frac{0.45}{1 + \exp(-2.5 \cdot (T - 5.2))}, 0.05, 0.65\right)$$
+    $$\psi_{\text{civ}}(T, u) = \text{clamp}\left(\psi_{\text{base}}(T) \cdot (1.0 + 1.2 \cdot u), 0.04, 0.80\right)$$
+    where $u = \text{clamp}(\text{pop} / 40\,000, 0, 1)$ reflects urban siege vulnerability. Vulnerable non-combatant cohorts (infants 0-4, elderly 65+) suffer 1.4x heightened mortality.
+  * Post-battle camp disease seeding (`activePathogenName` = "Camp Fever (Typhus & Dysentery)", "Cholera & Trench Typhus", or "Wartime Pathogen & Epidemic Sepsis"):
+    $$I_{\text{camp}} = \min(0.45 \cdot N, I_{\text{current}} + \text{round}((\text{losses}_{\text{mil}} + \text{losses}_{\text{civ}}) \cdot (0.25 + 0.15 \cdot u)))$$
+  * Sex-ratio birth deficit:
+    $$F(t + 1) = \max\left(1.1, F(t) \cdot \left(1.0 - \text{casualtyRate} \cdot 0.45 \cdot \frac{\text{militaryLosses}}{\max(1, \text{militaryCohort})}\right)\right)$$
+  * Strict demographic mass conservation: $N \equiv \sum_{i=1}^7 N_{\text{cohort}, i}$.
+* **Root Cause & Justification**:
+  * Warfare mortality shifts historically from field battle clashes to devastating feudal marauding (Thirty Years' War) and industrial total warfare / siege bombing. Post-battle bivouacs and broken water infrastructure historically generated more casualties via typhus and dysentery than battlefield trauma.
+* **Empirical Validation Grounding**:
+  * Eckhardt (1989); Smallman-Raynor & Cliff (2004); Maddison Project 2020.
+
+---
+
+### Entry 78: Smooth Continuous Property Rights Differential & Prehistoric Deep-Time Baseline
+* **Date**: November 2, 2026
+* **Subsystem**: `AcemogluRobinsonInstitutionsEngine.java`
+* **Canonical Literature**:
+  * Acemoglu, D., & Robinson, J. A. (2012). *Why Nations Fail: The Origins of Power, Prosperity, and Poverty*. Crown Business.
+* **Problem in Previous Implementation**:
+  * Discontinuous piecewise slope kink at $I_{\text{inc}} = 0.35$ (0.02 positive vs 0.015 negative) and active sovereign extractive index during prehistoric foraging epochs.
+* **Calibrated Ether Formulation**:
+  * Prehistoric deep-time baseline ($T < 1.0$): formal state property rights and institutional rent extraction are dormant ($dK/dt = 0$).
+  * Continuous differential property rights equation for $T \ge 1.0$:
+    $$\frac{dK}{dt} = K \cdot 0.02 \cdot (I_{\text{inc}} - 0.35) \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Eliminates numerical slope kinks and enforces AGENTS.md §8 deep-time invariant.
+* **Empirical Validation Grounding**:
+  * Acemoglu & Robinson (2012); Seshat Global History Databank.
+
+---
+
+### Entry 79: Mountain Hydroelectric Reservoir Infrastructure Commissioning Invariant
+* **Date**: November 2, 2026
+* **Subsystem**: `HydrologicalEngineeringEngine.java`
+* **Canonical Literature**:
+  * Wittfogel, K. A. (1957). *Oriental Despotism: A Comparative Study of Total Power*. Yale University Press.
+* **Problem in Previous Implementation**:
+  * Mountain dam construction lacked a state flag, continuously executing every tick and adding unbounded megawatts of electrical capacity and spamming monthly log entries.
+* **Calibrated Ether Formulation**:
+  * Explicit state persistence via `hasDam` on `H3Cell`: construction executes once, adding 500 kW capacity and stabilizing water security to 1000.0 without infinite power inflation.
+* **Root Cause & Justification**:
+  * Civil infrastructure construction is a discrete capital investment event, not a continuous additive leak.
+* **Empirical Validation Grounding**:
+  * Wittfogel (1957); World Commission on Dams (2000).
+
+---
+
+### Entry 80: Smooth Gaussian Military Arquebus Shock Envelope
+* **Date**: November 2, 2026
+* **Subsystem**: `MilitaryTechShockEngine.java`
+* **Canonical Literature**:
+  * Parker, G. (1996). *The Military Revolution: Military Innovation and the Rise of the West, 1500-1800*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Discontinuous knife-edge box filter `tech >= 3.4 && tech <= 3.8` caused sudden jump shocks.
+* **Calibrated Ether Formulation**:
+  $$\xi(T) = \exp\left(-\frac{(T - 3.6)^2}{2 \cdot 0.20^2}\right)$$
+  $$\Delta W = W \cdot 0.15 \cdot \xi(T) \cdot \Delta t, \quad \Delta T = 0.05 \cdot \xi(T) \cdot \Delta t$$
+* **Root Cause & Justification**:
+  * Replaces discrete conditional window with $C^\infty$ Gaussian distribution centered at the Tanegashima/gunpowder revolution ($T = 3.6$).
+* **Empirical Validation Grounding**:
+  * Parker (1996); Needham (1986).
+
+---
+
+### Entry 81: Labor Requirement & Prehistoric Deep-Time Invariant in Exhaustible Mineral Extraction
+* **Date**: November 2, 2026
+* **Subsystem**: `HotellingResourceDepletionEngine.java`
+* **Canonical Literature**:
+  * Hotelling, H. (1931). *The Economics of Exhaustible Resources*. Journal of Political Economy, 39(2), 137-175.
+* **Problem in Previous Implementation**:
+  * Desert or high mountain cells with zero population automatically mined ore and created capital ex nihilo; deep prehistoric eras mined industrial metals.
+* **Calibrated Ether Formulation**:
+  * Invariant gating: extraction requires resident population ($N \ge 50$) and metallurgical knowledge ($T \ge 1.8$). In deep-time prehistory ($T < 1.8$), ore deposits remain untouched.
+  * Industrial extraction demand: $D = N \cdot 0.02 \cdot (T / 5.0) \cdot \Delta t$.
+* **Root Cause & Justification**:
+  * Physical mineral extraction is constrained by human labor and smelting pyrotechnology.
+* **Empirical Validation Grounding**:
+  * Hotelling (1931); USGS Mineral Commodity Summaries.
+
+---
+
+### Entry 82: Disentangled Exosomatic Exergy Rebound from Somatic Metabolic Intake
+* **Date**: November 2, 2026
+* **Subsystem**: `JevonsParadoxEngine.java`
+* **Canonical Literature**:
+  * Jevons, W. S. (1865). *The Coal Question*. Macmillan.
+  * Alcott, B. (2005). *Jevons' paradox*. Ecological Economics, 54(1), 9-21.
+* **Problem in Previous Implementation**:
+  * Jevons rebound incremented human metabolic food consumption (`energyFoodConsumed`), violating human biological dietary limits.
+* **Calibrated Ether Formulation**:
+  * Industrial exergy rebound channels exclusively into electrical/mechanical capacity (`habitatEnergyKw += reboundDemand * 100.0`), while somatic food intake is capped at biological metabolic saturation.
+* **Root Cause & Justification**:
+  * Jevons paradox governs mechanical/thermal exosomatic work, not biological calorie consumption.
+* **Empirical Validation Grounding**:
+  * Jevons (1865); Smil (2017).
+
+---
+
+### Entry 83: Darcy Precipitation Infiltration Bounded Recharge in Ostrom CPR Governance
+* **Date**: November 2, 2026
+* **Subsystem**: `OstromCommonsPureEngine.java`
+* **Canonical Literature**:
+  * Ostrom, E. (1990). *Governing the Commons: The Evolution of Institutions for Collective Action*. Cambridge University Press.
+* **Problem in Previous Implementation**:
+  * Added flat 0.5 water units ex nihilo even in hyper-arid deserts with zero rainfall, violating hydrological mass conservation.
+* **Calibrated Ether Formulation**:
+  * Aquifer recharge under Ostrom community governance is bounded by Darcy precipitation infiltration:
+    $$R_{\text{inflow}} = \max\left(0.0, \frac{\text{rainfall}}{500.0} \cdot 0.5 \cdot \Delta t\right)$$
+    $$\Delta W = \min(0.5 \cdot \Delta t, R_{\text{inflow}})$$
+* **Root Cause & Justification**:
+  * Community institutional quotas protect existing water tables from overdraft, but cannot generate water without meteorological rainfall.
+* **Empirical Validation Grounding**:
+  * Ostrom (1990); UNESCO WHYMAP.
+
+---
+
+### Entry 84: Demographic Mass Conservation & Adult Targeting in Secular Violent Mortality Decline
+* **Date**: November 2, 2026
+* **Subsystem**: `PinkerViolenceDeclinePureEngine.java`
+* **Canonical Literature**:
+  * Pinker, S. (2011). *The Better Angels of Our Nature: Why Violence Has Declined*. Viking.
+  * Eisner, M. (2003). *Long-Term Historical Trends in Violent Crime*. Crime and Justice, 30, 83-142.
+* **Problem in Previous Implementation**:
+  * Deducted deaths from total population without adjusting age cohorts, breaking $\sum \text{cohorts} \equiv N$, and used proxy literacy in prehistoric epochs.
+* **Calibrated Ether Formulation**:
+  * Deep-time literacy is baseline 0.0% for $T < 1.0$.
+  * Violent mortality falls predominantly on young adult cohorts (`pop15to24` 60%, `pop25to49` 35%), with remaining attrition on mature adults (`pop50to64`). Total population closes exactly: $N \equiv \sum_{i=1}^7 N_{\text{cohort}, i}$.
+* **Root Cause & Justification**:
+  * Preserves demographic mass balance and reflects criminological epidemiology (Eisner 2003).
+* **Empirical Validation Grounding**:
+  * Pinker (2011); Eisner (2003).
+
+---
+
+### Entry 85: Physical Capital Depreciation in Kümmel-Ayres Useful Exergy Production
+* **Date**: November 2, 2026
+* **Subsystem**: `KummelAyresExergyEngine.java`
+* **Canonical Literature**:
+  * Kümmel, R. (1982). *The impact of energy on industrial growth*. Energy, 7(2), 189-203.
+  * Ayres, R. U., & Warr, B. (2009). *The Economic Growth Engine: How Energy and Work Drive Material Prosperity*. Edward Elgar Publishing.
+* **Problem in Previous Implementation**:
+  * Reinvestment lacked physical capital depreciation ($\delta = 0$), driving runaway capital accumulation to infinity.
+* **Calibrated Ether Formulation**:
+  $$\frac{dK}{dt} = s \cdot Y - \delta \cdot K$$
+  where savings rate $s = 0.05$ and physical infrastructure depreciation rate $\delta = 0.04/\text{year}$.
+* **Root Cause & Justification**:
+  * Restores Solow-Swan / Ayres & Warr thermodynamic capital wear and tear.
+* **Empirical Validation Grounding**:
+  * Ayres & Warr (2009); Maddison Project 2020.
+
+---
+
+### Entry 86: Deep-Time Paleolithic Subsistence Scaling & Eco-Material Liebig Input-Output Matrix
+* **Date**: November 2, 2026
+* **Subsystem**: `PhysicalLeontiefInputOutputEngine.java`
+* **Canonical Literature**:
+  * Leontief, W. (1951). *The Structure of American Economy, 1919-1939*. Oxford University Press.
+* **Problem in Previous Implementation**:
+  * Target capital output scaled with modern industrial coefficients regardless of epoch, causing hunter-gatherer bands to manufacture industrial capital.
+* **Calibrated Ether Formulation**:
+  $$\text{techScaling} = \begin{cases} T \cdot 0.20 & \text{for } T < 1.0 \\ 1.0 + T \cdot 0.10 & \text{for } T \ge 1.0 \end{cases}$$
+  * Preserves multi-channel Eco-Material Niche Envelope and high-tech critical mineral bottlenecks ($\Phi_{\text{HighTech}}$ for $T \ge 3.8$).
+* **Root Cause & Justification**:
+  * Deep-time Paleolithic tools (Oldowan/Acheulean flint axes) represent subsistence survival gear, not industrial capital stocks.
+* **Empirical Validation Grounding**:
+  * Leontief (1951); Kelly (2013).
+
+---
+
+### Entry 87: Material Capital Turnover Inertia & Decarbonization Constraints
+* **Date**: November 2, 2026
+* **Subsystem**: `SmilMaterialTransitionsPureEngine.java`
+* **Canonical Literature**:
+  * Smil, V. (2017). *Energy Transitions: Global and National Perspectives*. Praeger.
+  * Smil, V. (2022). *How the World Really Works: The Science Behind How We Got Here and Where We're Going*. Viking.
+* **Problem in Previous Implementation**:
+  * Naive 5% generic destruction of capital failed to model physical replacement timescale of energy and material infrastructure.
+* **Calibrated Ether Formulation**:
+  $$\tau_{\text{inertia}} = 60.0\text{ years}$$
+  $$\text{decayFactor} = \exp\left(-\frac{\Delta t}{\tau_{\text{inertia}}}\right)$$
+  $$K(t + \Delta t) = K(t) \cdot \text{decayFactor} + K(t) \cdot (1.0 - \text{decayFactor}) \cdot 0.96$$
+* **Root Cause & Justification**:
+  * Reflects Vaclav Smil's law on the 50-70 year turnover inertia of heavy industry (steel, cement, ammonia, plastics).
+* **Empirical Validation Grounding**:
+  * Smil (2017, 2022).
+
+---
+
+### Entry 88: Combinatorial Technology Ratchet Ceiling Clamp & Prehistoric Invariant
+* **Date**: November 2, 2026
+* **Subsystem**: `ArthurCombinatorialTechnologyEngine.java`
+* **Canonical Literature**:
+  * Arthur, W. B. (2009). *The Nature of Technology: What It Is and How It Evolves*. Free Press.
+* **Problem in Previous Implementation**:
+  * Technology increment was unclamped, allowing $T > 10.0$ and potential array out-of-bounds in downstream engines.
+* **Calibrated Ether Formulation**:
+  $$T(t + \Delta t) = \min\left(10.0, T(t) + 0.0008 \cdot T^{1.25} \cdot \sqrt{\text{R&D}} \cdot \Delta t\right)$$
+  * Gated for viable settlements ($N \ge 100$): dormant for isolated Paleolithic hominin bands.
+* **Root Cause & Justification**:
+  * Enforces simulation global upper bound $T \in [0.0, 10.0]$ and aligns with Arthur's recombining modular primitive dynamics.
+* **Empirical Validation Grounding**:
+  * Arthur (2009).
+
+---
+
+### Entry 89: Imperial Force Projection Across Orographic Crests (Pax Romana Attractor)
+* **Date**: November 2, 2026
+* **Subsystem**: `WarDiplomacyEngine.java`
+* **Canonical Literature**:
+  * Grataloup, C. (2020). *Géohistoire de la mondialisation*. Armand Colin.
+  * Marshall, T. (2015). *Prisoners of Geography: Ten Maps That Explain Everything About the World*. Scribner.
+* **Problem in Previous Implementation**:
+  * Topographic boundary friction applied a 38.7x penalty regardless of imperial state capacity or bullion war chests, freezing imperial legions at mountain passes.
+* **Calibrated Ether Formulation**:
+  $$\text{mitigation} = 1.0 + (S_{\text{agg}} \cdot 1.5) + \min\left(2.0, \frac{\text{Bullion}}{2000.0}\right)$$
+  $$\sigma_{\text{effective}} = 1.0 + \frac{\max(0.0, \sigma_{\text{friction}} - 1.5)}{\text{mitigation}}$$
+  * Imperial states ($S \ge 0.90$, high bullion) engineer roads and project power across orographic barriers, while decentralized feudal polities ($S \approx 0.20$) crystallize borders along natural mountain crests.
+* **Root Cause & Justification**:
+  * Captures Grataloup's geohistorical duality: centralized empires transcend orography through engineered infrastructure, while decentralized feudal realms settle into natural boundary attractors.
+* **Empirical Validation Grounding**:
+  * Grataloup (2020); Marshall (2015); ScientificModelFalsificationAndValidationSuite.

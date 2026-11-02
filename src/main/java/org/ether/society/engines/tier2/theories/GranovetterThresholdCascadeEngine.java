@@ -112,7 +112,7 @@ public class GranovetterThresholdCascadeEngine implements ProceduralEnginePlugin
 
             double work = cell.getResourceWorkOr(50.0);
             // Strike / civil defiance reallocates labor away from standard production
-            cell.setResourceWork(Math.max(10.0, work * (1.0 - 0.08 * mobilizationFraction * deltaYears)));
+            cell.setResourceWork(Math.max(0.0, work * (1.0 - 0.08 * mobilizationFraction * deltaYears)));
 
         }
     }

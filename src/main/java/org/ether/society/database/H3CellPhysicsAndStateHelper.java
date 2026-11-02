@@ -302,6 +302,7 @@ public final class H3CellPhysicsAndStateHelper {
         copy.setIsCoastal(src.getIsCoastal());
         copy.setCoastalMarineResource(src.getCoastalMarineResource());
         copy.setIsPolder(src.getIsPolder());
+        copy.setHasDam(src.getHasDam());
         copy.setHasFloatingInfrastructure(src.getHasFloatingInfrastructure());
 
         copy.setBiomassHuman(src.getBiomassHuman());

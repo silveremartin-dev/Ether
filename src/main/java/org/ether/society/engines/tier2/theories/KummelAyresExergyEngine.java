@@ -119,9 +119,11 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
             double tfp = 1.0;
             double economicOutput = tfp * Math.pow(capital, ALPHA_K) * Math.pow(labor, BETA_L) * Math.pow(usefulExergy, GAMMA_E);
 
-            // Reinvest fraction of output into physical infrastructure capital
+            // Reinvest fraction of output into physical infrastructure capital with physical depreciation (Ayres & Warr 2009)
+            // dK/dt = s · Y - δ · K (where savings rate s = 0.05, depreciation rate δ = 0.04/yr)
             double capitalReinvestment = economicOutput * 0.05 * deltaYears;
-            cell.setResourceCapital(capital + capitalReinvestment);
+            double capitalDepreciation = capital * 0.04 * deltaYears;
+            cell.setResourceCapital(Math.max(1.0, capital + capitalReinvestment - capitalDepreciation));
         }
     }
 }

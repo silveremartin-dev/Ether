@@ -72,12 +72,20 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
             if (metalDeposit <= 1.0) continue;
 
             int pop = cell.getPopulationOr(0);
-            double industrialDemand = Math.max(1.0, pop * 0.02);
+            double tech = cell.getTechnologyLevelOr(1.0);
+
+            // Deep-time baseline invariant (AGENTS.md §8): extractive metal smelting requires Chalcolithic/Bronze Age
+            // metallurgy (T >= 1.8) and actual resident labor force (pop >= 50). Uninhabited cells cannot mine themselves.
+            if (pop < 50 || tech < 1.8) continue;
+
+            double industrialDemand = pop * 0.02 * (tech / 5.0);
 
             // Deplete ore deposit based on extraction demand, strictly scaling with deltaYears
             double maxExtraction = metalDeposit * 0.05 * deltaYears;
             double extractionDemand = industrialDemand * deltaYears;
             double extraction = Math.min(metalDeposit, Math.min(maxExtraction, extractionDemand));
+            if (extraction <= 0.0) continue;
+
             cell.setResourceMetal(Math.max(0.0, metalDeposit - extraction));
 
             // Scarcity rent escalates infrastructure/capital creation as remaining reserves dwindle

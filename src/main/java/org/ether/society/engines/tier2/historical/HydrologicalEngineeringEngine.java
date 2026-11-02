@@ -76,12 +76,12 @@ public class HydrologicalEngineeringEngine {
             Biome biome = cell.getBiome();
 
             // 1. Tenochtitlan / Lake Texcoco Urban Reclamation & Wetland Drainage
-            if (biome == Biome.LAKE && pop >= 1500) {
+            if (biome == Biome.LAKE && pop >= 1500 && !Boolean.TRUE.equals(cell.getIsPolder())) {
                 if (tech >= tenochtitlanTech && capital >= tenochtitlanCapital) {
                     cell.setBiome(Biome.PLAINS);
                     cell.setIsPolder(true);
-                    cell.setFoodResource(Math.min(1000.0, cell.getFoodResourceOr(0.0) + 50.0 * (timeStepDays / 30.0)));
-                    cell.setSoilOrganicCarbon(Math.max(100.0, cell.getSoilOrganicCarbonOr(50.0) + 15.0 * (timeStepDays / 30.0)));
+                    cell.setFoodResource(Math.min(1000.0, cell.getFoodResourceOr(0.0) + 50.0));
+                    cell.setSoilOrganicCarbon(Math.max(100.0, cell.getSoilOrganicCarbonOr(50.0) + 15.0));
                     logger.info("Hydrological Reclamation (Tenochtitlan Model): Cell {} drained Lake Texcoco for urban expansion.", cell.getH3Index());
                 }
             }
@@ -99,14 +99,15 @@ public class HydrologicalEngineeringEngine {
                 }
             }
 
-            // 3. Mountain Water Reservoirs & Hydroelectric Dam Construction
+            // 3. Mountain Water Reservoirs & Hydroelectric Dam Construction (one-time infrastructure commission)
             if (elevation >= damMinElevation && (cell.getMovementFrictionOr(1.0) >= 1.3 || elevation >= 500.0)) {
-                if (tech >= damTech && capital >= damCapital && !Boolean.TRUE.equals(cell.getIsPolder())) {
-                    // Dam reservoir created: stabilizes water security and generates hydroelectric power
-                    cell.setWaterResource(1000.0);
-                    cell.setEnergySolar(cell.getEnergySolarOr(0.0) + 100.0 * (timeStepDays / 30.0)); // Hydroelectric power boost (legacy compatible)
-                    cell.setHabitatEnergyKw(cell.getHabitatEnergyKwOr(0.0) + 500.0 * (timeStepDays / 30.0)); // Grid mechanical power capacity
-                    cell.setResourceWork(cell.getResourceWorkOr(0.0) + 30.0 * (timeStepDays / 30.0));
+                if (tech >= damTech && capital >= damCapital && !Boolean.TRUE.equals(cell.getHasDam()) && !Boolean.TRUE.equals(cell.getIsPolder())) {
+                    // Dam reservoir created: stabilizes water security and establishes hydroelectric power capacity
+                    cell.setHasDam(true);
+                    cell.setWaterResource(Math.max(1000.0, cell.getWaterResourceOr(0.0)));
+                    cell.setEnergySolar(cell.getEnergySolarOr(0.0) + 100.0); // Hydroelectric power boost (legacy compatible)
+                    cell.setHabitatEnergyKw(cell.getHabitatEnergyKwOr(0.0) + 500.0); // Grid mechanical power capacity
+                    cell.setResourceWork(cell.getResourceWorkOr(0.0) + 30.0);
                     logger.info("Mountain Reservoir Dam Construction: Cell {} built hydroelectric water retention dam.", cell.getH3Index());
                 }
             }

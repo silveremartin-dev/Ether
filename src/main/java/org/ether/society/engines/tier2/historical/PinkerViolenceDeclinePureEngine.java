@@ -56,15 +56,41 @@ public class PinkerViolenceDeclinePureEngine {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
             double tech = cell.getTechnologyLevelOr(1.0);
-            double literacy = Math.min(1.0, tech / 5.0);
-            double stateStrength = Math.min(1.0, tech / 4.0);
+            // Empirical literacy rate; invariant deep-time baseline is 0.0% (AGENTS.md §8)
+            double literacy = tech < 1.0 ? 0.0 : Math.clamp((tech - 1.0) / 5.0, 0.0, 1.0);
+            double stateStrength = Math.min(1.0, Math.max(0.0, (tech - 1.0) / 4.0));
             double tradeOpenness = 0.50;
 
             double violentMortalityRate = calculateViolentDeathRatePerCapita(literacy, stateStrength, tradeOpenness);
 
-            // Reduce population by violent mortality rate
-            double violentDeaths = cell.getPopulation() * violentMortalityRate * deltaYears;
-            cell.setPopulation(Math.max(1, (int)(cell.getPopulation() - violentDeaths)));
+            // Calculate violent deaths scaling with deltaYears
+            int pop = cell.getPopulation();
+            int violentDeaths = (int) Math.round(pop * violentMortalityRate * deltaYears);
+            if (violentDeaths <= 0) continue;
+
+            // Historical violent mortality targeting (Eisner 2003): interpersonal violence & raids
+            // fall overwhelmingly on young adult cohorts (pop15to24: 60%, pop25to49: 35%)
+            int pop15 = cell.getPop15to24Or(0);
+            int pop25 = cell.getPop25to49Or(0);
+            int cas15 = Math.min(pop15, (int) Math.round(violentDeaths * 0.60));
+            int cas25 = Math.min(pop25, (int) Math.round(violentDeaths * 0.35));
+            int remainingCas = Math.max(0, violentDeaths - cas15 - cas25);
+
+            cell.setPop15to24(pop15 - cas15);
+            cell.setPop25to49(pop25 - cas25);
+
+            if (remainingCas > 0) {
+                int pop50 = cell.getPop50to64Or(0);
+                int cas50 = Math.min(pop50, remainingCas);
+                cell.setPop50to64(pop50 - cas50);
+            }
+
+            // Enforce exact demographic mass closure across all 7 cohorts
+            int newTotal = cell.getPop0to4Or(0) + cell.getPop5to14Or(0)
+                    + cell.getPop15to24Or(0) + cell.getPop25to49Or(0)
+                    + cell.getPop50to64Or(0) + cell.getPop65to79Or(0)
+                    + cell.getPop80PlusOr(0);
+            cell.setPopulation(Math.max(1, newTotal));
         }
     }
 }

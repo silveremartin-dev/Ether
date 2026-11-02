@@ -40,9 +40,14 @@ public class OstromCommonsPureEngine {
             if (cell == null || cell.getAccessibleAquifer() == null) continue;
 
             double aquifer = cell.getAccessibleAquifer();
-            // Ostrom polycentric governance protects aquifers from over-extraction
+            // Ostrom polycentric governance (Ostrom 1990) institutes community extraction quotas
+            // that prevent overdraft beyond natural Darcy precipitation recharge.
+            // Strict mass conservation (AGENTS.md §8): water recharge is bounded by actual precipitation inflow
             if (aquifer < 50.0) {
-                cell.setAccessibleAquifer(aquifer + 0.5 * deltaYears); // Sustainable recharge buffer
+                double rainfall = cell.getRainfallOr(0.0);
+                double naturalInflowCap = Math.max(0.0, (rainfall / 500.0) * 0.5 * deltaYears);
+                double sustainableRecharge = Math.min(0.5 * deltaYears, naturalInflowCap);
+                cell.setAccessibleAquifer(aquifer + sustainableRecharge);
             }
         }
     }

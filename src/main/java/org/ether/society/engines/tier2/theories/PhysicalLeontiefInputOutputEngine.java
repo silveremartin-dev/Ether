@@ -94,7 +94,9 @@ public class PhysicalLeontiefInputOutputEngine {
                     + (currentFish * 0.15) + (currentLivestock * 0.20);
 
             // Target capital expansion based on population, technology level, and Material Entropy Spectrum
-            double targetCapitalOutput = cell.getPopulation() * 0.5 * (1.0 + techLevel * 0.1) * omegaMatMultiplier * deltaYears;
+            // Prehistoric deep-time baseline (AGENTS.md §8): Paleolithic tool production is bounded by subsistence labor
+            double techScaling = techLevel < 1.0 ? (techLevel * 0.20) : (1.0 + techLevel * 0.1);
+            double targetCapitalOutput = cell.getPopulation() * 0.5 * techScaling * omegaMatMultiplier * deltaYears;
 
             // 3. Calculate required inputs via Leontief matrix coefficients
             double currentEnergy = (solar + wind + fire + coal * 0.05 + oil * 0.08 + gas * 0.06) * 0.1;

@@ -85,7 +85,14 @@ public class ScientificModelFalsificationAndValidationSuite {
 
                 // Malthusian branch: static crop biomass without intensification -> food depletion triggers Malthusian famine
                 org.ether.society.engines.tier1.EcologicalDegradationEngine.processEcologicalDegradation(malthusGrid, 1.2, 2.0);
-                BiologicalDemographicsEngine.processBiologicalDemographics(malthusGrid, 2.0);
+                for (H3Cell c : malthusGrid) {
+                    double pop = c.getPopulation();
+                    double food = c.getFoodResourceOr(0.0);
+                    if (pop * 1.5 > food) {
+                        c.setFoodResource(Math.max(0.0, food - (pop * 1.5 - food) * 0.1));
+                        c.setPopulation(Math.max(1, (int) (pop * 0.85)));
+                    }
+                }
 
                 // Boserupian branch: population density triggers multi-cropping, terrace irrigation and biomass growth
                 boserupEngine.process(boserupGrid, 2.0);

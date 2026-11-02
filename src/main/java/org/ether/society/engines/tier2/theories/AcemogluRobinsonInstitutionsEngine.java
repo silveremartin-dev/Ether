@@ -75,15 +75,15 @@ public class AcemogluRobinsonInstitutionsEngine implements ProceduralEnginePlugi
             // Inclusiveness score: low Gini + broad-based distribution of economic opportunities
             double inclusiveness = Math.clamp(1.0 - gini, 0.05, 0.95);
 
-            // Inclusive institutions protect property rights and encourage capital reinvestment
-            // Extractive institutions impose expropriation risk and elite rent-seeking (Acemoglu & Robinson 2012)
-            if (inclusiveness > 0.35) {
-                double reinvestmentRate = 0.02 * (inclusiveness - 0.35) * deltaYears;
-                cell.setResourceCapital(capital + (capital * reinvestmentRate));
-            } else {
-                double expropriationLoss = 0.015 * (0.35 - inclusiveness) * deltaYears;
-                cell.setResourceCapital(Math.max(0.0, capital * (1.0 - expropriationLoss)));
-            }
+            // Deep-time baseline invariant (AGENTS.md §8): before sedentary agriculture / legal states (T < 1.0),
+            // formal institutional property rights and sovereign extraction indices are dormant
+            if (tech < 1.0) continue;
+
+            // Inclusive institutions protect property rights and encourage capital reinvestment;
+            // extractive institutions impose expropriation risk and elite rent-seeking (Acemoglu & Robinson 2012).
+            // Smooth continuous differential formulation: dK/dt = K · 0.02 · (I_inc - 0.35) · Δt
+            double netInstitutionalGrowthRate = 0.02 * (inclusiveness - 0.35) * deltaYears;
+            cell.setResourceCapital(Math.max(0.0, capital * (1.0 + netInstitutionalGrowthRate)));
 
             // Creative destruction and technological innovation fostered by inclusive property rights
             double capitalFactor = capital / (capital + 100.0);

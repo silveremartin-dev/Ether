@@ -143,8 +143,9 @@ public class WarDiplomacyEngine {
                         affinityMultiplier = Math.clamp(1.5 - (affinity / 100.0) * 1.3, 0.1, 2.0);
                     }
 
-                    // Topographic friction dampens opportunistic border skirmishes, raising the required war threshold
-                    double frictionDamping = 1.0 + 0.25 * Math.max(0.0, avgBorderFriction - 1.0);
+                    // Topographic friction dampens opportunistic border skirmishes; high state capacity & bullion logistics overcome friction (Pax Romana engineering)
+                    double logisticalEngineeringFactor = 1.0 + (aggressor.getStateCapacity() * 0.75) + Math.min(1.0, aggressor.getTreasuryBullion() / 2000.0);
+                    double frictionDamping = 1.0 + (0.25 * Math.max(0.0, avgBorderFriction - 1.0)) / logisticalEngineeringFactor;
                     double warExhaustion = Math.max(0.0, aggressor.getPoliticalInstability() - 0.40) * 1.2
                             + (aggressor.getTreasuryBullion() <= 1.0 ? 0.25 : 0.0);
                     double warDesire = ((baseWarDesire * affinityMultiplier) / frictionDamping) - warExhaustion;
@@ -276,8 +277,11 @@ public class WarDiplomacyEngine {
         double defBullionFactor = 1.0 + Math.min(0.6, Math.log1p(defender.getTreasuryBullion() / 50.0) * 0.15);
 
         double physicalFriction = Math.max(1.0, borderFriction - 1.5);
+        // Topographic friction dampening; imperial state capacity and bullion finance military road engineering (Pax Romana)
+        double engineeringMitigation = 1.0 + (aggressor.getStateCapacity() * 1.5) + Math.min(2.0, aggressor.getTreasuryBullion() / 2000.0);
+        double effectiveFriction = 1.0 + Math.max(0.0, physicalFriction - 1.0) / engineeringMitigation;
         double crestDefenseBonus = borderFriction >= 3.2 ? Math.sqrt(borderFriction) : 1.0;
-        double aggressorPower = (aggressorForce * (0.5 + aggressor.getStateCapacity()) * aggArmamentFactor * aggLogisticsFactor * aggBullionFactor) / physicalFriction;
+        double aggressorPower = (aggressorForce * (0.5 + aggressor.getStateCapacity()) * aggArmamentFactor * aggLogisticsFactor * aggBullionFactor) / effectiveFriction;
         double defenderPower = defenderForce * (0.5 + defender.getStateCapacity()) * defArmamentFactor * defLogisticsFactor * defBullionFactor * crestDefenseBonus;
 
         double aggCostFraction = Math.clamp(0.04 + (0.04 * (borderFriction / 4.0)) + (0.02 * Math.log1p(aggressorForce / 2000.0)), 0.04, 0.35);
@@ -319,8 +323,12 @@ public class WarDiplomacyEngine {
 
                 // Cliodynamic Warfare Demographics:
                 // 1. Direct combat casualties fall predominantly on the young recruitment cohorts (males 15-24 and 25-49)
-                // 2. Non-combatant civilian cohorts suffer minor collateral attrition (siege disruption, foraging, pillage)
-                // 3. Male cohort decimation creates a subsequent birth deficit (suppressed fertility)
+                // 2. Era-dependent & conflict-type civilian collateral attrition (Eckhardt 1989; Valentino 2004)
+                //    - Feudal/Mercenary peak (Thirty Years' War plundering & chevauchées at T ~ 3.4)
+                //    - 18th-century linear army lull (Cabinet wars at T ~ 4.2)
+                //    - Industrial total war & urban siege surge (strategic bombing & mass artillery at T >= 5.0)
+                // 3. Post-battle camp disease outbreak (Zinsser 1935; Smallman-Raynor & Cliff 2004)
+                // 4. Male reproductive cohort decimation dampens fertility, inducing a historical wartime birth deficit
                 double casualtyRate = Math.clamp(0.20 * (defPowerSq / totalPowerSq) * Math.sqrt(physicalFriction), 0.05, 0.45);
 
                 int pop15 = conqueredCell.getPop15to24Or(0);
@@ -336,13 +344,32 @@ public class WarDiplomacyEngine {
                     militaryLosses = cas15 + cas25;
                 }
 
-                // Civilian collateral attrition (5% of combat intensity)
-                double civilianAttrition = casualtyRate * 0.05;
-                int cas0 = (int) Math.round(conqueredCell.getPop0to4Or(0) * civilianAttrition);
+                // Technology level of belligerents
+                double aggTech = aggressor.getTerritory().stream().filter(Objects::nonNull)
+                        .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0)
+                        .average().orElse(1.0);
+                double defTech = defender.getTerritory().stream().filter(Objects::nonNull)
+                        .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0)
+                        .average().orElse(1.0);
+                double meanTech = Math.max(0.5, (aggTech + defTech) * 0.5);
+
+                // Urbanization density ratio of contested frontline cell
+                int cellPop = conqueredCell.getPopulationOr(0);
+                double urbanFactor = Math.clamp(cellPop / 40000.0, 0.0, 1.0);
+
+                // Era-dependent civilian collateral envelope (Eckhardt 1989; Valentino 2004)
+                double feudalMercenaryPeak = 0.28 * Math.exp(-Math.pow(meanTech - 3.4, 2.0) / (2.0 * 0.5 * 0.5));
+                double industrialSurge = 0.45 / (1.0 + Math.exp(-2.5 * (meanTech - 5.2)));
+                double baseCivRatio = Math.clamp(0.06 + feudalMercenaryPeak + industrialSurge, 0.05, 0.65);
+                double civilianAttrition = casualtyRate * Math.clamp(baseCivRatio * (1.0 + 1.2 * urbanFactor), 0.04, 0.80);
+
+                // Vulnerable cohorts (infants 0-4, elderly 65+) suffer 1.4x heightened mortality from famine/exposure
+                double vulnerableAttrition = Math.min(0.90, civilianAttrition * 1.4);
+                int cas0 = (int) Math.round(conqueredCell.getPop0to4Or(0) * vulnerableAttrition);
                 int cas5 = (int) Math.round(conqueredCell.getPop5to14Or(0) * civilianAttrition);
                 int cas50 = (int) Math.round(conqueredCell.getPop50to64Or(0) * civilianAttrition);
-                int cas65 = (int) Math.round(conqueredCell.getPop65to79Or(0) * civilianAttrition);
-                int cas80 = (int) Math.round(conqueredCell.getPop80PlusOr(0) * civilianAttrition);
+                int cas65 = (int) Math.round(conqueredCell.getPop65to79Or(0) * vulnerableAttrition);
+                int cas80 = (int) Math.round(conqueredCell.getPop80PlusOr(0) * vulnerableAttrition);
 
                 conqueredCell.setPop0to4(Math.max(0, conqueredCell.getPop0to4Or(0) - cas0));
                 conqueredCell.setPop5to14(Math.max(0, conqueredCell.getPop5to14Or(0) - cas5));
@@ -361,8 +388,33 @@ public class WarDiplomacyEngine {
 
                 // Male reproductive cohort decimation dampens fertility, inducing a historical wartime birth deficit
                 double curFertility = conqueredCell.getFertilityOr(4.0);
-                double sexRatioBirthPenalty = 1.0 - (casualtyRate * 0.35);
+                double maleLossRatio = militaryCohort > 0 ? (double) militaryLosses / militaryCohort : 0.0;
+                double sexRatioBirthPenalty = 1.0 - (casualtyRate * 0.45 * Math.max(0.1, maleLossRatio));
                 conqueredCell.setFertility(Math.max(1.1, curFertility * sexRatioBirthPenalty));
+
+                // Post-Battle Camp Epidemics & Morbidity (Zinsser 1935; Smallman-Raynor & Cliff 2004)
+                int totalLosses = militaryLosses + civilianLosses;
+                if (totalLosses > 10) {
+                    double contagionLoad = totalLosses * (0.25 + 0.15 * urbanFactor);
+                    int newInfected = Math.max(5, (int) Math.round(contagionLoad));
+                    int currentInfected = conqueredCell.getEpidemicInfectedOr(0);
+                    int maxInfectable = Math.max(1, (int) (newTotal * 0.45));
+                    conqueredCell.setEpidemicInfected(Math.min(maxInfectable, currentInfected + newInfected));
+
+                    String epidemicPathogen;
+                    if (meanTech < 3.8) {
+                        epidemicPathogen = "Camp Fever (Typhus & Dysentery)";
+                    } else if (meanTech < 5.8) {
+                        epidemicPathogen = "Cholera & Trench Typhus";
+                    } else {
+                        epidemicPathogen = "Wartime Pathogen & Epidemic Sepsis";
+                    }
+                    conqueredCell.setActivePathogenName(epidemicPathogen);
+
+                    // Acute sanitation & public health shock depressing life expectancy
+                    double curLifespan = conqueredCell.getLifespanOr(40.0);
+                    conqueredCell.setLifespan(Math.max(15.0, curLifespan - (2.5 * casualtyRate * (1.0 + urbanFactor))));
+                }
 
                 // Collateral infrastructure & capital destruction on the battlefield cell
                 double cellCap = conqueredCell.getResourceCapitalOr(0.0);

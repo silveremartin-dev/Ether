@@ -44,13 +44,15 @@ public class JevonsParadoxEngine {
                 // High technology efficiency drives expanded aggregate physical energy demand
                 double reboundDemand = tech * reboundCoefficient * techEfficiencyFactor * 0.005 * deltaYears;
 
-                // Boost electrical/mechanical capacity in the cell
+                // Boost electrical/mechanical capacity in the cell (industrial exergy rebound)
                 double habitatKw = cell.getHabitatEnergyKwOr(0.0);
                 cell.setHabitatEnergyKw(habitatKw + reboundDemand * 100.0);
 
-                // Maintain legacy metric compatibility for unit test suites
+                // Biologically bounded somatic food intake: human metabolic limits (~2500 kcal/day)
+                // prevent runaway somatic calorie consumption while preserving legacy compatibility
                 double currentFoodEnergy = cell.getEnergyFoodConsumedOr(0.0);
-                cell.setEnergyFoodConsumed(currentFoodEnergy + reboundDemand);
+                double maxMetabolicFood = Math.max(10.0, cell.getPopulationOr(100) * 1.5);
+                cell.setEnergyFoodConsumed(Math.min(maxMetabolicFood, currentFoodEnergy + reboundDemand));
             }
         }
     }

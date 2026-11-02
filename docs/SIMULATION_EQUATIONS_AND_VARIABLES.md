@@ -2027,3 +2027,109 @@ $$\dot{B}_{\text{natural}} = 0.02 \cdot B \cdot \max\left(0, 1.0 - \frac{B}{100.
   * Tier 1: Latitudinal Bounding Box culling with $1.45^\circ$ ($\approx 160\text{ km}$) safety margin.
   * Tier 2: Spatial Hash Grid Binning ($1.5^\circ \times 1.5^\circ$) for defender polity territory.
   * Tier 3: Localized 9-Neighbor Bin traversal with equirectangular rejection before full Haversine geodesic evaluation.
+
+### 19.34. Cliodynamic Warfare Demographics & Post-Battle Camp Morbidity (`WarDiplomacyEngine.java`)
+* **Core Model**: Lanchester (1916) *Square Law*, Eckhardt (1989), Valentino (2004), Zinsser (1935) *Rats, Lice and History*, Smallman-Raynor & Cliff (2004).
+* **Targeted Combat Mortality**:
+  $$\text{Combat Losses} = \text{round}\left((N_{15-24} + N_{25-49}) \cdot \text{casualtyRate}\right)$$
+  $$\Delta N_{15-24} = - \min\left(N_{15-24}, \text{round}(\text{Combat Losses} \cdot 0.75)\right)$$
+  $$\Delta N_{25-49} = - \min\left(N_{25-49}, \text{Combat Losses} - |\Delta N_{15-24}|\right)$$
+* **Continuous Era-Dependent & Urban Siege Civilian Collateral Envelope**:
+  $$\psi_{\text{base}}(T) = \text{clamp}\left(0.06 + 0.28 \cdot \exp\left(-\frac{(T - 3.4)^2}{2 \cdot 0.5^2}\right) + \frac{0.45}{1 + \exp(-2.5 \cdot (T - 5.2))}, 0.05, 0.65\right)$$
+  $$\psi_{\text{civ}}(T, u) = \text{clamp}\left(\psi_{\text{base}}(T) \cdot (1.0 + 1.2 \cdot u), 0.04, 0.80\right)$$
+  where $u = \text{clamp}(N / 40\,000, 0, 1)$ is the urban siege vulnerability factor. Vulnerable non-combatant cohorts ($N_{0-4}$, $N_{65-79}$, $N_{80+}$) suffer $1.4\times$ mortality from famine and exposure.
+* **Post-Battle Camp Epidemics**:
+  $$I_{\text{camp}} = \min\left(0.45 \cdot N, I_{\text{existing}} + \text{round}\left((\text{Losses}_{\text{mil}} + \text{Losses}_{\text{civ}}) \cdot (0.25 + 0.15 \cdot u)\right)\right)$$
+  * Pathogen identification: "Camp Fever (Typhus & Dysentery)" for $T < 3.8$, "Cholera & Trench Typhus" for $3.8 \le T < 5.8$, "Wartime Pathogen & Epidemic Sepsis" for $T \ge 5.8$.
+* **Sex-Ratio Fertility Shock**:
+  $$F(t + 1) = \max\left(1.1, F(t) \cdot \left(1.0 - \text{casualtyRate} \cdot 0.45 \cdot \frac{\text{Losses}_{\text{mil}}}{\max(1, N_{15-24} + N_{25-49})}\right)\right)$$
+* **Orographic Power Projection (Pax Romana Logistics)**:
+  $$\text{mitigation} = 1.0 + (S_{\text{agg}} \cdot 1.5) + \min\left(2.0, \frac{\text{Bullion}}{2000.0}\right)$$
+  $$\sigma_{\text{effective}} = 1.0 + \frac{\max(0.0, \sigma_{\text{friction}} - 1.5)}{\text{mitigation}}$$
+
+### 19.35. Acemoglu-Robinson Institutional Divergence Engine (`AcemogluRobinsonInstitutionsEngine.java`)
+* **Core Model**: Acemoglu & Robinson (2012) *Why Nations Fail*.
+* **Smooth Continuous Property Rights Formulation**:
+  $$I_{\text{inc}} = \text{clamp}(1.0 - \text{Gini}, 0.05, 0.95)$$
+  $$\dot{K} = K \cdot 0.02 \cdot (I_{\text{inc}} - 0.35) \cdot \Delta t \quad (\text{for } T \ge 1.0)$$
+* **Creative Destruction**:
+  $$\dot{T} = I_{\text{inc}} \cdot 0.005 \cdot \left(0.5 + 0.5 \cdot \frac{K}{K + 100.0}\right) \cdot \Delta t$$
+* **Deep-Time Invariant**: Before sedentary state formation ($T < 1.0$), formal state property rights and institutional rent extraction are dormant.
+
+### 19.36. Anthropogenic Hydrological Landscape Engineering Engine (`HydrologicalEngineeringEngine.java`)
+* **Core Model**: Wittfogel (1957) *Oriental Despotism*, Tenochtitlan Chinampas & Aral Desiccation.
+* **One-Time Infrastructure Commissioning Invariants**:
+  * Polder Reclamation (Tenochtitlan): Converts shallow lake cells with $N \ge 1500$, $T \ge 3.5$, $K \ge 150.0$ to `PLAINS` polder (`isPolder = true`).
+  * Desiccation (Aral Sea): Unregulated irrigation diversion under rainfall $< 300\text{ mm}$ transitions lake to `DESERT`.
+  * Hydroelectric Retention Dam: High elevation ($\ge 300\text{ m}$) with $T \ge 4.5$, $K \ge 250.0$ creates retention dam (`hasDam = true`), adding 500 kW capacity and 1000.0 water security once upon commission.
+
+### 19.37. Military Technology Revolution Shock Engine (`MilitaryTechShockEngine.java`)
+* **Core Model**: Geoffrey Parker (1996) *The Military Revolution*, Tanegashima Arquebus Shock (1543).
+* **Continuous Gaussian Shock Envelope**:
+  $$\xi(T) = \exp\left(-\frac{(T - 3.6)^2}{2 \cdot 0.20^2}\right)$$
+  $$\Delta W = W \cdot 0.15 \cdot \xi(T) \cdot \Delta t$$
+  $$\Delta T = 0.05 \cdot \xi(T) \cdot \Delta t$$
+* **Invariants**: Eliminates knife-edge threshold $T \in [3.4, 3.8]$ with smooth $C^\infty$ activation.
+
+### 19.38. Hotelling Exhaustible Mineral Depletion Engine (`HotellingResourceDepletionEngine.java`)
+* **Core Model**: Harold Hotelling (1931) *The Economics of Exhaustible Resources*.
+* **Labor Requirement & Extraction Dynamics**:
+  $$D = N \cdot 0.02 \cdot \left(\frac{T}{5.0}\right) \cdot \Delta t \quad (\text{for } N \ge 50, T \ge 1.8)$$
+  $$\Delta Q = \min(Q_{\text{metal}}, \min(Q_{\text{metal}} \cdot 0.05 \cdot \Delta t, D))$$
+  $$\text{Scarcity Multiplier} = \text{clamp}\left(\sqrt{\frac{Q_{\text{initial}} + 100.0}{Q_{\text{remaining}} + 100.0}}, 1.0, 5.0\right)$$
+  $$\Delta K = \Delta Q \cdot 2.0 \cdot \text{Scarcity Multiplier}$$
+* **Deep-Time Invariant**: Uninhabited cells ($N < 50$) or pre-metallurgical eras ($T < 1.8$) experience zero mineral extraction.
+
+### 19.39. Jevons Paradox & Exergy Rebound Engine (`JevonsParadoxEngine.java`)
+* **Core Model**: William Stanley Jevons (1865), Alcott (2005).
+* **Continuous Exergy Rebound Activation**:
+  $$\eta_{\text{eff}} = \frac{T^2}{4.0 + T^2}$$
+  $$\Delta E_{\text{rebound}} = T \cdot \kappa_{\text{rebound}} \cdot \eta_{\text{eff}} \cdot 0.005 \cdot \Delta t$$
+  $$\Delta \text{HabitatKw} = \Delta E_{\text{rebound}} \cdot 100.0$$
+* **Biological Boundary Invariant**: Somatic metabolic calorie consumption is decoupled from industrial mechanical exergy rebound and bounded by human nutritional limits.
+
+### 19.40. Elinor Ostrom Polycentric Common-Pool Resource Governance (`OstromCommonsPureEngine.java`)
+* **Core Model**: Elinor Ostrom (1990) *Governing the Commons* (Nobel Memorial Prize 2009).
+* **Mass-Conserving Darcy Precipitation Recharge**:
+  $$R_{\text{inflow}} = \max\left(0.0, \frac{\text{Rainfall}}{500.0} \cdot 0.5 \cdot \Delta t\right)$$
+  $$\Delta W_{\text{aquifer}} = \min(0.5 \cdot \Delta t, R_{\text{inflow}})$$
+* **Invariants**: Water cannot be created ex nihilo in hyper-arid zones with zero precipitation inflow.
+
+### 19.41. Steven Pinker Secular Pacification Engine (`PinkerViolenceDeclinePureEngine.java`)
+* **Core Model**: Steven Pinker (2011) *The Better Angels of Our Nature*, Manuel Eisner (2003).
+* **Violent Mortality Rate**:
+  $$\mu_{\text{violence}} = \max\left(10^{-5}, 0.005 \cdot \exp(-3.0 \cdot (0.40 \cdot S_{\text{state}} + 0.30 \cdot \Omega_{\text{trade}} + 0.30 \cdot \omega_{\text{literacy}}))\right)$$
+* **Demographic Cohort Targeting & Exact Closure**:
+  $$\Delta N_{15-24} = - \min(N_{15-24}, \text{round}(N \cdot \mu_{\text{violence}} \cdot 0.60 \cdot \Delta t))$$
+  $$\Delta N_{25-49} = - \min(N_{25-49}, \text{round}(N \cdot \mu_{\text{violence}} \cdot 0.35 \cdot \Delta t))$$
+  $$N \equiv \sum_{i=1}^7 N_{\text{cohort}, i}$$
+
+### 19.42. Kümmel / Ayres-Warr Biophysical Exergy Economics Engine (`KummelAyresExergyEngine.java`)
+* **Core Model**: Reiner Kümmel (1982), Robert Ayres & Benjamin Warr (2009) *The Economic Growth Engine*.
+* **Thermodynamic Production Function**:
+  $$Y = A \cdot K^{0.25} \cdot L^{0.25} \cdot E_{\text{useful}}^{0.50}$$
+  $$E_{\text{useful}} = E_{\text{primary}} \cdot \eta_{\text{thermo}}(T)$$
+* **Capital Dynamics with Physical Depreciation**:
+  $$\Delta K = (s \cdot Y - \delta \cdot K) \cdot \Delta t$$
+  where savings rate $s = 0.05$ and physical depreciation $\delta = 0.04/\text{year}$.
+
+### 19.43. Physical Multi-Sector Leontief Input-Output Engine (`PhysicalLeontiefInputOutputEngine.java`)
+* **Core Model**: Wassily Leontief (1951), Eco-Material Niche Envelope.
+* **Liebig Bottleneck Inversion**:
+  $$\text{Actual Capital Produced} = \text{Target Capital} \cdot \min(\Phi_{\text{Metal}}, \Phi_{\text{Energy}}, \Phi_{\text{Clay}}, \Phi_{\text{HighTech}})$$
+* **Prehistoric Deep-Time Invariant**:
+  $$\text{techScaling} = \begin{cases} T \cdot 0.20 & \text{for } T < 1.0 \\ 1.0 + T \cdot 0.10 & \text{for } T \ge 1.0 \end{cases}$$
+
+### 19.44. Vaclav Smil Material & Energy Transitions Turnover Engine (`SmilMaterialTransitionsPureEngine.java`)
+* **Core Model**: Vaclav Smil (2017) *Energy Transitions*, Smil (2022) *How the World Really Works*.
+* **Material Turnover Inertia**:
+  $$\tau_{\text{inertia}} = 60.0\text{ years}$$
+  $$\text{decayFactor} = \exp\left(-\frac{\Delta t}{\tau_{\text{inertia}}}\right)$$
+  $$K(t + \Delta t) = K(t) \cdot \text{decayFactor} + K(t) \cdot (1.0 - \text{decayFactor}) \cdot 0.96$$
+
+### 19.45. W. Brian Arthur Combinatorial Technology Evolution Engine (`ArthurCombinatorialTechnologyEngine.java`)
+* **Core Model**: W. Brian Arthur (2009) *The Nature of Technology*.
+* **Recombinant Innovation Rate & Global Ceiling Clamp**:
+  $$\dot{T} = 0.0008 \cdot T^{1.25} \cdot \sqrt{\text{R&D Intensity}} \cdot \Delta t$$
+  $$T(t + \Delta t) = \min(10.0, T(t) + \dot{T})$$
+* **Invariants**: Clamped to the simulation global upper bound $T \in [0.0, 10.0]$, gated for settlements with $N \ge 100$.
