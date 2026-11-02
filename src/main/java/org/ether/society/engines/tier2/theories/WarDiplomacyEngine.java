@@ -317,30 +317,60 @@ public class WarDiplomacyEngine {
                 aggressor.addCell(conqueredCell);
                 conqueredCell.setBoundaryCell(true);
 
-                // War casualties in military age cohort scale with boundary friction resistance
+                // Cliodynamic Warfare Demographics:
+                // 1. Direct combat casualties fall predominantly on the young recruitment cohorts (males 15-24 and 25-49)
+                // 2. Non-combatant civilian cohorts suffer minor collateral attrition (siege disruption, foraging, pillage)
+                // 3. Male cohort decimation creates a subsequent birth deficit (suppressed fertility)
                 double casualtyRate = Math.clamp(0.20 * (defPowerSq / totalPowerSq) * Math.sqrt(physicalFriction), 0.05, 0.45);
-                double survival = 1.0 - casualtyRate;
 
-                int curPop15to24 = conqueredCell.getPop15to24Or(0);
-                int curPop = conqueredCell.getPopulationOr(0);
-                int casualties = (int) Math.round(curPop15to24 * casualtyRate);
+                int pop15 = conqueredCell.getPop15to24Or(0);
+                int pop25 = conqueredCell.getPop25to49Or(0);
+                int militaryCohort = pop15 + pop25;
+                int militaryLosses = 0;
+                if (militaryCohort > 0) {
+                    int combatCasualties = (int) Math.round(militaryCohort * casualtyRate);
+                    int cas15 = Math.min(pop15, (int) Math.round(combatCasualties * 0.75));
+                    int cas25 = Math.min(pop25, combatCasualties - cas15);
+                    conqueredCell.setPop15to24(pop15 - cas15);
+                    conqueredCell.setPop25to49(pop25 - cas25);
+                    militaryLosses = cas15 + cas25;
+                }
 
-                conqueredCell.setPop15to24(Math.max(0, curPop15to24 - casualties));
-                conqueredCell.setPopulation(Math.max(0, curPop - casualties));
-                // Maintain exact demographic mass conservation across all age cohorts
-                conqueredCell.setPop0to4((int) Math.round(conqueredCell.getPop0to4Or(0) * survival));
-                conqueredCell.setPop5to14((int) Math.round(conqueredCell.getPop5to14Or(0) * survival));
-                conqueredCell.setPop25to49((int) Math.round(conqueredCell.getPop25to49Or(0) * survival));
-                conqueredCell.setPop50to64((int) Math.round(conqueredCell.getPop50to64Or(0) * survival));
-                conqueredCell.setPop65to79((int) Math.round(conqueredCell.getPop65to79Or(0) * survival));
-                conqueredCell.setPop80Plus((int) Math.round(conqueredCell.getPop80PlusOr(0) * survival));
+                // Civilian collateral attrition (5% of combat intensity)
+                double civilianAttrition = casualtyRate * 0.05;
+                int cas0 = (int) Math.round(conqueredCell.getPop0to4Or(0) * civilianAttrition);
+                int cas5 = (int) Math.round(conqueredCell.getPop5to14Or(0) * civilianAttrition);
+                int cas50 = (int) Math.round(conqueredCell.getPop50to64Or(0) * civilianAttrition);
+                int cas65 = (int) Math.round(conqueredCell.getPop65to79Or(0) * civilianAttrition);
+                int cas80 = (int) Math.round(conqueredCell.getPop80PlusOr(0) * civilianAttrition);
+
+                conqueredCell.setPop0to4(Math.max(0, conqueredCell.getPop0to4Or(0) - cas0));
+                conqueredCell.setPop5to14(Math.max(0, conqueredCell.getPop5to14Or(0) - cas5));
+                conqueredCell.setPop50to64(Math.max(0, conqueredCell.getPop50to64Or(0) - cas50));
+                conqueredCell.setPop65to79(Math.max(0, conqueredCell.getPop65to79Or(0) - cas65));
+                conqueredCell.setPop80Plus(Math.max(0, conqueredCell.getPop80PlusOr(0) - cas80));
+
+                int civilianLosses = cas0 + cas5 + cas50 + cas65 + cas80;
+
+                // Maintain exact closure of the demographic mass balance across all cohorts
+                int newTotal = conqueredCell.getPop0to4Or(0) + conqueredCell.getPop5to14Or(0)
+                        + conqueredCell.getPop15to24Or(0) + conqueredCell.getPop25to49Or(0)
+                        + conqueredCell.getPop50to64Or(0) + conqueredCell.getPop65to79Or(0)
+                        + conqueredCell.getPop80PlusOr(0);
+                conqueredCell.setPopulation(Math.max(10, newTotal));
+
+                // Male reproductive cohort decimation dampens fertility, inducing a historical wartime birth deficit
+                double curFertility = conqueredCell.getFertilityOr(4.0);
+                double sexRatioBirthPenalty = 1.0 - (casualtyRate * 0.35);
+                conqueredCell.setFertility(Math.max(1.1, curFertility * sexRatioBirthPenalty));
 
                 // Collateral infrastructure & capital destruction on the battlefield cell
                 double cellCap = conqueredCell.getResourceCapitalOr(0.0);
                 conqueredCell.setResourceCapital(Math.max(0.0, cellCap * (1.0 - 0.25 * casualtyRate)));
 
-                logger.info("War Resolution: Nation '{}' conquered frontline border cell {} from Nation '{}' (Boundary Friction: {}). Military casualties: {}.",
-                        aggressor.getName(), conqueredCell.getH3Index(), defender.getName(), String.format(Locale.ROOT, "%.2f", physicalFriction), casualties);
+                logger.info("War Resolution: Nation '{}' conquered frontline border cell {} from Nation '{}' (Boundary Friction: {}). Casualties: {} military, {} civilian.",
+                        aggressor.getName(), conqueredCell.getH3Index(), defender.getName(),
+                        String.format(Locale.ROOT, "%.2f", physicalFriction), militaryLosses, civilianLosses);
             }
         }
     }
