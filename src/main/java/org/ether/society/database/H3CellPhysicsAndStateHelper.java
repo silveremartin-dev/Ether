@@ -46,6 +46,31 @@ public final class H3CellPhysicsAndStateHelper {
      * @param techLevel technology era level (continuous $\text{Tech} \in [0.0, 10.0]$)
      * @return updated movement friction
      */
+    public static double calculateMovementFriction(H3Cell cell) {
+        if (cell == null) return 1.0;
+        double elev = cell.getElevationOr(0.0);
+
+        if (elev < 0.0) {
+            double capital = cell.getResourceCapitalOr(0.0);
+            double seaFriction = Math.clamp(25.0 / (1.0 + 0.15 * Math.log1p(capital / 100.0)), 0.40, 25.0);
+            cell.setMovementFriction(seaFriction);
+            return seaFriction;
+        }
+
+        double fRelief = 1.0 + 4.0 * Math.pow(Math.max(0.0, elev) / 2500.0, 1.35);
+        double biomassNat = cell.getBiomassNaturalOr(0.0);
+        double fVeg = 2.5 * Math.clamp(biomassNat / 4000.0, 0.0, 1.0);
+        double tempC = cell.getTemperatureOr(15.0);
+        double fSnow = 4.5 / (1.0 + Math.exp(0.50 * (tempC - 0.0)));
+        double baseFriction = fRelief + fVeg + fSnow;
+
+        double capDensity = cell.getResourceCapitalOr(0.0) / Math.max(10.0, cell.getEffectiveSurfaceAreaKm2());
+        double infraMitigation = Math.max(0.15, 1.0 / (1.0 + 0.20 * Math.log1p(capDensity * 10.0)));
+        double computed = Math.max(0.30, baseFriction * infraMitigation);
+        cell.setMovementFriction(computed);
+        return computed;
+    }
+
     public static double calculateMovementFriction(H3Cell cell, double techLevel) {
         if (cell == null) return 1.0;
         double elev = cell.getElevationOr(0.0);

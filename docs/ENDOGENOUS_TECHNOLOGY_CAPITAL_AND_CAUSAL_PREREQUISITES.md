@@ -102,3 +102,33 @@ Empirical datasets do not possess uniform precision across history:
    A $12\%$ to $15\%$ deviation on a Paleolithic or Early Medieval metric lies **within the error bar of the historical reconstruction itself** ($\left|y_{\text{sim}} - y_{\text{obs}}\right| \le 1.96 \, \sigma_{\text{obs}}(t)$) and must never be over-fitted at the expense of universal physical laws.
 3. **Strict Terrestrial Historical Scope for Falsification**:
    All epistemic falsification benchmarks and negative controls must operate on **Earth's historical and paleoclimatic past** (e.g., Steampunk Rome 165 CE counterfactual, Norse Greenland 985–1450 CE Little Ice Age collapse), excluding speculative future sci-fi scenarios (such as Mars 2050 terraforming) from core cliodynamic model validation.
+
+---
+
+## 5. Formal Emergent Technology Formulation: Kardashev Energy & Capital Synthesis
+
+To complete the full decoupling of physics from post-hoc telemetry, $T$ is computed strictly as an *a posteriori* emergent index via the coupling of the **Sagan-Kardashev continuous energy consumption scale** and the **Solow-Ashby capital equipment stock density**:
+
+### 5.1. Continuous Kardashev Planetary Energy Scale
+Following Nikolay Kardashev (1964) and Carl Sagan (1973), civilizational exergy extraction is quantified on a base-10 logarithmic continuum:
+
+$$K_{\text{sagan}} = \frac{\log_{10}\left(\max\left(1.0, P_{\text{watts, total}}\right)\right) - 6.0}{10.0}$$
+
+Where $P_{\text{watts, total}} = P_{\text{watts/capita}} \cdot N$.
+* **Type 0 (Human Muscle & Firewood)**: $P \approx 10^{11}\text{ W} \implies K \approx 0.50$.
+* **Type 0.73 (Present Modern Grid, 2025 CE)**: $P \approx 2 \times 10^{13}\text{ W} \implies K \approx 0.73$.
+* **Type I (Planetary Solar Insolation Capture)**: $P \approx 1.74 \times 10^{17}\text{ W} \implies K \approx 1.14$.
+
+### 5.2. Intensive Per-Capita Technological Index ($T_{\text{emergent}}$)
+Locally on each cell or aggregated globally, the emergent technology level $T \in [0.1, 10.0]$ is evaluated by synthesizing energy harness and physical capital density:
+
+$$T_{\text{energy}} = 1.0 + 1.5 \cdot \log_{10}\left(\frac{\max(50.0, P_{\text{watts/capita}})}{300.0}\right)$$
+
+$$T_{\text{capital}} = 0.2 + 2.2 \cdot \log_{10}\left(\max\left(1.0, \frac{K}{N}\right)\right)$$
+
+$$T_{\text{emergent}} = 0.50 \cdot T_{\text{energy}} + 0.50 \cdot T_{\text{capital}}$$
+
+### 5.3. Verification of Zero Tier 1 Circularity
+Across all 18 Tier 1 physical simulation engines in `org.ether.society.engines.tier1`:
+* **Zero occurrences of `getTechnologyLevel()` remain** (verified by static AST inspection).
+* Physical processes (metallurgy, soil Haber-Bosch catalytic fixation, aquifer Darcy drawdown, fossil fuel combustion, infrastructure transport friction, epidemiologic sanitary transitions) depend solely on authentic first-principles state variables: mass ($kg$), energy flux ($W$), thermal enthalpy ($MJ/kg$), capital stock density ($kg/capita$), and material yield strength ($\sigma_{\text{yield}}$).

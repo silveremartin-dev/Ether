@@ -215,6 +215,10 @@ public class H3Cell {
      * @param techLevel technology level ($1.0$ = ancient, $10.0$ = modern)
      * @return movement friction multiplier
      */
+    public double calculateMovementFriction() {
+        return H3CellPhysicsAndStateHelper.calculateMovementFriction(this);
+    }
+
     public double calculateMovementFriction(double techLevel) {
         return H3CellPhysicsAndStateHelper.calculateMovementFriction(this, techLevel);
     }

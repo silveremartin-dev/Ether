@@ -36,18 +36,18 @@ public class NetEnergyEROEIEngine {
     public static double calculateEROEI(H3Cell cell) {
         if (cell == null) return 1.1;
 
-        double tech = cell.getTechnologyLevelOr(0.0);
         double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
-        double woodBiomass = cell.getBiomassNaturalOr(0.0);
-        if (cell.getWoodResource() != null && cell.getWoodResource() > woodBiomass) {
-            woodBiomass = cell.getWoodResource();
-        }
+double woodBiomass = cell.getBiomassNaturalOr(0.0);
+if (cell.getWoodResource() != null && cell.getWoodResource() > woodBiomass) {
+    woodBiomass = cell.getWoodResource();
+}
 
-        // Physical EROEI: ratio of harvestable exergy flux to harvesting work (Hall et al. 2014)
-        // Subsistence foragers/agrarians: 3:1 to 15:1; Industrial: 20:1 to 40:1; Severe resource depletion: < 1.0
-        double resourceAvailability = Math.clamp(woodBiomass / (250.0 * areaScale), 0.20, 4.0);
-        double technologicalEfficiency = 1.0 + Math.min(8.0, tech * 1.2);
-        double eroei = 2.5 * resourceAvailability * technologicalEfficiency;
+// Physical EROEI: ratio of harvestable exergy flux to harvesting work (Hall et al. 2014)
+// Subsistence foragers/agrarians: 3:1 to 15:1; Industrial: 20:1 to 40:1; Severe resource depletion: < 1.0
+double resourceAvailability = Math.clamp(woodBiomass / (250.0 * areaScale), 0.20, 4.0);
+double capPerWorker = cell.getResourceCapitalOr(0.0) / Math.max(1.0, cell.getPopulationOr(1));
+double extractionEquipmentEfficiency = 1.0 + 1.8 * Math.log1p(capPerWorker / 50.0);
+double eroei = 2.5 * resourceAvailability * extractionEquipmentEfficiency;
 
         return Math.max(0.4, eroei);
     }

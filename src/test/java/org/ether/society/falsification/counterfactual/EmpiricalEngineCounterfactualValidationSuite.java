@@ -35,6 +35,7 @@ import org.ether.society.engines.compiler.*;
 import org.ether.society.engines.tier2.theories.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 1.0.0-beta.2
  */
 @DisplayName("ðŸ”¬ Empirical Engine Counterfactual & Multi-Metric Benchmarking Suite")
+@Tag("academic")
+@Tag("scientific")
 public class EmpiricalEngineCounterfactualValidationSuite {
     private static final Logger logger = LoggerFactory.getLogger(EmpiricalEngineCounterfactualValidationSuite.class);
 
@@ -325,7 +328,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                         int pop = c.getPopulation() != null ? c.getPopulation() : 0;
                         if (pop >= 100) {
                             double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
-                            c.setTechnologyLevel(tech + 0.01 * deltaYears);
+                            c.setTechnologyLevel(tech + 0.0008 * deltaYears);
                         }
                     }
                     engine.process(treatmentGrid, deltaYears);
@@ -626,6 +629,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 for (H3Cell c : initialCells) {
                     c.setPopulation(2_000);
                     c.setResourceMetal(500.0);
+                    c.setTechnologyLevel(3.0);
                     c.setResourceCapital(100.0);
                 }
 

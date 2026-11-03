@@ -40,19 +40,22 @@ public class GeoengineeringAlbedoFeedbackEngine {
 
         double dtSafe = Math.max(0.0001, deltaYears);
 
-        // Calculate active geoengineering deployment based on global high-tech cells
-        double totalTech5Plus = 0;
+        // Calculate active geoengineering deployment based on global high-capacity industrial cells
+        double totalIndustrialSaiCapacity = 0;
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             int pop = cell.getPopulationOr(0);
-            if (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() >= 5.0 && pop > 1000) {
-                totalTech5Plus += (cell.getTechnologyLevel() - 4.0);
+            if (pop > 1000) {
+                double capPerCap = cell.getResourceCapitalOr(0.0) / pop;
+                if (capPerCap >= 2500.0) {
+                    totalIndustrialSaiCapacity += Math.min(10.0, (capPerCap - 2500.0) / 1000.0);
+                }
             }
         }
 
         // Stratospheric Aerosol Injection threshold: High-tech industrial civilizations deploy SAI if global temp > 18°C
-        if (totalTech5Plus > 50.0) {
-            globalSaiAerosolLoadingTg = Math.min(20.0, totalTech5Plus * 0.1);
+        if (totalIndustrialSaiCapacity > 50.0) {
+            globalSaiAerosolLoadingTg = Math.min(20.0, totalIndustrialSaiCapacity * 0.1);
             // 5 Tg SO2 ~ -0.5°C cooling
             globalCoolingEffectCelsius = globalSaiAerosolLoadingTg * 0.10;
         } else {

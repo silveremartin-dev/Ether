@@ -56,7 +56,6 @@ public class EcologicalDegradationEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             int pop = cell.getPopulationOr(0);
-            double effectiveTech = (cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0) ? cell.getTechnologyLevel() : techLevel;
             Biome biome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
 
             // 1. Pollution Generation & Natural Biogeochemical Attenuation
@@ -64,13 +63,14 @@ public class EcologicalDegradationEngine {
             // Natural environmental attenuation (rain washout, microbial breakdown, phytoremediation) occurs in all cells
             double attenuatedPollution = Math.max(0.0, currPollution * Math.pow(0.92, dtMonthlyRatio) - 1.2 * dtMonthlyRatio);
             if (pop > 0) {
-                // Heavy mining & industrial chemical pollution requires industrial-scale extraction (Tech >= 3.0)
-                double miningActivity = (effectiveTech >= 3.0 && cell.getResourceMetal() != null)
-                        ? Math.min(25.0, cell.getResourceMetal() * 0.02 * (effectiveTech / 4.0))
+                double capPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+                double fossilCombustion = cell.getResourceCoalOr(0.0) * 0.05 + cell.getResourceOilOr(0.0) * 0.08 + cell.getResourceGasOr(0.0) * 0.04;
+                double miningActivity = (fossilCombustion > 0.1 || capPerCapita > 100.0) && cell.getResourceMetal() != null
+                        ? Math.min(25.0, cell.getResourceMetal() * 0.02 * Math.min(3.0, capPerCapita / 50.0))
                         : 0.0;
                 // Continuous industrial emission curve (Smil 2017): gradual transition from organic smoke to fossil effluent
-                double mechanizationFactor = 0.002 + 0.068 / (1.0 + Math.exp(-2.2 * (effectiveTech - 4.2)));
-                double industrialEmission = pop * mechanizationFactor + miningActivity;
+                double mechanizationFactor = 0.002 + 0.068 / (1.0 + Math.exp(-0.02 * (capPerCapita - 300.0)));
+                double industrialEmission = pop * mechanizationFactor + miningActivity + Math.min(50.0, fossilCombustion);
                 cell.setPollutionLevel(Math.min(1000.0, attenuatedPollution + industrialEmission * dtMonthlyRatio));
             } else {
                 cell.setPollutionLevel(attenuatedPollution);
@@ -102,7 +102,8 @@ public class EcologicalDegradationEngine {
                 double pelagicLarvalSeed = 5.0 * areaScale * dtYears;
 
                 // Fishing harvest effort scaled by local population, technological gear and stock density
-                double harvestIntensity = pop * (0.08 + 0.04 * Math.tanh(effectiveTech / 3.0)) * (currentFishStock / maxStockCapacity) * dtYears;
+                double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+                double harvestIntensity = pop * (0.08 + 0.04 * Math.tanh(capPerCap / 50.0)) * (currentFishStock / maxStockCapacity) * dtYears;
                 double fishingHarvest = Math.min(currentFishStock * 0.85, harvestIntensity);
 
                 // Harvested fishery biomass converts to edible caloric human food
@@ -162,7 +163,7 @@ public class EcologicalDegradationEngine {
             double totalFood = (cell.getFoodResourceOr(0.0))
                     + (cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() * 0.70 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3) : 0.0)
                     + (cell.getBiomassFish() != null ? cell.getBiomassFish() * 0.80 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3) : 0.0)
-                    + (cell.getBiomassNatural() != null ? cell.getBiomassNatural() * (effectiveTech < 1.5 ? 0.008 : 0.005) * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG : 0.0);
+                    + (cell.getBiomassNatural() != null ? cell.getBiomassNatural() * (cell.getBiomassAgricultureOr(0.0) < 10.0 ? 0.008 : 0.005) * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG : 0.0);
 
             // Caloric requirement in GJ over time deltaYears: pop * 3.362 GJ/year * dtYears
             double safeDtYears = Math.max(1e-4, deltaYears);
@@ -200,9 +201,9 @@ public class EcologicalDegradationEngine {
 
             double currentAgriBiomass = cell.getBiomassAgricultureOr(0.0);
             // Agricultural land-use competition: cropland and settlement expansion reduces available forest canopy area
-            double clearedLandFraction = (effectiveTech >= 1.5)
-                    ? Math.clamp((currentAgriBiomass / (1800.0 * areaScale)) * 0.25 + (pop / (1500.0 * areaScale)) * 0.25, 0.0, 0.55)
-                    : 0.0;
+            double clearedLandFraction = (currentAgriBiomass > 10.0)
+        ? Math.clamp((currentAgriBiomass / (1800.0 * areaScale)) * 0.25 + (pop / (1500.0 * areaScale)) * 0.25, 0.0, 0.55)
+        : 0.0;
             double maxWoodCap = intactWoodCap * (1.0 - clearedLandFraction);
             double dtYears = dtMonthlyRatio / 12.0;
 
@@ -215,25 +216,26 @@ public class EcologicalDegradationEngine {
             // Per-capita timber, firewood & agricultural slash-and-burn (tavy) clearing demand
             double densityPerKm2 = pop / Math.max(10.0, planarCellAreaKm2);
             double accessibilityFactor = Math.clamp(densityPerKm2 / 3.0, 0.20, 1.0);
-            double perCapitaWoodAndClearing = (effectiveTech >= 1.5) ? 0.12 : 0.05;
+            double perCapitaWoodAndClearing = (currentAgriBiomass > 10.0) ? 0.12 : 0.05;
             double woodDemand = pop * perCapitaWoodAndClearing * accessibilityFactor * dtYears;
 
             // Pre-industrial logging without mechanized chainsaws/railways (tech < 3.5) cannot clear-cut remote interior mountain canopy (< 45% floor)
-            double minInaccessibleCanopy = (effectiveTech < 3.5) ? (intactWoodCap * 0.45) : (10.0 * areaScale);
+            double capPerCapForLogging = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+            double minInaccessibleCanopy = (capPerCapForLogging < 200.0) ? (intactWoodCap * 0.45) : (10.0 * areaScale);
             double nextWood = Math.max(minInaccessibleCanopy, currentWood + woodRegrowth - woodDemand);
             cell.setWoodResource(nextWood);
 
             // Dynamic natural ecological biomass (wild fauna, understory flora, roots, berries, game animals)
             double currentNat = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : (3000.0 * areaScale);
             double baseNatCap = Math.clamp(cellNpp * 3.5 * areaScale, 500.0 * areaScale, 9000.0 * areaScale);
-            double maxNatCap = (effectiveTech < 1.5 && pop > 0) ? Math.max(baseNatCap, pop * 48.0) : baseNatCap;
+            double maxNatCap = (currentAgriBiomass <= 10.0 && pop > 0) ? Math.max(baseNatCap, pop * 48.0) : baseNatCap;
             double rNat = 0.08 + 0.07 * (1.0 - forestAffinity);
             double natRegrowth = (currentNat < maxNatCap)
                     ? rNat * currentNat * (1.0 - currentNat / maxNatCap) * dtYears
                     : 0.0;
 
             // Hunting and wild foraging: foragers (tech < 1.5) rely heavily on wild game; agrarians shift to crops
-            double huntingFactor = (effectiveTech < 1.5 ? 0.10 : 0.03);
+            double huntingFactor = (currentAgriBiomass <= 10.0 ? 0.10 : 0.03);
             double huntingHarvest = pop * huntingFactor * accessibilityFactor * (currentNat / maxNatCap) * dtYears;
             huntingHarvest = Math.min(currentNat * 0.50, huntingHarvest);
 
@@ -253,24 +255,25 @@ public class EcologicalDegradationEngine {
             }
 
             // 6. Demographic Density Strain & Agricultural Intensification
-            double carryingCap = calculateCarryingCapacity(cell, effectiveTech);
+            double carryingCap = calculateCarryingCapacity(cell);
             double demoPressure = pop / Math.max(1.0, carryingCap);
 
-            if (demoPressure > 0.8 && effectiveTech >= 1.5) {
-                // High density induces gradual agricultural land-use intensification scaled by dtYears and bounded by tech ceiling
-                double annualIntensificationRate = Math.min(0.025, (demoPressure - 0.8) * 0.015 * (1.0 + effectiveTech * 0.1));
-                double techLandCeiling = Math.max(pop * (400.0 + 50.0 * Math.min(effectiveTech, 10.0)) * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, effectiveTech - 1.4), 1.5)) * areaScale);
+            if (demoPressure > 0.8 && cell.getBiomassAgricultureOr(0.0) > 0.0) {
+                // High density induces gradual agricultural land-use intensification scaled by dtYears
+                double capPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+                double annualIntensificationRate = Math.min(0.025, (demoPressure - 0.8) * 0.02);
+                double landCeiling = Math.max(pop * 600.0 * 1.5, (360000.0 + 550000.0 * Math.min(5.0, 1.0 + capPerCapita / 100.0)) * areaScale);
                 double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
                     ? cell.getBiomassAgriculture()
-                    : Math.min(techLandCeiling, Math.max(25.0 * areaScale, pop * 0.5));
-                cell.setBiomassAgriculture(Math.min(techLandCeiling, currentAgri * (1.0 + annualIntensificationRate * dtYears)));
+                    : Math.min(landCeiling, Math.max(25.0 * areaScale, pop * 0.5));
+                cell.setBiomassAgriculture(Math.min(landCeiling, currentAgri * (1.0 + annualIntensificationRate * dtYears)));
 
                 // Increases social inequality & friction (Gini index rises under density strain)
                 double currentGini = cell.getGiniIndexOr(0.3);
                 cell.setGiniIndex(Math.min(1.0, currentGini + 0.01 * demoPressure * dtMonthlyRatio));
             }
 
-            cell.calculateMovementFriction(effectiveTech);
+            cell.calculateMovementFriction();
         }
 
         // ── Phase 2: Pollution Atmospheric & River Dispersion (Remote Sites) ─
@@ -347,8 +350,7 @@ public class EcologicalDegradationEngine {
             int srcPop = source.getPopulationOr(0);
             if (srcPop < 10) continue;
 
-            double srcTech = (source.getTechnologyLevel() != null && source.getTechnologyLevel() > 0) ? source.getTechnologyLevel() : defaultTech;
-            double carryingCap = calculateCarryingCapacity(source, srcTech);
+            double carryingCap = calculateCarryingCapacity(source);
 
             // Trigger migration if population exceeds carrying capacity by 15% or extreme food shortage
             double excessPop = srcPop - (carryingCap * 1.15);
@@ -386,8 +388,7 @@ public class EcologicalDegradationEngine {
                         double distKmSq = dLat * dLat + dLon * dLon;
                         if (distKmSq > 22500.0) continue; // Cannot migrate beyond 150 km radius (150^2 = 22500)
 
-                        double candTech = (candidate.getTechnologyLevel() != null && candidate.getTechnologyLevel() > 0) ? candidate.getTechnologyLevel() : defaultTech;
-                        double candCap = calculateCarryingCapacity(candidate, candTech);
+                        double candCap = calculateCarryingCapacity(candidate);
                         int candPop = candidate.getPopulationOr(0);
                         double spareCap = candCap - candPop;
 
@@ -417,7 +418,7 @@ public class EcologicalDegradationEngine {
     /**
      * Calculate carrying capacity.
      */
-    public static double calculateCarryingCapacity(H3Cell cell, double techLevel) {
+    public static double calculateCarryingCapacity(H3Cell cell) {
         if (cell == null) return 100.0;
 
         double soc = cell.getSoilOrganicCarbonOr(20.0);
@@ -432,8 +433,17 @@ public class EcologicalDegradationEngine {
                 : 3;
         double areaScale = Math.max(0.05, H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3) / 1770.49);
         double baseCap = 50.0 * areaScale * soilFactor * rainFactor * waterFactor;
-        double techMultiplier = 1.0 + (techLevel * 0.8) + (techLevel >= 5.0 ? Math.pow(techLevel - 4.0, 1.5) : 0.0);
 
-        return Math.max(2.0, baseCap * techMultiplier);
+        int pop = cell.getPopulationOr(1);
+        double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+        double agBiomass = cell.getBiomassAgricultureOr(0.0);
+        double agMultiplier = (agBiomass > 10.0) ? (1.5 + 2.0 * (1.0 - Math.exp(-agBiomass / (500.0 * areaScale)))) : 1.0;
+        double capitalMultiplier = 1.0 + 3.0 * (1.0 - Math.exp(-capPerCap / 250.0));
+
+        return Math.max(2.0, baseCap * agMultiplier * capitalMultiplier);
+    }
+
+    public static double calculateCarryingCapacity(H3Cell cell, double techLevel) {
+        return calculateCarryingCapacity(cell);
     }
 }

@@ -41,15 +41,18 @@ public class ThermodynamicWarfareEngine {
             int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevelOr(0.0);
             double capital = cell.getResourceCapitalOr(0.0);
+double metal = cell.getResourceMetalOr(0.0);
+double capPerCap = capital / Math.max(1.0, pop);
+double metalPerCap = metal / Math.max(1.0, pop);
+double powerW = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
 
-            // Material Yield Strength (sigma_yield in MPa): Wood/Earth (20-40 MPa) -> Bronze/Iron (100-300 MPa) -> Steel/Composites (500-1500 MPa)
-            double normTech = Math.min(10.0, Math.max(0.0, tech));
-            double materialYieldStrengthMPa = Math.clamp(25.0 + Math.pow(normTech, 2.3) * 12.0, 20.0, 2000.0);
+// Material Yield Strength (sigma_yield in MPa): Wood/Earth (20-40 MPa) -> Bronze/Iron (100-300 MPa) -> Steel/Composites (500-1500 MPa)
+// Determined by refined metal availability and fortified capital density (Ashby 2011)
+double materialYieldStrengthMPa = Math.clamp(25.0 + 350.0 * (1.0 - Math.exp(-metalPerCap / 50.0)) + 1500.0 * (1.0 - Math.exp(-capPerCap / 500.0)), 20.0, 2000.0);
 
-            // Kinetic & Chemical Mechanical Power (Watts = Joules/sec) delivering offensive work
-            double kineticPowerWatts = pop * (50.0 + Math.pow(normTech, 3.0) * 100.0);
+// Kinetic & Chemical Mechanical Power (Watts = Joules/sec) delivering offensive work
+double kineticPowerWatts = pop * (50.0 + powerW * 0.15);
 
             // Total kinetic energy work delivered over time step dt (in Joules, accounting for 1% conflict mobilization duty cycle)
             double deliveredKineticJoules = kineticPowerWatts * (dt * 315576.0);

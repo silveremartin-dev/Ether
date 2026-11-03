@@ -77,8 +77,8 @@ public class NuclearWarfareClimateEngine {
             int pop = cell.getPopulationOr(0);
             if (pop <= 5000) continue;
 
-            double tech = cell.getTechnologyLevelOr(0.0);
-            if (tech < 4.0) continue; // Nuclear capability requires atomic age technology
+            double uranium = cell.getResourceUraniumOr(0.0);
+            if (uranium <= 0.0) continue; // Nuclear capability requires uranium fissile stock
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double capital = cell.getResourceCapitalOr(0.0);

@@ -69,9 +69,8 @@ public class PhysicalSupplyChainEngine {
             double work = cell.getResourceWorkOr(0.0);
             double capital = cell.getResourceCapitalOr(0.0);
             int pop = cell.getPopulationOr(1);
-            double tech = cell.getTechnologyLevelOr(1.0);
             double capPerCap = capital / Math.max(1.0, pop);
-            double infraFrictionDamping = Math.clamp(1.0 / (1.0 + 0.1 * capPerCap + 0.2 * tech), 0.15, 1.0);
+            double infraFrictionDamping = Math.clamp(1.0 / (1.0 + 0.25 * capPerCap), 0.15, 1.0);
 
             double effectiveFriction = baseFrictionCoeff * blockadeMultiplier * infraFrictionDamping;
             double logisticsLossFactor = Math.clamp(effectiveFriction * deltaYears, 0.0, 0.95);

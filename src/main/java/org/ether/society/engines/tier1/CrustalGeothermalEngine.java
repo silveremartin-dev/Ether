@@ -43,6 +43,21 @@ public class CrustalGeothermalEngine {
      * @return maximum accessible depth in meters
      * @see <a href="https://doi.org/10.1007/978-1-4615-5627-5">Hartman (1992)</a>
      */
+    public static double calculateMaxMiningDepthMeters(double powerWattsPerCapita, double capital) {
+        double dSurface = 50.0;
+        double dMax = 4000.0;
+        double mechRatio = Math.log1p(Math.max(0.0, powerWattsPerCapita) / 250.0);
+        double capRatio = Math.log1p(Math.max(0.0, capital) / 1000.0);
+        double depthProgress = 1.0 / (1.0 + Math.exp(-0.85 * (mechRatio + capRatio - 3.5)));
+        return dSurface + (dMax - dSurface) * depthProgress;
+    }
+
+    /**
+     * Legacy overload for calculateMaxMiningDepthMeters using technology proxy.
+     *
+     * @param techLevel technology era level (continuous $\text{Tech} \in [0.0, 10.0]$)
+     * @return maximum accessible depth in meters
+     */
     public static double calculateMaxMiningDepthMeters(double techLevel) {
         double dSurface = 50.0;
         double dMax = 4000.0;
@@ -59,15 +74,16 @@ public class CrustalGeothermalEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double tech = cell.getTechnologyLevelOr(0.0);
-            double maxDepthMeters = calculateMaxMiningDepthMeters(tech);
+            double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
+            double capital = cell.getResourceCapitalOr(0.0);
+            double maxDepthMeters = calculateMaxMiningDepthMeters(powerPerCapita, capital);
 
             // Sub-surface temperature at max mining depth
             double surfaceTempC = cell.getTemperatureOr(15.0);
             double miningSubsurfaceTempC = surfaceTempC + (maxDepthMeters / 1000.0) * GEOTHERMAL_GRADIENT_C_PER_KM;
 
             // Deep mining unlocks deeper extractable ore capacity without creating mass out of nowhere
-            if (tech >= 5.0 && miningSubsurfaceTempC > 60.0) {
+            if (powerPerCapita >= 2500.0 && miningSubsurfaceTempC > 60.0) {
                 double metalOre = cell.getResourceMetalOr(0.0);
                 double accessibleOreCap = 100.0 + (maxDepthMeters / 4000.0) * 900.0;
                 cell.setResourceMetal(Math.max(metalOre, Math.min(accessibleOreCap, metalOre)));

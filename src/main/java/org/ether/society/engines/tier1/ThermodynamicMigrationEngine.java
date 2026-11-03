@@ -366,8 +366,7 @@ public class ThermodynamicMigrationEngine {
                     mass[i] = actuallyTransferred;
                     agents.getEnergy()[i] = 80.0f;
                     agents.getAge()[i] = 25.0f;
-                    float[] techs = world.getTechnologyLevel();
-                    agents.getTechLevel()[i] = (techs != null && techs.length > destIdx) ? techs[destIdx] : 1.0f;
+                    agents.getTechLevel()[i] = 1.0f;
                     added = true;
                     break;
                 }

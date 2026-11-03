@@ -2,12 +2,14 @@
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
-package org.ether.society.h3;
+package org.ether.society.falsification.formal;
 
 import com.uber.h3core.H3Core;
 import com.uber.h3core.util.LatLng;
 import org.ether.society.database.H3Cell;
+import org.ether.society.h3.DeterministicSpatialAdjacencyTable;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -28,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@Tag("academic")
+@Tag("scientific")
 public class H3SpatialIsotropyAndGridInvarianceTest {
 
     @Test

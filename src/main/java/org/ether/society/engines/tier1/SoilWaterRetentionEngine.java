@@ -107,8 +107,8 @@ public class SoilWaterRetentionEngine {
             double awcIndex = calculatePlantAvailableWaterIndex(rainfall, slope);
 
             // Modulate agricultural biomass based on van Genuchten plant available water
-            double tech = cell.getTechnologyLevelOr(0.0);
-            double potentialBiomass = Math.max(50.0, pop * (400.0 + 50.0 * Math.min(tech, 10.0)));
+            double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+            double potentialBiomass = Math.max(50.0, pop * (400.0 + 150.0 * Math.min(4.0, Math.log1p(capPerCap / 50.0))));
             if (agriBiomass <= 0.0) {
                 agriBiomass = potentialBiomass;
             }

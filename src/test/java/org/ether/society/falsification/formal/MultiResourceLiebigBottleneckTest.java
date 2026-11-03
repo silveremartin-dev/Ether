@@ -2,11 +2,13 @@
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
-package org.ether.society.engines.tier1;
+package org.ether.society.falsification.formal;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.engines.tier1.SoilNutrientNPKEngine;
 import org.ether.society.model.Biome;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -38,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@Tag("academic")
+@Tag("scientific")
 public class MultiResourceLiebigBottleneckTest {
 
     @Test

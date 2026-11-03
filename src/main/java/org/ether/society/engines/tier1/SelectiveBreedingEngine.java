@@ -30,10 +30,17 @@ public class SelectiveBreedingEngine {
      * @param techLevel Technology era level
      * @return Crop yield breeding factor (1.0 to 3.5)
      */
-    public static double calculateSelectiveBreedingYieldFactor(double techLevel) {
+    public static double calculateSelectiveBreedingYieldFactor(double agBiomass, double capitalPerCapita) {
 // Numerical integration step for SelectiveBreedingEngine - verifies boundary conservation and updates local thermodynamic state
-        if (techLevel < 1.0) return 1.0; // Wild gatherer plants
-        return 1.0 + Math.min(2.5, techLevel * 0.35); // 3.5x multiplier in Green Revolution era
+        if (agBiomass <= 0.0) return 1.0; // Wild gatherer plants
+        double domesticationEffect = 1.0 + 1.2 * (1.0 - Math.exp(-agBiomass / 2000.0));
+        double breedingCapitalEffect = 1.0 + Math.min(1.3, capitalPerCapita / 300.0);
+        return Math.min(3.5, domesticationEffect * breedingCapitalEffect);
+    }
+
+    public static double calculateSelectiveBreedingYieldFactor(double techLevel) {
+        if (techLevel < 1.0) return 1.0;
+        return 1.0 + Math.min(2.5, techLevel * 0.35);
     }
 
     /**
@@ -53,17 +60,15 @@ public class SelectiveBreedingEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double tech = cell.getTechnologyLevelOr(0.0);
-            if (tech >= 1.5) {
+            double currentAgri = cell.getBiomassAgricultureOr(0.0);
+            if (currentAgri > 10.0) {
                 int pop = cell.getPopulationOr(0);
                 double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
-                double breedingFactor = calculateSelectiveBreedingYieldFactor(tech);
-                double laborCultivatedBiomass = pop * (400.0 + 50.0 * Math.min(tech, 10.0));
-                double techLandCeiling = Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale);
-                double maxBreedableBiomass = techLandCeiling * Math.min(1.5, breedingFactor * 0.85);
-                double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
-                        ? cell.getBiomassAgriculture()
-                        : Math.min(maxBreedableBiomass, Math.max(25.0 * areaScale, laborCultivatedBiomass));
+                double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+                double breedingFactor = calculateSelectiveBreedingYieldFactor(currentAgri, capPerCap);
+                double laborCultivatedBiomass = pop * (400.0 + 150.0 * Math.min(4.0, Math.log1p(capPerCap / 50.0)));
+                double landCeiling = Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.min(5.0, 1.0 + capPerCap / 100.0)) * areaScale);
+                double maxBreedableBiomass = landCeiling * Math.min(1.5, breedingFactor * 0.85);
                 cell.setBiomassAgriculture(Math.min(maxBreedableBiomass, currentAgri * (1.0 + (breedingFactor - 1.0) * 0.005 * dtSafe)));
             }
         }

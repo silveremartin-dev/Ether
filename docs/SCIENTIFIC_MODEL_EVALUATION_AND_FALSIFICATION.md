@@ -1288,6 +1288,25 @@ We evaluate:
 
 ---
 
+### 5.5 Non-Linear Bifurcation Early-Warning Signals (Scheffer et al. 2009) & Kramers Escape Rate Theory
+
+To prove that civilizational and ecological collapses in Ether emerge from genuine non-linear differential dynamics rather than hardcoded threshold switches, [`CriticalSlowingDownTippingPointTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/CriticalSlowingDownTippingPointTest.java) evaluates the canonical saddle-node bifurcation normal form under continuous SplitMix64 Langevin forcing (`DeterministicPRNG`):
+
+$$\frac{dx}{dt} = -\frac{dV}{dx} + \sigma \, dW_t = \mu - x^2 + \sigma \, dW_t, \quad V(x) = -\mu x + \frac{1}{3}x^3$$
+
+As environmental or fiscal-institutional degradation drives the control parameter $\mu \to 0^+$, the restorative eigenvalue at the stable equilibrium $x^* = \sqrt{\mu}$ vanishes ($\lambda = -2\sqrt{\mu} \to 0^-$), producing three universal signatures verified across three distinct Earth-system and cliodynamic regimes:
+1. **Critical Slowing Down (CSD)**: Lag-1 temporal autocorrelation inflates toward unity ($\text{ACF}(1) = \exp(\lambda \Delta t) \to 1.0$).
+2. **Variance Amplification**: Stationary variance diverges ($\text{Var}(x) = \frac{\sigma^2}{2|\lambda|} \to +\infty$).
+3. **Kramers Escape Rate Contraction**: The potential barrier height $\Delta V = \frac{4}{3}\mu^{3/2}$ erodes, causing the Mean First-Passage Time (MFPT) before stochastic basin exit ($\tau_{\text{escape}} \propto \exp(2\Delta V / \sigma^2)$) to collapse exponentially:
+
+| Dynamical Regime | Eigenvalue Decay $\lambda$ | Lag-1 Autocorrelation $\text{ACF}(1)$ | Variance Amplification | Kramers MFPT ($\tau_{\text{escape}}$) | Post-Tipping State |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **1. Sahel-Sahara Vegetation Fold** | $-4.00 \to -1.00$ | $0.4694 \to 0.8221$ | **$+330.7\%$** ($0.0091 \to 0.0393$) | $2\,785.1 \to 100.9\text{ steps}$ (**$27.6\times$ drop**) | Biomass $= 0.00$ (Desert) |
+| **2. Stommel 2-Box AMOC Circulation** | $-3.87 \to -0.98$ | $0.4262 \to 0.7987$ | **$+197.9\%$** ($0.0083 \to 0.0247$) | $3\,317.7 \to 142.7\text{ steps}$ (**$23.3\times$ drop**) | $\Delta T = -7.5^\circ\text{C}$ Cooling |
+| **3. Turchin SDT Elite Overproduction** | $-4.24 \to -0.99$ | $0.4110 \to 0.7797$ | **$+267.0\%$** ($0.0081 \to 0.0296$) | $2\,314.7 \to 56.9\text{ steps}$ (**$40.7\times$ drop**) | Secular State Breakdown |
+
+---
+
 ## 6. References & Empirical Datasets
 
 ### 1. Agrarian Dynamics, Demography & Carrying Capacity

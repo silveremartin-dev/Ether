@@ -467,8 +467,8 @@ public class SimulationMetricsAggregator {
         double energyMW = getEnergyCaptured();
         if (energyMW <= 0) return 0.0;
         double watts = energyMW * 1e6;
-        double k = (Math.log10(Math.max(1.0, watts)) - 6.0) / 10.0;
-        return Math.max(0.0, Math.min(3.0, k));
+        long pop = engine.getTotalPopulation();
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeKardashevScale(watts / Math.max(1, pop), pop);
     }
 
     /**
@@ -1059,59 +1059,40 @@ public class SimulationMetricsAggregator {
      */
     public double getCurrencyDebasement() {
         float tech = engine.getAverageTechnology();
-        double mintActivation = Math.tanh(Math.max(0.0, tech - 1.80) * 1.25);
-        if (mintActivation <= 0.0) return 0.0;
-        float gini = engine.getCurrentGini();
-        double safeGini = Double.isNaN(gini) ? 0.42 : gini;
-        double basePurity = 48.0 + 18.0 * Math.exp(-12.0 * Math.pow(tech - 2.60, 2.0))
-                + 8.0 * Math.tanh(tech - 3.30) - 10.0 * Math.max(0.0, safeGini - 0.50);
-        double fiatTransition = 1.0 / (1.0 + Math.exp(1.8 * (tech - 7.00)));
-        return Math.clamp(mintActivation * basePurity * fiatTransition, 0.0, 98.0);
+        double stability = getHappinessIndex();
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeCurrencyDebasement(tech, stability);
     }
 
     /**
      * Evaluates Robert C. Allen (2001) Real Unskilled Worker Purchasing Power (Welfare Ratio Index, $100 = \text{Subsistence}$)
-     * using continuous analytical transition between Malthusian subsistence and Solow-Kummel industrial breakout.
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return real unskilled wage index
      */
     public double getRealUnskilledWageIndex() {
-        float tech = engine.getAverageTechnology();
-        float gini = engine.getCurrentGini();
-        double safeGini = Double.isNaN(gini) ? 0.35 : gini;
-        // Pre-industrial Malthusian regime oscillates smoothly around 100
-        double preIndustrialWage = 100.0 + 18.0 * Math.tanh(tech - 1.50) - 20.0 * Math.max(0.0, safeGini - 0.45);
-        double industrialSurplusFactor = Math.tanh(Math.max(0.0, tech - 3.60) * 0.85);
-        double industrialProductivity = 65.0 * industrialSurplusFactor * Math.exp(Math.min(3.0, industrialSurplusFactor * 2.2));
-        return Math.clamp(preIndustrialWage + industrialProductivity, 60.0, 2500.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeRealUnskilledWageIndex(engine.getAverageTechnology());
     }
 
     /**
-     * Evaluates Turchin &amp; Nefedov (2009) Political Stress Index ($\text{PSI} \in [0, 100]$).
-     * Enforces Deep-Time Invariant ($0.0$) prior to state emergence ($T \le 1.55$) via smooth continuous activation.
+     * Evaluates Turchin &amp; Nefedov (2009) Political Stress Index ($\text{PSI} \in [0, 100]$)
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return political stress index in $[0.0, 100.0]$
      */
     public double getPoliticalStressIndex() {
-        float tech = engine.getAverageTechnology();
-        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.35);
-        if (stateActivation <= 0.0) return 0.0;
-        return Math.clamp(stateActivation * getSociopoliticalInstabilityIndex(), 0.0, 100.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computePoliticalStressIndex(
+                engine.getAverageTechnology(), getHappinessIndex());
     }
 
     /**
      * Evaluates Ibn Khaldun (1377) normalized Asabiyyah / Collective Solidarity Score in $[0.0, 1.0]$
-     * as a continuous function of technological complexity and income inequality (Gini).
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return normalized social cohesion score in $[0.0, 1.0]$
      */
     public double getAsabiyyahSocialCohesionScore() {
-        float tech = engine.getAverageTechnology();
-        float gini = engine.getCurrentGini();
-        double safeGini = Double.isNaN(gini) ? 0.25 : gini;
-        double baseline = 1.02 - 0.35 * Math.tanh(Math.max(0.0, tech - 1.55) * 0.65);
-        double asabiyyah = baseline - 0.65 * safeGini;
-        return Math.clamp(asabiyyah, 0.10, 0.98);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeAsabiyyahSocialCohesion(
+                engine.getAverageTechnology(), getHappinessIndex());
     }
 
     /**
@@ -1131,37 +1112,27 @@ public class SimulationMetricsAggregator {
 
     /**
      * Evaluates Federico &amp; Tena-Junguito (2017) Global Trade Volume Index ($100 = 1913\text{ Level}$)
-     * using continuous analytical long-distance exchange network emergence ($T_0 = 1.55$).
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return global trade volume index
      */
     public double getGlobalTradeVolumeIndex() {
-        float tech = engine.getAverageTechnology();
-        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.20);
-        if (tradeActivation <= 0.0) return 0.0;
-        double preIndustrialTrade = 1.0 + 22.0 * Math.tanh(Math.max(0.0, tech - 2.00) * 0.90);
-        double globalShippingBoom = 250.0 / (1.0 + Math.exp(-2.40 * (tech - 4.15)));
-        double hyperGlobalization = (tech > 4.5) ? 2200.0 / (1.0 + Math.exp(-2.80 * (tech - 5.20))) : 0.0;
-        return Math.clamp(tradeActivation * (preIndustrialTrade + globalShippingBoom + hyperGlobalization), 0.0, 3000.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeGlobalTradeVolume(engine.getAverageTechnology());
     }
 
     /**
-     * Evaluates Montgomery (2007) Cumulative Topsoil Erosion &amp; Salinization Loss (% of Holocene baseline)
-     * as an authentic continuous sigmoid response to mechanized agriculture.
+     * Evaluates Montgomery (2007) Cumulative Topsoil Erosion Loss (% of Holocene baseline)
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return topsoil loss percentage in $[0.03, 85.0]$ %
      */
     public double getTopsoilErosionLossPct() {
-        float tech = engine.getAverageTechnology();
-        double lossActivation = Math.tanh(Math.max(0.0, tech - 1.25) * 0.65);
-        double mechanizedAcceleration = 1.0 / (1.0 + Math.exp(-1.20 * (tech - 3.50)));
-        double soilLoss = 0.03 + 32.0 * lossActivation * mechanizedAcceleration;
-        return Math.clamp(soilLoss, 0.03, 80.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeTopsoilErosionLoss(engine.getAverageTechnology());
     }
 
     /**
      * Evaluates Vaclav Smil (2008) / Giampietro (2013) Agricultural EROEI Ratio
-     * using continuous analytical food system energetics.
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return agricultural EROEI ratio
      */
@@ -1170,85 +1141,64 @@ public class SimulationMetricsAggregator {
     }
 
     /**
-     * Evaluates HYDE 3.2 / FAO Global Forest Cover Remaining (% of post-glacial Holocene forest).
+     * Evaluates HYDE 3.2 / FAO Global Forest Cover Remaining (% of post-glacial Holocene forest)
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return forest retention percentage in $[0.0, 100.0]$ %
      */
     public double getForestCoverRemainingPct() {
-        float tech = engine.getAverageTechnology();
-        double clearingActivation = Math.tanh(Math.max(0.0, tech - 1.25) * 0.70);
-        double industrialDeforestation = 1.0 / (1.0 + Math.exp(-1.10 * (tech - 3.40)));
-        double clearing = 36.0 * clearingActivation * industrialDeforestation;
-        double postGlacialFactor = Math.tanh(Math.max(0.0, tech - 1.15) * 2.0);
-        return Math.clamp(postGlacialFactor * (99.0 - clearing), 0.0, 100.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeForestCoverRemaining(engine.getAverageTechnology());
     }
 
     /**
      * Evaluates Scheidel (2014) ORBIS Information Travel Speed ($\text{km/day}$)
-     * as a continuous transport network expansion from pedestrian to courier to telecommunications.
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return information transmission speed in $\text{km/day}$
      */
     public double getInformationTravelSpeedKmPerDay() {
-        float tech = engine.getAverageTechnology();
-        // Pedestrian foot speed baseline (4 km/day) in deep prehistory (T < 2.10)
-        double courierActivation = Math.tanh(Math.max(0.0, tech - 2.10) * 1.50);
-        double courierSpeed = 4.0 + 80.0 * courierActivation;
-        // Optical & electric telegraph (Standage 1998): strictly inactive before T >= 3.75
-        double telegraphActivation = Math.tanh(Math.max(0.0, tech - 3.75) * 2.50);
-        double telegraphSpeed = telegraphActivation * (24000.0 / (1.0 + Math.exp(-2.50 * (tech - 3.85))));
-        // Telephony and radio
-        double earlyTelecom = (tech > 4.25) ? 5.8e6 * Math.tanh(Math.max(0.0, tech - 4.25) * 2.50) : 0.0;
-        double modernTelecom = (tech > 5.00) ? 2.94e8 / (1.0 + Math.exp(-3.50 * (tech - 5.50))) : 0.0;
-        return Math.clamp(courierSpeed + telegraphSpeed + earlyTelecom + modernTelecom, 4.0, 3.0e8);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeInformationTravelSpeed(engine.getAverageTechnology());
     }
 
     /**
      * Evaluates Malandra (1990) / USGS Per-Capita Metal Smelting Output ($\text{kg/capita/yr}$)
-     * using continuous Chalcolithic smelting activation ($T_0 = 1.65$).
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return metal smelting output in $\text{kg/capita/yr}$
      */
     public double getMetalSmeltingPerCapitaKg() {
-        float tech = engine.getAverageTechnology();
-        double smeltActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 1.30);
-        if (smeltActivation <= 0.0) return 0.0;
-        // Malandra (1990) / USGS (2023): Antiquity (~1.2 kg) -> Medieval (~1.8 kg)
-        // -> 1800 CE (~6.5 kg) -> 1914 CE (~85 kg) -> Modern (~210 kg)
-        double preIndustrial = 0.5 + 1.3 * Math.tanh(Math.max(0.0, tech - 2.20) * 0.70) + 4.7 * Math.tanh(Math.max(0.0, tech - 3.40) * 1.50);
-        double industrialBessemer = (tech > 3.85) ? 205.0 / (1.0 + Math.exp(-2.20 * (tech - 4.60))) : 0.0;
-        return Math.clamp(smeltActivation * (preIndustrial + industrialBessemer), 0.0, 350.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeMetalSmeltingPerCapita(engine.getAverageTechnology());
     }
 
     /**
      * Evaluates Vaclav Smil (2017) / Marchetti &amp; Nakicenovic (1979) Fossil Fuel Share in Primary Energy (%)
-     * using an authentic continuous logistic substitution model with zero pre-industrial leakage.
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return fossil energy share in $[0.0, 90.0]$ %
      */
     public double getFossilSharePrimaryEnergyPct() {
-        float tech = engine.getAverageTechnology();
-        // Strict continuous modern activation: fossil exploitation begins only above steam threshold T_0 = 3.40 (1750 CE)
-        double modernActivation = Math.tanh(Math.max(0.0, tech - 3.40) * 1.80);
-        if (modernActivation <= 0.0) return 0.0;
-        double logisticCoalOil = 88.0 / (1.0 + Math.exp(-2.80 * (tech - 4.25)));
-        return Math.clamp(modernActivation * logisticCoalOil, 0.0, 90.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeFossilSharePrimaryEnergy(engine.getAverageTechnology());
     }
 
     /**
      * Evaluates Harley (1988) / Mohammed &amp; Williamson (2004) Real Maritime Shipping Freight Cost Index ($100 = 1913\text{ Level}$)
-     * using continuous smooth maritime trade activation ($T_0 = 1.55$).
+     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
      *
      * @return real maritime freight cost index
      */
     public double getShippingFreightCostIndex() {
-        float tech = engine.getAverageTechnology();
-        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.50);
-        if (tradeActivation <= 0.0) return 0.0;
-        // Harley (1988): Antiquity/Rome (~1420) -> Renaissance lateen/caravel/fluyt (~930 in 1347, ~450 in 1700)
-        // -> 19th Century Steam (~250 in 1800, ~56 in 1914, ~20 modern)
-        double preModernDecline = 1450.0 - 800.0 * Math.tanh(Math.max(0.0, tech - 2.50) * 0.85);
-        double steamRevolution = 600.0 / (1.0 + Math.exp(-2.20 * (tech - 4.10)));
-        return Math.clamp(tradeActivation * (preModernDecline - steamRevolution), 20.0, 1600.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeShippingFreightCostIndex(engine.getAverageTechnology());
+    }
+
+    /**
+     * Evaluates synthetic emergent technology index from physical exergy and capital density.
+     *
+     * @return emergent technology index
+     */
+    public double getEmergentTechnologyLevel() {
+        long pop = engine.getTotalPopulation();
+        double powerWatts = (pop > 0) ? (getEnergyCaptured() * 1e6) / pop : 100.0;
+        double capPerCapita = (pop > 0) ? getBuiltCapitalTotal() / pop : 1.0;
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeEmergentTechnologyLevel(powerWatts, capPerCapita);
     }
 }

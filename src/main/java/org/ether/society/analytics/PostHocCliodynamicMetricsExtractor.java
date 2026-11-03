@@ -565,4 +565,39 @@ public final class PostHocCliodynamicMetricsExtractor {
         double modernMedicine = (tech > 4.50) ? 40.0 / (1.0 + Math.exp(-2.00 * (tech - 5.80))) : 0.0;
         return Math.clamp(baselineLife + modernMedicine + nutritionBonus, 20.0, 85.0);
     }
+
+    /**
+     * Evaluates continuous planetary Kardashev scale index (Kardashev 1964; Sagan 1973).
+     * <p>
+     * \(K = (\log_{10}(P_{\text{watts\_total}}) - 6) / 10\).
+     * Type 0 (human metabolic / firewood ~ \(10^{11}\) W) &rarr; ~0.5.
+     * Modern planetary grid (~\(2 \times 10^{13}\) W) &rarr; ~0.73.
+     * Type I (full insolation capture ~ \(1.74 \times 10^{17}\) W) &rarr; 1.14.
+     * </p>
+     *
+     * @param powerWattsPerCapita mechanical, thermal, and electrical power flux (Watts/capita)
+     * @param population total population
+     * @return continuous Kardashev scale index
+     */
+    public static double computeKardashevScale(double powerWattsPerCapita, long population) {
+        double totalWatts = Math.max(1.0, powerWattsPerCapita * Math.max(1, population));
+        return (Math.log10(totalWatts) - 6.0) / 10.0;
+    }
+
+    /**
+     * Synthesizes emergent technology level \(T\) strictly a posteriori from physical state:
+     * energy extraction flux (Kardashev 1964; Lotka 1922; Smil 2017) and physical capital
+     * stock density (Solow 1956; Ashby 2011).
+     *
+     * @param powerWattsPerCapita per-capita exergy flux in Watts
+     * @param capitalPerCapita productive physical capital density (kg/capita)
+     * @return synthetic emergent technology index in [0.1, 10.0]
+     */
+    public static double computeEmergentTechnologyLevel(double powerWattsPerCapita, double capitalPerCapita) {
+        // 1. Energy conversion component (Lotka 1922 / Smil 2017)
+        double tEnergy = 1.0 + 1.5 * Math.log10(Math.max(50.0, powerWattsPerCapita) / 300.0);
+        // 2. Physical capital density component (Ashby 2011 / Solow 1956)
+        double tCapital = 0.2 + 2.2 * Math.log10(Math.max(1.0, capitalPerCapita));
+        return Math.clamp(0.50 * tEnergy + 0.50 * tCapital, 0.1, 10.0);
+    }
 }

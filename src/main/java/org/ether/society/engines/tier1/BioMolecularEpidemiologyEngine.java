@@ -80,11 +80,10 @@ public class BioMolecularEpidemiologyEngine {
             double immunoglobulinSynthesisRate = Math.clamp(energyRatio, 0.05, 1.0);
 
             double curLife = cell.getLifespanOr(40.0);
-            double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-            // Continuous Preston curve (Preston 1975; Omran 1971 Epidemiological Transition):
-            // Baseline life expectancy transitions smoothly from forager/early agrarian baseline (~36-40 yrs)
-            // to modern clinical obstetrics and antibiotics (~80.5 yrs at T >= 7.0)
-            double targetBaselineLife = 32.0 + 50.0 / (1.0 + Math.exp(-0.85 * (tech - 4.0)));
+            double capPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+            double waterSecurity = Math.clamp((cell.getFreshwaterAquiferOr(0.0) + cell.getWaterResourceOr(0.0)) / Math.max(10.0, pop * 0.05), 0.1, 2.0);
+            double devIndex = Math.log1p(capPerCapita / 50.0) * Math.min(1.5, waterSecurity);
+            double targetBaselineLife = 32.0 + 50.0 / (1.0 + Math.exp(-0.85 * (devIndex - 3.0)));
 
             // Malnutrition-induced immune collapse
             if (immunoglobulinSynthesisRate < 0.40) {

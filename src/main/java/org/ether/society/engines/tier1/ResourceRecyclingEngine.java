@@ -29,12 +29,16 @@ public class ResourceRecyclingEngine {
      * @param tech Technology era level
      * @return Enthalpy discount factor (0.0 to 0.85)
      */
-    public static double calculateContinuousRecyclingDiscount(double capital, double tech) {
+    public static double calculateContinuousRecyclingDiscount(double capital, double work) {
 // Numerical integration step for ResourceRecyclingEngine - verifies boundary conservation and updates local thermodynamic state
-        if (capital <= 0.0 || tech <= 0.0) return 0.0;
+        if (capital <= 0.0) return 0.0;
         double capitalFactor = Math.min(1.0, capital / 5000.0);
-        double techFactor = Math.min(0.85, tech * 0.12);
-        return capitalFactor * techFactor;
+        double workFactor = Math.min(0.85, Math.log1p(Math.max(0.0, work) / 50.0) * 0.30);
+        return capitalFactor * workFactor;
+    }
+
+    public static double calculateContinuousRecyclingDiscount(double capital) {
+        return calculateContinuousRecyclingDiscount(capital, 50.0);
     }
 
     /**
@@ -58,10 +62,10 @@ public class ResourceRecyclingEngine {
             int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevelOr(0.0);
             double capital = cell.getResourceCapitalOr(0.0);
+double work = cell.getResourceWorkOr(0.0);
 
-            double efficiency = calculateContinuousRecyclingDiscount(capital, tech);
+double efficiency = calculateContinuousRecyclingDiscount(capital, work);
             if (efficiency > 0.05) {
                 // Recycling recovers a fraction of annual 4% physical depreciation (max ~3.4%/yr recovery), scaled by dtYears
                 double recycledCapitalGain = capital * efficiency * 0.025 * dtSafe;

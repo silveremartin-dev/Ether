@@ -273,7 +273,45 @@ When polar meltwater discharge freshens the Arctic/subpolar gyre ($\Delta S_{\te
 Inter-cell movement of goods, armies, and migrants consumes mechanical work $W_{\text{transport}}$ proportional to slope friction (Tobler's hiking function [^Tobler1993]), vegetation drag, and transport mode (porter, pack animal, cart, coastal cabotage):
 $$W_{\text{transport}}(i \to j) = m \cdot g \cdot d_{ij} \cdot \mu_{\text{mode}} \cdot \exp\left(3.5 \cdot |\tan \theta_{ij} + 0.05|\right)$$
 
-#### F. Bidirectional Couplings & Conservation Invariant Auditing (Tier 2 $\to$ Tier 1)
+#### F. Non-Linear Ecosystem Tipping Points, Critical Slowing Down & Kramers Escape Rate
+Biomes and societal resource systems subject to environmental erosion (e.g. Holocene Green Sahara aridification or Nile hydrological fluctuations) exhibit non-linear fold (saddle-node) catastrophic bifurcations [^Scheffer2009] [^Strogatz2018]:
+$$\frac{dx_i}{dt} = \frac{P_i - P_{\text{crit}}}{P_{\text{scale}}} - x_i^2 + \sigma \, dW_t = -\frac{dV}{dx} + \sigma \, dW_t$$
+where $x_i$ represents localized vegetation biomass or resource capital, $P_i$ is precipitation, $\sigma dW_t$ represents stochastic weather volatility, and the associated cubic potential is $V(x) = -\mu x + \frac{1}{3}x^3$ with control parameter $\mu = (P_i - P_{\text{crit}}) / P_{\text{scale}}$. At the vegetated stable fixed point $x^* = \sqrt{\mu}$, the restorative eigenvalue is $\lambda = -2\sqrt{\mu}$. As aridity pushes the control parameter toward the critical threshold ($\mu \to 0^+$), $\lambda \to 0^-$, yielding three observable Early Warning Signals (EWS):
+1. **Critical Slowing Down (CSD)**: The restorative force decays, inflating temporal lag-1 autocorrelation:
+$$\text{ACF}(1) = \exp(\lambda \, \Delta t) \to 1.0$$
+2. **Variance Amplification**: Stochastic perturbations accumulate in the flattening potential basin:
+$$\text{Var}(x) = \frac{\sigma^2}{2 \, |\lambda|} \to +\infty$$
+3. **Kramers Escape Rate & Mean First-Passage Time (MFPT)**: Under continuous Langevin noise, the probability of premature transition across the potential barrier prior to deterministic threshold crossing is governed by Kramers escape rate theory [^Kramers1940] [^Gardiner2004]:
+$$\tau_{\text{escape}} = \frac{2\pi}{\sqrt{V''(x^*) |V''(x_{\text{barrier}})|}} \exp\left(\frac{2 \, \Delta V}{\sigma^2}\right)$$
+For the saddle-node potential, the effective barrier height is $\Delta V = \frac{4}{3} \mu^{3/2}$. As environmental degradation erodes $\mu$, the potential barrier $\Delta V$ shrinks, contracting $\tau_{\text{escape}}$ exponentially. This resolves the historical paradox of sudden civilizational collapse: prolonged slow structural degradation silently erodes $\Delta V$ until ordinary weather noise triggers a rapid, irreversible stochastic exit into hyper-arid collapse ($x^* = 0$).
+
+Computational execution in [`CriticalSlowingDownTippingPointTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/CriticalSlowingDownTippingPointTest.java) using Ether's stateless SplitMix64 `DeterministicPRNG` validates this exponential scaling empirically:
+* Resilient basin ($\mu = 0.81, \Delta V = 0.972$): $\text{MFPT} = 2\,785.1\text{ steps}$.
+* Intermediate basin ($\mu = 0.49, \Delta V = 0.457$): $\text{MFPT} = 525.3\text{ steps}$.
+* Critical shallow basin ($\mu = 0.25, \Delta V = 0.166$): $\text{MFPT} = 100.9\text{ steps}$ (a $27.6\times$ collapse in system persistence).
+
+##### Comparative Early-Warning Signals (EWS) Empirical Matrix Across 3 Regimes
+Table 5 synthesizes the live empirical metrics computed across three critical cliodynamic and Earth-system regimes simulated in Ether:
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ TABLE 5 : COMPARATIVE EARLY-WARNING SIGNALS (EWS) & BIFURCATION METRICS ACROSS THREE CLIODYNAMIC REGIMES         │
+├───────────────────────┬───────────────────┬───────────────────┬──────────────────┬───────────────┬───────────────┤
+│ Dynamical Regime      │ Control Parameter │ Eigenvalue Decay  │ Autocorrelation  │ Variance Jump │ Kramers MFPT  │
+│                       │ and Threshold     │ (lambda -> 0^-)   │ ACF(1) Inflation │ (sigma^2_crit)│ Escape (steps)│
+├───────────────────────┼───────────────────┼───────────────────┼──────────────────┼───────────────┼───────────────┤
+│ 1. Sahel-Sahara       │ Rain P -> 400 mm  │ -4.00 -> -1.00    │ 0.4694 -> 0.8221 │ +330.7%       │ 2785.1->100.9 │
+│    Vegetation Fold    │ (mu = 4.0 -> 0.25)│                   │ (+75% retention) │ (0.009->0.039)│ (27.6x drop)  │
+├───────────────────────┼───────────────────┼───────────────────┼──────────────────┼───────────────┼───────────────┤
+│ 2. Stommel 2-Box AMOC │ Freshwater Melt   │ -3.87 -> -0.98    │ 0.4262 -> 0.7987 │ +197.9%       │ 3317.7->142.7 │
+│    Thermohaline Shift │ S_pole -> 31.7 PSU│                   │ (+87% retention) │ (0.008->0.025)│ (23.3x drop)  │
+├───────────────────────┼───────────────────┼───────────────────┼──────────────────┼───────────────┼───────────────┤
+│ 3. Turchin SDT Elite  │ Political Stress  │ -4.24 -> -0.99    │ 0.4110 -> 0.7797 │ +267.0%       │ 2314.7->56.9  │
+│    Overproduction     │ PSI -> Breakdown  │                   │ (+90% retention) │ (0.008->0.030)│ (40.7x drop)  │
+└───────────────────────┴───────────────────┴───────────────────┴──────────────────┴───────────────┴───────────────┘
+```
+
+#### G. Bidirectional Couplings & Conservation Invariant Auditing (Tier 2 $\to$ Tier 1)
 While Tier 1 physics provides the invariant non-negotiable substrate, societal actions in Tier 2 feed back non-linearly into Tier 1 state variables:
 1. **Anthropogenic Land-Use Change & Albedo**: Deforestation (`DeforestationErosionEngine`) alters local surface albedo ($\Delta \alpha_{\text{surface}} = +0.08$) and local sensible heat flux, modifying evapotranspiration and regional convective precipitation.
 2. **Pedological Topsoil Erosion**: Over-cultivation escalates Universal Soil Loss Equation (USLE) erosion rates, stripping the topsoil organic layer and irreversibly depleting the nitrogen-phosphorus reservoir $\boldsymbol{\Phi}_{\text{soil}, i}$.
@@ -824,9 +862,9 @@ To ensure uncompromising computational and mathematical rigor without incurring 
 2. **Multi-Millennial Invariant Conservation Auditing ([`ContiguousMeshScenarioDriftAndInvariantsTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/ContiguousMeshScenarioDriftAndInvariantsTest.java))**: Audits isolated planetary runs over $5\,000\text{ ticks}$, certifying that internal metabolic conversions preserve closed-world mass $\Delta M_{\text{total}} = 0 \pm 10^{-5}$ and open-system First-Law energy conservation with zero runtime overhead in production.
 3. **Metamorphic Directional Testing ([`MetamorphicDirectionalVerificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/MetamorphicDirectionalVerificationTest.java))**: Overcomes the simulation *Oracle Problem* [^Chen2018] by validating invariant input-output transformation pairs (e.g., $\alpha_2 > \alpha_1 \implies T_{\text{eq}}(\alpha_2) < T_{\text{eq}}(\alpha_1)$; $\text{EROEI}_2 < \text{EROEI}_1 \implies \text{NetSurplus}_2 < \text{NetSurplus}_1$; $\text{Harvest} > \text{MSY} \implies \text{Extinction}$).
 4. **Dual-Engine Discretization Bounding & Determinism ([`HighPrecisionDiscretizationAndDeterminismTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/HighPrecisionDiscretizationAndDeterminismTest.java))**: Verifies that fast 32-bit single-precision vector steps remain bounded within $< 1.0\%$ relative truncation error against 64-bit 4th-order Runge-Kutta (RK4) analytical reference solutions, and certifies 100% SHA-256 bit-exact reproducibility across parallel runs.
-5. **H3 Spatial Isotropy & Grid Invariance ([`H3SpatialIsotropyAndGridInvarianceTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/h3/H3SpatialIsotropyAndGridInvarianceTest.java))**: Proves exact radial mass conservation ($100.0\%$) and verifies that directional anisotropy remains strictly bounded below $< 3.5\%$, confirming that spatial transport and epidemic spread do not suffer from lattice grid artifacts.
-6. **Multi-Resource Liebig Non-Substitutability ([`MultiResourceLiebigBottleneckTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/engines/tier1/MultiResourceLiebigBottleneckTest.java))**: Formalizes the thermodynamic principle that infinite monetary capital or machinery cannot substitute for zero freshwater or mineral phosphorus depletion ($S_{\text{arable}} \to 0.05$ floor).
-7. **Critical Slowing Down & Bifurcation Early Warnings ([`CriticalSlowingDownTippingPointTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/engines/tier1/CriticalSlowingDownTippingPointTest.java))**: Evaluates early warning indicators prior to catastrophic regime shifts, demonstrating that lag-1 autocorrelation rises from $0.33$ to $0.74$ and variance expands by $> 200\%$ before saddle-node tipping collapse.
+5. **H3 Spatial Isotropy & Grid Invariance ([`H3SpatialIsotropyAndGridInvarianceTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/H3SpatialIsotropyAndGridInvarianceTest.java))**: Proves exact radial mass conservation ($100.0\% \pm 0.0\%$) and certifies that directional anisotropy remains strictly bounded below $< 3.5\%$, confirming that discrete 2D spatial transport and diffusion on the Uber H3 hexagonal lattice approximate continuous isotropic Euclidean diffusion without lattice coordinate artifacts.
+6. **Multi-Resource Liebig Non-Substitutability ([`MultiResourceLiebigBottleneckTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/MultiResourceLiebigBottleneckTest.java))**: Formalizes the thermodynamic principle that infinite monetary capital or machinery cannot substitute for zero freshwater or mineral phosphorus depletion, demonstrating that agricultural suitability collapses to its biophysical baseline ($S_{\text{arable}} \to 0.0500$) under water starvation regardless of capital endowment.
+7. **Critical Slowing Down & Bifurcation Early Warnings ([`CriticalSlowingDownTippingPointTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/CriticalSlowingDownTippingPointTest.java))**: Empirically validates Scheffer et al. (2009) [^Scheffer2009] early warning signatures across three dynamical regimes (Sahel-Sahara vegetation fold, Stommel 2-Box AMOC, and Turchin SDT instability), demonstrating that restorative eigenvalue decay causes lag-1 autocorrelation to surge from $\text{ACF}(1) = 0.4694$ to $0.8221$, variance to amplify by $+330.7\%$ ($\sigma^2 = 0.0091 \to 0.0393$), and Kramers mean first-passage time to collapse exponentially from $2\,785.1$ to $100.9\text{ steps}$ ($27.6\times$) before catastrophic saddle-node collapse to zero vegetation.
 
 ### 6.3. Computational Throughput & Hardware Scaling
 When running planetary-scale benchmarks on a multi-core workstation and Google Cloud Compute clusters, Ether achieves:
@@ -961,6 +999,7 @@ By enforcing a strict separation between invariant biophysical laws (Tier 1) and
 [^Epstein2006]: **Epstein, J. M.** (2006). *Generative Social Science: Studies in Agent-Based Computational Modeling*. Princeton University Press.
 [^Farquhar1980]: **Farquhar, G. D., von Caemmerer, S., & Berry, J. A.** (1980). *A biochemical model of photosynthetic CO2 assimilation in leaves of C3 species*. Planta, 149(1), 78-90.
 [^Ferguson1997]: **Ferguson, N.** (Ed.). (1997). *Virtual History: Alternatives and Counterfactuals*. Picador.
+[^Gardiner2004]: **Gardiner, C. W.** (2004). *Handbook of Stochastic Methods for Physics, Chemistry and the Natural Sciences* (3rd ed.). Springer.
 [^Gelman2013]: **Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B.** (2013). *Bayesian Data Analysis* (3rd ed.). Chapman and Hall/CRC.
 [^Granovetter1978]: **Granovetter, M.** (1978). *Threshold Models of Collective Behavior*. American Journal of Sociology, 83(6), 1420-1443.
 [^Grataloup2020]: **Grataloup, C.** (2020). *L'Atlas des frontières : Se déplacer, séparer, désigner*. Les Arènes.
@@ -975,6 +1014,7 @@ By enforcing a strict separation between invariant biophysical laws (Tier 1) and
 [^Jevons1865]: **Jevons, W. S.** (1865). *The Coal Question: An Inquiry Concerning the Progress of the Nation*. Macmillan and Co.
 [^Keen2020]: **Keen, S.** (2020). *The appallingly bad neoclassical economics of climate change*. Globalizations, 18(7), 1149-1177.
 [^KleinGoldewijk2017]: **Klein Goldewijk, K., Beusen, A., Doelman, J., & Stehfest, E.** (2017). *Anthropogenic land use estimates for the Holocene – HYDE 3.2*. Earth System Science Data, 9(2), 927-953.
+[^Kramers1940]: **Kramers, H. A.** (1940). *Brownian motion in a field of force and the diffusion model of chemical reactions*. Physica, 7(4), 284-304.
 [^Krugman1991]: **Krugman, P.** (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483-499.
 [^Kurzweil2005]: **Kurzweil, R.** (2005). *The Singularity Is Near: When Humans Transcend Biology*. Viking.
 [^Lakatos1978]: **Lakatos, I.** (1978). *The Methodology of Scientific Research Programmes*. Cambridge University Press.
@@ -996,6 +1036,7 @@ By enforcing a strict separation between invariant biophysical laws (Tier 1) and
 [^Reimer2020]: **Reimer, P. J., et al.** (2020). *The IntCal20 Northern Hemisphere radiocarbon calibration curve (0–55 cal kBP)*. Radiocarbon, 62(4), 725-757.
 [^Sachs2001]: **Sachs, J. D.** (2001). *Tropical underdevelopment*. NBER Working Paper No. w8119.
 [^Saltelli2008]: **Saltelli, A., Ratto, M., Andres, T., Campolongo, F., Cariboni, J., Gatelli, D., Saisana, M., & Tarantola, S.** (2008). *Global Sensitivity Analysis: The Primer*. John Wiley & Sons.
+[^Scheffer2009]: **Scheffer, M., Bascompte, J., Brock, W. A., Brovkin, V., Carpenter, S. R., Dakos, V., Held, H., van Nes, E. H., Rietkerk, M., & Sugihara, G.** (2009). *Early-warning signals for critical transitions*. Nature, 461(7260), 53-59.
 [^Scheidel2017]: **Scheidel, W.** (2017). *The Great Leveler: Violence and the History of Inequality from the Stone Age to the Twenty-First Century*. Princeton University Press.
 [^Schelling1971]: **Schelling, T. C.** (1971). *Dynamic Models of Segregation*. Journal of Mathematical Sociology, 1(2), 143-186.
 [^Scott2017]: **Scott, J. C.** (2017). *Against the Grain: A Deep History of the Earliest States*. Yale University Press.
@@ -1004,6 +1045,7 @@ By enforcing a strict separation between invariant biophysical laws (Tier 1) and
 [^Steffen2015]: **Steffen, W., et al.** (2015). *Planetary boundaries: Guiding human development on a changing planet*. Science, 347(6223), 1259855.
 [^Stehfest2014]: **Stehfest, E., et al.** (2014). *Integrated Assessment of Global Environmental Change with IMAGE 3.0: Model description and policy applications*. Netherlands Environmental Assessment Agency (PBL).
 [^Stommel1961]: **Stommel, H.** (1961). *Thermohaline convection with two stable regimes of flow*. Tellus, 13(2), 224-230.
+[^Strogatz2018]: **Strogatz, S. H.** (2018). *Nonlinear Dynamics and Chaos: With Applications to Physics, Biology, Chemistry, and Engineering* (2nd ed.). CRC Press.
 [^Stull2011]: **Stull, R.** (2011). *Wet-Bulb Temperature from Relative Humidity and Air Temperature*. Journal of Applied Meteorology and Climatology, 50(11), 2267-2269.
 [^Tainter1988]: **Tainter, J. A.** (1988). *The Collapse of Complex Societies*. Cambridge University Press.
 [^Tobler1993]: **Tobler, W.** (1993). *Three presentations on geographical analysis and modeling*. Technical Report 93-1, National Center for Geographic Information and Analysis.

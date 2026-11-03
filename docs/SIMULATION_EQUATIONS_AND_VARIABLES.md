@@ -2349,3 +2349,16 @@ In strict accordance with the Headless Decoupling Architecture, runtime headless
     * **Literature**: Allen (2001), Clark (2005) *A Farewell to Alms*.
     * **Governing Equation**:
       $$W_{\text{unskilled}}(T) = \text{clamp}\left(100.0 + \frac{550.0}{1.0 + \exp(-2.20 \cdot (T - 4.60))}, 50.0, 1000.0\right)$$
+
+23. **Planetary Kardashev Energy Scale & Emergent Technology Formulation**:
+    * **Literature**: Kardashev, N. S. (1964) *Transmission of Information by Extraterrestrial Civilizations*; Sagan, C. (1973) *The Cosmic Connection*; Lotka, A. J. (1922) *Contribution to the Energetics of Evolution*; Smil, V. (2017) *Energy and Civilization*.
+    * **Epistemic Principle**: Technology ($T$) is strictly a synthetic output metric reconstituted *a posteriori* from physical exergy and capital stock density, never a causal input driver in Tier 1.
+    * **Continuous Kardashev Scale**:
+      $$K_{\text{sagan}} = \frac{\log_{10}\left(\max\left(1.0, P_{\text{watts, total}}\right)\right) - 6.0}{10.0}$$
+      where $P_{\text{watts, total}} = P_{\text{watts/capita}} \cdot N$.
+    * **Emergent Technology Level ($T_{\text{emergent}}$)**:
+      $$T_{\text{energy}} = 1.0 + 1.5 \cdot \log_{10}\left(\frac{\max(50.0, P_{\text{watts/capita}})}{300.0}\right)$$
+      $$T_{\text{capital}} = 0.2 + 2.2 \cdot \log_{10}\left(\max\left(1.0, \frac{K}{N}\right)\right)$$
+      $$T_{\text{emergent}} = 0.50 \cdot T_{\text{energy}} + 0.50 \cdot T_{\text{capital}}$$
+    * **Tier 1 Extraction Status**: 100% complete across all 18 Tier 1 physical engines. Zero calls to `getTechnologyLevel()` remain in Tier 1. All physical state transformations are driven strictly by mass, enthalpy, exergy flux (Watts), and material strength.
+

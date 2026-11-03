@@ -103,25 +103,22 @@ public class SoilNutrientNPKEngine {
             if (baseBiomass <= 0.0 && pop <= 0) return;
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double metalOre = cell.getResourceMetalOr(100.0);
-            double tech = cell.getTechnologyLevelOr(0.0);
+double metalOre = cell.getResourceMetalOr(100.0);
 
-            // 1. Rock Phosphate (P) & Potash (K) Geological Mining Extraction
-            double extractedMiningP = Math.min(metalOre * 0.05, minMinedOreScaled);
-            double extractedMiningK = Math.min(metalOre * 0.05, minMinedOreScaled);
+// 1. Rock Phosphate (P) & Potash (K) Geological Mining Extraction
+double extractedMiningP = Math.min(metalOre * 0.05, minMinedOreScaled);
+double extractedMiningK = Math.min(metalOre * 0.05, minMinedOreScaled);
 
-            // Enforce conservation of mass: deduct mined fertilizer ore from the geological mineral stock
-            double totalMinedOre = (extractedMiningP + extractedMiningK) * dtFactor;
-            cell.setResourceMetal(Math.max(0.0, metalOre - totalMinedOre));
+// Enforce conservation of mass: deduct mined fertilizer ore from the geological mineral stock
+double totalMinedOre = (extractedMiningP + extractedMiningK) * dtFactor;
+cell.setResourceMetal(Math.max(0.0, metalOre - totalMinedOre));
 
-            // 2. Biological & Haber-Bosch Industrial Nitrogen Fixation (Smil 2001, Enriching the Earth)
-            // Pre-industrial biological fixation (rhizobia legumes / crop rotations) smoothly transitions to
-            // catalytic high-pressure Haber-Bosch synthesis (N2 + 3H2 <=> 2NH3 at 20 MPa, 450 C, Fritz Haber 1909)
-            // requiring modern industrial technology (T >= 4.5) and electrical/mechanical power capacity.
-            double bioFixationN = Math.max(0.0, nNorm - soilNBase) * (1.0 / (1.0 + Math.exp(2.0 * (tech - 3.8))));
-            double haberBoschTechFactor = 1.0 / (1.0 + Math.exp(-3.0 * (tech - 4.5)));
-            double haberBoschPowerFactor = 1.0 / (1.0 + Math.exp(-0.02 * (powerPerCapita - HABER_BOSCH_POWER_WATTS)));
-            double haberBoschShare = haberBoschTechFactor * haberBoschPowerFactor;
+// 2. Biological & Haber-Bosch Industrial Nitrogen Fixation (Smil 2001, Enriching the Earth)
+// Pre-industrial biological fixation (rhizobia legumes / crop rotations) smoothly transitions to
+// catalytic high-pressure Haber-Bosch synthesis (N2 + 3H2 <=> 2NH3 at 20 MPa, 450 C, Fritz Haber 1909)
+// governed by physical electrical/mechanical power capacity.
+double haberBoschShare = 1.0 / (1.0 + Math.exp(-0.01 * (powerPerCapita - HABER_BOSCH_POWER_WATTS)));
+double bioFixationN = Math.max(0.0, nNorm - soilNBase) * (1.0 - haberBoschShare);
             if (haberBoschShare > 0.5) {
                 haberBoschCounter.incrementAndGet();
             }
@@ -135,30 +132,27 @@ public class SoilNutrientNPKEngine {
             double liebigFactor = Math.min(effectiveSoilN / nNorm, Math.min(effectiveSoilP / pNorm, effectiveSoilK / kNorm));
 
             // Continuous arability suitability replaces discrete switch(biome)
-            double arableBiomeFactor = calculateContinuousArableSuitability(cell);
-            double laborCultivatedBiomass = pop * (580.0 + 50.0 * Math.min(tech, 10.0));
-            double techLandCeiling = (planarCellAreaKm2 < 5.0)
-                    ? (25.0 * areaScale * arableBiomeFactor)
-                    : Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.pow(Math.max(0.0, tech - 1.4), 1.5)) * areaScale * arableBiomeFactor);
-            double maxCellBiomass = techLandCeiling;
-            double neolithicTransition = 1.0 / (1.0 + Math.exp(-4.0 * (tech - 1.5)));
-            double potentialBiomass = neolithicTransition * ((planarCellAreaKm2 < 5.0)
-                    ? (25.0 * areaScale * arableBiomeFactor)
-                    : Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass));
-            if (baseBiomass <= 0.0) {
-                baseBiomass = potentialBiomass;
-            }
-            double targetYield = potentialBiomass * liebigFactor;
+double arableBiomeFactor = calculateContinuousArableSuitability(cell);
+double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+double laborCultivatedBiomass = pop * (580.0 + 150.0 * Math.min(4.0, Math.log1p(capPerCap / 50.0)));
+double landCeiling = (planarCellAreaKm2 < 5.0)
+        ? (25.0 * areaScale * arableBiomeFactor)
+        : Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.min(5.0, 1.0 + capPerCap / 100.0)) * areaScale * arableBiomeFactor);
+double maxCellBiomass = landCeiling;
+double potentialBiomass = (planarCellAreaKm2 < 5.0)
+        ? (25.0 * areaScale * arableBiomeFactor)
+        : Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass);
+double targetYield = potentialBiomass * liebigFactor;
 
-            double updatedBiomass;
-            if (tech < 1.5) {
-                updatedBiomass = 0.0;
-            } else if (baseBiomass <= targetYield) {
-                updatedBiomass = baseBiomass + relaxationRate * (targetYield - baseBiomass);
-            } else {
-                updatedBiomass = baseBiomass - terraceMaintenanceDecay * (baseBiomass - targetYield);
-            }
-            cell.setBiomassAgriculture(Math.clamp(updatedBiomass, 0.0, maxCellBiomass * 1.25));
+double updatedBiomass;
+if (baseBiomass <= 0.0) {
+    updatedBiomass = 0.0;
+} else if (baseBiomass <= targetYield) {
+    updatedBiomass = baseBiomass + relaxationRate * (targetYield - baseBiomass);
+} else {
+    updatedBiomass = baseBiomass - terraceMaintenanceDecay * (baseBiomass - targetYield);
+}
+cell.setBiomassAgriculture(Math.clamp(updatedBiomass, 0.0, maxCellBiomass * 1.25));
         };
 
         if (size >= 10000) {

@@ -39,13 +39,16 @@ public class InfrastructureInertiaEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
-            double tech = cell.getTechnologyLevelOr(1.0);
-            // Dynamic half-life scaling: High technology and maintenance increase asset longevity
-            // Tech 1.0 (primitive): ~24 years | Tech 5.0 (industrial benchmark): 35 years | Tech 10.0+ (advanced): 45-60 years
-            double dynamicHalfLife = baseCapitalTurnoverHalfLifeYears * Math.max(0.5, 0.5 + 0.5 * Math.pow(tech / 5.0, 0.6));
+            double metal = cell.getResourceMetalOr(0.0);
+            double work = cell.getResourceWorkOr(0.0);
+            double capital = cell.getResourceCapitalOr(0.0);
+            // Dynamic half-life scaling (Jorgenson 1963): Metal durability and ongoing maintenance work increase asset longevity
+            // Primitive unmaintained wood/earth: ~24 years | Metal-reinforced maintained infrastructure: 35-50 years
+            double maintenanceRatio = (capital > 0.0) ? (work + metal * 0.5) / capital : 0.05;
+            double longevityFactor = 0.65 + 0.35 * Math.min(2.5, Math.log1p(maintenanceRatio * 5.0));
+            double dynamicHalfLife = baseCapitalTurnoverHalfLifeYears * Math.clamp(longevityFactor, 0.5, 2.0);
             double decayFactor = Math.exp(-deltaYears / dynamicHalfLife);
 
-            double capital = cell.getResourceCapitalOr(0.0);
             // Physical depreciation of industrial capital per cell
             cell.setResourceCapital(capital * decayFactor);
         }

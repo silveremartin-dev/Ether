@@ -103,8 +103,8 @@ public class NuclearSafetyRadiotoxicityEngine {
             int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevelOr(0.0);
-            if (tech < 4.0) continue; // Nuclear fission requires atomic age technology (tech >= 4.0)
+            double uranium = cell.getResourceUraniumOr(0.0);
+            if (uranium <= 0.0) continue; // Nuclear fission requires uranium mineral feedstock
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double pollution = cell.getPollutionLevelOr(0.0);

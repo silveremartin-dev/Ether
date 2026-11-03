@@ -65,9 +65,9 @@ public class BiologicalDemographicsEngine {
             double naturalBiomass = cell.getBiomassNaturalOr(0.0);
             double agBiomass = cell.getBiomassAgricultureOr(0.0);
             double fishBiomass = cell.getBiomassFishOr(0.0);
-            double tech = cell.getTechnologyLevelOr(1.0);
+            double agShare = agBiomass / Math.max(1.0, agBiomass + naturalBiomass);
             // Continuous dietary transition from wild foraging to agricultural staples (Kelly 2013; Bocquet-Appel 2011)
-            double foragingFraction = 0.005 + 0.003 / (1.0 + Math.exp(4.0 * (tech - 1.5)));
+            double foragingFraction = 0.005 + 0.003 / (1.0 + Math.exp(6.0 * (agShare - 0.20)));
             double edibleNaturalBiomassGJ = naturalBiomass * foragingFraction * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
             double edibleAgBiomassGJ = agBiomass * 0.70 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
             double edibleFishBiomassGJ = fishBiomass * 0.25 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
@@ -75,7 +75,7 @@ public class BiologicalDemographicsEngine {
             double totalFoodGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20, food * 0.15);
 
             // Trophic-adjusted annual metabolic requirement matching DemographicKernel (Lindeman primary crop vs foraging trophic chain)
-            double trophicRatio = (tech < 1.5)
+            double trophicRatio = (agShare < 0.15)
                     ? 1.0
                     : (org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN
                        / org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER);
@@ -119,7 +119,8 @@ public class BiologicalDemographicsEngine {
 
             // Environmental hazard factor calculation for telemetry and age pyramid updates
             if (pop > 0) {
-                cell.updateAgePyramidFromTotal(cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0 ? cell.getTechnologyLevel() : 1.0);
+                double demoStageTechEquiv = 1.0 + 7.0 * Math.clamp((cell.getLifespanOr(35.0) - 32.0) / 48.0, 0.0, 1.0);
+                cell.updateAgePyramidFromTotal(demoStageTechEquiv);
             }
         }
     }
