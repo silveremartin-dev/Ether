@@ -335,7 +335,7 @@ public class HeadlessBatchRunner {
         metricsMap.put("worldPopulation", (double) pop);
         metricsMap.put("foodPerCapita", foodPerCap);
         metricsMap.put("avgTechLevel", avgTech);
-        metricsMap.put("asabiyyah", stability);
+        metricsMap.put("stability", stability);
         metricsMap.put("populatedCellCount", (double) populatedCells);
 
         record.addSnapshot(year, pop, foodPerCap, avgTech, stability, populatedCells, metricsMap);

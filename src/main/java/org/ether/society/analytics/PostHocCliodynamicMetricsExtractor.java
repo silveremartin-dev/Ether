@@ -153,16 +153,18 @@ public final class PostHocCliodynamicMetricsExtractor {
     // --- ANALYTICAL CLOSED-FORM POST-HOC EVALUATORS ---
 
     public static double computeGrossWorldProduct(long pop, double tech) {
-        // Maddison Project Database (2020):
-        // Antiquity (~450 Int$), Medieval (~550 Int$), 1800 CE (~667 Int$), 1913 CE (~1,525 Int$), Modern (~11,000 Int$)
-        double gdpPerCap = 450.0 + 120.0 * Math.tanh(Math.max(0.0, tech - 1.50) * 1.10)
-                + (tech > 3.60 ? 10500.0 / (1.0 + Math.exp(-2.20 * (tech - 4.90))) : 0.0);
+        // Maddison Project Database (2020) per-capita scaling:
+        // Pre-industrial baseline (~180 Int$ global aggregate), industrial takeoff post-1870 (~1,480 Int$ in 1914, ~13,000 Int$ modern)
+        double gdpPerCap = 175.0 + 35.0 * Math.tanh(Math.max(0.0, tech - 1.50) * 0.90)
+                + (tech > 3.70 ? 12800.0 / (1.0 + Math.exp(-2.30 * (tech - 5.00))) : 0.0);
         return ((double) pop * gdpPerCap) / 1e9; // Billion 1990 Int$
     }
 
     public static double computePrimaryEnergyEJ(long pop, double tech) {
-        double gigajoulesPerCap = 15.0 + 10.0 * Math.max(0.0, tech - 1.0)
-                + (tech > 3.6 ? 60.0 / (1.0 + Math.exp(-2.2 * (tech - 4.5))) : 0.0);
+        // Vaclav Smil (2017) per-capita primary energy harvest:
+        // Pre-industrial biomass/muscle (~15.2 GJ/capita), coal/steam breakout (~29.5 GJ/capita in 1914, ~76.5 GJ/capita modern)
+        double gigajoulesPerCap = 15.2 + 1.2 * Math.tanh(Math.max(0.0, tech - 1.50) * 0.80)
+                + (tech > 3.60 ? 60.0 / (1.0 + Math.exp(-2.25 * (tech - 4.90))) : 0.0);
         return ((double) pop * gigajoulesPerCap * 1e9) / 1e18; // Exajoules
     }
 

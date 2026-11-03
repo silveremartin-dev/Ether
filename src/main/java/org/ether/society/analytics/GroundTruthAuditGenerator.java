@@ -107,166 +107,49 @@ public class GroundTruthAuditGenerator {
         }
         if (id == null) id = metric;
 
-        double val = snap.getValue(id);
-        if (val != 0.0 && !Double.isNaN(val)) {
-            if ("zeroContainmentScore".equals(id) && val > 1.0) return val / 100.0;
-            if ("primaryEnergy".equals(id) && val > 1e12) return val * 3.15576e-5;
-            return val;
+        // 1. Direct hit in precomputed metricsMap (if present and non-zero)
+        if (snap.getMetricsMap() != null && snap.getMetricsMap().containsKey(id)) {
+            double v = snap.getMetricsMap().get(id);
+            if (!Double.isNaN(v)) {
+                if ("zeroContainmentScore".equals(id) && v > 1.0) return v / 100.0;
+                if ("asabiyyahSocialCohesion".equals(id) && v > 1.0) return v / 100.0;
+                if ("primaryEnergy".equals(id) && v > 1e12) return v * 3.15576e-5;
+                return v;
+            }
         }
 
+        // 2. Physical snapshot state properties (population, technology, food)
         String lower = id.toLowerCase(Locale.ROOT);
         if (lower.contains("populat") || lower.contains("densit")) {
-            val = snap.getValue("worldPopulation");
-            if (val == 0.0) val = snap.getValue("population");
-            if (val == 0.0) val = (double) snap.getPopulation();
-            if (val != 0.0) return val;
+            return (double) snap.getPopulation();
         }
         if (lower.contains("tech") || lower.contains("outillage")) {
-            val = snap.getValue("avgTechLevel");
-            if (val == 0.0) val = snap.getValue("technology");
-            if (val == 0.0) val = snap.getAvgTech();
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("literacy") || lower.contains("alphabet")) {
-            val = snap.getValue("literacyRate");
-            if (!Double.isNaN(val)) return val;
-            return 0.0;
-        }
-        if (lower.contains("urban")) {
-            val = snap.getValue("urbanizationRate");
-            if (!Double.isNaN(val)) return val;
-            return 0.0;
+            return snap.getAvgTech();
         }
         if (lower.contains("food") || lower.contains("alim")) {
-            val = snap.getValue("foodPerCapita");
-            if (val == 0.0) val = snap.getFood();
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("asabiyyah") || lower.contains("cohesion")) {
-            val = snap.getValue("asabiyyah");
-            if (val == 0.0) val = snap.getStability();
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("instabil") || lower.contains("conflict") || lower.contains("conflit") || lower.contains("psi")) {
-            val = snap.getValue("sociopoliticalInstability");
-            if (val == 0.0) val = snap.getValue("conflict");
-            if (val == 0.0) val = Math.min(100.0, Math.max(5.0, 100.0 - snap.getStability()));
-            return val;
-        }
-        if (lower.contains("primaryenergy")) {
-            val = snap.getValue("primaryEnergy");
-            if (val > 0.0 && val < 1e5) return val;
-            val = snap.getValue("energyCaptured");
-            if (val > 0.0) return val * 3.15576e-5;
-        }
-        if (lower.contains("energy") || lower.contains("énerg")) {
-            val = snap.getValue("primaryEnergy");
-            if (val > 0.0 && val < 1e5) return val;
-            val = snap.getValue("energyCaptured");
-            if (val != 0.0) return val * 3.15576e-5;
-        }
-        if (lower.contains("gdp") || lower.contains("product") || lower.contains("richesse") || lower.contains("pib")) {
-            val = snap.getValue("grossWorldProduct");
-            if (val == 0.0) val = snap.getValue("gdp");
-            if (val == 0.0) val = snap.getValue("gdpTotal");
-            if (val > 1e6) val /= 1e9;
-            if (val != 0.0) return val;
+            return snap.getFood();
         }
         if (lower.contains("mégafaune") || lower.contains("megafauna")) {
-            val = snap.getValue("megafaunaIndex");
-            if (val != 0.0) return val;
+            double v = snap.getValue("megafaunaIndex");
+            if (v != 0.0) return v;
             return ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(year, snap.getPopulation() / 1e6, 0.2);
         }
         if (lower.contains("milankovitch") || lower.contains("insolation")) {
-            val = snap.getValue("milankovitchInsolation");
-            if (val != 0.0) return val;
+            double v = snap.getValue("milankovitchInsolation");
+            if (v != 0.0) return v;
             return ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year);
         }
         if (lower.contains("confinement") || lower.contains("zerocontainment")) {
-            val = snap.getValue("zeroContainmentScore");
-            if (val > 1.0) val /= 100.0;
-            if (val == 0.0) {
-                val = year <= 1492 ? Math.max(0.75, 1.0 - (year + 10000.0) / 11492.0 * 0.25)
-                                   : Math.max(0.04, 0.75 - Math.min(0.71, (year - 1492.0) / 534.0 * 0.71));
+            double v = snap.getValue("zeroContainmentScore");
+            if (v > 1.0) v /= 100.0;
+            if (v == 0.0) {
+                v = year <= 1492 ? Math.max(0.75, 1.0 - (year + 10000.0) / 11492.0 * 0.25)
+                                 : Math.max(0.04, 0.75 - Math.min(0.71, (year - 1492.0) / 534.0 * 0.71));
             }
-            return val;
+            return v;
         }
-        if (lower.contains("gini") || lower.contains("inégal")) {
-            val = snap.getValue("giniInequality");
-            if (val == 0.0) val = snap.getValue("gini");
-            if (val == 0.0) val = snap.getValue("giniIndex");
-            if (val != 0.0) return val;
-        }
-        if (lower.contains("currency") || lower.contains("debasement")) {
-            val = snap.getValue("currencyDebasement");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("elite") || lower.contains("overproduction")) {
-            val = snap.getValue("eliteOverproductionIndex");
-            if (val == 0.0) val = snap.getValue("eliteOverproduction");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("wage") || lower.contains("salaire")) {
-            val = snap.getValue("realUnskilledWage");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("politicalstress") || lower.contains("psi")) {
-            val = snap.getValue("politicalStressIndex");
-            if (val == 0.0) val = snap.getValue("psiStressIndex");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("sovereigndebt") || lower.contains("debt") || lower.contains("dette")) {
-            val = snap.getValue("sovereignDebtBurden");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("trade") || lower.contains("commerce")) {
-            val = snap.getValue("globalTradeVolume");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("soil") || lower.contains("erosion")) {
-            val = snap.getValue("soilErosionRate");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("eroei") || lower.contains("eroi")) {
-            val = snap.getValue("agriculturalEroei");
-            if (val == 0.0) val = snap.getValue("eroiAlim");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("deforest") || lower.contains("forest")) {
-            val = snap.getValue("deforestationRate");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("speed") || lower.contains("vitesse")) {
-            val = snap.getValue("informationSpeed");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("smelt") || lower.contains("metal")) {
-            val = snap.getValue("metalSmeltingPerCapita");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("fossil")) {
-            val = snap.getValue("fossilSharePrimaryEnergy");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("freight") || lower.contains("shipping")) {
-            val = snap.getValue("shippingFreightCostIndex");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("life") || lower.contains("expectancy") || lower.contains("esperance")) {
-            val = snap.getValue("lifeExpectancyAtBirth");
-            if (val == 0.0) val = snap.getValue("lifeExpectancy");
-            if (val == 0.0) val = snap.getValue("avgLifespan");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("temperature") || lower.contains("anom")) {
-            val = snap.getValue("temperatureAnomaly");
-            if (!Double.isNaN(val)) return val;
-        }
-        if (lower.contains("bonheur") || lower.contains("happiness")) {
-            val = snap.getValue("happiness");
-            if (val == 0.0) val = snap.getValue("avgHappiness");
-            if (val != 0.0) return val;
-        }
+
+        // 3. Systematically delegate all other macroeconomic & cliodynamic indicators to PostHocCliodynamicMetricsExtractor
         return PostHocCliodynamicMetricsExtractor.computeMetric(snap, id, year);
     }
 
