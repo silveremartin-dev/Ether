@@ -4,7 +4,7 @@
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.falsification;
+package org.ether.society.falsification.multiscale;
 
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
@@ -36,6 +36,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
+@Tag("academic")
+@Tag("scientific")
 @Tag("falsification")
 @Tag("benchmark")
 public class WindowedVsGlobalSpatialFalsificationSuiteTest {
@@ -232,5 +234,16 @@ public class WindowedVsGlobalSpatialFalsificationSuiteTest {
         assertNotNull(r);
         assertTrue(r.passed(), "Medieval Iceland benchmark must pass");
         assertTrue(r.pearsonCorrelation() >= 0.80, "Medieval Iceland correlation must be >= 0.80");
+    }
+    @Test
+    @DisplayName("Ch2.6 - Tokugawa Japan Sakoku (1639-1669 AD): Insular Archipelago Maritime Isolation")
+    public void testTokugawaJapanSakokuIsolation() {
+        logger.info("=== Starting Test: Tokugawa Japan Sakoku Isolation (1639-1669 AD) ===");
+
+        BenchmarkResult r = WindowedVsGlobalSpatialFalsificationHarness.runTokugawaSakoku1639IsolationBenchmark();
+        assertNotNull(r);
+        assertTrue(r.passed(), "Tokugawa Japan Sakoku isolation benchmark must pass");
+        assertTrue(r.pearsonCorrelation() >= 0.85, "Tokugawa Japan correlation must be >= 0.85");
+        assertTrue(r.coreMAPE() < 0.20, "Tokugawa Japan MAPE must be < 20%");
     }
 }

@@ -4,7 +4,7 @@
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.falsification;
+package org.ether.society.falsification.debates;
 
 import org.ether.society.analytics.HistoricalValidationKernel;
 import org.ether.society.database.H3Cell;

@@ -499,6 +499,10 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     public static BenchmarkResult runIcelandBenchmark() {
         return HistoricalSpatialIsolationBenchmarks.runIcelandBenchmark();
     }
+
+    public static BenchmarkResult runTokugawaSakoku1639IsolationBenchmark() {
+        return HistoricalSpatialIsolationBenchmarks.runTokugawaSakoku1639IsolationBenchmark();
+    }
     // =========================================================================
     // SPATIAL MATHEMATICS & STATISTICAL METRICS
     // =========================================================================

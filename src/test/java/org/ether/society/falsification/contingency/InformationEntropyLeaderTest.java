@@ -3,7 +3,10 @@
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
-package org.ether.society.events;
+package org.ether.society.falsification.contingency;
+
+import org.ether.society.events.*;
+import org.junit.jupiter.api.Tag;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
@@ -43,6 +46,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see TopologicalConvergenceTest Experiment B — Wasserstein distributional distance
  * @see ArchetypeSubstitutionTest Experiment D — Identity invariance permutation test
  */
+@Tag("academic")
+@Tag("scientific")
+@Tag("falsification")
 public class InformationEntropyLeaderTest {
 
     private static final int N_RUNS    = 50;   // Monte-Carlo ensemble (for robust histogram)

@@ -294,4 +294,56 @@ public final class HistoricalSpatialIsolationBenchmarks {
                 pearson, mape, centroidShift, refl, pass,
                 String.format("Subarctic agricultural margin & maritime linkage validated (Pearson r = %.4f, MAPE = %.2f%%)", pearson, mape * 100));
     }
+
+    /**
+     * Executes the Tokugawa Japan (1639-1669 AD) Sakoku maritime isolation benchmark.
+     * Evaluates whether oceanic isolation decoupling accurately preserves archipelago cliodynamics.
+     *
+     * @return benchmark result with spatial metrics
+     */
+    public static BenchmarkResult runTokugawaSakoku1639IsolationBenchmark() {
+        Scenario tokugawa = new Scenario();
+        tokugawa.setName("Tokugawa_Sakoku_1639_Base");
+        tokugawa.setStartDateYear(1639);
+        tokugawa.setEndDateYear(1669);
+        tokugawa.setInitialHumanCount(18_000_000L);
+        tokugawa.setH3Resolution(4);
+        tokugawa.setTemporalResolutionDays(30.0);
+        tokugawa.setSeed(16391639L);
+
+        // Japan Archipelago bounding window: 30°N to 45°N, 128°E to 146°E
+        double minLat = 30.0, maxLat = 45.0;
+        double minLng = 128.0, maxLng = 146.0;
+
+        Scenario winJapan = cloneScenario(tokugawa);
+        winJapan.setName("Japan_Sakoku_Windowed");
+        winJapan.setClippingEnabled(true);
+        winJapan.setMinLat(minLat); winJapan.setMaxLat(maxLat);
+        winJapan.setMinLng(minLng); winJapan.setMaxLng(maxLng);
+        winJapan.setBoundaryMode("DYNAMIC_RESERVOIR");
+        SimulationRunRecord recWin = HeadlessBatchRunner.executeScenarioHeadless(winJapan);
+
+        Scenario globJapan = cloneScenario(tokugawa);
+        globJapan.setName("Japan_Sakoku_Global");
+        globJapan.setClippingEnabled(false);
+        SimulationRunRecord recGlob = HeadlessBatchRunner.executeScenarioHeadless(globJapan);
+
+        int finalYear = (int) tokugawa.getEndDateYear();
+        List<H3Cell> gCells = recGlob.getSpatialSnapshotAt(finalYear);
+        List<H3Cell> wCells = recWin.getSpatialSnapshotAt(finalYear);
+
+        Map<Long, Double> gMap = extractPopDensityMap(gCells, minLat, maxLat, minLng, maxLng);
+        Map<Long, Double> wMap = extractPopDensityMap(wCells, minLat, maxLat, minLng, maxLng);
+
+        double pearson = computeSpatialPearsonCorrelation(gMap, wMap);
+        double mape = computeCoreMAPE(gMap, wMap);
+        double centroidShift = computeCentroidShiftKm(gMap, wMap, wCells);
+        double refl = computeBoundaryReflectionIndex(gMap, wMap, wCells);
+
+        boolean pass = pearson >= 0.85 && mape < 0.20 && centroidShift < 120.0;
+        return new BenchmarkResult("Tokugawa Japan Sakoku (1639-1669 AD)", "Insular Archipelago Sakoku Isolation", "DYNAMIC_RESERVOIR", 4, 30.0,
+                pearson, mape, centroidShift, refl, pass,
+                String.format("Tokugawa archipelago maritime isolation validated (Pearson r = %.4f, MAPE = %.2f%%, Shift = %.1f km)",
+                        pearson, mape * 100, centroidShift));
+    }
 }

@@ -1264,3 +1264,110 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Federico & Tena-Junguito (2017); Findlay & O'Rourke (2007); Maddison Project (2020).
 
 ---
+
+### Entry 51: Exact Canonical Metric Dispatch & Greedy Substring Collision Elimination
+* **Date**: November 3, 2026
+* **Subsystem**: `PostHocCliodynamicMetricsExtractor.java` (`computeMetric()`), `GroundTruthAuditGenerator.java` (`extractValue()`)
+* **Canonical Literature**:
+  * Turchin, P. (2016). *Ages of Discord: A Structural-Demographic Analysis of American Polity*. Beresta Books.
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+* **Problem in Previous Implementation**:
+  * Greedy substring matching (`lower.contains("product")` and `lower.contains("energy")`) inadvertently intercepted `eliteOverproductionIndex` and `fossilSharePrimaryEnergy`, returning Gross World Product in Billion Int$ ($12.39$ to $33.89$) and Primary Energy in Exajoules ($1.00$ to $2.72$) instead of Turchin's elite ratio and fossil fuel percentage ($0.0\%$). This generated artificial statistical errors of up to $1\,511\,704\%$ in the audit reports.
+* **Calibrated Ether Formulation**:
+  * Replaced greedy substring cascade with an explicit, bit-exact `switch (metricKey)` on all 27 canonical telemetry IDs, followed by an order-safe fallback verifying compound tokens (`elite`, `overproduction`, `fossil`) prior to generic stems (`product`, `energy`).
+* **Root Cause & Academic Justification**:
+  * Eliminates cross-metric contamination and guarantees that structural cliodynamic indices and thermodynamic share ratios evaluate strictly within their normalized peer-reviewed domains ($[0.0, 5.0]$ and $[0\%, 100\%]$).
+* **Empirical Validation Grounding**:
+  * Seshat Global History Databank; Peter Turchin (2016); Vaclav Smil (2017).
+
+---
+
+### Entry 52: Neolithic Threshold Activation for Agricultural EROEI
+* **Date**: November 3, 2026
+* **Subsystem**: `PostHocCliodynamicMetricsExtractor.java` (`computeAgriculturalEroei()`)
+* **Canonical Literature**:
+  * Hall, C. A. S., & Klitgaard, K. A. (2012). *Energy and the Wealth of Nations: Understanding the Biophysical Economy*. Springer.
+  * Leach, G. (1976). *Energy and Food Production*. IPC Science and Technology Press.
+* **Problem in Previous Implementation**:
+  * Agricultural EROEI evaluated to $6.44$ during the Last Glacial Maximum ($-20\,000$ BP) when agriculture did not exist, violating `AGENTS.md §8` (Deep-Time Invariant Baselines).
+* **Calibrated Ether Formulation**:
+  $$\text{agActivation}(T) = \tanh(\max(0, T - 1.20) \cdot 3.0)$$
+  $$\text{EROEI}_{\text{ag}}(T) = \text{agActivation}(T) \cdot \left[14.5 - \frac{10.0}{1.0 + \exp(-1.40 \cdot (T - 2.50))}\right]$$
+  * When $T \le 1.20$ (Paleolithic/Pleistocene), $\text{EROEI}_{\text{ag}} \equiv 0.0$.
+* **Root Cause & Academic Justification**:
+  * Foraging societies derived metabolic energy exclusively from wild faunal/floral gathering; agricultural energy returns emerge strictly with Holocene plant domestication (Neolithic Revolution, $T \ge 1.20$).
+* **Empirical Validation Grounding**:
+  * Hall & Klitgaard (2012); Leach (1976); HYDE 3.4.
+
+---
+
+### Entry 53: Continuous Pristine Forest Retention & Anthropogenic Clearing
+* **Date**: November 3, 2026
+* **Subsystem**: `PostHocCliodynamicMetricsExtractor.java` (`computeForestCoverRemaining()`)
+* **Canonical Literature**:
+  * Williams, M. (2003). *Deforesting the Earth: From Prehistory to Global Crisis*. University of Chicago Press.
+  * Kaplan, J. O., Krumhardt, K. M., & Zimmermann, N. (2009). "The prehistoric and preindustrial deforestation of Europe." *Quaternary Science Reviews*, 28(27–28), 3016–3034.
+* **Problem in Previous Implementation**:
+  * A post-glacial activation factor multiplied baseline forest cover by $\tanh((T - 1.15) \cdot 2.0)$, erroneously predicting that forest cover collapsed to $37\%$ in the early Holocene ($-8000$ BCE) when human technology was low.
+* **Calibrated Ether Formulation**:
+  $$\text{Clearing}(T) = 12.0 \cdot \tanh(\max(0, T - 1.35) \cdot 0.90) + \frac{22.0}{1.0 + \exp(-1.80 \cdot (T - 3.80))}$$
+  $$\text{ForestRemaining}(T) = \text{clamp}(99.0 - \text{Clearing}(T), 50.0, 99.0) \quad [\%]$$
+* **Root Cause & Academic Justification**:
+  * Pristine terrestrial biomes held maximal forest cover ($\sim 98\text{--}99\%$) prior to large-scale agrarian clearing, which expanded in two historical phases: traditional axe/fire cultivation ($\sim 12\%$ clearing in Antiquity/Medieval) and industrial timber/agriculture ($\sim 22\%$ additional clearing).
+* **Empirical Validation Grounding**:
+  * Williams (2003); Kaplan et al. (2009); HYDE 3.4.
+
+---
+
+### Entry 54: Continuous Multi-Era Topsoil Erosion Modeling
+* **Date**: November 3, 2026
+* **Subsystem**: `PostHocCliodynamicMetricsExtractor.java` (`computeTopsoilErosionLoss()`)
+* **Canonical Literature**:
+  * Montgomery, D. R. (2007). *Dirt: The Erosion of Civilizations*. University of California Press.
+  * Montgomery, D. R. (2007). "Soil erosion and agricultural sustainability." *PNAS*, 104(33), 13268–13272.
+* **Problem in Previous Implementation**:
+  * Soil erosion was coupled solely to a modern tractor mechanization sigmoid, yielding only $3.76\text{ t/ha/yr}$ in Roman Antiquity (observed: $15.42\text{ t/ha/yr}$ due to Mediterranean slope plowing).
+* **Calibrated Ether Formulation**:
+  $$\text{lossActivation}(T) = \tanh(\max(0, T - 1.20) \cdot 1.50)$$
+  $$\text{Erosion}(T) = 0.03 + \text{lossActivation}(T) \cdot \left[14.5 \cdot \tanh(\max(0, T - 1.35) \cdot 1.20) + \frac{20.0}{1.0 + \exp(-1.80 \cdot (T - 3.80))}\right] \quad [\text{t/ha/yr}]$$
+* **Root Cause & Academic Justification**:
+  * Soil erosion accelerates in two distinct empirical waves: first, traditional animal-drawn ard/moldboard plowing and deforestation on hilly terrain ($12\text{--}16\text{ t/ha/yr}$ in Antiquity and the Song Dynasty); second, deep mechanized industrial tractor tillage ($30\text{--}45\text{ t/ha/yr}$).
+* **Empirical Validation Grounding**:
+  * Montgomery (2007); UN FAO Global Soil Partnership (2020).
+
+---
+
+### Entry 55: Pleistocene Deep-Time Glacial $\text{CO}_2$ & Deglaciation Scaling
+* **Date**: November 3, 2026
+* **Subsystem**: `PostHocCliodynamicMetricsExtractor.java` (`computeCo2Concentration()`), `GroundTruthAuditGenerator.java` (`extractValue()`)
+* **Canonical Literature**:
+  * Petit, J. R., et al. (1999). "Climate and atmospheric history of the past 420,000 years from the Vostok ice core, Antarctica." *Nature*, 399(6735), 429–436.
+  * Lüthi, D., et al. (2008). "High-resolution carbon dioxide concentration record 650,000–800,000 years before present." *Nature*, 453(7193), 379–382.
+* **Problem in Previous Implementation**:
+  * Atmospheric $\text{CO}_2$ was fixed at an invariant $280\text{ ppm}$ default, resulting in a $47.4\%$ error during the Last Glacial Maximum ($-20\,000$ BP) where ice cores establish $\text{CO}_2 \approx 190\text{ ppm}$.
+* **Calibrated Ether Formulation**:
+  $$\text{CO}_2(\text{year}, T) = \begin{cases} 190.0 + \text{clamp}\left(\frac{\text{year} + 20000}{10000}, 0.0, 1.0\right) \cdot 85.0 & \text{if } \text{year} < -10000 \\ 280.0 + \frac{145.0}{1.0 + \exp(-2.20 \cdot (T - 4.60))} & \text{if } T > 3.65 \\ 280.0 & \text{otherwise} \end{cases} \quad [\text{ppm}]$$
+* **Root Cause & Academic Justification**:
+  * Enforces paleoclimatic ice core ground truth during the Pleistocene glacial-interglacial transition, smoothly joining the pre-industrial Holocene baseline ($280\text{ ppm}$) and modern Keeling curve fossil emissions.
+* **Empirical Validation Grounding**:
+  * EPICA Dome C; Vostok Ice Core (Petit et al. 1999); NOAA Global Monitoring Laboratory.
+
+---
+
+### Entry 56: Scenario Preset Technology Level Alignment for the Second Industrial Revolution (1914 CE)
+* **Date**: November 3, 2026
+* **Subsystem**: `data/presets/scenarios/earth_+1914_world_wars_totalitarian_1914.json`, `src/main/resources/data/presets/scenarios/earth_+1914_world_wars_totalitarian_1914.json`
+* **Canonical Literature**:
+  * Morris, I. (2013). *The Measure of Civilization: How Social Development Decides the Fate of Nations*. Princeton University Press.
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  * Maddison Project Database (2020).
+* **Problem in Previous Implementation**:
+  * The scenario preset for 1914 CE had `initialTechLevel` mistakenly set to $6.1$ (corresponding to post-WWII / Space Age technology $\sim 1965\text{--}1975$), causing all tech-dependent functions in 1914 to jump prematurely to late-20th-century levels (e.g. GWP of $\$24\,880\text{B}$ vs $\$3\,260\text{B}$ observed, Primary Energy of $149.6\text{ EJ}$ vs $62.8\text{ EJ}$ observed).
+* **Calibrated Ether Formulation**:
+  * Calibrated `initialTechLevel` for 1914 CE to **$4.45$**, perfectly capturing the peak of the Second Industrial Revolution (internal combustion engine, electrification, chemical synthesis, Bessemer steel) within the continuous $[0.0, 10.0]$ Morris-Smil scale (where $1800 \equiv 3.65$, $1914 \equiv 4.45$, $1945 \equiv 5.20$, $2000 \equiv 8.50$).
+* **Root Cause & Academic Justification**:
+  * Restores historical and chronological consistency across the continuous technological progression vector, eliminating severe over-scaling across GWP, primary energy, urbanization, and telecommunications speed in 1914.
+* **Empirical Validation Grounding**:
+  * Morris (2013); Smil (2017); Maddison Project (2020); HYDE 3.4.
+
+---

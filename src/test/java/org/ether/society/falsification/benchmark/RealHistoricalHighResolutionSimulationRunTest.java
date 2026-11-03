@@ -2,13 +2,14 @@
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
-package org.ether.society.falsification;
+package org.ether.society.falsification.benchmark;
 
 import org.ether.society.analytics.HeadlessBatchRunner;
 import org.ether.society.analytics.SimulationRunRecord;
 import org.ether.society.config.EtherPaths;
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -26,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * Verifies that full snapshots, compressed topologies, and telemetry files are generated in saves/.
  */
+@Tag("academic")
+@Tag("scientific")
 public class RealHistoricalHighResolutionSimulationRunTest {
 
     @Test

@@ -143,8 +143,7 @@ public class GroundTruthAuditGenerator {
             double v = snap.getValue("zeroContainmentScore");
             if (v > 1.0) v /= 100.0;
             if (v == 0.0) {
-                v = year <= 1492 ? Math.max(0.75, 1.0 - (year + 10000.0) / 11492.0 * 0.25)
-                                 : Math.max(0.04, 0.75 - Math.min(0.71, (year - 1492.0) / 534.0 * 0.71));
+                v = PostHocCliodynamicMetricsExtractor.computeZeroContainmentScore(year);
             }
             return v;
         }

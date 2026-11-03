@@ -4,7 +4,9 @@
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
-package org.ether.society.analytics;
+package org.ether.society.falsification.multiscale;
+
+import org.junit.jupiter.api.Tag;
 
 import org.ether.society.h3.H3Service;
 import org.junit.jupiter.api.Assertions;
@@ -25,6 +27,9 @@ import java.util.Map;
  * and demographic correlation ($R^2$, Pearson $r$) across discrete H3 resolutions
  * against empirical ground truth historical rasters (1800 AD Sovereign Polities & HYDE 3.4).
  */
+@Tag("academic")
+@Tag("scientific")
+@Tag("multiscale")
 public class HistoricalFidelityEvaluationTest {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalFidelityEvaluationTest.class);
 

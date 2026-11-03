@@ -2,7 +2,7 @@
  * MIT License
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot & Gemini AI
  */
-package org.ether.society.scenarios;
+package org.ether.society.falsification.multiscale;
 
 import com.uber.h3core.H3Core;
 import com.uber.h3core.util.LatLng;

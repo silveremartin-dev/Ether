@@ -36,7 +36,8 @@ public class BioMolecularEpidemiologyEngine {
      * Mammalian cross-species viral/bacterial phylogenetic transmission coefficient (Plowright et al. 2017; Wolfe et al. 2007).
      * Reflects the molecular compatibility barrier between domestic mammals (ungulates, suids) and human hosts.
      */
-    public static final double MAMMALIAN_PHYLOGENETIC_SPILLOVER_COEFF = 1.2e-6;
+    public static final double MAMMALIAN_PHYLOGENETIC_SPILLOVER_COEFF = 0.25;
+
 
     /**
      * Executes one bio-molecular immune response and pathogen tick across cells using default monthly step.

@@ -3,7 +3,10 @@
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
-package org.ether.society.events;
+package org.ether.society.falsification.contingency;
+
+import org.ether.society.events.*;
+import org.junit.jupiter.api.Tag;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
@@ -21,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Scientific validation & A/B Counterfactual Falsification Test Suite
  * for historical contingency leaders and cliodynamic bifurcations in Ether.
  */
+@Tag("academic")
+@Tag("scientific")
+@Tag("falsification")
 public class HistoricalLeaderBifurcationTest {
 
     private EventSystem eventSystem;

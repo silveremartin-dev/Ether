@@ -243,11 +243,14 @@ public final class H3CellPhysicsAndStateHelper {
      * @return effective 3D surface area in $\text{km}^2$
      */
     public static double getEffectiveSurfaceAreaKm2(H3Cell cell) {
-        int res = 3;
+        int res = 4;
         Long h3Index = cell.getH3Index();
         if (h3Index != null && h3Index != 0) {
+            int mode = (int) ((h3Index >>> 59) & 0xF);
             int r = (int) ((h3Index >>> 52) & 0xF);
-            if (r >= 0 && r <= 15) {
+            if (mode == 1 && r >= 0 && r <= 15) {
+                res = r;
+            } else if (r >= 1 && r <= 15) {
                 res = r;
             }
         }

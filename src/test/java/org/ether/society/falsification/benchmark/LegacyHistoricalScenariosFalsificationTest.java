@@ -1,10 +1,12 @@
-package org.ether.society.analytics;
+package org.ether.society.falsification.benchmark;
 
+import org.ether.society.analytics.*;
 import org.ether.society.analytics.MapComparisonMetrics.MapComparisonResult;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
 import org.ether.society.ui.analytics.SpatialTensorRasterRenderer;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -26,6 +28,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * evaluates 2D spatial density distributions against historical ground truth rasters,
  * and produces rigorous markdown epistemic audit reports.
  */
+@Tag("academic")
+@Tag("scientific")
+@Tag("benchmark")
 public class LegacyHistoricalScenariosFalsificationTest {
 
     public record SimpleBenchmarkItem(String name, String runId) implements ScenarioBenchmarkItem {

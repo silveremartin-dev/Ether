@@ -8,13 +8,13 @@
 
 | Variable | Authentic Simulation (165-185 CE) | Counterfactual Steampunk Fake Benchmark | MAPE Divergence (%) | Epistemic Verdict |
 | :--- | :---: | :---: | :---: | :---: |
-| **grossWorldProduct** | 10.87 | 3100.00 | **99.6%** | 🔴 **FALSIFIED (Physically Impossible)** |
-| **primaryEnergy** | 1.40 | 95.00 | **98.5%** | 🔴 **FALSIFIED (Physically Impossible)** |
-| **co2Concentration** | 275.00 | 370.00 | **25.7%** | 🟢 Plausible |
-| **urbanizationRate** | 2.74 | 47.00 | **94.2%** | 🔴 **FALSIFIED (Physically Impossible)** |
-| **metalSmeltingPerCapita** | 6.13 | 160.00 | **96.2%** | 🔴 **FALSIFIED (Physically Impossible)** |
-| **fossilSharePrimaryEnergy** | 0.42 | 82.00 | **99.5%** | 🔴 **FALSIFIED (Physically Impossible)** |
-| **informationSpeed** | 78.22 | 10000.00 | **99.2%** | 🔴 **FALSIFIED (Physically Impossible)** |
+| **grossWorldProduct** | 13.85 | 3100.00 | **99.6%** | 🔴 **FALSIFIED (Physically Impossible)** |
+| **primaryEnergy** | 1.12 | 95.00 | **98.8%** | 🔴 **FALSIFIED (Physically Impossible)** |
+| **co2Concentration** | 280.00 | 370.00 | **24.3%** | 🟢 Plausible |
+| **urbanizationRate** | 2.29 | 47.00 | **95.1%** | 🔴 **FALSIFIED (Physically Impossible)** |
+| **metalSmeltingPerCapita** | 3.23 | 160.00 | **98.0%** | 🔴 **FALSIFIED (Physically Impossible)** |
+| **fossilSharePrimaryEnergy** | 1.12 | 82.00 | **98.6%** | 🔴 **FALSIFIED (Physically Impossible)** |
+| **informationSpeed** | 94.28 | 10000.00 | **99.1%** | 🔴 **FALSIFIED (Physically Impossible)** |
 
 ### 2. Epistemic Synthesis & Popperian Verdict
 

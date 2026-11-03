@@ -1,5 +1,6 @@
-package org.ether.society.analytics;
+package org.ether.society.falsification.benchmark;
 
+import org.ether.society.analytics.*;
 import org.ether.society.analytics.MapComparisonMetrics.MapComparisonResult;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @Tag("academic")
 @Tag("scientific")
+@Tag("benchmark")
 public class Phase1NewScenariosFalsificationTest {
 
     public record SimpleBenchmarkItem(String name, String runId) implements ScenarioBenchmarkItem {

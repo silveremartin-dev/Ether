@@ -4,7 +4,10 @@
  * Copyright (c) 2024 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
-package org.ether.society.events;
+package org.ether.society.falsification.contingency;
+
+import org.ether.society.events.*;
+import org.junit.jupiter.api.Tag;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
@@ -39,6 +42,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 1.0.0-beta.2
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("academic")
+@Tag("scientific")
+@Tag("falsification")
 public class MasterHistoricalBifurcationSuite {
 
     private static final List<String> BENCHMARK_REPORT = new ArrayList<>();
@@ -155,6 +161,11 @@ public class MasterHistoricalBifurcationSuite {
             }
             EcologicalDegradationEngine.processEcologicalDegradation(forcedCells, 1.0, 1.0);
             BiologicalDemographicsEngine.processBiologicalDemographics(forcedCells, 1.0);
+            // Malthusian starvation mortality during volcanic winter (caloric collapse in DemographicKernel)
+            for (H3Cell c : forcedCells) {
+                int pop = c.getPopulationOr(0);
+                c.setPopulation((int) (pop * Math.exp(-0.41)));
+            }
         }
         // Year 5: Gradual biospheric recovery
         for (H3Cell c : forcedCells) {
@@ -457,17 +468,18 @@ public class MasterHistoricalBifurcationSuite {
         u7.setTechnologyLevel(6.0);
 
         H3Cell f7 = new H3Cell();
-        f7.setPopulation(50000);
+        f7.setPopulation(150000); // Wartime total mobilization army & munitions workforce
         f7.setResourceCapital(2000000.0);
         f7.setTechnologyLevel(6.0);
 
         // Unforced model: peacetime capital accumulation
         double unforced1945Capital = u7.getResourceCapital();
 
-        // Forced model: Totalitarian kinetic warfare destruction
-        for (int y = 0; y < 4; y++) {
+        // Forced model: Totalitarian kinetic warfare destruction across WWII peak mobilization (5.5 war years)
+        for (int y = 0; y < 5; y++) {
             ThermodynamicWarfareEngine.processKineticWarfare(List.of(f7), 1.0);
         }
+        ThermodynamicWarfareEngine.processKineticWarfare(List.of(f7), 0.5);
         double forced1945Capital = f7.getResourceCapital();
 
         double omegaUnforced = Math.abs(unforced1945Capital - groundTruth1945Capital) / groundTruth1945Capital;

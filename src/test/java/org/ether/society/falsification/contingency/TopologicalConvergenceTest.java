@@ -3,7 +3,10 @@
  * Copyright (c) 2024 Gemini AI Assistant
  * Copyright (c) 2024 Silvere Martin-Michiellot
  */
-package org.ether.society.events;
+package org.ether.society.falsification.contingency;
+
+import org.ether.society.events.*;
+import org.junit.jupiter.api.Tag;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
@@ -38,6 +41,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see InformationEntropyLeaderTest Experiment C — Shannon entropy gain
  * @see ArchetypeSubstitutionTest Experiment D — Cross-archetype permutation ranking
  */
+@Tag("academic")
+@Tag("scientific")
+@Tag("falsification")
 public class TopologicalConvergenceTest {
 
     private static final int N_NULL    = 40;   // ensemble size for null/leader distributions
