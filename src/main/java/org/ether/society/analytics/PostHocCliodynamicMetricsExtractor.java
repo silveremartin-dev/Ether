@@ -93,7 +93,9 @@ public final class PostHocCliodynamicMetricsExtractor {
                 return computeGiniInequality(tech);
             }
             case "sovereignDebtBurden" -> {
-                return computeSovereignDebtBurden(tech);
+                double trade = computeGlobalTradeVolume(tech);
+                double lit = computeLiteracyRate(tech);
+                return computeSovereignDebtBurden(trade, lit, stability, tech);
             }
             case "globalTradeVolume" -> {
                 return computeGlobalTradeVolume(tech);
@@ -411,15 +413,32 @@ public final class PostHocCliodynamicMetricsExtractor {
     }
 
     public static double computeSovereignDebtBurden(double tech) {
-        // Dickson (1967) / North & Weingast (1989): Permanent negotiable sovereign funded debt
-        // emerged exclusively with the early modern fiscal state (T >= 3.35).
-        // Before 1500 CE, sovereign debt is strictly inactive (0.0%).
-        double fiscalStateActivation = Math.tanh(Math.max(0.0, tech - 3.35) * 2.0);
-        if (fiscalStateActivation <= 0.0) return 0.0;
-        // Reinhart & Rogoff (2009): Early modern debt peaks during war cycles (~75-120% in 1815/1914, ~100% post-1945)
-        double earlyDebt = 20.0 + 55.0 * Math.tanh(Math.max(0.0, tech - 3.50) * 1.50);
-        double modernFiscalState = 80.0 / (1.0 + Math.exp(-2.20 * (tech - 4.10)));
-        return Math.clamp(fiscalStateActivation * Math.max(earlyDebt, modernFiscalState), 0.0, 250.0);
+        double trade = computeGlobalTradeVolume(tech);
+        double lit = computeLiteracyRate(tech);
+        return computeSovereignDebtBurden(trade, lit, 70.0, tech);
+    }
+
+    /**
+     * Endogenous Institutional Debt Emergence:
+     * Eliminates arbitrary calendar-date / T-step conditionals per AGENTS.md §8 & §9.
+     * Negotiable funded sovereign debt emerges strictly from 3 material prerequisites:
+     * 1. Accounting literacy & debt ledgers (North & Weingast 1989) -> Literacy > 5%
+     * 2. Liquid commercial monetization & domestic bond market (Dickson 1967) -> Trade Volume > 10
+     * 3. Credible institutional commitment & fiscal war shocks (Reinhart & Rogoff 2009).
+     */
+    public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double tech) {
+        double accountingCapacity = Math.tanh(Math.max(0.0, literacy - 5.0) * 0.15);
+        if (accountingCapacity <= 0.0) return 0.0;
+
+        double monetizationCapacity = Math.tanh(Math.max(0.0, tradeVolume - 10.0) * 0.08);
+        if (monetizationCapacity <= 0.0) return 0.0;
+
+        double credibleCommitment = Math.tanh((stability / 100.0) * 2.0);
+        double fiscalShock = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
+        double debtCycle = 35.0 + 85.0 * Math.pow(fiscalShock, 1.2) + 40.0 * Math.tanh(tradeVolume / 150.0);
+
+        double debtBurden = accountingCapacity * monetizationCapacity * credibleCommitment * debtCycle;
+        return Math.clamp(debtBurden, 0.0, 250.0);
     }
 
     public static double computeGlobalTradeVolume(double tech) {

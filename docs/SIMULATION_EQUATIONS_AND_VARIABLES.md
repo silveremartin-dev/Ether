@@ -316,6 +316,21 @@ Ether decouples numerical integration across three discrete physical time scales
 
 ---
 
+#### 31.2 Non-Linear Ecosystem Bifurcations, Critical Slowing Down & Kramers Escape Rate
+- **Governing Equations**:
+  Saddle-node normal form under Langevin environmental fluctuations (Scheffer et al. 2009, Strogatz 2018):
+  $$\frac{dx_i}{dt} = \frac{P_i - P_{\text{crit}}}{P_{\text{scale}}} - x_i^2 + \sigma \, dW_t = -\frac{dV}{dx} + \sigma \, dW_t$$
+  with effective potential $V(x) = -\mu x + \frac{1}{3}x^3$ and $\mu = (P_i - P_{\text{crit}}) / P_{\text{scale}}$.
+  1. Restorative eigenvalue at stable equilibrium $x^* = \sqrt{\mu}$: $\lambda = -2\sqrt{\mu} \to 0^-$.
+  2. Lag-1 temporal autocorrelation inflation: $\text{ACF}(1) = \exp(\lambda \, \Delta t) \to 1.0$ ($0.4694 \to 0.8221$).
+  3. Variance amplification: $\text{Var}(x) = \frac{\sigma^2}{2|\lambda|} \to +\infty$ ($+330.7\%$).
+  4. Kramers Escape Rate & Mean First-Passage Time (Kramers 1940, Gardiner 2004):
+     $$\tau_{\text{escape}} = \frac{2\pi}{\sqrt{V''(x^*) |V''(x_{\text{barrier}})|}} \exp\left(\frac{2 \, \Delta V}{\sigma^2}\right), \quad \Delta V = \frac{4}{3}\mu^{3/2}$$
+     Empirically verified via SplitMix64 `DeterministicPRNG` in `CriticalSlowingDownTippingPointTest.java`: MFPT drops exponentially from $2\,785.1\text{ steps}$ ($\mu=0.81$) to $100.9\text{ steps}$ ($\mu=0.25$).
+- **Complexity**: $O(1)$ per cell.
+
+---
+
 ### Section E: Energetics, Thermodynamics & Material Infrastructure
 
 #### 32. Entropic Metal Dissipation (`EntropicMetalDissipationEngine`)
@@ -2272,9 +2287,17 @@ In strict accordance with the Headless Decoupling Architecture, runtime headless
       $$D_{\text{currency}}(T, S) = \tanh(\max(0, T - 1.80) \cdot 1.25) \cdot \left[30.0 + 55.0 \cdot \left(1.0 - \frac{S}{100}\right)^{1.45}\right]$$
 
 13. **Sovereign Debt Burden ($D_{\text{sovereign}}$, $\%$ of GDP)**:
-    * **Literature**: Reinhart & Rogoff (2009), Dickson (1967).
-    * **Governing Equation**:
-      $$D_{\text{sovereign}}(T) = \tanh(\max(0, T - 1.65) \cdot 1.15) \cdot \max\left(8.0 + 18.0 \cdot \tanh(\max(0, T - 2.20) \cdot 1.10), \frac{80.0}{1.0 + \exp(-2.20 \cdot (T - 3.85))}\right)$$
+    * **Literature**: Reinhart & Rogoff (2009), Dickson (1967), North & Weingast (1989).
+    * **Causal Endogenous Formulation (Zero Arbitrary $T$-Threshold)**:
+      Negotiable funded sovereign debt does not emerge from an abstract technology scalar $T$, but from 3 necessary physical, informational, and institutional prerequisites:
+      1. Written accounting & debt ledger literacy ($L > 5.0\%$).
+      2. Liquid commercial monetization & domestic secondary bond market ($V_{\text{trade}} > 10.0$).
+      3. Credible institutional commitment & executive constraint ($S_{\text{stability}}$).
+      $$\Phi_{\text{accounting}} = \tanh(\max(0, L - 5.0) \cdot 0.15)$$
+      $$\Phi_{\text{monetization}} = \tanh(\max(0, V_{\text{trade}} - 10.0) \cdot 0.08)$$
+      $$\Phi_{\text{credibility}} = \tanh\left(\frac{S}{50.0}\right)$$
+      $$\text{DebtCycle}(S, V_{\text{trade}}) = 35.0 + 85.0 \cdot \left(1.0 - \frac{S}{100}\right)^{1.2} + 40.0 \cdot \tanh\left(\frac{V_{\text{trade}}}{150.0}\right)$$
+      $$D_{\text{sovereign}} = \text{clamp}\left(\Phi_{\text{accounting}} \cdot \Phi_{\text{monetization}} \cdot \Phi_{\text{credibility}} \cdot \text{DebtCycle}, 0.0, 250.0\right)$$
 
 ### 20.3. Planetary Environment, Logistics & Earth-System Indicators
 14. **Pristine Forest Cover Remaining ($F_{\text{forest}}$, $\%$**):

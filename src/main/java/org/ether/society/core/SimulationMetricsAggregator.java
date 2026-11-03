@@ -1121,12 +1121,12 @@ public class SimulationMetricsAggregator {
      * @return sovereign debt burden in $[0.0, 250.0]$ %
      */
     public double getSovereignDebtBurdenPct() {
+        double trade = getGlobalTradeVolumeIndex();
+        double literacy = getLiteracyRate();
+        double stability = getHappinessIndex();
         float tech = engine.getAverageTechnology();
-        double fiscalStateActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 1.15);
-        if (fiscalStateActivation <= 0.0) return 0.0;
-        double earlyDebt = 8.0 + 18.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 1.10);
-        double modernFiscalState = 80.0 / (1.0 + Math.exp(-2.20 * (tech - 3.85)));
-        return Math.clamp(fiscalStateActivation * Math.max(earlyDebt, modernFiscalState), 0.0, 250.0);
+        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeSovereignDebtBurden(
+                trade, literacy, stability, tech);
     }
 
     /**
