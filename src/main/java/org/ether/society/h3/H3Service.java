@@ -284,8 +284,18 @@ public class H3Service {
             for (Long base : baseCells) {
                 LatLng baseCoord = h3.cellToLatLng(base);
                 if (res > 2) {
-                    double margin = 35.0;
-                    if (baseCoord.lat < minLat - margin || baseCoord.lat > maxLat + margin) {
+                    double marginLat = 20.0;
+                    if (baseCoord.lat < minLat - marginLat || baseCoord.lat > maxLat + marginLat) {
+                        continue;
+                    }
+                    // Bounding longitude check to prune non-regional base cells across Pacific/Americas
+                    double cosLat = Math.max(0.2, Math.cos(Math.toRadians(baseCoord.lat)));
+                    double marginLng = Math.min(60.0, 20.0 / cosLat);
+                    double centerLng = (minLng + maxLng) / 2.0;
+                    double dLng = Math.abs(baseCoord.lng - centerLng);
+                    if (dLng > 180.0) dLng = 360.0 - dLng;
+                    double halfSpan = Math.abs(maxLng - minLng) / 2.0 + marginLng;
+                    if (dLng > halfSpan) {
                         continue;
                     }
                 }

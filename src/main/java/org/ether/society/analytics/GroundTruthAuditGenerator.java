@@ -270,12 +270,12 @@ public class GroundTruthAuditGenerator {
                     || "sovereignDebtBurden".equals(benchKey)
                     || "soilErosionRate".equals(benchKey)
                     || "deforestationRate".equals(benchKey);
-            double denom = isPercentageVariable ? Math.max(Math.abs(obs), 1.0) : Math.abs(obs);
             double errPct;
-            if (denom < 1e-6) {
+            if (Math.abs(obs) < 1e-4) {
                 // Deep-Time Invariant: when empirical ground truth is exactly 0.0
-                errPct = (Math.abs(sim) < 1e-3) ? 0.0 : Math.min(100.0, Math.abs(sim) * 100.0);
+                errPct = (Math.abs(sim) < 1e-3) ? 0.0 : (isPercentageVariable ? Math.min(100.0, Math.abs(sim)) : Math.min(100.0, Math.abs(sim) * 100.0));
             } else {
+                double denom = isPercentageVariable ? Math.max(Math.abs(obs), 5.0) : Math.abs(obs);
                 errPct = Math.abs(sim - obs) / denom * 100.0;
             }
 

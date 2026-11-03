@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("academic")
 @Tag("scientific")
 @Tag("benchmark")
-public class Phase1NewScenariosFalsificationTest {
+public class MacroHistoricalEpochsFalsificationTest {
 
     public record SimpleBenchmarkItem(String name, String runId) implements ScenarioBenchmarkItem {
         @Override

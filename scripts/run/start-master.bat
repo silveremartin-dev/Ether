@@ -18,16 +18,13 @@ if "%SECRET%"=="" if defined ETHER_CLUSTER_SECRET (set SECRET=%ETHER_CLUSTER_SEC
 set TICKS=%~4
 if "%TICKS%"=="" set TICKS=500
 
-set CELLS=%~5
-if "%CELLS%"=="" set CELLS=10000
-
 echo ==========================================================
 echo      ETHER -- STARTING CLUSTER MASTER SERVER              
 echo ==========================================================
 echo   Scenario Preset : %SCENARIO%
 echo   Port            : %PORT%
 echo   Target Ticks    : %TICKS%
-echo   H3 Grid Cells   : %CELLS%
+echo   H3 Resolution   : Native from Scenario JSON
 echo ----------------------------------------------------------
 
 set "JAR_PATH="
@@ -49,6 +46,6 @@ if not defined JAR_PATH (
 )
 
 echo Launching Master Node Server...
-java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "!JAR_PATH!" --headless --mode=cluster --role=master --port=%PORT% --secret="%SECRET%" --scenario="%SCENARIO%" --ticks=%TICKS% --cells=%CELLS% --profile
+java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "!JAR_PATH!" --headless --mode=cluster --role=master --port=%PORT% --secret="%SECRET%" --scenario="%SCENARIO%" --ticks=%TICKS% --profile
 
 endlocal

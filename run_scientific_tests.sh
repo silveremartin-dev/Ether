@@ -24,62 +24,62 @@ export MAVEN_OPTS="--add-modules=jdk.incubator.vector --enable-native-access=ALL
 
 case "$TARGET" in
     ""|"--help")
-        echo "[INFO] Usage options:"
-        echo "  ./run_scientific_tests.sh --debates       [Pillar 1: 8 Canonical Debates]"
-        echo "  ./run_scientific_tests.sh --steampunk     [Pillar 2: Popperian Negative Control (Steampunk Rome)]"
-        echo "  ./run_scientific_tests.sh --contingency   [Pillar 3: Great Man Theory & Bifurcation Benchmarks]"
-        echo "  ./run_scientific_tests.sh --multiscale    [Pillar 4: Multiscale Spatio-Temporal Invariance & Isolation]"
-        echo "  ./run_scientific_tests.sh --benchmark     [Pillar 5: Empirical Ground-Truth Scenario Audits]"
-        echo "  ./run_scientific_tests.sh --inference     [Pillar 6: Bayesian ABC-SMC & Sobol Sensitivity]"
-        echo "  ./run_scientific_tests.sh --formal        [Pillar 7: Offline Formal Verification & Invariants]"
-        echo "  ./run_scientific_tests.sh --all           [Runs All Academic Paper Suites in org.ether.society.falsification.*]"
+        echo "[INFO] Usage options (Organized in 7 Bottom-Up Epistemological Pillars):"
+        echo "  ./run_scientific_tests.sh --formal        [Pillar 1: Formal Invariants & Physical Conservation (Tier 1)]"
+        echo "  ./run_scientific_tests.sh --multiscale    [Pillar 2: Multiscale Discretization, Fénétrange & Isolation]"
+        echo "  ./run_scientific_tests.sh --inference     [Pillar 3: Bayesian ABC-SMC, Identifiability & Sobol Sensitivity]"
+        echo "  ./run_scientific_tests.sh --debates       [Pillar 4: 8 Canonical Cliodynamic Debates (Tier 2)]"
+        echo "  ./run_scientific_tests.sh --contingency   [Pillar 5: Historical Contingency & Great Man Theory Falsification]"
+        echo "  ./run_scientific_tests.sh --counterfactual [Pillar 6: Popperian Negative Controls (Steampunk Rome 165 CE)]"
+        echo "  ./run_scientific_tests.sh --benchmark     [Pillar 7: Deep-Time Empirical Historical Benchmarks]"
+        echo "  ./run_scientific_tests.sh --all           [Runs All 7 Pillars sequentially in org.ether.society.falsification.*]"
         echo ""
-        echo "[RUN] Defaulting to Pillar 1: 8 Canonical Scientific Debates..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.debates.**.*"
-        ;;
-    "--debates")
-        echo "[RUN] Executing Pillar 1: 8 Canonical Scientific Debates..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.debates.**.*"
-        ;;
-    "--steampunk"|"--counterfactual")
-        echo "[RUN] Executing Pillar 2: Popperian Negative-Control Falsifier (Steampunk Rome 165 CE)..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.counterfactual.**.*"
-        ;;
-    "--great-man"|"--contingency")
-        echo "[RUN] Executing Pillar 3: Great Man Contingency vs Determinism..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.contingency.**.*"
-        ;;
-    "--multiscale")
-        echo "[RUN] Executing Pillar 4: Multiscale Spatio-Temporal Invariance & Isolation..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.multiscale.**.*"
-        ;;
-    "--benchmark"|"--benchmarks")
-        echo "[RUN] Executing Pillar 5: Empirical Ground-Truth Benchmarks..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.benchmark.**.*"
-        ;;
-    "--inference")
-        echo "[RUN] Executing Pillar 6: Bayesian Inverse Inference & Sobol Sensitivity..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.inference.**.*"
+        echo "[RUN] Defaulting to Pillar 1: Formal Invariants & Physical Conservation..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.formal.**.*"
         ;;
     "--formal")
-        echo "[RUN] Executing Pillar 7: Offline Formal Verification & Physical Invariants..."
+        echo "[RUN] Executing Pillar 1: Formal Invariants & Physical Conservation (Tier 1)..."
         mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.formal.**.*"
         ;;
-    "--all")
-        echo "[RUN 1/7] Executing Pillar 1: 8 Canonical Scientific Debates..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.debates.**.*"
-        echo "[RUN 2/7] Executing Pillar 2: Popperian Negative-Control Counterfactual..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.counterfactual.**.*"
-        echo "[RUN 3/7] Executing Pillar 3: Great Man Contingency vs Determinism..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.contingency.**.*"
-        echo "[RUN 4/7] Executing Pillar 4: Multiscale Spatio-Temporal Invariance & Isolation..."
+    "--multiscale")
+        echo "[RUN] Executing Pillar 2: Multiscale Spatiotemporal Discretization & Domain Truncation..."
         mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.multiscale.**.*"
-        echo "[RUN 5/7] Executing Pillar 5: Empirical Ground-Truth Benchmarks..."
-        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.benchmark.**.*"
-        echo "[RUN 6/7] Executing Pillar 6: Bayesian Inverse Inference & Sobol Sensitivity..."
+        ;;
+    "--inference")
+        echo "[RUN] Executing Pillar 3: Bayesian Inverse Inference & Global Identifiability..."
         mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.inference.**.*"
-        echo "[RUN 7/7] Executing Pillar 7: Offline Formal Verification & Physical Invariants..."
+        ;;
+    "--debates")
+        echo "[RUN] Executing Pillar 4: The 8 Canonical Historiographical Debates..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.debates.**.*"
+        ;;
+    "--great-man"|"--contingency")
+        echo "[RUN] Executing Pillar 5: Historical Contingency & Macro-Determinism..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.contingency.**.*"
+        ;;
+    "--steampunk"|"--counterfactual")
+        echo "[RUN] Executing Pillar 6: Popperian Falsification & Negative Controls (Steampunk Rome 165 CE)..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.counterfactual.**.*"
+        ;;
+    "--benchmark"|"--benchmarks")
+        echo "[RUN] Executing Pillar 7: Deep-Time Empirical Historical Benchmarks..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.benchmark.**.*"
+        ;;
+    "--all")
+        echo "[RUN 1/7] Executing Pillar 1: Formal Invariants & Physical Conservation..."
         mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.formal.**.*"
+        echo "[RUN 2/7] Executing Pillar 2: Multiscale Spatiotemporal Discretization & Isolation..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.multiscale.**.*"
+        echo "[RUN 3/7] Executing Pillar 3: Bayesian Inverse Inference & Identifiability..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.inference.**.*"
+        echo "[RUN 4/7] Executing Pillar 4: The 8 Canonical Historiographical Debates..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.debates.**.*"
+        echo "[RUN 5/7] Executing Pillar 5: Historical Contingency & Macro-Determinism..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.contingency.**.*"
+        echo "[RUN 6/7] Executing Pillar 6: Popperian Falsification & Negative Controls..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.counterfactual.**.*"
+        echo "[RUN 7/7] Executing Pillar 7: Deep-Time Empirical Historical Benchmarks..."
+        mvn test -Pacademic-paper "-Dtest=org.ether.society.falsification.benchmark.**.*"
         ;;
     *)
         echo "[CUSTOM] Executing custom test target: $TARGET"

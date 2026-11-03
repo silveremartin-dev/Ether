@@ -12,15 +12,12 @@ if "%SCENARIO%"=="" set SCENARIO=OUT_OF_AFRICA
 set TICKS=%~2
 if "%TICKS%"=="" set TICKS=300
 
-set CELLS=%~3
-if "%CELLS%"=="" set CELLS=3000
-
 echo ==========================================================
 echo      ETHER -- HEADLESS ENGINE BATCH RUNNER                
 echo ==========================================================
 echo   Scenario Preset : %SCENARIO%
 echo   Target Ticks    : %TICKS%
-echo   H3 Grid Cells   : %CELLS%
+echo   H3 Resolution   : Native from Scenario JSON
 echo ----------------------------------------------------------
 
 set "JAR_PATH="
@@ -42,6 +39,6 @@ if not defined JAR_PATH (
 )
 
 echo Executing Headless Batch Run...
-java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "!JAR_PATH!" --headless --scenario="%SCENARIO%" --ticks=%TICKS% --cells=%CELLS% --profile
+java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "!JAR_PATH!" --headless --scenario="%SCENARIO%" --ticks=%TICKS% --profile
 
 endlocal

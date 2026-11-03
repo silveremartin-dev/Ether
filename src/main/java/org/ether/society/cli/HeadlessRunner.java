@@ -41,7 +41,6 @@ public class HeadlessRunner {
 
     public enum CliEngineMode {
         RUST_NATIVE,
-        GPU_SHADERS,
         JAVA_VECTOR_SIMD,
         CPU_JIT,
         SAFE_FALLBACK
@@ -140,7 +139,7 @@ public class HeadlessRunner {
                 return;
             }
 
-            // Tab 4: Engine & Hardware Backend
+            // Tab 4: Engine & Hardware Backend (Aligned with GUI Tab 4)
             else if (a.startsWith("--engine=")) {
                 engineMode = parseEngineMode(a.substring("--engine=".length()));
             } else if ((a.equals("-e") || a.equals("--engine")) && i + 1 < args.length) {
@@ -148,16 +147,14 @@ public class HeadlessRunner {
             } else if (a.equals("--rust") || a.equals("--native")) {
                 engineMode = CliEngineMode.RUST_NATIVE;
             } else if (a.equals("--gpu") || a.equals("--opencl") || a.equals("--gpu-on")) {
-                engineMode = CliEngineMode.GPU_SHADERS;
-                workerGpuEnabled = true;
+                logger.warn("GPU Compute Shaders (OpenCL) are not available in headless CLI mode; falling back to Java SIMD Vector acceleration.");
+                engineMode = CliEngineMode.JAVA_VECTOR_SIMD;
+                workerGpuEnabled = false;
             } else if (a.equals("--no-gpu") || a.equals("--gpu-off")) {
-                if (engineMode == CliEngineMode.GPU_SHADERS) {
-                    engineMode = CliEngineMode.JAVA_VECTOR_SIMD;
-                }
                 workerGpuEnabled = false;
             } else if (a.equals("--simd") || a.equals("--vector")) {
                 engineMode = CliEngineMode.JAVA_VECTOR_SIMD;
-            } else if (a.equals("--cpu") || a.equals("--cpu-jit")) {
+            } else if (a.equals("--cpu") || a.equals("--cpu-jit") || a.equals("--jit")) {
                 engineMode = CliEngineMode.CPU_JIT;
             } else if (a.equals("--safe") || a.equals("--fallback")) {
                 engineMode = CliEngineMode.SAFE_FALLBACK;
@@ -243,11 +240,9 @@ public class HeadlessRunner {
                 engineMode = CliEngineMode.CPU_JIT;
             }
 
-            // Tab 3: Scenario Determinism & Approximation Options
-            else if (a.startsWith("--strict-determinism")) {
-                cliStrictDeterminism = !a.endsWith("=false");
-            } else if (a.equals("--no-determinism") || a.equals("--fast")) {
-                cliStrictDeterminism = false;
+            // Tab 3: Performance & Scenario Optimizations Tracking (Governed by Scenario JSON)
+            else if (a.startsWith("--strict-determinism") || a.equals("--no-determinism") || a.equals("--fast")) {
+                logger.info("Determinism settings are governed directly by scenario preset configuration.");
             } else if (a.startsWith("--sparse-skipping") || a.startsWith("--sparse-cells")) {
                 cliSparseCellSkipping = !a.endsWith("=false");
             } else if (a.equals("--no-sparse-skipping")) {
@@ -275,10 +270,8 @@ public class HeadlessRunner {
                 cliSpatialRangeTruncation = !a.endsWith("=false");
             } else if (a.equals("--no-spatial-truncation")) {
                 cliSpatialRangeTruncation = false;
-            } else if (a.equals("--windowed") || a.equals("--clipped") || a.startsWith("--windowed=")) {
-                cliWindowed = !a.endsWith("=false");
-            } else if (a.equals("--fullscreen") || a.equals("--global") || a.equals("--no-windowed")) {
-                cliWindowed = false;
+            } else if (a.equals("--windowed") || a.equals("--clipped") || a.startsWith("--windowed=") || a.equals("--fullscreen") || a.equals("--global") || a.equals("--no-windowed")) {
+                logger.info("Spatial windowing and bounding boxes are governed directly by scenario preset definition.");
             }
 
             // Scenario, Spatiotemporal & Historical Presets
@@ -292,14 +285,12 @@ public class HeadlessRunner {
             } else if ((a.equals("-t") || a.equals("--ticks")) && i + 1 < args.length) {
                 ticksToRun = Integer.parseInt(args[++i]);
                 ticksExplicitlySet = true;
-            } else if (a.startsWith("--cells=")) {
-                cellCount = Integer.parseInt(a.substring("--cells=".length()));
-            } else if ((a.equals("-c") || a.equals("--cells")) && i + 1 < args.length) {
-                cellCount = Integer.parseInt(args[++i]);
-            } else if (a.startsWith("--res=") || a.startsWith("--resolution=")) {
-                h3Resolution = Integer.parseInt(a.substring(a.indexOf('=') + 1));
-            } else if ((a.equals("-r") || a.equals("--res") || a.equals("--resolution")) && i + 1 < args.length) {
-                h3Resolution = Integer.parseInt(args[++i]);
+            } else if (a.startsWith("--cells=") || a.equals("-c") || a.equals("--cells")) {
+                logger.warn("Arbitrary cell count subsampling (--cells) is deprecated and disabled to preserve hexagonal H3 topology; use --res=<level> instead.");
+                if (!a.contains("=") && i + 1 < args.length && !args[i + 1].startsWith("-")) i++;
+            } else if (a.startsWith("--res=") || a.startsWith("--resolution=") || a.equals("-r") || a.equals("--res") || a.equals("--resolution")) {
+                logger.info("Spatial resolution is governed directly by scenario preset definition; CLI override ignored.");
+                if (!a.contains("=") && i + 1 < args.length && !args[i + 1].startsWith("-")) i++;
             } else if (a.startsWith("--start-year=")) {
                 overrideStartYear = Long.parseLong(a.substring("--start-year=".length()));
             } else if (a.startsWith("--end-year=")) {
@@ -312,10 +303,9 @@ public class HeadlessRunner {
                 overrideInitialTech = Integer.parseInt(a.substring(a.indexOf('=') + 1));
             } else if (a.startsWith("--seed=")) {
                 randomSeed = Long.parseLong(a.substring("--seed=".length()));
-            } else if (a.startsWith("--scenario-suffix=")) {
-                scenarioSuffix = arg.substring("--scenario-suffix=".length()).trim();
-            } else if (a.equals("--scenario-suffix") && i + 1 < args.length) {
-                scenarioSuffix = args[++i].trim();
+            } else if (a.startsWith("--scenario-suffix=") || a.equals("--scenario-suffix")) {
+                // Deprecated parameter ignored safely to preserve backward compatibility with legacy shell scripts
+                if (!a.contains("=") && i + 1 < args.length && !args[i + 1].startsWith("-")) i++;
             }
 
             // Persistence & Telemetry
@@ -515,14 +505,8 @@ public class HeadlessRunner {
             if (overrideInitialPop != null) scenario.setInitialHumanCount(overrideInitialPop);
             if (overrideInitialTech != null) scenario.setInitialTechLevel(overrideInitialTech);
             if (randomSeed != null) scenario.setSeed(randomSeed);
-            if (scenarioSuffix != null && !scenarioSuffix.isBlank()) {
-                scenario.setName(scenario.getName() + scenarioSuffix);
-            }
 
             // Apply CLI Overrides on Tab 3 Scenario Optimizations
-            if (cliStrictDeterminism != null) {
-                scenario.setStrictDeterminism(cliStrictDeterminism);
-            }
             if (cliSparseCellSkipping != null) {
                 scenario.setSparseCellSkippingEnabled(cliSparseCellSkipping);
             }
@@ -544,15 +528,6 @@ public class HeadlessRunner {
             }
             if (cliSpatialRangeTruncation != null) {
                 scenario.setSpatialRangeTruncationEnabled(cliSpatialRangeTruncation);
-            }
-            if (cliWindowed != null) {
-                scenario.setClippingEnabled(cliWindowed);
-                if (cliWindowed && scenario.getMinLat() == -90.0 && scenario.getMaxLat() == 90.0) {
-                    scenario.setMinLat(25.0);
-                    scenario.setMaxLat(45.0);
-                    scenario.setMinLng(-10.0);
-                    scenario.setMaxLng(45.0);
-                }
             }
 
             // Convert scenario to effective runtime performance configuration directly derived from scenario definition
@@ -582,7 +557,7 @@ public class HeadlessRunner {
                 }
             }
             System.out.printf("\n   [Tab 3: Scenario Determinism & Approximations]\n");
-            System.out.printf("   • Strict Determinism  : %s\n", effectivePerfConfig.isStrictDeterminism() ? "ON (Tier 1 Bit-Identical Physics)" : "OFF (Heuristic Shortcuts Allowed)");
+            System.out.printf("   • Strict Determinism  : %s\n", effectivePerfConfig.isStrictDeterminism() ? "ON" : "OFF");
             System.out.printf("   • Sparse Cell Skip    : %s (Deserts & Abyssal Oceans)\n", effectivePerfConfig.isEnableSparseCellSkipping() ? "ENABLED" : "DISABLED");
             System.out.printf("   • Ocean Macro-Aggreg  : %s (Deep Basins z < -200m)\n", effectivePerfConfig.isEnableOceanMacroAggregation() ? "ENABLED" : "DISABLED");
             System.out.printf("   • Coastal Nav Only    : %s (Pathfinding Focused on Coasts)\n", effectivePerfConfig.isEnableCoastalNavigationOnly() ? "ENABLED" : "DISABLED");
@@ -611,39 +586,24 @@ public class HeadlessRunner {
                         ? scenario.getPlanetPreset()
                         : org.ether.society.generation.PlanetPreset.EARTH_LIKE;
                 org.ether.society.generation.PlanetPreset planetPreset = basePreset.withResolution(effectiveRes);
-                logger.info("Generating planetary grid for {} at H3 Resolution {}...", planetPreset.name(), effectiveRes);
-                List<H3Cell> generated = org.ether.society.generation.ProceduralGenerator.getInstance().generatePlanet(planetPreset);
-
+                List<H3Cell> generated;
                 if (scenario.isClippingEnabled()) {
                     double minLat = scenario.getMinLat();
                     double maxLat = scenario.getMaxLat();
                     double minLng = scenario.getMinLng();
                     double maxLng = scenario.getMaxLng();
-                    logger.info("Applying scenario spatial window clipping: Lat [{}, {}], Lng [{}, {}]", minLat, maxLat, minLng, maxLng);
-                    generated = generated.stream()
-                            .filter(c -> c.getLatitude() >= minLat && c.getLatitude() <= maxLat && c.getLongitude() >= minLng && c.getLongitude() <= maxLng)
-                            .collect(java.util.stream.Collectors.toList());
+                    logger.info("Generating regional windowed grid: Lat [{}, {}], Lng [{}, {}] at H3 Resolution {}...",
+                            minLat, maxLat, minLng, maxLng, effectiveRes);
+                    generated = org.ether.society.generation.ProceduralGenerator.getInstance().generateRegionalPlanet(
+                            planetPreset, minLat, maxLat, minLng, maxLng);
                     logger.info("Regional windowed cells count: {} hexagons", generated.size());
-                }
-
-                if (cellCount > 0 && cellCount < generated.size()) {
-                    logger.warn("EXPLICIT SUBSAMPLING: Subsampling grid from {} down to {} cells (stride: {})",
-                            generated.size(), cellCount, Math.max(1, generated.size() / cellCount));
-                    int stride = Math.max(1, generated.size() / cellCount);
-                    List<H3Cell> sampled = new ArrayList<>(cellCount);
-                    for (int i = 0; i < generated.size() && sampled.size() < cellCount; i += stride) {
-                        sampled.add(generated.get(i));
-                    }
-                    cells = sampled;
                 } else {
-                    logger.info("FULL GRID MODE: Retaining all {} hexagons without subsampling.", generated.size());
-                    cells = generated;
+                    logger.info("Generating planetary grid for {} at H3 Resolution {}...", planetPreset.name(), effectiveRes);
+                    generated = org.ether.society.generation.ProceduralGenerator.getInstance().generatePlanet(planetPreset);
                 }
+                cells = generated;
             } else {
-                List<H3Cell> allCells = SampleDataGenerator.generateEuropeSample();
-                cells = (cellCount > 0 && cellCount < allCells.size())
-                        ? new ArrayList<>(allCells.subList(0, cellCount))
-                        : allCells;
+                cells = SampleDataGenerator.generateEuropeSample();
             }
 
             if (clusterManager != null) {
@@ -710,9 +670,12 @@ public class HeadlessRunner {
 
     private static CliEngineMode parseEngineMode(String str) {
         if (str.contains("rust") || str.contains("native")) return CliEngineMode.RUST_NATIVE;
-        if (str.contains("gpu") || str.contains("shader") || str.contains("opencl")) return CliEngineMode.GPU_SHADERS;
         if (str.contains("simd") || str.contains("vector")) return CliEngineMode.JAVA_VECTOR_SIMD;
-        if (str.contains("safe") || str.contains("sw")) return CliEngineMode.SAFE_FALLBACK;
+        if (str.contains("safe") || str.contains("sw") || str.contains("fallback")) return CliEngineMode.SAFE_FALLBACK;
+        if (str.contains("gpu") || str.contains("shader") || str.contains("opencl")) {
+            logger.warn("GPU Compute Shaders (OpenCL) are not available in headless CLI mode; falling back to Java SIMD Vector acceleration.");
+            return CliEngineMode.JAVA_VECTOR_SIMD;
+        }
         return CliEngineMode.CPU_JIT;
     }
 
@@ -749,8 +712,7 @@ public class HeadlessRunner {
         System.out.println("  --snapshot-dir=<PATH>                         Snapshot directory path (Default: saves/cluster_snapshots)");
         System.out.println("  --worker-gpu, --worker-rust, --worker-simd    Acceleration backend specifically on worker nodes");
         System.out.println("\n⚡ [Tab 3] Scenario Determinism & Approximation Options:");
-        System.out.println("  --strict-determinism[=true|false]             Enforce strict bit-identical physical conservation (Tier 1)");
-        System.out.println("  --no-determinism, --fast                      Disable strict determinism to allow heuristic approximations");
+
         System.out.println("  --sparse-skipping[=true|false], --sparse-cells Skip compute updates on empty ocean/desert cells");
         System.out.println("  --ocean-macro-aggregation[=true|false]        Group abyssal ocean basins (z < -200m) into coarse blocks");
         System.out.println("  --coastal-nav-only[=true|false]               Focus trade/military maritime pathfinding on coasts & straits");
@@ -760,8 +722,7 @@ public class HeadlessRunner {
         System.out.println("  --spatial-truncation[=true|false]             Truncate dispersion plumes at 10^-6 cutoff");
         System.out.println("\nðŸ—ºï¸ Scenario, Spatial & Chronological Options:");
         System.out.println("  --scenario=<NAME>, -s <NAME>                  Scenario preset (e.g. OUT_OF_AFRICA, NEOLITHIC, CLASSICAL, INDUSTRIAL, MODERN)");
-        System.out.println("  --res=<2..6>, -r <N>, --resolution=<N>        H3 planetary grid resolution level");
-        System.out.println("  --cells=<N>, -c <N>                           Number of H3 cells to simulate");
+
         System.out.println("  --ticks=<N>, -t <N>                           Target number of simulation ticks (Default: from scenario)");
         System.out.println("  --start-year=<YEAR>                           Override scenario starting year (BCE negative, CE positive)");
         System.out.println("  --end-year=<YEAR>                             Override scenario ending year");

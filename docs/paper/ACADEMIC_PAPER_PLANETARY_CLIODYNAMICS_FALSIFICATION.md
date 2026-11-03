@@ -110,6 +110,43 @@ Compared to traditional world modeling systems (*World3*, *Threshold 21*, *IFs*,
 4. **Bayesian Inverse Calibration & Out-of-Sample Cross-Validation**: Systematically estimates parameter posteriors and 95% Credible Intervals via ABC-SMC, resolving equifinality through invariant boundary manifolds and Leave-One-Century-Out cross-validation [^Beaumont2009] [^Toni2009] [^Gelman2013].
 5. **Strict Bit-Reproducibility**: Delivers deterministic, bit-identical simulations under invariant random seeds, satisfying the gold standard of falsifiable computational physics.
 
+### 1.4. The Seven Epistemological Pillars of Cliodynamic Falsification
+To prevent ad-hoc heuristics and guarantee universal mathematical validity across all historical epochs, Ether organizes its verification, validation, and falsification harness into seven strictly ordered, bottom-up epistemological pillars:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│             THE SEVEN BOTTOM-UP EPISTEMOLOGICAL PILLARS OF ETHER                       │
+├────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ Pillar 1: Formal Invariants &  │ Mass, energy & demographic conservation (> 10k states)│
+│  Biophysical Conservation      │ RK4 vector bounding, bit-exact SHA-256 determinism,   │
+│  (Tier 1 Core Physics)         │ H3 spatial isotropy (anisotropy < 3.5%), Liebig bounds│
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ Pillar 2: Multiscale Spatio-   │ H3 spatial resolution sweeps (Res 3 to Res 7),        │
+│  temporal Discretization &     │ Courant-Friedrichs-Lewy convergence (dt = 30 days),   │
+│  Domain Truncation             │ Fénétrange sponge layer (Γ_margin), insular isolation │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ Pillar 3: Bayesian Inverse     │ ABC-SMC global parameter posterior estimation,        │
+│  Inference & Identifiability   │ parameter correlation matrix bounds (|r_jk| < 0.35),   │
+│                                │ Shannon entropy contraction (ΔH > 2.80 nats), LOCO R² │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ Pillar 4: The 8 Canonical      │ Coupled differential formalizations confronting       │
+│  Historiographical Debates     │ Malthus, Turchin SDT, Smil, Ostrom, Acemoglu, Scott,  │
+│  (Tier 2 Cliodynamics)         │ Henrich, and Grataloup against empirical databanks    │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ Pillar 5: Historical           │ Great Man Theory falsification: Markovian dissipation │
+│  Contingency & Macro-          │ of conquerors (W₁ = 0, ANOVA η² = 0.0000), minimal    │
+│  Determinism                   │ intervention forcing μ*, 7 historical ruptures        │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ Pillar 6: Popperian            │ Counterfactual negative controls: Steampunk Rome      │
+│  Falsification & Controls      │ 165 CE rejection (MAPE = 87.6%), Martian and          │
+│                                │ Venusian biophysical atmospheric lethality bounds     │
+├────────────────────────────────┼───────────────────────────────────────────────────────┤
+│ Pillar 7: Deep-Time Empirical  │ Empirical macro-historical epoch validation across    │
+│  Historical Benchmarks         │ 9 calibration eras against HYDE 3.4, Maddison 2020,   │
+│                                │ and Seshat Global History Databank                    │
+└────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 2. Core Simulation Architecture & Tier-1 Biophysical Invariants
@@ -498,13 +535,13 @@ Activating conflicting sociological paradigms simultaneously introduces self-con
 * **Physical Mechanism of Relaxation vs. Structural Bifurcation**:
   * *Why Military Conquests Dissipate ($\tau_{\text{relax}} \le 120\text{ yr}$)*: A pure military blitzkrieg (e.g. Alexander the Great, Genghis Khan, Napoleon I) alters political borders and redistributes wealth, but does not alter the underlying net agricultural primary productivity (NPP) or caloric transport friction of the terrain. Once the charismatic figure dies and the military force vector $\mathbf{J}_{\text{shock}}$ ceases, the demographic carrying capacity $K_{\text{food}}$ and Malthusian dissipation pull the system back to its baseline geographical attractor within $3\text{ to }4$ human generations.
   * *Why Hydraulic & Institutional Reformers Shift the Attractor Permanently ($\tau_{\text{relax}} \to \infty$)*: Interventions that permanently construct physical capital (canals, dikes, roads) or institutional property rights (Hammurabi's Code, Roman civil law) modify the fundamental potential landscape $\nabla \Phi(\mathbf{x})$. By raising $K_{\text{food}}$ or lowering transport friction $W_{\text{transport}}$ permanently, they shift the fixed-point attractor of the phase space.
-* **Systematic Falsification Suite Findings (Experiments A–D & Pillars 1–4)**:
+* **Systematic Falsification Suite Findings (Experiments A–F)**:
   1. **Experiment A (ANOVA Variance Decomposition)**: Multi-arm Monte-Carlo ensemble ($N = 40\text{ runs} \times 200\text{ years}$) yields an attributed leadership effect size $\eta^2_{\text{leader}} = 0.0000$ ($0.0\%$ of total variance), confirming **macro-determinism** ($H_0$).
   2. **Experiment B (Topological Convergence & 1-Wasserstein Distance)**: 1-Wasserstein distance $W_1(D_{\text{null}}, D_{\text{leader}}) = 0$ with $z = 0.0000$ ($|z| < 2.0$), demonstrating that historical leader configurations fall entirely within the natural structural attractor basin.
   3. **Experiment C (Information Entropy Gain)**: Shannon entropy difference $\Delta H = H_{\text{leaders}} - H_{\text{null}} = 0.0000\text{ bits}$, demonstrating that leaders generate zero novel information states; the outcome phase space is strictly pre-conditioned by biophysical constraints.
   4. **Experiment D (Identity Invariance Theorem & Archetype Permutation)**: Permuting leader identities across 10 distinct cultural designations produces $100\%$ bit-identical trajectories ($\Delta = 0.000000\%$), proving that the biographical identity is a mathematically free variable. Physical capital archetypes dominate long-term accumulation ($\text{Builder } +6.67\% > \text{Hydraulic } +3.33\% > \text{Conqueror } +0.00\%$).
-  5. **Pillar 3 (Inter-State Selective Pressure & The Grand Canal Proof)**: In delayed convergence counterfactual testing, a state adopting an infrastructure builder 100 years late closes the capital gap from $+6.25\%$ to **$0.00\%$** ($1\,600\,000$ vs $1\,600\,000$). The north-south caloric gradient of China made the Grand Canal structurally inevitable; Emperor Yang merely compressed the timeline.
-  6. **Pillar 4 (War as Malthusian Thermodynamic Regulator)**: Demographic collapse event frequencies ($-15\%$ drop) over 500 years are statistically identical with and without military leaders ($0.0\%$ difference). Following conquest, population exhibits **$100.0\%$ recovery** to the structural carrying capacity ceiling ($K$).
+  5. **Experiment E (Inter-State Selective Pressure & The Grand Canal Proof)**: In delayed convergence counterfactual testing, a state adopting an infrastructure builder 100 years late closes the capital gap from $+6.25\%$ to **$0.00\%$** ($1\,600\,000$ vs $1\,600\,000$). The north-south caloric gradient of China made the Grand Canal structurally inevitable; Emperor Yang merely compressed the timeline.
+  6. **Experiment F (War as Malthusian Thermodynamic Regulator)**: Demographic collapse event frequencies ($-15\%$ drop) over 500 years are statistically identical with and without military leaders ($0.0\%$ difference). Following conquest, population exhibits **$100.0\%$ recovery** to the structural carrying capacity ceiling ($K$).
 * **Epistemic Verdict**: **Military Conqueror Shocks Are Dissipative Noise ($\tau_{\text{relax}} \le 120\text{ yr}$, $H_0$ Validated); Biophysical & Institutional Capital Injections Produce True Path-Dependent Bifurcation ($H_{\text{synth}}$ Validated); Biographical Identity is a Mathematically Free Variable**.
 
 ```
@@ -589,6 +626,8 @@ To address the methodological risk of evaluating goodness-of-fit against interpo
 ║ Epoch 9: Industrial Revolution & The Great Acceleration        ║ 1850 -> 2026 ║ 0.9252       ║ 0.8860       ║ 7.48%        ║ 🟡 Acceptable / Fossil exergy & Haber-Bosch  ║
 ╚════════════════════════════════════════════════════════════════╩══════════════╩══════════════╩══════════════╩══════════════╩══════════════════════════════════════════════╝
 ```
+
+These 9 calibration epochs and crisis transitions are continuously audited in the automated benchmark suite via [`MacroHistoricalEpochsFalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/MacroHistoricalEpochsFalsificationTest.java), [`CrisisMilestoneScenariosFalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/CrisisMilestoneScenariosFalsificationTest.java), and [`HighResolutionPlanetaryRunFalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/HighResolutionPlanetaryRunFalsificationTest.java).
 
 ### 5.2. Intermediate Geopolitical Empire Centroid Localization & Spatial Overlap Accuracy
 Geopolitical verification confirms that historical polities emerge at their exact historical geographic centroids with bounded spatial drift:
@@ -785,6 +824,9 @@ To ensure uncompromising computational and mathematical rigor without incurring 
 2. **Multi-Millennial Invariant Conservation Auditing ([`ContiguousMeshScenarioDriftAndInvariantsTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/ContiguousMeshScenarioDriftAndInvariantsTest.java))**: Audits isolated planetary runs over $5\,000\text{ ticks}$, certifying that internal metabolic conversions preserve closed-world mass $\Delta M_{\text{total}} = 0 \pm 10^{-5}$ and open-system First-Law energy conservation with zero runtime overhead in production.
 3. **Metamorphic Directional Testing ([`MetamorphicDirectionalVerificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/MetamorphicDirectionalVerificationTest.java))**: Overcomes the simulation *Oracle Problem* [^Chen2018] by validating invariant input-output transformation pairs (e.g., $\alpha_2 > \alpha_1 \implies T_{\text{eq}}(\alpha_2) < T_{\text{eq}}(\alpha_1)$; $\text{EROEI}_2 < \text{EROEI}_1 \implies \text{NetSurplus}_2 < \text{NetSurplus}_1$; $\text{Harvest} > \text{MSY} \implies \text{Extinction}$).
 4. **Dual-Engine Discretization Bounding & Determinism ([`HighPrecisionDiscretizationAndDeterminismTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/formal/HighPrecisionDiscretizationAndDeterminismTest.java))**: Verifies that fast 32-bit single-precision vector steps remain bounded within $< 1.0\%$ relative truncation error against 64-bit 4th-order Runge-Kutta (RK4) analytical reference solutions, and certifies 100% SHA-256 bit-exact reproducibility across parallel runs.
+5. **H3 Spatial Isotropy & Grid Invariance ([`H3SpatialIsotropyAndGridInvarianceTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/h3/H3SpatialIsotropyAndGridInvarianceTest.java))**: Proves exact radial mass conservation ($100.0\%$) and verifies that directional anisotropy remains strictly bounded below $< 3.5\%$, confirming that spatial transport and epidemic spread do not suffer from lattice grid artifacts.
+6. **Multi-Resource Liebig Non-Substitutability ([`MultiResourceLiebigBottleneckTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/engines/tier1/MultiResourceLiebigBottleneckTest.java))**: Formalizes the thermodynamic principle that infinite monetary capital or machinery cannot substitute for zero freshwater or mineral phosphorus depletion ($S_{\text{arable}} \to 0.05$ floor).
+7. **Critical Slowing Down & Bifurcation Early Warnings ([`CriticalSlowingDownTippingPointTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/engines/tier1/CriticalSlowingDownTippingPointTest.java))**: Evaluates early warning indicators prior to catastrophic regime shifts, demonstrating that lag-1 autocorrelation rises from $0.33$ to $0.74$ and variance expands by $> 200\%$ before saddle-node tipping collapse.
 
 ### 6.3. Computational Throughput & Hardware Scaling
 When running planetary-scale benchmarks on a multi-core workstation and Google Cloud Compute clusters, Ether achieves:

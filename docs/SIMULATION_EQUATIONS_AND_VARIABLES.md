@@ -2197,3 +2197,132 @@ $$\dot{B}_{\text{natural}} = 0.02 \cdot B \cdot \max\left(0, 1.0 - \frac{B}{100.
   $$\dot{T} = 0.0008 \cdot T^{1.25} \cdot \sqrt{\text{R&D Intensity}} \cdot \Delta t$$
   $$T(t + \Delta t) = \min(10.0, T(t) + \dot{T})$$
 * **Invariants**: Clamped to the simulation global upper bound $T \in [0.0, 10.0]$, gated for settlements with $N \ge 100$.
+
+---
+
+## 20. Post-Hoc Cliodynamic Macro-Indicators & Telemetry Formulations (`PostHocCliodynamicMetricsExtractor.java`)
+
+In strict accordance with the Headless Decoupling Architecture, runtime headless simulation kernels record only fundamental physical state variables (population, caloric supply, mean technology $T$, political stability $S$, active cells). All 27 macro-indicators and cliodynamic metrics are evaluated post-hoc using closed-form analytical equations grounded in empirical literature:
+
+### 20.1. Macroeconomic & Energy Metabolism Formulations
+1. **Gross World Product ($Y_{\text{GWP}}$, Billion 1990 Int-$)**:
+   * **Literature**: Maddison Project Database (2020), De Long (1998).
+   * **Governing Equation**:
+     $$y_{\text{preInd}}(T) = 175.0 + 20.0 \cdot \tanh(\max(0, T - 1.50) \cdot 0.90)$$
+     $$y_{\text{ind1}}(T) = \frac{1800.0 \cdot \mathbb{I}_{T > 3.30}}{1.0 + \exp(-2.20 \cdot (T - 4.10))}$$
+     $$y_{\text{ind2}}(T) = \frac{11500.0 \cdot \mathbb{I}_{T > 4.60}}{1.0 + \exp(-1.80 \cdot (T - 7.50))}$$
+     $$Y_{\text{GWP}}(N, T) = \frac{N \cdot (y_{\text{preInd}}(T) + y_{\text{ind1}}(T) + y_{\text{ind2}}(T))}{10^9}$$
+
+2. **Primary Energy Harvest ($E_{\text{primary}}$, Exajoules $\text{EJ}$)**:
+   * **Literature**: Smil, V. (2017) *Energy and Civilization: A History*.
+   * **Governing Equation**:
+     $$e_{\text{preInd}}(T) = 15.2 + 0.8 \cdot \tanh(\max(0, T - 1.50) \cdot 0.80) \quad [\text{GJ/capita}]$$
+     $$e_{\text{fossil}}(T) = \frac{61.0 \cdot \mathbb{I}_{T > 3.30}}{1.0 + \exp(-2.10 \cdot (T - 4.85))} \quad [\text{GJ/capita}]$$
+     $$E_{\text{primary}}(N, T) = \frac{N \cdot (e_{\text{preInd}}(T) + e_{\text{fossil}}(T)) \cdot 10^9}{10^{18}}$$
+
+3. **Fossil Fuel Share in Primary Energy ($f_{\text{fossil}}$, $\%$**):
+   * **Literature**: Smil (2017), Ritchie et al. (2020).
+   * **Governing Equation**:
+     $$f_{\text{fossil}}(T) = \tanh(\max(0, T - 3.40) \cdot 1.80) \cdot \frac{82.0}{1.0 + \exp(-2.50 \cdot (T - 4.10))}$$
+
+4. **Agricultural EROEI ($\text{EROEI}_{\text{ag}}$, dimensionless)**:
+   * **Literature**: Hall & Klitgaard (2012), Leach (1976).
+   * **Governing Equation**:
+     $$\text{EROEI}_{\text{ag}}(T) = \tanh(\max(0, T - 1.20) \cdot 3.0) \cdot \left[14.5 - \frac{10.0}{1.0 + \exp(-1.40 \cdot (T - 2.50))}\right]$$
+     *(Strict zero baseline prior to the Neolithic transition: $\text{EROEI}_{\text{ag}} \equiv 0.0$ for $T \le 1.20$)*.
+
+### 20.2. Urban, Human Capital & Institutional Formulations
+5. **Urbanization Rate ($U$, $\%$**):
+   * **Literature**: Bairoch (1988), De Vries (1984), HYDE 3.4.
+   * **Governing Equation**:
+     $$U(T) = \tanh(\max(0, T - 1.55) \cdot 1.15) \cdot \left[ 4.0 + 3.5 \cdot \tanh(\max(0, T - 1.80) \cdot 0.90) + \frac{48.0}{1.0 + \exp(-2.20 \cdot (T - 4.75))} \right]$$
+
+6. **Literacy Rate ($L$, $\%$**):
+   * **Literature**: Buringh & van Zanden (2009), Graff (1987).
+   * **Governing Equation**:
+     $$L(T) = \tanh(\max(0, T - 1.65) \cdot 1.25) \cdot \left[ 2.5 + 3.5 \cdot \tanh(\max(0, T - 2.00) \cdot 0.85) + \frac{80.0}{1.0 + \exp(-2.20 \cdot (T - 4.65))} \right]$$
+
+7. **Life Expectancy ($e_0$, years)**:
+   * **Literature**: Omran (1971), Preston (1975), Riley (2005).
+   * **Governing Equation**:
+     $$e_0(T, \text{Food}) = 27.5 + 4.5 \cdot \tanh(\max(0, T - 1.50) \cdot 0.70) + \frac{42.0}{1.0 + \exp(-2.20 \cdot (T - 4.65))} + \text{clamp}\left(\frac{\text{Food} - 2000}{1000}, -5, 5\right)$$
+
+8. **Elite Overproduction Index ($\text{EOI}$, dimensionless)**:
+   * **Literature**: Turchin (2016) *Ages of Discord*.
+   * **Governing Equation**:
+     $$\text{EOI}(T, S) = \tanh(\max(0, T - 1.55) \cdot 1.45) \cdot \left[ 1.0 + 1.20 \cdot \left(1.0 - \frac{S}{100}\right) + 0.35 \cdot \tanh(\max(0, T - 2.50)) \right]$$
+
+9. **Political Stress Index ($\Psi$, $\%$**):
+   * **Literature**: Turchin (2003, 2016).
+   * **Governing Equation**:
+     $$\Psi(T, S) = \tanh(\max(0, T - 1.55) \cdot 1.35) \cdot \left(1.0 - \frac{S}{100}\right) \cdot 100.0$$
+
+10. **Asabiyyah Social Cohesion ($S_{\text{asabiyyah}}$, $[0, 1]$)**:
+    * **Literature**: Ibn Khaldun (*Muqaddimah* 1377), Turchin (2003).
+    * **Governing Equation**:
+      $$S_{\text{asabiyyah}}(T, S) = \text{clamp}\left(1.02 - 0.35 \cdot \tanh(\max(0, T - 1.55) \cdot 0.65) - 0.65 \cdot \left(1.0 - \frac{S}{100}\right), 0.01, 1.0\right)$$
+
+11. **Gini Income & Wealth Inequality ($G$, $[0, 1]$)**:
+    * **Literature**: Milanovic (2016), Scheidel (2017) *The Great Leveler*.
+    * **Governing Equation**:
+      $$G(T) = \text{clamp}\left(0.18 + 0.32 \cdot \tanh(\max(0, T - 1.55) \cdot 1.20) + 0.15 \cdot \exp\left(-\frac{(T - 4.2)^2}{0.8}\right), 0.18, 0.75\right)$$
+
+12. **Currency Debasement Rate ($D_{\text{currency}}$, $\%$**):
+    * **Governing Equation**:
+      $$D_{\text{currency}}(T, S) = \tanh(\max(0, T - 1.80) \cdot 1.25) \cdot \left[30.0 + 55.0 \cdot \left(1.0 - \frac{S}{100}\right)^{1.45}\right]$$
+
+13. **Sovereign Debt Burden ($D_{\text{sovereign}}$, $\%$ of GDP)**:
+    * **Literature**: Reinhart & Rogoff (2009), Dickson (1967).
+    * **Governing Equation**:
+      $$D_{\text{sovereign}}(T) = \tanh(\max(0, T - 1.65) \cdot 1.15) \cdot \max\left(8.0 + 18.0 \cdot \tanh(\max(0, T - 2.20) \cdot 1.10), \frac{80.0}{1.0 + \exp(-2.20 \cdot (T - 3.85))}\right)$$
+
+### 20.3. Planetary Environment, Logistics & Earth-System Indicators
+14. **Pristine Forest Cover Remaining ($F_{\text{forest}}$, $\%$**):
+    * **Literature**: Williams (2003), Kaplan et al. (2009).
+    * **Governing Equation**:
+      $$\text{Clearing}(T) = 12.0 \cdot \tanh(\max(0, T - 1.35) \cdot 0.90) + \frac{22.0 \cdot \mathbb{I}_{T > 3.0}}{1.0 + \exp(-1.80 \cdot (T - 3.80))}$$
+      $$F_{\text{forest}}(T) = \text{clamp}(99.0 - \text{Clearing}(T), 50.0, 99.0)$$
+
+15. **Topsoil Erosion Loss ($E_{\text{erosion}}$, $\text{t/ha/yr}$)**:
+    * **Literature**: Montgomery (2007) *Dirt: The Erosion of Civilizations*.
+    * **Governing Equation**:
+      $$E_{\text{erosion}}(T) = 0.03 + \tanh(\max(0, T - 1.20) \cdot 1.50) \cdot \left[14.5 \cdot \tanh(\max(0, T - 1.35) \cdot 1.20) + \frac{20.0}{1.0 + \exp(-1.80 \cdot (T - 3.80))}\right]$$
+
+16. **Atmospheric $\text{CO}_2$ Concentration ($\text{ppm}$)**:
+    * **Literature**: EPICA Dome C Ice Core (Lüthi et al. 2008), NOAA GML.
+    * **Governing Equation**:
+      $$\text{CO}_2(\text{year}, T) = \begin{cases} 190.0 + \text{clamp}\left(\frac{\text{year} + 20000}{10000}, 0.0, 1.0\right) \cdot 85.0 & \text{if } \text{year} < -10000 \\ 280.0 + \frac{145.0}{1.0 + \exp(-2.20 \cdot (T - 4.60))} & \text{if } T > 3.65 \\ 280.0 & \text{otherwise} \end{cases}$$
+
+17. **Biogeographical Zero-Containment Compliance ($\Omega_{\text{containment}}$, $[0, 1]$)**:
+    * **Literature**: Crosby (1972) *The Columbian Exchange*.
+    * **Governing Equation**:
+      $$\Omega_{\text{containment}}(\text{year}) = \begin{cases} 1.0 & \text{if } \text{year} \le -10000 \\ \text{clamp}\left(1.0 - \frac{\text{year} + 10000}{11492} \cdot 0.25, 0.75, 1.0\right) & \text{if } \text{year} \le 1492 \\ \text{clamp}\left(0.75 - \frac{\text{year} - 1492}{534} \cdot 0.71, 0.04, 0.75\right) & \text{if } \text{year} > 1492 \end{cases}$$
+
+18. **Information Travel Speed ($v_{\text{info}}$, $\text{km/day}$)**:
+    * **Literature**: Standage (1998) *The Victorian Internet*, Scheidel (2014) *ORBIS*.
+    * **Governing Equation**:
+      $$v_{\text{courier}}(T) = 4.0 + 95.0 \cdot \tanh(\max(0, T - 1.35) \cdot 0.85)$$
+      $$v_{\text{telegraph}}(T) = \frac{24000.0}{1.0 + \exp(-2.50 \cdot (T - 3.85))}$$
+      $$v_{\text{telecom1}}(T) = 5.8 \times 10^6 \cdot \tanh(\max(0, T - 4.20) \cdot 2.50) \cdot \mathbb{I}_{T > 4.20}$$
+      $$v_{\text{telecom2}}(T) = \frac{2.94 \times 10^8 \cdot \mathbb{I}_{T > 4.80}}{1.0 + \exp(-3.50 \cdot (T - 5.50))}$$
+      $$v_{\text{info}}(T) = \text{clamp}(v_{\text{courier}} + v_{\text{telegraph}} + v_{\text{telecom1}} + v_{\text{telecom2}}, 4.0, 3.0 \times 10^8)$$
+
+19. **Global Maritime Trade Volume ($V_{\text{trade}}$, index)**:
+    * **Literature**: Federico & Tena-Junguito (2017).
+    * **Governing Equation**:
+      $$V_{\text{trade}}(T) = \tanh(\max(0, T - 1.60) \cdot 1.25) \cdot \left[ 2.5 + 8.5 \cdot \tanh(\max(0, T - 2.00) \cdot 0.85) + \frac{250.0}{1.0 + \exp(-2.40 \cdot (T - 4.45))} + \frac{2200.0 \cdot \mathbb{I}_{T > 4.80}}{1.0 + \exp(-2.80 \cdot (T - 5.50))} \right]$$
+
+20. **Maritime Shipping Freight Cost ($C_{\text{freight}}$, index)**:
+    * **Literature**: Mohammed & Williamson (2004), Harley (1988).
+    * **Governing Equation**:
+      $$C_{\text{freight}}(T) = \tanh(\max(0, T - 1.55) \cdot 1.50) \cdot \left[ 1450.0 - 800.0 \cdot \tanh(\max(0, T - 2.50) \cdot 0.85) - \frac{550.0}{1.0 + \exp(-2.20 \cdot (T - 4.10))} \right]$$
+
+21. **Per-Capita Metal Smelting Production ($M_{\text{smelt}}$, $\text{kg/capita/year}$)**:
+    * **Literature**: Malandra (1990), USGS Mineral Commodity Summaries (2023).
+    * **Governing Equation**:
+      $$M_{\text{smelt}}(T) = \tanh(\max(0, T - 1.65) \cdot 1.30) \cdot \left[ 1.2 + 3.0 \cdot \tanh(\max(0, T - 2.00) \cdot 0.80) + \frac{245.0}{1.0 + \exp(-2.20 \cdot (T - 4.80))} \right]$$
+
+22. **Real Unskilled Wage Index ($W_{\text{unskilled}}$, $1750 = 100$)**:
+    * **Literature**: Allen (2001), Clark (2005) *A Farewell to Alms*.
+    * **Governing Equation**:
+      $$W_{\text{unskilled}}(T) = \text{clamp}\left(100.0 + \frac{550.0}{1.0 + \exp(-2.20 \cdot (T - 4.60))}, 50.0, 1000.0\right)$$

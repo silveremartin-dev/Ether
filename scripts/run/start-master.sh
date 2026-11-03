@@ -13,7 +13,6 @@ SCENARIO="${1:-OUT_OF_AFRICA}"
 PORT="${2:-9090}"
 SECRET="${3:-${ETHER_CLUSTER_SECRET:-default-cluster-token}}"
 TICKS="${4:-500}"
-CELLS="${5:-10000}"
 
 echo "=========================================================="
 echo "     ETHER -- STARTING CLUSTER MASTER SERVER (Linux)      "
@@ -21,7 +20,7 @@ echo "=========================================================="
 echo "  Scenario Preset : $SCENARIO"
 echo "  Port            : $PORT"
 echo "  Target Ticks    : $TICKS"
-echo "  H3 Grid Cells   : $CELLS"
+echo "  H3 Resolution   : Native from Scenario JSON"
 echo "----------------------------------------------------------"
 
 EXEC_JAR=""
@@ -40,4 +39,4 @@ if [ -z "$EXEC_JAR" ]; then
 fi
 
 echo "Launching Master Node Server..."
-java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$EXEC_JAR" --headless --mode=cluster --role=master --port=$PORT --secret="$SECRET" --scenario="$SCENARIO" --ticks=$TICKS --cells=$CELLS --profile
+java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$EXEC_JAR" --headless --mode=cluster --role=master --port=$PORT --secret="$SECRET" --scenario="$SCENARIO" --ticks=$TICKS --profile

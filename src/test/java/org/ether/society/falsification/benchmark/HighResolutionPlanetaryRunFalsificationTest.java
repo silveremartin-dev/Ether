@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @Tag("academic")
 @Tag("scientific")
-public class RealHistoricalHighResolutionSimulationRunTest {
+public class HighResolutionPlanetaryRunFalsificationTest {
 
     @Test
     @DisplayName("Execute Real High-Resolution Simulation Run for Ramesses II Scenario (Res 5, dt = 30 days)")
@@ -43,8 +43,9 @@ public class RealHistoricalHighResolutionSimulationRunTest {
         }
         assertNotNull(ramessesScenario, "Ramesses II scenario must exist in built-in scenarios");
 
-        // Bound scenario duration to 1 year (12 monthly ticks) for regression test speed
+        // Bound scenario duration to 1 year (12 monthly ticks) and Res 5 for regression test speed
         ramessesScenario.setEndDateYear(-1278);
+        ramessesScenario.setH3Resolution(5);
 
         // Execute headless real physics run
         SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(ramessesScenario);
@@ -90,19 +91,19 @@ public class RealHistoricalHighResolutionSimulationRunTest {
     }
 
     @Test
-    @DisplayName("Execute Real High-Resolution Simulation Run for Earth 2025 BAU Scenario (Planetary Grid, dt = 30 days)")
+    @DisplayName("Execute Real High-Resolution Simulation Run for Earth 2026 BAU Scenario (Planetary Grid, dt = 30 days)")
     public void testEarth2025BAUHighResolutionSimulationRun() {
         Scenario earthBAUScenario = null;
         for (Scenario s : Scenario.getBuiltInScenarios()) {
-            if ("business_as_usual".equals(s.getPresetKey())) {
+            if ("earth_2026_future".equals(s.getPresetKey()) || "business_as_usual".equals(s.getPresetKey())) {
                 earthBAUScenario = s;
                 break;
             }
         }
-        assertNotNull(earthBAUScenario, "Earth 2025 BAU scenario must exist in built-in scenarios");
+        assertNotNull(earthBAUScenario, "Earth 2026 future baseline scenario must exist in built-in scenarios");
 
         // Bound planetary scenario duration to 1 year (12 monthly ticks) for regression test speed
-        earthBAUScenario.setEndDateYear(2026);
+        earthBAUScenario.setEndDateYear(earthBAUScenario.getStartDateYear() + 1);
         // Optimize resolution and cohort granularity for regression test performance
         earthBAUScenario.setH3Resolution(2);
         earthBAUScenario.setTargetCohortSize(50000);

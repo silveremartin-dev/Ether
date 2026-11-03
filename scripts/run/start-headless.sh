@@ -11,14 +11,13 @@ cd "$ROOT_DIR"
 
 SCENARIO="${1:-OUT_OF_AFRICA}"
 TICKS="${2:-300}"
-CELLS="${3:-3000}"
 
 echo "=========================================================="
 echo "     ETHER -- HEADLESS ENGINE BATCH RUNNER (Linux)        "
 echo "=========================================================="
 echo "  Scenario Preset : $SCENARIO"
 echo "  Target Ticks    : $TICKS"
-echo "  H3 Grid Cells   : $CELLS"
+echo "  H3 Resolution   : Native from Scenario JSON"
 echo "----------------------------------------------------------"
 
 EXEC_JAR=""
@@ -37,4 +36,4 @@ if [ -z "$EXEC_JAR" ]; then
 fi
 
 echo "Executing Headless Batch Run..."
-java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$EXEC_JAR" --headless --scenario="$SCENARIO" --ticks="$TICKS" --cells="$CELLS" --profile
+java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar "$EXEC_JAR" --headless --scenario="$SCENARIO" --ticks="$TICKS" --profile

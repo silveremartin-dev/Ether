@@ -41,7 +41,7 @@ public class HeadlessRunnerCliTest {
     public void testHeadlessSimulationWithPerformanceFlags() {
         String[] args = new String[]{
                 "--ticks=3",
-                "--cells=25",
+                "--res=1",
                 "--scenario=OUT_OF_AFRICA",
                 "--single-core",
                 "--sparse-skipping",
@@ -71,7 +71,7 @@ public class HeadlessRunnerCliTest {
     public void testHeadlessSimulationDefaultScenarioBaseline() {
         String[] args = new String[]{
                 "--ticks=2",
-                "--cells=20",
+                "--res=1",
                 "--scenario=OUT_OF_AFRICA",
                 "--no-save",
                 "--no-profile"
@@ -177,7 +177,7 @@ public class HeadlessRunnerCliTest {
     public void testHeadlessExecutionRamessesIIScenario() {
         String[] args = new String[]{
                 "--ticks=5",
-                "--cells=30",
+                "--res=1",
                 "--scenario=ramesses_ii",
                 "--save=Test_Ramesses_II_Snapshot",
                 "--safe",
@@ -193,7 +193,7 @@ public class HeadlessRunnerCliTest {
     public void testHeadlessExecutionEarth2025BAUScenario() {
         String[] args = new String[]{
                 "--ticks=5",
-                "--cells=30",
+                "--res=1",
                 "--scenario=business_as_usual",
                 "--save=Test_Earth_2025_BAU_Snapshot",
                 "--safe",

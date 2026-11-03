@@ -45,6 +45,7 @@ echo "[*] Running with JVM Heap: ${HEAP_FLAGS}"
 echo "[*] Launching 5-Axis Real Planetary Simulation Engine Benchmarks..."
 
 java -XX:+UseG1GC ${HEAP_FLAGS} \
+    --add-modules=jdk.incubator.vector \
     --enable-native-access=ALL-UNNAMED \
     -cp "${JAR_PATH}" \
     org.ether.society.benchmark.RealPlanetaryEngineBenchmarkRunner "$@"

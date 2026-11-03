@@ -347,10 +347,17 @@ public class SimulationMetricsAggregator {
      */
     public double getEroiAlimentaire() {
         float tech = engine.getAverageTechnology();
-        // Boserupian agricultural intensification: EROI decreases smoothly from foraged wild harvest (~7.0)
-        // to pre-industrial animal traction (~2.5) down to modern industrial fossil-fuel subsidized agriculture (< 0.5)
-        double eroi = 0.12 + 6.88 / (1.0 + Math.exp(1.35 * (tech - 2.80)));
-        return Math.clamp(eroi, 0.12, 7.50);
+        double agActivation = Math.tanh(Math.max(0.0, tech - 1.15) * 4.0);
+        if (agActivation <= 0.0) return 0.0;
+        // Leach (1976) / Hall & Klitgaard (2012) / Giampietro (2013):
+        // Early Neolithic horticulture (alluvial flood recession) bonus (~15-20)
+        double neolithicHorticultureBonus = 15.0 * Math.exp(-Math.pow((tech - 1.45), 2) / 0.18);
+        // Pre-industrial draft animal traction equilibrium: ~4.2 - 5.0
+        double traditionalEquilibrium = 4.2 + 0.8 * Math.tanh(Math.max(0.0, tech - 2.50) * 1.10);
+        // Modern mechanization and Green Revolution expansion (Smil 2017): ~8-15
+        double greenRevolutionBoom = (tech > 3.60) ? 9.5 / (1.0 + Math.exp(-2.20 * (tech - 4.50))) : 0.0;
+        double eroei = traditionalEquilibrium + neolithicHorticultureBonus + greenRevolutionBoom;
+        return Math.clamp(agActivation * eroei, 0.0, 25.0);
     }
 
     /**
@@ -1184,10 +1191,16 @@ public class SimulationMetricsAggregator {
      */
     public double getInformationTravelSpeedKmPerDay() {
         float tech = engine.getAverageTechnology();
-        double courierSpeed = 4.0 + 76.0 * Math.tanh(Math.max(0.0, tech - 1.55) * 0.80);
-        double railSteamSpeed = 2400.0 / (1.0 + Math.exp(-2.50 * (tech - 3.90)));
-        double telecomSpeed = (tech > 4.15) ? 3.0e8 / (1.0 + Math.exp(-3.50 * (tech - 4.45))) : 0.0;
-        return Math.clamp(courierSpeed + railSteamSpeed + telecomSpeed, 4.0, 3.0e8);
+        // Pedestrian foot speed baseline (4 km/day) in deep prehistory (T < 2.10)
+        double courierActivation = Math.tanh(Math.max(0.0, tech - 2.10) * 1.50);
+        double courierSpeed = 4.0 + 80.0 * courierActivation;
+        // Optical & electric telegraph (Standage 1998): strictly inactive before T >= 3.75
+        double telegraphActivation = Math.tanh(Math.max(0.0, tech - 3.75) * 2.50);
+        double telegraphSpeed = telegraphActivation * (24000.0 / (1.0 + Math.exp(-2.50 * (tech - 3.85))));
+        // Telephony and radio
+        double earlyTelecom = (tech > 4.25) ? 5.8e6 * Math.tanh(Math.max(0.0, tech - 4.25) * 2.50) : 0.0;
+        double modernTelecom = (tech > 5.00) ? 2.94e8 / (1.0 + Math.exp(-3.50 * (tech - 5.50))) : 0.0;
+        return Math.clamp(courierSpeed + telegraphSpeed + earlyTelecom + modernTelecom, 4.0, 3.0e8);
     }
 
     /**
@@ -1200,10 +1213,10 @@ public class SimulationMetricsAggregator {
         float tech = engine.getAverageTechnology();
         double smeltActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 1.30);
         if (smeltActivation <= 0.0) return 0.0;
-        // Malandra (1990) / USGS (2023): Antiquity (~1.5 kg) -> Medieval (~3.0 kg)
-        // -> 1800 CE (~10 kg) -> 1914 CE (~57 kg) -> 2026 CE (~255 kg)
-        double preIndustrial = 1.2 + 6.0 * Math.tanh(Math.max(0.0, tech - 2.00) * 0.80);
-        double industrialBessemer = 250.0 / (1.0 + Math.exp(-2.20 * (tech - 4.60)));
+        // Malandra (1990) / USGS (2023): Antiquity (~1.2 kg) -> Medieval (~1.8 kg)
+        // -> 1800 CE (~6.5 kg) -> 1914 CE (~85 kg) -> Modern (~210 kg)
+        double preIndustrial = 0.5 + 1.3 * Math.tanh(Math.max(0.0, tech - 2.20) * 0.70) + 4.7 * Math.tanh(Math.max(0.0, tech - 3.40) * 1.50);
+        double industrialBessemer = (tech > 3.85) ? 205.0 / (1.0 + Math.exp(-2.20 * (tech - 4.60))) : 0.0;
         return Math.clamp(smeltActivation * (preIndustrial + industrialBessemer), 0.0, 350.0);
     }
 

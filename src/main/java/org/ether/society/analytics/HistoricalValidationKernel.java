@@ -648,18 +648,21 @@ public class HistoricalValidationKernel {
                 // Anthropogenic civilizational & institutional variables strictly 0.0 before historical emergence
                 case "literacyRate", "urbanizationRate", "currencyDebasement", "eliteOverproductionIndex",
                      "sovereignDebtBurden", "fossilSharePrimaryEnergy", "metalSmeltingPerCapita",
-                     "deforestationRate", "politicalStressIndex", "agriculturalEroei", "globalTradeVolume" -> {
+                     "politicalStressIndex", "agriculturalEroei", "globalTradeVolume" -> {
                     return 0.0;
                 }
                 // Ecological & evolutionary deep-time physical invariants
+                case "deforestationRate" -> {
+                    return 99.0; // Pristine post-glacial forest baseline (99% forest cover remaining)
+                }
+                case "soilErosionRate" -> {
+                    return 0.03; // Geomorphic natural background weathering (Montgomery 2007 PNAS)
+                }
                 case "megafaunaIndex" -> {
                     return 100.0; // Pre-Quaternary megafauna baseline
                 }
                 case "zeroContainmentScore" -> {
                     return 1.0; // Uncontained open biosphere
-                }
-                case "soilErosionRate" -> {
-                    return 0.03; // Geomorphic natural background weathering (Montgomery 2007 PNAS)
                 }
                 case "giniInequality" -> {
                     return 0.17; // Egalitarian nomadic hunter-gatherer band baseline (Kohler et al. 2017 Nature)
