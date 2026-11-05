@@ -1,22 +1,24 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.core.math.SmoothMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
- * Weberian Protestant Work Ethic Engine Variant B31.1 (Pure) & B31.2 (Hybrid).
- * Models Max Weber's hypothesis (The Protestant Ethic and the Spirit of Capitalism):
- * Delayed gratification, high literacy rates, capital accumulation, and accelerated technological innovation.
- * Increases capital savings rate and tech research rate while dampening fertility (demographic transition).
+ * Max Weber Protestant Work Ethic &amp; Human Capital Engine.
+ *
+ * <p>Formalizes Max Weber (1905) and Becker &amp; Woessmann (2009, <i>QJE</i> 124:531): religious
+ * and institutional reforms promoting literacy, thrift, and ascetic reinvestment of surpluses
+ * accelerate capital formation (\(\Delta K\)).</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -24,106 +26,34 @@ import java.util.List;
 public class ProtestantWorkEthicEngine {
     private static final Logger logger = LoggerFactory.getLogger(ProtestantWorkEthicEngine.class);
 
-    private static double capitalSavingsMultiplier = 1.35; // +35% capital retention
-    private static double techAccelerationMultiplier = 1.25; // +25% tech innovation speed
-    private static double literacyRateMultiplier = 1.40; // +40% literacy boost
+    private static double capitalSavingsMultiplier = 1.30;
+    private static double techAccelerationMultiplier = 1.20;
 
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            // Apply Protestant Ethic effects to cells with active cultural/religious transformation
             double capital = cell.getResourceCapitalOr(100.0);
-            double tech = cell.getTechnologyLevelOr(1.0);
             double pop = cell.getPopulation();
 
             // Accelerated capital formation via frugal savings (Weber 1905; Becker & Woessmann 2009)
-            // Continuous human capital weighting via technology/literacy state rather than flat global drift
-            double literacyWeight = Math.clamp(tech / 6.0, 0.10, 1.0);
-            double capitalGain = (pop * 0.05 * (1.0 + (capitalSavingsMultiplier - 1.0) * literacyWeight)) * deltaYears;
+            // Human capital weighting derived continuously from capital per capita
+            double literacyWeight = SmoothMath.smoothClamp(capital / (pop * 2000.0), 0.10, 1.0, 0.05);
+            double capitalGain = (pop * 0.10 * (1.0 + (capitalSavingsMultiplier - 1.0) * literacyWeight)) * deltaYears;
             cell.setResourceCapital(capital + capitalGain);
-
-            // Accelerated technology adoption rate weighted by human capital
-            double techGain = (0.01 * (1.0 + (techAccelerationMultiplier - 1.0) * literacyWeight)) * deltaYears;
-            cell.setTechnologyLevel(tech + techGain);
-
-            // Population is NOT modified here: the former "+0.1%/yr" multiplication created people without
-            // births or food (and contradicted its own comment about reduced fertility). Demographic effects
-            // must act through the Tier 1 DemographicKernel to preserve demographic mass conservation.
         }
     }
 
-    /**
-     * Get capital savings multiplier.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getCapitalSavingsMultiplier() { return capitalSavingsMultiplier; }
-    /**
-     * Set capital savings multiplier operation.
-     * <p>
-     * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param v the v argument (double)
-     */
-    public static void setCapitalSavingsMultiplier(double v) { capitalSavingsMultiplier = Math.max(1.0, v); }
+    public static void setCapitalSavingsMultiplier(double mult) { capitalSavingsMultiplier = mult; }
 
-    /**
-     * Get tech acceleration multiplier.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getTechAccelerationMultiplier() { return techAccelerationMultiplier; }
-    /**
-     * Set tech acceleration multiplier operation.
-     * <p>
-     * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param v the v argument (double)
-     */
-    public static void setTechAccelerationMultiplier(double v) { techAccelerationMultiplier = Math.max(1.0, v); }
+    public static void setTechAccelerationMultiplier(double mult) { techAccelerationMultiplier = mult; }
 
-    /**
-     * Get literacy rate multiplier.
-     *
-     * @return the resulting computation or state reference
-     */
-    public static double getLiteracyRateMultiplier() { return literacyRateMultiplier; }
-    /**
-     * Set literacy rate multiplier operation.
-     * <p>
-     * Executes operational logic for {@code ProtestantWorkEthicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param v the v argument (double)
-     */
-    public static void setLiteracyRateMultiplier(double v) { literacyRateMultiplier = Math.max(1.0, v); }
-
-    /**
-     * Resets Protestant ethic multipliers for scenario isolation.
-     */
     public static void resetState() {
-        capitalSavingsMultiplier = 1.35;
-        techAccelerationMultiplier = 1.25;
-        literacyRateMultiplier = 1.40;
+        capitalSavingsMultiplier = 1.30;
+        techAccelerationMultiplier = 1.20;
     }
 }
-
-

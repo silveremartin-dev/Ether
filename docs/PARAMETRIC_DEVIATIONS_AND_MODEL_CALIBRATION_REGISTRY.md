@@ -1,4 +1,4 @@
-# ⚖️ Central Registry of Model Calibrations, Parametric Scaling & Literature Deviations
+﻿# ⚖️ Central Registry of Model Calibrations, Parametric Scaling & Literature Deviations
 
 > **Ether Cliodynamic & Planetary Epistemic Laboratory**  
 > *Author: Silvere Martin-Michiellot*  
@@ -245,6 +245,81 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 
 ---
 
+### Entry 15: Exosomatic Motive Power vs Passive Structural Capital (Smil-Garrett Energy Gate)
+* **Subsystem**: `WorldBuffer.java` (`computeCellPowerWattsPerCapita()`) & `PhysicalEnergyGridEngine.java`
+* **Canonical Literature**:
+  * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  * Garrett, T. J. (2011). *Are there basic physical constraints on future anthropogenic emissions of carbon dioxide?* Climatic Change, 104(3), 437–455.
+  * Malanima, P. (2006). *Energy consumption in England and Italy, 1560–1913*. The Economic History Review.
+* **Canonical Published Value**:
+  * Classical Antiquity (Pax Romana 165 CE): Total power per capita was $350–500\text{ W/capita}$ (somatic labor $80–130\text{ W}$, domestic hearth heating $150–250\text{ W}$, draft animals $80–120\text{ W}$).
+  * Modern Industrial (1970 CE): Machine electric grid power exceeded $4500–6000\text{ W/capita}$.
+* **Calibrated Ether Formulation**:
+  $$P_{\text{grid}} = 4500.0 \cdot \sigma\left(k_{\text{pc}};\; 900.0,\; 200.0\right) \cdot \eta_{\text{converter}}$$
+  $$\text{Gate}_{\text{fossil}} = \sigma\left(k_{\text{pc}};\; 800.0,\; 150.0\right), \quad \text{Gate}_{\text{nuclear}} = \sigma\left(k_{\text{pc}};\; 4500.0,\; 800.0\right)$$
+* **Root Cause & Justification**:
+  * Passive civil engineering structural capital (roads, aqueducts, stone masonry, amphorae) does not generate motive electrical power. Multiplying gross capital by an unconstrained scalar ($18\text{ W/kpc}$) spuriously injected $+4500\text{ W/capita}$ into the Roman Empire ($k_{\text{pc}} = 420$), inflating emergent technology to $T \sim 5.5$ (modern space age). Gating active motive power behind authentic prime mover capital ($k_{\text{pc}} \ge 800$) restores authentic Roman energetics ($480\text{ W/capita}$, $T \sim 2.1$).
+* **Empirical Validation Grounding**:
+  * Smil (2017); Malanima (2006); Maddison Project (2020).
+
+---
+
+### Entry 16: Solow-Swan Physical Mechanical Power Capital Steady-State in DOD Grids
+* **Subsystem**: `UrbanKernel.java` (`tick()`)
+* **Canonical Literature**:
+  * Solow, R. M. (1956). *A Contribution to the Theory of Economic Growth*. The Quarterly Journal of Economics, 70(1), 65–94.
+  * Ayres, R. U., & Warr, B. (2009). *The Economic Growth Engine: How Energy and Work Drive Material Prosperity*. Edward Elgar Publishing.
+* **Canonical Published Value**:
+  * Pre-industrial steady-state capital stock per capita ($k^*$) is strictly bounded by available mechanical work: $k^* \le 15–30$ in mobile foraging societies, $k^* \le 80$ in early horticulture, and converges without runaway compounding.
+* **Calibrated Ether Formulation**:
+  $$k^* = 15.0 + 12.0 \cdot \left(\frac{P_{\text{watts}}}{100.0}\right)^{1.30}$$
+  $$\frac{dk_{\text{pc}}}{dt} = \delta_{\text{annual}} \cdot (k^* - k_{\text{pc}})$$
+  with mobile foraging band somatic constraint $k^* \le 15.0$ when $N_{\text{cell}} < 50$.
+* **Root Cause & Justification**:
+  * Unconstrained Cobb-Douglas capital formation in DOD cells previously produced a persistent net surplus of $+1.37\text{ capital/capita/year}$ even in the deep Paleolithic (-20,000 BP), causing capital to cross the Neolithic threshold after 10 years of simulation. Solow-Swan mechanical power convergence guarantees strict stability across deep time.
+* **Empirical Validation Grounding**:
+  * Solow (1956); Ayres & Warr (2009); HYDE 3.4.
+
+---
+
+### Entry 17: Logarithmic Radiometric Cartographic Transfer Function
+* **Subsystem**: `SpatialTensorRasterRenderer.java` (`rasterizeDensityToGrayscaleReference()`)
+* **Canonical Literature**:
+  * Klein Goldewijk, K., et al. (2017). *Anthropogenic land use estimates for the Holocene – HYDE 3.2*. Earth System Science Data, 9(2), 927–953.
+  * Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). *Image quality assessment: from error visibility to structural similarity*. IEEE Transactions on Image Processing, 13(4), 600–612.
+* **Canonical Published Value**:
+  * Demographic population density spans 5 orders of magnitude (from $0.05\text{ hab/km}^2$ to $> 500\text{ hab/km}^2$). Historical demographic rasters (HYDE, NOAA) encode densities on a logarithmic scale in the 8-bit visual spectrum $[0, 255]$.
+* **Calibrated Ether Formulation**:
+  $$L_{\text{gray}} = \operatorname{sclamp}\left( \frac{\log_{10}(N + 1)}{\log_{10}(N_{\max} + 1)} \cdot \text{refMax},\; 2,\; 255 \right)$$
+* **Root Cause & Justification**:
+  * Linear scaling $(N / N_{\max})$ previously compressed all rural and medium-density cells into near-black pixels ($L_{\text{gray}} \le 4$), generating artificial SSIM penalties and high RMSE against HYDE rasters. Logarithmic scaling restores true radiometric alignment across rural and urban densities.
+* **Empirical Validation Grounding**:
+  * HYDE 3.4; NOAA ETOPO1; IEEE SSIM (Wang et al. 2004).
+
+---
+
+### Entry 18: Equestrian Courier Relay & Agrarian Soil Plowing Continuous Activation Gates
+* **Subsystem**: `CliodynamicAnalyticalFormulasCatalog.java` (`computeInformationTravelSpeed()`, `computeTopsoilErosionLoss()`, `computeSovereignDebtBurden()`)
+* **Canonical Literature**:
+  * Scheidel, W. (2014). *The Shape of the Roman World: Modelling Imperium*. Journal of Roman Archaeology, 27, 7–32 (ORBIS: Stanford Geospatial Network Model of the Roman World).
+  * Montgomery, D. R. (2007). *Soil erosion and agricultural sustainability*. Proceedings of the National Academy of Sciences, 104(33), 13268–13272.
+  * Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different: Eight Centuries of Financial Folly*. Princeton University Press.
+* **Canonical Published Value**:
+  * Pedestrian hunter-gatherer communication: ~4 km/day.
+  * Imperial equestrian relay network (cursus publicus, Persian Angarium): 80–88 km/day.
+  * Pristine Holocene geological background erosion: 0.03 t/ha/yr; classical agrarian plowing: 12–18 t/ha/yr.
+  * Pre-modern state emergency fiscal commitments during acute wartime/epidemic crises: 8–12% GWP.
+* **Calibrated Ether Formulation**:
+  * Courier relay activation centered at T_0 = 1.80 (horse domestication & paved transport corridors) with steepness s = 2.20, reaching ~81 km/day in classical imperial antiquity while strictly remaining at 4 km/day throughout prehistory (T < 1.80).
+  * Topsoil erosion plowing activation centered at T_0 = 1.40 (Neolithic ard plowing), maintaining pure geological background (0.03 t/ha/yr) during the Paleolithic (T <= 1.0) and rising continuously to ~15 t/ha/yr in antiquity.
+  * Sovereign crisis debt accounting capacity gated at scribal administrative literacy L >= 1.5% rather than modern mass schooling (L >= 5.0%).
+* **Root Cause & Justification**:
+  * Preserves C1 differentiability while eliminating erroneous paleolithic erosion spikes and restoring classical imperial infrastructure velocity without telegraph contamination.
+* **Empirical Validation Grounding**:
+  * ORBIS Geospatial Network; Montgomery (2007); Butcher & Ponting (2014); HYDE 3.4.
+
+---
+
 ## 🔬 3. Epistemic Audit Summary
 
 | # | Calibrated Subsystem | Academic Author(s) | Original Domain | Ether Calibrated Domain | Root Cause of Divergence |
@@ -261,3 +336,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 | 10 | Gross World Product (GWP) | Maddison (2007), Bolt & van Zanden (2020) | National macro Geary-Khamis | Contiguous cellular aggregation | Malthusian subsistence floor vs industrial capital deepening |
 | 11 | Information Travel Speed | Scheidel (2014) ORBIS, UN ITU | Historical route measurements | Continuous transport network | Separation of physical locomotion from electromagnetic propagation |
 | 12 | Shipping Freight Cost | Harley (1988), Williamson (2004) | Historical freight indices | Continuous technological scalar $T$ | Continuous translation of 19th-century steam/steel maritime transition |
+| 15 | Exosomatic Motive Power Grid | Smil (2017), Malanima (2006) | National energy balances | Capital gating $k_{\text{pc}} \ge 800$ | Elimination of synthetic motive power from pre-industrial structural capital |
+| 16 | DOD Solow-Swan Capital | Solow (1956), Ayres & Warr (2009) | Aggregate growth model | DOD H3 cell buffer convergence | Prevents runaway capital accumulation in deep-time mobile foraging grids |
+| 17 | Logarithmic Radiometric Cartography | Klein Goldewijk et al. (2017), Wang (2004) | Spatial demographic rasters | Grayscale transfer $[0, 255]$ | Matches HYDE 3.4 multi-scale demographic density distribution |
+| 18 | Continuous Infrastructure Gates | Scheidel (2014), Montgomery (2007) | ORBIS, geomorphic field studies | Analytical closed-form catalog | Universal smooth sigmoids for courier relays ($T \ge 1.80$) and plowing ($T \ge 1.40$) |

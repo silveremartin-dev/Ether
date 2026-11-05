@@ -100,7 +100,12 @@ public class SoilNutrientNPKEngine {
             if (cell == null) return;
             int pop = cell.getPopulationOr(0);
             double baseBiomass = cell.getBiomassAgricultureOr(0.0);
-            if (baseBiomass <= 0.0 && pop <= 0) return;
+            if (baseBiomass <= 0.0 || pop <= 0) return;
+
+            double capital = cell.getResourceCapitalOr(0.0);
+            double capPerCap = capital / Math.max(1.0, pop);
+            double cultivationFactor = Math.tanh(capPerCap / 5.0);
+            if (cultivationFactor <= 0.001) return;
 
             double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
 double metalOre = cell.getResourceMetalOr(100.0);
@@ -126,15 +131,15 @@ double bioFixationN = Math.max(0.0, nNorm - soilNBase) * (1.0 - haberBoschShare)
 
             // 3. Liebig's Law of the Minimum Yield Bound
             double effectiveSoilN = soilNBase + synthesizedN;
-            double effectiveSoilP = Math.max(pNorm, soilPBase + extractedMiningP);
-            double effectiveSoilK = Math.max(kNorm, soilKBase + extractedMiningK);
+            double effectiveSoilP = Math.min(pNorm * 1.5, soilPBase + extractedMiningP);
+            double effectiveSoilK = Math.min(kNorm * 1.5, soilKBase + extractedMiningK);
 
             double liebigFactor = Math.min(effectiveSoilN / nNorm, Math.min(effectiveSoilP / pNorm, effectiveSoilK / kNorm));
 
             // Continuous arability suitability replaces discrete switch(biome)
-double arableBiomeFactor = calculateContinuousArableSuitability(cell);
-double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-double laborCultivatedBiomass = pop * (580.0 + 150.0 * Math.min(4.0, Math.log1p(capPerCap / 50.0)));
+            double arableBiomeFactor = calculateContinuousArableSuitability(cell);
+            capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+            double laborCultivatedBiomass = pop * (580.0 + 150.0 * Math.min(4.0, Math.log1p(capPerCap / 50.0)));
 double landCeiling = (planarCellAreaKm2 < 5.0)
         ? (25.0 * areaScale * arableBiomeFactor)
         : Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.min(5.0, 1.0 + capPerCap / 100.0)) * areaScale * arableBiomeFactor);

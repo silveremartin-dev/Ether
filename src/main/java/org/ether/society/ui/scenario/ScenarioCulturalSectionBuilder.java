@@ -11,24 +11,17 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import org.ether.society.data.ImageMapLoader;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
 import org.ether.society.ui.CulturalAffinityMatrixDialog;
 import org.ether.society.ui.WindowUtils;
 import org.ether.society.ui.util.DataSourceUIHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -46,8 +39,6 @@ import java.util.function.Consumer;
  * @version 1.0.0-beta.2
  */
 public class ScenarioCulturalSectionBuilder {
-
-    private static final Logger logger = LoggerFactory.getLogger(ScenarioCulturalSectionBuilder.class);
 
     /**
      * Callback context interface providing access to host panel state.
@@ -130,6 +121,33 @@ public class ScenarioCulturalSectionBuilder {
         desc.setStyle("-fx-font-size: 11px; -fx-font-weight: normal;");
         desc.setWrapText(true);
 
+        GridPane grid = buildLangevinKernelGrid();
+
+        // Layer Import Panel
+        VBox layersPanel = new VBox(8);
+        layersPanel.getStyleClass().add("layers-panel-card");
+
+        Label layerTitle = new Label(I18n.getOrDefault("scenario.header.tensor_subblocks",
+                "🗺 3.2 Cartographic Sub-Blocks per Tensor (Procedural Generation / Imported Maps)"));
+        layerTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
+        layerTitle.setWrapText(true);
+
+        VBox layerHeaderBox = new VBox(6, layerTitle, buildSeedAndActionBox());
+
+        Label culturalFormatHintLabel = new Label(I18n.getOrDefault("scenario.desc.tensor_formats",
+                "PNG / JPEG (2:1 equirectangular projection):\n  Each sub-block below allows individual choice of parameterized procedural generation or map import. In map import mode, a valid map file must be loaded."));
+        culturalFormatHintLabel.setWrapText(true);
+        culturalFormatHintLabel.getStyleClass().add("hint-label");
+
+        layersDynamicContainer = new VBox(10);
+        rebuildCulturalTensorSubBlocks(cultureVectorDimSpinner.getValue());
+
+        layersPanel.getChildren().addAll(layerHeaderBox, culturalFormatHintLabel, layersDynamicContainer);
+        section.getChildren().addAll(cultureHeader, desc, grid, layersPanel);
+        return section;
+    }
+
+    private GridPane buildLangevinKernelGrid() {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(8);
@@ -139,7 +157,6 @@ public class ScenarioCulturalSectionBuilder {
         cg2.setPercentWidth(45);
         grid.getColumnConstraints().setAll(cg1, cg2);
 
-        // 1. Vector Dimension (M)
         Label dimLbl = new Label(I18n.getOrDefault("scenario.label.cultural_dim", "Taille Tenseur Culturel (M dims) :"));
         dimLbl.getStyleClass().add("control-label");
         cultureVectorDimSpinner = new Spinner<>(0, 32, 9, 1);
@@ -156,7 +173,6 @@ public class ScenarioCulturalSectionBuilder {
         Tooltip.install(cultureVectorDimSpinner, new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_dim",
                 "Nombre de composantes N-dimensionnelles du vecteur d'information culturelle (ex: 9D, 16D, 32D).")));
 
-        // 2. Cultural Diffusion Rate (\alpha)
         Label diffLbl = new Label(I18n.getOrDefault("scenario.label.cultural_diffusion", "Cultural Diffusion Conductivity (α):"));
         diffLbl.getStyleClass().add("control-label");
         culturalDiffusionRateSpinner = new Spinner<>(0.001, 0.50, 0.05, 0.01);
@@ -166,7 +182,6 @@ public class ScenarioCulturalSectionBuilder {
         Tooltip.install(culturalDiffusionRateSpinner, new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_diffusion",
                 "Diffusion rate of association energy between neighboring H3 hexagons.")));
 
-        // 3. Cultural Mutation Noise Rate (\sigma)
         Label mutLbl = new Label(I18n.getOrDefault("scenario.label.cultural_mutation", "Mutation / Drift Noise (1/√sN):"));
         mutLbl.getStyleClass().add("control-label");
         culturalMutationRateSpinner = new Spinner<>(0.001, 0.10, 0.01, 0.005);
@@ -179,16 +194,10 @@ public class ScenarioCulturalSectionBuilder {
         grid.add(dimLbl, 0, 0); grid.add(cultureVectorDimSpinner, 1, 0);
         grid.add(diffLbl, 0, 1); grid.add(culturalDiffusionRateSpinner, 1, 1);
         grid.add(mutLbl, 0, 2); grid.add(culturalMutationRateSpinner, 1, 2);
+        return grid;
+    }
 
-        // Layer Import Panel
-        VBox layersPanel = new VBox(8);
-        layersPanel.getStyleClass().add("layers-panel-card");
-
-        Label layerTitle = new Label(I18n.getOrDefault("scenario.header.tensor_subblocks",
-                "🗺 3.2 Cartographic Sub-Blocks per Tensor (Procedural Generation / Imported Maps)"));
-        layerTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
-        layerTitle.setWrapText(true);
-
+    private VBox buildSeedAndActionBox() {
         btnGenerateProceduralTensorsSection = new Button(I18n.getOrDefault("scenario.btn.regen_tensors", "⚡ Régénérer les Tenseurs"));
         btnGenerateProceduralTensorsSection.getStyleClass().add("button");
         btnGenerateProceduralTensorsSection.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
@@ -207,11 +216,9 @@ public class ScenarioCulturalSectionBuilder {
         cultRandSeedBtn.setStyle("-fx-font-size: 11px;");
         cultRandSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_tensor_seed",
                 "Tirer une nouvelle graine stochastique aléatoire pour les tenseurs culturels (sans affecter la densité de population).")));
-
         cultRandSeedBtn.setOnAction(e -> {
             context.notifyParamChange();
-            String newSeed = String.valueOf(new Random().nextLong(1000000));
-            cultSeedField.setText(newSeed);
+            cultSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
             generateProceduralCulturalTensors();
         });
 
@@ -236,11 +243,7 @@ public class ScenarioCulturalSectionBuilder {
         btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_gis",
                 "Export scenario density layers and 9 cultural tensors under professional GIS formats (GeoTIFF, NetCDF-4, GeoJSON).")));
         btnExportGisMultiFormat.setOnAction(e -> ScenarioGisExporter.exportGisMultiFormat(
-                context.getWindow(),
-                context.getScenarioDescription(),
-                context.getStartYear(),
-                cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9
-        ));
+                context.getWindow(), context.getScenarioDescription(), context.getStartYear(), getCultureVectorDimensions()));
 
         Button btnExportProvenanceManifest = new Button(I18n.getOrDefault("scenario.btn.provenance_manifest", "📜 Manifeste Provenance SHA-256"));
         btnExportProvenanceManifest.getStyleClass().add("button-secondary");
@@ -248,20 +251,14 @@ public class ScenarioCulturalSectionBuilder {
         btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.gen_provenance",
                 "Generate a cryptographic JSON manifest (provenance.json) containing SHA-256 hashes of datasets and parameters.")));
         btnExportProvenanceManifest.setOnAction(e -> ScenarioGisExporter.exportProvenanceManifest(
-                context.getWindow(),
-                context.getStartYear(),
-                cultSeedField != null ? cultSeedField.getText() : "54321"
-        ));
+                context.getWindow(), context.getStartYear(), cultSeedField != null ? cultSeedField.getText() : "54321"));
 
         Button btnCulturalMatrix = new Button(I18n.getOrDefault("scenario.btn.cultural_matrix_inspect", "🧬 Inspecteur des Affinités Culturelles"));
         btnCulturalMatrix.getStyleClass().add("button-secondary");
         btnCulturalMatrix.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnCulturalMatrix.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_matrix",
                 "Inspect the N × N Pairwise Cultural Affinity and Distance Heatmap Matrix.")));
-        btnCulturalMatrix.setOnAction(e -> {
-            long epoch = context.getStartYear();
-            new CulturalAffinityMatrixDialog(epoch, context.getScenario()).show();
-        });
+        btnCulturalMatrix.setOnAction(e -> new CulturalAffinityMatrixDialog(context.getStartYear(), context.getScenario()).show());
 
         HBox actionButtonsRow = new HBox(8, culturalHelpBtn, btnExportGisMultiFormat, btnExportProvenanceManifest);
         actionButtonsRow.setAlignment(Pos.CENTER_LEFT);
@@ -276,20 +273,7 @@ public class ScenarioCulturalSectionBuilder {
         matrixDesc.setWrapText(true);
         matrixCard.getChildren().addAll(matrixTitle, matrixDesc, btnCulturalMatrix);
 
-        VBox seedAndActionBox = new VBox(8, seedRow, actionButtonsRow, matrixCard);
-        VBox layerHeaderBox = new VBox(6, layerTitle, seedAndActionBox);
-
-        Label culturalFormatHintLabel = new Label(I18n.getOrDefault("scenario.desc.tensor_formats",
-                "PNG / JPEG (2:1 equirectangular projection):\n  Each sub-block below allows individual choice of parameterized procedural generation or map import. In map import mode, a valid map file must be loaded."));
-        culturalFormatHintLabel.setWrapText(true);
-        culturalFormatHintLabel.getStyleClass().add("hint-label");
-
-        layersDynamicContainer = new VBox(10);
-        rebuildCulturalTensorSubBlocks(cultureVectorDimSpinner.getValue());
-
-        layersPanel.getChildren().addAll(layerHeaderBox, culturalFormatHintLabel, layersDynamicContainer);
-        section.getChildren().addAll(cultureHeader, desc, grid, layersPanel);
-        return section;
+        return new VBox(8, seedRow, actionButtonsRow, matrixCard);
     }
 
     public String getDefaultTensorName(int index) {
@@ -322,14 +306,13 @@ public class ScenarioCulturalSectionBuilder {
 
     public ComboBox<String> buildCulturalSourceCombo(int tensorIdx) {
         ComboBox<String> combo = ScenarioCulturalTensorCatalog.buildCulturalSourceCombo(tensorIdx);
-        long scYear = context.getStartYear();
-        String autoSrc = pickCulturalSourceForEpoch(tensorIdx, scYear, context.getActivePlanetPreset());
+        String autoSrc = pickCulturalSourceForEpoch(tensorIdx, context.getStartYear(), context.getActivePlanetPreset());
         DataSourceUIHelper.selectBestSource(combo, autoSrc, "Terre");
         combo.setOnAction(e -> {
             if (context.isUpdatingFromPreset()) return;
             String val = combo.getValue();
             if (val != null && !val.isEmpty()) {
-                if (customTensorImages.containsKey(tensorIdx) && customTensorImages.get(tensorIdx) != null && tensorImportRadios.containsKey(tensorIdx)) {
+                if (customTensorImages.get(tensorIdx) != null && tensorImportRadios.containsKey(tensorIdx)) {
                     tensorImportRadios.get(tensorIdx).setSelected(true);
                 }
                 context.notifyParamChange();
@@ -356,36 +339,8 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     public void updateTensorFileLabel(int tensorIdx) {
-        Label fileLbl = tensorFileLabels.get(tensorIdx);
-        Button loadBtn = tensorLoadBtns.get(tensorIdx);
-        if (fileLbl == null) return;
-        boolean isProc = tensorProcRadios.containsKey(tensorIdx) && tensorProcRadios.get(tensorIdx).isSelected();
-        Image img = customTensorImages.get(tensorIdx);
-
-        if (isProc) {
-            fileLbl.setText(I18n.getOrDefault("scenario.tensor.status.procedural", "⚡ Mode procédural actif"));
-            fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
-            if (loadBtn != null) loadBtn.setStyle("");
-            return;
-        }
-
-        if (img == null) {
-            fileLbl.setText(I18n.getOrDefault("scenario.tensor.file.none", "⚠ Aucune carte chargée — Fichier requis en mode import"));
-            fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #f59e0b;");
-            if (loadBtn != null) loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-            return;
-        }
-
-        ImageMapLoader.ImageValidationResult val = ImageMapLoader.validateMapImage(img);
-        if (!val.valid()) {
-            fileLbl.setText(String.format(I18n.getOrDefault("scenario.tensor.file.invalid", "⚠ Carte incompatible : %s"), val.message()));
-            fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
-            if (loadBtn != null) loadBtn.setStyle("-fx-border-color: #ef4444; -fx-border-width: 2px; -fx-border-radius: 4px;");
-        } else {
-            fileLbl.setText(String.format(I18n.getOrDefault("scenario.tensor.file.loaded_res", "✔ Carte chargée : %s (%dx%d)"), getCulturalBaselineName(tensorIdx), val.width(), val.height()));
-            fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #38bdf8;");
-            if (loadBtn != null) loadBtn.setStyle("");
-        }
+        ScenarioCulturalStateIOHelper.updateTensorFileLabel(
+                tensorIdx, tensorFileLabels, tensorLoadBtns, tensorProcRadios, customTensorImages);
     }
 
     public void exportCulturalTensor(int tensorIdx) {
@@ -399,14 +354,10 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     public Image generateProceduralTensorRasterImage(int tensorIdx, int w, int h) {
-        double p1 = tensorParam1Sliders.containsKey(tensorIdx) ? tensorParam1Sliders.get(tensorIdx).getValue() : 1.0;
-        double p2 = tensorParam2Sliders.containsKey(tensorIdx) ? tensorParam2Sliders.get(tensorIdx).getValue() : 1.0;
-        double p3 = tensorParam3Sliders.containsKey(tensorIdx) ? tensorParam3Sliders.get(tensorIdx).getValue() : 1.0;
-        long seed = 11235L + tensorIdx * 11111L;
-        if (tensorSeedFields.containsKey(tensorIdx)) {
-            try { seed = Long.parseLong(tensorSeedFields.get(tensorIdx).getText().trim()); } catch (Exception ignored) {}
-        }
-        return ScenarioProceduralTensorRasterizer.generateProceduralTensorRasterImage(tensorIdx, w, h, p1, p2, p3, seed);
+        return ScenarioProceduralTensorRasterizer.generateProceduralTensorRasterImage(
+                tensorIdx, w, h,
+                getTensorParam1(tensorIdx), getTensorParam2(tensorIdx), getTensorParam3(tensorIdx),
+                getTensorSeed(tensorIdx));
     }
 
     public Color evaluateProceduralTensorColor(int tIndex, double lat, double lon, double elevation, double p1, double p2, double p3, long seed) {
@@ -414,70 +365,10 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     public void deleteCulturalTensor(int indexToDelete) {
-        int curDims = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
-        if (indexToDelete < 0 || indexToDelete >= curDims) return;
-
-        for (int j = indexToDelete; j < curDims - 1; j++) {
-            if (customTensorNames.containsKey(j + 1)) {
-                customTensorNames.put(j, customTensorNames.get(j + 1));
-            } else {
-                customTensorNames.remove(j);
-            }
-            if (customTensorImages.containsKey(j + 1)) {
-                customTensorImages.put(j, customTensorImages.get(j + 1));
-            } else {
-                customTensorImages.remove(j);
-            }
-            if (tensorSeedFields.containsKey(j + 1)) {
-                String s = tensorSeedFields.get(j + 1).getText();
-                if (tensorSeedFields.containsKey(j)) tensorSeedFields.get(j).setText(s);
-                else tensorSeedFields.put(j, new TextField(s));
-            }
-            if (tensorParam1Sliders.containsKey(j + 1) && tensorParam1Sliders.containsKey(j)) {
-                tensorParam1Sliders.get(j).setValue(tensorParam1Sliders.get(j + 1).getValue());
-            }
-            if (tensorParam2Sliders.containsKey(j + 1) && tensorParam2Sliders.containsKey(j)) {
-                tensorParam2Sliders.get(j).setValue(tensorParam2Sliders.get(j + 1).getValue());
-            }
-            if (tensorParam3Sliders.containsKey(j + 1) && tensorParam3Sliders.containsKey(j)) {
-                tensorParam3Sliders.get(j).setValue(tensorParam3Sliders.get(j + 1).getValue());
-            }
-            if (tensorImportRadios.containsKey(j + 1) && tensorImportRadios.get(j + 1).isSelected()) {
-                if (tensorImportRadios.containsKey(j)) tensorImportRadios.get(j).setSelected(true);
-            } else {
-                if (tensorProcRadios.containsKey(j)) tensorProcRadios.get(j).setSelected(true);
-            }
-        }
-
-        int lastIdx = curDims - 1;
-        customTensorNames.remove(lastIdx);
-        customTensorImages.remove(lastIdx);
-        tensorSeedFields.remove(lastIdx);
-        tensorParam1Sliders.remove(lastIdx);
-        tensorParam2Sliders.remove(lastIdx);
-        tensorParam3Sliders.remove(lastIdx);
-        tensorParam1ValueLabels.remove(lastIdx);
-        tensorParam2ValueLabels.remove(lastIdx);
-        tensorParam3ValueLabels.remove(lastIdx);
-        tensorProcRadios.remove(lastIdx);
-        tensorImportRadios.remove(lastIdx);
-        tensorSourceCombos.remove(lastIdx);
-        tensorSourceLabels.remove(lastIdx);
-        tensorFileLabels.remove(lastIdx);
-        tensorLoadBtns.remove(lastIdx);
-        tensorFormatLabels.remove(lastIdx);
-        tensorGenSingleBtns.remove(lastIdx);
-        tensorSubTitles.remove(lastIdx);
-
-        int newDims = Math.max(0, curDims - 1);
-        if (cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValueFactory() != null) {
-            cultureVectorDimSpinner.getValueFactory().setValue(newDims);
-        } else {
-            rebuildCulturalTensorSubBlocks(newDims);
-            context.updatePreviewModesCombo();
-            context.notifyParamChange();
-            context.drawPreview();
-        }
+        ScenarioCulturalStateIOHelper.deleteCulturalTensor(
+                indexToDelete, this, context, tensorSubTitles, tensorSourceLabels, tensorFileLabels,
+                tensorFormatLabels, tensorParam1ValueLabels, tensorParam2ValueLabels, tensorParam3ValueLabels,
+                tensorGenSingleBtns);
     }
 
     public void updateTexts() {
@@ -488,55 +379,9 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     public void updateCulturalTensorSubBlockTexts() {
-        if (btnGenerateProceduralTensorsSection != null) {
-            btnGenerateProceduralTensorsSection.setText(I18n.getOrDefault("scenario.btn.regen_tensors", "⚡ Régénérer les Tenseurs"));
-            btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.regen_tensors",
-                    "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
-        }
-        int dims = cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValue() != null ? cultureVectorDimSpinner.getValue() : 9;
-        if (layersDynamicContainer == null || layersDynamicContainer.getChildren().size() != dims) {
-            rebuildCulturalTensorSubBlocks(dims);
-            return;
-        }
-        for (int i = 0; i < dims; i++) {
-            Label subTitle = tensorSubTitles.get(i);
-            if (subTitle != null) {
-                subTitle.setText(getCulturalTensorTitle(i));
-                Tooltip.install(subTitle, new Tooltip(getCulturalTensorTooltip(i)));
-            }
-            RadioButton radioProc = tensorProcRadios.get(i);
-            if (radioProc != null) {
-                radioProc.setText(I18n.getOrDefault("scenario.mode.procedural_sde", "⚡ Mode Procédural (Paramètres adaptatifs & Graine)"));
-                radioProc.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_radio_proc",
-                        "Génère procéduralement ce tenseur culturel via des équations stochastiques et les paramètres ci-dessous.")));
-            }
-            RadioButton radioImport = tensorImportRadios.get(i);
-            if (radioImport != null) {
-                radioImport.setText(I18n.getOrDefault("scenario.mode.spatial_import", "📁 Importation Carte Spatiale (PNG / GeoJSON)"));
-                radioImport.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_radio_import",
-                        "Importe une image matricielle ou une couche SIG externe pour modéliser ce tenseur culturel.")));
-            }
-            Label srcLbl = tensorSourceLabels.get(i);
-            if (srcLbl != null) {
-                srcLbl.setText(I18n.getOrDefault("resource.label.reference_source", "Reference Source:"));
-            }
-            Button loadBtn = tensorLoadBtns.get(i);
-            if (loadBtn != null) {
-                loadBtn.setText(I18n.getOrDefault("resource.btn.load_map", "Load Map"));
-            }
-            Button genBtn = tensorGenSingleBtns.get(i);
-            if (genBtn != null) {
-                genBtn.setText(I18n.getOrDefault("scenario.tensor.btn.export_single", "💾 Export"));
-            }
-            Label fmtLbl = tensorFormatLabels.get(i);
-            if (fmtLbl != null) {
-                fmtLbl.setText(getCulturalFormatHint(i));
-            }
-            ComboBox<String> sc = tensorSourceCombos.get(i);
-            if (sc != null && sc.getCellFactory() != null) {
-                sc.setButtonCell(sc.getCellFactory().call(null));
-            }
-        }
+        ScenarioCulturalStateIOHelper.updateCulturalTensorSubBlockTexts(
+                this, layersDynamicContainer, btnGenerateProceduralTensorsSection,
+                tensorSubTitles, tensorSourceLabels, tensorFormatLabels, tensorGenSingleBtns);
     }
 
     public void rebuildCulturalTensorSubBlocks(int dimCount) {
@@ -544,213 +389,24 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     public void loadCustomCultureLayerForTensor(int tensorIdx, Consumer<Image> onLoaded) {
-        String name = getCulturalTensorTitle(tensorIdx);
-        loadCustomCultureLayer(name, onLoaded);
+        loadCustomCultureLayer(getCulturalTensorTitle(tensorIdx), onLoaded);
     }
 
     public void loadCustomCultureLayer(String layerName, Consumer<Image> onLoaded) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("scenario.dialog.import_layer_title", "Import layer ") + layerName + " (PNG/GeoJSON/JPG)");
-        chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Images & Cartes", "*.png", "*.jpg", "*.jpeg", "*.geojson", "*.json")
-        );
-        File file = chooser.showOpenDialog(context.getWindow());
-        if (file != null) {
-            try {
-                Image img = new Image(new FileInputStream(file));
-                ImageMapLoader.ImageValidationResult val = ImageMapLoader.validateMapImage(img);
-                if (!val.valid()) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle(I18n.getOrDefault("scenario.dialog.invalid_map_title", "Carte Incompatible ou Invalide"));
-                    alert.setHeaderText(I18n.getOrDefault("scenario.dialog.invalid_map_header", "Fichier de carte non supporté ou illisible"));
-                    alert.setContentText(file.getName() + " :\n" + val.message() + "\n\n" + I18n.getOrDefault("scenario.dialog.invalid_map_hint", "Veuillez fournir une image raster valide (PNG/JPG) en projection équirectangulaire (2:1)."));
-                    alert.showAndWait();
-                    return;
-                }
-                onLoaded.accept(img);
-            } catch (Exception ex) {
-                logger.error("Failed to load culture layer {}", layerName, ex);
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Erreur de chargement: " + ex.getMessage());
-                alert.showAndWait();
-            }
-        }
+        ScenarioCulturalStateIOHelper.loadCustomCultureLayer(context.getWindow(), layerName, onLoaded);
     }
 
     public void generateProceduralCulturalTensors() {
-        if (tensorProcRadios != null) {
-            for (var entry : tensorProcRadios.entrySet()) {
-                if (entry.getValue() != null) {
-                    entry.getValue().setSelected(true);
-                }
-            }
-        }
-        customTensorImages.clear();
-
-        context.selectPreviewMode(1);
-        if (tensorFileLabels != null) {
-            for (Integer idx : tensorFileLabels.keySet()) {
-                updateTensorFileLabel(idx);
-            }
-        }
-        context.notifyParamChange();
-
-        Scenario s = context.getScenario();
-        if (s == null) return;
-        if (btnGenerateProceduralTensorsSection != null) btnGenerateProceduralTensorsSection.setDisable(true);
-        CompletableFuture.runAsync(() -> {
-            org.ether.society.data.HistoricalMapGenerator.forceGenerateCulturalTensorsOnly(s);
-            org.ether.society.data.HistoricalMapGenerator.generateProceduralMapsForScenario(s);
-        }).thenRun(() -> javafx.application.Platform.runLater(() -> {
-            if (btnGenerateProceduralTensorsSection != null) btnGenerateProceduralTensorsSection.setDisable(false);
-            int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
-            for (int i = 0; i < dims; i++) {
-                String b64 = s.getCustomTensorMapBase64(i);
-                if (b64 != null && !b64.isBlank()) {
-                    Image img = ImageMapLoader.base64PngToImage(b64);
-                    if (img != null) {
-                        customTensorImages.put(i, img);
-                    }
-                }
-                updateTensorFileLabel(i);
-            }
-            context.notifyParamChange();
-            context.drawPreview();
-        }));
+        ScenarioCulturalStateIOHelper.generateProceduralCulturalTensors(
+                this, context, btnGenerateProceduralTensorsSection, tensorFileLabels);
     }
 
     public void applyScenario(Scenario s) {
-        if (s == null) return;
-        if (s.getCultureVectorDimensions() > 0 && cultureVectorDimSpinner != null && cultureVectorDimSpinner.getValueFactory() != null) {
-            cultureVectorDimSpinner.getValueFactory().setValue(s.getCultureVectorDimensions());
-        }
-        if (s.getCulturalDiffusionRate() > 0 && culturalDiffusionRateSpinner != null && culturalDiffusionRateSpinner.getValueFactory() != null) {
-            culturalDiffusionRateSpinner.getValueFactory().setValue(s.getCulturalDiffusionRate());
-        }
-        if (s.getCulturalMutationRate() > 0 && culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValueFactory() != null) {
-            culturalMutationRateSpinner.getValueFactory().setValue(s.getCulturalMutationRate());
-        }
-        int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
-        customTensorImages.clear();
-        customTensorNames.clear();
-        if (s.getCustomTensorNames() != null) {
-            customTensorNames.putAll(s.getCustomTensorNames());
-        }
-
-        for (int i = 0; i < dims; i++) {
-            String b64 = s.getCustomTensorMapBase64(i);
-            if (b64 != null && !b64.isBlank()) {
-                Image img = ImageMapLoader.base64PngToImage(b64);
-                if (img != null) {
-                    customTensorImages.put(i, img);
-                }
-            }
-        }
-
-        rebuildCulturalTensorSubBlocks(dims);
-
-        if (s.getTensorProceduralModes() != null) {
-            for (int i = 0; i < Math.min(dims, s.getTensorProceduralModes().size()); i++) {
-                boolean isProc = s.getTensorProceduralModes().get(i);
-                if (isProc && tensorProcRadios.containsKey(i)) {
-                    tensorProcRadios.get(i).setSelected(true);
-                } else if (!isProc && tensorImportRadios.containsKey(i)) {
-                    tensorImportRadios.get(i).setSelected(true);
-                }
-            }
-        }
-
-        if (s.getTensorSeeds() != null) {
-            for (var entry : s.getTensorSeeds().entrySet()) {
-                if (tensorSeedFields.containsKey(entry.getKey())) {
-                    tensorSeedFields.get(entry.getKey()).setText(String.valueOf(entry.getValue()));
-                }
-            }
-        }
-
-        if (s.getTensorProceduralParameters() != null) {
-            for (var entry : s.getTensorProceduralParameters().entrySet()) {
-                int tIdx = entry.getKey();
-                var pMap = entry.getValue();
-                if (pMap == null) continue;
-                ScenarioCulturalTensorCatalog.TensorParamDescriptor d1 = getTensorParam1Descriptor(tIdx);
-                ScenarioCulturalTensorCatalog.TensorParamDescriptor d2 = getTensorParam2Descriptor(tIdx);
-                ScenarioCulturalTensorCatalog.TensorParamDescriptor d3 = getTensorParam3Descriptor(tIdx);
-                if (pMap.containsKey(d1.labelKey) && tensorParam1Sliders.containsKey(tIdx)) {
-                    tensorParam1Sliders.get(tIdx).setValue(pMap.get(d1.labelKey));
-                }
-                if (pMap.containsKey(d2.labelKey) && tensorParam2Sliders.containsKey(tIdx)) {
-                    tensorParam2Sliders.get(tIdx).setValue(pMap.get(d2.labelKey));
-                }
-                if (pMap.containsKey(d3.labelKey) && tensorParam3Sliders.containsKey(tIdx)) {
-                    tensorParam3Sliders.get(tIdx).setValue(pMap.get(d3.labelKey));
-                }
-            }
-        }
-
-        for (int i = 0; i < dims; i++) {
-            updateTensorFileLabel(i);
-        }
+        ScenarioCulturalStateIOHelper.applyScenario(s, this);
     }
 
     public void exportToScenario(Scenario s) {
-        if (s == null) return;
-        int dims = cultureVectorDimSpinner != null ? cultureVectorDimSpinner.getValue() : 9;
-        s.setCultureVectorDimensions(dims);
-        s.setCustomTensorNames(new HashMap<>(customTensorNames));
-        if (culturalDiffusionRateSpinner != null) {
-            s.setCulturalDiffusionRate(culturalDiffusionRateSpinner.getValue());
-        }
-        if (culturalMutationRateSpinner != null) {
-            s.setCulturalMutationRate(culturalMutationRateSpinner.getValue());
-        }
-        Map<Integer, Long> tSeeds = new HashMap<>();
-        Map<Integer, Map<String, Double>> tProcParams = new HashMap<>();
-
-        for (int i = 0; i < dims; i++) {
-            if (customTensorImages.get(i) != null) {
-                s.setCustomTensorMapBase64(i, ImageMapLoader.imageToBase64Png(customTensorImages.get(i)));
-            }
-            boolean isProc = tensorProcRadios.containsKey(i) && tensorProcRadios.get(i).isSelected();
-            while (s.getTensorProceduralModes().size() <= i) {
-                s.getTensorProceduralModes().add(true);
-            }
-            s.getTensorProceduralModes().set(i, isProc);
-
-            if (tensorSeedFields.containsKey(i) && tensorSeedFields.get(i) != null) {
-                try {
-                    tSeeds.put(i, Long.parseLong(tensorSeedFields.get(i).getText().trim()));
-                } catch (NumberFormatException ignored) {
-                    try {
-                        tSeeds.put(i, Long.parseLong(getDefaultTensorSeed(i)));
-                    } catch (Exception e) {
-                        tSeeds.put(i, 12345L);
-                    }
-                }
-            } else {
-                try {
-                    tSeeds.put(i, Long.parseLong(getDefaultTensorSeed(i)));
-                } catch (Exception e) {
-                    tSeeds.put(i, 12345L);
-                }
-            }
-
-            Map<String, Double> pMap = new HashMap<>();
-            ScenarioCulturalTensorCatalog.TensorParamDescriptor d1 = getTensorParam1Descriptor(i);
-            ScenarioCulturalTensorCatalog.TensorParamDescriptor d2 = getTensorParam2Descriptor(i);
-            ScenarioCulturalTensorCatalog.TensorParamDescriptor d3 = getTensorParam3Descriptor(i);
-            if (tensorParam1Sliders.containsKey(i) && tensorParam1Sliders.get(i) != null) {
-                pMap.put(d1.labelKey, tensorParam1Sliders.get(i).getValue());
-            }
-            if (tensorParam2Sliders.containsKey(i) && tensorParam2Sliders.get(i) != null) {
-                pMap.put(d2.labelKey, tensorParam2Sliders.get(i).getValue());
-            }
-            if (tensorParam3Sliders.containsKey(i) && tensorParam3Sliders.get(i) != null) {
-                pMap.put(d3.labelKey, tensorParam3Sliders.get(i).getValue());
-            }
-            tProcParams.put(i, pMap);
-        }
-        s.setTensorSeeds(tSeeds);
-        s.setTensorProceduralParameters(tProcParams);
+        ScenarioCulturalStateIOHelper.exportToScenario(s, this);
     }
 
     public int getCultureVectorDimensions() {
@@ -765,88 +421,31 @@ public class ScenarioCulturalSectionBuilder {
         return culturalMutationRateSpinner != null && culturalMutationRateSpinner.getValue() != null ? culturalMutationRateSpinner.getValue() : 0.02;
     }
 
-    public Image getCustomTensorImage(int index) {
-        return customTensorImages.get(index);
-    }
-
-    public boolean isTensorImportActive(int index) {
-        return tensorImportRadios.containsKey(index) && tensorImportRadios.get(index).isSelected();
-    }
-
-    public double getTensorParam1(int index) {
-        return tensorParam1Sliders.containsKey(index) ? tensorParam1Sliders.get(index).getValue() : 1.0;
-    }
-
-    public double getTensorParam2(int index) {
-        return tensorParam2Sliders.containsKey(index) ? tensorParam2Sliders.get(index).getValue() : 1.0;
-    }
-
-    public double getTensorParam3(int index) {
-        return tensorParam3Sliders.containsKey(index) ? tensorParam3Sliders.get(index).getValue() : 1.0;
-    }
+    public Image getCustomTensorImage(int index) { return customTensorImages.get(index); }
+    public boolean isTensorImportActive(int index) { return tensorImportRadios.containsKey(index) && tensorImportRadios.get(index).isSelected(); }
+    public double getTensorParam1(int index) { return tensorParam1Sliders.containsKey(index) ? tensorParam1Sliders.get(index).getValue() : 1.0; }
+    public double getTensorParam2(int index) { return tensorParam2Sliders.containsKey(index) ? tensorParam2Sliders.get(index).getValue() : 1.0; }
+    public double getTensorParam3(int index) { return tensorParam3Sliders.containsKey(index) ? tensorParam3Sliders.get(index).getValue() : 1.0; }
 
     public long getTensorSeed(int index) {
         if (tensorSeedFields.containsKey(index)) {
-            try {
-                return Long.parseLong(tensorSeedFields.get(index).getText().trim());
-            } catch (Exception ignored) {}
+            try { return Long.parseLong(tensorSeedFields.get(index).getText().trim()); } catch (Exception ignored) {}
         }
         return 11235L + index * 11111L;
     }
 
-    public Spinner<Integer> getCultureVectorDimSpinner() {
-        return cultureVectorDimSpinner;
-    }
-
-    public Spinner<Double> getCulturalDiffusionRateSpinner() {
-        return culturalDiffusionRateSpinner;
-    }
-
-    public Spinner<Double> getCulturalMutationRateSpinner() {
-        return culturalMutationRateSpinner;
-    }
-
-    public TextField getCultSeedField() {
-        return cultSeedField;
-    }
-
-    public Map<Integer, Image> getCustomTensorImages() {
-        return customTensorImages;
-    }
-
-    public Map<Integer, String> getCustomTensorNames() {
-        return customTensorNames;
-    }
-
-    public Map<Integer, RadioButton> getTensorProcRadios() {
-        return tensorProcRadios;
-    }
-
-    public Map<Integer, RadioButton> getTensorImportRadios() {
-        return tensorImportRadios;
-    }
-
-    public Map<Integer, Slider> getTensorParam1Sliders() {
-        return tensorParam1Sliders;
-    }
-
-    public Map<Integer, Slider> getTensorParam2Sliders() {
-        return tensorParam2Sliders;
-    }
-
-    public Map<Integer, Slider> getTensorParam3Sliders() {
-        return tensorParam3Sliders;
-    }
-
-    public Map<Integer, TextField> getTensorSeedFields() {
-        return tensorSeedFields;
-    }
-
-    public Map<Integer, ComboBox<String>> getTensorSourceCombos() {
-        return tensorSourceCombos;
-    }
-
-    public Map<Integer, Button> getTensorLoadBtns() {
-        return tensorLoadBtns;
-    }
+    public Spinner<Integer> getCultureVectorDimSpinner() { return cultureVectorDimSpinner; }
+    public Spinner<Double> getCulturalDiffusionRateSpinner() { return culturalDiffusionRateSpinner; }
+    public Spinner<Double> getCulturalMutationRateSpinner() { return culturalMutationRateSpinner; }
+    public TextField getCultSeedField() { return cultSeedField; }
+    public Map<Integer, Image> getCustomTensorImages() { return customTensorImages; }
+    public Map<Integer, String> getCustomTensorNames() { return customTensorNames; }
+    public Map<Integer, RadioButton> getTensorProcRadios() { return tensorProcRadios; }
+    public Map<Integer, RadioButton> getTensorImportRadios() { return tensorImportRadios; }
+    public Map<Integer, Slider> getTensorParam1Sliders() { return tensorParam1Sliders; }
+    public Map<Integer, Slider> getTensorParam2Sliders() { return tensorParam2Sliders; }
+    public Map<Integer, Slider> getTensorParam3Sliders() { return tensorParam3Sliders; }
+    public Map<Integer, TextField> getTensorSeedFields() { return tensorSeedFields; }
+    public Map<Integer, ComboBox<String>> getTensorSourceCombos() { return tensorSourceCombos; }
+    public Map<Integer, Button> getTensorLoadBtns() { return tensorLoadBtns; }
 }

@@ -135,7 +135,7 @@ public class AutoEpochScenarioDialog extends Stage {
                 if (empty || item == null) {
                     setText("");
                 } else {
-                    setText(getLocalizedPlanetName(item));
+                    setText(AutoEpochDialogPresenter.getLocalizedPlanetName(item));
                 }
             }
         });
@@ -374,7 +374,7 @@ public class AutoEpochScenarioDialog extends Stage {
                 Button chip = new Button(label);
                 chip.getStyleClass().add("button-secondary");
                 chip.setStyle("-fx-font-size: 10px; -fx-padding: 3 8; -fx-background-radius: 12; -fx-cursor: hand;");
-                chip.setTooltip(new Tooltip(String.format(Locale.ROOT, "Initialiser %s pour l'époque %s", getLocalizedPlanetName(planet), label)));
+                chip.setTooltip(new Tooltip(String.format(Locale.ROOT, "Initialiser %s pour l'époque %s", AutoEpochDialogPresenter.getLocalizedPlanetName(planet), label)));
                 chip.setOnAction(e -> yearSpinner.getValueFactory().setValue(yr.intValue()));
                 chipsPane.getChildren().add(chip);
             }
@@ -442,12 +442,12 @@ public class AutoEpochScenarioDialog extends Stage {
                 ? fallbackSelector.getValue() 
                 : TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION;
 
-        strategyExplanationLabel.setText(getStrategyExplanation(strat));
+        strategyExplanationLabel.setText(AutoEpochDialogPresenter.getStrategyExplanation(strat));
 
         // Match description
         String milestoneDesc = isEarth 
                 ? I18n.getOrDefault("scenario.autodialog.interpolated_epoch", "Époque continue interpolée via TemporalMapTensorManager.")
-                : String.format(Locale.ROOT, "Contexte planétaire & colonisation extraterrestre pour %s (%s).", getLocalizedPlanetName(planet), formattedYear);
+                : String.format(Locale.ROOT, "Contexte planétaire & colonisation extraterrestre pour %s (%s).", AutoEpochDialogPresenter.getLocalizedPlanetName(planet), formattedYear);
 
         if (isEarth) {
             for (AutoEpochScenarioGenerator.EpochMilestone m : AutoEpochScenarioGenerator.EARTH_KEY_MILESTONES) {
@@ -463,7 +463,7 @@ public class AutoEpochScenarioDialog extends Stage {
         String rasterFormat = I18n.getOrDefault("scenario.autodialog.raster_preview", 
                 "🗺️ Onglets 1 & 2 (Cartographie & Ressources) : 25 calques résolus [%s] (%s, %d époques empiriques). Topographie, biomes, nappes & minerais.");
         rasterPreviewLabel.setText(String.format(Locale.ROOT, rasterFormat,
-                strat.getLocalizedName(), getLocalizedPlanetName(planet), availableEpochs.size()));
+                strat.getLocalizedName(), AutoEpochDialogPresenter.getLocalizedPlanetName(planet), availableEpochs.size()));
 
         long pop = AutoEpochScenarioGenerator.estimatePopulation(planet, year);
         double k0 = AutoEpochScenarioGenerator.estimateCapitalPerCapita(planet, year);
@@ -486,28 +486,4 @@ public class AutoEpochScenarioDialog extends Stage {
                 year >= 1800 ? activeLabel : disabledLabel));
     }
 
-    private String getStrategyExplanation(TemporalMapTensorManager.DataFallbackStrategy strategy) {
-        if (strategy == null) strategy = TemporalMapTensorManager.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH;
-        String note = " " + I18n.getOrDefault("scenario.autodialog.tab3_scope_note", "💡 Remarque : Ce réglage s'applique spécifiquement aux calques de l'Onglet 3 (données démographiques initiales et tenseurs culturels).");
-        return switch (strategy) {
-            case CONTINUOUS_INTERPOLATION -> I18n.getOrDefault("scenario.fallback.interpolation.desc", 
-                    "🔄 Interpolation temporelle continue (Fondu barycentrique) : Effectue un fondu progressif entre les 2 époques empiriques encadrant la date.") + note;
-            case PREVIOUS_EARLIER_EPOCH -> I18n.getOrDefault("scenario.fallback.earlier_epoch.desc", 
-                    "⏮️ Repli conservateur sur l'époque antérieure : Verrouille strictement les données sur l'époque documentée précédente. Prévient tout anachronisme technologique, institutionnel ou géopolitique.") + note;
-            case CLOSEST_ANCHOR_EPOCH -> I18n.getOrDefault("scenario.fallback.closest_anchor.desc", 
-                    "🎯 Jalon étalonné le plus proche : Aligne immédiatement l'ensemble des données sur le jalon historique ayant la distance chronologique minimale (|t - t_jalon| min).") + note;
-        };
-    }
-
-    private String getLocalizedPlanetName(String p) {
-        if (p == null) return I18n.getOrDefault("planet.map.earth", "🌍 Terre");
-        return switch (p.toLowerCase()) {
-            case "earth", "terre" -> I18n.getOrDefault("planet.map.earth", "🌍 Terre");
-            case "mars" -> I18n.getOrDefault("planet.map.mars", "🔴 Mars");
-            case "moon", "lune" -> I18n.getOrDefault("planet.map.moon", "🌕 Lune");
-            case "venus", "vénus" -> I18n.getOrDefault("planet.map.venus", "♀️ Vénus");
-            case "mercury", "mercure" -> I18n.getOrDefault("planet.map.mercury", "☿️ Mercure");
-            default -> "🪐 " + p;
-        };
-    }
 }

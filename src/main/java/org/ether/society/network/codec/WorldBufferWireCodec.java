@@ -9,15 +9,17 @@ package org.ether.society.network.codec;
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.network.EtherSecurityManager;
 
-import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Base64;
 
 /**
- * High-speed binary wire serializer for Structure-of-Arrays (SoA) WorldBuffer chunks.
- * Packs primitive contiguous arrays directly into binary ByteBuffers for zero-copy
- * network transmission across distributed cluster nodes with AES-256 GCM encryption.
+ * High-speed binary wire serializer for Structure-of-Arrays (SoA) {@link WorldBuffer} chunks.
+ * <p>
+ * Packs conserved biophysical primitive contiguous arrays directly into binary {@link ByteBuffer}s
+ * for zero-copy network transmission across distributed cluster nodes with AES-256 GCM encryption.
+ * Strictly adheres to {@code AGENTS.md} §10.1 (zero state-level {@code technologyLevel} wire payload).
+ * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -25,25 +27,24 @@ import java.util.Base64;
 public class WorldBufferWireCodec {
 
     private static final int MAGIC_HEADER = 0x45544852; // "ETHR"
-    private static final byte PROTOCOL_VERSION = 1;
+    private static final byte PROTOCOL_VERSION = 2;
 
+    /**
+     * Decoded wire chunk container with tick and spatial index slice metadata.
+     */
     public static class ChunkPayload {
-        /** Internal state: tick id (long). */
         private final long tickId;
-        /** Internal state: chunk start (int). */
         private final int chunkStart;
-        /** Internal state: chunk count (int). */
         private final int chunkCount;
         private final byte[] binaryData;
 
         /**
-         * Chunk payload.
+         * Constructs a decoded wire chunk payload.
          *
-         * @param tickId the tick id parameter (long)
-         * @param chunkStart the chunk start parameter (int)
-         * @param chunkCount the chunk count parameter (int)
-         * @param binaryData the binary data parameter (byte[])
-         * @return the resulting computation or state reference
+         * @param tickId     simulation tick identifier
+         * @param chunkStart starting cell index in the global buffer
+         * @param chunkCount number of contiguous cells encoded
+         * @param binaryData raw encoded byte slice
          */
         public ChunkPayload(long tickId, int chunkStart, int chunkCount, byte[] binaryData) {
             this.tickId = tickId;
@@ -52,34 +53,24 @@ public class WorldBufferWireCodec {
             this.binaryData = binaryData;
         }
 
-        /**
-         * Get tick id.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return simulation tick identifier */
         public long getTickId() { return tickId; }
-        /**
-         * Get chunk start.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return starting cell index */
         public int getChunkStart() { return chunkStart; }
-        /**
-         * Get chunk count.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return encoded cell count */
         public int getChunkCount() { return chunkCount; }
-        /**
-         * Get binary data.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return raw binary payload */
         public byte[] getBinaryData() { return binaryData; }
     }
 
     /**
-     * Serializes a slice of WorldBuffer [start .. start + count - 1] into a compact binary byte array.
+     * Serializes a slice of {@link WorldBuffer} {@code [start .. start + count - 1]} into a compact binary byte array.
+     *
+     * @param buffer source world buffer
+     * @param start  starting cell index
+     * @param count  number of cells to encode
+     * @param tickId current simulation tick identifier
+     * @return little-endian binary payload
      */
     public static byte[] encodeChunk(WorldBuffer buffer, int start, int count, long tickId) {
         if (buffer == null || count <= 0) return new byte[0];
@@ -87,33 +78,29 @@ public class WorldBufferWireCodec {
         int validCount = Math.min(count, buffer.getCapacity() - start);
         if (validCount <= 0) return new byte[0];
 
-        // 27 float arrays + 1 byte array + 1 long array (h3Indexes) = 117 bytes per cell
+        // 26 conserved biophysical float arrays + 1 byte array + 1 long array (h3Indexes) = 113 bytes per cell
         // Header: Magic(4) + Version(1) + Tick(8) + Start(4) + Count(4) = 21 bytes
         int headerSize = 21;
-        int bytesPerCell = 27 * Float.BYTES + Byte.BYTES + Long.BYTES;
+        int bytesPerCell = 26 * Float.BYTES + Byte.BYTES + Long.BYTES;
         int dataSize = validCount * bytesPerCell;
         ByteBuffer byteBuffer = ByteBuffer.allocate(headerSize + dataSize).order(ByteOrder.LITTLE_ENDIAN);
 
-        // Write Header
         byteBuffer.putInt(MAGIC_HEADER);
         byteBuffer.put(PROTOCOL_VERSION);
         byteBuffer.putLong(tickId);
         byteBuffer.putInt(start);
         byteBuffer.putInt(validCount);
 
-        // Write H3 Indexes
         long[] h3 = buffer.getH3Indexes();
         for (int i = 0; i < validCount; i++) {
             byteBuffer.putLong(h3 != null && (start + i) < h3.length ? h3[start + i] : 0L);
         }
 
-        // Write Biomes
         byte[] biomes = buffer.getBiomes();
         for (int i = 0; i < validCount; i++) {
             byteBuffer.put(biomes != null && (start + i) < biomes.length ? biomes[start + i] : 0);
         }
 
-        // Helper to serialize float array
         serializeFloatSlice(byteBuffer, buffer.getElevation(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getTemperature(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getRainfall(), start, validCount);
@@ -135,7 +122,6 @@ public class WorldBufferWireCodec {
         serializeFloatSlice(byteBuffer, buffer.getLifespan(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getFertility(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getGiniIndex(), start, validCount);
-        serializeFloatSlice(byteBuffer, buffer.getTechnologyLevel(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getResourceCapital(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getFluxPressure(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getLocalPrice(), start, validCount);
@@ -146,7 +132,11 @@ public class WorldBufferWireCodec {
     }
 
     /**
-     * Decodes a binary payload and writes values directly into target WorldBuffer.
+     * Decodes a binary payload and writes values directly into the target {@link WorldBuffer}.
+     *
+     * @param data         raw binary wire payload
+     * @param targetBuffer destination world buffer
+     * @return decoded chunk metadata
      */
     public static ChunkPayload decodeChunkInto(byte[] data, WorldBuffer targetBuffer) {
         if (data == null || data.length < 21) {
@@ -159,7 +149,7 @@ public class WorldBufferWireCodec {
             throw new IllegalArgumentException("Invalid magic header: " + Integer.toHexString(magic));
         }
 
-        byte version = byteBuffer.get();
+        byteBuffer.get(); // protocol version
         long tickId = byteBuffer.getLong();
         int start = byteBuffer.getInt();
         int count = byteBuffer.getInt();
@@ -200,7 +190,6 @@ public class WorldBufferWireCodec {
             deserializeFloatSlice(byteBuffer, targetBuffer.getLifespan(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getFertility(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getGiniIndex(), start, writeCount);
-            deserializeFloatSlice(byteBuffer, targetBuffer.getTechnologyLevel(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getResourceCapital(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getFluxPressure(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getLocalPrice(), start, writeCount);
@@ -212,7 +201,7 @@ public class WorldBufferWireCodec {
     }
 
     /**
-     * Encodes and encrypts chunk into Base64 string.
+     * Encodes and encrypts a chunk into a Base64 string.
      */
     public static String encodeAndEncryptChunk(WorldBuffer buffer, int start, int count, long tickId, EtherSecurityManager security) throws Exception {
         byte[] raw = encodeChunk(buffer, start, count, tickId);
@@ -221,7 +210,7 @@ public class WorldBufferWireCodec {
     }
 
     /**
-     * Decrypts and decodes chunk Base64 string into buffer.
+     * Decrypts and decodes a Base64 chunk string into the target buffer.
      */
     public static ChunkPayload decryptAndDecodeChunk(String payload, WorldBuffer targetBuffer, EtherSecurityManager security) throws Exception {
         String decrypted = (security != null) ? security.decrypt(payload) : payload;
@@ -242,4 +231,3 @@ public class WorldBufferWireCodec {
         }
     }
 }
-

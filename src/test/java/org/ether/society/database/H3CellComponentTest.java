@@ -47,7 +47,6 @@ public class H3CellComponentTest {
         cell.setLifespan(42.5);
         cell.setFertility(5.8);
         cell.setGiniIndex(0.35);
-        cell.setTechnologyLevel(2.5);
         cell.setHomininSpecies(1);
 
         DemographicState demo = cell.getDemographicState();
@@ -55,10 +54,9 @@ public class H3CellComponentTest {
         assertEquals(42.5, demo.lifespan(), 1e-4);
         assertEquals(5.8, demo.fertility(), 1e-4);
         assertEquals(0.35, demo.giniIndex(), 1e-4);
-        assertEquals(2.5, demo.technologyLevel(), 1e-4);
         assertEquals(1, demo.homininSpecies());
 
-        DemographicState updated = new DemographicState(8000, 50.0, 4.5, 0.40, 3.2, 1);
+        DemographicState updated = new DemographicState(8000, 50.0, 4.5, 0.40, 1);
         cell.setDemographicState(updated);
         assertEquals(8000, cell.getPopulation());
         assertEquals(50.0, cell.getLifespan(), 1e-4);

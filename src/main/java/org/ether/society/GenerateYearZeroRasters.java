@@ -5,6 +5,12 @@ import org.ether.society.data.SvgMapIngestor;
 import javax.imageio.ImageIO;
 import java.io.File;
 
+/**
+ * Cartographic ingestion tool that converts historical vector SVG maps (e.g., Year 0 Roman Empire) into discretized cellular raster tensors.
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
+ */
 public class GenerateYearZeroRasters {
     /**
      * Main operation.

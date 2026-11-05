@@ -48,14 +48,16 @@ public class KurzweilAcceleratingReturnsEngine {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-
-            double currentTech = cell.getTechnologyLevelOr(0.0);
-            // S-Curve Paradigm Shift Envelope: P(t) = K / (1 + exp(-beta * t))
-            double paradigmCapacity = 10.0 / (1.0 + Math.exp(-0.1 * globalKnowledgeStock));
+            int pop = cell.getPopulation();
+            double currentCap = cell.getResourceCapitalOr(0.0);
+            double capPerCapita = pop > 0 ? (currentCap / pop) : 0.0;
+            // S-Curve Paradigm Shift Envelope for physical capital infrastructure
+            double paradigmCapacity = 100_000.0 / (1.0 + Math.exp(-0.01 * globalKnowledgeStock));
 
             // Continuous logistic headroom saturation (Kurzweil 2001, Marchetti 1980)
-            double headroom = Math.max(0.0, 1.0 - currentTech / paradigmCapacity);
-            cell.setTechnologyLevel(Math.min(10.0, currentTech + dW * 0.1 * headroom));
+            double headroom = Math.max(0.0, 1.0 - capPerCapita / paradigmCapacity);
+            double dCapPerCapita = dW * 10.0 * headroom;
+            cell.setResourceCapital(currentCap + dCapPerCapita * pop);
         }
     }
 

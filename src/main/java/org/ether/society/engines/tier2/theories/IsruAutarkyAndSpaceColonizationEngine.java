@@ -1,27 +1,22 @@
 /*
  * MIT License
+ *
  * Copyright (c) 2024-2026 Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.generation.PlanetPreset;
 import org.ether.society.model.HabitatType;
+import org.ether.society.core.math.SmoothMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
- * Type B Cliodynamic Engine: ISRU Autarky, Earth Dependence & Space Colonization Dynamics.
- *
- * Models:
- * 1. In-Situ Resource Utilization (ISRU): Sintering local regolith, harvesting volatile ice and mineral veins
- *    to generate local physical capital K(x) and construction metals.
- * 2. Autarky vs Earth Supply-Chain Ratio: Evaluates the technological and economic transition from
- *    metropolitan dependency (Tsiolkovsky rocket logistics) to autonomous off-world civilization.
- * 3. Pioneer Social Cohesion (Asabiyyah boost): Extreme environmental hardship strengthens group solidarity
- *    and innovation rates among dome inhabitants.
+ * In-Situ Resource Utilization (ISRU) and Autarky Engine.
+ * Models sealed closed-loop off-world and high-frontier habitats.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -29,22 +24,14 @@ import java.util.List;
 public class IsruAutarkyAndSpaceColonizationEngine {
     private static final Logger logger = LoggerFactory.getLogger(IsruAutarkyAndSpaceColonizationEngine.class);
 
-    /**
-     * Process space colonization cliodynamics.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param preset the preset parameter (PlanetPreset)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processSpaceColonizationCliodynamics(List<H3Cell> cells, PlanetPreset preset, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    public static void processSpaceColonizationCliodynamics(List<H3Cell> cells, Object ignored, double deltaYears) {
+        processIsruAndAutarky(cells, deltaYears);
+    }
 
+    public static void processIsruAndAutarky(List<H3Cell> cells, double deltaYears) {
+        if (cells == null || cells.isEmpty()) return;
         double dt = Math.max(0.001, deltaYears);
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
@@ -54,13 +41,13 @@ public class IsruAutarkyAndSpaceColonizationEngine {
             int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double tech = cell.getTechnologyLevelOr(1.0);
             double capital = cell.getResourceCapitalOr(0.0);
             double metal = cell.getResourceMetalOr(0.0);
 
             // 1. ISRU Extraction & Transformation Rate
-            // Local mineral exploitation efficiency scales with technology level
-            double isruEfficiency = Math.clamp(0.20 + (tech * 0.15), 0.20, 2.50);
+            // Local mineral exploitation efficiency scales with capital intensity
+            double capPerCap = capital / pop;
+            double isruEfficiency = SmoothMath.smoothClamp(0.20 + (capPerCap * 0.005), 0.20, 2.50, 0.05);
             double metalYield = pop * 0.50 * isruEfficiency * dt;
             double capitalGrowth = pop * 2.0 * isruEfficiency * dt;
 
@@ -71,12 +58,6 @@ public class IsruAutarkyAndSpaceColonizationEngine {
             // Life under hostile dome conditions elevates collective mutual aid
             double workAvailable = cell.getResourceWorkOr(0.0);
             cell.setResourceWork(workAvailable + (pop * 1.10 * dt));
-
-            // 3. Technical Knowledge & Information Entropy Mitigation
-            // Advanced ECLSS monitoring accelerates local technological progress
-            if (tech < 8.0) {
-                cell.setTechnologyLevel(tech + (0.01 * dt));
-            }
         }
     }
 }

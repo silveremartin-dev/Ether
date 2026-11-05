@@ -227,7 +227,7 @@ public class HeadlessBatchRunner {
         perfConfig.setEnableParallelExecution(true);
         perfConfig.setParallelThreadCount(Math.max(1, cores));
         engine.setPerformanceConfig(perfConfig);
-        engine.setTemporalScale(H3SimulationEngine.TemporalScale.MONTHLY);
+        engine.setTemporalScale(org.ether.society.core.TemporalScale.MONTHLY);
         if (engine.getHistoryManager() != null) {
             engine.getHistoryManager().setMaxSnapshots(12);
         }

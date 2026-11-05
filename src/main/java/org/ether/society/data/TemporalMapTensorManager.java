@@ -115,68 +115,22 @@ public class TemporalMapTensorManager {
 
     /**
      * Resolves the canonical directory name for a planet (e.g. terre -> earth).
+     *
+     * @param planet raw planet identifier
+     * @return sanitized canonical planet directory name
      */
     public static String normalizePlanet(String planet) {
-        if (planet == null || planet.isBlank()) return "earth";
-        String p = planet.trim().toLowerCase();
-        // Prevent path traversal by stripping directory characters and keeping only safe identifiers
-        p = p.replaceAll("[^a-z0-9_-]", "");
-        if (p.isBlank()) return "earth";
-
-        return switch (p) {
-            case "terre", "earth", "terra", "gaia" -> "earth";
-            case "lune", "moon", "luna", "selene" -> "moon";
-            case "mars", "ares" -> "mars";
-            case "venus", "hesperos", "aphrodite" -> "venus";
-            case "mercure", "mercury", "hermes" -> "mercury";
-            default -> p;
-        };
+        return TemporalRasterInterpolator.normalizePlanet(planet);
     }
 
     /**
      * Standardizes layer name into short canonical tag (e.g. "density", "pathogen", "elevation", "coal").
+     *
+     * @param layerName raw layer name or filename
+     * @return canonical layer tag
      */
     public static String canonicalLayerTag(String layerName) {
-        if (layerName == null || layerName.isBlank()) return "elevation";
-        String base = layerName.trim().toLowerCase(Locale.ROOT);
-        if (base.startsWith("/")) base = base.substring(1);
-        if (base.contains("/")) base = base.substring(base.lastIndexOf('/') + 1);
-        if (base.endsWith(".png")) base = base.substring(0, base.length() - 4);
-        // Strip planet prefix if present
-        for (String prefix : List.of("earth_", "mars_", "moon_", "venus_", "mercury_", "terre_", "lune_", "mercure_")) {
-            if (base.startsWith(prefix)) {
-                base = base.substring(prefix.length());
-                break;
-            }
-        }
-        // Strip any leading year digits if present (e.g. 1000_density -> density)
-        if (base.matches("^-?\\d+_.+")) {
-            base = base.substring(base.indexOf('_') + 1);
-        }
-        // Canonical aliases
-        return switch (base) {
-            case "geothermal", "mantleheat", "mantle_heat" -> "geothermal";
-            case "trade", "tradenetwork", "trade_network" -> "tradenetwork";
-            case "ironcopper", "iron_copper" -> "iron_copper";
-            case "preciousmetals", "precious_metals", "preciousree", "precious_ree" -> "precious_metals";
-            case "rareearths", "rare_earths" -> "rare_earths";
-            case "aquifer", "aquifers" -> "aquifers";
-            case "he3", "helium3", "helium_3" -> "helium3";
-            case "temp", "temperature" -> "temperature";
-            case "rain", "rainfall", "precipitation" -> "precipitation";
-            case "elev", "elevation", "dem" -> "elevation";
-            case "biome", "biomes" -> "biomes";
-            case "pop", "density", "population" -> "density";
-            case "sovereignty", "borders", "empire", "polity" -> "sovereignty";
-            case "language", "isogloss", "dialects" -> "isogloss";
-            case "kinship", "clans", "family" -> "kinship";
-            case "religion", "rituals", "sacred" -> "rituals";
-            case "tech", "technology" -> "technology";
-            case "inst", "institutional", "complexity" -> "institutional";
-            case "eco", "ecological", "footprint" -> "ecological";
-            case "pathogen", "disease", "immunity" -> "pathogen";
-            default -> base;
-        };
+        return TemporalRasterInterpolator.canonicalLayerTag(layerName);
     }
 
     /**
@@ -508,97 +462,26 @@ public class TemporalMapTensorManager {
 
     /**
      * Performs linear cross-fade blending between two headless {@link BufferedImage} scalar raster maps.
-     * Uses scanline-buffered 32-bit ARGB integer arithmetic for maximum performance and zero object allocation.
      *
      * @param img0 the earlier baseline raster
      * @param img1 the later target raster
-     * @param t the interpolation factor in [0.0, 1.0]
+     * @param t    the interpolation factor in [0.0, 1.0]
      * @return the interpolated {@link BufferedImage}
      */
     public static BufferedImage interpolateBufferedImages(BufferedImage img0, BufferedImage img1, double t) {
-        t = Math.clamp(t, 0.0, 1.0);
-        int w = Math.min(img0.getWidth(), img1.getWidth());
-        int h = Math.min(img0.getHeight(), img1.getHeight());
-
-        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        int[] line0 = new int[w];
-        int[] line1 = new int[w];
-        int[] lineOut = new int[w];
-        double invT = 1.0 - t;
-
-        for (int y = 0; y < h; y++) {
-            img0.getRGB(0, y, w, 1, line0, 0, w);
-            img1.getRGB(0, y, w, 1, line1, 0, w);
-            for (int x = 0; x < w; x++) {
-                int c0 = line0[x];
-                int c1 = line1[x];
-
-                int a0 = (c0 >>> 24);
-                int r0 = (c0 >> 16) & 0xFF;
-                int g0 = (c0 >> 8) & 0xFF;
-                int b0 = c0 & 0xFF;
-
-                int a1 = (c1 >>> 24);
-                int r1 = (c1 >> 16) & 0xFF;
-                int g1 = (c1 >> 8) & 0xFF;
-                int b1 = c1 & 0xFF;
-
-                int a = Math.clamp((int) Math.round(a0 * invT + a1 * t), 0, 255);
-                int r = Math.clamp((int) Math.round(r0 * invT + r1 * t), 0, 255);
-                int g = Math.clamp((int) Math.round(g0 * invT + g1 * t), 0, 255);
-                int b = Math.clamp((int) Math.round(b0 * invT + b1 * t), 0, 255);
-
-                lineOut[x] = (a << 24) | (r << 16) | (g << 8) | b;
-            }
-            result.setRGB(0, y, w, 1, lineOut, 0, w);
-        }
-        return result;
+        return TemporalRasterInterpolator.interpolateBufferedImages(img0, img1, t);
     }
 
     /**
      * Performs linear cross-fade blending between two JavaFX {@link Image} raster maps.
-     * Uses direct integer ARGB manipulation to eliminate object allocations.
      *
      * @param img0 the earlier baseline raster
      * @param img1 the later target raster
-     * @param t the interpolation factor in [0.0, 1.0]
+     * @param t    the interpolation factor in [0.0, 1.0]
      * @return the interpolated JavaFX WritableImage
      */
     public static Image interpolateImages(Image img0, Image img1, double t) {
-        t = Math.clamp(t, 0.0, 1.0);
-        int w = (int) Math.min(img0.getWidth(), img1.getWidth());
-        int h = (int) Math.min(img0.getHeight(), img1.getHeight());
-
-        javafx.scene.image.WritableImage result = new javafx.scene.image.WritableImage(w, h);
-        javafx.scene.image.PixelReader r0 = img0.getPixelReader();
-        javafx.scene.image.PixelReader r1 = img1.getPixelReader();
-        javafx.scene.image.PixelWriter pw = result.getPixelWriter();
-        double invT = 1.0 - t;
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                int c0 = r0.getArgb(x, y);
-                int c1 = r1.getArgb(x, y);
-
-                int a0 = (c0 >>> 24);
-                int r0c = (c0 >> 16) & 0xFF;
-                int g0c = (c0 >> 8) & 0xFF;
-                int b0c = c0 & 0xFF;
-
-                int a1 = (c1 >>> 24);
-                int r1c = (c1 >> 16) & 0xFF;
-                int g1c = (c1 >> 8) & 0xFF;
-                int b1c = c1 & 0xFF;
-
-                int a = Math.clamp((int) Math.round(a0 * invT + a1 * t), 0, 255);
-                int r = Math.clamp((int) Math.round(r0c * invT + r1c * t), 0, 255);
-                int g = Math.clamp((int) Math.round(g0c * invT + g1c * t), 0, 255);
-                int b = Math.clamp((int) Math.round(b0c * invT + b1c * t), 0, 255);
-
-                pw.setArgb(x, y, (a << 24) | (r << 16) | (g << 8) | b);
-            }
-        }
-        return result;
+        return TemporalRasterInterpolator.interpolateImages(img0, img1, t);
     }
 
     /**

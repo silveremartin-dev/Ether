@@ -90,7 +90,7 @@ public final class SpatialTensorRasterRenderer {
             int y = (int) Math.round(((90.0 - lat) / 180.0) * targetH);
 
             Color col;
-            if (chLower.contains("densité") || chLower.contains("demographic") || chLower.contains("density") || chLower.contains("人口")) {
+            if (chLower.contains("densitÃ©") || chLower.contains("demographic") || chLower.contains("density") || chLower.contains("äººå£")) {
                 long pop = c.getPopulation() != null ? c.getPopulation() : 0;
                 if (pop > 0) {
                     double norm = Math.min(1.0, Math.log10(pop + 1.0) / 6.0);
@@ -98,42 +98,42 @@ public final class SpatialTensorRasterRenderer {
                 } else {
                     col = new Color(30, 41, 59);
                 }
-            } else if (chLower.contains("technologie") || chLower.contains("technology") || chLower.contains("outillage") || chLower.contains("科技")) {
+            } else if (chLower.contains("technologie") || chLower.contains("technology") || chLower.contains("outillage") || chLower.contains("ç§‘æŠ€")) {
                 double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
                 double norm = Math.min(1.0, tech / 100.0);
                 col = getTechColor(norm);
-            } else if (chLower.contains("température") || chLower.contains("temperature") || chLower.contains("climat") || chLower.contains("气温")) {
+            } else if (chLower.contains("tempÃ©rature") || chLower.contains("temperature") || chLower.contains("climat") || chLower.contains("æ°”æ¸©")) {
                 double temp = c.getTemperature() != null ? c.getTemperature() : 15.0;
                 double norm = Math.max(0.0, Math.min(1.0, (temp + 20.0) / 60.0));
                 col = getTemperatureColor(norm);
-            } else if (chLower.contains("aquifère") || chLower.contains("aquifer") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("含水层")) {
+            } else if (chLower.contains("aquifÃ¨re") || chLower.contains("aquifer") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("å«æ°´å±‚")) {
                 double aqua = c.getFreshwaterAquifer() != null ? c.getFreshwaterAquifer() : 50.0;
                 double norm = Math.max(0.0, Math.min(1.0, aqua / 100.0));
                 col = getAquiferColor(norm);
-            } else if (chLower.contains("biomasse") || chLower.contains("biomass") || chLower.contains("agricole") || chLower.contains("agriculture") || chLower.contains("农业")) {
+            } else if (chLower.contains("biomasse") || chLower.contains("biomass") || chLower.contains("agricole") || chLower.contains("agriculture") || chLower.contains("å†œä¸š")) {
                 double bio = c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0;
                 double norm = Math.max(0.0, Math.min(1.0, bio / 1000.0));
                 col = getAgricultureColor(norm);
-            } else if (chLower.contains("souveraineté") || chLower.contains("sovereignty") || chLower.contains("主权")) {
+            } else if (chLower.contains("souverainetÃ©") || chLower.contains("sovereignty") || chLower.contains("ä¸»æƒ")) {
                 long polity = (c.getLanguageGroup() != null) ? (long) Math.abs(c.getLanguageGroup().hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode()) : 0L);
                 col = getPolityColor(polity);
-            } else if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("亲属")) {
+            } else if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("äº²å±ž")) {
                 long hash = c.getLanguageGroup() != null ? (long) Math.abs((c.getLanguageGroup() + "_kin").hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode() * 31) : 0L);
                 col = getPolityColor(hash);
-            } else if (chLower.contains("rituel") || chLower.contains("ritual") || chLower.contains("croyan") || chLower.contains("belief") || chLower.contains("信仰")) {
+            } else if (chLower.contains("rituel") || chLower.contains("ritual") || chLower.contains("croyan") || chLower.contains("belief") || chLower.contains("ä¿¡ä»°")) {
                 long hash = c.getLanguageGroup() != null ? (long) Math.abs((c.getLanguageGroup() + "_rit").hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode() * 73) : 0L);
                 col = getPolityColor(hash);
-            } else if (chLower.contains("commerc") || chLower.contains("trade") || chLower.contains("route") || chLower.contains("贸易")) {
+            } else if (chLower.contains("commerc") || chLower.contains("trade") || chLower.contains("route") || chLower.contains("è´¸æ˜“")) {
                 double friction = c.getMovementFriction() != null ? c.getMovementFriction() : 1.0;
                 double norm = Math.max(0.0, Math.min(1.0, 1.0 - (friction / 5.0)));
                 col = getTechColor(norm);
-            } else if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("制度")) {
+            } else if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("åˆ¶åº¦")) {
                 double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
                 col = getTechColor(Math.min(1.0, tech / 80.0));
-            } else if (chLower.contains("écolog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("生态")) {
+            } else if (chLower.contains("Ã©colog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("ç”Ÿæ€")) {
                 double soc = c.getSoilOrganicCarbon() != null ? c.getSoilOrganicCarbon() : 50.0;
                 col = getAgricultureColor(Math.max(0.0, Math.min(1.0, soc / 100.0)));
-            } else if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("病原")) {
+            } else if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("ç—…åŽŸ")) {
                 int recovered = c.getEpidemicRecovered() != null ? c.getEpidemicRecovered() : 0;
                 double norm = Math.min(1.0, recovered / 500.0);
                 col = getDensityColor(norm);
@@ -167,8 +167,8 @@ public final class SpatialTensorRasterRenderer {
     public static BufferedImage rasterizeCellsToGrayscaleDensityImage(
             List<H3Cell> cells, BufferedImage referenceImage, int width, int height) {
         if (cells == null || cells.isEmpty()) return null;
-        int targetW = width > 0 ? width : computeOptimalRasterWidth(cells.size());
-        int targetH = height > 0 ? height : targetW / 2;
+        int targetW = width > 0 ? width : (referenceImage != null ? referenceImage.getWidth() : 2048);
+        int targetH = height > 0 ? height : (referenceImage != null ? referenceImage.getHeight() : 1024);
 
         BufferedImage img = new BufferedImage(targetW, targetH, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = img.createGraphics();
@@ -182,9 +182,25 @@ public final class SpatialTensorRasterRenderer {
             }
         }
 
-        // Estimate hexagonal cell footprint radius in equirectangular pixels
-        int r = Math.max(2, (int) Math.round(targetW / Math.sqrt(Math.max(100.0, cells.size()) * 1.6)));
-        if (r > 18) r = 18;
+        // Determine reference max luminance in the domain of interest to preserve absolute scale calibration
+        double refMax = 255.0;
+        if (referenceImage != null) {
+            int peakRef = 1;
+            for (H3Cell c : cells) {
+                if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
+                int refX = Math.clamp((int) Math.round(((c.getLongitude() + 180.0) / 360.0) * (referenceImage.getWidth() - 1)), 0, referenceImage.getWidth() - 1);
+                int refY = Math.clamp((int) Math.round(((90.0 - c.getLatitude()) / 180.0) * (referenceImage.getHeight() - 1)), 0, referenceImage.getHeight() - 1);
+                int l = referenceImage.getRGB(refX, refY) & 0xFF;
+                if (l > peakRef) peakRef = l;
+            }
+            refMax = Math.max(10.0, (double) peakRef);
+        }
+
+        // Cell radius in pixels based on geographic resolution
+        double pixelScaleKm = 40075.0 / (double) targetW;
+        double approxCellRadiusKm = Math.sqrt(Math.max(1.0, 510000000.0 / Math.max(100.0, cells.size() * 10.0)) / Math.PI);
+        int r = Math.max(1, (int) Math.round(approxCellRadiusKm / pixelScaleKm));
+        if (r > 6) r = 6;
 
         for (H3Cell c : cells) {
             if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
@@ -196,24 +212,35 @@ public final class SpatialTensorRasterRenderer {
             int x = (int) Math.round(((lng + 180.0) / 360.0) * targetW);
             int y = (int) Math.round(((90.0 - lat) / 180.0) * targetH);
 
-            int gray;
-            if (referenceImage != null) {
-                int refX = Math.clamp((int) Math.round(((lng + 180.0) / 360.0) * (referenceImage.getWidth() - 1)), 0, referenceImage.getWidth() - 1);
-                int refY = Math.clamp((int) Math.round(((90.0 - lat) / 180.0) * (referenceImage.getHeight() - 1)), 0, referenceImage.getHeight() - 1);
-                int refRgb = referenceImage.getRGB(refX, refY) & 0xFF;
-                double simLinear = (double) pop / (double) maxPop;
-                gray = Math.clamp((int) Math.round(Math.max(refRgb, simLinear * 255.0)), 2, 255);
-            } else {
-                gray = Math.clamp((int) Math.round(((double) pop / (double) maxPop) * 255.0), 2, 255);
-            }
+            double simLog = Math.log10(pop + 1.0) / Math.log10(Math.max(10.0, (double) maxPop + 1.0));
+            int gray = Math.clamp((int) Math.round(simLog * refMax), 2, 255);
 
-            // Cosmological latitude secant correction for equirectangular horizontal cell width
             double cosLat = Math.max(0.25, Math.cos(Math.toRadians(lat)));
             int rx = Math.max(r, (int) Math.round(r / cosLat));
             int ry = r;
 
-            g2.setColor(new Color(gray, gray, gray));
-            g2.fillOval(x - rx, y - ry, rx * 2, ry * 2);
+            // Draw footprint ensuring proper blending and resolution-aware rasterization
+            if (rx <= 1 && ry <= 1) {
+                if (x >= 0 && x < targetW && y >= 0 && y < targetH) {
+                    int current = img.getRGB(x, y) & 0xFF;
+                    int blend = Math.max(current, gray);
+                    img.setRGB(x, y, (blend << 16) | (blend << 8) | blend);
+                }
+            } else {
+                for (int dy = -ry; dy <= ry; dy++) {
+                    int py = y + dy;
+                    if (py < 0 || py >= targetH) continue;
+                    for (int dx = -rx; dx <= rx; dx++) {
+                        int px = x + dx;
+                        if (px < 0 || px >= targetW) continue;
+                        if ((dx * dx) * (ry * ry) + (dy * dy) * (rx * rx) <= (rx * rx * ry * ry)) {
+                            int current = img.getRGB(px, py) & 0xFF;
+                            int blend = Math.max(current, gray);
+                            img.setRGB(px, py, (blend << 16) | (blend << 8) | blend);
+                        }
+                    }
+                }
+            }
         }
         g2.dispose();
         return img;

@@ -13,7 +13,6 @@ import org.ether.society.database.components.ClimateState;
 import org.ether.society.database.components.DemographicState;
 import org.ether.society.database.components.MineralState;
 import org.ether.society.model.Biome;
-import org.ether.society.model.HabitatType;
 
 /**
  * <h1>H3Cell</h1>
@@ -25,12 +24,13 @@ import org.ether.society.model.HabitatType;
  * <p>
  * Analytical equations (movement friction, dynamic surface albedo, 7-cohort demographic age pyramid,
  * metabolic subsistence needs, 3D surface area, and DOD component transformations) are delegated to
- * {@link H3CellPhysicsAndStateHelper}.
+ * {@link H3CellPhysicsAndStateHelper} and {@link H3CellStateSnapshotHelper}.
  * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @since 1.0.0
+ * @see H3CellSocioDemographicBase
  * @see H3CellPhysicsAndStateHelper
  */
 @Entity
@@ -40,7 +40,7 @@ import org.ether.society.model.HabitatType;
         @Index(name = "idx_lat_lng", columnList = "latitude, longitude"),
         @Index(name = "idx_biome", columnList = "biome")
 })
-public class H3Cell {
+public class H3Cell extends H3CellSocioDemographicBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -123,7 +123,7 @@ public class H3Cell {
     @Column(nullable = false) private Double accessibleAquifer = 0.0;
     @Column(nullable = false) private Double pollutionLevel = 0.0;
 
-    // --- Socio-Economic Indices ---
+    // --- Socio-Economic Indices (Primary Biophysical & Demographic Observables Only) ---
     @Column(nullable = false) private Double lifespan = 40.0;
     @Column(nullable = false) private Double fertility = 6.0;
     @Column(nullable = false) private Double giniIndex = 0.0;
@@ -136,51 +136,7 @@ public class H3Cell {
     @Column(nullable = false) private Double chokePointScore = 0.0;
     @Column(nullable = false) private Double transitTollRevenue = 0.0;
 
-    // --- Dynamic Climate & Surface Physics ---
-    @Column(nullable = false) private Double dynamicAlbedo = 0.30;
-    @Column(nullable = false) private Double iceSheetThicknessMeters = 0.0;
-    @Column(nullable = false) private Double crustalDeflectionMeters = 0.0;
-    @Column(nullable = false) private Double seaLevelOffsetMeters = 0.0;
-    @Column(nullable = false) private Boolean isCoastal = false;
-    @Column(nullable = false) private Double coastalMarineResource = 0.0;
-    @Column(nullable = false) private Boolean isPolder = false;
-    @Column(nullable = false) private Boolean hasDam = false;
-    @Column(nullable = false) private Boolean hasFloatingInfrastructure = false;
-
-    // --- Extraterrestrial Pressurized Habitats & Infrastructure ---
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
-    private HabitatType habitatType = HabitatType.NONE;
-    @Column(nullable = false) private Integer habitatTier = 0;
-    @Column(nullable = false) private Double habitatCapacity = 0.0;
-    @Column(nullable = false) private Double habitatIntegrity = 1.0;
-    @Column(nullable = false) private Double habitatEnergyKw = 0.0;
-    @Column(nullable = false) private Double habitatAgeYears = 0.0;
-
-    // --- Detailed Demographic Age Pyramid (7 Fine-Grained Cohorts) ---
-    @Column(nullable = false) private Integer pop0to4 = 0;
-    @Column(nullable = false) private Integer pop5to14 = 0;
-    @Column(nullable = false) private Integer pop15to24 = 0;
-    @Column(nullable = false) private Integer pop25to49 = 0;
-    @Column(nullable = false) private Integer pop50to64 = 0;
-    @Column(nullable = false) private Integer pop65to79 = 0;
-    @Column(nullable = false) private Integer pop80Plus = 0;
-
-    // Demographic cohort aggregations
-    @Column(nullable = false) private Integer popYouth = 0;
-    @Column(nullable = false) private Integer popAdult = 0;
-    @Column(nullable = false) private Integer popElderly = 0;
-
-    // --- Epidemiological SEIR Model State ---
-    @Column(nullable = false) private Integer epidemicInfected = 0;
-    @Column(nullable = false) private Integer epidemicRecovered = 0;
-    @Column(length = 50) private String activePathogenName = null;
-
-    // --- Linguistic & Cultural Diffusion ---
-    @Column(length = 50) private String languageGroup = "Proto-Human";
-    @Column(nullable = false) private Double linguisticDrift = 0.0;
-
-    // Analytics / Simulation State
+    // --- Transient Analytics / Simulation State ---
     @Transient private double fluxPressure = 0.0;
     @Transient @JsonIgnore private Polity owner;
     @Transient private boolean boundaryCell = false;
@@ -205,14 +161,20 @@ public class H3Cell {
         this.biome = Biome.PLAINS;
     }
 
+    @Override
+    protected void ensureAgePyramidInitialized() {
+        if (population != null && population > 0) {
+            updateAgePyramidFromObservables();
+        }
+    }
+
     // =========================================================================
     // ANALYTICAL & DOMAIN METHODS (DELEGATED TO H3CellPhysicsAndStateHelper)
     // =========================================================================
 
     /**
-     * Calculates terrain movement friction (cost-distance factor) based on elevation, biome, and technology level.
+     * Calculates terrain movement friction (cost-distance factor) based on elevation, vegetation, snow, and capital.
      *
-     * @param techLevel technology level ($1.0$ = ancient, $10.0$ = modern)
      * @return movement friction multiplier
      */
     public double calculateMovementFriction() {
@@ -224,7 +186,7 @@ public class H3Cell {
     }
 
     /**
-     * Calculates dynamic surface albedo based on snow cover, biome, and natural vegetation density.
+     * Calculates dynamic surface albedo based on snow cover, soil moisture, and natural vegetation density.
      *
      * @return updated dynamic albedo $\alpha \in [0.06, 0.85]$
      */
@@ -233,28 +195,18 @@ public class H3Cell {
     }
 
     /**
-     * Updates the detailed 7-segment age pyramid based on total population and demographic transition stage.
-     *
-     * @param techLevel technological level
+     * Updates the detailed 7-segment Lotka stable age pyramid from total population, lifespan $e_0$, and fertility.
      */
-    public void updateAgePyramidFromTotal(double techLevel) {
-        H3CellPhysicsAndStateHelper.updateAgePyramidFromTotal(this, techLevel);
+    public void updateAgePyramidFromObservables() {
+        H3CellPhysicsAndStateHelper.updateAgePyramidFromObservables(this);
     }
 
-    /**
-     * Gets the 7-segment demographic age pyramid cohorts as an array:
-     * {@code [0..4, 5..14, 15..24, 25..49, 50..64, 65..79, 80+]}.
-     *
-     * @return 7-element array containing population counts for each age cohort
-     */
-    public int[] getAgePyramid() {
-        if (pop0to4 == null && population != null && population > 0) {
-            updateAgePyramidFromTotal(technologyLevel != null && technologyLevel > 0 ? technologyLevel : 1.0);
-        }
-        return new int[] {
-            getPop0to4Or(0), getPop5to14Or(0), getPop15to24Or(0),
-            getPop25to49Or(0), getPop50to64Or(0), getPop65to79Or(0), getPop80PlusOr(0)
-        };
+    public void updateAgePyramidFromTotal() {
+        updateAgePyramidFromObservables();
+    }
+
+    public void updateAgePyramidFromTotal(double legacyTech) {
+        updateAgePyramidFromObservables();
     }
 
     /**
@@ -285,6 +237,10 @@ public class H3Cell {
         return H3CellPhysicsAndStateHelper.getEffectiveSurfaceAreaKm2(this);
     }
 
+    public double getCellAreaKm2() {
+        return getEffectiveSurfaceAreaKm2();
+    }
+
     /**
      * Creates a deep snapshot copy of this cell.
      *
@@ -298,16 +254,24 @@ public class H3Cell {
     // DATA-ORIENTED DESIGN (DOD) COMPONENT ACCESSORS
     // =========================================================================
 
+    /** @return immutable climate state snapshot */
     public ClimateState getClimateState() { return H3CellPhysicsAndStateHelper.extractClimateState(this); }
+    /** @param state climate state component to apply */
     public void setClimateState(ClimateState state) { H3CellPhysicsAndStateHelper.applyClimateState(this, state); }
 
+    /** @return immutable biomass state snapshot */
     public BiomassState getBiomassState() { return H3CellPhysicsAndStateHelper.extractBiomassState(this); }
+    /** @param state biomass state component to apply */
     public void setBiomassState(BiomassState state) { H3CellPhysicsAndStateHelper.applyBiomassState(this, state); }
 
+    /** @return immutable demographic state snapshot */
     public DemographicState getDemographicState() { return H3CellPhysicsAndStateHelper.extractDemographicState(this); }
+    /** @param state demographic state component to apply */
     public void setDemographicState(DemographicState state) { H3CellPhysicsAndStateHelper.applyDemographicState(this, state); }
 
+    /** @return immutable mineral state snapshot */
     public MineralState getMineralState() { return H3CellPhysicsAndStateHelper.extractMineralState(this); }
+    /** @param state mineral state component to apply */
     public void setMineralState(MineralState state) { H3CellPhysicsAndStateHelper.applyMineralState(this, state); }
 
     // =========================================================================
@@ -376,90 +340,64 @@ public class H3Cell {
 
     public Double getBiomassLivestock() { return biomassLivestock; }
     public void setBiomassLivestock(Double val) { this.biomassLivestock = val; }
-
     public Double getBiomassFish() { return biomassFish; }
     public void setBiomassFish(Double val) { this.biomassFish = val; }
-
     public Double getBiomassAgriculture() { return biomassAgriculture; }
     public void setBiomassAgriculture(Double val) { this.biomassAgriculture = val; }
-
     public Double getBiomassNatural() { return biomassNatural; }
     public void setBiomassNatural(Double val) { this.biomassNatural = val; }
-
     public Double getEnergyWind() { return energyWind; }
     public void setEnergyWind(Double val) { this.energyWind = val; }
-
     public Double getEnergySolar() { return energySolar; }
     public void setEnergySolar(Double val) { this.energySolar = val; }
-
     public Double getEnergyFire() { return energyFire; }
     public void setEnergyFire(Double val) { this.energyFire = val; }
-
     public Double getEnergySlaves() { return energySlaves; }
     public void setEnergySlaves(Double val) { this.energySlaves = val; }
-
     public Double getEnergyFoodConsumed() { return energyFoodConsumed; }
     public void setEnergyFoodConsumed(Double val) { this.energyFoodConsumed = val; }
-
     public Double getResourceMetal() { return resourceMetal; }
     public void setResourceMetal(Double val) { this.resourceMetal = val; }
-
     public Double getResourcePreciousMetal() { return resourcePreciousMetal; }
     public void setResourcePreciousMetal(Double val) { this.resourcePreciousMetal = val; }
-
     public Double getSoilOrganicCarbon() { return soilOrganicCarbon; }
     public void setSoilOrganicCarbon(Double val) { this.soilOrganicCarbon = val; }
-
     public Double getSoilSalinity() { return soilSalinity != null ? soilSalinity : 0.0; }
     public void setSoilSalinity(Double val) { this.soilSalinity = val != null ? val : 0.0; }
-
     public Double getResourceCoal() { return resourceCoal != null ? resourceCoal : 0.0; }
     public void setResourceCoal(Double val) { this.resourceCoal = val != null ? Math.max(0.0, val) : 0.0; }
-
     public Double getResourceOil() { return resourceOil != null ? resourceOil : 0.0; }
     public void setResourceOil(Double val) { this.resourceOil = val != null ? Math.max(0.0, val) : 0.0; }
-
     public Double getResourceGas() { return resourceGas != null ? resourceGas : 0.0; }
     public void setResourceGas(Double val) { this.resourceGas = val != null ? Math.max(0.0, val) : 0.0; }
-
     public Double getResourceUranium() { return resourceUranium != null ? resourceUranium : 0.0; }
     public void setResourceUranium(Double val) { this.resourceUranium = val != null ? Math.max(0.0, val) : 0.0; }
-
     public Double getResourceRareEarths() { return resourceRareEarths != null ? resourceRareEarths : 0.0; }
     public void setResourceRareEarths(Double val) { this.resourceRareEarths = val != null ? Math.max(0.0, val) : 0.0; }
-
     public Double getMantleHeatFlow() { return mantleHeatFlow; }
     public void setMantleHeatFlow(Double val) { this.mantleHeatFlow = val; }
-
     public Double getFreshwaterAquifer() { return freshwaterAquifer; }
     public void setFreshwaterAquifer(Double val) { this.freshwaterAquifer = val; }
-
     public Double getAccessibleAquifer() { return accessibleAquifer; }
     public void setAccessibleAquifer(Double accessibleAquifer) { this.accessibleAquifer = accessibleAquifer; }
-
     public Double getPollutionLevel() { return pollutionLevel; }
     public void setPollutionLevel(Double pollutionLevel) { this.pollutionLevel = pollutionLevel; }
-
     public Double getResourceClay() { return resourceClay; }
     public void setResourceClay(Double val) { this.resourceClay = val; }
-
     public Double getResourceWork() { return resourceWork; }
     public void setResourceWork(Double val) { this.resourceWork = val; }
-
     public Double getResourceCapital() { return resourceCapital; }
     public void setResourceCapital(Double val) { this.resourceCapital = val; }
-
     public Double getLifespan() { return lifespan; }
     public void setLifespan(Double val) { this.lifespan = val; }
-
     public Double getFertility() { return fertility; }
     public void setFertility(Double val) { this.fertility = val; }
-
     public Double getGiniIndex() { return giniIndex; }
     public void setGiniIndex(Double val) { this.giniIndex = val; }
 
-    public Double getTechnologyLevel() { return technologyLevel; }
-    public void setTechnologyLevel(Double val) { this.technologyLevel = val; }
+    public Double getTechnologyLevel() { return technologyLevel != null ? technologyLevel : 0.0; }
+    public void setTechnologyLevel(Double val) { this.technologyLevel = val != null ? val : 0.0; }
+    public void setTechnologyLevel(double val) { this.technologyLevel = val; }
 
     public Integer getHomininSpecies() { return homininSpecies != null ? homininSpecies : 1; }
     public void setHomininSpecies(Integer val) { this.homininSpecies = val != null ? val : 1; }
@@ -479,111 +417,6 @@ public class H3Cell {
     public void setTransitTollRevenue(Double transitTollRevenue) {
         this.transitTollRevenue = transitTollRevenue != null ? Math.max(0.0, transitTollRevenue) : 0.0;
     }
-
-    public Integer getPopYouth() {
-        if (popYouth == null && population != null && population > 0) {
-            updateAgePyramidFromTotal(technologyLevel != null && technologyLevel > 0 ? technologyLevel : 1.0);
-        }
-        return popYouth;
-    }
-    public void setPopYouth(Integer popYouth) { this.popYouth = popYouth; }
-
-    public Integer getPopAdult() {
-        if (popAdult == null && population != null && population > 0) {
-            updateAgePyramidFromTotal(technologyLevel != null && technologyLevel > 0 ? technologyLevel : 1.0);
-        }
-        return popAdult;
-    }
-    public void setPopAdult(Integer popAdult) { this.popAdult = popAdult; }
-
-    public Integer getPopElderly() {
-        if (popElderly == null && population != null && population > 0) {
-            updateAgePyramidFromTotal(technologyLevel != null && technologyLevel > 0 ? technologyLevel : 1.0);
-        }
-        return popElderly;
-    }
-    public void setPopElderly(Integer popElderly) { this.popElderly = popElderly; }
-
-    public Double getDynamicAlbedo() { return dynamicAlbedo; }
-    public void setDynamicAlbedo(Double dynamicAlbedo) { this.dynamicAlbedo = dynamicAlbedo; }
-
-    public Integer getPop0to4() { return pop0to4; }
-    public void setPop0to4(Integer val) { this.pop0to4 = val; }
-
-    public Integer getPop5to14() { return pop5to14; }
-    public void setPop5to14(Integer val) { this.pop5to14 = val; }
-
-    public Integer getPop15to24() { return pop15to24; }
-    public void setPop15to24(Integer val) { this.pop15to24 = val; }
-
-    public Integer getPop25to49() { return pop25to49; }
-    public void setPop25to49(Integer val) { this.pop25to49 = val; }
-
-    public Integer getPop50to64() { return pop50to64; }
-    public void setPop50to64(Integer val) { this.pop50to64 = val; }
-
-    public Integer getPop65to79() { return pop65to79; }
-    public void setPop65to79(Integer val) { this.pop65to79 = val; }
-
-    public Integer getPop80Plus() { return pop80Plus; }
-    public void setPop80Plus(Integer val) { this.pop80Plus = val; }
-
-    public Integer getEpidemicInfected() { return epidemicInfected; }
-    public void setEpidemicInfected(Integer val) { this.epidemicInfected = val; }
-
-    public Integer getEpidemicRecovered() { return epidemicRecovered; }
-    public void setEpidemicRecovered(Integer val) { this.epidemicRecovered = val; }
-
-    public String getActivePathogenName() { return activePathogenName; }
-    public void setActivePathogenName(String name) { this.activePathogenName = name; }
-
-    public String getLanguageGroup() { return languageGroup; }
-    public void setLanguageGroup(String lang) { this.languageGroup = lang; }
-
-    public Double getLinguisticDrift() { return linguisticDrift; }
-    public void setLinguisticDrift(Double drift) { this.linguisticDrift = drift; }
-
-    public Double getIceSheetThicknessMeters() { return iceSheetThicknessMeters != null ? iceSheetThicknessMeters : 0.0; }
-    public void setIceSheetThicknessMeters(Double iceSheetThicknessMeters) { this.iceSheetThicknessMeters = iceSheetThicknessMeters; }
-
-    public Double getCrustalDeflectionMeters() { return crustalDeflectionMeters != null ? crustalDeflectionMeters : 0.0; }
-    public void setCrustalDeflectionMeters(Double crustalDeflectionMeters) { this.crustalDeflectionMeters = crustalDeflectionMeters; }
-
-    public Double getSeaLevelOffsetMeters() { return seaLevelOffsetMeters != null ? seaLevelOffsetMeters : 0.0; }
-    public void setSeaLevelOffsetMeters(Double seaLevelOffsetMeters) { this.seaLevelOffsetMeters = seaLevelOffsetMeters; }
-
-    public Boolean getIsCoastal() { return isCoastal != null ? isCoastal : false; }
-    public void setIsCoastal(Boolean isCoastal) { this.isCoastal = isCoastal; }
-
-    public Double getCoastalMarineResource() { return coastalMarineResource != null ? coastalMarineResource : 0.0; }
-    public void setCoastalMarineResource(Double coastalMarineResource) { this.coastalMarineResource = coastalMarineResource; }
-
-    public Boolean getIsPolder() { return isPolder != null ? isPolder : false; }
-    public void setIsPolder(Boolean isPolder) { this.isPolder = isPolder; }
-
-    public Boolean getHasDam() { return hasDam != null ? hasDam : false; }
-    public void setHasDam(Boolean hasDam) { this.hasDam = hasDam; }
-
-    public Boolean getHasFloatingInfrastructure() { return hasFloatingInfrastructure != null ? hasFloatingInfrastructure : false; }
-    public void setHasFloatingInfrastructure(Boolean hasFloatingInfrastructure) { this.hasFloatingInfrastructure = hasFloatingInfrastructure; }
-
-    public HabitatType getHabitatType() { return habitatType != null ? habitatType : HabitatType.NONE; }
-    public void setHabitatType(HabitatType habitatType) { this.habitatType = habitatType != null ? habitatType : HabitatType.NONE; }
-
-    public Integer getHabitatTier() { return habitatTier != null ? habitatTier : 0; }
-    public void setHabitatTier(Integer habitatTier) { this.habitatTier = habitatTier != null ? habitatTier : 0; }
-
-    public Double getHabitatCapacity() { return habitatCapacity != null ? habitatCapacity : 0.0; }
-    public void setHabitatCapacity(Double habitatCapacity) { this.habitatCapacity = habitatCapacity != null ? Math.max(0.0, habitatCapacity) : 0.0; }
-
-    public Double getHabitatIntegrity() { return habitatIntegrity != null ? habitatIntegrity : 1.0; }
-    public void setHabitatIntegrity(Double habitatIntegrity) { this.habitatIntegrity = habitatIntegrity != null ? Math.clamp(habitatIntegrity, 0.0, 1.0) : 1.0; }
-
-    public Double getHabitatEnergyKw() { return habitatEnergyKw != null ? habitatEnergyKw : 0.0; }
-    public void setHabitatEnergyKw(Double habitatEnergyKw) { this.habitatEnergyKw = habitatEnergyKw != null ? Math.max(0.0, habitatEnergyKw) : 0.0; }
-
-    public Double getHabitatAgeYears() { return habitatAgeYears != null ? habitatAgeYears : 0.0; }
-    public void setHabitatAgeYears(Double habitatAgeYears) { this.habitatAgeYears = habitatAgeYears != null ? Math.max(0.0, habitatAgeYears) : 0.0; }
 
     // =========================================================================
     // PRIMITIVE-SAFE UNBOXING ACCESSORS (ZERO-OVERHEAD HOT-PATH GETTERS)
@@ -632,28 +465,5 @@ public class H3Cell {
     public double getMovementFrictionOr(double defaultValue) { return movementFriction != null ? movementFriction : defaultValue; }
     public double getChokePointScoreOr(double defaultValue) { return chokePointScore != null ? chokePointScore : defaultValue; }
     public double getTransitTollRevenueOr(double defaultValue) { return transitTollRevenue != null ? transitTollRevenue : defaultValue; }
-    public double getDynamicAlbedoOr(double defaultValue) { return dynamicAlbedo != null ? dynamicAlbedo : defaultValue; }
-    public double getIceSheetThicknessMetersOr(double defaultValue) { return iceSheetThicknessMeters != null ? iceSheetThicknessMeters : defaultValue; }
-    public double getCrustalDeflectionMetersOr(double defaultValue) { return crustalDeflectionMeters != null ? crustalDeflectionMeters : defaultValue; }
-    public double getSeaLevelOffsetMetersOr(double defaultValue) { return seaLevelOffsetMeters != null ? seaLevelOffsetMeters : defaultValue; }
-    public double getCoastalMarineResourceOr(double defaultValue) { return coastalMarineResource != null ? coastalMarineResource : defaultValue; }
-    public double getHabitatCapacityOr(double defaultValue) { return habitatCapacity != null ? habitatCapacity : defaultValue; }
-    public double getHabitatIntegrityOr(double defaultValue) { return habitatIntegrity != null ? habitatIntegrity : defaultValue; }
-    public double getHabitatEnergyKwOr(double defaultValue) { return habitatEnergyKw != null ? habitatEnergyKw : defaultValue; }
-    public double getHabitatAgeYearsOr(double defaultValue) { return habitatAgeYears != null ? habitatAgeYears : defaultValue; }
-    public double getLinguisticDriftOr(double defaultValue) { return linguisticDrift != null ? linguisticDrift : defaultValue; }
     public int getHomininSpeciesOr(int defaultValue) { return homininSpecies != null ? homininSpecies : defaultValue; }
-    public int getHabitatTierOr(int defaultValue) { return habitatTier != null ? habitatTier : defaultValue; }
-    public int getPop0to4Or(int defaultValue) { return pop0to4 != null ? pop0to4 : defaultValue; }
-    public int getPop5to14Or(int defaultValue) { return pop5to14 != null ? pop5to14 : defaultValue; }
-    public int getPop15to24Or(int defaultValue) { return pop15to24 != null ? pop15to24 : defaultValue; }
-    public int getPop25to49Or(int defaultValue) { return pop25to49 != null ? pop25to49 : defaultValue; }
-    public int getPop50to64Or(int defaultValue) { return pop50to64 != null ? pop50to64 : defaultValue; }
-    public int getPop65to79Or(int defaultValue) { return pop65to79 != null ? pop65to79 : defaultValue; }
-    public int getPop80PlusOr(int defaultValue) { return pop80Plus != null ? pop80Plus : defaultValue; }
-    public int getPopYouthOr(int defaultValue) { return popYouth != null ? popYouth : defaultValue; }
-    public int getPopAdultOr(int defaultValue) { return popAdult != null ? popAdult : defaultValue; }
-    public int getPopElderlyOr(int defaultValue) { return popElderly != null ? popElderly : defaultValue; }
-    public int getEpidemicInfectedOr(int defaultValue) { return epidemicInfected != null ? epidemicInfected : defaultValue; }
-    public int getEpidemicRecoveredOr(int defaultValue) { return epidemicRecovered != null ? epidemicRecovered : defaultValue; }
 }

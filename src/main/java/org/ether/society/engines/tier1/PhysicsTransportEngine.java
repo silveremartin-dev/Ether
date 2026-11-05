@@ -6,6 +6,7 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
@@ -14,10 +15,12 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Mechanical Work & Hydrodynamic Transport Engine.
- * Replaces abstract gold/trade costs with fundamental Mechanical Work (W = F_friction * distance):
- * 1. <b>Hydrodynamic Fluid Friction (Î¼_water â‰ˆ 0.001)</b>: Extremely low transport work for maritime & river routes.
- * 2. <b>Terrestrial Coulomb Friction (Î¼_land â‰ˆ 0.05 - 0.25)</b>: High caloric expenditure for overland pack animals & foot transport.
+ * Mechanical Work &amp; Hydrodynamic Transport Engine.
+ * <p>
+ * Models mechanical freight work $W = \mu_{\text{eff}} \, m \, g \, d$ ($\text{J}/\text{kg}\cdot\text{km}$)
+ * as a smooth ($C^\infty$) continuous function of bathymetry/elevation, aridity, and standing canopy density
+ * rather than discrete {@code switch(biome)} jumps ({@code AGENTS.md} §3, §10.2).
+ * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -26,47 +29,49 @@ public class PhysicsTransportEngine {
     private static final Logger logger = LoggerFactory.getLogger(PhysicsTransportEngine.class);
 
     /**
-     * Calculates the mechanical work (Joules per kg-km) required to transport cargo across a cell.
+     * Calculates the mechanical work ($\text{J}/\text{kg}\cdot\text{km}$) required to transport cargo across a cell
+     * from continuous physical terrain observables (elevation, precipitation, canopy biomass).
      *
      * @param cell H3 terrain cell
-     * @return Energy expenditure in Joules per kg per kilometer
+     * @return mechanical energy expenditure in Joules per kg per kilometer
      */
     public static double calculateTransportWorkJoules(H3Cell cell) {
-// Numerical integration step for PhysicsTransportEngine - verifies boundary conservation and updates local thermodynamic state
         if (cell == null) return 1000.0;
 
         Biome biome = cell.getBiome();
-        double frictionCoeff;
+        double elev = cell.getElevationOr(0.0);
+        boolean isWaterBody = (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.LAKE);
 
-        if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH) {
-            frictionCoeff = 0.001; // Hydrodynamic drag coefficient
-        } else if (biome == Biome.PLAINS) {
-            frictionCoeff = 0.05;  // Low rolling friction
-        } else if (biome == Biome.HILLS || biome == Biome.FOREST) {
-            frictionCoeff = 0.12;  // Moderate slope friction
-        } else {
-            frictionCoeff = 0.25;  // High mountain/desert friction
-        }
+        double landFraction = isWaterBody ? 0.0 : SmoothMath.sigmoid(elev, 2.0, 5.0);
+        // Hydrodynamic fluid drag mu_water ~ 0.001
+        double waterFriction = 0.001;
 
-        double gravity = 9.81;
-        double distanceMeters = 1000.0;
+        // Continuous terrestrial Coulomb + topographic slope + sand/canopy impedance
+        double posElev = SmoothMath.softplus(elev, 0.05);
+        double slopeImpedance = 0.16 * Math.tanh(posElev / 1600.0);
+        double rain = cell.getRainfallOr(500.0);
+        // Loose dune sand impedance in hyper-arid zones (< 180 mm/yr)
+        double duneImpedance = 0.10 * (1.0 - SmoothMath.sigmoid(rain, 180.0, 50.0));
+        // Dense forest/jungle understory impedance
+        double woodBio = cell.getWoodResourceOr(0.0) + cell.getBiomassNaturalOr(0.0) * 0.2;
+        double canopyImpedance = 0.06 * Math.tanh(woodBio / 2500.0);
 
-        // Work W = Î¼ * m * g * d (in Joules/kg)
-        return frictionCoeff * gravity * distanceMeters;
+        double landFriction = 0.05 + slopeImpedance + duneImpedance + canopyImpedance;
+        double effectiveFriction = waterFriction + landFraction * (landFriction - waterFriction);
+
+        return effectiveFriction * 9.81 * 1000.0;
     }
 
-    /**
-     * Executes one transport work evaluation step across cells using default monthly step.
-     */
+    /** Executes one monthly transport work evaluation step across cells. */
     public static void processPhysicsTransport(List<H3Cell> cells) {
         processPhysicsTransport(cells, 1.0 / 12.0);
     }
 
     /**
-     * Executes transport work evaluation step across cells scaling cargo by dtYears and deducting energy.
+     * Executes transport work evaluation step across cells, scaling cargo mass by {@code dtYears}
+     * and deducting mechanical work from cellular energetic labor capacity.
      */
     public static void processPhysicsTransport(List<H3Cell> cells, double dtYears) {
-// Numerical integration step for PhysicsTransportEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
         double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 
@@ -78,16 +83,13 @@ public class PhysicsTransportEngine {
             int pop = cell.getPopulationOr(0);
             if (pop > 0) {
                 double workPerKgKm = calculateTransportWorkJoules(cell);
-                // 2 kg cargo per person per month scaled by dt
                 double cargoMassKg = pop * 2.0 * dtMonthlyRatio;
                 double cellWorkJoules = workPerKgKm * cargoMassKg;
                 totalWorkExpendedJoules += cellWorkJoules;
                 activeTransportCells++;
 
-                // Deduct mechanical transport work in GJ from cell energetic labor capacity
                 double cellWorkGJ = cellWorkJoules / 1.0e9;
-                double curWork = cell.getResourceWorkOr(0.0);
-                cell.setResourceWork(Math.max(0.0, curWork - cellWorkGJ));
+                cell.setResourceWork(Math.max(0.0, cell.getResourceWorkOr(0.0) - cellWorkGJ));
             }
         }
 
@@ -97,5 +99,3 @@ public class PhysicsTransportEngine {
         }
     }
 }
-
-

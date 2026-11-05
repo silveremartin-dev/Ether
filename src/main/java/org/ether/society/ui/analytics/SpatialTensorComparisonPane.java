@@ -6,51 +6,31 @@
  */
 package org.ether.society.ui.analytics;
 
-import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Cursor;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Popup;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.ether.society.analytics.MapComparisonMetrics;
 import org.ether.society.analytics.SimulationRunRecord;
-import org.ether.society.data.HistoricalMapGenerator;
-import org.ether.society.database.H3Cell;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
 import org.ether.society.ui.export.ComparativeAnalyticsExporter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 import static org.ether.society.ui.analytics.SpatialTensorDiskCatalog.RASTER_IMAGE_CACHE;
 
 /**
- * 2D Spatial Tensor & Cartographic Comparison Pane.
+ * 2D Spatial Tensor &amp; Cartographic Comparison Pane.
  *
  * <p>Provides side-by-side raster visualization, discrepancy heatmapping \(\Delta(A - B)\),
  * chronological timeline scrubbing with interactive playback, multi-channel physical and
@@ -62,49 +42,40 @@ import static org.ether.society.ui.analytics.SpatialTensorDiskCatalog.RASTER_IMA
  */
 public class SpatialTensorComparisonPane extends VBox {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpatialTensorComparisonPane.class);
-
     private final Function<ScenarioSelectableItem, SimulationRunRecord> runResolver;
 
-    // UI Components
-    private Label channelLabel;
-    private ComboBox<String> spatialChannelCombo;
-    private Label scenarioSelectLabelA;
-    private ComboBox<ScenarioSelectableItem> comboScenarioA;
-    private Label scenarioSelectLabelB;
-    private ComboBox<ScenarioSelectableItem> comboScenarioB;
+    Label channelLabel;
+    ComboBox<String> spatialChannelCombo;
+    Label scenarioSelectLabelA;
+    ComboBox<ScenarioSelectableItem> comboScenarioA;
+    Label scenarioSelectLabelB;
+    ComboBox<ScenarioSelectableItem> comboScenarioB;
 
-    private Slider dateSlider;
-    private Label currentDateLabel;
-    private Button playTimelineBtn;
-    private Button export2DZipBtn;
+    Slider dateSlider;
+    Label currentDateLabel;
+    Button playTimelineBtn;
+    Button export2DZipBtn;
 
-    private Label mapRegenStatusLabel;
-    private ProgressBar mapRegenProgress;
-    private HBox mapRegenBox;
+    Label mapRegenStatusLabel;
+    ProgressBar mapRegenProgress;
+    HBox mapRegenBox;
 
-    private ImageView mapImageViewA;
-    private ImageView mapImageViewB;
-    private ImageView mapImageViewDiff;
-    private Label mapLabelA;
-    private Label mapLabelB;
-    private Label mapLabelDiff;
+    ImageView mapImageViewA;
+    ImageView mapImageViewB;
+    ImageView mapImageViewDiff;
+    Label mapLabelA;
+    Label mapLabelB;
+    Label mapLabelDiff;
 
-    private Label legendBlue;
-    private Label legendSlate;
-    private Label legendGreen;
-    private Label legendRed;
+    Label legendBlue;
+    Label legendSlate;
+    Label legendGreen;
+    Label legendRed;
 
-    private TextArea spatialMetricsReportArea;
+    TextArea spatialMetricsReportArea;
 
-    // Hover Map Magnifier Popup
-    private final Popup hoverMapPopup = new Popup();
-    private final ImageView popupImageView = new ImageView();
-    private final Label popupTitleLabel = new Label();
-    private Timeline popupHideTimer;
-
-    // Animation & Concurrency
-    private final SpatialTensorTimelineAnimator timelineAnimator = new SpatialTensorTimelineAnimator();
+    private final SpatialTensorUIHelper uiHelper = new SpatialTensorUIHelper();
+    final SpatialTensorTimelineAnimator timelineAnimator = new SpatialTensorTimelineAnimator();
     private final AtomicLong spatialComparisonRequestId = new AtomicLong(0);
     private boolean isUpdatingTexts = false;
 
@@ -174,15 +145,12 @@ public class SpatialTensorComparisonPane extends VBox {
 
         HBox scenarioRow = new HBox(10, scenarioSelectLabelA, comboScenarioA, scenarioSelectLabelB, comboScenarioB);
         scenarioRow.setAlignment(Pos.CENTER_LEFT);
-
         HBox channelRow = new HBox(10, channelLabel, spatialChannelCombo);
         channelRow.setAlignment(Pos.CENTER_LEFT);
-
         VBox spatialControlsBox = new VBox(6, scenarioRow, channelRow);
 
         mapRegenStatusLabel = new Label("");
         mapRegenStatusLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-font-size: 11px;");
-
         mapRegenProgress = new ProgressBar(0.0);
         mapRegenProgress.setPrefWidth(220);
         mapRegenProgress.setStyle("-fx-accent: #38bdf8;");
@@ -204,71 +172,28 @@ public class SpatialTensorComparisonPane extends VBox {
         spatialBottomBox.setAlignment(Pos.CENTER_LEFT);
         spatialBottomBox.setPadding(new Insets(6, 0, 0, 0));
 
-        // 3-Map Side-by-Side Spatial Map Viewers (A, B, and Difference Heatmap)
         mapLabelA = new Label(I18n.getOrDefault("analytics.label.scenario_a_ref", "Scenario A (Reference Baseline)"));
-        mapLabelA.getStyleClass().add("label-section-header");
-        mapImageViewA = new ImageView();
-        mapImageViewA.setFitWidth(360);
-        mapImageViewA.setFitHeight(180);
-        mapImageViewA.setPreserveRatio(true);
-        mapImageViewA.getStyleClass().add("card-section");
-
-        VBox mapBoxA = new VBox(4, mapLabelA, mapImageViewA);
-        mapBoxA.setAlignment(Pos.CENTER);
+        mapImageViewA = createMapView();
+        VBox mapBoxA = createMapBox(mapLabelA, mapImageViewA);
 
         mapLabelB = new Label(I18n.getOrDefault("analytics.label.scenario_b_target", "Scenario B (Comparison Target)"));
-        mapLabelB.getStyleClass().add("label-section-header");
-        mapImageViewB = new ImageView();
-        mapImageViewB.setFitWidth(360);
-        mapImageViewB.setFitHeight(180);
-        mapImageViewB.setPreserveRatio(true);
-        mapImageViewB.getStyleClass().add("card-section");
-
-        VBox mapBoxB = new VBox(4, mapLabelB, mapImageViewB);
-        mapBoxB.setAlignment(Pos.CENTER);
+        mapImageViewB = createMapView();
+        VBox mapBoxB = createMapBox(mapLabelB, mapImageViewB);
 
         mapLabelDiff = new Label(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
-        mapLabelDiff.getStyleClass().add("label-section-header");
         mapLabelDiff.setStyle("-fx-text-fill: #f59e0b;");
-        mapImageViewDiff = new ImageView();
-        mapImageViewDiff.setFitWidth(360);
-        mapImageViewDiff.setFitHeight(180);
-        mapImageViewDiff.setPreserveRatio(true);
-        mapImageViewDiff.getStyleClass().add("card-section");
-
-        VBox mapBoxDiff = new VBox(4, mapLabelDiff, mapImageViewDiff);
-        mapBoxDiff.setAlignment(Pos.CENTER);
+        mapImageViewDiff = createMapView();
+        VBox mapBoxDiff = createMapBox(mapLabelDiff, mapImageViewDiff);
 
         HBox mapPairBox = new HBox(12, mapBoxA, mapBoxB, mapBoxDiff);
         mapPairBox.setAlignment(Pos.CENTER);
 
-        // Setup Hover Magnifier Popup
-        initHoverPopup();
-        attachHoverZoom(mapImageViewA, () -> mapLabelA.getText());
-        attachHoverZoom(mapImageViewB, () -> mapLabelB.getText());
-        attachHoverZoom(mapImageViewDiff, () -> mapLabelDiff.getText());
+        uiHelper.attachHoverZoom(mapImageViewA, () -> mapLabelA.getText());
+        uiHelper.attachHoverZoom(mapImageViewB, () -> mapLabelB.getText());
+        uiHelper.attachHoverZoom(mapImageViewDiff, () -> mapLabelDiff.getText());
 
-        // Discrepancy Heatmap Color Scale Legend
-        HBox discrepancyLegendBox = new HBox(16);
-        discrepancyLegendBox.setAlignment(Pos.CENTER);
-        discrepancyLegendBox.setPadding(new Insets(4, 12, 4, 12));
-        discrepancyLegendBox.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6;");
+        HBox discrepancyLegendBox = buildLegendBar();
 
-        legendBlue = new Label("🟦 " + I18n.getOrDefault("analytics.legend.under", "A < B (Underestimation)"));
-        legendBlue.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px;");
-
-        legendSlate = new Label("⬛ " + I18n.getOrDefault("analytics.legend.zero", "Δ = 0 (Identical / Zero divergence)"));
-        legendSlate.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
-
-        legendGreen = new Label("🟩 " + I18n.getOrDefault("analytics.legend.close", "|Δ| ≤ 5% (Close agreement)"));
-        legendGreen.setStyle("-fx-text-fill: #10b981; -fx-font-size: 11px;");
-
-        legendRed = new Label("🟥 " + I18n.getOrDefault("analytics.legend.over", "A > B (Overestimation)"));
-        legendRed.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
-
-        discrepancyLegendBox.getChildren().addAll(legendBlue, legendSlate, legendGreen, legendRed);
-
-        // Quantitative Spatial Comparison Metrics Area
         spatialMetricsReportArea = new TextArea();
         spatialMetricsReportArea.setEditable(false);
         spatialMetricsReportArea.setPrefRowCount(6);
@@ -279,97 +204,39 @@ public class SpatialTensorComparisonPane extends VBox {
                 discrepancyLegendBox, spatialMetricsReportArea, spatialBottomBox);
     }
 
-    private void initHoverPopup() {
-        popupImageView.setFitWidth(560);
-        popupImageView.setFitHeight(280);
-        popupImageView.setPreserveRatio(true);
-        popupTitleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-padding: 4 8; -fx-font-size: 13px;");
-
-        VBox popupBox = new VBox(6, popupTitleLabel, popupImageView);
-        popupBox.setStyle(
-                "-fx-background-color: rgba(15, 23, 42, 0.96);" +
-                "-fx-padding: 10px;" +
-                "-fx-border-color: #38bdf8;" +
-                "-fx-border-width: 1.5px;" +
-                "-fx-border-radius: 8px;" +
-                "-fx-background-radius: 8px;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 12, 0, 0, 4);"
-        );
-        hoverMapPopup.getContent().add(popupBox);
-        hoverMapPopup.setAutoHide(false);
+    private static ImageView createMapView() {
+        ImageView iv = new ImageView();
+        iv.setFitWidth(360);
+        iv.setFitHeight(180);
+        iv.setPreserveRatio(true);
+        iv.getStyleClass().add("card-section");
+        return iv;
     }
 
-    private void attachHoverZoom(ImageView view, java.util.function.Supplier<String> titleSupplier) {
-        view.setCursor(Cursor.HAND);
-        view.setOnMouseEntered(e -> {
-            if (view.getImage() != null) {
-                cancelHideTimer();
-                popupImageView.setImage(view.getImage());
-                popupTitleLabel.setText(titleSupplier.get());
-                Bounds bounds = view.localToScreen(view.getBoundsInLocal());
-                if (bounds != null) {
-                    double popupX = bounds.getMinX();
-                    double popupY = bounds.getMaxY() + 8;
-                    Rectangle2D screen = Screen.getPrimary().getVisualBounds();
-                    if (popupY + 300 > screen.getMaxY()) {
-                        popupY = bounds.getMinY() - 310;
-                    }
-                    if (popupX + 580 > screen.getMaxX()) {
-                        popupX = screen.getMaxX() - 590;
-                    }
-                    hoverMapPopup.show(view, Math.max(10, popupX), Math.max(10, popupY));
-                }
-            }
-        });
-        view.setOnMouseExited(e -> scheduleHidePopup());
-        view.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.PRIMARY && view.getImage() != null) {
-                showFullMapModal(titleSupplier.get(), view.getImage());
-            }
-        });
+    private static VBox createMapBox(Label label, ImageView view) {
+        label.getStyleClass().add("label-section-header");
+        VBox box = new VBox(4, label, view);
+        box.setAlignment(Pos.CENTER);
+        return box;
     }
 
-    private void scheduleHidePopup() {
-        cancelHideTimer();
-        popupHideTimer = new Timeline(new KeyFrame(Duration.millis(200), ev -> hoverMapPopup.hide()));
-        popupHideTimer.setCycleCount(1);
-        popupHideTimer.play();
-    }
+    private HBox buildLegendBar() {
+        HBox discrepancyLegendBox = new HBox(16);
+        discrepancyLegendBox.setAlignment(Pos.CENTER);
+        discrepancyLegendBox.setPadding(new Insets(4, 12, 4, 12));
+        discrepancyLegendBox.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6;");
 
-    private void cancelHideTimer() {
-        if (popupHideTimer != null) {
-            popupHideTimer.stop();
-            popupHideTimer = null;
-        }
-    }
+        legendBlue = new Label("🟦 " + I18n.getOrDefault("analytics.legend.under", "A < B (Underestimation)"));
+        legendBlue.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px;");
+        legendSlate = new Label("⬛ " + I18n.getOrDefault("analytics.legend.zero", "Δ = 0 (Identical / Zero divergence)"));
+        legendSlate.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
+        legendGreen = new Label("🟩 " + I18n.getOrDefault("analytics.legend.close", "|Δ| ≤ 5% (Close agreement)"));
+        legendGreen.setStyle("-fx-text-fill: #10b981; -fx-font-size: 11px;");
+        legendRed = new Label("🟥 " + I18n.getOrDefault("analytics.legend.over", "A > B (Overestimation)"));
+        legendRed.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
 
-    private void showFullMapModal(String title, Image img) {
-        if (img == null) return;
-        Stage modal = new Stage();
-        modal.initModality(Modality.APPLICATION_MODAL);
-        modal.setTitle(title != null ? title : I18n.getOrDefault("analytics.preview.modal_title", "2D Cartographic Tensor High-Resolution View"));
-
-        ImageView largeView = new ImageView(img);
-        largeView.setFitWidth(800);
-        largeView.setFitHeight(400);
-        largeView.setPreserveRatio(true);
-
-        Label titleLbl = new Label(title);
-        titleLbl.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-font-size: 15px;");
-
-        Button closeBtn = new Button(I18n.getOrDefault("analytics.preview.close", "Close"));
-        closeBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 6 16; -fx-cursor: hand;");
-        closeBtn.setOnAction(e -> modal.close());
-        closeBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.close_modal", "Close detailed view dialog.")));
-
-        VBox layout = new VBox(12, titleLbl, largeView, closeBtn);
-        layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(16));
-        layout.setStyle("-fx-background-color: #0f172a;");
-
-        Scene scene = new Scene(layout, 840, 500);
-        modal.setScene(scene);
-        modal.show();
+        discrepancyLegendBox.getChildren().addAll(legendBlue, legendSlate, legendGreen, legendRed);
+        return discrepancyLegendBox;
     }
 
     /**
@@ -383,7 +250,6 @@ public class SpatialTensorComparisonPane extends VBox {
         List<ScenarioSelectableItem> selected = scenarioList.stream()
                 .filter(ScenarioSelectableItem::isSelected)
                 .toList();
-
         List<ScenarioSelectableItem> pool = (selected.size() >= 2) ? selected : new ArrayList<>(scenarioList);
 
         ScenarioSelectableItem prevA = comboScenarioA.getValue();
@@ -392,19 +258,12 @@ public class SpatialTensorComparisonPane extends VBox {
         comboScenarioA.getItems().setAll(pool);
         comboScenarioB.getItems().setAll(pool);
 
-        if (prevA != null && pool.contains(prevA)) {
-            comboScenarioA.setValue(prevA);
-        } else if (!pool.isEmpty()) {
-            comboScenarioA.setValue(pool.get(0));
-        }
+        if (prevA != null && pool.contains(prevA)) comboScenarioA.setValue(prevA);
+        else if (!pool.isEmpty()) comboScenarioA.setValue(pool.get(0));
 
-        if (prevB != null && pool.contains(prevB)) {
-            comboScenarioB.setValue(prevB);
-        } else if (pool.size() > 1) {
-            comboScenarioB.setValue(pool.get(1));
-        } else if (!pool.isEmpty()) {
-            comboScenarioB.setValue(pool.get(0));
-        }
+        if (prevB != null && pool.contains(prevB)) comboScenarioB.setValue(prevB);
+        else if (pool.size() > 1) comboScenarioB.setValue(pool.get(1));
+        else if (!pool.isEmpty()) comboScenarioB.setValue(pool.get(0));
 
         update2DSpatialComparison();
     }
@@ -434,99 +293,62 @@ public class SpatialTensorComparisonPane extends VBox {
         }
 
         Scenario scA = itemA.getScenario();
-        Scenario scB = (itemB != null) ? itemB.getScenario() : scA;
-
+        Scenario scB = (itemB != null && itemB.getScenario() != null) ? itemB.getScenario() : scA;
         if (scA == null) return;
-        if (scB == null) scB = scA;
 
         if (mapLabelA != null) mapLabelA.setText(I18n.getOrDefault("analytics.label.scenario_a_prefix", "Scenario A: ") + itemA.getName());
         if (mapLabelB != null) mapLabelB.setText(I18n.getOrDefault("analytics.label.scenario_b_prefix", "Scenario B: ") + (itemB != null ? itemB.getName() : scB.getName()));
         if (mapLabelDiff != null) mapLabelDiff.setText(I18n.getOrDefault("analytics.label.scenario_diff", "Discrepancy Heatmap Δ(A - B)"));
 
-        int startA = (int) scA.getStartDateYear();
-        int endA = (int) scA.getEndDateYear();
-        int startB = (int) scB.getStartDateYear();
-        int endB = (int) scB.getEndDateYear();
+        int startA = (int) scA.getStartDateYear(), endA = (int) scA.getEndDateYear();
+        int startB = (int) scB.getStartDateYear(), endB = (int) scB.getEndDateYear();
 
-        boolean isGroundTruthA = "HISTORICAL_GROUND_TRUTH".equals(itemA.getRunId());
-        boolean isGroundTruthB = (itemB != null) && "HISTORICAL_GROUND_TRUTH".equals(itemB.getRunId());
+        boolean isGtA = "HISTORICAL_GROUND_TRUTH".equals(itemA.getRunId());
+        boolean isGtB = (itemB != null) && "HISTORICAL_GROUND_TRUTH".equals(itemB.getRunId());
 
         String planetA = itemA.getPlanetDisplayName();
         String planetB = (itemB != null) ? itemB.getPlanetDisplayName() : planetA;
-        boolean differentPlanets = !planetA.equalsIgnoreCase(planetB);
+        boolean diffPlanets = !planetA.equalsIgnoreCase(planetB);
 
         double minLatA = itemA.getMinLat(), maxLatA = itemA.getMaxLat();
-        double minLngA = itemA.getMinLng(), maxLngA = itemA.getMaxLng();
         double minLatB = (itemB != null) ? itemB.getMinLat() : minLatA;
         double maxLatB = (itemB != null) ? itemB.getMaxLat() : maxLatA;
-        double minLngB = (itemB != null) ? itemB.getMinLng() : minLngA;
-        double maxLngB = (itemB != null) ? itemB.getMaxLng() : maxLngA;
+        double interMinLat = Math.max(minLatA, minLatB), interMaxLat = Math.min(maxLatA, maxLatB);
+        double interMinLng = Math.max(itemA.getMinLng(), itemB != null ? itemB.getMinLng() : itemA.getMinLng());
+        double interMaxLng = Math.min(itemA.getMaxLng(), itemB != null ? itemB.getMaxLng() : itemA.getMaxLng());
 
-        double interMinLat = Math.max(minLatA, minLatB);
-        double interMaxLat = Math.min(maxLatA, maxLatB);
-        double interMinLng = Math.max(minLngA, minLngB);
-        double interMaxLng = Math.min(maxLngA, maxLngB);
-
-        boolean spatialDisjoint = differentPlanets || (interMinLat >= interMaxLat) || (interMinLng >= interMaxLng);
-
-        int minYear;
-        int maxYear;
-        boolean temporalDisjoint = false;
-
-        if (isGroundTruthA && !isGroundTruthB) {
-            minYear = startB;
-            maxYear = endB;
-        } else if (!isGroundTruthA && isGroundTruthB) {
-            minYear = startA;
-            maxYear = endA;
-        } else if (!isGroundTruthA && !isGroundTruthB) {
-            minYear = Math.max(startA, startB);
-            maxYear = Math.min(endA, endB);
-            if (maxYear < minYear) {
-                temporalDisjoint = true;
-            }
-        } else {
-            minYear = -100000;
-            maxYear = 2026;
-        }
+        boolean spatialDisjoint = diffPlanets || (interMinLat >= interMaxLat) || (interMinLng >= interMaxLng);
+        int minYear = isGtA && !isGtB ? startB : (!isGtA && isGtB ? startA : (!isGtA ? Math.max(startA, startB) : -100000));
+        int maxYear = isGtA && !isGtB ? endB : (!isGtA && isGtB ? endA : (!isGtA ? Math.min(endA, endB) : 2026));
+        boolean temporalDisjoint = !isGtA && !isGtB && (maxYear < minYear);
 
         if (spatialDisjoint || temporalDisjoint) {
             if (mapImageViewDiff != null) mapImageViewDiff.setImage(null);
             if (dateSlider != null) dateSlider.setDisable(true);
             if (playTimelineBtn != null) playTimelineBtn.setDisable(true);
             if (spatialMetricsReportArea != null) {
-                if (spatialDisjoint) {
-                    spatialMetricsReportArea.setText(differentPlanets
-                            ? String.format(I18n.getOrDefault("analytics.spatial.disjoint_planets_fmt", "⚠️ Scénarios sur des planètes distinctes (%s vs %s) : aucune intersection spatiale possible. Données comparatives cartographiques directes indisponibles."), planetA, planetB)
-                            : String.format(Locale.US, I18n.getOrDefault("analytics.spatial.disjoint_coords_fmt", "⚠️ Scénarios spatialement disjoints : aucune intersection géographique possible ([%.1f°..%.1f° Lat] vs [%.1f°..%.1f° Lat]). Données comparatives cartographiques indisponibles."), minLatA, maxLatA, minLatB, maxLatB));
-                } else {
-                    spatialMetricsReportArea.setText(String.format(I18n.getOrDefault("analytics.spatial.disjoint_time_fmt", "⚠️ Scénarios temporellement disjoints : aucune intersection temporelle possible (Scénario A : %d ➔ %d | Scénario B : %d ➔ %d). Données comparatives indisponibles."), startA, endA, startB, endB));
-                }
+                spatialMetricsReportArea.setText(spatialDisjoint
+                        ? (diffPlanets
+                                ? String.format(I18n.getOrDefault("analytics.spatial.disjoint_planets_fmt", "⚠️ Scénarios sur des planètes distinctes (%s vs %s) : aucune intersection spatiale possible. Données comparatives cartographiques directes indisponibles."), planetA, planetB)
+                                : String.format(Locale.US, I18n.getOrDefault("analytics.spatial.disjoint_coords_fmt", "⚠️ Scénarios spatialement disjoints : aucune intersection géographique possible ([%.1f°..%.1f° Lat] vs [%.1f°..%.1f° Lat]). Données comparatives cartographiques indisponibles."), minLatA, maxLatA, minLatB, maxLatB))
+                        : String.format(I18n.getOrDefault("analytics.spatial.disjoint_time_fmt", "⚠️ Scénarios temporellement disjoints : aucune intersection temporelle possible (Scénario A : %d ➔ %d | Scénario B : %d ➔ %d). Données comparatives indisponibles."), startA, endA, startB, endB));
             }
             return;
         }
 
         if (dateSlider != null) dateSlider.setDisable(false);
         if (playTimelineBtn != null) playTimelineBtn.setDisable(false);
-
         if (maxYear <= minYear) maxYear = minYear + 100;
 
-        if (dateSlider != null) {
-            if (minYear != (int) dateSlider.getMin() || maxYear != (int) dateSlider.getMax()) {
-                dateSlider.setMin(minYear);
-                dateSlider.setMax(maxYear);
-                double tickUnit = Math.max(10.0, (maxYear - minYear) / 5.0);
-                dateSlider.setMajorTickUnit(tickUnit);
-                if (dateSlider.getValue() < minYear || dateSlider.getValue() > maxYear) {
-                    dateSlider.setValue(minYear);
-                }
-                preloadAll2DTensorsAsync(itemA, itemB, minYear, maxYear);
-            }
+        if (dateSlider != null && (minYear != (int) dateSlider.getMin() || maxYear != (int) dateSlider.getMax())) {
+            dateSlider.setMin(minYear);
+            dateSlider.setMax(maxYear);
+            dateSlider.setMajorTickUnit(Math.max(10.0, (maxYear - minYear) / 5.0));
+            if (dateSlider.getValue() < minYear || dateSlider.getValue() > maxYear) dateSlider.setValue(minYear);
+            preloadAll2DTensorsAsync(itemA, itemB, minYear, maxYear);
         }
 
-        String rawChannel = spatialChannelCombo != null ? spatialChannelCombo.getValue() : null;
-        final String channelKey = SpatialTensorDiskCatalog.resolveCanonicalChannelKey(rawChannel);
-
+        final String channelKey = SpatialTensorDiskCatalog.resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
         int targetYear = dateSlider != null ? (int) dateSlider.getValue() : 0;
         final long currentReqId = spatialComparisonRequestId.incrementAndGet();
 
@@ -534,51 +356,36 @@ public class SpatialTensorComparisonPane extends VBox {
             spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.status.loading_tensors", "ℹ️ Loading cartographic tensors for selected scenarios..."));
         }
 
-        final ScenarioSelectableItem finalItemA = itemA;
-        final ScenarioSelectableItem finalItemB = itemB;
+        String runIdA = itemA.getRunId();
+        String runIdB = itemB != null ? itemB.getRunId() : runIdA;
+        boolean alreadyCached = RASTER_IMAGE_CACHE.containsKey(runIdA + "_" + targetYear + "_" + channelKey)
+                && RASTER_IMAGE_CACHE.containsKey(runIdB + "_" + targetYear + "_" + channelKey);
 
-        String runIdA = finalItemA != null ? finalItemA.getRunId() : "N/A";
-        String runIdB = finalItemB != null ? finalItemB.getRunId() : runIdA;
-        String checkKeyA = runIdA + "_" + targetYear + "_" + channelKey;
-        String checkKeyB = runIdB + "_" + targetYear + "_" + channelKey;
-        boolean alreadyCached = RASTER_IMAGE_CACHE.containsKey(checkKeyA) && RASTER_IMAGE_CACHE.containsKey(checkKeyB);
-
-        if (!alreadyCached && mapRegenBox != null) {
-            mapRegenBox.setVisible(true);
-            mapRegenBox.setManaged(true);
-            mapRegenProgress.setProgress(-1);
-            mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.loading_tensors", "â„¹ï¸ Loading cartographic tensors..."));
-        } else if (alreadyCached && mapRegenBox != null) {
-            mapRegenBox.setVisible(false);
-            mapRegenBox.setManaged(false);
+        if (mapRegenBox != null) {
+            mapRegenBox.setVisible(!alreadyCached);
+            mapRegenBox.setManaged(!alreadyCached);
+            if (!alreadyCached) {
+                mapRegenProgress.setProgress(-1);
+                mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.loading_tensors", "ℹ️ Loading cartographic tensors..."));
+            }
         }
 
         SpatialTensorDiffEngine.compute2DComparisonAsync(
-                finalItemA,
-                finalItemB,
-                targetYear,
-                channelKey,
-                runResolver,
-                RASTER_IMAGE_CACHE,
+                itemA, itemB, targetYear, channelKey, runResolver, RASTER_IMAGE_CACHE,
                 totalMapsNeeded -> Platform.runLater(() -> {
                     if (mapRegenBox != null && mapRegenStatusLabel != null) {
                         mapRegenBox.setVisible(true);
                         mapRegenBox.setManaged(true);
                         mapRegenProgress.setProgress(0.1);
-                        mapRegenStatusLabel.setText(String.format(I18n.getOrDefault("analytics.status.regen_maps_fmt", "âš¡ Regenerating 2D maps: %d / %d"), 1, totalMapsNeeded));
+                        mapRegenStatusLabel.setText(String.format(I18n.getOrDefault("analytics.status.regen_maps_fmt", "⚡ Regenerating 2D maps: %d / %d"), 1, totalMapsNeeded));
                     }
                 })
         ).thenAccept(res -> Platform.runLater(() -> {
             if (currentReqId != spatialComparisonRequestId.get()) return;
-
             if (mapImageViewA != null) mapImageViewA.setImage(res.imgA());
             if (mapImageViewB != null) mapImageViewB.setImage(res.imgB());
             if (mapImageViewDiff != null) mapImageViewDiff.setImage(res.imgDiff());
-
-            if (spatialMetricsReportArea != null) {
-                spatialMetricsReportArea.setText(res.formattedReport());
-            }
-
+            if (spatialMetricsReportArea != null) spatialMetricsReportArea.setText(res.formattedReport());
             if (mapRegenBox != null) {
                 mapRegenBox.setVisible(false);
                 mapRegenBox.setManaged(false);
@@ -592,22 +399,10 @@ public class SpatialTensorComparisonPane extends VBox {
                 playTimelineBtn, mapRegenBox, mapRegenProgress, mapRegenStatusLabel);
     }
 
-    /**
-     * Determines optimal raster resolution based on total cell count to maximize visual fidelity.
-     *
-     * @param cellCount simulation cell count
-     * @return recommended image width in pixels
-     */
     public static int computeOptimalRasterWidth(int cellCount) {
         return SpatialTensorRasterRenderer.computeOptimalRasterWidth(cellCount);
     }
 
-    /**
-     * Resolves human-readable or localized layer names into canonical disk layer keys.
-     *
-     * @param channel raw channel descriptor
-     * @return canonical key (e.g., "density", "technology", "temperature")
-     */
     public static String resolveCanonicalChannelKey(String channel) {
         return SpatialTensorDiskCatalog.resolveCanonicalChannelKey(channel);
     }
@@ -616,9 +411,6 @@ public class SpatialTensorComparisonPane extends VBox {
         timelineAnimator.toggleDateAnimation(playTimelineBtn, dateSlider);
     }
 
-    /**
-     * Halts timeline playback animation.
-     */
     public void stopAnimation() {
         timelineAnimator.stopAnimation(playTimelineBtn);
     }
@@ -631,149 +423,37 @@ public class SpatialTensorComparisonPane extends VBox {
         if (itemB == null) itemB = itemA;
         if (itemA == null) return;
 
-        final int targetYear = dateSlider != null ? (int) dateSlider.getValue() : 0;
-        final String spatialReportText = spatialMetricsReportArea != null ? spatialMetricsReportArea.getText() : "";
-        final String channelKey = resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
-
         ComparativeAnalyticsExporter.export2DCartographyZip(
-                export2DZipBtn,
-                itemA,
-                itemB,
-                targetYear,
-                channelKey,
-                spatialReportText,
+                export2DZipBtn, itemA, itemB,
+                dateSlider != null ? (int) dateSlider.getValue() : 0,
+                resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null),
+                spatialMetricsReportArea != null ? spatialMetricsReportArea.getText() : "",
                 mapImageViewA != null ? mapImageViewA.getImage() : null,
                 mapImageViewB != null ? mapImageViewB.getImage() : null,
                 mapImageViewDiff != null ? mapImageViewDiff.getImage() : null,
-                RASTER_IMAGE_CACHE
-        );
+                RASTER_IMAGE_CACHE);
     }
 
-    /**
-     * Updates all localized labels, tooltips, and combo items.
-     *
-     * @param scenarioList active scenario list for dynamic custom tensor channels
-     */
     public void updateTexts(List<ScenarioSelectableItem> scenarioList) {
         isUpdatingTexts = true;
         try {
-            if (channelLabel != null) channelLabel.setText(I18n.getOrDefault("analytics.channel_label", "Tensor Channel:"));
-            if (scenarioSelectLabelA != null) scenarioSelectLabelA.setText(I18n.getOrDefault("analytics.label.select_a", "Baseline (A):"));
-            if (scenarioSelectLabelB != null) scenarioSelectLabelB.setText(I18n.getOrDefault("analytics.label.select_b", "Target (B):"));
-
-            if (playTimelineBtn != null) {
-                playTimelineBtn.setText(timelineAnimator.isPlayingAnimation()
-                        ? I18n.getOrDefault("analytics.btn.pause_timeline", "⏸️ Pause")
-                        : I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Play Timeline"));
-            }
-
-            if (export2DZipBtn != null) {
-                export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "📦 Export 2D Tensors (.zip)"));
-                export2DZipBtn.setTooltip(new Tooltip(I18n.getOrDefault("analytics.tooltip.export_2d_zip", "Export all 2D comparative maps and spatial metrics report into a timestamped ZIP archive.")));
-            }
-
-            if (legendBlue != null) legendBlue.setText("🟦 " + I18n.getOrDefault("analytics.legend.under", "A < B (Underestimation)"));
-            if (legendSlate != null) legendSlate.setText("⬛ " + I18n.getOrDefault("analytics.legend.zero", "Δ = 0 (Identical / Zero divergence)"));
-            if (legendGreen != null) legendGreen.setText("🟩 " + I18n.getOrDefault("analytics.legend.close", "|Δ| ≤ 5% (Close agreement)"));
-            if (legendRed != null) legendRed.setText("🟥 " + I18n.getOrDefault("analytics.legend.over", "A > B (Overestimation)"));
-
-            if (spatialChannelCombo != null) {
-                int selectedIdx = spatialChannelCombo.getSelectionModel().getSelectedIndex();
-                if (selectedIdx < 0) selectedIdx = 0;
-                var oldAction = spatialChannelCombo.getOnAction();
-                spatialChannelCombo.setOnAction(null);
-                spatialChannelCombo.getItems().clear();
-                spatialChannelCombo.getItems().addAll(
-                        I18n.getOrDefault("analytics.spatial.density", "👥 Demographic Density"),
-                        I18n.getOrDefault("analytics.spatial.technology", "🔬 Technology & Tooling Level"),
-                        I18n.getOrDefault("analytics.spatial.temperature", "🌡️ Surface Temperature & Climate"),
-                        I18n.getOrDefault("analytics.spatial.aquifers", "💧 Aquifers & Freshwater Tables"),
-                        I18n.getOrDefault("analytics.spatial.agriculture", "🌾 Agricultural Biomass & Soils"),
-                        I18n.getOrDefault("analytics.spatial.sovereignty", "👑 Political Sovereignty & Borders"),
-                        I18n.getOrDefault("analytics.spatial.linguistic", "🗣️ Linguistic Isoglosses (Languages)"),
-                        I18n.getOrDefault("analytics.spatial.kinship", "🧬 Kinship & Family Structures"),
-                        I18n.getOrDefault("analytics.spatial.rituals", "🔮 Sacred Beliefs & Ritual Practices"),
-                        I18n.getOrDefault("analytics.spatial.trade", "🛣️ Trade Corridors & Exchange Routes"),
-                        I18n.getOrDefault("analytics.spatial.institutional", "⚖️ Institutional Complexity (Seshat)"),
-                        I18n.getOrDefault("analytics.spatial.ecological", "⚠️ Ecological Footprint & Overshoot"),
-                        I18n.getOrDefault("analytics.spatial.pathogen", "🧬 Pathogen Burden & Zoonotic Risk")
-                );
-
-                Set<String> customChannels = new LinkedHashSet<>();
-                if (scenarioList != null) {
-                    for (ScenarioSelectableItem item : scenarioList) {
-                        if (item != null && item.getScenario() != null) {
-                            int dims = item.getScenario().getCultureVectorDimensions();
-                            var customNames = item.getScenario().getCustomTensorNames();
-                            int maxDim = Math.max(dims, (customNames != null && !customNames.isEmpty()) ? customNames.keySet().stream().mapToInt(k -> k + 1).max().orElse(0) : 0);
-                            for (int tIdx = 9; tIdx < maxDim; tIdx++) {
-                                int oneBased = tIdx + 1;
-                                String rawName = customNames != null ? customNames.get(tIdx) : null;
-                                boolean hasCustomName = rawName != null && !rawName.isBlank();
-                                String displayName = hasCustomName ? rawName.trim() : (I18n.getOrDefault("scenario.tensor.custom.fallback", "Custom Layer") + " " + oneBased);
-                                String sanitized = displayName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_]+", "_").replaceAll("^_+|_+$", "");
-                                String slug = "custom_tensor_" + String.format("%02d", oneBased) + (sanitized.isBlank() ? "" : "_" + sanitized);
-                                customChannels.add("🧬 " + I18n.getOrDefault("scenario.tensor.label_prefix", "Tensor ") + "[" + oneBased + "]: " + displayName + " (" + slug + ")");
-                            }
-                        }
-                    }
-                }
-                for (String customCh : customChannels) {
-                    if (!spatialChannelCombo.getItems().contains(customCh)) {
-                        spatialChannelCombo.getItems().add(customCh);
-                    }
-                }
-
-                if (selectedIdx >= spatialChannelCombo.getItems().size()) selectedIdx = 0;
-                spatialChannelCombo.getSelectionModel().select(selectedIdx);
-                spatialChannelCombo.setOnAction(oldAction);
-            }
+            SpatialTensorUIHelper.updateLocalizedControls(this, scenarioList);
         } finally {
             isUpdatingTexts = false;
         }
-
         update2DSpatialComparison();
     }
 
-    public ComboBox<ScenarioSelectableItem> getComboScenarioA() {
-        return comboScenarioA;
-    }
+    public ComboBox<ScenarioSelectableItem> getComboScenarioA() { return comboScenarioA; }
+    public ComboBox<ScenarioSelectableItem> getComboScenarioB() { return comboScenarioB; }
+    public ComboBox<String> getSpatialChannelCombo() { return spatialChannelCombo; }
+    public Slider getDateSlider() { return dateSlider; }
+    public ImageView getMapImageViewA() { return mapImageViewA; }
+    public ImageView getMapImageViewB() { return mapImageViewB; }
+    public ImageView getMapImageViewDiff() { return mapImageViewDiff; }
+    public TextArea getSpatialMetricsReportArea() { return spatialMetricsReportArea; }
+    public Button getExport2DZipBtn() { return export2DZipBtn; }
 
-    public ComboBox<ScenarioSelectableItem> getComboScenarioB() {
-        return comboScenarioB;
-    }
-
-    public ComboBox<String> getSpatialChannelCombo() {
-        return spatialChannelCombo;
-    }
-
-    public Slider getDateSlider() {
-        return dateSlider;
-    }
-
-    public ImageView getMapImageViewA() {
-        return mapImageViewA;
-    }
-
-    public ImageView getMapImageViewB() {
-        return mapImageViewB;
-    }
-
-    public ImageView getMapImageViewDiff() {
-        return mapImageViewDiff;
-    }
-
-    public TextArea getSpatialMetricsReportArea() {
-        return spatialMetricsReportArea;
-    }
-
-    public Button getExport2DZipBtn() {
-        return export2DZipBtn;
-    }
-
-    /**
-     * Clears in-memory raster cache.
-     */
     public static void clearRasterCache() {
         SpatialTensorDiskCatalog.clearRasterCache();
     }

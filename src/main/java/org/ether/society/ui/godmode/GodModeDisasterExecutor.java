@@ -91,7 +91,7 @@ public final class GodModeDisasterExecutor {
                             double blastFactor = Math.max(0.0, 1.0 - (dist / (mag * 1.5)));
                             org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(c, (int) (c.getPopulation() * (1.0 - 0.90 * blastFactor)));
                             c.setFoodResource(Math.max(0.0, (c.getFoodResource() != null ? c.getFoodResource() : 0.0) * (1.0 - 0.80 * blastFactor)));
-                            c.setTechnologyLevel(Math.max(0.0, (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0) * (1.0 - 0.70 * blastFactor)));
+                            c.setResourceCapital(Math.max(0.0, (c.getResourceCapital() != null ? c.getResourceCapital() : 0.0) * (1.0 - 0.70 * blastFactor)));
                             c.setPollutionLevel(Math.min(1.0, (c.getPollutionLevel() != null ? c.getPollutionLevel() : 0.0) + 0.9 * blastFactor));
                         }
                     }
@@ -168,14 +168,14 @@ public final class GodModeDisasterExecutor {
             case "SOLAR_EMP", "CYBER_ATTACK", "ECONOMIC_CRASH" -> {
                 if (engine != null && engine.getCells() != null) {
                     for (H3Cell c : engine.getCells()) {
-                        c.setTechnologyLevel(Math.max(0.0, (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 10.0) * (1.0 - mag * 0.05)));
+                        c.setResourceCapital(Math.max(0.0, (c.getResourceCapital() != null ? c.getResourceCapital() : 1000.0) * (1.0 - mag * 0.05)));
                     }
                 }
             }
             case "RENAISSANCE_BOOM", "TECH_SINGULARITY", "ALIEN_CONTACT" -> {
                 if (engine != null && engine.getCells() != null) {
                     for (H3Cell c : engine.getCells()) {
-                        c.setTechnologyLevel((c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 10.0) + mag * 5.0);
+                        c.setResourceCapital((c.getResourceCapital() != null ? c.getResourceCapital() : 1000.0) * (1.0 + mag * 0.5));
                     }
                 }
             }

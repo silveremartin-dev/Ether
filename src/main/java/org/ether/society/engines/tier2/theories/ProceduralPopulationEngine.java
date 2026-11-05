@@ -16,26 +16,35 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Advanced Population Simulation & Density Generator.
- * Supports:
- * 1. Earth historical pre-generated human density distributions across pivot eras (-100k to 1800).
- * 2. Procedural tech-adapted human population distribution based on Tab 1 & Tab 2 parameters:
- *    - Heightmap & Relief suitability
- *    - Thermal & Climate comfort
- *    - Waterways / River proximity & Freshwater constraints
- *    - Technological adaptation capacity (Neolithic = strict river/coastal dependence; 17th-18th century = high variable adaptation).
+ * Advanced Population Simulation &amp; Density Generator.
+ *
+ * <p>Supports:</p>
+ * <ol>
+ *   <li>Earth historical human density distributions across pivot eras (-100k BP to 1800 CE).</li>
+ *   <li>Procedural tech-adapted human population distribution based on topographic relief,
+ *       thermal/climate niche (Xu et al. 2020), freshwater/aquifer proximity, Zipf urban agglomeration
+ *       (Zipf 1949; Gabaix 1999), and pressurized extraterrestrial pioneer outposts.</li>
+ * </ol>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
+ * @see ProceduralPopulationSuitabilityHelper
  */
 public class ProceduralPopulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(ProceduralPopulationEngine.class);
 
     /**
      * Historical pivot dates with estimated global population and tech levels for Earth preset.
+     *
+     * @param year              chronological year (negative BCE/BP, positive CE)
+     * @param eraName           display name of the historical epoch
+     * @param defaultPopulation estimated global human population
+     * @param techLevel         baseline technological index
+     * @param description       summary of settlement geography
      */
     public record EarthHistoricalPivot(long year, String eraName, long defaultPopulation, double techLevel, String description) {}
 
+    /** Canonical Earth historical demographic pivot epochs. */
     public static final List<EarthHistoricalPivot> EARTH_PIVOTS = List.of(
             new EarthHistoricalPivot(-100000, "Out of Africa (-100,000 BP)", 15000L, 0.2, "Pre-Neolithic Sapiens: East African Rift & early coastal migration routes."),
             new EarthHistoricalPivot(-40000, "Upper Paleolithic (-40,000 BP)", 500000L, 0.6, "Paleolithic Hunter-Gatherers: Spread across Africa, Europe, Asia, and Australia."),
@@ -48,20 +57,26 @@ public class ProceduralPopulationEngine {
     );
 
     /**
-     * Distributes total human population across cells according to Earth historical maps or procedural tech suitability.
-     * Note: startYear is provided purely for logging/reference and does not affect demographic calculations.
+     * Distributes total human population across cells according to hostile outpost constraints or procedural tech suitability.
+     *
+     * @param cells           target H3 cell grid
+     * @param scenario        active scenario configuration
+     * @param totalPopulation total initial population headcount
+     * @param techLevel       initial technological index
+     * @param pattern         spatial density distribution pattern
+     * @param isEarthPreset   whether using Earth cartography
+     * @param startYear       starting chronological year
      */
-    public static void distributePopulation(List<H3Cell> cells, Scenario scenario, long totalPopulation, double techLevel, String pattern, boolean isEarthPreset, long startYear) {
+    public static void distributePopulation(List<H3Cell> cells, Scenario scenario, long totalPopulation,
+                                            double techLevel, String pattern, boolean isEarthPreset, long startYear) {
         if (cells == null || cells.isEmpty()) return;
 
-        // Reset populations and human biomass first
         for (H3Cell c : cells) {
             if (c == null) continue;
             c.setPopulation(0);
             c.setBiomassHuman(0.0);
         }
 
-        // Filter habitable cells (including land, coastal shelves, reclaimed polders, seasteading floating habitats, and high-tech oceanic settlements)
         List<H3Cell> landCells = cells.stream()
                 .filter(java.util.Objects::nonNull)
                 .filter(c -> (c.getBiome() != null && c.getBiome() != Biome.DEEP_OCEAN)
@@ -77,9 +92,6 @@ public class ProceduralPopulationEngine {
         double capitalPerCapita = scenario != null ? scenario.getInitialCapitalPerCapita() : Math.pow(10, (techLevel - 0.2) / 2.2);
         long seedVal = scenario != null ? scenario.getSeed() : 12345L;
 
-        // Hostile exoplanetary environments (vacuum, near-vacuum, toxic hyperbaric)
-        // require discrete pressurized outpost landing sites rather than diffuse planetary settlement
-
         org.ether.society.generation.PlanetPreset preset = scenario != null ? scenario.getPlanetPreset() : null;
         boolean isHostile = org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(preset);
 
@@ -91,9 +103,7 @@ public class ProceduralPopulationEngine {
     }
 
     /**
-     * Concentrates extraterrestrial pioneering populations strictly into 1 to 3 isolated pressurized outposts.
-     * Hostile environments (vacuum, near-vacuum, toxic dense atmospheres) prevent diffuse settlement.
-     * All remaining planetary cells strictly retain zero population.
+     * Concentrates extraterrestrial pioneering populations strictly into isolated pressurized outposts.
      */
     private static void distributeExtraterrestrialPioneers(List<H3Cell> landCells,
                                                            org.ether.society.generation.PlanetPreset preset,
@@ -102,7 +112,6 @@ public class ProceduralPopulationEngine {
                                                            double capitalPerCapita) {
         if (landCells == null || landCells.isEmpty() || totalPopulation <= 0) return;
 
-        // Reset all cells to zero
         for (H3Cell c : landCells) {
             c.setPopulation(0);
             c.setBiomassHuman(0.0);
@@ -116,24 +125,18 @@ public class ProceduralPopulationEngine {
         List<OutpostTarget> targets = new ArrayList<>();
 
         if (presetKey.contains("mars") || scenarioName.contains("mars")) {
-            // Chryse Planitia (22.4 N, -49.8 E) and Jezero Crater (18.38 N, 77.58 E)
             targets.add(new OutpostTarget(22.4, -49.8, 0.60, "Chryse Planitia Outpost"));
             targets.add(new OutpostTarget(18.38, 77.58, 0.40, "Jezero Crater Science Hub"));
         } else if (presetKey.contains("moon") || presetKey.contains("shackleton") || scenarioName.contains("lune") || scenarioName.contains("moon")) {
-            // Shackleton Crater (South Pole)
             targets.add(new OutpostTarget(-89.9, 0.0, 1.0, "Shackleton Crater Base"));
-        } else if (presetKey.contains("venus") || scenarioName.contains("venus") || scenarioName.contains("vu{00e9}nus")) {
-            // Cloud City Flotilla (Equatorial high altitude)
+        } else if (presetKey.contains("venus") || scenarioName.contains("venus") || scenarioName.contains("vénus")) {
             targets.add(new OutpostTarget(0.0, 0.0, 0.70, "Aphrodite Cloud Station"));
             targets.add(new OutpostTarget(0.0, 120.0, 0.30, "Ishtar Aerostat Station"));
         } else if (presetKey.contains("mercury") || presetKey.contains("caloris") || scenarioName.contains("mercure")) {
-            // Caloris Basin edge
             targets.add(new OutpostTarget(30.5, -170.0, 1.0, "Caloris Forge Colony"));
         } else if (presetKey.contains("titan") || scenarioName.contains("titan")) {
-            // Kraken Mare shoreline
             targets.add(new OutpostTarget(68.0, 50.0, 1.0, "Kraken Mare Hydrocarbon Base"));
         } else {
-            // Generic hostile exoplanet: select sheltered landing cells with continuous population share distribution
             List<H3Cell> sortedByShelter = landCells.stream()
                     .sorted(Comparator.comparingDouble(c -> c.getElevationOr(0.0)))
                     .toList();
@@ -154,7 +157,6 @@ public class ProceduralPopulationEngine {
 
         for (int i = 0; i < targets.size(); i++) {
             OutpostTarget target = targets.get(i);
-            // Find closest cell to target coordinates
             H3Cell bestCell = null;
             double minDistSq = Double.MAX_VALUE;
             for (H3Cell c : landCells) {
@@ -177,161 +179,24 @@ public class ProceduralPopulationEngine {
                 bestCell.setBiomassHuman((double) outpostPop);
                 bestCell.setResourceCapital(outpostPop * capitalPerCapita);
                 bestCell.setResourceMetal(outpostPop * capitalPerCapita * 0.20);
-                bestCell.setFoodResource(outpostPop * 36.0 * 10.0); // 36 months baseline ISRU food
+                bestCell.setFoodResource(outpostPop * 36.0 * 10.0);
                 bestCell.setEnergyFire(outpostPop * 80.0);
-                bestCell.setTechnologyLevel(derivedTech);
-                bestCell.calculateMovementFriction(derivedTech);
-                bestCell.updateAgePyramidFromTotal(derivedTech);
+                bestCell.calculateMovementFriction();
+                bestCell.updateAgePyramidFromTotal();
 
                 org.ether.society.engines.tier1.PressurizedHabitatEngine.initializePioneerOutpost(bestCell, preset, outpostPop);
-                logger.info("ðŸ›°ï¸ Placed Extraterrestrial Outpost '{}' at ({}, {}) with {} colonists.",
+                logger.info("Placed Extraterrestrial Outpost '{}' at ({}, {}) with {} colonists.",
                         target.name(), bestCell.getLatitudeOr(0.0), bestCell.getLongitudeOr(0.0), outpostPop);
             }
         }
     }
-    /**
-     * Earth pre-generated historical population density mapping based on tech suitability.
-     */
-    private static void distributeEarthHistorical(List<H3Cell> landCells, long totalPopulation, double techLevel, double capitalPerCapita, long startYear, Scenario scenario) {
-        double[] weights = new double[landCells.size()];
-        double totalWeight = 0.0;
-
-        for (int i = 0; i < landCells.size(); i++) {
-            H3Cell cell = landCells.get(i);
-            double lat = cell.getLatitude();
-            double lng = cell.getLongitude();
-            Biome biome = cell.getBiome();
-
-            double baseSuitability = calculateBiomeAndElevSuitability(cell, techLevel);
-            double geoWeight = getEarthHistoricalRegionalWeight(lat, lng, biome, techLevel, startYear, scenario);
-
-            double w = (geoWeight <= 0.0) ? 0.0 : Math.max(0.0001, baseSuitability * geoWeight);
-            weights[i] = w;
-            totalWeight += weights[i];
-        }
-
-        applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation, capitalPerCapita, techLevel);
-        logger.info("Distributed {} humans on Earth map (Tech: {}, Capital: {} kg/capita)", totalPopulation, techLevel, capitalPerCapita);
-    }
 
     /**
-     * Regional weighting heuristic for Earth historical geography based on techLevel.
+     * Procedural human population distribution taking into account relief, thermal niche,
+     * freshwater/aquifer proximity, carrying capacity, and technological adaptation across eras.
      */
-    private static double getEarthHistoricalRegionalWeight(double lat, double lng, Biome biome, double techLevel, long startYear, Scenario scenario) {
-        boolean isEastAfrica = (lat >= -15.0 && lat <= 15.0) && (lng >= 25.0 && lng <= 45.0);
-        boolean isFertileCrescent = (lat >= 25.0 && lat <= 40.0) && (lng >= 32.0 && lng <= 50.0);
-        boolean isNileDelta = (lat >= 15.0 && lat <= 35.0) && (lng >= 22.0 && lng <= 38.0);
-        boolean isIndusValley = (lat >= 20.0 && lat <= 35.0) && (lng >= 65.0 && lng <= 78.0);
-        boolean isYellowYangtzeChina = (lat >= 20.0 && lat <= 42.0) && (lng >= 100.0 && lng <= 125.0);
-        boolean isGangesIndia = (lat >= 8.0 && lat <= 30.0) && (lng >= 70.0 && lng <= 90.0);
-        boolean isMediterraneanEurope = (lat >= 25.0 && lat <= 58.0) && (lng >= -12.0 && lng <= 45.0);
-        boolean isMesoamerica = (lat >= 10.0 && lat <= 25.0) && (lng >= -110.0 && lng <= -80.0);
-        boolean isAndes = (lat >= -25.0 && lat <= 5.0) && (lng >= -82.0 && lng <= -62.0);
-        boolean isSahulAustralia = (lat < 10.0 && lng > 95.0) || (lat < -8.0 && lng > 110.0);
-        boolean isAmericas = lng < -25.0;
-        boolean isSahara = (lat >= 10.0 && lat <= 32.0) && (lng >= -18.0 && lng <= 35.0);
-
-        // Specific regional historical density pattern overrides if set
-        if (scenario != null && scenario.getPopulationDensityType() != null) {
-            String pType = scenario.getPopulationDensityType().toUpperCase();
-            switch (pType) {
-                case "AUSTRALIA_SAHUL" -> { return isSahulAustralia ? 15.0 : 0.0; }
-                case "EGYPT_NILE" -> { return isNileDelta ? 20.0 : 0.0; }
-                case "MESOAMERICA" -> { return isMesoamerica ? 20.0 : 0.0; }
-                case "ROMAN_EMPIRE" -> { return isMediterraneanEurope ? 20.0 : 0.0; }
-                case "WEST_AFRICA_MALI" -> { return (lat >= 5.0 && lat <= 25.0 && lng >= -18.0 && lng <= 15.0) ? 20.0 : 0.0; }
-                case "JAPAN_SAKOKU" -> { return (lat >= 30.0 && lat <= 45.0 && lng >= 128.0 && lng <= 146.0) ? 20.0 : 0.0; }
-                case "INDIA_MAURYA" -> { return (isGangesIndia || isIndusValley) ? 20.0 : 0.0; }
-                case "AMERICAS_1491" -> { return isAmericas ? 15.0 : 0.0; }
-                case "BERINGIA_AMERICAS" -> { return (lat >= 50.0 && lat <= 75.0 && (lng >= 140.0 || lng <= -140.0)) ? 20.0 : 0.0; }
-                case "GREEN_SAHARA" -> { return isSahara ? 20.0 : 0.0; }
-                case "YOUNGER_DRYAS" -> { return (lat >= 28.0 && lat <= 40.0 && lng >= 28.0 && lng <= 45.0) ? 20.0 : 0.0; }
-            }
-        }
-
-        String scName = scenario != null && scenario.getName() != null ? scenario.getName().toLowerCase() : "";
-
-        // 1. Deep Paleolithic / Out of Africa (~100,000 BP to ~50,000 BP)
-        // Homo sapiens core in Africa; Neanderthalensis in W. Eurasia; Denisova in E. Eurasia.
-        // Strictly ZERO population in Sahul/Australia and Americas.
-        if (startYear < -50000 || (scName.contains("out_of_africa") || (scName.contains("sortie d'afrique") && !scName.contains("sahul")))) {
-            if (isAmericas || isSahulAustralia) return 0.0;
-            if (isEastAfrica) return 15.0;
-            if (isNileDelta || isFertileCrescent) return 6.0;
-            if (lat >= -35.0 && lat <= 37.0 && lng >= -18.0 && lng <= 51.0) return 3.0; // Rest of Africa (Homo Sapiens)
-            if (lat >= 10.0 && lat <= 55.0 && lng >= -10.0 && lng <= 100.0) return 1.5; // Eurasia (Neanderthal & Denisova)
-            return 0.0;
-        }
-
-        // 2. Sahul Migration & Upper Paleolithic (~50,000 BP to ~25,000 BP)
-        // Sahul/Australia populated (~50k-45k BP). Americas remain unpopulated.
-        if (startYear <= -25000) {
-            if (isAmericas) return 0.0;
-            if (isSahulAustralia) return 4.0;
-            if (isEastAfrica) return 6.0;
-            if (isFertileCrescent || isNileDelta) return 5.0;
-            if (isYellowYangtzeChina || isGangesIndia) return 4.0;
-            if (isMediterraneanEurope) return 4.0;
-            return 1.0;
-        }
-
-        // 3. Late Pleistocene / Beringian Crossing into Americas (~25,000 BP to ~10,000 BP)
-        // Americas populated via Beringian migration.
-        if (startYear <= -10000) {
-            if (isFertileCrescent || isNileDelta) return 10.0;
-            if (isYellowYangtzeChina || isGangesIndia) return 8.0;
-            if (isMediterraneanEurope) return 6.0;
-            if (isSahulAustralia) return 4.0;
-            if (isMesoamerica || isAndes) return 3.0;
-            return 1.0;
-        }
-
-        // 4. Neolithic Revolution & Early Agriculture (-10000 to -3000 BP)
-        if (startYear <= -3000) {
-            if (isFertileCrescent) return 15.0;
-            if (isYellowYangtzeChina) return 12.0;
-            if (isNileDelta) return 10.0;
-            if (isIndusValley) return 8.0;
-            if (isMesoamerica) return 6.0;
-            if (isMediterraneanEurope) return 4.0;
-            if (isSahulAustralia) return 2.0;
-            return 1.0;
-        }
-
-        // 5. Bronze Age & Classical Antiquity (-3000 to 500 CE)
-        if (startYear <= 500) {
-            if (isYellowYangtzeChina) return 20.0;
-            if (isGangesIndia || isIndusValley) return 18.0;
-            if (isMediterraneanEurope) return 18.0;
-            if (isFertileCrescent || isNileDelta) return 14.0;
-            if (isMesoamerica || isAndes) return 5.0;
-            return 1.2;
-        }
-
-        // 6. Medieval & Early Modern (500 CE to 1800 CE)
-        if (startYear <= 1800) {
-            if (isYellowYangtzeChina) return 22.0;
-            if (isGangesIndia) return 20.0;
-            if (isMediterraneanEurope) return 18.0;
-            if (isFertileCrescent || isNileDelta) return 10.0;
-            if (isMesoamerica || isAndes) return 6.0;
-            if (lat >= 30 && lat <= 50 && lng >= -100 && lng <= -70) return 4.0;
-            return 1.5;
-        }
-
-        // 7. Industrial & Modern (> 1800 CE)
-        if (isMediterraneanEurope) return 25.0;
-        if (isYellowYangtzeChina) return 24.0;
-        if (isGangesIndia) return 22.0;
-        if (lat >= 30 && lat <= 48 && lng >= -90 && lng <= -70) return 12.0;
-        return 2.5;
-    }
-
-    /**
-     * Procedural human population simulation taking into account heightmap, temperature, biomes,
-     * river/waterway proximity, and technological adaptation capacity across eras.
-     */
-    private static void distributeProcedural(List<H3Cell> landCells, long totalPopulation, double techLevel, String pattern, long seed, double capitalPerCapita) {
+    private static void distributeProcedural(List<H3Cell> landCells, long totalPopulation,
+                                             double techLevel, String pattern, long seed, double capitalPerCapita) {
         double[] weights = new double[landCells.size()];
         double totalWeight = 0.0;
 
@@ -339,304 +204,27 @@ public class ProceduralPopulationEngine {
 
         for (int i = 0; i < landCells.size(); i++) {
             H3Cell cell = landCells.get(i);
-
-            // 1. Environmental base suitability
-            double envSuit = calculateBiomeAndElevSuitability(cell, techLevel);
-
-            // 2. Temperature comfort suitability
-            double cellTemp = cell.getTemperatureOr(15.0);
-            double tempSuit = calculateTemperatureSuitability(cellTemp, techLevel);
-
-            // 3. Freshwater & River proximity constraint (Tech dependent!)
-            double waterSuit = calculateWaterAndRiverSuitability(cell, techLevel);
-
-            // 4. Resource & Carrying capacity bonus
-            double resourceSuit = calculateResourceSuitability(cell);
-
-            // 5. Pattern multiplier
-            double patternMult = calculatePatternMultiplier(cell, pattern);
-
-            // 6. Seed-based deterministic noise variation (0.8 to 1.2)
+            double envSuit = ProceduralPopulationSuitabilityHelper.calculateBiomeAndElevSuitability(cell, techLevel);
+            double tempSuit = ProceduralPopulationSuitabilityHelper.calculateTemperatureSuitability(cell.getTemperatureOr(15.0), techLevel);
+            double waterSuit = ProceduralPopulationSuitabilityHelper.calculateWaterAndRiverSuitability(cell, techLevel);
+            double resourceSuit = ProceduralPopulationSuitabilityHelper.calculateResourceSuitability(cell);
+            double patternMult = ProceduralPopulationSuitabilityHelper.calculatePatternMultiplier(cell, pattern);
             double noiseMult = 0.80 + (seedRand.nextDouble() * 0.40);
 
-            // Total weight formula
             double cellWeight = envSuit * tempSuit * waterSuit * resourceSuit * patternMult * noiseMult;
-
             weights[i] = Math.max(0.00001, cellWeight);
             totalWeight += weights[i];
         }
 
-        // Apply tech-driven urbanization / clustering if tech level > 3.0 or high population
         if (techLevel >= 2.5 && "URBAN_CLUSTERS".equals(pattern)) {
             applyUrbanClustering(landCells, weights, techLevel);
-            // Recalculate total weight after clustering
             totalWeight = 0.0;
             for (double w : weights) totalWeight += w;
         }
 
         applyNormalizedPopulation(landCells, weights, totalWeight, totalPopulation, capitalPerCapita, techLevel);
-        logger.info("Procedurally distributed {} humans across {} cells (Capital: {} kg/capita, Pattern: {})", totalPopulation, landCells.size(), capitalPerCapita, pattern);
-    }
-
-    /**
-     * Biome & Elevation suitability adjusted by technological capacity.
-     */
-    private static double calculateBiomeAndElevSuitability(H3Cell cell, double techLevel) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (Boolean.TRUE.equals(cell.getIsPolder())) {
-            return 1.5; // Reclaimed rich alluvial land
-        }
-        if (Boolean.TRUE.equals(cell.getHasFloatingInfrastructure())) {
-            return 0.8 + Math.min(1.0, techLevel * 0.1); // Seasteading floating habitat
-        }
-
-        double elev = cell.getElevationOr(0.0);
-        if (elev < 0.0) {
-            // Marine cells: unpopulated unless advanced seasteading technology (tech >= 8.5)
-            return techLevel >= 8.5 ? Math.clamp(0.40 + (techLevel - 8.5) * 0.15, 0.0001, 1.0) : 0.0001;
-        }
-
-        double tempC = cell.getTemperatureOr(15.0);
-        double rainMm = cell.getRainfallOr(500.0);
-
-        // Continuous human climate niche (Xu et al. 2020, PNAS)
-        double sigmaT = 6.5 * (1.0 + 0.10 * techLevel);
-        double thermalNiche = Math.exp(-Math.pow(tempC - 13.5, 2.0) / (2.0 * sigmaT * sigmaT));
-        double moistureNiche = (rainMm / (rainMm + 300.0)) * Math.exp(-rainMm / 4000.0);
-
-        // Altitude suitability
-        double maxHabitableElev = 500.0 + (techLevel * 300.0);
-        double elevFactor;
-        if (elev > maxHabitableElev) {
-            double overflow = (elev - maxHabitableElev) / 1000.0;
-            elevFactor = Math.max(0.001, Math.exp(-overflow * (3.5 - techLevel * 0.25)));
-        } else {
-            elevFactor = 1.0 - (elev / (maxHabitableElev * 2.0));
-        }
-
-        return Math.clamp(thermalNiche * moistureNiche * Math.max(0.01, elevFactor), 0.001, 2.0);
-    }
-
-    /**
-     * Temperature comfort rating.
-     * Optimal range: 12°C - 24°C.
-     * Low tech has narrow tolerance; High tech broadens thermal adaptation.
-     */
-    private static double calculateTemperatureSuitability(double temp, double techLevel) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        double optimalTemp = 18.0;
-        // Thermal tolerance width sigma increases with technology
-        double sigma = 8.0 + (techLevel * 2.0); // Tech 0: sigma 8, Tech 6: sigma 20
-        double diff = temp - optimalTemp;
-
-        return Math.exp(- (diff * diff) / (2.0 * sigma * sigma));
-    }
-
-    /**
-     * Calculates planetary solar insolation (W/m²) dynamically based on celestial mechanics.
-     * For Earth (isEarth = true), uses Earth's Milankovitch orbital cycles at 65°N.
-     * For Mars, Venus, or procedural exoplanets (isEarth = false), computes solar flux from orbital parameters:
-     * F_solar = (S_0 / a²) * (1 - e²)^(-0.5) * cos(lat - declination).
-     */
-    public static double calculatePlanetarySolarInsolation(double lat, double obliquityDeg, double eccentricity, double semiMajorAxisAU, long startYearBP, boolean isEarth) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (isEarth) {
-
-
-
-
-            org.ether.society.engines.tier1.MilankovitchOrbitalEngine.MilankovitchParameters params =
-                    org.ether.society.engines.tier1.MilankovitchOrbitalEngine.computeOrbitalParameters((double) startYearBP);
-            return org.ether.society.engines.tier1.MilankovitchOrbitalEngine.calculateDailyInsolation(lat, 172, params);
-        } else {
-            // Celestial Mechanics General Solar Flux Equilibrium
-            double solarConstant = 1361.0; // Watts/m² at 1 AU
-            double distSq = Math.max(0.1, semiMajorAxisAU * semiMajorAxisAU);
-            double orbitalCorrection = 1.0 / Math.sqrt(Math.max(0.01, 1.0 - eccentricity * eccentricity));
-            double declination = Math.toRadians(obliquityDeg) * Math.sin(2.0 * Math.PI * (startYearBP % 365) / 365.0);
-            double latRad = Math.toRadians(lat);
-            double cosZenith = Math.max(0.0, Math.sin(latRad) * Math.sin(declination) + Math.cos(latRad) * Math.cos(declination));
-            return (solarConstant / distSq) * orbitalCorrection * cosZenith;
-        }
-    }
-
-    /**
-     * Standard Earth-preset wrapper for Milankovitch summer insolation at 65°N.
-     */
-    public static double calculateMilankovitchSummerInsolation65N(long startYearBP) {
-        // Step 1: Query exact numerical astronomical ephemeris (Laskar 2004 / Berger 1978)
-        double laskar = org.ether.society.analytics.HistoricalValidationKernel.getInterpolatedBenchmarkValue("milankovitchInsolation", (int) startYearBP);
-        if (!Double.isNaN(laskar) && laskar > 0.0) {
-            return laskar;
-        }
-        // Step 2: Fallback to celestial mechanics solver for procedural orbital parameters
-        return calculatePlanetarySolarInsolation(65.0, 23.44, 0.0167, 1.0, startYearBP, true);
-    }
-
-    /**
-     * Calculates plant Net Primary Productivity (NPP) multiplier based on atmospheric CO2 levels
-     * derived from EPICA Dome C / Vostok ice cores (180 ppm LGM peak to 280 ppm Holocene).
-     */
-    public static double calculateCO2VegetationMultiplier(long startYearBP) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        double t = (double) Math.abs(startYearBP);
-        // CO2 concentration interpolation (180 ppm at LGM peak ~20,000 BP up to 280 ppm Holocene)
-        double co2ppm = 280.0 - 100.0 * Math.exp(-Math.pow((t - 20000.0) / 15000.0, 2.0));
-        co2ppm = Math.clamp(co2ppm, 180.0, 280.0);
-        return 1.0 + 0.25 * Math.log(co2ppm / 180.0);
-    }
-
-    /**
-     * Calculates coastal foraging carrying capacity boost (2.5x) for intertidal shellfisheries
-     * and marine omega-3 (DHA) resource exploitation along coastal margins.
-     */
-    public static double calculateCoastalForagingMultiplier(H3Cell cell) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cell == null) return 1.0;
-        Biome b = cell.getBiome();
-        double elev = cell.getElevationOr(0.0);
-        if (b == Biome.BEACH || (elev > 0 && elev <= 25.0 && cell.getWaterResource() != null && cell.getWaterResource() > 0.6)) {
-            return 2.5; // High-density intertidal shellfishery & marine foraging boost
-        }
-        return 1.0;
-    }
-
-    /**
-     * Computes Quaternary Megafauna Extinction (QME) density coupling using Lotka-Volterra dynamics
-     * as a synergistic function of human hunting pressure gamma * rho and climate stress.
-     */
-    public static double calculateMegafaunaAbundanceIndex(long startYearBP, double humanDensity, double climateStress) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        double t = (double) Math.abs(startYearBP);
-        double baseMegafauna = 100.0; // Baseline 100% megafauna index
-        if (startYearBP >= -10000) {
-            // Post-Holocene and Anthropocene continuous megafauna defaunation (Sandom et al. 2014, Barnosky 2004, WWF LPR 2024)
-            if (startYearBP < 1800) {
-                return 9.5 + (20.0 - 9.5) * Math.max(0.0, (1800.0 - startYearBP) / 11800.0);
-            } else {
-                return Math.max(1.0, 9.5 - (8.0 * Math.min(1.0, (startYearBP - 1800.0) / 226.0)));
-            }
-        }
-
-        // Late Pleistocene cumulative megafaunal defaunation (-100,000 BP to -10,000 BP)
-        // Canonical empirical fossil record (Sandom et al. 2014; Barnosky et al. 2004):
-        // Pristine baseline = 100% at -100k BP; ~80% at -30k BP; ~60% at LGM -20k BP; ~20% at -10k BP
-        double tKya = t / 1000.0;
-        double baselinePleistoceneAbundance = 20.0 + 80.0 / (1.0 + Math.exp((20.0 - tKya) / 8.5));
-        double huntingPressure = 0.02 * humanDensity;
-        double stressModulation = 1.0 - Math.clamp(huntingPressure + 0.15 * climateStress, 0.0, 0.35);
-        return Math.clamp(baselinePleistoceneAbundance * stressModulation, 2.0, 100.0);
-    }
-
-
-    /**
-     * Freshwater & River / Coastal proximity constraint.
-     * Crucial user requirement:
-     * - Neolithic / Prehistory (Tech <= 1.5): humans can ONLY live near rivers, lakes, coasts.
-     *   Independence from water sources is severely penalized.
-     * - 17th Century / Industrial (Tech >= 5.0): humans can dig deep wells, build aqueducts, transport water.
-     */
-    private static double calculateWaterAndRiverSuitability(H3Cell cell, double techLevel) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        double water = cell.getWaterResourceOr(0.0);
-        double accessibleAquifer = cell.getAccessibleAquiferOr(0.0);
-        Biome b = cell.getBiome();
-
-        double elev = cell.getElevationOr(0.0);
-        double rain = cell.getRainfallOr(0.0);
-        boolean isCoastal = (b == Biome.BEACH || b == Biome.PLAINS || elev < 50.0);
-        boolean isRiverValley = (b == Biome.PLAINS && rain > 0.4) || water > 400.0;
-
-        // Base water score combining surface water, coastal access, AND accessible groundwater table (nappe phréatique accessible)
-        double aquiferScore = Math.min(1.0, accessibleAquifer / 10000.0);
-        double baseWaterScore = (water / 1000.0) * 0.45 + (aquiferScore * 0.35) + (isCoastal ? 0.2 : 0.0);
-        if (isRiverValley) baseWaterScore += 0.3;
-
-        // Accessible groundwater allows human settlement even in arid/dry areas (Oasis & shallow wells)
-        if (accessibleAquifer > 3000.0 && (b == Biome.DESERT || b == Biome.PLAINS)) {
-            baseWaterScore += 0.25;
-        }
-
-        baseWaterScore = Math.max(0.01, Math.min(1.0, baseWaterScore));
-
-        // Tech constraint exponent:
-        // Low tech (Tech 0-1): power = 2.5 to 3.0 (steep drop off if far from water/accessible aquifers)
-        // High tech (Tech 5+): power = 0.5 (very lenient with deep drilling & aqueducts)
-        double exponent = Math.max(0.4, 3.0 - (techLevel * 0.4));
-
-        return Math.pow(baseWaterScore, exponent);
-    }
-
-    /**
-     * Resource & carrying capacity bonus (Food, Wood, Metal, Agriculture).
-     */
-    private static double calculateResourceSuitability(H3Cell cell) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        double food = cell.getFoodResourceOr(0.0);
-        double wood = cell.getWoodResourceOr(0.0);
-        double metal = cell.getResourceMetalOr(0.0);
-
-        double bonus = 1.0 + (food / 2000.0) + (wood / 3000.0) + (metal / 4000.0);
-        return Math.min(3.0, bonus);
-    }
-
-    /**
-     * Pattern multiplier based on user selected density pattern.
-     */
-    private static double calculatePatternMultiplier(H3Cell cell, String pattern) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (pattern == null) return 1.0;
-        Biome b = cell.getBiome();
-        double elev = cell.getElevationOr(0.0);
-        double lat = cell.getLatitudeOr(0.0);
-        double lng = cell.getLongitudeOr(0.0);
-        double water = cell.getWaterResourceOr(0.0);
-        double aquifer = cell.getAccessibleAquiferOr(0.0);
-
-        return switch (pattern) {
-            case "UNBIASED_NATURAL", "UNBIASED", "NONE", "NATURAL_EQUILIBRIUM" -> 1.0;
-            case "COASTAL_MARITIME" -> 0.6 + 2.9 / (1.0 + Math.exp(0.05 * (elev - 40.0)));
-            case "RIVER_VALLEYS" -> 0.6 + 3.4 / (1.0 + Math.exp(-0.01 * (water - 300.0)));
-            case "HIGHLAND_MOUNTAIN" -> 0.6 + 2.9 / (1.0 + Math.exp(-0.005 * (elev - 700.0)));
-            case "INLAND_OASIS" -> 0.6 + 3.4 / (1.0 + Math.exp(-0.003 * (aquifer - 1500.0)));
-            case "EQUATORIAL_BELT" -> 0.6 + 2.4 * Math.exp(-Math.pow(lat / 18.0, 2.0));
-            case "EGYPT_NILE" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 27.0, 2.0) / 50.0 - Math.pow(lng - 31.0, 2.0) / 18.0);
-            case "GREEN_SAHARA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 22.0, 2.0) / 72.0 - Math.pow(lng - 10.0, 2.0) / 200.0);
-            case "MESOAMERICA" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 18.0, 2.0) / 32.0 - Math.pow(lng + 95.0, 2.0) / 72.0);
-            case "ROMAN_EMPIRE" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 38.0, 2.0) / 72.0 - Math.pow(lng - 15.0, 2.0) / 200.0);
-            case "AUSTRALIA_SAHUL" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat + 25.0, 2.0) / 100.0 - Math.pow(lng - 135.0, 2.0) / 200.0);
-            case "INDIA_MAURYA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 22.0, 2.0) / 50.0 - Math.pow(lng - 78.0, 2.0) / 72.0);
-            case "FERTILE_CRESCENT", "MESOPOTAMIA_ASSYRIA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 33.0, 2.0) / 32.0 - Math.pow(lng - 43.0, 2.0) / 50.0);
-            case "BERINGIA_AMERICAS", "LGM_REFUGIA", "YOUNGER_DRYAS" -> 1.0 + 2.5 / (1.0 + Math.exp(-0.2 * (lat - 35.0)));
-            case "WEST_AFRICA_MALI" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 14.0, 2.0) / 32.0 - Math.pow(lng + 4.0, 2.0) / 72.0);
-            case "JAPAN_SAKOKU" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 36.0, 2.0) / 32.0 - Math.pow(lng - 138.0, 2.0) / 32.0);
-            case "AMERICAS_1491", "COLUMBIAN_CONTACT" -> 1.0 + 2.0 * Math.exp(-Math.pow(lng + 75.0, 2.0) / 450.0);
-            case "ONE_CONTINENT" -> 1.0 + 2.0 * Math.exp(-Math.pow(lat / 25.0, 2.0));
-            case "INDUSTRIAL_1800" -> 1.0 + 2.0 * Math.exp(-Math.pow(lat - 50.0, 2.0) / 72.0);
-            case "URBAN_CLUSTERS" -> 1.0;
-            case "SPARSE_NOMADIC" -> 0.8;
-            case "UNIFORM" -> 1.0;
-            case "RANDOM" -> 1.0;
-            default -> 1.0;
-        };
+        logger.info("Procedurally distributed {} humans across {} cells (Capital: {} kg/capita, Pattern: {})",
+                totalPopulation, landCells.size(), capitalPerCapita, pattern);
     }
 
     /**
@@ -651,7 +239,6 @@ public class ProceduralPopulationEngine {
         double meanWeight = sum / cellCount;
         if (meanWeight <= 0.0) return;
 
-        // Zipf scaling exponent alpha increases continuously with technological development (urbanization transition)
         double alphaUrban = 0.35 * Math.min(1.0, Math.max(0.0, techLevel / 10.0));
         for (int i = 0; i < cellCount; i++) {
             if (weights[i] > meanWeight) {
@@ -662,7 +249,9 @@ public class ProceduralPopulationEngine {
 
     /**
      * Detects urban nodes / spatial density singularities on the H3 grid based on local population maxima.
-     * Identifies cells with peak density relative to their surroundings and returns them sorted by density.
+     *
+     * @param cells input H3 cell list
+     * @return sorted list of high-density urban hub cells
      */
     public static List<H3Cell> detectUrbanNodes(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return List.of();
@@ -675,7 +264,6 @@ public class ProceduralPopulationEngine {
         if (populated.isEmpty()) return List.of();
 
         int maxPop = populated.get(0).getPopulation();
-        // Threshold: top density cells (>20% of max population and >= 10 inhabitants)
         int threshold = Math.max(10, (int) (maxPop * 0.20));
 
         List<H3Cell> nodes = new ArrayList<>();
@@ -690,17 +278,17 @@ public class ProceduralPopulationEngine {
     }
 
     /**
-     * Normalizes weights so sum of cell populations exactly matches totalPopulation.
-     * Computes cell terrain friction matrix, spatializes K(x), E(x), F(x), I(x), and populates age pyramid cohorts.
+     * Normalizes weights so sum of cell populations matches {@code totalPopulation}, spatializes
+     * physical capital $K(x)$, food reserves $F(x)$, energy $E(x)$, and initializes age pyramids.
      */
-    private static void applyNormalizedPopulation(List<H3Cell> landCells, double[] weights, double totalWeight, long totalPopulation, double capitalPerCapita, double techLevel) {
+    private static void applyNormalizedPopulation(List<H3Cell> landCells, double[] weights, double totalWeight,
+                                                  long totalPopulation, double capitalPerCapita, double techLevel) {
         if (totalWeight <= 0) return;
 
         double derivedTech = (techLevel > 0.0)
                 ? techLevel
                 : Math.clamp(1.0 + Math.log10(Math.max(1.0, capitalPerCapita / 50.0)) * 1.4, 0.2, 10.0);
 
-        // First pass: calculate populations
         long assigned = 0;
         long maxCellPop = 1;
         for (int i = 0; i < landCells.size(); i++) {
@@ -716,7 +304,6 @@ public class ProceduralPopulationEngine {
             assigned += pop;
         }
 
-        // Adjust rounding discrepancy on highest weight cell
         long diff = totalPopulation - assigned;
         if (diff != 0 && !landCells.isEmpty()) {
             H3Cell topCell = landCells.stream()
@@ -730,20 +317,17 @@ public class ProceduralPopulationEngine {
             if (newTopPop > maxCellPop) maxCellPop = newTopPop;
         }
 
-        // Second pass: Spatialization of Physical Capital K(x), Food Reserves F(x), Energy E(x), and Info I(x)
         double baseCapital = capitalPerCapita;
         for (H3Cell cell : landCells) {
             int pop = cell.getPopulationOr(0);
-            double normDensity = maxCellPop > 0 ? ((double) pop / (double) maxCellPop) : 0.0; // 0.0 to 1.0
+            double normDensity = maxCellPop > 0 ? ((double) pop / (double) maxCellPop) : 0.0;
 
-            // 1. Spatial Physical Capital K(x) [kg/capita]
-            double envSuit = calculateBiomeAndElevSuitability(cell, derivedTech);
+            double envSuit = ProceduralPopulationSuitabilityHelper.calculateBiomeAndElevSuitability(cell, derivedTech);
             double cellCapitalPerCapita = baseCapital * (0.4 + 0.6 * normDensity) * Math.clamp(envSuit, 0.2, 2.0);
             double cellCapitalTotal = pop * cellCapitalPerCapita;
             cell.setResourceCapital(cellCapitalTotal);
             cell.setResourceMetal(cellCapitalTotal * 0.15);
 
-            // 2. Spatial Food Reserves F(x) & Agricultural Biomass
             double foodBiomeFactor = cell.getFoodResource() != null && cell.getFoodResource() > 0 ? Math.clamp(cell.getFoodResource() / 1000.0, 0.2, 2.0) : 1.0;
             double soilNPK = cell.getSoilOrganicCarbon() != null && cell.getSoilOrganicCarbon() > 0 ? Math.clamp(cell.getSoilOrganicCarbon() / 100.0, 0.2, 2.5) : 1.0;
             cell.setFoodResource(pop * 6.0 * foodBiomeFactor * soilNPK * 10.0);
@@ -751,17 +335,74 @@ public class ProceduralPopulationEngine {
                 cell.setBiomassAgriculture(pop * 420.0 * foodBiomeFactor);
             }
 
-            // 3. Spatial Energy Stock E(x)
-            double energyBiomePot = (cell.getWoodResource() != null ? cell.getWoodResource() / 1000.0 : 0.5) * 0.5 + (cell.getMantleHeatFlow() != null ? cell.getMantleHeatFlow() / 100.0 : 0.8) * 0.5;
+            double energyBiomePot = (cell.getWoodResource() != null ? cell.getWoodResource() / 1000.0 : 0.5) * 0.5
+                    + (cell.getMantleHeatFlow() != null ? cell.getMantleHeatFlow() / 100.0 : 0.8) * 0.5;
             double cellEnergyPerCapita = 50.0 * (0.7 * (cellCapitalPerCapita / Math.max(1.0, baseCapital)) + 0.3 * Math.clamp(energyBiomePot, 0.1, 2.0));
             cell.setEnergyFire(pop * cellEnergyPerCapita);
 
-            // 4. Tech & Movement friction & Age pyramid
-            cell.setTechnologyLevel(derivedTech);
-            cell.calculateMovementFriction(derivedTech);
-            cell.updateAgePyramidFromTotal(derivedTech);
+            cell.calculateMovementFriction();
+            cell.updateAgePyramidFromTotal();
         }
     }
+
+    // --- Delegated Paleoclimatic, Orbital & Ecological Functions ---
+
+    /**
+     * Calculates planetary solar insolation ($\text{W/m}^2$) dynamically based on celestial mechanics.
+     *
+     * @param lat             latitude in degrees
+     * @param obliquityDeg    axial obliquity in degrees
+     * @param eccentricity    orbital eccentricity
+     * @param semiMajorAxisAU semi-major axis in AU
+     * @param startYearBP     epoch year
+     * @param isEarth         whether using Earth Milankovitch orbital solution
+     * @return solar insolation in $\text{W/m}^2$
+     */
+    public static double calculatePlanetarySolarInsolation(double lat, double obliquityDeg, double eccentricity,
+                                                           double semiMajorAxisAU, long startYearBP, boolean isEarth) {
+        return ProceduralPopulationSuitabilityHelper.calculatePlanetarySolarInsolation(
+                lat, obliquityDeg, eccentricity, semiMajorAxisAU, startYearBP, isEarth);
+    }
+
+    /**
+     * Standard Earth-preset wrapper for Milankovitch summer insolation at $65^\circ\text{N}$.
+     *
+     * @param startYearBP epoch year
+     * @return summer insolation at $65^\circ\text{N}$ in $\text{W/m}^2$
+     */
+    public static double calculateMilankovitchSummerInsolation65N(long startYearBP) {
+        return ProceduralPopulationSuitabilityHelper.calculateMilankovitchSummerInsolation65N(startYearBP);
+    }
+
+    /**
+     * Calculates plant Net Primary Productivity (NPP) multiplier based on EPICA Dome C atmospheric $\text{CO}_2$.
+     *
+     * @param startYearBP epoch year
+     * @return $\text{CO}_2$ vegetation multiplier
+     */
+    public static double calculateCO2VegetationMultiplier(long startYearBP) {
+        return ProceduralPopulationSuitabilityHelper.calculateCO2VegetationMultiplier(startYearBP);
+    }
+
+    /**
+     * Calculates coastal foraging carrying capacity boost ($2.5\times$) along intertidal coastal margins.
+     *
+     * @param cell target H3 cell
+     * @return coastal foraging multiplier
+     */
+    public static double calculateCoastalForagingMultiplier(H3Cell cell) {
+        return ProceduralPopulationSuitabilityHelper.calculateCoastalForagingMultiplier(cell);
+    }
+
+    /**
+     * Computes Quaternary Megafauna Extinction (QME) abundance index (Sandom et al. 2014; Barnosky 2004).
+     *
+     * @param startYearBP   epoch year
+     * @param humanDensity  human population density
+     * @param climateStress climate stress index
+     * @return megafauna abundance percentage $\in [1.0, 100.0]$
+     */
+    public static double calculateMegafaunaAbundanceIndex(long startYearBP, double humanDensity, double climateStress) {
+        return ProceduralPopulationSuitabilityHelper.calculateMegafaunaAbundanceIndex(startYearBP, humanDensity, climateStress);
+    }
 }
-
-

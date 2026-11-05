@@ -6,21 +6,14 @@
  */
 package org.ether.society.ui;
 
-import javafx.animation.AnimationTimer;
-import javafx.animation.PauseTransition;
-import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
 import org.ether.society.events.EventSystem;
 import org.ether.society.h3.H3Service;
-import org.ether.society.model.Biome;
+import org.ether.society.ui.mapcanvas.H3MapViewportAndRenderHelper;
 import org.ether.society.ui.renderers.H3BeaconOverlayRenderer;
 import org.ether.society.ui.renderers.H3CellColorResolver;
 import org.ether.society.ui.renderers.H3Flat2DRenderer;
@@ -32,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -50,6 +42,7 @@ import java.util.function.BiConsumer;
  *   <li>{@link H3Globe3DRenderer}: 3D spherical orthographic projection, horizon culling, and atmosphere glow</li>
  *   <li>{@link H3VectorLayerRenderer}: Hypsometric contour isolines, flux vectors, resource glyphs, and histogram legends</li>
  *   <li>{@link H3BeaconOverlayRenderer}: Pulsing event beacons, radar rings, and scenario HUD badges</li>
+ *   <li>{@link H3MapViewportAndRenderHelper}: Camera flight trajectories, auto-rotation timers, and frame compositing</li>
  * </ul>
  * </p>
  *
@@ -97,11 +90,9 @@ public class H3MapCanvas extends Canvas {
     private double verticalExaggeration = 25.0;
     private double reliefScale = 1.0;
 
-    // --- Animation & Auto-Rotation ---
+    // --- Auto-Rotation ---
     private boolean autoRotating = false;
     private double autoRotationSpeed = 0.4;
-    private AnimationTimer autoRotateTimer;
-    private AnimationTimer activeFlyTimer;
 
     // --- Interactive Overlays & SubScenes ---
     private MiniMap miniMap;
@@ -112,8 +103,9 @@ public class H3MapCanvas extends Canvas {
     private String currentDateStr = "An -100000";
     private boolean isRecordingVideo = false;
 
-    // --- Modular Interaction & Renderers ---
+    // --- Modular Interaction, Viewport & Renderers ---
     private final H3MapInteractionHandler interactionHandler;
+    private final H3MapViewportAndRenderHelper viewportHelper = new H3MapViewportAndRenderHelper();
     private final H3CellColorResolver colorResolver = new H3CellColorResolver(scientificColorMap);
     private final H3Flat2DRenderer flat2DRenderer = new H3Flat2DRenderer();
     private final H3Globe3DRenderer globe3DRenderer = new H3Globe3DRenderer();
@@ -136,8 +128,6 @@ public class H3MapCanvas extends Canvas {
         widthProperty().addListener((obs, oldW, newW) -> draw());
         heightProperty().addListener((obs, oldH, newH) -> draw());
     }
-
-    // --- Resizable Canvas Overrides ---
 
     @Override public boolean isResizable() { return true; }
     @Override public double prefWidth(double height) { return getWidth(); }
@@ -192,14 +182,12 @@ public class H3MapCanvas extends Canvas {
         draw();
     }
 
-    public void invalidateSmoothCache() {
-        this.globe3DRenderer.invalidateSmoothCache();
-    }
+    public void invalidateSmoothCache() { this.globe3DRenderer.invalidateSmoothCache(); }
 
     public boolean isTabVisible() { return tabVisible; }
     public void setTabVisible(boolean tabVisible) {
         this.tabVisible = tabVisible;
-        updateAutoRotateTimerState();
+        viewportHelper.updateAutoRotateTimerState(this, this::notifyMiniMap);
         draw();
     }
 
@@ -230,7 +218,7 @@ public class H3MapCanvas extends Canvas {
     public ViewMode getViewMode() { return viewMode; }
     public void setViewMode(ViewMode mode) {
         this.viewMode = mode;
-        updateAutoRotateTimerState();
+        viewportHelper.updateAutoRotateTimerState(this, this::notifyMiniMap);
         draw();
         logger.info("View mode changed to: {}", mode);
     }
@@ -244,9 +232,7 @@ public class H3MapCanvas extends Canvas {
             this.activeDisplayModes.add(mode);
         }
         this.displayMode = mode;
-        this.colorResolver.setActiveDisplayModes(this.activeDisplayModes);
-        this.globe3DRenderer.invalidateSmoothCache();
-        draw();
+        syncDisplayModesAndRedraw();
     }
 
     public Set<DisplayMode> getActiveDisplayModes() {
@@ -261,9 +247,7 @@ public class H3MapCanvas extends Canvas {
             this.activeDisplayModes.add(DisplayMode.BIOME);
         }
         this.displayMode = getPrimaryDisplayMode();
-        this.colorResolver.setActiveDisplayModes(this.activeDisplayModes);
-        this.globe3DRenderer.invalidateSmoothCache();
-        draw();
+        syncDisplayModesAndRedraw();
     }
 
     public void setDisplayModeActive(DisplayMode mode, boolean active) {
@@ -277,14 +261,16 @@ public class H3MapCanvas extends Canvas {
             }
         }
         this.displayMode = getPrimaryDisplayMode();
+        syncDisplayModesAndRedraw();
+    }
+
+    private void syncDisplayModesAndRedraw() {
         this.colorResolver.setActiveDisplayModes(this.activeDisplayModes);
         this.globe3DRenderer.invalidateSmoothCache();
         draw();
     }
 
-    public boolean isDisplayModeActive(DisplayMode mode) {
-        return activeDisplayModes.contains(mode);
-    }
+    public boolean isDisplayModeActive(DisplayMode mode) { return activeDisplayModes.contains(mode); }
 
     public DisplayMode getPrimaryDisplayMode() {
         for (DisplayMode dm : activeDisplayModes) {
@@ -302,10 +288,8 @@ public class H3MapCanvas extends Canvas {
     public boolean isAutoRotating() { return autoRotating; }
     public void setAutoRotating(boolean autoRotating) {
         this.autoRotating = autoRotating;
-        if (globe3DSubScene != null) {
-            globe3DSubScene.setAutoRotating(autoRotating);
-        }
-        updateAutoRotateTimerState();
+        if (globe3DSubScene != null) globe3DSubScene.setAutoRotating(autoRotating);
+        viewportHelper.updateAutoRotateTimerState(this, this::notifyMiniMap);
         draw();
     }
 
@@ -320,39 +304,12 @@ public class H3MapCanvas extends Canvas {
         }
     }
 
-    private void updateAutoRotateTimerState() {
-        if (autoRotating && viewMode == ViewMode.VIEW_3D && tabVisible) {
-            if (autoRotateTimer == null) {
-                autoRotateTimer = new AnimationTimer() {
-                    private long lastNow = 0;
-                    @Override
-                    public void handle(long now) {
-                        if (!autoRotating || viewMode != ViewMode.VIEW_3D || !tabVisible) return;
-                        if (activeFlyTimer != null) { lastNow = now; return; }
-                        if (lastNow == 0) { lastNow = now; return; }
-                        double deltaSeconds = Math.min(0.1, (now - lastNow) / 1_000_000_000.0);
-                        lastNow = now;
-                        double deg = autoRotationSpeed * 60.0 * deltaSeconds;
-                        centerLng = (centerLng + deg + 180.0) % 360.0 - 180.0;
-                        draw();
-                        notifyMiniMap();
-                    }
-                };
-            }
-            autoRotateTimer.start();
-        } else if (autoRotateTimer != null) {
-            autoRotateTimer.stop();
-        }
-    }
-
     public void resetView() {
         this.zoomFactor = 1.0;
         if (cells != null && !cells.isEmpty()) {
             if (minLat == 0 && maxLat == 0 && minLng == 0 && maxLng == 0) {
-                minLat = cells.stream().mapToDouble(H3Cell::getLatitude).min().orElse(-90.0);
-                maxLat = cells.stream().mapToDouble(H3Cell::getLatitude).max().orElse(90.0);
-                minLng = cells.stream().mapToDouble(H3Cell::getLongitude).min().orElse(-180.0);
-                maxLng = cells.stream().mapToDouble(H3Cell::getLongitude).max().orElse(180.0);
+                double[] b = H3MapViewportAndRenderHelper.computeGeographicBounds(cells, true);
+                minLat = b[0]; maxLat = b[1]; minLng = b[2]; maxLng = b[3];
             }
             this.centerLat = (minLat + maxLat) / 2.0;
             this.centerLng = (minLng + maxLng) / 2.0;
@@ -360,9 +317,7 @@ public class H3MapCanvas extends Canvas {
             this.centerLat = 0.0;
             this.centerLng = 0.0;
         }
-        if (globe3DSubScene != null) {
-            globe3DSubScene.resetCamera();
-        }
+        if (globe3DSubScene != null) globe3DSubScene.resetCamera();
         this.globe3DRenderer.invalidateSmoothCache();
         draw();
         notifyMiniMap();
@@ -371,9 +326,7 @@ public class H3MapCanvas extends Canvas {
     public H3Globe3DSubScene getGlobe3DSubScene() {
         if (globe3DSubScene == null) {
             globe3DSubScene = new H3Globe3DSubScene(getWidth() > 0 ? getWidth() : 1280, getHeight() > 0 ? getHeight() : 800);
-            if (cells != null && !cells.isEmpty()) {
-                globe3DSubScene.updateTerrainMesh(cells);
-            }
+            if (cells != null && !cells.isEmpty()) globe3DSubScene.updateTerrainMesh(cells);
         }
         return globe3DSubScene;
     }
@@ -382,51 +335,30 @@ public class H3MapCanvas extends Canvas {
         this.reliefScale = scale;
         if (globe3DSubScene != null) {
             globe3DSubScene.setReliefScale(scale);
-            if (cells != null && !cells.isEmpty()) {
-                globe3DSubScene.updateTerrainMesh(cells);
-            }
+            if (cells != null && !cells.isEmpty()) globe3DSubScene.updateTerrainMesh(cells);
         }
         draw();
     }
 
-    public double getReliefScale() { return reliefScale; }
-    public double getZoomFactor() { return zoomFactor; }
-    public double getCenterLat() { return centerLat; }
-    public double getCenterLng() { return centerLng; }
+    public double getReliefScale() { return reliefScale; } public double getZoomFactor() { return zoomFactor; }
+    public double getCenterLat() { return centerLat; } public double getCenterLng() { return centerLng; }
     public void setMiniMap(MiniMap miniMap) { this.miniMap = miniMap; notifyMiniMap(); }
+    public void setCenterView(double lat, double lng) { this.centerLat = Math.max(-90.0, Math.min(90.0, lat)); this.centerLng = Math.max(-180.0, Math.min(180.0, lng)); draw(); notifyMiniMap(); }
 
-    public void setCenterView(double lat, double lng) {
-        this.centerLat = Math.max(-90.0, Math.min(90.0, lat));
-        this.centerLng = Math.max(-180.0, Math.min(180.0, lng));
-        draw();
-        notifyMiniMap();
-    }
-
-    public void centerOnCoordinates(double lat, double lng) {
-        setCenterView(lat, lng);
-    }
+    public void centerOnCoordinates(double lat, double lng) { setCenterView(lat, lng); }
 
     void notifyMiniMap() {
-        if (miniMap != null) {
-            miniMap.updateViewport(zoomFactor, centerLat, centerLng);
-        }
+        if (miniMap != null) miniMap.updateViewport(zoomFactor, centerLat, centerLng);
     }
 
-    public double getMinLat() { return minLat; }
-    public double getMaxLat() { return maxLat; }
-    public double getMinLng() { return minLng; }
-    public double getMaxLng() { return maxLng; }
-    public double getScale() { return scale; }
-    public double getOffsetX() { return offsetX; }
-    public double getOffsetY() { return offsetY; }
-    public void setCenterLat(double centerLat) { this.centerLat = centerLat; }
-    public void setCenterLng(double centerLng) { this.centerLng = centerLng; }
+    public double getMinLat() { return minLat; } public double getMaxLat() { return maxLat; }
+    public double getMinLng() { return minLng; } public double getMaxLng() { return maxLng; }
+    public double getScale() { return scale; } public double getOffsetX() { return offsetX; } public double getOffsetY() { return offsetY; }
+    public void setCenterLat(double centerLat) { this.centerLat = centerLat; } public void setCenterLng(double centerLng) { this.centerLng = centerLng; }
     public void setZoomFactor(double zoomFactor) { this.zoomFactor = zoomFactor; }
     public H3BeaconOverlayRenderer getBeaconOverlayRenderer() { return beaconOverlayRenderer; }
-    public Map<Long, Integer> getPreviousPopMap() { return previousPopMap; }
-    public WorldBuffer getWorldBuffer() { return worldBuffer; }
-    public H3Service getH3Service() { return h3Service; }
-    public Map<Long, H3Cell> getCellMap() { return cellMap; }
+    public Map<Long, Integer> getPreviousPopMap() { return previousPopMap; } public WorldBuffer getWorldBuffer() { return worldBuffer; }
+    public H3Service getH3Service() { return h3Service; } public Map<Long, H3Cell> getCellMap() { return cellMap; }
 
     // --- Data Ingestion ---
 
@@ -440,15 +372,8 @@ public class H3MapCanvas extends Canvas {
             this.colorResolver.setCellMap(this.cellMap);
             return;
         }
-        this.cells = new ArrayList<>(cells);
-        this.cells.sort(Comparator.comparingDouble(c -> c != null ? c.getLatitude() : 0.0));
-
-        this.cellMap = new HashMap<>();
-        for (H3Cell c : this.cells) {
-            if (c != null) {
-                cellMap.put(c.getH3Index(), c);
-            }
-        }
+        this.cells = H3MapViewportAndRenderHelper.buildSortedCells(cells);
+        this.cellMap = H3MapViewportAndRenderHelper.buildCellMap(this.cells);
 
         if (!cells.isEmpty() && h3Service != null) {
             try {
@@ -460,49 +385,32 @@ public class H3MapCanvas extends Canvas {
             } catch (Exception ignored) {}
         }
 
-        minLat = cells.stream().mapToDouble(H3Cell::getLatitude).min().orElse(0);
-        maxLat = cells.stream().mapToDouble(H3Cell::getLatitude).max().orElse(0);
-        minLng = cells.stream().mapToDouble(H3Cell::getLongitude).min().orElse(0);
-        maxLng = cells.stream().mapToDouble(H3Cell::getLongitude).max().orElse(0);
+        double[] bounds = H3MapViewportAndRenderHelper.computeGeographicBounds(cells, false);
+        minLat = bounds[0]; maxLat = bounds[1]; minLng = bounds[2]; maxLng = bounds[3];
 
         this.colorResolver.setCells(this.cells);
         this.colorResolver.setCellMap(this.cellMap);
         this.globe3DRenderer.invalidateSmoothCache();
         resetView();
 
-        if (globe3DSubScene != null) {
-            globe3DSubScene.updateTerrainMesh(cells);
-        }
+        if (globe3DSubScene != null) globe3DSubScene.updateTerrainMesh(cells);
     }
 
     public void setWorldBuffer(WorldBuffer buffer) {
         this.worldBuffer = buffer;
-        this.h3ToBufferIndexMap.clear();
-        if (buffer != null) {
-            long[] indexes = buffer.getH3Indexes();
-            int cap = buffer.getCapacity();
-            for (int k = 0; k < cap; k++) {
-                if (indexes[k] != 0L) {
-                    h3ToBufferIndexMap.put(indexes[k], k);
-                }
-            }
-        }
+        H3MapViewportAndRenderHelper.rebuildBufferIndexMap(buffer, this.h3ToBufferIndexMap);
         this.colorResolver.setWorldBuffer(buffer);
         this.colorResolver.setH3ToBufferIndexMap(this.h3ToBufferIndexMap);
         this.globe3DRenderer.invalidateSmoothCache();
         draw();
     }
 
-    public Integer getBufferIndex(long h3Index) {
-        return h3ToBufferIndexMap.get(h3Index);
-    }
+    public Integer getBufferIndex(long h3Index) { return h3ToBufferIndexMap.get(h3Index); }
 
     // --- Overlays, Metadata & Video Stubs ---
 
     public void setTooltipContainer(Pane container) {
-        if (interactionHandler != null) {
-            interactionHandler.setTooltipContainer(container);
-        }
+        if (interactionHandler != null) interactionHandler.setTooltipContainer(container);
     }
 
     public void setScenarioName(String name) {
@@ -518,19 +426,13 @@ public class H3MapCanvas extends Canvas {
     public boolean isRecordingVideo() { return isRecordingVideo; }
     public void startVideoRecording() { this.isRecordingVideo = true; }
     public void stopVideoRecording() { this.isRecordingVideo = false; }
-    public void captureTickFrame() {}
-    public void captureTickFrame(long currentTick) {}
-    public void truncateVideoFramesAbove(long tickIndex) {}
+    public void captureTickFrame() {} public void captureTickFrame(long currentTick) {} public void truncateVideoFramesAbove(long tickIndex) {}
 
     public void setOnHoverCallback(BiConsumer<H3Cell, double[]> callback) {
-        if (interactionHandler != null) {
-            interactionHandler.setOnHoverCallback(callback);
-        }
+        if (interactionHandler != null) interactionHandler.setOnHoverCallback(callback);
     }
     public void setOnCellClickedCallback(BiConsumer<Double, Double> callback) {
-        if (interactionHandler != null) {
-            interactionHandler.setOnCellClickedCallback(callback);
-        }
+        if (interactionHandler != null) interactionHandler.setOnCellClickedCallback(callback);
     }
 
     // --- Main Rendering Pipeline ---
@@ -539,66 +441,14 @@ public class H3MapCanvas extends Canvas {
         if (!tabVisible || !isVisible() || getWidth() < 1.0 || getHeight() < 1.0) return;
         if (cells == null || cells.isEmpty()) return;
 
-        GraphicsContext gc = getGraphicsContext2D();
-        gc.clearRect(0, 0, getWidth(), getHeight());
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, getWidth(), getHeight());
-
-        double latRange = maxLat - minLat;
-        double lngRange = maxLng - minLng;
-        double scaleX = getWidth() / Math.max(1e-4, lngRange);
-        double scaleY = getHeight() / Math.max(1e-4, latRange);
+        double scaleX = getWidth() / Math.max(1e-4, maxLng - minLng);
+        double scaleY = getHeight() / Math.max(1e-4, maxLat - minLat);
         scale = Math.min(scaleX, scaleY) * 0.9 * zoomFactor;
-
         offsetX = (getWidth() / 2.0) - (centerLng - minLng) * scale;
         offsetY = (getHeight() / 2.0) - (maxLat - centerLat) * scale;
 
-        if (viewMode == ViewMode.VIEW_3D) {
-            globe3DRenderer.draw3D(gc, cells, colorResolver, smoothMap, showHexGrid, showFloatingLayers,
-                    showHillshading, showSolarTerminator, verticalExaggeration, zoomFactor,
-                    centerLat, centerLng, minLat, maxLat, minLng, maxLng, getWidth(), getHeight());
-        } else {
-            flat2DRenderer.draw2D(gc, cells, colorResolver, globe3DRenderer, smoothMap, showHexGrid,
-                    showFloatingLayers, showHillshading, showSolarTerminator,
-                    minLat, maxLat, minLng, maxLng, scale, offsetX, offsetY, getWidth(), getHeight());
-        }
-
-        if (showContours) {
-            vectorLayerRenderer.drawContours(gc, showContours, cells, cellMap, h3Service, viewMode,
-                    zoomFactor, minLat, maxLat, minLng, scale, offsetX, offsetY,
-                    getWidth(), getHeight(), centerLat, centerLng, verticalExaggeration);
-        }
-
-        if (showFlowVectors) {
-            vectorLayerRenderer.drawFlowVectors(gc, showFlowVectors, cells, cellMap, h3Service, viewMode,
-                    zoomFactor, minLng, maxLat, scale, offsetX, offsetY, getWidth(), getHeight(), centerLat, centerLng);
-        }
-
-        if (showResourceOverlay) {
-            vectorLayerRenderer.drawResourceOverlay(gc, showResourceOverlay, cells, worldBuffer, h3ToBufferIndexMap,
-                    viewMode, zoomFactor, minLng, maxLat, scale, offsetX, offsetY, getWidth(), getHeight(), centerLat, centerLng);
-        }
-
-        beaconOverlayRenderer.drawEventBeacons(gc, eventSystem, viewMode, zoomFactor, centerLat, centerLng,
-                minLng, maxLat, scale, offsetX, offsetY, getWidth(), getHeight());
-
-        if (showCornerOverlays) {
-            beaconOverlayRenderer.drawCornerOverlays(gc, showCornerOverlays, scenarioName, currentDateStr, getWidth(), getHeight());
-        }
-
-        if (showLegendOverlay) {
-            vectorLayerRenderer.drawLegendOverlay(gc, cells, getPrimaryDisplayMode(), colorResolver, getWidth(), getHeight());
-        }
-
-        if (showMouseOverInfo && interactionHandler != null && interactionHandler.getTooltip() != null
-                && interactionHandler.getTooltip().isVisible() && interactionHandler.getHoveredCell() != null) {
-            interactionHandler.updateTooltip(
-                    interactionHandler.getPendingCanvasX(),
-                    interactionHandler.getPendingCanvasY(),
-                    interactionHandler.getPendingSceneX(),
-                    interactionHandler.getPendingSceneY()
-            );
-        }
+        viewportHelper.renderLayers(this, colorResolver, flat2DRenderer, globe3DRenderer,
+                vectorLayerRenderer, beaconOverlayRenderer, interactionHandler, h3ToBufferIndexMap, currentDateStr);
     }
 
     // --- Camera Flights & Event Beacons ---
@@ -609,46 +459,7 @@ public class H3MapCanvas extends Canvas {
     }
 
     public void flyTo(double targetLat, double targetLng, double targetZoom) {
-        if (activeFlyTimer != null) activeFlyTimer.stop();
-        if (globe3DSubScene != null) globe3DSubScene.flyTo(targetLat, targetLng);
-
-        final double startLat = this.centerLat;
-        final double startLng = this.centerLng;
-        final double startZoom = this.zoomFactor;
-        final double finalTargetZoom = (targetZoom > 0.1 && targetZoom < 50.0) ? targetZoom : startZoom;
-
-        double dLng = targetLng - startLng;
-        while (dLng > 180.0) dLng -= 360.0;
-        while (dLng < -180.0) dLng += 360.0;
-        final double finalTargetLng = startLng + dLng;
-
-        final long startNs = System.nanoTime();
-        final long durationNs = 1_000_000_000L;
-
-        activeFlyTimer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                double elapsed = (now - startNs) / (double) durationNs;
-                if (elapsed >= 1.0) {
-                    centerLat = targetLat;
-                    centerLng = ((finalTargetLng + 180.0) % 360.0) - 180.0;
-                    zoomFactor = finalTargetZoom;
-                    draw();
-                    notifyMiniMap();
-                    stop();
-                    activeFlyTimer = null;
-                } else {
-                    double t = 0.5 - 0.5 * Math.cos(elapsed * Math.PI);
-                    centerLat = startLat + t * (targetLat - startLat);
-                    double currentLng = startLng + t * (finalTargetLng - startLng);
-                    centerLng = ((currentLng + 180.0) % 360.0) - 180.0;
-                    zoomFactor = startZoom + t * (finalTargetZoom - startZoom);
-                    draw();
-                    notifyMiniMap();
-                }
-            }
-        };
-        activeFlyTimer.start();
+        viewportHelper.flyTo(this, globe3DSubScene, targetLat, targetLng, targetZoom, this::notifyMiniMap);
     }
 
     public void pingLocation(double lat, double lng, String title, String type, double magnitude) {
@@ -669,40 +480,17 @@ public class H3MapCanvas extends Canvas {
     // --- Mouse Interaction & Picking Delegation ---
 
     public void setupMouseHandlers() {
-        if (interactionHandler != null) {
-            interactionHandler.setupMouseHandlers();
-        }
+        if (interactionHandler != null) interactionHandler.setupMouseHandlers();
     }
 
-    public double[] getLatLngAt(double mouseX, double mouseY) {
-        return interactionHandler != null ? interactionHandler.getLatLngAt(mouseX, mouseY) : null;
-    }
-
-    public H3Cell findCellAt(double mouseX, double mouseY) {
-        return interactionHandler != null ? interactionHandler.findCellAt(mouseX, mouseY) : null;
-    }
-
-    public void updateTooltip(double canvasX, double canvasY, double sceneX, double sceneY) {
-        if (interactionHandler != null) {
-            interactionHandler.updateTooltip(canvasX, canvasY, sceneX, sceneY);
-        }
-    }
+    public double[] getLatLngAt(double mouseX, double mouseY) { return interactionHandler != null ? interactionHandler.getLatLngAt(mouseX, mouseY) : null; }
+    public H3Cell findCellAt(double mouseX, double mouseY) { return interactionHandler != null ? interactionHandler.findCellAt(mouseX, mouseY) : null; }
+    public void updateTooltip(double canvasX, double canvasY, double sceneX, double sceneY) { if (interactionHandler != null) interactionHandler.updateTooltip(canvasX, canvasY, sceneX, sceneY); }
 
     // --- Public Color & Metric Delegation ---
 
-    public Color blendColors(Color base, Color overlay, double alpha) {
-        return H3CellColorResolver.blendColors(base, overlay, alpha);
-    }
-
-    public boolean hasThematicOverlay(H3Cell cell) {
-        return colorResolver.hasThematicOverlay(cell, getPrimaryDisplayMode());
-    }
-
-    public double getCellDisplayValue(H3Cell cell, int unusedIndex) {
-        return colorResolver.getCellDisplayValue(cell, getPrimaryDisplayMode(), getPrimaryDisplayMode());
-    }
-
-    public double getCellDisplayValue(H3Cell cell, DisplayMode mode, int unusedIndex) {
-        return colorResolver.getCellDisplayValue(cell, mode, getPrimaryDisplayMode());
-    }
+    public Color blendColors(Color base, Color overlay, double alpha) { return H3CellColorResolver.blendColors(base, overlay, alpha); }
+    public boolean hasThematicOverlay(H3Cell cell) { return colorResolver.hasThematicOverlay(cell, getPrimaryDisplayMode()); }
+    public double getCellDisplayValue(H3Cell cell, int unusedIndex) { return colorResolver.getCellDisplayValue(cell, getPrimaryDisplayMode(), getPrimaryDisplayMode()); }
+    public double getCellDisplayValue(H3Cell cell, DisplayMode mode, int unusedIndex) { return colorResolver.getCellDisplayValue(cell, mode, getPrimaryDisplayMode()); }
 }

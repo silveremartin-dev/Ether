@@ -439,9 +439,7 @@ public class SimulationSaveManager {
                         Path metaFile = dir.resolve(METADATA_FILE);
                         SaveMetadata meta = null;
                         if (Files.exists(metaFile)) {
-                            try {
-                                meta = objectMapper.readValue(metaFile.toFile(), SaveMetadata.class);
-                            } catch (Exception ex) {
+                            try { meta = objectMapper.readValue(metaFile.toFile(), SaveMetadata.class); } catch (Exception ex) {
                                 logger.debug("Could not deserialize metadata.json in {}: {}", dir.getFileName(), ex.getMessage());
                             }
                         }
@@ -470,8 +468,7 @@ public class SimulationSaveManager {
 
                                 if (Files.exists(historyFile)) {
                                     try {
-                                        List<org.ether.society.analytics.HistorySnapshot> snaps = objectMapper.readValue(historyFile.toFile(),
-                                                objectMapper.getTypeFactory().constructCollectionType(List.class, org.ether.society.analytics.HistorySnapshot.class));
+                                        List<org.ether.society.analytics.HistorySnapshot> snaps = objectMapper.readValue(historyFile.toFile(), objectMapper.getTypeFactory().constructCollectionType(List.class, org.ether.society.analytics.HistorySnapshot.class));
                                         if (snaps != null && !snaps.isEmpty()) {
                                             endYear = snaps.get(snaps.size() - 1).year();
                                         }
@@ -496,11 +493,7 @@ public class SimulationSaveManager {
             logger.error("Failed to list saves", e);
         }
 
-        list.sort((a, b) -> {
-            if (a.getTimestamp() == null) return 1;
-            if (b.getTimestamp() == null) return -1;
-            return b.getTimestamp().compareTo(a.getTimestamp());
-        });
+        list.sort(java.util.Comparator.comparing(SaveMetadata::getTimestamp, java.util.Comparator.nullsLast(java.util.Comparator.reverseOrder())));
 
         return list;
     }

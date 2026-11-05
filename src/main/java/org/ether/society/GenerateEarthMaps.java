@@ -6,6 +6,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Procedural map generator for synthetic planetary elevation, precipitation, and biome rasters.
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
+ */
 public class GenerateEarthMaps {
 
     // Simple noise generator for terrain detail

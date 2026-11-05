@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.analytics;
@@ -13,17 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * World3 (Meadows Limits to Growth) vs Kurzweil (Law of Accelerating Returns LOAR) Comparator.
- * Compares system dynamics outcomes across parallel timeline trajectories:
- * 1. <b>World3 Limits to Growth</b>: Resource depletion, capital diversion, pollution feedback, Malthusian collapse.
- * 2. <b>Kurzweil LOAR</b>: Double-exponential technological acceleration, resource efficiency gains, singularity asymptote.
- * 3. <b>Ether Thermodynamic Baseline</b>: Physical EROEI and biophysical limits without macro-heuristics.
- * 4. <b>Coupled Hybrid</b>: Physical EROEI limits combined with tech acceleration and ecological feedback.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -45,46 +38,30 @@ public class World3VsKurzweilComparator {
 
         public double structuralDivergenceIndex = 0.0;
         public String dominantDriverSummary = "";
-
-        /**
-         * To string.
-         *
-         * @return the resulting computation or state reference
-         */
-        @Override
-        public String toString() {
-            return String.format(
-                "World3 vs Kurzweil Comparison Report:\n" +
-                "  - World3 Peak Pop: %.2fM in year %d (Depletion: %.2f%%/yr)\n" +
-                "  - Kurzweil Peak Pop: %.2fM in year %d (Tech Level 2050: %.2f)\n" +
-                "  - Baseline Pop 2050: %.2fM | Hybrid Pop 2050: %.2fM\n" +
-                "  - Structural Divergence Index: %.4f\n" +
-                "  - Dominant Driver: %s",
-                world3PeakPopulation / 1e6, world3PeakYear, world3ResourceDepletionRate * 100,
-                kurzweilPeakPopulation / 1e6, kurzweilPeakYear, kurzweilTechLevel2050,
-                baselinePopulation2050 / 1e6, hybridPopulation2050 / 1e6,
-                structuralDivergenceIndex, dominantDriverSummary
-            );
-        }
     }
 
-    /**
-     * Executes comparative multi-trajectory analysis over a given time horizon.
-     */
+    public static class DivergenceReport {
+        public double world3FinalCapital;
+        public double kurzweilFinalCapital;
+        public double structuralDivergenceIndex;
+        public String dominantParadigm;
+    }
+
     public static ComparisonReport compareTrajectories(H3Cell initialCell, int startYear, int durationYears) {
         ComparisonReport report = new ComparisonReport();
+        if (initialCell == null) return report;
 
         // 1. World3 Trajectory Simulation
         H3Cell w3Cell = cloneCell(initialCell);
         List<H3Cell> w3Cells = List.of(w3Cell);
-        double w3MaxPop = w3Cell.getPopulation();
+        double w3MaxPop = w3Cell.getPopulationOr(0);
         int w3MaxYear = startYear;
         double initialCapital = w3Cell.getResourceCapital() != null ? w3Cell.getResourceCapital() : 1000.0;
 
         for (int yr = startYear; yr < startYear + durationYears; yr++) {
             World3CouplingEngine.processWorld3System(w3Cells, 1.0);
-            if (w3Cell.getPopulation() > w3MaxPop) {
-                w3MaxPop = w3Cell.getPopulation();
+            if (w3Cell.getPopulationOr(0) > w3MaxPop) {
+                w3MaxPop = w3Cell.getPopulationOr(0);
                 w3MaxYear = yr;
             }
         }
@@ -96,13 +73,13 @@ public class World3VsKurzweilComparator {
         // 2. Kurzweil Trajectory Simulation
         H3Cell kurzCell = cloneCell(initialCell);
         List<H3Cell> kurzCells = List.of(kurzCell);
-        double kurzMaxPop = kurzCell.getPopulation();
+        double kurzMaxPop = kurzCell.getPopulationOr(0);
         int kurzMaxYear = startYear;
 
         for (int yr = startYear; yr < startYear + durationYears; yr++) {
             KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(kurzCells, 1.0);
-            if (kurzCell.getPopulation() > kurzMaxPop) {
-                kurzMaxPop = kurzCell.getPopulation();
+            if (kurzCell.getPopulationOr(0) > kurzMaxPop) {
+                kurzMaxPop = kurzCell.getPopulationOr(0);
                 kurzMaxYear = yr;
             }
         }
@@ -112,7 +89,7 @@ public class World3VsKurzweilComparator {
 
         // 3. Baseline Trajectory
         H3Cell baseCell = cloneCell(initialCell);
-        report.baselinePopulation2050 = baseCell.getPopulation();
+        report.baselinePopulation2050 = baseCell.getPopulationOr(0);
 
         // 4. Hybrid Trajectory (World3 + Kurzweil coupled)
         H3Cell hybridCell = cloneCell(initialCell);
@@ -121,11 +98,10 @@ public class World3VsKurzweilComparator {
             KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(hybridCells, 1.0);
             World3CouplingEngine.processWorld3System(hybridCells, 1.0);
         }
-        report.hybridPopulation2050 = hybridCell.getPopulation();
+        report.hybridPopulation2050 = hybridCell.getPopulationOr(0);
 
-        // Compute Structural Divergence Index (ratio of Kurzweil pop vs World3 pop divergence)
-        double popDiff = Math.abs(kurzCell.getPopulation() - w3Cell.getPopulation());
-        double meanPop = (kurzCell.getPopulation() + w3Cell.getPopulation()) / 2.0;
+        double popDiff = Math.abs(kurzCell.getPopulationOr(0) - w3Cell.getPopulationOr(0));
+        double meanPop = (kurzCell.getPopulationOr(0) + w3Cell.getPopulationOr(0)) / 2.0;
         report.structuralDivergenceIndex = meanPop > 0 ? popDiff / meanPop : 0.0;
 
         if (report.structuralDivergenceIndex > 0.50) {
@@ -133,6 +109,36 @@ public class World3VsKurzweilComparator {
         } else {
             report.dominantDriverSummary = "BALANCED COUPLING: Physical thermodynamic constraints cap technological accelerating returns.";
         }
+
+        return report;
+    }
+
+    public static DivergenceReport evaluateDivergence(List<H3Cell> baselineCells, double horizonYears) {
+        DivergenceReport report = new DivergenceReport();
+        if (baselineCells == null || baselineCells.isEmpty()) return report;
+
+        List<H3Cell> w3Cells = new ArrayList<>(baselineCells.size());
+        List<H3Cell> kurzCells = new ArrayList<>(baselineCells.size());
+
+        for (H3Cell c : baselineCells) {
+            w3Cells.add(cloneCell(c));
+            kurzCells.add(cloneCell(c));
+        }
+
+        World3CouplingEngine.processWorld3Coupling(w3Cells, horizonYears);
+        KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(kurzCells, horizonYears);
+
+        double w3Cap = 0;
+        double kCap = 0;
+        for (int i = 0; i < baselineCells.size(); i++) {
+            w3Cap += w3Cells.get(i).getResourceCapitalOr(0.0);
+            kCap += kurzCells.get(i).getResourceCapitalOr(0.0);
+        }
+
+        report.world3FinalCapital = w3Cap;
+        report.kurzweilFinalCapital = kCap;
+        report.structuralDivergenceIndex = Math.abs(kCap - w3Cap) / Math.max(1.0, (kCap + w3Cap) / 2.0);
+        report.dominantParadigm = kCap >= w3Cap ? "Kurzweil Exponential Expansion" : "World3 Entropic Overshoot";
 
         logger.info("Executed World3 vs Kurzweil comparison: Divergence index = {}", report.structuralDivergenceIndex);
         return report;
@@ -144,11 +150,8 @@ public class World3VsKurzweilComparator {
         clone.setResourceCapital(source.getResourceCapital());
         clone.setResourceMetal(source.getResourceMetal());
         clone.setPollutionLevel(source.getPollutionLevel());
-        clone.setTechnologyLevel(source.getTechnologyLevel());
         clone.setFoodResource(source.getFoodResource());
         clone.setLifespan(source.getLifespan());
         return clone;
     }
 }
-
-

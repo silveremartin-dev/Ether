@@ -30,19 +30,20 @@ public class ScottAgainstTheGrainPureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
+        // grounded strictly in conserved physical observables (AGENTS.md §10.1, §10.2).
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getTechnologyLevel() == null) continue;
+            if (cell == null) continue;
 
-            double tech = cell.getTechnologyLevel();
+            int pop = cell.getPopulationOr(0);
+            if (pop <= 0) continue;
+
+            double kPerCapita = cell.getResourceCapitalOr(0.0) / pop;
             // Continuous Gaussian early-agrarian health & epidemic vulnerability envelope (Scott 2017 "Against the Grain")
-            // Peak vulnerability centered at tech 2.0 (early state formation) with standard deviation 0.25
-            double scottVulnerability = Math.exp(-Math.pow(tech - 2.0, 2.0) / (2.0 * 0.25 * 0.25));
+            // Peak vulnerability centered at K/N = 150 kg/capita (early sedentary grain state) with standard deviation 35.0
+            double scottVulnerability = Math.exp(-Math.pow(kPerCapita - 150.0, 2.0) / (2.0 * 35.0 * 35.0));
 
             if (scottVulnerability > 0.01) {
                 // Scott penalty: initial health drop from grain monoculture and crowd disease

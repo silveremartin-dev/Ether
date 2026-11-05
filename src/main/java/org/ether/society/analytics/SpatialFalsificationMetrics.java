@@ -201,4 +201,37 @@ public final class SpatialFalsificationMetrics {
         copy.setEcologyPreset(s.getEcologyPreset());
         return copy;
     }
+
+    /**
+     * Extracts population density map filtered by geographic bounding box.
+     */
+    public static Map<Long, Double> extractPopDensityMap(List<H3Cell> cells, double minLat, double maxLat, double minLng, double maxLng) {
+        Map<Long, Double> result = new HashMap<>();
+        if (cells == null) return result;
+        for (H3Cell c : cells) {
+            if (c.getLatitude() >= minLat && c.getLatitude() <= maxLat &&
+                c.getLongitude() >= minLng && c.getLongitude() <= maxLng) {
+                double pop = c.getPopulation() != null ? c.getPopulation().doubleValue() : 0.0;
+                result.put(c.getH3Index(), pop);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Extracts total population within bounding box at given historical year.
+     */
+    public static long extractPopulationInBBox(SimulationRunRecord rec, int year, double minLat, double maxLat, double minLng, double maxLng) {
+        if (rec == null) return 0L;
+        List<H3Cell> startCells = rec.getSpatialSnapshotAt(year);
+        if (startCells == null) return 0L;
+        long total = 0L;
+        for (H3Cell c : startCells) {
+            if (c.getLatitude() >= minLat && c.getLatitude() <= maxLat &&
+                c.getLongitude() >= minLng && c.getLongitude() <= maxLng) {
+                total += c.getPopulationOr(0);
+            }
+        }
+        return total;
+    }
 }

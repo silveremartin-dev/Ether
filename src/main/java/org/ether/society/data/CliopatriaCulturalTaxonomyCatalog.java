@@ -154,96 +154,9 @@ public final class CliopatriaCulturalTaxonomyCatalog {
      * @return color corresponding to kinship typology
      */
     public static Color getPolityKinshipColor(String name, String seshatId) {
-        if (name == null) return new Color(0x8B5CF6);
-        String lower = normalize(name);
-
-        // 1. Egalitarian Nuclear Family & Civil Code / Partible Inheritance (#EC4899)
-        if (lower.contains("franc") || lower.contains("french") || lower.contains("consulate") ||
-            lower.contains("louisiana") || lower.contains("cispadane") || lower.contains("cisalpine") ||
-            lower.contains("tuscany") || lower.contains("papal") || lower.contains("sardinia") ||
-            lower.contains("naples") || lower.contains("two sicilies") || lower.contains("spain") ||
-            lower.contains("spanish") || lower.contains("castil") || lower.contains("urgell") ||
-            lower.contains("portug") || lower.contains("brazil") || lower.contains("haiti") ||
-            lower.contains("belgium") || lower.contains("wallonia") || lower.contains("ragusa")) return new Color(0xEC4899);
-
-        // 2. Absolute Nuclear Family & Proletarian Wage Labor (#3B82F6)
-        if (lower.contains("brit") || lower.contains("england") || lower.contains("great britain") ||
-            lower.contains("united kingdom") || lower.contains("united states") || lower.contains("america") ||
-            lower.contains("netherland") || lower.contains("dutch") || lower.contains("batavia") ||
-            lower.contains("cape colony") || lower.contains("ceylon")) return new Color(0x3B82F6);
-
-        // 3. Stem Family & Primogeniture (Stammfamilie / Famille Souche / Ie) (#8B5CF6)
-        if (lower.contains("prussia") || lower.contains("brandenburg") ||
-            lower.contains("austria") || lower.contains("habsburg") || lower.contains("holy roman") ||
-            lower.contains("bavaria") || lower.contains("saxony") || lower.contains("baden") ||
-            lower.contains("wurttemberg") || lower.contains("hesse") || lower.contains("hanover") ||
-            lower.contains("sweden") || lower.contains("denmark") || lower.contains("norway") ||
-            lower.contains("greenland") || lower.contains("swiss") || lower.contains("helvetic") ||
-            lower.contains("japan") || lower.contains("tokugawa") || lower.contains("edo") ||
-            lower.contains("basque")) return new Color(0x8B5CF6);
-
-        // 4. Patriarchal Joint Family & Peasant Commune (Mir / Obshchina / Zadruga) (#DC2626)
-        if (lower.contains("russ") || lower.contains("slav") || lower.contains("serb") ||
-            lower.contains("bulgar") || lower.contains("poland") || lower.contains("moldavia") ||
-            lower.contains("wallachia") || lower.contains("ukrain") || lower.contains("bohemia") ||
-            lower.contains("czech")) return new Color(0xDC2626);
-
-        // 5. Agnatic Lineage & Confucian Zongzu Clan (#EF4444)
-        if (lower.contains("qing") || lower.contains("china") || lower.contains("chinese") ||
-            lower.contains("korea") || lower.contains("joseon") || lower.contains("vietnam") ||
-            lower.contains("nguyen") || lower.contains("tay son") || lower.contains("dai viet")) return new Color(0xEF4444);
-
-        // 6. Segmentary Patrilineal Lineage & Endogamous Clan (#10B981)
-        if (lower.contains("ottoman") || lower.contains("turk") || lower.contains("morocco") ||
-            lower.contains("alaouite") || lower.contains("oman") || lower.contains("diriyah") ||
-            lower.contains("kuwait") || lower.contains("qasimid") || lower.contains("algiers") ||
-            lower.contains("tunis") || lower.contains("tripolitania") || lower.contains("karamanli") ||
-            lower.contains("persia") || lower.contains("qajar") || lower.contains("iran") ||
-            lower.contains("durrani") || lower.contains("afghan") || lower.contains("kazakh") ||
-            lower.contains("bukhara") || lower.contains("khiva") || lower.contains("kokand")) return new Color(0x10B981);
-
-        // 7. Gotra Exogamous Patrilineal Joint Family & Jati Caste Endogamy (#F59E0B)
-        if (lower.contains("maratha") || lower.contains("mughal") || lower.contains("sikh") ||
-            lower.contains("awadh") || lower.contains("bengal") || lower.contains("carnatic") ||
-            lower.contains("mysore") || lower.contains("travancore") || lower.contains("nepal") ||
-            lower.contains("india") || lower.contains("hyderabad")) return new Color(0xF59E0B);
-
-        // 8. Bilateral Matrifocal & Malay Nusantara / Southeast Asia (#06B6D4)
-        if (lower.contains("siam") || lower.contains("rattanakosin") || lower.contains("burma") ||
-            lower.contains("konbaung") || lower.contains("khmer") || lower.contains("cambodia") ||
-            lower.contains("chiangmai") || lower.contains("luang phrabang") || lower.contains("vientiane") ||
-            lower.contains("champasak") || lower.contains("banjar") || lower.contains("aceh") ||
-            lower.contains("johor") || lower.contains("yogyakarta") || lower.contains("surakarta") ||
-            lower.contains("banten") || lower.contains("brunei") || lower.contains("bali") ||
-            lower.contains("hawai") || lower.contains("merina") || lower.contains("madagascar") ||
-            lower.contains("malay") || lower.contains("malacca") || lower.contains("selangor") ||
-            lower.contains("kedah") || lower.contains("negeri sembilan") || lower.contains("pontianak") ||
-            lower.contains("mempawah") || lower.contains("sambas") || lower.contains("sukadana") ||
-            lower.contains("bima") || lower.contains("bone") || lower.contains("palembang") ||
-            lower.contains("jambi") || lower.contains("maguindanao") || lower.contains("sulu") ||
-            lower.contains("septinsular")) return new Color(0x06B6D4);
-
-        // 9. African Segmentary Lineages & Age-Set Organizations (#15803D)
-        if (lower.contains("sokoto") || lower.contains("bornu") || lower.contains("oyo") ||
-            lower.contains("ashanti") || lower.contains("bamana") || lower.contains("wadai") ||
-            lower.contains("darfur") || lower.contains("funj") || lower.contains("lunda") ||
-            lower.contains("kongo") || lower.contains("zulu") || lower.contains("xhosa") ||
-            lower.contains("dahomey") || lower.contains("ethiopia")) return new Color(0x15803D);
-
-        // 10. Caucasian Mountain Clan Lineages (#84CC16)
-        if (lower.contains("georgia") || lower.contains("guria") || lower.contains("imereti") ||
-            lower.contains("mingrelia") || lower.contains("abkhazia") || lower.contains("svaneti")) return new Color(0x84CC16);
-
-        return new Color(0x8B5CF6);
+        return CliopatriaKinshipAndTraitCatalog.getPolityKinshipColor(name, seshatId);
     }
 
-    /**
-     * Map historical polity name to official hex color matching cultural_registry.json.
-     *
-     * @param name polity name
-     * @param seshatId Seshat unique ID
-     * @return sovereign color
-     */
     public static Color getPolityColor(String name, String seshatId) {
         if (name == null) return new Color(0x64748B);
         String lower = normalize(name);

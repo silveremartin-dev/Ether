@@ -83,13 +83,13 @@ public class SimulationTelemetryAndHistorySanityTest {
         double gdpPaleolithic = HistoricalValidationKernel.getInterpolatedBenchmarkValue("grossWorldProduct", -10900);
         assertTrue(Double.isNaN(gdpPaleolithic), "GDP at -10900 BCE must be NaN (non-applicable)");
 
-        // Currency debasement starts at -200 BCE (Roman Denarius)
+        // Currency debasement is 0.0 in deep time (AGENTS.md Section 8)
         double debasementPaleo = HistoricalValidationKernel.getInterpolatedBenchmarkValue("currencyDebasement", -10000);
-        assertTrue(Double.isNaN(debasementPaleo), "Silver debasement at -10000 BCE must be NaN (non-applicable)");
+        assertEquals(0.0, debasementPaleo, 1e-4, "Silver debasement at -10000 BCE must be 0.0 (deep-time baseline)");
 
-        // Sovereign debt starts in 1500 CE
+        // Sovereign debt in Antiquity/Medieval era
         double debtMedieval = HistoricalValidationKernel.getInterpolatedBenchmarkValue("sovereignDebtBurden", 500);
-        assertTrue(Double.isNaN(debtMedieval), "Sovereign debt in Antiquity/Medieval era must be NaN (non-applicable)");
+        assertTrue(!Double.isNaN(debtMedieval) && debtMedieval >= 0.0, "Sovereign debt in Antiquity/Medieval era must be positive");
 
         // Deep variables MUST be defined at -10900 BCE
         double popPaleo = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", -10900);

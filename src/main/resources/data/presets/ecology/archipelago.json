@@ -44,9 +44,9 @@
     "seasonUseImport" : false,
     "seasonSource" : "",
     "seasonSeed" : 79777,
-    "canonicalPlanet" : "none",
-    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
+    "tidalLocked" : false,
+    "canonicalPlanet" : "none",
     "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique."
   },
   "terrestrialBiomassGtC" : 550.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
-  "canonicalPlanet" : "none",
   "associatedEpochYear" : 2026,
+  "canonicalPlanet" : "none",
   "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique."
 }

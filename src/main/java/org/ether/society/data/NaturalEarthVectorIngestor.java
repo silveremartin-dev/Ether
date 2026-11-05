@@ -427,48 +427,29 @@ public class NaturalEarthVectorIngestor {
         return applyElevationMask(img, elevationMask);
     }
 
-    public static BufferedImage rasterizeModernInstitutionalMap(long year, int width, int height, BufferedImage elevationMask) {
+    private static BufferedImage rasterizeScalarMap(java.util.function.ToIntFunction<CountryFeature> levelFunc, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
-
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, width, height);
-
         for (CountryFeature c : countries) {
-            int v = c.institutionalLevel;
+            int v = levelFunc.applyAsInt(c);
             g.setColor(new Color(v, v, v));
-            for (Path2D p : c.paths) {
-                g.fill(p);
-            }
+            for (Path2D p : c.paths) g.fill(p);
         }
         g.dispose();
-
         return applyElevationMask(img, elevationMask);
     }
 
+    public static BufferedImage rasterizeModernInstitutionalMap(long year, int width, int height, BufferedImage elevationMask) {
+        return rasterizeScalarMap(c -> c.institutionalLevel, width, height, elevationMask);
+    }
+
     public static BufferedImage rasterizeModernTechnologyMap(long year, int width, int height, BufferedImage elevationMask) {
-        List<CountryFeature> countries = getCountries(width, height);
-        if (countries.isEmpty()) return null;
-
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = img.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, width, height);
-
-        for (CountryFeature c : countries) {
-            int v = c.technologyLevel;
-            g.setColor(new Color(v, v, v));
-            for (Path2D p : c.paths) {
-                g.fill(p);
-            }
-        }
-        g.dispose();
-
-        return applyElevationMask(img, elevationMask);
+        return rasterizeScalarMap(c -> c.technologyLevel, width, height, elevationMask);
     }
 
     public static BufferedImage rasterizeModernTradeNetworkMap(long year, int width, int height, BufferedImage elevationMask) {
@@ -476,25 +457,7 @@ public class NaturalEarthVectorIngestor {
     }
 
     public static BufferedImage rasterizeModernEcologicalMap(long year, int width, int height, BufferedImage elevationMask) {
-        List<CountryFeature> countries = getCountries(width, height);
-        if (countries.isEmpty()) return null;
-
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = img.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, width, height);
-
-        for (CountryFeature c : countries) {
-            int v = c.ecologicalFootprint;
-            g.setColor(new Color(v, v, v));
-            for (Path2D p : c.paths) {
-                g.fill(p);
-            }
-        }
-        g.dispose();
-
-        return applyElevationMask(img, elevationMask);
+        return rasterizeScalarMap(c -> c.ecologicalFootprint, width, height, elevationMask);
     }
 
     public static BufferedImage rasterizeModernPathogenMap(long year, int width, int height, BufferedImage elevationMask) {

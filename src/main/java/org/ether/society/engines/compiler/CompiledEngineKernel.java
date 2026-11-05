@@ -80,17 +80,6 @@ public class CompiledEngineKernel {
                 cap[i] = (float) Math.max(0.0, coeff * cap[i] + offset);
             }
         }
-
-        // 4. Technology Level
-        SymbolicExpression techExpr = fusedExpressions.get("technologyLevel");
-        if (techExpr != null) {
-            float[] tech = worldBuffer.getTechnologyLevel();
-            double coeff = techExpr.getCoefficient();
-            double offset = techExpr.getOffset() * dt;
-            for (int i = 0; i < capacity; i++) {
-                tech[i] = (float) Math.max(0.0, coeff * tech[i] + offset);
-            }
-        }
     }
 
     /**
@@ -102,7 +91,6 @@ public class CompiledEngineKernel {
         SymbolicExpression popExpr = fusedExpressions.get("biomassHuman");
         SymbolicExpression tempExpr = fusedExpressions.get("temperature");
         SymbolicExpression capExpr = fusedExpressions.get("resourceCapital");
-        SymbolicExpression techExpr = fusedExpressions.get("technologyLevel");
         SymbolicExpression pollExpr = fusedExpressions.get("pollutionLevel");
         SymbolicExpression energyExpr = fusedExpressions.get("energyFoodConsumed");
 
@@ -122,11 +110,6 @@ public class CompiledEngineKernel {
             if (capExpr != null && cell.getResourceCapital() != null) {
                 double newCap = capExpr.evaluate(cell.getResourceCapital());
                 cell.setResourceCapital(Math.max(0.0, newCap));
-            }
-
-            if (techExpr != null && cell.getTechnologyLevel() != null) {
-                double newTech = techExpr.evaluate(cell.getTechnologyLevel());
-                cell.setTechnologyLevel(Math.max(1.0, newTech));
             }
 
             if (pollExpr != null && cell.getPollutionLevel() != null) {

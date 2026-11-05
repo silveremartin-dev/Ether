@@ -44,9 +44,9 @@
     "seasonUseImport" : true,
     "seasonSource" : "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model",
     "seasonSeed" : 68666,
-    "canonicalPlanet" : "mercury",
-    "tidalLocked" : false,
     "associatedEpochYear" : 2026,
+    "tidalLocked" : false,
+    "canonicalPlanet" : "mercury",
     "presetDescription" : "Mercure (Hermes)"
   },
   "terrestrialBiomassGtC" : 0.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
-  "canonicalPlanet" : "mercury",
   "associatedEpochYear" : 2026,
+  "canonicalPlanet" : "mercury",
   "presetDescription" : "Mercure (Hermes)"
 }

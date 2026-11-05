@@ -442,50 +442,31 @@ public class ControlPanelLayersSection {
         if (presetsTitle != null) {
             presetsTitle.setText(I18n.getOrDefault("sim.presets.1click", "⚡ 1-Click Scientific Presets:"));
         }
-        if (presetSynth != null) {
-            presetSynth.setText(I18n.getOrDefault("sim.preset.synthesis", "🌍 Synthesis"));
-            presetSynth.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.synthesis.desc", "3D Globe Mode + Biomes + Relief + Contour Lines")));
-        }
-        if (presetEcon != null) {
-            presetEcon.setText(I18n.getOrDefault("sim.preset.economy", "📈 Economy"));
-            presetEcon.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.economy.desc", "Flux / GDP Map + Transport Vectors + Ore Deposits")));
-        }
-        if (presetClim != null) {
-            presetClim.setText(I18n.getOrDefault("sim.preset.climate", "🌡️ Climate"));
-            presetClim.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.climate.desc", "Temperature Map + Aquifers + Relief Contour Lines")));
-        }
-        if (presetCliodyn != null) {
-            presetCliodyn.setText(I18n.getOrDefault("sim.preset.cliodynamics", "🏛️ Cliodynamics"));
-            presetCliodyn.setTooltip(new Tooltip(I18n.getOrDefault("sim.preset.cliodynamics.desc", "Demographic Map + H3 Mesh + Event Pause")));
-        }
-        if (layerComboLabel != null) {
-            layerComboLabel.setText(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layers (Multi-Select):"));
-        }
-        if (dataLayersTitle != null) {
-            dataLayersTitle.setText(I18n.getOrDefault("sim.layer.datalayers", "📊 Data Layers & Vectors:"));
-        }
-        if (uiOverlaysTitle != null) {
-            uiOverlaysTitle.setText(I18n.getOrDefault("sim.layer.uioverlays", "🖥️ UI Overlays & Insets:"));
-        }
+        setBtn(presetSynth, "sim.preset.synthesis", "🌍 Synthesis", "sim.preset.synthesis.desc", "3D Globe Mode + Biomes + Relief + Contour Lines");
+        setBtn(presetEcon, "sim.preset.economy", "📈 Economy", "sim.preset.economy.desc", "Flux / GDP Map + Transport Vectors + Ore Deposits");
+        setBtn(presetClim, "sim.preset.climate", "🌡️ Climate", "sim.preset.climate.desc", "Temperature Map + Aquifers + Relief Contour Lines");
+        setBtn(presetCliodyn, "sim.preset.cliodynamics", "🏛️ Cliodynamics", "sim.preset.cliodynamics.desc", "Demographic Map + H3 Mesh + Event Pause");
+        if (layerComboLabel != null) layerComboLabel.setText(I18n.getOrDefault("sim.layer.datacategory", "Active Data Layers (Multi-Select):"));
+        if (dataLayersTitle != null) dataLayersTitle.setText(I18n.getOrDefault("sim.layer.datalayers", "📊 Data Layers & Vectors:"));
+        if (uiOverlaysTitle != null) uiOverlaysTitle.setText(I18n.getOrDefault("sim.layer.uioverlays", "🖥️ UI Overlays & Insets:"));
 
         rebuildLayerMenuItems();
 
-        contourCheck.setText(I18n.getOrDefault("sim.layer.contours", "📈 Elevation Contour Lines"));
-        contourCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.contours", "Displays elevation contour lines on H3 cells")));
-        fluxVectorCheck.setText(I18n.getOrDefault("sim.layer.fluxvectors", "🌊 Flux & Transports (Vectors)"));
-        fluxVectorCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.fluxvectors", "Overlays material flux and population transport vectors")));
-        resourceOverlayCheck.setText(I18n.getOrDefault("sim.layer.resources", "💎 Deposits & Capital (Overlays)"));
-        resourceOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.resources", "Displays metal, aquifer, and infrastructure markers")));
-        if (floatingLayerCheck != null) {
-            floatingLayerCheck.setText(I18n.getOrDefault("sim.layer.floating", "☁️ 2.5D Floating Layers (Altitude)"));
-            floatingLayerCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.floating", "Projects thematic layers in 2.5D elevation floating above biome topography")));
-        }
-        legendCheck.setText(I18n.getOrDefault("sim.layer.legend", "🗺️ Color Legend (Overlay)"));
-        legendCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.legend", "Shows or hides the map color legend pane")));
-        dateOverlayCheck.setText(I18n.getOrDefault("sim.layer.date_overlay", "📅 Date & Scenario Inset"));
-        dateOverlayCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.date_overlay", "Shows or hides time and scenario overlay badges on the map")));
-        cellInfoCheck.setText(I18n.getOrDefault("sim.layer.cell_info", "ℹ️ Hover Cell Info (Tooltip)"));
-        cellInfoCheck.setTooltip(new Tooltip(I18n.getOrDefault("sim.tooltip.cell_info", "Enables or disables inspection tooltip when hovering over hexagons")));
+        setCheck(contourCheck, "sim.layer.contours", "📈 Elevation Contour Lines", "sim.tooltip.contours", "Displays elevation contour lines on H3 cells");
+        setCheck(fluxVectorCheck, "sim.layer.fluxvectors", "🌊 Flux & Transports (Vectors)", "sim.tooltip.fluxvectors", "Overlays material flux and population transport vectors");
+        setCheck(resourceOverlayCheck, "sim.layer.resources", "💎 Deposits & Capital (Overlays)", "sim.tooltip.resources", "Displays metal, aquifer, and infrastructure markers");
+        setCheck(floatingLayerCheck, "sim.layer.floating", "☁️ 2.5D Floating Layers (Altitude)", "sim.tooltip.floating", "Projects thematic layers in 2.5D elevation floating above biome topography");
+        setCheck(legendCheck, "sim.layer.legend", "🗺️ Color Legend (Overlay)", "sim.tooltip.legend", "Shows or hides the map color legend pane");
+        setCheck(dateOverlayCheck, "sim.layer.date_overlay", "📅 Date & Scenario Inset", "sim.tooltip.date_overlay", "Shows or hides time and scenario overlay badges on the map");
+        setCheck(cellInfoCheck, "sim.layer.cell_info", "ℹ️ Hover Cell Info (Tooltip)", "sim.tooltip.cell_info", "Enables or disables inspection tooltip when hovering over hexagons");
+    }
+
+    private void setCheck(CheckBox c, String tk, String td, String tipk, String tipd) {
+        if (c != null) { c.setText(I18n.getOrDefault(tk, td)); c.setTooltip(new Tooltip(I18n.getOrDefault(tipk, tipd))); }
+    }
+
+    private void setBtn(Button b, String tk, String td, String tipk, String tipd) {
+        if (b != null) { b.setText(I18n.getOrDefault(tk, td)); b.setTooltip(new Tooltip(I18n.getOrDefault(tipk, tipd))); }
     }
 
     private Button createPresetBtn(String label, String tooltip, Runnable action) {

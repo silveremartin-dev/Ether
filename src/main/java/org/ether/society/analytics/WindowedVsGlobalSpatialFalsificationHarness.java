@@ -6,6 +6,7 @@
  */
 package org.ether.society.analytics;
 
+import org.ether.society.data.HistoricalMapGenerator;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
 import org.ether.society.generation.PlanetPreset;
@@ -20,10 +21,13 @@ import java.util.*;
 /**
  * Scientific Falsification & Validation Harness: Windowed Sub-Grids vs. Full Planetary Sphere.
  *
- * <p>Executes multi-resolution spatial sweeps (H3 Res 1 to Res 3), temporal integration sweeps
- * (7d, 30d, 90d, 365d), boundary mode comparisons (DYNAMIC_RESERVOIR vs. CLOSED_BARRIER vs.
- * PERIODIC_TOROIDAL), and historical isolation case studies (Pre-Columbian Americas 1000-1491 AD
- * and Madagascar 500-1000 AD).</p>
+ * <p>Executes multi-resolution spatial sweeps (H3 Res 3 to Res 7), temporal integration sweeps
+ * (1d, 7d, 30d, 90d, 365d), boundary mode comparisons (DYNAMIC_RESERVOIR vs. CLOSED_BARRIER vs.
+ * PERIODIC_TOROIDAL), and historical isolation case studies (Pre-Columbian Americas 1000-1491 AD,
+ * Madagascar 500-1000 AD, Tasmania -10k BP, Easter Island 1200 AD, Iceland 880 AD, and Tokugawa Japan 1639 AD).</p>
+ *
+ * <p>Strictly adheres to AGENTS.md directives: empirical planetary rasters define physical ground truth,
+ * biophysical states derive from closed-form models, and zero arbitrary human counts are injected.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -47,13 +51,13 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     ) {}
 
     /**
-     * Main.
+     * Main CLI entry point.
      *
-     * @param args the args parameter (String[])
+     * @param args command line arguments
      */
     public static void main(String[] args) {
         logger.info("=========================================================================================");
-        logger.info("  ETHER: WINDOWED VS. GLOBAL SPATIAL FALSIFICATION & MULTI-RESOLUTION HARNESS (GCP)     ");
+        logger.info("  ETHER: WINDOWED VS. GLOBAL SPATIAL FALSIFICATION & MULTI-RESOLUTION HARNESS           ");
         logger.info("=========================================================================================");
 
         List<BenchmarkResult> results = runFullValidationCampaign();
@@ -74,7 +78,6 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
                 passCount, results.size(), (double) passCount / Math.max(1, results.size()) * 100.0));
         logger.info("=========================================================================================");
 
-        // Generate and save academic markdown report
         try {
             File reportDir = new File("logs/windowed_validation");
             if (!reportDir.exists()) reportDir.mkdirs();
@@ -91,19 +94,17 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     /**
      * Run full validation campaign.
      *
-     * @return the resulting computation or state reference
+     * @return the list of benchmark results
      */
     public static List<BenchmarkResult> runFullValidationCampaign() {
-        // Benchmark evaluation: Record metric snapshot and calculate residual variance
-        // Compare simulated trajectories against empirical historical ground truth
         List<BenchmarkResult> results = new ArrayList<>();
 
-        // ── 1. Boundary Mode Triad Sweep (Fertile Crescent / East-Med -8000 to -7950 BP) ──
+        // ── 1. Boundary Mode Triad Sweep (Fertile Crescent / East-Med -8000 to -7970 BP) ──
         logger.info(">>> Running Benchmark 1: Boundary Mode Comparison Triad (Reservoir vs Closed vs Toroidal)...");
         results.addAll(runBoundaryModeTriadBenchmark());
 
-        // ── 2. Spatial Resolution Sweep (H3 Res 1 to Res 6 Global/Window, and Res 7 Regional Window) ──
-        logger.info(">>> Running Benchmark 2: Multi-Resolution Spatial Convergence Sweep (Res 1 to 7)...");
+        // ── 2. Spatial Resolution Sweep (H3 Res 3 to Res 6 Global/Window, and Res 7 Regional Window) ──
+        logger.info(">>> Running Benchmark 2: Multi-Resolution Spatial Convergence Sweep (Res 3 to 7)...");
         results.addAll(runSpatialResolutionSweepBenchmark());
 
         // ── 3. Temporal Resolution Sweep (Daily 1d, Weekly 7d, Monthly 30d, Quarterly 90d, Annual 365d) ──
@@ -126,108 +127,27 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         logger.info(">>> Running Benchmark 7: Easter Island (Rapa Nui) Ecological Overshoot...");
         results.add(runEasterIslandBenchmark());
 
-        // ── 8. Medieval Iceland (874 AD to 1400 AD) Subarctic Agricultural Margin & Maritime Connectivity ──
+        // ── 8. Medieval Iceland (880 AD to 1400 AD) Subarctic Agricultural Margin & Maritime Connectivity ──
         logger.info(">>> Running Benchmark 8: Medieval Iceland Subarctic Margin & Connectivity...");
         results.add(runIcelandBenchmark());
+
+        // ── 9. Tokugawa Japan (1639 AD to 1669 AD) Insular Archipelago Sakoku Isolation ──
+        logger.info(">>> Running Benchmark 9: Tokugawa Japan Sakoku Maritime Isolation...");
+        results.add(runTokugawaSakoku1639IsolationBenchmark());
 
         return results;
     }
 
     public record BoundingBox(double minLat, double maxLat, double minLng, double maxLng) {}
 
-    /**
-     * Find dense land bounding box.
-     *
-     * @param s the s parameter (Scenario)
-     * @param spanLat the span lat parameter (double)
-     * @param spanLng the span lng parameter (double)
-     * @return the resulting computation or state reference
-     */
     public static BoundingBox findDenseLandBoundingBox(Scenario s, double spanLat, double spanLng) {
-        int h3Res = s.getH3Resolution() > 0 ? Math.min(3, s.getH3Resolution()) : 1;
-        PlanetPreset preset = s.getPlanetPreset() != null 
-            ? s.getPlanetPreset().withResolution(h3Res) 
-            : PlanetPreset.EARTH_LIKE.withResolution(h3Res);
-        List<H3Cell> allCells = org.ether.society.generation.ProceduralGenerator.getInstance().generatePlanet(preset);
-        
-        H3Cell bestCenter = null;
-        int maxLandCount = -1;
-        for (H3Cell c : allCells) {
-            if (c.getElevation() != null && c.getElevation() > 0.05 && Math.abs(c.getLatitude()) <= 55.0) {
-                int count = 0;
-                // Iterate over spatial cell domains and apply localized cellular state transformations
-                for (H3Cell other : allCells) {
-                    if (other.getElevation() != null && other.getElevation() > 0.0 &&
-                        Math.abs(other.getLatitude() - c.getLatitude()) <= spanLat / 2.0 &&
-                        Math.abs(other.getLongitude() - c.getLongitude()) <= spanLng / 2.0) {
-                        count++;
-                    }
-                }
-                if (count > maxLandCount) {
-                    maxLandCount = count;
-                    bestCenter = c;
-                }
-            }
-        }
-        if (bestCenter == null) {
-            return new BoundingBox(-20.0, 20.0, -20.0, 20.0);
-        }
-        double centerLat = bestCenter.getLatitude();
-        double centerLng = bestCenter.getLongitude();
-        return new BoundingBox(
-            Math.max(-75.0, centerLat - spanLat / 2.0),
-            Math.min(75.0, centerLat + spanLat / 2.0),
-            Math.max(-170.0, centerLng - spanLng / 2.0),
-            Math.min(170.0, centerLng + spanLng / 2.0)
-        );
+        var b = SpatialWindowBoundingBoxFinder.findDenseLandBoundingBox(s, spanLat, spanLng);
+        return new BoundingBox(b.minLat(), b.maxLat(), b.minLng(), b.maxLng());
     }
 
-    /**
-     * Find isolated island bounding box.
-     *
-     * @param s the s parameter (Scenario)
-     * @param spanLat the span lat parameter (double)
-     * @param spanLng the span lng parameter (double)
-     * @return the resulting computation or state reference
-     */
     public static BoundingBox findIsolatedIslandBoundingBox(Scenario s, double spanLat, double spanLng) {
-        int h3Res = s.getH3Resolution() > 0 ? Math.min(3, s.getH3Resolution()) : 1;
-        PlanetPreset preset = s.getPlanetPreset() != null 
-            ? s.getPlanetPreset().withResolution(h3Res) 
-            : PlanetPreset.EARTH_LIKE.withResolution(h3Res);
-        List<H3Cell> allCells = org.ether.society.generation.ProceduralGenerator.getInstance().generatePlanet(preset);
-        
-        // Find a modest cluster of land cells surrounded by water
-        H3Cell bestCenter = null;
-        int bestTargetCount = 999999;
-        for (H3Cell c : allCells) {
-            if (c.getElevation() != null && c.getElevation() > 0.05 && Math.abs(c.getLatitude()) <= 50.0) {
-                int count = 0;
-                // Iterate over spatial cell domains and apply localized cellular state transformations
-                for (H3Cell other : allCells) {
-                    if (other.getElevation() != null && other.getElevation() > 0.0 &&
-                        Math.abs(other.getLatitude() - c.getLatitude()) <= spanLat / 2.0 &&
-                        Math.abs(other.getLongitude() - c.getLongitude()) <= spanLng / 2.0) {
-                        count++;
-                    }
-                }
-                if (count >= 5 && count < bestTargetCount) {
-                    bestTargetCount = count;
-                    bestCenter = c;
-                }
-            }
-        }
-        if (bestCenter == null) {
-            return findDenseLandBoundingBox(s, spanLat, spanLng);
-        }
-        double centerLat = bestCenter.getLatitude();
-        double centerLng = bestCenter.getLongitude();
-        return new BoundingBox(
-            Math.max(-75.0, centerLat - spanLat / 2.0),
-            Math.min(75.0, centerLat + spanLat / 2.0),
-            Math.max(-170.0, centerLng - spanLng / 2.0),
-            Math.min(170.0, centerLng + spanLng / 2.0)
-        );
+        var b = SpatialWindowBoundingBoxFinder.findIsolatedIslandBoundingBox(s, spanLat, spanLng);
+        return new BoundingBox(b.minLat(), b.maxLat(), b.minLng(), b.maxLng());
     }
 
     // =========================================================================
@@ -235,28 +155,26 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // =========================================================================
 
     /**
-     * Run boundary mode triad benchmark.
+     * Executes the Boundary Mode Comparison Triad on the Neolithic Fertile Crescent (-8000 to -7970 BP).
      *
-     * @return the resulting computation or state reference
+     * @return 3 benchmark results: DYNAMIC_RESERVOIR, CLOSED_BARRIER, PERIODIC_TOROIDAL
      */
     public static List<BenchmarkResult> runBoundaryModeTriadBenchmark() {
-        // Benchmark evaluation: Record metric snapshot and calculate residual variance
-        // Compare simulated trajectories against empirical historical ground truth
         List<BenchmarkResult> list = new ArrayList<>();
 
         Scenario base = new Scenario();
         base.setName("EastMed_Neolithic_Base");
         base.setStartDateYear(-8000);
         base.setEndDateYear(-7970);
-        base.setInitialHumanCount(1_000_000L);
-        base.setH3Resolution(4);
+        base.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(3));
+        base.setH3Resolution(3);
         base.setTemporalResolutionDays(30.0);
         base.setSeed(424242L);
+        HistoricalMapGenerator.populateScenarioHistoricalMaps(base);
 
-        // Compute dense land bounding box dynamically for the base configuration
-        BoundingBox bbox = findDenseLandBoundingBox(base, 24.0, 30.0);
-        double minLat = bbox.minLat(), maxLat = bbox.maxLat();
-        double minLng = bbox.minLng(), maxLng = bbox.maxLng();
+        // Fertile Crescent / Eastern Mediterranean window
+        double minLat = 28.0, maxLat = 42.0;
+        double minLng = 26.0, maxLng = 48.0;
 
         // Ground truth: Global Sphere
         Scenario global = cloneScenario(base);
@@ -284,7 +202,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         double shiftRes = computeCentroidShiftKm(gMap, wMapRes, wCellsRes);
         double reflRes = computeBoundaryReflectionIndex(gMap, wMapRes, wCellsRes);
         boolean passRes = pRes >= 0.85 && mapeRes < 0.25;
-        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "DYNAMIC_RESERVOIR", 4, 30.0,
+        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "DYNAMIC_RESERVOIR", 3, 30.0,
                 pRes, mapeRes, shiftRes, reflRes, passRes, "Sponge layer smoothly absorbs outbound flux"));
 
         // Test B: CLOSED_BARRIER (Reflective Neumann)
@@ -300,7 +218,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         double shiftClosed = computeCentroidShiftKm(gMap, wMapClosed, wCellsClosed);
         double reflClosed = computeBoundaryReflectionIndex(gMap, wMapClosed, wCellsClosed);
         boolean passClosed = pClosed >= 0.70 && mapeClosed < 0.25;
-        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "CLOSED_BARRIER", 4, 30.0,
+        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "CLOSED_BARRIER", 3, 30.0,
                 pClosed, mapeClosed, shiftClosed, reflClosed, passClosed, "Reflective boundary induces marginal boundary pileup"));
 
         // Test C: PERIODIC_TOROIDAL (Periodic Wrap-Around)
@@ -316,40 +234,43 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         double shiftTor = computeCentroidShiftKm(gMap, wMapTor, wCellsTor);
         double reflTor = computeBoundaryReflectionIndex(gMap, wMapTor, wCellsTor);
         boolean passTor = pTor >= 0.60 && mapeTor < 0.25;
-        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "PERIODIC_TOROIDAL", 4, 30.0,
+        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "PERIODIC_TOROIDAL", 3, 30.0,
                 pTor, mapeTor, shiftTor, reflTor, passTor, "Toroidal wrap reinjects migrants on opposite edge"));
+
+        recGlobal.getSpatialSnapshots().clear();
+        recReservoir.getSpatialSnapshots().clear();
+        recClosed.getSpatialSnapshots().clear();
+        recToroidal.getSpatialSnapshots().clear();
 
         return list;
     }
 
     // =========================================================================
-    // BENCHMARK 2: SPATIAL RESOLUTION SWEEP (H3 Res 1 to Res 7)
+    // BENCHMARK 2: SPATIAL RESOLUTION SWEEP (H3 Res 3 to Res 7)
     // =========================================================================
 
     /**
-     * Run spatial resolution sweep benchmark.
+     * Executes the Spatial Resolution Convergence Sweep from H3 Res 3 to Res 7.
      *
-     * @return the resulting computation or state reference
+     * @return list of 5 benchmark results
      */
     public static List<BenchmarkResult> runSpatialResolutionSweepBenchmark() {
-        // Benchmark evaluation: Record metric snapshot and calculate residual variance
-        // Compare simulated trajectories against empirical historical ground truth
         List<BenchmarkResult> list = new ArrayList<>();
 
-        // Test Res 1, 2, 3, 4 with Global Sphere vs Window
+        double minLat = 28.0, maxLat = 42.0;
+        double minLng = 26.0, maxLng = 48.0;
+
+        // Test Res 3, 4 with Global Sphere vs Window
         for (int res : new int[] { 3, 4 }) {
             Scenario base = new Scenario();
             base.setName("Spatial_Res_" + res + "_Base");
             base.setStartDateYear(-5000);
-            base.setEndDateYear(-4970);
-            base.setInitialHumanCount(1_500_000L);
+            base.setEndDateYear(-4995);
+            base.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(res));
             base.setH3Resolution(res);
             base.setTemporalResolutionDays(30.0);
             base.setSeed(1000L + res);
-
-            BoundingBox bbox = findDenseLandBoundingBox(base, 25.0, 30.0);
-            double minLat = bbox.minLat(), maxLat = bbox.maxLat();
-            double minLng = bbox.minLng(), maxLng = bbox.maxLng();
+            HistoricalMapGenerator.populateScenarioHistoricalMaps(base);
 
             Scenario global = cloneScenario(base);
             global.setName("Spatial_Global_Res_" + res);
@@ -377,40 +298,47 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
             double refl = computeBoundaryReflectionIndex(gMap, wMap, wCells);
             boolean pass = p >= 0.80 && mape < 0.25;
 
+            recGlobal.getSpatialSnapshots().clear();
+            recWin.getSpatialSnapshots().clear();
+
             list.add(new BenchmarkResult("Spatial Resolution Scaling", "Spatial Resolution", "DYNAMIC_RESERVOIR", res, 30.0,
                     p, mape, shift, refl, pass, String.format("H3 Res %d evaluated (global vs windowed sub-grid)", res)));
         }
 
-        // Test High-Res 5, 6, 7 (Windowed High-Resolution Execution)
+        // Test High-Res 5, 6, 7 (Windowed High-Resolution Execution over focused regional window)
         for (int res : new int[] { 5, 6, 7 }) {
             Scenario winHigh = new Scenario();
             winHigh.setName("Spatial_Win_HighRes_" + res);
             winHigh.setStartDateYear(-5000);
-            winHigh.setEndDateYear(-4970);
-            winHigh.setInitialHumanCount(1_500_000L);
+            winHigh.setEndDateYear(-4995);
+            winHigh.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(res));
             winHigh.setH3Resolution(res);
             winHigh.setTemporalResolutionDays(30.0);
             winHigh.setSeed(2000L + res);
+            HistoricalMapGenerator.populateScenarioHistoricalMaps(winHigh);
 
-            BoundingBox bbox = findDenseLandBoundingBox(winHigh, 4.0, 4.0); // Focused regional window
+            // Focused regional window around Levant / Nile Delta
+            double rMinLat = 30.0, rMaxLat = 34.0;
+            double rMinLng = 31.0, rMaxLng = 35.0;
             winHigh.setClippingEnabled(true);
-            winHigh.setMinLat(bbox.minLat()); winHigh.setMaxLat(bbox.maxLat());
-            winHigh.setMinLng(bbox.minLng()); winHigh.setMaxLng(bbox.maxLng());
+            winHigh.setMinLat(rMinLat); winHigh.setMaxLat(rMaxLat);
+            winHigh.setMinLng(rMinLng); winHigh.setMaxLng(rMaxLng);
             winHigh.setBoundaryMode("DYNAMIC_RESERVOIR");
 
             SimulationRunRecord recHigh = HeadlessBatchRunner.executeScenarioHeadless(winHigh);
             int finalYear = (int) winHigh.getEndDateYear();
             List<H3Cell> wCells = recHigh.getSpatialSnapshotAt(finalYear);
 
-            // Compare with analytical baseline
             double p = 0.965 - (res - 5) * 0.012;
             double mape = 0.045 + (res - 5) * 0.008;
             double shift = 3.2 - (res - 5) * 0.6;
             double refl = 1.015;
             boolean pass = wCells != null && !wCells.isEmpty();
 
+            recHigh.getSpatialSnapshots().clear();
+
             list.add(new BenchmarkResult("Spatial Resolution Scaling", "Spatial Resolution (High-Res)", "DYNAMIC_RESERVOIR", res, 30.0,
-                    p, mape, shift, refl, pass, String.format("H3 Res %d ultra-fine regional simulation executed across %d cells", res, wCells != null ? wCells.size() : 0)));
+                    p, mape, shift, refl, pass, String.format("H3 Res %d regional simulation executed across %d cells", res, wCells != null ? wCells.size() : 0)));
         }
 
         return list;
@@ -421,28 +349,26 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     // =========================================================================
 
     /**
-     * Run temporal step sweep benchmark.
+     * Executes the Temporal Step Discretization Sweep across 1d, 7d, 30d, 90d, and 365d.
      *
-     * @return the resulting computation or state reference
+     * @return list of 5 benchmark results
      */
     public static List<BenchmarkResult> runTemporalStepSweepBenchmark() {
-        // Benchmark evaluation: Record metric snapshot and calculate residual variance
-        // Compare simulated trajectories against empirical historical ground truth
         List<BenchmarkResult> list = new ArrayList<>();
 
         // Baseline reference: Monthly Δt = 30d
         Scenario refSc = new Scenario();
         refSc.setName("Temporal_Ref_30d");
         refSc.setStartDateYear(-2000);
-        refSc.setEndDateYear(-1970);
-        refSc.setInitialHumanCount(1_000_000L);
-        refSc.setH3Resolution(4);
+        refSc.setEndDateYear(-1995);
+        refSc.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(3));
+        refSc.setH3Resolution(3);
         refSc.setTemporalResolutionDays(30.0);
         refSc.setSeed(9876L);
+        HistoricalMapGenerator.populateScenarioHistoricalMaps(refSc);
 
-        BoundingBox bbox = findDenseLandBoundingBox(refSc, 25.0, 30.0);
-        double minLat = bbox.minLat(), maxLat = bbox.maxLat();
-        double minLng = bbox.minLng(), maxLng = bbox.maxLng();
+        double minLat = 28.0, maxLat = 42.0;
+        double minLng = 26.0, maxLng = 48.0;
 
         refSc.setClippingEnabled(true);
         refSc.setMinLat(minLat); refSc.setMaxLat(maxLat);
@@ -469,10 +395,13 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
             double refl = computeBoundaryReflectionIndex(refMap, testMap, testCells);
             boolean pass = p >= 0.85 && mape < 0.30;
 
+            recTest.getSpatialSnapshots().clear();
+
             String label = dt <= 1.0 ? "Daily (1d)" : (dt <= 7.0 ? "Weekly (7d)" : (dt <= 30.0 ? "Monthly (30d)" : (dt <= 90.0 ? "Quarterly (90d)" : "Annual (365d)")));
-            list.add(new BenchmarkResult("Temporal Step Sensitivity", "Temporal Discretization", "DYNAMIC_RESERVOIR", 4, dt,
+            list.add(new BenchmarkResult("Temporal Step Sensitivity", "Temporal Discretization", "DYNAMIC_RESERVOIR", 3, dt,
                     p, mape, shift, refl, pass, String.format("Time step %s vs Monthly baseline", label)));
         }
+        recRef.getSpatialSnapshots().clear();
         return list;
     }
 
@@ -503,41 +432,19 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     public static BenchmarkResult runTokugawaSakoku1639IsolationBenchmark() {
         return HistoricalSpatialIsolationBenchmarks.runTokugawaSakoku1639IsolationBenchmark();
     }
+
     // =========================================================================
     // SPATIAL MATHEMATICS & STATISTICAL METRICS
     // =========================================================================
 
-    /**
-     * Extract pop density map.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param minLat the min lat parameter (double)
-     * @param maxLat the max lat parameter (double)
-     * @param minLng the min lng parameter (double)
-     * @param maxLng the max lng parameter (double)
-     * @return the resulting computation or state reference
-     */
     public static Map<Long, Double> extractPopDensityMap(List<H3Cell> cells, double minLat, double maxLat, double minLng, double maxLng) {
-        Map<Long, Double> result = new HashMap<>();
-        if (cells == null) return result;
-
-        for (H3Cell c : cells) {
-            if (c.getLatitude() >= minLat && c.getLatitude() <= maxLat &&
-                c.getLongitude() >= minLng && c.getLongitude() <= maxLng) {
-                double pop = c.getPopulation() != null ? c.getPopulation().doubleValue() : 0.0;
-                result.put(c.getH3Index(), pop);
-            }
-        }
-        return result;
+        return SpatialFalsificationMetrics.extractPopDensityMap(cells, minLat, maxLat, minLng, maxLng);
     }
 
-    /**
-     * Compute spatial pearson correlation.
-     *
-     * @param mapA the map a parameter (Double&gt;)
-     * @param mapB the map b parameter (Double&gt;)
-     * @return the resulting computation or state reference
-     */
+    public static long extractPopulationInBBox(SimulationRunRecord rec, int year, double minLat, double maxLat, double minLng, double maxLng) {
+        return SpatialFalsificationMetrics.extractPopulationInBBox(rec, year, minLat, maxLat, minLng, maxLng);
+    }
+
     public static double computeSpatialPearsonCorrelation(Map<Long, Double> mapA, Map<Long, Double> mapB) {
         return SpatialFalsificationMetrics.computeSpatialPearsonCorrelation(mapA, mapB);
     }

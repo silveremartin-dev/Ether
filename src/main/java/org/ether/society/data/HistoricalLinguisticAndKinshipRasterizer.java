@@ -145,17 +145,7 @@ public final class HistoricalLinguisticAndKinshipRasterizer {
             paleoLangs.add(new OrographicGlottologPropagator.CulturalSeed(105.0, 0.0, 0x8E44AD, 2.2, "Sundaland Pebble-Tool & Bamboo Communication Sphere"));
 
             BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(paleoLangs, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask, 1e5f);
-            for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-                double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-                for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                    double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
-                    double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
-                    if (occWeight <= 0.001) {
-                        orographicImg.setRGB(x, y, 0x2D3748);
-                    }
-                }
-            }
-            return HistoricalMapGenerator.applyAltimetryCoastlineMask(orographicImg);
+            return maskOccupancyAndCoastline(orographicImg, year);
         } else if (year <= -65000L) {
             // -74,000 BP: Toba Volcanic Winter Refugial Technocomplexes
             List<OrographicGlottologPropagator.CulturalSeed> tobaLangs = new ArrayList<>();
@@ -170,17 +160,7 @@ public final class HistoricalLinguisticAndKinshipRasterizer {
             tobaLangs.add(new OrographicGlottologPropagator.CulturalSeed(110.0, -7.5, 0x8E44AD, 1.8, "Sundaland Late Soloensis Pebble-Tool Domain"));
 
             BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(tobaLangs, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask, 1e5f);
-            for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-                double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-                for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                    double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
-                    double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
-                    if (occWeight <= 0.001) {
-                        orographicImg.setRGB(x, y, 0x2D3748);
-                    }
-                }
-            }
-            return HistoricalMapGenerator.applyAltimetryCoastlineMask(orographicImg);
+            return maskOccupancyAndCoastline(orographicImg, year);
         } else if (year <= -35000L) {
             // -50,000 BP: MIS 3 Initial Upper Paleolithic & Sahul Edge-Ground Axe Traditions
             List<OrographicGlottologPropagator.CulturalSeed> mis3Langs = new ArrayList<>();
@@ -204,17 +184,7 @@ public final class HistoricalLinguisticAndKinshipRasterizer {
             mis3Langs.add(new OrographicGlottologPropagator.CulturalSeed(105.0, -2.0, 0x8E44AD, 2.2, "Sundaland Late Archaic Flake Complex"));
 
             BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(mis3Langs, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask, 1e5f);
-            for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-                double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-                for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                    double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
-                    double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
-                    if (occWeight <= 0.001) {
-                        orographicImg.setRGB(x, y, 0x2D3748);
-                    }
-                }
-            }
-            return HistoricalMapGenerator.applyAltimetryCoastlineMask(orographicImg);
+            return maskOccupancyAndCoastline(orographicImg, year);
         } else if (year <= -18000L) {
             // -25,000 to -18,000 BP: Gravettian, Solutrean & LGM Technocomplexes
             List<OrographicGlottologPropagator.CulturalSeed> lgmLangs = new ArrayList<>();
@@ -231,17 +201,7 @@ public final class HistoricalLinguisticAndKinshipRasterizer {
             lgmLangs.add(new OrographicGlottologPropagator.CulturalSeed(22.0, -34.0, 0xF1C40F, 2.0, "Southern African Robberg Bladelet Industry"));
 
             BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(lgmLangs, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask, 1e5f);
-            for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-                double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-                for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                    double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
-                    double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
-                    if (occWeight <= 0.001) {
-                        orographicImg.setRGB(x, y, 0x2D3748);
-                    }
-                }
-            }
-            return HistoricalMapGenerator.applyAltimetryCoastlineMask(orographicImg);
+            return maskOccupancyAndCoastline(orographicImg, year);
         } else if (year <= -10500L) {
             // -10,900 BP: Younger Dryas, Clovis & Natufian Epipaleolithic
             List<OrographicGlottologPropagator.CulturalSeed> ydLangs = new ArrayList<>();
@@ -261,17 +221,7 @@ public final class HistoricalLinguisticAndKinshipRasterizer {
             ydLangs.add(new OrographicGlottologPropagator.CulturalSeed(134.0, -24.0, 0xC0392B, 2.5, "Australian Core Tool & Scraper Tradition"));
 
             BufferedImage orographicImg = OrographicGlottologPropagator.propagateCulturalSeeds(ydLangs, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask, 1e5f);
-            for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-                double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-                for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                    double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
-                    double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
-                    if (occWeight <= 0.001) {
-                        orographicImg.setRGB(x, y, 0x2D3748);
-                    }
-                }
-            }
-            return HistoricalMapGenerator.applyAltimetryCoastlineMask(orographicImg);
+            return maskOccupancyAndCoastline(orographicImg, year);
         }
 
         // Orographic Glottolog DEM cost-distance propagation for ancient & prehistoric clades
@@ -528,5 +478,19 @@ public final class HistoricalLinguisticAndKinshipRasterizer {
             }
         }
         return HistoricalMapGenerator.applyAltimetryCoastlineMask(kinImg);
+    }
+
+    private static BufferedImage maskOccupancyAndCoastline(BufferedImage orographicImg, long year) {
+        for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
+            double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
+            for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
+                double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
+                double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
+                if (occWeight <= 0.001) {
+                    orographicImg.setRGB(x, y, 0x2D3748);
+                }
+            }
+        }
+        return HistoricalMapGenerator.applyAltimetryCoastlineMask(orographicImg);
     }
 }

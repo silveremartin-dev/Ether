@@ -7,32 +7,33 @@
 package org.ether.society.data;
 
 import org.ether.society.model.Scenario;
-import org.ether.society.generation.PlanetPreset;
-import org.ether.society.generation.ProceduralGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
  * Ultra-High Precision Cartographic Generator for Ether Simulation Engine.
- * 
+ *
  * <p>Central facade coordinating continuous topographic landmasking, empirical
  * altimetry, paleoclimatology, and multi-channel spatial tensors across all
  * built-in scenarios.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
+ * @see HistoricalScenarioMapOrchestrator
+ * @see HomininPaleoOccupancyCalculator
+ * @see PaleoClimateMapRasterizer
+ * @see GeologicalResourceMapRasterizer
  */
 public class HistoricalMapGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(HistoricalMapGenerator.class);
 
+    /** Standard global equirectangular raster width in pixels. */
     public static final int WIDTH = 2048;
+    /** Standard global equirectangular raster height in pixels. */
     public static final int HEIGHT = 1024;
 
     // Quaternary Continental Ice Sheets - Delegated to PaleoGeographyCoordinatesCatalog
@@ -83,102 +84,126 @@ public class HistoricalMapGenerator {
 
     // --- HOMININ OCCUPANCY & PALEO TRAITS DELEGATIONS ---
 
+    /** Computes hominin clade probability weights at (lon, lat). */
     public static double[] computeHomininCladeWeights(double lon, double lat) {
         return HomininPaleoOccupancyCalculator.computeHomininCladeWeights(lon, lat);
     }
 
+    /** Returns 1-indexed dominant hominin entity identifier at (lon, lat). */
     public static int getHomininEntityId(double lon, double lat) {
         return HomininPaleoOccupancyCalculator.getHomininEntityId(lon, lat);
     }
 
+    /** Returns hominin species classification index at (lon, lat). */
     public static int getHomininSpeciesType(double lon, double lat) {
         return HomininPaleoOccupancyCalculator.getHomininSpeciesType(lon, lat);
     }
 
+    /** Blends paleolithic sociological traits across Sapiens, Neanderthal, and Denisovan clades. */
     public static double blendPaleoTraits(double lon, double lat, double valSapiens, double valNeanderthal, double valDenisovan) {
         return HomininPaleoOccupancyCalculator.blendPaleoTraits(lon, lat, valSapiens, valNeanderthal, valDenisovan);
     }
 
+    /** Smooths a closed polygon via Chaikin corner-cutting subdivision. */
     public static double[][] chaikinSmoothPolygon(double[][] poly, int iterations) {
         return PaleoGeographyCoordinatesCatalog.chaikinSmoothPolygon(poly, iterations);
     }
 
+    /** Computes minimum distance in degrees from (lon, lat) to a polyline. */
     public static double distToPolyline(double lon, double lat, double[][] line) {
         return HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, line);
     }
 
+    /** Computes signed distance in degrees from (lon, lat) to a closed polygon (negative inside). */
     public static double signedDistanceToPolygon(double lon, double lat, double[][] poly) {
         return HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, poly);
     }
 
+    /** Returns {@code true} if (lon, lat) is an uninhabited oceanic island at {@code year}. */
     public static boolean isRemoteOceanicIsland(double lon, double lat, long year) {
         return HomininPaleoOccupancyCalculator.isRemoteOceanicIsland(lon, lat, year);
     }
 
+    /** Computes continuous hominin occupancy weight in \([0.0, 1.0]\) at (lon, lat, year). */
     public static double getHomininOccupancyWeight(double lon, double lat, long year) {
         return HomininPaleoOccupancyCalculator.getHomininOccupancyWeight(lon, lat, year);
     }
 
+    /** Returns {@code true} if (lon, lat) is occupied by hominins at {@code year}. */
     public static boolean isHomininOccupied(double lon, double lat, long year) {
         return HomininPaleoOccupancyCalculator.isHomininOccupied(lon, lat, year);
     }
 
+    /** Returns {@code true} if (lng, lat) lies on continental or insular land. */
     public static boolean isLand(double lng, double lat) {
         return HistoricalLandGeometryCatalog.isLand(lng, lat);
     }
 
+    /** Creates a pure transparent 2048x1024 ARGB canvas. */
     public static BufferedImage createPureTransparentCanvas() {
         return new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
     }
 
     // --- PALEOCLIMATOLOGY DELEGATIONS ---
 
+    /** Computes mean annual surface temperature (°C) for (lat, lon, elevM, year). */
     public static double computeSurfaceTemperature(double lat, double lon, double elevM, long year) {
         return PaleoClimateMapRasterizer.computeSurfaceTemperature(lat, lon, elevM, year);
     }
 
+    /** Computes mean annual precipitation (mm/yr) for (lat, lon, elevM, year). */
     public static double computeAnnualPrecipitation(double lat, double lon, double elevM, long year) {
         return PaleoClimateMapRasterizer.computeAnnualPrecipitation(lat, lon, elevM, year);
     }
 
+    /** Computes annual thermal seasonality amplitude (°C) for (lat, lon, elevM, year). */
     public static double computeSeasonalityAmplitude(double lat, double lon, double elevM, long year) {
         return PaleoClimateMapRasterizer.computeSeasonalityAmplitude(lat, lon, elevM, year);
     }
 
+    /** Rasterizes the global biome classification map for {@code year}. */
     public static BufferedImage rasterizeBiomesMap(long year) {
         return PaleoClimateMapRasterizer.rasterizeBiomesMap(year);
     }
 
+    /** Rasterizes the global surface temperature map for {@code year}. */
     public static BufferedImage rasterizeTemperatureMap(long year) {
         return PaleoClimateMapRasterizer.rasterizeTemperatureMap(year);
     }
 
+    /** Rasterizes the global annual precipitation map for {@code year}. */
     public static BufferedImage rasterizePrecipitationMap(long year) {
         return PaleoClimateMapRasterizer.rasterizePrecipitationMap(year);
     }
 
+    /** Rasterizes the global thermal seasonality map for {@code year}. */
     public static BufferedImage rasterizeSeasonalityMap(long year) {
         return PaleoClimateMapRasterizer.rasterizeSeasonalityMap(year);
     }
 
     // --- DISK CACHE & FILE PERSISTENCE DELEGATIONS ---
 
+    /** Encodes a {@link BufferedImage} to a Base64 PNG string. */
     public static String bufferedImageToBase64Png(BufferedImage bImg) {
         return HistoricalMapDiskCacheManager.bufferedImageToBase64Png(bImg);
     }
 
+    /** Writes a {@link BufferedImage} to disk as PNG. */
     public static void writePngFile(BufferedImage img, File targetFile) {
         HistoricalMapDiskCacheManager.writePngFile(img, targetFile);
     }
 
+    /** Loads scenario rasters from {@code data/ether/earth/<year>/} if available. */
     public static boolean loadFromYearDirectory(Scenario scenario) {
         return HistoricalMapDiskCacheManager.loadFromYearDirectory(scenario);
     }
 
-    public static boolean loadFromDiskCache(Scenario scenario, java.nio.file.Path cacheDir, String safeName) {
+    /** Loads scenario rasters from legacy {@code data/cache/} directory if available. */
+    public static boolean loadFromDiskCache(Scenario scenario, Path cacheDir, String safeName) {
         return HistoricalMapDiskCacheManager.loadFromDiskCache(scenario, cacheDir, safeName);
     }
 
+    /** Persists the full 20-channel demographic, cultural, and geological raster suite to {@code data/ether/earth/<year>/}. */
     public static void saveImagesToYearDirectory(long year, BufferedImage imgDensity, BufferedImage imgSovereignty,
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen,
@@ -187,16 +212,19 @@ public class HistoricalMapGenerator {
         HistoricalMapDiskCacheManager.saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
     }
 
+    /** Persists cultural tensor rasters to {@code data/ether/earth/<year>/}. */
     public static void saveCulturalTensorsToYearDirectory(long year, BufferedImage imgSovereignty,
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
         HistoricalMapDiskCacheManager.saveCulturalTensorsToYearDirectory(year, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen);
     }
 
+    /** Persists demographic and cultural rasters to {@code data/cache/}. */
     public static void saveImagesToDiskCache(String scenarioName, BufferedImage imgDensity, BufferedImage imgSovereignty, BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech, BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
         HistoricalMapDiskCacheManager.saveImagesToDiskCache(scenarioName, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen);
     }
 
+    /** Persists geological resource rasters to {@code data/cache/}. */
     public static void saveGeologyTensorsToDiskCache(String scenarioName,
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas,
             BufferedImage imgUranium, BufferedImage imgHe3, BufferedImage imgIronCopper,
@@ -204,299 +232,181 @@ public class HistoricalMapGenerator {
         HistoricalMapDiskCacheManager.saveGeologyTensorsToDiskCache(scenarioName, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
     }
 
-    public static void generateOrUpdateEpochMetadataFiles(java.nio.file.Path earthDir, long year) {
+    /** Generates or updates epoch provenance and README files inside an earth epoch directory. */
+    public static void generateOrUpdateEpochMetadataFiles(Path earthDir, long year) {
         HistoricalEpochMetadataGenerator.generateOrUpdateEpochMetadataFiles(earthDir, year);
     }
 
+    /** Applies Pleistocene glaciation and hominin dispersal masks to a base density raster. */
     public static BufferedImage applyPrehistoricGeographicMask(String scenarioKey, long year, BufferedImage src) {
         return PaleolithicDensityGenerator.applyPrehistoricGeographicMask(scenarioKey, year, src);
     }
 
+    /** Generates analytical prehistoric population density maps for deep-time epochs. */
     public static BufferedImage generatePrehistoricSyntheticDensityMap(long year, String type) {
         return PaleolithicDensityGenerator.generatePrehistoricSyntheticDensityMap(year, type);
     }
 
+    // --- CULTURAL & GEOLOGICAL RASTERIZER DELEGATIONS ---
+
+    /** Blends clade RGB colors weighted by hominin clade probabilities and occupancy weight. */
     public static int blendCladeRgb(double[] w, int[] cladeColors, double occWeight) {
         return HistoricalCulturalTensorRasterizer.blendCladeRgb(w, cladeColors, occWeight);
     }
 
+    /** Rasterizes the political sovereignty tensor map. */
     public static BufferedImage rasterizeSovereigntyMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizeSovereigntyMap(type, scenario);
     }
 
+    /** Rasterizes the linguistic isogloss tensor map. */
     public static BufferedImage rasterizeIsoglossMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizeIsoglossMap(type, scenario);
     }
 
+    /** Rasterizes the kinship and family structure tensor map. */
     public static BufferedImage rasterizeKinshipMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizeKinshipMap(type, scenario);
     }
 
+    /** Rasterizes the ritual and religious tradition tensor map. */
     public static BufferedImage rasterizeRitualsMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizeRitualsMap(type, scenario);
     }
 
+    /** Rasterizes the technological index tensor map. */
     public static BufferedImage rasterizeTechnologyMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizeTechnologyMap(type, scenario);
     }
 
+    /** Rasterizes the trade network connectivity tensor map. */
     public static BufferedImage rasterizeTradeNetworkMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizeTradeNetworkMap(type, scenario);
     }
 
+    /** Rasterizes the institutional administrative complexity tensor map. */
     public static BufferedImage rasterizeInstitutionalComplexityMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizeInstitutionalComplexityMap(type, scenario);
     }
 
+    /** Rasterizes the anthropogenic ecological footprint tensor map. */
     public static BufferedImage rasterizeEcologicalFootprintMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizeEcologicalFootprintMap(type, scenario);
     }
 
+    /** Rasterizes the endemic pathogen immunity tensor map. */
     public static BufferedImage rasterizePathogenImmunityMap(String type, Scenario scenario) {
         return HistoricalCulturalTensorRasterizer.rasterizePathogenImmunityMap(type, scenario);
     }
 
+    /** Rasterizes the coal reserves geological tensor map. */
     public static BufferedImage rasterizeCoalMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeCoalMap(type, scenario);
     }
 
+    /** Rasterizes the crude oil reserves geological tensor map. */
     public static BufferedImage rasterizeOilMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeOilMap(type, scenario);
     }
 
+    /** Rasterizes the natural gas reserves geological tensor map. */
     public static BufferedImage rasterizeGasMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeGasMap(type, scenario);
     }
 
+    /** Rasterizes the uranium ore reserves geological tensor map. */
     public static BufferedImage rasterizeUraniumMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeUraniumMap(type, scenario);
     }
 
+    /** Rasterizes the Helium-3 / regolith volatiles geological tensor map. */
     public static BufferedImage rasterizeHelium3Map(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeHelium3Map(type, scenario);
     }
 
+    /** Rasterizes the iron and copper metallogenic provinces tensor map. */
     public static BufferedImage rasterizeIronCopperMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeIronCopperMap(type, scenario);
     }
 
+    /** Rasterizes the gold and silver precious metals tensor map. */
     public static BufferedImage rasterizePreciousMetalsMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizePreciousMetalsMap(type, scenario);
     }
 
+    /** Rasterizes the rare earth elements (REE) geological tensor map. */
     public static BufferedImage rasterizeRareEarthsMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeRareEarthsMap(type, scenario);
     }
 
+    /** Rasterizes the Davies (2013) terrestrial mantle heat flow tensor map. */
     public static BufferedImage rasterizeMantleHeatMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeMantleHeatMap(type, scenario);
     }
 
+    /** Computes paleoclimate aquifer recharge multiplier for (lon, lat, year). */
     public static double getPaleoAquiferRechargeFactor(double lon, double lat, long year) {
         return GeologicalResourceMapRasterizer.getPaleoAquiferRechargeFactor(lon, lat, year);
     }
 
+    /** Rasterizes the UNESCO WHYMAP groundwater aquifer recharge tensor map. */
     public static BufferedImage rasterizeAquiferMap(String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeAquiferMap(type, scenario);
     }
 
+    /** Rasterizes an extensible resource tensor map for custom resource dimensions {@code >= 10}. */
     public static BufferedImage rasterizeExtensibleResourceTensorMap(int index, String type, Scenario scenario) {
         return GeologicalResourceMapRasterizer.rasterizeExtensibleResourceTensorMap(index, type, scenario);
     }
 
-    public static java.util.List<double[]> loadMRDSDeposits(String... commodityKeywords) {
+    /** Loads USGS MRDS mineral deposit coordinates matching commodity keywords. */
+    public static List<double[]> loadMRDSDeposits(String... commodityKeywords) {
         return GeologicalResourceMapRasterizer.loadMRDSDeposits(commodityKeywords);
     }
 
-    public static void rasterizeSpotListToAlpha(BufferedImage img, java.util.List<double[]> spots, Color themeColor, double defaultRadiusPx) {
+    /** Renders radial Gaussian alpha spots onto an ARGB geological layer. */
+    public static void rasterizeSpotListToAlpha(BufferedImage img, List<double[]> spots, Color themeColor, double defaultRadiusPx) {
         GeologicalResourceMapRasterizer.rasterizeSpotListToAlpha(img, spots, themeColor, defaultRadiusPx);
     }
 
-    public static void rasterizeTieredSpotList(BufferedImage img, java.util.List<double[]> spots, Color lowColor, Color medColor, Color highColor, double defaultRadiusPx) {
+    /** Renders 3-tier color-graded radial Gaussian spots onto an ARGB geological layer. */
+    public static void rasterizeTieredSpotList(BufferedImage img, List<double[]> spots, Color lowColor, Color medColor, Color highColor, double defaultRadiusPx) {
         GeologicalResourceMapRasterizer.rasterizeTieredSpotList(img, spots, lowColor, medColor, highColor, defaultRadiusPx);
     }
 
-    // --- ELEVATION MASK & CARTOGRAPHIC PIPELINE ---
+    // --- ELEVATION MASK & CARTOGRAPHIC PIPELINE DELEGATIONS ---
 
-    private static volatile BufferedImage cachedElevationMask = null;
-    private static final Object ELEV_LOCK = new Object();
-
+    /** Loads and caches the global 2048x1024 NOAA ETOPO coastline mask. */
     public static BufferedImage loadElevationMask() {
-        if (cachedElevationMask != null) return cachedElevationMask;
-        synchronized (ELEV_LOCK) {
-            if (cachedElevationMask != null) return cachedElevationMask;
-            try {
-                int tw = WIDTH, th = HEIGHT;
-                BufferedImage mask = new BufferedImage(tw, th, BufferedImage.TYPE_BYTE_GRAY);
-
-                float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(tw, th);
-                if (etopo != null) {
-                    for (int y = 0; y < th; y++) {
-                        for (int x = 0; x < tw; x++) {
-                            mask.getRaster().setSample(x, y, 0, (etopo[y][x] >= 0.0f) ? 255 : 0);
-                        }
-                    }
-                    cachedElevationMask = mask;
-                    logger.info("Altimetry coastline mask loaded directly from official NOAA ETOPO 2022 GeoTIFF ({}x{}).", tw, th);
-                    return cachedElevationMask;
-                }
-
-                BufferedImage elev = null;
-                File f100k = new File("data/ether/earth/-100000/earth_-100000_elevation.png");
-                if (f100k.exists()) {
-                    try { elev = ImageIO.read(f100k); } catch (Exception ignored) {}
-                }
-                if (elev == null) {
-                    File f2026 = new File("data/ether/earth/2026/earth_2026_elevation.png");
-                    if (f2026.exists()) {
-                        try { elev = ImageIO.read(f2026); } catch (Exception ignored) {}
-                    }
-                }
-                if (elev == null) {
-                    File fCache = new File("data/cache/earth_elevation.png");
-                    if (fCache.exists()) {
-                        try { elev = ImageIO.read(fCache); } catch (Exception ignored) {}
-                    }
-                }
-                if (elev == null) {
-                    logger.warn("earth_elevation.png not found â€” altimetry coastline mask disabled.");
-                    return null;
-                }
-                for (int y = 0; y < th; y++) {
-                    for (int x = 0; x < tw; x++) {
-                        int sx = Math.clamp((int) ((x / (double) tw) * elev.getWidth()), 0, elev.getWidth() - 1);
-                        int sy = Math.clamp((int) ((y / (double) th) * elev.getHeight()), 0, elev.getHeight() - 1);
-                        int rgb = elev.getRGB(sx, sy);
-                        int r = (rgb >> 16) & 0xFF;
-                        int gr = (rgb >> 8) & 0xFF;
-                        int b = rgb & 0xFF;
-                        double lum = (0.299 * r + 0.587 * gr + 0.114 * b) / 255.0;
-                        mask.getRaster().setSample(x, y, 0, (lum >= 0.478) ? 255 : 0);
-                    }
-                }
-                cachedElevationMask = mask;
-                logger.info("Altimetry coastline mask loaded from data/ether/ ({}x{} -> {}x{}).", elev.getWidth(), elev.getHeight(), tw, th);
-                return cachedElevationMask;
-            } catch (Exception e) {
-                logger.warn("Failed to load altimetry coastline mask: {}", e.getMessage());
-                return null;
-            }
-        }
+        return HistoricalScenarioMapOrchestrator.loadElevationMask();
     }
 
+    /** Masks ocean pixels to pure black using the cached ETOPO coastline mask. */
     public static BufferedImage applyAltimetryCoastlineMask(BufferedImage src) {
-        if (src == null) return null;
-        BufferedImage mask = loadElevationMask();
-        int w = src.getWidth(), h = src.getHeight();
-        BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                int mx = (int) ((x + 0.5) * (mask != null ? mask.getWidth() : w) / w);
-                int my = (int) ((y + 0.5) * (mask != null ? mask.getHeight() : h) / h);
-                mx = Math.clamp(mx, 0, (mask != null ? mask.getWidth() : w) - 1);
-                my = Math.clamp(my, 0, (mask != null ? mask.getHeight() : h) - 1);
-                int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
-                if (land == 0) {
-                    out.setRGB(x, y, 0x000000);
-                } else {
-                    out.setRGB(x, y, src.getRGB(x, y));
-                }
-            }
-        }
-        return out;
+        return HistoricalScenarioMapOrchestrator.applyAltimetryCoastlineMask(src);
     }
 
+    /** Computes topographic and hyper-arid habitability factor in \([0.12, 1.0]\). */
     public static double getTopographicHabitability(String scenarioType, double lng, double lat) {
-        double himalayas = Math.exp(-(Math.pow(lat - 32.0, 2) + Math.pow(lng - 85.0, 2)) / 100.0);
-        double alps = Math.exp(-(Math.pow(lat - 46.0, 2) + Math.pow(lng - 10.0, 2)) / 30.0);
-        double zagros = Math.exp(-(Math.pow(lat - 33.0, 2) + Math.pow(lng - 47.0, 2)) / 40.0);
-        double andes = Math.exp(-(Math.pow(lat - (-20.0), 2) + Math.pow(lng - (-70.0), 2)) / 60.0);
-
-        double mountainPenalty = himalayas * 0.75 + alps * 0.5 + zagros * 0.5 + andes * 0.6;
-        boolean isGreenSahara = scenarioType != null && scenarioType.equalsIgnoreCase("GREEN_SAHARA");
-        double saharaPenalty = 0.0;
-        if (!isGreenSahara) {
-            double saharaCore = Math.exp(-(Math.pow(lat - 23.0, 2) + Math.pow(lng - 12.0, 2)) / 140.0);
-            saharaPenalty = saharaCore * 0.6;
-        }
-
-        double factor = 1.0 - mountainPenalty - saharaPenalty;
-        return Math.max(0.12, Math.min(1.0, factor));
+        return HistoricalScenarioMapOrchestrator.getTopographicHabitability(scenarioType, lng, lat);
     }
 
+    /** Rasterizes the demographic density map for {@code scenario}'s start year. */
     public static BufferedImage rasterizeDensityMap(String type, Scenario scenario) {
         return rasterizeDensityMapForYear(type, scenario, (scenario != null) ? scenario.getStartDateYear() : -10000);
     }
 
+    /** Rasterizes the demographic density map for an explicit {@code targetYear}. */
     public static BufferedImage rasterizeDensityMapForYear(String type, Scenario scenario, long targetYear) {
-        if (scenario != null && scenario.isUseRealEarthData() && (targetYear < -10000 || targetYear > 2024)) {
-            throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical HYDE 3.4 dataset unavailable for year " + targetYear);
-        }
-        if (targetYear < -10000) {
-            return applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(targetYear, type));
-        }
-        BufferedImage realHydeImg = Hyde34GridReader.loadForYear(targetYear);
-        if (realHydeImg != null) {
-            logger.info("Ingested authentic HYDE 3.4 5-arc-minute Esri ASCII raster grid for year {}", targetYear);
-            return applyAltimetryCoastlineMask(realHydeImg);
-        }
-        return applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(targetYear, type));
+        return HistoricalScenarioMapOrchestrator.rasterizeDensityMapForYear(type, scenario, targetYear);
     }
 
+    /** Synthesizes an extensible cultural tensor map for custom dimension {@code tensorIndex}. */
     public static BufferedImage rasterizeExtensibleTensorMap(int tensorIndex, String type, Scenario scenario) {
-        int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = img.createGraphics();
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, width, height);
-
-        long seed = 11235L + tensorIndex * 11111L;
-        if (scenario != null && scenario.getTensorSeeds() != null && scenario.getTensorSeeds().containsKey(tensorIndex)) {
-            seed = scenario.getTensorSeeds().get(tensorIndex);
-        } else if (scenario != null && scenario.getCulturalSeed() != 0) {
-            seed = scenario.getCulturalSeed() ^ (tensorIndex * 0x9E3779B97F4A7C15L);
-        }
-
-        double pFreq = 0.020;
-        double pAmp = 1.00;
-        double pDiff = 0.25;
-        if (scenario != null && scenario.getTensorProceduralParameters() != null && scenario.getTensorProceduralParameters().containsKey(tensorIndex)) {
-            java.util.Map<String, Double> pMap = scenario.getTensorProceduralParameters().get(tensorIndex);
-            if (pMap != null) {
-                pFreq = pMap.getOrDefault("scenario.tensor.ext.p1.label", 0.020);
-                pAmp = pMap.getOrDefault("scenario.tensor.ext.p2.label", 1.00);
-                pDiff = pMap.getOrDefault("scenario.tensor.ext.p3.label", 0.25);
-            }
-        }
-
-        java.util.Random rnd = new java.util.Random(seed);
-        double phaseLng = rnd.nextDouble() * Math.PI * 2.0;
-        double phaseLat = rnd.nextDouble() * Math.PI * 2.0;
-        double scale = Math.clamp(pFreq, 0.001, 0.20);
-        float hueBase = (float) ((tensorIndex * 0.137 + (rnd.nextDouble() * 0.2)) % 1.0);
-
-        for (int y = 0; y < height; y++) {
-            double lat = 90.0 - (y / (double) height) * 180.0;
-            for (int x = 0; x < width; x++) {
-                double lon = -180.0 + (x / (double) width) * 360.0;
-                if (!isLand(lon, lat)) {
-                    img.setRGB(x, y, 0x0F172A);
-                    continue;
-                }
-
-                double val = (Math.sin(lon * scale + phaseLng) * Math.cos(lat * scale + phaseLat) * 0.5 + 0.5) * pAmp;
-                val = Math.clamp(val, 0.0, 1.0);
-                float sat = (float) Math.clamp(0.5f + val * 0.45f * (1.0 - pDiff * 0.5), 0.0, 1.0);
-                float bright = (float) Math.clamp(0.2f + val * 0.75f, 0.0, 1.0);
-                int rgb = Color.HSBtoRGB(hueBase, sat, bright);
-                img.setRGB(x, y, rgb);
-            }
-        }
-        g.dispose();
-        return img;
+        return HistoricalScenarioMapOrchestrator.rasterizeExtensibleTensorMap(tensorIndex, type, scenario);
     }
 
+    /** Creates an empty black RGB canvas of dimensions {@code width x height}. */
     public static BufferedImage rasterizeCoastlines(int width, int height) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
@@ -506,218 +416,38 @@ public class HistoricalMapGenerator {
         return img;
     }
 
+    /** Populates procedural/historical maps for {@code scenario}. */
     public static void generateProceduralMapsForScenario(Scenario scenario) {
         populateScenarioHistoricalMaps(scenario);
     }
 
+    /** Populates all cartographic tensor maps for {@code scenario}, utilizing disk caches when available. */
     public static void populateScenarioHistoricalMaps(Scenario scenario) {
-        if (scenario == null) return;
-        try {
-            if (loadFromYearDirectory(scenario)) return;
-
-            String safeName = scenario.getName().replaceAll("[^a-zA-Z0-9_\\-]", "_").toLowerCase(java.util.Locale.ROOT);
-            java.nio.file.Path cacheDir = java.nio.file.Paths.get("data", "cache");
-
-            if (loadFromDiskCache(scenario, cacheDir, safeName)) {
-                logger.info("Successfully loaded scenario '{}' cartographic tensors from disk cache.", scenario.getName());
-                return;
-            }
-
-            String presetKey = scenario.getPresetKey();
-            if (presetKey != null && !presetKey.isEmpty() && !presetKey.equals(safeName)) {
-                if (loadFromDiskCache(scenario, cacheDir, presetKey)) return;
-            }
-
-            String type = scenario.getPopulationDensityType();
-            if (type == null) type = "URBAN_CLUSTERS";
-
-            SvgMapIngestor.SvgIngestionResult neResult = NaturalEarthVectorIngestor.loadNaturalEarthMap(type);
-            if (neResult == null) neResult = SvgMapIngestor.ingestForScenario(type);
-            if (neResult == null && scenario.getStartDateYear() != 0) {
-                neResult = HgisAtlasIngestor.loadHistoricalPolityMap(scenario.getStartDateYear(), type);
-            }
-
-            BufferedImage imgDensity = (neResult != null && neResult.densityImage != null) ? neResult.densityImage : null;
-            if (imgDensity == null) {
-                if (scenario.getStartDateYear() <= -70000) {
-                    imgDensity = applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type));
-                } else if (scenario.getStartDateYear() < -10000) {
-                    BufferedImage baseHyde = Hyde34GridReader.loadForYear(-10000);
-                    if (baseHyde != null) {
-                        imgDensity = applyAltimetryCoastlineMask(applyPrehistoricGeographicMask(scenario.getPresetKey() != null ? scenario.getPresetKey() : safeName, scenario.getStartDateYear(), baseHyde));
-                    } else {
-                        imgDensity = applyAltimetryCoastlineMask(generatePrehistoricSyntheticDensityMap(scenario.getStartDateYear(), type));
-                    }
-                } else {
-                    imgDensity = Hyde34GridReader.loadForYear(scenario.getStartDateYear());
-                    if (imgDensity != null) {
-                        imgDensity = applyAltimetryCoastlineMask(imgDensity);
-                    } else {
-                        imgDensity = applyAltimetryCoastlineMask(rasterizeDensityMap(type, scenario));
-                    }
-                }
-            } else {
-                imgDensity = applyAltimetryCoastlineMask(imgDensity);
-            }
-            scenario.setCustomDensityBase64(bufferedImageToBase64Png(imgDensity));
-
-            BufferedImage imgIsogloss = (neResult != null && neResult.isoglossImage != null) ? neResult.isoglossImage : rasterizeIsoglossMap(type, scenario);
-            scenario.setCustomTensorMapBase64(0, bufferedImageToBase64Png(imgIsogloss));
-
-            BufferedImage imgKinship = (neResult != null && neResult.kinshipImage != null) ? neResult.kinshipImage : rasterizeKinshipMap(type, scenario);
-            scenario.setCustomTensorMapBase64(1, bufferedImageToBase64Png(imgKinship));
-
-            BufferedImage imgRituals = (neResult != null && neResult.ritualsImage != null) ? neResult.ritualsImage : rasterizeRitualsMap(type, scenario);
-            scenario.setCustomTensorMapBase64(2, bufferedImageToBase64Png(imgRituals));
-
-            BufferedImage imgSovereignty = (neResult != null && neResult.sovereigntyImage != null) ? neResult.sovereigntyImage : rasterizeSovereigntyMap(type, scenario);
-            scenario.setCustomTensorMapBase64(3, bufferedImageToBase64Png(imgSovereignty));
-
-            BufferedImage imgTechnology = rasterizeTechnologyMap(type, scenario);
-            scenario.setCustomTensorMapBase64(4, bufferedImageToBase64Png(imgTechnology));
-
-            BufferedImage imgTrade = rasterizeTradeNetworkMap(type, scenario);
-            scenario.setCustomTensorMapBase64(5, bufferedImageToBase64Png(imgTrade));
-
-            BufferedImage imgInstitutional = rasterizeInstitutionalComplexityMap(type, scenario);
-            scenario.setCustomTensorMapBase64(6, bufferedImageToBase64Png(imgInstitutional));
-
-            BufferedImage imgEcological = rasterizeEcologicalFootprintMap(type, scenario);
-            scenario.setCustomTensorMapBase64(7, bufferedImageToBase64Png(imgEcological));
-
-            BufferedImage imgPathogen = rasterizePathogenImmunityMap(type, scenario);
-            scenario.setCustomTensorMapBase64(8, bufferedImageToBase64Png(imgPathogen));
-
-            int dims = scenario.getCultureVectorDimensions();
-            if (dims > 9) {
-                for (int i = 9; i < dims; i++) {
-                    BufferedImage imgExt = rasterizeExtensibleTensorMap(i, type, scenario);
-                    scenario.setCustomTensorMapBase64(i, bufferedImageToBase64Png(imgExt));
-                }
-            }
-
-            BufferedImage imgCoal = rasterizeCoalMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(0, bufferedImageToBase64Png(imgCoal));
-
-            BufferedImage imgOil = rasterizeOilMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(1, bufferedImageToBase64Png(imgOil));
-
-            BufferedImage imgGas = rasterizeGasMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(2, bufferedImageToBase64Png(imgGas));
-
-            BufferedImage imgUranium = rasterizeUraniumMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(3, bufferedImageToBase64Png(imgUranium));
-
-            BufferedImage imgHe3 = rasterizeHelium3Map(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(4, bufferedImageToBase64Png(imgHe3));
-
-            BufferedImage imgIronCopper = rasterizeIronCopperMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(5, bufferedImageToBase64Png(imgIronCopper));
-
-            BufferedImage imgPreciousMetals = rasterizePreciousMetalsMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(6, bufferedImageToBase64Png(imgPreciousMetals));
-
-            BufferedImage imgRareEarths = rasterizeRareEarthsMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(7, bufferedImageToBase64Png(imgRareEarths));
-
-            BufferedImage imgMantleHeat = rasterizeMantleHeatMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(8, bufferedImageToBase64Png(imgMantleHeat));
-
-            BufferedImage imgAquifer = rasterizeAquiferMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(9, bufferedImageToBase64Png(imgAquifer));
-
-            int resDims = scenario.getResourceVectorDimensions();
-            if (resDims > 10) {
-                for (int i = 10; i < resDims; i++) {
-                    BufferedImage imgExtRes = rasterizeExtensibleResourceTensorMap(i, type, scenario);
-                    scenario.setCustomGeologyTensorMapBase64(i, bufferedImageToBase64Png(imgExtRes));
-                }
-            }
-
-            saveImagesToYearDirectory(scenario.getStartDateYear(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
-            saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
-            saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
-
-        } catch (Exception e) {
-            logger.error("Failed to generate historical maps for scenario {}", scenario.getName(), e);
-        }
+        HistoricalScenarioMapOrchestrator.populateScenarioHistoricalMaps(scenario);
     }
 
+    /** Force-regenerates demographic, cultural, and aquifer rasters for {@code scenario}. */
     public static void forceGenerateCulturalTensorsOnly(Scenario scenario) {
-        if (scenario == null) return;
-        try {
-            String type = scenario.getPopulationDensityType();
-            if (type == null) type = "URBAN_CLUSTERS";
-            long year = scenario.getStartDateYear();
-
-            BufferedImage imgDensity = rasterizeDensityMap(type, scenario);
-            BufferedImage imgIsogloss = rasterizeIsoglossMap(type, scenario);
-            BufferedImage imgKinship = rasterizeKinshipMap(type, scenario);
-            BufferedImage imgRituals = rasterizeRitualsMap(type, scenario);
-            BufferedImage imgSovereignty = rasterizeSovereigntyMap(type, scenario);
-            BufferedImage imgTechnology = rasterizeTechnologyMap(type, scenario);
-            BufferedImage imgTrade = rasterizeTradeNetworkMap(type, scenario);
-            BufferedImage imgInstitutional = rasterizeInstitutionalComplexityMap(type, scenario);
-            BufferedImage imgEcological = rasterizeEcologicalFootprintMap(type, scenario);
-            BufferedImage imgPathogen = rasterizePathogenImmunityMap(type, scenario);
-
-            BufferedImage imgAquifer = rasterizeAquiferMap(type, scenario);
-
-            saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology,
-                    imgTrade, imgInstitutional, imgEcological, imgPathogen, null, null, null, null,
-                    null, null, null, null, null, imgAquifer);
-
-            saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
-            logger.info("Successfully regenerated and persisted the COMPLETE 25-raster suite for scenario '{}' (Year {}).", scenario.getName(), year);
-        } catch (Exception e) {
-            logger.error("Failed to generate complete raster suite for scenario {}", scenario.getName(), e);
-        }
+        HistoricalScenarioMapOrchestrator.forceGenerateCulturalTensorsOnly(scenario);
     }
 
+    /** Force-populates historical maps for {@code scenario}. */
     public static void forceGenerateScenarioHistoricalMaps(Scenario scenario) {
         populateScenarioHistoricalMaps(scenario);
     }
 
+    /** Ensures all built-in scenario rasters exist on disk without forcing overwrite. */
     public static void ensureAllScenarioMapsGenerated() {
         ensureAllScenarioMapsGenerated(false);
     }
 
+    /** Ensures all built-in scenario rasters exist on disk, optionally forcing regeneration. */
     public static void ensureAllScenarioMapsGenerated(boolean force) {
-        List<Scenario> builtIns = Scenario.getBuiltInScenarios();
-        logger.info("Verifying cartographic maps for all {} built-in scenarios in 'data/ether/earth/<year>/' (force={})...", builtIns.size(), force);
-        int generated = 0;
-        for (Scenario sc : builtIns) {
-            long year = sc.getStartDateYear();
-            java.nio.file.Path earthDir = java.nio.file.Paths.get("data", "ether", "earth", String.valueOf(year));
-            boolean exists = !force &&
-                             java.nio.file.Files.exists(earthDir.resolve("earth_" + year + "_density.png")) &&
-                             java.nio.file.Files.exists(earthDir.resolve("earth_" + year + "_isogloss.png")) &&
-                             java.nio.file.Files.exists(earthDir.resolve("earth_" + year + "_sovereignty.png"));
-            if (!exists) {
-                forceGenerateScenarioHistoricalMaps(sc);
-                generated++;
-            }
-        }
-        logger.info("Batch generation check complete. Generated/updated {} scenarios in data/ether/earth/.", generated);
+        HistoricalScenarioMapOrchestrator.ensureAllScenarioMapsGenerated(force);
     }
 
+    /** Pre-caches cartographic tensor maps for all named scenario archetypes. */
     public static void precacheAllBuiltInScenarios() {
-        String[] types = {
-            "ONE_CONTINENT", "OUT_OF_AFRICA_100K", "FERTILE_CRESCENT_8000BC",
-            "ROMAN_EMPIRE_0", "SONG_DYNASTY_1000", "MALI_EMPIRE_1324",
-            "EGYPT_NILE", "MESOPOTAMIA_ASSYRIA", "GREEN_SAHARA", "INDIA_MAURYA",
-            "SAKOKU_JAPAN", "MESOAMERICA", "AMERICAS_1491", "SAHUL_MIGRATION",
-            "BERINGIA_AMERICAS", "URBAN_CLUSTERS",
-            "SILK_ROAD_NEXUS", "LGM_REFUGIA", "INDIAN_OCEAN_TRADE", "BRONZE_AGE_COLLAPSE"
-        };
-        logger.info("Pre-caching cartographic tensor maps for {} built-in scenarios to 'data/cache/'...", types.length);
-        for (String type : types) {
-            Scenario dummy = new Scenario();
-            dummy.setName(type);
-            dummy.setPopulationDensityType(type);
-            populateScenarioHistoricalMaps(dummy);
-        }
-        logger.info("Cartographic pre-caching complete.");
+        HistoricalScenarioMapOrchestrator.precacheAllBuiltInScenarios();
     }
 }
-

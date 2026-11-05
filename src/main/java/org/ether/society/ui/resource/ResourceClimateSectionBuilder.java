@@ -6,6 +6,9 @@
  */
 package org.ether.society.ui.resource;
 
+import static org.ether.society.ui.util.UISectionBuilderHelper.*;
+import static org.ether.society.ui.resource.ResourceClimateSourceHelper.*;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -378,55 +381,11 @@ public class ResourceClimateSectionBuilder {
     }
 
     public void showClimateImportFormatHelp() {
-        WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("planet.dialog.climate_help_title", "Climate Map Specifications"),
-                I18n.getOrDefault("planet.dialog.climate_help_header", "Supported Image Formats for Climate Data"),
-                "Images PNG/JPEG in 2:1 ratio (e.g. 2048x1024 px, Equirectangular Plate Carree projection).\n\n" +
-                "1. SEPARATE MAPS IN GRAYSCALE OR THERMAL GRADIENTS:\n" +
-                "   • Temperature: Black / Blue = -50°C, White / Red = +50°C\n" +
-                "   • Precipitation: Black = 0 mm/yr, White / Dark Blue = 3000 mm/yr\n" +
-                "   • Seasonality: Black = 0°C, White / Magenta = 50°C annual amplitude\n\n" +
-                "2. COMBINED MULTI-CHANNEL RGB MAP:\n" +
-                "   • R (Red) = Temperature (-50°C to +50°C)\n" +
-                "   • G (Green) = Precipitation (0 to 3000 mm/yr)\n" +
-                "   • B (Blue) = Seasonality / Thermal amplitude (0 to 50°C)\n\n" +
-                "3. WMS SATELLITE DOWNLOAD:\n" +
-                "   • NASA MODIS (thermal) and NASA/JAXA GPM (precipitation) live layers."
-        );
+        ResourceClimateSourceHelper.showClimateImportFormatHelp();
     }
-
-    public String getClimateSourceDisplayName(String planetKey) {
-        if (planetKey == null) planetKey = "earth";
-        return switch (planetKey.toLowerCase(Locale.ROOT)) {
-            case "mars" -> "🌡️ Mars Viking/MGS Thermal Inertia Model";
-            case "moon" -> "🌡️ Moon Diviner Lunar Radiometer Experiment";
-            case "venus" -> "🌡️ Venus Venera/VIRTIS Thermal Greenhouse Model";
-            case "mercury" -> "🌡️ Mercury MESSENGER Thermal Radiometry";
-            default -> "🌡️ Earth ERA5 / MODIS Land Surface Temp";
-        };
-    }
-
-    public String getRainfallSourceDisplayName(String planetKey) {
-        if (planetKey == null) planetKey = "earth";
-        return switch (planetKey.toLowerCase(Locale.ROOT)) {
-            case "mars" -> "🌧️ Mars Atmospheric Water Vapor & Sublimation";
-            case "moon" -> "🌧️ Moon Vacuum Exosphere (0 mm/yr Precipitation)";
-            case "venus" -> "🌧️ Venus Sulfuric Acid Cloud Condensation & Virga";
-            case "mercury" -> "🌧️ Mercury Exospheric Zero Precipitation";
-            default -> "🌧️ Earth NASA GPM IMERG Precipitation";
-        };
-    }
-
-    public String getSeasonalitySourceDisplayName(String planetKey) {
-        if (planetKey == null) planetKey = "earth";
-        return switch (planetKey.toLowerCase(Locale.ROOT)) {
-            case "mars" -> "☀️ Mars Obliquity (25.2°) Thermal Seasonality";
-            case "moon" -> "☀️ Moon Diurnal Day/Night Extreme Seasonality";
-            case "venus" -> "☀️ Venus Slow Retrograde Thermal Inertia";
-            case "mercury" -> "☀️ Mercury 3:2 Spin-Orbit Thermal Resonance";
-            default -> "☀️ Earth Milankovitch Axial Obliquity Seasonality";
-        };
-    }
+    public String getClimateSourceDisplayName(String planetKey) { return ResourceClimateSourceHelper.getClimateSourceDisplayName(planetKey); }
+    public String getRainfallSourceDisplayName(String planetKey) { return ResourceClimateSourceHelper.getRainfallSourceDisplayName(planetKey); }
+    public String getSeasonalitySourceDisplayName(String planetKey) { return ResourceClimateSourceHelper.getSeasonalitySourceDisplayName(planetKey); }
 
     public void applyPresetClimate(EcologyPreset p, String planetKey, long epochYear) {
         if (p != null && p.customClimateBase64() != null) {
@@ -509,17 +468,10 @@ public class ResourceClimateSectionBuilder {
 
     public void updateTexts() {
         if (climateDomainSecHeader != null) climateDomainSecHeader.setText(I18n.getOrDefault("resource.domain.climate", "3. CLIMATE & ATMOSPHERE DOMAIN"));
-        if (radioProcClimate != null) radioProcClimate.setText(I18n.getOrDefault("resource.mode.procedural_climate", "▶ Procedural Climate"));
-        if (radioImportClimate != null) radioImportClimate.setText(I18n.getOrDefault("resource.mode.import_climate", "📂 Climate Maps (PNG)"));
-        if (climateMapRowLabel != null) climateMapRowLabel.setText(I18n.getOrDefault("planet.map.climate", "Climate Map (Thermal / RGB):"));
-        if (rainfallMapRowLabel != null) rainfallMapRowLabel.setText(I18n.getOrDefault("planet.map.rainfall", "Precipitation Map (Humidity):"));
-        if (seasonalityMapRowLabel != null) seasonalityMapRowLabel.setText(I18n.getOrDefault("planet.map.seasonality", "Seasonality / Variance Map:"));
-        if (loadClimateBtn != null) loadClimateBtn.setText(I18n.get("planet.map.btn_load"));
-        if (loadRainfallBtn != null) loadRainfallBtn.setText(I18n.get("planet.map.btn_load"));
-        if (loadSeasonalityBtn != null) loadSeasonalityBtn.setText(I18n.get("planet.map.btn_load"));
-        if (customClimateImage == null && climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
-        if (customRainfallImage == null && rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
-        if (customSeasonalityImage == null && seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
+        if (radioProcClimate != null) radioProcClimate.setText(I18n.getOrDefault("resource.mode.procedural_climate", "▶ Procedural Climate")); if (radioImportClimate != null) radioImportClimate.setText(I18n.getOrDefault("resource.mode.import_climate", "📂 Climate Maps (PNG)"));
+        if (climateMapRowLabel != null) climateMapRowLabel.setText(I18n.getOrDefault("planet.map.climate", "Climate Map (Thermal / RGB):")); if (rainfallMapRowLabel != null) rainfallMapRowLabel.setText(I18n.getOrDefault("planet.map.rainfall", "Precipitation Map (Humidity):")); if (seasonalityMapRowLabel != null) seasonalityMapRowLabel.setText(I18n.getOrDefault("planet.map.seasonality", "Seasonality / Variance Map:"));
+        if (loadClimateBtn != null) loadClimateBtn.setText(I18n.get("planet.map.btn_load")); if (loadRainfallBtn != null) loadRainfallBtn.setText(I18n.get("planet.map.btn_load")); if (loadSeasonalityBtn != null) loadSeasonalityBtn.setText(I18n.get("planet.map.btn_load"));
+        if (customClimateImage == null && climateFileLabel != null) climateFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —")); if (customRainfallImage == null && rainfallFileLabel != null) rainfallFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —")); if (customSeasonalityImage == null && seasonalityFileLabel != null) seasonalityFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
         if (fetchOnlineClimateBtn != null) fetchOnlineClimateBtn.setText(I18n.getOrDefault("planet.map.btn_fetch_online_climate", "🌐 Download Satellite Climate NASA/USGS (WMS)"));
         if (climateHelpBtn != null) climateHelpBtn.setText(I18n.getOrDefault("planet.map.btn_climate_help", "ℹ️ Climate Map Specifications"));
         if (climateSummaryLabel != null) climateSummaryLabel.setText(I18n.getOrDefault("resource.climate.summary", "🌡️ Climate Model: Inherited from Tab 1 planet parameters (Temperature, Gradient, Pressure, O₂, CO₂, Albedo)"));
@@ -529,31 +481,10 @@ public class ResourceClimateSectionBuilder {
         }
     }
 
-    private VBox createSection(Label header, VBox content) {
-        VBox card = new VBox(8, header, content);
-        card.getStyleClass().add("card-section");
-        card.setPadding(new Insets(10));
-        return card;
-    }
-
-    private VBox createControlRow(Label label, Node control, String tooltipText) {
-        label.getStyleClass().add("label-control");
-        if (tooltipText != null && !tooltipText.isBlank()) {
-            label.setTooltip(new Tooltip(tooltipText));
-        }
-        VBox row = new VBox(2, label, control);
-        row.setAlignment(Pos.CENTER_LEFT);
-        return row;
-    }
-
     // Getters and Setters
-    public Image getCustomClimateImage() { return customClimateImage; }
-    public void setCustomClimateImage(Image img) { this.customClimateImage = img; }
-    public Image getCustomRainfallImage() { return customRainfallImage; }
-    public void setCustomRainfallImage(Image img) { this.customRainfallImage = img; }
-    public Image getCustomSeasonalityImage() { return customSeasonalityImage; }
-    public void setCustomSeasonalityImage(Image img) { this.customSeasonalityImage = img; }
-
+    public Image getCustomClimateImage() { return customClimateImage; } public void setCustomClimateImage(Image img) { this.customClimateImage = img; }
+    public Image getCustomRainfallImage() { return customRainfallImage; } public void setCustomRainfallImage(Image img) { this.customRainfallImage = img; }
+    public Image getCustomSeasonalityImage() { return customSeasonalityImage; } public void setCustomSeasonalityImage(Image img) { this.customSeasonalityImage = img; }
     public boolean isRadioImportClimateSelected() { return radioImportClimate != null && radioImportClimate.isSelected(); }
     public void setRadioProcClimateSelected(boolean selected) { if (radioProcClimate != null) radioProcClimate.setSelected(selected); }
     public void setRadioImportClimateSelected(boolean selected) { if (radioImportClimate != null) radioImportClimate.setSelected(selected); }

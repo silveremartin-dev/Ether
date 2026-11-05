@@ -1,79 +1,66 @@
 /*
  * MIT License
- * Copyright (c) 2024 Gemini AI Assistant
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
 package org.ether.society.events;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.ether.society.database.H3Cell;
-
+import org.ether.society.i18n.I18n;
 
 /**
- * <h1>Historical Intervention</h1>
- * <p>
  * Encapsulates an exogenous or procedural historical leader intervention.
- * Modifies local geographic physics (H3Cell) and sovereign cliodynamic properties (Nation)
- * across an active spatio-temporal radius.
- * </p>
+ * Modifies local geographic physics and sovereign cliodynamic properties
+ * across an active spatio-temporal radius with anisotropic cultural and watershed coupling.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
+ * @see HistoricalInterventionPhysicsHelper
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HistoricalIntervention {
-    /** Internal state: id (String). */
+
     private String id;
-    /** Internal state: name (String). */
     private String name;
-    /** Internal state: description (String). */
     private String description;
-    /** Internal state: year start (int). */
     private int yearStart;
-    /** Internal state: duration years (int). */
     private int durationYears = 25;
-    /** Internal state: latitude (double). */
     private double latitude;
-    /** Internal state: longitude (double). */
     private double longitude;
-    /** Internal state: radius km (double). */
     private double radiusKm = 1000.0;
     private LeaderArchetype archetype = LeaderArchetype.INSTITUTIONAL_REFORMER;
-    private double magnitude = 6.0; // Scale 1.0 to 10.0
+    private double magnitude = 6.0;
 
-    // Physical & Socio-Economic Modifiers
-    /** Internal state: movement friction multiplier (double). */
     private double movementFrictionMultiplier = 1.0;
-    /** Internal state: state capacity delta (double). */
     private double stateCapacityDelta = 0.0;
-    /** Internal state: asabiyyah delta (double). */
     private double asabiyyahDelta = 0.0;
-    /** Internal state: elite overproduction delta (double). */
     private double eliteOverproductionDelta = 0.0;
-    /** Internal state: political instability delta (double). */
     private double politicalInstabilityDelta = 0.0;
-    /** Internal state: capital bonus gj (double). */
     private double capitalBonusGJ = 0.0;
-    /** Internal state: carrying capacity multiplier (double). */
     private double carryingCapacityMultiplier = 1.0;
-    /** Internal state: conquest speed multiplier (double). */
     private double conquestSpeedMultiplier = 1.0;
-    /** Internal state: trigger succession crisis at end (boolean). */
     private boolean triggerSuccessionCrisisAtEnd = false;
 
-    // Runtime state tracking
-    /** Internal state: activated (boolean). */
     private boolean activated = false;
-    /** Internal state: completed (boolean). */
     private boolean completed = false;
 
-    /**
-     * Historical intervention.
-     *
-     */
+    /** Default no-arg constructor for Jackson deserialization. */
     public HistoricalIntervention() {
     }
 
+    /**
+     * Constructs a parameterized historical leader intervention and initializes archetype modifiers.
+     *
+     * @param id            unique intervention identifier
+     * @param name          display name
+     * @param description   historical summary
+     * @param yearStart     onset year (CE/BCE)
+     * @param durationYears active duration in years (>= 1)
+     * @param latitude      epicenter latitude in degrees
+     * @param longitude     epicenter longitude in degrees
+     * @param radiusKm      influence cutoff radius in kilometers (>= 50 km)
+     * @param archetype     catalytic leader archetype
+     * @param magnitude     intervention intensity on [1.0, 10.0]
+     */
     public HistoricalIntervention(String id, String name, String description, int yearStart, int durationYears,
                                   double latitude, double longitude, double radiusKm,
                                   LeaderArchetype archetype, double magnitude) {
@@ -90,527 +77,198 @@ public class HistoricalIntervention {
         initDefaultModifiersByArchetype();
     }
 
-    /**
-     * Initializes typical modifier intensities scaled by magnitude.
-     */
+    /** Initializes default socio-physical modifier intensities scaled by magnitude. */
     public void initDefaultModifiersByArchetype() {
-        double intensity = magnitude / 10.0; // 0.1 to 1.0
-        switch (archetype) {
-            case MILITARY_CONQUEROR -> {
-                this.conquestSpeedMultiplier = 1.0 + (intensity * 4.0); // up to 5x
-                this.movementFrictionMultiplier = Math.max(0.3, 1.0 - (intensity * 0.5));
-                this.asabiyyahDelta = intensity * 0.25;
-                this.triggerSuccessionCrisisAtEnd = true;
-            }
-            case INFRASTRUCTURE_BUILDER -> {
-                this.movementFrictionMultiplier = Math.max(0.2, 1.0 - (intensity * 0.7)); // roads / routes
-                this.capitalBonusGJ = intensity * 100_000.0;
-                this.stateCapacityDelta = intensity * 0.15;
-            }
-            case INSTITUTIONAL_REFORMER -> {
-                this.stateCapacityDelta = intensity * 0.35;
-                this.politicalInstabilityDelta = -intensity * 0.30;
-                this.eliteOverproductionDelta = -intensity * 0.20;
-            }
-            case HYDRAULIC_AGRARIAN_INNOVATOR -> {
-                this.carryingCapacityMultiplier = 1.0 + (intensity * 0.80);
-                this.capitalBonusGJ = intensity * 50_000.0;
-            }
-            case MORAL_RELIGIOUS_SAGE -> {
-                this.asabiyyahDelta = intensity * 0.40;
-                this.politicalInstabilityDelta = -intensity * 0.35;
-            }
-            case TOTALITARIAN_PURGER -> {
-                this.eliteOverproductionDelta = -intensity * 0.50;
-                this.stateCapacityDelta = -intensity * 0.20;
-                this.politicalInstabilityDelta = intensity * 0.40;
-            }
-        }
+        HistoricalInterventionPhysicsHelper.applyDefaultArchetypeModifiers(this);
     }
 
     /**
-     * Is active.
+     * Checks whether the intervention is active during {@code currentYear}.
      *
-     * @param currentYear the current year parameter (int)
-     * @return the resulting computation or state reference
+     * @param currentYear calendar year
+     * @return {@code true} if active
      */
     public boolean isActive(int currentYear) {
         return currentYear >= yearStart && currentYear < (yearStart + durationYears);
     }
 
     /**
-     * Is expired.
+     * Checks whether the intervention has expired at or after {@code currentYear}.
      *
-     * @param currentYear the current year parameter (int)
-     * @return the resulting computation or state reference
+     * @param currentYear calendar year
+     * @return {@code true} if expired
      */
     public boolean isExpired(int currentYear) {
         return currentYear >= (yearStart + durationYears);
     }
 
     /**
-     * Get distance km.
+     * Computes great-circle Haversine distance in kilometers to a target cell.
      *
-     * @param cellLat the cell lat parameter (double)
-     * @param cellLng the cell lng parameter (double)
-     * @return the resulting computation or state reference
+     * @param cellLat target cell latitude in degrees
+     * @param cellLng target cell longitude in degrees
+     * @return distance in kilometers
      */
     public double getDistanceKm(double cellLat, double cellLng) {
-        double dLat = Math.toRadians(cellLat - latitude);
-        double dLng = Math.toRadians(cellLng - longitude);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                   Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(cellLat)) *
-                   Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return 6371.0 * c;
+        return HistoricalInterventionPhysicsHelper.computeHaversineDistanceKm(latitude, longitude, cellLat, cellLng);
     }
 
     /**
-     * Is inside radius.
+     * Checks whether the target cell lies within {@code radiusKm}.
      *
-     * @param cellLat the cell lat parameter (double)
-     * @param cellLng the cell lng parameter (double)
-     * @return the resulting computation or state reference
+     * @param cellLat target cell latitude in degrees
+     * @param cellLng target cell longitude in degrees
+     * @return {@code true} if inside radius
      */
     public boolean isInsideRadius(double cellLat, double cellLng) {
         return getDistanceKm(cellLat, cellLng) <= radiusKm;
     }
 
     /**
-     * Get spatial attenuation weight.
+     * Computes isotropic Gaussian spatial attenuation weight at target coordinates.
      *
-     * @param cellLat the cell lat parameter (double)
-     * @param cellLng the cell lng parameter (double)
-     * @return the resulting computation or state reference
+     * @param cellLat target cell latitude in degrees
+     * @param cellLng target cell longitude in degrees
+     * @return weight in [0.0, 1.0]
      */
     public double getSpatialAttenuationWeight(double cellLat, double cellLng) {
-        double distKm = getDistanceKm(cellLat, cellLng);
-        if (distKm > radiusKm) return 0.0;
-        double sigma = Math.max(10.0, radiusKm / 2.5);
-        return Math.exp(-0.5 * (distKm * distKm) / (sigma * sigma));
+        return HistoricalInterventionPhysicsHelper.computeSpatialAttenuation(getDistanceKm(cellLat, cellLng), radiusKm);
     }
 
     /**
-     * Computes the anisotropic spatial attenuation weight coupled with the Cultural Isogloss
-     * tensor (Tensor 0) and Hydrographic Drainage Basin topology.
+     * Computes anisotropic spatial attenuation coupled with Cultural Isogloss (Tensor 0)
+     * and Hydrographic Drainage Basin topology.
      *
-     * @param cellLat Latitude of the target cell
-     * @param cellLng Longitude of the target cell
-     * @param cellCultureId Culture/isogloss tensor identifier of the target cell (-1 or null if unspecified)
-     * @param leaderCultureId Culture/isogloss tensor identifier of the leader's homeland (-1 or null if unspecified)
-     * @param cellWatershedId Hydrographic drainage basin identifier of the target cell (-1 or null if unspecified)
-     * @param leaderWatershedId Hydrographic drainage basin identifier of the leader's epicenter (-1 or null if unspecified)
-     * @return Effective weight in [0.0, 1.0] accounting for physical distance, cultural friction, and hydrographic alignment
+     * @param cellLat           target cell latitude in degrees
+     * @param cellLng           target cell longitude in degrees
+     * @param cellCultureId     target cell culture identifier
+     * @param leaderCultureId   leader epicenter culture identifier
+     * @param cellWatershedId   target cell watershed identifier
+     * @param leaderWatershedId leader epicenter watershed identifier
+     * @return coupled transmission weight in [0.0, 1.0]
      */
     public double getCulturalAndWatershedCoupledWeight(double cellLat, double cellLng,
                                                        Integer cellCultureId, Integer leaderCultureId,
                                                        Integer cellWatershedId, Integer leaderWatershedId) {
         double spatialWeight = getSpatialAttenuationWeight(cellLat, cellLng);
-        if (spatialWeight <= 0.0) return 0.0;
-
-        // 1. Cultural Isogloss Coupling (Tensor 0)
-        double culturalFactor = 1.0;
-        if (cellCultureId != null && leaderCultureId != null && cellCultureId >= 0 && leaderCultureId >= 0) {
-            if (cellCultureId.equals(leaderCultureId)) {
-                culturalFactor = 1.0; // Same cultural sphere: full transmission
-            } else {
-                // Cross-cultural friction: conquerors project further across borders than sages/reformers
-                culturalFactor = switch (archetype) {
-                    case MILITARY_CONQUEROR -> 0.60;
-                    case INFRASTRUCTURE_BUILDER -> 0.45;
-                    case HYDRAULIC_AGRARIAN_INNOVATOR -> 0.50;
-                    case INSTITUTIONAL_REFORMER -> 0.35;
-                    case MORAL_RELIGIOUS_SAGE -> 0.30;
-                    case TOTALITARIAN_PURGER -> 0.20;
-                };
-            }
-        }
-
-        // 2. Hydrographic Watershed Drainage Basin Coupling
-        double watershedFactor = 1.0;
-        if (cellWatershedId != null && leaderWatershedId != null && cellWatershedId >= 0 && leaderWatershedId >= 0) {
-            if (cellWatershedId.equals(leaderWatershedId)) {
-                watershedFactor = 1.0; // Same river basin / corridor: full hydraulic propagation
-            } else {
-                // Trans-basin physical friction: hydraulic innovations and roads attenuate across mountain divides
-                watershedFactor = switch (archetype) {
-                    case HYDRAULIC_AGRARIAN_INNOVATOR -> 0.35; // Canal/irrigation benefits largely confined to drainage basin
-                    case INFRASTRUCTURE_BUILDER -> 0.60;      // Roads cross divides with elevated engineering cost
-                    default -> 0.80;                          // Other archetypes less constrained by river basins
-                };
-            }
-        }
-
-        return spatialWeight * culturalFactor * watershedFactor;
+        return HistoricalInterventionPhysicsHelper.computeCoupledWeight(
+                spatialWeight, archetype, cellCultureId, leaderCultureId, cellWatershedId, leaderWatershedId);
     }
 
-    // Getters and Setters
-    /**
-     * Get id.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return unique intervention identifier */
     public String getId() { return id; }
-    /**
-     * Set id operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param id the id argument (String)
-     */
+    /** @param id unique intervention identifier */
     public void setId(String id) { this.id = id; }
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return localized display name */
     public String getName() {
         if (id != null && !id.isBlank()) {
-            return org.ether.society.i18n.I18n.getOrDefault("leader.event." + id.toLowerCase() + ".name",
-                   org.ether.society.i18n.I18n.getOrDefault("leader.event." + id + ".name", name));
+            return I18n.getOrDefault("leader.event." + id.toLowerCase() + ".name",
+                   I18n.getOrDefault("leader.event." + id + ".name", name));
         }
         return name;
     }
-    /**
-     * Set name operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param name the name argument (String)
-     */
+    /** @param name raw display name */
     public void setName(String name) { this.name = name; }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return localized intervention description */
     public String getDescription() {
         if (id != null && !id.isBlank()) {
-            return org.ether.society.i18n.I18n.getOrDefault("leader.event." + id.toLowerCase() + ".desc",
-                   org.ether.society.i18n.I18n.getOrDefault("leader.event." + id + ".desc", description));
+            return I18n.getOrDefault("leader.event." + id.toLowerCase() + ".desc",
+                   I18n.getOrDefault("leader.event." + id + ".desc", description));
         }
         return description;
     }
-    /**
-     * Set description operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param description the description argument (String)
-     */
+    /** @param description raw intervention description */
     public void setDescription(String description) { this.description = description; }
 
-    /**
-     * Get year start.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return onset calendar year */
     public int getYearStart() { return yearStart; }
-    /**
-     * Set year start operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param yearStart the year start argument (int)
-     */
+    /** @param yearStart onset calendar year */
     public void setYearStart(int yearStart) { this.yearStart = yearStart; }
 
-    /**
-     * Get duration years.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return active duration in years */
     public int getDurationYears() { return durationYears; }
-    /**
-     * Set duration years operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param durationYears the duration years argument (int)
-     */
+    /** @param durationYears active duration in years */
     public void setDurationYears(int durationYears) { this.durationYears = durationYears; }
 
-    /**
-     * Get latitude.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return epicenter latitude in degrees */
     public double getLatitude() { return latitude; }
-    /**
-     * Set latitude operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param latitude the latitude argument (double)
-     */
+    /** @param latitude epicenter latitude in degrees */
     public void setLatitude(double latitude) { this.latitude = latitude; }
 
-    /**
-     * Get longitude.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return epicenter longitude in degrees */
     public double getLongitude() { return longitude; }
-    /**
-     * Set longitude operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param longitude the longitude argument (double)
-     */
+    /** @param longitude epicenter longitude in degrees */
     public void setLongitude(double longitude) { this.longitude = longitude; }
 
-    /**
-     * Get radius km.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return spatial cutoff radius in kilometers */
     public double getRadiusKm() { return radiusKm; }
-    /**
-     * Set radius km operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param radiusKm the radius km argument (double)
-     */
+    /** @param radiusKm spatial cutoff radius in kilometers */
     public void setRadiusKm(double radiusKm) { this.radiusKm = radiusKm; }
 
-    /**
-     * Get archetype.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return leader archetype */
     public LeaderArchetype getArchetype() { return archetype; }
-    /**
-     * Set archetype operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param archetype the archetype argument (LeaderArchetype)
-     */
+    /** @param archetype leader archetype */
     public void setArchetype(LeaderArchetype archetype) { this.archetype = archetype; }
 
-    /**
-     * Get magnitude.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return intervention magnitude on [1.0, 10.0] */
     public double getMagnitude() { return magnitude; }
-    /**
-     * Set magnitude operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param magnitude the magnitude argument (double)
-     */
+    /** @param magnitude intervention magnitude on [1.0, 10.0] */
     public void setMagnitude(double magnitude) { this.magnitude = magnitude; }
 
-    /**
-     * Get movement friction multiplier.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return transport friction multiplier */
     public double getMovementFrictionMultiplier() { return movementFrictionMultiplier; }
-    /**
-     * Set movement friction multiplier operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param movementFrictionMultiplier the movement friction multiplier argument (double)
-     */
+    /** @param movementFrictionMultiplier transport friction multiplier */
     public void setMovementFrictionMultiplier(double movementFrictionMultiplier) { this.movementFrictionMultiplier = movementFrictionMultiplier; }
 
-    /**
-     * Get state capacity delta.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return state administrative capacity delta */
     public double getStateCapacityDelta() { return stateCapacityDelta; }
-    /**
-     * Set state capacity delta operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param stateCapacityDelta the state capacity delta argument (double)
-     */
+    /** @param stateCapacityDelta state administrative capacity delta */
     public void setStateCapacityDelta(double stateCapacityDelta) { this.stateCapacityDelta = stateCapacityDelta; }
 
-    /**
-     * Get asabiyyah delta.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return social cohesion (asabiyyah) delta */
     public double getAsabiyyahDelta() { return asabiyyahDelta; }
-    /**
-     * Set asabiyyah delta operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param asabiyyahDelta the asabiyyah delta argument (double)
-     */
+    /** @param asabiyyahDelta social cohesion (asabiyyah) delta */
     public void setAsabiyyahDelta(double asabiyyahDelta) { this.asabiyyahDelta = asabiyyahDelta; }
 
-    /**
-     * Get elite overproduction delta.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return elite overproduction index delta */
     public double getEliteOverproductionDelta() { return eliteOverproductionDelta; }
-    /**
-     * Set elite overproduction delta operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param eliteOverproductionDelta the elite overproduction delta argument (double)
-     */
+    /** @param eliteOverproductionDelta elite overproduction index delta */
     public void setEliteOverproductionDelta(double eliteOverproductionDelta) { this.eliteOverproductionDelta = eliteOverproductionDelta; }
 
-    /**
-     * Get political instability delta.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return political instability index delta */
     public double getPoliticalInstabilityDelta() { return politicalInstabilityDelta; }
-    /**
-     * Set political instability delta operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param politicalInstabilityDelta the political instability delta argument (double)
-     */
+    /** @param politicalInstabilityDelta political instability index delta */
     public void setPoliticalInstabilityDelta(double politicalInstabilityDelta) { this.politicalInstabilityDelta = politicalInstabilityDelta; }
 
-    /**
-     * Get capital bonus gj.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return physical infrastructure capital bonus in GJ */
     public double getCapitalBonusGJ() { return capitalBonusGJ; }
-    /**
-     * Set capital bonus gj operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param capitalBonusGJ the capital bonus gj argument (double)
-     */
+    /** @param capitalBonusGJ physical infrastructure capital bonus in GJ */
     public void setCapitalBonusGJ(double capitalBonusGJ) { this.capitalBonusGJ = capitalBonusGJ; }
 
-    /**
-     * Get carrying capacity multiplier.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return local carrying capacity multiplier */
     public double getCarryingCapacityMultiplier() { return carryingCapacityMultiplier; }
-    /**
-     * Set carrying capacity multiplier operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param carryingCapacityMultiplier the carrying capacity multiplier argument (double)
-     */
+    /** @param carryingCapacityMultiplier local carrying capacity multiplier */
     public void setCarryingCapacityMultiplier(double carryingCapacityMultiplier) { this.carryingCapacityMultiplier = carryingCapacityMultiplier; }
 
-    /**
-     * Get conquest speed multiplier.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return military conquest speed multiplier */
     public double getConquestSpeedMultiplier() { return conquestSpeedMultiplier; }
-    /**
-     * Set conquest speed multiplier operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param conquestSpeedMultiplier the conquest speed multiplier argument (double)
-     */
+    /** @param conquestSpeedMultiplier military conquest speed multiplier */
     public void setConquestSpeedMultiplier(double conquestSpeedMultiplier) { this.conquestSpeedMultiplier = conquestSpeedMultiplier; }
 
-    /**
-     * Is trigger succession crisis at end.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return whether expiration triggers a succession crisis */
     public boolean isTriggerSuccessionCrisisAtEnd() { return triggerSuccessionCrisisAtEnd; }
-    /**
-     * Set trigger succession crisis at end operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param triggerSuccessionCrisisAtEnd the trigger succession crisis at end argument (boolean)
-     */
+    /** @param triggerSuccessionCrisisAtEnd whether expiration triggers a succession crisis */
     public void setTriggerSuccessionCrisisAtEnd(boolean triggerSuccessionCrisisAtEnd) { this.triggerSuccessionCrisisAtEnd = triggerSuccessionCrisisAtEnd; }
 
-    /**
-     * Is activated.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return runtime activation flag */
     public boolean isActivated() { return activated; }
-    /**
-     * Set activated operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param activated the activated argument (boolean)
-     */
+    /** @param activated runtime activation flag */
     public void setActivated(boolean activated) { this.activated = activated; }
 
-    /**
-     * Is completed.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return runtime completion flag */
     public boolean isCompleted() { return completed; }
-    /**
-     * Set completed operation.
-     * <p>
-     * Executes operational logic for {@code HistoricalIntervention} within the simulation engine framework.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param completed the completed argument (boolean)
-     */
+    /** @param completed runtime completion flag */
     public void setCompleted(boolean completed) { this.completed = completed; }
 }

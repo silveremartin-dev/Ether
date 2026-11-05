@@ -235,173 +235,22 @@ public class WorldClimEmpiricalRasterLoader {
     }
 
     private static void decodeTiffLzw(byte[] compressed, byte[] uncompressed) {
-        int[][] stringTable = new int[4096][];
-        for (int i = 0; i < 256; i++) {
-            stringTable[i] = new int[]{i};
-        }
-        int tableSize = 258;
-        int codeSize = 9;
-
-        int bitPos = 0;
-        int totalBits = compressed.length * 8;
-        int outPos = 0;
-        int oldCode = -1;
-
-        while (bitPos + codeSize <= totalBits && outPos < uncompressed.length) {
-            int code = getBits(compressed, bitPos, codeSize);
-            bitPos += codeSize;
-
-            if (code == 257) break; // EOI
-            if (code == 256) { // Clear table
-                tableSize = 258;
-                codeSize = 9;
-                oldCode = -1;
-                continue;
-            }
-
-            if (oldCode == -1) {
-                int[] str = stringTable[code];
-                if (str != null) {
-                    for (int b : str) if (outPos < uncompressed.length) uncompressed[outPos++] = (byte) b;
-                }
-                oldCode = code;
-            } else {
-                int[] str;
-                if (code < tableSize && stringTable[code] != null) {
-                    str = stringTable[code];
-                    for (int b : str) if (outPos < uncompressed.length) uncompressed[outPos++] = (byte) b;
-
-                    int[] newEntry = Arrays.copyOf(stringTable[oldCode], stringTable[oldCode].length + 1);
-                    newEntry[newEntry.length - 1] = str[0];
-                    if (tableSize < 4096) stringTable[tableSize++] = newEntry;
-                } else {
-                    int[] oldStr = stringTable[oldCode];
-                    int[] newEntry = Arrays.copyOf(oldStr, oldStr.length + 1);
-                    newEntry[newEntry.length - 1] = oldStr[0];
-                    for (int b : newEntry) if (outPos < uncompressed.length) uncompressed[outPos++] = (byte) b;
-                    if (tableSize < 4096) stringTable[tableSize++] = newEntry;
-                }
-                oldCode = code;
-            }
-
-            if (tableSize == (1 << codeSize) - 1 && codeSize < 12) {
-                codeSize++;
-            }
-        }
-    }
-
-    private static int getBits(byte[] data, int bitOffset, int bitLength) {
-        int bytePos = bitOffset / 8;
-        int bitInByte = bitOffset % 8;
-        int val = 0;
-        int bitsNeeded = bitLength;
-
-        while (bitsNeeded > 0 && bytePos < data.length) {
-            int bitsAvailable = 8 - bitInByte;
-            int take = Math.min(bitsNeeded, bitsAvailable);
-            int mask = (1 << take) - 1;
-            int shift = bitsAvailable - take;
-            int chunk = ((data[bytePos] & 0xFF) >> shift) & mask;
-            val = (val << take) | chunk;
-            bitsNeeded -= take;
-            bytePos++;
-            bitInByte = 0;
-        }
-        return val;
+        TiffLzwDecoder.decodeTiffLzw(compressed, uncompressed);
     }
 
     /**
      * Compute authentic Sea Surface Temperature (SST) for oceans (°C).
      */
     public static double computePhysicalOceanSST(double lat, double lon) {
-        // Ingestion & Transformation: Parse raw geospatial/tabular records
-        // Standardize coordinates, normalize projection tensors, and populate spatial index
-        double absLat = Math.abs(lat - 6.0); // Thermal equator at 6°N
-        double frac = Math.clamp(absLat / 86.0, 0.0, 1.0);
-        // Smooth C-infinity cosine glide from tropical peak (28.5°C) to polar sea-ice freezing point (-1.8°C)
-        double sst = -1.8 + (28.5 - (-1.8)) * Math.pow(Math.cos(frac * (Math.PI / 2.0)), 1.35);
-
-        // Gulf Stream & North Atlantic Drift (+7.5°C in NE Atlantic)
-        double dGulf = Math.exp(-(Math.pow(lat - 55.0, 2) / 220.0 + Math.pow(lon - (-10.0), 2) / 500.0));
-        sst += dGulf * 7.5;
-
-        // Kuroshio Current (+4.0°C off Japan)
-        double dKuro = Math.exp(-(Math.pow(lat - 35.0, 2) / 140.0 + Math.pow(lon - 142.0, 2) / 300.0));
-        sst += dKuro * 4.0;
-
-        // Cold Humboldt / Peru current (-5.5°C)
-        double dHumb = Math.exp(-(Math.pow(lat - (-20.0), 2) / 220.0 + Math.pow(lon - (-78.0), 2) / 60.0));
-        sst -= dHumb * 5.5;
-
-        // Cold Benguela current (-4.5°C)
-        double dBeng = Math.exp(-(Math.pow(lat - (-22.0), 2) / 180.0 + Math.pow(lon - 11.0, 2) / 50.0));
-        sst -= dBeng * 4.5;
-
-        // Cold California & Canary currents
-        double dCalif = Math.exp(-(Math.pow(lat - 32.0, 2) / 140.0 + Math.pow(lon - (-124.0), 2) / 60.0));
-        sst -= dCalif * 4.0;
-        double dCanary = Math.exp(-(Math.pow(lat - 25.0, 2) / 140.0 + Math.pow(lon - (-20.0), 2) / 60.0));
-        sst -= dCanary * 3.5;
-
-        return Math.clamp(sst, -1.8, 31.0);
+        return MarineClimatePhysics.computePhysicalOceanSST(lat, lon);
     }
 
-    /**
-     * Compute realistic marine precipitation over oceans (mm/year).
-     */
     public static double computePhysicalMarinePrecipitation(double lat, double lon) {
-        // Ingestion & Transformation: Parse raw geospatial/tabular records
-        // Standardize coordinates, normalize projection tensors, and populate spatial index
-        double radLon = Math.toRadians(lon);
-        double itczLat = 6.0 + 3.0 * Math.sin(radLon * 2.0 + 0.5) + 2.0 * Math.cos(radLon * 3.0);
-        double dItcz = Math.abs(lat - itczLat);
-
-        // Narrow equatorial ITCZ band (2200 mm/yr)
-        double itczRain = 2200.0 * Math.exp(-(dItcz * dItcz) / 60.0);
-
-        // Subtropical high pressure dry belts (15° to 30° latitude) - down to 100 mm/yr
-        double dryNorth = Math.exp(-Math.pow(lat - 24.0, 2) / 55.0);
-        double drySouth = Math.exp(-Math.pow(lat - (-22.0), 2) / 50.0);
-        double baseRain = (itczRain + 450.0) * (1.0 - Math.max(dryNorth, drySouth) * 0.82);
-
-        // Mid-latitude oceanic storm tracks (40° to 60° N/S)
-        double stormNorth = Math.exp(-Math.pow(lat - 50.0, 2) / 75.0) * 1150.0;
-        double stormSouth = Math.exp(-Math.pow(lat - (-50.0), 2) / 70.0) * 1350.0;
-
-        double total = baseRain + stormNorth + stormSouth;
-
-        // Asian Monsoon Maritime Convective Pool & Western Pacific Warm Pool (TRMM / GPM empirical physics)
-        double dBayOfBengal = Math.exp(-(Math.pow(lat - 15.0, 2) / 80.0 + Math.pow(lon - 90.0, 2) / 180.0));
-        double dSouthChinaSea = Math.exp(-(Math.pow(lat - 12.0, 2) / 70.0 + Math.pow(lon - 115.0, 2) / 160.0));
-        double dWarmPool = Math.exp(-(Math.pow(lat - 4.0, 2) / 90.0 + Math.pow(lon - 145.0, 2) / 350.0));
-        double dIndoArabian = Math.exp(-(Math.pow(lat - 14.0, 2) / 70.0 + Math.pow(lon - 68.0, 2) / 140.0));
-        total += (dBayOfBengal * 1500.0) + (dSouthChinaSea * 1200.0) + (dWarmPool * 1300.0) + (dIndoArabian * 900.0);
-
-        // Desiccated cold current marine upwellings (SE Pacific & South Atlantic)
-        double dAtacamaOcean = Math.exp(-(Math.pow(lat - (-20.0), 2) / 100.0 + Math.pow(lon - (-85.0), 2) / 120.0));
-        total *= (1.0 - dAtacamaOcean * 0.85);
-
-        double dNamibOcean = Math.exp(-(Math.pow(lat - (-22.0), 2) / 90.0 + Math.pow(lon - 5.0, 2) / 90.0));
-        total *= (1.0 - dNamibOcean * 0.85);
-
-        // Smooth polar decay
-        if (Math.abs(lat) > 55.0) {
-            double pPolar = Math.exp(-Math.pow((Math.abs(lat) - 55.0) / 16.0, 2));
-            total = 60.0 + (total - 60.0) * pPolar;
-        }
-
-        return Math.clamp(total, 50.0, 3500.0);
+        return MarineClimatePhysics.computePhysicalMarinePrecipitation(lat, lon);
     }
 
-    /**
-     * Compute realistic marine seasonality (°C annual range).
-     */
     public static double computePhysicalMarineSeasonality(double lat, double lon) {
-        // Ingestion & Transformation: Parse raw geospatial/tabular records
-        // Standardize coordinates, normalize projection tensors, and populate spatial index
-        double absLat = Math.abs(lat);
-        double oceanRange = 2.2 + (absLat / 90.0) * 5.8;
-        return Math.clamp(oceanRange, 1.5, 9.0);
+        return MarineClimatePhysics.computePhysicalMarineSeasonality(lat, lon);
     }
 
     /**
@@ -545,257 +394,22 @@ public class WorldClimEmpiricalRasterLoader {
      * @return the resulting computation or state reference
      */
     public static double computePaleoTemperatureDelta(double lat, double lon, double elevM, long year) {
-        // Ingestion & Transformation: Parse raw geospatial/tabular records
-        // Standardize coordinates, normalize projection tensors, and populate spatial index
-        if (year >= 1950) return 0.0; // Modern baseline
-
-        double absLat = Math.abs(lat);
-        double radLat = Math.toRadians(lat);
-        double sinLat = Math.sin(radLat);
-
-        // Continuous Global Mean Temperature Anomaly (EPICA / NGRIP delta18O / TraCE-21ka)
-        double[][] climateAnchors = {
-            {-100000.0,  1.2}, // MIS 5e Eemian Warm Optimum (+1.2°C)
-            { -85000.0, -1.0}, // MIS 5a/5b stadial cooling
-            { -74000.0, -4.8}, // -74,000 BP: Toba Super-Eruption & MIS 4 Stadial
-            { -60000.0, -3.2}, // Early MIS 3
-            { -50000.0, -3.5}, // MIS 3 Interstadial
-            { -35000.0, -4.2}, // Late MIS 3
-            { -25000.0, -5.6}, // Early LGM
-            { -20000.0, -6.2}, // LGM Peak Glaciation
-            { -16000.0, -4.5}, // Heinrich Stadial 1
-            { -14500.0, -2.0}, // Bølling-Allerød Interstadial
-            { -12000.0, -3.5}, // Younger Dryas Cold Stadial
-            { -10000.0, -0.5}, // Early Holocene Preboreal
-            {  -7000.0,  0.8}, // Holocene Climate Optimum (+0.8°C)
-            {  -3000.0,  0.2}, // Neoglacial Transition
-            {      0.0,  0.0}, // Common Era baseline
-            {   1000.0,  0.3}, // Medieval Climate Optimum
-            {   1650.0, -0.5}, // Little Ice Age
-            {   1950.0,  0.0}  // 1950 baseline
-        };
-
-        double globalAnom = 0.0;
-        if (year >= 1 && year <= 2000) {
-            // High-fidelity empirical PAGES 2k Consortium (2019) multi-proxy Common Era anomaly
-            globalAnom = Pages2kClimateProvider.getTemperatureAnomaly((int) year);
-        } else if (year <= climateAnchors[0][0]) {
-            globalAnom = climateAnchors[0][1];
-        } else if (year >= climateAnchors[climateAnchors.length - 1][0]) {
-            globalAnom = climateAnchors[climateAnchors.length - 1][1];
-        } else {
-            for (int i = 0; i < climateAnchors.length - 1; i++) {
-                double y0 = climateAnchors[i][0];
-                double y1 = climateAnchors[i + 1][0];
-                if (year >= y0 && year <= y1) {
-                    double t = (year - y0) / (y1 - y0);
-                    // Smooth Hermite cubic interpolation
-                    double smoothT = t * t * (3.0 - 2.0 * t);
-                    globalAnom = climateAnchors[i][1] * (1.0 - smoothT) + climateAnchors[i + 1][1] * smoothT;
-                    break;
-                }
-            }
-        }
-
-        // 2D Smooth Polar & Continental Amplification (Smooth continuous spherical function):
-        double polarFactor = 0.65 + 1.35 * (sinLat * sinLat);
-        double landAmplification = (elevM >= 0.0) ? 1.30 : 0.85;
-        double deltaT = globalAnom * polarFactor * landAmplification;
-
-        // Toba Volcanic Aerosol Shielding (Smooth Gaussian plume concentrated in South/SE Asia ~ -74,000 BP)
-        if (year <= -65000L && year > -85000L) {
-            double timeWeight = Math.exp(-Math.pow((year - (-74000.0)) / 4500.0, 2));
-            double tobaPlume = Math.exp(-(Math.pow(lat - 15.0, 2) / 350.0 + Math.pow(lon - 85.0, 2) / 1000.0));
-            deltaT -= (tobaPlume * 4.5 * timeWeight);
-        }
-
-        // Ice sheet albedo & topographic lapse rate cooling over ice domes
-        if (year <= -35000L && year > -70000L) {
-            double dFenno = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_MIS3);
-            double dLaur = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_MIS3);
-            if (dFenno <= 4.0) deltaT -= 8.0 * Math.exp(-Math.max(0, dFenno) / 2.0);
-            if (dLaur <= 4.0) deltaT -= 9.0 * Math.exp(-Math.max(0, dLaur) / 2.0);
-        } else if (year <= -16000L) {
-            double dLaur = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_LGM);
-            double dFenno = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_LGM);
-            double dAlps = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_ALPS_LGM);
-            double dPat = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_PATAGONIA_LGM);
-
-            if (dLaur <= 5.0) deltaT -= 14.0 * Math.exp(-Math.max(0, dLaur) / 2.5);
-            if (dFenno <= 5.0) deltaT -= 12.0 * Math.exp(-Math.max(0, dFenno) / 2.5);
-            if (dAlps <= 3.0) deltaT -= 7.0 * Math.exp(-Math.max(0, dAlps) / 1.5);
-            if (dPat <= 3.0) deltaT -= 6.0 * Math.exp(-Math.max(0, dPat) / 1.5);
-        } else if (year <= -10500L) {
-            double amocPlume = Math.exp(-(Math.pow(lat - 56.0, 2) / 180.0 + Math.pow(lon - (-15.0), 2) / 350.0));
-            double ydLaur = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_YD);
-            double ydFenno = HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_YD);
-
-            if (ydLaur <= 4.0) deltaT -= 10.0 * Math.exp(-Math.max(0, ydLaur) / 2.0);
-            if (ydFenno <= 4.0) deltaT -= 9.0 * Math.exp(-Math.max(0, ydFenno) / 2.0);
-            deltaT -= (amocPlume * 7.5);
-        }
-
-        return deltaT;
+        return PaleoClimateAnomalyModel.computePaleoTemperatureDelta(lat, lon, elevM, year);
     }
 
-    /**
-     * Compute paleo precipitation factor.
-     *
-     * @param lat the lat parameter (double)
-     * @param lon the lon parameter (double)
-     * @param elevM the elev m parameter (double)
-     * @param year the year parameter (long)
-     * @return the resulting computation or state reference
-     */
     public static double computePaleoPrecipitationFactor(double lat, double lon, double elevM, long year) {
-        // Ingestion & Transformation: Parse raw geospatial/tabular records
-        // Standardize coordinates, normalize projection tensors, and populate spatial index
-        if (year >= 1950) return 1.0;
-
-        double absLat = Math.abs(lat);
-
-        if (year <= -65000L && year > -85000L) {
-            // Toba Volcanic Drought in Monsoon Tropics (Smooth continuous 2D Gaussian plume — no rectangular clipping)
-            double timeWeight = Math.exp(-Math.pow((year - (-74000.0)) / 5000.0, 2));
-            double dMonsoon = Math.exp(-(Math.pow(lat - 15.0, 2) / 400.0 + Math.pow(lon - 85.0, 2) / 1200.0));
-            return 0.85 - (dMonsoon * 0.30 * timeWeight);
-        } else if (year <= -18000L && year >= -25000L) {
-            return 1.0 - 0.38 * Math.sin(Math.toRadians(absLat));
-        } else if (year <= -10500L && year > -12800L) {
-            // Asian monsoon drought in Younger Dryas (Smooth 2D Gaussian plume)
-            double dYdMonsoon = Math.exp(-(Math.pow(lat - 20.0, 2) / 350.0 + Math.pow(lon - 90.0, 2) / 1000.0));
-            return 0.90 - (dYdMonsoon * 0.15);
-        }
-        return 1.0;
+        return PaleoClimateAnomalyModel.computePaleoPrecipitationFactor(lat, lon, elevM, year);
     }
 
-    /**
-     * Compute paleo precipitation delta.
-     *
-     * @param lat the lat parameter (double)
-     * @param lon the lon parameter (double)
-     * @param elevM the elev m parameter (double)
-     * @param year the year parameter (long)
-     * @return the resulting computation or state reference
-     */
     public static double computePaleoPrecipitationDelta(double lat, double lon, double elevM, long year) {
-        // Ingestion & Transformation: Parse raw geospatial/tabular records
-        // Standardize coordinates, normalize projection tensors, and populate spatial index
-        if (year >= 1950) return 0.0;
-
-        // African Humid Period / Green Sahara & Arabian wet corridor (-100,000 BP & -10,000 to -5,000 BP)
-        if (year <= -85000L || (year <= -4500L && year >= -10500L)) {
-            double greenSahara = Math.exp(-(Math.pow(lat - 21.0, 2) / 80.0 + Math.pow(lon - 15.0, 2) / 450.0));
-            double greenArabia = Math.exp(-(Math.pow(lat - 22.0, 2) / 50.0 + Math.pow(lon - 48.0, 2) / 120.0));
-            return (greenSahara * 950.0) + (greenArabia * 650.0);
-        }
-
-        return 0.0;
+        return PaleoClimateAnomalyModel.computePaleoPrecipitationDelta(lat, lon, elevM, year);
     }
 
-    /**
-     * Compute paleo seasonality factor.
-     *
-     * @param year the year parameter (long)
-     * @return the resulting computation or state reference
-     */
     public static double computePaleoSeasonalityFactor(long year) {
-        // Ingestion & Transformation: Parse raw geospatial/tabular records
-        // Standardize coordinates, normalize projection tensors, and populate spatial index
-        if (year >= 1950) return 1.0;
-
-        if (year <= -85000L || (year <= -6000L && year >= -11000L)) {
-            return 1.15; // High obliquity / enhanced seasonality
-        } else if (year <= -65000L && year > -85000L) {
-            return 1.20; // Post-Toba severe winter extremes
-        } else if (year <= -18000L && year >= -25000L) {
-            return 0.92;
-        }
-        return 1.0;
+        return PaleoClimateAnomalyModel.computePaleoSeasonalityFactor(year);
     }
 
-    /**
-     * Classify holdridge/whittaker ecological biome with glacial ice sheet overrides.
-     */
     public static int classifyBiome(double tempC, double precipMm, double elevM, double lat, double lon, long year) {
-        // 1. Permanent Polar Ice Sheets & Glaciers
-        if (lat < -60.0) return BIOME_GLACIER; // Antarctica
-        if (lat > 60.0 && lon > -55.0 && lon < -18.0) return BIOME_GLACIER; // Greenland
-
-        // Historical Glacial Polygons
-        if (year <= -40000L && year > -70000L) {
-            if (HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_MIS3) <= 0 ||
-                HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_MIS3) <= 0) {
-                return BIOME_GLACIER;
-            }
-        } else if (year <= -16000L) {
-            if (HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_LGM) <= 0 ||
-                HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_LGM) <= 0 ||
-                HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_ALPS_LGM) <= 0 ||
-                HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_PATAGONIA_LGM) <= 0) {
-                return BIOME_GLACIER;
-            }
-        } else if (year <= -10500L && year > -16000L) {
-            if (HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_LAURENTIDE_YD) <= 0 ||
-                HistoricalMapGenerator.signedDistanceToPolygon(lon, lat, HistoricalMapGenerator.POLY_FENNOSCANDIA_YD) <= 0) {
-                return BIOME_GLACIER;
-            }
-        }
-
-        // Mountain Snow & Extreme Peaks
-        if (elevM > 5200.0 || (tempC < -12.0 && elevM > 3800.0)) {
-            return BIOME_SNOW;
-        }
-        if (elevM > 3800.0 && tempC < -4.0) {
-            return BIOME_MOUNTAINS;
-        }
-
-        // Tundra & High Alpine Permafrost
-        if (tempC < -2.0) {
-            return BIOME_TUNDRA;
-        }
-        if (elevM > 3200.0 && tempC < 6.0 && precipMm < 600.0) {
-            return BIOME_TUNDRA; // Tibetan / Andean Alpine Tundra & Steppe
-        }
-
-        // Hills & Rugged Highlands
-        if (elevM > 1800.0 && precipMm < 800.0 && tempC < 14.0) {
-            return BIOME_HILLS;
-        }
-
-        // Ancient Holocene Climax Override: Continuous Primary Forests in Western/Central Europe & Eastern North America
-        // Strictly bounded to the Holocene (year >= -10000) and temperate regime (tempC >= 6.0°C)
-        if (year >= -10000L && year < 1500L && tempC >= 6.0 && elevM < 1600.0 && precipMm >= 350.0) {
-            // Western/Central Europe (Silva Hercynia, Silva Carbonaria, Atlantic Climax)
-            if (lat >= 42.0 && lat <= 60.0 && lon >= -10.0 && lon <= 28.0) {
-                return BIOME_FOREST;
-            }
-            // Eastern North American Primary Deciduous & Mixed Forest Climax
-            if (lat >= 30.0 && lat <= 52.0 && lon >= -95.0 && lon <= -60.0) {
-                return BIOME_FOREST;
-            }
-        }
-
-        // Temperate & Boreal Zone (tempC < 15.0°C)
-        if (tempC < 15.0) {
-            if (precipMm < 200.0) {
-                return BIOME_DESERT; // Cold continental desert (Gobi, Taklamakan, Patagonia)
-            } else if (precipMm < (year < 1500L ? 350.0 : 550.0)) {
-                return BIOME_PLAINS; // Steppe / Temperate Grassland
-            } else {
-                return BIOME_FOREST; // Boreal Taiga & Temperate Deciduous Climax Forest
-            }
-        }
-
-        // Subtropical & Tropical Zones (tempC >= 15.0°C)
-        if (precipMm < 150.0) {
-            return BIOME_DESERT; // Hyper-arid desert (Sahara, Arabia, Namib, Australian Outback)
-        } else if (precipMm < 750.0) {
-            return BIOME_PLAINS; // Savanna / Sahel / Shrubland / Cerrado (distinct Sahelian ribbon)
-        } else if (tempC >= 19.0 && precipMm >= 1350.0) {
-            return BIOME_JUNGLE; // Tropical Rainforest (Amazon, Congo, Sundaland, New Guinea)
-        } else {
-            return BIOME_FOREST; // Subtropical & Monsoon Deciduous Forest
-        }
+        return EmpiricalBiomeClassifier.classifyBiome(tempC, precipMm, elevM, lat, lon, year);
     }
 }

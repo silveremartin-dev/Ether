@@ -1,99 +1,95 @@
 package org.ether.society.core.dod;
 
-import org.ether.society.model.Biome;
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.model.PhysicalConstants;
 
 /**
  * Data-Oriented Environmental Kernel.
- *
+ * <p>
  * Models ecological biomass regeneration, agricultural yields, and natural resource decay
- * governed by differential equations anchored in Farquhar C3/C4 Photosynthesis kinetics (FvCB),
- * Priestley-Taylor Potential Evapotranspiration (PET), Arrhenius thermal kinetics, and
- * physical environmental constants.
- *
- * <h2>Differential State Equations</h2>
- * <pre>
- *   d(Food_i)/dt = Prod_biome * f_FvCB(T_i, CO2_i) * f_PriestleyTaylor(R_i, PET_i) - decay_rate * Food_i
- *   d(BiomassNatural_i)/dt = 0.5 * Growth_i
- * </pre>
+ * governed by smooth ($C^\infty$) differential equations anchored in Farquhar C3/C4 Photosynthesis
+ * kinetics (FvCB), Priestley-Taylor Potential Evapotranspiration (PET), Lieth (1975) Miami NPP,
+ * continuous topographic slope retention, and physical capital intensification ({@code AGENTS.md} §3, §10.1, §10.2).
+ * </p>
+ * <p>
+ * Mathematically synchronized with {@code native/ether-core-native/src/environmental.rs}.
+ * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 public class EnvironmentalKernel {
 
-    // Pre-computed Farquhar FvCB 2D Look-Up Table (Temperature x CO2)
-    // T: -10°C to +45°C (56 steps), CO2: 150 ppm to 1000 ppm (35 steps)
-    /** Internal state: lut temp min (int). */
     private static final int LUT_TEMP_MIN = -10;
-    /** Internal state: lut temp max (int). */
     private static final int LUT_TEMP_MAX = 45;
     private static final int LUT_TEMP_STEPS = LUT_TEMP_MAX - LUT_TEMP_MIN + 1; // 56
-    /** Internal state: lut co2 min (int). */
     private static final int LUT_CO2_MIN = 150;
-    /** Internal state: lut co2 max (int). */
     private static final int LUT_CO2_MAX = 1000;
-    /** Internal state: lut co2 step size (int). */
     private static final int LUT_CO2_STEP_SIZE = 25;
     private static final int LUT_CO2_STEPS = (LUT_CO2_MAX - LUT_CO2_MIN) / LUT_CO2_STEP_SIZE + 1; // 35
 
     private static final float[][] FVCB_PHOTOSYNTHESIS_LUT = new float[LUT_TEMP_STEPS][LUT_CO2_STEPS];
 
     static {
-        // Pre-compute Farquhar FvCB assimilation Look-Up Table at class initialization
+        // Pre-compute C^infty smooth Farquhar FvCB assimilation LUT (Medlyn et al. 2002 peaked response)
         for (int tIdx = 0; tIdx < LUT_TEMP_STEPS; tIdx++) {
             double tempC = LUT_TEMP_MIN + tIdx;
             double tempK = tempC + PhysicalConstants.KELVIN_ZERO_CELSIUS;
+            double chillActivation = SmoothMath.sigmoid(tempC, -1.0, 1.8);
+            double heatPreservation = 1.0 - SmoothMath.sigmoid(tempC, 39.5, 2.5);
+            double invDiff = (1.0 / 298.15) - (1.0 / tempK);
+
+            double vcmax = 60.0 * Math.exp((65000.0 / PhysicalConstants.R_GAS_CONSTANT) * invDiff);
+            double gammaStar = 42.75 * Math.exp((37830.0 / PhysicalConstants.R_GAS_CONSTANT) * invDiff);
+            double kc = 404.9 * Math.exp((79430.0 / PhysicalConstants.R_GAS_CONSTANT) * invDiff);
+            double ko = 278.4 * Math.exp((36380.0 / PhysicalConstants.R_GAS_CONSTANT) * invDiff);
+            double km = kc * (1.0 + 210.0 / ko);
+
             for (int cIdx = 0; cIdx < LUT_CO2_STEPS; cIdx++) {
                 double co2Ppm = LUT_CO2_MIN + cIdx * LUT_CO2_STEP_SIZE;
-
-                if (tempC < -2.0) {
-                    FVCB_PHOTOSYNTHESIS_LUT[tIdx][cIdx] = 0.05f;
-                } else {
-                    // Farquhar parameters
-                    double vcmax = 60.0 * Math.exp( (65000.0 / PhysicalConstants.R_GAS_CONSTANT) * (1.0/298.15 - 1.0/tempK) );
-                    double gammaStar = 42.75 * Math.exp( (37830.0 / PhysicalConstants.R_GAS_CONSTANT) * (1.0/298.15 - 1.0/tempK) );
-                    double kc = 404.9 * Math.exp( (79430.0 / PhysicalConstants.R_GAS_CONSTANT) * (1.0/298.15 - 1.0/tempK) );
-                    double ko = 278.4 * Math.exp( (36380.0 / PhysicalConstants.R_GAS_CONSTANT) * (1.0/298.15 - 1.0/tempK) );
-                    double km = kc * (1.0 + 210.0 / ko);
-
-                    double ci = co2Ppm * 0.70; // Intercellular CO2 concentration
-                    double ac = vcmax * Math.max(0.0, ci - gammaStar) / Math.max(1.0, ci + km);
-                    double aj = 0.5 * vcmax * Math.max(0.0, ci - gammaStar) / Math.max(1.0, ci + 2.0 * gammaStar);
-
-                    double anet = Math.min(ac, aj);
-                    // Denaturation above 38°C
-                    if (tempC > 38.0) {
-                        anet *= Math.exp(-(tempC - 38.0) * 0.15);
-                    }
-                    float normalizedYield = (float) Math.clamp(anet / 25.0, 0.05, 1.50);
-                    FVCB_PHOTOSYNTHESIS_LUT[tIdx][cIdx] = normalizedYield;
-                }
+                double ci = co2Ppm * 0.70;
+                double netCi = SmoothMath.softplus(ci - gammaStar, 1.0);
+                double ac = vcmax * netCi / SmoothMath.softmax(1.0, ci + km, 2.0);
+                double aj = 0.5 * vcmax * netCi / SmoothMath.softmax(1.0, ci + 2.0 * gammaStar, 2.0);
+                double anet = SmoothMath.softmin(ac, aj, 0.5) * chillActivation * heatPreservation;
+                float normalizedYield = (float) Math.clamp(0.05 + anet / 25.0, 0.05, 1.50);
+                FVCB_PHOTOSYNTHESIS_LUT[tIdx][cIdx] = normalizedYield;
             }
         }
     }
 
     /**
-     * Retrieves photosynthetic assimilation factor from the precomputed Farquhar FvCB LUT.
+     * Evaluates photosynthetic assimilation factor via bilinear interpolation over the precomputed
+     * Farquhar FvCB LUT for smooth $C^1$ temperature and $\text{CO}_2$ sensitivity.
+     *
+     * @param tempC  surface air temperature (°C)
+     * @param co2Ppm atmospheric $\text{CO}_2$ concentration (ppm)
+     * @return normalized photosynthetic assimilation multiplier in $[0.05, 1.50]$
      */
     public static float evaluateFarquharYield(float tempC, float co2Ppm) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
-        int tIdx = Math.clamp(Math.round(tempC) - LUT_TEMP_MIN, 0, LUT_TEMP_STEPS - 1);
-        int cIdx = Math.clamp(Math.round((co2Ppm - LUT_CO2_MIN) / LUT_CO2_STEP_SIZE), 0, LUT_CO2_STEPS - 1);
-        return FVCB_PHOTOSYNTHESIS_LUT[tIdx][cIdx];
+        float tPos = Math.clamp(tempC - LUT_TEMP_MIN, 0.0f, (float) (LUT_TEMP_STEPS - 1));
+        float cPos = Math.clamp((co2Ppm - LUT_CO2_MIN) / (float) LUT_CO2_STEP_SIZE, 0.0f, (float) (LUT_CO2_STEPS - 1));
+        int t0 = Math.min((int) tPos, LUT_TEMP_STEPS - 2);
+        int c0 = Math.min((int) cPos, LUT_CO2_STEPS - 2);
+        float ft = tPos - t0;
+        float fc = cPos - c0;
+        float v00 = FVCB_PHOTOSYNTHESIS_LUT[t0][c0];
+        float v10 = FVCB_PHOTOSYNTHESIS_LUT[t0 + 1][c0];
+        float v01 = FVCB_PHOTOSYNTHESIS_LUT[t0][c0 + 1];
+        float v11 = FVCB_PHOTOSYNTHESIS_LUT[t0 + 1][c0 + 1];
+        float v0 = v00 + ft * (v10 - v00);
+        float v1 = v01 + ft * (v11 - v01);
+        return v0 + fc * (v1 - v0);
     }
 
     /**
-     * Calculates Beer-Lambert canopy light transmission fraction I / I_0 = exp(-k_ext * LAI).
+     * Calculates Beer-Lambert canopy light transmission fraction $I / I_0 = \exp(-k_{\text{ext}} \cdot \text{LAI})$.
      *
-     * @param leafAreaIndex Leaf Area Index (LAI in m²/m²)
-     * @param extinctionCoeff Canopy light extinction coefficient k_ext (~0.5 - 0.7)
-     * @return Light transmission fraction to understory [0.0, 1.0]
+     * @param leafAreaIndex   Leaf Area Index ($\text{m}^2/\text{m}^2$)
+     * @param extinctionCoeff canopy light extinction coefficient $k_{\text{ext}}$
+     * @return light transmission fraction to understory in $[0.0, 1.0]$
      */
     public static float calculateBeerLambertCanopyTransmission(float leafAreaIndex, float extinctionCoeff) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         if (leafAreaIndex <= 0.0f) return 1.0f;
         return (float) Math.exp(-extinctionCoeff * leafAreaIndex);
     }
@@ -109,55 +105,50 @@ public class EnvironmentalKernel {
             double delta = (4098.0 * (0.6108 * Math.exp(17.27 * t / (t + 237.3)))) / ((t + 237.3) * (t + 237.3));
             double gammaPsy = 0.066;
             double alphaPT = 1.26;
-            double netSolarRadiationMmEquiv = Math.max(100.0, (t + 10.0) * 35.0);
+            double netSolarRadiationMmEquiv = SmoothMath.softmax(100.0, (t + 10.0) * 35.0, 0.05);
             PET_LUT[i] = (float) (alphaPT * (delta / (delta + gammaPsy)) * netSolarRadiationMmEquiv);
         }
     }
 
     /**
      * Calculates Priestley-Taylor Potential Evapotranspiration (PET in mm/year).
+     *
+     * @param tempC surface air temperature (°C)
+     * @return annual potential evapotranspiration (mm/yr)
      */
     public static float calculatePriestleyTaylorPET(float tempC) {
-        if (tempC <= -5.0f) return 50.0f;
+        if (tempC <= -5.0f) return PET_LUT[0];
         if (tempC >= 50.0f) return PET_LUT[PET_LUT_STEPS - 1];
         float idxF = (tempC - PET_LUT_MIN) * 2.0f;
-        int idx = (int) idxF;
+        int idx = Math.min((int) idxF, PET_LUT_STEPS - 2);
         float frac = idxF - idx;
         return PET_LUT[idx] + frac * (PET_LUT[idx + 1] - PET_LUT[idx]);
     }
 
     /**
-     * Tick.
-     *
-     * @param world the world parameter (WorldBuffer)
-     * @param dt the dt parameter (float)
+     * Executes one environmental update tick with default month {@code 0}.
      */
     public void tick(WorldBuffer world, float dt) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         tick(world, 0, dt);
     }
 
     /**
-     * Executes one environmental update tick over all active land cells in WorldBuffer.
+     * Executes one environmental update tick over all active land cells in {@link WorldBuffer}.
      *
      * @param world DOD buffer container for world state
-     * @param month Current simulation month
-     * @param dt Time delta in seconds or days
+     * @param month current simulation month
+     * @param dt    time delta in seconds (if &gt; 1000) or days
      */
     public void tick(WorldBuffer world, int month, float dt) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         float[] food = world.getFoodResource();
         float[] temp = world.getTemperature();
         float[] rain = world.getRainfall();
-        byte[] biomes = world.getBiomes();
-        
+        float[] elev = world.getElevation();
+
         int[] landIndices = world.getLandIndices();
         if (landIndices == null) return;
         float baselineCO2 = 280.0f;
 
-        // Extract H3 resolution from the first valid H3 index to scale macro-cell production rates by actual cell surface area
         float areaScale = 1.0f;
         long[] h3Indexes = world.getH3Indexes();
         if (h3Indexes != null && h3Indexes.length > 0 && h3Indexes[0] != 0L) {
@@ -173,35 +164,56 @@ public class EnvironmentalKernel {
                 : (dt / 365.25));
         float foodRetentionFactor = (float) Math.exp(-0.03 * dtInYears);
 
+        float[] waterArr = world.getWaterResource();
+        float[] humanArr = world.getBiomassHuman();
+        float[] capArr = world.getResourceCapital();
+        float[] livestockArr = world.getBiomassLivestock();
+        float[] bioNatArr = world.getBiomassNatural();
+        float[] bioAgriArr = world.getBiomassAgriculture();
+
         for (int idx = 0; idx < landIndices.length; idx++) {
             int i = landIndices[idx];
             if (i < 0 || i >= world.getCapacity()) continue;
-            Biome biome = Biome.fromOrdinal(biomes[i] & 0xFF);
-            
-            // Primary production derived analytically from Miami NPP model (Lieth 1975), Farquhar bioenergetics,
-            // Priestley-Taylor moisture balance, and cell surface area (Zero discrete biome switch tables per AGENTS.md §3)
-            float waterAvail = world.getWaterResource() != null ? world.getWaterResource()[i] : 0.0f;
-            float effectiveMoisture = Math.max(rain[i], Math.min(1500.0f, rain[i] + waterAvail * 0.8f));
-            float baseProd = calculateAnalyticalNaturalProductionGJ(biome, temp[i], effectiveMoisture) * areaScale;
-            float fvcbFactor = evaluateFarquharYield(temp[i], baselineCO2);
-            float pet = calculatePriestleyTaylorPET(temp[i]);
-            float moistureAridityRatio = Math.clamp(effectiveMoisture / Math.max(100.0f, pet), 0.40f, 1.25f);
-            
-            float tech = world.getTechnologyLevel() != null ? world.getTechnologyLevel()[i] : 0.0f;
-            // Pre-industrial draft animal traction requires land dedication to draft animal fodder (Wrigley 1988, Smil 2008).
-            // Continuous draft animal usage bell-curve peaking in mature agrarian era (T ~ 3.2), phasing out with mechanization (T >= 4.5).
-            float draftAnimalShare = (float) Math.exp(-Math.pow(tech - 3.2f, 2.0f) / (2.0f * 0.8f * 0.8f));
-            float fodderFactor = 1.0f - (float) PhysicalConstants.PREINDUSTRIAL_FODDER_LAND_FRACTION * draftAnimalShare;
-            // Continuous industrial green revolution agricultural boost (Borlaug 1970, Smil 2001 Haber-Bosch + mechanization)
-            float industrialBoost = 1.0f + 2.5f / (1.0f + (float) Math.exp(-2.2 * (tech - 4.5)));
-            
-            float agroClimaticFactor = Math.clamp(fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost, 0.40f, 2.0f);
-            float humanPop = world.getBiomassHuman() != null ? world.getBiomassHuman()[i] : 0.0f;
-            
-            // Biophysical agricultural yield response (Mitscherlich 1909; Spillman 1923; Boserup 1965):
-            // Diminishing returns asymptotic response bounds total agricultural caloric output per cell by arable potential
-            float maxAgPotential = calculateAnalyticalAgriculturalPotentialGJ(biome, temp[i], effectiveMoisture)
-                    * areaScale * agroClimaticFactor * (1.0f + 0.25f * Math.min(10.0f, tech));
+
+            float tempC = temp[i];
+            float elevationM = (elev != null && i < elev.length) ? elev[i] : 0.0f;
+            float waterAvail = (waterArr != null && i < waterArr.length) ? waterArr[i] : 0.0f;
+            float effectiveMoisture = (float) SmoothMath.softmax(
+                    rain[i],
+                    SmoothMath.softmin(1500.0, rain[i] + waterAvail * 0.8, 0.02),
+                    0.05);
+
+            float npp = calculateMiamiNPP(tempC, effectiveMoisture);
+            float frostFactor = SmoothMath.sigmoidF(tempC, -4.0f, 2.5f);
+            float posElev = Math.max(0.0f, elevationM);
+            float elevNorm = posElev / 1800.0f;
+            float slopeRetention = 1.0f / (1.0f + elevNorm * elevNorm);
+
+            float baseProd = Math.clamp(150.0f + npp * 1.95f * frostFactor, 150.0f, 3800.0f) * areaScale;
+            float fvcbFactor = evaluateFarquharYield(tempC, baselineCO2);
+            float pet = calculatePriestleyTaylorPET(tempC);
+            float moistureAridityRatio = (float) SmoothMath.smoothClamp(effectiveMoisture / Math.max(100.0f, pet), 0.40, 1.25, 8.0);
+
+            float humanPop = (humanArr != null && i < humanArr.length) ? humanArr[i] : 0.0f;
+            float capital = (capArr != null && i < capArr.length) ? capArr[i] : 0.0f;
+            float capPerCap = humanPop > 0.001f ? (capital / humanPop) : 0.0f;
+
+            // Pre-industrial draft animal traction land share (Wrigley 1988, Smil 2008) from domesticated livestock biomass
+            float bioDom = (livestockArr != null && i < livestockArr.length) ? livestockArr[i] : 0.0f;
+            float animalTractionRatio = humanPop > 0.0f
+                    ? (float) Math.tanh(bioDom / (humanPop * 0.35f + 1.0f))
+                    : 0.0f;
+            float fodderFactor = 1.0f - (float) PhysicalConstants.PREINDUSTRIAL_FODDER_LAND_FRACTION * animalTractionRatio;
+
+            // Smooth C^infty physical capital intensification (tools, irrigation, machinery, nutrient cycling)
+            float industrialBoost = 1.0f + 2.5f * (float) Math.tanh(capPerCap / 600.0f);
+            float agroClimaticFactor = (float) SmoothMath.smoothClamp(
+                    fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost, 0.40, 2.0, 6.0);
+
+            float arableLandCap = 0.08f + 0.92f * (float) Math.tanh(capPerCap / 80.0f);
+            float baseAgPotential = Math.clamp(npp * 85.0f * slopeRetention * frostFactor, 500.0f, 180000.0f);
+            float maxAgPotential = baseAgPotential * areaScale * agroClimaticFactor * arableLandCap
+                    * (1.0f + 0.20f * (float) Math.log1p(capPerCap / 50.0f));
             float agDemandPotential = humanPop * 6.5f;
             float agRatio = (maxAgPotential > 0.0f) ? (agDemandPotential / maxAgPotential) : 0.0f;
             float agProd = (humanPop > 0.0f && maxAgPotential > 0.0f)
@@ -211,73 +223,42 @@ public class EnvironmentalKernel {
 
             float growth = naturalProd + agProd;
             float retainedFood = food[i] * foodRetentionFactor;
-            
-            food[i] = Math.max(0.0f, Math.min(50000.0f * areaScale, retainedFood + growth));
-            
-            // Biomass regeneration coupled to Primary Productivity (bounded by analytical Whittaker & Likens 1975 standing phytomass capacity)
-            if (world.getBiomassNatural() != null) {
-                float npp = calculateMiamiNPP(temp[i], effectiveMoisture);
-                double forestAffinity = (1.0 / (1.0 + Math.exp(-0.006 * (effectiveMoisture - 450.0))))
-                        * (1.0 / (1.0 + Math.exp(-0.25 * (temp[i] - 2.0))));
+            food[i] = Math.clamp(retainedFood + growth, 0.0f, 50000.0f * areaScale);
+
+            if (bioNatArr != null && i < bioNatArr.length) {
+                double forestAffinity = SmoothMath.sigmoid(effectiveMoisture, 450.0, 166.67)
+                        * SmoothMath.sigmoid(tempC, 2.0, 4.0);
                 float residenceYears = (float) (25.0 * forestAffinity + 4.0 * (1.0 - forestAffinity));
                 float analyticalCapacityTons = Math.max(10000.0f * areaScale, npp * 1770.49f * areaScale * residenceYears * 0.025f);
-                float minForagerBiomassTons = (tech < 1.6f && humanPop > 0.0f) ? (humanPop * 48.0f) : 0.0f;
-                float natCeiling = Math.max(world.getBiomassNatural()[i], Math.max(analyticalCapacityTons, minForagerBiomassTons));
-                world.getBiomassNatural()[i] = Math.min(natCeiling, world.getBiomassNatural()[i] + naturalProd * 0.5f);
+                float foragerDependence = 1.0f - (float) Math.tanh(capPerCap / 25.0f);
+                float minForagerBiomassTons = humanPop * 48.0f * foragerDependence;
+                float natCeiling = Math.max(bioNatArr[i], Math.max(analyticalCapacityTons, minForagerBiomassTons));
+                bioNatArr[i] = Math.min(natCeiling, bioNatArr[i] + naturalProd * 0.5f);
             }
-            if (world.getBiomassAgriculture() != null && tech >= 1.25f) {
-                float neolithicShare = (float) (1.0 / (1.0 + Math.exp(-6.0 * (tech - 1.30f))));
-                float perCapitaAgTarget = humanPop * (250.0f + 370.0f * neolithicShare);
+            if (bioAgriArr != null && i < bioAgriArr.length) {
+                float cultivationShare = (float) Math.tanh(capPerCap / 15.0f);
+                float perCapitaAgTarget = humanPop * (250.0f + 370.0f * cultivationShare) * cultivationShare;
                 float annualAgFluxKg = (agProd > 0.0f)
-                        ? Math.max(perCapitaAgTarget, (agProd / Math.max(0.0001f, dtInYears)) / 0.0105f * neolithicShare)
+                        ? Math.max(perCapitaAgTarget, (agProd / Math.max(0.0001f, dtInYears)) / 0.0105f * cultivationShare)
                         : perCapitaAgTarget;
-                world.getBiomassAgriculture()[i] = Math.max(world.getBiomassAgriculture()[i] * foodRetentionFactor, annualAgFluxKg);
+                bioAgriArr[i] = Math.max(bioAgriArr[i] * foodRetentionFactor, annualAgFluxKg);
             }
         }
     }
 
     /**
-     * Computes Net Primary Productivity (NPP in g DM/m²/yr = metric tons DM/km²/yr)
-     * analytically via the Lieth (1975) Miami Climate Model:
-     * $$NPP(T, P) = \min\!\left(\frac{3000}{1 + \exp(1.315 - 0.119\,T)},\; 3000\,(1 - \exp(-0.000664\,P))\right)$$
+     * Computes smooth ($C^\infty$) Net Primary Productivity (NPP in $\text{g DM}/\text{m}^2/\text{yr}$)
+     * analytically via the Lieth (1975) Miami Climate Model using soft-minimum coupling:
+     * $$\text{NPP}(T, P) = \text{softmin}\!\left(\frac{3000}{1 + \exp(1.315 - 0.119\,T)},\; 3000\,(1 - \exp(-0.000664\,P))\right)$$
      *
-     * @param tempC            mean surface temperature (°C)
+     * @param tempC             mean surface temperature (°C)
      * @param effectivePrecipMm effective moisture / precipitation (mm/yr)
-     * @return analytical NPP in metric tons of dry matter per km² per year
+     * @return analytical NPP in metric tons of dry matter per $\text{km}^2$ per year
      */
     public static float calculateMiamiNPP(float tempC, float effectivePrecipMm) {
         double nppTemp = 3000.0 / (1.0 + Math.exp(1.315 - 0.119 * tempC));
-        double nppPrecip = 3000.0 * (1.0 - Math.exp(-0.000664 * Math.max(0.0, effectivePrecipMm)));
-        return (float) Math.clamp(Math.min(nppTemp, nppPrecip), 15.0, 3000.0);
-    }
-
-    /**
-     * Analytical closed-form natural trophic energy production rate in GJ/yr for a reference macro-cell,
-     * derived from the Lieth (1975) Miami NPP model ($f(T, P)$).
-     */
-    private float calculateAnalyticalNaturalProductionGJ(Biome biome, float tempC, float effectivePrecipMm) {
-        if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN) {
-            return 1200.0f;
-        }
-        if (biome == Biome.GLACIER || biome == Biome.SNOW) {
-            return 150.0f;
-        }
-        float npp = calculateMiamiNPP(tempC, effectivePrecipMm);
-        return Math.clamp(150.0f + npp * 1.95f, 150.0f, 3800.0f);
-    }
-
-    /**
-     * Analytical closed-form maximum agricultural caloric potential in GJ/yr for a reference macro-cell,
-     * derived from Miami NPP ($f(T, P)$) and Smil (2000) cereal harvest index stoichiometry.
-     */
-    private float calculateAnalyticalAgriculturalPotentialGJ(Biome biome, float tempC, float effectivePrecipMm) {
-        if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.GLACIER || biome == Biome.SNOW) {
-            return 500.0f;
-        }
-        float npp = calculateMiamiNPP(tempC, effectivePrecipMm);
-        float slopeRetention = (biome == Biome.MOUNTAINS) ? 0.25f : ((biome == Biome.HILLS) ? 0.55f : 1.0f);
-        return Math.clamp(npp * 85.0f * slopeRetention, 2000.0f, 180000.0f);
+        double posPrecip = SmoothMath.softplus(effectivePrecipMm, 0.2);
+        double nppPrecip = 3000.0 * (1.0 - Math.exp(-0.000664 * posPrecip));
+        return (float) Math.clamp(SmoothMath.softmin(nppTemp, nppPrecip, 0.02), 15.0, 3000.0);
     }
 }
-
-

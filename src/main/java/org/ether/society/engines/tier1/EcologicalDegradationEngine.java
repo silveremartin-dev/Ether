@@ -6,23 +6,22 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
+import org.ether.society.model.PhysicalConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
- * Ecological Degradation, Climate Stress, Pollution & Overfishing Engine.
- * Models:
- * 1. <b>Deforestation & Canopy Loss</b>: Continuous Whittaker & Likens / Olson standing woody biomass residence,
- *    reducing natural biomass, increasing albedo, and disrupting regional evapotranspiration.
- * 2. <b>Pollution & Remote Atmospheric Dispersion</b>: Industrial/mining waste generation in populated cells
- *    and atmospheric/river dispersion diffusing toxic contaminants even into unpopulated, high-altitude or remote sites.
- * 3. <b>Marine Resource Overfishing</b>: Logistic fish stock harvesting ($r \cdot K_{fish}$). Over-harvesting
- *    leads to fishery collapse and coastal food crises.
- * 4. <b>Droughts, Famines & Demographic Migrations</b>.
+ * Ecological Degradation, Climate Stress, Pollution &amp; Overfishing Engine (Tier 1 Core Physics).
+ * <p>
+ * Strictly governed by smooth ($C^\infty$) conservation and regeneration equations of physical
+ * observables ($N, K, B_{\text{nat}}, B_{\text{agr}}, B_{\text{fish}}, W_{\text{wood}}$, soil carbon, water)
+ * with zero {@code technologyLevel} parameters and zero Tier 2 static coupling ({@code AGENTS.md} §7.2, §10.1, §10.2).
+ * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -30,29 +29,39 @@ import java.util.List;
 public class EcologicalDegradationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EcologicalDegradationEngine.class);
 
-    /**
-     * Standard human annual metabolic energy consumption:
-     * 2,200 kcal/capita/day = 9.2048 MJ/capita/day = 3.362 GJ/capita/year.
-     * (Smil 2008, Energy in Nature and Society; FAO Dietary Energy Requirements).
-     */
-    public static final double HUMAN_ANNUAL_METABOLIC_ENERGY_GJ = org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
+    /** Standard human annual metabolic energy consumption ($3.362\,\text{GJ/capita/year}$). */
+    public static final double HUMAN_ANNUAL_METABOLIC_ENERGY_GJ = PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
 
-    public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel) {
-        processEcologicalDegradation(cells, techLevel, 1.0 / 12.0);
+    /**
+     * Executes one monthly ecological degradation tick across all cells.
+     */
+    public static void processEcologicalDegradation(List<H3Cell> cells) {
+        processEcologicalDegradation(cells, 1.0 / 12.0);
+    }
+
+    public static void processEcologicalDegradation(List<H3Cell> cells, double legacyTech, double deltaYears) {
+        processEcologicalDegradation(cells, deltaYears);
+    }
+
+    public static void processEcologicalDegradation(List<H3Cell> cells, Double legacyTech, double deltaYears) {
+        processEcologicalDegradation(cells, deltaYears);
     }
 
     /**
-     * Executes one ecological, pollution, overfishing & socio-demographic simulation tick across all cells.
+     * Executes one ecological, pollution, overfishing &amp; socio-demographic simulation tick across all cells
+     * over {@code deltaYears}, driven purely by conserved physical observables.
+     *
+     * @param cells      active H3 cells
+     * @param deltaYears time step in Julian years
      */
-    public static void processEcologicalDegradation(List<H3Cell> cells, double techLevel, double deltaYears) {
+    public static void processEcologicalDegradation(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
-        double dtMonthlyRatio = Math.max(0.001, deltaYears / (1.0 / 12.0));
+        double dtSafeYears = Math.max(1e-4, deltaYears);
+        double dtMonthlyRatio = Math.max(0.001, dtSafeYears / (1.0 / 12.0));
 
         int droughtEvents = 0;
         int famineEvents = 0;
-        int totalMigrants = 0;
 
-        // ── Phase 1: Local Environmental, Deforestation, Overfishing & Famine ──
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             int pop = cell.getPopulationOr(0);
@@ -60,227 +69,189 @@ public class EcologicalDegradationEngine {
 
             // 1. Pollution Generation & Natural Biogeochemical Attenuation
             double currPollution = cell.getPollutionLevelOr(0.0);
-            // Natural environmental attenuation (rain washout, microbial breakdown, phytoremediation) occurs in all cells
             double attenuatedPollution = Math.max(0.0, currPollution * Math.pow(0.92, dtMonthlyRatio) - 1.2 * dtMonthlyRatio);
             if (pop > 0) {
                 double capPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-                double fossilCombustion = cell.getResourceCoalOr(0.0) * 0.05 + cell.getResourceOilOr(0.0) * 0.08 + cell.getResourceGasOr(0.0) * 0.04;
-                double miningActivity = (fossilCombustion > 0.1 || capPerCapita > 100.0) && cell.getResourceMetal() != null
-                        ? Math.min(25.0, cell.getResourceMetal() * 0.02 * Math.min(3.0, capPerCapita / 50.0))
-                        : 0.0;
-                // Continuous industrial emission curve (Smil 2017): gradual transition from organic smoke to fossil effluent
-                double mechanizationFactor = 0.002 + 0.068 / (1.0 + Math.exp(-0.02 * (capPerCapita - 300.0)));
-                double industrialEmission = pop * mechanizationFactor + miningActivity + Math.min(50.0, fossilCombustion);
+                double fossilCombustion = cell.getResourceCoalOr(0.0) * 0.05
+                        + cell.getResourceOilOr(0.0) * 0.08
+                        + cell.getResourceGasOr(0.0) * 0.04;
+                double miningGate = SmoothMath.sigmoid(fossilCombustion * 10.0 + capPerCapita / 100.0, 1.0, 0.35);
+                double rawMining = cell.getResourceMetalOr(0.0) * 0.02 * SmoothMath.softmin(3.0, capPerCapita / 50.0, 4.0);
+                double miningActivity = miningGate * SmoothMath.softmin(25.0, rawMining, 0.5);
+                double mechanizationFactor = 0.002 + 0.068 * SmoothMath.sigmoid(capPerCapita, 300.0, 50.0);
+                double industrialEmission = pop * mechanizationFactor + miningActivity + SmoothMath.softmin(50.0, fossilCombustion, 0.2);
                 cell.setPollutionLevel(Math.min(1000.0, attenuatedPollution + industrialEmission * dtMonthlyRatio));
             } else {
                 cell.setPollutionLevel(attenuatedPollution);
             }
 
-            // Continuous concave dose-response curve for pollution health and environmental impacts (Pope et al. 2002; WHO):
             double pLevel = cell.getPollutionLevelOr(0.0);
             if (pLevel > 0.0) {
                 double pollutionToxicity = pLevel / (150.0 + pLevel);
-                double curLifespan = cell.getLifespanOr(30.0);
-                double curFertility = cell.getFertilityOr(2.5);
-                double curBioNat = cell.getBiomassNaturalOr(0.0);
-                cell.setLifespan(Math.max(15.0, curLifespan - 1.2 * pollutionToxicity * dtMonthlyRatio));
-                cell.setFertility(Math.max(0.5, curFertility - 0.5 * pollutionToxicity * dtMonthlyRatio));
-                cell.setBiomassNatural(Math.max(0.0, curBioNat - 5.0 * pollutionToxicity * dtMonthlyRatio));
+                cell.setLifespan(Math.max(15.0, cell.getLifespanOr(30.0) - 1.2 * pollutionToxicity * dtMonthlyRatio));
+                cell.setFertility(Math.max(0.5, cell.getFertilityOr(2.5) - 0.5 * pollutionToxicity * dtMonthlyRatio));
+                cell.setBiomassNatural(Math.max(0.0, cell.getBiomassNaturalOr(0.0) - 5.0 * pollutionToxicity * dtMonthlyRatio));
             }
 
-            // 2. Overfishing & Marine Harvest Dynamics in Ocean & Coastal Biomes
-            if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH) {
-                double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
-                double maxStockCapacity = (biome == Biome.BEACH ? 1500.0 : 1000.0) * areaScale;
-                double currentFishStock = cell.getBiomassFish() != null ? cell.getBiomassFish() : (800.0 * areaScale);
-                double dtYears = dtMonthlyRatio / 12.0;
-
-                // Natural logistic regeneration of fish stock (Schaefer model: intrinsic rate r ~ 0.35/year)
-                double rFish = (biome == Biome.BEACH ? 0.35 : 0.25);
-                double regeneration = rFish * currentFishStock * Math.max(0.0, 1.0 - (currentFishStock / maxStockCapacity)) * dtYears;
-                // Pelagic larval dispersal / immigration seed prevents irreversible mathematical extinction
-                double pelagicLarvalSeed = 5.0 * areaScale * dtYears;
-
-                // Fishing harvest effort scaled by local population, technological gear and stock density
-                double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-                double harvestIntensity = pop * (0.08 + 0.04 * Math.tanh(capPerCap / 50.0)) * (currentFishStock / maxStockCapacity) * dtYears;
-                double fishingHarvest = Math.min(currentFishStock * 0.85, harvestIntensity);
-
-                // Harvested fishery biomass converts to edible caloric human food
-                if (fishingHarvest > 0.0) {
-                    double foodGain = fishingHarvest * 0.80;
-                    cell.setFoodResource(Math.min(2000000.0, (cell.getFoodResourceOr(0.0)) + foodGain));
-                }
-
-                double updatedStock = currentFishStock + regeneration + pelagicLarvalSeed - fishingHarvest;
-                // Continuous ecotoxicological impact of water pollution on marine fish biomass (NRC 2005)
-                double ecotoxicity = (pLevel / (100.0 + pLevel)) * 8.0 * dtYears;
-                updatedStock = Math.max(0.0, updatedStock - ecotoxicity);
-
-                cell.setBiomassFish(Math.max(pelagicLarvalSeed, Math.min(maxStockCapacity, updatedStock)));
-                if (biome != Biome.BEACH) {
-                    continue;
-                }
-            }
-
-            if (cell.getElevation() == null || cell.getElevation() <= 0) continue;
-
-            if (pop <= 0) {
-                // Natural recovery when unoccupied
-                double curSoc = cell.getSoilOrganicCarbonOr(20.0);
-                double curNat = cell.getBiomassNaturalOr(500.0);
-                double curWater = cell.getWaterResourceOr(100.0);
-                cell.setSoilOrganicCarbon(Math.min(100.0, curSoc + 0.5 * dtMonthlyRatio));
-                cell.setBiomassNatural(Math.min(1000.0, curNat + 2.0 * dtMonthlyRatio));
-                cell.setWaterResource(Math.min(1000.0, curWater + 5.0 * dtMonthlyRatio));
-                continue;
-            }
-
-            // 3. Drought Simulation
-            double rain = cell.getRainfallOr(0.0);
-            double temp = cell.getTemperatureOr(15.0);
-            double curWaterRes = cell.getWaterResourceOr(100.0);
-
-            double hydroStress = 0.0;
-            // Combines meteoric precipitation and river/alluvial water table irrigation
-            double totalAvailableWater = rain + Math.min(800.0, curWaterRes * 0.50);
-            if (totalAvailableWater < 300.0 || temp > 45.0) {
-                hydroStress = Math.min(1.0, (300.0 - totalAvailableWater) / 300.0 + Math.max(0.0, temp - 45.0) * 0.03);
-                droughtEvents++;
-
-                double aquiferDepletion = hydroStress * 200.0 * dtMonthlyRatio;
-                double curAquifer = cell.getAccessibleAquiferOr(0.0);
-                double curAgri = cell.getBiomassAgricultureOr(0.0);
-                cell.setAccessibleAquifer(Math.max(0.0, curAquifer - aquiferDepletion));
-                cell.setWaterResource(Math.max(0.0, curWaterRes - hydroStress * 150.0 * dtMonthlyRatio));
-                cell.setBiomassAgriculture(Math.max(0.0, curAgri * Math.exp(-0.4 * hydroStress * dtMonthlyRatio)));
-            } else {
-                cell.setWaterResource(Math.min(1000.0, curWaterRes + (rain / 100.0) * 10.0 * dtMonthlyRatio));
-            }
-
-            // 4. Famine & Nutritional Stress Telemetry
-            // Ownership split (no double-counting): Caloric deduction and starvation mortality are owned by DemographicKernel.
-            double totalFood = (cell.getFoodResourceOr(0.0))
-                    + (cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture() * 0.70 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3) : 0.0)
-                    + (cell.getBiomassFish() != null ? cell.getBiomassFish() * 0.80 * (org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3) : 0.0)
-                    + (cell.getBiomassNatural() != null ? cell.getBiomassNatural() * (cell.getBiomassAgricultureOr(0.0) < 10.0 ? 0.008 : 0.005) * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG : 0.0);
-
-            // Caloric requirement in GJ over time deltaYears: pop * 3.362 GJ/year * dtYears
-            double safeDtYears = Math.max(1e-4, deltaYears);
-            double foodRequired = pop * HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * safeDtYears;
-            double curLife = cell.getLifespanOr(30.0);
-            double curFert = cell.getFertilityOr(2.5);
-
-            if (totalFood < foodRequired) {
-                famineEvents++;
-                double foodDeficitRatio = Math.min(1.0, (foodRequired - totalFood) / foodRequired);
-
-                cell.setLifespan(Math.max(15.0, curLife - 0.5 * foodDeficitRatio * dtMonthlyRatio));
-                cell.setFertility(Math.max(0.5, curFert - 0.25 * foodDeficitRatio * dtMonthlyRatio));
-            } else {
-                cell.setLifespan(Math.min(85.0, curLife + 0.02 * dtMonthlyRatio));
-                cell.setFertility(Math.min(7.0, curFert + 0.01 * dtMonthlyRatio));
-            }
-
-            // 5. Deforestation & Biome Impact (flux normalized by dt and planar H3 cell surface area)
             int h3Res = (cell.getH3Index() != null && cell.getH3Index() != 0L)
                     ? (int) ((cell.getH3Index() >>> 52) & 0xFL)
                     : 3;
             double planarCellAreaKm2 = H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3);
             double areaScale = Math.max(0.05, planarCellAreaKm2 / 1770.49);
-            double currentWood = cell.getWoodResource() != null ? cell.getWoodResource() : (1000.0 * areaScale);
 
-            // Continuous Whittaker (1973) & Olson et al. (1983) standing woody biomass capacity
-            double forestAffinity = (1.0 / (1.0 + Math.exp(-0.006 * (rain - 450.0))))
-                    * (1.0 / (1.0 + Math.exp(-0.25 * (temp - 2.0))));
+            // 2. Schaefer Logistic Fishery Dynamics in Marine & Coastal Cells
+            double elev = cell.getElevationOr(0.0);
+            boolean isMarineOrCoastal = (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH || elev <= 0.0);
+            if (isMarineOrCoastal) {
+                double coastalShelfFactor = SmoothMath.sigmoid(elev, -200.0, 80.0);
+                double maxStockCapacity = (1000.0 + 500.0 * coastalShelfFactor) * areaScale;
+                double currentFishStock = cell.getBiomassFish() != null ? cell.getBiomassFish() : (800.0 * areaScale);
+
+                double rFish = 0.25 + 0.10 * coastalShelfFactor;
+                double regeneration = rFish * currentFishStock * Math.max(0.0, 1.0 - (currentFishStock / maxStockCapacity)) * dtSafeYears;
+                double pelagicLarvalSeed = 5.0 * areaScale * dtSafeYears;
+
+                double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+                double harvestIntensity = pop * (0.08 + 0.04 * Math.tanh(capPerCap / 50.0)) * (currentFishStock / maxStockCapacity) * dtSafeYears;
+                double fishingHarvest = Math.min(currentFishStock * 0.85, harvestIntensity);
+
+                if (fishingHarvest > 0.0) {
+                    cell.setFoodResource(Math.min(2000000.0, cell.getFoodResourceOr(0.0) + fishingHarvest * 0.80));
+                }
+
+                double ecotoxicity = (pLevel / (100.0 + pLevel)) * 8.0 * dtSafeYears;
+                double updatedStock = Math.max(0.0, currentFishStock + regeneration + pelagicLarvalSeed - fishingHarvest - ecotoxicity);
+                cell.setBiomassFish(Math.clamp(updatedStock, pelagicLarvalSeed, maxStockCapacity));
+
+                if (elev <= 0.0 && biome != Biome.BEACH) {
+                    continue;
+                }
+            }
+
+            if (elev <= 0.0) continue;
+
+            if (pop <= 0) {
+                cell.setSoilOrganicCarbon(Math.min(100.0, cell.getSoilOrganicCarbonOr(20.0) + 0.5 * dtMonthlyRatio));
+                cell.setBiomassNatural(Math.min(1000.0, cell.getBiomassNaturalOr(500.0) + 2.0 * dtMonthlyRatio));
+                cell.setWaterResource(Math.min(1000.0, cell.getWaterResourceOr(100.0) + 5.0 * dtMonthlyRatio));
+                continue;
+            }
+
+            // 3. Smooth C^infty Hydrological Drought Stress
+            double rain = cell.getRainfallOr(0.0);
+            double temp = cell.getTemperatureOr(15.0);
+            double curWaterRes = cell.getWaterResourceOr(100.0);
+
+            double totalAvailableWater = rain + SmoothMath.softmin(800.0, curWaterRes * 0.50, 0.02);
+            double aridityDeficit = SmoothMath.softplus(300.0 - totalAvailableWater, 0.05) / 300.0;
+            double heatStress = SmoothMath.softplus(temp - 45.0, 0.5) * 0.03;
+            double hydroStress = SmoothMath.softmin(1.0, aridityDeficit + heatStress, 8.0);
+
+            if (hydroStress > 0.05) {
+                droughtEvents++;
+            }
+            double droughtGate = SmoothMath.sigmoid(hydroStress, 0.08, 0.03);
+            double rechargeRate = (1.0 - droughtGate) * (rain / 100.0) * 10.0 * dtMonthlyRatio;
+            double depletionRate = droughtGate * hydroStress * 150.0 * dtMonthlyRatio;
+            cell.setAccessibleAquifer(Math.max(0.0, cell.getAccessibleAquiferOr(0.0) - droughtGate * hydroStress * 200.0 * dtMonthlyRatio));
+            cell.setWaterResource(Math.clamp(curWaterRes + rechargeRate - depletionRate, 0.0, 1000.0));
+            cell.setBiomassAgriculture(Math.max(0.0, cell.getBiomassAgricultureOr(0.0) * Math.exp(-0.4 * droughtGate * hydroStress * dtMonthlyRatio)));
+
+            // 4. Smooth Nutritional Stress Telemetry
+            double agBio = cell.getBiomassAgricultureOr(0.0);
+            double natBio = cell.getBiomassNaturalOr(0.0);
+            double agShare = agBio / (agBio + natBio * 0.01 + 1.0);
+            double wildForageFrac = 0.008 - 0.003 * SmoothMath.sigmoid(agShare, 0.20, 0.08);
+            double totalFood = cell.getFoodResourceOr(0.0)
+                    + agBio * 0.70 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3)
+                    + cell.getBiomassFishOr(0.0) * 0.80 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3)
+                    + natBio * wildForageFrac * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+
+            double foodRequired = pop * HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtSafeYears;
+            double curLife = cell.getLifespanOr(30.0);
+            double curFert = cell.getFertilityOr(2.5);
+
+            double deficitRatio = SmoothMath.softmin(1.0, SmoothMath.softplus(foodRequired - totalFood, 0.5) / Math.max(1e-4, foodRequired), 8.0);
+            if (deficitRatio > 0.05) famineEvents++;
+            double surplusGate = SmoothMath.sigmoid(totalFood - foodRequired, 0.0, Math.max(0.1, 0.1 * foodRequired));
+            cell.setLifespan(Math.clamp(curLife + (0.02 * surplusGate - 0.5 * deficitRatio) * dtMonthlyRatio, 15.0, 85.0));
+            cell.setFertility(Math.clamp(curFert + (0.01 * surplusGate - 0.25 * deficitRatio) * dtMonthlyRatio, 0.5, 7.0));
+
+            // 5. Continuous Whittaker & Likens Woody Biomass & Deforestation (Zero Tier-2 Sakoku static coupling!)
+            double currentWood = cell.getWoodResource() != null ? cell.getWoodResource() : (1000.0 * areaScale);
+            double forestAffinity = SmoothMath.sigmoid(rain, 450.0, 166.67) * SmoothMath.sigmoid(temp, 2.0, 4.0);
             double woodResidenceYears = 35.0 * forestAffinity + 5.0 * (1.0 - forestAffinity) * (rain / (rain + 250.0));
             double nppP = 3000.0 * (1.0 - Math.exp(-0.000664 * Math.max(0.0, rain)));
             double nppT = 3000.0 / (1.0 + Math.exp(1.315 - 0.119 * temp));
-            double cellNpp = Math.min(nppP, nppT);
-            double intactWoodCap = Math.clamp(cellNpp * 0.60 * woodResidenceYears * 0.08 * areaScale, 100.0 * areaScale, 9500.0 * areaScale);
+            double cellNpp = SmoothMath.softmin(nppP, nppT, 0.02);
+            double intactWoodCap = Math.clamp(cellNpp * 0.60 * woodResidenceYears * 0.25 * areaScale, 100.0 * areaScale, 9500.0 * areaScale);
 
-            double currentAgriBiomass = cell.getBiomassAgricultureOr(0.0);
-            // Agricultural land-use competition: cropland and settlement expansion reduces available forest canopy area
-            double clearedLandFraction = (currentAgriBiomass > 10.0)
-        ? Math.clamp((currentAgriBiomass / (1800.0 * areaScale)) * 0.25 + (pop / (1500.0 * areaScale)) * 0.25, 0.0, 0.55)
-        : 0.0;
-            double maxWoodCap = intactWoodCap * (1.0 - clearedLandFraction);
-            double dtYears = dtMonthlyRatio / 12.0;
+            double agriClearanceGate = SmoothMath.sigmoid(agBio, 10.0, 4.0);
+            double clearedLandFraction = agriClearanceGate * SmoothMath.softmin(0.55,
+                    (agBio / (1800.0 * areaScale)) * 0.25 + (pop / (1500.0 * areaScale)) * 0.25, 10.0);
+            double maxWoodCap = Math.max(currentWood, intactWoodCap * (1.0 - clearedLandFraction));
 
-            // Continuous logistic forest biomass regeneration (IPCC / FAO forestry model)
-            double logisticRegrowthRate = 0.030 + 0.020 * forestAffinity * (Math.max(0.0, temp) / (Math.max(0.0, temp) + 12.0));
-            double woodRegrowth = (currentWood < maxWoodCap)
-                    ? logisticRegrowthRate * currentWood * (1.0 - currentWood / maxWoodCap) * dtYears
-                    : 0.0;
+            double posTemp = SmoothMath.softplus(temp, 0.5);
+            double logisticRegrowthRate = 0.030 + 0.020 * forestAffinity * (posTemp / (posTemp + 12.0));
+            double woodRegrowth = logisticRegrowthRate * currentWood * Math.max(0.0, 1.0 - currentWood / maxWoodCap) * dtSafeYears;
 
-            // Per-capita timber, firewood & agricultural slash-and-burn (tavy) clearing demand
             double densityPerKm2 = pop / Math.max(10.0, planarCellAreaKm2);
-            double accessibilityFactor = Math.clamp(densityPerKm2 / 3.0, 0.20, 1.0);
-            double perCapitaWoodAndClearing = (currentAgriBiomass > 10.0) ? 0.12 : 0.05;
-            double woodDemand = pop * perCapitaWoodAndClearing * accessibilityFactor * dtYears;
+            double accessibilityFactor = SmoothMath.smoothClamp(densityPerKm2 / 3.0, 0.20, 1.0, 8.0);
+            double perCapitaWoodAndClearing = 0.05 + 0.07 * agriClearanceGate;
+            // Endogenous physical timber scarcity elasticity (von Thünen / Hotelling): scarce mountain timber raises extraction effort
+            double remainingWoodRatio = Math.clamp(currentWood / Math.max(1.0, intactWoodCap), 0.0, 1.0);
+            double scarcityConservation = 0.25 + 0.75 * SmoothMath.sigmoid(remainingWoodRatio, 0.35, 0.10);
+            double woodDemand = pop * perCapitaWoodAndClearing * accessibilityFactor * scarcityConservation * dtSafeYears;
 
-            // Pre-industrial logging without mechanized chainsaws/railways (tech < 3.5) cannot clear-cut remote interior mountain canopy (< 45% floor)
-            double capPerCapForLogging = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-            double minInaccessibleCanopy = (capPerCapForLogging < 200.0) ? (intactWoodCap * 0.45) : (10.0 * areaScale);
+            // Smooth mechanized logging accessibility (chainsaws/railways require high physical capital per capita K/N)
+            double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+            double mechanizedLogging = SmoothMath.sigmoid(capPerCap, 250.0, 75.0);
+            double minInaccessibleCanopy = (1.0 - mechanizedLogging) * (intactWoodCap * 0.45) + mechanizedLogging * (10.0 * areaScale);
             double nextWood = Math.max(minInaccessibleCanopy, currentWood + woodRegrowth - woodDemand);
             cell.setWoodResource(nextWood);
 
-            // Dynamic natural ecological biomass (wild fauna, understory flora, roots, berries, game animals)
+            // Dynamic wild fauna & understory flora
             double currentNat = cell.getBiomassNatural() != null ? cell.getBiomassNatural() : (3000.0 * areaScale);
             double baseNatCap = Math.clamp(cellNpp * 3.5 * areaScale, 500.0 * areaScale, 9000.0 * areaScale);
-            double maxNatCap = (currentAgriBiomass <= 10.0 && pop > 0) ? Math.max(baseNatCap, pop * 48.0) : baseNatCap;
+            double maxNatCap = Math.max(baseNatCap, pop * 48.0 * (1.0 - agriClearanceGate));
             double rNat = 0.08 + 0.07 * (1.0 - forestAffinity);
-            double natRegrowth = (currentNat < maxNatCap)
-                    ? rNat * currentNat * (1.0 - currentNat / maxNatCap) * dtYears
-                    : 0.0;
+            double natRegrowth = rNat * currentNat * Math.max(0.0, 1.0 - currentNat / maxNatCap) * dtSafeYears;
 
-            // Hunting and wild foraging: foragers (tech < 1.5) rely heavily on wild game; agrarians shift to crops
-            double huntingFactor = (currentAgriBiomass <= 10.0 ? 0.10 : 0.03);
-            double huntingHarvest = pop * huntingFactor * accessibilityFactor * (currentNat / maxNatCap) * dtYears;
-            huntingHarvest = Math.min(currentNat * 0.50, huntingHarvest);
-
+            double huntingFactor = 0.10 - 0.07 * agriClearanceGate;
+            double huntingHarvest = Math.min(currentNat * 0.50,
+                    pop * huntingFactor * accessibilityFactor * (currentNat / maxNatCap) * dtSafeYears);
             if (huntingHarvest > 0.0) {
-                double wildFoodGain = huntingHarvest * 0.70;
-                cell.setFoodResource(Math.min(2000000.0, (cell.getFoodResourceOr(0.0)) + wildFoodGain));
+                cell.setFoodResource(Math.min(2000000.0, cell.getFoodResourceOr(0.0) + huntingHarvest * 0.70));
             }
-
-            double nextNat = Math.max(50.0 * areaScale, Math.min(maxNatCap, currentNat + natRegrowth - huntingHarvest));
+            double nextNat = Math.clamp(currentNat + natRegrowth - huntingHarvest, 50.0 * areaScale, maxNatCap);
             cell.setBiomassNatural(nextNat);
 
-            // Severe deforestation & ecological depletion degrades soil organic carbon and rainfall
-            if (nextWood < (100.0 * areaScale) && nextNat < (100.0 * areaScale) && forestAffinity > 0.40) {
-                double curSoc = cell.getSoilOrganicCarbonOr(20.0);
-                cell.setSoilOrganicCarbon(Math.max(5.0, curSoc - 0.5 * dtMonthlyRatio));
-                cell.setRainfall(Math.max(100.0, rain * Math.pow(0.98, dtMonthlyRatio))); // Evapotranspiration loss
+            // Smooth canopy loss evapotranspiration & soil carbon feedback
+            double severeDeforestation = (1.0 - SmoothMath.sigmoid(nextWood / areaScale, 100.0, 30.0))
+                    * (1.0 - SmoothMath.sigmoid(nextNat / areaScale, 100.0, 30.0))
+                    * SmoothMath.sigmoid(forestAffinity, 0.40, 0.10);
+            if (severeDeforestation > 0.01) {
+                cell.setSoilOrganicCarbon(Math.max(5.0, cell.getSoilOrganicCarbonOr(20.0) - 0.5 * severeDeforestation * dtMonthlyRatio));
+                cell.setRainfall(Math.max(100.0, rain * Math.pow(1.0 - 0.02 * severeDeforestation, dtMonthlyRatio)));
             }
 
-            // 6. Demographic Density Strain & Agricultural Intensification
+            // 6. Smooth Demographic Density Strain & Boserupian Land Intensification
             double carryingCap = calculateCarryingCapacity(cell);
             double demoPressure = pop / Math.max(1.0, carryingCap);
-
-            if (demoPressure > 0.8 && cell.getBiomassAgricultureOr(0.0) > 0.0) {
-                // High density induces gradual agricultural land-use intensification scaled by dtYears
-                double capPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-                double annualIntensificationRate = Math.min(0.025, (demoPressure - 0.8) * 0.02);
-                double landCeiling = Math.max(pop * 600.0 * 1.5, (360000.0 + 550000.0 * Math.min(5.0, 1.0 + capPerCapita / 100.0)) * areaScale);
-                double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
-                    ? cell.getBiomassAgriculture()
-                    : Math.min(landCeiling, Math.max(25.0 * areaScale, pop * 0.5));
-                cell.setBiomassAgriculture(Math.min(landCeiling, currentAgri * (1.0 + annualIntensificationRate * dtYears)));
-
-                // Increases social inequality & friction (Gini index rises under density strain)
-                double currentGini = cell.getGiniIndexOr(0.3);
-                cell.setGiniIndex(Math.min(1.0, currentGini + 0.01 * demoPressure * dtMonthlyRatio));
+            double pressureExcess = SmoothMath.softplus(demoPressure - 0.80, 10.0);
+            if (pressureExcess > 0.001 && agBio > 0.0) {
+                double annualIntensificationRate = SmoothMath.softmin(0.025, pressureExcess * 0.02, 100.0);
+                double landCeiling = Math.max(pop * 900.0,
+                        (360000.0 + 550000.0 * SmoothMath.softmin(5.0, 1.0 + capPerCap / 100.0, 2.0)) * areaScale);
+                cell.setBiomassAgriculture(Math.min(landCeiling, agBio * (1.0 + annualIntensificationRate * dtSafeYears)));
+                cell.setGiniIndex(Math.min(1.0, cell.getGiniIndexOr(0.3) + 0.01 * demoPressure * SmoothMath.sigmoid(demoPressure, 0.8, 0.1) * dtMonthlyRatio));
             }
 
             cell.calculateMovementFriction();
         }
 
-        // ── Phase 2: Pollution Atmospheric & River Dispersion (Remote Sites) ─
         processPollutionDispersion(cells);
-
-        // ── Phase 3: Demographic Migration Flux ───────────────────
-        totalMigrants = processMigrationFlux(cells, techLevel, deltaYears);
+        int totalMigrants = processMigrationFlux(cells, dtSafeYears);
 
         if (droughtEvents > 0 || famineEvents > 0 || totalMigrants > 0) {
             logger.debug("Simulation Tick: {} drought cells, {} famine cells, {} climate migrants relocated.",
@@ -288,26 +259,19 @@ public class EcologicalDegradationEngine {
         }
     }
 
-    /**
-     * Atmospheric and aquatic dispersion of toxic pollution across neighboring cells,
-     * diffusing contaminants even into unpopulated, high-altitude or remote wilderness sites.
-     */
     private static void processPollutionDispersion(List<H3Cell> cells) {
         int count = cells.size();
         if (count < 2) return;
-
         double[] pollutionDeltas = new double[count];
 
         for (int i = 0; i < count; i++) {
             H3Cell src = cells.get(i);
             if (src == null) continue;
             double srcPollution = src.getPollutionLevelOr(0.0);
-            if (srcPollution > 20.0) {
-                // Diffuse 5% of intense local pollution out into surrounding regional cells
-                double emittedFraction = srcPollution * 0.05;
+            double excess = SmoothMath.softplus(srcPollution - 20.0, 0.5);
+            if (excess > 0.01) {
+                double emittedFraction = excess * 0.05;
                 pollutionDeltas[i] -= emittedFraction;
-
-                // Evenly distribute among a sample of neighboring cells in the buffer
                 int step = Math.max(1, count / 8);
                 int targets = 0;
                 for (int j = 1; j <= 4; j++) {
@@ -318,7 +282,7 @@ public class EcologicalDegradationEngine {
                     }
                 }
                 if (targets == 0) {
-                    pollutionDeltas[i] += emittedFraction; // restore if no neighbors
+                    pollutionDeltas[i] += emittedFraction;
                 }
             }
         }
@@ -326,24 +290,16 @@ public class EcologicalDegradationEngine {
         for (int i = 0; i < count; i++) {
             H3Cell c = cells.get(i);
             if (c != null && pollutionDeltas[i] != 0.0) {
-                double p = c.getPollutionLevelOr(0.0);
-                c.setPollutionLevel(Math.max(0.0, p + pollutionDeltas[i]));
+                c.setPollutionLevel(Math.max(0.0, c.getPollutionLevelOr(0.0) + pollutionDeltas[i]));
             }
         }
     }
 
-    /**
-     * Demographic migration flux driven by localized carrying capacity pressure, famines, and droughts.
-     * Overpopulated, starved, or parched cells push migrants toward neighboring fertile land cells.
-     */
-    private static int processMigrationFlux(List<H3Cell> cells, double defaultTech, double deltaYears) {
+    private static int processMigrationFlux(List<H3Cell> cells, double dtYears) {
         int totalMigrated = 0;
         int count = cells.size();
         if (count < 2) return 0;
 
-        double dtYears = Math.max(1e-4, deltaYears);
-
-        // Process migration for cells exceeding carrying capacity or suffering extreme ecological collapse
         for (int i = 0; i < count; i++) {
             H3Cell source = cells.get(i);
             if (source == null) continue;
@@ -351,23 +307,19 @@ public class EcologicalDegradationEngine {
             if (srcPop < 10) continue;
 
             double carryingCap = calculateCarryingCapacity(source);
-
-            // Trigger migration if population exceeds carrying capacity by 15% or extreme food shortage
-            double excessPop = srcPop - (carryingCap * 1.15);
+            double excessPop = SmoothMath.softplus(srcPop - carryingCap * 1.15, 0.2);
             double curFood = source.getFoodResourceOr(0.0);
             double foodRequired = srcPop * HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtYears;
-            boolean isStarving = curFood < foodRequired * 0.50;
+            double starvationUrgency = SmoothMath.sigmoid(foodRequired * 0.50 - curFood, 0.0, Math.max(0.1, foodRequired * 0.1));
 
-            if (excessPop > 0 || isStarving) {
-                // Outmigration rate: 2-5% of distressed population moves per year
-                double migrationRate = isStarving ? 0.05 : 0.02;
-                int migrants = (int) Math.min(srcPop * 0.15, Math.max(1.0, (excessPop > 0 ? excessPop : srcPop * 0.10) * migrationRate * (dtYears * 12.0)));
+            if (excessPop > 0.5 || starvationUrgency > 0.2) {
+                double migrationRate = 0.02 + 0.03 * starvationUrgency;
+                double distressedPool = Math.max(excessPop, srcPop * 0.10 * starvationUrgency);
+                int migrants = (int) Math.min(srcPop * 0.15, Math.floor(distressedPool * migrationRate * (dtYears * 12.0)));
 
                 if (migrants > 0) {
-                    // Find most suitable nearby land target (search up to 12 neighboring cells)
                     H3Cell bestTarget = null;
                     double bestScore = -Double.MAX_VALUE;
-
                     int step = Math.max(1, count / 16);
                     for (int k = 1; k <= 8; k++) {
                         int targetIdx = (i + k * step) % count;
@@ -376,23 +328,19 @@ public class EcologicalDegradationEngine {
                         if (candidate == null) continue;
                         Biome candBiome = candidate.getBiome();
                         if (candBiome == Biome.OCEAN || candBiome == Biome.DEEP_OCEAN || candBiome == Biome.GLACIER) continue;
-                        if (candidate.getElevation() == null || candidate.getElevation() <= 0) continue;
+                        if (candidate.getElevationOr(0.0) <= 0.0) continue;
 
-                        // Geographic distance sanity check (cannot teleport across the entire planet in a monthly step)
                         double lat1 = source.getLatitudeOr(0.0);
                         double lon1 = source.getLongitudeOr(0.0);
                         double lat2 = candidate.getLatitudeOr(0.0);
                         double lon2 = candidate.getLongitudeOr(0.0);
                         double dLat = (lat2 - lat1) * 111.0;
                         double dLon = (lon2 - lon1) * 111.0 * Math.cos(Math.toRadians((lat1 + lat2) / 2.0));
-                        double distKmSq = dLat * dLat + dLon * dLon;
-                        if (distKmSq > 22500.0) continue; // Cannot migrate beyond 150 km radius (150^2 = 22500)
+                        if (dLat * dLat + dLon * dLon > 22500.0) continue;
 
                         double candCap = calculateCarryingCapacity(candidate);
                         int candPop = candidate.getPopulationOr(0);
                         double spareCap = candCap - candPop;
-
-                        // Attractiveness score combines spare carrying capacity, food abundance, and low pollution
                         double score = spareCap + candidate.getFoodResourceOr(0.0) * 0.1 - candidate.getPollutionLevelOr(0.0) * 2.0;
                         if (score > bestScore && spareCap > migrants) {
                             bestScore = score;
@@ -401,32 +349,32 @@ public class EcologicalDegradationEngine {
                     }
 
                     if (bestTarget != null) {
-                        int newSrcPop = Math.max(0, srcPop - migrants);
-                        int newTargetPop = bestTarget.getPopulationOr(0) + migrants;
-                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(source, newSrcPop);
-                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(bestTarget, newTargetPop);
-
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(source, Math.max(0, srcPop - migrants));
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(bestTarget, bestTarget.getPopulationOr(0) + migrants);
                         totalMigrated += migrants;
                     }
                 }
             }
         }
-
         return totalMigrated;
     }
 
     /**
-     * Calculate carrying capacity.
+     * Computes local biophysical human carrying capacity strictly from soil organic carbon,
+     * meteoric rainfall, freshwater availability, cultivated biomass, and physical capital per capita ($C^\infty$).
+     *
+     * @param cell H3 cell
+     * @return biophysical carrying capacity (individuals)
      */
     public static double calculateCarryingCapacity(H3Cell cell) {
         if (cell == null) return 100.0;
 
         double soc = cell.getSoilOrganicCarbonOr(20.0);
-        double soilFactor = soc > 0 ? (soc / 50.0) : 1.0;
+        double soilFactor = SmoothMath.softmax(0.2, soc / 50.0, 5.0);
         double rain = cell.getRainfallOr(500.0);
-        double rainFactor = Math.min(2.0, Math.max(0.1, rain / 500.0));
+        double rainFactor = SmoothMath.smoothClamp(rain / 500.0, 0.1, 2.0, 5.0);
         double water = cell.getWaterResourceOr(100.0);
-        double waterFactor = water > 0 ? 1.2 : 0.8;
+        double waterFactor = 0.8 + 0.4 * (water / (25.0 + Math.max(0.0, water)));
 
         int h3Res = (cell.getH3Index() != null && cell.getH3Index() != 0L)
                 ? (int) ((cell.getH3Index() >>> 52) & 0xFL)
@@ -434,16 +382,13 @@ public class EcologicalDegradationEngine {
         double areaScale = Math.max(0.05, H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3) / 1770.49);
         double baseCap = 50.0 * areaScale * soilFactor * rainFactor * waterFactor;
 
-        int pop = cell.getPopulationOr(1);
-        double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+        int pop = Math.max(1, cell.getPopulationOr(1));
+        double capPerCap = cell.getResourceCapitalOr(0.0) / pop;
         double agBiomass = cell.getBiomassAgricultureOr(0.0);
-        double agMultiplier = (agBiomass > 10.0) ? (1.5 + 2.0 * (1.0 - Math.exp(-agBiomass / (500.0 * areaScale)))) : 1.0;
+        double agGate = SmoothMath.sigmoid(agBiomass, 10.0, 4.0);
+        double agMultiplier = 1.0 + agGate * (0.5 + 2.0 * (1.0 - Math.exp(-agBiomass / (500.0 * areaScale))));
         double capitalMultiplier = 1.0 + 3.0 * (1.0 - Math.exp(-capPerCap / 250.0));
 
         return Math.max(2.0, baseCap * agMultiplier * capitalMultiplier);
-    }
-
-    public static double calculateCarryingCapacity(H3Cell cell, double techLevel) {
-        return calculateCarryingCapacity(cell);
     }
 }

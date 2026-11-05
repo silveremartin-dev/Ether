@@ -5,44 +5,54 @@
  */
 package org.ether.society.ui;
 
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier1.NuclearWarfareClimateEngine;
-import org.ether.society.events.ActiveEvent;
 import org.ether.society.i18n.I18n;
-import org.ether.society.model.Biome;
 import org.ether.society.model.ScenarioTimeline;
 import org.ether.society.ui.godmode.GodModeDisasterExecutor;
 import org.ether.society.ui.godmode.GodModeEventCatalog;
 import org.ether.society.ui.godmode.GodModeEventCatalog.EventTypeItem;
-
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.util.StringConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ether.society.ui.godmode.GodModeInterventionCoordinator;
+import org.ether.society.ui.godmode.GodModeUiConfigurator;
 
 import java.util.List;
 import java.util.Locale;
 
 /**
  * God Mode &amp; Interactive Timeline Controller.
- * Allows pausing live simulation, injecting real physical events (volcanoes, EMP, heatwaves),
- * selecting duration, and viewing/navigating the chronological scenario timeline audit trail.
+ *
+ * <p>Allows pausing live simulation, injecting real physical events (volcanoes, EMP, heatwaves),
+ * selecting active duration, applying spatial brushes, and viewing/navigating the chronological
+ * scenario timeline audit trail. Delegates UI form construction to {@link GodModeUiConfigurator}
+ * and forcing execution / timeline audit coordination to {@link GodModeInterventionCoordinator}.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 public class GodModePanel extends VBox {
-    private static final Logger logger = LoggerFactory.getLogger(GodModePanel.class);
 
+    /** Canonical catalog of available God Mode physical and climatic event types. */
     public static final List<EventTypeItem> EVENT_TYPES = GodModeEventCatalog.EVENT_TYPES;
 
     private final H3SimulationEngine engine;
     private final ScenarioTimeline timeline;
     private H3MapCanvas mapCanvas;
+    @SuppressWarnings("unused")
     private NotificationOverlay notificationOverlay;
 
     private final Label headerLabel;
@@ -94,10 +104,10 @@ public class GodModePanel extends VBox {
     private final Button resetDisastersBtn;
 
     /**
-     * God mode panel constructor.
+     * Constructs the God Mode &amp; Chronological Audit Panel.
      *
-     * @param engine the simulation engine
-     * @param timeline the scenario timeline
+     * @param engine active H3 simulation engine
+     * @param timeline scenario chronological timeline
      */
     public GodModePanel(H3SimulationEngine engine, ScenarioTimeline timeline) {
         this.engine = engine;
@@ -107,65 +117,15 @@ public class GodModePanel extends VBox {
         setSpacing(10);
         getStyleClass().add("glass-panel");
 
-        // Title Header
         headerLabel = new Label();
         headerLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #38bdf8;");
 
-        // Explanatory Pause Banner
         pauseNoticeLabel = new Label();
         pauseNoticeLabel.setWrapText(true);
         pauseNoticeLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #fcd34d; -fx-padding: 8 10; -fx-background-color: rgba(245, 158, 11, 0.12); -fx-background-radius: 6; -fx-border-color: rgba(245, 158, 11, 0.4); -fx-border-radius: 6; -fx-line-spacing: 2px;");
 
-        // Form fields initialization
         eventTypeCombo = new ComboBox<>();
-        eventTypeCombo.getItems().addAll(EVENT_TYPES);
-        eventTypeCombo.setPrefWidth(220);
-        eventTypeCombo.setMaxWidth(280);
-
-        eventTypeCombo.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(EventTypeItem item) {
-                return item != null ? item.getDisplayName() : "";
-            }
-
-            @Override
-            public EventTypeItem fromString(String string) {
-                if (string == null) return null;
-                for (EventTypeItem item : EVENT_TYPES) {
-                    if (item.getDisplayName().equalsIgnoreCase(string) || item.id().equalsIgnoreCase(string)) {
-                        return item;
-                    }
-                }
-                return null;
-            }
-        });
-
-        eventTypeCombo.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(EventTypeItem item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setTooltip(null);
-                } else {
-                    setText(item.getDisplayName());
-                    setTooltip(new Tooltip(item.getDescription()));
-                }
-            }
-        });
-        eventTypeCombo.setButtonCell(new ListCell<>() {
-            @Override
-            protected void updateItem(EventTypeItem item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setTooltip(null);
-                } else {
-                    setText(item.getDisplayName());
-                    setTooltip(new Tooltip(item.getDescription()));
-                }
-            }
-        });
+        GodModeUiConfigurator.configureEventTypeCombo(eventTypeCombo, EVENT_TYPES);
 
         eventDescriptionLabel = new Label();
         eventDescriptionLabel.setWrapText(true);
@@ -207,30 +167,15 @@ public class GodModePanel extends VBox {
             }
         });
 
-        latSpinner = new Spinner<>(-90.0, 90.0, 0.0, 1.0);
-        latSpinner.setEditable(true);
-        latSpinner.setPrefWidth(95);
-        latSpinner.setMaxWidth(110);
-
-        lngSpinner = new Spinner<>(-180.0, 180.0, 0.0, 1.0);
-        lngSpinner.setEditable(true);
-        lngSpinner.setPrefWidth(95);
-        lngSpinner.setMaxWidth(110);
-
-        magnitudeSpinner = new Spinner<>(0.1, 10.0, 7.0, 0.5);
-        magnitudeSpinner.setEditable(true);
-        magnitudeSpinner.setPrefWidth(95);
-        magnitudeSpinner.setMaxWidth(110);
+        latSpinner = GodModeUiConfigurator.createDoubleSpinner(-90.0, 90.0, 0.0, 1.0);
+        lngSpinner = GodModeUiConfigurator.createDoubleSpinner(-180.0, 180.0, 0.0, 1.0);
+        magnitudeSpinner = GodModeUiConfigurator.createDoubleSpinner(0.1, 10.0, 7.0, 0.5);
+        radiusKmSpinner = GodModeUiConfigurator.createDoubleSpinner(50.0, 5000.0, 1000.0, 50.0);
 
         durationDaysSpinner = new Spinner<>(0, 36500, 365, 1);
         durationDaysSpinner.setEditable(true);
         durationDaysSpinner.setPrefWidth(95);
         durationDaysSpinner.setMaxWidth(110);
-
-        radiusKmSpinner = new Spinner<>(50.0, 5000.0, 1000.0, 50.0);
-        radiusKmSpinner.setEditable(true);
-        radiusKmSpinner.setPrefWidth(95);
-        radiusKmSpinner.setMaxWidth(110);
 
         eventTypeCombo.valueProperty().addListener((obs, oldV, newV) -> {
             if (newV == null) return;
@@ -246,19 +191,18 @@ public class GodModePanel extends VBox {
         });
         eventTypeCombo.getSelectionModel().select(0);
 
-        // Injector section labels
         injectorTitleLabel = new Label();
         injectorTitleLabel.getStyleClass().add("label-section-header");
-        lblEventType = createLabel();
-        lblEventTitle = createLabel();
-        lblTargetYear = createLabel();
-        lblLat = createLabel();
-        lblLng = createLabel();
-        lblMag = createLabel();
-        lblDurationDays = createLabel();
+        lblEventType = GodModeUiConfigurator.createFormLabel(140);
+        lblEventTitle = GodModeUiConfigurator.createFormLabel(140);
+        lblTargetYear = GodModeUiConfigurator.createFormLabel(140);
+        lblLat = GodModeUiConfigurator.createFormLabel(140);
+        lblLng = GodModeUiConfigurator.createFormLabel(140);
+        lblMag = GodModeUiConfigurator.createFormLabel(140);
+        lblDurationDays = GodModeUiConfigurator.createFormLabel(140);
         lblDurationUnit.setText(I18n.getOrDefault("godmode.unit.days", "jours"));
         lblDurationUnit.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
-        lblRadius = createLabel();
+        lblRadius = GodModeUiConfigurator.createFormLabel(140);
 
         scheduleBtn = new Button();
         scheduleBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 7 12; -fx-background-radius: 6;");
@@ -270,8 +214,13 @@ public class GodModePanel extends VBox {
         triggerNowBtn.setMaxWidth(Double.MAX_VALUE);
         triggerNowBtn.setOnAction(e -> scheduleEvent(true));
 
-        VBox injectorBox = createInjectorSection();
-        injectorBox.getStyleClass().add("card-section");
+        VBox injectorBox = GodModeUiConfigurator.buildInjectorSection(
+                injectorTitleLabel, lblEventType, eventTypeCombo, eventDescriptionLabel,
+                lblEventTitle, eventNameField, lblTargetYear, targetYearSpinner, targetYearSlider, dateRangeLabel,
+                lblLat, latSpinner, lblLng, lngSpinner, lblMag, magnitudeSpinner,
+                lblRadius, radiusKmSpinner, lblDurationDays, durationDaysSpinner, lblDurationUnit,
+                scheduleBtn, triggerNowBtn
+        );
 
         // Spawner components
         spawnerTitleLabel = new Label();
@@ -280,21 +229,7 @@ public class GodModePanel extends VBox {
         injectPopBtn = new Button();
         injectPopBtn.setStyle("-fx-background-color: #059669; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
         injectPopBtn.setMaxWidth(Double.MAX_VALUE);
-        injectPopBtn.setOnAction(e -> {
-            double targetLat = latSpinner.getValue();
-            double targetLng = lngSpinner.getValue();
-            H3Cell nearest = GodModeDisasterExecutor.injectPopulationAtEpicenter(engine, targetLat, targetLng, 100_000);
-            if (nearest != null) {
-                targetLat = nearest.getLatitude();
-                targetLng = nearest.getLongitude();
-            }
-            recordIntervention(
-                "POP_INJECT",
-                I18n.getOrDefault("godmode.spawner.pop_title", "👥 Injection Démographique (+100k hab)"),
-                String.format(Locale.ROOT, "Ajout de +100 000 habitants à l'épicentre (Lat: %.2f°, Lng: %.2f°)", targetLat, targetLng),
-                targetLat, targetLng, 100000.0, 365
-            );
-        });
+        injectPopBtn.setOnAction(e -> handlePopulationInjection());
 
         injectFoodBtn = new Button();
         injectFoodBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
@@ -302,35 +237,22 @@ public class GodModePanel extends VBox {
         injectFoodBtn.setOnAction(e -> {
             GodModeDisasterExecutor.injectGlobalFood(engine, 1000.0);
             recordIntervention(
-                "FOOD_INJECT",
-                I18n.getOrDefault("godmode.spawner.food_title", "🌾 Ravitaillement Alimentaire Mondial (+1000 t)"),
-                I18n.getOrDefault("godmode.spawner.food_details", "Remplissage des silos céréaliers et réserves vivrières mondiales"),
-                0.0, 0.0, 1000.0, 365
+                    "FOOD_INJECT",
+                    I18n.getOrDefault("godmode.spawner.food_title", "🌾 Ravitaillement Alimentaire Mondial (+1000 t)"),
+                    I18n.getOrDefault("godmode.spawner.food_details", "Remplissage des silos céréaliers et réserves vivrières mondiales"),
+                    0.0, 0.0, 1000.0, 365
             );
         });
 
         massExtinctionBtn = new Button();
         massExtinctionBtn.setStyle("-fx-background-color: #991b1b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 10; -fx-background-radius: 4;");
         massExtinctionBtn.setMaxWidth(Double.MAX_VALUE);
-        massExtinctionBtn.setOnAction(e -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(I18n.getOrDefault("godmode.dialog.extinction_title", "Confirmation d'Extinction Massive"));
-            alert.setHeaderText(I18n.getOrDefault("godmode.dialog.extinction_header", "⚠️ Action Destructive en Mode Dieu"));
-            alert.setContentText(I18n.getOrDefault("godmode.dialog.extinction_desc", "Are you sure you want to eliminate 50% of world population? This action will be logged irreversibly in the audit trail."));
-            alert.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    GodModeDisasterExecutor.triggerMassExtinction(engine, 0.5);
-                    recordIntervention(
-                        "MASS_EXTINCTION",
-                        I18n.getOrDefault("godmode.spawner.extinction_title", "💀 Extinction Cataclysmique (-50% Pop)"),
-                        I18n.getOrDefault("godmode.spawner.extinction_details", "Réduction instantanée de 50% de la biomasse humaine mondiale"),
-                        0.0, 0.0, 50.0, 365
-                    );
-                }
-            });
-        });
+        massExtinctionBtn.setOnAction(e -> handleMassExtinctionConfirmation());
 
-        VBox spawnerBox = createSpawnerSection();
+        HBox spawnerBtnGrid = new HBox(8, injectPopBtn, injectFoodBtn);
+        HBox.setHgrow(injectPopBtn, Priority.ALWAYS);
+        HBox.setHgrow(injectFoodBtn, Priority.ALWAYS);
+        VBox spawnerBox = new VBox(8, spawnerTitleLabel, spawnerBtnGrid, massExtinctionBtn);
         spawnerBox.getStyleClass().add("card-section");
 
         // Terraform components
@@ -346,16 +268,17 @@ public class GodModePanel extends VBox {
         applyBrushBtn.setMaxWidth(Double.MAX_VALUE);
         applyBrushBtn.setOnAction(e -> {
             if (engine == null || engine.getCells() == null) return;
-            double targetLat = latSpinner.getValue();
-            double targetLng = lngSpinner.getValue();
-            int selectedIdx = brushModeCombo.getSelectionModel().getSelectedIndex();
-            GodModeDisasterExecutor.BrushOutcome outcome = GodModeDisasterExecutor.applyTerraformBrush(engine, selectedIdx, targetLat, targetLng);
+            GodModeDisasterExecutor.BrushOutcome outcome = GodModeDisasterExecutor.applyTerraformBrush(
+                    engine, brushModeCombo.getSelectionModel().getSelectedIndex(),
+                    latSpinner.getValue(), lngSpinner.getValue()
+            );
             if (outcome != null) {
-                recordIntervention(outcome.type(), outcome.title(), outcome.description(), outcome.cell().getLatitude(), outcome.cell().getLongitude(), outcome.magnitude(), 365);
+                recordIntervention(outcome.type(), outcome.title(), outcome.description(),
+                        outcome.cell().getLatitude(), outcome.cell().getLongitude(), outcome.magnitude(), 365);
             }
         });
 
-        VBox terraformBox = createTerraformSection();
+        VBox terraformBox = new VBox(8, terraformTitleLabel, brushModeCombo, applyBrushBtn);
         terraformBox.getStyleClass().add("card-section");
 
         // Reset components
@@ -371,10 +294,10 @@ public class GodModePanel extends VBox {
                     I18n.getOrDefault("godmode.reset.details", "Return to climate equilibrium and standard stratospheric transparency (τ = 0.0)"));
         });
 
-        VBox resetBox = createResetSection();
+        VBox resetBox = new VBox(8, resetTitleLabel, resetDisastersBtn);
         resetBox.getStyleClass().add("card-section");
 
-        // Section 5: Scenario Timeline Audit Log
+        // Scenario Timeline Audit Log
         timelineHeaderLabel = new Label();
         timelineHeaderLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #a78bfa; -fx-font-size: 12px;");
 
@@ -386,68 +309,10 @@ public class GodModePanel extends VBox {
         timelineListView.setPrefHeight(180);
         timelineListView.setMinHeight(140);
 
-        timelineListView.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
-                    int eventYear = currentYear;
-                    try {
-                        if (item.contains("|")) {
-                            String yearPart = item.substring(0, item.indexOf('|')).replaceAll("[^0-9-]", "").trim();
-                            if (!yearPart.isEmpty()) {
-                                eventYear = Integer.parseInt(yearPart);
-                            }
-                        }
-                    } catch (Exception ignored) {}
-
-                    if (eventYear < currentYear) {
-                        setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px; -fx-cursor: hand;");
-                    } else if (eventYear == currentYear) {
-                        setStyle("-fx-text-fill: #4ade80; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-                    } else {
-                        setStyle("-fx-text-fill: #f59e0b; -fx-font-style: italic; -fx-font-size: 11px; -fx-cursor: hand;");
-                    }
-                }
-            }
-        });
-
-        // Click on timeline event recenters 2D/3D camera on the event
-        timelineListView.getSelectionModel().selectedIndexProperty().addListener((obs, oldIdx, newIdx) -> {
-            if (newIdx == null || newIdx.intValue() < 0) return;
-            List<ScenarioTimeline.TimelineEntry> entries = timeline.getEntries();
-            if (newIdx.intValue() < entries.size()) {
-                ScenarioTimeline.TimelineEntry entry = entries.get(newIdx.intValue());
-                double lat = entry.latitude();
-                double lng = entry.longitude();
-
-                if (lat == 0.0 && lng == 0.0 && entry.details() != null) {
-                    try {
-                        if (entry.details().contains("Lat:") && entry.details().contains("Lng:")) {
-                            String d = entry.details();
-                            int latStart = d.indexOf("Lat:") + 4;
-                            int latEnd = d.indexOf("°", latStart);
-                            int lngStart = d.indexOf("Lng:") + 4;
-                            int lngEnd = d.indexOf("°", lngStart);
-                            if (latStart > 3 && latEnd > latStart && lngStart > 3 && lngEnd > lngStart) {
-                                lat = Double.parseDouble(d.substring(latStart, latEnd).trim());
-                                lng = Double.parseDouble(d.substring(lngStart, lngEnd).trim());
-                            }
-                        }
-                    } catch (Exception ignored) {}
-                }
-
-                updateCoordinates(lat, lng);
-
-                if (mapCanvas != null) {
-                    mapCanvas.flyTo(lat, lng);
-                }
+        GodModeInterventionCoordinator.configureTimelineListView(timelineListView, this.timeline, this.engine, (lat, lng) -> {
+            updateCoordinates(lat, lng);
+            if (mapCanvas != null) {
+                mapCanvas.flyTo(lat, lng);
             }
         });
 
@@ -462,41 +327,76 @@ public class GodModePanel extends VBox {
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
     }
 
+    private void handlePopulationInjection() {
+        double targetLat = latSpinner.getValue();
+        double targetLng = lngSpinner.getValue();
+        H3Cell nearest = GodModeDisasterExecutor.injectPopulationAtEpicenter(engine, targetLat, targetLng, 100_000);
+        if (nearest != null) {
+            targetLat = nearest.getLatitude();
+            targetLng = nearest.getLongitude();
+        }
+        recordIntervention(
+                "POP_INJECT",
+                I18n.getOrDefault("godmode.spawner.pop_title", "👥 Injection Démographique (+100k hab)"),
+                String.format(Locale.ROOT, "Ajout de +100 000 habitants à l'épicentre (Lat: %.2f°, Lng: %.2f°)", targetLat, targetLng),
+                targetLat, targetLng, 100000.0, 365
+        );
+    }
+
+    private void handleMassExtinctionConfirmation() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(I18n.getOrDefault("godmode.dialog.extinction_title", "Confirmation d'Extinction Massive"));
+        alert.setHeaderText(I18n.getOrDefault("godmode.dialog.extinction_header", "⚠️ Action Destructive en Mode Dieu"));
+        alert.setContentText(I18n.getOrDefault("godmode.dialog.extinction_desc",
+                "Are you sure you want to eliminate 50% of world population? This action will be logged irreversibly in the audit trail."));
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                GodModeDisasterExecutor.triggerMassExtinction(engine, 0.5);
+                recordIntervention(
+                        "MASS_EXTINCTION",
+                        I18n.getOrDefault("godmode.spawner.extinction_title", "💀 Extinction Cataclysmique (-50% Pop)"),
+                        I18n.getOrDefault("godmode.spawner.extinction_details", "Réduction instantanée de 50% de la biomasse humaine mondiale"),
+                        0.0, 0.0, 50.0, 365
+                );
+            }
+        });
+    }
+
+    /**
+     * Binds the interactive cartographic canvas for camera fly-to operations.
+     *
+     * @param mapCanvas cartographic H3 canvas
+     */
     public void setMapCanvas(H3MapCanvas mapCanvas) {
         this.mapCanvas = mapCanvas;
     }
 
+    /**
+     * Binds the floating notification overlay.
+     *
+     * @param notificationOverlay notification toast overlay
+     */
     public void setNotificationOverlay(NotificationOverlay notificationOverlay) {
         this.notificationOverlay = notificationOverlay;
     }
 
     /**
-     * Updates all localized UI texts and controls.
+     * Updates all localized UI texts and controls across all 5 languages.
      */
     public void updateTexts() {
         headerLabel.setText(I18n.getOrDefault("godmode.title", "⚡ 5. GOD MODE & CHRONOLOGY"));
         pauseNoticeLabel.setText(I18n.getOrDefault("godmode.pause_notice", "⏸️ Simulation is automatically paused on this tab to allow peaceful configuration of climatic disturbances without temporal drift."));
 
         eventTypeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.event_type", "Type of physical or climate disturbance to inject into ecosystem.")));
-        eventNameField.setPromptText(I18n.getOrDefault("godmode.prompt.event_title", "Event Title or Name..."));
-        eventNameField.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.event_title", "Custom title that will appear in chronological log and audit trail.")));
-        targetYearSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.target_year", "Exact target year for triggering event in simulation calendar.")));
-        targetYearSlider.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.target_year_slider", "Exact target year for triggering event in simulation calendar.")));
-        latSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.lat", "Latitude of physical phenomenon epicenter (-90° South to +90° North).")));
-        lngSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.lng", "Longitude of physical phenomenon epicenter (-180° West to +180° East).")));
-        magnitudeSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.magnitude", "Shock intensity / magnitude (determines depth and spatial impact of perturbation).")));
-        durationDaysSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.duration_days", "Active duration of the physical phenomenon in simulation days.")));
+        eventNameField.setPromptText(I18n.getOrDefault("godmode.prompt.event_title", "Event Title or Name...")); eventNameField.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.event_title", "Custom title that will appear in chronological log and audit trail.")));
+        targetYearSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.target_year", "Exact target year for triggering event in simulation calendar."))); targetYearSlider.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.target_year_slider", "Exact target year for triggering event in simulation calendar.")));
+        latSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.lat", "Latitude of physical phenomenon epicenter (-90° South to +90° North)."))); lngSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.lng", "Longitude of physical phenomenon epicenter (-180° West to +180° East).")));
+        magnitudeSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.magnitude", "Shock intensity / magnitude (determines depth and spatial impact of perturbation)."))); durationDaysSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.duration_days", "Active duration of the physical phenomenon in simulation days.")));
 
         injectorTitleLabel.setText(I18n.getOrDefault("godmode.injector.title", "🛠️ CLIMATE EVENT EDITING & PROGRAMMING:"));
-        lblEventType.setText(I18n.getOrDefault("godmode.label.event_type", "Event Type:"));
-        lblEventTitle.setText(I18n.getOrDefault("godmode.label.event_title", "Name / Title:"));
-        lblTargetYear.setText(I18n.getOrDefault("godmode.label.target_year", "Target Year (Date):"));
-        lblLat.setText(I18n.getOrDefault("godmode.label.lat", "Latitude (-90 to +90°):"));
-        lblLng.setText(I18n.getOrDefault("godmode.label.lng", "Longitude (-180 to +180°):"));
-        lblMag.setText(I18n.getOrDefault("godmode.label.magnitude", "Intensity / Magnitude:"));
-        lblRadius.setText(I18n.getOrDefault("godmode.label.radius", "Action Radius (km):"));
-        lblDurationDays.setText(I18n.getOrDefault("godmode.label.duration_days", "Active Duration:"));
-        lblDurationUnit.setText(I18n.getOrDefault("godmode.unit.days", "jours"));
+        lblEventType.setText(I18n.getOrDefault("godmode.label.event_type", "Event Type:")); lblEventTitle.setText(I18n.getOrDefault("godmode.label.event_title", "Name / Title:")); lblTargetYear.setText(I18n.getOrDefault("godmode.label.target_year", "Target Year (Date):"));
+        lblLat.setText(I18n.getOrDefault("godmode.label.lat", "Latitude (-90 to +90°):")); lblLng.setText(I18n.getOrDefault("godmode.label.lng", "Longitude (-180 to +180°):")); lblMag.setText(I18n.getOrDefault("godmode.label.magnitude", "Intensity / Magnitude:"));
+        lblRadius.setText(I18n.getOrDefault("godmode.label.radius", "Action Radius (km):")); lblDurationDays.setText(I18n.getOrDefault("godmode.label.duration_days", "Active Duration:")); lblDurationUnit.setText(I18n.getOrDefault("godmode.unit.days", "jours"));
         radiusKmSpinner.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.radius", "Geographical impact or influence radius of the event (in km).")));
 
         scheduleBtn.setText(I18n.getOrDefault("godmode.btn.schedule", "📅 Schedule in Timeline"));
@@ -513,32 +413,16 @@ public class GodModePanel extends VBox {
         massExtinctionBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.mass_extinction", "Instantly reduces active world population by 50% (Cataclysmic Shock).")));
 
         terraformTitleLabel.setText(I18n.getOrDefault("godmode.terraform.header", "🖌️ SPATIAL BRUSH & LOCAL DYNAMICS:"));
-        int selIdx = brushModeCombo.getSelectionModel().getSelectedIndex();
-        brushModeCombo.getItems().clear();
-        brushModeCombo.getItems().addAll(
-            I18n.getOrDefault("godmode.brush.pop", "👥 Population Boost (+50,000 cap)"),
-            I18n.getOrDefault("godmode.brush.agri", "🌾 Agricultural & Silo Boost (+500 t)"),
-            I18n.getOrDefault("godmode.brush.water", "🚰 Aquifer Recharge (+2,000 m³)"),
-            I18n.getOrDefault("godmode.brush.heat", "🔥 Local Heatwave (+10.0°C)"),
-            I18n.getOrDefault("godmode.brush.cold", "❄️ Local Cooling (-10.0°C)"),
-            I18n.getOrDefault("godmode.brush.clean", "🧼 Complete Ecological Cleanup (0.0)")
-        );
-        brushModeCombo.getSelectionModel().select(selIdx >= 0 ? selIdx : 0);
-        brushModeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.brush_mode", "Select local effect to apply.")));
+        GodModeUiConfigurator.updateBrushItems(brushModeCombo);
 
-        applyBrushBtn.setText(I18n.getOrDefault("godmode.btn.apply_brush", "🖌️ Apply to Epicenter Coordinates"));
-        applyBrushBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.apply_brush", "Applies selected action directly to the targeted H3 cell.")));
-
+        setBtn(applyBrushBtn, "godmode.btn.apply_brush", "🖌️ Apply to Epicenter Coordinates", "godmode.tooltip.apply_brush", "Applies selected action directly to the targeted H3 cell.");
         resetTitleLabel.setText(I18n.getOrDefault("godmode.reset.header", "🛑 PHYSICAL NORMALIZATION & RESET:"));
-        resetDisastersBtn.setText(I18n.getOrDefault("godmode.btn.reset_disasters", "🛑 Stop All Disasters & Dissipate Soot"));
-        resetDisastersBtn.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.reset_disasters", "Resets soot optical depth (τ = 0.0) and cancels active perturbations.")));
+        setBtn(resetDisastersBtn, "godmode.btn.reset_disasters", "🛑 Stop All Disasters & Dissipate Soot", "godmode.tooltip.reset_disasters", "Resets soot optical depth (τ = 0.0) and cancels active perturbations.");
 
         int minYr = engine != null && engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getStartDateYear() : -100000;
         int maxYr = engine != null && engine.getCurrentScenario() != null ? (int) engine.getCurrentScenario().getEndDateYear() : 2100;
         if (minYr >= maxYr) { minYr = -100000; maxYr = 2100; }
-        if (dateRangeLabel != null) {
-            dateRangeLabel.setText(String.format(I18n.getOrDefault("godmode.label.date_range", "📅 Allowed Range: [Year %,d ➔ Year %,d]"), minYr, maxYr));
-        }
+        dateRangeLabel.setText(String.format(I18n.getOrDefault("godmode.label.date_range", "📅 Allowed Range: [Year %,d ➔ Year %,d]"), minYr, maxYr));
 
         EventTypeItem currentType = eventTypeCombo.getValue();
         if (currentType != null) {
@@ -556,242 +440,44 @@ public class GodModePanel extends VBox {
         refreshTimelineView();
     }
 
-    private VBox createInjectorSection() {
-        VBox box = new VBox(8);
-        GridPane grid = new GridPane();
-        grid.setHgap(8);
-        grid.setVgap(6);
-
-        ColumnConstraints col0 = new ColumnConstraints();
-        col0.setMinWidth(140);
-        col0.setPrefWidth(150);
-        col0.setHgrow(Priority.NEVER);
-
-        ColumnConstraints col1 = new ColumnConstraints();
-        col1.setHgrow(Priority.ALWAYS);
-
-        grid.getColumnConstraints().addAll(col0, col1);
-
-        grid.addRow(0, lblEventType, eventTypeCombo);
-        grid.add(eventDescriptionLabel, 1, 1);
-        grid.addRow(2, lblEventTitle, eventNameField);
-
-        HBox yearRow = new HBox(8, targetYearSpinner, targetYearSlider);
-        yearRow.setAlignment(Pos.CENTER_LEFT);
-        VBox yearBox = new VBox(3, yearRow, dateRangeLabel);
-        grid.addRow(3, lblTargetYear, yearBox);
-
-        grid.addRow(4, lblLat, latSpinner);
-        grid.addRow(5, lblLng, lngSpinner);
-        grid.addRow(6, lblMag, magnitudeSpinner);
-        grid.addRow(7, lblRadius, radiusKmSpinner);
-
-        HBox durationBox = new HBox(8, durationDaysSpinner, lblDurationUnit);
-        durationBox.setAlignment(Pos.CENTER_LEFT);
-        grid.addRow(8, lblDurationDays, durationBox);
-
-        HBox btnBox = new HBox(8, scheduleBtn, triggerNowBtn);
-        HBox.setHgrow(scheduleBtn, Priority.ALWAYS);
-        HBox.setHgrow(triggerNowBtn, Priority.ALWAYS);
-
-        box.getChildren().addAll(injectorTitleLabel, grid, btnBox);
-        return box;
-    }
-
-    private VBox createSpawnerSection() {
-        VBox box = new VBox(8);
-        HBox btnGrid = new HBox(8, injectPopBtn, injectFoodBtn);
-        HBox.setHgrow(injectPopBtn, Priority.ALWAYS);
-        HBox.setHgrow(injectFoodBtn, Priority.ALWAYS);
-
-        box.getChildren().addAll(spawnerTitleLabel, btnGrid, massExtinctionBtn);
-        return box;
-    }
-
-    private VBox createTerraformSection() {
-        VBox box = new VBox(8);
-        box.getChildren().addAll(terraformTitleLabel, brushModeCombo, applyBrushBtn);
-        return box;
-    }
-
-    private VBox createResetSection() {
-        VBox box = new VBox(8);
-        box.getChildren().addAll(resetTitleLabel, resetDisastersBtn);
-        return box;
-    }
-
-    private Label createLabel(String text, double minWidth) {
-        Label l = new Label(text);
-        l.getStyleClass().add("control-label");
-        l.setMinWidth(minWidth);
-        l.setPrefWidth(minWidth);
-        l.setWrapText(false);
-        return l;
-    }
-
-    private Label createLabel() {
-        return createLabel("", 140);
-    }
-
     private void scheduleEvent(boolean immediate) {
-        EventTypeItem item = eventTypeCombo.getValue();
-        String type = item != null ? item.id() : "VOLCANO";
-        String name = eventNameField.getText();
-        if (name == null || name.isBlank()) name = item != null ? item.getDefaultTitle() : type;
-
-        int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
-        int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
-        int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
-        int targetYear = immediate ? currentYear : targetYearSpinner.getValue();
-
-        double lat = latSpinner.getValue();
-        double lng = lngSpinner.getValue();
-        double mag = magnitudeSpinner.getValue();
-        double radiusKm = radiusKmSpinner != null ? radiusKmSpinner.getValue() : 1000.0;
-        int durationDays = durationDaysSpinner.getValue();
-
-        H3Cell nearestCell = GodModeDisasterExecutor.findNearestCell(engine, lat, lng);
-        if (nearestCell != null) {
-            boolean isOcean = nearestCell.getBiome() == Biome.OCEAN || nearestCell.getBiome() == Biome.DEEP_OCEAN;
-            if (GodModeDisasterExecutor.isTerrestrialEventType(type) && isOcean) {
-                String warnMsg = String.format(Locale.ROOT, "⚠️ Incompatibilité Géographique :\nL'événement '%s' (%s) ne peut pas se produire en plein océan (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ Événement incompatible avec le milieu océanique"));
-                alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice", "Veuillez sélectionner des coordonnées situées sur la terre ferme."));
-                WindowUtils.applyWindowIcon(alert);
-                alert.showAndWait();
-                return;
-            } else if (GodModeDisasterExecutor.isOceanicEventType(type) && !isOcean && nearestCell.getElevation() != null && nearestCell.getElevation() > 300) {
-                String warnMsg = String.format(Locale.ROOT, "⚠️ Incompatibilité Géographique :\nL'événement '%s' (%s) nécessite une zone maritime ou côtière (Lat: %.2f°, Lng: %.2f°).", name, type, lat, lng);
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-                alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ Événement incompatible avec les hautes terres"));
-                alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice_ocean", "Veuillez sélectionner des coordonnées maritimes ou côtières."));
-                WindowUtils.applyWindowIcon(alert);
-                alert.showAndWait();
-                return;
-            }
-        }
-
-        String daysUnit = durationDays > 1 ? "jours" : "jour";
-        String details = String.format(Locale.ROOT, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f, R: %.0fkm, Durée: %d %s", lat, lng, mag, radiusKm, durationDays, daysUnit);
-
-        timeline.addEntry(targetYear, type, name, details, true, lat, lng, mag, durationDays);
-        refreshTimelineView();
-
-        if (engine != null && engine.getEventSystem() != null) {
-            ActiveEvent ae = new ActiveEvent(
-                "GM_" + System.currentTimeMillis(),
-                "⚡ GOD MODE: " + name,
-                type, lat, lng, targetYear, currentMonth, currentDay, Math.max(15.0, durationDays * 0.5), mag, durationDays
-            );
-            engine.getEventSystem().recordSpatialEvent(ae);
-        }
-
-        if (immediate || targetYear <= currentYear) {
-            GodModeDisasterExecutor.executePhysicalForcing(engine, type, mag, lat, lng, radiusKm);
-            if (engine != null && engine.getWorldBuffer() != null && engine.getCells() != null) {
-                org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
-                if (engine.getHistoryManager() != null) {
-                    engine.getHistoryManager().captureSnapshot(engine);
-                    engine.getHistoryManager().captureWorldSnapshot(engine);
-                }
-            }
-            logger.info("God Mode intervention EXECUTED immediately (Year {}): {} - {}", currentYear, name, details);
-            if (mapCanvas != null) {
-                mapCanvas.flyTo(lat, lng);
-            }
-        } else {
-            logger.info("God Mode intervention SCHEDULED for Year {}: {} - {}", targetYear, name, details);
-        }
+        GodModeInterventionCoordinator.scheduleOrExecuteEvent(
+                immediate,
+                eventTypeCombo.getValue(),
+                eventNameField.getText(),
+                targetYearSpinner.getValue(),
+                latSpinner.getValue(),
+                lngSpinner.getValue(),
+                magnitudeSpinner.getValue(),
+                radiusKmSpinner != null ? radiusKmSpinner.getValue() : 1000.0,
+                durationDaysSpinner.getValue(),
+                engine,
+                timeline,
+                mapCanvas,
+                this::refreshTimelineView
+        );
     }
 
     /**
-     * Records a divine intervention in the scenario timeline.
+     * Records a divine intervention in the scenario timeline using current spinner values.
      *
      * @param type event identifier
-     * @param title human readable title
+     * @param title human-readable title
      * @param details descriptive details
      */
     public void recordIntervention(String type, String title, String details) {
-        double lat = latSpinner != null ? latSpinner.getValue() : 0.0;
-        double lng = lngSpinner != null ? lngSpinner.getValue() : 0.0;
-        double mag = magnitudeSpinner != null ? magnitudeSpinner.getValue() : 5.0;
-        int durationDays = durationDaysSpinner != null ? durationDaysSpinner.getValue() : 30;
-        recordIntervention(type, title, details, lat, lng, mag, durationDays);
+        recordIntervention(type, title, details, latSpinner != null ? latSpinner.getValue() : 0.0, lngSpinner != null ? lngSpinner.getValue() : 0.0, magnitudeSpinner != null ? magnitudeSpinner.getValue() : 5.0, durationDaysSpinner != null ? durationDaysSpinner.getValue() : 30);
     }
-
-    /**
-     * Records a divine intervention in the scenario timeline with explicit spatial parameters.
-     *
-     * @param type event identifier
-     * @param title title
-     * @param details details
-     * @param lat latitude
-     * @param lng longitude
-     * @param mag magnitude
-     * @param durationDays duration in days
-     */
     public void recordIntervention(String type, String title, String details, double lat, double lng, double mag, int durationDays) {
-        int currentYear = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentYear() : 2026;
-        int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
-        int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
-
-        if (engine != null && engine.getWorldBuffer() != null && engine.getCells() != null) {
-            org.ether.society.data.DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
-        }
-        if (engine != null && engine.getHistoryManager() != null) {
-            engine.getHistoryManager().captureSnapshot(engine);
-            engine.getHistoryManager().captureWorldSnapshot(engine);
-        }
-
-        timeline.addEntry(currentYear, type, title, details, true, lat, lng, mag, durationDays);
-        refreshTimelineView();
-
-        if (engine != null && engine.getEventSystem() != null) {
-            ActiveEvent ae = new ActiveEvent(
-                "GM_" + System.currentTimeMillis(),
-                "⚡ GOD MODE: " + title,
-                type, lat, lng, currentYear, currentMonth, currentDay, Math.max(15.0, durationDays * 0.5), mag, durationDays
-            );
-            engine.getEventSystem().recordSpatialEvent(ae);
-        }
-
-        logger.info("God Mode intervention recorded at Year {}: {} - {}", currentYear, title, details);
+        GodModeInterventionCoordinator.recordIntervention(engine, timeline, type, title, details, lat, lng, mag, durationDays, this::refreshTimelineView);
     }
-
-    /**
-     * Refreshes the scenario timeline audit log list view.
-     */
-    public void refreshTimelineView() {
-        if (timelineListView == null) return;
-        int selected = timelineListView.getSelectionModel().getSelectedIndex();
-        timelineListView.getItems().clear();
-        String yearPrefix = I18n.getOrDefault("godmode.timeline.year_prefix", "Year");
-        String godBadge = I18n.getOrDefault("godmode.timeline.godmode_badge", "⚡ [GOD MODE]");
-        String histBadge = I18n.getOrDefault("godmode.timeline.historical_badge", "📜 [HISTORICAL]");
-        for (ScenarioTimeline.TimelineEntry entry : timeline.getEntries()) {
-            String badge = entry.isGodModeIntervention() ? godBadge : histBadge;
-            timelineListView.getItems().add(String.format("%s %5d | %s %s : %s", yearPrefix, entry.year(), badge, entry.title(), entry.details()));
-        }
-        if (selected >= 0 && selected < timelineListView.getItems().size()) {
-            timelineListView.getSelectionModel().select(selected);
-        }
-    }
-
-    /**
-     * Updates coordinates in the God Mode latitude and longitude spinners.
-     *
-     * @param lat target latitude
-     * @param lng target longitude
-     */
+    public void refreshTimelineView() { GodModeInterventionCoordinator.refreshTimelineView(timelineListView, timeline); }
     public void updateCoordinates(double lat, double lng) {
-        if (latSpinner != null && latSpinner.getValueFactory() != null) {
-            latSpinner.getValueFactory().setValue(Math.max(-90.0, Math.min(90.0, lat)));
-        }
-        if (lngSpinner != null && lngSpinner.getValueFactory() != null) {
-            lngSpinner.getValueFactory().setValue(Math.max(-180.0, Math.min(180.0, lng)));
-        }
+        if (latSpinner != null && latSpinner.getValueFactory() != null) latSpinner.getValueFactory().setValue(Math.max(-90.0, Math.min(90.0, lat)));
+        if (lngSpinner != null && lngSpinner.getValueFactory() != null) lngSpinner.getValueFactory().setValue(Math.max(-180.0, Math.min(180.0, lng)));
+    }
+
+    private static void setBtn(Button b, String tk, String td, String tipk, String tipd) {
+        if (b != null) { b.setText(I18n.getOrDefault(tk, td)); b.setTooltip(new Tooltip(I18n.getOrDefault(tipk, tipd))); }
     }
 }

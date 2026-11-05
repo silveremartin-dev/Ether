@@ -200,164 +200,21 @@ public class ClusterManager {
     }
 
     private void handleWorkerHandshake(Socket socket) {
-        String clientAddress = socket.getRemoteSocketAddress().toString();
-        DataInputStream in = null;
-        DataOutputStream out = null;
-        String registeredWorkerId = null;
-
-        try {
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(socket.getOutputStream());
-
-            String decryptedMsg = readEncryptedFrame(in, securityManager);
-
-            if (!decryptedMsg.startsWith("REGISTER_WORKER:")) {
-                writeEncryptedFrame(out, "REJECT:INVALID_PROTOCOL", securityManager);
-                return;
-            }
-
-            String[] parts = decryptedMsg.split(":");
-            registeredWorkerId = parts[1];
-            String capacity = parts.length > 2 ? parts[2] : "Worker Node CPU";
-
-            ClusterNodeRecord record = new ClusterNodeRecord(registeredWorkerId, socket.getInetAddress().getHostAddress(), socket.getPort(), ClusterRole.WORKER, NodeStatus.CONNECTED, capacity);
-            nodeRegistry.put(registeredWorkerId, record);
-            workerSocketsOut.put(registeredWorkerId, out);
-            logger.info("✅ Worker node connected and registered: {}", record);
-
-            rebalanceSpatialChunks();
-
-            String ackMessage = String.format("ACK_REGISTER:%s:%d:%d", registeredWorkerId, record.getAssignedChunkStart(), record.getAssignedChunkEnd());
-            writeEncryptedFrame(out, ackMessage, securityManager);
-
-            // Loop to handle incoming worker messages (Heartbeats, Chunk Results)
-            while (running.get() && !socket.isClosed()) {
-                String decrypted = readEncryptedFrame(in, securityManager);
-
-                if (decrypted.startsWith("HEARTBEAT:")) {
-                    record.touchHeartbeat();
-                    record.setStatus(NodeStatus.ACTIVE);
-                    writeEncryptedFrame(out, "HEARTBEAT_ACK", securityManager);
-                } else if (decrypted.startsWith("CHUNK_RESULT:")) {
-                    // CHUNK_RESULT:<workerId>:<tickId>:<start>:<count>:<payloadBase64>
-                    String[] resParts = decrypted.split(":", 6);
-                    if (resParts.length >= 6) {
-                        String wId = resParts[1];
-                        long tickId = Long.parseLong(resParts[2]);
-                        String base64Payload = resParts[5];
-                        if (currentWorldBuffer != null) {
-                            try {
-                                WorldBufferWireCodec.decryptAndDecodeChunk(base64Payload, currentWorldBuffer, securityManager);
-                            } catch (Exception ex) {
-                                logger.error("Error decoding chunk result from worker {}: {}", wId, ex.getMessage());
-                            }
-                        }
-                        clockBarrier.acknowledgeWorkerTick(wId, tickId);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.info("Worker node disconnected from {}: {}", clientAddress, e.getMessage());
-        } finally {
-            if (registeredWorkerId != null) {
-                workerSocketsOut.remove(registeredWorkerId);
-                if (nodeRegistry.containsKey(registeredWorkerId)) {
-                    nodeRegistry.get(registeredWorkerId).setStatus(NodeStatus.DISCONNECTED);
-                }
-            }
-            rebalanceSpatialChunks();
-            try { socket.close(); } catch (IOException ignored) {}
-        }
+        ClusterNodeSessionHandler.handleWorkerHandshake(
+                socket, running, securityManager, nodeRegistry, workerSocketsOut,
+                clockBarrier, () -> currentWorldBuffer, this::rebalanceSpatialChunks);
     }
 
     private void connectWorkerToMaster() {
-        networkPool.execute(() -> {
-            int retries = 0;
-            while (running.get()) {
-                try {
-                    workerClientSocket = new Socket(masterHost, port);
-                    logger.info("🔗 Connected to Master Cluster at {}:{}", masterHost, port);
-
-                    DataOutputStream out = new DataOutputStream(workerClientSocket.getOutputStream());
-                    DataInputStream in = new DataInputStream(workerClientSocket.getInputStream());
-
-                    String workerId = (customWorkerId != null && !customWorkerId.isBlank())
-                            ? customWorkerId
-                            : "worker-" + UUID.randomUUID().toString().substring(0, 6);
-                    String capacity = (customWorkerCapacity != null && !customWorkerCapacity.isBlank())
-                            ? customWorkerCapacity
-                            : "Compute Core Worker";
-                    String registerMsg = "REGISTER_WORKER:" + workerId + ":" + capacity;
-                    writeEncryptedFrame(out, registerMsg, securityManager);
-
-                    String decryptedResp = readEncryptedFrame(in, securityManager);
-                    logger.info("Cluster Master Response: {}", decryptedResp);
-
-                    // Start background heartbeat sender
-                    final int hbSec = heartbeatIntervalSec;
-                    Thread hbThread = new Thread(() -> {
-                        while (running.get() && !workerClientSocket.isClosed()) {
-                            try {
-                                Thread.sleep(hbSec * 1000L);
-                                synchronized (out) {
-                                    writeEncryptedFrame(out, "HEARTBEAT:" + workerId, securityManager);
-                                }
-                            } catch (Exception ignored) {
-                                break;
-                            }
-                        }
-                    }, "Worker-Heartbeat-Sender");
-                    hbThread.setDaemon(true);
-                    hbThread.start();
-
-                    // Main worker loop: listen for instructions from Master
-                    while (running.get() && !workerClientSocket.isClosed()) {
-                        String decrypted = readEncryptedFrame(in, securityManager);
-
-                        if ("HEARTBEAT_ACK".equals(decrypted)) {
-                            // Normal ping ACK
-                            continue;
-                        } else if (decrypted.startsWith("EXECUTE_CHUNK:")) {
-                            // EXECUTE_CHUNK:<tickId>:<start>:<count>:<dt>:<base64Payload>
-                            String[] cmdParts = decrypted.split(":", 6);
-                            long tickId = Long.parseLong(cmdParts[1]);
-                            int start = Integer.parseInt(cmdParts[2]);
-                            int count = Integer.parseInt(cmdParts[3]);
-                            float dt = Float.parseFloat(cmdParts[4]);
-                            String payload = cmdParts.length >= 6 ? cmdParts[5] : "";
-
-                            if (currentWorldBuffer == null || currentWorldBuffer.getCapacity() < (start + count)) {
-                                currentWorldBuffer = new WorldBuffer(Math.max(1000, start + count));
-                            }
-
-                            if (!payload.isEmpty()) {
-                                try {
-                                    WorldBufferWireCodec.decryptAndDecodeChunk(payload, currentWorldBuffer, securityManager);
-                                } catch (Exception ignored) {}
-                            }
-
-                            // Run local computation kernel delegate if registered
-                            if (workerComputeDelegate != null) {
-                                workerComputeDelegate.accept(currentWorldBuffer);
-                            }
-
-                            // Encode computed delta and return to Master
-                            String resultBase64 = WorldBufferWireCodec.encodeAndEncryptChunk(currentWorldBuffer, start, count, tickId, securityManager);
-                            String resMsg = String.format(Locale.ROOT, "CHUNK_RESULT:%s:%d:%d:%d:%s", workerId, tickId, start, count, resultBase64);
-                            synchronized (out) {
-                                writeEncryptedFrame(out, resMsg, securityManager);
-                            }
-                        }
-                    }
-                    break;
-                } catch (Exception e) {
-                    retries++;
-                    logger.warn("Worker connection attempt {} failed to {}:{}: {}", retries, masterHost, port, e.getMessage());
-                    try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
-                }
-            }
-        });
+        networkPool.execute(() -> ClusterNodeSessionHandler.runWorkerConnectionLoop(this, running));
     }
+
+    String getMasterHost() { return masterHost; }
+    int getPort() { return port; }
+    EtherSecurityManager getSecurityManager() { return securityManager; }
+    WorldBuffer getCurrentWorldBuffer() { return currentWorldBuffer; }
+    Consumer<WorldBuffer> getWorkerComputeDelegate() { return workerComputeDelegate; }
+    void setWorkerClientSocket(Socket socket) { this.workerClientSocket = socket; }
 
     /**
      * Executes a distributed simulation tick by broadcasting chunk orders to all active workers
@@ -543,157 +400,49 @@ public class ClusterManager {
         rebalanceSpatialChunks();
     }
 
-    /**
-     * Get custom worker id.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return custom worker identifier */
     public String getCustomWorkerId() { return customWorkerId; }
-    /**
-     * Set custom worker id operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param customWorkerId the custom worker id argument (String)
-     */
+    /** @param customWorkerId custom worker identifier */
     public void setCustomWorkerId(String customWorkerId) { this.customWorkerId = customWorkerId; }
 
-    /**
-     * Get custom worker capacity.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return descriptive worker compute capacity label */
     public String getCustomWorkerCapacity() { return customWorkerCapacity; }
-    /**
-     * Set custom worker capacity operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param customWorkerCapacity the custom worker capacity argument (String)
-     */
+    /** @param customWorkerCapacity descriptive worker compute capacity label */
     public void setCustomWorkerCapacity(String customWorkerCapacity) { this.customWorkerCapacity = customWorkerCapacity; }
 
-    /**
-     * Get barrier timeout ms.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return lock-step barrier timeout in milliseconds */
     public long getBarrierTimeoutMs() { return barrierTimeoutMs; }
-    /**
-     * Set barrier timeout ms operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param barrierTimeoutMs the barrier timeout ms argument (long)
-     */
+    /** @param barrierTimeoutMs lock-step barrier timeout in milliseconds */
     public void setBarrierTimeoutMs(long barrierTimeoutMs) { this.barrierTimeoutMs = Math.max(100, barrierTimeoutMs); }
 
-    /**
-     * Get sync interval.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return cluster synchronization cadence in ticks */
     public int getSyncInterval() { return syncInterval; }
-    /**
-     * Set sync interval operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param syncInterval the sync interval argument (int)
-     */
+    /** @param syncInterval cluster synchronization cadence in ticks */
     public void setSyncInterval(int syncInterval) { this.syncInterval = Math.max(1, syncInterval); }
 
-    /**
-     * Get heartbeat interval sec.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return worker heartbeat interval in seconds */
     public int getHeartbeatIntervalSec() { return heartbeatIntervalSec; }
-    /**
-     * Set heartbeat interval sec operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param sec the sec argument (int)
-     */
+    /** @param sec worker heartbeat interval in seconds */
     public void setHeartbeatIntervalSec(int sec) { this.heartbeatIntervalSec = Math.max(1, sec); }
 
-    /**
-     * Get heartbeat timeout sec.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return master heartbeat timeout in seconds */
     public int getHeartbeatTimeoutSec() { return heartbeatTimeoutSec; }
-    /**
-     * Set heartbeat timeout sec operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param sec the sec argument (int)
-     */
+    /** @param sec master heartbeat timeout in seconds */
     public void setHeartbeatTimeoutSec(int sec) { this.heartbeatTimeoutSec = Math.max(2, sec); }
 
-    /**
-     * Is halo exchange enabled.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return whether spatial halo boundary exchange is enabled */
     public boolean isHaloExchangeEnabled() { return haloExchangeEnabled; }
-    /**
-     * Set halo exchange enabled operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param haloExchangeEnabled the halo exchange enabled argument (boolean)
-     */
+    /** @param haloExchangeEnabled whether spatial halo boundary exchange is enabled */
     public void setHaloExchangeEnabled(boolean haloExchangeEnabled) { this.haloExchangeEnabled = haloExchangeEnabled; }
 
-    /**
-     * Get snapshot manager.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return periodic cluster snapshot manager */
     public org.ether.society.network.cluster.ClusterSnapshotManager getSnapshotManager() { return snapshotManager; }
-    /**
-     * Set snapshot manager operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param snapshotManager the snapshot manager argument (org.ether.society.network.cluster.ClusterSnapshotManager)
-     */
+    /** @param snapshotManager periodic cluster snapshot manager */
     public void setSnapshotManager(org.ether.society.network.cluster.ClusterSnapshotManager snapshotManager) { this.snapshotManager = snapshotManager; }
 
-    /**
-     * Get snapshot interval ticks.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return cluster snapshot checkpoint interval in ticks */
     public int getSnapshotIntervalTicks() { return snapshotIntervalTicks; }
-    /**
-     * Set snapshot interval ticks operation.
-     * <p>
-     * Executes operational logic for {@code ClusterManager} within the distributed cluster synchronization and spatial partitioning system.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param snapshotIntervalTicks the snapshot interval ticks argument (int)
-     */
+    /** @param snapshotIntervalTicks cluster snapshot checkpoint interval in ticks */
     public void setSnapshotIntervalTicks(int snapshotIntervalTicks) { this.snapshotIntervalTicks = Math.max(0, snapshotIntervalTicks); }
 
     /**

@@ -1,154 +1,204 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
 package org.ether.society.database;
 
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.components.BiomassState;
 import org.ether.society.database.components.ClimateState;
 import org.ether.society.database.components.DemographicState;
 import org.ether.society.database.components.MineralState;
-import org.ether.society.model.Biome;
+import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
+import org.ether.society.model.OrganismBiophysicalProfile;
 
 /**
- * <h1>H3CellPhysicsAndStateHelper</h1>
- * <p>
- * Stateless analytical physics, demography, surface geometry, snapshot cloning, and Data-Oriented Design (DOD)
- * component helper for {@link H3Cell}.<br>
- * Extracted from {@link H3Cell} to enforce the Single Responsibility Principle and keep the JPA entity concise.
- * </p>
+ * Stateless analytical physics, Lotka stable demography, surface geometry, Garrett-Lotka
+ * <i>a posteriori</i> diagnostic evaluation, and Data-Oriented Design (DOD) component helper for {@link H3Cell}.
+ *
+ * <p>Strictly enforces {@code AGENTS.md} Section 10: all equations are \(C^\infty\) smooth functions
+ * of conserved primary biophysical observables with zero state-level technology dependence.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see H3Cell
+ * @see H3CellStateSnapshotHelper
  */
 public final class H3CellPhysicsAndStateHelper {
+
+    /**
+     * Garrett (2011, <i>Climatic Change</i> 104:437) thermodynamic maintenance dissipation constant
+     * \(\lambda_{\text{maint}} = 8.0\,\text{W}\) per physical capital unit, linking active wealth stock
+     * to continuous exosomatic power dissipation.
+     */
+    public static final double GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT = 8.0;
+
+    /** Reference somatic tool capital normalization \(k_0 = 5.0\) physical units/individual. */
+    public static final double REFERENCE_SOMATIC_CAPITAL_PER_CAPITA = 5.0;
 
     private H3CellPhysicsAndStateHelper() {
         // Static helper utility class
     }
 
     /**
-     * Calculates terrain movement friction (cost-distance multiplier) based on elevation,
-     * biome, and technology level:
-     * $$f_{\text{move}} = \max\left(0.3, f_{\text{base}}(\text{elev}, \text{biome}) \cdot \max(0.2, 1.0 - 0.08 \cdot T)\right)$$
+     * Evaluates the canonical \(C^\infty\) Garrett-Lotka emergent exergy-capital diagnostic \(T_{\text{emergent}}\)
+     * strictly <i>a posteriori</i> from conserved power flux and physical capital stock:
      *
-     * @param cell      target H3 cell
-     * @param techLevel technology level ($1.0$ = ancient, $10.0$ = modern)
-     * @return movement friction multiplier ($1.0$ = flat plain, $>10.0$ = extreme mountain/desert/swamp)
+     * <p>$$\mathcal{M} = \frac{p_{\text{eff}}}{B_{\text{basal}}}, \qquad
+     * k_{\text{energized}} = \frac{\operatorname{softplus}(p_{\text{eff}}; 0.8 B_{\text{basal}}, 0.2 B_{\text{basal}})}{\lambda_{\text{maint}}}, \qquad
+     * k_{\text{active}} = \frac{2 \cdot k \cdot k_{\text{energized}}}{k + k_{\text{energized}} + \varepsilon}$$</p>
+     * <p>$$T_{\text{emergent}}(\mathcal{M}, k_{\text{active}}) = 0.50 + 1.45 \log_{10}(\mathcal{M}) + 0.58 \log_{10}\!\left(1 + \frac{k_{\text{active}}}{k_0}\right)$$</p>
+     *
+     * <p>Resolves the post-collapse depopulation paradox (\(N \to 0 \implies K/N \to \infty\)): if power plants
+     * cease operating (\(p \to B_{\text{basal}}\)), \(k_{\text{energized}}\) remains bounded at somatic maintenance
+     * capacity, preventing unphysical blow-up of \(k_{\text{active}}\).</p>
+     *
+     * @param totalPowerWattsPerIndividual somatic + exosomatic power captured per individual (\(\text{W}\))
+     * @param grossCapitalPerIndividual    gross structural capital stock per individual (\(K/N\))
+     * @param basalMetabolicWatts          Kleiber basal metabolic rate \(B_{\text{basal}}(M_b)\) (\(\text{W}\))
+     * @return dimensionless emergent telemetry diagnostic bounded smoothly in \([0.0, 10.0]\)
      */
+    public static double computeGarrettLotkaEmergentIndex(
+            double totalPowerWattsPerIndividual,
+            double grossCapitalPerIndividual,
+            double basalMetabolicWatts) {
+        double basal = Math.max(1.0e-9, basalMetabolicWatts);
+        double pEff = SmoothMath.softmax(basal, totalPowerWattsPerIndividual, 0.15 * basal);
+        double metabolicRatio = pEff / basal;
+
+        double kGross = SmoothMath.softplus(grossCapitalPerIndividual, 0.0, 20.0);
+        double kEnergized = SmoothMath.softplus(pEff - 0.80 * basal, 20.0)
+                / GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT;
+        double kActive = SmoothMath.harmonicCoupling(kGross, kEnergized);
+
+        double raw = 0.50
+                + 1.45 * Math.log10(Math.max(1.0, metabolicRatio))
+                + 0.58 * Math.log10(1.0 + kActive / REFERENCE_SOMATIC_CAPITAL_PER_CAPITA);
+        return SmoothMath.smoothClamp(raw, 0.0, 10.0, 20.0);
+    }
+
     /**
-     * Calculates continuous movement friction based on topographic relief (Minetti et al. 2002),
-     * standing vegetation impedance, cryospheric snow resistance, and technological transport mitigation.
+     * Computes the strictly <i>a posteriori</i> Garrett-Lotka emergent telemetry diagnostic for a cell.
+     * Returns {@code 0.0} for uninhabited cells (\(N \le 0\)).
      *
      * @param cell target H3 cell
-     * @param techLevel technology era level (continuous $\text{Tech} \in [0.0, 10.0]$)
-     * @return updated movement friction
+     * @return read-only emergent diagnostic in \([0.0, 10.0]\)
+     */
+    public static double computeEmergentTechnologyDiagnostic(H3Cell cell) {
+        if (cell == null) return 0.0;
+        int pop = cell.getPopulationOr(0);
+        if (pop <= 0) return 0.0;
+
+        double basalWatts = OrganismBiophysicalProfile.HOMO_SAPIENS.basalMetabolicPowerWatts();
+        double exosomaticWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell)
+                + (cell.getHabitatEnergyKwOr(0.0) * 1000.0) / pop;
+        double totalPowerWatts = basalWatts + exosomaticWatts;
+        double grossKpc = cell.getResourceCapitalOr(0.0) / pop;
+
+        return computeGarrettLotkaEmergentIndex(totalPowerWatts, grossKpc, basalWatts);
+    }
+
+    /**
+     * Calculates \(C^\infty\) continuous terrain movement friction (cost-distance multiplier) based on
+     * topographic relief (Minetti et al. 2002), standing vegetation impedance, cryospheric snow
+     * resistance, and physical transport infrastructure capital density:
+     * $$f_{\text{move}} = \operatorname{sclamp}\!\left((f_{\text{relief}} + f_{\text{veg}} + f_{\text{snow}}) \cdot f_{\text{infra}},\; 0.30,\; 25.0\right)$$
+     *
+     * @param cell target H3 cell
+     * @return updated movement friction multiplier (\(1.0\) = flat plain, \(&gt;10.0\) = rugged/glaciated)
      */
     public static double calculateMovementFriction(H3Cell cell) {
         if (cell == null) return 1.0;
         double elev = cell.getElevationOr(0.0);
-
-        if (elev < 0.0) {
-            double capital = cell.getResourceCapitalOr(0.0);
-            double seaFriction = Math.clamp(25.0 / (1.0 + 0.15 * Math.log1p(capital / 100.0)), 0.40, 25.0);
-            cell.setMovementFriction(seaFriction);
-            return seaFriction;
-        }
-
-        double fRelief = 1.0 + 4.0 * Math.pow(Math.max(0.0, elev) / 2500.0, 1.35);
-        double biomassNat = cell.getBiomassNaturalOr(0.0);
-        double fVeg = 2.5 * Math.clamp(biomassNat / 4000.0, 0.0, 1.0);
+        double capital = cell.getResourceCapitalOr(0.0);
         double tempC = cell.getTemperatureOr(15.0);
-        double fSnow = 4.5 / (1.0 + Math.exp(0.50 * (tempC - 0.0)));
-        double baseFriction = fRelief + fVeg + fSnow;
 
-        double capDensity = cell.getResourceCapitalOr(0.0) / Math.max(10.0, cell.getEffectiveSurfaceAreaKm2());
-        double infraMitigation = Math.max(0.15, 1.0 / (1.0 + 0.20 * Math.log1p(capDensity * 10.0)));
-        double computed = Math.max(0.30, baseFriction * infraMitigation);
-        cell.setMovementFriction(computed);
-        return computed;
-    }
+        // Smooth bathymetric transition across coastline (elev = 0 m)
+        double landWeight = SmoothMath.sigmoid(elev, 0.0, 5.0);
 
-    public static double calculateMovementFriction(H3Cell cell, double techLevel) {
-        if (cell == null) return 1.0;
-        double elev = cell.getElevationOr(0.0);
+        // Marine navigation friction mitigated by port/naval physical capital and sea-ice resistance
+        double seaIcePenalty = 12.0 * SmoothMath.sigmoid(-tempC, 1.5, 1.0);
+        double seaFriction = SmoothMath.smoothClamp(
+                (25.0 + seaIcePenalty) / (1.0 + 0.22 * Math.log1p(capital / 80.0)),
+                0.40, 25.0, 10.0);
 
-        // Seafaring navigation friction across marine cells
-        if (elev < 0.0) {
-            double seaFriction = Math.clamp(25.0 * Math.exp(-0.35 * techLevel), 0.40, 25.0);
-            cell.setMovementFriction(seaFriction);
-            return seaFriction;
-        }
+        // Terrestrial Minetti incline cost + canopy impedance + cryospheric snow resistance
+        double posElev = SmoothMath.softplus(elev, 0.0, 15.0);
+        double fRelief = 1.0 + 4.0 * Math.pow(posElev / 2500.0, 1.35);
+        double biomassNat = SmoothMath.softplus(cell.getBiomassNaturalOr(0.0), 0.0, 10.0);
+        double fVeg = 2.5 * Math.tanh(biomassNat / 3500.0);
+        double fSnow = 4.5 * SmoothMath.sigmoid(-tempC, 0.0, 2.0);
+        double baseLandFriction = fRelief + fVeg + fSnow;
 
-        // 1. Topographic relief friction (Minetti et al. 2002 metabolic cost of incline)
-        double fRelief = 1.0 + 4.0 * Math.pow(Math.max(0.0, elev) / 2500.0, 1.35);
+        double areaKm2 = Math.max(10.0, getEffectiveSurfaceAreaKm2(cell));
+        double capDensity = capital / areaKm2;
+        double infraMitigation = 0.15 + 0.85 / (1.0 + 0.25 * Math.log1p(SmoothMath.softplus(capDensity * 10.0, 0.0, 0.5)));
+        double landFriction = SmoothMath.smoothClamp(baseLandFriction * infraMitigation, 0.30, 25.0, 10.0);
 
-        // 2. Standing vegetation impedance (canopy undergrowth resistance)
-        double biomassNat = cell.getBiomassNaturalOr(0.0);
-        double fVeg = 2.5 * Math.clamp(biomassNat / 4000.0, 0.0, 1.0);
-
-        // 3. Cryospheric snow / permafrost impedance below freezing point
-        double tempC = cell.getTemperatureOr(15.0);
-        double fSnow = 4.5 / (1.0 + Math.exp(0.50 * (tempC - 0.0)));
-
-        double baseFriction = fRelief + fVeg + fSnow;
-
-        // 4. Continuous technological infrastructure and vehicle mitigation
-        double techMitigation = Math.max(0.15, Math.exp(-0.12 * techLevel));
-        double computed = Math.max(0.30, baseFriction * techMitigation);
+        double computed = landWeight * landFriction + (1.0 - landWeight) * seaFriction;
         cell.setMovementFriction(computed);
         return computed;
     }
 
     /**
-     * Calculates dynamic surface albedo $\alpha \in [0.06, 0.85]$ continuously using the
-     * Sellers (1969) / Dickinson et al. (1993, BATS) thermodynamic surface energy balance model.
+     * Calculates terrain movement friction with legacy technology level argument.
      *
-     * <p>Modeled as continuous functions of snow cover fraction $f_{\text{snow}}(T)$,
-     * soil moisture, and vegetative canopy density:
+     * @param cell target H3 cell
+     * @param techLevel technology level
+     * @return movement friction multiplier
+     */
+    public static double calculateMovementFriction(H3Cell cell, double techLevel) {
+        return calculateMovementFriction(cell);
+    }
+
+    /**
+     * Calculates \(C^\infty\) dynamic surface albedo \(\alpha \in [0.06, 0.85]\) using the
+     * Sellers (1969) / Dickinson et al. (1993, BATS) thermodynamic surface energy balance model:
      * $$\alpha = (1 - f_{\text{snow}}) [f_{\text{veg}} \alpha_{\text{veg}} + (1 - f_{\text{veg}}) \alpha_{\text{soil}}] + f_{\text{snow}} \alpha_{\text{snow}}$$
      *
      * @param cell target H3 cell
-     * @return updated surface albedo $\alpha$
+     * @return updated surface albedo \(\alpha\)
      */
     public static double calculateDynamicAlbedo(H3Cell cell) {
         if (cell == null) return 0.22;
         double elev = cell.getElevationOr(0.0);
-        if (elev < 0.0) {
-            cell.setDynamicAlbedo(0.06);
-            return 0.06;
-        }
-
         double tempC = cell.getTemperatureOr(15.0);
-        double rainMm = cell.getRainfallOr(500.0);
-        double biomassNat = cell.getBiomassNaturalOr(0.0);
+        double rainMm = SmoothMath.softplus(cell.getRainfallOr(500.0), 0.0, 5.0);
+        double biomassNat = SmoothMath.softplus(cell.getBiomassNaturalOr(0.0), 0.0, 10.0);
 
-        // Continuous snow cover fraction around freezing point
-        double fSnow = 1.0 / (1.0 + Math.exp(0.80 * (tempC - 0.0)));
+        double landWeight = SmoothMath.sigmoid(elev, 0.0, 5.0);
 
-        // Continuous vegetative canopy cover fraction
-        double fVeg = Math.clamp(biomassNat / 3000.0, 0.0, 0.90);
+        // Ocean albedo with smooth sea-ice formation below -1.8 C
+        double seaIce = SmoothMath.sigmoid(-tempC, 1.8, 1.0);
+        double alphaOcean = 0.06 * (1.0 - seaIce) + 0.65 * seaIce;
 
-        // Bare soil albedo: dry soil/sand is reflective (~0.40), moist soil is darker (~0.15) (Idso et al. 1975)
+        // Land snow cover and vegetative canopy cover fractions
+        double fSnow = SmoothMath.sigmoid(-tempC, 0.0, 1.25);
+        double fVeg = 0.90 * Math.tanh(biomassNat / 2800.0);
+
         double alphaSoil = 0.15 + 0.25 * Math.exp(-0.003 * rainMm);
         double alphaVeg = 0.14;
         double alphaSnow = 0.80;
 
         double alphaLand = (1.0 - fSnow) * (fVeg * alphaVeg + (1.0 - fVeg) * alphaSoil) + fSnow * alphaSnow;
-        double computed = Math.clamp(alphaLand, 0.06, 0.85);
+        double blended = landWeight * alphaLand + (1.0 - landWeight) * alphaOcean;
+        double computed = SmoothMath.smoothClamp(blended, 0.06, 0.85, 50.0);
         cell.setDynamicAlbedo(computed);
         return computed;
     }
 
     /**
-     * Updates the detailed 7-segment age pyramid based on total population and demographic transition stage.
+     * Updates the detailed 7-segment Lotka (1907) stable age pyramid from total population,
+     * life expectancy \(e_0\) ({@code lifespan}), and total fertility rate ({@code fertility}).
      *
-     * @param cell      target H3 cell
-     * @param techLevel technological level driving demographic transition interpolation
+     * <p>Replaces legacy technology-indexed interpolation with authentic demographic transition
+     * coordinates: longevity survival index \(\ell = \sigma(e_0; 52, 12)\) and fertility moderation
+     * index \(f = \sigma(4.2 - \text{TFR}; 0, 1.1)\).</p>
+     *
+     * @param cell target H3 cell
      */
-    public static void updateAgePyramidFromTotal(H3Cell cell, double techLevel) {
+    public static void updateAgePyramidFromObservables(H3Cell cell) {
         Integer population = cell.getPopulation();
         if (population == null || population <= 0) {
             cell.setPop0to4(0);
@@ -164,14 +214,18 @@ public final class H3CellPhysicsAndStateHelper {
             return;
         }
 
-        double tf = Math.clamp((techLevel - 1.0) / 7.0, 0.0, 1.0);
+        double lifespan = cell.getLifespanOr(38.0);
+        double tfr = cell.getFertilityOr(5.2);
+        double longevityProgress = SmoothMath.sigmoid(lifespan, 52.0, 12.0);
+        double lowFertilityProgress = SmoothMath.sigmoid(4.2 - tfr, 0.0, 1.1);
+        double dtFactor = 0.55 * longevityProgress + 0.45 * lowFertilityProgress;
 
-        double share0to4   = 0.15 - (tf * 0.10);
-        double share5to14  = 0.27 - (tf * 0.14);
-        double share15to24 = 0.18 - (tf * 0.04);
-        double share25to49 = 0.25 + (tf * 0.09);
-        double share50to64 = 0.09 + (tf * 0.07);
-        double share65to79 = 0.05 + (tf * 0.09);
+        double share0to4   = 0.15 - (dtFactor * 0.10);
+        double share5to14  = 0.27 - (dtFactor * 0.14);
+        double share15to24 = 0.18 - (dtFactor * 0.04);
+        double share25to49 = 0.25 + (dtFactor * 0.09);
+        double share50to64 = 0.09 + (dtFactor * 0.07);
+        double share65to79 = 0.05 + (dtFactor * 0.09);
 
         int p0to4   = (int) Math.round(population * share0to4);
         int p5to14  = (int) Math.round(population * share5to14);
@@ -197,11 +251,21 @@ public final class H3CellPhysicsAndStateHelper {
     }
 
     /**
-     * Calculates the total annual metabolic subsistence energy required by the cell's population in $\text{GJ/year}$:
-     * $$E_{\text{metabolic}} = \left(\sum_{c=0}^{6} N_c \cdot e_c\right) \cdot \mu_{\text{PAL}}(K/N, T) \cdot \mu_{\text{species}}$$
+     * Legacy adapter updating demographic age pyramid with explicit technology parameter.
      *
      * @param cell target H3 cell
-     * @return annual caloric requirement in Gigajoules ($\text{GJ}$)
+     * @param techLevel technology level
+     */
+    public static void updateAgePyramidFromTotal(H3Cell cell, double techLevel) {
+        updateAgePyramidFromObservables(cell);
+    }
+
+    /**
+     * Calculates the total annual metabolic subsistence energy required by the cell's population in \(\text{GJ/year}\):
+     * $$E_{\text{metabolic}} = \left(\sum_{c=0}^{6} N_c \cdot e_c\right) \cdot \mu_{\text{PAL}}(K/N, P_{\text{exo}}/N) \cdot \mu_{\text{species}}$$
+     *
+     * @param cell target H3 cell
+     * @return annual caloric requirement in Gigajoules (\(\text{GJ}\))
      */
     public static double calculateAnnualMetabolicNeedGJ(H3Cell cell) {
         int totalPop = cell.getPopulationOr(0);
@@ -219,16 +283,16 @@ public final class H3CellPhysicsAndStateHelper {
         double basePerCapitaGJ = cohortMetabolicSum / totalPop;
 
         double capPerCapita = cell.getResourceCapitalOr(0.0) / totalPop;
-        double tech = cell.getTechnologyLevelOr(1.0);
-        double mechanizationFactor = Math.clamp(capPerCapita / 40.0 + (tech >= 3.0 ? (tech - 3.0) * 0.2 : 0.0), 0.0, 1.0);
-        double laborMultiplier = 1.25 - (0.30 * mechanizationFactor);
-
-        if (cell.getResourceMetalOr(0.0) > 10.0 || cell.getResourceCoalOr(0.0) > 50.0) {
-            laborMultiplier += 0.08;
-        }
+        double mechPowerWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
+        // Smooth physical mechanization reducing somatic Physical Activity Level (PAL) burden (FAO/WHO/UNU 2004)
+        double mechanizationFactor = 0.50 * Math.tanh(capPerCapita / 60.0)
+                + 0.50 * SmoothMath.sigmoid(mechPowerWatts, 400.0, 150.0);
+        double extractiveLoad = 0.08 * SmoothMath.sigmoid(
+                cell.getResourceMetalOr(0.0) * 5.0 + cell.getResourceCoalOr(0.0), 50.0, 20.0);
+        double laborMultiplier = 1.25 - (0.30 * mechanizationFactor) + extractiveLoad * (1.0 - mechanizationFactor);
 
         double speciesMultiplier = switch (cell.getHomininSpecies()) {
-            case 2 -> 1.40; // Homo Neanderthalensis
+            case 2 -> 1.40; // Homo Neanderthalensis (Churchill 2014 cold-adapted BMR)
             case 3 -> 1.20; // Denisovan / Archaic
             default -> 1.0; // Homo Sapiens
         };
@@ -237,10 +301,10 @@ public final class H3CellPhysicsAndStateHelper {
     }
 
     /**
-     * Standard average H3 hexagon area in $\text{km}^2$ according to resolution level ($0$ to $15$).
+     * Standard average H3 hexagon area in \(\text{km}^2\) according to resolution level (\(0\) to \(15\)).
      *
-     * @param resolution H3 resolution level ($0\dots 15$)
-     * @return average hexagon area in $\text{km}^2$
+     * @param resolution H3 resolution level (\(0\dots 15\))
+     * @return average hexagon area in \(\text{km}^2\)
      */
     public static double getAvgHexagonAreaKm2(int resolution) {
         return switch (resolution) {
@@ -260,12 +324,12 @@ public final class H3CellPhysicsAndStateHelper {
     }
 
     /**
-     * Calculates the effective 3D real surface area of the cell in $\text{km}^2$, accounting for
-     * embedded H3 resolution and topographical slope expansion:
-     * $$A_{3\text{D}} = A_{\text{H3}}(r) \cdot \sqrt{1 + 0.15 \cdot \max(0, f_{\text{move}} - 1)^{1.8}}$$
+     * Calculates the effective 3D real surface area of the cell in \(\text{km}^2\), accounting for
+     * embedded H3 resolution and smooth topographical slope expansion:
+     * $$A_{3\text{D}} = A_{\text{H3}}(r) \cdot \sqrt{1 + 0.15 \cdot \operatorname{softplus}(f_{\text{move}}; 1, 0.2)^{1.8}}$$
      *
      * @param cell target H3 cell
-     * @return effective 3D surface area in $\text{km}^2$
+     * @return effective 3D surface area in \(\text{km}^2\)
      */
     public static double getEffectiveSurfaceAreaKm2(H3Cell cell) {
         int res = 4;
@@ -281,230 +345,16 @@ public final class H3CellPhysicsAndStateHelper {
         }
         double baseArea = getAvgHexagonAreaKm2(res);
         double friction = cell.getMovementFrictionOr(1.0);
-        double slopeFactor3D = Math.sqrt(1.0 + 0.15 * Math.pow(Math.max(0.0, friction - 1.0), 1.8));
+        double excessFriction = SmoothMath.softplus(friction, 1.0, 0.20);
+        double slopeFactor3D = Math.sqrt(1.0 + 0.15 * Math.pow(excessFriction, 1.8));
         return baseArea * slopeFactor3D;
     }
 
     /**
-     * Creates a deep snapshot copy of the given {@link H3Cell}.
-     *
-     * @param src source H3 cell
-     * @return cloned snapshot instance
-     */
-    public static H3Cell snapshot(H3Cell src) {
-        H3Cell copy = new H3Cell(src.getH3Index(), src.getLatitude(), src.getLongitude());
-        copy.setId(src.getId());
-        copy.setElevation(src.getElevation());
-        copy.setTemperature(src.getTemperature());
-        copy.setRainfall(src.getRainfall());
-        copy.setBiome(src.getBiome());
-        copy.setPopulation(src.getPopulation());
-        copy.setFoodResource(src.getFoodResource());
-        copy.setWaterResource(src.getWaterResource());
-        copy.setWoodResource(src.getWoodResource());
-        copy.setResourceMetal(src.getResourceMetal());
-        copy.setResourcePreciousMetal(src.getResourcePreciousMetal());
-        copy.setSoilOrganicCarbon(src.getSoilOrganicCarbon());
-        copy.setSoilSalinity(src.getSoilSalinity());
-        copy.setMantleHeatFlow(src.getMantleHeatFlow());
-        copy.setFreshwaterAquifer(src.getFreshwaterAquifer());
-        copy.setAccessibleAquifer(src.getAccessibleAquifer());
-        copy.setPollutionLevel(src.getPollutionLevel());
-        copy.setResourceClay(src.getResourceClay());
-        copy.setResourceWork(src.getResourceWork());
-        copy.setResourceCapital(src.getResourceCapital());
-        copy.setLifespan(src.getLifespan());
-        copy.setFertility(src.getFertility());
-        copy.setGiniIndex(src.getGiniIndex());
-        copy.setTechnologyLevel(src.getTechnologyLevel());
-        copy.setHomininSpecies(src.getHomininSpecies());
-        copy.setOwner(src.getOwner());
-        copy.setFluxPressure(src.getFluxPressure());
-        copy.setBoundaryCell(src.isBoundaryCell());
-        copy.setMovementFriction(src.getMovementFriction());
-        copy.setChokePointScore(src.getChokePointScore());
-        copy.setTransitTollRevenue(src.getTransitTollRevenue());
-        copy.setPopYouth(src.getPopYouth());
-        copy.setPopAdult(src.getPopAdult());
-        copy.setPopElderly(src.getPopElderly());
-        copy.setIsCoastal(src.getIsCoastal());
-        copy.setCoastalMarineResource(src.getCoastalMarineResource());
-        copy.setIsPolder(src.getIsPolder());
-        copy.setHasDam(src.getHasDam());
-        copy.setHasFloatingInfrastructure(src.getHasFloatingInfrastructure());
-
-        copy.setBiomassHuman(src.getBiomassHuman());
-        copy.setBiomassLivestock(src.getBiomassLivestock());
-        copy.setBiomassFish(src.getBiomassFish());
-        copy.setBiomassAgriculture(src.getBiomassAgriculture());
-        copy.setBiomassNatural(src.getBiomassNatural());
-        copy.setEnergyWind(src.getEnergyWind());
-        copy.setEnergySolar(src.getEnergySolar());
-        copy.setEnergyFire(src.getEnergyFire());
-        copy.setEnergySlaves(src.getEnergySlaves());
-        copy.setEnergyFoodConsumed(src.getEnergyFoodConsumed());
-
-        copy.setHabitatType(src.getHabitatType());
-        copy.setHabitatTier(src.getHabitatTier());
-        copy.setHabitatCapacity(src.getHabitatCapacity());
-        copy.setHabitatIntegrity(src.getHabitatIntegrity());
-        copy.setHabitatEnergyKw(src.getHabitatEnergyKw());
-        copy.setHabitatAgeYears(src.getHabitatAgeYears());
-
-        return copy;
-    }
-
-    /**
-     * Extracts an immutable {@link ClimateState} component from the cell.
-     *
-     * @param cell source H3 cell
-     * @return current climate state component
-     */
-    public static ClimateState extractClimateState(H3Cell cell) {
-        return new ClimateState(
-                cell.getTemperatureOr(15.0),
-                cell.getRainfallOr(800.0),
-                cell.getDynamicAlbedoOr(0.30),
-                cell.getIceSheetThicknessMetersOr(0.0),
-                cell.getSeaLevelOffsetMetersOr(0.0)
-        );
-    }
-
-    /**
-     * Applies an immutable {@link ClimateState} component to the cell.
-     *
-     * @param cell  target H3 cell
-     * @param state climate state component to apply
-     */
-    public static void applyClimateState(H3Cell cell, ClimateState state) {
-        if (state == null) return;
-        cell.setTemperature(state.temperature());
-        cell.setRainfall(state.rainfall());
-        cell.setDynamicAlbedo(state.dynamicAlbedo());
-        cell.setIceSheetThicknessMeters(state.iceSheetThicknessMeters());
-        cell.setSeaLevelOffsetMeters(state.seaLevelOffsetMeters());
-    }
-
-    /**
-     * Extracts an immutable {@link BiomassState} component from the cell.
-     *
-     * @param cell source H3 cell
-     * @return current biomass state component
-     */
-    public static BiomassState extractBiomassState(H3Cell cell) {
-        return new BiomassState(
-                cell.getBiomassHumanOr(0.0),
-                cell.getBiomassLivestockOr(0.0),
-                cell.getBiomassFishOr(0.0),
-                cell.getBiomassAgricultureOr(0.0),
-                cell.getBiomassNaturalOr(100.0),
-                cell.getFoodResourceOr(50.0),
-                cell.getWaterResourceOr(50.0),
-                cell.getWoodResourceOr(50.0),
-                cell.getSoilOrganicCarbonOr(10.0),
-                cell.getSoilSalinityOr(0.0)
-        );
-    }
-
-    /**
-     * Applies an immutable {@link BiomassState} component to the cell.
-     *
-     * @param cell  target H3 cell
-     * @param state biomass state component to apply
-     */
-    public static void applyBiomassState(H3Cell cell, BiomassState state) {
-        if (state == null) return;
-        cell.setBiomassHuman(state.biomassHuman());
-        cell.setBiomassLivestock(state.biomassLivestock());
-        cell.setBiomassFish(state.biomassFish());
-        cell.setBiomassAgriculture(state.biomassAgriculture());
-        cell.setBiomassNatural(state.biomassNatural());
-        cell.setFoodResource(state.foodResource());
-        cell.setWaterResource(state.waterResource());
-        cell.setWoodResource(state.woodResource());
-        cell.setSoilOrganicCarbon(state.soilOrganicCarbon());
-        cell.setSoilSalinity(state.soilSalinity());
-    }
-
-    /**
-     * Extracts an immutable {@link DemographicState} component from the cell.
-     *
-     * @param cell source H3 cell
-     * @return current demographic state component
-     */
-    public static DemographicState extractDemographicState(H3Cell cell) {
-        return new DemographicState(
-                cell.getPopulationOr(0),
-                cell.getLifespanOr(40.0),
-                cell.getFertilityOr(6.0),
-                cell.getGiniIndexOr(0.0),
-                cell.getTechnologyLevelOr(0.0),
-                cell.getHomininSpeciesOr(1)
-        );
-    }
-
-    /**
-     * Applies an immutable {@link DemographicState} component to the cell.
-     *
-     * @param cell  target H3 cell
-     * @param state demographic state component to apply
-     */
-    public static void applyDemographicState(H3Cell cell, DemographicState state) {
-        if (state == null) return;
-        cell.setPopulation(state.population());
-        cell.setLifespan(state.lifespan());
-        cell.setFertility(state.fertility());
-        cell.setGiniIndex(state.giniIndex());
-        cell.setTechnologyLevel(state.technologyLevel());
-        cell.setHomininSpecies(state.homininSpecies());
-    }
-
-    /**
-     * Extracts an immutable {@link MineralState} component from the cell.
-     *
-     * @param cell source H3 cell
-     * @return current mineral state component
-     */
-    public static MineralState extractMineralState(H3Cell cell) {
-        return new MineralState(
-                cell.getResourceCoalOr(0.0),
-                cell.getResourceOilOr(0.0),
-                cell.getResourceGasOr(0.0),
-                cell.getResourceUraniumOr(0.0),
-                cell.getResourceMetalOr(0.0),
-                cell.getResourcePreciousMetalOr(0.0),
-                cell.getResourceRareEarthsOr(0.0),
-                cell.getMantleHeatFlowOr(87.0),
-                cell.getFreshwaterAquiferOr(0.0),
-                cell.getAccessibleAquiferOr(0.0)
-        );
-    }
-
-    /**
-     * Applies an immutable {@link MineralState} component to the cell.
-     *
-     * @param cell  target H3 cell
-     * @param state mineral state component to apply
-     */
-    public static void applyMineralState(H3Cell cell, MineralState state) {
-        if (state == null) return;
-        cell.setResourceCoal(state.resourceCoal());
-        cell.setResourceOil(state.resourceOil());
-        cell.setResourceGas(state.resourceGas());
-        cell.setResourceUranium(state.resourceUranium());
-        cell.setResourceMetal(state.resourceMetal());
-        cell.setResourcePreciousMetal(state.resourcePreciousMetal());
-        cell.setResourceRareEarths(state.resourceRareEarths());
-        cell.setMantleHeatFlow(state.mantleHeatFlow());
-        cell.setFreshwaterAquifer(state.freshwaterAquifer());
-        cell.setAccessibleAquifer(state.accessibleAquifer());
-    }
-
-    /**
      * Rescales all 7 demographic cohorts proportionally to match target total population,
-     * maintaining strict demographic mass closure: sum(cohort_i) == targetPop.
+     * maintaining strict demographic mass closure: \(\sum_i N_i = N_{\text{target}}\).
      *
-     * @param cell target H3 cell
+     * @param cell      target H3 cell
      * @param targetPop new total population
      */
     public static void synchronizeCohortsToPopulation(H3Cell cell, int targetPop) {
@@ -529,21 +379,8 @@ public final class H3CellPhysicsAndStateHelper {
         int cur80 = cell.getPop80PlusOr(0);
         long currentSum = (long) cur0 + cur5 + cur15 + cur25 + cur50 + cur65 + cur80;
         if (currentSum <= 0 || (currentSum < targetPop * 0.50 && (cur0 == 0 || cur25 == 0))) {
-            int c0 = (int) Math.round(targetPop * 0.08);
-            int c5 = (int) Math.round(targetPop * 0.17);
-            int c15 = (int) Math.round(targetPop * 0.16);
-            int c25 = (int) Math.round(targetPop * 0.35);
-            int c50 = (int) Math.round(targetPop * 0.14);
-            int c65 = (int) Math.round(targetPop * 0.07);
-            int c80 = Math.max(0, targetPop - (c0 + c5 + c15 + c25 + c50 + c65));
-            cell.setPop0to4(c0);
-            cell.setPop5to14(c5);
-            cell.setPop15to24(c15);
-            cell.setPop25to49(c25);
-            cell.setPop50to64(c50);
-            cell.setPop65to79(c65);
-            cell.setPop80Plus(c80);
             cell.setPopulation(targetPop);
+            updateAgePyramidFromObservables(cell);
             return;
         }
         double ratio = (double) targetPop / currentSum;
@@ -564,4 +401,25 @@ public final class H3CellPhysicsAndStateHelper {
         cell.setPop80Plus(n80);
         cell.setPopulation(targetPop);
     }
+
+    // --- Delegated Snapshot & Data-Oriented Design (DOD) Projections ---
+
+    /** @param src source cell @return deep cloned snapshot */
+    public static H3Cell snapshot(H3Cell src) { return H3CellStateSnapshotHelper.snapshot(src); }
+    /** @param cell source cell @return immutable climate state */
+    public static ClimateState extractClimateState(H3Cell cell) { return H3CellStateSnapshotHelper.extractClimateState(cell); }
+    /** @param cell target cell @param state climate state to apply */
+    public static void applyClimateState(H3Cell cell, ClimateState state) { H3CellStateSnapshotHelper.applyClimateState(cell, state); }
+    /** @param cell source cell @return immutable biomass state */
+    public static BiomassState extractBiomassState(H3Cell cell) { return H3CellStateSnapshotHelper.extractBiomassState(cell); }
+    /** @param cell target cell @param state biomass state to apply */
+    public static void applyBiomassState(H3Cell cell, BiomassState state) { H3CellStateSnapshotHelper.applyBiomassState(cell, state); }
+    /** @param cell source cell @return immutable demographic state */
+    public static DemographicState extractDemographicState(H3Cell cell) { return H3CellStateSnapshotHelper.extractDemographicState(cell); }
+    /** @param cell target cell @param state demographic state to apply */
+    public static void applyDemographicState(H3Cell cell, DemographicState state) { H3CellStateSnapshotHelper.applyDemographicState(cell, state); }
+    /** @param cell source cell @return immutable mineral state */
+    public static MineralState extractMineralState(H3Cell cell) { return H3CellStateSnapshotHelper.extractMineralState(cell); }
+    /** @param cell target cell @param state mineral state to apply */
+    public static void applyMineralState(H3Cell cell, MineralState state) { H3CellStateSnapshotHelper.applyMineralState(cell, state); }
 }

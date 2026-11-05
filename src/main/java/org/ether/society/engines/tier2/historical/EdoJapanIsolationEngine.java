@@ -27,7 +27,7 @@ public class EdoJapanIsolationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EdoJapanIsolationEngine.class);
 
     /** Internal state: sakoku isolation active (boolean). */
-    private static boolean sakokuIsolationActive = true;
+    private static volatile boolean sakokuIsolationActive = false;
     private static double sustainableEquilibriumCap = 30.0; // 30M population equilibrium cap
 
     /** Logistic regrowth rate of managed sugi/hinoki plantations, yr<sup>-1</sup> (Totman 1989). */
@@ -43,7 +43,7 @@ public class EdoJapanIsolationEngine {
      * Resets mutable static state between scenario executions to guarantee isolation.
      */
     public static void resetState() {
-        sakokuIsolationActive = true;
+        sakokuIsolationActive = false;
         sustainableEquilibriumCap = 30.0;
         initialWoodStock.clear();
     }

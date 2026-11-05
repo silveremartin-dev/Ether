@@ -43,9 +43,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 
-/**
- * Multi-island archipelago maritime trade and resource specialization validation suite.
- */
 @Tag("academic")
 @Tag("scientific")
 @Tag("multiscale")

@@ -1,5 +1,6 @@
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.PhysicalConstants;
 import org.slf4j.Logger;
@@ -8,20 +9,12 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Radiative Greenhouse Effect, Stefan-Boltzmann Equilibrium & Clausius-Clapeyron Dynamics Engine.
- * 
- * <h2>Fundamental Model Physics Equations</h2>
- * <ul>
- *   <li><b>Stefan-Boltzmann Radiative Balance</b>:
- *       $$\epsilon \sigma T^4 = \frac{S_0}{4}(1 - \alpha) + \Delta F_{\text{GES}}$$
- *   </li>
- *   <li><b>Clausius-Clapeyron Saturation Vapor Pressure</b>:
- *       $$e_s(T) = e_0 \cdot \exp\left( \frac{L_v}{R_v} \left( \frac{1}{T_0} - \frac{1}{T_K} \right) \right)$$
- *   </li>
- *   <li><b>CO2 & CH4 Radiative Forcing</b>:
- *       $$\Delta F = 5.35 \ln\left(\frac{[\text{CO}_2]}{[\text{CO}_2]_0}\right) + 0.036\left(\sqrt{[\text{CH}_4]} - \sqrt{[\text{CH}_4]_0}\right)$$
- *   </li>
- * </ul>
+ * Radiative Greenhouse Effect, Stefan-Boltzmann Equilibrium &amp; Clausius-Clapeyron Dynamics Engine.
+ * <p>
+ * Strictly governed by physical atmospheric concentrations ($[\text{CO}_2]$, $[\text{CH}_4]$) and
+ * surface radiative physics ({@code AGENTS.md} §7.2, §10.1, §10.2), with zero dependency on
+ * synthetic {@code avgTechLevel} mitigation cliffs.
+ * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -29,46 +22,33 @@ import java.util.List;
 public class GreenhouseRadiativeEngine {
     private static final Logger logger = LoggerFactory.getLogger(GreenhouseRadiativeEngine.class);
 
-    /** Internal state: baseline co2 ppm (double). */
     private static final double BASELINE_CO2_PPM = 280.0;
-    /** Internal state: baseline ch4 ppb (double). */
     private static final double BASELINE_CH4_PPB = 720.0;
     private static final double CLIMATE_SENSITIVITY_LAMBDA = 0.8; // °C per W/m²
 
-    // Physical constants for Stefan-Boltzmann and Clausius-Clapeyron
-    public static final double STEFAN_BOLTZMANN_SIGMA = 5.670374e-8; // W/(m²Â·Kâ´)
-    /** Internal state: emissivity epsilon (double). */
+    public static final double STEFAN_BOLTZMANN_SIGMA = 5.670374e-8;
     public static final double EMISSIVITY_EPSILON = 0.98;
-    public static final double SOLAR_CONSTANT_TOA = 1361.0; // W/m²
-    public static final double LATENT_HEAT_VAPORIZATION_LV = 2.501e6; // J/kg
-    public static final double GAS_CONSTANT_VAPOR_RV = 461.5; // J/(kgÂ·K)
-    public static final double REFERENCE_VAPOR_PRESSURE_E0 = 611.3; // Pa at 273.15 K
+    public static final double SOLAR_CONSTANT_TOA = 1361.0;
+    public static final double LATENT_HEAT_VAPORIZATION_LV = 2.501e6;
+    public static final double GAS_CONSTANT_VAPOR_RV = 461.5;
+    public static final double REFERENCE_VAPOR_PRESSURE_E0 = 611.3;
 
-    /** Internal state: current co2ppm (double). */
     private double currentCo2Ppm = 280.0;
-    /** Internal state: current ch4ppb (double). */
     private double currentCh4Ppb = 720.0;
-    /** Internal state: sea level delta meters (double). */
     private double seaLevelDeltaMeters = 0.0;
-
-    /** Internal state: technological mitigation efficiency (double). */
-    private double technologicalMitigationEfficiency = 0.0;
     private double previousAppliedDeltaT = 0.0;
     private double previousAppliedSeaShift = 0.0;
 
-    /**
-     * Greenhouse radiative engine.
-     *
-     */
+    /** Constructs a radiative engine initialized to pre-industrial Holocene equilibrium (280 ppm CO2, 720 ppb CH4). */
     public GreenhouseRadiativeEngine() {
         this(280.0, 720.0);
     }
 
     /**
-     * Greenhouse radiative engine.
+     * Constructs a radiative engine with explicit atmospheric greenhouse gas concentrations.
      *
-     * @param initialCo2Ppm the initial co2ppm parameter (double)
-     * @param initialCh4Ppb the initial ch4ppb parameter (double)
+     * @param initialCo2Ppm initial $\text{CO}_2$ concentration in ppm
+     * @param initialCh4Ppb initial $\text{CH}_4$ concentration in ppb
      */
     public GreenhouseRadiativeEngine(double initialCo2Ppm, double initialCh4Ppb) {
         this.currentCo2Ppm = initialCo2Ppm;
@@ -76,84 +56,57 @@ public class GreenhouseRadiativeEngine {
     }
 
     /**
-     * Updates technological mitigation factor based on planetary tech level
-     * (Carbon Capture & Storage, Fusion, Geoengineering).
-     */
-    public void applyTechnologicalMitigation(double avgTechLevel) {
-        if (avgTechLevel > 5.0) {
-            this.technologicalMitigationEfficiency = Math.clamp((avgTechLevel - 5.0) * 0.10, 0.0, 0.60);
-        } else {
-            this.technologicalMitigationEfficiency = 0.0;
-        }
-    }
-
-    /**
-     * Get technological mitigation efficiency.
+     * Calculates net radiative forcing in $\text{W/m}^2$ directly from physical atmospheric
+     * $\text{CO}_2$ and $\text{CH}_4$ concentrations (Myhre et al. 1998; IPCC AR6):
+     * $$\Delta F = 5.35 \ln\!\left(\frac{[\text{CO}_2]}{[\text{CO}_2]_0}\right) + 0.036\left(\sqrt{[\text{CH}_4]} - \sqrt{[\text{CH}_4]_0}\right)$$
+     * Note: Negative anomalies ($[\text{CO}_2] < 280\,\text{ppm}$, e.g. glacial LGM $185\,\text{ppm}$)
+     * produce authentic negative radiative forcing without artificial zero-clipping.
      *
-     * @return the resulting computation or state reference
-     */
-    public double getTechnologicalMitigationEfficiency() {
-        return technologicalMitigationEfficiency;
-    }
-
-    /**
-     * Calculates radiative forcing in W/m² based on greenhouse gas concentrations
-     * modulated by technological carbon capture and solar geoengineering mitigation.
+     * @return radiative forcing anomaly in $\text{W/m}^2$
      */
     public double computeRadiativeForcingWpm2() {
-// Numerical integration step for GreenhouseRadiativeEngine - verifies boundary conservation and updates local thermodynamic state
-        double co2Ratio = Math.max(1.0, currentCo2Ppm) / BASELINE_CO2_PPM;
+        double co2Ratio = SmoothMath.softmax(50.0, currentCo2Ppm, 0.2) / BASELINE_CO2_PPM;
         double co2Forcing = 5.35 * Math.log(co2Ratio);
-
-        double ch4Forcing = 0.036 * (Math.sqrt(Math.max(0.0, currentCh4Ppb)) - Math.sqrt(BASELINE_CH4_PPB));
-        double rawForcing = Math.max(0.0, co2Forcing + ch4Forcing);
-        return rawForcing * (1.0 - technologicalMitigationEfficiency);
+        double ch4Forcing = 0.036 * (Math.sqrt(SmoothMath.softplus(currentCh4Ppb, 0.2)) - Math.sqrt(BASELINE_CH4_PPB));
+        return SmoothMath.softplus(co2Forcing + ch4Forcing, 4.0);
     }
 
     /**
-     * Computes the global mean temperature anomaly (°C) relative to baseline.
+     * Computes the global mean surface temperature anomaly (°C) relative to Holocene baseline.
      */
     public double computeTemperatureAnomalyC() {
-// Numerical integration step for GreenhouseRadiativeEngine - verifies boundary conservation and updates local thermodynamic state
         return computeRadiativeForcingWpm2() * CLIMATE_SENSITIVITY_LAMBDA;
     }
 
     /**
-     * Calculates saturation vapor pressure e_s(T) in Pascals using Clausius-Clapeyron.
-     *
-     * @param tempCelsius Temperature in Celsius
-     * @return Saturation vapor pressure in Pascals
+     * Calculates saturation vapor pressure $e_s(T)$ in Pascals using Clausius-Clapeyron.
      */
     public static double calculateClausiusClapeyronVaporPressurePa(double tempCelsius) {
-// Numerical integration step for GreenhouseRadiativeEngine - verifies boundary conservation and updates local thermodynamic state
-        double tempK = Math.max(150.0, tempCelsius + PhysicalConstants.KELVIN_ZERO_CELSIUS);
-        double exponent = (LATENT_HEAT_VAPORIZATION_LV / GAS_CONSTANT_VAPOR_RV) * ( (1.0 / PhysicalConstants.KELVIN_ZERO_CELSIUS) - (1.0 / tempK) );
+        double tempK = SmoothMath.softmax(150.0, tempCelsius + PhysicalConstants.KELVIN_ZERO_CELSIUS, 0.2);
+        double exponent = (LATENT_HEAT_VAPORIZATION_LV / GAS_CONSTANT_VAPOR_RV)
+                * ((1.0 / PhysicalConstants.KELVIN_ZERO_CELSIUS) - (1.0 / tempK));
         return REFERENCE_VAPOR_PRESSURE_E0 * Math.exp(Math.clamp(exponent, -15.0, 15.0));
     }
 
     /**
-     * Computes radiative equilibrium surface temperature in Kelvin using Stefan-Boltzmann:
-     * T_eq = [ (S_0/4 * (1 - alpha) + Delta_F) / (epsilon * sigma) ]^(1/4)
+     * Computes radiative equilibrium surface temperature in Kelvin using Stefan-Boltzmann.
      */
     public static double calculateStefanBoltzmannEquilibriumTempK(double albedo, double greenhouseForcingWpm2) {
-// Numerical integration step for GreenhouseRadiativeEngine - verifies boundary conservation and updates local thermodynamic state
         double absorbedSolarFlux = (SOLAR_CONSTANT_TOA / 4.0) * (1.0 - Math.clamp(albedo, 0.05, 0.95));
-        double totalDownwardFlux = absorbedSolarFlux + Math.max(0.0, greenhouseForcingWpm2);
+        double totalDownwardFlux = absorbedSolarFlux + SmoothMath.softplus(greenhouseForcingWpm2, 2.0);
         double radiativeDenominator = EMISSIVITY_EPSILON * STEFAN_BOLTZMANN_SIGMA;
         return Math.pow(totalDownwardFlux / radiativeDenominator, 0.25);
     }
 
     /**
-     * Computes sea level rise in meters based on thermal expansion & ice sheet melt.
+     * Computes equilibrium eustatic sea level rise in meters from thermal expansion and ice-sheet melt.
      */
     public double computeSeaLevelDeltaMeters() {
-// Numerical integration step for GreenhouseRadiativeEngine - verifies boundary conservation and updates local thermodynamic state
-        double deltaT = computeTemperatureAnomalyC();
-        return deltaT * 42.5; // ~42.5m rise per °C long term
+        return computeTemperatureAnomalyC() * 42.5;
     }
 
     /**
-     * Advances radiative state by adding anthropogenic or volcanic greenhouse emissions.
+     * Advances radiative state by adding net greenhouse gas flux (emissions minus physical biosphere/CCS sinks).
      */
     public void addEmissions(double deltaCo2Ppm, double deltaCh4Ppb) {
         this.currentCo2Ppm = Math.max(50.0, this.currentCo2Ppm + deltaCo2Ppm);
@@ -162,7 +115,7 @@ public class GreenhouseRadiativeEngine {
     }
 
     /**
-     * Applies temperature anomaly, Stefan-Boltzmann equilibrium, and sea level shift incrementally to the H3 grid.
+     * Applies incremental temperature anomaly and sea-level shift to the H3 grid.
      */
     public void applyToGrid(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) return;
@@ -196,24 +149,10 @@ public class GreenhouseRadiativeEngine {
         });
     }
 
-    /**
-     * Get current co2ppm.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return current atmospheric $\text{CO}_2$ concentration in ppm */
     public double getCurrentCo2Ppm() { return currentCo2Ppm; }
-    /**
-     * Get current ch4ppb.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return current atmospheric $\text{CH}_4$ concentration in ppb */
     public double getCurrentCh4Ppb() { return currentCh4Ppb; }
-    /**
-     * Get sea level delta meters.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return cumulative sea level delta in meters */
     public double getSeaLevelDeltaMeters() { return seaLevelDeltaMeters; }
 }
-
-

@@ -12,7 +12,6 @@ import org.ether.society.generation.*;
 import org.ether.society.engines.*;
 import org.ether.society.engines.tier1.*;
 import org.ether.society.engines.tier2.theories.*;
-import org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
 import org.ether.society.model.Biome;
@@ -21,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * High-Performance Declarative Simulation Pipeline.
@@ -44,6 +42,7 @@ public class SimulationPipeline {
     private Scenario configuredScenario;
     private CompiledEngineKernel compiledKernel;
     private final GreenhouseRadiativeEngine greenhouseRadiativeEngine = new GreenhouseRadiativeEngine();
+    private final TypeBEnginePassRunner typeBPassRunner = new TypeBEnginePassRunner();
 
     private List<H3Cell> cachedLandCells = null;
     private int cachedLandCellsCount = -1;
@@ -78,34 +77,7 @@ public class SimulationPipeline {
      * Resets all mutable static simulation states, caches, and registers to guarantee strict inter-scenario isolation.
      */
     public static void resetGlobalSimulationState() {
-        KurzweilAcceleratingReturnsEngine.resetState();
-        NuclearWarfareClimateEngine.resetState();
-        BifurcationChaosEngine.resetState();
-        TrophicEcosystemEngine.resetState();
-        GeoengineeringAlbedoFeedbackEngine.resetState();
-        TerraformingEngine.resetState();
-        PhysicalLawEngine.resetState();
-        World3CouplingEngine.resetState();
-        CulturalSociologyEngine.resetState();
-        ThermodynamicMigrationEngine.clearSpatialCache();
-        DynamicMaritimeRoutingGraph.clearCache();
-        PhysicalSupplyChainEngine.resetState();
-        AmerindianEcosystemEngine.resetState();
-        EdoJapanIsolationEngine.resetState();
-        CoGovernanceTradeEngine.resetState();
-        RomanImperialCliodynamicEngine.resetState();
-        TradeNetworkEngine.resetCumulativeStats();
-        InfrastructureInertiaEngine.resetState();
-        EntropicMetalDissipationEngine.resetState();
-        NuclearSafetyRadiotoxicityEngine.resetState();
-        OreGradeThermodynamicsEngine.resetState();
-        MonasticDemographicBufferEngine.resetState();
-        ProtestantWorkEthicEngine.resetState();
-        SmilMaterialTransitionsPureEngine.resetState();
-        TasmanianCulturalRegressionEngine.resetState();
-        JevonsParadoxEngine.resetState();
-        LanguageLinguisticEngine.resetState();
-        ProceduralEngineRegistry.clearPlugins();
+        TypeBEnginePassRunner.resetGlobalSimulationState();
     }
 
     /**
@@ -128,70 +100,7 @@ public class SimulationPipeline {
         if (this.demographicKernel != null) {
             this.demographicKernel.setBaseSeed(sSeed);
         }
-        if (this.structuralDemographicBifurcationEngine != null) {
-            this.structuralDemographicBifurcationEngine.setSeed(sSeed);
-        }
-        NuclearSafetyRadiotoxicityEngine.setBaseSeed(sSeed);
-        NuclearWarfareClimateEngine.setBaseSeed(sSeed);
-        LanguageLinguisticEngine.setBaseSeed(sSeed);
-
-        if (scenario == null || scenario.getTypeBEngineStates() == null || scenario.getTypeBEngineStates().isEmpty()) {
-            this.compiledKernel = null;
-            return;
-        }
-
-        Map<String, Boolean> states = scenario.getTypeBEngineStates();
-        ScenarioEngineJITCompiler compiler = new ScenarioEngineJITCompiler();
-        int registeredEngines = 0;
-
-        if (Boolean.TRUE.equals(states.get("SmilMaterialTransitionsPureEngine"))) {
-            compiler.registerEngineStep("SmilMaterialTransitionsPureEngine", "resourceCapital",
-                    new SymbolicExpression("resourceCapital", 0.999, 0.0), 0.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("JevonsParadoxEngine"))) {
-            compiler.registerEngineStep("JevonsParadoxEngine", "energyFoodConsumed",
-                    new SymbolicExpression("energyFoodConsumed", 1.005, 0.0), 0.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
-            compiler.registerEngineStep("TasmanianCulturalRegressionEngine", "technologyLevel",
-                    new SymbolicExpression("technologyLevel", 0.999, 0.0), 1.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("CoGovernanceTradeEngine"))) {
-            compiler.registerEngineStep("CoGovernanceTradeEngine", "pollutionLevel",
-                    new SymbolicExpression("pollutionLevel", 0.98, 0.0), 200.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("KurzweilAcceleratingReturnsEngine"))) {
-            compiler.registerEngineStep("KurzweilAcceleratingReturnsEngine", "technologyLevel",
-                    new SymbolicExpression("technologyLevel", 1.002, 0.0), 10.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("World3CouplingEngine"))) {
-            compiler.registerEngineStep("World3CouplingEngine", "resourceCapital",
-                    new SymbolicExpression("resourceCapital", 0.998, 0.0), 0.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("RomanImperialCliodynamicEngine"))) {
-            compiler.registerEngineStep("RomanImperialCliodynamicEngine", "resourceCapital",
-                    new SymbolicExpression("resourceCapital", 0.995, 0.0), 0.0);
-            registeredEngines++;
-        }
-
-        if (registeredEngines > 0) {
-            try {
-                this.compiledKernel = compiler.compile();
-                logger.info("⚡ Scenario JIT Kernel Compiled successfully for '{}' with {} fused Type B theories into a single unified pass.",
-                        scenario.getName(), registeredEngines);
-            } catch (Exception e) {
-                logger.warn("Could not compile scenario JIT kernel: {}", e.getMessage());
-                this.compiledKernel = null;
-            }
-        } else {
-            this.compiledKernel = null;
-        }
+        this.compiledKernel = typeBPassRunner.configureAndCompile(scenario, sSeed);
     }
 
     /**
@@ -252,17 +161,9 @@ public class SimulationPipeline {
 
         if (!executedNative) {
             environmentalKernel.tick(worldBuffer, dtSlow);
-
-
             demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
-
-
             urbanKernel.tick(worldBuffer, dtSlow);
-
-
             fluxKernel.tick(worldBuffer, dtSlow);
-
-
             cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
         }
 
@@ -325,12 +226,11 @@ public class SimulationPipeline {
         double currentCo2Ppm = (engine != null && engine.getMetricsAggregator() != null)
                 ? engine.getMetricsAggregator().getAtmosphericCO2Ppm()
                 : 280.0;
-        executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, avgTech, currentCo2Ppm);
-
+        executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, currentCo2Ppm);
 
         // Pass 2: Terrestrial Soil, Water & Ecosystem Fused Pass
         if (!landCells.isEmpty()) {
-            executeFusedTerrestrialPass(landCells, dtYears, dtMonthly, avgTech);
+            executeFusedTerrestrialPass(landCells, dtYears, dtMonthly);
         }
 
         // Pass 3: Anthropogenic Inhabited Cliodynamics & JIT-Compiled Scenario Theories Fused Pass
@@ -340,7 +240,6 @@ public class SimulationPipeline {
 
             // Dynamic Procedural Engine Plugins
             ProceduralEngineRegistry.processPlugins(populatedCells, dtMonthly);
-
         }
 
         if (engine != null) {
@@ -358,12 +257,11 @@ public class SimulationPipeline {
                                              AgentBuffer agentBuffer,
                                              double dtYears, double dtMonthly,
                                              SimulationPerformanceConfig perfConfig,
-                                             double avgTech, double co2Ppm) {
+                                             double co2Ppm) {
         RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(allCells);
         AtmosphericOxygenEngine.processAtmosphericOxygen(allCells, 0.21, 1.0);
         AlbedoClimateEngine.processAlbedoFeedback(allCells, dtYears);
 
-        greenhouseRadiativeEngine.applyTechnologicalMitigation(avgTech);
         greenhouseRadiativeEngine.applyToGrid(allCells);
 
         TerraformingEngine.processTerraforming(allCells, dtMonthly);
@@ -378,7 +276,7 @@ public class SimulationPipeline {
     /**
      * Pass 2: Soil Nutrients, Hydrology, Erosion & Terrestrial Ecosystems (Land Domain).
      */
-    private void executeFusedTerrestrialPass(List<H3Cell> landCells, double dtYears, double dtMonthly, double avgTech) {
+    private void executeFusedTerrestrialPass(List<H3Cell> landCells, double dtYears, double dtMonthly) {
         GlacialIsostaticAdjustmentEngine.processGlacialIsostasy(landCells, dtYears);
         SoilWaterRetentionEngine.processSoilWaterRetention(landCells);
         CrustalGeothermalEngine.processCrustalGeothermal(landCells);
@@ -387,30 +285,12 @@ public class SimulationPipeline {
         DeforestationErosionEngine.processDeforestationErosion(landCells, dtYears);
         AquiferDepletionEngine.processAquiferDepletion(landCells, dtYears);
         org.ether.society.engines.tier1.ManningStricklerHydrodynamicsEngine.processRiverHydrodynamics(landCells, dtYears);
-        EcologicalDegradationEngine.processEcologicalDegradation(landCells, avgTech, dtYears);
+        EcologicalDegradationEngine.processEcologicalDegradation(landCells, dtYears);
         MegafaunaEcosystemEngine.processMegafaunaEcosystem(landCells, dtYears);
 
         TrophicEcosystemEngine.processTrophicEcosystem(landCells, dtMonthly);
         DynamicHydrographicSiltationEngine.processHydrographicSiltation(landCells, dtMonthly);
     }
-
-    private final AcemogluRobinsonInstitutionsEngine acemogluRobinsonInstitutionsEngine = new AcemogluRobinsonInstitutionsEngine();
-    private final ArthurCombinatorialTechnologyEngine arthurCombinatorialTechnologyEngine = new ArthurCombinatorialTechnologyEngine();
-    private final BoserupAgriculturalIntensificationEngine boserupAgriculturalIntensificationEngine = new BoserupAgriculturalIntensificationEngine();
-    private final DraftAnimalFodderAllocationEngine draftAnimalFodderAllocationEngine = new DraftAnimalFodderAllocationEngine();
-    private final GranovetterThresholdCascadeEngine granovetterThresholdCascadeEngine = new GranovetterThresholdCascadeEngine();
-    private final HotellingResourceDepletionEngine hotellingResourceDepletionEngine = new HotellingResourceDepletionEngine();
-    private final KrugmanCorePeripheryEngine krugmanCorePeripheryEngine = new KrugmanCorePeripheryEngine();
-    private final KummelAyresExergyEngine kummelAyresExergyEngine = new KummelAyresExergyEngine();
-    private final PriceMultilevelSelectionEngine priceMultilevelSelectionEngine = new PriceMultilevelSelectionEngine();
-    private final SchellingAxelrodSegregationEngine schellingAxelrodSegregationEngine = new SchellingAxelrodSegregationEngine();
-    private final SoilSalinizationHydrologyEngine soilSalinizationHydrologyEngine = new SoilSalinizationHydrologyEngine();
-    private final SpatialMetapopulationSEIREngine spatialMetapopulationSEIREngine = new SpatialMetapopulationSEIREngine();
-    private final StructuralDemographicBifurcationEngine structuralDemographicBifurcationEngine = new StructuralDemographicBifurcationEngine();
-    private final TainterComplexityCollapseEngine tainterComplexityCollapseEngine = new TainterComplexityCollapseEngine();
-    private final TurchinGoldstoneSDTEngine turchinGoldstoneSDTEngine = new TurchinGoldstoneSDTEngine();
-    private final WestBettencourtAllometryEngine westBettencourtAllometryEngine = new WestBettencourtAllometryEngine();
-    private final SovereignAIGovernanceEngine sovereignAIGovernanceEngine = new SovereignAIGovernanceEngine();
 
     /**
      * Pass 3: Human Demographics, Power Grid, Metallurgy, Technology & Active Cliodynamic Theories (Populated Domain).
@@ -432,7 +312,9 @@ public class SimulationPipeline {
 
         // Step 3.3: Transport, Kinetic Warfare & Infrastructure
         PhysicsTransportEngine.processPhysicsTransport(populatedCells, dtYears);
-        if (scenario != null && scenario.getTypeBEngineStates() != null && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("ThermodynamicWarfareEngine"))) { ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears); }
+        if (scenario != null && scenario.getTypeBEngineStates() != null && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("ThermodynamicWarfareEngine"))) {
+            ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears);
+        }
         if (scenario != null && scenario.getTypeBEngineStates() != null
                 && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("NuclearWarfareClimateEngine"))) {
             NuclearWarfareClimateEngine.processNuclearWarfareClimate(populatedCells);
@@ -450,11 +332,7 @@ public class SimulationPipeline {
         List<TradeNetworkEngine.TradeRoute> tradeRoutes = null;
         if (scenario != null && scenario.getTypeBEngineStates() != null
                 && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("TradeNetworkEngine"))) {
-            double meanTech = populatedCells.stream()
-                    .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0)
-                    .average()
-                    .orElse(2.0);
-            tradeRoutes = TradeNetworkEngine.generateTradeNetworks(populatedCells, meanTech, dtYears);
+            tradeRoutes = TradeNetworkEngine.generateTradeNetworks(populatedCells, 1.0, dtYears);
         }
         TechTreeEngine.processTechnologyDiffusion(populatedCells, tradeRoutes, dtYears);
         LanguageLinguisticEngine.processLinguisticDrift(populatedCells, tradeRoutes);
@@ -469,189 +347,7 @@ public class SimulationPipeline {
         InfrastructureInertiaEngine.processInfrastructureInertia(populatedCells, dtMonthly);
         EntropicMetalDissipationEngine.processEntropicDissipation(populatedCells, dtMonthly);
 
-        // Step 3.6: JIT-Compiled Kernel Fusion for Active Type B Theories
-        if (compiledKernel != null) {
-            compiledKernel.executeFusedKernel(populatedCells, dtMonthly);
-        }
-
-        // Step 3.7: Active Type B Cliodynamic Theories & Historical Scenario Engines
-        if (scenario != null && scenario.getTypeBEngineStates() != null) {
-            Map<String, Boolean> states = scenario.getTypeBEngineStates();
-            
-            // Macroeconomic & Sociological Type B Theories
-            if (Boolean.TRUE.equals(states.get("UrbanThermodynamicsEngine"))) {
-                UrbanThermodynamicsEngine.processUrbanThermodynamics(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("CulturalSociologyEngine"))) {
-                CulturalSociologyEngine.processCulturalSociology(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("PhysicalLeontiefInputOutputEngine"))) {
-                PhysicalLeontiefInputOutputEngine.processLeontiefInputOutput(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("BifurcationChaosEngine"))) {
-                BifurcationChaosEngine.processBifurcationAnalysis(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("AcemogluRobinsonInstitutionsEngine"))) {
-                acemogluRobinsonInstitutionsEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("ArthurCombinatorialTechnologyEngine"))) {
-                arthurCombinatorialTechnologyEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("BoserupAgriculturalIntensificationEngine"))) {
-                boserupAgriculturalIntensificationEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("DraftAnimalFodderAllocationEngine"))) {
-                draftAnimalFodderAllocationEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("GranovetterThresholdCascadeEngine"))) {
-                granovetterThresholdCascadeEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("HotellingResourceDepletionEngine"))) {
-                hotellingResourceDepletionEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("KrugmanCorePeripheryEngine"))) {
-                krugmanCorePeripheryEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("KummelAyresExergyEngine"))) {
-                kummelAyresExergyEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("PriceMultilevelSelectionEngine"))) {
-                priceMultilevelSelectionEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("SchellingAxelrodSegregationEngine"))) {
-                schellingAxelrodSegregationEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("SoilSalinizationHydrologyEngine"))) {
-                soilSalinizationHydrologyEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("SpatialMetapopulationSEIREngine"))) {
-                spatialMetapopulationSEIREngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("StructuralDemographicBifurcationEngine"))) {
-                structuralDemographicBifurcationEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("TainterComplexityCollapseEngine"))) {
-                tainterComplexityCollapseEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("TurchinGoldstoneSDTEngine"))) {
-                turchinGoldstoneSDTEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("WestBettencourtAllometryEngine"))) {
-                westBettencourtAllometryEngine.process(populatedCells, dtYears);
-            }
-
-            // Historical & Specialized Type B Engines
-            if (Boolean.TRUE.equals(states.get("AmerindianEcosystemEngine"))) {
-                AmerindianEcosystemEngine.processHybrid(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("AsymmetricColonialTradeEngine"))) {
-                AsymmetricColonialTradeEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("DynamicMaritimeRoutingGraph"))) {
-                DynamicMaritimeRoutingGraph.processHybrid(populatedCells, dtMonthly * 365.25);
-            }
-            if (Boolean.TRUE.equals(states.get("EdoJapanIsolationEngine"))) {
-                EdoJapanIsolationEngine.processHybrid(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("FrontierAsabiyyahEngine"))) {
-                FrontierAsabiyyahEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("HydrologicalEngineeringEngine"))) {
-                HydrologicalEngineeringEngine.processHybrid(populatedCells, dtMonthly * 365.25);
-            }
-            if (Boolean.TRUE.equals(states.get("IsruAutarkyAndSpaceColonizationEngine"))) {
-                IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(populatedCells, null, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("KinSelectionHamiltonEngine"))) {
-                KinSelectionHamiltonEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("LandReclamationEngine"))) {
-                LandReclamationEngine.processHybrid(populatedCells, dtMonthly * 365.25);
-            }
-            if (Boolean.TRUE.equals(states.get("LenskiPureEngine"))) {
-                LenskiPureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("MarineSubmersionEngine"))) {
-                MarineSubmersionEngine.processHybrid(populatedCells, dtMonthly * 365.25);
-            }
-            if (Boolean.TRUE.equals(states.get("MaritimeHighwayEngine"))) {
-                MaritimeHighwayEngine.processHybrid(populatedCells, dtMonthly * 365.25);
-            }
-            if (Boolean.TRUE.equals(states.get("MonasticDemographicBufferEngine"))) {
-                MonasticDemographicBufferEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("NordhausDiceHybridEngine")) || Boolean.TRUE.equals(states.get("NordhausDICE"))) {
-                NordhausDiceHybridEngine.processPlugin(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("OstromCommonsPureEngine"))) {
-                OstromCommonsPureEngine.processHybrid(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("PhysicalSupplyChainEngine"))) {
-                PhysicalSupplyChainEngine.processSupplyChains(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("PinkerViolenceDeclinePureEngine")) || Boolean.TRUE.equals(states.get("Pinker"))) {
-                PinkerViolenceDeclinePureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("ProtestantWorkEthicEngine"))) {
-                ProtestantWorkEthicEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("RomanImperialCliodynamicEngine"))) {
-                RomanImperialCliodynamicEngine.processHybrid(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("ScottAgainstTheGrainPureEngine"))) {
-                ScottAgainstTheGrainPureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("SelfDomesticationEngine"))) {
-                SelfDomesticationEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("SexualSelectionMatingEngine"))) {
-                SexualSelectionMatingEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("SmilMaterialTransitionsPureEngine"))) {
-                SmilMaterialTransitionsPureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("SpatialCityFractalEngine"))) {
-                SpatialCityFractalEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
-                TasmanianCulturalRegressionEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("AiAutonomousRegulationPureEngine")) || Boolean.TRUE.equals(states.get("AutoRegulationPureEngine"))) {
-                AiAutonomousRegulationPureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("CulturalMaterialismPureEngine"))) {
-                CulturalMaterialismPureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("HandyNasaHybridEngine"))) {
-                HandyNasaHybridEngine.processPlugin(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("HandyNasaPureEngine"))) {
-                HandyNasaPureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("KardashevPureEngine"))) {
-                KardashevPureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("LeslieWhitePureEngine"))) {
-                LeslieWhitePureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("MilitaryTechShockEngine"))) {
-                MilitaryTechShockEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("NordhausDicePureEngine"))) {
-                NordhausDicePureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("PsychohistoryPureEngine"))) {
-                PsychohistoryPureEngine.processHybrid(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("SovereignAIGovernanceEngine"))) {
-                sovereignAIGovernanceEngine.process(populatedCells, dtYears);
-            }
-            if (Boolean.TRUE.equals(states.get("World3HybridEngine"))) {
-                World3HybridEngine.processPlugin(populatedCells, dtMonthly);
-            }
-            if (Boolean.TRUE.equals(states.get("World3PureEngine"))) {
-                World3PureEngine.processPlugin(populatedCells, dtMonthly);
-            }
-        }
+        // Step 3.6 & 3.7: JIT-Compiled Kernel Fusion & Active Type B Cliodynamic Engines
+        typeBPassRunner.executeActiveTypeBEngines(populatedCells, dtYears, dtMonthly, scenario, compiledKernel);
     }
 }

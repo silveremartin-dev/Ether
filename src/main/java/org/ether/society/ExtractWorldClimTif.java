@@ -6,6 +6,12 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
 
+/**
+ * Utility tool to extract and downsample WorldClim GeoTIFF raster layers for planetary elevation and precipitation.
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
+ */
 public class ExtractWorldClimTif {
     /**
      * Main operation.

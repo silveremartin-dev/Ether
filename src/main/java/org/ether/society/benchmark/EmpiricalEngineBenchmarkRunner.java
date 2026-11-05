@@ -110,14 +110,12 @@ public class EmpiricalEngineBenchmarkRunner {
             world.getFoodResource()[i] = 10000.0f;
             world.getBiomassNatural()[i] = 500.0f;
             world.getResourceCapital()[i] = 150.0f;
-            world.getTechnologyLevel()[i] = 2.5f;
 
             if (i < capacity / 2) {
                 agents.getHexIds()[i] = i;
                 agents.getMass()[i] = 150.0f;
                 agents.getEnergy()[i] = 80.0f;
                 agents.getAge()[i] = 25.0f;
-                agents.getTechLevel()[i] = 2.5f;
             }
         }
 

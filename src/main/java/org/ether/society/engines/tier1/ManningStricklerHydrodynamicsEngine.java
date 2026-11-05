@@ -6,63 +6,44 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
- * Open-Channel River Hydrodynamics & Floodplain Inundation Engine (Manning-Strickler Formula).
- *
- * <p>Models gravity-driven open-channel water flow velocity and volumetric discharge in river basins:</p>
- * <ul>
- *   <li><b>Manning-Strickler Mean Velocity Formula</b>:
- *     $$v = \frac{1}{n} R_h^{2/3} S^{1/2} = K_{\text{strickler}} \cdot R_h^{2/3} \cdot S^{1/2} \quad [\text{m/s}]$$
- *     where:
- *     - $n$: Manning roughness coefficient ($n \approx 0.030\text{ s}\cdot\text{m}^{-1/3}$ for natural clean channels).
- *     - $R_h$: Hydraulic radius ($R_h = A / P_{\text{wetted}} \approx \text{depth}$ in wide channels).
- *     - $S$: Channel bed hydraulic slope ($S = |\Delta z| / d$).
- *   </li>
- *   <li><b>Volumetric Discharge ($Q$)</b>: $Q = v \cdot A \quad [\text{m}^3/\text{s}]$.</li>
- *   <li><b>Floodplain Overtop & Inundation</b>: When discharge $Q > Q_{\text{bankfull}}$, water overtops natural levees,
- *       depositing fertile alluvial silt and replenishing soil moisture in riparian floodplains (Nile, Tigris-Euphrates, Indus).
- *   </li>
- * </ul>
+ * Open-Channel River Hydrodynamics &amp; Floodplain Inundation Engine (Manning-Strickler Formula).
+ * <p>
+ * Models gravity-driven open-channel water velocity $v = \frac{1}{n} R_h^{2/3} S^{1/2}$ and alluvial
+ * floodplain silt deposition using smooth ($C^\infty$) functions of continuous elevation $z$ and
+ * meteoric/catchment runoff ({@code AGENTS.md} §3, §10.2), without discrete {@code Biome} slope switches.
+ * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 public class ManningStricklerHydrodynamicsEngine {
-    private static final Logger logger = LoggerFactory.getLogger(ManningStricklerHydrodynamicsEngine.class);
 
-    /** Standard natural river channel Manning roughness coefficient (s/m^(1/3)) */
+    /** Standard natural river channel Manning roughness coefficient ($\text{s}\cdot\text{m}^{-1/3}$). */
     public static final double MANNING_ROUGHNESS_N = 0.035;
 
     /**
-     * Calculates open channel flow velocity (m/s) using Manning-Strickler equation.
-     *
-     * @param hydraulicRadiusM Hydraulic radius R_h in meters (approximated by river depth)
-     * @param bedSlope Bed slope gradient S (unitless, e.g. 0.001 = 1m drop per 1km)
-     * @param manningN Roughness coefficient n
-     * @return Mean water velocity in m/s
+     * Calculates open-channel flow velocity (m/s) using the Manning-Strickler equation.
      */
     public static double calculateFlowVelocity(double hydraulicRadiusM, double bedSlope, double manningN) {
-// Numerical integration step for ManningStricklerHydrodynamicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (hydraulicRadiusM <= 0.0 || bedSlope <= 0.0 || manningN <= 0.0) {
             return 0.0;
         }
-        double s = Math.max(1e-5, bedSlope);
-        double rh = Math.max(0.1, hydraulicRadiusM);
+        double s = SmoothMath.softmax(1e-5, bedSlope, 1e4);
+        double rh = SmoothMath.softmax(0.1, hydraulicRadiusM, 20.0);
         return (1.0 / manningN) * Math.pow(rh, 2.0 / 3.0) * Math.sqrt(s);
     }
 
     /**
-     * Calculates river discharge Q (m³/s) for a rectangular channel of given width and depth.
+     * Calculates river discharge $Q$ ($\text{m}^3/\text{s}$) for a rectangular channel of given width and depth.
      */
     public static double calculateDischarge(double widthM, double depthM, double bedSlope) {
-// Numerical integration step for ManningStricklerHydrodynamicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (widthM <= 0.0 || depthM <= 0.0) return 0.0;
         double area = widthM * depthM;
         double wettedPerimeter = widthM + 2.0 * depthM;
@@ -72,73 +53,72 @@ public class ManningStricklerHydrodynamicsEngine {
     }
 
     /**
-     * Processes river hydrodynamics and floodplain agricultural fertilization across H3 cells.
-     * Incorporates upstream regional watershed catchment accumulation: downstream river cells receive
-     * accumulated surface runoff from elevated upstream cells within their catchment basin.
+     * Processes river hydrodynamics and alluvial floodplain fertilization across H3 cells using
+     * continuous elevation-driven catchment partitioning and bed slope.
      */
     public static void processRiverHydrodynamics(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
 
-        // 1. Calculate upstream catchment runoff accumulation
-        // Estimate average runoff per cell based on precipitation
         double totalCatchmentRunoff = 0.0;
-        int upstreamCellCount = 0;
+        double upstreamWeightSum = 0.0;
+        double lowlandWeightSum = 0.0;
         boolean isWindowed = false;
+
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             if (cell.isBoundaryCell()) isWindowed = true;
+            Biome b = cell.getBiome();
+            if (b == Biome.OCEAN || b == Biome.DEEP_OCEAN) continue;
+
             double elev = cell.getElevationOr(0.0);
-            if (elev > 100.0 || cell.getBiome() == Biome.MOUNTAINS || cell.getBiome() == Biome.HILLS) {
-                double rain = cell.getRainfallOr(500.0);
-                totalCatchmentRunoff += rain * 0.40; // 40% surface runoff coefficient
-                upstreamCellCount++;
-            }
+            if (elev <= 0.0) continue;
+            double headwaterWeight = SmoothMath.sigmoid(elev, 150.0, 50.0);
+            double rain = cell.getRainfallOr(500.0);
+            totalCatchmentRunoff += rain * 0.40 * headwaterWeight;
+            upstreamWeightSum += headwaterWeight;
+            lowlandWeightSum += (1.0 - headwaterWeight);
         }
 
-        // Physical transboundary allogenic river boundary condition for windowed regional domains:
-        // When upstream headwater catchments fall outside the spatial window (e.g. Ethiopian Highlands for the Nile,
-        // Anatolian Plateau for Tigris-Euphrates, Tibetan Plateau for Indus), external discharge Q_inflow
-        // is determined by external catchment basin area A_basin * headwater precipitation P_head * runoff coefficient C_runoff.
-        if (isWindowed && (upstreamCellCount == 0 || totalCatchmentRunoff < 1000.0)) {
-            // UN FAO AQUASTAT / GRDC Nile empirical baseline: Q_basin ~ 84 km3/year = ~2660 m3/s
-            // In cellular precipitation equivalent across the river channel:
+        if (isWindowed && totalCatchmentRunoff < 1000.0) {
             int boundaryRiverChannels = Math.max(1, (int) Math.sqrt(cells.size()));
-            double transboundaryAnnualRunoffMm = 1200.0 * 0.35 * boundaryRiverChannels;
-            totalCatchmentRunoff += transboundaryAnnualRunoffMm;
-            upstreamCellCount += boundaryRiverChannels;
+            totalCatchmentRunoff += 1200.0 * 0.35 * boundaryRiverChannels;
+            upstreamWeightSum += boundaryRiverChannels;
         }
 
-        double catchmentRunoffPerEstuary = upstreamCellCount > 0 ? (totalCatchmentRunoff / Math.max(1, cells.size() - upstreamCellCount)) : 0.0;
+        double catchmentRunoffPerLowland = upstreamWeightSum > 0.0
+                ? (totalCatchmentRunoff / Math.max(1.0, lowlandWeightSum))
+                : 0.0;
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double rainfall = cell.getRainfallOr(500.0);
+            Biome b = cell.getBiome();
+            if (b == Biome.OCEAN || b == Biome.DEEP_OCEAN) continue;
             double elev = cell.getElevationOr(0.0);
+            if (elev < 0.0) continue;
 
-            // In lowlands / floodplains, effective water flow accumulates from upstream catchment runoff
-            double effectiveFlowRainfall = (elev < 100.0 && (cell.getBiome() == Biome.PLAINS || cell.getBiome() == Biome.BEACH))
-                    ? rainfall + catchmentRunoffPerEstuary
-                    : rainfall;
+            double rainfall = cell.getRainfallOr(500.0);
+            double lowlandFactor = 1.0 - SmoothMath.sigmoid(elev, 120.0, 40.0);
+            double effectiveFlowRainfall = rainfall + catchmentRunoffPerLowland * lowlandFactor;
 
-            // Slope estimated by terrain
-            double slope = (cell.getBiome() == Biome.MOUNTAINS) ? 0.02 : (cell.getBiome() == Biome.HILLS ? 0.005 : 0.0005);
-            double estimatedDepth = Math.max(0.5, (effectiveFlowRainfall / 1000.0) * 3.0);
-            double estimatedWidth = Math.max(10.0, Math.sqrt(effectiveFlowRainfall) * 2.5);
+            // Smooth continuous hydraulic bed slope S(z): 0.0005 on flat alluvial plains -> 0.025 in high mountains
+            double slope = 0.0004 + 0.025 * Math.tanh(Math.max(0.0, elev) / 1800.0);
+            double estimatedDepth = SmoothMath.softmax(0.5, (effectiveFlowRainfall / 1000.0) * 3.0, 4.0);
+            double estimatedWidth = SmoothMath.softmax(10.0, Math.sqrt(Math.max(0.0, effectiveFlowRainfall)) * 2.5, 0.5);
 
             double dischargeQ = calculateDischarge(estimatedWidth, estimatedDepth, slope);
 
-            // Fertile floodplain silt bonus for large lowland rivers (Plains/Beach with high discharge)
-            if (dischargeQ > 50.0 && (cell.getBiome() == Biome.PLAINS || cell.getBiome() == Biome.BEACH)) {
+            // Smooth alluvial silt deposition in lowland floodplains when discharge exceeds bankfull threshold (~50 m^3/s)
+            double overbankGate = SmoothMath.sigmoid(dischargeQ, 50.0, 15.0) * lowlandFactor;
+            if (overbankGate > 0.01) {
                 int pop = cell.getPopulationOr(0);
                 double currentAgri = (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0)
                         ? cell.getBiomassAgriculture()
                         : Math.min(2000.0, Math.max(50.0, pop * 2.5));
-                double floodplainFertilityBoost = Math.min(25.0, dischargeQ * 0.05 * deltaYears);
+                double floodplainFertilityBoost = SmoothMath.softmin(25.0, dischargeQ * 0.05 * deltaYears, 0.2) * overbankGate;
                 cell.setBiomassAgriculture(currentAgri + floodplainFertilityBoost);
-                cell.setWaterResource(Math.max(cell.getWaterResourceOr(0.0), Math.min(1000.0, dischargeQ * 2.5)));
+                double alluvialWater = SmoothMath.softmin(1000.0, dischargeQ * 2.5 * overbankGate, 0.02);
+                cell.setWaterResource(Math.max(cell.getWaterResourceOr(0.0), alluvialWater));
             }
         }
     }
 }
-
-

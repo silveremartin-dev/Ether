@@ -43,9 +43,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 
-/**
- * Deep multi-century cliodynamic validation suite on Madagascar contiguous hexagonal grid.
- */
 @Tag("academic")
 @Tag("scientific")
 @Tag("multiscale")

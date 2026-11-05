@@ -40,7 +40,6 @@ public class CellTooltip extends VBox {
 
     /**
      * Cell tooltip.
-     *
      */
     public CellTooltip() {
         // Container styling - frosted glass dark HUD panel
@@ -134,7 +133,6 @@ public class CellTooltip extends VBox {
      * Unified comprehensive cell update method.
      */
     public void updateCell(H3Cell cell, org.ether.society.core.dod.WorldBuffer world, Integer bufferIndex, Integer prevPop, List<ActiveEvent> activeEvents) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (cell == null && (world == null || bufferIndex == null || bufferIndex < 0)) {
             setVisible(false);
             return;
@@ -229,17 +227,17 @@ public class CellTooltip extends VBox {
         double aquifer = cell != null && cell.getFreshwaterAquifer() != null ? cell.getFreshwaterAquifer() : 0.0;
         waterLabel.setText(String.format("%-14s %.1f m³ (Aquifère: %.0f)", I18n.getOrDefault("tooltip.water_aquifer", "Eau / Aquifère:"), water, aquifer));
 
-        // Tech Level
+        // Tech Level (Emergent A Posteriori Diagnostic)
         double tech = 1.0;
-        if (world != null && bufferIndex != null && bufferIndex >= 0 && bufferIndex < world.getCapacity() && world.getTechnologyLevel()[bufferIndex] > 0) {
-            tech = world.getTechnologyLevel()[bufferIndex];
-        } else if (cell != null && cell.getTechnologyLevel() != null && cell.getTechnologyLevel() > 0) {
+        if (world != null && bufferIndex != null && bufferIndex >= 0 && bufferIndex < world.getCapacity()) {
+            tech = world.computeEmergentTechnologyDiagnostic(bufferIndex);
+        } else if (cell != null && cell.getTechnologyLevel() != null) {
             tech = cell.getTechnologyLevel();
         }
         techLabel.setText(String.format("%-14s Niv. %.2f", "Technologie :", tech));
 
         // Wealth
-        double wealth = currentPop * tech * 15.0;
+        double wealth = cell != null && cell.getResourceCapital() != null ? (cell.getResourceCapital() / 3.5) : (currentPop * tech * 15.0);
         wealthVarianceLabel.setText(String.format("%-14s G$ %,.0f", I18n.getOrDefault("tooltip.mesh_wealth", "Richesse PIB :"), wealth));
 
         // Carrying Capacity (K) & Malthusian Ratio
@@ -324,40 +322,19 @@ public class CellTooltip extends VBox {
         setVisible(true);
     }
 
-    /**
-     * Update cell.
-     *
-     * @param cell the cell parameter (H3Cell)
-     * @param prevPop the prev pop parameter (Integer)
-     */
     public void updateCell(H3Cell cell, Integer prevPop) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateCell(cell, null, null, prevPop, null);
     }
 
-    /**
-     * Update cell.
-     *
-     * @param cell the cell parameter (H3Cell)
-     */
     public void updateCell(H3Cell cell) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateCell(cell, null, null, null, null);
     }
 
-    /**
-     * Update from buffer.
-     *
-     * @param world the world parameter (org.ether.society.core.dod.WorldBuffer)
-     * @param index the index parameter (int)
-     */
     public void updateFromBuffer(org.ether.society.core.dod.WorldBuffer world, int index) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         updateCell(null, world, index, null, null);
     }
 
     private double computeCarryingCapacity(Biome biome, int elevation, double water, double aquifer, double tech) {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         if (elevation <= 0 && biome == Biome.OCEAN) return 0.0;
         double baseCap = 250.0;
         if (biome != null) {
@@ -398,14 +375,6 @@ public class CellTooltip extends VBox {
         };
     }
 
-    /**
-     * Position.
-     *
-     * @param canvasX the canvas x parameter (double)
-     * @param canvasY the canvas y parameter (double)
-     * @param maxX the max x parameter (double)
-     * @param maxY the max y parameter (double)
-     */
     public void position(double canvasX, double canvasY, double maxX, double maxY) {
         applyCss();
         layout();
@@ -438,10 +407,6 @@ public class CellTooltip extends VBox {
         setVisible(true);
     }
 
-    /**
-     * Hide.
-     *
-     */
     public void hide() {
         setVisible(false);
     }

@@ -49,7 +49,7 @@ public interface ISimulationEngine {
 
     default boolean isPauseAtNextEvent() { return false; }
 
-    default H3SimulationEngine.TemporalScale getTemporalScale() { return H3SimulationEngine.TemporalScale.DAILY; }
+    default TemporalScale getTemporalScale() { return TemporalScale.DAILY; }
 
     default org.ether.society.model.Scenario getCurrentScenario() { return null; }
 

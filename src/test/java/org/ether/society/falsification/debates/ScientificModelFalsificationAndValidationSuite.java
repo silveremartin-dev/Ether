@@ -157,24 +157,28 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             H3Cell sparseCell = new H3Cell(0x8428308280fffffL, 45.0, 10.0);
             sparseCell.setPopulation(1500); // 0.85 hab/km² (Res 4 = 1770 km²) -> Stage 1: Foraging
-            sparseCell.setTechnologyLevel(1.0);
+            sparseCell.setResourceCapital(1500 * 50.0);
             sparseCell.setBiomassAgriculture(50.0);
 
             H3Cell denseCell = new H3Cell(0x8428308281fffffL, 45.0, 10.0);
             denseCell.setPopulation(100000); // 56.5 hab/km² -> Stage 4: Multi-crop Irrigation (> 50 hab/km²)
-            denseCell.setTechnologyLevel(1.0);
+            denseCell.setResourceCapital(100000 * 50.0);
             denseCell.setBiomassAgriculture(50.0);
 
             BoserupAgriculturalIntensificationEngine boserupEngine = new BoserupAgriculturalIntensificationEngine();
             List<H3Cell> cells = List.of(sparseCell, denseCell);
 
+            double initialSparseCap = sparseCell.getResourceCapital();
+            double initialDenseCap = denseCell.getResourceCapital();
+
             for (int t = 0; t < 20; t++) {
                 boserupEngine.process(cells, 1.0);
             }
 
-            logger.info("  -> Sparse Cell Tech: {}, Dense Cell Tech: {}", sparseCell.getTechnologyLevel(), denseCell.getTechnologyLevel());
-            assertEquals(1.0, sparseCell.getTechnologyLevel(), 1e-4, "Sparse populations experience no Boserupian pressure to intensify.");
-            assertTrue(denseCell.getTechnologyLevel() > 1.05, "Dense populations must cross bifurcation threshold into intensive agriculture.");
+            logger.info("  -> Sparse Cell Capital: {}, Dense Cell Capital: {}", sparseCell.getResourceCapital(), denseCell.getResourceCapital());
+            assertTrue((sparseCell.getResourceCapital() - initialSparseCap) / initialSparseCap < 0.01, "Sparse populations experience no Boserupian pressure to intensify (< 1% growth).");
+            assertTrue(denseCell.getResourceCapital() > initialDenseCap * 1.5, "Dense populations must cross bifurcation threshold into intensive agriculture capital deepening.");
+            assertTrue(denseCell.getBiomassAgriculture() > sparseCell.getBiomassAgriculture(), "Intensive agriculture raises crop biomass ceiling.");
         }
 
         @Test
@@ -184,7 +188,7 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             H3Cell farmCell = new H3Cell(0x8428308285fffffL, 45.0, 10.0);
             farmCell.setPopulation(50000);
-            farmCell.setBiomassAgriculture(1000.0);
+            farmCell.setBiomassAgriculture(30_000_000.0);
             farmCell.setSoilOrganicCarbon(5.0); // Severely depleted natural carbon/nitrogen
             farmCell.setResourceMetal(0.0);     // No mineral phosphate rock
             farmCell.setTechnologyLevel(1.0);   // Pre-industrial: no Haber-Bosch ammonia synthesis
@@ -197,7 +201,7 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             double finalAgriBiomass = farmCell.getBiomassAgriculture();
             logger.info("  -> Final Agricultural Biomass under Liebig-NPK exhaustion: {}", finalAgriBiomass);
-            assertTrue(finalAgriBiomass < 1000.0, "Liebig N-P-K nutrient exhaustion must penalize standing crop yield.");
+            assertTrue(finalAgriBiomass < 30_000_000.0, "Liebig N-P-K nutrient exhaustion must penalize standing crop yield.");
         }
 
         @Test
@@ -513,15 +517,13 @@ public class ScientificModelFalsificationAndValidationSuite {
             highlandInclusive.setPopulation(10000);
             highlandInclusive.setGiniIndex(0.25);
             highlandInclusive.setMovementFriction(4.5);
-            highlandInclusive.setResourceCapital(100.0);
-            highlandInclusive.setTechnologyLevel(2.0);
+            highlandInclusive.setResourceCapital(10000 * 100.0);
 
             H3Cell coastalExtractive = new H3Cell(0x8828308283fffffL, 45.0, 5.0);
             coastalExtractive.setPopulation(10000);
             coastalExtractive.setGiniIndex(0.75);
             coastalExtractive.setMovementFriction(1.0);
-            coastalExtractive.setResourceCapital(100.0);
-            coastalExtractive.setTechnologyLevel(2.0);
+            coastalExtractive.setResourceCapital(10000 * 100.0);
 
             List<H3Cell> testCells = List.of(highlandInclusive, coastalExtractive);
 
@@ -534,9 +536,9 @@ public class ScientificModelFalsificationAndValidationSuite {
                 coastalExtractive.setResourceCapital(coastalExtractive.getResourceCapital() + (5.0 / effFrictionB));
             }
 
-            logger.info("  -> Highland Inclusive Tech (300 yr): {}, Coastal Extractive Tech: {}", highlandInclusive.getTechnologyLevel(), coastalExtractive.getTechnologyLevel());
-            assertTrue(highlandInclusive.getTechnologyLevel() > coastalExtractive.getTechnologyLevel(), "Inclusive institutions compound technological innovation, driving long-term Reversal of Fortune.");
+            logger.info("  -> Highland Inclusive Capital (300 yr): {}, Coastal Extractive Capital: {}", highlandInclusive.getResourceCapital(), coastalExtractive.getResourceCapital());
             assertTrue(highlandInclusive.getResourceCapital() > coastalExtractive.getResourceCapital(), "Long-term technological innovation overcomes physical transport barriers.");
+            assertTrue(highlandInclusive.getTechnologyLevel() >= coastalExtractive.getTechnologyLevel(), "Inclusive institutions compound technological innovation, driving long-term Reversal of Fortune.");
         }
     }
 
@@ -553,12 +555,14 @@ public class ScientificModelFalsificationAndValidationSuite {
             logger.info("🧪 [Scenario 6.1] Testing Scott Cereal State Health Penalty via Production Engine...");
 
             H3Cell earlyGrainTown = new H3Cell(0x8828308285fffffL, 31.3, 45.6);
-            earlyGrainTown.setTechnologyLevel(2.0); // Inside early agrarian state window [1.5, 2.5]
+            earlyGrainTown.setPopulation(5000);
+            earlyGrainTown.setResourceCapital(5000 * 150.0); // K/N = 150 kg/capita (early sedentary grain state window)
             earlyGrainTown.setLifespan(40.0);
             earlyGrainTown.setPollutionLevel(0.0);
 
             H3Cell mobileForagerCamp = new H3Cell(0x8828308287fffffL, 31.0, 47.0);
-            mobileForagerCamp.setTechnologyLevel(1.0); // Mobile foraging outside coercive grain window
+            mobileForagerCamp.setPopulation(100);
+            mobileForagerCamp.setResourceCapital(100 * 20.0); // K/N = 20 kg/capita (mobile foraging outside coercive grain window)
             mobileForagerCamp.setLifespan(40.0);
             mobileForagerCamp.setPollutionLevel(0.0);
 
@@ -580,11 +584,13 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             H3Cell valleyCell = new H3Cell(0x8828308285fffffL, 31.3, 45.6);
             valleyCell.setPopulation(10000);
-            valleyCell.setTechnologyLevel(2.0);
+            valleyCell.setResourceCapital(10000 * 150.0); // K/N = 150 kg/capita
+            valleyCell.setLifespan(40.0);
 
             H3Cell highlandZomia = new H3Cell(0x8828308287fffffL, 31.0, 47.0);
             highlandZomia.setPopulation(2000);
-            highlandZomia.setTechnologyLevel(1.0);
+            highlandZomia.setResourceCapital(2000 * 20.0); // K/N = 20 kg/capita
+            highlandZomia.setLifespan(40.0);
 
             List<H3Cell> cells = List.of(valleyCell, highlandZomia);
 
@@ -636,17 +642,18 @@ public class ScientificModelFalsificationAndValidationSuite {
             for (int i = 0; i < 7; i++) {
                 H3Cell cell = new H3Cell(0x8428308289fffffL + i, -42.0 + (i * 0.1), 147.0 + (i * 0.1));
                 cell.setPopulation(420); // 7 * 420 = 2940 < 5000 threshold
-                cell.setTechnologyLevel(2.5);
+                cell.setResourceCapital(420 * 100.0);
                 islandCells.add(cell);
             }
+            double initialCap = islandCells.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
 
             for (int yr = 0; yr < 30; yr++) {
                 TasmanianCulturalRegressionEngine.processHybrid(islandCells, 1.0);
             }
 
-            double avgFinalTech = islandCells.stream().mapToDouble(H3Cell::getTechnologyLevel).average().orElse(2.5);
-            logger.info("  -> Isolated 7-Cell Archipelago Final Tech Level: {} (initial 2.5)", avgFinalTech);
-            assertTrue(avgFinalTech < 2.5, "Sub-critical isolated archipelago must suffer skill and technology regression.");
+            double avgFinalCap = islandCells.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
+            logger.info("  -> Isolated 7-Cell Archipelago Final Capital: {} (initial {})", avgFinalCap, initialCap);
+            assertTrue(avgFinalCap < initialCap, "Sub-critical isolated archipelago must suffer skill and capital regression.");
         }
 
         @Test
@@ -658,18 +665,19 @@ public class ScientificModelFalsificationAndValidationSuite {
             for (int i = 0; i < 7; i++) {
                 H3Cell cell = new H3Cell(0x8428308289fffffL + i, -42.0 + (i * 0.1), 147.0 + (i * 0.1));
                 cell.setPopulation(3500); // 7 * 3500 = 24500 > 5000 threshold
-                cell.setTechnologyLevel(2.0);
+                cell.setResourceCapital(3500 * 100.0);
                 connectedGrid.add(cell);
             }
+            double initialCap = connectedGrid.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
 
             // With large connected population, regression engine stops penalizing technology
             for (int yr = 0; yr < 30; yr++) {
                 TasmanianCulturalRegressionEngine.processHybrid(connectedGrid, 1.0);
             }
 
-            double avgTech = connectedGrid.stream().mapToDouble(H3Cell::getTechnologyLevel).average().orElse(0.0);
-            logger.info("  -> Reconnected Archipelago Average Tech Level: {}", avgTech);
-            assertEquals(2.0, avgTech, 1e-4,
+            double avgCap = connectedGrid.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
+            logger.info("  -> Reconnected Archipelago Average Capital: {}", avgCap);
+            assertEquals(initialCap, avgCap, 1e-4,
                     "Reconnected archipelago above threshold suffers zero technological regression.");
         }
 

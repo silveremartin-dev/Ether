@@ -5,6 +5,7 @@ import org.ether.society.database.components.ClimateState;
 import org.ether.society.database.components.DemographicState;
 import org.ether.society.database.components.MineralState;
 import org.ether.society.model.Biome;
+import org.ether.society.core.math.SmoothMath;
 
 /**
  * High-performance Data-Oriented Storage for world hexagonal grid.
@@ -84,6 +85,9 @@ public class WorldBuffer {
     private final float[] storage;                 // Neolithic storage (granaries)
     private final float[] institutionalComplexity; // Tainter's complexity index
 
+    /** Allometric organism profile governing metabolic scaling across cells. */
+    private org.ether.society.model.OrganismBiophysicalProfile organismProfile = org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS;
+
     /**
      * World buffer.
      *
@@ -142,194 +146,190 @@ public class WorldBuffer {
      * @return the resulting computation or state reference
      */
     public long[] getH3Indexes() { return h3Indexes; }
+
     /**
-     * Get neighbor indexes.
+     * Retrieves the 2D neighbor adjacency table across all cells.
      *
-     * @return the resulting computation or state reference
+     * @return 2D array mapping each cell index to its contiguous topological neighbor indices
      */
     public int[][] getNeighborIndexes() { return neighborIndexes; }
-    /**
-     * Get elevation.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return topographic elevation buffer in meters above sea level (m) */
     public float[] getElevation() { return elevation; }
-    /**
-     * Get temperature.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return thermodynamic mean annual surface temperature buffer in degrees Celsius (°C) */
     public float[] getTemperature() { return temperature; }
-    /**
-     * Get rainfall.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return annual precipitation rainfall buffer in millimeters per year (mm/yr) */
     public float[] getRainfall() { return rainfall; }
-    /**
-     * Get biomes.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return discrete biome categorical classification ordinal identifiers */
     public byte[] getBiomes() { return biomes; }
-    
-    /**
-     * Get food resource.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return local available edible food biomass stock buffer in gigacalories (Gcal) */
     public float[] getFoodResource() { return foodResource; }
-    /**
-     * Get water resource.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return local available potable freshwater flux buffer in cubic meters (m³) */
     public float[] getWaterResource() { return waterResource; }
-    /**
-     * Get wood resource.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return local standing timber / combustible fuelwood biomass buffer in tons dry matter */
     public float[] getWoodResource() { return woodResource; }
-    /**
-     * Get metal resource.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return accessible structural and industrial metal reserves buffer in metric tons */
     public float[] getMetalResource() { return metalResource; }
-    /**
-     * Get clay resource.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return ceramic clay and earthen structural minerals buffer in metric tons */
     public float[] getClayResource() { return clayResource; }
-    
-    /**
-     * Get biomass human.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return total human / conscious living agent population count (individuals) */
     public float[] getBiomassHuman() { return biomassHuman; }
-    /**
-     * Get biomass livestock.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return domesticated livestock biomass stock in metric tons */
     public float[] getBiomassLivestock() { return biomassLivestock; }
-    /**
-     * Get biomass fish.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return marine and freshwater harvestable fish biomass stock in metric tons */
     public float[] getBiomassFish() { return biomassFish; }
-    /**
-     * Get biomass agriculture.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return cultivated crop standing agricultural biomass in metric tons */
     public float[] getBiomassAgriculture() { return biomassAgriculture; }
-    /**
-     * Get biomass natural.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return primary wild vegetative ecosystem biomass stock in metric tons */
     public float[] getBiomassNatural() { return biomassNatural; }
-    
-    /**
-     * Get energy wind.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return kinetic wind energy flux captured in megawatt-hours (MWh) */
     public float[] getEnergyWind() { return energyWind; }
-    /**
-     * Get energy solar.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return incident solar irradiance energy flux captured in megawatt-hours (MWh) */
     public float[] getEnergySolar() { return energySolar; }
-    /**
-     * Get energy fire.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return combustible thermal fire / furnace exergy captured in megawatt-hours (MWh) */
     public float[] getEnergyFire() { return energyFire; }
-    /**
-     * Get energy slaves.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return forced somatic captive labor energy flux in megawatt-hours (MWh) */
     public float[] getEnergySlaves() { return energySlaves; }
-    /**
-     * Get energy food consumed.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return metabolic food energy ingested by human population in gigajoules (GJ) */
     public float[] getEnergyFoodConsumed() { return energyFoodConsumed; }
-    
-    /**
-     * Get lifespan.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return demographic cohort life expectancy at birth in years (yr) */
     public float[] getLifespan() { return lifespan; }
-    /**
-     * Get fertility.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return demographic total fertility rate (children per female) */
     public float[] getFertility() { return fertility; }
-    /**
-     * Get gini index.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return Lorenz curve economic Gini inequality coefficient [0.0..1.0] */
     public float[] getGiniIndex() { return giniIndex; }
+
     /**
-     * Get technology level.
+     * Retrieves the legacy technology level buffer array.
      *
-     * @return the resulting computation or state reference
+     * @return raw float array representing technology levels for backwards compatibility
      */
     public float[] getTechnologyLevel() { return technologyLevel; }
-    /**
-     * Get resource capital.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return gross physical built structural capital stock in physical units (K) */
     public float[] getResourceCapital() { return resourceCapital; }
-    
-    /**
-     * Get flux pressure.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return spatial logistic transport flux pressure gradient */
     public float[] getFluxPressure() { return fluxPressure; }
-    /**
-     * Get local price.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return marginal commodity clearing price index */
     public float[] getLocalPrice() { return localPrice; }
-    /**
-     * Get storage.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return non-perishable stored grain and staple food reserve in metric tons */
     public float[] getStorage() { return storage; }
-    /**
-     * Get institutional complexity.
-     *
-     * @return the resulting computation or state reference
-     */
+
+    /** @return Tainter administrative bureaucracy and institutional complexity index */
     public float[] getInstitutionalComplexity() { return institutionalComplexity; }
+
+    /**
+     * Retrieves the allometric biophysical organism profile governing somatic energetics.
+     *
+     * @return active organism biophysical profile
+     */
+    public org.ether.society.model.OrganismBiophysicalProfile getOrganismProfile() { return organismProfile; }
+
+    /**
+     * Updates the allometric biophysical organism profile.
+     *
+     * @param p organism biophysical profile (defaults to Homo Sapiens if non-null)
+     */
+    public void setOrganismProfile(org.ether.society.model.OrganismBiophysicalProfile p) { if (p != null) this.organismProfile = p; }
+
+    /**
+     * Calculates total somatic and exosomatic mechanical and thermal power flux per individual in Watts:
+     * $$P_{\text{watts/cap}} = B_{\text{basal}} + P_{\text{work}} + P_{\text{wood}} \cdot \eta_{\text{conv}} + P_{\text{draft}} + \frac{P_{\text{direct}}}{N} + 18.0 \cdot k_{\text{pc}} \cdot \eta_{\text{conv}}$$
+     *
+     * @param index cell buffer index
+     * @return total continuous power dissipated per capita in Watts (\(\text{W}\))
+     */
+    public float computeCellPowerWattsPerCapita(int index) {
+        if (index < 0 || index >= capacity) return 0.0f;
+        float pop = biomassHuman[index];
+        if (pop <= 0.001f) return 0.0f;
+        double basalW = organismProfile.basalMetabolicPowerWatts();
+        double kpc = Math.max(0.0, resourceCapital[index] / pop);
+        double converterEff = 0.15 + 0.70 * (1.0 - Math.exp(-kpc / 400.0));
+        double woodThermalW = (150.0 + 500.0 * Math.tanh((biomassNatural[index] + woodResource[index]) / 500.0 + kpc * 0.02)) * converterEff;
+        double draftW = 120.0 * Math.tanh(biomassLivestock[index] / Math.max(1.0, pop * 0.25));
+        // Environmental thermal & kinetic harness strictly bounded by physical converter capital (Smil 2017)
+        // Fire power per capita is bounded by domestic heating/cooking hearth limits (~250 W/capita)
+        double fireW = 250.0 * Math.tanh(Math.max(0.0, energyFire[index]) / Math.max(1.0, pop * 400.0));
+        // Wind kinetic harvesting gated by medieval/early modern windmill and sail capital (kpc ~ 150-300)
+        double sigmaWind = SmoothMath.sigmoid(kpc, 250.0, 60.0);
+        double windHarnessedW = 150.0 * sigmaWind * Math.tanh(Math.max(0.0, energyWind[index]) / 1000.0);
+        // Solar photovoltaic/concentrated solar thermal gated by advanced modern capital (kpc ~ 8000+)
+        double sigmaSolar = SmoothMath.sigmoid(kpc, 10000.0, 2500.0);
+        double solarHarnessedW = 1500.0 * sigmaSolar * Math.tanh(Math.max(0.0, energySolar[index]) / 1000.0);
+        double directFluxW = fireW + windHarnessedW + solarHarnessedW;
+        // Passive structural capital (roads, aqueducts, stone masonry) does not generate motive power.
+        // Motive mechanical/electric machinery power requires authentic industrial converter capital (kpc >= 800, Smil 2017)
+        double sigmaIndustrialMachinery = SmoothMath.sigmoid(kpc, 900.0, 200.0);
+        double capitalGridW = 4500.0 * sigmaIndustrialMachinery * converterEff;
+        return (float) (basalW + 50.0 + woodThermalW + draftW + directFluxW + capitalGridW);
+    }
+
+    /**
+     * Computes the strictly <i>a posteriori</i> Garrett-Lotka emergent exergy-capital diagnostic index
+     * for a cell buffer index:
+     * $$T_{\text{emergent}} = 0.50 + 1.45 \log_{10}(\mathcal{M}) + 0.58 \log_{10}\!\left(1 + \frac{k_{\text{active}}}{k_0}\right)$$
+     *
+     * @param index primitive cell buffer index
+     * @return dimensionless emergent technology diagnostic in \([0.0, 10.0]\)
+     */
+    public float computeEmergentTechnologyDiagnostic(int index) {
+        if (index < 0 || index >= capacity) return 0.0f;
+        if (technologyLevel != null && technologyLevel[index] > 0.0f) {
+            return technologyLevel[index];
+        }
+        float pop = biomassHuman[index];
+        if (pop <= 0.001f) return 0.0f;
+        double powerW = computeCellPowerWattsPerCapita(index);
+        double kpc = Math.max(0.0, resourceCapital[index] / pop);
+        return (float) org.ether.society.database.H3CellPhysicsAndStateHelper.computeGarrettLotkaEmergentIndex(
+                powerW, kpc, organismProfile.basalMetabolicPowerWatts());
+    }
+
+    /**
+     * Computes the strictly <i>a posteriori</i> Garrett-Lotka emergent exergy-capital diagnostic index
+     * for a nullable boxed cell buffer index.
+     *
+     * @param index boxed cell buffer index
+     * @return dimensionless emergent technology diagnostic in \([0.0, 10.0]\) (0.0f if null)
+     */
+    public float computeEmergentTechnologyDiagnostic(Integer index) {
+        return index != null ? computeEmergentTechnologyDiagnostic(index.intValue()) : 0.0f;
+    }
 
     // Index Partitioning for DOD Performance (Land vs. Ocean)
     private int[] landIndices;
     private int[] oceanIndices;
 
     /**
-     * Get land indices.
+     * Retrieves the cached array of cell indices classified as terrestrial land (non-oceanic biomes).
+     * Lazily populates partition cache on first invocation.
      *
-     * @return the resulting computation or state reference
+     * @return array of land cell buffer indices
      */
     public synchronized int[] getLandIndices() {
         if (landIndices == null) {
@@ -359,9 +359,9 @@ public class WorldBuffer {
     }
 
     /**
-     * Get ocean indices.
+     * Retrieves the cached array of cell indices classified as marine waters ({@link Biome#OCEAN} and {@link Biome#DEEP_OCEAN}).
      *
-     * @return the resulting computation or state reference
+     * @return array of marine cell buffer indices
      */
     public synchronized int[] getOceanIndices() {
         if (oceanIndices == null) {
@@ -371,9 +371,13 @@ public class WorldBuffer {
     }
 
     /**
-     * Invalidate partition indices.
-     *
+     * Invalidates the cached land and ocean partition indices, triggering lazy recalculation
+     * upon next query if cell biome classifications are modified dynamically.
      */
+    public void invalidatePartitionIndices() {
+        this.landIndices = null;
+        this.oceanIndices = null;
+    }
     // =========================================================================
     // COMPONENT ADAPTERS (DATA-ORIENTED DESIGN)
     // =========================================================================
@@ -506,10 +510,5 @@ public class WorldBuffer {
     public void setMineralState(int index, MineralState state) {
         if (state == null) return;
         this.metalResource[index] = (float) state.resourceMetal();
-    }
-
-    public void invalidatePartitionIndices() {
-        this.landIndices = null;
-        this.oceanIndices = null;
     }
 }

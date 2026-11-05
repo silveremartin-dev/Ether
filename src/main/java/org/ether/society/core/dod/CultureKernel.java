@@ -1,5 +1,6 @@
 package org.ether.society.core.dod;
 
+import org.ether.society.core.math.SmoothMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,11 +8,11 @@ import org.slf4j.LoggerFactory;
  * Thermodynamic Cultural Simulation Kernel (Langevin Stochastic Differential Equation Bridge).
  * <p>
  * Models stochastic cultural drift, spatial memetic diffusion across H3 hexagonal neighbors,
- * and restoration forcing toward empirical geocultural tensors (Isogloss, Kinship, Rituals, Sovereignty).
+ * and restoration forcing toward biophysical geocultural tensors (Isogloss, Kinship, Rituals, Sovereignty)
+ * derived strictly from conserved physical observables ({@code AGENTS.md} §10.1, §10.2).
  * </p>
  * <p>
- * <b>Governing Langevin-SDE Equation:</b>
- * $$dC_i = \left[ \mu_d \sum_{j \in N(i)} (C_j - C_i) + \lambda_{\text{forcing}} (C_{\text{tensor}}(x_i) - C_i) \right] dt + \sigma_{\text{Langevin}} dW_t$$
+ * Mathematically synchronized with {@code native/ether-core-native/src/culture.rs}.
  * </p>
  *
  * @author Silvere Martin-Michiellot
@@ -20,9 +21,9 @@ import org.slf4j.LoggerFactory;
 public class CultureKernel {
     private static final Logger logger = LoggerFactory.getLogger(CultureKernel.class);
 
-    private float diffusionRate = 0.08f;   // Inter-cohort memetic acculturation rate (mu_d)
-    private float mutationRate = 0.015f;   // Langevin stochastic noise intensity (sigma_Langevin)
-    private float forcingRate = 0.05f;    // Geocultural map tensor anchoring rate (lambda_forcing)
+    private float diffusionRate = 0.08f;
+    private float mutationRate = 0.015f;
+    private float forcingRate = 0.05f;
     private long deterministicTickCounter = 0L;
     private long baseSeed = 42L;
 
@@ -32,9 +33,7 @@ public class CultureKernel {
     private int[] activeHexes;
     private int activeHexCount = 0;
 
-    /**
-     * Resets the internal deterministic tick counter and default kernel rates.
-     */
+    /** Resets internal deterministic tick counter and default kernel rates. */
     public void resetState() {
         this.diffusionRate = 0.08f;
         this.mutationRate = 0.015f;
@@ -43,120 +42,58 @@ public class CultureKernel {
         this.baseSeed = 42L;
     }
 
-    /**
-     * Sets the scenario-derived random seed for deterministic cultural drift.
-     *
-     * @param seed the scenario seed (long)
-     */
-    public void setBaseSeed(long seed) {
-        this.baseSeed = seed;
-    }
+    /** @param seed deterministic scenario seed */
+    public void setBaseSeed(long seed) { this.baseSeed = seed; }
+    /** @return deterministic scenario seed */
+    public long getBaseSeed() { return baseSeed; }
 
-    /**
-     * Gets the scenario-derived random seed for deterministic cultural drift.
-     *
-     * @return the base seed (long)
-     */
-    public long getBaseSeed() {
-        return baseSeed;
-    }
-
-    /**
-     * Get diffusion rate.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return memetic spatial diffusion rate */
     public float getDiffusionRate() { return diffusionRate; }
-    /**
-     * Set diffusion rate operation.
-     * <p>
-     * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param rate the rate argument (float)
-     */
+    /** @param rate memetic spatial diffusion rate */
     public void setDiffusionRate(float rate) { this.diffusionRate = Math.max(0.0f, rate); }
 
-    /**
-     * Get mutation rate.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return Langevin stochastic mutation rate */
     public float getMutationRate() { return mutationRate; }
-    /**
-     * Set mutation rate operation.
-     * <p>
-     * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param rate the rate argument (float)
-     */
+    /** @param rate Langevin stochastic mutation rate */
     public void setMutationRate(float rate) { this.mutationRate = Math.max(0.0f, rate); }
 
-    /**
-     * Get forcing rate.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return regional tensor forcing rate */
     public float getForcingRate() { return forcingRate; }
-    /**
-     * Set forcing rate operation.
-     * <p>
-     * Executes operational logic for {@code CultureKernel} within the Data-Oriented Design memory buffer subsystem.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param rate the rate argument (float)
-     */
+    /** @param rate regional tensor forcing rate */
     public void setForcingRate(float rate) { this.forcingRate = Math.max(0.0f, rate); }
 
     /**
      * Executes one thermodynamic cultural evolution step (Langevin SDE integration).
      *
-     * @param world contiguous world state buffer
+     * @param world  contiguous world state buffer
      * @param agents contiguous agent/cohort state buffer
-     * @param dt time step duration
+     * @param dt     time step duration in days or seconds (if &gt; 1000)
      */
     public void tick(WorldBuffer world, AgentBuffer agents, float dt) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
-        float dtNormalized = Math.max(0.001f, dt > 1000.0f ? (dt / (86400.0f * 365.25f)) : (dt / 365.25f));
+        float dtNormalized = Math.max(0.0001f, dt > 1000.0f ? (dt / 31557600.0f) : (dt / 365.25f));
         deterministicTickCounter++;
         langevinDrift(agents, dtNormalized, deterministicTickCounter);
         diffuseAndForce(world, agents, dtNormalized);
     }
 
-    /**
-     * Applies local Langevin stochastic Wiener drift dW_t using deterministic Box-Muller sampling.
-     */
     private void langevinDrift(AgentBuffer agents, float dt, long tickIndex) {
         float[][] culture = agents.getCulture();
         int[] hexIds = agents.getHexIds();
         int dims = culture != null ? culture.length : 0;
+        if (mutationRate <= 0.0f || dims == 0) return;
         float noiseCoeff = (float) (mutationRate * Math.sqrt(dt));
-        
+
         for (int i = 0; i < agents.getCapacity(); i++) {
             if (hexIds[i] == -1) continue;
-            
             for (int d = 0; d < dims; d++) {
-                // Deterministic Langevin stochastic Wiener increment (dw = Normal(0, sqrt(dt)))
                 double gaussianNoise = Math.clamp(
                         org.ether.society.util.DeterministicPRNG.nextGaussian(baseSeed, tickIndex, ((long) i << 4) | d),
                         -3.0, 3.0);
-                
-                culture[d][i] += (float) (gaussianNoise * noiseCoeff);
-                // Closed projection onto the unit hypercube tensor domain [0.0, 1.0]
-                culture[d][i] = Math.max(0.0f, Math.min(1.0f, culture[d][i]));
+                culture[d][i] = Math.clamp(culture[d][i] + (float) (gaussianNoise * noiseCoeff), 0.0f, 1.0f);
             }
         }
     }
 
-    /**
-     * Inter-hexagon memetic diffusion and thermodynamic anchoring toward reference tensors.
-     * Strictly linear complexity O(N_agents + 6 * N_cells) via cell-level spatial aggregation.
-     */
     private void diffuseAndForce(WorldBuffer world, AgentBuffer agents, float dt) {
         float[][] culture = agents.getCulture();
         int[] hexIds = agents.getHexIds();
@@ -189,7 +126,6 @@ public class CultureKernel {
             }
         }
 
-        // Compute cell-level cultural means strictly for active populated cells
         for (int k = 0; k < activeHexCount; k++) {
             int h = activeHexes[k];
             int count = cachedHexAgentCount[h];
@@ -200,7 +136,6 @@ public class CultureKernel {
             }
         }
 
-        // 2. Apply spatial neighbor diffusion and regional tensor forcing: O(N_agents)
         float diffCoeff = (diffusionRate / 6.0f) * dt;
         float forceCoeff = forcingRate * dt;
 
@@ -212,7 +147,6 @@ public class CultureKernel {
                 float myVal = culture[d][i];
                 float delta = 0.0f;
 
-                // Spatial diffusion across the 6 adjacent H3 hexagonal neighbors
                 for (int j = 0; j < 6; j++) {
                     int nHex = neighbors[myHex][j];
                     if (nHex >= 0 && nHex < worldCapacity) {
@@ -223,16 +157,13 @@ public class CultureKernel {
                     }
                 }
 
-                // Thermodynamic forcing lambda toward the regional tensor attractor
                 float targetSpatialVal = getSpatialTensorAnchor(world, myHex, d);
                 delta += (targetSpatialVal - myVal) * forceCoeff;
 
-                // Bounded state update within [0.0, 1.0]
-                culture[d][i] = Math.max(0.0f, Math.min(1.0f, myVal + delta));
+                culture[d][i] = Math.clamp(myVal + delta, 0.0f, 1.0f);
             }
         }
 
-        // Reset only the active cells in O(activeHexCount)
         for (int k = 0; k < activeHexCount; k++) {
             int h = activeHexes[k];
             cachedHexAgentCount[h] = 0;
@@ -243,49 +174,51 @@ public class CultureKernel {
     }
 
     /**
-     * Computes the geographic spatial tensor anchor for a given cell and cultural dimension.
+     * Computes the smooth ($C^\infty$) geographic spatial tensor anchor for a given cell and cultural dimension
+     * strictly from conserved physical observables (elevation, physical capital per capita $K/N$,
+     * institutional complexity, population, biomass, and lifespan).
      */
     private float getSpatialTensorAnchor(WorldBuffer world, int hexIdx, int dimension) {
         if (world == null || hexIdx < 0 || hexIdx >= world.getCapacity()) return 0.5f;
 
-        float tech = world.getTechnologyLevel() != null && hexIdx < world.getTechnologyLevel().length ? world.getTechnologyLevel()[hexIdx] : 1.0f;
         float elevation = world.getElevation() != null && hexIdx < world.getElevation().length ? world.getElevation()[hexIdx] : 0.0f;
         float instComp = world.getInstitutionalComplexity() != null && hexIdx < world.getInstitutionalComplexity().length ? world.getInstitutionalComplexity()[hexIdx] : 0.0f;
         float humanPop = world.getBiomassHuman() != null && hexIdx < world.getBiomassHuman().length ? world.getBiomassHuman()[hexIdx] : 0.0f;
+        float capital = world.getResourceCapital() != null && hexIdx < world.getResourceCapital().length ? world.getResourceCapital()[hexIdx] : 0.0f;
+        float capPerCap = humanPop > 0.001f ? (capital / humanPop) : 0.0f;
         float lifespan = world.getLifespan() != null && hexIdx < world.getLifespan().length ? world.getLifespan()[hexIdx] : 35.0f;
         float natBiomass = (world.getBiomassNatural() != null && hexIdx < world.getBiomassNatural().length ? world.getBiomassNatural()[hexIdx] : 0.0f)
                 + (world.getBiomassAgriculture() != null && hexIdx < world.getBiomassAgriculture().length ? world.getBiomassAgriculture()[hexIdx] : 0.0f);
 
         switch (dimension) {
-            case 0: // Isogloss (Linguistic variability driven by topographic elevation roughness, Nichols 1992)
+            case 0: // Isogloss (topographic elevation roughness, Nichols 1992)
                 return Math.clamp(0.5f + (float) Math.tanh(elevation / 3500.0) * 0.35f, 0.0f, 1.0f);
-            case 1: // Kinship & Clan structure vs. Nuclear family (Henrich 2020; Goody 1983)
-                float clanDecay = (float) (1.0 / (1.0 + Math.exp(1.2 * (tech - 3.2))));
-                return Math.clamp(0.20f + 0.60f * clanDecay, 0.0f, 1.0f);
-            case 2: // Rituals & Asabiyyah (Sacred social cohesion / frontier solidarity, Turchin 2003)
-                float asabiyyahRuggedness = (float) (1.0 / (1.0 + Math.exp(-0.003 * (elevation - 1000.0f))));
+            case 1: // Kinship & Clan structure vs. Market/Institutional nuclearization (Henrich 2020; Goody 1983)
+                float clanPersistence = 1.0f - SmoothMath.sigmoidF(capPerCap, 120.0f, 45.0f);
+                return Math.clamp(0.20f + 0.60f * clanPersistence, 0.0f, 1.0f);
+            case 2: // Rituals & Asabiyyah (frontier solidarity, Turchin 2003)
+                float asabiyyahRuggedness = SmoothMath.sigmoidF(elevation, 1000.0f, 333.333f);
                 return Math.clamp(0.50f + 0.30f * asabiyyahRuggedness, 0.0f, 1.0f);
-            case 3: // Sovereignty & State Integration (Tilly 1990; coercive centralization)
-                float stateCentralization = instComp / (15.0f + instComp);
+            case 3: // Sovereignty & State Integration (Tilly 1990; coercive/administrative centralization)
+                float stateCentralization = instComp / (15.0f + Math.max(0.0f, instComp));
                 return Math.clamp(0.15f + 0.70f * stateCentralization, 0.0f, 1.0f);
-            case 4: // Technology & Materiality (Solow 1956; physical capitalization)
-                return Math.clamp(0.10f + 0.80f * (float) Math.tanh(tech / 5.5), 0.0f, 1.0f);
-            case 5: // Trade networks & Market integration (Krugman 1991; lowland coastal accessibility and urban density)
-                float lowlandAccess = (float) (1.0 / (1.0 + Math.exp(0.004 * (elevation - 600.0f))));
+            case 4: // Material Capitalization (Solow 1956; intensive physical infrastructure K/N)
+                return Math.clamp(0.10f + 0.80f * (float) Math.tanh(capPerCap / 250.0), 0.0f, 1.0f);
+            case 5: // Trade networks & Market integration (Krugman 1991; lowland accessibility and settlement scale)
+                float lowlandAccess = 1.0f - SmoothMath.sigmoidF(elevation, 600.0f, 250.0f);
                 float popDensityScale = (float) Math.tanh(humanPop / 5000.0f);
                 return Math.clamp(0.25f + 0.40f * lowlandAccess + 0.25f * popDensityScale, 0.0f, 1.0f);
-            case 6: // Institutional complexity (Seshat scale, Turchin et al. 2018; hierarchical administrative levels)
-                float seshatHierarchy = instComp / (25.0f + instComp);
+            case 6: // Institutional complexity (Seshat scale, Turchin et al. 2018)
+                float seshatHierarchy = instComp / (25.0f + Math.max(0.0f, instComp));
                 return Math.clamp(0.10f + 0.80f * seshatHierarchy, 0.0f, 1.0f);
-            case 7: // Ecological footprint / Malthusian stress (Boserup 1965; human load vs biomass base)
-                float malthusianLoad = humanPop / (100.0f + natBiomass);
+            case 7: // Ecological footprint / Malthusian stress (Boserup 1965)
+                float malthusianLoad = humanPop / (100.0f + Math.max(0.0f, natBiomass));
                 float footprintScale = malthusianLoad / (0.6f + malthusianLoad);
                 return Math.clamp(0.15f + 0.75f * footprintScale, 0.0f, 1.0f);
-            case 8: // Pathogen memory & Sanitary barrier (Omran 1971; Preston 1975; epidemiological transition)
-                float sanitaryTransition = (float) (1.0 / (1.0 + Math.exp(-0.12 * (lifespan - 45.0f))));
+            case 8: // Pathogen memory & Sanitary barrier (Omran 1971; Preston 1975)
+                float sanitaryTransition = SmoothMath.sigmoidF(lifespan, 45.0f, 8.333f);
                 return Math.clamp(0.20f + 0.65f * sanitaryTransition, 0.0f, 1.0f);
             default:
-                // Neutral anchor for custom higher dimensions
                 return 0.5f;
         }
     }
@@ -294,8 +227,6 @@ public class CultureKernel {
      * Computes Euclidean linguistic/cultural intelligibility distance between two cohorts.
      */
     public static float calculateCulturalDistance(float[] c1, float[] c2) {
-        // High-performance contiguous memory pass: Cache-aligned array streaming
-        // Vectorized SIMD / analytical state updates with zero heap allocation
         if (c1 == null || c2 == null) return 0.0f;
         float sumSq = 0.0f;
         for (int d = 0; d < Math.min(c1.length, c2.length); d++) {

@@ -28,123 +28,11 @@ import java.awt.image.BufferedImage;
 public class MapComparisonMetrics {
     private static final Logger logger = LoggerFactory.getLogger(MapComparisonMetrics.class);
 
-    public static class MapComparisonResult {
-        /** Internal state: rmse (double). */
-        private final double rmse;
-        /** Internal state: pearson r (double). */
-        private final double pearsonR;
-        /** Internal state: ssim (double). */
-        private final double ssim;
-        /** Internal state: jaccard index (double). */
-        private final double jaccardIndex;
-        /** Internal state: dice coefficient (double). */
-        private final double diceCoefficient;
-        /** Internal state: kl divergence (double). */
-        private final double klDivergence;
-        /** Internal state: max delta value (double). */
-        private final double maxDeltaValue;
-        /** Internal state: max delta lng (double). */
-        private final double maxDeltaLng;
-        /** Internal state: max delta lat (double). */
-        private final double maxDeltaLat;
-        /** Internal state: diagnostic summary (String). */
-        private final String diagnosticSummary;
-
+    public static class MapComparisonResult extends org.ether.society.analytics.MapComparisonResult {
         public MapComparisonResult(double rmse, double pearsonR, double ssim, double jaccardIndex,
                                    double diceCoefficient, double klDivergence, double maxDeltaValue,
                                    double maxDeltaLng, double maxDeltaLat, String diagnosticSummary) {
-            this.rmse = rmse;
-            this.pearsonR = pearsonR;
-            this.ssim = ssim;
-            this.jaccardIndex = jaccardIndex;
-            this.diceCoefficient = diceCoefficient;
-            this.klDivergence = klDivergence;
-            this.maxDeltaValue = maxDeltaValue;
-            this.maxDeltaLng = maxDeltaLng;
-            this.maxDeltaLat = maxDeltaLat;
-            this.diagnosticSummary = diagnosticSummary;
-        }
-
-        /**
-         * Get rmse.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getRmse() { return rmse; }
-        /**
-         * Get pearson r.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getPearsonR() { return pearsonR; }
-        /**
-         * Get ssim.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getSsim() { return ssim; }
-        /**
-         * Get jaccard index.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getJaccardIndex() { return jaccardIndex; }
-        /**
-         * Get dice coefficient.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getDiceCoefficient() { return diceCoefficient; }
-        /**
-         * Get kl divergence.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getKlDivergence() { return klDivergence; }
-        /**
-         * Get max delta value.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getMaxDeltaValue() { return maxDeltaValue; }
-        /**
-         * Get max delta lng.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getMaxDeltaLng() { return maxDeltaLng; }
-        /**
-         * Get max delta lat.
-         *
-         * @return the resulting computation or state reference
-         */
-        public double getMaxDeltaLat() { return maxDeltaLat; }
-        /**
-         * Get diagnostic summary.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getDiagnosticSummary() { return diagnosticSummary; }
-
-        /**
-         * Get formatted report.
-         *
-         * @return the resulting computation or state reference
-         */
-        public String getFormattedReport() {
-            return String.format(java.util.Locale.US,
-                "🗺️ SPATIAL TENSOR & CARTOGRAPHIC COMPARISON REPORT:\n" +
-                "  - RMSE (Spatial Grid Error): %.4f\n" +
-                "  - Pearson Correlation (r): %.4f\n" +
-                "  - SSIM (Structural Similarity): %.4f\n" +
-                "  - Categorical Jaccard Index: %.2f%%\n" +
-                "  - Dice Overlap Coefficient: %.2f%%\n" +
-                "  - Kullback-Leibler Divergence: %.4f nats\n" +
-                "  - Maximum Spatial Divergence: Delta = %.2f at (Lat: %.2f°, Lng: %.2f°)\n" +
-                "  - Diagnostic Assessment: %s",
-                rmse, pearsonR, ssim, jaccardIndex * 100.0, diceCoefficient * 100.0,
-                klDivergence, maxDeltaValue, maxDeltaLat, maxDeltaLng, diagnosticSummary
-            );
+            super(rmse, pearsonR, ssim, jaccardIndex, diceCoefficient, klDivergence, maxDeltaValue, maxDeltaLng, maxDeltaLat, diagnosticSummary);
         }
     }
 
@@ -434,152 +322,24 @@ public class MapComparisonMetrics {
         return new MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
     }
 
-    private static double[] extractLuminanceGridWindowed(
-            BufferedImage img, int minX, int minY, int subW, int subH, int fullW, int fullH) {
-        double[] grid = new double[subW * subH];
-        int imgW = img.getWidth();
-        int imgH = img.getHeight();
-        int idx = 0;
-        for (int y = 0; y < subH; y++) {
-            int globalY = minY + y;
-            int srcY = (int) Math.min(imgH - 1, ((long) globalY * imgH) / fullH);
-            for (int x = 0; x < subW; x++) {
-                int globalX = minX + x;
-                int srcX = (int) Math.min(imgW - 1, ((long) globalX * imgW) / fullW);
-                int rgb = img.getRGB(srcX, srcY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                grid[idx++] = 0.299 * r + 0.587 * g + 0.114 * b;
-            }
-        }
-        return grid;
-    }
-
-    private static int[] extractCategoryGridWindowed(
-            BufferedImage img, int minX, int minY, int subW, int subH, int fullW, int fullH) {
-        int[] cat = new int[subW * subH];
-        int imgW = img.getWidth();
-        int imgH = img.getHeight();
-        int idx = 0;
-        for (int y = 0; y < subH; y++) {
-            int globalY = minY + y;
-            int srcY = (int) Math.min(imgH - 1, ((long) globalY * imgH) / fullH);
-            for (int x = 0; x < subW; x++) {
-                int globalX = minX + x;
-                int srcX = (int) Math.min(imgW - 1, ((long) globalX * imgW) / fullW);
-                int rgb = img.getRGB(srcX, srcY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                if (r == g && g == b) {
-                    cat[idx++] = (r >= 2) ? 1 : 0;
-                } else {
-                    cat[idx++] = rgb;
-                }
-            }
-        }
-        return cat;
-    }
-
-    private static double[] extractLuminanceGrid(BufferedImage img, int width, int height) {
-        double[] grid = new double[width * height];
-        int imgW = img.getWidth();
-        int imgH = img.getHeight();
-        int idx = 0;
-        for (int y = 0; y < height; y++) {
-            int srcY = (int) Math.min(imgH - 1, ((long) y * imgH) / height);
-            for (int x = 0; x < width; x++) {
-                int srcX = (int) Math.min(imgW - 1, ((long) x * imgW) / width);
-                int rgb = img.getRGB(srcX, srcY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                // Standard NTSC Grayscale Luminance Formula
-                grid[idx++] = 0.299 * r + 0.587 * g + 0.114 * b;
-            }
-        }
-        return grid;
-    }
-
-    private static int[] extractCategoryGrid(BufferedImage img, int width, int height) {
-        int[] cat = new int[width * height];
-        int imgW = img.getWidth();
-        int imgH = img.getHeight();
-        int idx = 0;
-        for (int y = 0; y < height; y++) {
-            int srcY = (int) Math.min(imgH - 1, ((long) y * imgH) / height);
-            for (int x = 0; x < width; x++) {
-                int srcX = (int) Math.min(imgW - 1, ((long) x * imgW) / width);
-                int rgb = img.getRGB(srcX, srcY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                if (r == g && g == b) {
-                    cat[idx++] = (r >= 2) ? 1 : 0;
-                } else {
-                    cat[idx++] = rgb;
-                }
-            }
-        }
-        return cat;
-    }
-
-    /**
-     * Generates a 2D Discrepancy Heatmap highlighting spatial divergences between Map A and Map B.
-     * Color Legend:
-     * - Dark Slate: Neutral / Unpopulated matching areas
-     * - Bright Emerald / Cyan: High spatial agreement
-     * - Intense Amber / Red: Overestimation (A > B)
-     * - Intense Indigo / Blue: Underestimation (A < B)
-     */
     public static BufferedImage generateDiscrepancyHeatmap(BufferedImage imgA, BufferedImage imgB) {
-        if (imgA == null || imgB == null) return null;
+        return MapComparisonRasterExtractor.generateDiscrepancyHeatmap(imgA, imgB);
+    }
 
-        int width = Math.min(imgA.getWidth(), imgB.getWidth());
-        int height = Math.min(imgA.getHeight(), imgB.getHeight());
+    public static double[] extractLuminanceGrid(BufferedImage img, int width, int height) {
+        return MapComparisonRasterExtractor.extractLuminanceGrid(img, width, height);
+    }
 
-        BufferedImage diffMap = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    public static int[] extractCategoryGrid(BufferedImage img, int width, int height) {
+        return MapComparisonRasterExtractor.extractCategoryGrid(img, width, height);
+    }
 
-        double[] gridA = extractLuminanceGrid(imgA, width, height);
-        double[] gridB = extractLuminanceGrid(imgB, width, height);
+    public static double[] extractLuminanceGridWindowed(BufferedImage img, int minX, int minY, int subW, int subH, int fullW, int fullH) {
+        return MapComparisonRasterExtractor.extractLuminanceGridWindowed(img, minX, minY, subW, subH, fullW, fullH);
+    }
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int idx = y * width + x;
-                double valA = gridA[idx];
-                double valB = gridB[idx];
-                double delta = valA - valB; // Range -255 to +255
-
-                int rgba;
-                if (Math.abs(valA) < 5.0 && Math.abs(valB) < 5.0) {
-                    // Ocean / Empty Cell: Dark Slate
-                    rgba = 0xFF0F172A;
-                } else if (Math.abs(delta) <= 4.0) {
-                    // Exact or near-zero discrepancy (A == B): Neutral baseline Slate Gray (no divergence)
-                    rgba = 0xFF1E293B;
-                } else if (Math.abs(delta) <= 12.0) {
-                    // Subtle alignment: Soft muted slate-emerald
-                    rgba = 0xFF064E3B;
-                } else if (delta > 0) {
-                    // A is greater than B (Overestimation): Amber to Red gradient
-                    double norm = Math.min(1.0, (delta - 12.0) / 168.0);
-                    int r = (int) (245 + norm * 10);
-                    int g = (int) (158 - norm * 110);
-                    int b = (int) (11 - norm * 11);
-                    rgba = (0xFF << 24) | (Math.min(255, r) << 16) | (Math.max(0, g) << 8) | Math.max(0, b);
-                } else {
-                    // A is less than B (Underestimation): Cyan to Royal Blue gradient
-                    double norm = Math.min(1.0, (-delta - 12.0) / 168.0);
-                    int r = (int) (56 - norm * 40);
-                    int g = (int) (189 - norm * 120);
-                    int b = (int) (248 + norm * 7);
-                    rgba = (0xFF << 24) | (Math.max(0, r) << 16) | (Math.max(0, g) << 8) | Math.min(255, b);
-                }
-                diffMap.setRGB(x, y, rgba);
-            }
-        }
-        return diffMap;
+    public static int[] extractCategoryGridWindowed(BufferedImage img, int minX, int minY, int subW, int subH, int fullW, int fullH) {
+        return MapComparisonRasterExtractor.extractCategoryGridWindowed(img, minX, minY, subW, subH, fullW, fullH);
     }
 
     private static double calculateMean(double[] arr, int len) {

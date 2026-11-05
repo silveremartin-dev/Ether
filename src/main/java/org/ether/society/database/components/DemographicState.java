@@ -31,4 +31,9 @@ public record DemographicState(
     public static final DemographicState DEFAULT = new DemographicState(
             0, 40.0, 6.0, 0.0, 0.0, 1
     );
+
+    /** Compatibility constructor for 5-argument calls. */
+    public DemographicState(int population, double lifespan, double fertility, double giniIndex, int homininSpecies) {
+        this(population, lifespan, fertility, giniIndex, 0.0, homininSpecies);
+    }
 }

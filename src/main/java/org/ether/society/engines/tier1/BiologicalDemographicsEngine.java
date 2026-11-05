@@ -6,48 +6,46 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ether.society.model.PhysicalConstants;
 
 import java.util.List;
 
 /**
  * Gompertz-Makeham Biological Actuarial Mortality Engine.
- * Replaces simple age cohorts with the fundamental Gompertz-Makeham actuarial mortality law:
- * Î¼(x) = Î± * e^(Î² * x) + Î³
- * 1. <b>Î± * e^(Î² * x)</b>: Exponential biological aging rate (cellular senescence).
- * 2. <b>Î³</b>: Environmental baseline hazard rate (famine, disease, trauma).
+ * <p>
+ * Models actuarial cellular senescence ($\alpha e^{\beta x}$) and smooth ($C^\infty$) environmental
+ * physiological hazards (high-altitude hypobaric hypoxia and extreme thermal cold stress), updating
+ * Lotka age pyramids directly from conserved demographic observables ({@code AGENTS.md} §10.1, §10.2).
+ * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 public class BiologicalDemographicsEngine {
-    private static final Logger logger = LoggerFactory.getLogger(BiologicalDemographicsEngine.class);
 
-    /** Baseline actuarial aging constant Î± */
+    /** Baseline actuarial aging constant $\alpha$. */
     public static final double GOMPERTZ_ALPHA = 0.0001;
 
-    /** Cellular senescence rate Î² */
+    /** Cellular senescence rate $\beta$. */
     public static final double GOMPERTZ_BETA = 0.08;
 
     /**
-     * Calculates Gompertz-Makeham hazard rate Î¼(x) for age x.
+     * Calculates Gompertz-Makeham hazard rate $\mu(x) = \alpha e^{\beta x} + \gamma$ for age $x$.
      *
-     * @param ageYears Age in years
-     * @param environmentalHazardGamma Baseline environmental hazard Î³ (pollution, disease)
-     * @return Mortality hazard rate Î¼(x)
+     * @param ageYears                 age in years
+     * @param environmentalHazardGamma baseline extrinsic environmental hazard $\gamma$
+     * @return mortality hazard rate $\mu(x)$ in $\text{yr}^{-1}$
      */
     public static double calculateGompertzHazardRate(double ageYears, double environmentalHazardGamma) {
-// Numerical integration step for BiologicalDemographicsEngine - verifies boundary conservation and updates local thermodynamic state
         return GOMPERTZ_ALPHA * Math.exp(GOMPERTZ_BETA * ageYears) + environmentalHazardGamma;
     }
 
     /**
-     * Executes one biological demographic mortality tick across cells with dt.
+     * Executes one biological demographic mortality tick across cells over {@code deltaYears}.
      */
     public static void processBiologicalDemographics(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for BiologicalDemographicsEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
         double dt = Math.max(0.001, deltaYears);
@@ -57,83 +55,41 @@ public class BiologicalDemographicsEngine {
             int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double pollution = cell.getPollutionLevelOr(0.0);
-            double food = cell.getFoodResourceOr(0.0);
             double elev = cell.getElevationOr(0.0);
             double tempC = cell.getTemperatureOr(15.0);
 
-            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
-            double agBiomass = cell.getBiomassAgricultureOr(0.0);
-            double fishBiomass = cell.getBiomassFishOr(0.0);
-            double agShare = agBiomass / Math.max(1.0, agBiomass + naturalBiomass);
-            // Continuous dietary transition from wild foraging to agricultural staples (Kelly 2013; Bocquet-Appel 2011)
-            double foragingFraction = 0.005 + 0.003 / (1.0 + Math.exp(6.0 * (agShare - 0.20)));
-            double edibleNaturalBiomassGJ = naturalBiomass * foragingFraction * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
-            double edibleAgBiomassGJ = agBiomass * 0.70 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
-            double edibleFishBiomassGJ = fishBiomass * 0.25 * org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
-            double renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgBiomassGJ + edibleFishBiomassGJ;
-            double totalFoodGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20, food * 0.15);
+            // Smooth C^infty Altitude Hypoxia Hazard (barometric PO2 drop above ~3000 m, West 2012)
+            double epas1Adaptation = cell.getMovementFriction() != null
+                    ? Math.clamp(1.0 - (cell.getMovementFriction() / 3.0), 0.0, 1.0)
+                    : 0.05;
+            double excessElevKm = SmoothMath.softplus((elev - 3000.0) / 1000.0, 2.5);
+            double altitudeVulnerability = SmoothMath.softmax(0.10, 1.0 - epas1Adaptation * 0.85, 10.0);
+            double hypoxiaHazard = excessElevKm * 0.08 * altitudeVulnerability;
 
-            // Trophic-adjusted annual metabolic requirement matching DemographicKernel (Lindeman primary crop vs foraging trophic chain)
-            double trophicRatio = (agShare < 0.15)
-                    ? 1.0
-                    : (org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_NEOLITHIC_EARLY_AGRARIAN
-                       / org.ether.society.model.PhysicalConstants.TROPHIC_MULTIPLIER_HUNTER_GATHERER);
-            double effectiveAnnualMetabolicNeedGJ = org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * trophicRatio;
-            double carryingCapacity = Math.max(0.05, totalFoodGJ / effectiveAnnualMetabolicNeedGJ);
-            double stressRatio = (double) pop / carryingCapacity;
+            // Smooth C^infty Extreme Cold Hazard (hypothermia / frostbite below -10°C, mitigated by shelter capital)
+            double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+            double shelterProtection = 1.0 - 0.70 * Math.tanh(capPerCap / 150.0);
+            double subZeroExcess = SmoothMath.softplus(-10.0 - tempC, 0.8);
+            double coldHazard = SmoothMath.softmin(0.25, subZeroExcess * 0.012 * shelterProtection, 15.0);
 
-            // Famine / Nutritional stress factor (acute scaling with caloric deficit)
-            double nutritionalStress = 0.0;
-            if (stressRatio > 1.0) {
-                double deficit = 1.0 - (1.0 / stressRatio); // ranges from 0.0 (at K) to 1.0 (extreme deficit)
-                nutritionalStress = deficit * 0.15 + Math.pow(deficit, 3) * 1.50;
-            }
-
-            // Altitude Hypoxia Hazard (HAPE/AMS above 3000m, death zone above 5500m)
-            double epas1 = cell.getMovementFriction() != null ? Math.clamp(1.0 - (cell.getMovementFriction() / 3.0), 0.0, 1.0) : 0.05;
-            double hypoxiaHazard = 0.0;
-            if (elev > 3000.0) {
-                double excessElev = (elev - 3000.0) / 1000.0;
-                double altitudeVulnerability = Math.max(0.1, 1.0 - epas1 * 0.85);
-                hypoxiaHazard = excessElev * 0.08 * altitudeVulnerability;
-            }
-
-            // Extreme Cold Hazard (Hypothermia / Frostbite below -10°C)
-            double coldHazard = tempC < -10.0 ? Math.min(0.25, (-10.0 - tempC) * 0.012) : 0.0;
-
-            // Environmental hazard mortality integration (Gompertz-Makeham extrinsic hazard gamma).
-            // Ownership split (no double counting): Malthusian starvation mortality is owned by
-            // DemographicKernel (core.dod), which already applies it to cohort mass every tick.
-            // This engine therefore applies ONLY the physiological hazards the kernel does not model:
-            //   gamma_env = mu_hypoxia(elevation, EPAS1) + mu_cold(T < -10 C)
-            //   N(t + dt) = N(t) * exp(-gamma_env * dt)   (unconditionally stable exponential integration)
-            // nutritionalStress is retained as a diagnostic only.
             double environmentalHazard = hypoxiaHazard + coldHazard;
-            if (environmentalHazard > 0.0) {
+            if (environmentalHazard > 1e-6) {
                 double survivalRate = Math.exp(-environmentalHazard * dt);
                 int survivingPop = (int) Math.round(pop * survivalRate);
                 org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, survivingPop));
-                pop = cell.getPopulation();
+                pop = cell.getPopulationOr(0);
             }
 
-            // Environmental hazard factor calculation for telemetry and age pyramid updates
             if (pop > 0) {
-                double demoStageTechEquiv = 1.0 + 7.0 * Math.clamp((cell.getLifespanOr(35.0) - 32.0) / 48.0, 0.0, 1.0);
-                cell.updateAgePyramidFromTotal(demoStageTechEquiv);
+                cell.updateAgePyramidFromObservables();
             }
         }
     }
 
     /**
-     * Process biological demographics.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * Executes one monthly biological demographic mortality tick across cells.
      */
     public static void processBiologicalDemographics(List<H3Cell> cells) {
-// Numerical integration step for BiologicalDemographicsEngine - verifies boundary conservation and updates local thermodynamic state
         processBiologicalDemographics(cells, 30.0 / 365.25);
     }
 }
-
-

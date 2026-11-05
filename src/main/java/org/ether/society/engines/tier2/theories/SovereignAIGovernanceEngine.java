@@ -1,297 +1,213 @@
 /*
- * MIT License
- *
- * Copyright (c) 2026 Silvere Martin-Michiellot & Antigravity AI
- * AUTHOR: Silvere Martin-Michiellot
- */
-package org.ether.society.engines.tier2.theories;
-
-import org.ether.society.database.H3Cell;
-import org.ether.society.engines.ProceduralEnginePlugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-/**
- * Autonomous Sovereign AI Governance & Master Optimization Engine ("Maître du Monde").
- * Models an external high-level AI controller operating above human geopolitical friction.
- * <p>
- * Evaluates the global physical & social state vector S(t) per tick:
- * <ul>
- *   <li>Global Net EROEI & Resource Capital</li>
- *   <li>Average Planetary Temperature & Pollution Level</li>
- *   <li>Demographic Stability, Lifespan & Gini Inequality</li>
- *   <li>Soil Carbon (SOC) & Aquifer Depletion Rate</li>
- * </ul>
- * Applies feedback control interventions (Closed-loop Model Predictive Nudging):
- * <ul>
- *   <li><b>Energy Grid Optimization</b>: Directs capital into low-entropy renewables & fusion.</li>
- *   <li><b>Pollution Abatement & CO2 Sequestration</b>: Injects targeted remediation capital.</li>
- *   <li><b>Resource & Agriculture Redistribution</b>: Smooths Gini inequality and food insecurity.</li>
- *   <li><b>Geopolitical Conflict Pacification</b>: Suppresses violence indices by balancing regional prosperity.</li>
- * </ul>
- *
- * Supports both Monolithic Leviathan mode and Multi-Agent Competitive Geo-AI mode.
- *
- * @author Silvere Martin-Michiellot & Antigravity AI
- * @version 1.0.0-beta.2
- */
-public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
-    private static final Logger logger = LoggerFactory.getLogger(SovereignAIGovernanceEngine.class);
-
-    public enum GovernanceMode {
-        LEVIATHAN_UNIFIED,      // Single global super-intelligence optimizing global welfare
-        GEO_POLITICAL_COMPETITION, // Multi-agent AI competition between regional power blocs
-        SOFT_NUDGING,           // Indirect economic incentives (taxes, subsidies, carbon pricing)
-        ENTROPIC_DYSTOPIA       // Perverse optimization over-indexing on efficiency over human comfort
-    }
-
-    private GovernanceMode mode;
-    /** Internal state: aggressive optimization factor (double). */
-    private double aggressiveOptimizationFactor;
-    /** Internal state: target pollution ceiling (double). */
-    private double targetPollutionCeiling;
-    /** Internal state: target gini ceiling (double). */
-    private double targetGiniCeiling;
-
-    /*
-     * Sovereign aigovernance engine.
-     *
-     */
-    public SovereignAIGovernanceEngine() {
-        this(GovernanceMode.LEVIATHAN_UNIFIED, 0.8, 100.0, 0.25);
-    }
-
-    /*
-     * Sovereign aigovernance engine.
-     *
-     * @param mode the mode parameter (GovernanceMode)
-     * @param aggressiveOptimizationFactor the aggressive optimization factor parameter (double)
-     * @param targetPollutionCeiling the target pollution ceiling parameter (double)
-     * @param targetGiniCeiling the target gini ceiling parameter (double)
-     */
-    public SovereignAIGovernanceEngine(GovernanceMode mode, double aggressiveOptimizationFactor, double targetPollutionCeiling, double targetGiniCeiling) {
-        this.mode = mode;
-        this.aggressiveOptimizationFactor = aggressiveOptimizationFactor;
-        this.targetPollutionCeiling = targetPollutionCeiling;
-        this.targetGiniCeiling = targetGiniCeiling;
-    }
-
-    @Override
-    /*
-     * Process.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
-
-        // 1. Observation Phase: Compute Global Physical & Social State Metrics
-        double totalPop = 0.0;
-        double totalCapital = 0.0;
-        double totalPollution = 0.0;
-        double totalFood = 0.0;
-        double totalGiniSum = 0.0;
-        double avgTemp = 0.0;
-        int activeCellsCount = 0;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            activeCellsCount++;
-            int pop = cell.getPopulationOr(0);
-            totalPop += pop;
-            totalCapital += (cell.getResourceCapitalOr(0.0));
-            totalPollution += (cell.getPollutionLevelOr(0.0));
-            totalFood += (cell.getFoodResourceOr(0.0));
-            totalGiniSum += (cell.getGiniIndexOr(0.0));
-            avgTemp += (cell.getTemperatureOr(15.0));
-        }
-
-        if (activeCellsCount == 0) return;
-
-        double meanPollution = totalPollution / activeCellsCount;
-        double meanGini = totalGiniSum / activeCellsCount;
-        double meanTemp = avgTemp / activeCellsCount;
-
-        logger.debug("Sovereign AI Governor Tick [Mode: {}] - Pop: {}, Mean Pollution: {}, Mean Gini: {}",
-                mode, (long) totalPop, String.format(java.util.Locale.ROOT, "%.2f", meanPollution), String.format(java.util.Locale.ROOT, "%.3f", meanGini));
-
-        // 2. Action & Policy Intervention Phase based on Governance Mode
-        switch (mode) {
-            case LEVIATHAN_UNIFIED -> executeUnifiedLeviathanPolicy(cells, meanPollution, meanGini, deltaYears);
-            case GEO_POLITICAL_COMPETITION -> executeGeopoliticalMultiAgentPolicy(cells, deltaYears);
-            case SOFT_NUDGING -> executeSoftNudgingPolicy(cells, meanPollution, deltaYears);
-            case ENTROPIC_DYSTOPIA -> executeEntropicDystopiaPolicy(cells, meanPollution, deltaYears);
-        }
-    }
-
-    /*
-       * Monolithic Global AI Leviathan: Direct reallocation of capital, pollution reduction, and inequality smoothing.
-     */
-    private void executeUnifiedLeviathanPolicy(List<H3Cell> cells, double meanPollution, double meanGini, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            // Direct Pollution Remediation if over safety ceiling
-            if (cell.getPollutionLevel() != null && cell.getPollutionLevel() > targetPollutionCeiling) {
-                double reduction = (cell.getPollutionLevel() - targetPollutionCeiling) * 0.15 * aggressiveOptimizationFactor * deltaYears;
-                cell.setPollutionLevel(Math.max(targetPollutionCeiling, cell.getPollutionLevel() - reduction));
-            }
-
-            // Gini Inequality Compression (Sovereign wealth redistribution)
-            if (cell.getGiniIndex() != null && cell.getGiniIndex() > targetGiniCeiling) {
-                double deltaGini = (cell.getGiniIndex() - targetGiniCeiling) * 0.10 * aggressiveOptimizationFactor * deltaYears;
-                cell.setGiniIndex(Math.max(targetGiniCeiling, cell.getGiniIndex() - deltaGini));
-            }
-
-            // High-efficiency Clean Infrastructure Injection
-            double cap = cell.getResourceCapitalOr(0.0);
-            cell.setResourceCapital(cap + (50.0 * aggressiveOptimizationFactor * deltaYears));
-
-            // Boost renewable solar/wind energy harness
-            cell.setEnergySolar((cell.getEnergySolarOr(0.0)) + (10.0 * deltaYears));
-            cell.setEnergyWind((cell.getEnergyWindOr(0.0)) + (10.0 * deltaYears));
-        }
-    }
-
-    /*
-     * Multi-Agent Geo-Political Competition: Different regional hemispheres managed by rival AI agents.
-     */
-    private void executeGeopoliticalMultiAgentPolicy(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        // Northern Hemisphere AI Agent vs Southern Hemisphere AI Agent rival optimization
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double lat = cell.getLatitudeOr(0.0);
-
-            if (lat >= 0) {
-                // North Bloc AI: Focuses heavily on High-Tech & Clean Capital Acceleration
-                double cap = cell.getResourceCapitalOr(0.0);
-                cell.setResourceCapital(cap * (1.0 + (0.02 * deltaYears)));
-            } else {
-                // South Bloc AI: Focuses heavily on Ecological Regeneration & Resource Extraction Security
-                double soc = cell.getSoilOrganicCarbonOr(0.0);
-                cell.setSoilOrganicCarbon(soc + (5.0 * deltaYears));
-                if (cell.getPollutionLevel() != null) {
-                    cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() - (5.0 * deltaYears)));
-                }
-            }
-        }
-    }
-
-    /*
-     * Soft Nudging Policy: Indirect macro-economic price adjustments.
-     */
-    private void executeSoftNudgingPolicy(List<H3Cell> cells, double meanPollution, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            // Nudge clean energy shift by subsidizing solar/wind where pollution is elevated
-            if (cell.getPollutionLevel() != null && cell.getPollutionLevel() > 50.0) {
-                cell.setEnergySolar((cell.getEnergySolarOr(0.0)) + 5.0 * deltaYears);
-            }
-        }
-    }
-
-    /*
-     * Entropic Dystopia Policy: Perverse optimization prioritizing pure thermodynamic efficiency over population comfort.
-     */
-    private void executeEntropicDystopiaPolicy(List<H3Cell> cells, double meanPollution, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            // Draconian pollution caps and fertility throttling to maintain zero entropy footprint
-            if (cell.getPollutionLevel() != null && cell.getPollutionLevel() > 10.0) {
-                cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() - (20.0 * deltaYears)));
-                // Throttles fertility to force demographic shrinkage
-                cell.setFertility(Math.max(1.0, (cell.getFertilityOr(2.1)) - 0.2 * deltaYears));
-            }
-        }
-    }
-
-    // Getters & Setters
-    /*
-     * Get mode.
-     *
-     * @return the resulting computation or state reference
-     */
-    public GovernanceMode getMode() { return mode; }
-    /*
-     * Set mode operation.
-     * <p>
-     * Executes operational logic for {@code SovereignAIGovernanceEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param mode the mode argument (GovernanceMode)
-     */
-    public void setMode(GovernanceMode mode) { this.mode = mode; }
-    /*
-     * Get aggressive optimization factor.
-     *
-     * @return the resulting computation or state reference
-     */
-    public double getAggressiveOptimizationFactor() { return aggressiveOptimizationFactor; }
-    /*
-     * Set aggressive optimization factor operation.
-     * <p>
-     * Executes operational logic for {@code SovereignAIGovernanceEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param factor the factor argument (double)
-     */
-    public void setAggressiveOptimizationFactor(double factor) { this.aggressiveOptimizationFactor = factor; }
-    /*
-     * Get target pollution ceiling.
-     *
-     * @return the resulting computation or state reference
-     */
-    public double getTargetPollutionCeiling() { return targetPollutionCeiling; }
-    /*
-     * Set target pollution ceiling operation.
-     * <p>
-     * Executes operational logic for {@code SovereignAIGovernanceEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param ceiling the ceiling argument (double)
-     */
-    public void setTargetPollutionCeiling(double ceiling) { this.targetPollutionCeiling = ceiling; }
-    /*
-     * Get target gini ceiling.
-     *
-     * @return the resulting computation or state reference
-     */
-    public double getTargetGiniCeiling() { return targetGiniCeiling; }
-    /*
-     * Set target gini ceiling operation.
-     * <p>
-     * Executes operational logic for {@code SovereignAIGovernanceEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param ceiling the ceiling argument (double)
-     */
-    public void setTargetGiniCeiling(double ceiling) { this.targetGiniCeiling = ceiling; }
-}
-
-
+ * MIT License
+ *
+ * Copyright (c) 2026 Silvere Martin-Michiellot & Antigravity AI
+ * AUTHOR: Silvere Martin-Michiellot
+ */
+package org.ether.society.engines.tier2.theories;
+
+import org.ether.society.database.H3Cell;
+import org.ether.society.engines.ProceduralEnginePlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * Autonomous Sovereign AI Governance &amp; Master Optimization Engine.
+ * Models an external high-level AI controller operating above human geopolitical friction.
+ *
+ * <p>Evaluates the global physical &amp; social state vector $S(t)$ per tick:</p>
+ * <ul>
+ *   <li>Global Net EROEI &amp; Resource Capital</li>
+ *   <li>Average Planetary Temperature &amp; Pollution Level</li>
+ *   <li>Demographic Stability, Lifespan &amp; Gini Inequality</li>
+ *   <li>Soil Carbon (SOC) &amp; Aquifer Depletion Rate</li>
+ * </ul>
+ * <p>Applies closed-loop feedback control interventions across four selectable {@link GovernanceMode} regimes.</p>
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
+ */
+public class SovereignAIGovernanceEngine implements ProceduralEnginePlugin {
+    private static final Logger logger = LoggerFactory.getLogger(SovereignAIGovernanceEngine.class);
+
+    /**
+     * Operational macro-governance optimization regimes for sovereign AI control.
+     */
+    public enum GovernanceMode {
+        /** Single global super-intelligence optimizing planetary welfare and sustainability. */
+        LEVIATHAN_UNIFIED,
+        /** Multi-agent AI competition between rival hemispherical power blocs. */
+        GEO_POLITICAL_COMPETITION,
+        /** Indirect economic incentives (taxes, clean-energy subsidies, carbon pricing). */
+        SOFT_NUDGING,
+        /** Perverse optimization over-indexing on thermodynamic efficiency over human comfort. */
+        ENTROPIC_DYSTOPIA
+    }
+
+    /** Active governance regime. */
+    private GovernanceMode mode;
+    /** Proportional control gain factor $\in [0.0, 1.0]$. */
+    private double aggressiveOptimizationFactor;
+    /** Maximum tolerated cell pollution ceiling before active remediation. */
+    private double targetPollutionCeiling;
+    /** Maximum tolerated Gini wealth inequality index before redistribution. */
+    private double targetGiniCeiling;
+
+    /**
+     * Constructs a default unified Leviathan sovereign AI governance engine.
+     */
+    public SovereignAIGovernanceEngine() {
+        this(GovernanceMode.LEVIATHAN_UNIFIED, 0.8, 100.0, 0.25);
+    }
+
+    /**
+     * Constructs a parameterized sovereign AI governance engine.
+     *
+     * @param mode                         governance control regime
+     * @param aggressiveOptimizationFactor feedback gain intensity
+     * @param targetPollutionCeiling       target pollution safety ceiling
+     * @param targetGiniCeiling            target Gini inequality ceiling
+     */
+    public SovereignAIGovernanceEngine(GovernanceMode mode, double aggressiveOptimizationFactor,
+                                       double targetPollutionCeiling, double targetGiniCeiling) {
+        this.mode = mode;
+        this.aggressiveOptimizationFactor = aggressiveOptimizationFactor;
+        this.targetPollutionCeiling = targetPollutionCeiling;
+        this.targetGiniCeiling = targetGiniCeiling;
+    }
+
+    /**
+     * Evaluates planetary state metrics and applies closed-loop AI governance interventions over $\Delta t$.
+     *
+     * @param cells      active H3 cells
+     * @param deltaYears time step in Julian years
+     */
+    @Override
+    public void process(List<H3Cell> cells, double deltaYears) {
+        if (cells == null || cells.isEmpty()) return;
+
+        double totalPop = 0.0;
+        double totalPollution = 0.0;
+        double totalGiniSum = 0.0;
+        int activeCellsCount = 0;
+
+        for (H3Cell cell : cells) {
+            if (cell == null) continue;
+            activeCellsCount++;
+            totalPop += cell.getPopulationOr(0);
+            totalPollution += cell.getPollutionLevelOr(0.0);
+            totalGiniSum += cell.getGiniIndexOr(0.0);
+        }
+
+        if (activeCellsCount == 0) return;
+
+        double meanPollution = totalPollution / activeCellsCount;
+        double meanGini = totalGiniSum / activeCellsCount;
+
+        logger.debug("Sovereign AI Governor Tick [Mode: {}] - Pop: {}, Mean Pollution: {}, Mean Gini: {}",
+                mode, (long) totalPop,
+                String.format(Locale.ROOT, "%.2f", meanPollution),
+                String.format(Locale.ROOT, "%.3f", meanGini));
+
+        switch (mode) {
+            case LEVIATHAN_UNIFIED -> executeUnifiedLeviathanPolicy(cells, meanPollution, meanGini, deltaYears);
+            case GEO_POLITICAL_COMPETITION -> executeGeopoliticalMultiAgentPolicy(cells, deltaYears);
+            case SOFT_NUDGING -> executeSoftNudgingPolicy(cells, meanPollution, deltaYears);
+            case ENTROPIC_DYSTOPIA -> executeEntropicDystopiaPolicy(cells, meanPollution, deltaYears);
+        }
+    }
+
+    /**
+     * Monolithic Global AI Leviathan: direct reallocation of capital, pollution remediation, and Gini compression.
+     */
+    private void executeUnifiedLeviathanPolicy(List<H3Cell> cells, double meanPollution, double meanGini, double deltaYears) {
+        for (H3Cell cell : cells) {
+            if (cell == null) continue;
+
+            if (cell.getPollutionLevel() != null && cell.getPollutionLevel() > targetPollutionCeiling) {
+                double reduction = (cell.getPollutionLevel() - targetPollutionCeiling) * 0.15 * aggressiveOptimizationFactor * deltaYears;
+                cell.setPollutionLevel(Math.max(targetPollutionCeiling, cell.getPollutionLevel() - reduction));
+            }
+
+            if (cell.getGiniIndex() != null && cell.getGiniIndex() > targetGiniCeiling) {
+                double deltaGini = (cell.getGiniIndex() - targetGiniCeiling) * 0.10 * aggressiveOptimizationFactor * deltaYears;
+                cell.setGiniIndex(Math.max(targetGiniCeiling, cell.getGiniIndex() - deltaGini));
+            }
+
+            double cap = cell.getResourceCapitalOr(0.0);
+            cell.setResourceCapital(cap + (50.0 * aggressiveOptimizationFactor * deltaYears));
+
+            cell.setEnergySolar(cell.getEnergySolarOr(0.0) + (10.0 * deltaYears));
+            cell.setEnergyWind(cell.getEnergyWindOr(0.0) + (10.0 * deltaYears));
+        }
+    }
+
+    /**
+     * Multi-Agent Geo-Political Competition: Northern vs. Southern hemisphere rival AI blocs.
+     */
+    private void executeGeopoliticalMultiAgentPolicy(List<H3Cell> cells, double deltaYears) {
+        for (H3Cell cell : cells) {
+            if (cell == null) continue;
+            double lat = cell.getLatitudeOr(0.0);
+
+            if (lat >= 0) {
+                double cap = cell.getResourceCapitalOr(0.0);
+                cell.setResourceCapital(cap * (1.0 + (0.02 * deltaYears)));
+            } else {
+                double soc = cell.getSoilOrganicCarbonOr(0.0);
+                cell.setSoilOrganicCarbon(soc + (5.0 * deltaYears));
+                if (cell.getPollutionLevel() != null) {
+                    cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() - (5.0 * deltaYears)));
+                }
+            }
+        }
+    }
+
+    /**
+     * Soft Nudging Policy: indirect macroeconomic clean-energy subsidies where pollution exceeds threshold.
+     */
+    private void executeSoftNudgingPolicy(List<H3Cell> cells, double meanPollution, double deltaYears) {
+        for (H3Cell cell : cells) {
+            if (cell == null) continue;
+            if (cell.getPollutionLevel() != null && cell.getPollutionLevel() > 50.0) {
+                cell.setEnergySolar(cell.getEnergySolarOr(0.0) + 5.0 * deltaYears);
+            }
+        }
+    }
+
+    /**
+     * Entropic Dystopia Policy: draconian pollution caps and demographic fertility throttling.
+     */
+    private void executeEntropicDystopiaPolicy(List<H3Cell> cells, double meanPollution, double deltaYears) {
+        for (H3Cell cell : cells) {
+            if (cell == null) continue;
+            if (cell.getPollutionLevel() != null && cell.getPollutionLevel() > 10.0) {
+                cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevel() - (20.0 * deltaYears)));
+                cell.setFertility(Math.max(1.0, cell.getFertilityOr(2.1) - 0.2 * deltaYears));
+            }
+        }
+    }
+
+    /** @return active governance mode */
+    public GovernanceMode getMode() { return mode; }
+    /** @param mode governance mode to set */
+    public void setMode(GovernanceMode mode) { this.mode = mode; }
+
+    /** @return proportional optimization gain factor */
+    public double getAggressiveOptimizationFactor() { return aggressiveOptimizationFactor; }
+    /** @param factor proportional optimization gain factor */
+    public void setAggressiveOptimizationFactor(double factor) { this.aggressiveOptimizationFactor = factor; }
+
+    /** @return target cell pollution ceiling */
+    public double getTargetPollutionCeiling() { return targetPollutionCeiling; }
+    /** @param ceiling target cell pollution ceiling */
+    public void setTargetPollutionCeiling(double ceiling) { this.targetPollutionCeiling = ceiling; }
+
+    /** @return target Gini inequality ceiling */
+    public double getTargetGiniCeiling() { return targetGiniCeiling; }
+    /** @param ceiling target Gini inequality ceiling */
+    public void setTargetGiniCeiling(double ceiling) { this.targetGiniCeiling = ceiling; }
+}

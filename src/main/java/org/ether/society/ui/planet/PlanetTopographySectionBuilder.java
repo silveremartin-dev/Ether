@@ -455,113 +455,23 @@ public class PlanetTopographySectionBuilder {
     }
 
     private VBox createControlRow(Label label, javafx.scene.Node control, String tooltipText) {
-        label.getStyleClass().add("control-label");
-        if (tooltipText != null && !tooltipText.isBlank()) {
-            Tooltip tt = new Tooltip(tooltipText);
-            label.setTooltip(tt);
-            if (control instanceof Control ctrl) {
-                ctrl.setTooltip(tt);
-            }
-        }
-        return new VBox(4, label, control);
+        return PlanetControlRowHelper.createControlRow(label, control, tooltipText);
     }
 
     private VBox createControlRow(Label label, Slider slider, String formatPattern, String tooltipText) {
-        label.getStyleClass().add("control-label");
-        Label valLabel = new Label(String.format(formatPattern, slider.getValue()));
-        valLabel.getStyleClass().add("value-label");
-
-        slider.valueProperty().addListener((obs, old, val) ->
-                valLabel.setText(String.format(formatPattern, val.doubleValue()))
-        );
-
-        if (tooltipText != null && !tooltipText.isBlank()) {
-            Tooltip tt = new Tooltip(tooltipText);
-            label.setTooltip(tt);
-            slider.setTooltip(tt);
-            valLabel.setTooltip(tt);
-        }
-
-        HBox header = new HBox(label, new Pane(), valLabel);
-        HBox.setHgrow(header.getChildren().get(1), Priority.ALWAYS);
-        return new VBox(3, header, slider);
+        return PlanetControlRowHelper.createControlRow(label, slider, formatPattern, tooltipText);
     }
 
-    private void commitEditorDoubleText(Spinner<Double> spinner) {
-        if (spinner == null || !spinner.isEditable()) return;
-        String text = spinner.getEditor().getText();
-        if (text == null || text.isBlank()) return;
-        String cleanText = text.trim().replace(',', '.').replaceAll("[^0-9.-]", "");
-        try {
-            double value = Double.parseDouble(cleanText);
-            SpinnerValueFactory.DoubleSpinnerValueFactory factory =
-                    (SpinnerValueFactory.DoubleSpinnerValueFactory) spinner.getValueFactory();
-            value = Math.clamp(value, factory.getMin(), factory.getMax());
-            factory.setValue(value);
-        } catch (NumberFormatException ignored) {}
-    }
-
+    private void commitEditorDoubleText(Spinner<Double> spinner) { PlanetControlRowHelper.commitEditorDoubleText(spinner); }
     private VBox createControlRowWithSpinner(Label label, Slider slider, Spinner<Double> spinner, String formatPattern, String tooltipText) {
-        label.getStyleClass().add("control-label");
-        spinner.setEditable(true);
-        spinner.setPrefWidth(95);
-        spinner.setMaxWidth(110);
-        spinner.getStyleClass().add("dense-spinner");
-
-        spinner.getEditor().setOnAction(e -> commitEditorDoubleText(spinner));
-        spinner.focusedProperty().addListener((obs, oldV, focused) -> {
-            if (!focused) commitEditorDoubleText(spinner);
-        });
-
-        slider.valueProperty().addListener((obs, oldV, newV) -> {
-            if (context.isUpdatingFromPreset() || isUpdatingControlSync) return;
-            isUpdatingControlSync = true;
-            try {
-                spinner.getValueFactory().setValue(Math.round(newV.doubleValue() * 10.0) / 10.0);
-            } finally {
-                isUpdatingControlSync = false;
-            }
-        });
-
-        spinner.valueProperty().addListener((obs, oldV, newV) -> {
-            if (context.isUpdatingFromPreset() || isUpdatingControlSync || newV == null) return;
-            isUpdatingControlSync = true;
-            try {
-                slider.setValue(newV);
-                context.notifyParamChange();
-                context.updatePreview();
-            } finally {
-                isUpdatingControlSync = false;
-            }
-        });
-
-        String unit = formatPattern.replaceAll("[^a-zA-Z°☉%²³/]", "").trim();
-        Label unitLbl = new Label(unit);
-        unitLbl.getStyleClass().add("unit-label");
-        HBox valBox = new HBox(4, spinner, unitLbl);
-        valBox.setAlignment(Pos.CENTER_RIGHT);
-
-        if (tooltipText != null && !tooltipText.isBlank()) {
-            Tooltip tt = new Tooltip(tooltipText);
-            label.setTooltip(tt);
-            slider.setTooltip(tt);
-            spinner.setTooltip(tt);
-        }
-
-        HBox header = new HBox(label, new Pane(), valBox);
-        HBox.setHgrow(header.getChildren().get(1), Priority.ALWAYS);
-        return new VBox(3, header, slider);
+        return PlanetControlRowHelper.createControlRowWithSpinner(label, slider, spinner, formatPattern, tooltipText,
+                context::isUpdatingFromPreset, () -> { context.notifyParamChange(); context.updatePreview(); });
     }
 
     // Getters for building preset
     public long getSeed() {
-        try {
-            return Long.parseLong(seedField.getText());
-        } catch (NumberFormatException e) {
-            return 12345L;
-        }
+        try { return Long.parseLong(seedField.getText()); } catch (NumberFormatException e) { return 12345L; }
     }
-
     public double getMinAltitudeMeters() { return minAltSlider.getValue(); }
     public double getMaxAltitudeMeters() { return maxAltSlider.getValue(); }
     public double getWaterLevel() { return waterSlider.getValue(); }
@@ -573,7 +483,6 @@ public class PlanetTopographySectionBuilder {
     public void setCustomElevationImage(Image img) { this.customElevImage = img; }
     public String getCachedElevationBase64() { return cachedElevB64; }
     public void setCachedElevationBase64(String b64) { this.cachedElevB64 = b64; }
-
     public Slider getMinAltSlider() { return minAltSlider; }
     public Slider getMaxAltSlider() { return maxAltSlider; }
     public Slider getWaterSlider() { return waterSlider; }

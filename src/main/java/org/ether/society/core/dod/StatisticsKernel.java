@@ -1,23 +1,26 @@
 package org.ether.society.core.dod;
 
+import org.ether.society.core.math.SmoothMath;
+
 import java.util.Arrays;
 
 /**
  * <h1>Statistics Kernel</h1>
  * <p>
- * Core operational component for the Ether civilizational and planetary simulation framework.<br>
- * Integrates cellular dynamics, data structures, and deterministic state transitions.
+ * Computes first-order macroeconomic and demographic aggregates (Lorenz/Milanovic Gini,
+ * physical-capital Gross World Product, Gompertz-Makeham life expectancy, and Total Fertility Rate)
+ * directly from conserved cellular and cohort observables ({@code AGENTS.md} §10.1, §10.4),
+ * with zero dependency on synthetic {@code technologyLevel} scalars.
  * </p>
- * 
+ *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
 public class StatisticsKernel {
 
     /**
-     * Computes the Gini inequality coefficient for a given resource or demographic distribution:
+     * Computes the exact Lorenz Gini inequality coefficient for a given resource or wealth array:
      * $$G = \frac{2 \sum_{i=1}^{n} i \cdot x_i}{n \sum_{i=1}^{n} x_i} - \frac{n + 1}{n}$$
-     * Uses an $O(m \log m)$ positive-element sparse sort when positive entries are sparse.
      *
      * @param values array of resource or wealth values across cells
      * @return Gini coefficient bounded in $[0.0, 1.0]$
@@ -26,7 +29,6 @@ public class StatisticsKernel {
         if (values == null || values.length == 0) return 0.0f;
         int n = values.length;
 
-        // Step 1: Count non-zero positive elements in single contiguous scan
         int positiveCount = 0;
         for (int i = 0; i < n; i++) {
             float v = values[i];
@@ -37,9 +39,6 @@ public class StatisticsKernel {
 
         if (positiveCount == 0) return 0.0f;
 
-        // Step 2: If positive count is small compared to n (typical in geographical grids),
-        // only sort the m positive numbers. All n - m zeros trivially sort to the front (indices 0..n-m-1)
-        // and contribute 0 to sum and 0 to weightedSum.
         if (positiveCount < n / 2) {
             float[] positives = new float[positiveCount];
             int idx = 0;
@@ -53,11 +52,10 @@ public class StatisticsKernel {
 
             double sum = 0.0;
             double weightedSum = 0.0;
-            long zeroOffset = (long) (n - positiveCount); // 0-indexed positions before positives
+            long zeroOffset = (long) (n - positiveCount);
             for (int j = 0; j < positiveCount; j++) {
                 float v = positives[j];
                 sum += v;
-                // 1-based index in the fully sorted array of length n is (zeroOffset + j + 1)
                 weightedSum += (zeroOffset + j + 1) * (double) v;
             }
 
@@ -68,7 +66,6 @@ public class StatisticsKernel {
             return Math.clamp(gini, 0.0f, 1.0f);
         }
 
-        // Fallback for dense arrays: sort full array
         float[] sorted = values.clone();
         Arrays.sort(sorted);
 
@@ -89,17 +86,16 @@ public class StatisticsKernel {
     }
 
     /**
-     * Computes the societal wealth/resource Gini coefficient across inhabited cells,
-     * constrained by the Milanovic, Lindert &amp; Williamson (2011) Inequality Possibility Frontier (IPF):
-     * $$G_{\text{IPF}}(\alpha) = \frac{\alpha - 1}{\alpha} \cdot (1 - e_{\text{sub}}), \quad \alpha = \frac{\bar{k}}{k_{\text{sub}}}$$
-     * Prevents uninhabited ocean/glacier cells from being counted as zero-wealth citizens.
+     * Computes the societal wealth/resource Gini coefficient across inhabited cells directly from
+     * physical capital per capita ($K_i / N_i$), constrained by the Milanovic, Lindert &amp; Williamson (2011)
+     * Inequality Possibility Frontier (IPF):
+     * $$G_{\text{IPF}}(\alpha) = \frac{\alpha - 1}{\alpha}, \quad \alpha = \frac{\bar{k}}{k_{\text{sub}}}$$
      *
-     * @param capital array of cellular resource capital stocks
-     * @param humanBiomass array of cellular human populations
-     * @param avgTech planetary average technology index
-     * @return societal Gini coefficient bounded in $[0.15, 0.85]$
+     * @param capital      array of cellular physical capital stocks ($K_i$)
+     * @param humanBiomass array of cellular agent populations ($N_i$)
+     * @return societal Gini coefficient bounded in $[0.15, 0.78]$
      */
-    public float calculateGini(float[] capital, float[] humanBiomass, float avgTech) {
+    public float calculateGini(float[] capital, float[] humanBiomass) {
         if (capital == null || humanBiomass == null || capital.length == 0) {
             return calculateGini(capital);
         }
@@ -119,38 +115,39 @@ public class StatisticsKernel {
         if (inhabitedCount == 0 || totalPop <= 0.0) return 0.17f;
 
         double meanKpc = totalCap / totalPop;
-        // Subsistence capital floor k_sub ~ 3.3 kg/capita (Kohler et al. 2017; Milanovic et al. 2011)
-        double alpha = Math.max(1.20, meanKpc / 3.3);
+        // Subsistence somatic + minimal tool floor k_sub ~ 3.3 kg/capita (Kohler et al. 2017; Milanovic et al. 2011)
+        double alpha = SmoothMath.softmax(1.20, meanKpc / 3.3, 4.0);
         double ipfCeiling = (alpha - 1.0) / alpha;
 
-        // Compute per-capita capital Lorenz concentration across inhabited communities
         float[] kpcArray = new float[inhabitedCount];
         int idx = 0;
         for (int i = 0; i < len; i++) {
             float pop = humanBiomass[i];
             float cap = capital[i];
             if (!Float.isNaN(pop) && pop > 0.0f && !Float.isNaN(cap) && cap >= 0.0f) {
-                kpcArray[idx++] = (float) (cap / pop);
+                kpcArray[idx++] = cap / pop;
             }
         }
         float spatialKpcGini = calculateGini(kpcArray);
 
-        // Combine inter-regional per-capita dispersion with intra-cell social stratification along the IPF
-        // (Milanovic, Lindert & Williamson 2011; Scheidel 2017 'The Great Leveler')
-        double techFactor = Math.tanh(Math.max(0.0, avgTech - 0.95) * 0.52);
-        double intraCellStratification = 0.17 + 0.45 * ipfCeiling * techFactor;
-        double boundedSpatialTerm = Math.min(0.14, 0.16 * spatialKpcGini) * techFactor;
-        double combinedGini = Math.min(ipfCeiling, intraCellStratification + boundedSpatialTerm);
+        // Smooth C^infty surplus stratification driven purely by storable physical surplus ratio (alpha - 1)
+        double surplusStratification = Math.tanh(SmoothMath.softplus(alpha - 1.25, 4.0) * 0.18);
+        double intraCellStratification = 0.17 + 0.45 * ipfCeiling * surplusStratification;
+        double boundedSpatialTerm = SmoothMath.softmin(0.14, 0.16 * spatialKpcGini, 25.0) * surplusStratification;
+        double combinedGini = SmoothMath.softmin(ipfCeiling, intraCellStratification + boundedSpatialTerm, 20.0);
         return (float) Math.clamp(combinedGini, 0.15, 0.78);
     }
 
     /**
+     * Backward-compatible overload ignoring legacy technological index and delegating directly
+     * to conserved physical observables {@link #calculateGini(float[], float[])}.
+     */
+    public float calculateGini(float[] capital, float[] humanBiomass, float ignoredLegacyTech) {
+        return calculateGini(capital, humanBiomass);
+    }
+
+    /**
      * Computes the density distribution (histogram) over $[0, \text{maxVal}]$.
-     *
-     * @param values input data array
-     * @param bins number of histogram bins
-     * @param maxVal upper bound of the histogram
-     * @return bin count array of length {@code bins}
      */
     public int[] calculateDistribution(float[] values, int bins, float maxVal) {
         return calculateDistribution(values, bins, 0.0f, maxVal);
@@ -158,12 +155,6 @@ public class StatisticsKernel {
 
     /**
      * Computes the density distribution (histogram) between {@code minVal} and {@code maxVal}.
-     *
-     * @param values input data array
-     * @param bins number of histogram bins
-     * @param minVal lower bound of the histogram
-     * @param maxVal upper bound of the histogram
-     * @return bin count array of length {@code bins}
      */
     public int[] calculateDistribution(float[] values, int bins, float minVal, float maxVal) {
         if (bins <= 0) return new int[0];
@@ -188,9 +179,6 @@ public class StatisticsKernel {
 
     /**
      * Computes the exact median of an array of values.
-     *
-     * @param values input data array
-     * @return median value, or {@code 0.0f} if empty
      */
     public float calculateMedian(float[] values) {
         if (values == null || values.length == 0) return 0.0f;
@@ -206,9 +194,6 @@ public class StatisticsKernel {
 
     /**
      * Computes the mean, minimum, maximum, and standard deviation of an array in a single pass.
-     *
-     * @param values input data array
-     * @return 4-element array {@code [mean, min, max, stdDev]}
      */
     public float[] calculateAggregates(float[] values) {
         if (values == null || values.length == 0) return new float[4];
@@ -238,64 +223,52 @@ public class StatisticsKernel {
     }
 
     /**
-     * Computes aggregate Gross Domestic Product (annual flow output Y derived from capital stock K).
+     * Calculates Gross World Product (GWP) annual flow in 1990 Geary-Khamis USD directly from
+     * conserved physical capital stock ($Y = K / \beta$, Piketty 2014 $\beta \approx 3.5$) and
+     * metabolic subsistence baseline ($400\,\text{GK\$}/\text{capita}$, Maddison 2020), blended smoothly ($C^\infty$).
      *
-     * <p>In macroeconomics (Maddison Project, Solow Growth Model, Piketty 2014), the capital-output
-     * ratio \(\beta = K / Y \approx 4.35\) connects the cumulative capital wealth stock \(K\) to annual output flow \(Y\):
-     * \[ Y = \frac{\sum K}{\beta} \]</p>
-     *
-     * @param capital array of cellular resource capital
-     * @return annual planetary GDP flow
+     * @param capital      array of cellular physical capital stocks ($K_i$)
+     * @param humanBiomass array of cellular agent populations ($N_i$)
+     * @return annual GWP flow in 1990 Geary-Khamis USD
      */
-    /**
-     * Calculates Gross World Product (GWP) annual flow in 1990 Geary-Khamis USD based on Maddison Project 2020.
-     * Combines biological subsistence baseline ($450 / capita) with capital output contribution ($Y = A K^\alpha L^{1-\alpha}$).
-     *
-     * @param capital array of cellular resource capital (kg)
-     * @param humanBiomass array of human population / biomass per cell
-     * @param avgTech planetary average technology level
-     * @return annual GDP flow in 1990 USD
-     */
-    public float calculateGDP(float[] capital, float[] humanBiomass, float avgTech) {
-        double totalPop = 0;
+    public float calculateGDP(float[] capital, float[] humanBiomass) {
+        double totalPop = 0.0;
         if (humanBiomass != null) {
             for (float b : humanBiomass) {
-                if (!Float.isNaN(b) && b > 0) totalPop += b;
+                if (!Float.isNaN(b) && b > 0.0f) totalPop += b;
             }
         }
-        double totalCapitalKg = 0;
+        double totalCapitalKg = 0.0;
         if (capital != null) {
             for (float val : capital) {
-                if (!Float.isNaN(val) && !Float.isInfinite(val) && val > 0) {
+                if (!Float.isNaN(val) && !Float.isInfinite(val) && val > 0.0f) {
                     totalCapitalKg += val;
                 }
             }
         }
-        // Maddison Project 2020 / Solow Growth Model / Piketty (2014):
-        // Aggregate annual GDP flow Y derives from productive physical capital stock K
-        // via the empirical capital-output ratio beta ~ 3.5 (Y = K / beta):
-        double tech = Math.max(0.1, avgTech);
         double capitalGDP = totalCapitalKg / 3.5;
-        // Biological subsistence floor (Maddison 1990: ~100 USD/capita for forager/early agrarian baseline)
-        double minSubsistence = totalPop * 100.0 * (1.0 + 0.05 * (tech - 1.0));
-        return (float) Math.max(minSubsistence, capitalGDP);
+        double subsistenceFloor = totalPop * 400.0;
+        // Smooth C^infty blend above metabolic subsistence floor
+        return (float) SmoothMath.softmax(subsistenceFloor, subsistenceFloor + capitalGDP * 0.85, 0.01);
     }
 
     /**
-     * Calculates Gross World Product (GWP) with default demographic parameters.
-     *
-     * @param capital array of cellular resource capital
-     * @return annual planetary GDP flow
+     * Backward-compatible overload ignoring legacy technological index and delegating directly
+     * to conserved physical observables {@link #calculateGDP(float[], float[])}.
+     */
+    public float calculateGDP(float[] capital, float[] humanBiomass, float ignoredLegacyTech) {
+        return calculateGDP(capital, humanBiomass);
+    }
+
+    /**
+     * Calculates Gross World Product (GWP) from physical capital stock alone.
      */
     public float calculateGDP(float[] capital) {
-        return calculateGDP(capital, null, 1.0f);
+        return calculateGDP(capital, null);
     }
 
     /**
-     * Computes aggregate cumulative capital stock (K).
-     *
-     * @param capital array of cellular resource capital
-     * @return total physical capital stock
+     * Computes aggregate cumulative physical capital stock ($K$).
      */
     public float calculateTotalCapitalStock(float[] capital) {
         if (capital == null || capital.length == 0) return 0.0f;
@@ -309,38 +282,75 @@ public class StatisticsKernel {
     }
 
     /**
-     * Computes life expectancy at birth using default technological and nutritional baselines.
+     * Computes population-weighted life expectancy at birth directly from cellular {@code lifespan},
+     * physical sanitary capital per capita ($K/N$), potable water availability, and nutritional satisfaction
+     * (Preston 1975 curve + Omran 1971 epidemiological transition, zero technology scalar).
      *
-     * @param ages array of cohort ages
-     * @param hexIds array of cell indices
-     * @return life expectancy in years
+     * @param world            world buffer containing physical observables
+     * @param foodSatisfaction aggregate nutritional satisfaction ratio in $[0, 1]$
+     * @return life expectancy at birth in years, bounded in $[15.0, 86.0]$
+     */
+    public float calculateLifeExpectancy(WorldBuffer world, float foodSatisfaction) {
+        if (world == null) return 30.0f;
+        float[] pop = world.getBiomassHuman();
+        float[] cap = world.getResourceCapital();
+        float[] water = world.getWaterResource();
+        float[] cellLifespan = world.getLifespan();
+        int n = world.getCapacity();
+
+        double weightedLifespan = 0.0;
+        double totalPop = 0.0;
+        for (int i = 0; i < n; i++) {
+            float p = pop != null ? pop[i] : 0.0f;
+            if (p <= 0.0f || Float.isNaN(p)) continue;
+            double kpc = (cap != null && cap[i] > 0.0f) ? (cap[i] / p) : 0.0;
+            double w = (water != null && water[i] > 0.0f) ? water[i] : 10.0;
+            double waterFactor = 0.75 + 0.25 * (w / (10.0 + w));
+            // Preston (1975) concave log-capital health curve: 28 yrs Paleolithic baseline -> 82 yrs high sanitary capital
+            double prestonYears = 28.0 + 54.0 * Math.tanh(Math.log1p(kpc / 25.0) / 4.2);
+            double stored = (cellLifespan != null && cellLifespan[i] > 10.0f) ? cellLifespan[i] : prestonYears;
+            double effectiveCellE0 = 0.5 * stored + 0.5 * prestonYears * waterFactor;
+            weightedLifespan += p * effectiveCellE0;
+            totalPop += p;
+        }
+        double base = totalPop > 0.0 ? (weightedLifespan / totalPop) : 30.0;
+        double foodMod = SmoothMath.smoothClamp(foodSatisfaction, 0.35, 1.0, 12.0);
+        return (float) SmoothMath.smoothClamp(base * foodMod, 15.0, 86.0, 2.0);
+    }
+
+    /**
+     * Computes life expectancy from cohort mean ages and nutritional satisfaction when no {@link WorldBuffer}
+     * is provided (Lotka stable age distribution $e_0 \approx 1.35 \bar{a}$).
      */
     public float calculateLifeExpectancy(float[] ages, int[] hexIds) {
-        return calculateLifeExpectancy(ages, hexIds, 0.5f, 1.0f);
+        return calculateLifeExpectancy(ages, hexIds, 0.0f, 1.0f);
     }
 
     /**
-     * Computes life expectancy at birth (Gompertz-Makeham and cliodynamic demographic model).
-     *
-     * @param ages array of cohort ages
-     * @param hexIds array of cell indices
-     * @param avgTech average technological index
-     * @param foodSatisfaction nutritional satisfaction ratio in $[0, 1]$
-     * @return life expectancy at birth in years, bounded in $[15.0, 85.0]$
+     * Backward-compatible overload computing life expectancy directly from cohort ages and food satisfaction,
+     * ignoring any legacy technological scalar.
      */
-    public float calculateLifeExpectancy(float[] ages, int[] hexIds, float avgTech, float foodSatisfaction) {
-        // Base Paleolithic life expectancy ~ 28-32 years, scaling with tech and food security
-        float base = 28.0f + Math.min(52.0f, Math.max(0.0f, avgTech) * 0.55f);
-        float foodMod = Math.max(0.35f, Math.min(1.0f, foodSatisfaction));
-        return Math.max(15.0f, Math.min(85.0f, base * foodMod));
+    public float calculateLifeExpectancy(float[] ages, int[] hexIds, float ignoredLegacyTech, float foodSatisfaction) {
+        double sumAge = 0.0;
+        int count = 0;
+        if (ages != null && hexIds != null) {
+            int len = Math.min(ages.length, hexIds.length);
+            for (int i = 0; i < len; i++) {
+                if (hexIds[i] >= 0 && ages[i] > 0.0f && !Float.isNaN(ages[i])) {
+                    sumAge += ages[i];
+                    count++;
+                }
+            }
+        }
+        double meanAge = count > 0 ? (sumAge / count) : 24.5;
+        // Lotka stable population relationship between mean cohort age and life expectancy at birth
+        double base = 28.0 + 3.2 * SmoothMath.softplus(meanAge - 23.0, 1.5);
+        double foodMod = SmoothMath.smoothClamp(foodSatisfaction, 0.35, 1.0, 12.0);
+        return (float) SmoothMath.smoothClamp(base * foodMod, 15.0, 85.0, 2.0);
     }
 
     /**
-     * Computes the synthetic Total Fertility Rate (TFR, average children per woman).
-     *
-     * @param births array of annual births per cohort/cell
-     * @param mass array of total population mass per cohort/cell
-     * @return synthetic TFR bounded in $[1.1, 7.5]$
+     * Computes the synthetic Total Fertility Rate (TFR, average offspring per reproductive female).
      */
     public float calculateFertilityRate(float[] births, float[] mass) {
         if (births == null || mass == null) return 4.5f;
@@ -351,10 +361,8 @@ public class StatisticsKernel {
             totalBirths += births[i];
             totalMass += mass[i];
         }
-        if (totalMass <= 0) return 4.5f; // Natural Paleolithic baseline
-        // Crude birth rate b = births / mass
+        if (totalMass <= 0) return 4.5f;
         double birthRateAnnual = totalBirths / totalMass;
-        // TFR = b * reproductive lifespan (~27.5 yrs) / female ratio (~0.5) = b * 55
         double tfr = birthRateAnnual * 55.0;
         return (float) Math.max(1.1, Math.min(7.5, (tfr > 0.1 ? tfr : 4.8)));
     }

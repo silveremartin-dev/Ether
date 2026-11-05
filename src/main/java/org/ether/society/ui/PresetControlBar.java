@@ -1,23 +1,30 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  */
 package org.ether.society.ui;
 
-import org.ether.society.i18n.I18n;
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.FileChooser;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Window;
+import javafx.util.StringConverter;
+import org.ether.society.i18n.I18n;
+import org.ether.society.ui.preset.PresetDialogAndToastHelper;
+import org.ether.society.ui.preset.PresetItemFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.util.Duration;
-import javafx.util.StringConverter;
 
 import java.io.File;
 import java.util.List;
@@ -26,38 +33,19 @@ import java.util.Optional;
 /**
  * Standardized Preset Toolbar with inline editable name field.
  *
- * Behaviour:
- * - Starts empty (no preset selected by default).
- * - Selecting a preset from the ComboBox populates the name field.
- * - If the user modifies any parameter (notified via {@link #notifyParametersChanged()}),
- *   the name field is cleared to signal an unsaved custom state.
- * - The name field is always directly editable (user can type a new name or rename).
- * - Saving uses the text currently in the name field.
- * - Renaming an existing preset: edit the name field + Save → updates the preset name.
- *
  * @param <T> Preset type
  * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
  */
 public class PresetControlBar<T> extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(PresetControlBar.class);
 
-    /** Prefix category used for export file naming (e.g. "planetgenerator", "ecology", "scenario") */
     private String exportCategory = "preset";
-
-    /** Internal state: label key (String). */
     private String labelKey;
-    /** Internal state: default label text (String). */
     private String defaultLabelText;
 
     private final Label presetLabel;
     private final ComboBox<T> presetCombo;
-
-    /**
-     * Inline editable name field.
-     * - Populated when a preset is selected.
-     * - Cleared when parameters change (unsaved custom state).
-     * - Always writable to allow naming/renaming.
-     */
     private final TextField nameField;
 
     private final Button saveBtn;
@@ -65,40 +53,23 @@ public class PresetControlBar<T> extends VBox {
     private final Button exportBtn;
     private final Button importBtn;
 
-    /** When true, parameter changes should clear the name field. */
     private boolean trackingChanges = false;
-    /** Internal state: dirty (boolean). */
     private boolean dirty = false;
-
-    /** Floating toast notification shown inside the control bar */
     private Label toastLabel;
-
     private PresetActionsListener<T> listener;
 
     public interface PresetActionsListener<T> {
         void onPresetSelected(T preset);
-        /** Called when user saves with the given name (new or renamed). */
         void onSavePreset(String name);
         void onDeletePreset(T preset);
         void onExportPreset(File targetFile, T preset);
         void onImportPreset(File sourceFile);
     }
 
-    /**
-     * Preset control bar.
-     *
-     * @param labelText the label text parameter (String)
-     */
     public PresetControlBar(String labelText) {
         this(null, labelText);
     }
 
-    /**
-     * Preset control bar.
-     *
-     * @param labelKey the label key parameter (String)
-     * @param defaultLabelText the default label text parameter (String)
-     */
     public PresetControlBar(String labelKey, String defaultLabelText) {
         super(8);
         this.labelKey = labelKey;
@@ -112,7 +83,6 @@ public class PresetControlBar<T> extends VBox {
         presetLabel = new Label(initialLabelText + ":");
         presetLabel.getStyleClass().add("control-label");
 
-        // --- ComboBox (no default selection — starts blank) ---
         presetCombo = new ComboBox<>();
         presetCombo.setMaxWidth(Double.MAX_VALUE);
         presetCombo.setPrefWidth(220);
@@ -120,17 +90,16 @@ public class PresetControlBar<T> extends VBox {
         HBox.setHgrow(presetCombo, Priority.ALWAYS);
 
         presetCombo.setConverter(new StringConverter<T>() {
-            @Override public String toString(T object) { return formatPresetItem(object); }
+            @Override public String toString(T object) { return PresetItemFormatter.formatPresetItem(object); }
             @Override public T fromString(String string) { return null; }
         });
 
-        presetCombo.setCellFactory(p -> createPresetListCell());
-        presetCombo.setButtonCell(createPresetListCell());
+        presetCombo.setCellFactory(p -> PresetItemFormatter.createPresetListCell());
+        presetCombo.setButtonCell(PresetItemFormatter.createPresetListCell());
 
-        // Dynamic update of the ComboBox's tooltip on selection change
         presetCombo.valueProperty().addListener((obs, oldV, newV) -> {
             if (newV != null) {
-                String desc = getPresetDetailedDescription(newV);
+                String desc = PresetItemFormatter.getPresetDetailedDescription(newV);
                 if (desc != null && !desc.isBlank()) {
                     Tooltip tip = new Tooltip(desc);
                     tip.setWrapText(true);
@@ -144,7 +113,6 @@ public class PresetControlBar<T> extends VBox {
             }
         });
 
-        // --- Inline editable name field ---
         nameField = new TextField();
         nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
         nameField.setMaxWidth(Double.MAX_VALUE);
@@ -153,223 +121,142 @@ public class PresetControlBar<T> extends VBox {
         HBox.setHgrow(nameField, Priority.ALWAYS);
 
         nameField.textProperty().addListener((obs, old, val) -> {
-            if (val != null && !val.isBlank()) {
-                if (!trackingChanges && presetCombo.getValue() != null) {
-                    String selectedName = formatPresetItem(presetCombo.getValue());
-                    String cleanVal = cleanScenarioName(val);
-                    String cleanSel = cleanScenarioName(selectedName);
-                    if (!val.trim().equalsIgnoreCase(selectedName) && !cleanVal.equalsIgnoreCase(cleanSel)) {
-                        dirty = true;
-                    }
+            if (val != null && !val.isBlank() && !trackingChanges && presetCombo.getValue() != null) {
+                String selectedName = PresetItemFormatter.formatPresetItem(presetCombo.getValue());
+                String cleanVal = PresetItemFormatter.cleanScenarioName(val);
+                String cleanSel = PresetItemFormatter.cleanScenarioName(selectedName);
+                if (!val.trim().equalsIgnoreCase(selectedName) && !cleanVal.equalsIgnoreCase(cleanSel)) {
+                    dirty = true;
                 }
             }
         });
 
+        bindComboSelectionHandler();
+
+        HBox topRow = new HBox(8, presetCombo); topRow.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(presetCombo, Priority.ALWAYS);
+        HBox nameRow = new HBox(8, presetLabel, nameField); nameRow.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(nameField, Priority.ALWAYS);
+
+        saveBtn = createActionButton(this::doSave);
+        deleteBtn = createActionButton(this::promptDelete);
+        exportBtn = createActionButton(this::promptExport);
+        importBtn = createActionButton(this::promptImport);
+
+        HBox row1 = new HBox(6, saveBtn, deleteBtn); row1.setAlignment(Pos.CENTER);
+        HBox row2 = new HBox(6, exportBtn, importBtn); row2.setAlignment(Pos.CENTER);
+        VBox btnBox = new VBox(6, row1, row2);
+
+        toastLabel = PresetDialogAndToastHelper.createToastLabel();
+        getChildren().addAll(topRow, nameRow, btnBox, toastLabel);
+
+        updateTexts();
+        I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
+    }
+
+    private Button createActionButton(Runnable action) {
+        Button btn = new Button();
+        btn.getStyleClass().add("button-secondary");
+        btn.setOnAction(e -> action.run());
+        HBox.setHgrow(btn, Priority.ALWAYS);
+        btn.setMaxWidth(Double.MAX_VALUE);
+        return btn;
+    }
+
+    private void bindComboSelectionHandler() {
         final boolean[] reverting = {false};
         presetCombo.setOnAction(e -> {
-            if (reverting[0]) return; // ignore synthetic event from revert
+            if (reverting[0]) return;
             T selected = presetCombo.getValue();
             if (selected != null) {
-                // If there are unsaved changes, prompt to save/discard/cancel before switching
                 if (dirty) {
-                    javafx.stage.Window owner = getScene() != null ? getScene().getWindow() : null;
-                    boolean canProceed = promptSavePresetIfDirty(owner);
-                    if (!canProceed) {
-                        // Revert combo to the preset matching current nameField text
+                    Window owner = getScene() != null ? getScene().getWindow() : null;
+                    if (!promptSavePresetIfDirty(owner)) {
                         String baseName = nameField.getText() != null
                                 ? nameField.getText().trim().replace(I18n.getOrDefault("preset.name.custom_suffix", " (Custom)"), "").trim()
                                 : "";
                         T previous = presetCombo.getItems().stream()
-                                .filter(it -> it != null && formatPresetItem(it).equalsIgnoreCase(baseName))
+                                .filter(it -> it != null && PresetItemFormatter.formatPresetItem(it).equalsIgnoreCase(baseName))
                                 .findFirst().orElse(null);
                         reverting[0] = true;
                         try {
-                            presetCombo.setValue(previous); // revert without triggering the block again
+                            presetCombo.setValue(previous);
                         } finally {
                             reverting[0] = false;
                         }
                         return;
                     }
                 }
-                // Populate name field with selected preset name
-                String name = formatPresetItem(selected);
-                nameField.setText(name);
-                nameField.setStyle(""); // reset unsaved style
-                trackingChanges = false; // clean state right after selection
-                dirty = false;
-                if (listener != null) {
-                    listener.onPresetSelected(selected);
-                }
-            }
-        });
-
-        HBox topRow = new HBox(8, presetCombo);
-        topRow.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(presetCombo, Priority.ALWAYS);
-
-        HBox nameRow = new HBox(8, presetLabel, nameField);
-        nameRow.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(nameField, Priority.ALWAYS);
-
-        // --- Action buttons ---
-        saveBtn = new Button();
-        saveBtn.getStyleClass().add("button-secondary");
-        saveBtn.setOnAction(e -> doSave());
-        HBox.setHgrow(saveBtn, Priority.ALWAYS);
-        saveBtn.setMaxWidth(Double.MAX_VALUE);
-
-        deleteBtn = new Button();
-        deleteBtn.getStyleClass().add("button-secondary");
-        deleteBtn.setOnAction(e -> promptDelete());
-        HBox.setHgrow(deleteBtn, Priority.ALWAYS);
-        deleteBtn.setMaxWidth(Double.MAX_VALUE);
-
-        exportBtn = new Button();
-        exportBtn.getStyleClass().add("button-secondary");
-        exportBtn.setOnAction(e -> promptExport());
-        HBox.setHgrow(exportBtn, Priority.ALWAYS);
-        exportBtn.setMaxWidth(Double.MAX_VALUE);
-
-        importBtn = new Button();
-        importBtn.getStyleClass().add("button-secondary");
-        importBtn.setOnAction(e -> promptImport());
-        HBox.setHgrow(importBtn, Priority.ALWAYS);
-        importBtn.setMaxWidth(Double.MAX_VALUE);
-
-        HBox row1 = new HBox(6, saveBtn, deleteBtn);
-        row1.setAlignment(Pos.CENTER);
-        HBox row2 = new HBox(6, exportBtn, importBtn);
-        row2.setAlignment(Pos.CENTER);
-        VBox btnBox = new VBox(6, row1, row2);
-
-        // Toast label (hidden by default)
-        toastLabel = new Label();
-        toastLabel.setStyle("-fx-background-color: rgba(239,68,68,0.9); -fx-text-fill: white; -fx-padding: 6 12; -fx-background-radius: 6; -fx-font-size: 12px;");
-        toastLabel.setVisible(false);
-        toastLabel.setManaged(false);
-
-        getChildren().addAll(topRow, nameRow, btnBox, toastLabel);
-
-        updateTexts();
-        updateTooltips();
-        I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
-    }
-
-    // -------------------------------------------------------------------------
-    // Public API
-    // -------------------------------------------------------------------------
-
-    /** Set the export category used for file name prefix. */
-    public void setExportCategory(String category) {
-        this.exportCategory = category;
-    }
-
-    /**
-     * Get export category.
-     *
-     * @return the resulting computation or state reference
-     */
-    public String getExportCategory() {
-        return exportCategory;
-    }
-
-    /**
-     * Sets the preset list. Pre-selects defaultItem if non-null.
-     */
-    public void setPresets(List<T> items, T defaultItem) {
-        presetCombo.getItems().setAll(items);
-        if (defaultItem != null) {
-            T found = null;
-            for (T it : items) {
-                if (it.equals(defaultItem) || formatPresetItem(it).equalsIgnoreCase(formatPresetItem(defaultItem))) {
-                    found = it;
-                    break;
-                }
-            }
-            if (found != null) {
-                presetCombo.setValue(found);
-                nameField.setText(formatPresetItem(found));
+                nameField.setText(PresetItemFormatter.formatPresetItem(selected));
                 nameField.setStyle("");
                 trackingChanges = false;
                 dirty = false;
-                return;
+                if (listener != null) listener.onPresetSelected(selected);
+            }
+        });
+    }
+
+    public void setExportCategory(String category) { this.exportCategory = category; }
+    public String getExportCategory() { return exportCategory; }
+
+    public void setPresets(List<T> items, T defaultItem) {
+        presetCombo.getItems().setAll(items);
+        if (defaultItem != null) {
+            String target = PresetItemFormatter.formatPresetItem(defaultItem);
+            for (T it : items) {
+                if (it.equals(defaultItem) || PresetItemFormatter.formatPresetItem(it).equalsIgnoreCase(target)) {
+                    presetCombo.setValue(it);
+                    nameField.setText(PresetItemFormatter.formatPresetItem(it));
+                    nameField.setStyle("");
+                    trackingChanges = false;
+                    dirty = false;
+                    return;
+                }
             }
         }
-        // Start blank: no selection, empty name
         presetCombo.setValue(null);
         nameField.setText("");
         trackingChanges = false;
         dirty = false;
     }
 
-    /**
-     * Is dirty.
-     *
-     * @return the resulting computation or state reference
-     */
-    public boolean isDirty() {
-        return dirty;
-    }
+    public boolean isDirty() { return dirty; }
 
-    /**
-     * Mark dirty.
-     *
-     */
     public void markDirty() {
         this.dirty = true;
         this.trackingChanges = true;
-        if (nameField != null) {
-            nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-        }
+        if (nameField != null) nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
     }
 
-    /**
-     * Mark clean.
-     *
-     */
     public void markClean() {
         this.dirty = false;
         this.trackingChanges = false;
-        if (nameField != null) {
-            nameField.setStyle("");
-        }
+        if (nameField != null) nameField.setStyle("");
     }
 
-    /**
-     * Resets preset bar to a clean state matching the given preset item.
-     */
     public void markClean(T item) {
         if (item != null) {
-            T found = null;
+            String target = PresetItemFormatter.formatPresetItem(item);
             for (T it : presetCombo.getItems()) {
-                if (it.equals(item) || formatPresetItem(it).equalsIgnoreCase(formatPresetItem(item))) {
-                    found = it;
+                if (it.equals(item) || PresetItemFormatter.formatPresetItem(it).equalsIgnoreCase(target)) {
+                    presetCombo.setValue(it);
+                    nameField.setText(PresetItemFormatter.formatPresetItem(it));
                     break;
                 }
             }
-            if (found != null) {
-                presetCombo.setValue(found);
-                nameField.setText(formatPresetItem(found));
-            } else {
-                nameField.setText(formatPresetItem(item));
-            }
+            if (nameField.getText().isBlank()) nameField.setText(target);
         }
         nameField.setStyle("");
         trackingChanges = false;
         dirty = false;
     }
 
-    /**
-     * Call this whenever a parameter slider/field is modified by the user.
-     * If a preset was selected, the name field is cleared to indicate
-     * the configuration is now in an unsaved custom state.
-     */
     public void notifyParametersChanged() {
         dirty = true;
         if (trackingChanges || presetCombo.getValue() != null) {
             String current = nameField.getText() != null ? nameField.getText().trim() : "";
             if (presetCombo.getValue() != null) {
-                String presetName = formatPresetItem(presetCombo.getValue());
+                String presetName = PresetItemFormatter.formatPresetItem(presetCombo.getValue());
                 if (!presetName.contains("Personnalisé") && !presetName.contains("Custom")) {
                     presetName = presetName + I18n.getOrDefault("preset.name.custom_suffix", " (Custom)");
                 }
@@ -382,59 +269,26 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /**
-     * Shows a themed modal dialog asking whether to save unsaved modifications when exiting tab.
-     * Returns true if user saved or discarded (ok to switch tab), or false if user cancelled.
-     */
-    public boolean promptSavePresetIfDirty(javafx.stage.Window ownerWindow) {
-        if (!dirty) {
-            return true;
-        }
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        WindowUtils.applyWindowIcon(alert);
-        WindowUtils.styleDialogPane(alert.getDialogPane());
-        if (ownerWindow != null) {
-            alert.initOwner(ownerWindow);
-        }
-
-        alert.setTitle(I18n.getOrDefault("preset.dialog.unsaved_title", "Modifications non enregistrées"));
-        String rawName = (presetCombo.getValue() != null) ? formatPresetItem(presetCombo.getValue()) : (nameField.getText() != null ? nameField.getText() : "");
-        String cleanName = rawName.replace("(Custom)", "").replace("(Personnalisé)", "").trim();
-        if (cleanName.isBlank()) {
-            cleanName = I18n.getOrDefault("preset.name.custom", "Personnalisé");
-        }
-        alert.setContentText(I18n.get("preset.dialog.unsaved_content", cleanName));
-
+    public boolean promptSavePresetIfDirty(Window ownerWindow) {
+        if (!dirty) return true;
         ButtonType btnSave = new ButtonType("💾 " + I18n.getOrDefault("preset.save", "Enregistrer"), ButtonBar.ButtonData.YES);
         ButtonType btnDiscard = new ButtonType(I18n.getOrDefault("preset.dialog.discard", "Ignorer"), ButtonBar.ButtonData.NO);
         ButtonType btnCancel = new ButtonType(I18n.getOrDefault("preset.btn.cancel", "Annuler"), ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        alert.getButtonTypes().setAll(btnSave, btnDiscard, btnCancel);
-
-        Optional<ButtonType> res = alert.showAndWait();
+        Optional<ButtonType> res = PresetDialogAndToastHelper.showUnsavedChangesAlert(ownerWindow, presetCombo, nameField, btnSave, btnDiscard, btnCancel);
         if (res.isPresent() && res.get() == btnSave) {
-            boolean saved = doSave();
-            if (!saved) {
-                return false; // User cancelled the save dialog
-            }
+            if (!doSave()) return false;
             markClean();
             return true;
         } else if (res.isPresent() && res.get() == btnDiscard) {
             dirty = false;
             trackingChanges = false;
-            if (nameField != null) {
-                nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-            }
+            if (nameField != null) nameField.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
             return true;
-        } else {
-            return false; // Cancel tab switch
         }
+        return false;
     }
 
-    /**
-     * Sets the text of the inline name field.
-     */
     public void setNameText(String name) {
         if (nameField != null) {
             nameField.setText(name != null ? name : "");
@@ -443,368 +297,77 @@ public class PresetControlBar<T> extends VBox {
         }
     }
 
-    /**
-     * Get preset combo.
-     *
-     * @return the resulting computation or state reference
-     */
-    public ComboBox<T> getPresetCombo() {
-        return presetCombo;
-    }
+    public ComboBox<T> getPresetCombo() { return presetCombo; }
+    public String getCurrentName() { return nameField.getText().trim(); }
+    public void setListener(PresetActionsListener<T> listener) { this.listener = listener; }
 
-    /** Returns the current name typed in the name field. */
-    public String getCurrentName() {
-        return nameField.getText().trim();
-    }
-
-    /**
-     * Set listener.
-     *
-     * @param listener the listener parameter (PresetActionsListener&lt;T&gt;)
-     */
-    public void setListener(PresetActionsListener<T> listener) {
-        this.listener = listener;
-    }
-
-    // -------------------------------------------------------------------------
-    // Actions
-    // -------------------------------------------------------------------------
-
-    /**
-     * Save with the name currently in the name field.
-     * If the field is empty, shows an inline prompt asking for a name.
-     */
     public boolean doSave() {
         String name = nameField.getText().trim();
         if (name.isBlank() || name.contains("(Custom)") || name.contains("(Personnalisé)")) {
-            String defaultName = name.isBlank() ? I18n.getOrDefault("preset.dialog.default_name", "My Preset") : name.replace("(Custom)", "").replace("(Personnalisé)", "").trim();
-            TextInputDialog dialog = new TextInputDialog(defaultName);
-            WindowUtils.applyWindowIcon(dialog);
-            WindowUtils.styleDialogPane(dialog.getDialogPane());
-            dialog.setTitle(I18n.getOrDefault("preset.dialog.save_title", "Save Preset"));
-            dialog.setHeaderText(I18n.getOrDefault("preset.dialog.save_header", "Enter a name for this preset:"));
-            dialog.setContentText(I18n.getOrDefault("preset.dialog.save_label", "Nom :"));
-            Optional<String> entered = dialog.showAndWait();
+            Optional<String> entered = PresetDialogAndToastHelper.promptSavePresetName(name);
             if (entered.isPresent() && !entered.get().isBlank()) {
-                String finalName = entered.get().trim();
+                String finalName = entered.get();
                 nameField.setText(finalName);
                 nameField.setStyle("");
                 return performSave(finalName);
-            } else {
-                return false;
             }
-        } else {
-            return performSave(name);
+            return false;
         }
+        return performSave(name);
     }
 
     private boolean performSave(String name) {
-        boolean exists = presetCombo.getItems().stream()
-                .anyMatch(item -> item != null && formatPresetItem(item).equalsIgnoreCase(name));
-
-        if (exists) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            WindowUtils.applyWindowIcon(confirm);
-            WindowUtils.styleDialogPane(confirm.getDialogPane());
-            confirm.setTitle(I18n.getOrDefault("preset.dialog.overwrite_title", "Preset Exists"));
-            confirm.setHeaderText(I18n.getOrDefault("preset.dialog.overwrite_header", "Replace existing preset"));
-            confirm.setContentText(I18n.getOrDefault("preset.dialog.overwrite_content",
-                    "Un préréglage nommé '" + name + "' existe déjà. Voulez-vous l'écraser ?"));
-            Optional<ButtonType> result = confirm.showAndWait();
-            if (result.isEmpty() || result.get() != ButtonType.OK) {
-                return false;
-            }
-        }
-
-        dirty = false;
-        trackingChanges = false;
-        if (listener != null) {
-            listener.onSavePreset(name);
-        }
-        showToast(I18n.getOrDefault("preset.toast.saved", "✅ Preset saved: ") + name,
-                "-fx-background-color: rgba(16,185,129,0.9);");
+        boolean exists = presetCombo.getItems().stream().anyMatch(item -> item != null && PresetItemFormatter.formatPresetItem(item).equalsIgnoreCase(name));
+        if (exists && !PresetDialogAndToastHelper.confirmOverwriteExistingPreset(name)) return false;
+        dirty = false; trackingChanges = false;
+        if (listener != null) listener.onSavePreset(name);
+        PresetDialogAndToastHelper.showToast(toastLabel, I18n.getOrDefault("preset.toast.saved", "✅ Preset saved: ") + name, "-fx-background-color: rgba(16,185,129,0.9);");
         return true;
     }
 
     private void promptDelete() {
         T selected = presetCombo.getValue();
-        if (selected == null) {
-            showToast(I18n.getOrDefault("preset.toast.no_selection", "⚠️ Select a preset to delete."),
-                    "-fx-background-color: rgba(234,179,8,0.9);");
-            return;
-        }
-
-        String name = formatPresetItem(selected);
-
-        toastLabel.setText(I18n.getOrDefault("preset.toast.confirm_delete", "⚠️ Supprimer « ") + name + " » ?");
-        toastLabel.setStyle("-fx-background-color: rgba(239,68,68,0.92); -fx-text-fill: white; -fx-padding: 6 12; -fx-background-radius: 6; -fx-font-size: 12px;");
-        toastLabel.setVisible(true);
-        toastLabel.setManaged(true);
-
-        Button confirmBtn = new Button(I18n.getOrDefault("preset.btn.confirm_delete", "Confirm deletion"));
-        confirmBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
-        confirmBtn.setMaxWidth(Double.MAX_VALUE);
-
-        Button cancelBtn = new Button(I18n.getOrDefault("preset.btn.cancel", "Annuler"));
-        cancelBtn.getStyleClass().add("button-secondary");
-        cancelBtn.setMaxWidth(Double.MAX_VALUE);
-
-        HBox confirmRow = new HBox(6, confirmBtn, cancelBtn);
-        confirmRow.setAlignment(Pos.CENTER);
-        HBox.setHgrow(confirmBtn, Priority.ALWAYS);
-        HBox.setHgrow(cancelBtn, Priority.ALWAYS);
-        getChildren().add(confirmRow);
-
-        confirmBtn.setOnAction(ev -> {
-            getChildren().remove(confirmRow);
-            hideToast();
+        PresetDialogAndToastHelper.promptInlineDelete(this, toastLabel, selected, name -> {
             if (listener != null) {
                 listener.onDeletePreset(selected);
                 presetCombo.getItems().remove(selected);
                 nameField.clear();
                 trackingChanges = false;
-                showToast(I18n.getOrDefault("preset.toast.deleted", "🗑️ Preset deleted: ") + name,
-                        "-fx-background-color: rgba(239,68,68,0.85);");
+                PresetDialogAndToastHelper.showToast(toastLabel, I18n.getOrDefault("preset.toast.deleted", "🗑️ Preset deleted: ") + name, "-fx-background-color: rgba(239,68,68,0.85);");
             }
-        });
-
-        cancelBtn.setOnAction(ev -> {
-            getChildren().remove(confirmRow);
-            hideToast();
         });
     }
 
     private void promptExport() {
-        T selected = presetCombo.getValue();
-        if (selected == null) {
-            showToast(I18n.getOrDefault("preset.toast.no_selection", "⚠️ Select a preset to export."),
-                    "-fx-background-color: rgba(234,179,8,0.9);");
-            return;
-        }
-
-        String presetName = nameField.getText().trim().isBlank()
-                ? formatPresetItem(selected)
-                : nameField.getText().trim();
-
-        String safeName = presetName.toLowerCase()
-                .replaceAll("[^a-z0-9\\-]", "-")
-                .replaceAll("-{2,}", "-")
-                .replaceAll("^-|-$", "");
-        if (safeName.isBlank()) safeName = "custom";
-
-        String suggestedFileName = "ether-" + exportCategory + "-" + safeName + ".json";
-
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("preset.dialog.export_title", "Export Preset (JSON)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers JSON", "*.json"));
-        chooser.setInitialFileName(suggestedFileName);
-
-        File file = chooser.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null && listener != null) {
-            listener.onExportPreset(file, selected);
-            showToast(I18n.getOrDefault("preset.toast.exported", "📤 Exported: ") + file.getName(),
-                    "-fx-background-color: rgba(16,185,129,0.9);");
-        }
+        PresetDialogAndToastHelper.promptExportPresetFile(getScene() != null ? getScene().getWindow() : null, exportCategory, presetCombo.getValue(), nameField, toastLabel, (file, sel) -> {
+            if (listener != null) listener.onExportPreset(file, sel);
+        });
     }
 
     private void promptImport() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("preset.dialog.import_title", "Import Preset (JSON)"));
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers JSON", "*.json"));
-        File file = chooser.showOpenDialog(getScene() != null ? getScene().getWindow() : null);
-        if (file != null && listener != null) {
-            listener.onImportPreset(file);
-            showToast(I18n.getOrDefault("preset.toast.imported", "📥 Imported: ") + file.getName(),
-                    "-fx-background-color: rgba(16,185,129,0.9);");
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // Toast notification helpers
-    // -------------------------------------------------------------------------
-
-    private void showToast(String message, String styleOverride) {
-        toastLabel.setText(message);
-        toastLabel.setStyle(styleOverride + " -fx-text-fill: white; -fx-padding: 6 12; -fx-background-radius: 6; -fx-font-size: 12px;");
-        toastLabel.setVisible(true);
-        toastLabel.setManaged(true);
-        toastLabel.setOpacity(1.0);
-
-        PauseTransition pause = new PauseTransition(Duration.seconds(3));
-        pause.setOnFinished(e -> {
-            FadeTransition fade = new FadeTransition(Duration.millis(500), toastLabel);
-            fade.setFromValue(1.0);
-            fade.setToValue(0.0);
-            fade.setOnFinished(f -> hideToast());
-            fade.play();
+        PresetDialogAndToastHelper.promptImportPresetFile(getScene() != null ? getScene().getWindow() : null, toastLabel, file -> {
+            if (listener != null) listener.onImportPreset(file);
         });
-        pause.play();
     }
 
-    private void hideToast() {
-        toastLabel.setVisible(false);
-        toastLabel.setManaged(false);
-        toastLabel.setOpacity(1.0);
-    }
-
-    // -------------------------------------------------------------------------
-    // i18n
-    // -------------------------------------------------------------------------
-
-    /**
-     * Update texts.
-     *
-     */
     public void updateTexts() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (presetLabel != null && labelKey != null) {
-            presetLabel.setText(I18n.getOrDefault(labelKey, defaultLabelText) + ":");
-        }
+        if (presetLabel != null && labelKey != null) presetLabel.setText(I18n.getOrDefault(labelKey, defaultLabelText) + ":");
         if (saveBtn != null) saveBtn.setText("💾 " + I18n.getOrDefault("preset.save", "Enregistrer"));
         if (deleteBtn != null) deleteBtn.setText("🗑️ " + I18n.getOrDefault("preset.delete", "Supprimer"));
         if (exportBtn != null) exportBtn.setText("📤 " + I18n.getOrDefault("preset.export", "Export"));
         if (importBtn != null) importBtn.setText("📥 " + I18n.getOrDefault("preset.import", "Import"));
         if (presetCombo != null) {
             presetCombo.setPromptText(I18n.getOrDefault("preset.combo.placeholder", "— Select a preset —"));
-            presetCombo.setButtonCell(createPresetListCell());
+            presetCombo.setButtonCell(PresetItemFormatter.createPresetListCell());
             T cur = presetCombo.getValue();
-            if (cur != null) {
-                if (nameField != null && !dirty) {
-                    nameField.setText(formatPresetItem(cur));
-                }
-            }
+            if (cur != null && nameField != null && !dirty) nameField.setText(PresetItemFormatter.formatPresetItem(cur));
         }
-        if (nameField != null)
-            nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
-        updateTooltips();
-    }
-
-    private void updateTooltips() {
-        // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-        if (presetCombo != null) presetCombo.setTooltip(new Tooltip(
-                I18n.getOrDefault("preset.tooltip.combo", "Select an existing preset")));
-        if (nameField != null) nameField.setTooltip(new Tooltip(
-                I18n.getOrDefault("preset.name.tooltip", "Preset name — directly editable to name or rename")));
-        if (saveBtn != null) saveBtn.setTooltip(new Tooltip(
-                I18n.getOrDefault("planet.tooltip.preset_save", "Enregistrer la configuration actuelle sous ce nom")));
-        if (deleteBtn != null) deleteBtn.setTooltip(new Tooltip(
-                I18n.getOrDefault("planet.tooltip.preset_delete", "Delete selected preset")));
-        if (exportBtn != null) exportBtn.setTooltip(new Tooltip(
-                I18n.getOrDefault("planet.tooltip.preset_export", "Export preset as JSON (ether-category-name.json)")));
-        if (importBtn != null) importBtn.setTooltip(new Tooltip(
-                I18n.getOrDefault("planet.tooltip.preset_import", "Import JSON preset file")));
-    }
-
-    private String formatPresetItem(T item) {
-        if (item == null) return "";
-        if (item instanceof org.ether.society.generation.PlanetPreset p) return I18n.getPlanetPresetDisplayName(p.name());
-        if (item instanceof org.ether.society.model.EcologyPreset e) return org.ether.society.i18n.I18n.getPlanetPresetDisplayName(e.name());
-        if (item instanceof org.ether.society.model.Scenario s) {
-            return cleanScenarioName(s.getDisplayName());
-        }
-        try {
-            var method = item.getClass().getMethod("name");
-            Object val = method.invoke(item);
-            if (val != null) return val.toString();
-        } catch (Exception ignored) {}
-        try {
-            var method = item.getClass().getMethod("getName");
-            Object val = method.invoke(item);
-            if (val != null) return val.toString();
-        } catch (Exception ignored) {}
-        return item.toString();
-    }
-
-    private String cleanScenarioName(String name) {
-        if (name == null) return "";
-        return name.replaceAll("\\s*\\((?:\\-?\\d+|An 0|Year 0|SSP[0-9\\-\\.]+)\\)\\s*$", "").trim();
-    }
-
-    private String getPresetDateText(T item) {
-        if (item instanceof org.ether.society.model.Scenario s) {
-            long year = s.getStartDateYear();
-            if (year < 0) {
-                String bcFmt = I18n.getOrDefault("scenario.date.bc", "%,d BCE");
-                return String.format(bcFmt, Math.abs(year)).replace(',', ' ');
-            } else if (year == 0) {
-                return I18n.getOrDefault("scenario.date.year_zero", "Year 0");
-            } else {
-                return String.valueOf(year);
-            }
-        }
-        return null;
-    }
-
-    private String getPresetDetailedDescription(T item) {
-        if (item == null) return null;
-        if (item instanceof org.ether.society.generation.PlanetPreset p) {
-            return p.getPresetDescription();
-        }
-        if (item instanceof org.ether.society.model.EcologyPreset e) {
-            return e.getPresetDescription();
-        }
-        if (item instanceof org.ether.society.model.Scenario s) {
-            String desc = s.getDisplayDescription();
-            if (desc != null && !desc.isBlank()) return desc;
-            return s.getDisplayName();
-        }
-        return formatPresetItem(item);
-    }
-
-    private ListCell<T> createPresetListCell() {
-        return new ListCell<>() {
-            private final Label nameLabel = new Label();
-            private final Label dateLabel = new Label();
-            private final Region spacer = new Region();
-            private final HBox container = new HBox(8, nameLabel, spacer, dateLabel);
-
-            {
-                HBox.setHgrow(spacer, Priority.ALWAYS);
-                container.setAlignment(Pos.CENTER_LEFT);
-                nameLabel.getStyleClass().add("preset-cell-name");
-                dateLabel.getStyleClass().add("preset-cell-date");
-                dateLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-            }
-
-            /**
-             * Update item.
-             *
-             * @param item the item parameter (T)
-             * @param empty the empty parameter (boolean)
-             */
-            @Override
-            protected void updateItem(T item, boolean empty) {
-                // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                    setText(null);
-                    setTooltip(null);
-                } else {
-                    String formattedName = formatPresetItem(item);
-                    String dateText = getPresetDateText(item);
-                    if (dateText != null && !dateText.isBlank()) {
-                        nameLabel.setText(formattedName);
-                        dateLabel.setText("📅 " + dateText);
-                        setGraphic(container);
-                        setText(null);
-                    } else {
-                        setGraphic(null);
-                        setText(formattedName);
-                    }
-                    String desc = getPresetDetailedDescription(item);
-                    if (desc != null && !desc.isBlank()) {
-                        Tooltip tip = new Tooltip(desc);
-                        tip.setWrapText(true);
-                        tip.setMaxWidth(480);
-                        setTooltip(tip);
-                    } else {
-                        setTooltip(null);
-                    }
-                }
-            }
-        };
+        if (nameField != null) nameField.setPromptText(I18n.getOrDefault("preset.name.placeholder", "Preset name…"));
+        if (presetCombo != null) presetCombo.setTooltip(new Tooltip(I18n.getOrDefault("preset.tooltip.combo", "Select an existing preset")));
+        if (nameField != null) nameField.setTooltip(new Tooltip(I18n.getOrDefault("preset.name.tooltip", "Preset name — directly editable to name or rename")));
+        if (saveBtn != null) saveBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset_save", "Enregistrer la configuration actuelle sous ce nom")));
+        if (deleteBtn != null) deleteBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset_delete", "Delete selected preset")));
+        if (exportBtn != null) exportBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset_export", "Export preset as JSON (ether-category-name.json)")));
+        if (importBtn != null) importBtn.setTooltip(new Tooltip(I18n.getOrDefault("planet.tooltip.preset_import", "Import JSON preset file")));
     }
 }
-
-

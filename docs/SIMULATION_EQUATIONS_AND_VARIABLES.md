@@ -1,4 +1,4 @@
-# Ether Simulation â€” Differential Equations & State Variable Specification
+﻿# Ether Simulation â€” Differential Equations & State Variable Specification
 
 > **Master Technical, Physical & Mathematical Specification**  
 > *Strict Separation between Core Model Physics (Tier 1) and Optional Cliodynamic / Phenomenological Modules (Tier 2)*
@@ -2351,14 +2351,29 @@ In strict accordance with the Headless Decoupling Architecture, runtime headless
       $$W_{\text{unskilled}}(T) = \text{clamp}\left(100.0 + \frac{550.0}{1.0 + \exp(-2.20 \cdot (T - 4.60))}, 50.0, 1000.0\right)$$
 
 23. **Planetary Kardashev Energy Scale & Emergent Technology Formulation**:
-    * **Literature**: Kardashev, N. S. (1964) *Transmission of Information by Extraterrestrial Civilizations*; Sagan, C. (1973) *The Cosmic Connection*; Lotka, A. J. (1922) *Contribution to the Energetics of Evolution*; Smil, V. (2017) *Energy and Civilization*.
-    * **Epistemic Principle**: Technology ($T$) is strictly a synthetic output metric reconstituted *a posteriori* from physical exergy and capital stock density, never a causal input driver in Tier 1.
+    * **Literature**: Kardashev, N. S. (1964) *Transmission of Information by Extraterrestrial Civilizations*; Sagan, C. (1973) *The Cosmic Connection*; Lotka, A. J. (1922) *Contribution to the Energetics of Evolution*; Garrett, T. J. (2011, 2012) *Macro-thermodynamics of Civilizational Capital & Power Dissipation*; Smil, V. (2017) *Energy and Civilization*.
+    * **Epistemic Principle**: Technology ($T$) is strictly a synthetic output metric reconstituted *a posteriori* from physical exergy and capital stock density, never a causal input driver in Tier 1. Technology is NOT stored as an independent dynamical state variable in cells (`WorldBuffer` or `H3Cell`).
     * **Continuous Kardashev Scale**:
       $$K_{\text{sagan}} = \frac{\log_{10}\left(\max\left(1.0, P_{\text{watts, total}}\right)\right) - 6.0}{10.0}$$
       where $P_{\text{watts, total}} = P_{\text{watts/capita}} \cdot N$.
-    * **Emergent Technology Level ($T_{\text{emergent}}$)**:
-      $$T_{\text{energy}} = 1.0 + 1.5 \cdot \log_{10}\left(\frac{\max(50.0, P_{\text{watts/capita}})}{300.0}\right)$$
-      $$T_{\text{capital}} = 0.2 + 2.2 \cdot \log_{10}\left(\max\left(1.0, \frac{K}{N}\right)\right)$$
-      $$T_{\text{emergent}} = 0.50 \cdot T_{\text{energy}} + 0.50 \cdot T_{\text{capital}}$$
+    * **Garrett-Lotka Emergent Technology Level ($T_{\text{emergent}}$)**:
+      $$p_{\text{eff}} = \operatorname{softmax}(P_{\text{basal}}, P_{\text{total}}, 0.15 P_{\text{basal}})$$
+      $$\text{MetabolicRatio} = \frac{p_{\text{eff}}}{P_{\text{basal}}}$$
+      $$K_{\text{energized}} = \frac{\operatorname{softplus}(p_{\text{eff}} - 0.80 P_{\text{basal}}, 20.0)}{\eta_{\text{Garrett}}}$$
+      $$K_{\text{active}} = \operatorname{harmonicCoupling}(K_{\text{gross}}, K_{\text{energized}}) = \frac{2 \cdot K_{\text{gross}} \cdot K_{\text{energized}}}{K_{\text{gross}} + K_{\text{energized}} + \epsilon}$$
+      $$T_{\text{emergent}} = \operatorname{sclamp}\left(0.50 + 2.15 \ln(\max(1.0, \text{MetabolicRatio})) + 0.58 \ln\left(1.0 + \frac{K_{\text{active}}}{K_{\text{ref}}}\right), \; 0.0, \; 10.0\right)$$
     * **Tier 1 Extraction Status**: 100% complete across all 18 Tier 1 physical engines. Zero calls to `getTechnologyLevel()` remain in Tier 1. All physical state transformations are driven strictly by mass, enthalpy, exergy flux (Watts), and material strength.
+    * **Post-Apocalyptic Invariance**: If $N \to 0$ or energy grids shut down ($p_{\text{eff}} \to P_{\text{basal}}$), $K_{\text{energized}} \to 0 \implies K_{\text{active}} \to 0$, causing $T_{\text{emergent}}$ to collapse smoothly to subsistence level ($T \le 1.0$), eliminating spurious technological blow-up from idle capital.
+    * **Dedicated Telemetry Specification**: For the complete formalization of all 12 biophysical observables, zero-cascade derivations, and macro-historical indicators, see **`docs/TELEMETRY_ARCHITECTURE_AND_OBSERVABLES.md`**.
 
+24. **Solow-Swan Useful Mechanical Power Capital Steady-State ($k^*$)**:
+    * **Literature**: Solow, R. M. (1956) *A Contribution to the Theory of Economic Growth*; Ayres, R. U. & Warr, B. (2009) *The Economic Growth Engine: How Energy and Work Drive Material Prosperity*; Garrett, T. J. (2011).
+    * **Governing Differential Equation**:
+      $$k^* = 15.0 + 12.0 \cdot \left(\frac{P_{\text{watts}}}{100.0}\right)^{1.30}$$
+      $$\frac{dk_{\text{pc}}}{dt} = \delta_{\text{annual}} \cdot (k^* - k_{\text{pc}})$$
+      where $\delta_{\text{annual}} = 0.04\,\text{yr}^{-1}$ represents entropic structural depreciation.
+    * **Somatic Transport Bounding (Paleolithic Invariant)**:
+      For mobile foraging bands ($N_{\text{cell}} < 50$), physical human transport capacity enforces $k^* \le 15.0$ (portable stone and organic tools, AGENTS.md §8).
+    * **Prime Mover Gating of Exosomatic Power**:
+      Passive structural capital (aqueducts, roads, masonry) generates zero active motive power. Machine grid power is gated strictly by prime mover capital ($k_{\text{pc}} \ge 800$):
+      $$P_{\text{grid}} = 4500.0 \cdot \sigma(k_{\text{pc}};\; 900.0,\; 200.0) \cdot \eta_{\text{converter}}$$

@@ -20,10 +20,12 @@ import java.util.function.Function;
  * and EPICA ice core reconstructions).</p>
  *
  * <p>Computes Mean Absolute Percentage Error (MAPE), Cohen's \(d\) effect size,
- * 95% confidence intervals, and statistical bifurcation onsets.</p>
+ * 95% confidence intervals, and statistical bifurcation onsets. Markdown synthesis and
+ * multi-scenario cross-matrices are delegated to {@link GroundTruthAuditReportBuilder}.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
+ * @see GroundTruthAuditReportBuilder
  */
 public class GroundTruthAuditGenerator {
 
@@ -48,6 +50,9 @@ public class GroundTruthAuditGenerator {
         public final double cohenD;
         public final String significance;
 
+        /**
+         * Constructs a complete variable drift analysis record.
+         */
         public VariableDriftAnalysis(String variableName, double mape, String status,
                                      String driftOnsetYear, String peakDiscrepancy,
                                      String temporalPattern, String suspectEngine,
@@ -72,8 +77,15 @@ public class GroundTruthAuditGenerator {
             this.significance = significance;
         }
 
+        /**
+         * Formats the 95% normal confidence interval \([\mu_{\text{sim}} - 1.96\,\text{SE}, \mu_{\text{sim}} + 1.96\,\text{SE}]\).
+         *
+         * @return formatted 95% confidence interval string
+         */
         public String getCi95Display() {
-            if (sampleCount <= 1 || stdSim <= 1e-9) return String.format(Locale.US, "[%,.2f ; %,.2f]", meanSim, meanSim);
+            if (sampleCount <= 1 || stdSim <= 1e-9) {
+                return String.format(Locale.US, "[%,.2f ; %,.2f]", meanSim, meanSim);
+            }
             double se = stdSim / Math.sqrt(sampleCount);
             double moe = 1.96 * se;
             return String.format(Locale.US, "[%,.2f ; %,.2f]", meanSim - moe, meanSim + moe);
@@ -92,9 +104,9 @@ public class GroundTruthAuditGenerator {
     /**
      * Extracts numerical telemetry value from a simulation snapshot.
      *
-     * @param snap snapshot instance
+     * @param snap   snapshot instance
      * @param metric metric descriptor or key
-     * @param year calendar year
+     * @param year   calendar year
      * @return scalar telemetry value
      */
     public static double extractValue(SimulationRunRecord.MetricSnapshot snap, String metric, int year) {
@@ -107,7 +119,7 @@ public class GroundTruthAuditGenerator {
         }
         if (id == null) id = metric;
 
-        // 1. Direct hit in precomputed metricsMap (if present and non-zero)
+        // 1. Direct hit in precomputed metricsMap (if present and non-NaN)
         if (snap.getMetricsMap() != null && snap.getMetricsMap().containsKey(id)) {
             double v = snap.getMetricsMap().get(id);
             if (!Double.isNaN(v)) {
@@ -148,7 +160,7 @@ public class GroundTruthAuditGenerator {
             return v;
         }
 
-        // 3. Systematically delegate all other macroeconomic & cliodynamic indicators to PostHocCliodynamicMetricsExtractor
+        // 3. Systematically delegate all other macroeconomic & cliodynamic indicators
         return PostHocCliodynamicMetricsExtractor.computeMetric(snap, id, year);
     }
 
@@ -170,6 +182,13 @@ public class GroundTruthAuditGenerator {
 
     /**
      * Computes statistical drift parameters for a single state variable.
+     *
+     * @param label      display label
+     * @param benchKey   canonical benchmark key
+     * @param benchmark  empirical benchmark map
+     * @param timeSeries simulation telemetry snapshots
+     * @param method     interpolation method
+     * @return drift analysis record
      */
     public static VariableDriftAnalysis computeVariableDrift(String label, String benchKey, Map<Integer, Double> benchmark,
                                                              Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
@@ -228,7 +247,6 @@ public class GroundTruthAuditGenerator {
             double obs = HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, yr, method);
             if (Double.isNaN(obs)) continue;
 
-            // Apply territorial window scaling for extensive variables when the simulation is clipped
             if (regionalExtensiveScaleFactor > 0.0 && regionalExtensiveScaleFactor < 0.50) {
                 if ("worldPopulation".equals(benchKey) || "grossWorldProduct".equals(benchKey) || "primaryEnergy".equals(benchKey)) {
                     obs = obs * regionalExtensiveScaleFactor;
@@ -237,30 +255,9 @@ public class GroundTruthAuditGenerator {
 
             double sim = extractValue(timeSeries.get(yr), benchKey, yr);
             if ("milankovitchInsolation".equals(benchKey) && sim <= 0.0) {
-                // Orbital Milankovitch cycles are physical invariants of the Earth-Sun system; disabled for extraterrestrial bodies
                 continue;
             }
-            if ("worldPopulation".equals(benchKey) && sim > 100.0) {
-                sim = sim / 1_000_000.0;
-            } else if ("grossWorldProduct".equals(benchKey)) {
-                if (sim > 1e6) {
-                    sim = sim / 1e9;
-                }
-            } else if ("primaryEnergy".equals(benchKey)) {
-                if (sim > 1e12) {
-                    sim = sim / 1e18;
-                } else if (sim > 1e4) {
-                    sim = sim * 3.15576e-5;
-                }
-            } else if ("zeroContainmentScore".equals(benchKey)) {
-                if (sim > 1.0) {
-                    sim = sim / 100.0;
-                }
-            } else if ("co2Concentration".equals(benchKey)) {
-                if (sim < 100.0) {
-                    sim = 280.0 + sim;
-                }
-            }
+            sim = normalizeSimulatedUnits(benchKey, sim);
 
             boolean isPercentageVariable = "temperatureAnomaly".equals(benchKey)
                     || "fossilSharePrimaryEnergy".equals(benchKey)
@@ -272,7 +269,6 @@ public class GroundTruthAuditGenerator {
                     || "deforestationRate".equals(benchKey);
             double errPct;
             if (Math.abs(obs) < 1e-4) {
-                // Deep-Time Invariant: when empirical ground truth is exactly 0.0
                 errPct = (Math.abs(sim) < 1e-3) ? 0.0 : (isPercentageVariable ? Math.min(100.0, Math.abs(sim)) : Math.min(100.0, Math.abs(sim) * 100.0));
             } else {
                 double denom = isPercentageVariable ? Math.max(Math.abs(obs), 5.0) : Math.abs(obs);
@@ -299,56 +295,17 @@ public class GroundTruthAuditGenerator {
         }
 
         double mape = sumAbsError / count;
-        String status;
-        if (mape <= 10.0) status = "🟢 " + I18n.getOrDefault("analytics.status.calibrated", "Calibrated");
-        else if (mape <= 25.0) status = "🟡 " + I18n.getOrDefault("analytics.status.moderate_drift", "Moderate drift");
-        else status = "🔴 " + I18n.getOrDefault("analytics.status.severe_drift", "Severe drift");
+        String status = mape <= 10.0
+                ? "🟢 " + I18n.getOrDefault("analytics.status.calibrated", "Calibrated")
+                : mape <= 25.0
+                ? "🟡 " + I18n.getOrDefault("analytics.status.moderate_drift", "Moderate drift")
+                : "🔴 " + I18n.getOrDefault("analytics.status.severe_drift", "Severe drift");
 
-        String onsetStr = driftYear != null ? String.format("%d AD", driftYear) : "—";
-        String peakStr = String.format(Locale.US, "%.1f%% (%d AD)", maxError, peakYear);
-
-        String pattern;
-        if (errorList.size() >= 4) {
-            double minErr = Collections.min(errorList);
-            double maxErr = Collections.max(errorList);
-            double errSpread = maxErr - minErr;
-
-            // Count directional sign changes (true oscillations)
-            int signChanges = 0;
-            double prevDiff = 0.0;
-            for (int i = 1; i < errorList.size(); i++) {
-                double diff = errorList.get(i) - errorList.get(i - 1);
-                if (Math.abs(diff) > 0.05) {
-                    if (prevDiff != 0.0 && (diff * prevDiff < 0)) {
-                        signChanges++;
-                    }
-                    prevDiff = diff;
-                }
-            }
-
-            double firstHalfAvg = 0.0;
-            int half = errorList.size() / 2;
-            for (int i = 0; i < half; i++) firstHalfAvg += errorList.get(i);
-            firstHalfAvg /= half;
-
-            double secondHalfAvg = 0.0;
-            for (int i = half; i < errorList.size(); i++) secondHalfAvg += errorList.get(i);
-            secondHalfAvg /= (errorList.size() - half);
-
-            if (mape < 2.0 || errSpread < 1.0) {
-                pattern = "🟢 " + I18n.getOrDefault("analytics.pattern.constant", "Stable (Invariant / Calibrated)");
-            } else if (signChanges >= 2) {
-                pattern = "〰️ " + I18n.getOrDefault("analytics.pattern.oscillating", "Oscillating Cycle");
-            } else if (secondHalfAvg > firstHalfAvg * 1.3) {
-                pattern = "📈 " + I18n.getOrDefault("analytics.pattern.divergent", "Divergent (compounding)");
-            } else if (firstHalfAvg > secondHalfAvg * 1.3) {
-                pattern = "📉 " + I18n.getOrDefault("analytics.pattern.convergent", "Convergent (damping)");
-            } else {
-                pattern = "➖ " + I18n.getOrDefault("analytics.pattern.stable_offset", "Stable Offset (Uniform)");
-            }
-        } else {
-            pattern = "—";
-        }
+        String onsetStr = driftYear != null ? (driftYear < 0 ? String.format("%d BCE", -driftYear) : String.format("%d CE", driftYear)) : "—";
+        String peakStr = peakYear < 0
+                ? String.format(Locale.US, "%.1f%% (%d BCE)", maxError, -peakYear)
+                : String.format(Locale.US, "%.1f%% (%d CE)", maxError, peakYear);
+        String pattern = classifyTemporalErrorPattern(errorList, mape);
 
         double meanObs = obsList.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
         double meanSim = simList.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
@@ -374,277 +331,72 @@ public class GroundTruthAuditGenerator {
                 count, meanObs, meanSim, stdSim, medianSim, q1Sim, q3Sim, cohenD, significance);
     }
 
+    private static double normalizeSimulatedUnits(String benchKey, double sim) {
+        if ("worldPopulation".equals(benchKey) && sim > 100.0) {
+            return sim / 1_000_000.0;
+        } else if ("grossWorldProduct".equals(benchKey) && sim > 1e6) {
+            return sim / 1e9;
+        } else if ("primaryEnergy".equals(benchKey)) {
+            if (sim > 1e12) return sim / 1e18;
+            if (sim > 1e4) return sim * 3.15576e-5;
+        } else if ("zeroContainmentScore".equals(benchKey) && sim > 1.0) {
+            return sim / 100.0;
+        } else if ("co2Concentration".equals(benchKey) && sim < 100.0) {
+            return 280.0 + sim;
+        }
+        return sim;
+    }
+
+    private static String classifyTemporalErrorPattern(List<Double> errorList, double mape) {
+        if (errorList.size() < 4) return "—";
+        double errSpread = Collections.max(errorList) - Collections.min(errorList);
+        int signChanges = 0;
+        double prevDiff = 0.0;
+        for (int i = 1; i < errorList.size(); i++) {
+            double diff = errorList.get(i) - errorList.get(i - 1);
+            if (Math.abs(diff) > 0.05) {
+                if (prevDiff != 0.0 && (diff * prevDiff < 0)) signChanges++;
+                prevDiff = diff;
+            }
+        }
+        int half = errorList.size() / 2;
+        double firstHalfAvg = 0.0;
+        for (int i = 0; i < half; i++) firstHalfAvg += errorList.get(i);
+        firstHalfAvg /= half;
+        double secondHalfAvg = 0.0;
+        for (int i = half; i < errorList.size(); i++) secondHalfAvg += errorList.get(i);
+        secondHalfAvg /= (errorList.size() - half);
+
+        if (mape < 2.0 || errSpread < 1.0) {
+            return "🟢 " + I18n.getOrDefault("analytics.pattern.constant", "Stable (Invariant / Calibrated)");
+        } else if (signChanges >= 2) {
+            return "〰️ " + I18n.getOrDefault("analytics.pattern.oscillating", "Oscillating Cycle");
+        } else if (secondHalfAvg > firstHalfAvg * 1.3) {
+            return "📈 " + I18n.getOrDefault("analytics.pattern.divergent", "Divergent (compounding)");
+        } else if (firstHalfAvg > secondHalfAvg * 1.3) {
+            return "📉 " + I18n.getOrDefault("analytics.pattern.convergent", "Convergent (damping)");
+        }
+        return "➖ " + I18n.getOrDefault("analytics.pattern.stable_offset", "Stable Offset (Uniform)");
+    }
+
     /**
      * Generates a multi-scenario ground truth audit against empirical historical reality.
      */
-    public static <T extends ScenarioBenchmarkItem> AuditResult generateMultiScenarioGroundTruthAudit(List<T> simulatedSelected,
-                                                                    HistoricalValidationKernel.InterpolationMethod method,
-                                                                    Function<? super T, SimulationRunRecord> runResolver) {
-        StringBuilder fullReport = new StringBuilder();
-        fullReport.append("# 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT\n\n");
-        fullReport.append("**Reference Baseline**: Empirical Cliodynamic Reality (-100,000 BP ➔ 2026 CE)\n\n");
-
-        int earliestDivergence = -1;
-        StringBuilder explanationSummary = new StringBuilder();
-
-        Map<String, String> benchmarkKeys = new LinkedHashMap<>();
-        benchmarkKeys.put("👥 Global Demographic Population (worldPopulation)", "worldPopulation");
-        benchmarkKeys.put("💰 Gross World Product (grossWorldProduct)", "grossWorldProduct");
-        benchmarkKeys.put("⚡ Primary Energy Consumption (primaryEnergy)", "primaryEnergy");
-        benchmarkKeys.put("🏙️ Urbanization Rate (urbanizationRate)", "urbanizationRate");
-        benchmarkKeys.put("🌿 Atmospheric CO2 Concentration (co2Concentration)", "co2Concentration");
-        benchmarkKeys.put("📖 Global Literacy Rate (literacyRate)", "literacyRate");
-        benchmarkKeys.put("🪙 Currency Debasement / Coinage Purity (currencyDebasement)", "currencyDebasement");
-        benchmarkKeys.put("👑 Elite Overproduction Index (eliteOverproductionIndex)", "eliteOverproductionIndex");
-        benchmarkKeys.put("🍞 Real Unskilled Wage (realUnskilledWage)", "realUnskilledWage");
-        benchmarkKeys.put("🏛️ Political Stress Index (politicalStressIndex)", "politicalStressIndex");
-        benchmarkKeys.put("🤝 Asabiyyah Social Cohesion (asabiyyahSocialCohesion)", "asabiyyahSocialCohesion");
-        benchmarkKeys.put("📉 Sociopolitical Instability (sociopoliticalInstability)", "sociopoliticalInstability");
-        benchmarkKeys.put("⚖️ Gini Inequality (giniInequality)", "giniInequality");
-        benchmarkKeys.put("📜 Sovereign Debt Burden (sovereignDebtBurden)", "sovereignDebtBurden");
-        benchmarkKeys.put("🚢 Global Trade Volume (globalTradeVolume)", "globalTradeVolume");
-        benchmarkKeys.put("🌡️ Temperature Anomaly (temperatureAnomaly)", "temperatureAnomaly");
-        benchmarkKeys.put("🌱 Topsoil Erosion Loss (soilErosionRate)", "soilErosionRate");
-        benchmarkKeys.put("🌾 Agricultural EROEI (agriculturalEroei)", "agriculturalEroei");
-        benchmarkKeys.put("🌲 Forest Cover Remaining (deforestationRate)", "deforestationRate");
-        benchmarkKeys.put("⚡ Information Travel Speed (informationSpeed)", "informationSpeed");
-        benchmarkKeys.put("🦣 Megafauna Abundance Index (megafaunaIndex)", "megafaunaIndex");
-        benchmarkKeys.put("☀️ Milankovitch 65°N Insolation (milankovitchInsolation)", "milankovitchInsolation");
-        benchmarkKeys.put("🛡️ Biogeographical Zero-Containment (zeroContainmentScore)", "zeroContainmentScore");
-        benchmarkKeys.put("👶 Life Expectancy at Birth (lifeExpectancyAtBirth)", "lifeExpectancyAtBirth");
-        benchmarkKeys.put("⚒️ Metal Smelting Per Capita (metalSmeltingPerCapita)", "metalSmeltingPerCapita");
-        benchmarkKeys.put("⛏️ Fossil Share Primary Energy (fossilSharePrimaryEnergy)", "fossilSharePrimaryEnergy");
-        benchmarkKeys.put("⚓ Shipping Freight Cost Index (shippingFreightCostIndex)", "shippingFreightCostIndex");
-
-        record ScenarioAudit(
-                ScenarioBenchmarkItem item,
-                SimulationRunRecord run,
-                List<VariableDriftAnalysis> drifts,
-                Map<String, Double> mapes,
-                double avgMape,
-                double rSquared,
-                int scenarioDivergence
-        ) {}
-
-        List<ScenarioAudit> audits = new ArrayList<>();
-
-        for (T item : simulatedSelected) {
-            SimulationRunRecord run = runResolver != null ? runResolver.apply(item) : null;
-            if (run == null || run.getTimeSeriesData() == null || run.getTimeSeriesData().isEmpty()) {
-                continue;
-            }
-
-            var timeSeries = run.getTimeSeriesData();
-            List<VariableDriftAnalysis> drifts = new ArrayList<>();
-            Map<String, Double> mapes = new LinkedHashMap<>();
-            double totalMape = 0.0;
-            int validVariables = 0;
-            int scenarioDiv = -1;
-
-            // Automatically compute territorial scaling for windowed scenarios
-            double regionalExtensiveScaleFactor = 1.0;
-            List<Integer> sortedYears = new ArrayList<>(timeSeries.keySet());
-            Collections.sort(sortedYears);
-            if (!sortedYears.isEmpty()) {
-                int firstYear = sortedYears.get(0);
-                long initialSimPop = timeSeries.get(firstYear).getPopulation();
-                double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", firstYear, method);
-                if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
-                    double globalPop = globalPopM * 1_000_000.0;
-                    boolean isWindowed = (initialSimPop < globalPop * 0.85);
-                    if (initialSimPop > 0 && isWindowed) {
-                        regionalExtensiveScaleFactor = (double) initialSimPop / globalPop;
-                    }
-                }
-            }
-
-            for (Map.Entry<String, String> entry : benchmarkKeys.entrySet()) {
-                String label = entry.getKey();
-                String benchKey = entry.getValue();
-                Map<Integer, Double> benchmark = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
-                VariableDriftAnalysis drift = computeVariableDrift(label, benchKey, benchmark, timeSeries, method, regionalExtensiveScaleFactor);
-                drifts.add(drift);
-                mapes.put(label, drift.mape);
-                if (drift.mape > 0.0) {
-                    totalMape += drift.mape;
-                    validVariables++;
-                }
-                if (!"—".equals(drift.driftOnsetYear)) {
-                    try {
-                        int yr = Integer.parseInt(drift.driftOnsetYear.replaceAll("[^0-9-]", ""));
-                        if (scenarioDiv == -1 || yr < scenarioDiv) scenarioDiv = yr;
-                    } catch (Exception ignored) {}
-                }
-            }
-
-            double avgMape = validVariables > 0 ? (totalMape / validVariables) : 0.0;
-            double rSquared = Math.max(0.0, 1.0 - (avgMape / 100.0));
-
-            audits.add(new ScenarioAudit(item, run, drifts, mapes, avgMape, rSquared, scenarioDiv));
-
-            if (scenarioDiv != -1 && (earliestDivergence == -1 || scenarioDiv < earliestDivergence)) {
-                earliestDivergence = scenarioDiv;
-            }
-        }
-
-        if (audits.isEmpty()) {
-            return new AuditResult(
-                    I18n.getOrDefault("analytics.error.no_telemetry_history", "⚠️ No execution telemetry history found for selected simulated scenarios. Please execute or load scenarios first."),
-                    -1,
-                    ""
-            );
-        }
-
-        fullReport.append("## 🏆 1. Inter-Scenario Calibration Ranking (Empirical Reality Fitness)\n\n");
-        fullReport.append("| # | Scenario | Fidelity Score | Global MAPE | R² Goodness of Fit | First Rupture (T_div) | Diagnostic Status |\n");
-        fullReport.append("|---|---|---|---|---|---|---|\n");
-
-        audits.sort(Comparator.comparingDouble(a -> a.avgMape));
-
-        int rank = 1;
-        for (ScenarioAudit a : audits) {
-            double fidelity = Math.max(0.0, 100.0 - a.avgMape);
-            String medal = rank == 1 ? "🥇 " : rank == 2 ? "🥈 " : rank == 3 ? "🥉 " : "• ";
-            String divStr = a.scenarioDivergence != -1 ? String.format("%d CE", a.scenarioDivergence) : "None (> 10%)";
-            String diagStatus = a.avgMape <= 12.0 ? "🟢 Calibrated" : a.avgMape <= 25.0 ? "🟡 Moderate Drift" : "🔴 Severe Divergence";
-
-            fullReport.append(String.format(Locale.US, "| %s%d | **%s** | **%.1f%%** | %.2f%% | %.3f | %s | %s |\n",
-                    medal, rank, a.item.getName(), fidelity, a.avgMape, a.rSquared, divStr, diagStatus));
-            rank++;
-        }
-        fullReport.append("\n");
-
-        if (audits.size() >= 2) {
-            fullReport.append("## 🔬 2. Multi-Scenario Comparative Gap Matrix\n\n");
-            fullReport.append("| Historical Variable (Metric) |");
-            for (ScenarioAudit a : audits) {
-                fullReport.append(" ").append(a.item.getName()).append(" |");
-            }
-            fullReport.append("\n|---|");
-            for (int i = 0; i < audits.size(); i++) fullReport.append("---|");
-            fullReport.append("\n");
-
-            for (Map.Entry<String, String> entry : benchmarkKeys.entrySet()) {
-                String varLabel = entry.getKey();
-                fullReport.append("| **").append(varLabel).append("** |");
-                for (ScenarioAudit a : audits) {
-                    Double m = a.mapes.get(varLabel);
-                    String badge = (m == null || m == 0.0) ? "⚪ N/A" : m <= 10.0 ? String.format(Locale.US, "🟢 %.1f%%", m) : m <= 25.0 ? String.format(Locale.US, "🟡 %.1f%%", m) : String.format(Locale.US, "🔴 %.1f%%", m);
-                    fullReport.append(" ").append(badge).append(" |");
-                }
-                fullReport.append("\n");
-            }
-            fullReport.append("\n");
-        }
-
-        fullReport.append("## 📊 3. Deep Diagnostic Analysis by Scenario\n\n");
-        for (ScenarioAudit a : audits) {
-            fullReport.append("### 🔎 Scenario: `").append(a.item.getName()).append("` (`").append(a.item.getRunId()).append("`)\n\n");
-            fullReport.append("| Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |\n");
-            fullReport.append("|---|---|---|---|---|---|---|\n");
-            for (VariableDriftAnalysis d : a.drifts) {
-                fullReport.append(String.format(Locale.US, "| %s | %.2f%% | %s | %s | %s | %s | `%s` |\n",
-                        d.variableName, d.mape, d.status, d.driftOnsetYear, d.peakDiscrepancy, d.temporalPattern, d.suspectEngine));
-            }
-            fullReport.append("\n");
-
-            fullReport.append("#### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)\n\n");
-            fullReport.append("| Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |\n");
-            fullReport.append("|---|---|---|---|---|---|---|---|\n");
-            for (VariableDriftAnalysis d : a.drifts) {
-                String obsStr = String.format(Locale.US, "%,.2f", d.meanObs);
-                String simStr = String.format(Locale.US, "%,.2f \u00B1 %,.2f", d.meanSim, d.stdSim);
-                String iqrStr = String.format(Locale.US, "%,.2f [%,.2f - %,.2f]", d.medianSim, d.q1Sim, d.q3Sim);
-                fullReport.append(String.format(Locale.US, "| %s | %d | %s | %s | %s | %s | %.3f | %s |\n",
-                        d.variableName, d.sampleCount, obsStr, simStr, d.getCi95Display(), iqrStr, d.cohenD, d.significance));
-            }
-            fullReport.append("\n---\n\n");
-        }
-
-        for (ScenarioAudit a : audits) {
-            explanationSummary.append(String.format(Locale.US, "• **%s**: Fidelity %.1f%% (MAPE %.1f%%) — %s\n",
-                    a.item.getName(), Math.max(0.0, 100.0 - a.avgMape), a.avgMape,
-                    a.scenarioDivergence != -1 ? String.format("Bifurcation in %d CE", a.scenarioDivergence) : "Calibrated"));
-        }
-
-        return new AuditResult(fullReport.toString(), earliestDivergence, explanationSummary.toString());
+    public static <T extends ScenarioBenchmarkItem> AuditResult generateMultiScenarioGroundTruthAudit(
+            List<T> simulatedSelected,
+            HistoricalValidationKernel.InterpolationMethod method,
+            Function<? super T, SimulationRunRecord> runResolver) {
+        return GroundTruthAuditReportBuilder.generateMultiScenarioGroundTruthAudit(simulatedSelected, method, runResolver);
     }
 
     /**
      * Generates a comparative report across pairs of simulated scenarios.
      */
-    public static <T extends ScenarioBenchmarkItem> AuditResult generateInterScenarioComparativeReport(List<T> simulatedSelected,
-                                                                      RootCauseAnalyzer analyzer,
-                                                                      Function<? super T, SimulationRunRecord> runResolver,
-                                                                      SimulationRunRepository runRepository) {
-        T baselineItem = simulatedSelected.get(0);
-        SimulationRunRecord baseline = runResolver != null ? runResolver.apply(baselineItem) : null;
-
-        if (baseline == null) {
-            return new AuditResult(
-                    I18n.getOrDefault("analytics.error.no_telemetry", "⚠️ Unable to access base scenario telemetry data."),
-                    -1,
-                    ""
-            );
-        }
-
-        StringBuilder explanationSummary = new StringBuilder();
-        StringBuilder multiReport = new StringBuilder();
-        multiReport.append("# ").append(I18n.getOrDefault("analytics.report.title", "📊 RAPPORT D'ANALYSE COMPARATIVE INTER-SCÉNARIOS")).append("\n\n");
-        multiReport.append(String.format("**%s** : `%s`\n\n", I18n.getOrDefault("analytics.report.baseline_label", "Baseline Reference Scenario"), baselineItem.getName()));
-
-        int firstDivergence = -1;
-
-        for (int i = 1; i < simulatedSelected.size(); i++) {
-            T targetItem = simulatedSelected.get(i);
-            SimulationRunRecord target = runResolver != null ? runResolver.apply(targetItem) : null;
-
-            if (target != null && analyzer != null) {
-                RootCauseAnalyzer.ComparisonResult result = analyzer.compareRuns(baseline, target);
-                if (result.getDivergenceYear() != -1 && (firstDivergence == -1 || result.getDivergenceYear() < firstDivergence)) {
-                    firstDivergence = result.getDivergenceYear();
-                }
-                explanationSummary.append(String.format("• **vs %s** : %s\n", targetItem.getName(), result.getPrimaryRootCauseExplanation()));
-                multiReport.append(ComparativeReportGenerator.generateMarkdownReport(result));
-                multiReport.append("\n\n---\n\n");
-            }
-        }
-
-        if (simulatedSelected.size() >= 3 && runRepository != null && analyzer != null) {
-            multiReport.append("## 🔀 Matrice croisée entre scénarios alternatifs\n\n");
-            for (int i = 1; i < simulatedSelected.size(); i++) {
-                for (int j = i + 1; j < simulatedSelected.size(); j++) {
-                    ScenarioBenchmarkItem itemA = simulatedSelected.get(i);
-                    ScenarioBenchmarkItem itemB = simulatedSelected.get(j);
-                    SimulationRunRecord runA = runRepository.getRun(itemA.getRunId());
-                    if (runA == null) runA = runRepository.getRunByScenarioName(itemA.getName()).orElse(null);
-                    SimulationRunRecord runB = runRepository.getRun(itemB.getRunId());
-                    if (runB == null) runB = runRepository.getRunByScenarioName(itemB.getName()).orElse(null);
-
-                    if (runA != null && runB != null) {
-                        RootCauseAnalyzer.ComparisonResult crossRes = analyzer.compareRuns(runA, runB);
-                        multiReport.append(String.format("### ⚖️ Comparaison : %s ⟷ %s\n\n", itemA.getName(), itemB.getName()));
-                        if (crossRes.getDivergenceYear() != -1) {
-                            multiReport.append(String.format("> ⚡ **Bifurcation ($T_{\\text{divergence}}$)** : Année **%d AD**\n\n", crossRes.getDivergenceYear()));
-                        }
-                        fullReportOrCross(crossRes, multiReport);
-                        multiReport.append("\n---\n\n");
-                    }
-                }
-            }
-        }
-
-        return new AuditResult(multiReport.toString(), firstDivergence, explanationSummary.toString());
-    }
-
-    private static void fullReportOrCross(RootCauseAnalyzer.ComparisonResult crossRes, StringBuilder multiReport) {
-        multiReport.append(String.format("> 💡 %s\n\n", crossRes.getPrimaryRootCauseExplanation()));
-        if (!crossRes.getKeyDifferences().isEmpty()) {
-            multiReport.append("#### Différences paramétriques :\n");
-            for (String diff : crossRes.getKeyDifferences()) {
-                multiReport.append("- ").append(diff).append("\n");
-            }
-            multiReport.append("\n");
-        }
+    public static <T extends ScenarioBenchmarkItem> AuditResult generateInterScenarioComparativeReport(
+            List<T> simulatedSelected,
+            RootCauseAnalyzer analyzer,
+            Function<? super T, SimulationRunRecord> runResolver,
+            SimulationRunRepository runRepository) {
+        return GroundTruthAuditReportBuilder.generateInterScenarioComparativeReport(simulatedSelected, analyzer, runResolver, runRepository);
     }
 }
