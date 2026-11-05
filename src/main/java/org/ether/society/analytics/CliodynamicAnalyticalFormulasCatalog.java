@@ -55,10 +55,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // 1914 CE (~1,450-1,530 Int$ global aggregate)
         // Modern 2026 (~13,500-14,000 Int$ global aggregate)
         double preIndustrial = 175.0 + 20.0 * Math.tanh(Math.max(0.0, tech - 1.50) * 0.90);
-        // Stage 1: First and Second Industrial Revolution (coal, steam, rail, Bessemer steel)
-        double industrialTakeoff = (tech > 3.30) ? 1800.0 / (1.0 + Math.exp(-2.20 * (tech - 4.10))) : 0.0;
+        // Stage 1: First and Second Industrial Revolution (coal, steam, rail, Bessemer steel, electrification)
+        double industrialTakeoff = (tech > 2.60) ? 1400.0 / (1.0 + Math.exp(-2.50 * (tech - 3.55))) : 0.0;
         // Stage 2: Post-WWII & 20th/21st century technological acceleration (electrification, petrochem, digital)
-        double modernAcceleration = (tech > 4.60) ? 11500.0 / (1.0 + Math.exp(-1.80 * (tech - 7.50))) : 0.0;
+        double modernAcceleration = (tech > 4.20) ? 11500.0 / (1.0 + Math.exp(-1.80 * (tech - 6.80))) : 0.0;
         double gdpPerCap = preIndustrial + industrialTakeoff + modernAcceleration;
         return ((double) pop * gdpPerCap) / 1e9; // Billion 1990 Int$
     }
@@ -70,7 +70,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // 1914 CE (~32.0-35.0 GJ/capita)
         // Modern 2026 (~76.5-80.0 GJ/capita)
         double preIndustrialGJ = 15.2 + 0.8 * Math.tanh(Math.max(0.0, tech - 1.50) * 0.80);
-        double fossilBoomGJ = (tech > 3.30) ? 61.0 / (1.0 + Math.exp(-2.10 * (tech - 4.85))) : 0.0;
+        double fossilBoomGJ = (tech > 2.60) ? 61.0 / (1.0 + Math.exp(-2.20 * (tech - 3.75))) : 0.0;
         double gigajoulesPerCap = preIndustrialGJ + fossilBoomGJ;
         return ((double) pop * gigajoulesPerCap * 1e9) / 1e18; // Exajoules
     }
@@ -164,7 +164,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computeRealUnskilledWageIndex(double tech) {
         // Allen (2001) / Clark (2005) Real Wage Index (100 = 1750-1800 level):
         // Pre-industrial Malthusian wage (~95-105), First Industrial break post-1870 (~210 in 1914, ~650 modern)
-        double industrialBreakout = 550.0 / (1.0 + Math.exp(-2.20 * (tech - 4.60)));
+        double industrialBreakout = 550.0 / (1.0 + Math.exp(-2.20 * (tech - 3.85)));
         return Math.clamp(100.0 + industrialBreakout, 50.0, 1000.0);
     }
 
@@ -335,13 +335,14 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // State courier relay network activation (paved corridors & stage stations: Roman, Inca, Persian)
         double courierActivation = Math.tanh(Math.max(0.0, tech - 1.80) * 2.20);
         double courierSpeed = 4.0 + 77.0 * courierActivation;
-        // Optical & electric telegraph (Standage 1998): strictly inactive before T >= 3.75
-        double telegraphActivation = Math.tanh(Math.max(0.0, tech - 3.75) * 2.50);
-        double telegraphSpeed = telegraphActivation * (24000.0 / (1.0 + Math.exp(-2.50 * (tech - 3.85))));
-        // Telephony and radio
-        double earlyTelecom = (tech > 4.25) ? 5.8e6 * Math.tanh(Math.max(0.0, tech - 4.25) * 2.50) : 0.0;
-        double modernTelecom = (tech > 5.00) ? 2.94e8 / (1.0 + Math.exp(-3.50 * (tech - 5.50))) : 0.0;
-        return Math.clamp(courierSpeed + telegraphSpeed + earlyTelecom + modernTelecom, 4.0, 3.0e8);
+        // Optical & electric telegraph (Standage 1998): strictly inactive before T >= 2.80
+        double telegraphActivation = Math.tanh(Math.max(0.0, tech - 2.80) * 2.50);
+        double telegraphSpeed = telegraphActivation * (24000.0 / (1.0 + Math.exp(-2.50 * (tech - 3.20))));
+        // Submarine telegraph cables & early radio / wireless (Marconi 1901)
+        double submarineCables = (tech > 3.40) ? 1.5e7 / (1.0 + Math.exp(-3.00 * (tech - 3.65))) : 0.0;
+        // Telephony and high-bandwidth telecom
+        double modernTelecom = (tech > 4.50) ? 2.85e8 / (1.0 + Math.exp(-3.50 * (tech - 5.20))) : 0.0;
+        return Math.clamp(courierSpeed + telegraphSpeed + submarineCables + modernTelecom, 4.0, 3.0e8);
     }
 
     public static double computeMetalSmeltingPerCapita(double tech) {
@@ -365,9 +366,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Smil (2017) / Ritchie (2020):
         // Pre-industrial: 0% fossil share
         // 1800 CE: ~14% (early coal in UK/Europe)
-        // 1914 CE: ~65-70% (coal & early oil)
+        // 1914 CE: ~65-78% (coal & early oil)
         // 2026 CE: ~82%
-        double transition = 82.0 / (1.0 + Math.exp(-2.20 * (tech - 4.25)));
+        double transition = 82.0 / (1.0 + Math.exp(-2.60 * (tech - 3.45)));
         return Math.clamp(industrialActivation * transition, 0.0, 95.0);
     }
 
@@ -375,9 +376,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.50);
         if (tradeActivation <= 0.0) return 0.0;
         // Mohammed & Williamson (2004) / Harley (1988) (Index 100 = 1913):
-        // Antiquity/Rome (~1420) -> Middle Ages (~900) -> 1800 CE (~230) -> 1914 CE (~100) -> Modern (~20)
+        // Antiquity/Rome (~1420) -> Middle Ages (~900) -> 1800 CE (~230) -> 1914 CE (~48-100) -> Modern (~20)
         double preModernDecline = 1450.0 - 1220.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 1.60);
-        double steamRevolution = (tech > 3.60) ? 130.0 / (1.0 + Math.exp(-2.20 * (tech - 4.20))) : 0.0;
+        double steamRevolution = (tech > 3.30) ? 182.0 / (1.0 + Math.exp(-3.00 * (tech - 3.60))) : 0.0;
         return Math.clamp(tradeActivation * (preModernDecline - steamRevolution), 20.0, 1600.0);
     }
 
