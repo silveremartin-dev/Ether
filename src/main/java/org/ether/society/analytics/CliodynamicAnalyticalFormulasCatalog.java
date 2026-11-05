@@ -312,14 +312,26 @@ public final class CliodynamicAnalyticalFormulasCatalog {
 
     /**
      * Calibrated Information Travel Speed (km/day):
-     * Strictly inactive courier relays before horse domestication (T < 1.80).
-     * Strictly inactive electric telegraph before T >= 3.75.
-     * Pedestrian messenger (4 km/day) -> Roman cursus publicus / Persian Angarium (80-88 km/day)
-     * -> Electric telegraph / railway post (24,000 km/day in 1840-1900)
-     * -> Modern global telecommunications / fiber optics (Standage 1998, Scheidel 2014).
+     * Models maximum long-distance dispatch propagation across physical relay networks (Scheidel 2014; Hyslop 1984; Alsan 2015).
+     * <p>
+     * Universal Biogeographical Invariant:
+     * High-speed long-distance dispatch transmission depends on state-organized relay infrastructure
+     * (stations, paved corridors, courier rations) rather than equids alone:
+     * <ul>
+     *   <li>Eurasia &amp; North Africa: Mounted horse relay networks (Roman cursus publicus, Persian Angarium, Mongol Yam) ~80-120 km/day.</li>
+     *   <li>Pre-Columbian Americas: Paved mountain road runner relays (Inca Chasquis along the Qhapaq Ñan) ~150-240 km/day despite zero horses.</li>
+     *   <li>Tsetse Fly Savanna (Sub-Saharan Africa): Pedestrian &amp; fluvial canoe dispatches ~20-50 km/day (Alsan 2015).</li>
+     * </ul>
+     * Pedestrian individual baseline (4 km/day) in deep prehistory (T &lt; 1.80) transitions smoothly
+     * to state courier relay corridors (80-88 km/day at T &gt;= 1.80), followed by electric telegraph
+     * (Standage 1998, 24,000 km/day at T &gt;= 3.75) and optical telecommunications (T &gt; 5.0).
+     * </p>
+     *
+     * @param tech emergent technological progress index
+     * @return dispatch propagation velocity in kilometers per day (km/day)
      */
     public static double computeInformationTravelSpeed(double tech) {
-        // Pedestrian foot speed baseline (4 km/day) in deep prehistory (T < 1.80)
+        // State courier relay network activation (paved corridors & stage stations: Roman, Inca, Persian)
         double courierActivation = Math.tanh(Math.max(0.0, tech - 1.80) * 2.20);
         double courierSpeed = 4.0 + 77.0 * courierActivation;
         // Optical & electric telegraph (Standage 1998): strictly inactive before T >= 3.75
