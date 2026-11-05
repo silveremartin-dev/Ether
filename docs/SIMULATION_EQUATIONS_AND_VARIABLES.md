@@ -2394,3 +2394,33 @@ In strict accordance with the Headless Decoupling Architecture, runtime headless
       $$v_{\text{cable}} = \frac{8.5 \times 10^6}{1.0 + \exp(-2.50 \cdot (T - 3.75))} \quad (T \ge 3.35)$$
       $$v_{\text{telecom}} = \frac{2.85 \times 10^8}{1.0 + \exp(-3.50 \cdot (T - 5.20))} \quad (T \ge 4.50)$$
       $$v_{\text{info}} = \text{clamp}(v_{\text{courier}} + v_{\text{telegraph}} + v_{\text{cable}} + v_{\text{telecom}}, \; 4.0, \; 3.0 \times 10^8)$$
+
+
+---
+
+## 26. Pre-Modern Freight Cost, Life Expectancy, and Frontier Asabiyyah Dynamics
+
+### 26.1 Maritime Shipping Freight Cost Index (Harley 1988, Mohammed & Williamson 2004)
+Maritime shipping freight costs per ton-mile were historically at their maximum during the Bronze Age, Antiquity, and Early Middle Ages (~1400-1460 on the 1913=100 scale), due to restricted seasonal cabotage, square rigging, and reliance on oars.
+The cost reduction is governed by a two-stage logistic innovation wave:
+1. Medieval and Early Modern nautical revolution (sternpost rudder, lateen rig, compass, full-rigged ship / caravel / galleon): $T_0 = 2.50$.
+2. Industrial steam, iron/steel hulls, screw propellers, and modern containerization: $T_0 = 3.60$.
+
+$$\text{FreightCost}(T) = \sigma_{\text{nav}}(T) \left[ 20.0 + \frac{950.0}{1 + e^{2.80(T - 2.50)}} + \frac{480.0}{1 + e^{2.40(T - 3.60)}} \right]$$
+
+where $\sigma_{\text{nav}}(T) = \tanh(\max(0.0, T - 1.05) \cdot 4.0)$ acts as the Bronze Age maritime threshold.
+
+### 26.2 Cohort Life Expectancy at Birth (Omran 1971, Riley 2005)
+Global life expectancy $e_0$ progresses through three continuous epidemiological regimes:
+1. Pre-industrial agrarian baseline ($28.5$ to $36.0$ years, driven by nutritional abundance and caloric security).
+2. The urban sanitary and Pasteurian germ revolution ($T_0 = 4.15$, adding $+14.0$ years).
+3. 20th-century pharmacology, antibiotics, and cardiovascular interventions ($T_0 = 5.50$, reaching $>73.0$ years).
+
+$$e_0(T, \text{food}) = 28.5 + 8.0 \cdot \tanh(\max(0, T - 1.0) \cdot 0.60) + \frac{14.0}{1 + e^{-2.40(T - 4.15)}} + \frac{25.0}{1 + e^{-1.80(T - 5.50)}} + \Delta_{\text{nutr}}$$
+
+where $\Delta_{\text{nutr}} = \text{clamp}((\text{food} - 2000.0)/1000.0, -5.0, 5.0)$.
+
+### 26.3 Frontier Asabiyyah Collective Solidarity (Ibn Khaldun 1377, Turchin 2003)
+Asabiyyah (group feeling / collective action capacity) is highest in nomadic/frontier groups during initial polity expansion ($\sim 0.70 - 0.95$). It decays secularly as civilizations transition into sedentary urban centers with administrative bureaucracy and luxury, rather than fluctuating wildly with monthly political instability:
+
+$$\text{Asabiyyah}(T, S) = \text{clamp}\left( 0.95 - 0.35 \cdot \tanh(\max(0, T - 1.20) \cdot 0.40) - 0.30 \left(1 - \frac{S}{100}\right), \; 0.01, \; 1.0 \right)$$

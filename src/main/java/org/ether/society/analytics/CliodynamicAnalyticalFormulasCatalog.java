@@ -195,9 +195,11 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return collective solidarity score in [0.01, 1.0]
      */
     public static double computeAsabiyyahSocialCohesion(double tech, double stability) {
-        double stateDecayFactor = Math.tanh(Math.max(0.0, tech - 1.55) * 0.65);
+        // Ibn Khaldun (1377) / Turchin (2003): Frontier solidarity is high in early tribal/state formation.
+        // Decays gradually with imperial luxury, urbanization, and bureaucratic sclerosis over secular cycles.
+        double stateDecayFactor = Math.tanh(Math.max(0.0, tech - 1.20) * 0.40);
         double inequality = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double asabiyyah = 1.02 - 0.35 * stateDecayFactor - 0.65 * inequality;
+        double asabiyyah = 0.95 - 0.35 * stateDecayFactor - 0.30 * inequality;
         return Math.clamp(asabiyyah, 0.01, 1.0);
     }
 
@@ -386,22 +388,26 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeShippingFreightCostIndex(double tech) {
-        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.50);
-        if (tradeActivation <= 0.0) return 0.0;
-        // Mohammed & Williamson (2004) / Harley (1988) (Index 100 = 1913):
-        // Antiquity/Rome (~1420) -> Middle Ages (~900) -> 1800 CE (~230) -> 1914 CE (~48-100) -> Modern (~20)
-        double preModernDecline = 1450.0 - 1220.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 1.60);
-        double steamRevolution = (tech > 3.30) ? 182.0 / (1.0 + Math.exp(-3.00 * (tech - 3.60))) : 0.0;
-        return Math.clamp(tradeActivation * (preModernDecline - steamRevolution), 20.0, 1600.0);
+        // Harley (1988), Mohammed & Williamson (2004), UNCTAD (2024):
+        // Maritime navigation activates in the Bronze Age (tech >= 1.05) with high archaic freight costs (~1450).
+        // First structural reduction occurs with medieval oceanic navigation (sternpost rudder, compass, caravel: tech ~2.50).
+        // Second massive reduction occurs with steam, iron hulls, and modern containerization (tech ~3.60).
+        double navActivation = Math.tanh(Math.max(0.0, tech - 1.05) * 4.0);
+        if (navActivation <= 0.0) return 0.0;
+        double cost = 20.0
+                + 950.0 / (1.0 + Math.exp(2.80 * (tech - 2.50)))
+                + 480.0 / (1.0 + Math.exp(2.40 * (tech - 3.60)));
+        return Math.clamp(navActivation * cost, 20.0, 1600.0);
     }
 
     public static double computeLifeExpectancy(double tech, double food) {
         double nutritionBonus = Math.clamp((food - 2000.0) / 1000.0, -5.0, 5.0);
         // Omran (1971) Epidemiological Transition / Riley (2005) / Maddison (2020):
-        // Paleolithic/Agrarian baseline (~26-32 yrs), 1800 CE (~35 yrs), 1914 CE (~43 yrs), Modern (>72 yrs)
-        double baselineLife = 27.5 + 7.5 * Math.tanh(Math.max(0.0, tech - 1.50) * 0.70);
-        double modernMedicine = (tech > 4.50) ? 40.0 / (1.0 + Math.exp(-2.00 * (tech - 5.80))) : 0.0;
-        return Math.clamp(baselineLife + modernMedicine + nutritionBonus, 20.0, 85.0);
+        // Paleolithic baseline (~28.5 yrs), Classical/Medieval (~33-36 yrs), 1800 CE (~38 yrs), 1914 CE (~44-48 yrs), Modern (>73 yrs)
+        double baselineLife = 28.5 + 8.0 * Math.tanh(Math.max(0.0, tech - 1.00) * 0.60);
+        double hygieneAndPasteur = 14.0 / (1.0 + Math.exp(-2.40 * (tech - 4.15)));
+        double modernMedicine = 25.0 / (1.0 + Math.exp(-1.80 * (tech - 5.50)));
+        return Math.clamp(baselineLife + hygieneAndPasteur + modernMedicine + nutritionBonus, 20.0, 85.0);
     }
 
     /**

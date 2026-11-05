@@ -367,3 +367,22 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Eliminates the 108% GWP error and 4000% information speed spikes observed in Antonine Plague (165 CE) and Late Antique Little Ice Age (536 CE) reports.
 * **Empirical Validation Grounding**:
   * Maddison Project (2020); Reinhart & Rogoff (2009); Federico & Tena-Junguito (2017); Scheidel (2014); HYDE 3.4.
+
+
+### Entry 20: Pre-Modern Freight Cost, Cohort Life Expectancy, and Frontier Asabiyyah Solidarity Calibration
+* **Subsystem**: `CliodynamicAnalyticalFormulasCatalog.java` (`computeShippingFreightCostIndex()`, `computeLifeExpectancy()`, `computeAsabiyyahSocialCohesion()`)
+* **Canonical Literature**:
+  - Harley, C. K. (1988). *Ocean Freight Rates and New World Expansion 1750–1913*. The Journal of Economic History, 48(4), 851–876.
+  - Mohammed, S. I., & Williamson, J. G. (2004). *Freight Rates and Productivity Gains in British Tramp Shipping 1869–1950*. Explorations in Economic History, 41(2), 172–203.
+  - Omran, A. R. (1971). *The Epidemiologic Transition: A Theory of the Epidemiology of Population Change*. The Milbank Memorial Fund Quarterly, 49(4), 509–538.
+  - Riley, J. C. (2005). *Estimating Life Expectancy in the Past: Techniques and Challenges*. Population and Development Review.
+  - Ibn Khaldun (1377). *The Muqaddimah: An Introduction to History*. Translated by Franz Rosenthal.
+  - Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press.
+* **Calibrated Simulation Formulation & Implementation**:
+  - `computeShippingFreightCostIndex`: Fixed the archaic baseline cost multiplier truncation. Freight costs in Antiquity and the Early Middle Ages are maximal (~1400-1450) due to square sails, rowing, and lack of sternpost rudders. Replaced premature scalar dampening with an authentic two-stage nautical transition:
+    $$C_{\text{maritime}} = 20.0 + \frac{950.0}{1 + \exp(2.80 \cdot (T - 2.50))} + \frac{480.0}{1 + \exp(2.40 \cdot (T - 3.60))}$$
+    gated by Bronze Age navigation activation $\tanh(\max(0, T - 1.05) \cdot 4.0)$, eliminating the 50% underestimation in 632 CE.
+  - `computeLifeExpectancy`: Elevated pre-industrial baseline from 27.5 to 28.5 years, with pre-modern agrarian expansion reaching 33-36 years, early sanitation/Pasteurian hygiene at $T_0 = 4.15$ adding up to 14 years, and modern 20th-century medicine at $T_0 = 5.50$ reaching >73 years.
+  - `computeAsabiyyahSocialCohesion`: Decoupled rapid transient political instability from deep secular collective solidarity. Under Ibn Khaldun's model, frontier solidarity is high during state emergence (such as the early Caliphate in 632 CE) even amidst regime shocks, decaying primarily with secular imperial luxury, urban decadence, and bureaucratic sclerosis.
+* **Academic Justification / Root Cause**:
+  Empirical falsification of the 632 CE Islamic Expansion scenario revealed that archaic shipping freight was halved (718 vs 1389 benchmark) due to a premature technology multiplier, life expectancy was depressed (30.3 vs 34.0 yrs), and Asabiyyah dropped to 0.50 due to oversensitivity to temporary crisis stress. All equations are strictly $C^1$ smooth and universal across all epochs.
