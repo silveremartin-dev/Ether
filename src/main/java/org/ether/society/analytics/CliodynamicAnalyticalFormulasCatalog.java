@@ -257,13 +257,14 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Federico & Tena-Junguito (2017) 'World trade, 1800-1938' (Index 100 = 1913):
         // Antiquity (1 CE): ~2
         // Medieval (1000 CE): ~4
-        // 1800 CE: ~35
+        // 1800 CE: ~35-50 (Early modern oceanic merchant shipping)
         // 1913 CE: ~100
         // Modern: ~2500
         double preIndustrialTrade = 1.8 + 3.2 * Math.tanh(Math.max(0.0, tech - 2.40) * 0.85);
+        double oceanicSailBoom = 45.0 * Math.tanh(Math.max(0.0, tech - 2.50) * 1.20);
         double steamShippingBoom = (tech > 3.60) ? 95.0 / (1.0 + Math.exp(-2.50 * (tech - 4.45))) : 0.0;
         double hyperGlobalization = (tech > 4.80) ? 2400.0 / (1.0 + Math.exp(-2.80 * (tech - 5.60))) : 0.0;
-        return Math.clamp(tradeActivation * (preIndustrialTrade + steamShippingBoom + hyperGlobalization), 0.0, 3000.0);
+        return Math.clamp(tradeActivation * (preIndustrialTrade + oceanicSailBoom + steamShippingBoom + hyperGlobalization), 0.0, 3000.0);
     }
 
     public static double computeTopsoilErosionLoss(double tech) {
@@ -347,22 +348,23 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double smeltActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 1.30);
         if (smeltActivation <= 0.0) return 0.0;
         // Malandra (1990) / USGS (2023): Antiquity (~1.2 kg) -> Medieval (~1.8 kg)
-        // -> 1800 CE (~6.5 kg) -> 1914 CE (~85 kg) -> Modern (~210 kg)
-        double preIndustrial = 0.5 + 1.3 * Math.tanh(Math.max(0.0, tech - 2.20) * 0.70) + 4.7 * Math.tanh(Math.max(0.0, tech - 3.40) * 1.50);
+        // -> 1800 CE (~10-12 kg coke smelting & puddling) -> 1914 CE (~85 kg) -> Modern (~210 kg)
+        double preIndustrial = 0.5 + 1.3 * Math.tanh(Math.max(0.0, tech - 2.20) * 0.70);
+        double cokePuddling = 9.5 * Math.tanh(Math.max(0.0, tech - 2.50) * 1.30);
         double industrialBessemer = (tech > 3.85) ? 205.0 / (1.0 + Math.exp(-2.20 * (tech - 4.60))) : 0.0;
-        return Math.clamp(smeltActivation * (preIndustrial + industrialBessemer), 0.0, 350.0);
+        return Math.clamp(smeltActivation * (preIndustrial + cokePuddling + industrialBessemer), 0.0, 350.0);
     }
 
     /**
      * Calibrated Fossil Fuel Share in Primary Energy (%):
-     * Strictly inactive before the Industrial Revolution (T < 3.65), eliminating early era leakage.
+     * Emerges with the First Industrial Revolution (coke, Newcomen & Watt steam engines, T >= 2.50).
      */
     public static double computeFossilSharePrimaryEnergy(double tech) {
-        double industrialActivation = Math.tanh(Math.max(0.0, tech - 3.65) * 2.00);
+        double industrialActivation = Math.tanh(Math.max(0.0, tech - 2.50) * 1.50);
         if (industrialActivation <= 0.0) return 0.0;
         // Smil (2017) / Ritchie (2020):
         // Pre-industrial: 0% fossil share
-        // 1800 CE: ~7% (early coal)
+        // 1800 CE: ~14% (early coal in UK/Europe)
         // 1914 CE: ~65-70% (coal & early oil)
         // 2026 CE: ~82%
         double transition = 82.0 / (1.0 + Math.exp(-2.20 * (tech - 4.25)));
@@ -374,8 +376,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         if (tradeActivation <= 0.0) return 0.0;
         // Mohammed & Williamson (2004) / Harley (1988) (Index 100 = 1913):
         // Antiquity/Rome (~1420) -> Middle Ages (~900) -> 1800 CE (~230) -> 1914 CE (~100) -> Modern (~20)
-        double preModernDecline = 1450.0 - 1200.0 * Math.tanh(Math.max(0.0, tech - 2.40) * 1.10);
-        double steamRevolution = (tech > 3.85) ? 150.0 / (1.0 + Math.exp(-2.20 * (tech - 4.20))) : 0.0;
+        double preModernDecline = 1450.0 - 1220.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 1.60);
+        double steamRevolution = (tech > 3.60) ? 130.0 / (1.0 + Math.exp(-2.20 * (tech - 4.20))) : 0.0;
         return Math.clamp(tradeActivation * (preModernDecline - steamRevolution), 20.0, 1600.0);
     }
 
