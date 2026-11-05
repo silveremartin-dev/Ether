@@ -1,4 +1,4 @@
-﻿# ⚖️ Central Registry of Model Calibrations, Parametric Scaling & Literature Deviations
+# ⚖️ Central Registry of Model Calibrations, Parametric Scaling & Literature Deviations
 
 > **Ether Cliodynamic & Planetary Epistemic Laboratory**  
 > *Author: Silvere Martin-Michiellot*  
@@ -340,3 +340,30 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 | 16 | DOD Solow-Swan Capital | Solow (1956), Ayres & Warr (2009) | Aggregate growth model | DOD H3 cell buffer convergence | Prevents runaway capital accumulation in deep-time mobile foraging grids |
 | 17 | Logarithmic Radiometric Cartography | Klein Goldewijk et al. (2017), Wang (2004) | Spatial demographic rasters | Grayscale transfer $[0, 255]$ | Matches HYDE 3.4 multi-scale demographic density distribution |
 | 18 | Continuous Infrastructure Gates | Scheidel (2014), Montgomery (2007) | ORBIS, geomorphic field studies | Analytical closed-form catalog | Universal smooth sigmoids for courier relays ($T \ge 1.80$) and plowing ($T \ge 1.40$) |
+| 19 | Classical & Medieval Macro-State | Maddison (2020), Reinhart & Rogoff (2009) | Global economic history | Analytical closed-form catalog | Calibration of antiquity GWP ($104\text{ \$}$), debt ($8.5\%$), trade ($3.5$), and telegraph gating ($T \ge 3.10$) |
+
+---
+
+### Entry 19: Classical Antiquity & Medieval Gross World Product, Patrimonial Sovereign Debt, and Communication Telemetry Calibration
+* **Subsystem**: `CliodynamicAnalyticalFormulasCatalog.java` (`computeGrossWorldProduct()`, `computeSovereignDebtBurden()`, `computeGlobalTradeVolume()`, `computeInformationTravelSpeed()`, `computeUrbanizationRate()`)
+* **Canonical Literature**:
+  * Maddison, A. (2007). *Contours of the World Economy 1–2030 AD: Essays in Macro-Economic History*. Oxford University Press; Bolt, J., & van Zanden, J. L. (2020). *Maddison Project Database 2020*.
+  * Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different: Eight Centuries of Financial Folly*. Princeton University Press.
+  * Federico, G., & Tena-Junguito, A. (2017). *A Tale of Two Globalizations: Gains from Trade and Openness 1800–2010*. Review of World Economics, 153(3), 601–626.
+  * Standage, T. (1998). *The Victorian Internet: The Remarkable Story of the Telegraph and the Nineteenth Century's On-line Pioneers*. Walker & Company.
+* **Canonical Published Value**:
+  * Classical Antiquity GWP (1–165 CE): ~18.5–21.0 Billion 1990 Int$ (~100–110 Int$/capita for ~190M population).
+  * Early Middle Ages GWP (536–632 CE): ~21.5–23.0 Billion 1990 Int$ (~105–110 Int$/capita).
+  * High Middle Ages GWP (1000 CE): ~35.0 Billion 1990 Int$ (~130 Int$/capita).
+  * Sovereign debt burden in pre-modern patrimonial empires (Rome, Byzantium, Umayyad): ~8.0–10.0% of imperial revenue/product (absence of modern negotiable bond markets).
+  * Pre-industrial global trade volume index: ~2.5–3.5 in Antiquity, ~3.9–4.4 in Early Middle Ages, ~6.0 in 1000 CE (1913 = 100).
+  * Maximum dispatch travel speed: strictly bounded to courier relays (~80 km/day) prior to Chappe optical telegraph (1792) and Morse electric telegraph (1844, requiring $T \ge 3.10$).
+* **Calibrated Ether Formulation**:
+  * GWP per capita floor recalibrated to $100.0 + 35.0 \cdot \tanh(\max(0, T - 1.60) \cdot 1.20) + 40.0 \cdot \tanh(\max(0, T - 2.30) \cdot 1.50)$ Int$/capita, yielding ~104 Int$/capita in Antiquity ($19.8\text{ Billion Int\$}$ for 190M population), ~125 Int$/capita in Song China, ~175 Int$/capita in 1800, and ~1,580 Int$/capita in 1914.
+  * Pre-modern sovereign debt decomposed into patrimonial baseline ($7.5 + 4.0 \cdot \tanh(\dots) + 12.0 \cdot \text{shock}^{1.2}$) scaling to 8.5–10.5% in antiquity and medieval eras, and modern negotiable funded debt emerging only at $T \ge 2.65$ (Dickson 1967).
+  * Global trade volume baseline activated at $T \ge 1.20$ (Bronze Age maritime and overland commerce) with $2.4 + 4.5 \cdot \tanh(\dots)$, matching historical indices of ~3.5 (165 CE), ~3.9 (536 CE), ~4.4 (632 CE), ~6.0 (1000 CE), ~11.6 (1347 CE), ~45 (1800 CE), and ~265 (1914 CE).
+  * Telegraph activation threshold raised to $T \ge 3.10$, completely immunizing ancient and medieval simulations against transient capital/population ratio spikes that previously triggered unphysical telegraph speeds ($>4,000\text{ km/day}$).
+* **Root Cause & Justification**:
+  * Eliminates the 108% GWP error and 4000% information speed spikes observed in Antonine Plague (165 CE) and Late Antique Little Ice Age (536 CE) reports.
+* **Empirical Validation Grounding**:
+  * Maddison Project (2020); Reinhart & Rogoff (2009); Federico & Tena-Junguito (2017); Scheidel (2014); HYDE 3.4.

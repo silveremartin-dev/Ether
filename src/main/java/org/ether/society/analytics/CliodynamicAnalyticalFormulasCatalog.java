@@ -50,15 +50,19 @@ public final class CliodynamicAnalyticalFormulasCatalog {
 
     public static double computeGrossWorldProduct(long pop, double tech) {
         // Maddison Project Database (2020) per-capita scaling:
-        // Pre-industrial baseline (~175-195 Int$ global aggregate)
-        // 1800 CE (~650-680 Int$ global aggregate)
-        // 1914 CE (~1,450-1,530 Int$ global aggregate)
-        // Modern 2026 (~13,500-14,000 Int$ global aggregate)
-        double preIndustrial = 175.0 + 20.0 * Math.tanh(Math.max(0.0, tech - 1.50) * 0.90);
+        // Deep Paleolithic / Early Neolithic: ~70-85 Int$
+        // Classical Antiquity (Rome/Han, 1-165 CE): ~100-110 Int$ global aggregate
+        // High Middle Ages (Song / Europe, 1000-1347 CE): ~125-145 Int$ global aggregate
+        // Early Modern (1800 CE): ~175-195 Int$ global aggregate
+        // First & Second Industrial Revolution (1914 CE): ~1,580 Int$ global aggregate
+        // Modern 2026: ~13,500-14,000 Int$ global aggregate
+        double preIndustrial = 100.0
+                + 35.0 * Math.tanh(Math.max(0.0, tech - 1.60) * 1.20)
+                + 40.0 * Math.tanh(Math.max(0.0, tech - 2.30) * 1.50);
         // Stage 1: First and Second Industrial Revolution (coal, steam, rail, Bessemer steel, electrification)
-        double industrialTakeoff = (tech > 2.60) ? 1400.0 / (1.0 + Math.exp(-2.50 * (tech - 3.55))) : 0.0;
+        double industrialTakeoff = (tech > 2.65) ? 1405.0 / (1.0 + Math.exp(-2.50 * (tech - 3.55))) : 0.0;
         // Stage 2: Post-WWII & 20th/21st century technological acceleration (electrification, petrochem, digital)
-        double modernAcceleration = (tech > 4.20) ? 11500.0 / (1.0 + Math.exp(-1.80 * (tech - 6.80))) : 0.0;
+        double modernAcceleration = (tech > 4.20) ? 12200.0 / (1.0 + Math.exp(-1.80 * (tech - 6.80))) : 0.0;
         double gdpPerCap = preIndustrial + industrialTakeoff + modernAcceleration;
         return ((double) pop * gdpPerCap) / 1e9; // Billion 1990 Int$
     }
@@ -67,11 +71,12 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Vaclav Smil (2017) 'Energy and Civilization' per-capita primary energy harvest:
         // Pre-industrial biomass/muscle (~15.2-16.0 GJ/capita)
         // 1800 CE (~17.5-18.5 GJ/capita)
-        // 1914 CE (~32.0-35.0 GJ/capita)
+        // 1914 CE (~31.0-35.0 GJ/capita)
         // Modern 2026 (~76.5-80.0 GJ/capita)
         double preIndustrialGJ = 15.2 + 0.8 * Math.tanh(Math.max(0.0, tech - 1.50) * 0.80);
-        double fossilBoomGJ = (tech > 2.60) ? 61.0 / (1.0 + Math.exp(-2.20 * (tech - 3.75))) : 0.0;
-        double gigajoulesPerCap = preIndustrialGJ + fossilBoomGJ;
+        double coalSteamGJ = 15.5 * Math.tanh(Math.max(0.0, tech - 2.50) * 0.90);
+        double modernHydrocarbonsGJ = (tech > 4.20) ? 48.0 / (1.0 + Math.exp(-2.20 * (tech - 5.50))) : 0.0;
+        double gigajoulesPerCap = preIndustrialGJ + coalSteamGJ + modernHydrocarbonsGJ;
         return ((double) pop * gigajoulesPerCap * 1e9) / 1e18; // Exajoules
     }
 
@@ -90,8 +95,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // 1914 CE: ~21.6%
         // Modern (2007-2026): ~50-56%
         double agrarian = 5.0 + 3.0 * Math.tanh(Math.max(0.0, tech - 2.00) * 0.85);
-        double earlyIndustrial = (tech > 3.00) ? 5.5 * Math.tanh(Math.max(0.0, tech - 3.00) * 1.50) : 0.0;
-        double massUrbanization = (tech > 3.30) ? 38.0 / (1.0 + Math.exp(-1.50 * (tech - 4.50))) : 0.0;
+        double earlyIndustrial = (tech > 2.70) ? 8.5 * Math.tanh(Math.max(0.0, tech - 2.70) * 1.10) : 0.0;
+        double massUrbanization = (tech > 3.60) ? 38.0 / (1.0 + Math.exp(-1.80 * (tech - 5.20))) : 0.0;
         return Math.clamp(techActivation * (agrarian + earlyIndustrial + massUrbanization), 0.0, 90.0);
     }
 
@@ -237,33 +242,40 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * 3. Credible institutional commitment & fiscal war shocks (Reinhart & Rogoff 2009).
      */
     public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double tech) {
-        double accountingCapacity = Math.tanh(Math.max(0.0, literacy - 1.5) * 0.35);
+        double accountingCapacity = Math.tanh(Math.max(0.0, literacy - 0.8) * 0.80);
         if (accountingCapacity <= 0.0) return 0.0;
 
-        double monetizationCapacity = Math.tanh(Math.max(0.0, tradeVolume - 1.5) * 0.15);
+        double monetizationCapacity = Math.tanh(Math.max(0.0, tradeVolume - 0.8) * 0.60);
         if (monetizationCapacity <= 0.0) return 0.0;
 
         double credibleCommitment = Math.tanh((stability / 100.0) * 2.0);
         double fiscalShock = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double debtCycle = 35.0 + 85.0 * Math.pow(fiscalShock, 1.2) + 40.0 * Math.tanh(tradeVolume / 150.0);
 
-        double debtBurden = accountingCapacity * monetizationCapacity * credibleCommitment * debtCycle;
+        // Pre-modern patrimonial borrowing (Reinhart & Rogoff 2009: 6.5-12.0% of imperial revenue/GWP):
+        double preModernDebt = 7.5 + 4.0 * Math.tanh(Math.max(0.0, tech - 1.60) * 1.10) + 12.0 * Math.pow(fiscalShock, 1.2);
+
+        // Modern institutional funded debt (Dickson 1967, Consols post-1694, T >= 2.65, rising to 75-110%):
+        double modernFundedDebt = (tech > 2.65) ? 75.0 / (1.0 + Math.exp(-2.20 * (tech - 3.45))) : 0.0;
+
+        double debtBurden = accountingCapacity * monetizationCapacity * credibleCommitment * (preModernDebt + modernFundedDebt);
         return Math.clamp(debtBurden, 0.0, 250.0);
     }
 
     public static double computeGlobalTradeVolume(double tech) {
-        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.80) * 1.25);
+        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.20) * 2.00);
         if (tradeActivation <= 0.0) return 0.0;
         // Federico & Tena-Junguito (2017) 'World trade, 1800-1938' (Index 100 = 1913):
-        // Antiquity (1 CE): ~2
-        // Medieval (1000 CE): ~4
-        // 1800 CE: ~35-50 (Early modern oceanic merchant shipping)
-        // 1913 CE: ~100
-        // Modern: ~2500
-        double preIndustrialTrade = 1.8 + 3.2 * Math.tanh(Math.max(0.0, tech - 2.40) * 0.85);
-        double oceanicSailBoom = 45.0 * Math.tanh(Math.max(0.0, tech - 2.50) * 1.20);
-        double steamShippingBoom = (tech > 3.60) ? 95.0 / (1.0 + Math.exp(-2.50 * (tech - 4.45))) : 0.0;
-        double hyperGlobalization = (tech > 4.80) ? 2400.0 / (1.0 + Math.exp(-2.80 * (tech - 5.60))) : 0.0;
+        // Bronze Age & Classical Antiquity (1 CE - 165 CE): ~2.5 - 3.5
+        // Early Middle Ages (536 - 632 CE): ~3.9 - 4.4
+        // High Middle Ages / Song (1000 - 1347 CE): ~6.0 - 11.6
+        // Early Modern (1800 CE): ~45.0 (Oceanic merchant fleets, VOC, East India Co.)
+        // 1913/1914 CE: ~260 - 265 (First Globalization wave, steam shipping, Suez canal)
+        // Modern 2026: ~2500 (Containerization, WTO)
+        double preIndustrialTrade = 2.4 + 4.5 * Math.tanh(Math.max(0.0, tech - 1.70) * 0.90)
+                + 6.5 * Math.tanh(Math.max(0.0, tech - 2.25) * 1.20);
+        double oceanicSailBoom = 35.0 * Math.tanh(Math.max(0.0, tech - 2.50) * 1.30);
+        double steamShippingBoom = (tech > 2.85) ? 220.0 / (1.0 + Math.exp(-2.60 * (tech - 3.55))) : 0.0;
+        double hyperGlobalization = (tech > 4.50) ? 2250.0 / (1.0 + Math.exp(-2.50 * (tech - 5.50))) : 0.0;
         return Math.clamp(tradeActivation * (preIndustrialTrade + oceanicSailBoom + steamShippingBoom + hyperGlobalization), 0.0, 3000.0);
     }
 
@@ -332,25 +344,26 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return dispatch propagation velocity in kilometers per day (km/day)
      */
     public static double computeInformationTravelSpeed(double tech) {
-        // State courier relay network activation (paved corridors & stage stations: Roman, Inca, Persian)
-        double courierActivation = Math.tanh(Math.max(0.0, tech - 1.80) * 2.20);
+        // State courier relay network activation (paved corridors & stage stations: Roman Cursus Publicus, Inca Chasquis, Persian Angarium)
+        // Scheidel (2014); Hyslop (1984); Alsan (2015): ~75-88 km/day
+        double courierActivation = Math.tanh(Math.max(0.0, tech - 1.45) * 2.80);
         double courierSpeed = 4.0 + 77.0 * courierActivation;
-        // Optical & electric telegraph (Standage 1998): strictly inactive before T >= 2.80
-        double telegraphActivation = Math.tanh(Math.max(0.0, tech - 2.80) * 2.50);
-        double telegraphSpeed = telegraphActivation * (24000.0 / (1.0 + Math.exp(-2.50 * (tech - 3.20))));
-        // Submarine telegraph cables & early radio / wireless (Marconi 1901)
-        double submarineCables = (tech > 3.40) ? 1.5e7 / (1.0 + Math.exp(-3.00 * (tech - 3.65))) : 0.0;
+        // Optical & electric telegraph (Chappe 1792, Morse 1844, Standage 1998): strictly requires industrial-scale network (T >= 3.10)
+        double telegraphActivation = Math.tanh(Math.max(0.0, tech - 3.10) * 2.50);
+        double telegraphSpeed = telegraphActivation * (24000.0 / (1.0 + Math.exp(-2.50 * (tech - 3.35))));
+        // Submarine telegraph cables & early radio / wireless (Atlantic Cable 1866, Marconi 1901)
+        double submarineCables = (tech > 3.35) ? 8.5e6 / (1.0 + Math.exp(-2.50 * (tech - 3.75))) : 0.0;
         // Telephony and high-bandwidth telecom
         double modernTelecom = (tech > 4.50) ? 2.85e8 / (1.0 + Math.exp(-3.50 * (tech - 5.20))) : 0.0;
         return Math.clamp(courierSpeed + telegraphSpeed + submarineCables + modernTelecom, 4.0, 3.0e8);
     }
 
     public static double computeMetalSmeltingPerCapita(double tech) {
-        double smeltActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 1.30);
+        double smeltActivation = Math.tanh(Math.max(0.0, tech - 1.45) * 1.80);
         if (smeltActivation <= 0.0) return 0.0;
-        // Malandra (1990) / USGS (2023): Antiquity (~1.2 kg) -> Medieval (~1.8 kg)
+        // Malandra (1990) / USGS (2023): Antiquity (~1.2-1.6 kg) -> Medieval (~1.8-2.2 kg)
         // -> 1800 CE (~10-12 kg coke smelting & puddling) -> 1914 CE (~85 kg) -> Modern (~210 kg)
-        double preIndustrial = 0.5 + 1.3 * Math.tanh(Math.max(0.0, tech - 2.20) * 0.70);
+        double preIndustrial = 1.25 + 0.95 * Math.tanh(Math.max(0.0, tech - 1.80) * 1.10);
         double cokePuddling = 9.5 * Math.tanh(Math.max(0.0, tech - 2.50) * 1.30);
         double industrialBessemer = (tech > 3.85) ? 205.0 / (1.0 + Math.exp(-2.20 * (tech - 4.60))) : 0.0;
         return Math.clamp(smeltActivation * (preIndustrial + cokePuddling + industrialBessemer), 0.0, 350.0);

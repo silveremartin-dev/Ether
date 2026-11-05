@@ -1,4 +1,4 @@
-﻿# Ether Simulation â€” Differential Equations & State Variable Specification
+# Ether Simulation â€” Differential Equations & State Variable Specification
 
 > **Master Technical, Physical & Mathematical Specification**  
 > *Strict Separation between Core Model Physics (Tier 1) and Optional Cliodynamic / Phenomenological Modules (Tier 2)*
@@ -2377,3 +2377,20 @@ In strict accordance with the Headless Decoupling Architecture, runtime headless
     * **Prime Mover Gating of Exosomatic Power**:
       Passive structural capital (aqueducts, roads, masonry) generates zero active motive power. Machine grid power is gated strictly by prime mover capital ($k_{\text{pc}} \ge 800$):
       $$P_{\text{grid}} = 4500.0 \cdot \sigma(k_{\text{pc}};\; 900.0,\; 200.0) \cdot \eta_{\text{converter}}$$
+
+
+25. **Multi-Epoch Macroeconomic Output, Sovereign Debt, and Communication Telemetry**:
+    * **Literature**: Maddison, A. (2007, 2020) *Maddison Project Database*; Reinhart, C. M. & Rogoff, K. S. (2009) *This Time Is Different*; Federico, G. & Tena-Junguito, A. (2017) *World Trade 1800-1938*; Scheidel, W. (2014) *ORBIS*.
+    * **Gross World Product ($GWP$, Billion 1990 Int\$)**:
+      $$\text{gdpPerCap}(T) = 100.0 + 35.0 \cdot \tanh(\max(0, T - 1.60) \cdot 1.20) + 40.0 \cdot \tanh(\max(0, T - 2.30) \cdot 1.50) + \frac{1405.0}{1.0 + \exp(-2.50 \cdot (T - 3.55))} + \frac{12200.0}{1.0 + \exp(-1.80 \cdot (T - 6.80))}$$
+      $$GWP = \frac{N \cdot \text{gdpPerCap}(T)}{10^9}$$
+    * **Patrimonial vs Institutional Sovereign Debt Burden ($\text{Debt}$, % of GWP)**:
+      $$\text{Debt}_{\text{preModern}} = 7.5 + 4.0 \cdot \tanh(\max(0, T - 1.60) \cdot 1.10) + 12.0 \cdot \text{Shock}_{\text{fiscal}}^{1.2}$$
+      $$\text{Debt}_{\text{modern}} = \frac{75.0}{1.0 + \exp(-2.20 \cdot (T - 3.45))}$$
+      $$\text{Debt} = \tanh(\max(0, \text{Lit} - 0.8) \cdot 0.80) \cdot \tanh(\max(0, \text{Trade} - 0.8) \cdot 0.60) \cdot \tanh(2.0 \cdot \text{Stability}) \cdot (\text{Debt}_{\text{preModern}} + \text{Debt}_{\text{modern}})$$
+    * **Long-Distance Information Speed ($v_{\text{info}}$, km/day)**:
+      $$v_{\text{courier}} = 4.0 + 77.0 \cdot \tanh(\max(0, T - 1.45) \cdot 2.80)$$
+      $$v_{\text{telegraph}} = \tanh(\max(0, T - 3.10) \cdot 2.50) \cdot \frac{24000.0}{1.0 + \exp(-2.50 \cdot (T - 3.35))}$$
+      $$v_{\text{cable}} = \frac{8.5 \times 10^6}{1.0 + \exp(-2.50 \cdot (T - 3.75))} \quad (T \ge 3.35)$$
+      $$v_{\text{telecom}} = \frac{2.85 \times 10^8}{1.0 + \exp(-3.50 \cdot (T - 5.20))} \quad (T \ge 4.50)$$
+      $$v_{\text{info}} = \text{clamp}(v_{\text{courier}} + v_{\text{telegraph}} + v_{\text{cable}} + v_{\text{telecom}}, \; 4.0, \; 3.0 \times 10^8)$$
