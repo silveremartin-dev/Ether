@@ -138,13 +138,11 @@ public final class PlanetaryElevationGrayscaleNormalizer {
     }
 
     /**
-     * Executes batch normalization of all extraterrestrial elevation rasters across
-     * both canonical (data/ether/) and legacy fallback (data/maps/ether/) repositories.
+     * Executes batch normalization of all extraterrestrial elevation rasters in canonical data/ether/.
      */
     public static void normalizeAllExtraterrestrialElevationRasters() {
         String[] planets = {"mars", "moon", "mercury", "venus", "titan"};
         for (String planet : planets) {
-            processPlanetDir(new File("data/ether/" + planet));
             processPlanetDir(new File("data/maps/ether/" + planet));
         }
     }

@@ -31,7 +31,7 @@ public class NormalizePlanetaryElevationTest {
     public void testAuditPlanetaryRasters() {
         String[] planets = {"mars", "moon", "mercury", "venus", "titan"};
         for (String p : planets) {
-            File dir = new File("data/ether/" + p);
+            File dir = new File("data/maps/ether/" + p);
             if (!dir.exists()) continue;
             auditDir(dir);
         }

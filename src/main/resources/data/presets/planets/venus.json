@@ -41,8 +41,8 @@
   "seasonUseImport" : true,
   "seasonSource" : "\uD83D\uDFE1 Vénus — Super-Rotation Low Variance Model",
   "seasonSeed" : 57555,
-  "associatedEpochYear" : 2026,
-  "tidalLocked" : false,
   "canonicalPlanet" : "venus",
-  "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
+  "tidalLocked" : false,
+  "presetDescription" : "\uD83D\uDFE1 VENUS (Hesperos): Runaway greenhouse hellscape with 92 atm CO₂ atmosphere, 465°C surface temperature, sulfuric acid clouds, active basaltic volcanism, and complete absence of liquid water.",
+  "associatedEpochYear" : 2026
 }

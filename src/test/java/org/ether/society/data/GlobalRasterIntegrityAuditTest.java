@@ -31,8 +31,8 @@ public class GlobalRasterIntegrityAuditTest {
 
     @Test
     public void auditAllEarthRasters() {
-        File earthBaseDir = new File("data/ether/earth");
-        assertTrue(earthBaseDir.exists() && earthBaseDir.isDirectory(), "data/ether/earth must exist");
+        File earthBaseDir = new File("data/maps/ether/earth");
+        assertTrue(earthBaseDir.exists() && earthBaseDir.isDirectory(), "data/maps/ether/earth must exist");
 
         File[] epochDirs = earthBaseDir.listFiles(File::isDirectory);
         assertNotNull(epochDirs, "Epoch directories must not be null");

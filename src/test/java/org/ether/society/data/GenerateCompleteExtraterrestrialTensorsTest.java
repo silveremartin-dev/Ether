@@ -139,10 +139,10 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
      * @throws Exception if raster or metadata file generation fails
      */
     private void generateWorldEpoch(String planet, int epoch, String eraName, String summary, List<OutpostSite> outposts) throws Exception {
-        File dir = new File("data/ether/" + planet + "/" + epoch);
+        File dir = new File("data/maps/ether/" + planet + "/" + epoch);
         dir.mkdirs();
 
-        File refDir = new File("data/ether/" + planet + "/2026");
+        File refDir = new File("data/maps/ether/" + planet + "/2026");
         copyOrCreatePhysicalLayers(refDir, dir, planet, epoch);
 
         BufferedImage imgDensity = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);

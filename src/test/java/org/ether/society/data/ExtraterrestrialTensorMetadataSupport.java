@@ -50,7 +50,7 @@ final class ExtraterrestrialTensorMetadataSupport {
             System.out.printf("Titan source image loaded: %dx%d%n", src.getWidth(), src.getHeight());
 
             int cropX = 41, cropY = 24, cropW = 500, cropH = 260;
-            File titanDir = new File("data/ether/titan/2150");
+            File titanDir = new File("data/maps/ether/titan/2150");
             titanDir.mkdirs();
 
             BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);

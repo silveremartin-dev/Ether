@@ -354,9 +354,9 @@ public class InspectGeoTiffBoundsTest {
         String[] paths = {
             "data/maps/reference_earth_elevation.png",
             "data/maps/reference_earth_biomes.png",
-            "data/ether/earth/-100000/earth_-100000_elevation.png",
-            "data/ether/earth/-100000/earth_-100000_biomes.png",
-            "data/ether/earth/2026/earth_2026_elevation.png"
+            "data/maps/ether/earth/-100000/earth_-100000_elevation.png",
+            "data/maps/ether/earth/-100000/earth_-100000_biomes.png",
+            "data/maps/ether/earth/2026/earth_2026_elevation.png"
         };
         for (String p : paths) {
             File f = new File(p);

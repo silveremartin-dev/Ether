@@ -76,7 +76,13 @@ public final class HistoricalCalibrationSpatialEvaluator {
             snap.observedTech = def.initialTechLevel() + (elapsed * 0.0048);
 
             // Attempt to load authentic raster from disk for this epoch
-            File epochDir = new File("data/ether/earth/" + chkYear);
+            File epochDir = org.ether.society.config.EtherPaths.getEarthDir().resolve(String.valueOf(chkYear)).toFile();
+            if (!epochDir.exists()) {
+                epochDir = new File("data/maps/ether/earth/" + chkYear);
+            }
+            if (!epochDir.exists()) {
+                epochDir = new File("data/ether/earth/" + chkYear);
+            }
             File densityImgFile = new File(epochDir, "earth_" + chkYear + "_density.png");
 
             if (densityImgFile.exists()) {
@@ -168,9 +174,9 @@ public final class HistoricalCalibrationSpatialEvaluator {
      * @param result the result parameter (ScenarioCalibrationResult)
      */
     public static void evaluateSpatialMaps(CalibrationScenarioDefinition def, ScenarioCalibrationResult result) {
-        String baseMapDir = "data/ether/earth/";
-        File t0Dir = new File(baseMapDir + def.startYear());
-        File t1Dir = new File(baseMapDir + def.endYear());
+        java.nio.file.Path baseDir = org.ether.society.config.EtherPaths.getEarthDir();
+        File t0Dir = baseDir.resolve(String.valueOf(def.startYear())).toFile();
+        File t1Dir = baseDir.resolve(String.valueOf(def.endYear())).toFile();
 
         File t0Density = new File(t0Dir, "earth_" + def.startYear() + "_density.png");
         File t1Density = new File(t1Dir, "earth_" + def.endYear() + "_density.png");

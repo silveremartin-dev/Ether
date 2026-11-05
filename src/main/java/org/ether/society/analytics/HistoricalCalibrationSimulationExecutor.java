@@ -58,7 +58,13 @@ final class HistoricalCalibrationSimulationExecutor {
      */
     static List<Integer> discoverAvailableDiskEpochs(int startYear, int endYear) {
         List<Integer> epochs = new ArrayList<>();
-        File earthDir = new File("data/ether/earth/");
+        File earthDir = org.ether.society.config.EtherPaths.getEarthDir().toFile();
+        if (!earthDir.exists()) {
+            earthDir = new File("data/maps/ether/earth/");
+        }
+        if (!earthDir.exists()) {
+            earthDir = new File("data/ether/earth/");
+        }
         if (earthDir.exists() && earthDir.isDirectory()) {
             File[] dirs = earthDir.listFiles(File::isDirectory);
             if (dirs != null) {

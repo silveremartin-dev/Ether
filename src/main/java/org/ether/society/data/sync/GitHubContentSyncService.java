@@ -232,7 +232,7 @@ public final class GitHubContentSyncService {
         return p.startsWith("data/presets/")
                 || p.startsWith("data/events/")
                 || p.startsWith("data/history/")
-                || p.startsWith("data/ether/")
+                || p.startsWith("data/maps/") || p.startsWith("data/ether/")
                 || (p.startsWith("saves/") && isOfficialSavePath(p));
     }
 

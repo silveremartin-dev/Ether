@@ -193,7 +193,7 @@ public class HistoricalMapGenerator {
         HistoricalMapDiskCacheManager.writePngFile(img, targetFile);
     }
 
-    /** Loads scenario rasters from {@code data/ether/earth/<year>/} if available. */
+    /** Loads scenario rasters from {@code data/maps/ether/earth/<year>/} if available. */
     public static boolean loadFromYearDirectory(Scenario scenario) {
         return HistoricalMapDiskCacheManager.loadFromYearDirectory(scenario);
     }
@@ -203,7 +203,7 @@ public class HistoricalMapGenerator {
         return HistoricalMapDiskCacheManager.loadFromDiskCache(scenario, cacheDir, safeName);
     }
 
-    /** Persists the full 20-channel demographic, cultural, and geological raster suite to {@code data/ether/earth/<year>/}. */
+    /** Persists the full 20-channel demographic, cultural, and geological raster suite to {@code data/maps/ether/earth/<year>/}. */
     public static void saveImagesToYearDirectory(long year, BufferedImage imgDensity, BufferedImage imgSovereignty,
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen,
@@ -212,7 +212,7 @@ public class HistoricalMapGenerator {
         HistoricalMapDiskCacheManager.saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
     }
 
-    /** Persists cultural tensor rasters to {@code data/ether/earth/<year>/}. */
+    /** Persists cultural tensor rasters to {@code data/maps/ether/earth/<year>/}. */
     public static void saveCulturalTensorsToYearDirectory(long year, BufferedImage imgSovereignty,
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {

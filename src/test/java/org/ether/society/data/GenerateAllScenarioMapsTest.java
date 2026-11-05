@@ -78,7 +78,7 @@ public class GenerateAllScenarioMapsTest {
         // Force regenerate scenario tensors
         HistoricalMapGenerator.forceGenerateScenarioHistoricalMaps(sc100k);
 
-        File yearFolder = new File("data/ether/earth/-100000");
+        File yearFolder = new File("data/maps/ether/earth/-100000");
         assertTrue(yearFolder.exists() && yearFolder.isDirectory());
 
         String[] requiredTensorFiles = {
@@ -127,7 +127,7 @@ public class GenerateAllScenarioMapsTest {
 
         for (Scenario sc : scenarios) {
             long year = sc.getStartDateYear();
-            File yearFolder = new File("data/ether/earth/" + year);
+            File yearFolder = new File("data/maps/ether/earth/" + year);
             assertTrue(yearFolder.exists() && yearFolder.isDirectory(),
                     "Scenario directory 'data/ether/earth/" + year + "' must exist for scenario '" + sc.getName() + "'");
 

@@ -69,12 +69,18 @@ final class HistoricalScenarioMapOrchestrator {
                 }
 
                 BufferedImage elev = null;
-                File f100k = new File("data/ether/earth/-100000/earth_-100000_elevation.png");
+                File f100k = org.ether.society.config.EtherPaths.getEarthDir().resolve("-100000/earth_-100000_elevation.png").toFile();
+                if (!f100k.exists()) {
+                    f100k = new File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
+                }
                 if (f100k.exists()) {
                     try { elev = ImageIO.read(f100k); } catch (Exception ignored) {}
                 }
                 if (elev == null) {
-                    File f2026 = new File("data/ether/earth/2026/earth_2026_elevation.png");
+                    File f2026 = org.ether.society.config.EtherPaths.getEarthDir().resolve("2026/earth_2026_elevation.png").toFile();
+                    if (!f2026.exists()) {
+                        f2026 = new File("data/maps/ether/earth/2026/earth_2026_elevation.png");
+                    }
                     if (f2026.exists()) {
                         try { elev = ImageIO.read(f2026); } catch (Exception ignored) {}
                     }
@@ -434,11 +440,11 @@ final class HistoricalScenarioMapOrchestrator {
      */
     static void ensureAllScenarioMapsGenerated(boolean force) {
         List<Scenario> builtIns = Scenario.getBuiltInScenarios();
-        logger.info("Verifying cartographic maps for all {} built-in scenarios in 'data/ether/earth/<year>/' (force={})...", builtIns.size(), force);
+        logger.info("Verifying cartographic maps for all {} built-in scenarios in 'data/maps/ether/earth/<year>/' (force={})...", builtIns.size(), force);
         int generated = 0;
         for (Scenario sc : builtIns) {
             long year = sc.getStartDateYear();
-            Path earthDir = Paths.get("data", "ether", "earth", String.valueOf(year));
+            Path earthDir = org.ether.society.config.EtherPaths.getEarthDir().resolve(String.valueOf(year));
             boolean exists = !force &&
                              Files.exists(earthDir.resolve("earth_" + year + "_density.png")) &&
                              Files.exists(earthDir.resolve("earth_" + year + "_isogloss.png")) &&

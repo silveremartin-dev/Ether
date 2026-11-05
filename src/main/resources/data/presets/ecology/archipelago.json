@@ -44,10 +44,10 @@
     "seasonUseImport" : false,
     "seasonSource" : "",
     "seasonSeed" : 79777,
-    "associatedEpochYear" : 2026,
-    "tidalLocked" : false,
     "canonicalPlanet" : "none",
-    "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique."
+    "tidalLocked" : false,
+    "presetDescription" : "\uD83C\uDFDD ARCHIPELAGO WORLD: Oceanic world dotted with micro-continents, island chains, and shallow seas. High maritime transport efficiency, low continuous agricultural landmasses, strong naval trade dependencies.",
+    "associatedEpochYear" : 2026
   },
   "terrestrialBiomassGtC" : 550.0,
   "soilOrganicCarbonGtC" : 1800.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
-  "associatedEpochYear" : 2026,
   "canonicalPlanet" : "none",
-  "presetDescription" : "\uD83C\uDFDD MONDE ARCHIPEL : Monde océanique parsemé de micro-continents, chaînes d'îles et mers peu profondes. Rendement élevé du transport maritime, surfaces arables terrestres morcelées, forte dépendance commerciale halieutique."
+  "presetDescription" : "\uD83C\uDFDD ARCHIPELAGO WORLD: Oceanic world dotted with micro-continents, island chains, and shallow seas. High maritime transport efficiency, low continuous agricultural landmasses, strong naval trade dependencies.",
+  "associatedEpochYear" : 2026
 }

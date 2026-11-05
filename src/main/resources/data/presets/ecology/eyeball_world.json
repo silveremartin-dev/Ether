@@ -44,10 +44,10 @@
     "seasonUseImport" : false,
     "seasonSource" : "",
     "seasonSeed" : 35333,
-    "associatedEpochYear" : 2026,
-    "tidalLocked" : true,
     "canonicalPlanet" : "none",
-    "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
+    "tidalLocked" : true,
+    "presetDescription" : "\uD83D\uDC41 TIDALLY LOCKED WORLD (Eyeball): Synchronous rotation around a red dwarf star. Permanent blistering day side, frozen night hemisphere, and a narrow habitable twilight terminator ring.",
+    "associatedEpochYear" : 2026
   },
   "terrestrialBiomassGtC" : 180.0,
   "soilOrganicCarbonGtC" : 600.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
-  "associatedEpochYear" : 2026,
   "canonicalPlanet" : "none",
-  "presetDescription" : "\uD83D\uDC41 MONDE SYNCHRONE (Eyeball) : Rotation verrouillée par effet de marée autour d'une naine rouge. Face jour sous insolation brûlante perpétuelle, face nuit glacée permanente, et anneau tempéré habitable au terminateur."
+  "presetDescription" : "\uD83D\uDC41 TIDALLY LOCKED WORLD (Eyeball): Synchronous rotation around a red dwarf star. Permanent blistering day side, frozen night hemisphere, and a narrow habitable twilight terminator ring.",
+  "associatedEpochYear" : 2026
 }

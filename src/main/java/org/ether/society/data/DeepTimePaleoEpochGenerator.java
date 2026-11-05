@@ -67,13 +67,14 @@ public final class DeepTimePaleoEpochGenerator {
      */
     public static void generateDeepTimeEpoch(long epoch) {
         try {
-            Path epochDir = Paths.get("data", "ether", "earth", String.valueOf(epoch));
+            Path earthBase = org.ether.society.config.EtherPaths.getEarthDir();
+            Path epochDir = earthBase.resolve(String.valueOf(epoch));
             Files.createDirectories(epochDir);
 
             // 1. Copy lithospheric static rasters from -100,000 BP baseline
-            Path refDir = Paths.get("data", "ether", "earth", "-100000");
+            Path refDir = earthBase.resolve("-100000");
             if (!Files.exists(refDir)) {
-                refDir = Paths.get("data", "ether", "earth", "2025");
+                refDir = earthBase.resolve("2025");
             }
 
             String[] staticLayers = {

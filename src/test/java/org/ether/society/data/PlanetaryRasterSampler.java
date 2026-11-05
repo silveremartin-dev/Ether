@@ -331,7 +331,7 @@ public class PlanetaryRasterSampler {
 
     static void saveMapImage(BufferedImage img, String baseName, String canonicalPreset, long year) {
         try {
-            File etherSubDir = new File("data/ether/" + canonicalPreset + "/" + year);
+            File etherSubDir = new File("data/maps/ether/" + canonicalPreset + "/" + year);
             etherSubDir.mkdirs();
             String stdFileName = TemporalMapTensorManager.buildStandardFilename(canonicalPreset, year, baseName);
             File fEtherSub = new File(etherSubDir, stdFileName);

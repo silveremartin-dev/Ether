@@ -23,7 +23,7 @@ public class DeepTimePaleoEpochGeneratorTest {
 
         long[] epochs = DeepTimePaleoEpochGenerator.DEEP_TIME_EPOCHS;
         for (long epoch : epochs) {
-            File epochDir = new File("data/ether/earth/" + epoch);
+            File epochDir = new File("data/maps/ether/earth/" + epoch);
             assertTrue(epochDir.exists(), "Epoch dir must exist: " + epochDir);
             assertTrue(new File(epochDir, "state_1d.json").exists(), "state_1d.json must exist in " + epochDir);
             assertTrue(new File(epochDir, "cultural_registry.json").exists(), "cultural_registry.json must exist in " + epochDir);

@@ -51,7 +51,7 @@ public class RegenerateAndVerifyHoloceneBatchTest {
             System.out.println("Force regenerating maps for scenario: " + sc.getName() + " (Year " + yr + ")");
             HistoricalMapGenerator.forceGenerateScenarioHistoricalMaps(sc);
 
-            File dir = new File("data/ether/earth/" + yr);
+            File dir = new File("data/maps/ether/earth/" + yr);
             assertTrue(dir.exists() && dir.isDirectory(), "Directory must exist: " + dir);
 
             String[] allLayers = {

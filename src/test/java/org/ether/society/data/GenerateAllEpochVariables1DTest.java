@@ -49,7 +49,7 @@ public class GenerateAllEpochVariables1DTest {
     @Test
     @DisplayName("Generate and Validate 1D State Variables for All Planetary Epochs with Maps")
     void testGenerateAllEpochVariables1D() throws IOException {
-        File mapsEtherDir = new File("data/ether");
+        File mapsEtherDir = new File("data/maps/ether");
         assertTrue(mapsEtherDir.exists() && mapsEtherDir.isDirectory(), "data/ether directory must exist");
 
         File[] planets = mapsEtherDir.listFiles(File::isDirectory);

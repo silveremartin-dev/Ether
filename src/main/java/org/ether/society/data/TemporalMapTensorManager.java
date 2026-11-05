@@ -147,7 +147,7 @@ public class TemporalMapTensorManager {
      */
     public static List<Long> getAvailableEpochYears(String planet) {
         String p = normalizePlanet(planet);
-        File planetDir = new File("data/ether/" + p);
+        File planetDir = org.ether.society.config.EtherPaths.getEtherDir().resolve(p).toFile(); if (!planetDir.exists()) planetDir = new File("data/maps/ether/" + p); if (!planetDir.exists()) planetDir = new File("data/ether/" + p);
         List<Long> years = new ArrayList<>();
         if (!planetDir.exists() || !planetDir.isDirectory()) {
             return years;
@@ -392,7 +392,7 @@ public class TemporalMapTensorManager {
     public static Image loadExactEpochImage(String planet, long epoch, String layerTag, String cacheKey) {
         String p = normalizePlanet(planet);
         String tag = canonicalLayerTag(layerTag);
-        String dirPath = "data/ether/" + p + "/" + epoch + "/";
+        File epochDir = org.ether.society.config.EtherPaths.getEtherDir().resolve(p).resolve(String.valueOf(epoch)).toFile(); if (!epochDir.exists()) epochDir = new File("data/maps/ether/" + p + "/" + epoch); String dirPath = epochDir.getAbsolutePath() + File.separator;
 
         String[] candidateNames = {
             p + "_" + epoch + "_" + tag + ".png",
@@ -431,7 +431,7 @@ public class TemporalMapTensorManager {
     public static BufferedImage loadExactEpochBufferedImage(String planet, long epoch, String layerTag, String cacheKey) {
         String p = normalizePlanet(planet);
         String tag = canonicalLayerTag(layerTag);
-        String dirPath = "data/ether/" + p + "/" + epoch + "/";
+        File epochDir = org.ether.society.config.EtherPaths.getEtherDir().resolve(p).resolve(String.valueOf(epoch)).toFile(); if (!epochDir.exists()) epochDir = new File("data/maps/ether/" + p + "/" + epoch); String dirPath = epochDir.getAbsolutePath() + File.separator;
 
         String[] candidateNames = {
             p + "_" + epoch + "_" + tag + ".png",

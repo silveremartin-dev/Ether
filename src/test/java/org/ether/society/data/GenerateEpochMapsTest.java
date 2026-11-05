@@ -34,7 +34,7 @@ public class GenerateEpochMapsTest {
      */
     public void generateEpoch100kOnly() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
-        File rootDir = new File("data/ether/earth");
+        File rootDir = new File("data/maps/ether/earth");
         rootDir.mkdirs();
 
         EpochMeta em = EPOCHS.stream().filter(e -> e.year() == -100000L).findFirst().orElseThrow();
@@ -81,7 +81,7 @@ public class GenerateEpochMapsTest {
      */
     public void generateCanonical36EpochsCulturalData() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
-        File rootDir = new File("data/ether/earth");
+        File rootDir = new File("data/maps/ether/earth");
         rootDir.mkdirs();
 
         List<EpochMeta> canonicalList = EPOCHS.stream()
@@ -139,7 +139,7 @@ public class GenerateEpochMapsTest {
      *
      */
     public void regeneratePrehistoricDensityMapsOnly() throws Exception {
-        File rootDir = new File("data/ether/earth");
+        File rootDir = new File("data/maps/ether/earth");
         rootDir.mkdirs();
 
         List<EpochMeta> prehistoricEpochs = EPOCHS.stream()
@@ -307,7 +307,7 @@ public class GenerateEpochMapsTest {
      */
     public void generateAll36EpochsCulturalData() throws Exception {
         File seshatFile = new File(CliopatriaPolityVectorReader.SESHAT_GEOJSON_PATH);
-        File rootDir = new File("data/ether/earth");
+        File rootDir = new File("data/maps/ether/earth");
         rootDir.mkdirs();
 
         System.out.printf("Starting high-throughput parallel cultural data regeneration for %d epochs...%n", EPOCHS.size());

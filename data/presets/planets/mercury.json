@@ -43,6 +43,6 @@
   "seasonSeed" : 68666,
   "canonicalPlanet" : "mercury",
   "tidalLocked" : false,
-  "associatedEpochYear" : 2026,
-  "presetDescription" : "Mercure (Hermes)"
+  "presetDescription" : "Mercure (Hermes)",
+  "associatedEpochYear" : 2026
 }

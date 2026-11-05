@@ -110,7 +110,7 @@ public class GenerateVisualClimateComparisonArtifact {
             ImageIO.write(s, "PNG", new File(outDir, "earth_" + epoch + "_seasonality.png"));
 
             // Also persist directly into data/ether/earth/<epoch>/
-            File earthEpochDir = new File("data/ether/earth/" + epoch);
+            File earthEpochDir = new File("data/maps/ether/earth/" + epoch);
             earthEpochDir.mkdirs();
             ImageIO.write(b, "PNG", new File(earthEpochDir, "earth_" + epoch + "_biomes.png"));
             ImageIO.write(t, "PNG", new File(earthEpochDir, "earth_" + epoch + "_temperature.png"));

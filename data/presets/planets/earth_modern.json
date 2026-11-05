@@ -43,6 +43,6 @@
   "seasonSeed" : 14345,
   "canonicalPlanet" : "earth",
   "tidalLocked" : false,
-  "associatedEpochYear" : 2026,
-  "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
+  "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies.",
+  "associatedEpochYear" : 2026
 }

@@ -55,10 +55,10 @@ public class HistoricalStateRegistry {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalStateRegistry.class);
 
     /** Primary path relative to the working directory (Maven project root). */
-    private static final String PRIMARY_PATH = "data/ether/earth/history/treaties_and_transitions.json";
+    private static final String PRIMARY_PATH = "data/maps/ether/earth/history/treaties_and_transitions.json";
 
     /** Legacy fallback path for backward compatibility. */
-    private static final String LEGACY_PATH = "data/history/treaties_and_transitions.json";
+    private static final String LEGACY_PATH = "data/ether/earth/history/treaties_and_transitions.json";
 
     /** Fallback for classpath resources during unit tests. */
     private static final String CLASSPATH_RESOURCE = "/treaties_and_transitions.json";

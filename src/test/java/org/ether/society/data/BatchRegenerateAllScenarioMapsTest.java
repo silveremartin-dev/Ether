@@ -56,7 +56,7 @@ public class BatchRegenerateAllScenarioMapsTest {
         List<Scenario> builtIns = Scenario.getBuiltInScenarios();
 
         // 1. Clean up obsolete/orphaned folders if any
-        File earthRoot = new File("data/ether/earth");
+        File earthRoot = new File("data/maps/ether/earth");
         if (earthRoot.exists()) {
             File dir1500 = new File(earthRoot, "1500");
             if (dir1500.exists() && dir1500.isDirectory()) {

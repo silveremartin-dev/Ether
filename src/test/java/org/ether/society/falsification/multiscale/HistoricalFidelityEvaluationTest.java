@@ -33,8 +33,8 @@ import java.util.Map;
 public class HistoricalFidelityEvaluationTest {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalFidelityEvaluationTest.class);
 
-    private static final String SOVEREIGNTY_PATH = "data/ether/earth/1800/earth_1800_sovereignty.png";
-    private static final String DENSITY_PATH = "data/ether/earth/1800/earth_1800_density.png";
+    private static final String SOVEREIGNTY_PATH = "data/maps/ether/earth/1800/earth_1800_sovereignty.png";
+    private static final String DENSITY_PATH = "data/maps/ether/earth/1800/earth_1800_density.png";
 
     // 18 Authentic Historical Entities of 1800 CE
     private static final String[] POLITY_NAMES = {

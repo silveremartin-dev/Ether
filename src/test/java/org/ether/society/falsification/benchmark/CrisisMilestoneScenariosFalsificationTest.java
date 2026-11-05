@@ -52,11 +52,11 @@ public class CrisisMilestoneScenariosFalsificationTest {
 
     private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
             new ScenarioRunConfig("black_death_1347", "The Black Death & Post-Feudal Economic Inversion (1347 CE)",
-                    1347, 1367, 4, false, "data/ether/earth/1347/earth_1347_density.png"),
+                    1347, 1367, 4, false, "data/maps/ether/earth/1347/earth_1347_density.png"),
             new ScenarioRunConfig("world_wars_totalitarian_1914", "World Wars, Totalitarian Crisis & Nuclear Dawn (1914 CE)",
-                    1914, 1934, 4, false, "data/ether/earth/1914/earth_1914_density.png"),
+                    1914, 1934, 4, false, "data/maps/ether/earth/1914/earth_1914_density.png"),
             new ScenarioRunConfig("antonine_plague_165", "Antonine Plague & Imperial Crisis under Marcus Aurelius (165 CE)",
-                    165, 180, 6, true, "data/ether/earth/180/earth_180_density.png")
+                    165, 180, 6, true, "data/maps/ether/earth/180/earth_180_density.png")
     );
 
     @Test

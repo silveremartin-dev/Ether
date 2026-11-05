@@ -25,7 +25,7 @@ public class GenerateExoplanetDensityMapsTest {
     }
 
     private void generateMars2050DensityMap() throws Exception {
-        File marsElevFile = new File("data/ether/mars/2026/mars_2026_elevation.png");
+        File marsElevFile = new File("data/maps/ether/mars/2026/mars_2026_elevation.png");
         assertTrue(marsElevFile.exists(), "Mars elevation raster must exist");
         BufferedImage srcElev = ImageIO.read(marsElevFile);
         int w = srcElev.getWidth();
@@ -84,7 +84,7 @@ public class GenerateExoplanetDensityMapsTest {
         gVis.dispose();
 
         // Save files
-        File outDir = new File("data/ether/mars/2050");
+        File outDir = new File("data/maps/ether/mars/2050");
         outDir.mkdirs();
         File grayFile = new File(outDir, "mars_2050_density.png");
         File visFile = new File(outDir, "mars_2050_density_visual.png");
@@ -98,7 +98,7 @@ public class GenerateExoplanetDensityMapsTest {
     }
 
     private void generateVenus2080DensityMap() throws Exception {
-        File venusElevFile = new File("data/ether/venus/2026/venus_2026_elevation.png");
+        File venusElevFile = new File("data/maps/ether/venus/2026/venus_2026_elevation.png");
         assertTrue(venusElevFile.exists(), "Venus elevation raster must exist");
         BufferedImage srcElev = ImageIO.read(venusElevFile);
         int w = srcElev.getWidth();
@@ -157,7 +157,7 @@ public class GenerateExoplanetDensityMapsTest {
         gVis.dispose();
 
         // Save files
-        File outDir = new File("data/ether/venus/2080");
+        File outDir = new File("data/maps/ether/venus/2080");
         outDir.mkdirs();
         File grayFile = new File(outDir, "venus_2080_density.png");
         File visFile = new File(outDir, "venus_2080_density_visual.png");

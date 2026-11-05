@@ -92,7 +92,7 @@ public class ScenarioSpatial2DFidelityAuditTest {
 
     private void auditRamsesRes6(List<SpatialAuditEntry> results) {
         try {
-            File epochDir = new File("data/ether/earth/-1279");
+            File epochDir = new File("data/maps/ether/earth/-1279");
             File groundTruthFile = new File(epochDir, "earth_-1279_density.png");
             if (!groundTruthFile.exists()) return;
 
@@ -134,7 +134,7 @@ public class ScenarioSpatial2DFidelityAuditTest {
 
     private void auditAntoninePlague(List<SpatialAuditEntry> results) {
         try {
-            File epochDir = new File("data/ether/earth/165");
+            File epochDir = new File("data/maps/ether/earth/165");
             File groundTruthFile = new File(epochDir, "earth_165_density.png");
             if (!groundTruthFile.exists()) return;
 
@@ -175,7 +175,7 @@ public class ScenarioSpatial2DFidelityAuditTest {
 
     private void auditBlackDeath(List<SpatialAuditEntry> results) {
         try {
-            File epochDir = new File("data/ether/earth/1347");
+            File epochDir = new File("data/maps/ether/earth/1347");
             File groundTruthFile = new File(epochDir, "earth_1347_density.png");
             if (!groundTruthFile.exists()) return;
 
@@ -214,7 +214,7 @@ public class ScenarioSpatial2DFidelityAuditTest {
 
     private void auditWorldWars1914(List<SpatialAuditEntry> results) {
         try {
-            File epochDir = new File("data/ether/earth/1914");
+            File epochDir = new File("data/maps/ether/earth/1914");
             File groundTruthFile = new File(epochDir, "earth_1914_density.png");
             if (!groundTruthFile.exists()) return;
 

@@ -58,22 +58,22 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 ---
 
 ## 🗺️ 6. Cartographic Tensor Provenance & Planetary Encapsulation Architecture
-* **Planetary Encapsulation (`data/ether/<planet>/`)**:
-  * All planet-specific physical datasets, rasters, historical catalogs, and state variables are strictly encapsulated within their respective planetary root `data/ether/<planet>/` (e.g., `data/ether/earth/`).
-  * **2D Spatial Rasters (`data/ether/<planet>/<year>/`)**:
+* **Planetary Encapsulation (`data/maps/ether/<planet>/`)**:
+  * All planet-specific physical datasets, rasters, historical catalogs, and state variables are strictly encapsulated within their respective planetary root `data/maps/ether/<planet>/` (e.g., `data/maps/ether/earth/`).
+  * **2D Spatial Rasters (`data/maps/ether/<planet>/<year>/`)**:
     * For every historical epoch (from -100,000 BP to present-day 2025 CE), rasters are stored as 2D spatial layers (Elevation, Density, Biomes, Aquifers, etc.).
     * Every directory contains `provenance_and_sources.json` and `README.md` detailing geophysical and demographic sources.
   * **Discrete Catalogs & Vector Geometries**:
-    * `events/historical_events_catalog.json`: Historical event records (chronological shocks, wars, scientific milestones).
+    * `history/events/historical_events_catalog.json`: Historical event records (chronological shocks, wars, scientific milestones).
     * `history/treaties_and_transitions.json`: Gapless epoch transitions and geopolitical boundaries.
     * `history/paleo/`: Paleolithic vector geometries (`hominin_hearths.json`, `ice_sheets.json`, `migration_routes.json` with 19 global migration corridors).
-    * `leaders/earth_historical_leaders.json`: Historical figures and catalytic leadership interventions.
-  * **1D Continuous Variables & State Baselines (`data/ether/<planet>/variables/`)**:
+    * `history/leaders/earth_historical_leaders.json`: Historical figures and catalytic leadership interventions.
+  * **1D Continuous Variables & State Baselines (`data/maps/ether/<planet>/variables/`)**:
     * Stores scalar time-series trajectories and epoch state initialization vectors in 1 dimension ($t \to \text{value}$).
     * `variables/historical/paleo_sources_1d.json`: Deep Paleolithic ($t_0 < -10\,000\,\text{BP}$) initialized to **`PALEO_SOURCES`** (EPICA Dome C ice cores, PaleoClim v1.2, Biraben 1979 / Kremer 1993).
     * `variables/historical/hyde_maddison_historical_1d.json`: Historical eras ($-10\,000\,\text{BP} \le t_0 \le 2025\,\text{CE}$) initialized to **`HYDE_MADDISON`** (HYDE 3.4, Maddison Project 2020, ECMWF ERA5).
     * `variables/projections/`: Future trajectories ($t_0 \ge 2025\,\text{CE}$) selectable via UI ComboBox between **`SSP1`**, **`SSP2`** (default), **`SSP3`**, **`SSP4`**, **`SSP5`**, and **`ETHER_CALIBRATED`**.
-  * **Legacy Compatibility**: Root-level directories (`data/variables/`, `data/history/`, `data/historical_events_catalog/`, `data/presets/leaders/`) are maintained as secondary fallbacks, with canonical priority given to `data/ether/<planet>/`.
+  * **Legacy Compatibility**: Root-level directories (`data/variables/`, `data/history/`, `data/historical_events_catalog/`, `data/presets/leaders/`) are maintained as secondary fallbacks, with canonical priority given to `data/maps/ether/<planet>/`.
 * **Zero Double Transition Invariant**: ERA5 observational data governs the recent past until the end of real observations (2024/2025), switching directly to the chosen prospective trajectory with zero ad-hoc intermediate approximations. Monotone cubic Hermite spline interpolation (PCHIP, Fritsch & Carlson 1980) guarantees monotonicity and eliminates Runge overshoot around volcanic and demographic crises (e.g., 1816 Tambora, 536 volcanic winter, 1347 Black Death).
 
 ---
@@ -127,3 +127,34 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
      * **Calibrated Simulation Formulation & Value**: The exact formula used in Ether.
      * **Academic Justification / Root Cause of Divergence**: Why the canonical form required spatial/temporal adaptation (e.g., transition from discrete national index to local continuous cellular tensor).
      * **Empirical Validation Grounding**: Empirical historical datasets (Seshat, Maddison, HYDE 3.4, EPICA) confirming the accuracy of the calibrated formulation.
+
+---
+
+## ⚛️ 10. The Physical Observables Invariant, $C^1$ Smoothness & Ban on State-Level Technology
+1. **Primary Biophysical Observables as the Sole Dynamical State**:
+   * The fundamental state of any simulation cell (`H3Cell`, `WorldBuffer`) MUST consist **exclusively of conserved physical, chemical, thermodynamic, and biological observables**:
+     * Biological masses ($N$ human/agent population, $B_{\text{agr}}$ agricultural biomass, $B_{\text{nat}}$ wild biomass).
+     * Material and geological stocks (soil depth, N-P-K mineral reserves, groundwater hydraulic head, coal, iron, hydrocarbons).
+     * Physical built capital stock ($K$, measured in physical units of structural materials and machinery).
+     * Useful energy and exergy flux ($P_{\text{watts}}$, measured in Joules/second or Watts).
+     * Thermodynamic state variables (temperature $T$ in Kelvin, moisture in mm, atmospheric $\text{CO}_2$ in ppm).
+   * **Absolute Ban on Technology as a State Variable**:
+     * Technology is NOT a physical substance and CANNOT be stored as an independent dynamical state variable (e.g., `float[] technologyLevel` in `WorldBuffer` or `Double technologyLevel` in `H3Cell`).
+     * It is strictly forbidden to mutate or increment technology via procedural updates (`cell.setTechnologyLevel(...)`).
+     * Any technological metric is strictly a **derived a posteriori telemetric diagnostic** computed from physical observables:
+       $$T_{\text{emergent}} = f\left(\frac{P_{\text{watts}}}{N}, \; \frac{K_{\text{active}}}{N}\right)$$
+       and MUST NEVER feed back into Tier 1 or Tier 2 equations as an artificial gating variable.
+2. **Strict $C^1$ Differentiability & Absolute Ban on Cliff Effects**:
+   * Nature does not feature infinite-gradient discontinuities at macro scales.
+   * All regime transitions, phase changes, and behavioral shifts MUST be mathematically continuous to at least the first derivative ($C^1$ smoothness), using smooth Fermi-Dirac sigmoids $\sigma(x; x_0, s) = \frac{1}{1 + \exp(-(x - x_0)/s)}$ or hyperbolic tangents $\tanh((x - x_0)/s)$.
+   * **Strictly Prohibited**: Discontinuous step functions, boolean gating cliffs (`if (tech < 1.25)`, `if (year > 1850)`), and piecewise non-differentiable thresholds. All variables $x$ driving sigmoids must be physical observables (power per capita, capital density, temperature, moisture).
+3. **Universality Across Eras and Collective Organisms (Insects, Humans, Aliens)**:
+   * All macrosociological equations must hold true universally for any dissipative structure of living agents:
+     * Human civilizations across deep time (from Paleolithic hunter-gatherers to modern grids).
+     * Non-human collective biosystems (eusocial insects: ant supercolonies, termite mounds, bee hives).
+     * Theoretical extraterrestrial intelligent biosystems.
+   * Across all these systems, the physical principles remain invariant: structural capital $K$ depreciates via entropy ($\delta K$), energetic metabolism requires continuous power capture ($P$), and organizational complexity scales with demographic network size ($N$).
+4. **First-Order Physical Telemetry Invariant & Ban on Cascading Synthetic Scalars**:
+   * Telemetry snapshots (`MetricSnapshot`, `HistorySnapshot`, `SimulationMetricsAggregator`) MUST record **first-order conserved physical observables** directly from cellular buffers ($N$, $K$, $P_{\text{watts}}$, $B_{\text{nat}}$, $B_{\text{agr}}$, $B_{\text{livestock}}$, potable water, smelted minerals, occupied surface area, $\text{CO}_2$, Lorenz Gini, institutional stability).
+   * It is **STRICTLY FORBIDDEN** to cascade macroscopic or post-hoc indicators (GWP, energy, urbanization, literacy, deforestation, soil erosion, freight cost, EROEI, life expectancy) through a synthetic intermediate scalar such as `avgTech` or `getAverageTechnology()`, or to leak ground-truth benchmark tables / calendar years (`year <= 1492`, `year >= 2025`) into simulated telemetry outputs.
+   * When computing emergent *a posteriori* diagnostics (such as Kardashev scale or Garrett-Lotka emergent exergy-capital index), active capital $k_{\text{active}}$ MUST be coupled thermodynamically to active power dissipation $p = P_{\text{watts}}/N$ (Garrett 2011) so post-collapse depopulation ($N \to 0$) never produces spurious technological blow-up ($K/N \to \infty$).

@@ -1,0 +1,173 @@
+{
+  "metadata" : {
+    "planet" : "earth",
+    "year" : 760,
+    "temporalWindow" : "760 CE",
+    "referenceModel" : "HYDE_MADDISON",
+    "modelDescription" : "HYDE 3.4 & Maddison Project (10k BCE - 2024 CE)"
+  },
+  "variables" : {
+    "urbanizationRate" : {
+      "value" : 4.071784497681843,
+      "unit" : "Percentage (%) of population in settlements > 5,000 inhabitants",
+      "name" : "Urbanization Rate",
+      "source" : "Paul Bairoch (1988), Tertius Chandler (1987), UN World Urbanization Prospects (2024)"
+    },
+    "giniInequality" : {
+      "value" : 0.4442312726501389,
+      "unit" : "Gini Index (0.0 = Perfect Equality, 1.0 = Total Monopolization)",
+      "name" : "Wealth & Land Gini Coefficient",
+      "source" : "Walter Scheidel (2017) 'The Great Leveler', Branko Milanovic (2016)"
+    },
+    "worldPopulation" : {
+      "value" : 214.57419781337398,
+      "unit" : "Millions of people",
+      "name" : "World Population",
+      "source" : "McEvedy & Jones (1978), UN World Population Prospects (2024 Revision), HYDE 3.2"
+    },
+    "co2Concentration" : {
+      "value" : 278.88349901089447,
+      "unit" : "Parts Per Million (ppm)",
+      "name" : "Atmospheric CO2 Concentration",
+      "source" : "EPICA Dome C, Law Dome Ice Core, NOAA ESRL Mauna Loa, IPCC AR6 SSP2-4.5 (MAGICC7)"
+    },
+    "sociopoliticalInstability" : {
+      "value" : 35.1503083806177,
+      "unit" : "Events per Decade / Normalized Index",
+      "name" : "Sociopolitical Violence & Instability Index",
+      "source" : "Seshat Databank, Correlates of War (COW) Project"
+    },
+    "agriculturalEroei" : {
+      "value" : 4.44625667752718,
+      "unit" : "Ratio (Caloric Output / Caloric Input Dexpended)",
+      "name" : "Agricultural EROEI (Energy Return on Investment)",
+      "source" : "Vaclav Smil (2008) 'Energy in Nature and Society', Giampietro et al. (2013)"
+    },
+    "lifeExpectancyAtBirth" : {
+      "value" : 34.32271552515422,
+      "unit" : "Years (e_0)",
+      "name" : "Global Life Expectancy at Birth",
+      "source" : "Riley (2005), UN Population Division, HYDE 3.4"
+    },
+    "literacyRate" : {
+      "value" : 3.739437698714219,
+      "unit" : "Percentage (%) of adult population able to read and write",
+      "name" : "Literacy Rate",
+      "source" : "Buringh & van Zanden (2009), UNESCO Institute for Statistics"
+    },
+    "milankovitchInsolation" : {
+      "value" : 466.11650098910553,
+      "unit" : "Watts per Square Meter (W/mÂ²)",
+      "name" : "Milankovitch Summer Insolation 65Â°N",
+      "source" : "Laskar et al. (2004), Berger (1978)"
+    },
+    "realUnskilledWage" : {
+      "value" : 115.19155167464905,
+      "unit" : "Index (100 = Subsistence Basket Baseline)",
+      "name" : "Real Unskilled Worker Purchasing Power",
+      "source" : "Robert C. Allen (2001) 'The Great Divergence in European Wages and Prices'"
+    },
+    "fossilSharePrimaryEnergy" : {
+      "value" : 0.0,
+      "unit" : "Percentage (%) of Total Primary Energy Harvest",
+      "name" : "Fossil Fuel Share in Primary Energy",
+      "source" : "Vaclav Smil (2017) 'Energy and Civilization', Our World in Data (2024)"
+    },
+    "currencyDebasement" : {
+      "value" : 46.15572366512743,
+      "unit" : "Percentage (%) of pure silver in Denarius / standard coin",
+      "name" : "Roman & Classical Silver Coinage Content",
+      "source" : "Butcher & Ponting (2014) 'The Metallurgy of Roman Silver Coinage'"
+    },
+    "deforestationRate" : {
+      "value" : 82.21089171317143,
+      "unit" : "Percentage (%) of original post-glacial forest area remaining",
+      "name" : "Global Forest Cover Remaining",
+      "source" : "HYDE 3.2, FAO Global Forest Resources Assessment"
+    },
+    "grossWorldProduct" : {
+      "value" : 26.641659669014565,
+      "unit" : "Billion 1990 International Dollars",
+      "name" : "Gross World Product (GWP)",
+      "source" : "Maddison Project Database (2020), Bolt & van Zanden (2020), IPCC AR6 SSP2 (MESSAGEix)"
+    },
+    "shippingFreightCostIndex" : {
+      "value" : 1380.4433359810166,
+      "unit" : "Index (100 = 1913 Level)",
+      "name" : "Real Maritime Shipping Freight Cost Index",
+      "source" : "Harley (1988), Mohammed & Williamson (2004), UNCTAD (2024)"
+    },
+    "primaryEnergy" : {
+      "value" : 2.6634420497492757,
+      "unit" : "Exajoules (EJ)",
+      "name" : "Primary Energy Consumption",
+      "source" : "Vaclav Smil (2017) 'Energy and Civilization', IEA (2024), IPCC AR6 SSP2 (IMAGE)"
+    },
+    "eliteOverproductionIndex" : {
+      "value" : 1.280157951181492,
+      "unit" : "Normalized Index (1.0 = Baseline Balance, > 2.0 = High Crisis Risk)",
+      "name" : "Elite Overproduction Index",
+      "source" : "Peter Turchin (2016) 'Ages of Discord', Seshat Databank"
+    },
+    "sovereignDebtBurden" : {
+      "value" : 9.731790099051436,
+      "unit" : "Percentage (%) of Gross Product / State Revenue",
+      "name" : "Sovereign Debt Burden",
+      "source" : "Reinhart & Rogoff (2009) 'This Time Is Different', IMF Global Debt Database"
+    },
+    "globalTradeVolume" : {
+      "value" : 4.908673359730337,
+      "unit" : "Index (100 = 1913 Level)",
+      "name" : "Global Trade Volume Index",
+      "source" : "Federico & Tena-Junguito (2017) 'World Trade 1800-1938', WTO"
+    },
+    "asabiyyahSocialCohesion" : {
+      "value" : 0.68,
+      "unit" : "Normalized Score (0.0 = Atomized/Decadent, 1.0 = Maximum Frontier Solidarism)",
+      "name" : "Asabiyyah / Collective Solidarity Score",
+      "source" : "Ibn Khaldun (1377) 'Muqaddimah', Peter Turchin (2003) 'Historical Dynamics'"
+    },
+    "temperatureAnomaly" : {
+      "value" : -0.023080765404301422,
+      "unit" : "Degrees Celsius (Â°C) relative to 1850-1900 pre-industrial baseline",
+      "name" : "Global Surface Temperature Anomaly",
+      "source" : "PAGES 2k Consortium, HadCRUT5, IPCC AR6 SSP2-4.5 (2021)"
+    },
+    "politicalStressIndex" : {
+      "value" : 35.1503083806177,
+      "unit" : "Composite Index (0 = Stable, 100 = Structural State Collapse)",
+      "name" : "Political Stress Index (PSI)",
+      "source" : "Turchin & Nefedov (2009) 'Secular Cycles'"
+    },
+    "soilErosionRate" : {
+      "value" : 18.186234094773624,
+      "unit" : "Percentage (%) of topsoil loss relative to original Holocene baseline",
+      "name" : "Topsoil Erosion & Salinization Loss",
+      "source" : "Montgomery (2007) 'Dirt: The Erosion of Civilizations', FAO"
+    },
+    "metalSmeltingPerCapita" : {
+      "value" : 2.003946164342654,
+      "unit" : "kg per capita per year",
+      "name" : "Per Capita Metal Smelting Output",
+      "source" : "World Steel Association, Malandra (1990), USGS Historical Mineral Statistics"
+    },
+    "informationSpeed" : {
+      "value" : 85.1507151680342,
+      "unit" : "Kilometers Per Day (km/day)",
+      "name" : "Information Travel Speed",
+      "source" : "Scheidel (2014) 'ORBIS: The Stanford Geospatial Network Model of the Roman World'"
+    },
+    "megafaunaIndex" : {
+      "value" : 12.27194782205911,
+      "unit" : "Percentage (%) of Late Pleistocene Baseline Biomass",
+      "name" : "Megafauna Biomass & Survival Index",
+      "source" : "Sandom et al. (2014), Barnosky (2004), WWF Living Planet Report (2024)"
+    },
+    "zeroContainmentScore" : {
+      "value" : 0.8147444321850966,
+      "unit" : "Normalized Score (1.0 = Pristine Continental Isolation, 0.0 = Total Homogenization)",
+      "name" : "Biogeographical Isolation & Containment Score",
+      "source" : "Crosby (1972) 'The Columbian Exchange', Diamond (1997), Seebens et al. (2017)"
+    }
+  }
+}

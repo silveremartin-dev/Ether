@@ -46,8 +46,8 @@
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
-    "associatedEpochYear" : -1900,
-    "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
+    "presetDescription" : "\uD83C\uDFFA EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture.",
+    "associatedEpochYear" : -1900
   },
   "terrestrialBiomassGtC" : 590.0,
   "soilOrganicCarbonGtC" : 1800.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
-  "associatedEpochYear" : -1900,
-  "presetDescription" : "\uD83C\uDFFA TERRE (-1 900 / Âge du Bronze Moyen) : Réseaux commerciaux transcontinentaux établis (cuivre, étain, ambre), codification des lois, cités-États hydrauliques et architecture monumentale de temple."
+  "presetDescription" : "\uD83C\uDFFA EARTH (-1,900 BP / Middle Bronze Age): Established transcontinental trade routes (copper, tin, amber), early legal codification, hydraulic city-states, and monumental temple architecture.",
+  "associatedEpochYear" : -1900
 }

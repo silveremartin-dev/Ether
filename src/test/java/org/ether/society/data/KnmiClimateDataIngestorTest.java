@@ -24,7 +24,7 @@ public class KnmiClimateDataIngestorTest {
             return;
         }
 
-        File outFile = new File("data/ether/earth/variables/projections/cmip6_knmi_temperatures_1d.json");
+        File outFile = new File("data/maps/ether/earth/variables/projections/cmip6_knmi_temperatures_1d.json");
         KnmiClimateDataIngestor.ingestDirectoryAndExportJson(knmiDir, outFile);
 
         // Also update legacy mirror if directory exists

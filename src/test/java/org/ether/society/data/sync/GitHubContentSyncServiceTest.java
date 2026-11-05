@@ -35,7 +35,7 @@ public class GitHubContentSyncServiceTest {
         assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/presets/planets/earth.json"));
         assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/events/historical_events.json"));
         assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/history/timeline_rome.json"));
-        assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/ether/earth/0/elevation.png"));
+        assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("data/maps/ether/earth/0/elevation.png"));
         assertTrue(GitHubContentSyncService.isAuthorizedSyncPath("saves/run-alexander_hellenistic_334bce_forced/metadata.json"));
 
         // Reject unauthorized paths

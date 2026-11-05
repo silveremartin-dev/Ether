@@ -56,27 +56,27 @@ public class MacroHistoricalEpochsFalsificationTest {
     private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
             // --- Middle Epochs (Classical, Medieval & Post-Feudal Transitions) ---
             new ScenarioRunConfig("antonine_plague_165", "Antonine Plague & Imperial Crisis under Marcus Aurelius (165-180 CE)",
-                    165, 185, 6, true, "data/ether/earth/160/earth_160_density.png"),
+                    165, 185, 6, true, "data/maps/ether/earth/160/earth_160_density.png"),
             new ScenarioRunConfig("late_antique_ice_age", "Late Antique Little Ice Age & Justinian Plague (536 CE)",
-                    536, 556, 4, false, "data/ether/earth/536/earth_536_density.png"),
+                    536, 556, 4, false, "data/maps/ether/earth/536/earth_536_density.png"),
             new ScenarioRunConfig("islamic_expansion_632", "Islamic Expansion & Caliphal Commercial Revolution (632 CE)",
-                    632, 652, 4, false, "data/ether/earth/632/earth_632_density.png"),
+                    632, 652, 4, false, "data/maps/ether/earth/632/earth_632_density.png"),
             new ScenarioRunConfig("song_dynasty", "Song Dynasty & Hydraulic Pre-Industrialization (1000 CE)",
-                    1000, 1020, 4, false, "data/ether/earth/1000/earth_1000_density.png"),
+                    1000, 1020, 4, false, "data/maps/ether/earth/1000/earth_1000_density.png"),
             new ScenarioRunConfig("black_death_1347", "The Black Death & Post-Feudal Economic Inversion (1347 CE)",
-                    1347, 1367, 4, false, "data/ether/earth/1347/earth_1347_density.png"),
+                    1347, 1367, 4, false, "data/maps/ether/earth/1347/earth_1347_density.png"),
 
             // --- Modern & Contemporary Epochs ---
             new ScenarioRunConfig("industrial_1800", "Industrial Revolution & Fossil Energy (1800 CE)",
-                    1800, 1820, 4, false, "data/ether/earth/1800/earth_1800_density.png"),
+                    1800, 1820, 4, false, "data/maps/ether/earth/1800/earth_1800_density.png"),
             new ScenarioRunConfig("world_wars_totalitarian_1914", "World Wars, Totalitarian Rupture & Nuclear Era (1914 CE)",
-                    1914, 1934, 4, false, "data/ether/earth/1914/earth_1914_density.png"),
+                    1914, 1934, 4, false, "data/maps/ether/earth/1914/earth_1914_density.png"),
 
             // --- Deep Prehistory & Paleolithic ---
             new ScenarioRunConfig("fertile_crescent", "Fertile Crescent & Neolithic Agriculture (-8000 BCE)",
-                    -8000, -7980, 7, true, "data/ether/earth/-8000/earth_-8000_density.png"),
+                    -8000, -7980, 7, true, "data/maps/ether/earth/-8000/earth_-8000_density.png"),
             new ScenarioRunConfig("lgm_solutrean", "Last Glacial Maximum & Solutrean (-20,000 BP)",
-                    -20000, -19980, 4, false, "data/ether/earth/-20000/earth_-20000_density.png")
+                    -20000, -19980, 4, false, "data/maps/ether/earth/-20000/earth_-20000_density.png")
     );
 
     @Test

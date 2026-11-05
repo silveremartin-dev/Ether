@@ -44,10 +44,10 @@
     "seasonUseImport" : false,
     "seasonSource" : "",
     "seasonSeed" : 56321,
-    "associatedEpochYear" : 2026,
-    "tidalLocked" : false,
     "canonicalPlanet" : "none",
-    "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime."
+    "tidalLocked" : false,
+    "presetDescription" : "\uD83C\uDF0A OCEAN WORLD (Oceania): Panthalassic water world with 98% ocean coverage, no exposed continental cratons, deep pelagic ecosystems, and exclusive dependence on marine foraging.",
+    "associatedEpochYear" : 2026
   },
   "terrestrialBiomassGtC" : 80.0,
   "soilOrganicCarbonGtC" : 300.0,
@@ -65,7 +65,7 @@
   "customRainfallBase64" : null,
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
-  "associatedEpochYear" : 2026,
   "canonicalPlanet" : "none",
-  "presetDescription" : "\uD83C\uDF0A MONDE OCÉAN (Oceania) : Planète océanique panthalassique à 98% d'eau, absence de cratons continentaux émergés, écosystèmes pélagiques profonds et subsistance humaine exclusivement maritime."
+  "presetDescription" : "\uD83C\uDF0A OCEAN WORLD (Oceania): Panthalassic water world with 98% ocean coverage, no exposed continental cratons, deep pelagic ecosystems, and exclusive dependence on marine foraging.",
+  "associatedEpochYear" : 2026
 }

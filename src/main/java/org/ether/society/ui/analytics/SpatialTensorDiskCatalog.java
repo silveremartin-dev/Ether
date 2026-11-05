@@ -31,7 +31,7 @@ public final class SpatialTensorDiskCatalog {
     public static final int[] AVAILABLE_EARTH_EPOCHS;
 
     static {
-        File earthDir = new File("data/ether/earth/");
+        File earthDir = org.ether.society.config.EtherPaths.getEarthDir().toFile(); if (!earthDir.exists()) earthDir = new File("data/maps/ether/earth/"); if (!earthDir.exists()) earthDir = new File("data/ether/earth/");
         if (earthDir.exists() && earthDir.isDirectory()) {
             File[] sub = earthDir.listFiles(File::isDirectory);
             if (sub != null) {
@@ -110,7 +110,7 @@ public final class SpatialTensorDiskCatalog {
      * @return File handle if found on disk, or null
      */
     public static File getDiskRasterForChannel(int year, String channel) {
-        String baseMapDir = "data/ether/earth/" + year + "/";
+        File baseMapDirFile = org.ether.society.config.EtherPaths.getEarthDir().resolve(String.valueOf(year)).toFile(); String baseMapDir = baseMapDirFile.getAbsolutePath() + File.separator;
         String channelKey = resolveCanonicalChannelKey(channel);
         File rasterFile = new File(baseMapDir, "earth_" + year + "_" + channelKey + ".png");
         if (rasterFile.exists()) return rasterFile;
@@ -143,10 +143,10 @@ public final class SpatialTensorDiskCatalog {
                     closestYear = (Math.abs(prev - year) <= Math.abs(next - year)) ? prev : next;
                 }
             }
-            File candidate = new File("data/ether/earth/" + closestYear + "/earth_" + closestYear + "_" + channelKey + ".png");
+            File closestDir = org.ether.society.config.EtherPaths.getEarthDir().resolve(String.valueOf(closestYear)).toFile(); File candidate = new File(closestDir, "earth_" + closestYear + "_" + channelKey + ".png");
             if (candidate.exists()) return candidate;
 
-            File closestDir = new File("data/ether/earth/" + closestYear + "/");
+            
             if (closestDir.exists() && closestDir.isDirectory()) {
                 File[] matches = closestDir.listFiles((d, name) -> {
                     String n = name.toLowerCase(Locale.ROOT);

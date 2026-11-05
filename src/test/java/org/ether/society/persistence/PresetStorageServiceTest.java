@@ -107,10 +107,10 @@ class PresetStorageServiceTest {
     }
 
     @Test
-    @DisplayName("Should verify leaders catalog preset exists in presets/leaders/")
+    @DisplayName("Should verify leaders catalog exists in history/leaders/")
     void testLeadersPresetLocation() {
         Path leadersFile = EtherPaths.getPresetsLeadersDir().resolve("earth_historical_leaders.json");
-        assertTrue(Files.exists(leadersFile), "earth_historical_leaders.json must exist under presets/leaders/");
+        assertTrue(Files.exists(leadersFile), "earth_historical_leaders.json must exist under history/leaders/");
     }
 }
 

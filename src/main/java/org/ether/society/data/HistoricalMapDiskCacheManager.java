@@ -88,9 +88,12 @@ public final class HistoricalMapDiskCacheManager {
         if (scenario.getPlanetPreset() != null && scenario.getPlanetPreset().getCanonicalPlanet() != null && !scenario.getPlanetPreset().getCanonicalPlanet().isBlank()) {
             planet = scenario.getPlanetPreset().getCanonicalPlanet().toLowerCase(java.util.Locale.ROOT);
         }
-        Path basePlanetDir = Paths.get("data", "ether", planet);
+        Path basePlanetDir = org.ether.society.config.EtherPaths.getEtherDir().resolve(planet);
         if (!Files.isDirectory(basePlanetDir)) {
-            basePlanetDir = Paths.get("data", "ether", "earth");
+            basePlanetDir = Paths.get("data", "maps", "ether", planet);
+        }
+        if (!Files.isDirectory(basePlanetDir)) {
+            basePlanetDir = org.ether.society.config.EtherPaths.getEarthDir();
             planet = "earth";
         }
         if (!Files.isDirectory(basePlanetDir)) {
@@ -265,7 +268,7 @@ public final class HistoricalMapDiskCacheManager {
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas, BufferedImage imgUranium,
             BufferedImage imgHe3, BufferedImage imgIronCopper, BufferedImage imgPreciousMetals, BufferedImage imgRareEarths, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
         try {
-            Path earthDir = Paths.get("data", "ether", "earth", String.valueOf(year));
+            Path earthDir = org.ether.society.config.EtherPaths.getEarthDir().resolve(String.valueOf(year));
             Files.createDirectories(earthDir);
 
             writePngFile(imgDensity, earthDir.resolve("earth_" + year + "_density.png").toFile());
@@ -286,8 +289,8 @@ public final class HistoricalMapDiskCacheManager {
                 if (staticImgs[i] != null) {
                     writePngFile(staticImgs[i], minPath.toFile());
                 } else if (!minPath.toFile().exists()) {
-                    File srcMin = new File("data/ether/earth/2025/earth_2025_" + min + ".png");
-                    if (!srcMin.exists()) srcMin = new File("data/ether/earth/-100000/earth_-100000_" + min + ".png");
+                    File srcMin = org.ether.society.config.EtherPaths.getEarthDir().resolve("2025/earth_2025_" + min + ".png").toFile();
+                    if (!srcMin.exists()) srcMin = org.ether.society.config.EtherPaths.getEarthDir().resolve("-100000/earth_-100000_" + min + ".png").toFile();
                     if (srcMin.exists()) {
                         Files.copy(srcMin.toPath(), minPath, StandardCopyOption.REPLACE_EXISTING);
                     }
@@ -321,9 +324,9 @@ public final class HistoricalMapDiskCacheManager {
             }
 
             Path elevPath = earthDir.resolve("earth_" + year + "_elevation.png");
-            File srcElev = new File("data/ether/earth/earth_elevation.png");
-            if (!srcElev.exists()) srcElev = new File("data/ether/earth/2026/earth_2026_elevation.png");
-            if (!srcElev.exists()) srcElev = new File("data/ether/earth/-100000/earth_-100000_elevation.png");
+            File srcElev = org.ether.society.config.EtherPaths.getEarthDir().resolve("earth_elevation.png").toFile();
+            if (!srcElev.exists()) srcElev = org.ether.society.config.EtherPaths.getEarthDir().resolve("2026/earth_2026_elevation.png").toFile();
+            if (!srcElev.exists()) srcElev = org.ether.society.config.EtherPaths.getEarthDir().resolve("-100000/earth_-100000_elevation.png").toFile();
             if (srcElev.exists()) {
                 Files.copy(srcElev.toPath(), elevPath, StandardCopyOption.REPLACE_EXISTING);
                 elevPath.toFile().setLastModified(System.currentTimeMillis());
@@ -346,7 +349,7 @@ public final class HistoricalMapDiskCacheManager {
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
         try {
-            Path earthDir = Paths.get("data", "ether", "earth", String.valueOf(year));
+            Path earthDir = org.ether.society.config.EtherPaths.getEarthDir().resolve(String.valueOf(year));
             Files.createDirectories(earthDir);
 
             if (imgIsogloss != null)        ImageIO.write(imgIsogloss,        "PNG", earthDir.resolve("earth_" + year + "_isogloss.png").toFile());
