@@ -327,16 +327,9 @@ public class HeadlessBatchRunner {
         double stability = engine.getHappinessIndex();
         int populatedCells = (int) engine.getPopulatedCellCount();
 
-        // Purely minimal physical baseline in headless mode: zero heavy cliodynamic monitoring during the simulation loop.
-        // All academic cliodynamic indicators (urbanization, literacy, PSI, debt, trade, EROEI, etc.)
-        // are computed strictly a posteriori on demand by PostHocCliodynamicMetricsExtractor.
-        Map<String, Double> metricsMap = new LinkedHashMap<>();
-        metricsMap.put("population", (double) pop);
-        metricsMap.put("worldPopulation", (double) pop);
-        metricsMap.put("foodPerCapita", foodPerCap);
-        metricsMap.put("avgTechLevel", avgTech);
-        metricsMap.put("stability", stability);
-        metricsMap.put("populatedCellCount", (double) populatedCells);
+        // Comprehensive biophysical snapshot: records 100% of physical observables calculated by the engine and aggregator.
+        // Zero metric filtering or partial snapshots: all telemetry variables are captured completely.
+        Map<String, Double> metricsMap = MetricRegistry.getInstance().computeMetricsMap(engine);
 
         record.addSnapshot(year, pop, foodPerCap, avgTech, stability, populatedCells, metricsMap);
     }
