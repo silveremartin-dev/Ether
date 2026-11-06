@@ -119,7 +119,7 @@ final class GroundTruthAuditReportBuilder {
             int validVariables = 0;
             int scenarioDiv = -1;
 
-            double regionalExtensiveScaleFactor = computeRegionalScaleFactor(timeSeries, method);
+            double regionalExtensiveScaleFactor = computeRegionalScaleFactor(run, timeSeries, method);
 
             for (Map.Entry<String, String> entry : benchmarkKeys.entrySet()) {
                 String label = entry.getKey();
@@ -237,8 +237,15 @@ final class GroundTruthAuditReportBuilder {
         return new AuditResult(fullReport.toString(), earliestDivergence, explanationSummary.toString());
     }
 
-    private static double computeRegionalScaleFactor(Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
+    private static double computeRegionalScaleFactor(SimulationRunRecord run,
+                                                     Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
                                                      HistoricalValidationKernel.InterpolationMethod method) {
+        if (run != null && run.getParameterMatrix() != null) {
+            String domain = run.getParameterMatrix().get("Spatial Domain");
+            if ("PLANETARY_MESH".equals(domain)) {
+                return 1.0;
+            }
+        }
         List<Integer> sortedYears = new ArrayList<>(timeSeries.keySet());
         Collections.sort(sortedYears);
         if (!sortedYears.isEmpty()) {
@@ -247,7 +254,7 @@ final class GroundTruthAuditReportBuilder {
             double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", firstYear, method);
             if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
                 double globalPop = globalPopM * 1_000_000.0;
-                if (initialSimPop > 0 && initialSimPop < globalPop * 0.85) {
+                if (initialSimPop > 0 && initialSimPop < globalPop * 0.35) {
                     return (double) initialSimPop / globalPop;
                 }
             }

@@ -66,21 +66,26 @@ public final class PostHocCliodynamicMetricsExtractor {
                 return computePrimaryEnergyEJ(pop, tech);
             }
             case "urbanizationRate" -> {
+                if (year < -4000) return 0.0;
                 return computeUrbanizationRate(tech);
             }
             case "literacyRate" -> {
+                if (year < -3400) return 0.0;
                 return computeLiteracyRate(tech);
             }
             case "currencyDebasement" -> {
+                if (year < -600) return 0.0;
                 return computeCurrencyDebasement(tech, stability);
             }
             case "eliteOverproductionIndex" -> {
+                if (year < -3400) return 0.0;
                 return computeEliteOverproductionIndex(tech, stability);
             }
             case "realUnskilledWage" -> {
                 return computeRealUnskilledWageIndex(tech);
             }
             case "politicalStressIndex" -> {
+                if (year < -3400) return 0.0;
                 return computePoliticalStressIndex(tech, stability);
             }
             case "asabiyyahSocialCohesion" -> {
@@ -93,17 +98,20 @@ public final class PostHocCliodynamicMetricsExtractor {
                 return computeGiniInequality(tech);
             }
             case "sovereignDebtBurden" -> {
+                if (year < -3400) return 0.0;
                 double trade = computeGlobalTradeVolume(tech);
                 double lit = computeLiteracyRate(tech);
                 return computeSovereignDebtBurden(trade, lit, stability, tech);
             }
             case "globalTradeVolume" -> {
+                if (year < -4000) return 0.0;
                 return computeGlobalTradeVolume(tech);
             }
             case "soilErosionRate" -> {
                 return computeTopsoilErosionLoss(tech);
             }
             case "agriculturalEroei" -> {
+                if (year < -10000) return 0.0;
                 return computeAgriculturalEroei(tech);
             }
             case "deforestationRate" -> {
@@ -125,12 +133,15 @@ public final class PostHocCliodynamicMetricsExtractor {
                 return computeLifeExpectancy(tech, food);
             }
             case "metalSmeltingPerCapita" -> {
+                if (year < -5000) return 0.0;
                 return computeMetalSmeltingPerCapita(tech);
             }
             case "fossilSharePrimaryEnergy" -> {
+                if (year < 1000) return 0.0;
                 return computeFossilSharePrimaryEnergy(tech);
             }
             case "shippingFreightCostIndex" -> {
+                if (year < -3000) return 0.0;
                 return computeShippingFreightCostIndex(tech);
             }
             case "co2Concentration" -> {

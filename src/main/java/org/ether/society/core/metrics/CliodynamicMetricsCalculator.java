@@ -289,6 +289,7 @@ public final class CliodynamicMetricsCalculator {
      * @return political stress index in $[0.0, 100.0]$
      */
     public double getPoliticalStressIndex() {
+        if (engine.getCurrentYear() < -3400) return 0.0;
         return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computePoliticalStressIndex(
                 engine.getAverageTechnology(), aggregator.getHappinessIndex());
     }

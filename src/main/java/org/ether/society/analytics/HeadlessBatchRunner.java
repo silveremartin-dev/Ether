@@ -156,6 +156,7 @@ public class HeadlessBatchRunner {
         parameterMatrix.put("Modèle de Densité", scenario.getPopulationDensityType() != null ? scenario.getPopulationDensityType() : "UNBIASED_NATURAL");
 
         parameterMatrix.put("Contexte Matériel", "CPU_JIT (Headless)");
+        parameterMatrix.put("Spatial Domain", scenario.isClippingEnabled() ? "REGIONAL_WINDOW" : "PLANETARY_MESH");
 
         if (scenario.getTypeBEngineStates() != null && !scenario.getTypeBEngineStates().isEmpty()) {
             for (var entry : scenario.getTypeBEngineStates().entrySet()) {

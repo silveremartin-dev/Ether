@@ -90,7 +90,9 @@ public class AquiferDepletionEngine {
             if (irrigationStress > 0.05 && pop > 0) {
                 if (irrigationStress > 0.5) depletedCounter.incrementAndGet();
                 double currentAgri = cell.getBiomassAgricultureOr(0.0);
-                cell.setBiomassAgriculture(Math.max(50.0, currentAgri * Math.exp(-0.15 * irrigationStress * dt)));
+                if (currentAgri > 0.0) {
+                    cell.setBiomassAgriculture(Math.max(0.0, currentAgri * Math.exp(-0.15 * irrigationStress * dt)));
+                }
             }
         };
 

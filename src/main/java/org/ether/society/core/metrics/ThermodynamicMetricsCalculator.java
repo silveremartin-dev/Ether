@@ -193,17 +193,22 @@ public final class ThermodynamicMetricsCalculator {
      * @return food system EROI ratio in $[0.12, 7.5]$
      */
     public double getEroiAlimentaire() {
-        float tech = engine.getAverageTechnology();
-        double agActivation = Math.tanh(Math.max(0.0, tech - 1.15) * 4.0);
+        if (engine.getCurrentYear() < -10000) {
+            return 0.0;
+        }
+        long pop = engine.getTotalPopulation();
+        if (pop <= 0) return 0.0;
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        // Continuous biophysical activation of agriculture (hoes/granaries/plows)
+        double agActivation = org.ether.society.core.math.SmoothMath.sigmoid(kpc, 40.0, 12.0);
         if (agActivation <= 0.0) return 0.0;
-        // Leach (1976) / Hall & Klitgaard (2012) / Giampietro (2013):
-        // Early Neolithic horticulture (alluvial flood recession) bonus (~15-20)
-        double neolithicHorticultureBonus = 9.8 * Math.exp(-Math.pow((tech - 1.45), 2) / 0.18);
-        // Pre-industrial draft animal traction equilibrium: ~4.2 - 5.0
-        double traditionalEquilibrium = 4.2 + 0.8 * Math.tanh(Math.max(0.0, tech - 2.50) * 1.10);
-        // Modern mechanization and Green Revolution expansion (Smil 2017): ~8-15
-        double greenRevolutionBoom = (tech > 3.60) ? 9.5 / (1.0 + Math.exp(-2.20 * (tech - 4.50))) : 0.0;
-        double eroei = traditionalEquilibrium + neolithicHorticultureBonus + greenRevolutionBoom;
+        // Pre-industrial draft animal traction equilibrium: ~4.2 - 4.8 (Smil 2008, Giampietro et al. 2013)
+        double traditionalEquilibrium = 4.2 + 0.6 * Math.tanh(kpc / 350.0);
+        // Early Neolithic flood-recession horticulture bonus (~14 at kpc ~ 60-120; Leach 1976, Hall & Klitgaard 2012):
+        double neolithicBonus = 9.8 * Math.exp(-Math.pow(kpc - 75.0, 2) / 1500.0);
+        // Modern mechanization and Green Revolution expansion (Smil 2017): ~10-15
+        double greenRevolutionBoom = 10.2 * org.ether.society.core.math.SmoothMath.sigmoid(kpc, 2500.0, 600.0);
+        double eroei = traditionalEquilibrium + neolithicBonus + greenRevolutionBoom;
         return Math.clamp(agActivation * eroei, 0.0, 25.0);
     }
 

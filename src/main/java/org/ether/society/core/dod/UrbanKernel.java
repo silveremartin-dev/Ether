@@ -84,6 +84,15 @@ public class UrbanKernel {
             double bandConstraint = SmoothMath.sigmoid(p, 50.0, 15.0);
             kStar = 15.0 * (1.0 - bandConstraint) + kStar * bandConstraint;
 
+            // Sedentary infrastructure (mudbrick/masonry/granaries/plows) requires agricultural biomass
+            // or high-power industrial grids; mobile foraging bands cannot transport stationary infrastructure (AGENTS.md §8).
+            float[] agri = world.getBiomassAgriculture();
+            float cellAgri = (agri != null && i < agri.length) ? agri[i] : 0.0f;
+            double agriActivation = SmoothMath.sigmoid(cellAgri, 100.0, 30.0);
+            double industrialActivation = SmoothMath.sigmoid(powerPerCapitaW, 600.0, 150.0);
+            double sedentaryCapability = Math.max(agriActivation, industrialActivation);
+            kStar = 15.0 + (kStar - 15.0) * sedentaryCapability;
+
             // Physical capital depreciation rate delta = 4.0% per year (entropy of physical structures/tools)
             double deltaAnnual = 0.04;
             double dCapitalPerCapita = deltaAnnual * (kStar - capitalPerCapita) * dtInYears;

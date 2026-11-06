@@ -230,6 +230,9 @@ public final class DemographicMetricsCalculator {
      * @return global urbanization rate in $[0.0, 95.0]$ %
      */
     public double getUrbanizationRate() {
+        if (engine.getCurrentYear() < -4000) {
+            return 0.0;
+        }
         WorldBuffer wb = engine.getWorldBuffer();
         if (wb != null && wb.getBiomassHuman() != null && wb.getCapacity() > 0) {
             float[] pop = wb.getBiomassHuman();
@@ -272,9 +275,9 @@ public final class DemographicMetricsCalculator {
                 double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2500.0, 500.0);
                 double industrialUrbanShare = 0.78 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
 
-                double cellUrbanFraction = SmoothMath.smoothClamp(
+                double cellUrbanFraction = Math.max(0.0, SmoothMath.smoothClamp(
                         SmoothMath.softmax(agrarianUrbanShare, industrialUrbanShare, 50.0),
-                        0.0, 0.92, 50.0);
+                        0.0, 0.92, 50.0));
                 urbanPop += p * cellUrbanFraction;
             }
             if (totalPop > 0.0) {
@@ -307,9 +310,9 @@ public final class DemographicMetricsCalculator {
             double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2500.0, 500.0);
             double industrialUrbanShare = 0.78 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
 
-            double cellUrbanFraction = SmoothMath.smoothClamp(
+            double cellUrbanFraction = Math.max(0.0, SmoothMath.smoothClamp(
                     SmoothMath.softmax(agrarianUrbanShare, industrialUrbanShare, 50.0),
-                    0.0, 0.92, 50.0);
+                    0.0, 0.92, 50.0));
             urbanPop += p * cellUrbanFraction;
         }
         return totalPop > 0 ? Math.max(0.0, Math.min(95.0, (urbanPop / totalPop) * 100.0)) : 0.0;

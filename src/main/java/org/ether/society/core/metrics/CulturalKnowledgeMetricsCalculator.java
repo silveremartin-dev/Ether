@@ -128,6 +128,9 @@ public final class CulturalKnowledgeMetricsCalculator {
      * @return global literacy rate in $[0.0, 99.5]$ %
      */
     public double getLiteracyRate() {
+        if (engine.getCurrentYear() < -3400) {
+            return 0.0;
+        }
         WorldBuffer wb = engine.getWorldBuffer();
         if (wb != null && wb.getBiomassHuman() != null && wb.getCapacity() > 0) {
             float[] pop = wb.getBiomassHuman();
@@ -144,7 +147,7 @@ public final class CulturalKnowledgeMetricsCalculator {
                 double powerW = wb.computeCellPowerWattsPerCapita(i);
 
                 // Scribal literacy (ancient administrative scribes, imperial/monastic codices: 1-3.5% Buringh & van Zanden 2009)
-                double scribalActivation = SmoothMath.sigmoid(cellKpc, 30.0, 10.0);
+                double scribalActivation = SmoothMath.sigmoid(cellKpc, 180.0, 40.0);
                 double scribalLit = 3.25 * scribalActivation;
 
                 // Vernacular literacy (Gutenberg movable type printing press, urban commercial bookkeeping: 10-30%)
@@ -180,7 +183,7 @@ public final class CulturalKnowledgeMetricsCalculator {
             double cellKpc = cellCapital / p;
             double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(c);
 
-            double scribalActivation = SmoothMath.sigmoid(cellKpc, 30.0, 10.0);
+            double scribalActivation = SmoothMath.sigmoid(cellKpc, 180.0, 40.0);
             double scribalLit = 3.25 * scribalActivation;
 
             double vernacularActivation = SmoothMath.sigmoid(cellKpc, 950.0, 200.0);

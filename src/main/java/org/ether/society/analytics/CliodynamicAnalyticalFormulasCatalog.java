@@ -269,10 +269,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // High medieval / renaissance war debt escalation (1347 CE Italian montes, French/English war loans: T >= 2.05):
         double medievalWarDebt = 18.0 * Math.tanh(Math.max(0.0, tech - 2.05) * 2.50) * (0.4 + 0.6 * fiscalShock);
 
-        // Modern institutional funded debt (Dickson 1967, British consols post-1694: T >= 2.25):
-        // Reaches ~73% in 1800 (T ~ 2.45) and ~90-110% in 1914 (T ~ 3.25)
-        double modernFundedActivation = Math.tanh(Math.max(0.0, tech - 2.25) * 3.00);
-        double modernFundedDebt = modernFundedActivation * (80.0 / (1.0 + Math.exp(-3.50 * (tech - 2.65))));
+        // Modern institutional funded debt (Dickson 1967, British consols post-1694: T >= 1.90):
+        // Reaches ~73% in 1800 (T ~ 2.08) and ~90-110% in 1914 (T ~ 3.25)
+        double modernFundedActivation = Math.tanh(Math.max(0.0, tech - 1.90) * 4.00);
+        double modernFundedDebt = modernFundedActivation * (80.0 / (1.0 + Math.exp(-3.50 * (tech - 2.10))));
 
         double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt;
         return Math.clamp(institutionalActivation * debtBurden, 0.0, 250.0);
@@ -289,9 +289,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double preIndustrialTrade = 3.5 + 2.5 * Math.tanh(Math.max(0.0, tech - 1.80) * 1.50)
                 + 6.5 * Math.tanh(Math.max(0.0, tech - 2.10) * 2.00);
 
-        // Early Modern oceanic sail trade boom (VOC, East India, Atlantic triangular: T >= 2.25)
-        double oceanicSailActivation = Math.tanh(Math.max(0.0, tech - 2.20) * 3.00);
-        double oceanicSailBoom = oceanicSailActivation * 40.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 2.20);
+        // Early Modern oceanic sail trade boom (VOC, East India, Atlantic triangular: T >= 1.90)
+        double oceanicSailActivation = Math.tanh(Math.max(0.0, tech - 1.90) * 4.00);
+        double oceanicSailBoom = oceanicSailActivation * 42.0 * Math.tanh(Math.max(0.0, tech - 1.90) * 4.00);
 
         // First Globalization steam shipping & railway boom (post-1870: T >= 2.70): reaching ~227 in 1914
         double steamShippingBoom = 210.0 / (1.0 + Math.exp(-3.00 * (tech - 3.15)));
@@ -343,8 +343,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double clearingActivation = Math.tanh(Math.max(0.0, tech - 1.35) * 1.20);
         if (clearingActivation <= 0.0) return 99.0;
         double traditionalClearing = 22.0 * Math.tanh(Math.max(0.0, tech - 1.45) * 1.10)
-                + 13.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 2.00);
-        double industrialClearing = 28.0 / (1.0 + Math.exp(-2.80 * (tech - 3.10)));
+                + 14.0 * Math.tanh(Math.max(0.0, tech - 1.88) * 3.50);
+        double industrialClearing = 28.0 / (1.0 + Math.exp(-2.80 * (tech - 2.85)));
         double clearing = traditionalClearing + industrialClearing;
         return Math.clamp(99.0 - clearing, 30.0, 99.0);
     }
@@ -368,8 +368,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double courierActivation = Math.tanh(Math.max(0.0, tech - 1.40) * 3.50);
         double courierSpeed = 4.0 + 82.0 * courierActivation + 4.0 * Math.tanh(Math.max(0.0, tech - 2.00) * 2.0);
 
-        // Chappe optical semaphore telegraph (1792: T >= 2.25): +180 km/day in 1800 CE (T ~ 2.45)
-        double opticalTelegraph = 200.0 * Math.tanh(Math.max(0.0, tech - 2.25) * 3.00);
+        // Chappe optical semaphore telegraph (1792: T >= 1.92): +180 km/day in 1800 CE (T ~ 2.08)
+        double opticalTelegraph = 195.0 * Math.tanh(Math.max(0.0, tech - 1.92) * 5.00);
 
         // Standage (1998) electric telegraph & submarine cables (1844-1866, global network in 1914: strictly T >= 3.10)
         // Gated to prevent premature telegraph speed in pre-industrial epidemics (1347 CE Black Death)
@@ -387,14 +387,14 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         if (smeltActivation <= 0.0) return 0.0;
 
         // Malandra (1990) / USGS (2023): Antiquity (~1.6 kg) -> Medieval (~2.0-3.0 kg)
-        double preIndustrial = 1.60 + 1.45 * Math.tanh(Math.max(0.0, tech - 1.80) * 1.50);
+        double preIndustrial = 1.60 + 1.45 * Math.tanh(Math.max(0.0, tech - 1.60) * 2.00);
 
-        // Coke smelting & puddling (Darby 1709, Cort 1784: T >= 2.15): +8.0 kg by 1800 CE
-        double cokeActivation = Math.tanh(Math.max(0.0, tech - 2.15) * 3.00);
-        double cokePuddling = cokeActivation * 9.0 * Math.tanh(Math.max(0.0, tech - 2.15) * 2.00);
+        // Coke smelting & puddling (Darby 1709, Cort 1784: T >= 1.90): +8.5 kg by 1800 CE
+        double cokeActivation = Math.tanh(Math.max(0.0, tech - 1.90) * 4.00);
+        double cokePuddling = cokeActivation * 8.5 * Math.tanh(Math.max(0.0, tech - 1.90) * 4.00);
 
         // Industrial Bessemer steel & mass metallurgy (post-1860: T >= 2.70): reaching ~64 kg in 1914, ~210 kg modern
-        double industrialBessemer = 210.0 / (1.0 + Math.exp(-2.60 * (tech - 3.65)));
+        double industrialBessemer = 210.0 / (1.0 + Math.exp(-2.60 * (tech - 3.45)));
 
         return Math.clamp(smeltActivation * (preIndustrial + cokePuddling + industrialBessemer), 0.0, 350.0);
     }
@@ -404,12 +404,12 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * Emerges with early coal and expanding in the First Industrial Revolution (~14% in 1800) and dominant in 1914 (~78%).
      */
     public static double computeFossilSharePrimaryEnergy(double tech) {
-        double industrialActivation = Math.tanh(Math.max(0.0, tech - 2.30) * 4.00);
+        double industrialActivation = Math.tanh(Math.max(0.0, tech - 1.92) * 4.00);
         if (industrialActivation <= 0.0) return 0.0;
 
         // Smil (2017) / Ritchie (2020):
-        // First & Second Industrial Revolution transition: ramps smoothly to ~14% at T = 2.45 and ~78% at T = 3.25
-        double modernTransition = 85.0 / (1.0 + Math.exp(-3.80 * (tech - 2.75)));
+        // First & Second Industrial Revolution transition: ramps smoothly to ~14% at T = 2.08 and ~78% at T = 3.25
+        double modernTransition = 14.0 * Math.tanh(Math.max(0.0, tech - 1.92) * 5.0) + 72.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80)));
 
         return Math.clamp(industrialActivation * modernTransition, 0.0, 95.0);
     }
@@ -421,11 +421,11 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Harley (1988), Mohammed & Williamson (2004), UNCTAD (2024):
         // Archaic / Classical Mediterranean freight costs: ~1400-1420 (Index 1913 = 100)
         // Medieval oceanic improvement (compass, sternpost rudder, caravel: T ~ 2.05-2.20): drops to ~900-950 in 1347
-        // Early modern oceanic sailing ship boom (VOC fluyt, 1800 CE: T ~ 2.45): drops to ~230
-        // Steamships, iron hulls, and compound engines (1870-1914: T ~ 3.25): drops to ~48
+        // Early modern oceanic sailing ship boom (VOC fluyt, 1800 CE: T ~ 2.08): drops to ~230-250
+        // Steamships, iron hulls, and compound engines (1870-1914: T ~ 3.25): drops to ~48-56
         double classicalCost = 1415.0;
         double medievalReduction = 480.0 * Math.tanh(Math.max(0.0, tech - 1.85) * 2.50);
-        double oceanicReduction = 700.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 3.00);
+        double oceanicReduction = 820.0 * Math.tanh(Math.max(0.0, tech - 1.90) * 4.00);
         double steamReduction = 187.0 / (1.0 + Math.exp(-3.50 * (tech - 2.85)));
         double cost = classicalCost - medievalReduction - oceanicReduction - steamReduction;
 

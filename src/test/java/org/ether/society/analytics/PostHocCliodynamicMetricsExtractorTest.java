@@ -98,4 +98,40 @@ public class PostHocCliodynamicMetricsExtractorTest {
         double speed = PostHocCliodynamicMetricsExtractor.computeMetric(snap1914, "informationSpeed", 1914);
         assertTrue(speed >= 2.0e6 && speed <= 1.0e7, "Information speed in 1914 should be ~5.8e6 km/day but was " + speed);
     }
+
+    @Test
+    @DisplayName("Debug live urbanization rate from DemographicMetricsCalculator")
+    public void testLiveUrbanizationCalculation() {
+        org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
+        scenario.setName("Test 1914");
+        scenario.setStartDateYear(1914);
+        scenario.setEndDateYear(1915);
+        scenario.setInitialHumanCount(100_000_000L);
+        scenario.setInitialCapitalPerCapita(3500.0);
+        scenario.setH3Resolution(4);
+
+        org.ether.society.config.Configuration config = new org.ether.society.config.Configuration(
+                new org.ether.society.config.Configuration.WorldConfig(10, 10, 10, new org.ether.society.config.Configuration.GenerationParams(4, 1.0, 4, 1.0)),
+                new org.ether.society.config.Configuration.SimulationConfig(1000, 42, new int[]{1}),
+                new org.ether.society.config.Configuration.AgentsConfig(100, java.util.Collections.emptyMap()),
+                new org.ether.society.config.Configuration.ClimateConfig(0.01, 14.0, 0.05),
+                new org.ether.society.config.Configuration.ResourcesConfig(100.0, 50.0, 1.0)
+        );
+
+        org.ether.society.core.H3SimulationEngine engine = new org.ether.society.core.H3SimulationEngine(config);
+        java.util.List<org.ether.society.database.H3Cell> cells = new java.util.ArrayList<>();
+        org.ether.society.database.H3Cell c1 = new org.ether.society.database.H3Cell();
+        c1.setH3Index(0x841f985ffffffffL); // valid res 4
+        c1.setPopulation(100_000);
+        c1.setResourceCapital(350_000_000.0);
+        c1.setFoodResource(500_000.0);
+        c1.setLatitude(48.85);
+        c1.setLongitude(2.35);
+        cells.add(c1);
+
+        engine.initializeFromScenario(scenario, cells);
+        double urban = engine.getUrbanizationRate();
+        System.out.println("DEBUG: Urbanization rate = " + urban);
+        assertTrue(urban > 0.0, "Urbanization rate must be strictly > 0 for 100k agglomeration with 3500 kpc but was " + urban);
+    }
 }
