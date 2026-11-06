@@ -247,12 +247,12 @@
                                                 "unit":  "Percentage (%) of original post-glacial forest area remaining",
                                                 "description":  "Global forest biomass retention.",
                                                 "data":  {
-                                                             "-3000000":  0,
-                                                             "-100000":  0,
-                                                             "-300000":  0,
-                                                             "-20000":  0,
-                                                             "-1000000":  0,
-                                                             "-50000":  0
+                                                             "-3000000":  99,
+                                                             "-100000":  99,
+                                                             "-300000":  99,
+                                                             "-20000":  99,
+                                                             "-1000000":  99,
+                                                             "-50000":  99
                                                          }
                                             },
                       "informationSpeed":  {

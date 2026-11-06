@@ -144,7 +144,7 @@ public final class CulturalKnowledgeMetricsCalculator {
                 double powerW = wb.computeCellPowerWattsPerCapita(i);
 
                 // Scribal literacy (ancient administrative scribes, monasteries: 1-5%)
-                double scribalActivation = SmoothMath.sigmoid(cellKpc, 80.0, 20.0);
+                double scribalActivation = SmoothMath.sigmoid(cellKpc, 15.0, 6.0);
                 double scribalLit = 5.0 * scribalActivation;
 
                 // Vernacular literacy (printing press, urban commerce: 10-30%)
@@ -180,7 +180,7 @@ public final class CulturalKnowledgeMetricsCalculator {
             double cellKpc = cellCapital / p;
             double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(c);
 
-            double scribalActivation = SmoothMath.sigmoid(cellKpc, 80.0, 20.0);
+            double scribalActivation = SmoothMath.sigmoid(cellKpc, 15.0, 6.0);
             double scribalLit = 5.0 * scribalActivation;
 
             double vernacularActivation = SmoothMath.sigmoid(cellKpc, 400.0, 100.0);
@@ -219,3 +219,4 @@ public final class CulturalKnowledgeMetricsCalculator {
         return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeEmergentTechnologyLevel(powerWatts, capPerCapita);
     }
 }
+

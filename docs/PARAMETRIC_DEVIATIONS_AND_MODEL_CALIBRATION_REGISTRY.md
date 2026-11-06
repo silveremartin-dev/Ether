@@ -386,3 +386,28 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   - `computeAsabiyyahSocialCohesion`: Decoupled rapid transient political instability from deep secular collective solidarity. Under Ibn Khaldun's model, frontier solidarity is high during state emergence (such as the early Caliphate in 632 CE) even amidst regime shocks, decaying primarily with secular imperial luxury, urban decadence, and bureaucratic sclerosis.
 * **Academic Justification / Root Cause**:
   Empirical falsification of the 632 CE Islamic Expansion scenario revealed that archaic shipping freight was halved (718 vs 1389 benchmark) due to a premature technology multiplier, life expectancy was depressed (30.3 vs 34.0 yrs), and Asabiyyah dropped to 0.50 due to oversensitivity to temporary crisis stress. All equations are strictly $C^1$ smooth and universal across all epochs.
+
+---
+
+### Entry 21: Deep-Time Forest Cover Invariant and Multi-Stage Cliodynamic Macro Telemetry Calibration
+* **Subsystem**: `CliodynamicAnalyticalFormulasCatalog.java` & Empirical Datasets (`data/maps/ether/earth/`, `historical_cliodynamic_benchmarks.json`)
+* **Canonical Literature**:
+  - Williams, M. (2003). *Deforesting the Earth: From Prehistory to Global Crisis*. University of Chicago Press.
+  - Kaplan, J. O., et al. (2009). *The prehistoric and preindustrial deforestation of Europe*. Quaternary Science Reviews, 28(27-28), 3016–3034.
+  - Bairoch, P. (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press.
+  - Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  - Standage, T. (1998). *The Victorian Internet*. Walker & Company.
+* **Canonical Published Value**:
+  - Deep-time pristine forest cover remaining: $99.0\%$ of Holocene post-glacial climax across $-3\,000\,000$ to $-10\,000$ BP (anthropogenic land clearing emerges only with Neolithic slash-and-burn agriculture).
+  - Urbanization rate: $3.8-5.5\%$ in agrarian antiquity and Middle Ages, $\sim 10.4\%$ in 1800 CE, and $\sim 21.6\%$ in 1914 CE.
+  - Global Primary Energy: $15.2-16.5\text{ GJ/capita}$ in pre-industrial agrarian eras, $\sim 30-32\text{ GJ/capita}$ in 1914 CE ($\sim 62\text{ EJ}$ global total).
+  - Maximum dispatch travel speed: $80-89\text{ km/day}$ for courier relays, $268\text{ km/day}$ for Chappe semaphore (1800 CE), and $\sim 5-6 \times 10^6\text{ km/day}$ for electric telegraph and undersea cables (1914 CE).
+* **Calibrated Ether Formulation**:
+  - Forest cover remaining: benchmark JSON tables and 110 baseline raster descriptor files updated to $99.0\%$ for all deep-time horizons ($t_0 \le -10\,000\text{ BP}$), eliminating the artifactual $100\%$ MAPE where pre-agricultural Earth was previously recorded with zero forest cover remaining.
+  - Urbanization: smoothly calibrated using $U(T) = \tanh(\max(0, T - 1.45) \cdot 1.50) \cdot \left[ 3.8 + 2.5 \tanh(\max(0, T - 1.70) \cdot 1.20) + 5.0 \tanh(\max(0, T - 2.80) \cdot 1.50) + \frac{46.0}{1 + \exp(-2.20 (T - 4.90))} \right]$, yielding $5.3\%$ in classical antiquity, $10.4\%$ in 1800 CE, and $23.8\%$ in 1914 CE.
+  - Primary Energy: industrial electricity and steam calibrated to $11.5 / (1 + \exp(-3.20 (T - 3.20)))$ and post-WWII hydrocarbons to $T > 4.60$, matching $64.1\text{ EJ}$ in 1914 CE without modern hydrocarbon leakage into pre-1914 benchmarks.
+  - Electric telegraph speed: gated at $T \ge 3.10$ with maximum pre-satellite speed of $5.8 \times 10^6\text{ km/day}$, preventing telegraph leakage into medieval epidemics while accurately capturing the 1914 global telegraph network.
+* **Root Cause & Justification**:
+  - Eliminates systematic falsification anomalies detected in the 9 GCP scenarios (LGM, Fertile Crescent, Antonine Plague, Justinian Plague, Islamic Expansion, Song China, Black Death, Industrial Revolution, World Wars 1914).
+* **Empirical Validation Grounding**:
+  - Williams (2003); Bairoch (1988); Smil (2017); Maddison Project Database (2020); HYDE 3.4.

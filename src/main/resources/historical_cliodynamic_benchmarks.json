@@ -1,4 +1,4 @@
-{
+﻿{
   "metadata" : {
     "title" : "Ether Macro-Historical & Cliodynamic 27-Variable Benchmark Suite",
     "version" : "4.1.0",
@@ -657,7 +657,7 @@
     },
     "temperatureAnomaly" : {
       "name" : "Global Surface Temperature Anomaly",
-      "unit" : "Degrees Celsius (Â°C) relative to 1850-1900 pre-industrial baseline",
+      "unit" : "Degrees Celsius (Ã‚Â°C) relative to 1850-1900 pre-industrial baseline",
       "description" : "Global mean surface temperature deviation.",
       "source" : "PAGES 2k Consortium, HadCRUT5, IPCC AR6 SSP2-4.5 (2021)",
       "window" : "DEEP_HORIZON",
@@ -777,13 +777,13 @@
       "source" : "HYDE 3.2, FAO Global Forest Resources Assessment",
       "window" : "DEEP_HORIZON",
       "data" : {
-        "-3000000" : 0.0,
-        "-1000000" : 0.0,
-        "-300000" : 0.0,
-        "-100000" : 0.0,
-        "-50000" : 0.0,
-        "-20000" : 0.0,
-        "-10000" : 0.0,
+        "-3000000" : 99.0,
+        "-1000000" : 99.0,
+        "-300000" : 99.0,
+        "-100000" : 99.0,
+        "-50000" : 99.0,
+        "-20000" : 99.0,
+        "-10000" : 99.0,
         "-8000" : 98.8,
         "-5000" : 95.0,
         "-1279" : 89.0,
@@ -874,9 +874,9 @@
       }
     },
     "milankovitchInsolation" : {
-      "name" : "Milankovitch Summer Insolation 65Â°N",
-      "unit" : "Watts per Square Meter (W/mÂ²)",
-      "description" : "Mid-June solar radiative forcing at 65Â°N driving Quaternary glacial-interglacial cycles.",
+      "name" : "Milankovitch Summer Insolation 65Ã‚Â°N",
+      "unit" : "Watts per Square Meter (W/mÃ‚Â²)",
+      "description" : "Mid-June solar radiative forcing at 65Ã‚Â°N driving Quaternary glacial-interglacial cycles.",
       "source" : "Laskar et al. (2004), Berger (1978)",
       "window" : "DEEP_HORIZON",
       "data" : {
@@ -1095,3 +1095,4 @@
     }
   }
 }
+
