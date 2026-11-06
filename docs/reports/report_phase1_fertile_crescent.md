@@ -2,11 +2,11 @@
 
 **Scenario**: `Fertile Crescent & Neolithic Agriculture (-8000 BCE)`
 
-**Simulation Run Identifier**: `RUN-FERTILE-CRESCENT---NEOLITHIC-AGRICULTURE---8000-BCE--2738`
+**Simulation Run Identifier**: `RUN-FERTILE-CRESCENT---NEOLITHIC-AGRICULTURE---8000-BCE--3138`
 
 **Spatial Domain**: H3 Resolution 7 (Regional Window)
 
-**Execution Duration**: 409.6 s
+**Execution Duration**: 379.7 s
 
 # 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT
 
@@ -16,11 +16,11 @@
 
 | # | Scenario | Fidelity Score | Global MAPE | R² Goodness of Fit | First Rupture (T_div) | Diagnostic Status |
 |---|---|---|---|---|---|---|
-| 🥇 1 | **Fertile Crescent & Neolithic Agriculture (-8000 BCE)** | **81.8%** | 18.20% | 0.818 | 7980 CE | 🟡 Moderate Drift |
+| 🥇 1 | **Fertile Crescent & Neolithic Agriculture (-8000 BCE)** | **81.7%** | 18.32% | 0.817 | 7980 CE | 🟡 Moderate Drift |
 
 ## 📊 3. Deep Diagnostic Analysis by Scenario
 
-### 🔎 Scenario: `Fertile Crescent & Neolithic Agriculture (-8000 BCE)` (`RUN-FERTILE-CRESCENT---NEOLITHIC-AGRICULTURE---8000-BCE--2738`)
+### 🔎 Scenario: `Fertile Crescent & Neolithic Agriculture (-8000 BCE)` (`RUN-FERTILE-CRESCENT---NEOLITHIC-AGRICULTURE---8000-BCE--3138`)
 
 | Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |
 |---|---|---|---|---|---|---|
@@ -29,7 +29,7 @@
 | ⚡ Primary Energy Consumption (primaryEnergy) | 46.61% | 🔴 Severe drift | 8000 BCE | 48.8% (7980 BCE) | ➖ Stable Offset (Uniform) | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 0.00% | 🟢 Calibrated | — | 0.0% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `SettlementEngine` |
 | 🌿 Atmospheric CO2 Concentration (co2Concentration) | 0.91% | 🟢 Calibrated | — | 0.9% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `EcologyEngine (Biomass)` |
-| 📖 Global Literacy Rate (literacyRate) | 12.03% | 🟡 Moderate drift | 8000 BCE | 12.1% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
+| 📖 Global Literacy Rate (literacyRate) | 0.00% | 🟢 Calibrated | — | 0.0% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `CulturalSociologyEngine` |
 | 🪙 Currency Debasement / Coinage Purity (currencyDebasement) | 0.00% | 🟢 Calibrated | — | 0.0% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `InstitutionalEngine` |
 | 👑 Elite Overproduction Index (eliteOverproductionIndex) | 0.00% | 🟢 Calibrated | — | 0.0% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | 🍞 Real Unskilled Wage (realUnskilledWage) | 2.32% | 🟢 Calibrated | — | 2.3% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
@@ -41,7 +41,7 @@
 | 🚢 Global Trade Volume (globalTradeVolume) | 0.00% | 🟢 Calibrated | — | 0.0% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | 🌡️ Temperature Anomaly (temperatureAnomaly) | 0.46% | 🟢 Calibrated | — | 0.5% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | 🌱 Topsoil Erosion Loss (soilErosionRate) | 9.48% | 🟢 Calibrated | — | 9.6% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| 🌾 Agricultural EROEI (agriculturalEroei) | 100.00% | 🔴 Severe drift | 8000 BCE | 100.0% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| 🌾 Agricultural EROEI (agriculturalEroei) | 95.62% | 🔴 Severe drift | 8000 BCE | 95.8% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | 🌲 Forest Cover Remaining (deforestationRate) | 0.20% | 🟢 Calibrated | — | 0.2% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ⚡ Information Travel Speed (informationSpeed) | 0.02% | 🟢 Calibrated | — | 0.1% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | 🦣 Megafauna Abundance Index (megafaunaIndex) | 0.98% | 🟢 Calibrated | — | 1.0% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
@@ -59,9 +59,9 @@
 | 👥 Global Demographic Population (worldPopulation) | 21 | 0.07 | 0.06 ± 0.00 | [0.06 ; 0.06] | 0.06 [0.06 - 0.06] | 2.635 | *** (p < 0.001) |
 | 💰 Gross World Product (grossWorldProduct) | 0 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
 | ⚡ Primary Energy Consumption (primaryEnergy) | 21 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 39.786 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (urbanizationRate) | 21 | 0.00 | -0.00 ± 0.00 | [-0.00 ; -0.00] | -0.00 [-0.00 - -0.00] | 0.000 | ns |
+| 🏙️ Urbanization Rate (urbanizationRate) | 21 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
 | 🌿 Atmospheric CO2 Concentration (co2Concentration) | 21 | 262.38 | 260.00 ± 0.00 | [260.00 ; 260.00] | 260.00 [260.00 - 260.00] | 619.468 | *** (p < 0.001) |
-| 📖 Global Literacy Rate (literacyRate) | 21 | 0.00 | 12.03 ± 0.02 | [12.02 ; 12.04] | 12.02 [12.02 - 12.04] | 851.724 | *** (p < 0.001) |
+| 📖 Global Literacy Rate (literacyRate) | 21 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
 | 🪙 Currency Debasement / Coinage Purity (currencyDebasement) | 21 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
 | 👑 Elite Overproduction Index (eliteOverproductionIndex) | 21 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
 | 🍞 Real Unskilled Wage (realUnskilledWage) | 21 | 98.00 | 100.27 ± 0.00 | [100.27 ; 100.27] | 100.27 [100.27 - 100.28] | 953.271 | *** (p < 0.001) |
@@ -73,7 +73,7 @@
 | 🚢 Global Trade Volume (globalTradeVolume) | 21 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
 | 🌡️ Temperature Anomaly (temperatureAnomaly) | 21 | -0.25 | -0.27 ± 0.00 | [-0.27 ; -0.27] | -0.27 [-0.27 - -0.27] | 157.783 | *** (p < 0.001) |
 | 🌱 Topsoil Erosion Loss (soilErosionRate) | 21 | 0.50 | 0.03 ± 0.00 | [0.03 ; 0.03] | 0.03 [0.03 - 0.03] | 285.015 | *** (p < 0.001) |
-| 🌾 Agricultural EROEI (agriculturalEroei) | 21 | 14.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 131313.914 | *** (p < 0.001) |
+| 🌾 Agricultural EROEI (agriculturalEroei) | 21 | 14.00 | 0.61 ± 0.02 | [0.61 ; 0.62] | 0.61 [0.60 - 0.63] | 1165.905 | *** (p < 0.001) |
 | 🌲 Forest Cover Remaining (deforestationRate) | 21 | 98.80 | 99.00 ± 0.00 | [99.00 ; 99.00] | 99.00 [99.00 - 99.00] | 243.467 | *** (p < 0.001) |
 | ⚡ Information Travel Speed (informationSpeed) | 21 | 4.00 | 4.00 ± 0.00 | [4.00 ; 4.00] | 4.00 [4.00 - 4.00] | 1.504 | *** (p < 0.001) |
 | 🦣 Megafauna Abundance Index (megafaunaIndex) | 21 | 18.39 | 18.21 ± 0.01 | [18.21 ; 18.21] | 18.21 [18.21 - 18.22] | 34.372 | *** (p < 0.001) |

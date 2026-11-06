@@ -29,13 +29,13 @@ public final class H3CellPhysicsAndStateHelper {
 
     /**
      * Garrett (2011, <i>Climatic Change</i> 104:437) thermodynamic maintenance dissipation constant
-     * \(\lambda_{\text{maint}} = 8.0\,\text{W}\) per physical capital unit, linking active wealth stock
+     * \(\lambda_{\text{maint}} = 0.15\,\text{W}\) per kg of physical capital stock, linking active wealth stock
      * to continuous exosomatic power dissipation.
      */
-    public static final double GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT = 8.0;
+    public static final double GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT = 0.15;
 
-    /** Reference somatic tool capital normalization \(k_0 = 5.0\) physical units/individual. */
-    public static final double REFERENCE_SOMATIC_CAPITAL_PER_CAPITA = 5.0;
+    /** Reference somatic tool capital normalization \(k_0 = 3.0\) physical units/individual. */
+    public static final double REFERENCE_SOMATIC_CAPITAL_PER_CAPITA = 3.0;
 
     private H3CellPhysicsAndStateHelper() {
         // Static helper utility class
@@ -72,9 +72,10 @@ public final class H3CellPhysicsAndStateHelper {
                 / GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT;
         double kActive = SmoothMath.harmonicCoupling(kGross, kEnergized);
 
-        double raw = 0.30
-                + 1.25 * Math.log10(Math.max(1.0, metabolicRatio))
-                + 0.45 * Math.log10(1.0 + kActive / REFERENCE_SOMATIC_CAPITAL_PER_CAPITA);
+        double exosomaticPowerAboveHearth = SmoothMath.softplus(pEff - 348.0, 0.2);
+        double raw = 0.88
+                + 0.39 * Math.log10(1.0 + kActive / REFERENCE_SOMATIC_CAPITAL_PER_CAPITA)
+                + 2.85 * Math.log10(1.0 + exosomaticPowerAboveHearth / 420.0);
         return SmoothMath.smoothClamp(raw, 0.0, 10.0, 20.0);
     }
 

@@ -132,7 +132,7 @@
     "techPreset":  "AUTO_FROM_YEAR",
     "initialHumanCount":  945000000,
     "initialTechLevel":  3.65,
-    "initialCapitalPerCapita":  900,
+    "initialCapitalPerCapita":  1100,
     "initialEnergyPerCapita":  1500,
     "initialFoodReserveMonths":  6.0,
     "initialInformationPerCapita":  15000.0,

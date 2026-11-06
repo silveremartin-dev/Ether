@@ -119,7 +119,8 @@ public final class PostHocCliodynamicMetricsExtractor {
                 return ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year);
             }
             case "zeroContainmentScore" -> {
-                return computeZeroContainmentScore(year);
+                double trade = computeGlobalTradeVolume(tech);
+                return CliodynamicAnalyticalFormulasCatalog.computeZeroContainmentScoreFromTrade(trade);
             }
             case "lifeExpectancyAtBirth" -> {
                 return computeLifeExpectancy(tech, food);

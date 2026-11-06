@@ -185,9 +185,10 @@ public class MetricRegistry {
 
         double insolation = org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(currentYear);
         double megafauna = org.ether.society.engines.tier2.theories.ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(currentYear, pop / 1e6, 0.2);
+        double containment = org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeZeroContainmentScoreFromTrade(trade);
         map.put("milankovitchInsolation", insolation);
         map.put("megafaunaIndex", megafauna);
-        map.put("zeroContainmentScore", 1.0);
+        map.put("zeroContainmentScore", containment);
 
         double lifeExp = engine.getCurrentLifeExpectancy();
         map.put("lifeExpectancy", lifeExp);

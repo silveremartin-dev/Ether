@@ -196,15 +196,16 @@ public final class ThermodynamicMetricsCalculator {
         long pop = engine.getTotalPopulation();
         if (pop <= 0) return 0.0;
         double kpc = aggregator.getBuiltCapitalTotal() / pop;
-        // Continuous biophysical activation of agriculture (hoes/granaries/plows, kpc >= 20 kg/capita)
-        double agActivation = Math.tanh(Math.max(0.0, kpc - 20.0) / 30.0);
+        // Continuous biophysical activation of agriculture (sickles/granaries/plows, kpc >= 8 kg/capita; Paleolithic foragers at kpc <= 5 have 0.0)
+        double agActivation = Math.tanh(Math.max(0.0, kpc - 8.0) / 4.0);
         if (agActivation <= 0.0) return 0.0;
         // Pre-industrial draft animal traction equilibrium: ~4.2 - 4.8 (Smil 2008, Giampietro et al. 2013)
         double traditionalEquilibrium = 4.2 + 0.6 * Math.tanh(kpc / 350.0);
-        // Early Neolithic flood-recession horticulture bonus (~14 at kpc ~ 60-120; Leach 1976, Hall & Klitgaard 2012):
-        double neolithicBonus = 9.8 * Math.exp(-Math.pow(kpc - 75.0, 2) / 1500.0);
-        // Modern mechanization and Green Revolution expansion (Smil 2017): ~10-15
-        double greenRevolutionBoom = 10.2 * org.ether.society.core.math.SmoothMath.sigmoid(kpc, 2500.0, 600.0);
+        // Early Neolithic flood-recession horticulture bonus (~14.0 at kpc ~ 15-35; Leach 1976, Hall & Klitgaard 2012):
+        double neolithicBonus = 9.9 * Math.exp(-Math.pow(kpc - 20.0, 2) / 900.0);
+        // Modern mechanization and Green Revolution expansion (Smil 2017): ~10.3 at kpc ~ 3500 (1914), ~14 modern
+        double greenRevolutionBoom = 6.0 * org.ether.society.core.math.SmoothMath.sigmoid(kpc, 2200.0, 600.0)
+                + 4.5 * org.ether.society.core.math.SmoothMath.sigmoid(kpc, 12000.0, 3000.0);
         double eroei = traditionalEquilibrium + neolithicBonus + greenRevolutionBoom;
         return Math.clamp(agActivation * eroei, 0.0, 25.0);
     }
