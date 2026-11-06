@@ -246,10 +246,12 @@ public class StatisticsKernel {
                 }
             }
         }
-        double capitalGDP = totalCapitalKg / 3.5;
-        double subsistenceFloor = totalPop * 400.0;
-        // Smooth C^infty blend above metabolic subsistence floor
-        return (float) SmoothMath.softmax(subsistenceFloor, subsistenceFloor + capitalGDP * 0.85, 0.01);
+        // Maddison Project Database (2020) & Bolt & van Zanden (2020):
+        // Deep-time physiological & subsistence baseline is ~105 1990 International Dollars per capita.
+        double subsistenceFloor = totalPop * 105.0;
+        // Solow-Swan / Cobb-Douglas capital contribution (capital-output ratio ~3.5 to 4.0 in industrial economies)
+        double capitalGDP = (totalCapitalKg > 0.0) ? (totalCapitalKg * 0.02) : 0.0;
+        return (float) (subsistenceFloor + capitalGDP);
     }
 
     /**
@@ -306,10 +308,13 @@ public class StatisticsKernel {
             double kpc = (cap != null && cap[i] > 0.0f) ? (cap[i] / p) : 0.0;
             double w = (water != null && water[i] > 0.0f) ? water[i] : 10.0;
             double waterFactor = 0.75 + 0.25 * (w / (10.0 + w));
-            // Preston (1975) concave log-capital health curve: 28 yrs Paleolithic baseline -> 82 yrs high sanitary capital
-            double prestonYears = 28.0 + 54.0 * Math.tanh(Math.log1p(kpc / 25.0) / 4.2);
-            double stored = (cellLifespan != null && cellLifespan[i] > 10.0f) ? cellLifespan[i] : prestonYears;
-            double effectiveCellE0 = 0.5 * stored + 0.5 * prestonYears * waterFactor;
+            // Preston (1975) & Omran (1971) epidemiological transition:
+            // Pre-industrial baseline: 27.5 yrs (foraging) to 33.5 yrs (classical agrarian granaries/stone shelter)
+            // Sanitary & modern epidemiological transition (+48 yrs) emerges only with clean municipal water grids (k_pc >= 1800)
+            double agrarianMod = 6.0 * Math.tanh(kpc / 350.0);
+            double sanitaryMod = 48.0 * SmoothMath.sigmoid(kpc, 1800.0, 450.0);
+            double prestonYears = 27.5 + agrarianMod + sanitaryMod;
+            double effectiveCellE0 = prestonYears * waterFactor;
             weightedLifespan += p * effectiveCellE0;
             totalPop += p;
         }

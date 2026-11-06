@@ -143,26 +143,26 @@ public final class CulturalKnowledgeMetricsCalculator {
                 float cellKpc = cellCapital / p;
                 double powerW = wb.computeCellPowerWattsPerCapita(i);
 
-                // Scribal literacy (ancient administrative scribes, monasteries: 1-5%)
-                double scribalActivation = SmoothMath.sigmoid(cellKpc, 15.0, 6.0);
-                double scribalLit = 5.0 * scribalActivation;
+                // Scribal literacy (ancient administrative scribes, imperial/monastic codices: 1-3.5% Buringh & van Zanden 2009)
+                double scribalActivation = SmoothMath.sigmoid(cellKpc, 30.0, 10.0);
+                double scribalLit = 3.25 * scribalActivation;
 
-                // Vernacular literacy (printing press, urban commerce: 10-30%)
-                double vernacularActivation = SmoothMath.sigmoid(cellKpc, 400.0, 100.0);
-                double vernacularLit = 30.0 * vernacularActivation;
+                // Vernacular literacy (Gutenberg movable type printing press, urban commercial bookkeeping: 10-30%)
+                double vernacularActivation = SmoothMath.sigmoid(cellKpc, 950.0, 200.0);
+                double vernacularLit = 28.0 * vernacularActivation;
 
                 // Mass universal primary education (industrialization, power grids: up to 99%)
                 double massEduActivation = SmoothMath.harmonicCoupling(
-                        SmoothMath.sigmoid(cellKpc, 2000.0, 400.0),
+                        SmoothMath.sigmoid(cellKpc, 2500.0, 500.0),
                         SmoothMath.sigmoid(powerW, 1000.0, 250.0));
                 double massEduLit = 99.0 * massEduActivation;
 
-                double cellLit = SmoothMath.softmax(scribalLit, SmoothMath.softmax(vernacularLit, massEduLit, 1.0), 1.0);
-                cellLit = SmoothMath.smoothClamp(cellLit, 0.0, 99.5, 0.1);
+                double cellLit = SmoothMath.softmax(scribalLit, SmoothMath.softmax(vernacularLit, massEduLit, 5.0), 5.0);
+                cellLit = Math.max(0.0, Math.min(99.5, cellLit));
                 weightedLit += p * cellLit;
             }
             if (totalPop > 0.0) {
-                return SmoothMath.smoothClamp(weightedLit / totalPop, 0.0, 99.5, 0.1);
+                return Math.max(0.0, Math.min(99.5, weightedLit / totalPop));
             }
         }
 
@@ -180,22 +180,22 @@ public final class CulturalKnowledgeMetricsCalculator {
             double cellKpc = cellCapital / p;
             double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(c);
 
-            double scribalActivation = SmoothMath.sigmoid(cellKpc, 15.0, 6.0);
-            double scribalLit = 5.0 * scribalActivation;
+            double scribalActivation = SmoothMath.sigmoid(cellKpc, 30.0, 10.0);
+            double scribalLit = 3.25 * scribalActivation;
 
-            double vernacularActivation = SmoothMath.sigmoid(cellKpc, 400.0, 100.0);
-            double vernacularLit = 30.0 * vernacularActivation;
+            double vernacularActivation = SmoothMath.sigmoid(cellKpc, 950.0, 200.0);
+            double vernacularLit = 28.0 * vernacularActivation;
 
             double massEduActivation = SmoothMath.harmonicCoupling(
-                    SmoothMath.sigmoid(cellKpc, 2000.0, 400.0),
+                    SmoothMath.sigmoid(cellKpc, 2500.0, 500.0),
                     SmoothMath.sigmoid(powerW, 1000.0, 250.0));
             double massEduLit = 99.0 * massEduActivation;
 
-            double cellLit = SmoothMath.softmax(scribalLit, SmoothMath.softmax(vernacularLit, massEduLit, 1.0), 1.0);
-            cellLit = SmoothMath.smoothClamp(cellLit, 0.0, 99.5, 0.1);
+            double cellLit = SmoothMath.softmax(scribalLit, SmoothMath.softmax(vernacularLit, massEduLit, 5.0), 5.0);
+            cellLit = Math.max(0.0, Math.min(99.5, cellLit));
             weightedLit += p * cellLit;
         }
-        return totalPop > 0 ? SmoothMath.smoothClamp(weightedLit / totalPop, 0.0, 99.5, 0.1) : 0.0;
+        return totalPop > 0 ? Math.max(0.0, Math.min(99.5, weightedLit / totalPop)) : 0.0;
     }
 
     /**

@@ -256,12 +256,16 @@ public final class DemographicMetricsCalculator {
                 float kpc = cellCap / p;
                 double powerW = wb.computeCellPowerWattsPerCapita(i);
 
+                // Urban nucleation: Bairoch (1988) defines urban settlements at >= 5,000 nucleated inhabitants.
+                // Multi-scale resolution coupling: considers absolute cell agglomeration (p >= 5,000) and local areal density.
+                double agglomerationFactor = SmoothMath.sigmoid(p, 5000.0, 1500.0);
                 double density = p / cellAreaKm2;
-                double nucleationFactor = SmoothMath.sigmoid(density, 30.0, 10.0);
+                double densityFactor = SmoothMath.sigmoid(density, 12.0, 4.0);
+                double nucleationFactor = Math.max(agglomerationFactor, densityFactor);
 
-                // Agrarian urbanization: non-farming artisans supported by agricultural surplus (Bairoch 1988)
+                // Agrarian urbanization: non-farming artisans supported by agricultural surplus (Bairoch 1988, Allen 2000)
                 double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
-                double agrarianUrbanShare = 0.12 * capAgrarianActivation * nucleationFactor;
+                double agrarianUrbanShare = 0.085 * capAgrarianActivation * nucleationFactor;
 
                 // Industrial urbanization: powered by mechanical energy grids & factory capital (de Vries 1984)
                 double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 800.0, 200.0);
@@ -269,12 +273,12 @@ public final class DemographicMetricsCalculator {
                 double industrialUrbanShare = 0.78 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
 
                 double cellUrbanFraction = SmoothMath.smoothClamp(
-                        SmoothMath.softmax(agrarianUrbanShare, industrialUrbanShare, 0.02),
-                        0.0, 0.92, 0.01);
+                        SmoothMath.softmax(agrarianUrbanShare, industrialUrbanShare, 50.0),
+                        0.0, 0.92, 50.0);
                 urbanPop += p * cellUrbanFraction;
             }
             if (totalPop > 0.0) {
-                return SmoothMath.smoothClamp((urbanPop / totalPop) * 100.0, 0.0, 95.0, 0.1);
+                return Math.max(0.0, Math.min(95.0, (urbanPop / totalPop) * 100.0));
             }
         }
 
@@ -291,10 +295,12 @@ public final class DemographicMetricsCalculator {
             double kpc = c.getResourceCapitalOr(0.0) / p;
             double cellArea = Math.max(1.0, c.getCellAreaKm2());
             double density = p / cellArea;
-            double nucleationFactor = SmoothMath.sigmoid(density, 30.0, 10.0);
+            double agglomerationFactor = SmoothMath.sigmoid(p, 5000.0, 1500.0);
+            double densityFactor = SmoothMath.sigmoid(density, 12.0, 4.0);
+            double nucleationFactor = Math.max(agglomerationFactor, densityFactor);
 
             double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
-            double agrarianUrbanShare = 0.12 * capAgrarianActivation * nucleationFactor;
+            double agrarianUrbanShare = 0.085 * capAgrarianActivation * nucleationFactor;
 
             double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(c);
             double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 800.0, 200.0);
@@ -302,10 +308,10 @@ public final class DemographicMetricsCalculator {
             double industrialUrbanShare = 0.78 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
 
             double cellUrbanFraction = SmoothMath.smoothClamp(
-                    SmoothMath.softmax(agrarianUrbanShare, industrialUrbanShare, 0.02),
-                    0.0, 0.92, 0.01);
+                    SmoothMath.softmax(agrarianUrbanShare, industrialUrbanShare, 50.0),
+                    0.0, 0.92, 50.0);
             urbanPop += p * cellUrbanFraction;
         }
-        return totalPop > 0 ? SmoothMath.smoothClamp((urbanPop / totalPop) * 100.0, 0.0, 95.0, 0.1) : 0.0;
+        return totalPop > 0 ? Math.max(0.0, Math.min(95.0, (urbanPop / totalPop) * 100.0)) : 0.0;
     }
 }
