@@ -254,7 +254,8 @@ final class GroundTruthAuditReportBuilder {
             double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue("worldPopulation", firstYear, method);
             if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
                 double globalPop = globalPopM * 1_000_000.0;
-                if (initialSimPop > 0 && initialSimPop < globalPop * 0.35) {
+                // For regional windows (or when initial simulation population is a strict subset of global ecumene)
+                if (initialSimPop > 0 && initialSimPop < globalPop * 0.95) {
                     return (double) initialSimPop / globalPop;
                 }
             }

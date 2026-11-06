@@ -254,7 +254,7 @@ public class StatisticsKernel {
         double meanKpc = Math.max(0.0, totalCapitalKg / totalPop);
         double perCapitaGwp = 102.0
                 + 0.045 * meanKpc
-                + 0.36 * meanKpc * SmoothMath.sigmoid(meanKpc, 1200.0, 210.0);
+                + 0.36 * meanKpc * SmoothMath.sigmoid(meanKpc, 2800.0, 400.0);
         return (float) (totalPop * perCapitaGwp);
     }
 

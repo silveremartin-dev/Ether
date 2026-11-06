@@ -276,10 +276,10 @@ public class WorldBuffer {
         double draftW = 25.0 * Math.tanh(SmoothMath.softplus(kpc - 150.0, 0.05) / 250.0);
         // 3. Waterwheels, windmills, sail & proto-industrial metallurgical furnaces (activates smoothly above kpc ~ 520 kg/cap, up to +220 W/cap)
         double millAndCharcoalW = 220.0 * Math.tanh(SmoothMath.softplus(kpc - 520.0, 0.05) / 420.0);
-        // 4. Coal/steam & early internal combustion prime movers (activates smoothly above kpc ~ 1000 kg/cap, up to +600 W/cap)
-        double steamCoalW = 600.0 * Math.tanh(SmoothMath.softplus(kpc - 1000.0, 0.02) / 1800.0);
-        // 5. Modern electric/hydrocarbon/nuclear/solar grid (activates smoothly above kpc ~ 4000 kg/cap, up to +1350 W/cap)
-        double modernGridW = 1350.0 * Math.tanh(SmoothMath.softplus(kpc - 4000.0, 0.01) / 10000.0);
+        // 4. Coal/steam & early internal combustion prime movers (activates smoothly above kpc ~ 2500 kg/cap, up to +600 W/cap)
+        double steamCoalW = 600.0 * Math.tanh(SmoothMath.softplus(kpc - 2500.0, 0.02) / 2500.0);
+        // 5. Modern electric/hydrocarbon/nuclear/solar grid (activates smoothly above kpc ~ 5000 kg/cap, up to +1350 W/cap)
+        double modernGridW = 1350.0 * Math.tanh(SmoothMath.softplus(kpc - 5000.0, 0.01) / 10000.0);
         return (float) (basalW + 35.0 + woodThermalW + draftW + millAndCharcoalW + steamCoalW + modernGridW);
     }
 

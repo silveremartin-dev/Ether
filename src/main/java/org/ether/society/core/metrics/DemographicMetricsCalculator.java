@@ -265,7 +265,7 @@ public final class DemographicMetricsCalculator {
 
                 // Agrarian urbanization: non-farming artisans supported by agricultural surplus (Bairoch 1988, Allen 2000)
                 double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
-                double agrarianUrbanShare = 0.085 * capAgrarianActivation * nucleationFactor;
+                double agrarianUrbanShare = 0.048 * capAgrarianActivation * nucleationFactor;
 
                 // Industrial urbanization: powered by mechanical energy grids & factory capital (de Vries 1984)
                 double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 800.0, 200.0);

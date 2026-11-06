@@ -149,7 +149,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return precious metal purity percentage in [0.0, 100.0]
      */
     public static double computeCurrencyDebasement(double tech, double stability) {
-        double mintingActivation = Math.tanh(Math.max(0.0, tech - 1.70) * 3.50);
+        double mintingActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 3.50);
         if (mintingActivation <= 0.0) return 0.0;
 
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
@@ -160,8 +160,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Stabilizes at ~50-56% in early modern/industrial bimetallic standards.
         double classicalPurity = 82.0 - 42.0 * Math.pow(stress, 1.40);
         double modernPurity = 56.0 - 8.0 * (stress - 0.40);
-        double purity = (tech > 2.30)
-                ? SmoothMath.sigmoid(tech, 2.50, 0.20) * modernPurity + (1.0 - SmoothMath.sigmoid(tech, 2.50, 0.20)) * classicalPurity
+        double purity = (tech > 2.50)
+                ? SmoothMath.sigmoid(tech, 2.70, 0.20) * modernPurity + (1.0 - SmoothMath.sigmoid(tech, 2.70, 0.20)) * classicalPurity
                 : classicalPurity;
         return Math.clamp(mintingActivation * purity, 0.0, 100.0);
     }
@@ -174,7 +174,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return dimensionless elite overproduction ratio in [0.0, 5.0]
      */
     public static double computeEliteOverproductionIndex(double tech, double stability) {
-        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.45) * 3.00);
+        double stateActivation = Math.tanh(Math.max(0.0, tech - 0.90) * 3.00);
         if (stateActivation <= 0.0) return 0.0;
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
         // Turchin (2016) Structural-Demographic Theory:
@@ -192,7 +192,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computeRealUnskilledWageIndex(double tech) {
         // Allen (2001) / Clark (2005) Real Wage Index (100 = 1750-1800 level):
         // Pre-industrial Malthusian wage (~98-115), First Industrial break in 1800 (~120), Second Industrial expansion in 1914 (~409)
-        double preIndustrialWelfare = 10.0 * Math.tanh(Math.max(0.0, tech - 1.60) * 1.50)
+        double preIndustrialWelfare = 10.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 1.50)
                 + 10.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 2.00);
         double secondIndustrialBreakout = 450.0 / (1.0 + Math.exp(-3.50 * (tech - 3.15)));
         return Math.clamp(100.0 + preIndustrialWelfare + secondIndustrialBreakout, 50.0, 1000.0);
@@ -206,11 +206,11 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return sociopolitical stress index
      */
     public static double computePoliticalStressIndex(double tech, double stability) {
-        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.45) * 3.00);
+        double stateActivation = Math.tanh(Math.max(0.0, tech - 0.90) * 3.00);
         if (stateActivation <= 0.0) return 0.0;
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
         // Turchin (2016): PSI baseline in imperial equilibrium is ~35-40%, rising to 55-80% during crisis/war
-        double basePsi = 35.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 2.00);
+        double basePsi = 35.0 * Math.tanh(Math.max(0.0, tech - 0.85) * 2.00);
         double crisisEscalation = 55.0 * stress;
         return Math.clamp(stateActivation * (basePsi + crisisEscalation), 0.0, 100.0);
     }
@@ -226,7 +226,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Ibn Khaldun (1377) / Turchin (2003): Frontier solidarity is high in early tribal/state formation (~0.95).
         // Decays gradually with imperial expansion, luxury, and bureaucratic inequality over secular cycles,
         // maintaining institutional baseline around ~0.58-0.68 in mature civilizations.
-        double stateDecayFactor = Math.tanh(Math.max(0.0, tech - 1.40) * 0.45);
+        double stateDecayFactor = Math.tanh(Math.max(0.0, tech - 1.10) * 0.45);
         double inequality = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
         double asabiyyah = 0.95 - 0.22 * stateDecayFactor - 0.20 * inequality;
         return Math.clamp(asabiyyah, 0.05, 1.0);
@@ -243,7 +243,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computeSociopoliticalInstability(double tech, double stability) {
         // Anthropological baseline for inter-band skirmishes (Keeley 1996; Kohler et al. 2017)
         double bandBaseline = 7.2 - 0.5 * Math.clamp(stability / 100.0, 0.0, 1.0);
-        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.15) * 3.00);
+        double stateActivation = Math.tanh(Math.max(0.0, tech - 0.85) * 3.00);
         if (stateActivation <= 0.0) return bandBaseline;
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
         // Turchin SDT non-linear crisis escalation (elite overproduction + state fiscal stress)
@@ -271,42 +271,42 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * and total war debt mobilization (1914 CE: ~90.2%).
      */
     public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double tech) {
-        double institutionalActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 2.00);
+        double institutionalActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 2.50);
         if (institutionalActivation <= 0.0) return 0.0;
 
         double fiscalShock = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
 
         // Pre-modern patrimonial borrowing (Reinhart & Rogoff 2009: 8-12% baseline, rising during war shocks):
-        double preModernDebt = 8.5 + 2.5 * Math.tanh(Math.max(0.0, tech - 1.70) * 1.20) + 14.0 * Math.pow(fiscalShock, 1.3);
+        double preModernDebt = 8.5 + 2.5 * Math.tanh(Math.max(0.0, tech - 1.10) * 1.20) + 14.0 * Math.pow(fiscalShock, 1.3);
 
-        // High medieval / renaissance war debt escalation (1347 CE Italian montes, French/English war loans: T >= 2.05):
-        double medievalWarDebt = 18.0 * Math.tanh(Math.max(0.0, tech - 2.05) * 2.50) * (0.4 + 0.6 * fiscalShock);
+        // High medieval / renaissance war debt escalation (1347 CE Italian montes, French/English war loans: T >= 1.50):
+        double medievalWarDebt = 18.0 * Math.tanh(Math.max(0.0, tech - 1.50) * 2.50) * (0.4 + 0.6 * fiscalShock);
 
-        // Modern institutional funded debt (Dickson 1967, British consols post-1694: T >= 1.90):
-        // Reaches ~73% in 1800 (T ~ 2.08) and ~90-110% in 1914 (T ~ 3.25)
-        double modernFundedActivation = Math.tanh(Math.max(0.0, tech - 1.90) * 4.00);
-        double modernFundedDebt = modernFundedActivation * (80.0 / (1.0 + Math.exp(-3.50 * (tech - 2.10))));
+        // Modern institutional funded debt (Dickson 1967, British consols post-1694: T >= 2.45):
+        // Reaches ~73% in 1800 (T ~ 2.55) and ~90-110% in 1914 (T ~ 3.50)
+        double modernFundedActivation = Math.tanh(Math.max(0.0, tech - 2.45) * 4.00);
+        double modernFundedDebt = modernFundedActivation * (80.0 / (1.0 + Math.exp(-3.50 * (tech - 3.10))));
 
         double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt;
         return Math.clamp(institutionalActivation * debtBurden, 0.0, 250.0);
     }
 
     public static double computeGlobalTradeVolume(double tech) {
-        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.45) * 2.50);
+        double tradeActivation = Math.tanh(Math.max(0.0, tech - 0.85) * 2.50);
         if (tradeActivation <= 0.0) return 0.0;
 
         // Federico & Tena-Junguito (2017) 'World trade, 1800-1938' (Index 100 = 1913):
-        // Classical Antiquity (T ~ 1.75): ~3.8-4.5
-        // Early Middle Ages (T ~ 1.78-1.82): ~4.2-4.8
-        // High & Late Middle Ages (T ~ 1.90-2.05): ~7.0-10.6
-        double preIndustrialTrade = 4.2 + 7.5 * Math.tanh(Math.max(0.0, tech - 1.80) * 4.20);
+        // Classical Antiquity (T ~ 1.15): ~3.8-4.5
+        // Early Middle Ages (T ~ 1.20-1.30): ~4.2-4.8
+        // High & Late Middle Ages (T ~ 1.40-1.60): ~6.0-10.6
+        double preIndustrialTrade = 4.2 + 4.5 * Math.tanh(Math.max(0.0, tech - 1.25) * 3.00);
 
-        // Early Modern oceanic sail trade boom (VOC, East India, Atlantic triangular: T >= 2.08): reaching ~26.8 at T ~ 2.27 (1800 CE)
-        double oceanicSailActivation = Math.tanh(Math.max(0.0, tech - 2.08) * 6.00);
-        double oceanicSailBoom = oceanicSailActivation * 19.0 * Math.tanh(Math.max(0.0, tech - 2.08) * 5.00);
+        // Early Modern oceanic sail trade boom (VOC, East India, Atlantic triangular: T >= 2.35): reaching ~26.8 at T ~ 2.55 (1800 CE)
+        double oceanicSailActivation = Math.tanh(Math.max(0.0, tech - 2.35) * 6.00);
+        double oceanicSailBoom = oceanicSailActivation * 19.0 * Math.tanh(Math.max(0.0, tech - 2.35) * 5.00);
 
-        // First Globalization steam shipping & railway boom (post-1870: T >= 2.65): reaching ~227 in 1914 (T ~ 3.35)
-        double steamShippingBoom = 235.0 / (1.0 + Math.exp(-3.50 * (tech - 2.95)));
+        // First Globalization steam shipping & railway boom (post-1870: T >= 2.95): reaching ~227 in 1914 (T ~ 3.50)
+        double steamShippingBoom = 235.0 / (1.0 + Math.exp(-3.50 * (tech - 3.25)));
 
         // Hyper-globalization (containerization, aviation, WTO: T >= 4.0)
         double hyperGlobalization = (tech > 4.00) ? 2250.0 / (1.0 + Math.exp(-2.50 * (tech - 5.50))) : 0.0;
@@ -377,16 +377,16 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      */
     public static double computeInformationTravelSpeed(double tech) {
         // State courier relay network (Cursus Publicus, Yam, Barid: Scheidel 2014, Alsan 2015): ~80-89 km/day
-        double courierActivation = Math.tanh(Math.max(0.0, tech - 1.40) * 3.50);
-        double courierSpeed = 4.0 + 82.0 * courierActivation + 4.0 * Math.tanh(Math.max(0.0, tech - 2.00) * 2.0);
+        double courierActivation = Math.tanh(Math.max(0.0, tech - 0.90) * 3.50);
+        double courierSpeed = 4.0 + 82.0 * courierActivation + 4.0 * Math.tanh(Math.max(0.0, tech - 1.30) * 2.0);
 
-        // Chappe optical semaphore telegraph (1792: T >= 2.08): +180 km/day in 1800 CE (T ~ 2.27)
-        double opticalTelegraph = 185.0 * Math.tanh(Math.max(0.0, tech - 2.08) * 7.00);
+        // Chappe optical semaphore telegraph (1792: T >= 2.45): +180 km/day in 1800 CE (T ~ 2.55)
+        double opticalTelegraph = 185.0 * Math.tanh(Math.max(0.0, tech - 2.45) * 7.00);
 
-        // Standage (1998) electric telegraph & submarine cables (1844-1866, global network in 1914: strictly T >= 2.65)
+        // Standage (1998) electric telegraph & submarine cables (1844-1866, global network in 1914: strictly T >= 2.95)
         // Gated to prevent premature telegraph speed in pre-industrial epidemics (1347 CE Black Death)
-        double electricActivation = Math.tanh(Math.max(0.0, tech - 2.65) * 3.00);
-        double electricAndCables = electricActivation * (6.8e6 / (1.0 + Math.exp(-4.50 * (tech - 2.95))));
+        double electricActivation = Math.tanh(Math.max(0.0, tech - 2.95) * 3.00);
+        double electricAndCables = electricActivation * (6.8e6 / (1.0 + Math.exp(-4.50 * (tech - 3.25))));
 
         // Telephony and high-bandwidth telecom (T >= 5.0)
         double modernTelecom = (tech > 5.00) ? 2.94e8 / (1.0 + Math.exp(-3.00 * (tech - 6.00))) : 0.0;
@@ -395,18 +395,18 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeMetalSmeltingPerCapita(double tech) {
-        double smeltActivation = Math.tanh(Math.max(0.0, tech - 1.40) * 2.20);
+        double smeltActivation = Math.tanh(Math.max(0.0, tech - 0.75) * 2.20);
         if (smeltActivation <= 0.0) return 0.0;
 
         // Malandra (1990) / USGS (2023): Antiquity (~1.6 kg) -> Medieval (~2.0-3.0 kg)
-        double preIndustrial = 1.60 + 1.45 * Math.tanh(Math.max(0.0, tech - 1.60) * 2.00);
+        double preIndustrial = 1.60 + 1.20 * Math.tanh(Math.max(0.0, tech - 1.10) * 2.00);
 
-        // Coke smelting & puddling (Darby 1709, Cort 1784: T >= 2.08): +3.5 kg by 1800 CE (T ~ 2.27)
-        double cokeActivation = Math.tanh(Math.max(0.0, tech - 2.08) * 5.00);
-        double cokePuddling = cokeActivation * 4.2 * Math.tanh(Math.max(0.0, tech - 2.08) * 5.00);
+        // Coke smelting & puddling (Darby 1709, Cort 1784: T >= 2.45): +3.5 kg by 1800 CE (T ~ 2.55)
+        double cokeActivation = Math.tanh(Math.max(0.0, tech - 2.45) * 5.00);
+        double cokePuddling = cokeActivation * 4.2 * Math.tanh(Math.max(0.0, tech - 2.45) * 5.00);
 
-        // Industrial Bessemer steel & mass metallurgy (post-1860: T >= 2.70): reaching ~64 kg in 1914 (T ~ 3.35), ~210 kg modern
-        double industrialBessemer = 210.0 / (1.0 + Math.exp(-2.60 * (tech - 3.70)));
+        // Industrial Bessemer steel & mass metallurgy (post-1860: T >= 3.00): reaching ~64 kg in 1914 (T ~ 3.50), ~210 kg modern
+        double industrialBessemer = 210.0 / (1.0 + Math.exp(-2.60 * (tech - 3.85)));
 
         return Math.clamp(smeltActivation * (preIndustrial + cokePuddling + industrialBessemer), 0.0, 350.0);
     }
@@ -416,30 +416,30 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * Emerges with early coal and expanding in the First Industrial Revolution (~14% in 1800) and dominant in 1914 (~78%).
      */
     public static double computeFossilSharePrimaryEnergy(double tech) {
-        double industrialActivation = Math.tanh(Math.max(0.0, tech - 2.30) * 4.50);
+        double industrialActivation = Math.tanh(Math.max(0.0, tech - 2.40) * 4.50);
         if (industrialActivation <= 0.0) return 0.0;
 
         // Smil (2017) / Ritchie (2020):
-        // Emerges into the First Industrial Revolution (~12-14% at T ~ 2.41 in 1800) and dominant in 1914 (~78% at T ~ 3.35).
-        double earlySteam = 14.5 * Math.tanh(Math.max(0.0, tech - 2.30) * 8.00);
-        double modernTransition = 70.0 / (1.0 + Math.exp(-3.80 * (tech - 2.95)));
+        // Emerges into the First Industrial Revolution (~12-14% at T ~ 2.55 in 1800) and dominant in 1914 (~78% at T ~ 3.50).
+        double earlySteam = 14.5 * Math.tanh(Math.max(0.0, tech - 2.40) * 8.00);
+        double modernTransition = 70.0 / (1.0 + Math.exp(-3.80 * (tech - 3.25)));
 
         return Math.clamp(industrialActivation * (earlySteam + modernTransition), 0.0, 95.0);
     }
 
     public static double computeShippingFreightCostIndex(double tech) {
-        double navActivation = Math.tanh(Math.max(0.0, tech - 1.10) * 5.00);
+        double navActivation = Math.tanh(Math.max(0.0, tech - 0.75) * 5.00);
         if (navActivation <= 0.0) return 0.0;
 
         // Harley (1988), Mohammed & Williamson (2004), UNCTAD (2024):
         // Archaic / Classical Mediterranean freight costs: ~1400-1420 (Index 1913 = 100)
-        // Medieval oceanic improvement (compass, sternpost rudder, caravel: T ~ 1.90-2.05): drops to ~1216 in 1000 CE and ~939 in 1347 CE
-        // Early modern oceanic sailing ship boom (VOC fluyt, 1800 CE: T ~ 2.27): drops to ~238
-        // Steamships, iron hulls, and compound engines (1870-1914: T ~ 3.35): drops to ~48.6
+        // Medieval oceanic improvement (compass, sternpost rudder, caravel: T ~ 1.30-1.60): drops to ~1216 in 1000 CE and ~939 in 1347 CE
+        // Early modern oceanic sailing ship boom (VOC fluyt, 1800 CE: T ~ 2.55): drops to ~238
+        // Steamships, iron hulls, and compound engines (1870-1914: T ~ 3.50): drops to ~48.6
         double classicalCost = 1415.0;
-        double medievalReduction = 510.0 * Math.tanh(Math.max(0.0, tech - 1.81) * 4.80);
-        double oceanicReduction = 685.0 * Math.tanh(Math.max(0.0, tech - 2.07) * 8.00);
-        double steamReduction = 188.0 / (1.0 + Math.exp(-4.00 * (tech - 2.85)));
+        double medievalReduction = 200.0 * Math.tanh(Math.max(0.0, tech - 1.30) * 3.00);
+        double oceanicReduction = 685.0 * Math.tanh(Math.max(0.0, tech - 2.35) * 6.00);
+        double steamReduction = 188.0 / (1.0 + Math.exp(-4.00 * (tech - 3.25)));
         double cost = classicalCost - medievalReduction - oceanicReduction - steamReduction;
 
         return Math.clamp(navActivation * cost, 20.0, 1600.0);
