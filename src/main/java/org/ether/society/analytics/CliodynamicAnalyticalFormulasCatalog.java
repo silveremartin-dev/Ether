@@ -136,7 +136,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return precious metal purity percentage in [0.0, 100.0]
      */
     public static double computeCurrencyDebasement(double tech, double stability) {
-        double mintingActivation = Math.tanh(Math.max(0.0, tech - 1.20) * 3.50);
+        double mintingActivation = Math.tanh(Math.max(0.0, tech - 1.70) * 3.50);
         if (mintingActivation <= 0.0) return 0.0;
 
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
@@ -161,7 +161,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return dimensionless elite overproduction ratio in [0.0, 5.0]
      */
     public static double computeEliteOverproductionIndex(double tech, double stability) {
-        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.15) * 3.00);
+        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.45) * 3.00);
         if (stateActivation <= 0.0) return 0.0;
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
         // Turchin (2016) Structural-Demographic Theory:
@@ -193,7 +193,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return sociopolitical stress index
      */
     public static double computePoliticalStressIndex(double tech, double stability) {
-        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.15) * 3.00);
+        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.45) * 3.00);
         if (stateActivation <= 0.0) return 0.0;
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
         // Turchin (2016): PSI baseline in imperial equilibrium is ~35-40%, rising to 55-80% during crisis/war
@@ -404,12 +404,12 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * Emerges with early coal and expanding in the First Industrial Revolution (~14% in 1800) and dominant in 1914 (~78%).
      */
     public static double computeFossilSharePrimaryEnergy(double tech) {
-        double industrialActivation = Math.tanh(Math.max(0.0, tech - 1.92) * 4.00);
+        double industrialActivation = Math.tanh(Math.max(0.0, tech - 2.30) * 4.00);
         if (industrialActivation <= 0.0) return 0.0;
 
         // Smil (2017) / Ritchie (2020):
-        // First & Second Industrial Revolution transition: ramps smoothly to ~14% at T = 2.08 and ~78% at T = 3.25
-        double modernTransition = 14.0 * Math.tanh(Math.max(0.0, tech - 1.92) * 5.0) + 72.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80)));
+        // Emerges post-Middle Ages (incipient coal) into the Industrial Revolution (~12-14% in 1800) and dominant in 1914 (~78%).
+        double modernTransition = 14.0 * Math.tanh(Math.max(0.0, tech - 2.30) * 3.50) + 72.0 / (1.0 + Math.exp(-3.50 * (tech - 3.20)));
 
         return Math.clamp(industrialActivation * modernTransition, 0.0, 95.0);
     }

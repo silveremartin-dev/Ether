@@ -230,9 +230,6 @@ public final class DemographicMetricsCalculator {
      * @return global urbanization rate in $[0.0, 95.0]$ %
      */
     public double getUrbanizationRate() {
-        if (engine.getCurrentYear() < -4000) {
-            return 0.0;
-        }
         WorldBuffer wb = engine.getWorldBuffer();
         if (wb != null && wb.getBiomassHuman() != null && wb.getCapacity() > 0) {
             float[] pop = wb.getBiomassHuman();

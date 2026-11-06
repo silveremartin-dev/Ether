@@ -134,4 +134,68 @@ public class PostHocCliodynamicMetricsExtractorTest {
         System.out.println("DEBUG: Urbanization rate = " + urban);
         assertTrue(urban > 0.0, "Urbanization rate must be strictly > 0 for 100k agglomeration with 3500 kpc but was " + urban);
     }
+
+    @Test
+    @DisplayName("Verify Exoplanet Colonization retains high literacy with low physical capital and Paleolithic oral culture evaluates to 0.0%")
+    public void testExoplanetColonizationKnowledgeAndPaleolithicOralBaselines() {
+        org.ether.society.config.Configuration config = new org.ether.society.config.Configuration(
+                new org.ether.society.config.Configuration.WorldConfig(10, 10, 10, new org.ether.society.config.Configuration.GenerationParams(4, 1.0, 4, 1.0)),
+                new org.ether.society.config.Configuration.SimulationConfig(1000, 42, new int[]{1}),
+                new org.ether.society.config.Configuration.AgentsConfig(100, java.util.Collections.emptyMap()),
+                new org.ether.society.config.Configuration.ClimateConfig(0.01, 14.0, 0.05),
+                new org.ether.society.config.Configuration.ResourcesConfig(100.0, 50.0, 1.0)
+        );
+
+        // 1. Exoplanet Colony (Mars 2050): astronauts arrive with low ground physical capital (50 kg/hab) but 50M bits/hab
+        org.ether.society.model.Scenario marsScenario = new org.ether.society.model.Scenario();
+        marsScenario.setName("Mars Colony 2050");
+        marsScenario.setStartDateYear(2050);
+        marsScenario.setEndDateYear(2060);
+        marsScenario.setInitialHumanCount(1000L);
+        marsScenario.setInitialCapitalPerCapita(50.0); // minimal initial camp infrastructure
+        marsScenario.setInitialInformationPerCapita(50_000_000.0); // 50M bits/capita knowledge stock
+        marsScenario.setH3Resolution(4);
+
+        org.ether.society.core.H3SimulationEngine marsEngine = new org.ether.society.core.H3SimulationEngine(config);
+        java.util.List<org.ether.society.database.H3Cell> marsCells = new java.util.ArrayList<>();
+        org.ether.society.database.H3Cell mc = new org.ether.society.database.H3Cell();
+        mc.setH3Index(0x841f985ffffffffL);
+        mc.setLatitude(0.0);
+        mc.setLongitude(0.0);
+        mc.setPopulation(1000);
+        mc.setResourceCapital(50_000.0);
+        mc.setFoodResource(20_000.0);
+        marsCells.add(mc);
+        marsEngine.initializeFromScenario(marsScenario, marsCells);
+
+        double marsLiteracy = marsEngine.getLiteracyRate();
+        assertTrue(marsLiteracy >= 98.0,
+                "Space colonists on Mars with low ground capital MUST retain high adult literacy (>= 98%) but had: " + marsLiteracy);
+
+        // 2. Paleolithic Foragers (-20,000 BP): oral culture only (5 bits/hab, 2 kg/hab capital)
+        org.ether.society.model.Scenario paleoScenario = new org.ether.society.model.Scenario();
+        paleoScenario.setName("Paleolithic -20000 BP");
+        paleoScenario.setStartDateYear(-20000);
+        paleoScenario.setEndDateYear(-19900);
+        paleoScenario.setInitialHumanCount(500L);
+        paleoScenario.setInitialCapitalPerCapita(2.0);
+        paleoScenario.setInitialInformationPerCapita(5.0); // oral culture, no script
+        paleoScenario.setH3Resolution(4);
+
+        org.ether.society.core.H3SimulationEngine paleoEngine = new org.ether.society.core.H3SimulationEngine(config);
+        java.util.List<org.ether.society.database.H3Cell> paleoCells = new java.util.ArrayList<>();
+        org.ether.society.database.H3Cell pc = new org.ether.society.database.H3Cell();
+        pc.setH3Index(0x841f985ffffffffL);
+        pc.setLatitude(0.0);
+        pc.setLongitude(0.0);
+        pc.setPopulation(500);
+        pc.setResourceCapital(1000.0);
+        pc.setFoodResource(5000.0);
+        paleoCells.add(pc);
+        paleoEngine.initializeFromScenario(paleoScenario, paleoCells);
+
+        double paleolithicLiteracy = paleoEngine.getLiteracyRate();
+        assertEquals(0.0, paleolithicLiteracy, 1e-6,
+                "Prehistoric oral hunter-gatherers with I = 5 bits/hab MUST have 0.0% literacy without artificial date gating");
+    }
 }

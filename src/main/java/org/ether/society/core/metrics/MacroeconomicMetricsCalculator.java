@@ -60,7 +60,6 @@ public final class MacroeconomicMetricsCalculator {
      * @return coinage silver purity in $[0.0, 99.0]$ %
      */
     public double getCurrencyDebasement() {
-        if (engine.getCurrentYear() < -600) return 0.0;
         float tech = engine.getAverageTechnology();
         double stability = aggregator.getHappinessIndex();
         return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeCurrencyDebasement(tech, stability);
@@ -83,7 +82,6 @@ public final class MacroeconomicMetricsCalculator {
      * @return sovereign debt burden in $[0.0, 250.0]$ %
      */
     public double getSovereignDebtBurdenPct() {
-        if (engine.getCurrentYear() < -3400) return 0.0;
         double trade = getGlobalTradeVolumeIndex();
         double literacy = aggregator.getLiteracyRate();
         double stability = aggregator.getHappinessIndex();
@@ -99,7 +97,6 @@ public final class MacroeconomicMetricsCalculator {
      * @return global trade volume index
      */
     public double getGlobalTradeVolumeIndex() {
-        if (engine.getCurrentYear() < -4000) return 0.0;
         return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeGlobalTradeVolume(engine.getAverageTechnology());
     }
 
@@ -110,7 +107,6 @@ public final class MacroeconomicMetricsCalculator {
      * @return metal smelting output in $\text{kg/capita/yr}$
      */
     public double getMetalSmeltingPerCapitaKg() {
-        if (engine.getCurrentYear() < -5000) return 0.0;
         return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeMetalSmeltingPerCapita(engine.getAverageTechnology());
     }
 
@@ -121,7 +117,6 @@ public final class MacroeconomicMetricsCalculator {
      * @return real maritime freight cost index
      */
     public double getShippingFreightCostIndex() {
-        if (engine.getCurrentYear() < -3000) return 0.0;
         return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeShippingFreightCostIndex(engine.getAverageTechnology());
     }
 }

@@ -410,3 +410,34 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   - Eliminates systematic falsification anomalies detected in the 9 GCP scenarios (LGM, Fertile Crescent, Antonine Plague, Justinian Plague, Islamic Expansion, Song China, Black Death, Industrial Revolution, World Wars 1914).
 * **Empirical Validation Grounding**:
   - Williams (2003); Bairoch (1988); Smil (2017); Maddison Project Database (2020); HYDE 3.4.
+
+---
+
+### Entry 22: Elimination of Calendar-Year Gating and Information-Theoretic Literacy Invariant for Exoplanetary and Deep-Time Universality
+* **Subsystem**: `CulturalKnowledgeMetricsCalculator.java`, `ThermodynamicMetricsCalculator.java`, `MacroeconomicMetricsCalculator.java`, `CliodynamicMetricsCalculator.java`, `DemographicMetricsCalculator.java`, `PostHocCliodynamicMetricsExtractor.java`, `CliodynamicAnalyticalFormulasCatalog.java`
+* **Canonical Literature**:
+  - Goody, J. (1986). *The Logic of Writing and the Organization of Society*. Cambridge University Press.
+  - Buringh, E., & van Zanden, J. L. (2009). *Charting the “Rise of the West”: Manuscripts and Printed Books in Europe, a Long-Term Perspective from the Sixth through Eighteenth Centuries*. The Journal of Economic History, 69(2), 409–445.
+  - Graff, H. J. (1987). *The Legacies of Literacy: Continuities and Contradictions in Western Culture and Society*. Indiana University Press.
+  - Shannon, C. E. (1948). *A Mathematical Theory of Communication*. Bell System Technical Journal, 27(3), 379–423.
+* **Problem & Epistemic Violation**:
+  - In previous calibration passes, eleven artificial calendar-year gating statements (`if (engine.getCurrentYear() < -3400) return 0.0;`, `year < -4000`, `year < -600`, `year < -10000`, etc.) were introduced to clamp pre-historic metrics.
+  - This directly violated AGENTS.md §8 & §10:
+    1. Nature possesses no calendar discontinuities; physical equations must have universal validity across deep time, future trajectories, and extraterrestrial colonization.
+    2. Gedanke scenario: A space crew landing on an alien exoplanet (Mars, Kepler-442b) arrives with minimal initial ground physical capital ($K/N \le 50\text{ kg/hab}$) and low initial power grid infrastructure, but high cognitive information stock ($I_{\text{pc}} = 5 \times 10^7\text{ bits/hab}$). Under capital-only and date-gated equations, astronaut literacy was erroneously suppressed to $\sim 0.0\%$.
+* **Calibrated Simulation Formulation & Implementation**:
+  - **Complete Elimination of Calendar Gating**: All eleven `if (year < X)` and `if (getCurrentYear() < X)` guards have been completely removed across all simulation and post-hoc extraction engines.
+  - **Information-Theoretic Literacy Formulation**: Adult literacy rate (%) is governed endogenously by effective Shannon information density $I_{\text{eff}} = \max\left(I_0, \; I_{\text{endogenous}}\right) \times (1 - \text{decay})$:
+    $$\text{Literacy Rate} = \text{clamp}\left(\sigma_{\text{scribal}} + \sigma_{\text{vernacular}} + \sigma_{\text{mass}}, \; 0.0, \; 99.5\right)$$
+    where:
+    $$\sigma_{\text{scribal}} = 3.5\% \cdot \tanh\left(\frac{\max(0, I_{\text{eff}} - 25.0)}{80.0}\right)$$
+    $$\sigma_{\text{vernacular}} = 26.5\% \cdot \tanh\left(\frac{\max(0, I_{\text{eff}} - 500.0)}{3000.0}\right)$$
+    $$\sigma_{\text{mass}} = 69.5\% \cdot \tanh\left(\frac{\max(0, I_{\text{eff}} - 20000.0)}{50000.0}\right)$$
+  - **Agricultural EROEI Activation**: Agriculture activation derives continuously from agricultural capital intensity ($k_{\text{pc}} \ge 20\text{ kg/hab}$) via $\tanh\left(\frac{\max(0, k_{\text{pc}} - 20.0)}{30.0}\right)$, naturally evaluating to strictly $0.0$ for Paleolithic foragers ($k_{\text{pc}} = 2.0$) while smoothly activating for Neolithic horticulturists and space hydroponics/aeroponics.
+  - **Metallurgical & Monetary Activation**: Currency debasement, sovereign debt, trade volume, and metal smelting activate smoothly along physical technological thresholds ($T_{\text{emergent}} \ge 1.70, 1.55, 1.45, 1.40$) without date checks.
+* **Academic Justification / Root Cause**:
+  - Restores absolute universality across all epochs and collective organisms.
+  - Prehistoric oral hunter-gatherers ($I \le 20\text{ bits/hab}$) evaluate smoothly to $0.0\%$ literacy.
+  - Space colonists landing with low physical capital retain $\ge 99.0\%$ literacy on day 1.
+* **Empirical Validation Grounding**:
+  - Buringh & van Zanden (2009); Graff (1987); Goody (1986); Shannon (1948); Seshat Databank; Unit Test `PostHocCliodynamicMetricsExtractorTest.testExoplanetColonizationKnowledgeAndPaleolithicOralBaselines`.

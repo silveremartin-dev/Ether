@@ -193,14 +193,11 @@ public final class ThermodynamicMetricsCalculator {
      * @return food system EROI ratio in $[0.12, 7.5]$
      */
     public double getEroiAlimentaire() {
-        if (engine.getCurrentYear() < -10000) {
-            return 0.0;
-        }
         long pop = engine.getTotalPopulation();
         if (pop <= 0) return 0.0;
         double kpc = aggregator.getBuiltCapitalTotal() / pop;
-        // Continuous biophysical activation of agriculture (hoes/granaries/plows)
-        double agActivation = org.ether.society.core.math.SmoothMath.sigmoid(kpc, 40.0, 12.0);
+        // Continuous biophysical activation of agriculture (hoes/granaries/plows, kpc >= 20 kg/capita)
+        double agActivation = Math.tanh(Math.max(0.0, kpc - 20.0) / 30.0);
         if (agActivation <= 0.0) return 0.0;
         // Pre-industrial draft animal traction equilibrium: ~4.2 - 4.8 (Smil 2008, Giampietro et al. 2013)
         double traditionalEquilibrium = 4.2 + 0.6 * Math.tanh(kpc / 350.0);
