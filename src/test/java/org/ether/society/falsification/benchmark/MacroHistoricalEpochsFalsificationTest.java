@@ -56,7 +56,7 @@ public class MacroHistoricalEpochsFalsificationTest {
     private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
             // --- Middle Epochs (Classical, Medieval & Post-Feudal Transitions) ---
             new ScenarioRunConfig("antonine_plague_165", "Antonine Plague & Imperial Crisis under Marcus Aurelius (165-180 CE)",
-                    165, 185, 6, true, "data/maps/ether/earth/160/earth_160_density.png"),
+                    165, 185, 4, false, "data/maps/ether/earth/160/earth_160_density.png"),
             new ScenarioRunConfig("late_antique_ice_age", "Late Antique Little Ice Age & Justinian Plague (536 CE)",
                     536, 556, 4, false, "data/maps/ether/earth/536/earth_536_density.png"),
             new ScenarioRunConfig("islamic_expansion_632", "Islamic Expansion & Caliphal Commercial Revolution (632 CE)",
@@ -116,6 +116,9 @@ public class MacroHistoricalEpochsFalsificationTest {
             s.setStartDateYear(cfg.startYear());
             s.setEndDateYear(cfg.endYear());
             s.setH3Resolution(cfg.resolution());
+            if (!cfg.windowed()) {
+                s.setClippingEnabled(false);
+            }
 
             long startMs = System.currentTimeMillis();
             SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(s);
