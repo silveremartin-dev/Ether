@@ -75,7 +75,7 @@ public class LanguageLinguisticEngine {
             double curDrift = cell.getLinguisticDriftOr(0.0);
 
             // 1. Isolat Culturel (Cultural Isolation): Island / Coastal / Mountainous isolation
-            boolean isIslandOrIsolated = (biome == Biome.BEACH || friction > 3.5 || elevation > 1200);
+            boolean isIslandOrIsolated = (friction > 3.5 || elevation > 1200.0);
 
             if (isIslandOrIsolated) {
                 isolatedCount++;

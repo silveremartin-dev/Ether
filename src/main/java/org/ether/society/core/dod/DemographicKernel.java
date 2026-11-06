@@ -139,6 +139,7 @@ public class DemographicKernel {
         float[] capArr = world.getResourceCapital();
         float[] bioAgriArr = world.getBiomassAgriculture();
         float[] bioNatArr = world.getBiomassNatural();
+        float[] bioLivestockArr = world.getBiomassLivestock();
         float[] bioFishArr = world.getBiomassFish();
         float[] waterArr = world.getWaterResource();
         float[] lifespanArr = world.getLifespan();
@@ -172,8 +173,10 @@ public class DemographicKernel {
                 float edibleAgriFluxAnnual = bioAgriArr[h] * 0.70f * (float) (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
                 float wildHarvestFraction = 0.005f + 0.003f / (1.0f + cellPop / 1500.0f);
                 float edibleNaturalFluxAnnual = bioNatArr[h] * wildHarvestFraction * (float) PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+                float livestockBio = (bioLivestockArr != null && h < bioLivestockArr.length) ? bioLivestockArr[h] : 0.0f;
+                float edibleFaunaFluxAnnual = livestockBio * 0.15f * (float) (PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG * 1e-3);
                 float edibleFishFluxAnnual = (float) fishBio * 0.25f * (float) (PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3);
-                float totalAnnualFoodFluxGJ = edibleAgriFluxAnnual + edibleNaturalFluxAnnual + edibleFishFluxAnnual;
+                float totalAnnualFoodFluxGJ = edibleAgriFluxAnnual + edibleNaturalFluxAnnual + edibleFaunaFluxAnnual + edibleFishFluxAnnual;
 
                 float foodHarvestTickGJ = totalAnnualFoodFluxGJ * dtInYears;
                 float totalAvailableFoodGJ = food[h] + foodHarvestTickGJ;
@@ -247,8 +250,10 @@ public class DemographicKernel {
             double wildHarvestFrac = 0.005 + 0.003 * foragerWeight;
             double edibleNaturalBiomassGJ = bioNatArr[hIdx] * wildHarvestFrac * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
             double edibleAgriBiomassGJ = bioAgriArr[hIdx] * 0.70 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
+            double livestockBioCell = (bioLivestockArr != null && hIdx < bioLivestockArr.length) ? bioLivestockArr[hIdx] : 0.0;
+            double edibleFaunaBiomassGJ = livestockBioCell * 0.15 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG * 1e-3);
             double edibleFishBiomassGJ = fishBio * 0.25 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3);
-            double renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgriBiomassGJ + edibleFishBiomassGJ;
+            double renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgriBiomassGJ + edibleFaunaBiomassGJ + edibleFishBiomassGJ;
             double annualCellProductivityGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20, food[hIdx] * 0.15);
 
             // Smooth Boserupian & synthetic nitrogen intensification driven by physical capital per capita (Smil 2001)

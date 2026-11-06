@@ -79,7 +79,8 @@ public class OceanAcidificationEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             Biome biome = cell.getBiome();
-            if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH) {
+            if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH
+                    || cell.getElevationOr(0.0) <= 0.0 || Boolean.TRUE.equals(cell.getIsCoastal())) {
                 impactedCells++;
                 double tempC = cell.getTemperatureOr(15.0);
                 double henrySolubility = calculateHenrySolubility(tempC);

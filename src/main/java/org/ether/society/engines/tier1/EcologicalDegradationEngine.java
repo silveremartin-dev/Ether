@@ -104,7 +104,9 @@ public class EcologicalDegradationEngine {
 
             // 2. Schaefer Logistic Fishery Dynamics in Marine & Coastal Cells
             double elev = cell.getElevationOr(0.0);
-            boolean isMarineOrCoastal = (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH || elev <= 0.0);
+            boolean isMarineOrCoastal = (elev <= 0.0 || Boolean.TRUE.equals(cell.getIsCoastal())
+                    || cell.getCoastalMarineResourceOr(0.0) > 0.0 || cell.getBiomassFishOr(0.0) > 0.0
+                    || biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH);
             if (isMarineOrCoastal) {
                 double coastalShelfFactor = SmoothMath.sigmoid(elev, -200.0, 80.0);
                 double maxStockCapacity = (1000.0 + 500.0 * coastalShelfFactor) * areaScale;
@@ -114,9 +116,25 @@ public class EcologicalDegradationEngine {
                 double regeneration = rFish * currentFishStock * Math.max(0.0, 1.0 - (currentFishStock / maxStockCapacity)) * dtSafeYears;
                 double pelagicLarvalSeed = 5.0 * areaScale * dtSafeYears;
 
+                // Harvest intensity scaling across technological/industrial eras (Pauly 1998, Worm et al. 2006):
+                // 1. Traditional/artisanal subsistence (k_pc < 60 kg/cap): ~0.06 t/cap/yr
+                // 2. Steam trawling & ice preservation (k_pc ~ 600-1200 kg/cap): +0.35 t/cap/yr
+                // 3. Modern diesel factory trawlers, sonar & pelagic nets (k_pc > 2500 kg/cap): +1.25 t/cap/yr
+                // In modern eras, harvest capacity vastly exceeds natural MSY (r*K/4), driving severe stock depletion.
                 double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-                double harvestIntensity = pop * (0.08 + 0.04 * Math.tanh(capPerCap / 50.0)) * (currentFishStock / maxStockCapacity) * dtSafeYears;
-                double fishingHarvest = Math.min(currentFishStock * 0.85, harvestIntensity);
+                double artisanalCatch = 0.06 + 0.04 * Math.tanh(capPerCap / 60.0);
+                double steamTrawlerCatch = 0.35 * SmoothMath.sigmoid(capPerCap, 750.0, 200.0);
+                double factoryFleetCatch = 1.25 * SmoothMath.sigmoid(capPerCap, 2800.0, 700.0);
+                double perCapitaMarineCatch = artisanalCatch + steamTrawlerCatch + factoryFleetCatch;
+
+                // Schaefer harvest kinetics: H = E * (B / B_max)^gamma
+                double stockAbundanceRatio = Math.clamp(currentFishStock / maxStockCapacity, 0.0, 1.0);
+                double catchPerEffort = Math.pow(stockAbundanceRatio, 0.75);
+                double harvestIntensity = pop * perCapitaMarineCatch * catchPerEffort * dtSafeYears;
+
+                // Modern overfishing can extract up to 90% of stock in high-capital zones
+                double maxHarvestFraction = 0.50 + 0.40 * SmoothMath.sigmoid(capPerCap, 1200.0, 400.0);
+                double fishingHarvest = Math.min(currentFishStock * maxHarvestFraction, harvestIntensity);
 
                 if (fishingHarvest > 0.0) {
                     cell.setFoodResource(Math.min(2000000.0, cell.getFoodResourceOr(0.0) + fishingHarvest * 0.80));
@@ -126,7 +144,7 @@ public class EcologicalDegradationEngine {
                 double updatedStock = Math.max(0.0, currentFishStock + regeneration + pelagicLarvalSeed - fishingHarvest - ecotoxicity);
                 cell.setBiomassFish(Math.clamp(updatedStock, pelagicLarvalSeed, maxStockCapacity));
 
-                if (elev <= 0.0 && biome != Biome.BEACH) {
+                if (elev <= 0.0 && !Boolean.TRUE.equals(cell.getIsPolder())) {
                     continue;
                 }
             }
@@ -160,15 +178,23 @@ public class EcologicalDegradationEngine {
             cell.setWaterResource(Math.clamp(curWaterRes + rechargeRate - depletionRate, 0.0, 1000.0));
             cell.setBiomassAgriculture(Math.max(0.0, cell.getBiomassAgricultureOr(0.0) * Math.exp(-0.4 * droughtGate * hydroStress * dtMonthlyRatio)));
 
-            // 4. Smooth Nutritional Stress Telemetry
+            // 4. Smooth Nutritional Stress Telemetry (Incorporates all biophysical food fluxes: crops, wild flora, fauna/livestock, marine fish & shellfish)
             double agBio = cell.getBiomassAgricultureOr(0.0);
             double natBio = cell.getBiomassNaturalOr(0.0);
+            double liveBio = cell.getBiomassLivestockOr(0.0);
+            double fishBio = cell.getBiomassFishOr(0.0);
+            double coastalBio = cell.getCoastalMarineResourceOr(0.0);
+
             double agShare = agBio / (agBio + natBio * 0.01 + 1.0);
             double wildForageFrac = 0.008 - 0.003 * SmoothMath.sigmoid(agShare, 0.20, 0.08);
-            double totalFood = cell.getFoodResourceOr(0.0)
-                    + agBio * 0.70 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3)
-                    + cell.getBiomassFishOr(0.0) * 0.80 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3)
-                    + natBio * wildForageFrac * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+            double animalHarvestFrac = 0.15; // Sustainable annual meat harvest from wild game / pastoral livestock
+
+            double edibleAgriGJ = agBio * 0.70 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
+            double edibleMarineGJ = (fishBio + coastalBio * 0.20) * 0.80 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3);
+            double edibleFaunaGJ = liveBio * animalHarvestFrac * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG * 1e-3);
+            double edibleFloraGJ = natBio * wildForageFrac * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+
+            double totalFood = cell.getFoodResourceOr(0.0) + edibleAgriGJ + edibleMarineGJ + edibleFaunaGJ + edibleFloraGJ;
 
             double foodRequired = pop * HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * dtSafeYears;
             double curLife = cell.getLifespanOr(30.0);
@@ -390,8 +416,17 @@ public class EcologicalDegradationEngine {
         double agBiomass = cell.getBiomassAgricultureOr(0.0);
         double agGate = SmoothMath.sigmoid(agBiomass, 10.0, 4.0);
         double agMultiplier = 1.0 + agGate * (0.5 + 2.0 * (1.0 - Math.exp(-agBiomass / (500.0 * areaScale))));
+
+        // Marine & coastal fishery carrying capacity boost (shellfish, fish, marine algae)
+        double marineStock = cell.getBiomassFishOr(0.0) + cell.getCoastalMarineResourceOr(0.0);
+        double marineMultiplier = 1.0 + 1.2 * Math.tanh(marineStock / (800.0 * areaScale));
+
+        // Terrestrial fauna / pastoral livestock carrying capacity boost (hunting & pastoralism)
+        double liveStock = cell.getBiomassLivestockOr(0.0);
+        double pastoralMultiplier = 1.0 + 0.8 * Math.tanh(liveStock / (600.0 * areaScale));
+
         double capitalMultiplier = 1.0 + 3.0 * (1.0 - Math.exp(-capPerCap / 250.0));
 
-        return Math.max(2.0, baseCap * agMultiplier * capitalMultiplier);
+        return Math.max(2.0, baseCap * agMultiplier * marineMultiplier * pastoralMultiplier * capitalMultiplier);
     }
 }

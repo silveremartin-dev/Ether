@@ -262,8 +262,12 @@ final class ProceduralPopulationSuitabilityHelper {
         if (cell == null) return 1.0;
         Biome b = cell.getBiome();
         double elev = cell.getElevationOr(0.0);
-        if (b == Biome.BEACH || (elev > 0 && elev <= 25.0 && cell.getWaterResource() != null && cell.getWaterResource() > 0.6)) {
-            return 2.5;
+        boolean isCoastal = Boolean.TRUE.equals(cell.getIsCoastal())
+                || b == Biome.BEACH
+                || (elev > 0.0 && elev <= 50.0 && cell.getCoastalMarineResourceOr(0.0) > 100.0);
+        if (isCoastal) {
+            double marineBio = cell.getCoastalMarineResourceOr(0.0) + cell.getBiomassFishOr(0.0);
+            return 1.0 + 1.5 * Math.tanh(Math.max(marineBio, 200.0) / 400.0);
         }
         return 1.0;
     }
@@ -308,7 +312,9 @@ final class ProceduralPopulationSuitabilityHelper {
 
         double elev = cell.getElevationOr(0.0);
         double rain = cell.getRainfallOr(0.0);
-        boolean isCoastal = (b == Biome.BEACH || b == Biome.PLAINS || elev < 50.0);
+        boolean isCoastal = Boolean.TRUE.equals(cell.getIsCoastal())
+                || b == Biome.BEACH
+                || (elev >= 0.0 && elev <= 30.0 && cell.getCoastalMarineResourceOr(0.0) > 100.0);
         boolean isRiverValley = (b == Biome.PLAINS && rain > 0.4) || water > 400.0;
 
         double aquiferScore = Math.min(1.0, accessibleAquifer / 10000.0);

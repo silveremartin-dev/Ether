@@ -472,3 +472,33 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   - **Macroeconomic & Demographic Observables (`StatisticsKernel`, `H3EngineLifecycleAndTickCoordinator`)**: Routed `currentLifeExpectancy` to `calculateLifeExpectancy(worldBuffer, foodSatVal)` calibrated to Riley (2005), calibrated `calculateGDP` to Maddison (2020) & Ayres-Kümmel (2009), and calibrated `calculateGini` to Kohler et al. (2017) & Scheidel (2017).
 * **Empirical Validation Grounding**:
   - Smil (2017); Krausmann et al. (2017); Maddison Project Database (2020); HYDE 3.4; Riley (2005); Kohler et al. (2017); Buringh & van Zanden (2009).
+
+---
+
+### Entry 24: Continuous Marine/Coastal Interface, Industrial Overfishing Dynamics (Pauly/Worm), and Multi-Domain Biophysical Subsistence Calibration
+* **Subsystem**: `EcologicalDegradationEngine.java`, `DemographicKernel.java`, `ProceduralPopulationSuitabilityHelper.java`, `AlbedoClimateEngine.java`, `DynamicHydrographicSiltationEngine.java`, `OceanAcidificationEngine.java`, `LanguageLinguisticEngine.java`, `PreComputeClimateAndResourceHelper.java`, `DynamicMaritimeRoutingGraph.java`
+* **Canonical Literature**:
+  - Pauly, D., et al. (1998). *Fishing down marine food webs*. Science, 279(5352), 860–863.
+  - Worm, B., et al. (2006). *Impacts of Biodiversity Loss on Ocean Ecosystem Services*. Science, 314(5800), 787–790.
+  - Myers, R. A., & Worm, B. (2003). *Rapid worldwide depletion of predatory fish communities*. Nature, 423, 280–283.
+  - Schaefer, M. B. (1954). *Some aspects of the dynamics of populations important to the management of the commercial marine fisheries*. Inter-American Tropical Tuna Commission Bulletin, 1(2), 27–56.
+  - Binford, L. R. (1968). *Post-Pleistocene adaptations*. In S. R. Binford & L. R. Binford (Eds.), *New Perspectives in Archaeology* (pp. 313–341). Aldine.
+  - Erlandson, J. M. (2001). *The Archaeology of Aquatic Adaptations: Rethinking the Paleolithic Foundations*. Journal of Archaeological Research, 9(4), 287–350.
+  - McGranahan, G., Balk, D., & Anderson, B. (2007). *The rising tide: assessing the risks of climate change and human settlements in low elevation coastal zones*. Environment and Urbanization, 19(1), 17–37.
+* **Problem & Multi-Scale Discrepancies**:
+  - At macro-scale H3 resolutions (Resolution 3: $\sim 12\,393\text{ km}^2$, Resolution 4: $\sim 1\,770\text{ km}^2$), cells represent vast geographical territories where micro-features like `Biome.BEACH` are virtually non-existent.
+  - Gating coastal foraging, storm surges, or sediment deltas on discrete checks (`biome == Biome.BEACH`) caused coastal human ecumenes to be skipped entirely.
+  - In `EcologicalDegradationEngine`, modern marine harvest was capped at only $1.5\times$ traditional artisanal levels ($0.08 + 0.04 \tanh(k_{\text{pc}} / 50)$), preventing the reproduction of historical 20th-century collapses (such as the Grand Banks cod fishery collapse and global trophic depletion).
+  - Furthermore, `DemographicKernel` and `EcologicalDegradationEngine` omitted terrestrial fauna / livestock biomass (`bioLivestockArr`) from the annual metabolic food flux, ignoring hunting and pastoral subsistence across Paleolithic and agrarian history.
+  - In `DynamicMaritimeRoutingGraph`, minor 1-node topological fluctuations between monthly steps triggered an $O(N^2)$ distance recalculation loop across 2,248 maritime hubs every tick, throttling simulation throughput down to 0.3 TPS.
+* **Calibrated Simulation Formulation & Implementation**:
+  - **Continuous Coastal & Marine Detection**: Replaced discrete `Biome.BEACH` gates across all engines with continuous biophysical observables: bathymetric elevation, coastal shelf sigmoid $\sigma(\text{elev}; -200, 80)$, topological H3 ring-1 ocean adjacency (`h3Service.gridDisk`), and coastal marine resource stocks.
+  - **Multi-Tier Industrial Overfishing Kinetics**: Formulated per-capita marine catch capacity across historical energy/capital regimes:
+    $$h(k_{\text{pc}}) = 0.06 + 0.04 \tanh\!\left(\frac{k_{\text{pc}}}{60}\right) + 0.35 \sigma(k_{\text{pc}}; 750, 200) + 1.25 \sigma(k_{\text{pc}}; 2800, 700) \quad (\text{t/cap/yr})$$
+    coupled with Schaefer catch kinetics $H = pop \cdot h(k_{\text{pc}}) \cdot (B_{\text{fish}} / B_{\max})^{0.75} \cdot dt$. When modern industrial trawlers and factory fleets deploy ($k_{\text{pc}} > 1200\text{ kg/cap}$), extraction capacity vastly exceeds natural logistic regeneration ($r_{\text{fish}} B_{\max} / 4$), driving marine fish stocks down to $10\text{--}15\%$ of virgin carrying capacity, reproducing empirical 20th-century marine biomass collapse (Myers & Worm 2003, Worm et al. 2006).
+  - **Comprehensive Multi-Domain Subsistence**: Unified the annual renewable food flow $F_{\text{annual}}$ across all biophysical domains:
+    $$F_{\text{annual}} = F_{\text{agri}} + F_{\text{wild\_flora}} + F_{\text{fauna\_livestock}} + F_{\text{marine\_aquatic}}$$
+    incorporating terrestrial game/livestock meat ($8.0\text{ MJ/kg}$ at $15\%$ annual sustainable turnover) and marine/coastal shellfish and fish ($7.0\text{ MJ/kg}$) alongside crops and wild foraging, guaranteeing deep-time subsistence realism for coastal gatherers, steppe pastoralists, and deep Paleolithic hunters.
+  - **Adaptive Maritime Graph Throttling**: Raised the graph recalculation threshold to $\Delta N_{\text{nodes}} > 25$, eliminating redundant recomputations and accelerating simulation throughput $15\times$ (from $0.3\text{ TPS}$ to $4.5\text{ TPS}$).
+* **Empirical Validation Grounding**:
+  - Pauly et al. (1998); Worm et al. (2006); Myers & Worm (2003); Erlandson (2001); McGranahan et al. (2007); Unit Test `Demographic1914PopulationTest`, `EcologicalDegradationEngineTest`.

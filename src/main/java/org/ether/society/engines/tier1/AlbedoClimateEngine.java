@@ -133,7 +133,7 @@ public class AlbedoClimateEngine {
 
             // ── 3. Megastorm / Flood Disaster Impact ──────────────────────────
             double rain = cell.getRainfallOr(500.0);
-            if (rain > 900.0 && elev < 30.0 && cell.getBiome() == Biome.BEACH) {
+            if (rain > 900.0 && elev < 30.0 && (Boolean.TRUE.equals(cell.getIsCoastal()) || cell.getBiome() == Biome.BEACH || elev < 10.0)) {
                 floodDisasterCounter.incrementAndGet();
                 double curCap = cell.getResourceCapitalOr(0.0);
                 // Continuous exponential storm damage: retention = exp(-lambda * dt)

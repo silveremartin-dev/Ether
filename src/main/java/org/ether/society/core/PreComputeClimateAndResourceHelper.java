@@ -194,10 +194,40 @@ final class PreComputeClimateAndResourceHelper {
      * @param cells    spatial H3 cell list
      */
     static void initializeResources(Scenario scenario, List<H3Cell> cells) {
+        java.util.Set<Long> oceanIndices = new java.util.HashSet<>();
+        for (H3Cell c : cells) {
+            if (c != null && c.getH3Index() != null && c.getH3Index() != 0L) {
+                double e = c.getElevationOr(0.0);
+                Biome b = c.getBiome();
+                if (e <= 0.0 || b == Biome.OCEAN || b == Biome.DEEP_OCEAN) {
+                    oceanIndices.add(c.getH3Index());
+                }
+            }
+        }
+
+        org.ether.society.h3.H3Service h3Service = null;
+        try {
+            h3Service = org.ether.society.h3.H3Service.getInstance();
+        } catch (Exception ignored) {}
+
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             Biome biome = cell.getBiome() != null ? cell.getBiome() : Biome.PLAINS;
-            boolean coastal = biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() > 0 && cell.getElevation() < 150.0);
+            boolean coastal = Boolean.TRUE.equals(cell.getIsCoastal()) || biome == Biome.BEACH;
+            if (!coastal && h3Service != null && cell.getH3Index() != null && cell.getH3Index() != 0L && !oceanIndices.contains(cell.getH3Index())) {
+                try {
+                    List<Long> neighbors = h3Service.gridDisk(cell.getH3Index(), 1);
+                    for (Long n : neighbors) {
+                        if (oceanIndices.contains(n)) {
+                            coastal = true;
+                            break;
+                        }
+                    }
+                } catch (Exception ignored) {}
+            }
+            if (!coastal && (cell.getElevation() != null && cell.getElevation() > 0 && cell.getElevation() < 50.0 && cell.getCoastalMarineResourceOr(0.0) > 0.0)) {
+                coastal = true;
+            }
             cell.setIsCoastal(coastal);
             if (coastal) {
                 if (cell.getCoastalMarineResource() == null || cell.getCoastalMarineResource() == 0.0) {

@@ -77,7 +77,7 @@ public class DynamicMaritimeRoutingGraph {
 
         // Trigger recalculation if average tech changes significantly (>0.2) or node topology changes
         boolean techShift = Math.abs(currentAvgTech - cachedAvgTech) > 0.2;
-        boolean topologyShift = currentNodeCount != cachedNodeCount;
+        boolean topologyShift = Math.abs(currentNodeCount - cachedNodeCount) > 25;
 
         if (techShift || topologyShift || routingGraph.isEmpty()) {
             cachedAvgTech = currentAvgTech;
