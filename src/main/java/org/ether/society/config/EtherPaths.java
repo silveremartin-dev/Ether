@@ -130,6 +130,7 @@ public final class EtherPaths {
         // Ensure Earth planetary sub-directories exist
         createDirSafely(getEarthEventsDir(), "Earth - Events");
         createDirSafely(getEarthHistoryDir(), "Earth - History");
+        createDirSafely(getEarthTreatiesDir(), "Earth - Treaties");
         createDirSafely(getEarthPaleoDir(), "Earth - Paleo");
         createDirSafely(getEarthLeadersDir(), "Earth - Leaders");
         createDirSafely(getEarthVariablesHistoricalDir(), "Earth - Variables Historical");
@@ -280,6 +281,15 @@ public final class EtherPaths {
     }
 
     /**
+     * Retrieves the Earth historical geopolitical treaties directory ({@code data/maps/ether/earth/history/treaties/}).
+     *
+     * @return absolute path to data/maps/ether/earth/history/treaties/
+     */
+    public static Path getEarthTreatiesDir() {
+        return getEarthHistoryDir().resolve("treaties");
+    }
+
+    /**
      * Retrieves the Earth paleogeography and archaeological directory ({@code data/maps/ether/earth/history/paleo/}).
      *
      * @return absolute path to data/maps/ether/earth/history/paleo/
@@ -298,30 +308,39 @@ public final class EtherPaths {
     }
 
     /**
-     * Retrieves the Earth 1D variables root directory ({@code data/ether/earth/variables/}).
+     * Retrieves the central 1D variables root directory ({@code data/variables/}).
      *
-     * @return absolute path to data/ether/earth/variables/
+     * @return absolute path to data/variables/
+     */
+    public static Path getVariablesDir() {
+        return dataDir.resolve("variables");
+    }
+
+    /**
+     * Retrieves the Earth 1D variables root directory ({@code data/variables/}).
+     *
+     * @return absolute path to data/variables/
      */
     public static Path getEarthVariablesDir() {
-        return getEarthDir().resolve("variables");
+        return getVariablesDir();
     }
 
     /**
-     * Retrieves the Earth 1D historical variables directory ({@code data/ether/earth/variables/historical/}).
+     * Retrieves the Earth 1D historical variables directory ({@code data/variables/historical/}).
      *
-     * @return absolute path to data/ether/earth/variables/historical/
+     * @return absolute path to data/variables/historical/
      */
     public static Path getEarthVariablesHistoricalDir() {
-        return getEarthVariablesDir().resolve("historical");
+        return getVariablesDir().resolve("historical");
     }
 
     /**
-     * Retrieves the Earth 1D projection variables directory ({@code data/ether/earth/variables/projections/}).
+     * Retrieves the Earth 1D projection variables directory ({@code data/variables/projections/}).
      *
-     * @return absolute path to data/ether/earth/variables/projections/
+     * @return absolute path to data/variables/projections/
      */
     public static Path getEarthVariablesProjectionsDir() {
-        return getEarthVariablesDir().resolve("projections");
+        return getVariablesDir().resolve("projections");
     }
 
     // ── Saves Sub-Directories ─────────────────────────────────────────────────

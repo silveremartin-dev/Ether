@@ -65,14 +65,14 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
     * Every directory contains `provenance_and_sources.json` and `README.md` detailing geophysical and demographic sources.
   * **Discrete Catalogs & Vector Geometries**:
     * `history/events/historical_events_catalog.json`: Historical event records (chronological shocks, wars, scientific milestones).
-    * `history/treaties_and_transitions.json`: Gapless epoch transitions and geopolitical boundaries.
+    * `history/treaties/treaties_and_transitions.json`: Gapless epoch transitions and geopolitical boundaries.
     * `history/paleo/`: Paleolithic vector geometries (`hominin_hearths.json`, `ice_sheets.json`, `migration_routes.json` with 19 global migration corridors).
     * `history/leaders/earth_historical_leaders.json`: Historical figures and catalytic leadership interventions.
-  * **1D Continuous Variables & State Baselines (`data/maps/ether/<planet>/variables/`)**:
+  * **1D Continuous Variables & State Baselines (`data/variables/`)**:
     * Stores scalar time-series trajectories and epoch state initialization vectors in 1 dimension ($t \to \text{value}$).
-    * `variables/historical/paleo_sources_1d.json`: Deep Paleolithic ($t_0 < -10\,000\,\text{BP}$) initialized to **`PALEO_SOURCES`** (EPICA Dome C ice cores, PaleoClim v1.2, Biraben 1979 / Kremer 1993).
-    * `variables/historical/hyde_maddison_historical_1d.json`: Historical eras ($-10\,000\,\text{BP} \le t_0 \le 2025\,\text{CE}$) initialized to **`HYDE_MADDISON`** (HYDE 3.4, Maddison Project 2020, ECMWF ERA5).
-    * `variables/projections/`: Future trajectories ($t_0 \ge 2025\,\text{CE}$) selectable via UI ComboBox between **`SSP1`**, **`SSP2`** (default), **`SSP3`**, **`SSP4`**, **`SSP5`**, and **`ETHER_CALIBRATED`**.
+    * `data/variables/historical/paleo_sources_1d.json`: Deep Paleolithic ($t_0 < -10\,000\,\text{BP}$) initialized to **`PALEO_SOURCES`** (EPICA Dome C ice cores, PaleoClim v1.2, Biraben 1979 / Kremer 1993).
+    * `data/variables/historical/hyde_maddison_historical_1d.json`: Historical eras ($-10\,000\,\text{BP} \le t_0 \le 2025\,\text{CE}$) initialized to **`HYDE_MADDISON`** (HYDE 3.4, Maddison Project 2020, ECMWF ERA5).
+    * `data/variables/projections/`: Future trajectories ($t_0 \ge 2025\,\text{CE}$) selectable via UI ComboBox between **`SSP1`**, **`SSP2`** (default), **`SSP3`**, **`SSP4`**, **`SSP5`**, and **`ETHER_CALIBRATED`**.
   * **Legacy Compatibility**: Root-level directories (`data/variables/`, `data/history/`, `data/historical_events_catalog/`, `data/presets/leaders/`) are maintained as secondary fallbacks, with canonical priority given to `data/maps/ether/<planet>/`.
 * **Zero Double Transition Invariant**: ERA5 observational data governs the recent past until the end of real observations (2024/2025), switching directly to the chosen prospective trajectory with zero ad-hoc intermediate approximations. Monotone cubic Hermite spline interpolation (PCHIP, Fritsch & Carlson 1980) guarantees monotonicity and eliminates Runge overshoot around volcanic and demographic crises (e.g., 1816 Tambora, 536 volcanic winter, 1347 Black Death).
 

@@ -55,7 +55,10 @@ public class HistoricalStateRegistry {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalStateRegistry.class);
 
     /** Primary path relative to the working directory (Maven project root). */
-    private static final String PRIMARY_PATH = "data/maps/ether/earth/history/treaties_and_transitions.json";
+    private static final String PRIMARY_PATH = "data/maps/ether/earth/history/treaties/treaties_and_transitions.json";
+
+    /** Fallback path before relocation into treaties/ sub-directory. */
+    private static final String FALLBACK_PATH = "data/maps/ether/earth/history/treaties_and_transitions.json";
 
     /** Legacy fallback path for backward compatibility. */
     private static final String LEGACY_PATH = "data/ether/earth/history/treaties_and_transitions.json";
@@ -211,6 +214,15 @@ public class HistoricalStateRegistry {
 
         // 1. Try filesystem path (runtime / Maven execution)
         Path fsPath = Path.of(PRIMARY_PATH);
+        if (!Files.exists(fsPath)) {
+            try {
+                fsPath = org.ether.society.config.EtherPaths.getEarthTreatiesDir().resolve("treaties_and_transitions.json");
+            } catch (Exception ignored) {
+            }
+        }
+        if (!Files.exists(fsPath)) {
+            fsPath = Path.of(FALLBACK_PATH);
+        }
         if (!Files.exists(fsPath)) {
             fsPath = Path.of(LEGACY_PATH);
         }

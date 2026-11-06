@@ -70,9 +70,6 @@ final class HistoricalBenchmarkDatasetRepository {
     private static void loadPredictiveBenchmarksResource() {
         File predFile = org.ether.society.config.EtherPaths.getEarthVariablesProjectionsDir().resolve("predictive_socioeconomic_projections_2026_2100.json").toFile();
         if (!predFile.exists()) {
-            predFile = new File("data/maps/ether/earth/variables/projections/predictive_socioeconomic_projections_2026_2100.json");
-        }
-        if (!predFile.exists()) {
             predFile = new File("data/variables/projections/predictive_socioeconomic_projections_2026_2100.json");
         }
         if (!predFile.exists()) {
@@ -131,9 +128,6 @@ final class HistoricalBenchmarkDatasetRepository {
      */
     private static void loadEtherCalibratedProjection(ObjectMapper mapper) throws Exception {
         File etherCalibFile = org.ether.society.config.EtherPaths.getEarthVariablesProjectionsDir().resolve("ether_calibrated_projection_1d.json").toFile();
-        if (!etherCalibFile.exists()) {
-            etherCalibFile = new File("data/maps/ether/earth/variables/projections/ether_calibrated_projection_1d.json");
-        }
         if (!etherCalibFile.exists()) {
             etherCalibFile = new File("data/variables/projections/ether_calibrated_projection_1d.json");
         }

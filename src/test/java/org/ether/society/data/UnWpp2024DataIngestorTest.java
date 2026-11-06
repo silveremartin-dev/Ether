@@ -24,14 +24,8 @@ public class UnWpp2024DataIngestorTest {
             return;
         }
 
-        File outFile = new File("data/maps/ether/earth/variables/projections/un_wpp_2024_world_projections_1d.json");
+        File outFile = new File("data/variables/projections/un_wpp_2024_world_projections_1d.json");
         UnWpp2024DataIngestor.ingestAndExportJson(gzFile, outFile);
-
-        // Also update legacy mirror if directory exists
-        File legacyFile = new File("data/variables/projections/un_wpp_2024_world_projections_1d.json");
-        if (legacyFile.getParentFile().exists()) {
-            UnWpp2024DataIngestor.ingestAndExportJson(gzFile, legacyFile);
-        }
 
         assertTrue(outFile.exists(), "UN WPP 2024 json should be generated");
         assertTrue(outFile.length() > 500, "Output file should have content");
