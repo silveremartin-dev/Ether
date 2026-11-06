@@ -101,24 +101,22 @@ public class BioMolecularEpidemiologyEngine {
             if (livestock > 10.0 && pop >= 50) {
                 double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
                 double animalCrowding = livestock / areaKm2;
+                double humanDensity = pop / areaKm2;
                 double pathogenSheddingLoad = 1.0 + Math.log(1.0 + animalCrowding * 0.1);
-                double exposureDensity = (livestock * pop) / (areaKm2 * 100.0);
+                double exposureDensity = (animalCrowding * humanDensity) / 100.0;
                 double immuneProtection = 1.0 + immunoglobulinSynthesisRate;
                 double exponent = -MAMMALIAN_PHYLOGENETIC_SPILLOVER_COEFF * (exposureDensity * pathogenSheddingLoad / immuneProtection) * dtYears;
                 double pSpillover = 1.0 - Math.exp(Math.max(-10.0, exponent));
 
                 int currentInfected = cell.getEpidemicInfectedOr(0);
+                int currentRecovered = cell.getEpidemicRecoveredOr(0);
+                int susceptible = Math.max(0, pop - currentInfected - currentRecovered);
 
                 // Stateless deterministic PRNG keyed to H3 cell index and zoonotic stream (101L)
                 double pseudoRand = org.ether.society.util.DeterministicPRNG.nextDouble(cell.getH3Index(), 101L);
 
-
-
-
-
-
-                if (currentInfected == 0 && pSpillover > 0.005 && (pSpillover > 0.10 || pseudoRand < pSpillover)) {
-                    int initialOutbreak = Math.max(5, (int) Math.round(pop * Math.min(0.20, pSpillover * 3.0)));
+                if (currentInfected == 0 && susceptible > 20 && pSpillover > 0.005 && pseudoRand < pSpillover) {
+                    int initialOutbreak = Math.max(5, (int) Math.round(susceptible * Math.min(0.15, pSpillover * 2.0)));
                     cell.setEpidemicInfected(initialOutbreak);
                     cell.setActivePathogenName("Zoonotic Pathogen (Spillover)");
                     newSpilloverOutbreaks++;
@@ -132,11 +130,11 @@ public class BioMolecularEpidemiologyEngine {
                 infected = Math.min(pop, infected);
 
                 // Case fatality elevated by malnutrition / low immunoglobulin synthesis
-                double caseFatalityRate = Math.clamp(0.04 * (1.5 - immunoglobulinSynthesisRate), 0.01, 0.25);
+                double caseFatalityRate = Math.clamp(0.015 * (1.5 - immunoglobulinSynthesisRate), 0.003, 0.12);
                 int deaths = Math.min(infected, (int) Math.round(infected * caseFatalityRate * dtMonthlyRatio));
 
-                // Recovery rate
-                double recoveryRate = 0.15 * dtMonthlyRatio;
+                // Recovery rate (acute infectious wave clears into acquired immunity over 2-3 months)
+                double recoveryRate = 0.45 * dtMonthlyRatio;
                 int recovered = Math.min(infected - deaths, (int) Math.round(infected * recoveryRate));
 
                 int totalRecovered = (cell.getEpidemicRecoveredOr(0)) + recovered;

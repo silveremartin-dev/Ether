@@ -121,7 +121,8 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
             infected = Math.min(pop, infected);
 
             double beta = 0.35; // Transmission rate
-            int susceptible = Math.max(0, pop - infected);
+            int recovered = Math.min(pop, cell.getEpidemicRecoveredOr(0));
+            int susceptible = Math.max(0, pop - infected - recovered);
             double lambda = beta * ((double) infected / pop);
             double probExposure = 1.0 - Math.exp(-lambda * (dt / 10.0));
             int newExposed = (int) Math.round(susceptible * probExposure);
@@ -141,9 +142,10 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
 
             int netInfected = Math.clamp(infected + newInfectious - totalRemovals, 0, pop);
             cell.setEpidemicInfected(netInfected);
+            cell.setEpidemicRecovered(Math.min(Math.max(0, pop - deaths), recovered + recoveries));
             H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, pop - deaths));
 
-            // Spatial propagation to immediate H3 neighbors
+            // Spatial propagation to immediate H3 neighbors (only into susceptible hosts)
             if (netInfected > 50 && cell.getH3Index() != null) {
                 List<Long> neighborIndexes = h3Service.getNeighbors(cell.getH3Index());
                 if (neighborIndexes != null && !neighborIndexes.isEmpty()) {
@@ -154,8 +156,14 @@ public class SpatialMetapopulationSEIREngine implements ProceduralEnginePlugin {
                         for (Long nIdx : neighborIndexes) {
                             H3Cell neighbor = lookup.get(nIdx);
                             if (neighbor != null && neighbor.getPopulation() != null && neighbor.getPopulation() > 0) {
+                                int nPop = neighbor.getPopulation();
                                 int nInfected = neighbor.getEpidemicInfectedOr(0);
-                                neighbor.setEpidemicInfected(Math.min(neighbor.getPopulation(), nInfected + perNeighborSpread));
+                                int nRecovered = neighbor.getEpidemicRecoveredOr(0);
+                                int nSusceptible = Math.max(0, nPop - nInfected - nRecovered);
+                                int actualSpread = Math.min(nSusceptible, perNeighborSpread);
+                                if (actualSpread > 0) {
+                                    neighbor.setEpidemicInfected(nInfected + actualSpread);
+                                }
                             }
                         }
                     }

@@ -48,59 +48,40 @@ public class PhysicalEnergyGridEngine {
         double capital = cell.getResourceCapitalOr(0.0);
         double capitalPerCapita = Math.max(0.0, capital / pop);
 
-        // Smooth prime-mover Carnot/electromechanical converter efficiency (15% somatic -> 85% electric grid, Smil 2017)
-        double converterEfficiency = 0.15 + 0.70 * (1.0 - Math.exp(-capitalPerCapita / 400.0));
         // Physical exosomatic power ceiling bounded smoothly by installed prime-mover capital stock (Garrett 2011; Lotka 1922)
-        double maxHarnessableWatts = 250.0 + 100000.0 * (1.0 - Math.exp(-capitalPerCapita / 5.0));
+        double maxHarnessableWatts = 350.0 + 100000.0 * (1.0 - Math.exp(-capitalPerCapita / 5.0));
 
-        // 1. Direct somatic mechanical labor (~50 W continuous work output)
-        double humanLaborWatts = 50.0;
+        // 1. Somatic basal + mechanical labor (~135 W continuous somatic metabolism + work output, Smil 2017)
+        double somaticWatts = 135.0;
 
-        // 2. Smooth wood/biomass thermal work (hearths, kilns, bloomeries)
+        // 2. Smooth domestic hearth & wood/biomass thermal flux (~212 W/cap in foraging & agrarian regimes, Smil 2017)
         double woodBiomassKg = Math.max(cell.getBiomassNaturalOr(0.0), cell.getWoodResourceOr(0.0));
-        double woodGate = SmoothMath.sigmoid(woodBiomassKg, 10.0, 4.0);
-        double firewoodThermalWatts = 150.0 + woodGate * (300.0 + SmoothMath.softmin(350.0, capitalPerCapita * 15.0, 0.05));
-        double thermalWorkWatts = firewoodThermalWatts * converterEfficiency;
+        double woodThermalWatts = 212.0 * Math.tanh((woodBiomassKg + 50.0) / 50.0);
 
-        // 3. Smooth draft animal traction (oxen, horses, camelids)
-        double livestock = cell.getBiomassLivestockOr(0.0);
-        double livestockGate = SmoothMath.sigmoid(livestock, 10.0, 4.0);
-        double draftRatio = SmoothMath.softmin(2.5,
-                (livestock / SmoothMath.softmax(10.0, pop * 0.1, 0.5)) + SmoothMath.softmin(1.0, capitalPerCapita * 0.05, 5.0),
-                2.0);
-        double animalTractionWatts = 120.0 * livestockGate * draftRatio;
+        // 3. Smooth draft animal traction & plows (activates smoothly above kpc ~ 150 kg/cap, up to +25 W/cap)
+        double animalTractionWatts = 25.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 150.0, 0.05) / 250.0);
 
-        double mechanicalPowerWatts = humanLaborWatts + thermalWorkWatts + animalTractionWatts;
+        // 4. Smooth Wind / Watermill kinetic & charcoal metallurgical harvesting (activates smoothly above kpc ~ 520 kg/cap, up to +220 W/cap)
+        double millAndCharcoalWatts = 220.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 520.0, 0.05) / 420.0);
 
-        // 4. Smooth Wind / Watermill kinetic harvesting (activates smoothly around K/N ~ 20)
-        double millGate = SmoothMath.sigmoid(capitalPerCapita, 20.0, 6.0);
-        double windEnergyW = cell.getEnergyWindOr(0.0);
-        double millFactor = SmoothMath.softmin(3.0, capitalPerCapita / 50.0, 3.0);
-        double kineticHarness = windEnergyW * 0.05 + 400.0 * millFactor;
-        double maxPerCapitaWindHydro = 250.0 + 2250.0 * (1.0 - Math.exp(-capitalPerCapita / 200.0));
-        mechanicalPowerWatts += millGate * (120.0 * millFactor + SmoothMath.softmin(maxPerCapitaWindHydro, kineticHarness / pop, 0.02));
-
-        // 5. Smooth Industrial Fossil Power (Coal, Oil, Gas) - Gated by authentic steam/heat engine capital (kpc >= 700)
+        // 5. Smooth Industrial Fossil Power (Coal, Oil, Gas) - Gated by authentic steam/heat engine capital (kpc >= 1000 kg/cap)
         double coalStock = cell.getResourceCoalOr(0.0);
         double oilStock = cell.getResourceOilOr(0.0);
         double gasStock = cell.getResourceGasOr(0.0);
-        double industrialFactor = SmoothMath.smoothClamp(1.0 + (capitalPerCapita - 600.0) * 0.005, 0.5, 3.5, 3.0);
-        double coalAvail = Math.tanh(Math.max(0.0, coalStock) / SmoothMath.softmax(10.0, pop * 0.05, 0.5));
-        double hydroAvail = Math.tanh(Math.max(0.0, oilStock + gasStock) / SmoothMath.softmax(5.0, pop * 0.02, 0.5));
-        double fossilPrimeMoverGate = SmoothMath.sigmoid(capitalPerCapita, 800.0, 150.0);
-        mechanicalPowerWatts += fossilPrimeMoverGate * (3200.0 * coalAvail + 4200.0 * hydroAvail) * industrialFactor * converterEfficiency;
+        double fossilAvailability = 0.65 + 0.35 * Math.tanh(Math.max(0.0, coalStock + oilStock + gasStock) / SmoothMath.softmax(5.0, pop * 0.02, 0.5));
+        double steamCoalWatts = 600.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 1000.0, 0.02) / 1800.0) * fossilAvailability;
 
-        // 6. Smooth Fissile Nuclear Power Grid - Gated by 20th century high-capital facilities (kpc >= 4000)
+        // 6. Smooth Modern Electric / Hydrocarbon / Fissile Grid - Gated by 20th/21st century capital (kpc >= 4000 kg/cap)
         double uraniumStock = cell.getResourceUraniumOr(0.0);
-        double reactorCapitalGate = SmoothMath.sigmoid(capitalPerCapita, 4500.0, 800.0);
-        double modernFactor = SmoothMath.smoothClamp(1.0 + capitalPerCapita * 0.0002, 0.5, 3.0, 3.0);
-        double fissileAvailability = Math.tanh(Math.max(0.0, uraniumStock) / SmoothMath.softmax(1.0, pop * 0.001, 2.0));
-        mechanicalPowerWatts += reactorCapitalGate * 25000.0 * modernFactor * fissileAvailability * converterEfficiency;
+        double fissileBonus = 1.0 + 0.25 * Math.tanh(Math.max(0.0, uraniumStock) / SmoothMath.softmax(1.0, pop * 0.001, 2.0));
+        double modernGridWatts = 1350.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 4000.0, 0.01) / 10000.0) * fissileBonus;
 
-        // 7. Smooth High-Capital Solar/Renewables/Fusion Grid (activates smoothly above K/N ~ 12000, plus explicit habitatEnergyKw)
-        double highFluxGate = SmoothMath.sigmoid(capitalPerCapita, 12000.0, 2500.0);
-        double postScarcityFactor = SmoothMath.softmin(5.0, capitalPerCapita / 12000.0, 2.0);
-        mechanicalPowerWatts += highFluxGate * 60000.0 * postScarcityFactor * converterEfficiency;
+        // 7. Smooth High-Capital Post-Scarcity Solar/Fusion Grid (activates smoothly above K/N ~ 28000, plus explicit habitatEnergyKw)
+        double highFluxGate = SmoothMath.sigmoid(capitalPerCapita, 28000.0, 4000.0);
+        double postScarcityWatts = highFluxGate * 25000.0 * SmoothMath.softmin(5.0, capitalPerCapita / 28000.0, 2.0);
+
+        double mechanicalPowerWatts = somaticWatts + woodThermalWatts + animalTractionWatts
+                + millAndCharcoalWatts + steamCoalWatts + modernGridWatts + postScarcityWatts;
 
         double habitatKw = cell.getHabitatEnergyKwOr(0.0);
         if (habitatKw > 0.0) {
@@ -169,10 +150,11 @@ public class PhysicalEnergyGridEngine {
                 cell.setResourceRareEarths(Math.max(0.0, reeStock - reeBurnTons));
             }
 
-            // Authentic Solow-Swan capital accumulation model grounded in useful mechanical power (Solow 1956, Garrett 2011)
-            // Steady-state capital stock per capita k* scales thermodynamically with available mechanical power:
-            // k* = 15.0 (stone/wood baseline) + 12.0 * (powerWatts / 100.0)^1.30
-            double kStar = 15.0 + 12.0 * Math.pow(Math.max(0.1, powerPerCapitaW / 100.0), 1.30);
+            // Authentic Solow-Swan capital accumulation model grounded in useful mechanical power (Solow 1956, Garrett 2011, Krausmann et al. 2017)
+            // Steady-state material capital stock per capita k* scales thermodynamically with available power above somatic hearth baseline (~348 W):
+            double kStar = 5.0
+                    + 580.0 * Math.tanh(SmoothMath.softplus(powerPerCapitaW - 348.0, 0.2) / 38.0)
+                    + 62.0 * Math.pow(SmoothMath.softplus(powerPerCapitaW - 400.0, 0.1) / 100.0, 1.95);
             // Capital depreciation rate delta = 4.0% per year (entropy of physical structures/tools)
             double deltaAnnual = 0.04;
             // Convergence towards thermodynamic steady state k*: dk/dt = delta * (k* - k)

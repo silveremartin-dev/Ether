@@ -1,6 +1,6 @@
 {
   "name" : "Business As Usual: Fossil Fuel Reliance & Warming (SSP5-8.5)",
-  "description" : "\uD83D\uDCC9 SCÃ‰NARIO FUTUR : Business As Usual (Trajectoire GIEC SSP5-8.5)\n\n[DESCRIPTION DES TERMES DE FORÃ‡AGE PHYSIQUE (Tâ‚€)]\nPoursuite de l'extraction des combustibles fossiles traditionnels sans dÃ©ploiement massif de la fusion ni captage du carbone.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Trajectoire de concentration COâ‚‚ non rÃ©gulÃ©e (>1000 ppm en 2100) et hausse thermique globale >4Â°C.\nâ€¢ Submersion marine des mÃ©tropoles cÃ´tiÃ¨res et stress thermique lÃ©tal (tempÃ©rature thermomÃ¨tre mouillÃ© Tw > 35Â°C).\nâ€¢ Effondrement des rendements agricoles tropicaux et vagues de rÃ©fugiÃ©s climatiques vers les hautes latitudes.\n",
+  "description" : "\uD83D\uDCC9 SCÃƒâ€°NARIO FUTUR : Business As Usual (Trajectoire GIEC SSP5-8.5)\n\n[DESCRIPTION DES TERMES DE FORÃƒâ€¡AGE PHYSIQUE (TÃ¢â€šâ‚¬)]\nPoursuite de l'extraction des combustibles fossiles traditionnels sans dÃƒÂ©ploiement massif de la fusion ni captage du carbone.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ Trajectoire de concentration COÃ¢â€šâ€š non rÃƒÂ©gulÃƒÂ©e (>1000 ppm en 2100) et hausse thermique globale >4Ã‚Â°C.\nÃ¢â‚¬Â¢ Submersion marine des mÃƒÂ©tropoles cÃƒÂ´tiÃƒÂ¨res et stress thermique lÃƒÂ©tal (tempÃƒÂ©rature thermomÃƒÂ¨tre mouillÃƒÂ© Tw > 35Ã‚Â°C).\nÃ¢â‚¬Â¢ Effondrement des rendements agricoles tropicaux et vagues de rÃƒÂ©fugiÃƒÂ©s climatiques vers les hautes latitudes.\n",
   "id" : null,
   "presetKey" : "ssp5_85",
   "planetPreset" : {
@@ -38,17 +38,17 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+    "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "Ã°Å¸Å’Â Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "Ã°Å¸Å’Â Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / AnthropocÃ¨ne Moderne) : RÃ©fÃ©rence terrestre contemporaine avec 70,8% d'ocÃ©ans, 15,0Â°C de tempÃ©rature moyenne, 420 ppm de COâ‚‚, mondialisation industrielle et biomes calibrÃ©s par tÃ©lÃ©dÃ©tection satellitaire.",
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / AnthropocÃƒÂ¨ne Moderne) : RÃƒÂ©fÃƒÂ©rence terrestre contemporaine avec 70,8% d'ocÃƒÂ©ans, 15,0Ã‚Â°C de tempÃƒÂ©rature moyenne, 420 ppm de COÃ¢â€šâ€š, mondialisation industrielle et biomes calibrÃƒÂ©s par tÃƒÂ©lÃƒÂ©dÃƒÂ©tection satellitaire.",
     "tidalLocked" : false
   },
   "ecologyPreset" : {
@@ -89,17 +89,17 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+      "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "Ã°Å¸Å’Â Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "Ã°Å¸Å’Â Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / AnthropocÃ¨ne Moderne) : RÃ©fÃ©rence terrestre contemporaine avec 70,8% d'ocÃ©ans, 15,0Â°C de tempÃ©rature moyenne, 420 ppm de COâ‚‚, mondialisation industrielle et biomes calibrÃ©s par tÃ©lÃ©dÃ©tection satellitaire.",
+      "presetDescription" : "\uD83C\uDF0D TERRE (2026 / AnthropocÃƒÂ¨ne Moderne) : RÃƒÂ©fÃƒÂ©rence terrestre contemporaine avec 70,8% d'ocÃƒÂ©ans, 15,0Ã‚Â°C de tempÃƒÂ©rature moyenne, 420 ppm de COÃ¢â€šâ€š, mondialisation industrielle et biomes calibrÃƒÂ©s par tÃƒÂ©lÃƒÂ©dÃƒÂ©tection satellitaire.",
       "tidalLocked" : false
     },
     "terrestrialBiomassGtC" : 450.0,
@@ -120,7 +120,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / AnthropocÃ¨ne Moderne) : RÃ©fÃ©rence terrestre contemporaine avec 70,8% d'ocÃ©ans, 15,0Â°C de tempÃ©rature moyenne, 420 ppm de COâ‚‚, mondialisation industrielle et biomes calibrÃ©s par tÃ©lÃ©dÃ©tection satellitaire."
+    "presetDescription" : "\uD83C\uDF0D TERRE (2026 / AnthropocÃƒÂ¨ne Moderne) : RÃƒÂ©fÃƒÂ©rence terrestre contemporaine avec 70,8% d'ocÃƒÂ©ans, 15,0Ã‚Â°C de tempÃƒÂ©rature moyenne, 420 ppm de COÃ¢â€šâ€š, mondialisation industrielle et biomes calibrÃƒÂ©s par tÃƒÂ©lÃƒÂ©dÃƒÂ©tection satellitaire."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -192,5 +192,6 @@
   "parallelThreadCount" : 0,
   "tier2CliodynamicsEnabled" : true,
   "displayName" : "Business As Usual: Fossil Fuel Reliance & Warming (SSP5-8.5)",
-  "displayDescription" : "\uD83D\uDD25 SCÃ‰NARIO FUTURISTE : Trajectoire Ã‰nergÃ©tique SSP5-8.5 (2026 apr. J.-C.)\n\nDÃ©veloppement intensif basÃ© sur les combustibles fossiles, rÃ©chauffement climatique accÃ©lÃ©rÃ©, Ã©lÃ©vation du niveau de la mer et stress agricole malthusien."
+  "displayDescription" : "\uD83D\uDD25 SCÃƒâ€°NARIO FUTURISTE : Trajectoire Ãƒâ€°nergÃƒÂ©tique SSP5-8.5 (2026 apr. J.-C.)\n\nDÃƒÂ©veloppement intensif basÃƒÂ© sur les combustibles fossiles, rÃƒÂ©chauffement climatique accÃƒÂ©lÃƒÂ©rÃƒÂ©, ÃƒÂ©lÃƒÂ©vation du niveau de la mer et stress agricole malthusien.",
+  "referenceTrajectoryModel" : "SSP5"
 }

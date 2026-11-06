@@ -185,7 +185,7 @@ final class H3EngineLifecycleAndTickCoordinator {
                 float foodPerCapVal = (float) engine.getFoodPerCapita();
                 float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
                 engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(
-                        engine.agentBuffer.getAge(), engine.agentBuffer.getHexIds(), avgTech, foodSatVal);
+                        engine.worldBuffer, foodSatVal);
                 engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(
                         engine.agentBuffer.getBirths(), engine.agentBuffer.getMass());
             }
@@ -259,7 +259,7 @@ final class H3EngineLifecycleAndTickCoordinator {
                 float foodPerCapVal = (float) engine.getFoodPerCapita();
                 float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
                 engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(
-                        engine.agentBuffer.getAge(), engine.agentBuffer.getHexIds(), avgTech, foodSatVal);
+                        engine.worldBuffer, foodSatVal);
                 engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(
                         engine.agentBuffer.getBirths(), engine.agentBuffer.getMass());
 
@@ -398,8 +398,10 @@ final class H3EngineLifecycleAndTickCoordinator {
             engine.currentGDP = engine.statisticsKernel.calculateGDP(
                     engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman(), engine.getAverageTechnology());
             if (engine.agentBuffer != null) {
+                float foodPerCapVal = (float) engine.getFoodPerCapita();
+                float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
                 engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(
-                        engine.agentBuffer.getAge(), engine.agentBuffer.getHexIds());
+                        engine.worldBuffer, foodSatVal);
                 engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(
                         engine.agentBuffer.getBirths(), engine.agentBuffer.getMass());
             }

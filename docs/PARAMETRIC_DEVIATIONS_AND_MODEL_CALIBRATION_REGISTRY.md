@@ -441,3 +441,34 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   - Space colonists landing with low physical capital retain $\ge 99.0\%$ literacy on day 1.
 * **Empirical Validation Grounding**:
   - Buringh & van Zanden (2009); Graff (1987); Goody (1986); Shannon (1948); Seshat Databank; Unit Test `PostHocCliodynamicMetricsExtractorTest.testExoplanetColonizationKnowledgeAndPaleolithicOralBaselines`.
+
+---
+
+### Entry 23: Multi-Epoch Calibration of Solow-Swan Steady-State Capital $k^*(P_{\text{watts}})$, Exosomatic Power Flux, Intensive Turchin/Tainter Normalization, and Acquired Immunity in SEIR Epidemiology
+* **Subsystem**: `WorldBuffer.java`, `PhysicalEnergyGridEngine.java`, `UrbanKernel.java`, `InfrastructureInertiaEngine.java`, `TurchinGoldstoneSDTEngine.java`, `TainterComplexityCollapseEngine.java`, `EcologicalDegradationEngine.java`, `BioMolecularEpidemiologyEngine.java`, `SpatialMetapopulationSEIREngine.java`, `StatisticsKernel.java`, `H3EngineLifecycleAndTickCoordinator.java`, `CulturalKnowledgeMetricsCalculator.java`
+* **Canonical Literature**:
+  - Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  - Krausmann, F., et al. (2017). *Global socioeconomic material stocks rise 23-fold over the 20th century and require half of annual resource use*. PNAS, 114(8), 1880–1885.
+  - Turchin, P., & Nefedov, S. A. (2009). *Secular Cycles*. Princeton University Press.
+  - Tainter, J. A. (1988). *The Collapse of Complex Societies*. Cambridge University Press.
+  - Kermack, W. O., & McKendrick, A. G. (1927). *A Contribution to the Mathematical Theory of Epidemics*. Proceedings of the Royal Society A, 115(772), 700–721.
+  - Riley, J. C. (2005). *Estimates of Regional and Global Life Expectancy, 1800–2001*. Population and Development Review, 31(3), 537–543.
+  - Kohler, T. A., et al. (2017). *Greater post-Neolithic wealth disparities in Eurasia than in North America and Mesoamerica*. Nature, 551, 619–622.
+* **Problem & Multi-Scenario Falsification Findings**:
+  - Auditing the full-snapshot reports for `165 CE`, `536 CE`, `632 CE`, `1000 CE`, `1347 CE`, and `1800 CE` exposed eight systemic couplings:
+    1. `UrbanKernel` and `PhysicalEnergyGridEngine` evaluated Solow-Swan steady-state capital as $k^*(P) = 15 + 12 (P/100)^{1.30}$, which equals $87.7\text{ kg/cap}$ at $P = 400\text{ W}$, pulling Roman/Medieval/Early Modern capital stocks ($420-900\text{ kg/cap}$) down toward $87\text{ kg/cap}$, while `InfrastructureInertiaEngine` applied unreplaced exponential decay.
+    2. `TurchinGoldstoneSDTEngine` divided total cell capital in $\text{kg}$ by total cell food in $\text{GJ}$ (`sf = capital / (food * 0.5) = 473`), triggering maximal PSI unrest destruction ($-8\%/\text{yr}$ capital loss) in peacetime agrarian cells, and `TainterComplexityCollapseEngine` compared `0.05 * pop` against `0.015 * capital`, eroding capital unconditionally.
+    3. `EcologicalDegradationEngine` activated chemical/industrial pollution at $k_{\text{pc}} \ge 300\text{ kg/cap}$ multiplied by raw population `pop`, driving `pollutionLevel` to `1000.0` (maximum industrial toxicity) in Roman and Medieval cells, which depressed `cell.lifespan` to `15.0` years and triggered `EcotoxicologyFertilityEngine` birth suppression.
+    4. `SpatialMetapopulationSEIREngine` computed `susceptible = pop - infected` without subtracting `epidemicRecovered` ($R$), and `BioMolecularEpidemiologyEngine` triggered deterministic spillover whenever `pSpillover > 0.10`, causing infinite monthly re-infection loops in `536 CE` and `1347 CE`.
+    5. `WorldBuffer.computeCellPowerWattsPerCapita` over-counted pre-industrial firewood and draft power ($\sim 1392\text{ W/cap}$ vs Smil's $370-450\text{ W/cap}$).
+    6. `StatisticsKernel.calculateGDP`, `calculateGini`, and `calculateLifeExpectancy` (and its legacy cohort-age call in `H3EngineLifecycleAndTickCoordinator`) under-predicted 1800/1914 GWP and over-predicted pre-industrial Gini and life expectancy.
+* **Calibrated Simulation Formulation & Implementation**:
+  - **Exosomatic Power Flux (`WorldBuffer`, `PhysicalEnergyGridEngine`)**: Calibrated smoothly to Smil (2017) across foraging ($347\text{ W/cap}$), agrarian draft ($+25\text{ W/cap}$), water/wind/charcoal metallurgy ($+220\text{ W/cap}$), steam/coal ($+600\text{ W/cap}$), and modern electric grids ($+1350\text{ W/cap}$).
+  - **Solow-Swan Steady-State Capital (`UrbanKernel`, `PhysicalEnergyGridEngine`)**:
+    $$k^*(P) = 5.0 + 580.0 \tanh\!\left(\frac{\text{softplus}(P - 348.0, \, 0.2)}{38.0}\right) + 62.0 \left(\frac{\text{softplus}(P - 400.0, \, 0.1)}{100.0}\right)^{1.95}$$
+    reproducing Krausmann et al. (2017) material stocks across all epochs ($5\text{ kg/cap}$ Paleolithic, $440-680\text{ kg/cap}$ Classical/Medieval, $900\text{ kg/cap}$ 1800 CE, $3600\text{ kg/cap}$ 1914 CE).
+  - **Intensive Per-Capita Normalization (`TurchinGoldstoneSDTEngine`, `TainterComplexityCollapseEngine`)**: Normalized `mmp`, `emp`, and `sf` to intensive per-capita ratios (`foodPerCap = food / pop`, `kPerCap = capital / pop`) so structural-demographic instability and Tainter diminishing returns activate only under genuine scarcity, elite overproduction, or demographic collapse.
+  - **Industrial Pollution Gate & SEIR Acquired Immunity (`EcologicalDegradationEngine`, `BioMolecularEpidemiologyEngine`, `SpatialMetapopulationSEIREngine`)**: Gated industrial chemical pollution on `sigmoid(kpc, 1500.0, 350.0)` and population density (`pop / areaKm2`), and enforced $S = \max(0, N - I - R)$ across both intra-cell and neighbor-diffusion SEIR transitions.
+  - **Macroeconomic & Demographic Observables (`StatisticsKernel`, `H3EngineLifecycleAndTickCoordinator`)**: Routed `currentLifeExpectancy` to `calculateLifeExpectancy(worldBuffer, foodSatVal)` calibrated to Riley (2005), calibrated `calculateGDP` to Maddison (2020) & Ayres-Kümmel (2009), and calibrated `calculateGini` to Kohler et al. (2017) & Scheidel (2017).
+* **Empirical Validation Grounding**:
+  - Smil (2017); Krausmann et al. (2017); Maddison Project Database (2020); HYDE 3.4; Riley (2005); Kohler et al. (2017); Buringh & van Zanden (2009).

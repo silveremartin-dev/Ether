@@ -72,14 +72,17 @@ public class EcologicalDegradationEngine {
             double attenuatedPollution = Math.max(0.0, currPollution * Math.pow(0.92, dtMonthlyRatio) - 1.2 * dtMonthlyRatio);
             if (pop > 0) {
                 double capPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-                double fossilCombustion = cell.getResourceCoalOr(0.0) * 0.05
+                double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
+                double popDensity = pop / areaKm2;
+                double industrialGate = SmoothMath.sigmoid(capPerCapita, 1500.0, 350.0);
+                double fossilCombustion = (cell.getResourceCoalOr(0.0) * 0.05
                         + cell.getResourceOilOr(0.0) * 0.08
-                        + cell.getResourceGasOr(0.0) * 0.04;
-                double miningGate = SmoothMath.sigmoid(fossilCombustion * 10.0 + capPerCapita / 100.0, 1.0, 0.35);
-                double rawMining = cell.getResourceMetalOr(0.0) * 0.02 * SmoothMath.softmin(3.0, capPerCapita / 50.0, 4.0);
+                        + cell.getResourceGasOr(0.0) * 0.04) * industrialGate;
+                double miningGate = SmoothMath.sigmoid(capPerCapita, 1100.0, 250.0);
+                double rawMining = cell.getResourceMetalOr(0.0) * 0.02 * SmoothMath.softmin(3.0, capPerCapita / 500.0, 4.0);
                 double miningActivity = miningGate * SmoothMath.softmin(25.0, rawMining, 0.5);
-                double mechanizationFactor = 0.002 + 0.068 * SmoothMath.sigmoid(capPerCapita, 300.0, 50.0);
-                double industrialEmission = pop * mechanizationFactor + miningActivity + SmoothMath.softmin(50.0, fossilCombustion, 0.2);
+                double mechanizationFactor = 0.08 * industrialGate;
+                double industrialEmission = popDensity * mechanizationFactor + miningActivity + SmoothMath.softmin(50.0, fossilCombustion, 0.2);
                 cell.setPollutionLevel(Math.min(1000.0, attenuatedPollution + industrialEmission * dtMonthlyRatio));
             } else {
                 cell.setPollutionLevel(attenuatedPollution);

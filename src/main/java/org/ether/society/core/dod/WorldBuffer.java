@@ -257,8 +257,9 @@ public class WorldBuffer {
     public void setOrganismProfile(org.ether.society.model.OrganismBiophysicalProfile p) { if (p != null) this.organismProfile = p; }
 
     /**
-     * Calculates total somatic and exosomatic mechanical and thermal power flux per individual in Watts:
-     * $$P_{\text{watts/cap}} = B_{\text{basal}} + P_{\text{work}} + P_{\text{wood}} \cdot \eta_{\text{conv}} + P_{\text{draft}} + \frac{P_{\text{direct}}}{N} + 18.0 \cdot k_{\text{pc}} \cdot \eta_{\text{conv}}$$
+     * Calculates total somatic and exosomatic mechanical and thermal power flux per individual in Watts,
+     * calibrated to Vaclav Smil (2017) <i>Energy and Civilization: A History</i>:
+     * $$P_{\text{watts/cap}} = B_{\text{basal}} + P_{\text{somatic}} + P_{\text{hearth}} + P_{\text{draft}}(k_{\text{pc}}) + P_{\text{mill}}(k_{\text{pc}}) + P_{\text{steam}}(k_{\text{pc}}) + P_{\text{grid}}(k_{\text{pc}})$$
      *
      * @param index cell buffer index
      * @return total continuous power dissipated per capita in Watts (\(\text{W}\))
@@ -269,24 +270,17 @@ public class WorldBuffer {
         if (pop <= 0.001f) return 0.0f;
         double basalW = organismProfile.basalMetabolicPowerWatts();
         double kpc = Math.max(0.0, resourceCapital[index] / pop);
-        double converterEff = 0.15 + 0.70 * (1.0 - Math.exp(-kpc / 400.0));
-        double woodThermalW = (150.0 + 500.0 * Math.tanh((biomassNatural[index] + woodResource[index]) / 500.0 + kpc * 0.02)) * converterEff;
-        double draftW = 120.0 * Math.tanh(biomassLivestock[index] / Math.max(1.0, pop * 0.25));
-        // Environmental thermal & kinetic harness strictly bounded by physical converter capital (Smil 2017)
-        // Fire power per capita is bounded by domestic heating/cooking hearth limits (~250 W/capita)
-        double fireW = 250.0 * Math.tanh(Math.max(0.0, energyFire[index]) / Math.max(1.0, pop * 400.0));
-        // Wind kinetic harvesting gated by medieval/early modern windmill and sail capital (kpc ~ 150-300)
-        double sigmaWind = SmoothMath.sigmoid(kpc, 250.0, 60.0);
-        double windHarnessedW = 150.0 * sigmaWind * Math.tanh(Math.max(0.0, energyWind[index]) / 1000.0);
-        // Solar photovoltaic/concentrated solar thermal gated by advanced modern capital (kpc ~ 8000+)
-        double sigmaSolar = SmoothMath.sigmoid(kpc, 10000.0, 2500.0);
-        double solarHarnessedW = 1500.0 * sigmaSolar * Math.tanh(Math.max(0.0, energySolar[index]) / 1000.0);
-        double directFluxW = fireW + windHarnessedW + solarHarnessedW;
-        // Passive structural capital (roads, aqueducts, stone masonry) does not generate motive power.
-        // Motive mechanical/electric machinery power requires authentic industrial converter capital (kpc >= 800, Smil 2017)
-        double sigmaIndustrialMachinery = SmoothMath.sigmoid(kpc, 900.0, 200.0);
-        double capitalGridW = 4500.0 * sigmaIndustrialMachinery * converterEff;
-        return (float) (basalW + 50.0 + woodThermalW + draftW + directFluxW + capitalGridW);
+        // 1. Somatic basal + mechanical labor + domestic hearth/firewood thermal baseline (~347 W/cap in foraging bands, Smil 2017)
+        double woodThermalW = 212.0 * Math.tanh((biomassNatural[index] + woodResource[index] + 50.0) / 50.0);
+        // 2. Agrarian draft traction & plows (activates smoothly above kpc ~ 150 kg/cap, up to +25 W/cap global average)
+        double draftW = 25.0 * Math.tanh(SmoothMath.softplus(kpc - 150.0, 0.05) / 250.0);
+        // 3. Waterwheels, windmills, sail & proto-industrial metallurgical furnaces (activates smoothly above kpc ~ 520 kg/cap, up to +220 W/cap)
+        double millAndCharcoalW = 220.0 * Math.tanh(SmoothMath.softplus(kpc - 520.0, 0.05) / 420.0);
+        // 4. Coal/steam & early internal combustion prime movers (activates smoothly above kpc ~ 1000 kg/cap, up to +600 W/cap)
+        double steamCoalW = 600.0 * Math.tanh(SmoothMath.softplus(kpc - 1000.0, 0.02) / 1800.0);
+        // 5. Modern electric/hydrocarbon/nuclear/solar grid (activates smoothly above kpc ~ 4000 kg/cap, up to +1350 W/cap)
+        double modernGridW = 1350.0 * Math.tanh(SmoothMath.softplus(kpc - 4000.0, 0.01) / 10000.0);
+        return (float) (basalW + 35.0 + woodThermalW + draftW + millAndCharcoalW + steamCoalW + modernGridW);
     }
 
     /**

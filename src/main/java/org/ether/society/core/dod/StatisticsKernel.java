@@ -115,10 +115,6 @@ public class StatisticsKernel {
         if (inhabitedCount == 0 || totalPop <= 0.0) return 0.17f;
 
         double meanKpc = totalCap / totalPop;
-        // Subsistence somatic + minimal tool floor k_sub ~ 3.3 kg/capita (Kohler et al. 2017; Milanovic et al. 2011)
-        double alpha = SmoothMath.softmax(1.20, meanKpc / 3.3, 4.0);
-        double ipfCeiling = (alpha - 1.0) / alpha;
-
         float[] kpcArray = new float[inhabitedCount];
         int idx = 0;
         for (int i = 0; i < len; i++) {
@@ -130,11 +126,15 @@ public class StatisticsKernel {
         }
         float spatialKpcGini = calculateGini(kpcArray);
 
-        // Smooth C^infty surplus stratification driven purely by storable physical surplus ratio (alpha - 1)
-        double surplusStratification = Math.tanh(SmoothMath.softplus(alpha - 1.25, 4.0) * 0.18);
-        double intraCellStratification = 0.17 + 0.45 * ipfCeiling * surplusStratification;
-        double boundedSpatialTerm = SmoothMath.softmin(0.14, 0.16 * spatialKpcGini, 25.0) * surplusStratification;
-        double combinedGini = SmoothMath.softmin(ipfCeiling, intraCellStratification + boundedSpatialTerm, 20.0);
+        // Smooth C^infty surplus stratification calibrated to Kohler et al. (2017), Milanovic et al. (2011) & Scheidel (2017):
+        // 1. Mobile foraging baseline (meanKpc ~ 4 kg/cap): Gini ~ 0.19
+        // 2. Agrarian land & granary surplus stratification (meanKpc ~ 400-700 kg/cap): Gini ~ 0.43 - 0.48
+        // 3. Early modern commercial & colonial stratification (meanKpc ~ 900-4000 kg/cap): Gini ~ 0.51 - 0.62
+        double agrarianStratification = 0.25 * Math.tanh(SmoothMath.softplus(meanKpc - 15.0, 0.2) / 260.0);
+        double commercialStratification = 0.11 * Math.tanh(SmoothMath.softplus(meanKpc - 550.0, 0.1) / 1200.0);
+        double industrialStratification = 0.10 * Math.tanh(SmoothMath.softplus(meanKpc - 3000.0, 0.05) / 10000.0);
+        double spatialContribution = 0.06 * spatialKpcGini * Math.tanh(meanKpc / 200.0);
+        double combinedGini = 0.19 + agrarianStratification + commercialStratification + industrialStratification + spatialContribution;
         return (float) Math.clamp(combinedGini, 0.15, 0.78);
     }
 
@@ -246,12 +246,16 @@ public class StatisticsKernel {
                 }
             }
         }
-        // Maddison Project Database (2020) & Bolt & van Zanden (2020):
-        // Deep-time physiological & subsistence baseline is ~105 1990 International Dollars per capita.
-        double subsistenceFloor = totalPop * 105.0;
-        // Solow-Swan / Cobb-Douglas capital contribution (capital-output ratio ~3.5 to 4.0 in industrial economies)
-        double capitalGDP = (totalCapitalKg > 0.0) ? (totalCapitalKg * 0.02) : 0.0;
-        return (float) (subsistenceFloor + capitalGDP);
+        // Maddison Project Database (2020) & Bolt & van Zanden (2020) + Ayres-Kümmel (2009) Exergy Production:
+        // Deep-time physiological & subsistence baseline is ~102 1990 International Dollars per capita.
+        if (totalPop <= 0.0) {
+            return (float) (totalCapitalKg * 0.045);
+        }
+        double meanKpc = Math.max(0.0, totalCapitalKg / totalPop);
+        double perCapitaGwp = 102.0
+                + 0.045 * meanKpc
+                + 0.36 * meanKpc * SmoothMath.sigmoid(meanKpc, 1200.0, 210.0);
+        return (float) (totalPop * perCapitaGwp);
     }
 
     /**
@@ -307,13 +311,13 @@ public class StatisticsKernel {
             if (p <= 0.0f || Float.isNaN(p)) continue;
             double kpc = (cap != null && cap[i] > 0.0f) ? (cap[i] / p) : 0.0;
             double w = (water != null && water[i] > 0.0f) ? water[i] : 10.0;
-            double waterFactor = 0.75 + 0.25 * (w / (10.0 + w));
-            // Preston (1975) & Omran (1971) epidemiological transition:
-            // Pre-industrial baseline: 27.5 yrs (foraging) to 33.5 yrs (classical agrarian granaries/stone shelter)
-            // Sanitary & modern epidemiological transition (+48 yrs) emerges only with clean municipal water grids (k_pc >= 1800)
-            double agrarianMod = 6.0 * Math.tanh(kpc / 350.0);
-            double sanitaryMod = 48.0 * SmoothMath.sigmoid(kpc, 1800.0, 450.0);
-            double prestonYears = 27.5 + agrarianMod + sanitaryMod;
+            double waterFactor = 0.92 + 0.08 * (w / (10.0 + w));
+            // Preston (1975), Omran (1971) & Riley (2005) epidemiological transition:
+            // Pre-industrial baseline: 29.0 yrs (foraging) to 35.0 yrs (classical/medieval agrarian granaries & shelter)
+            // Sanitary & modern epidemiological transition (+46 yrs) emerges smoothly with municipal water/medical grids (k_pc >= 2200)
+            double agrarianMod = 6.5 * Math.tanh(kpc / 350.0);
+            double sanitaryMod = 46.0 * SmoothMath.sigmoid(kpc, 2200.0, 650.0);
+            double prestonYears = 29.0 + agrarianMod + sanitaryMod;
             double effectiveCellE0 = prestonYears * waterFactor;
             weightedLifespan += p * effectiveCellE0;
             totalPop += p;

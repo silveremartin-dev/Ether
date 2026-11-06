@@ -74,24 +74,25 @@ public class UrbanKernel {
             double complexityOverhead = 0.001 * Math.pow(Math.max(0.0, cappedComp), 1.5);
             double depreciationRate = SmoothMath.softmin(0.08, baselineDepreciation + complexityOverhead, 40.0);
 
-            // 3. Physical Capital Steady-State Convergence (Solow-Swan mechanical power constraint, Solow 1956, Garrett 2011):
-            // Steady-state capital stock per capita k* scales thermodynamically with available mechanical power:
-            // k* = 15.0 (stone/wood baseline) + 12.0 * (powerWatts / 100.0)^1.30
+            // 3. Physical Capital Steady-State Convergence (Solow-Swan mechanical power constraint, Solow 1956, Garrett 2011, Krausmann et al. 2017):
+            // Steady-state material capital stock per capita k* scales thermodynamically with available power above somatic hearth baseline (~348 W):
             double powerPerCapitaW = world.computeCellPowerWattsPerCapita(i);
-            double kStar = 15.0 + 12.0 * Math.pow(Math.max(0.1, powerPerCapitaW / 100.0), 1.30);
+            double kStar = 5.0
+                    + 580.0 * Math.tanh(SmoothMath.softplus(powerPerCapitaW - 348.0, 0.2) / 38.0)
+                    + 62.0 * Math.pow(SmoothMath.softplus(powerPerCapitaW - 400.0, 0.1) / 100.0, 1.95);
 
             // In mobile hunter-gatherer bands (low population p < 50), somatic transport bounds capital stock to portable tools (AGENTS.md §8)
             double bandConstraint = SmoothMath.sigmoid(p, 50.0, 15.0);
-            kStar = 15.0 * (1.0 - bandConstraint) + kStar * bandConstraint;
+            kStar = 5.0 * (1.0 - bandConstraint) + kStar * bandConstraint;
 
             // Sedentary infrastructure (mudbrick/masonry/granaries/plows) requires agricultural biomass
             // or high-power industrial grids; mobile foraging bands cannot transport stationary infrastructure (AGENTS.md §8).
             float[] agri = world.getBiomassAgriculture();
             float cellAgri = (agri != null && i < agri.length) ? agri[i] : 0.0f;
             double agriActivation = SmoothMath.sigmoid(cellAgri, 100.0, 30.0);
-            double industrialActivation = SmoothMath.sigmoid(powerPerCapitaW, 600.0, 150.0);
+            double industrialActivation = SmoothMath.sigmoid(powerPerCapitaW, 480.0, 80.0);
             double sedentaryCapability = Math.max(agriActivation, industrialActivation);
-            kStar = 15.0 + (kStar - 15.0) * sedentaryCapability;
+            kStar = 5.0 + (kStar - 5.0) * sedentaryCapability;
 
             // Physical capital depreciation rate delta = 4.0% per year (entropy of physical structures/tools)
             double deltaAnnual = 0.04;

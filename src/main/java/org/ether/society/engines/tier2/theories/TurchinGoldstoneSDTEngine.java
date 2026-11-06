@@ -114,14 +114,15 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
             // 1. Mass Mobilization Potential: food scarcity + demographic density (in hab/km²)
             double areaKm2 = cell.getEffectiveSurfaceAreaKm2();
             double density = pop / Math.max(0.1, areaKm2);
-            // Reference agrarian rural-urban density transition: 50 hab/km²
-            double mmp = Math.max(0.5, (1000.0 / Math.max(100.0, food)) * (density / 50.0));
+            double foodPerCap = food / Math.max(1.0, pop);
+            double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
 
             // 2. Elite Mobilization Potential: high capital inequality (Gini > 0.45)
-            double emp = Math.max(0.5, Math.pow(gini / 0.35, 2.0));
+            double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));
 
             // 3. State Fiscal Distress (ratio of administrative overhead to resource capacity)
-            double sf = Math.max(0.5, (capital / Math.max(10.0, food * 0.5)));
+            double kPerCap = capital / Math.max(1.0, pop);
+            double sf = Math.max(0.2, 0.4 * (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(kPerCap / 800.0));
 
             double psi = mmp * emp * sf;
 

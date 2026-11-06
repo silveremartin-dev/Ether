@@ -97,13 +97,14 @@ public class TainterComplexityCollapseEngine implements ProceduralEnginePlugin {
             if (capital < 50.0) continue;
 
             int pop = cell.getPopulationOr(0);
-            // Consistent dimension: annual surplus flow scaled by deltaYears
-            double surplusFlow = (pop * 0.05) * deltaYears;
+            double kPerCap = (pop > 0) ? (capital / pop) : capital;
+            // Consistent intensive dimension: annual metabolic & capital surplus flow scaled by deltaYears
+            double surplusFlow = (pop * (0.05 + 0.020 * kPerCap)) * deltaYears;
 
-            // Complexity index derived from institutional capital depth
-            double complexity = Math.log(1.0 + 0.02 * capital);
-            // Institutional & infrastructural maintenance overhead scales with capital stock and bureaucratic depth
-            double maintenanceCost = (0.015 * capital + Math.pow(complexity, 1.5) * 5.0) * deltaYears;
+            // Intensive complexity index derived from per-capita institutional capital depth
+            double complexity = Math.log(1.0 + 0.02 * kPerCap);
+            // Institutional & infrastructural maintenance overhead scales with capital stock and nonlinear bureaucratic depth
+            double maintenanceCost = (0.015 * capital + Math.max(1, pop) * Math.pow(complexity, 2.2) * 0.08) * deltaYears;
 
             if (maintenanceCost > surplusFlow) {
                 // Diminishing returns trap (Tainter 1988): complexity maintenance exceeds surplus -> capital collapse

@@ -49,8 +49,11 @@ public class InfrastructureInertiaEngine {
             double dynamicHalfLife = baseCapitalTurnoverHalfLifeYears * Math.clamp(longevityFactor, 0.5, 2.0);
             double decayFactor = Math.exp(-deltaYears / dynamicHalfLife);
 
-            // Physical depreciation of industrial capital per cell
-            cell.setResourceCapital(capital * decayFactor);
+            // Physical depreciation of unmaintained capital vs active maintenance replacement in inhabited cells (Jorgenson 1963)
+            int pop = cell.getPopulationOr(0);
+            double activeReplacement = 0.98 * org.ether.society.core.math.SmoothMath.sigmoid(pop, 10.0, 3.0);
+            double netCapital = capital * decayFactor + capital * (1.0 - decayFactor) * activeReplacement;
+            cell.setResourceCapital(netCapital);
         }
     }
 

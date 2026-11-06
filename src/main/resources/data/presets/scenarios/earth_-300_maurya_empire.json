@@ -1,11 +1,11 @@
 {
   "name" : "Maurya Empire & Indus-Ganges Civilizations (-300 BCE)",
-  "description" : "â˜¸ï¸ HISTORICAL SCENARIO : L'Empire Maurya d'Ashoka & La VallÃ©e du Gange (-300 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nUnification du sous-continent indien sous Chandragupta et Ashoka. ModÃ©lise l'agriculture rizicole de la plaine gangÃ©tique, les routes commerciales de la Soie et le rÃ©seau urbain autour de Pataliputra et Taxila.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Densification dÃ©mographique extrÃªme de la plaine indo-gangÃ©tique grÃ¢ce au riz irriguÃ©.\nâ€¢ Diffusion des Ã©dits impÃ©riaux et baisse institutionnelle de la violence (pacification d'Ashoka).\nâ€¢ IntÃ©gration commerciale transasiatique le long de la Grand Trunk Road et des ports de l'ocÃ©an Indien.\n",
+  "description" : "☸️ HISTORICAL SCENARIO : L'Empire Maurya d'Ashoka & La Vallée du Gange (-300 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nUnification du sous-continent indien sous Chandragupta et Ashoka. Modélise l'agriculture rizicole de la plaine gangétique, les routes commerciales de la Soie et le réseau urbain autour de Pataliputra et Taxila.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Densification démographique extrême de la plaine indo-gangétique grâce au riz irrigué.\n• Diffusion des édits impériaux et baisse institutionnelle de la violence (pacification d'Ashoka).\n• Intégration commerciale transasiatique le long de la Grand Trunk Road et des ports de l'océan Indien.\n",
   "id" : null,
   "presetKey" : "maurya_empire",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
-    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -39,24 +39,24 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1000 BP) â€” Ã‚ge du Fer Ancien",
+    "tempSource" : "Terre (-1000 BP) — Âge du Fer Ancien",
     "tempSeed" : 12444,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) â€” PrÃ©cipitations",
+    "precipSource" : "?? Terre (-1000 BP) — Précipitations",
     "precipSeed" : 13344,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) â€” SaisonnalitÃ©",
+    "seasonSource" : "?? Terre (-1000 BP) — Saisonnalité",
     "seasonSeed" : 14344,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : -300,
-    "presetDescription" : "âš” TERRE (-1 000 / DÃ©but de l'Ã‚ge du Fer) : DÃ©mocratisation de la mÃ©tallurgie du fer aux hauts fourneaux, dÃ©forestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappÃ©es en Eurasie."
+    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie."
   },
   "ecologyPreset" : {
-    "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
-    "planetPresetName" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
+    "planetPresetName" : "Terre (-1 000 / Début Âge du Fer)",
     "embeddedPlanetPreset" : {
-      "name" : "Terre (-1 000 / DÃ©but Ã‚ge du Fer)",
+      "name" : "Terre (-1 000 / Début Âge du Fer)",
       "resolution" : 4,
       "radiusKm" : 6371.0,
       "dayLengthHours" : 24.0,
@@ -90,18 +90,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1000 BP) â€” Ã‚ge du Fer Ancien",
+      "tempSource" : "Terre (-1000 BP) — Âge du Fer Ancien",
       "tempSeed" : 12444,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) â€” PrÃ©cipitations",
+      "precipSource" : "?? Terre (-1000 BP) — Précipitations",
       "precipSeed" : 13344,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) â€” SaisonnalitÃ©",
+      "seasonSource" : "?? Terre (-1000 BP) — Saisonnalité",
       "seasonSeed" : 14344,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : -300,
-      "presetDescription" : "âš” TERRE (-1 000 / DÃ©but de l'Ã‚ge du Fer) : DÃ©mocratisation de la mÃ©tallurgie du fer aux hauts fourneaux, dÃ©forestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappÃ©es en Eurasie."
+      "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie."
     },
     "terrestrialBiomassGtC" : 580.0,
     "soilOrganicCarbonGtC" : 1780.0,
@@ -121,7 +121,7 @@
     "customGeologyTensorMapsBase64" : null,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -1000,
-    "presetDescription" : "âš” TERRE (-1 000 / DÃ©but de l'Ã‚ge du Fer) : DÃ©mocratisation de la mÃ©tallurgie du fer aux hauts fourneaux, dÃ©forestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappÃ©es en Eurasie."
+    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : false,
@@ -161,7 +161,7 @@
   "resourceVectorDimensions" : 10,
   "customGeologyTensorMapsBase64" : [ ],
   "geologyTensorProceduralModes" : [ ],
-  "h3Resolution" : 5,
+  "h3Resolution" : 6,
   "strictDeterminism" : true,
   "sparseCellSkippingEnabled" : false,
   "oceanMacroAggregationEnabled" : false,
@@ -192,5 +192,5 @@
   "maxLng" : 90.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "displayName" : "Maurya Empire & Indus-Ganges Civilizations (-300 BCE)",
-  "displayDescription" : "\uD83D\uDC18 SCÃ‰NARIO HISTORIQUE : L'Unification Maurya & Les Routes Commerciales Pan-Asiatiques (-322 av. J.-C.)\n\nUnification du sous-continent indien sous Chandragupta et Ashoka, codification des Ã©dits et expansion des routes commerciales terrestres et maritimes."
+  "displayDescription" : "?? SCÉNARIO HISTORIQUE : L'Unification Maurya & Les Routes Commerciales Pan-Asiatiques (-322 av. J.-C.)\n\nUnification du sous-continent indien sous Chandragupta et Ashoka, codification des édits et expansion des routes commerciales terrestres et maritimes."
 }
