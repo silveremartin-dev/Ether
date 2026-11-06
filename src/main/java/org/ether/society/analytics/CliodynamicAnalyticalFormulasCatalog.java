@@ -271,7 +271,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
 
         // Modern institutional funded debt (Dickson 1967, British consols post-1694: T >= 2.25):
         // Reaches ~73% in 1800 (T ~ 2.45) and ~90-110% in 1914 (T ~ 3.25)
-        double modernFundedDebt = 80.0 / (1.0 + Math.exp(-2.50 * (tech - 2.65)));
+        double modernFundedActivation = Math.tanh(Math.max(0.0, tech - 2.25) * 3.00);
+        double modernFundedDebt = modernFundedActivation * (80.0 / (1.0 + Math.exp(-3.50 * (tech - 2.65))));
 
         double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt;
         return Math.clamp(institutionalActivation * debtBurden, 0.0, 250.0);
@@ -289,7 +290,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
                 + 6.5 * Math.tanh(Math.max(0.0, tech - 2.10) * 2.00);
 
         // Early Modern oceanic sail trade boom (VOC, East India, Atlantic triangular: T >= 2.25)
-        double oceanicSailBoom = 40.0 * Math.tanh(Math.max(0.0, tech - 2.25) * 2.20);
+        double oceanicSailActivation = Math.tanh(Math.max(0.0, tech - 2.20) * 3.00);
+        double oceanicSailBoom = oceanicSailActivation * 40.0 * Math.tanh(Math.max(0.0, tech - 2.20) * 2.20);
 
         // First Globalization steam shipping & railway boom (post-1870: T >= 2.70): reaching ~227 in 1914
         double steamShippingBoom = 210.0 / (1.0 + Math.exp(-3.00 * (tech - 3.15)));
@@ -388,7 +390,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double preIndustrial = 1.60 + 1.45 * Math.tanh(Math.max(0.0, tech - 1.80) * 1.50);
 
         // Coke smelting & puddling (Darby 1709, Cort 1784: T >= 2.15): +8.0 kg by 1800 CE
-        double cokePuddling = 9.0 * Math.tanh(Math.max(0.0, tech - 2.15) * 2.00);
+        double cokeActivation = Math.tanh(Math.max(0.0, tech - 2.15) * 3.00);
+        double cokePuddling = cokeActivation * 9.0 * Math.tanh(Math.max(0.0, tech - 2.15) * 2.00);
 
         // Industrial Bessemer steel & mass metallurgy (post-1860: T >= 2.70): reaching ~64 kg in 1914, ~210 kg modern
         double industrialBessemer = 210.0 / (1.0 + Math.exp(-2.60 * (tech - 3.65)));

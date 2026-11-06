@@ -72,9 +72,9 @@ public final class H3CellPhysicsAndStateHelper {
                 / GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT;
         double kActive = SmoothMath.harmonicCoupling(kGross, kEnergized);
 
-        double raw = 0.50
-                + 1.45 * Math.log10(Math.max(1.0, metabolicRatio))
-                + 0.58 * Math.log10(1.0 + kActive / REFERENCE_SOMATIC_CAPITAL_PER_CAPITA);
+        double raw = 0.30
+                + 1.25 * Math.log10(Math.max(1.0, metabolicRatio))
+                + 0.45 * Math.log10(1.0 + kActive / REFERENCE_SOMATIC_CAPITAL_PER_CAPITA);
         return SmoothMath.smoothClamp(raw, 0.0, 10.0, 20.0);
     }
 

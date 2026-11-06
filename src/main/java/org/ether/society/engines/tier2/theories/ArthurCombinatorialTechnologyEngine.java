@@ -33,6 +33,16 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
     }
 
     @Override
+    public String getEquationsTooltip() {
+        return """
+               [Arthur Combinatorial Technology Evolution Model (2009)]
+               • Combinatorial Space:    dT/dt = α · (T^2 / 2) · σ(Pop, Capital)
+               • Novelty Recombination:  K_new = K · (1 + r · (K/N) · ln(N))
+               Ref: W. B. Arthur (2009) "The Nature of Technology: What It Is and How It Evolves"
+               """;
+    }
+
+    @Override
     public void process(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
 
@@ -47,8 +57,13 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
             // Combinatorial capital formation scales with structural tool density and network interaction
             double rAndDIntensity = SmoothMath.smoothClamp(kPerCapita / 100.0, 0.0, 5.0, 0.1);
             double popNetworkFactor = Math.min(3.0, Math.log1p(pop) / 5.0);
-            double capitalIncrement = capital * 0.002 * rAndDIntensity * popNetworkFactor * deltaYears;
+            double capitalIncrement = capital * 0.002 * Math.max(0.05, rAndDIntensity) * popNetworkFactor * deltaYears;
             cell.setResourceCapital(capital + capitalIncrement);
+
+            // W. Brian Arthur (2009) Combinatorial Tech Evolution: dT/dt = alpha * (T^2 / 2) * ln(1 + Pop)
+            double currentTech = cell.getTechnologyLevelOr(1.0);
+            double combinatorialDelta = 0.001 * (currentTech * currentTech / 2.0) * Math.log1p(pop) * deltaYears;
+            cell.setTechnologyLevel(currentTech + combinatorialDelta);
         }
     }
 }

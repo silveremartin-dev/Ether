@@ -35,6 +35,17 @@ public class BoserupAgriculturalIntensificationEngine implements ProceduralEngin
     }
 
     @Override
+    public String getEquationsTooltip() {
+        return """
+               [Boserup Agricultural Intensification Dynamics (1965)]
+               • Demographic Pressure:   ρ = N / Area_arable
+               • Cultivation Shift:      dB_agr/dt = μ · σ(ρ; ρ_0, s) · (K_carrying - B_agr)
+               • Fallow Shortening:      Forest fallow -> Bush -> Short -> Annual multicrop
+               Ref: E. Boserup (1965) "The Conditions of Agricultural Growth", Allen & Unwin
+               """;
+    }
+
+    @Override
     public void process(List<H3Cell> cells, double deltaYears) {
         processBoserupIntensification(cells, deltaYears);
     }
