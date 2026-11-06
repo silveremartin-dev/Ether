@@ -55,10 +55,10 @@ public class HistoricalStateRegistry {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalStateRegistry.class);
 
     /** Primary path relative to the working directory (Maven project root). */
-    private static final String PRIMARY_PATH = "data/maps/ether/earth/history/treaties/treaties_and_transitions.json";
+    private static final String PRIMARY_PATH = "data/history/ether/earth/treaties/treaties_and_transitions.json";
 
-    /** Fallback path before relocation into treaties/ sub-directory. */
-    private static final String FALLBACK_PATH = "data/maps/ether/earth/history/treaties_and_transitions.json";
+    /** Intermediate fallback path after initial sub-directory relocation. */
+    private static final String FALLBACK_PATH = "data/maps/ether/earth/history/treaties/treaties_and_transitions.json";
 
     /** Legacy fallback path for backward compatibility. */
     private static final String LEGACY_PATH = "data/ether/earth/history/treaties_and_transitions.json";

@@ -29,8 +29,10 @@ public class WikidataEventsFetcher {
     private static final Logger logger = LoggerFactory.getLogger(WikidataEventsFetcher.class);
     private static final ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
 
-    /** Primary Earth catalog file path under data/ether/earth/events/ */
-    public static final String CATALOG_FILE_PATH = "data/maps/ether/earth/history/events/historical_events_catalog.json";
+    /** Primary Earth catalog file path under data/history/ether/earth/events/ */
+    public static final String CATALOG_FILE_PATH = "data/history/ether/earth/events/historical_events_catalog.json";
+    /** Intermediate catalog file path for backward compatibility. */
+    public static final String INTERMEDIATE_CATALOG_FILE_PATH = "data/maps/ether/earth/history/events/historical_events_catalog.json";
     /** Legacy catalog file path for backward compatibility. */
     public static final String LEGACY_CATALOG_FILE_PATH = "data/ether/earth/events/historical_events_catalog.json";
 

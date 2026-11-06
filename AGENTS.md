@@ -63,11 +63,11 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
   * **2D Spatial Rasters (`data/maps/ether/<planet>/<year>/`)**:
     * For every historical epoch (from -100,000 BP to present-day 2025 CE), rasters are stored as 2D spatial layers (Elevation, Density, Biomes, Aquifers, etc.).
     * Every directory contains `provenance_and_sources.json` and `README.md` detailing geophysical and demographic sources.
-  * **Discrete Catalogs & Vector Geometries**:
-    * `history/events/historical_events_catalog.json`: Historical event records (chronological shocks, wars, scientific milestones).
-    * `history/treaties/treaties_and_transitions.json`: Gapless epoch transitions and geopolitical boundaries.
-    * `history/paleo/`: Paleolithic vector geometries (`hominin_hearths.json`, `ice_sheets.json`, `migration_routes.json` with 19 global migration corridors).
-    * `history/leaders/earth_historical_leaders.json`: Historical figures and catalytic leadership interventions.
+  * **Discrete Catalogs & Vector Geometries (`data/history/ether/<planet>/`)**:
+    * `data/history/ether/<planet>/events/historical_events_catalog.json`: Historical event records (chronological shocks, wars, scientific milestones).
+    * `data/history/ether/<planet>/treaties/treaties_and_transitions.json`: Gapless epoch transitions and geopolitical boundaries.
+    * `data/history/ether/<planet>/paleo/`: Paleolithic vector geometries (`hominin_hearths.json`, `ice_sheets.json`, `migration_routes.json` with 19 global migration corridors).
+    * `data/history/ether/<planet>/leaders/earth_historical_leaders.json`: Historical figures and catalytic leadership interventions.
   * **1D Continuous Variables & State Baselines (`data/variables/`)**:
     * Stores scalar time-series trajectories and epoch state initialization vectors in 1 dimension ($t \to \text{value}$).
     * `data/variables/historical/paleo_sources_1d.json`: Deep Paleolithic ($t_0 < -10\,000\,\text{BP}$) initialized to **`PALEO_SOURCES`** (EPICA Dome C ice cores, PaleoClim v1.2, Biraben 1979 / Kremer 1993).

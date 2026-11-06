@@ -64,8 +64,11 @@ public class HistoricalInterventionCatalog {
                 return;
             }
 
-            // 2. Try Local File via EtherPaths
+            // 2. Try Local File via EtherPaths (data/history/ether/earth/leaders/)
             File f = org.ether.society.config.EtherPaths.getEarthLeadersDir().resolve("earth_historical_leaders.json").toFile();
+            if (!f.exists()) {
+                f = new File("data/history/ether/earth/leaders/earth_historical_leaders.json");
+            }
             if (!f.exists()) {
                 f = new File("data/maps/ether/earth/history/leaders/earth_historical_leaders.json");
             }

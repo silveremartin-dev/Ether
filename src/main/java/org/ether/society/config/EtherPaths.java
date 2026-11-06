@@ -263,45 +263,54 @@ public final class EtherPaths {
     }
 
     /**
-     * Retrieves the Earth historical events directory ({@code data/maps/ether/earth/history/events/}).
+     * Retrieves the central history root directory ({@code data/history/}).
      *
-     * @return absolute path to data/maps/ether/earth/history/events/
+     * @return absolute path to data/history/
+     */
+    public static Path getHistoryDir() {
+        return getDataDir().resolve("history");
+    }
+
+    /**
+     * Retrieves the Earth historical root directory ({@code data/history/ether/earth/}).
+     *
+     * @return absolute path to data/history/ether/earth/
+     */
+    public static Path getEarthHistoryDir() {
+        return getHistoryDir().resolve("ether").resolve("earth");
+    }
+
+    /**
+     * Retrieves the Earth historical events directory ({@code data/history/ether/earth/events/}).
+     *
+     * @return absolute path to data/history/ether/earth/events/
      */
     public static Path getEarthEventsDir() {
         return getEarthHistoryDir().resolve("events");
     }
 
     /**
-     * Retrieves the Earth historical geopolitical treaties directory ({@code data/maps/ether/earth/history/}).
+     * Retrieves the Earth historical geopolitical treaties directory ({@code data/history/ether/earth/treaties/}).
      *
-     * @return absolute path to data/maps/ether/earth/history/
-     */
-    public static Path getEarthHistoryDir() {
-        return getEarthDir().resolve("history");
-    }
-
-    /**
-     * Retrieves the Earth historical geopolitical treaties directory ({@code data/maps/ether/earth/history/treaties/}).
-     *
-     * @return absolute path to data/maps/ether/earth/history/treaties/
+     * @return absolute path to data/history/ether/earth/treaties/
      */
     public static Path getEarthTreatiesDir() {
         return getEarthHistoryDir().resolve("treaties");
     }
 
     /**
-     * Retrieves the Earth paleogeography and archaeological directory ({@code data/maps/ether/earth/history/paleo/}).
+     * Retrieves the Earth paleogeography and archaeological directory ({@code data/history/ether/earth/paleo/}).
      *
-     * @return absolute path to data/maps/ether/earth/history/paleo/
+     * @return absolute path to data/history/ether/earth/paleo/
      */
     public static Path getEarthPaleoDir() {
         return getEarthHistoryDir().resolve("paleo");
     }
 
     /**
-     * Retrieves the Earth historical leaders directory ({@code data/maps/ether/earth/history/leaders/}).
+     * Retrieves the Earth historical leaders directory ({@code data/history/ether/earth/leaders/}).
      *
-     * @return absolute path to data/maps/ether/earth/history/leaders/
+     * @return absolute path to data/history/ether/earth/leaders/
      */
     public static Path getEarthLeadersDir() {
         return getEarthHistoryDir().resolve("leaders");

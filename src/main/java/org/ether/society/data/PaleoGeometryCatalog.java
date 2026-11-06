@@ -184,8 +184,11 @@ public final class PaleoGeometryCatalog {
     }
 
     private static JsonNode readJsonResource(String filename) {
-        // 1. Check canonical disk path via EtherPaths (data/maps/ether/earth/history/paleo/)
+        // 1. Check canonical disk path via EtherPaths (data/history/ether/earth/paleo/)
         File earthDiskFile = org.ether.society.config.EtherPaths.getEarthPaleoDir().resolve(filename).toFile();
+        if (!earthDiskFile.exists()) {
+            earthDiskFile = new File("data/history/ether/earth/paleo", filename);
+        }
         if (!earthDiskFile.exists()) {
             earthDiskFile = new File("data/maps/ether/earth/history/paleo", filename);
         }
