@@ -1,4 +1,4 @@
-﻿# ⚡ Ether Empirical Engine Benchmark Report (5-Axis Scientific Ground Truth)
+# ⚡ Ether Empirical Engine Benchmark Report (5-Axis Scientific Ground Truth)
 
 **Updated:** 2026-10-18  
 **Determinism Protocol:** Strict IEEE-754 Bit-Level Determinism (`strictDeterminism = true`). Zero spatial subsampling (100% full planetary hexagonal grid).  
@@ -166,6 +166,7 @@ Following the complete architectural rewrite to Data-Oriented Design (DOD) with 
 
 ### Comparative Throughput & Micro-Scaling by Grid Level:
 
+#### 1. Local Workstation (4 vCPUs, Windows 11, Java 25 Vector Incubator, Native Rust AVX-512):
 | Engine Backend Architecture | Active Grid Scale | Throughput (TPS) | Per-Tick Latency | Cell Latency | Speedup vs Java DoD | Execution Model |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Java 25 SIMD Vector DoD** | 10,000 h3 | **36.71 TPS** | **27.24 ms** | **2,724.2 ns / cell** | 1.00x *(Baseline)* | Contiguous primitive arrays (WorldBuffer) |
@@ -176,6 +177,18 @@ Following the complete architectural rewrite to Data-Oriented Design (DOD) with 
 | | | | | | | |
 | **Java 25 SIMD Vector DoD** | 288,122 h3 *(Res 4)* | **1.67 TPS** | **600.39 ms** | **2,083.8 ns / cell** | 1.00x *(Baseline)* | Contiguous primitive arrays (WorldBuffer) |
 | **Native Rust Core (AVX-512)** | 288,122 h3 *(Res 4)* | **2.07 TPS** | **482.18 ms** | **1,673.5 ns / cell** | **1.25x faster** | Compiled C-ABI, Rayon work-stealing |
+
+#### 2. Cloud Production Node (Google Cloud VM `ether-master`, Compute Engine `c2-standard-8`, 8 vCPUs, 32 GB RAM, Debian 12, AVX-512):
+| Engine Backend Architecture | Active Grid Scale | Throughput (TPS) | Per-Tick Latency | Cell Latency | Speedup vs Java DoD | Execution Model |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Java 25 SIMD Vector DoD** | 10,000 h3 | **52.44 TPS** | **19.07 ms** | **1,907.0 ns / cell** | 1.00x *(Baseline)* | Contiguous primitive arrays (WorldBuffer) |
+| **Native Rust Core (AVX-512)** | 10,000 h3 | **889.41 TPS** | **1.12 ms** | **112.4 ns / cell** | **16.96x faster** | Native C-ABI, Rayon multi-threaded work-stealing |
+| | | | | | | |
+| **Java 25 SIMD Vector DoD** | 41,162 h3 *(Res 3)* | **25.04 TPS** | **39.94 ms** | **970.2 ns / cell** | 1.00x *(Baseline)* | Contiguous primitive arrays (WorldBuffer) |
+| **Native Rust Core (AVX-512)** | 41,162 h3 *(Res 3)* | **350.49 TPS** | **2.85 ms** | **69.3 ns / cell** | **14.00x faster** | Native C-ABI, Rayon multi-threaded work-stealing |
+| | | | | | | |
+| **Java 25 SIMD Vector DoD** | 288,122 h3 *(Res 4)* | **3.58 TPS** | **279.12 ms** | **968.8 ns / cell** | 1.00x *(Baseline)* | Contiguous primitive arrays (WorldBuffer) |
+| **Native Rust Core (AVX-512)** | 288,122 h3 *(Res 4)* | **70.39 TPS** | **14.21 ms** | **49.3 ns / cell** | **19.65x faster** | Native C-ABI, Rayon multi-threaded work-stealing |
 
 ### Extreme Planetary Scale Scaling (Native Rust Core AVX-512 + Rayon):
 * **Res 2 (5,882 cells)**: **137.77 TPS** (7.3 ms/tick) — Latency: 1.23 µs / cell

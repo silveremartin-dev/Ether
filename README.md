@@ -1,4 +1,4 @@
-﻿# Ether - Human Society & Cliodynamic Thermodynamic Simulation
+# Ether - Human Society & Cliodynamic Thermodynamic Simulation
 
 ![Java](https://img.shields.io/badge/Java-21-orange.svg)
 ![Rust](https://img.shields.io/badge/Rust-1.80+-red.svg)
@@ -246,6 +246,18 @@ Ether includes high-performance cloud orchestration scripts (`scripts/gcp/`) sup
 > ðŸ“– See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and [docs/DEPLOYMENT_AND_INFRASTRUCTURE.md](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
 
 All snapshots, world state matrices (`topology.bin.gz`, `state.bin.gz`, `metadata.json`, `scenario.json`, `history.json`), and PostGIS spatial tables can be synchronized to the local machine in 1-click via `./scripts/gcp/fetch-results.sh` for seamless interactive replay in the Ether GUI.
+
+### 🚀 Planetary Engine Compute Performance: Native Rust Core vs. Java 25 SIMD
+Following the architectural rewrite to Data-Oriented Design (DOD) with contiguous memory buffers (`WorldBuffer`, `AgentBuffer`), lock-free Rayon parallelism, and Panama Foreign Function & Memory (FFM) native downcalls:
+* **Planetary Mesh (Resolution 4: 288,122 active cells)**:
+  - **Native Rust Core (AVX-512 + Rayon)**: **70.39 TPS** (14.21 ms/tick, **49.3 ns / cell**) — **19.65x speedup** on Google Cloud (`ether-master`, `c2-standard-8`, 8 vCPUs, 32 GB RAM).
+  - **Java 25 SIMD Vector DoD**: **3.58 TPS** (279.12 ms/tick, 968.8 ns / cell).
+* **Regional Window (Resolution 3: 41,162 active cells)**:
+  - **Native Rust Core (AVX-512 + Rayon)**: **350.49 TPS** (2.85 ms/tick, **69.3 ns / cell**) — **14.00x speedup**.
+  - **Java 25 SIMD Vector DoD**: **25.04 TPS** (39.94 ms/tick, 970.2 ns / cell).
+* **Sub-Scale Benchmark (10,000 active cells)**:
+  - **Native Rust Core**: **889.41 TPS** (1.12 ms/tick, **112.4 ns / cell**) — **16.96x speedup**.
+  - **Java 25 SIMD Vector DoD**: **52.44 TPS** (19.07 ms/tick, 1,907.0 ns / cell).
 
 ---
 
