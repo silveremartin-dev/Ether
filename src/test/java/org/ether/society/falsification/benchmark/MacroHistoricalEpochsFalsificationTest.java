@@ -115,7 +115,19 @@ public class MacroHistoricalEpochsFalsificationTest {
 
             s.setStartDateYear(cfg.startYear());
             s.setEndDateYear(cfg.endYear());
-            s.setH3Resolution(cfg.resolution());
+
+            int targetRes = cfg.resolution();
+            String resProp = System.getProperty("phase1.resolution");
+            if (resProp == null || resProp.isBlank()) {
+                resProp = System.getProperty("benchmark.resolution");
+            }
+            if (resProp != null && !resProp.isBlank() && !cfg.windowed()) {
+                try {
+                    targetRes = Integer.parseInt(resProp.trim());
+                } catch (NumberFormatException ignored) {}
+            }
+            s.setH3Resolution(targetRes);
+
             if (!cfg.windowed()) {
                 s.setClippingEnabled(false);
             }
@@ -195,7 +207,7 @@ public class MacroHistoricalEpochsFalsificationTest {
             StringBuilder synthesis = new StringBuilder();
             synthesis.append(globalAudit.reportMarkdown()).append("\n\n");
             synthesis.append("## 🗺️ 2D Cartographic Fidelity & Spatial Discrepancy Synthesis\n\n");
-            synthesis.append("> Direct pixel-to-pixel evaluation between empirical reference rasters and projected simulation grids.\n\n");
+            synthesis.append("> Direct H3 cellular spatial sampling between spherical cell centroids and empirical reference rasters (HYDE 3.4).\n\n");
             synthesis.append("| Scenario | Spatial Resolution | Historical Epoch | SSIM (Structure) | Pearson Spatial (r) | Jaccard IoU | Peak Delta Coordinates | Cartographic Anomaly Diagnostic |\n");
             synthesis.append("|---|:---:|:---:|:---:|:---:|:---:|:---:|---|\n");
 

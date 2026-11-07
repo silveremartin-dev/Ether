@@ -95,7 +95,15 @@ public class CrisisMilestoneScenariosFalsificationTest {
 
             s.setStartDateYear(cfg.startYear());
             s.setEndDateYear(cfg.endYear());
-            s.setH3Resolution(cfg.resolution());
+
+            int targetRes = cfg.resolution();
+            String resProp = System.getProperty("benchmark.resolution");
+            if (resProp != null && !resProp.isBlank() && !cfg.windowed()) {
+                try {
+                    targetRes = Integer.parseInt(resProp.trim());
+                } catch (NumberFormatException ignored) {}
+            }
+            s.setH3Resolution(targetRes);
 
             long startMs = System.currentTimeMillis();
             SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(s);
