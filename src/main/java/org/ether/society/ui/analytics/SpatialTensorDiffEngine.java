@@ -85,6 +85,8 @@ public final class SpatialTensorDiffEngine {
             BufferedImage bufA = null;
             BufferedImage bufB = null;
             BufferedImage bufDiff = null;
+            List<H3Cell> snapshotCellsA = null;
+            List<H3Cell> snapshotCellsB = null;
 
             try {
                 Scenario scA = itemA != null ? itemA.getScenario() : null;
@@ -95,8 +97,8 @@ public final class SpatialTensorDiffEngine {
                 SimulationRunRecord runA = runResolver != null ? runResolver.apply(itemA) : null;
                 SimulationRunRecord runB = runResolver != null ? runResolver.apply(itemB) : null;
 
-                List<H3Cell> snapshotCellsA = runA != null ? runA.getSpatialSnapshotAt(targetYear) : null;
-                List<H3Cell> snapshotCellsB = runB != null ? runB.getSpatialSnapshotAt(targetYear) : null;
+                snapshotCellsA = runA != null ? runA.getSpatialSnapshotAt(targetYear) : null;
+                snapshotCellsB = runB != null ? runB.getSpatialSnapshotAt(targetYear) : null;
 
                 String cacheKeyA = runIdA + "_" + targetYear + "_" + channelKey;
                 String cacheKeyB = runIdB + "_" + targetYear + "_" + channelKey;
@@ -187,8 +189,22 @@ public final class SpatialTensorDiffEngine {
             final Image imgFxB = SpatialTensorRasterRenderer.bufferedImageToFxImage(bufB);
             final Image imgFxDiff = SpatialTensorRasterRenderer.bufferedImageToFxImage(bufDiff);
 
-            final MapComparisonMetrics.MapComparisonResult metrics = (bufA != null && bufB != null)
-                    ? MapComparisonMetrics.compareImages(bufA, bufB) : null;
+            final MapComparisonMetrics.MapComparisonResult metrics;
+            if (snapshotCellsA != null && !snapshotCellsA.isEmpty() && snapshotCellsB != null && !snapshotCellsB.isEmpty()) {
+                // Direct cell-to-cell comparison between two simulations
+                metrics = MapComparisonMetrics.compareCellsToCells(snapshotCellsA, snapshotCellsB, channelKey);
+            } else if (snapshotCellsA != null && !snapshotCellsA.isEmpty() && bufB != null) {
+                // Direct cell-to-raster sampling (Simulation A vs Ground-Truth Raster B)
+                metrics = MapComparisonMetrics.compareCellsToRaster(snapshotCellsA, bufB, -90.0, 90.0, -180.0, 180.0, false);
+            } else if (snapshotCellsB != null && !snapshotCellsB.isEmpty() && bufA != null) {
+                // Direct cell-to-raster sampling (Simulation B vs Ground-Truth Raster A)
+                metrics = MapComparisonMetrics.compareCellsToRaster(snapshotCellsB, bufA, -90.0, 90.0, -180.0, 180.0, false);
+            } else if (bufA != null && bufB != null) {
+                // Fallback for pre-rendered raster comparison
+                metrics = MapComparisonMetrics.compareImages(bufA, bufB);
+            } else {
+                metrics = null;
+            }
 
             final String report = (metrics != null)
                     ? formatFidelityReport(metrics, targetYear, channelKey)

@@ -175,6 +175,156 @@ public class MapComparisonMetrics {
     }
 
     /**
+     * Directly compares two H3 cellular meshes (e.g. Scenario A vs Scenario B) across physical channels,
+     * computing direct Pearson spatial correlation, ecumene overlap (Dice/Jaccard), SSIM, and RMSE
+     * without any intermediate 2D equirectangular rasterization.
+     *
+     * @param cellsA list of H3 cells for scenario A
+     * @param cellsB list of H3 cells for scenario B
+     * @param channelKey target physical channel name (e.g. "density", "temperature", "aquifer")
+     * @return quantitative comparison result over the cellular mesh domain
+     */
+    public static MapComparisonResult compareCellsToCells(
+            java.util.List<org.ether.society.database.H3Cell> cellsA,
+            java.util.List<org.ether.society.database.H3Cell> cellsB,
+            String channelKey) {
+        if (cellsA == null || cellsA.isEmpty() || cellsB == null || cellsB.isEmpty()) {
+            return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Empty cellular inputs");
+        }
+
+        int count = Math.min(cellsA.size(), cellsB.size());
+        String chLower = channelKey != null ? channelKey.toLowerCase(java.util.Locale.ROOT) : "";
+
+        double maxA = 1.0;
+        double maxB = 1.0;
+        for (int i = 0; i < count; i++) {
+            org.ether.society.database.H3Cell ca = cellsA.get(i);
+            org.ether.society.database.H3Cell cb = cellsB.get(i);
+            if (ca == null || cb == null) continue;
+            double va = extractCellValue(ca, chLower);
+            double vb = extractCellValue(cb, chLower);
+            if (va > maxA) maxA = va;
+            if (vb > maxB) maxB = vb;
+        }
+
+        double[] gridA = new double[count];
+        double[] gridB = new double[count];
+        int validCount = 0;
+        double sumSqErr = 0.0;
+        double maxDelta = 0.0;
+        double maxDeltaLng = 0.0;
+        double maxDeltaLat = 0.0;
+        int matchCount = 0;
+        int unionCount = 0;
+
+        for (int i = 0; i < count; i++) {
+            org.ether.society.database.H3Cell ca = cellsA.get(i);
+            org.ether.society.database.H3Cell cb = cellsB.get(i);
+            if (ca == null || cb == null) continue;
+
+            double va = extractCellValue(ca, chLower);
+            double vb = extractCellValue(cb, chLower);
+
+            double normA = Math.clamp(va / maxA * 255.0, 0.0, 255.0);
+            double normB = Math.clamp(vb / maxB * 255.0, 0.0, 255.0);
+
+            boolean activeA = (va > 0.001);
+            boolean activeB = (vb > 0.001);
+
+            if (activeA || activeB) {
+                unionCount++;
+                if (activeA && activeB) {
+                    matchCount++;
+                }
+            }
+
+            gridA[validCount] = normA;
+            gridB[validCount] = normB;
+
+            double diff = Math.abs(normA - normB);
+            sumSqErr += diff * diff;
+            if (diff > maxDelta) {
+                maxDelta = diff;
+                if (ca.getLongitude() != null) maxDeltaLng = ca.getLongitude();
+                if (ca.getLatitude() != null) maxDeltaLat = ca.getLatitude();
+            }
+            validCount++;
+        }
+
+        if (validCount == 0) {
+            return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "No valid cells in domain");
+        }
+
+        double rmse = Math.sqrt(sumSqErr / validCount);
+        double jaccardIndex = (unionCount > 0) ? (double) matchCount / unionCount : 1.0;
+        double diceCoeff = (unionCount > 0) ? (2.0 * matchCount) / (matchCount + unionCount) : 1.0;
+
+        // Pearson R
+        double meanA = calculateMean(gridA, validCount);
+        double meanB = calculateMean(gridB, validCount);
+
+        double num = 0.0, denA = 0.0, denB = 0.0;
+        for (int i = 0; i < validCount; i++) {
+            double dA = gridA[i] - meanA;
+            double dB = gridB[i] - meanB;
+            num += dA * dB;
+            denA += dA * dA;
+            denB += dB * dB;
+        }
+        double pearsonR = (denA > 0 && denB > 0) ? (num / (Math.sqrt(denA) * Math.sqrt(denB))) : 1.0;
+
+        // SSIM
+        double varA = denA / validCount;
+        double varB = denB / validCount;
+        double covAB = num / validCount;
+        double c1 = 0.01 * 0.01 * 255.0 * 255.0;
+        double c2 = 0.03 * 0.03 * 255.0 * 255.0;
+        double ssim = ((2.0 * meanA * meanB + c1) * (2.0 * covAB + c2)) /
+                ((meanA * meanA + meanB * meanB + c1) * (varA + varB + c2));
+        ssim = Math.max(-1.0, Math.min(1.0, ssim));
+
+        // KL Divergence
+        double sumA = 0.0, sumB = 0.0;
+        for (int i = 0; i < validCount; i++) {
+            sumA += Math.max(1e-6, gridA[i]);
+            sumB += Math.max(1e-6, gridB[i]);
+        }
+        double klDiv = 0.0;
+        for (int i = 0; i < validCount; i++) {
+            double p = Math.max(1e-6, gridA[i]) / sumA;
+            double q = Math.max(1e-6, gridB[i]) / sumB;
+            klDiv += p * Math.log(p / q);
+        }
+
+        String summary;
+        if (rmse < 25.0 && pearsonR > 0.60 && jaccardIndex > 0.50) {
+            summary = "HIGH CELLULAR CONCORDANCE - Trajectories closely aligned across cellular mesh.";
+        } else if (pearsonR > 0.40) {
+            summary = "MODERATE CELLULAR CONCORDANCE - Shared regional macro-structures with localized divergences.";
+        } else {
+            summary = "HIGH SCENARIO DIVERGENCE - Trajectories have diverged significantly.";
+        }
+
+        return new MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
+    }
+
+    private static double extractCellValue(org.ether.society.database.H3Cell c, String chLower) {
+        if (chLower.contains("temp") || chLower.contains("climat")) {
+            return c.getTemperature() != null ? c.getTemperature() : 15.0;
+        } else if (chLower.contains("aquif") || chLower.contains("eau") || chLower.contains("water")) {
+            return c.getFreshwaterAquifer() != null ? c.getFreshwaterAquifer() : 0.0;
+        } else if (chLower.contains("biomass") || chLower.contains("agricol") || chLower.contains("agr")) {
+            return c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0;
+        } else if (chLower.contains("tech") || chLower.contains("outill")) {
+            return c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+        } else {
+            long pop = c.getPopulationOr(0);
+            double area = Math.max(1.0, c.getCellAreaKm2());
+            return Math.log10(1.0 + ((double) pop / area));
+        }
+    }
+
+    /**
      * Compares two multi-channel spatial images (e.g. Density, Sovereignty, or Isogloss rasters).
      */
     public static MapComparisonResult compareImages(BufferedImage imgA, BufferedImage imgB) {

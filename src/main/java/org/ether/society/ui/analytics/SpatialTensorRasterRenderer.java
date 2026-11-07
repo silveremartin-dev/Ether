@@ -78,7 +78,7 @@ public final class SpatialTensorRasterRenderer {
         g2.setColor(new Color(15, 23, 42));
         g2.fillRect(0, 0, targetW, targetH);
 
-        int r = Math.max(1, (int) Math.round(targetW / Math.sqrt(cells.size() * 3.5)));
+        int r = Math.max(2, (int) Math.ceil(targetW / Math.sqrt(cells.size() * 1.5)));
         if (r > 15) r = 15;
 
         String chLower = channel != null ? channel.toLowerCase(Locale.ROOT) : "";
