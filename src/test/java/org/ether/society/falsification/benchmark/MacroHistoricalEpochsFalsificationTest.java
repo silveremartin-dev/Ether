@@ -236,17 +236,14 @@ public class MacroHistoricalEpochsFalsificationTest {
             if (cells == null || cells.isEmpty()) {
                 return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "No Spatial Cells Captured");
             }
-            BufferedImage simRaster = SpatialTensorRasterRenderer.rasterizeCellsToGrayscaleDensityImage(
-                    cells, groundTruth, groundTruth.getWidth(), groundTruth.getHeight());
-            if (simRaster == null) {
-                return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Rasterization Failed");
-            }
-            if (cfg.windowed() && s != null && s.isClippingEnabled()) {
-                return MapComparisonMetrics.compareImagesWindowed(
-                        simRaster, groundTruth,
-                        s.getMinLat(), s.getMaxLat(), s.getMinLng(), s.getMaxLng());
-            }
-            return MapComparisonMetrics.compareImages(simRaster, groundTruth);
+            double minLat = (s != null) ? s.getMinLat() : -90.0;
+            double maxLat = (s != null) ? s.getMaxLat() : 90.0;
+            double minLng = (s != null) ? s.getMinLng() : -180.0;
+            double maxLng = (s != null) ? s.getMaxLng() : 180.0;
+            boolean windowed = cfg.windowed() && s != null && s.isClippingEnabled();
+
+            // Direct Cellular Mesh Sampling against Ground-Truth Raster (eliminating equirectangular rasterization artifacts)
+            return MapComparisonMetrics.compareCellsToRaster(cells, groundTruth, minLat, maxLat, minLng, maxLng, windowed);
         } catch (Exception e) {
             return new MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Comparison Error: " + e.getMessage());
         }

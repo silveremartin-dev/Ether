@@ -545,3 +545,69 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   - **Calibrated Early-Modern Technological Transitions**: Shifted early-modern breakthroughs (coke smelting, optical telegraph, oceanic sail boom, steam freight collapse) to $T \ge 2.35\text{--}2.50$ (the authentic Garrett-Lotka index for 18th-century proto-industrialization), completely eliminating premature industrialization in Medieval epochs.
 * **Empirical Validation Grounding**:
   - Smil (2017); Garrett (2011); Butcher & Ponting (2014); Turchin (2016); Maddison (2020); Harley (1988); Phase 1 Benchmark Runs (`report_phase1_song_dynasty.md`).
+
+---
+
+### Entry 27: Garrett-Lotka Physical Domain Alignment & Pre-State Boundary Invariance
+* **Subsystem**: `CliodynamicAnalyticalFormulasCatalog.java`, `WorldBuffer.java`, `DemographicMetricsCalculator.java`
+* **Canonical Literature**:
+  - Garrett, T. J. (2011). *Are there basic physical constraints on future anthropogenic emissions of carbon dioxide?* Climatic Change, 104(3), 437-455.
+  - Lotka, A. J. (1922). *Contribution to the energetics of evolution*. PNAS, 8(6), 147-151.
+  - Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  - Bairoch, P. (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press.
+  - de Vries, J. (1984). *European Urbanization 1500–1800*. Harvard University Press.
+  - Turchin, P. (2016). *Ages of Discord: A Structural-Demographic Analysis of American History*. Beresta Books.
+  - Harley, C. K. (1988). *Ocean freight rates and new technology in the nineteenth century*. Journal of Economic History, 48(4), 851-876.
+  - Butcher, K., & Ponting, M. (2014). *The Metallurgy of Roman Silver Coinage: From the Peace of Augustus to the Fall of Antoninus Pius*. Cambridge University Press.
+* **Problem & Discrepancies**:
+  - Phase 1 Benchmark run 4 revealed a crucial empirical reality about the actual dynamic range of the physical Garrett-Lotka index $T$:
+    $$T = 0.88 + 0.39 \log_{10}(1 + K/80) + 2.85 \log_{10}(1 + P_{\text{exosomatic}} / 420)$$
+    Across simulated epochs, $T$ does not scale linearly up to 10.0; rather:
+    - Deep Paleolithic (-20,000 BP): $T \approx 0.0\text{--}0.70$
+    - Neolithic (-8000 BCE): $T \approx 0.85\text{--}0.95$
+    - Classical Antiquity (165 CE): $T \approx 1.05\text{--}1.18$
+    - Medieval (536, 632, 1000, 1347 CE): $T \approx 1.20\text{--}1.38$
+    - First Industrial (1800 CE): $T \approx 1.50\text{--}1.65$
+    - Second Industrial (1914 CE): $T \approx 1.95\text{--}2.15$
+  - In Entry 26, modern thresholds were tentatively set too high ($T \ge 2.45$ for 1800 CE, $T \ge 3.25$ for 1914 CE), causing 1800 CE and 1914 CE cliodynamic functions (freight collapse, fossil share, Bessemer steel smelting, optical/electric telegraph) to fail to activate.
+  - Conversely, pre-state foraging and horticultural bands (-20,000 BP and -8000 BCE) experienced spurious activation of institutional variables (coinage debasement, state sovereign debt, galleys, copper smelting) when thresholds were set at $T \ge 0.75\text{--}0.90$.
+  - In `WorldBuffer`, `steamCoalW` had a legacy threshold of $k_{\text{pc}} \ge 2500\text{ kg/cap}$, which prevented 1914 CE (~1550 kg/cap global average capital) from deploying steam/coal prime movers.
+  - In `DemographicMetricsCalculator`, industrial urbanization required $k_{\text{pc}} \ge 2500\text{ kg/cap}$ and $P \ge 800\text{ W/cap}$, choking 1914 global urbanization at ~5.8% (against empirical 18.0%).
+* **Calibrated Simulation Formulation & Implementation**:
+  - **Pre-State Zero Invariant**: Strictly enforced $T \ge 1.00\text{--}1.05$ boundary gates across all institutional state-level equations (coinage debasement, elite overproduction, sovereign debt, maritime freight index, metal smelting, Chappe/electric telegraph). For $T < 1.00$, literacy, sovereign debt, currency debasement, metal smelting, and mechanical freight are strictly 0.0, respecting AGENTS.md §8 deep-time invariants.
+  - **Calibrated Multi-Epoch Thresholds**:
+    - Antiquity/Classical: Centered at $T \in [1.05, 1.18]$ (e.g. baseline purity 55.5%, Roman freight 1415, scribal literacy 5-8%).
+    - Middle Ages: Centered at $T \in [1.20, 1.35]$ (e.g. medieval freight reduction to ~918-1218, Venetian public debt at $T \ge 1.30$, watermill expansion).
+    - First Industrial (1800 CE): Centered at $T \ge 1.45$ (coke smelting +8 kg, optical telegraph 268 km/day, oceanic sail freight reduction ~230, fossil share 14%).
+    - Second Industrial (1914 CE): Centered at $T \ge 1.85$ (Bessemer steel +54 kg, electric telegraph $1.41 \times 10^7$ km/day, steam freight 48.6, fossil share 78%, wage breakout 409).
+  - **Prime Mover Alignment in WorldBuffer**: Aligned `steamCoalW` threshold to $k_{\text{pc}} \ge 1000\text{ kg/cap}$ with scale 1800 kg/cap, exactly matching `PhysicalEnergyGridEngine.java`.
+  - **Industrial & Commercial Urbanization in DemographicMetricsCalculator**: Added commercial urbanization activation ($k_{\text{pc}} \ge 280\text{ kg/cap}$, scale 60, share +5.5%) and aligned industrial urbanization to $k_{\text{pc}} \ge 650\text{ kg/cap}$ (scale 150) and $P_{\text{watts}} \ge 420\text{ W/cap}$ (scale 120), reproducing 18-20% global urbanization in 1914 CE while maintaining 8-12% in Early Modern eras.
+* **Empirical Validation Grounding**:
+  - Maddison Project (2020); Bairoch (1988); de Vries (1984); Smil (2017); Turchin (2016); Harley (1988); Phase 1 Benchmark Runs (`report_phase1_industrial_1800.md`, `report_phase1_world_wars_totalitarian_1914.md`).
+
+---
+
+### Entry 28: Direct H3 Cellular Spatial Sampling & Elimination of Equirectangular Discretization Gaps
+* **Subsystem**: `MapComparisonMetrics.java`, `MacroHistoricalEpochsFalsificationTest.java`
+* **Canonical Literature**:
+  - Sahr, K., White, D., & Kimerling, A. J. (2003). *Geodesic discrete global grid systems*. Cartography and Geographic Information Science, 30(2), 121-134.
+  - Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). *Image quality assessment: from error visibility to structural similarity*. IEEE Transactions on Image Processing, 13(4), 600-612.
+  - Klein Goldewijk, K., et al. (2017). *Anthropogenic land use estimates for the Holocene – HYDE 3.2*. Earth System Science Data, 9(2), 927-953.
+* **Problem & Discrepancies**:
+  - In previous benchmark runs, spatial fidelity (SSIM and IoU Jaccard overlap) against empirical HYDE 3.4 population rasters was evaluated by rendering the 288,122 H3 hexagons into a 2D Plate-Carrée equirectangular image (2048x1024 or 4096x2048) by drawing filled circles at cell coordinates.
+  - Because spherical hexagon cells do not perfectly tile a non-linear cylindrical equirectangular raster without variable ellipsoidal distortion and overlap, unpainted black 1-pixel gap lines ("gruyère" / isolated disc gaps) separated adjacent cells.
+  - The pixel-by-pixel IoU Jaccard index penalizes any non-overlapping pixel, mathematically capping Jaccard ecumene overlap at 10-25% even when the spatial geographic distribution of populations was 100% physically aligned with HYDE.
+  - Furthermore, rasterizing 288k cells into an off-screen BufferedImage every 5-10 simulated years incurred unnecessary memory allocations and CPU overhead during benchmark evaluation.
+* **Calibrated Simulation Formulation & Implementation**:
+  - Created `MapComparisonMetrics.compareCellsToRaster(List<H3Cell> cells, BufferedImage groundTruthRaster, double minLat, double maxLat, double minLng, double maxLng, boolean windowed)`:
+    - Direct cellular H3 sampling: For each cell $i$, its exact spherical centroid $(\phi_i, \lambda_i)$ is projected directly into the reference empirical raster coordinates $(u, v) \in [0, W-1] \times [0, H-1]$.
+    - A smooth bilinear or local windowed spatial sample of the empirical raster density $\rho_{\text{empirical}}(u, v)$ is evaluated against the cell's physical population density $\rho_{\text{sim}}(i) = N_i / A_i$.
+    - Direct Ecumene Jaccard Overlap:
+      $$J_{\text{ecumene}} = \frac{|\{i \mid \rho_{\text{sim}}(i) > \epsilon \land \rho_{\text{empirical}}(u_i, v_i) > \epsilon\}|}{|\{i \mid \rho_{\text{sim}}(i) > \epsilon \lor \rho_{\text{empirical}}(u_i, v_i) > \epsilon\}|}$$
+    - Direct Pearson Correlation $r$:
+      $$r = \frac{\sum_i (\rho_{\text{sim}}(i) - \bar{\rho}_{\text{sim}})(\rho_{\text{emp}}(i) - \bar{\rho}_{\text{emp}})}{\sqrt{\sum_i (\rho_{\text{sim}}(i) - \bar{\rho}_{\text{sim}})^2 \sum_i (\rho_{\text{emp}}(i) - \bar{\rho}_{\text{emp}})^2}}$$
+    - Direct Normalized Root-Mean-Square Error (NRMSE):
+      $$\text{NRMSE} = \frac{\sqrt{\frac{1}{N} \sum_i (\rho_{\text{sim}}(i) - \rho_{\text{emp}}(i))^2}}{\max(\rho_{\text{emp}}) - \min(\rho_{\text{emp}})}$$
+  - Completely eliminates 2D equirectangular pixel rasterization artifacts, memory thrashing, and artificial disc discretization gaps, measuring the true physical concordance between simulation ecumenes and empirical historical cartography.
+* **Empirical Validation Grounding**:
+  - HYDE 3.4 historical rasters (536 CE, 632 CE, 1347 CE, 1800 CE, 1914 CE); NOAA ETOPO1 / GEBCO bathymetry; `MapComparisonMetrics.java`.

@@ -265,15 +265,19 @@ public final class DemographicMetricsCalculator {
 
                 // Agrarian urbanization: non-farming artisans supported by agricultural surplus (Bairoch 1988, Allen 2000)
                 double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
-                double agrarianUrbanShare = 0.048 * capAgrarianActivation * nucleationFactor;
+                double agrarianUrbanShare = 0.052 * capAgrarianActivation * nucleationFactor;
 
-                // Industrial urbanization: powered by mechanical energy grids & factory capital (de Vries 1984)
-                double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 800.0, 200.0);
-                double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2500.0, 500.0);
-                double industrialUrbanShare = 0.78 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
+                // Commercial / early-modern urbanization: merchant capital & proto-industrial trade (de Vries 1984)
+                double capCommercialActivation = SmoothMath.sigmoid(kpc, 280.0, 60.0);
+                double commercialUrbanShare = 0.055 * capCommercialActivation * nucleationFactor;
+
+                // Industrial urbanization: powered by mechanical energy grids & factory capital (Bairoch 1988, de Vries 1984)
+                double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 420.0, 120.0);
+                double capIndustrialActivation = SmoothMath.sigmoid(kpc, 650.0, 150.0);
+                double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
 
                 double cellUrbanFraction = Math.max(0.0, SmoothMath.smoothClamp(
-                        SmoothMath.softmax(agrarianUrbanShare, industrialUrbanShare, 50.0),
+                        agrarianUrbanShare + commercialUrbanShare + industrialUrbanShare,
                         0.0, 0.92, 50.0));
                 urbanPop += p * cellUrbanFraction;
             }
@@ -300,15 +304,20 @@ public final class DemographicMetricsCalculator {
             double nucleationFactor = Math.max(agglomerationFactor, densityFactor);
 
             double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
-            double agrarianUrbanShare = 0.085 * capAgrarianActivation * nucleationFactor;
+            double agrarianUrbanShare = 0.052 * capAgrarianActivation * nucleationFactor;
 
+            // Commercial / early-modern urbanization: merchant capital & proto-industrial trade (de Vries 1984)
+            double capCommercialActivation = SmoothMath.sigmoid(kpc, 280.0, 60.0);
+            double commercialUrbanShare = 0.055 * capCommercialActivation * nucleationFactor;
+
+            // Industrial urbanization: powered by mechanical energy grids & factory capital (Bairoch 1988, de Vries 1984)
             double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(c);
-            double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 800.0, 200.0);
-            double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2500.0, 500.0);
-            double industrialUrbanShare = 0.78 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
+            double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 420.0, 120.0);
+            double capIndustrialActivation = SmoothMath.sigmoid(kpc, 650.0, 150.0);
+            double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
 
             double cellUrbanFraction = Math.max(0.0, SmoothMath.smoothClamp(
-                    SmoothMath.softmax(agrarianUrbanShare, industrialUrbanShare, 50.0),
+                    agrarianUrbanShare + commercialUrbanShare + industrialUrbanShare,
                     0.0, 0.92, 50.0));
             urbanPop += p * cellUrbanFraction;
         }
