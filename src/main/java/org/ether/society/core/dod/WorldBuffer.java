@@ -277,22 +277,7 @@ public class WorldBuffer {
      * @return total continuous power dissipated per capita in Watts (\(\text{W}\))
      */
     public float computeCellPowerWattsPerCapita(int index) {
-        if (index < 0 || index >= capacity) return 0.0f;
-        float pop = biomassHuman[index];
-        if (pop <= 0.001f) return 0.0f;
-        double basalW = organismProfile.basalMetabolicPowerWatts();
-        double kpc = Math.max(0.0, resourceCapital[index] / pop);
-        // 1. Somatic basal + mechanical labor + domestic hearth/firewood thermal baseline (~347 W/cap in foraging bands, Smil 2017)
-        double woodThermalW = 212.0 * Math.tanh((biomassNatural[index] + woodResource[index] + 50.0) / 50.0);
-        // 2. Agrarian draft traction & plows (activates smoothly above kpc ~ 150 kg/cap, up to +25 W/cap global average)
-        double draftW = 25.0 * Math.tanh(SmoothMath.softplus(kpc - 150.0, 0.05) / 250.0);
-        // 3. Waterwheels, windmills, sail & proto-industrial metallurgical furnaces (activates smoothly above kpc ~ 520 kg/cap, up to +220 W/cap)
-        double millAndCharcoalW = 220.0 * Math.tanh(SmoothMath.softplus(kpc - 520.0, 0.05) / 420.0);
-        // 4. Coal/steam & early internal combustion prime movers (activates smoothly above kpc ~ 1000 kg/cap, up to +600 W/cap)
-        double steamCoalW = 600.0 * Math.tanh(SmoothMath.softplus(kpc - 1000.0, 0.02) / 1800.0);
-        // 5. Modern electric/hydrocarbon/nuclear/solar grid (activates smoothly above kpc ~ 4000 kg/cap, up to +1350 W/cap)
-        double modernGridW = 1350.0 * Math.tanh(SmoothMath.softplus(kpc - 4000.0, 0.01) / 10000.0);
-        return (float) (basalW + 35.0 + woodThermalW + draftW + millAndCharcoalW + steamCoalW + modernGridW);
+        return WorldBufferComponentAdapter.computeCellPowerWattsPerCapita(this, index);
     }
 
     /**
@@ -304,15 +289,7 @@ public class WorldBuffer {
      * @return dimensionless emergent technology diagnostic in \([0.0, 10.0]\)
      */
     public float computeEmergentTechnologyDiagnostic(int index) {
-        if (index < 0 || index >= capacity) return 0.0f;
-        float pop = biomassHuman[index];
-        if (pop > 0.001f) {
-            double powerW = computeCellPowerWattsPerCapita(index);
-            double kpc = Math.max(0.0, resourceCapital[index] / pop);
-            return (float) org.ether.society.database.H3CellPhysicsAndStateHelper.computeGarrettLotkaEmergentIndex(
-                    powerW, kpc, organismProfile.basalMetabolicPowerWatts());
-        }
-        return 0.0f;
+        return WorldBufferComponentAdapter.computeEmergentTechnologyDiagnostic(this, index);
     }
 
     /**
@@ -394,13 +371,7 @@ public class WorldBuffer {
      * @return climate state component
      */
     public ClimateState getClimateState(int index) {
-        return new ClimateState(
-                this.temperature[index],
-                this.rainfall[index],
-                0.30,
-                0.0,
-                0.0
-        );
+        return WorldBufferComponentAdapter.getClimateState(this, index);
     }
 
     /**
@@ -410,9 +381,7 @@ public class WorldBuffer {
      * @param state climate state component
      */
     public void setClimateState(int index, ClimateState state) {
-        if (state == null) return;
-        this.temperature[index] = (float) state.temperature();
-        this.rainfall[index] = (float) state.rainfall();
+        WorldBufferComponentAdapter.setClimateState(this, index, state);
     }
 
     /**
@@ -422,18 +391,7 @@ public class WorldBuffer {
      * @return biomass state component
      */
     public BiomassState getBiomassState(int index) {
-        return new BiomassState(
-                this.biomassHuman[index],
-                this.biomassLivestock[index],
-                this.biomassFish[index],
-                this.biomassAgriculture[index],
-                this.biomassNatural[index],
-                this.foodResource[index],
-                this.waterResource[index],
-                this.woodResource[index],
-                10.0,
-                0.0
-        );
+        return WorldBufferComponentAdapter.getBiomassState(this, index);
     }
 
     /**
@@ -443,15 +401,7 @@ public class WorldBuffer {
      * @param state biomass state component
      */
     public void setBiomassState(int index, BiomassState state) {
-        if (state == null) return;
-        this.biomassHuman[index] = (float) state.biomassHuman();
-        this.biomassLivestock[index] = (float) state.biomassLivestock();
-        this.biomassFish[index] = (float) state.biomassFish();
-        this.biomassAgriculture[index] = (float) state.biomassAgriculture();
-        this.biomassNatural[index] = (float) state.biomassNatural();
-        this.foodResource[index] = (float) state.foodResource();
-        this.waterResource[index] = (float) state.waterResource();
-        this.woodResource[index] = (float) state.woodResource();
+        WorldBufferComponentAdapter.setBiomassState(this, index, state);
     }
 
     /**
@@ -461,13 +411,7 @@ public class WorldBuffer {
      * @return demographic state component
      */
     public DemographicState getDemographicState(int index) {
-        return new DemographicState(
-                (int) this.biomassHuman[index],
-                this.lifespan[index],
-                this.fertility[index],
-                this.giniIndex[index],
-                1
-        );
+        return WorldBufferComponentAdapter.getDemographicState(this, index);
     }
 
     /**
@@ -477,10 +421,7 @@ public class WorldBuffer {
      * @param state demographic state component
      */
     public void setDemographicState(int index, DemographicState state) {
-        if (state == null) return;
-        this.lifespan[index] = (float) state.lifespan();
-        this.fertility[index] = (float) state.fertility();
-        this.giniIndex[index] = (float) state.giniIndex();
+        WorldBufferComponentAdapter.setDemographicState(this, index, state);
     }
 
     /**
@@ -490,18 +431,7 @@ public class WorldBuffer {
      * @return mineral state component
      */
     public MineralState getMineralState(int index) {
-        return new MineralState(
-                this.resourceCoal[index],
-                this.resourceOil[index],
-                this.resourceGas[index],
-                this.resourceUranium[index],
-                this.metalResource[index],
-                0.0,
-                0.0,
-                87.0,
-                this.freshwaterAquifer[index],
-                this.freshwaterAquifer[index]
-        );
+        return WorldBufferComponentAdapter.getMineralState(this, index);
     }
 
     /**
@@ -511,13 +441,7 @@ public class WorldBuffer {
      * @param state mineral state component
      */
     public void setMineralState(int index, MineralState state) {
-        if (state == null) return;
-        this.resourceCoal[index] = (float) state.resourceCoal();
-        this.resourceOil[index] = (float) state.resourceOil();
-        this.resourceGas[index] = (float) state.resourceGas();
-        this.resourceUranium[index] = (float) state.resourceUranium();
-        this.metalResource[index] = (float) state.resourceMetal();
-        this.freshwaterAquifer[index] = (float) state.freshwaterAquifer();
+        WorldBufferComponentAdapter.setMineralState(this, index, state);
     }
 
     /** @return extractable coal reserve array */

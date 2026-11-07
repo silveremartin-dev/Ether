@@ -1,31 +1,35 @@
 package org.ether.society.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.database.DatabaseConfig;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellRepository;
-import org.ether.society.database.DatabaseConfig;
 import org.ether.society.network.codec.CellTopologyWireCodec;
 import org.ether.society.network.codec.WorldBufferWireCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 /**
- * Unified High-Performance Simulation Persistence & Replay Manager.
+ * Unified High-Performance Simulation Persistence &amp; Replay Manager.
  * Orchestrates saving and loading of:
  * 1. Topology (topology.bin.gz) — Static/cold spatial baselines via CellTopologyWireCodec
- * 2. World State (state.bin.gz & snapshots/) — Dynamic simulation arrays via WorldBufferWireCodec
+ * 2. World State (state.bin.gz &amp; snapshots/) — Dynamic simulation arrays via WorldBufferWireCodec
  * 3. Metadata (metadata.json) — Scenario identification, timeline, and tick indexes
  * 4. Telemetry (history.json) — Time series analytics and historical snapshots
  *
@@ -68,7 +72,6 @@ public class SimulationSaveManager {
 
     /**
      * Simulation save manager.
-     *
      */
     public SimulationSaveManager() {
         this(null);
@@ -137,11 +140,7 @@ public class SimulationSaveManager {
             long currentTick = engine.getTickCounter();
             byte[] stateBytes = WorldBufferWireCodec.encodeChunk(worldBuffer, 0, worldBuffer.getCapacity(), currentTick);
             Path statePath = savePath.resolve(STATE_FILE);
-            try (OutputStream fos = Files.newOutputStream(statePath);
-                 GZIPOutputStream gzos = new GZIPOutputStream(fos)) {
-                gzos.write(stateBytes);
-                gzos.finish();
-            }
+            SimulationSaveIOHelper.writeGzipBytes(statePath, stateBytes);
 
             // Also copy initial/current state as a discrete replay snapshot
             String currentSnapFileName = String.format("snapshot_tick_%010d.bin.gz", currentTick);
@@ -159,11 +158,7 @@ public class SimulationSaveManager {
                         WorldBuffer snapBuffer = new WorldBuffer(snapCells.size());
                         org.ether.society.data.DODDataGenerator.populateWorldBuffer(snapCells, snapBuffer);
                         byte[] snapBytes = WorldBufferWireCodec.encodeChunk(snapBuffer, 0, snapBuffer.getCapacity(), snapTick);
-                        try (OutputStream fos = Files.newOutputStream(snapPath);
-                             GZIPOutputStream gzos = new GZIPOutputStream(fos)) {
-                            gzos.write(snapBytes);
-                            gzos.finish();
-                        }
+                        SimulationSaveIOHelper.writeGzipBytes(snapPath, snapBytes);
                     }
                 }
             }
@@ -344,19 +339,10 @@ public class SimulationSaveManager {
             }
 
             if (Files.exists(statePath)) {
-                try (InputStream fis = Files.newInputStream(statePath);
-                     GZIPInputStream gzis = new GZIPInputStream(fis);
-                     ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                    byte[] buf = new byte[8192];
-                    int r;
-                    while ((r = gzis.read(buf)) != -1) {
-                        baos.write(buf, 0, r);
-                    }
-                    byte[] rawState = baos.toByteArray();
-                    WorldBufferWireCodec.decodeChunkInto(rawState, worldBuffer);
-                    engine.syncBufferToCells();
-                    logger.info("Restored dynamic world state ({} cells) from {}", cells.size(), statePath.getFileName());
-                }
+                byte[] rawState = SimulationSaveIOHelper.readGzipBytes(statePath);
+                WorldBufferWireCodec.decodeChunkInto(rawState, worldBuffer);
+                engine.syncBufferToCells();
+                logger.info("Restored dynamic world state ({} cells) from {}", cells.size(), statePath.getFileName());
             }
 
             // 6. Restore Historical Telemetry (history.json)
@@ -388,38 +374,7 @@ public class SimulationSaveManager {
      * Loads a specific tick snapshot from the save's snapshots/ directory into the engine.
      */
     public boolean loadTickSnapshot(Path savePath, long targetTick, H3SimulationEngine engine) {
-        try {
-            Path snapDir = savePath.resolve(SNAPSHOTS_DIR);
-            String snapFileName = String.format("snapshot_tick_%010d.bin.gz", targetTick);
-            Path snapPath = snapDir.resolve(snapFileName);
-
-            if (!Files.exists(snapPath)) {
-                // Fallback to searching matching tick in filename
-                File[] files = snapDir.toFile().listFiles((d, n) -> n.contains(String.valueOf(targetTick)) && (n.endsWith(".bin.gz") || n.endsWith(".gz")));
-                if (files != null && files.length > 0) {
-                    snapPath = files[0].toPath();
-                } else {
-                    return false;
-                }
-            }
-
-            try (InputStream fis = Files.newInputStream(snapPath);
-                 GZIPInputStream gzis = new GZIPInputStream(fis);
-                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                byte[] buf = new byte[8192];
-                int r;
-                while ((r = gzis.read(buf)) != -1) {
-                    baos.write(buf, 0, r);
-                }
-                byte[] rawState = baos.toByteArray();
-                WorldBufferWireCodec.decodeChunkInto(rawState, engine.getWorldBuffer());
-                engine.syncBufferToCells();
-                return true;
-            }
-        } catch (Exception ex) {
-            logger.error("Failed to load tick snapshot {}", targetTick, ex);
-            return false;
-        }
+        return SimulationSaveIOHelper.loadTickSnapshot(savePath, targetTick, engine);
     }
 
     private static final java.util.concurrent.ExecutorService asyncDbExecutor = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
@@ -451,72 +406,6 @@ public class SimulationSaveManager {
      * Lists all available saved simulation snapshots across normal saves and auto-checkpoints.
      */
     public List<SaveMetadata> listSaves() {
-        List<SaveMetadata> list = new ArrayList<>();
-        Path baseSaveDir = getSaveDirectory();
-        if (!Files.exists(baseSaveDir)) return list;
-
-        try (Stream<Path> stream = Files.list(baseSaveDir)) {
-            stream.filter(Files::isDirectory)
-                    .forEach(dir -> {
-                        Path metaFile = dir.resolve(METADATA_FILE);
-                        SaveMetadata meta = null;
-                        if (Files.exists(metaFile)) {
-                            try { meta = objectMapper.readValue(metaFile.toFile(), SaveMetadata.class); } catch (Exception ex) {
-                                logger.debug("Could not deserialize metadata.json in {}: {}", dir.getFileName(), ex.getMessage());
-                            }
-                        }
-
-                        if (meta == null || meta.getId() == null) {
-                            // Fallback & Auto-repair: Recover metadata from scenario.json and history.json
-                            Path scenarioFile = dir.resolve(SCENARIO_FILE);
-                            Path historyFile = dir.resolve(HISTORY_FILE);
-                            if (Files.exists(scenarioFile) || Files.exists(historyFile)) {
-                                String dirName = dir.getFileName().toString();
-                                String scName = dirName;
-                                long endYear = 0;
-                                int cellCount = 0;
-                                int res = 3;
-
-                                if (Files.exists(scenarioFile)) {
-                                    try {
-                                        org.ether.society.model.Scenario sc = objectMapper.readValue(scenarioFile.toFile(), org.ether.society.model.Scenario.class);
-                                        if (sc != null) {
-                                            if (sc.getName() != null && !sc.getName().isBlank()) scName = sc.getName();
-                                            endYear = sc.getEndDateYear();
-                                            res = sc.getH3Resolution();
-                                        }
-                                    } catch (Exception ignored) {}
-                                }
-
-                                if (Files.exists(historyFile)) {
-                                    try {
-                                        List<org.ether.society.analytics.HistorySnapshot> snaps = objectMapper.readValue(historyFile.toFile(), objectMapper.getTypeFactory().constructCollectionType(List.class, org.ether.society.analytics.HistorySnapshot.class));
-                                        if (snaps != null && !snaps.isEmpty()) {
-                                            endYear = snaps.get(snaps.size() - 1).year();
-                                        }
-                                    } catch (Exception ignored) {}
-                                }
-
-                                meta = new SaveMetadata(dirName, scName, endYear, 1, scName, cellCount, res);
-                                try {
-                                    EtherJsonUtil.writePrettyAtomic(metaFile, meta);
-                                    logger.info("Auto-repaired corrupted or missing metadata.json for save: {}", dirName);
-                                } catch (Exception ignored) {}
-                            }
-                        }
-
-                        if (meta != null) {
-                            // Directory name on disk is the authoritative filesystem identifier
-                            meta.setId(dir.getFileName().toString());
-                            list.add(meta);
-                        }
-                    });
-        } catch (IOException e) {
-            logger.error("Failed to list saves", e);
-        }
-
-        list.sort(java.util.Comparator.comparing(SaveMetadata::getTimestamp, java.util.Comparator.nullsLast(java.util.Comparator.reverseOrder())));
-
-        return list;
+        return SimulationSaveIOHelper.listSaves(getSaveDirectory(), objectMapper);
     }
 }
