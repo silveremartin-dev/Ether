@@ -55,16 +55,16 @@ public class PinkerViolenceDeclinePureEngine {
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            double tech = cell.getTechnologyLevelOr(1.0);
-            // Empirical literacy rate; invariant deep-time baseline is 0.0% (AGENTS.md §8)
-            double literacy = tech < 1.0 ? 0.0 : Math.clamp((tech - 1.0) / 5.0, 0.0, 1.0);
-            double stateStrength = Math.min(1.0, Math.max(0.0, (tech - 1.0) / 4.0));
+            int pop = cell.getPopulation();
+            double kpc = cell.getResourceCapitalOr(0.0) / pop;
+            // Endogenous scribal & print literacy and Leviathan administrative capacity from physical infrastructure capital (AGENTS.md §8)
+            double literacy = kpc < 30.0 ? 0.0 : Math.clamp(Math.tanh((kpc - 30.0) / 1500.0), 0.0, 1.0);
+            double stateStrength = kpc < 50.0 ? 0.0 : Math.clamp(Math.tanh((kpc - 50.0) / 800.0), 0.0, 1.0);
             double tradeOpenness = 0.50;
 
             double violentMortalityRate = calculateViolentDeathRatePerCapita(literacy, stateStrength, tradeOpenness);
 
             // Calculate violent deaths scaling with deltaYears
-            int pop = cell.getPopulation();
             int violentDeaths = (int) Math.round(pop * violentMortalityRate * deltaYears);
             if (violentDeaths <= 0) continue;
 

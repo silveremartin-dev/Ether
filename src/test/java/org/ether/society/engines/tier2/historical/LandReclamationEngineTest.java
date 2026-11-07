@@ -27,7 +27,6 @@ public class LandReclamationEngineTest {
         coastalCell.setBiome(Biome.BEACH);
         coastalCell.setIsCoastal(true);
         coastalCell.setElevation(-1.0); // Below sea level
-        coastalCell.setTechnologyLevel(4.5); // >= 4.0 threshold
         coastalCell.setResourceCapital(150.0); // >= 100.0 threshold
         coastalCell.setSoilOrganicCarbon(40.0);
         coastalCell.setIsPolder(false);
@@ -45,7 +44,6 @@ public class LandReclamationEngineTest {
         H3Cell oceanCell = new H3Cell(4002L, 0.0, -140.0); // Pacific Ocean
         oceanCell.setBiome(Biome.OCEAN);
         oceanCell.setElevation(-4000.0);
-        oceanCell.setTechnologyLevel(9.0); // >= 8.5 threshold
         oceanCell.setResourceCapital(600.0); // >= 500.0 threshold
         oceanCell.setEnergySolar(20.0);
         oceanCell.setHasFloatingInfrastructure(false);

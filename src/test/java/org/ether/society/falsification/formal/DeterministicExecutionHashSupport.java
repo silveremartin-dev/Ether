@@ -108,13 +108,12 @@ final class DeterministicExecutionHashSupport {
             buffer.getBiomassAgriculture()[i] = 200.0f;
             buffer.getBiomassNatural()[i] = 500.0f;
             buffer.getFoodResource()[i] = 500.0f + (float) rng.nextDouble() * 200.0f;
-            buffer.getTechnologyLevel()[i] = 1.0f + (float) rng.nextDouble() * 0.5f;
+            buffer.getResourceCapital()[i] = 100.0f + (float) rng.nextDouble() * 50.0f;
             buffer.getGiniIndex()[i] = 0.25f + (float) rng.nextDouble() * 0.2f;
 
             agents.getHexIds()[i] = i;
             agents.getMass()[i] = initPop;
             agents.getEnergy()[i] = 100.0f;
-            agents.getTechLevel()[i] = buffer.getTechnologyLevel()[i];
         }
 
         for (int t = 0; t < ticks; t++) {
@@ -126,7 +125,7 @@ final class DeterministicExecutionHashSupport {
         for (int i = 0; i < capacity; i++) {
             byteBuf.putFloat(buffer.getBiomassHuman()[i]);
             byteBuf.putFloat(buffer.getFoodResource()[i]);
-            byteBuf.putFloat(buffer.getTechnologyLevel()[i]);
+            byteBuf.putFloat(buffer.getResourceCapital()[i]);
             byteBuf.putFloat(buffer.getGiniIndex()[i]);
         }
         return HexFormat.of().formatHex(digest.digest(byteBuf.array()));
@@ -150,7 +149,7 @@ final class DeterministicExecutionHashSupport {
         WorldBuffer world = new WorldBuffer(totalCells);
         float[] pop = world.getBiomassHuman();
         float[] food = world.getFoodResource();
-        float[] tech = world.getTechnologyLevel();
+        float[] tech = new float[totalCells];
         float[] capital = world.getResourceCapital();
         float[] gini = world.getGiniIndex();
 
@@ -352,7 +351,6 @@ final class DeterministicExecutionHashSupport {
             cell.setFoodResource(2500.0 + rng.nextDouble() * 1000.0);
             cell.setWaterResource(80.0 + rng.nextDouble() * 40.0);
             cell.setResourceCapital(300.0 + rng.nextDouble() * 200.0);
-            cell.setTechnologyLevel(1.5 + rng.nextDouble() * 1.0);
             cell.setPollutionLevel(0.01);
             cell.setElevation(120.0 + i * 15.0);
             cell.setLatitude(lat);
@@ -382,7 +380,7 @@ final class DeterministicExecutionHashSupport {
             buf.putDouble(c.getFoodResource() != null ? c.getFoodResource() : 0.0);
             buf.putDouble(c.getWaterResource() != null ? c.getWaterResource() : 0.0);
             buf.putDouble(c.getResourceCapital() != null ? c.getResourceCapital() : 0.0);
-            buf.putDouble(c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0);
+            buf.putDouble(org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c));
             buf.putDouble(c.getPollutionLevel() != null ? c.getPollutionLevel() : 0.0);
         }
         return HexFormat.of().formatHex(digest.digest(buf.array()));

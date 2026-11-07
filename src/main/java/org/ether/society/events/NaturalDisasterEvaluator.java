@@ -181,7 +181,9 @@ public final class NaturalDisasterEvaluator {
                 double lat = target != null ? target.getLatitude() : 0.0;
                 double lng = target != null ? target.getLongitude() : 0.0;
                 String msg = severity > 0.5 ? "💀 FAMINE CRITIQUE : Famine généralisée et crise de subsistance!" : "🍂 CRISE ALIMENTAIRE : Mauvaises récoltes et hausse des prix de la nourriture.";
-                eventSystem.recordSpatialEvent(new ActiveEvent("FAMINE_" + year, msg, "FAMINE", lat, lng, year, month, 1, 20.0, 5.0 + severity * 4.0));
+                double fMag = 5.0 + severity * 4.0;
+                eventSystem.recordSpatialEvent(new ActiveEvent("FAMINE_" + year, msg, "FAMINE", lat, lng, year, month, 1, 20.0, fMag, 180));
+                org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "FAMINE", msg, fMag, lat, lng, 0.0, 0.0, 180);
                 lastFamineYear = year;
             }
         }
@@ -198,7 +200,8 @@ public final class NaturalDisasterEvaluator {
             double lng = target != null ? target.getLongitude() : 0.0;
             String msg = random.nextDouble() < 0.3 ? "☠️ PANDÉMIE MAJEURE : Une peste dévastatrice ravage les populations!" : "🤒 ÉPIDÉMIE LOCALE : Foyer infectieux propagé dans les centres urbains.";
             double mag = msg.contains("MAJEURE") ? 8.5 : 6.0;
-            eventSystem.recordSpatialEvent(new ActiveEvent("PLAGUE_" + year, msg, "PANDEMIC", lat, lng, year, month, 1, 20.0, mag));
+            eventSystem.recordSpatialEvent(new ActiveEvent("PLAGUE_" + year, msg, "PANDEMIC", lat, lng, year, month, 1, 20.0, mag, 730));
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "PANDEMIC", msg, mag, lat, lng, 0.0, 0.0, 730);
             lastPlagueYear = year;
         }
     }
@@ -219,7 +222,8 @@ public final class NaturalDisasterEvaluator {
             if (droughtTarget == null) droughtTarget = getRandomLandCell(cells);
             double dLat = (droughtTarget != null && droughtTarget.getLatitude() != null) ? droughtTarget.getLatitude() : 0.0;
             double dLng = (droughtTarget != null && droughtTarget.getLongitude() != null) ? droughtTarget.getLongitude() : 0.0;
-            eventSystem.recordSpatialEvent(new ActiveEvent("DROUGHT_" + year, "☀️ SÉCHERESSE : Stress hydrique prolongé et assèchement des nappes.", "DROUGHT", dLat, dLng, year, month, 1, 20.0, 5.5));
+            eventSystem.recordSpatialEvent(new ActiveEvent("DROUGHT_" + year, "☀️ SÉCHERESSE : Stress hydrique prolongé et assèchement des nappes.", "DROUGHT", dLat, dLng, year, month, 1, 20.0, 5.5, 180));
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "DROUGHT", "Drought", 5.5, dLat, dLng, 0.0, 0.0, 180);
             lastDroughtYear = year;
         }
 
@@ -228,7 +232,8 @@ public final class NaturalDisasterEvaluator {
             H3Cell vCell = findBestVolcanicFaultCell(cells, 0.0, 0.0, false);
             double vLat = (vCell != null && vCell.getLatitude() != null) ? vCell.getLatitude() : 0.0;
             double vLng = (vCell != null && vCell.getLongitude() != null) ? vCell.getLongitude() : 0.0;
-            eventSystem.recordSpatialEvent(new ActiveEvent("VOLCANO_" + year, "🌋 ÉRUPTION VOLCANIQUE : Éjection massive de cendres le long d'une faille tectonique!", "VOLCANO", vLat, vLng, year, month, 1, 25.0, 8.0));
+            eventSystem.recordSpatialEvent(new ActiveEvent("VOLCANO_" + year, "🌋 ÉRUPTION VOLCANIQUE : Éjection massive de cendres le long d'une faille tectonique!", "VOLCANO", vLat, vLng, year, month, 1, 25.0, 8.0, 365));
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "VOLCANO", "Volcano", 8.0, vLat, vLng, 10.0, 0.0, 365);
             lastVolcanoYear = year;
         }
 
@@ -237,7 +242,8 @@ public final class NaturalDisasterEvaluator {
             H3Cell eqTarget = getRandomLandCell(cells);
             double eqLat = (eqTarget != null && eqTarget.getLatitude() != null) ? eqTarget.getLatitude() : 0.0;
             double eqLng = (eqTarget != null && eqTarget.getLongitude() != null) ? eqTarget.getLongitude() : 0.0;
-            eventSystem.recordSpatialEvent(new ActiveEvent("EARTHQUAKE_" + year, "🌍 SÉISME / TREMBLEMENT DE TERRE : Secousse cataclysmique locale.", "EARTHQUAKE", eqLat, eqLng, year, month, 1, 20.0, 6.8));
+            eventSystem.recordSpatialEvent(new ActiveEvent("EARTHQUAKE_" + year, "🌍 SÉISME / TREMBLEMENT DE TERRE : Secousse cataclysmique locale.", "EARTHQUAKE", eqLat, eqLng, year, month, 1, 20.0, 6.8, 3));
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "EARTHQUAKE", "Earthquake", 6.8, eqLat, eqLng, 10.0, 0.0, 3);
         }
 
         // Flood
@@ -259,7 +265,8 @@ public final class NaturalDisasterEvaluator {
             }
             double fLat = (floodTarget != null && floodTarget.getLatitude() != null) ? floodTarget.getLatitude() : 0.0;
             double fLng = (floodTarget != null && floodTarget.getLongitude() != null) ? floodTarget.getLongitude() : 0.0;
-            eventSystem.recordSpatialEvent(new ActiveEvent("FLOOD_" + year, "🌊 INONDATION / CRUE MAJEURE : Les cours d'eau débordent de leur lit.", "FLOOD", fLat, fLng, year, month, 1, 20.0, 5.2));
+            eventSystem.recordSpatialEvent(new ActiveEvent("FLOOD_" + year, "🌊 INONDATION / CRUE MAJEURE : Les cours d'eau débordent de leur lit.", "FLOOD", fLat, fLng, year, month, 1, 20.0, 5.2, 30));
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "FLOOD", "Flood", 5.2, fLat, fLng, 0.0, 0.0, 30);
         }
 
         // Tsunami
@@ -270,7 +277,8 @@ public final class NaturalDisasterEvaluator {
             if (!coastalOrOcean.isEmpty()) {
                 H3Cell tCell = coastalOrOcean.get(random.nextInt(coastalOrOcean.size()));
                 if (tCell.getLatitude() != null && tCell.getLongitude() != null) {
-                    eventSystem.recordSpatialEvent(new ActiveEvent("TSUNAMI_" + year, "🌊 TSUNAMI / SUBMERSION CÔTIÈRE : Onde océanique déferlante sur les rivages.", "TSUNAMI", tCell.getLatitude(), tCell.getLongitude(), year, month, 1, 25.0, 7.8));
+                    eventSystem.recordSpatialEvent(new ActiveEvent("TSUNAMI_" + year, "🌊 TSUNAMI / SUBMERSION CÔTIÈRE : Onde océanique déferlante sur les rivages.", "TSUNAMI", tCell.getLatitude(), tCell.getLongitude(), year, month, 1, 25.0, 7.8, 1));
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "TSUNAMI", "Tsunami", 7.8, tCell.getLatitude(), tCell.getLongitude(), 0.0, 0.0, 1);
                 }
             }
         }

@@ -75,17 +75,33 @@ public class PhysicalLeontiefInputOutputEngine {
             double currentRareEarths = cell.getResourceRareEarthsOr(0.0);
             double currentPrecious = cell.getResourcePreciousMetalOr(0.0);
 
-            double techLevel = cell.getTechnologyLevelOr(1.0);
+            int pop = cell.getPopulation();
+            double kPerCapita = currentCapital / Math.max(1.0, (double) pop);
 
-            // 1. Material Entropy Spectrum Omega_mat(T): count active physical input channels
-            int activeMaterialChannels = 0;
-            if (currentClay > 1.0) activeMaterialChannels++;
-            if (currentWood > 1.0) activeMaterialChannels++;
-            if (currentFish > 1.0 || currentLivestock > 1.0) activeMaterialChannels++;
-            if (currentMetal > 0.5 && techLevel >= 1.5) activeMaterialChannels++;
-            if (coal > 0.5 && techLevel >= 3.0) activeMaterialChannels++;
-            if ((oil > 0.5 || gas > 0.5) && techLevel >= 3.4) activeMaterialChannels++;
-            if ((currentRareEarths > 0.05 || currentPrecious > 0.05 || uranium > 0.05) && techLevel >= 3.8) activeMaterialChannels++;
+            // 1. Material Entropy Spectrum Omega_mat(k_pc): smooth C^1 physical activation of input channels
+            // Grounded in Ashby (2012) "Materials and the Environment":
+            // - Biogenic/Ceramic channels (clay, wood, fish, livestock): accessible at all capital levels
+            // - Metallurgical smelting channel: activates smoothly around k_pc = 80 kg/cap (Chalcolithic/Bronze kilns)
+            // - Coal/Steam thermal channel: activates smoothly around k_pc = 900 kg/cap (Early Industrial furnaces)
+            // - Hydrocarbon petrochemical channel: activates smoothly around k_pc = 2200 kg/cap (Refineries & internal combustion)
+            // - Critical REE/Semiconductor/Nuclear channel: activates smoothly around k_pc = 6000 kg/cap (Precision cleanrooms)
+            double activeMaterialChannels = 0.0;
+            if (currentClay > 1.0) activeMaterialChannels += 1.0;
+            if (currentWood > 1.0) activeMaterialChannels += 1.0;
+            if (currentFish > 1.0 || currentLivestock > 1.0) activeMaterialChannels += 1.0;
+            if (currentMetal > 0.5) {
+                activeMaterialChannels += 1.0 / (1.0 + Math.exp(-(kPerCapita - 80.0) / 25.0));
+            }
+            if (coal > 0.5) {
+                activeMaterialChannels += 1.0 / (1.0 + Math.exp(-(kPerCapita - 900.0) / 250.0));
+            }
+            if (oil > 0.5 || gas > 0.5) {
+                activeMaterialChannels += 1.0 / (1.0 + Math.exp(-(kPerCapita - 2200.0) / 500.0));
+            }
+            double highTechActivation = 1.0 / (1.0 + Math.exp(-(kPerCapita - 6000.0) / 1500.0));
+            if (currentRareEarths > 0.05 || currentPrecious > 0.05 || uranium > 0.05) {
+                activeMaterialChannels += highTechActivation;
+            }
             double omegaMatMultiplier = 1.0 + 0.08 * activeMaterialChannels;
 
             // 2. Eco-Material Niche Envelope: societies adapt capital tools to local biome resources
@@ -93,10 +109,12 @@ public class PhysicalLeontiefInputOutputEngine {
             double nicheBiogenicSupport = (currentWood * 0.5) + (currentClay * 0.3)
                     + (currentFish * 0.15) + (currentLivestock * 0.20);
 
-            // Target capital expansion based on population, technology level, and Material Entropy Spectrum
-            // Prehistoric deep-time baseline (AGENTS.md §8): Paleolithic tool production is bounded by subsistence labor
-            double techScaling = techLevel < 1.0 ? (techLevel * 0.20) : (1.0 + techLevel * 0.1);
-            double targetCapitalOutput = cell.getPopulation() * 0.5 * techScaling * omegaMatMultiplier * deltaYears;
+            // Target capital expansion based on population, physical tool stock per capita, and Material Entropy Spectrum
+            // Prehistoric deep-time baseline (AGENTS.md §8 & §10): Paleolithic tool production (k_pc < 15 kg/cap) is bounded by somatic labor
+            double neolithicTransition = 1.0 / (1.0 + Math.exp(-(kPerCapita - 15.0) / 5.0));
+            double toolStockMultiplier = (0.20 * (1.0 - neolithicTransition))
+                    + (neolithicTransition * (1.0 + 0.12 * Math.log1p(kPerCapita / 20.0)));
+            double targetCapitalOutput = pop * 0.5 * toolStockMultiplier * omegaMatMultiplier * deltaYears;
 
             // 3. Calculate required inputs via Leontief matrix coefficients
             double currentEnergy = (solar + wind + fire + coal * 0.05 + oil * 0.08 + gas * 0.06) * 0.1;
@@ -110,12 +128,13 @@ public class PhysicalLeontiefInputOutputEngine {
             double energyFeasibility = requiredEnergy > 0 ? Math.min(1.0, (currentEnergy + 1.0) / requiredEnergy) : 1.0;
             double clayFeasibility = requiredEarthenClay > 0 ? Math.min(1.0, (currentClay + currentWood * 0.4 + 1.0) / requiredEarthenClay) : 1.0;
 
-            // High-tech critical mineral bottleneck (T >= 3.8 requires Rare Earths or industrial Precious Metals)
+            // High-tech critical mineral bottleneck (smoothly weighted by highTechActivation for k_pc >= 6000 kg/cap)
             double highTechFeasibility = 1.0;
-            if (techLevel >= 3.8) {
-                double requiredCritical = targetCapitalOutput * 0.005;
+            if (highTechActivation > 0.05) {
+                double requiredCritical = targetCapitalOutput * 0.005 * highTechActivation;
                 double availableCritical = currentRareEarths + currentPrecious * 0.5;
-                highTechFeasibility = Math.clamp(0.35 + 0.65 * Math.min(1.0, availableCritical / Math.max(1e-6, requiredCritical)), 0.35, 1.0);
+                double rawCriticalFeasibility = Math.clamp(0.35 + 0.65 * Math.min(1.0, availableCritical / Math.max(1e-6, requiredCritical)), 0.35, 1.0);
+                highTechFeasibility = (1.0 - highTechActivation) + highTechActivation * rawCriticalFeasibility;
             }
 
             double actualOutputRatio = Math.min(Math.min(metalFeasibility, energyFeasibility), Math.min(clayFeasibility, highTechFeasibility));
@@ -126,8 +145,8 @@ public class PhysicalLeontiefInputOutputEngine {
             double consumedClay = Math.min(currentClay, actualCapitalProduced * 0.15);
             cell.setResourceMetal(Math.max(0.0, currentMetal - consumedMetal));
             cell.setResourceClay(Math.max(0.0, currentClay - consumedClay));
-            if (techLevel >= 3.8 && actualCapitalProduced > 0) {
-                double consumedRee = Math.min(currentRareEarths, actualCapitalProduced * 0.002);
+            if (highTechActivation > 0.05 && actualCapitalProduced > 0) {
+                double consumedRee = Math.min(currentRareEarths, actualCapitalProduced * 0.002 * highTechActivation);
                 cell.setResourceRareEarths(Math.max(0.0, currentRareEarths - consumedRee));
             }
             cell.setResourceCapital(currentCapital + actualCapitalProduced);

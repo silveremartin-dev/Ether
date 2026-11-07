@@ -50,7 +50,8 @@ public class H3Flat2DRenderer {
         double cellSize = Math.max(5.0, cellSpacing * 1.45);
         double radiusY = Math.max(1.0, cellSize / 2.0);
 
-        if (smoothMap) {
+        boolean effectiveSmooth = smoothMap || cells.size() > 25000;
+        if (effectiveSmooth) {
             double worldX = offsetX;
             double worldY = offsetY;
             double worldW = (maxLng - minLng) * scale;

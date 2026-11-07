@@ -65,8 +65,8 @@ public class MarineSubmersionEngine {
             double elevation = cell.getElevationOr(0.0);
             double seaLevelOffset = cell.getSeaLevelOffsetMetersOr(0.0);
             double capital = cell.getResourceCapitalOr(0.0);
-            double tech = cell.getTechnologyLevelOr(0.0);
             int pop = cell.getPopulationOr(0);
+            double kpc = pop > 0 ? capital / pop : 0.0;
 
             // Determine if polder/coastal cell is flooded (elevation below sea level or dike failure)
             boolean isSubmerged = (elevation < seaLevelOffset);
@@ -82,9 +82,10 @@ public class MarineSubmersionEngine {
             }
 
             if (isSubmerged && pop > 0) {
-                // 1. Calculate Physically Realistic Evacuation Ratio (Foresight & Warning Systems)
+                // 1. Calculate Physically Realistic Evacuation Ratio (Transport & Early Warning Infrastructure Capital)
                 double capitalFactor = 1.0 + Math.min(5.0, capital / 500.0);
-                double evacuationRatio = 1.0 - Math.exp(-evacuationTechEfficiency * tech * capitalFactor);
+                double mobilityEfficiency = Math.log1p(kpc / 50.0);
+                double evacuationRatio = 1.0 - Math.exp(-evacuationTechEfficiency * mobilityEfficiency * capitalFactor);
                 evacuationRatio = Math.clamp(evacuationRatio, 0.0, 0.98); // Max 98% evacuated cleanly
 
                 int evacuatedPop = (int) (pop * evacuationRatio);

@@ -167,7 +167,7 @@ public class HeatmapRenderer {
     public Color getGdpWealthColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+        double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell);
         double gdp = Math.min(1.0, (pop * tech) / 2500.0);
         return Color.color(gdp, gdp * 0.8, 0.2 * (1.0 - gdp));
     }

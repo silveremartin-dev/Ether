@@ -51,7 +51,7 @@ public class DynamicMaritimeRoutingGraphTest {
         portA.setIsCoastal(true);
         portA.setBiome(Biome.OCEAN);
         portA.setElevation(-50.0);
-        portA.setTechnologyLevel(5.0);
+        portA.setPopulation(100);
         portA.setResourceCapital(100.0);
         portA.setMovementFriction(1.0);
         portA.setTemperature(20.0);
@@ -62,7 +62,7 @@ public class DynamicMaritimeRoutingGraphTest {
         portB.setIsCoastal(true);
         portB.setBiome(Biome.OCEAN);
         portB.setElevation(-50.0);
-        portB.setTechnologyLevel(5.0);
+        portB.setPopulation(100);
         portB.setResourceCapital(100.0);
         portB.setMovementFriction(1.0);
         portB.setTemperature(20.0);

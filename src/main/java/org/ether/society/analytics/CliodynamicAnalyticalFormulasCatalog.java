@@ -10,6 +10,40 @@ import org.ether.society.core.math.SmoothMath;
 /**
  * Analytical closed-form peer-reviewed equations for cliodynamic, macroeconomic,
  * energetic, demographic, and ecological indicator evaluation.
+ *
+ * <h2>Physical Foundation: The Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$</h2>
+ * <p>
+ * In accordance with the Physical Observables Invariant ({@code AGENTS.md} §10), no state-level
+ * technology variable exists in the simulation. All post-hoc macroeconomic and cliodynamic response
+ * envelopes are parameterized by the dimensionless <b>Garrett-Lotka Exergy-Capital Index</b>
+ * $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ derived strictly from two conserved physical observables:
+ * </p>
+ * <ul>
+ *   <li>$p = P_{\text{watts}} / N$: Per-capita mechanical, thermal, and electrical power dissipation ($\text{W/capita}$),
+ *   bounded below by the basal human somatic + domestic hearth floor $p_{\text{somatic}} = 348.0\,\text{W/capita}$ (Lotka 1922; Smil 2017).</li>
+ *   <li>$k_{\text{pc}} = K / N$: Per-capita physical built capital stock ($\text{kg/capita}$), thermodynamically coupled
+ *   to active power dissipation $k_{\text{active}} = k_{\text{pc}} \cdot \eta_{\text{Garrett}}(p)$ (Garrett 2011).</li>
+ * </ul>
+ * <p>
+ * The dimensionless mapping $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ is defined in
+ * {@link org.ether.society.database.H3CellPhysicsAndStateHelper#computeGarrettLotkaEmergentIndex(double, double, double)}:
+ * </p>
+ * $$\Phi_{\text{exergy}}(p, k_{\text{pc}}) = 0.85 + 0.50 \log_{10}\left(1 + \frac{k_{\text{active}}}{120\,\text{kg/cap}}\right) + 0.70 \log_{10}\left(1 + \frac{\operatorname{softplus}(p - 348\,\text{W/cap}, \, 5.0)}{250\,\text{W/cap}}\right)$$
+ *
+ * <h3>Physical Regime Anchors of $\Phi_{\text{exergy}}$</h3>
+ * <ul>
+ *   <li><b>$\Phi_{\text{exergy}} \le 0.95$ ($k_{\text{pc}} &lt; 10\,\text{kg/cap}, p = 348\,\text{W/cap}$)</b>:
+ *   Deep Paleolithic mobile foraging bands ($\text{AGENTS.md}$ §8 deep-time invariants: $0\%$ urbanization, $0\%$ literacy, $0$ state debt).</li>
+ *   <li><b>$\Phi_{\text{exergy}} \approx 1.05\text{--}1.20$ ($k_{\text{pc}} \in [150, 650]\,\text{kg/cap}, p \in [420, 520]\,\text{W/cap}$)</b>:
+ *   Agrarian Hydraulic &amp; Iron-Age Empires (Classical Antiquity 165 CE, Song/Medieval 1000–1347 CE).</li>
+ *   <li><b>$\Phi_{\text{exergy}} \approx 1.22\text{--}1.30$ ($k_{\text{pc}} \in [850, 1250]\,\text{kg/cap}, p \in [540, 620]\,\text{W/cap}$)</b>:
+ *   Early Modern Oceanic Sail, Print &amp; Proto-Industrial Regime (1800 CE).</li>
+ *   <li><b>$\Phi_{\text{exergy}} \approx 1.75\text{--}2.05$ ($k_{\text{pc}} \in [2800, 4200]\,\text{kg/cap}, p \in [1000, 1250]\,\text{W/cap}$)</b>:
+ *   Coal, Steam, Bessemer Steel &amp; Telegraph Industrial Regime (1914 CE).</li>
+ *   <li><b>$\Phi_{\text{exergy}} \ge 2.80$ ($k_{\text{pc}} \ge 15\,000\,\text{kg/cap}, p \ge 2500\,\text{W/cap}$)</b>:
+ *   High-Exergy Hydrocarbon, Nuclear &amp; Semiconductor Grid Regime (2026 CE).</li>
+ * </ul>
+ *
  * <p>
  * Grounded in authentic literature: Garrett (2011), Lotka (1922), Smil (2017),
  * Maddison (2020), Buringh &amp; van Zanden (2009), Butcher &amp; Ponting (2014),
@@ -25,16 +59,51 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     private CliodynamicAnalyticalFormulasCatalog() {
     }
 
-    public static double computeCo2Concentration(double tech, int year) {
-        if (tech > 3.65) {
-            // Law Dome Ice Core & Keeling Curve (NOAA GML):
-            // ~283 ppm in 1800 -> ~301 ppm in 1914 -> ~310 ppm in 1950 -> ~425 ppm in 2026
-            double earlyIndustrial = 22.0 * Math.tanh(Math.max(0.0, tech - 3.65) * 1.10);
-            double greatAcceleration = (tech > 4.60) ? 125.0 / (1.0 + Math.exp(-2.00 * (tech - 6.40))) : 0.0;
-            return 280.0 + earlyIndustrial + greatAcceleration;
-        }
-        return HistoricalValidationKernel.getInterpolatedBenchmarkValue(
-                "co2Concentration", year, HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+    /** Smooth C^infinity softplus hinge helper eliminating piecewise Math.max(0, x - x0) derivative kinks. */
+    private static double sp(double x, double x0) {
+        return SmoothMath.softplus(x, x0, 50.0);
+    }
+
+    /**
+     * Evaluates atmospheric $\text{CO}_2$ concentration ($\text{ppm}$) from cumulative industrial exergy-capital intensity
+     * $\Phi_{\text{exergy}}$ and paleoclimatic ice-core baseline (Lüthi et al. 2008 EPICA Dome C; Keeling NOAA GML).
+     *
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @param year      calendar year CE/BCE for paleoclimatic orbital baseline
+     * @return atmospheric $\text{CO}_2$ concentration in $\text{ppm}$
+     */
+    /**
+     * Evaluates atmospheric $\text{CO}_2$ concentration (in $\text{ppm}$) derived directly from the
+     * Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ (Smil 2017; Keeling et al. 2005)
+     * without any calendar-year leak.
+     *
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @return atmospheric $\text{CO}_2$ concentration in $\text{ppm}$
+     */
+    public static double computeCo2Concentration(double phiExergy) {
+        double earlyIndustrial = 22.0 * Math.tanh(sp(phiExergy, 3.65) * 1.10);
+        double greatAcceleration = SmoothMath.sigmoid(phiExergy, 4.60, 0.05) * (125.0 / (1.0 + Math.exp(-2.00 * (phiExergy - 6.40))));
+        return 280.0 + earlyIndustrial + greatAcceleration;
+    }
+
+    /**
+     * Legacy signature maintained for callers forwarding calendar year, evaluating pure physical response.
+     */
+    public static double computeCo2Concentration(double phiExergy, int year) {
+        return computeCo2Concentration(phiExergy);
+    }
+
+    /**
+     * Computes global mean surface temperature anomaly relative to pre-industrial Holocene baseline ($^\circ\text{C}$)
+     * directly from atmospheric $\text{CO}_2$ radiative forcing (Myhre et al. 1998; IPCC AR6 WG1).
+     *
+     * @param co2Ppm atmospheric $\text{CO}_2$ concentration in ppm
+     * @return global surface temperature anomaly in $^\circ\text{C}$
+     */
+    public static double computeTemperatureAnomalyFromCo2(double co2Ppm) {
+        double co2Ratio = Math.max(150.0, co2Ppm) / 280.0;
+        double radiativeForcing = 5.35 * Math.log(co2Ratio); // Myhre logarithmic formula
+        return radiativeForcing * 0.80; // Climate sensitivity lambda ~ 0.80 °C / (W/m^2)
     }
 
     public static double computeTemperatureAnomaly(int year) {
@@ -51,11 +120,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return biogeographical containment score in $[0.04, 1.00]$
      */
     public static double computeZeroContainmentScoreFromTrade(double tradeVolume) {
-        double v = Math.max(0.0, tradeVolume);
-        if (v <= 0.0) return 1.00;
+        double v = sp(tradeVolume, 0.0);
         double stage1 = 0.62 * Math.tanh(v / 19.5);
-        double stage2 = 0.21 * Math.tanh(Math.max(0.0, v - 16.0) / 110.0);
-        double stage3 = 0.13 * Math.tanh(Math.max(0.0, v - 400.0) / 1200.0);
+        double stage2 = 0.21 * Math.tanh(sp(v, 16.0) / 110.0);
+        double stage3 = 0.13 * Math.tanh(sp(v, 400.0) / 1200.0);
         return Math.clamp(1.00 - stage1 - stage2 - stage3, 0.04, 1.00);
     }
 
@@ -64,175 +132,150 @@ public final class CliodynamicAnalyticalFormulasCatalog {
                 "zeroContainmentScore", year, HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
     }
 
-    public static double computeGrossWorldProduct(long pop, double tech) {
-        // Maddison Project Database (2020) per-capita scaling:
-        // Deep Paleolithic / Early Neolithic: ~70-85 Int$
-        // Classical Antiquity (Rome/Han, 1-165 CE): ~105-110 Int$ global aggregate
-        // Early Middle Ages (536-632 CE): ~115-125 Int$
-        // High Middle Ages (Song / Europe, 1000-1347 CE): ~130-145 Int$ global aggregate
-        // Early Modern (1800 CE): ~190-200 Int$ global aggregate
-        // First & Second Industrial Revolution (1914 CE): ~1,650-1,700 Int$ global aggregate
-        // Modern 2026: ~13,500-14,000 Int$ global aggregate
+    /**
+     * Evaluates Gross World Product (GWP in billion 1990 Geary-Khamis International Dollars) from population $N$
+     * and the Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ (Maddison Project 2020; Ayres &amp; Warr 2009).
+     *
+     * @param pop       total population $N$
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @return Gross World Product in billions of 1990 Geary-Khamis International Dollars ($\text{G\$}$)
+     */
+    public static double computeGrossWorldProduct(long pop, double phiExergy) {
         double preIndustrial = 95.0
-                + 35.0 * Math.tanh(Math.max(0.0, tech - 1.05) * 3.00);
+                + 35.0 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
 
-        // First Industrial Revolution (1800 CE: T ~ 1.25-1.30): +80-100 Int$ -> ~190-200 Int$
-        double firstIndustrial = 90.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 5.00);
+        double firstIndustrial = 90.0 * Math.tanh(sp(phiExergy, 1.20) * 5.00);
 
-        // Second Industrial Revolution takeoff (coal, steam, rail, Bessemer steel, electrification: 1914 CE: T ~ 1.85-2.05)
-        double industrialActivation = Math.tanh(Math.max(0.0, tech - 1.50) * 4.00);
-        double industrialTakeoff = industrialActivation * (1500.0 / (1.0 + Math.exp(-5.50 * (tech - 1.85))));
+        double industrialActivation = Math.tanh(sp(phiExergy, 1.50) * 4.00);
+        double industrialTakeoff = industrialActivation * (1500.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.85))));
 
-        // Stage 3: Post-WWII & 20th/21st century technological acceleration (electrification, petrochem, digital)
-        double modernAcceleration = (tech > 2.30) ? 12200.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
+        double modernActivation = SmoothMath.sigmoid(phiExergy, 2.35, 0.04);
+        double modernAcceleration = modernActivation * (12200.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
 
         double gdpPerCap = preIndustrial + firstIndustrial + industrialTakeoff + modernAcceleration;
-        return ((double) pop * gdpPerCap) / 1e9; // Billion 1990 Int$
+        return ((double) pop * gdpPerCap) / 1e9;
     }
 
-    public static double computePrimaryEnergyEJ(long pop, double tech) {
-        // Vaclav Smil (2017) 'Energy and Civilization' per-capita primary energy harvest:
-        // Pre-industrial biomass/muscle (~15.2-16.5 GJ/capita)
-        // 1800 CE (~17.0-18.0 GJ/capita)
-        // 1914 CE (~30.0-35.0 GJ/capita, ~62 EJ global)
-        // Modern 2026 (~76.5-80.0 GJ/capita, ~600 EJ global)
-        double preIndustrialGJ = 15.2 + 1.2 * Math.tanh(Math.max(0.0, tech - 1.05) * 2.00);
-        double coalSteamGJ = 2.6 * Math.tanh(Math.max(0.0, tech - 1.20) * 5.00);
-        double industrialGridGJ = 20.0 * Math.tanh(Math.max(0.0, tech - 1.50) * 4.00)
-                / (1.0 + Math.exp(-5.50 * (tech - 1.80)));
-        double modernHydrocarbonsGJ = (tech > 2.25) ? 46.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
+    /**
+     * Evaluates global primary energy harvest in Exajoules per year ($\text{EJ/yr}$, $10^{18}\,\text{J}$)
+     * from population $N$ and the Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ (Vaclav Smil 2017).
+     *
+     * @param pop       total population $N$
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @return annual primary energy consumption in $\text{EJ/yr}$
+     */
+    public static double computePrimaryEnergyEJ(long pop, double phiExergy) {
+        double preIndustrialGJ = 15.2 + 1.2 * Math.tanh(sp(phiExergy, 1.05) * 2.00);
+        double coalSteamGJ = 2.6 * Math.tanh(sp(phiExergy, 1.20) * 5.00);
+        double industrialGridGJ = 20.0 * Math.tanh(sp(phiExergy, 1.50) * 4.00)
+                / (1.0 + Math.exp(-5.50 * (phiExergy - 1.80)));
+        double modernHydrocarbonsGJ = SmoothMath.sigmoid(phiExergy, 2.30, 0.04) * (46.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
         double gigajoulesPerCap = preIndustrialGJ + coalSteamGJ + industrialGridGJ + modernHydrocarbonsGJ;
-        return ((double) pop * gigajoulesPerCap * 1e9) / 1e18; // Exajoules
+        return ((double) pop * gigajoulesPerCap * 1e9) / 1e18;
     }
 
     /**
      * Calibrated Urbanization Rate (%):
      * Follows Bairoch (1988), De Vries (1984), and HYDE 3.4 empirical baselines.
-     * Transitions smoothly from agrarian urban clusters (~3.8-5.5%) to proto-industrialization (~10.4% in 1800)
-     * and industrial urbanization (~21.6% in 1914, ~56% modern).
+     *
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @return urbanization rate in $[0.0, 90.0]\%$
      */
-    public static double computeUrbanizationRate(double tech) {
-        double techActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 3.50);
-        if (techActivation <= 0.0) return 0.0;
-
-        // Bairoch (1988) agrarian baseline: ~3.8% to 5.3% (Antiquity to High Middle Ages)
-        double agrarian = 3.8 + 1.5 * Math.tanh(Math.max(0.0, tech - 1.05) * 3.00);
-        // Early Modern commercial / proto-industrial (de Vries 1984: T >= 1.20): reaching ~10.4% at 1800 CE (T ~ 1.28)
-        double earlyModern = 5.2 * Math.tanh(Math.max(0.0, tech - 1.20) * 6.00);
-        // Mass industrial urbanization (post-1870, 1914 CE: T >= 1.50): reaching ~22.5% at 1914 CE (T ~ 1.95-2.05)
-        double massIndustrial = 13.5 / (1.0 + Math.exp(-4.50 * (tech - 1.90)));
-        // Modern 20th/21st century metropolitan transition (T >= 2.25): reaching ~56% modern
-        double modernMetropolis = (tech > 2.25) ? 35.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
-        return Math.clamp(techActivation * (agrarian + earlyModern + massIndustrial + modernMetropolis), 0.0, 90.0);
+    public static double computeUrbanizationRate(double phiExergy) {
+        double exergyActivation = Math.tanh(sp(phiExergy, 0.95) * 3.50);
+        double agrarian = 3.8 + 1.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
+        double earlyModern = 5.2 * Math.tanh(sp(phiExergy, 1.20) * 6.00);
+        double massIndustrial = 13.5 / (1.0 + Math.exp(-4.50 * (phiExergy - 1.90)));
+        double modernMetropolis = SmoothMath.sigmoid(phiExergy, 2.30, 0.04) * (35.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
+        return Math.clamp(exergyActivation * (agrarian + earlyModern + massIndustrial + modernMetropolis), 0.0, 90.0);
     }
 
     /**
      * Calibrated Literacy Rate (%):
      * Follows Buringh &amp; van Zanden (2009) and Graff (1987).
-     * Ancient/Medieval scribes (~3-6%) -> Print vernacular (~15.6% in 1800) -> Mass education (~40.8% in 1914, >85% modern).
+     *
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @return adult literacy rate in $[0.0, 99.0]\%$
      */
-    public static double computeLiteracyRate(double tech) {
-        double techActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 3.50);
-        if (techActivation <= 0.0) return 0.0;
-
-        // Buringh & van Zanden (2009) / Graff (1987):
-        // Scribal / Antiquity & Middle Ages (T ~ 1.05 - 1.20): ~3.0 - 6.5%
-        double scribal = 3.0 + 3.5 * Math.tanh(Math.max(0.0, tech - 1.05) * 3.00);
-        // Print vernacular revolution (Gutenberg post-1450, early modern: T >= 1.20): +9-12% in 1800 CE (T ~ 1.28) -> ~15%
-        double printRevolution = 10.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 6.00);
-        // Mass education acts (post-1870 primary schooling: T >= 1.50): reaching ~24.5% global adult literacy in 1914
-        double massLiteracy = 18.0 / (1.0 + Math.exp(-4.50 * (tech - 1.95)));
-        // Modern 20th/21st century universal schooling (T >= 2.25): reaching ~85-88% modern
-        double modernLiteracy = (tech > 2.25) ? 55.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
-        return Math.clamp(techActivation * (scribal + printRevolution + massLiteracy + modernLiteracy), 0.0, 99.0);
+    public static double computeLiteracyRate(double phiExergy) {
+        double exergyActivation = Math.tanh(sp(phiExergy, 0.95) * 3.50);
+        double scribal = 3.0 + 3.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
+        double printRevolution = 10.0 * Math.tanh(sp(phiExergy, 1.20) * 6.00);
+        double massLiteracy = 18.0 / (1.0 + Math.exp(-4.50 * (phiExergy - 1.95)));
+        double modernLiteracy = SmoothMath.sigmoid(phiExergy, 2.30, 0.04) * (55.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
+        return Math.clamp(exergyActivation * (scribal + printRevolution + massLiteracy + modernLiteracy), 0.0, 99.0);
     }
 
     /**
      * Evaluates state coinage precious metal purity (%) based on Butcher &amp; Ponting (2014)
      * and Sargent &amp; Velde (2002).
      *
-     * @param tech emergent technology index
-     * @param stability institutional stability score in [0, 100]
-     * @return precious metal purity percentage in [0.0, 100.0]
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @param stability institutional stability score in $[0, 100]$
+     * @return precious metal purity percentage in $[0.0, 100.0]$
      */
-    public static double computeCurrencyDebasement(double tech, double stability) {
-        double mintingActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 4.00);
-        if (mintingActivation <= 0.0) return 0.0;
-
+    public static double computeCurrencyDebasement(double phiExergy, double stability) {
+        double mintingActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        // Butcher & Ponting (2014) / Sargent & Velde (2002):
-        // Average precious metal fineness in circulating currency: ~50-56% (Antiquity, Medieval, Early Modern).
-        // Drops under severe fiscal stress to ~40-45%.
         double baselinePurity = 55.5 - 12.0 * Math.pow(stress, 1.30);
         double modernPurity = 55.0 - 5.0 * (stress - 0.40);
-        double purity = (tech > 1.85)
-                ? SmoothMath.sigmoid(tech, 1.95, 0.15) * modernPurity + (1.0 - SmoothMath.sigmoid(tech, 1.95, 0.15)) * baselinePurity
-                : baselinePurity;
+        double wModern = SmoothMath.sigmoid(phiExergy, 1.95, 0.08);
+        double purity = wModern * modernPurity + (1.0 - wModern) * baselinePurity;
         return Math.clamp(mintingActivation * purity, 0.0, 100.0);
     }
 
     /**
      * Evaluates Peter Turchin's Structural-Demographic Theory (SDT) Elite Overproduction Index.
      *
-     * @param tech emergent technology index
-     * @param stability institutional stability score in [0, 100]
-     * @return dimensionless elite overproduction ratio in [0.0, 5.0]
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @param stability institutional stability score in $[0, 100]$
+     * @return dimensionless elite overproduction ratio in $[0.0, 5.0]$
      */
-    public static double computeEliteOverproductionIndex(double tech, double stability) {
-        double stateActivation = SmoothMath.sigmoid(tech, 1.02, 0.04);
-        if (stateActivation <= 0.01) return 0.0;
+    public static double computeEliteOverproductionIndex(double phiExergy, double stability) {
+        double stateActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        // Turchin (2016) Structural-Demographic Theory:
-        // Baseline equilibrium in historical states ~1.05 - 1.25, rising during immiseration & crisis to ~1.7 - 2.2
-        double overproduction = 1.05 + 0.55 * stress + 0.35 * Math.tanh(Math.max(0.0, tech - 1.45) * 2.00);
+        double overproduction = 1.05 + 0.55 * stress + 0.35 * Math.tanh(sp(phiExergy, 1.45) * 2.00);
         return Math.clamp(stateActivation * overproduction, 0.0, 5.0);
     }
 
     /**
-     * Evaluates Robert C. Allen (2001) real unskilled wage purchasing power index (100 = 1750 level).
+     * Evaluates Robert C. Allen (2001) real unskilled wage purchasing power index ($100 = 1750\text{ level}$).
      *
-     * @param tech emergent technology index
-     * @return real wage index in [50.0, 1000.0]
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @return real wage index in $[50.0, 1000.0]$
      */
-    public static double computeRealUnskilledWageIndex(double tech) {
-        // Allen (2001) / Clark (2005) Real Wage Index (100 = 1750-1800 level):
-        // Pre-industrial Malthusian wage (~98-118), First Industrial break in 1800 (~124), Second Industrial expansion in 1914 (~409)
-        double preIndustrialWelfare = 10.0 * Math.tanh(Math.max(0.0, tech - 1.15) * 2.00)
-                + 12.0 * Math.tanh(Math.max(0.0, tech - 1.40) * 3.00);
-        double secondIndustrialBreakout = 295.0 / (1.0 + Math.exp(-6.50 * (tech - 1.95)));
+    public static double computeRealUnskilledWageIndex(double phiExergy) {
+        double preIndustrialWelfare = 10.0 * Math.tanh(sp(phiExergy, 1.15) * 2.00)
+                + 12.0 * Math.tanh(sp(phiExergy, 1.40) * 3.00);
+        double secondIndustrialBreakout = 295.0 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.95)));
         return Math.clamp(100.0 + preIndustrialWelfare + secondIndustrialBreakout, 50.0, 1000.0);
     }
 
     /**
-     * Evaluates Turchin &amp; Nefedov (2009) Political Stress Index (PSI) in [0.0, 100.0].
+     * Evaluates Turchin &amp; Nefedov (2009) Political Stress Index (PSI) in $[0.0, 100.0]$.
      *
-     * @param tech emergent technology index
-     * @param stability institutional stability score in [0, 100]
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @param stability institutional stability score in $[0, 100]$
      * @return sociopolitical stress index
      */
-    public static double computePoliticalStressIndex(double tech, double stability) {
-        double stateActivation = SmoothMath.sigmoid(tech, 1.02, 0.04);
-        if (stateActivation <= 0.01) return 0.0;
+    public static double computePoliticalStressIndex(double phiExergy, double stability) {
+        double stateActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        // Turchin (2016) / Seshat: PSI baseline in historical empires is ~20%, rising to 35-50% during crisis/war
-        double basePsi = 18.0 * Math.tanh(Math.max(0.0, tech - 1.00) * 2.50);
+        double basePsi = 18.0 * Math.tanh(sp(phiExergy, 1.00) * 2.50);
         double crisisEscalation = 36.0 * stress;
-        double modernFactor = 12.0 * Math.tanh(Math.max(0.0, tech - 1.50) * 3.00);
+        double modernFactor = 12.0 * Math.tanh(sp(phiExergy, 1.50) * 3.00);
         return Math.clamp(stateActivation * (basePsi + crisisEscalation + modernFactor), 0.0, 100.0);
     }
 
     /**
      * Evaluates Ibn Khaldun (1377) normalized collective social cohesion (Asabiyyah).
      *
-     * @param tech emergent technology index
-     * @param stability institutional stability score in [0, 100]
-     * @return collective solidarity score in [0.05, 1.0]
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @param stability institutional stability score in $[0, 100]$
+     * @return collective solidarity score in $[0.05, 1.0]$
      */
-    public static double computeAsabiyyahSocialCohesion(double tech, double stability) {
-        // Ibn Khaldun (1377) / Turchin (2003): Frontier solidarity is high in early tribal/state formation (~0.95).
-        // Decays gradually with imperial expansion, luxury, and bureaucratic inequality over secular cycles,
-        // maintaining institutional baseline around ~0.58-0.68 in mature civilizations.
-        double stateDecayFactor = Math.tanh(Math.max(0.0, tech - 1.10) * 0.45);
+    public static double computeAsabiyyahSocialCohesion(double phiExergy, double stability) {
+        double stateDecayFactor = Math.tanh(sp(phiExergy, 1.10) * 0.45);
         double inequality = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
         double asabiyyah = 0.95 - 0.22 * stateDecayFactor - 0.20 * inequality;
         return Math.clamp(asabiyyah, 0.05, 1.0);
@@ -242,227 +285,162 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * Evaluates macroscopic Sociopolitical Instability Index combining anthropological baseline
      * skirmishing with non-linear SDT crisis escalation.
      *
-     * @param tech emergent technology index
-     * @param stability institutional stability score in [0, 100]
-     * @return sociopolitical instability index in [0.0, 100.0]
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @param stability institutional stability score in $[0, 100]$
+     * @return sociopolitical instability index in $[0.0, 100.0]$
      */
-    public static double computeSociopoliticalInstability(double tech, double stability) {
-        // Anthropological baseline for inter-band skirmishes (Keeley 1996; Kohler et al. 2017)
+    public static double computeSociopoliticalInstability(double phiExergy, double stability) {
         double bandBaseline = 7.2 - 3.5 * Math.clamp(stability / 100.0, 0.0, 1.0);
-        double stateActivation = SmoothMath.sigmoid(tech, 1.02, 0.04);
-        if (stateActivation <= 0.01) return bandBaseline;
+        double stateActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        // Turchin SDT non-linear crisis escalation (elite overproduction + state fiscal stress)
-        double stateInstability = stateActivation * (18.0 * stress + 22.0 * Math.pow(stress, 1.3) + 12.0 * Math.tanh(Math.max(0.0, tech - 1.45) * 2.0));
+        double stateInstability = stateActivation * (18.0 * stress + 22.0 * Math.pow(stress, 1.3) + 12.0 * Math.tanh(sp(phiExergy, 1.45) * 2.0));
         return Math.clamp(bandBaseline + stateInstability, 0.0, 100.0);
     }
 
-    public static double computeGiniInequality(double tech) {
-        double stateActivation = Math.tanh(Math.max(0.0, tech - 0.90) * 2.20);
+    /**
+     * Evaluates the Milanovic-Lenski-Kuznets Gini inequality coefficient from $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * (Lenski 1966; Milanovic, Lindert &amp; Williamson 2011; Kuznets 1955).
+     *
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @return Gini coefficient in $[0.18, 0.75]$
+     */
+    public static double computeGiniInequality(double phiExergy) {
+        double stateActivation = Math.tanh(sp(phiExergy, 0.90) * 2.20);
         double agrarianGini = 0.23 + 0.20 * stateActivation;
-        double kuznetsCurve = 0.15 * Math.exp(-Math.pow((tech - 4.2), 2) / 0.8);
+        double kuznetsCurve = 0.15 * Math.exp(-Math.pow((phiExergy - 4.2), 2) / 0.8);
         return Math.clamp(agrarianGini + kuznetsCurve, 0.18, 0.75);
     }
 
-    public static double computeSovereignDebtBurden(double tech) {
-        double trade = computeGlobalTradeVolume(tech);
-        double lit = computeLiteracyRate(tech);
-        return computeSovereignDebtBurden(trade, lit, 70.0, tech);
+    public static double computeSovereignDebtBurden(double phiExergy) {
+        double trade = computeGlobalTradeVolume(phiExergy);
+        double lit = computeLiteracyRate(phiExergy);
+        return computeSovereignDebtBurden(trade, lit, 70.0, phiExergy);
     }
 
     /**
-     * Endogenous Institutional Debt Emergence:
-     * Pre-modern state borrowing (8-12% of GDP) emerges with state administrative institutions (T >= 1.05),
-     * followed by high medieval war debt (1347 CE, montes: ~31%), early modern funded debt (1800 CE: ~73.5%),
-     * and total war debt mobilization (1914 CE: ~90.2%).
+     * Endogenous Institutional Debt Emergence (Reinhart &amp; Rogoff 2009; Dickson 1967).
      */
-    public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double tech) {
-        double institutionalActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 3.50);
-        if (institutionalActivation <= 0.0) return 0.0;
-
+    public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double phiExergy) {
+        double institutionalActivation = Math.tanh(sp(phiExergy, 0.95) * 3.50);
         double fiscalShock = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
 
-        // Pre-modern patrimonial borrowing (Reinhart & Rogoff 2009: ~8.5-10.5% in Antiquity & Early Middle Ages):
-        double preModernDebt = 8.5 + 1.5 * Math.tanh(Math.max(0.0, tech - 1.05) * 3.00)
-                + 3.0 * Math.tanh(Math.max(0.0, tech - 1.10) * 3.0) * Math.pow(fiscalShock, 1.3);
+        double preModernDebt = 8.5 + 1.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00)
+                + 3.0 * Math.tanh(sp(phiExergy, 1.10) * 3.0) * Math.pow(fiscalShock, 1.3);
 
-        // High medieval / renaissance war debt escalation (1347 CE Italian montes, French/English war loans: T >= 1.12):
-        double medievalWarDebt = 22.0 * Math.tanh(Math.max(0.0, tech - 1.12) * 5.00) * (0.5 + 0.5 * fiscalShock);
+        double medievalWarDebt = 22.0 * Math.tanh(sp(phiExergy, 1.12) * 5.00) * (0.5 + 0.5 * fiscalShock);
 
-        // Modern institutional funded debt (Dickson 1967, British consols post-1694: T >= 1.22):
-        // Reaches ~73% in 1800 (T ~ 1.28) and ~90-110% in 1914 (T ~ 1.93)
-        double modernFundedActivation = Math.tanh(Math.max(0.0, tech - 1.22) * 5.00);
-        double modernFundedDebt = modernFundedActivation * 42.0 * Math.tanh(Math.max(0.0, tech - 1.22) * 10.00);
-        double totalWarDebt = Math.tanh(Math.max(0.0, tech - 1.65) * 5.0) * (20.0 / (1.0 + Math.exp(-6.00 * (tech - 1.85))));
+        double modernFundedActivation = Math.tanh(sp(phiExergy, 1.22) * 5.00);
+        double modernFundedDebt = modernFundedActivation * 42.0 * Math.tanh(sp(phiExergy, 1.22) * 10.00);
+        double totalWarDebt = Math.tanh(sp(phiExergy, 1.65) * 5.0) * (20.0 / (1.0 + Math.exp(-6.00 * (phiExergy - 1.85))));
 
         double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt + totalWarDebt;
         return Math.clamp(institutionalActivation * debtBurden, 0.0, 250.0);
     }
 
-    public static double computeGlobalTradeVolume(double tech) {
-        double tradeActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 4.00);
-        if (tradeActivation <= 0.0) return 0.0;
+    public static double computeGlobalTradeVolume(double phiExergy) {
+        double tradeActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
 
-        // Federico & Tena-Junguito (2017) 'World trade, 1800-1938' (Index 100 = 1913):
-        // Classical Antiquity & Early Middle Ages (T ~ 1.05-1.25): ~3.8-4.5
-        double preIndustrialTrade = 3.5 + 2.5 * Math.tanh(Math.max(0.0, tech - 1.05) * 3.50)
-                + 5.5 * Math.tanh(Math.max(0.0, tech - 1.12) * 4.00);
+        double preIndustrialTrade = 3.5 + 2.5 * Math.tanh(sp(phiExergy, 1.05) * 3.50)
+                + 5.5 * Math.tanh(sp(phiExergy, 1.12) * 4.00);
 
-        // Early Modern oceanic sail trade boom (VOC, East India, Atlantic triangular: T >= 1.22): reaching ~48 at T ~ 1.28 (1800 CE)
-        double oceanicSailActivation = Math.tanh(Math.max(0.0, tech - 1.22) * 6.00);
-        double oceanicSailBoom = oceanicSailActivation * 36.0 * Math.tanh(Math.max(0.0, tech - 1.22) * 5.00);
+        double oceanicSailActivation = Math.tanh(sp(phiExergy, 1.22) * 6.00);
+        double oceanicSailBoom = oceanicSailActivation * 36.0 * Math.tanh(sp(phiExergy, 1.22) * 5.00);
 
-        // First Globalization steam shipping & railway boom (post-1870: T >= 1.50): reaching ~227 in 1914 (T ~ 1.93)
-        double steamShippingBoom = 180.0 / (1.0 + Math.exp(-6.50 * (tech - 1.70)));
+        double steamShippingBoom = 180.0 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.70)));
 
-        // Hyper-globalization (containerization, aviation, WTO: T >= 2.5)
-        double hyperGlobalization = (tech > 2.50) ? 2250.0 / (1.0 + Math.exp(-2.50 * (tech - 3.50))) : 0.0;
+        double hyperGlobalization = SmoothMath.sigmoid(phiExergy, 2.55, 0.05) * (2250.0 / (1.0 + Math.exp(-2.50 * (phiExergy - 3.50))));
 
         return Math.clamp(tradeActivation * (preIndustrialTrade + oceanicSailBoom + steamShippingBoom + hyperGlobalization), 0.0, 3000.0);
     }
 
-    public static double computeTopsoilErosionLoss(double tech) {
-        double lossActivation = Math.tanh(Math.max(0.0, tech - 0.90) * 4.00);
-        if (lossActivation <= 0.0) return 0.03;
-
-        // Montgomery (2007) / FAO (2015) Cumulative Topsoil Loss (% relative to Holocene baseline):
-        // Holocene pristine: 0.03 t/ha/yr geological background
-        // Classical Antiquity (1 CE - 165 CE): ~12-16 t/ha/yr
-        // Medieval (536 CE - 1347 CE): ~16-24 t/ha/yr
-        // Early Modern (1800 CE): ~32 t/ha/yr
-        // Mechanized 20th Century (1914 CE): ~45 t/ha/yr
-        double agrarianPlowing = 14.0 * Math.tanh(Math.max(0.0, tech - 0.92) * 4.00)
-                + 12.0 * Math.tanh(Math.max(0.0, tech - 1.15) * 3.00);
-        double modernMechanizedLoss = 24.0 / (1.0 + Math.exp(-5.50 * (tech - 1.75)));
+    public static double computeTopsoilErosionLoss(double phiExergy) {
+        double lossActivation = Math.tanh(sp(phiExergy, 0.90) * 4.00);
+        double agrarianPlowing = 14.0 * Math.tanh(sp(phiExergy, 0.92) * 4.00)
+                + 12.0 * Math.tanh(sp(phiExergy, 1.15) * 3.00);
+        double modernMechanizedLoss = 24.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.75)));
         return Math.clamp(lossActivation * (agrarianPlowing + modernMechanizedLoss), 0.03, 70.0);
     }
 
-    public static double computeAgriculturalEroei(double tech) {
-        double agActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 4.0);
-        if (agActivation <= 0.0) return 0.0;
-
-        // Leach (1976) / Hall & Klitgaard (2012) / Giampietro (2013):
-        // Early Neolithic horticulture (alluvial flood recession) bonus (~14-16)
-        double neolithicHorticultureBonus = 10.5 * Math.exp(-Math.pow((tech - 1.05), 2) / 0.02);
-        // Pre-industrial draft animal traction equilibrium: ~4.2 - 5.5
-        double traditionalEquilibrium = 4.3 + 1.2 * Math.tanh(Math.max(0.0, tech - 1.25) * 2.50);
-        // Modern mechanization and Green Revolution expansion (Smil 2017): ~10.3 in 1914, ~12-15 modern
-        double industrialGreenRev = 7.0 / (1.0 + Math.exp(-5.50 * (tech - 1.75)));
+    public static double computeAgriculturalEroei(double phiExergy) {
+        double agActivation = Math.tanh(sp(phiExergy, 0.95) * 4.0);
+        double neolithicHorticultureBonus = 10.5 * Math.exp(-Math.pow((phiExergy - 1.05), 2) / 0.02);
+        double traditionalEquilibrium = 4.3 + 1.2 * Math.tanh(sp(phiExergy, 1.25) * 2.50);
+        double industrialGreenRev = 7.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.75)));
         double eroei = traditionalEquilibrium + neolithicHorticultureBonus + industrialGreenRev;
         return Math.clamp(agActivation * eroei, 0.0, 25.0);
     }
 
-    public static double computeForestCoverRemaining(double tech) {
-        // Williams (2003) 'Deforesting the Earth' & Kaplan et al. (2009):
-        // Global forest cover remaining (% of pristine post-glacial baseline):
-        // Pre-agricultural Paleolithic / Early Neolithic: 99.0%
-        // Classical Antiquity / Middle Ages: ~78-85%
-        // 1800 CE: ~65%
-        // 1914 CE: ~49%
-        // Modern: ~38%
-        double clearingActivation = Math.tanh(Math.max(0.0, tech - 0.90) * 2.00);
-        if (clearingActivation <= 0.0) return 99.0;
-        double traditionalClearing = 14.0 * Math.tanh(Math.max(0.0, tech - 0.95) * 3.00)
-                + 18.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 4.00);
-        double industrialClearing = 26.0 / (1.0 + Math.exp(-5.50 * (tech - 1.75)));
+    public static double computeForestCoverRemaining(double phiExergy) {
+        double traditionalClearing = 14.0 * Math.tanh(sp(phiExergy, 0.95) * 3.00)
+                + 18.0 * Math.tanh(sp(phiExergy, 1.20) * 4.00);
+        double industrialClearing = 26.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.75)));
         double clearing = traditionalClearing + industrialClearing;
         return Math.clamp(99.0 - clearing, 30.0, 99.0);
     }
 
     /**
-     * Calibrated Information Travel Speed (km/day):
-     * Models maximum long-distance dispatch propagation across physical relay networks (Scheidel 2014; Hyslop 1984; Alsan 2015).
-     * <p>
-     * Pedestrian baseline (4 km/day) in deep prehistory (T &lt; 0.95) transitions smoothly
-     * to state courier relay corridors (80-89 km/day in Antiquity and Middle Ages),
-     * followed by Chappe optical telegraph (1792, ~268 km/day in 1800 CE),
-     * electric telegraph and submarine cables (Standage 1998, ~1.41e7 km/day in 1914 CE),
-     * and optical telecommunications (T &gt; 3.0).
-     * </p>
+     * Calibrated Information Travel Speed (km/day) across physical relay networks (Scheidel 2014; Standage 1998).
      *
-     * @param tech emergent technological progress index
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
      * @return dispatch propagation velocity in kilometers per day (km/day)
      */
-    public static double computeInformationTravelSpeed(double tech) {
-        // Pedestrian baseline: 4 km/day in prehistory (T < 0.95)
-        double courierActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 8.00);
-        double courierSpeed = 4.0 + 77.0 * courierActivation + 8.0 * Math.tanh(Math.max(0.0, tech - 1.10) * 3.0);
+    public static double computeInformationTravelSpeed(double phiExergy) {
+        double courierActivation = Math.tanh(sp(phiExergy, 0.95) * 8.00);
+        double courierSpeed = 4.0 + 77.0 * courierActivation + 8.0 * Math.tanh(sp(phiExergy, 1.10) * 3.0);
 
-        // Chappe optical semaphore telegraph (1792: T >= 1.22): +180 km/day in 1800 CE (T ~ 1.28) -> 268 km/day
-        double opticalTelegraph = 180.0 * Math.tanh(Math.max(0.0, tech - 1.22) * 8.00);
+        double opticalTelegraph = 180.0 * Math.tanh(sp(phiExergy, 1.22) * 8.00);
 
-        // Standage (1998) electric telegraph & submarine cables (1844-1866, global network in 1914: strictly T >= 1.65)
-        double electricActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 5.00);
-        double electricAndCables = electricActivation * (5.8e6 / (1.0 + Math.exp(-6.50 * (tech - 1.85))));
+        double electricActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
+        double electricAndCables = electricActivation * (5.8e6 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.85))));
 
-        // Telephony and high-bandwidth telecom (T >= 2.5)
-        double modernTelecom = (tech > 2.50) ? 2.86e8 / (1.0 + Math.exp(-3.00 * (tech - 3.20))) : 0.0;
+        double modernTelecom = SmoothMath.sigmoid(phiExergy, 2.55, 0.05) * (2.86e8 / (1.0 + Math.exp(-3.00 * (phiExergy - 3.20))));
 
         return Math.clamp(courierSpeed + opticalTelegraph + electricAndCables + modernTelecom, 4.0, 3.0e8);
     }
 
-    public static double computeMetalSmeltingPerCapita(double tech) {
-        double smeltActivation = Math.tanh(Math.max(0.0, tech - 0.92) * 4.00);
-        if (smeltActivation <= 0.0) return 0.0;
+    public static double computeMetalSmeltingPerCapita(double phiExergy) {
+        double smeltActivation = Math.tanh(sp(phiExergy, 0.92) * 4.00);
+        double preIndustrial = 1.60 + 1.45 * Math.tanh(sp(phiExergy, 1.10) * 3.00);
 
-        // Malandra (1990) / USGS (2023): Antiquity (~1.6 kg) -> Medieval (~1.8-3.0 kg)
-        double preIndustrial = 1.60 + 1.45 * Math.tanh(Math.max(0.0, tech - 1.10) * 3.00);
+        double cokeActivation = Math.tanh(sp(phiExergy, 1.20) * 6.00);
+        double cokePuddling = cokeActivation * 8.0 * Math.tanh(sp(phiExergy, 1.20) * 5.00);
 
-        // Coke smelting & puddling (Darby 1709, Cort 1784: T >= 1.20): +8.0 kg by 1800 CE (T ~ 1.28) -> ~10.9 kg
-        double cokeActivation = Math.tanh(Math.max(0.0, tech - 1.20) * 6.00);
-        double cokePuddling = cokeActivation * 8.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 5.00);
-
-        // Industrial Bessemer steel & mass metallurgy (post-1860: strictly T >= 1.65): reaching ~64 kg in 1914 (T ~ 1.93), ~210 kg modern
-        double bessemerActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 5.00);
-        double industrialBessemer = bessemerActivation * (180.0 / (1.0 + Math.exp(-5.50 * (tech - 1.85))));
+        double bessemerActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
+        double industrialBessemer = bessemerActivation * (180.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.85))));
 
         return Math.clamp(smeltActivation * (preIndustrial + cokePuddling + industrialBessemer), 0.0, 350.0);
     }
 
     /**
-     * Calibrated Fossil Fuel Share in Primary Energy (%):
-     * Emerges with early coal and expanding in the First Industrial Revolution (~14% in 1800) and dominant in 1914 (~78%).
+     * Calibrated Fossil Fuel Share in Primary Energy (%) (Smil 2017; Ritchie 2020).
      */
-    public static double computeFossilSharePrimaryEnergy(double tech) {
-        double industrialActivation = Math.tanh(Math.max(0.0, tech - 1.22) * 6.00);
-        if (industrialActivation <= 0.0) return 0.0;
-
-        // Smil (2017) / Ritchie (2020):
-        // Emerges into the First Industrial Revolution (~14% at T ~ 1.28 in 1800) and dominant in 1914 (~78% at T ~ 1.93).
-        double earlySteam = 14.5 * Math.tanh(Math.max(0.0, tech - 1.22) * 8.00);
-        double modernTransitionActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 5.00);
-        double modernTransition = modernTransitionActivation * (68.0 / (1.0 + Math.exp(-6.00 * (tech - 1.85))));
+    public static double computeFossilSharePrimaryEnergy(double phiExergy) {
+        double industrialActivation = Math.tanh(sp(phiExergy, 1.22) * 6.00);
+        double earlySteam = 14.5 * Math.tanh(sp(phiExergy, 1.22) * 8.00);
+        double modernTransitionActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
+        double modernTransition = modernTransitionActivation * (68.0 / (1.0 + Math.exp(-6.00 * (phiExergy - 1.85))));
 
         return Math.clamp(industrialActivation * (earlySteam + modernTransition), 0.0, 95.0);
     }
 
-    public static double computeShippingFreightCostIndex(double tech) {
-        // Harley (1988), Mohammed & Williamson (2004), UNCTAD (2024):
-        // Archaic / Classical Mediterranean freight costs: ~1415 (Index 1913 = 100)
-        // Medieval oceanic improvement (compass, sternpost rudder, caravel: T ~ 1.10-1.20): drops to ~1218 in 1000 CE and ~918 in 1347 CE
-        // Early modern oceanic sailing ship boom (VOC fluyt, 1800 CE: T ~ 1.28): drops to ~230
-        // Steamships, iron hulls, and compound engines (1870-1914: T ~ 1.93): drops to ~48.6
+    public static double computeShippingFreightCostIndex(double phiExergy) {
         double classicalCost = 1415.0;
-        double medievalReduction = 200.0 * Math.tanh(Math.max(0.0, tech - 1.10) * 3.50)
-                + 300.0 * Math.tanh(Math.max(0.0, tech - 1.15) * 4.50);
-        double oceanicReduction = 685.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 14.00);
-        double steamActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 5.00);
-        double steamReduction = steamActivation * (182.0 / (1.0 + Math.exp(-6.50 * (tech - 1.80))));
+        double medievalReduction = 200.0 * Math.tanh(sp(phiExergy, 1.10) * 3.50)
+                + 300.0 * Math.tanh(sp(phiExergy, 1.15) * 4.50);
+        double oceanicReduction = 685.0 * Math.tanh(sp(phiExergy, 1.20) * 14.00);
+        double steamActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
+        double steamReduction = steamActivation * (182.0 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.80))));
         double cost = classicalCost - medievalReduction - oceanicReduction - steamReduction;
 
         return Math.clamp(cost, 20.0, 1600.0);
     }
 
-    public static double computeLifeExpectancy(double tech, double food) {
+    public static double computeLifeExpectancy(double phiExergy, double food) {
         double nutritionBonus = Math.clamp((food - 2000.0) / 1000.0, -5.0, 5.0);
-        // Omran (1971) Epidemiological Transition / Riley (2005) / Maddison (2020):
-        // Paleolithic baseline (~28.5 yrs), Classical/Medieval (~33-36 yrs), 1800 CE (~38.7 yrs), 1914 CE (~43.7 yrs), Modern (>73 yrs)
-        double baselineLife = 27.5 + 6.5 * Math.tanh(Math.max(0.0, tech - 1.05) * 2.00);
-        // Early sanitation and clean water (McKeown 1976: T >= 1.20): +4-5 yrs in 1800 CE
-        double sanitationBonus = 4.5 * Math.tanh(Math.max(0.0, tech - 1.20) * 3.50);
-        // Pasteur, antiseptic surgery, municipal clean water, vaccinations (post-1870: T >= 1.50): reaching +8-10 yrs in 1914
-        double pasteurHygiene = 10.0 / (1.0 + Math.exp(-4.50 * (tech - 1.75)));
-        double modernMedicine = (tech > 2.50) ? 22.0 / (1.0 + Math.exp(-2.20 * (tech - 3.50))) : 0.0;
+        double baselineLife = 27.5 + 6.5 * Math.tanh(sp(phiExergy, 1.05) * 2.00);
+        double sanitationBonus = 4.5 * Math.tanh(sp(phiExergy, 1.20) * 3.50);
+        double pasteurHygiene = 10.0 / (1.0 + Math.exp(-4.50 * (phiExergy - 1.75)));
+        double modernMedicine = SmoothMath.sigmoid(phiExergy, 2.55, 0.05) * (22.0 / (1.0 + Math.exp(-2.20 * (phiExergy - 3.50))));
         return Math.clamp(baselineLife + sanitationBonus + pasteurHygiene + modernMedicine + nutritionBonus, 20.0, 85.0);
     }
 

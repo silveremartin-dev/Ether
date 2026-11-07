@@ -38,13 +38,6 @@ public class CliodynamicsEngine {
     public static final double STRIFE_MORTALITY_COEFF_PER_YEAR = 0.015;
 
     /**
-     * Characteristic imperial administrative projection radius in degrees ($\sim 1,600$ km).
-     * @deprecated use {@link #IMPERIAL_CORE_HORIZON_KM} for geodesic accuracy.
-     */
-    @Deprecated
-    public static final double IMPERIAL_CORE_HORIZON_DEG = 15.0;
-
-    /**
      * Characteristic imperial administrative projection radius in kilometers ($\sim 1,600$ km; Taagepera 1978; Turchin 2003).
      */
     public static final double IMPERIAL_CORE_HORIZON_KM = 1600.0;

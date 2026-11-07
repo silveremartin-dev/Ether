@@ -254,7 +254,7 @@ public class H3CellColorResolver {
             case FOOD -> getFoodColor(cell.getFoodResource() != null ? cell.getFoodResource() : 0.0);
             case TEMPERATURE -> getTemperatureColor(cell.getTemperature() != null ? cell.getTemperature() : 15.0);
             case PRECIPITATION -> getPrecipitationColor(cell.getRainfall() != null ? cell.getRainfall() : 0.0);
-            case TECHNOLOGY -> getTechColor(cell.getTechnologyLevel());
+            case TECHNOLOGY -> getTechColor(org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell));
             case WATER -> getWaterColor(cell.getWaterResource());
             case WOOD -> getWoodColor(cell.getWoodResource());
             case INEQUALITY -> getGiniColor(cell.getGiniIndex());
@@ -429,7 +429,7 @@ public class H3CellColorResolver {
             case FOOD -> cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
             case TEMPERATURE -> cell.getTemperature() != null ? cell.getTemperature() : 15.0;
             case PRECIPITATION -> cell.getRainfall() != null ? cell.getRainfall() : 800.0;
-            case TECHNOLOGY -> cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+            case TECHNOLOGY -> org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell);
             case MALTHUSIAN_PRESSURE -> cell.getPopulation() != null && computeCarryingCapacity(cell) > 0 ? (double) cell.getPopulation() / computeCarryingCapacity(cell) : 0.0;
             case MINERAL_RESOURCES -> (cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0) + (cell.getResourcePreciousMetal() != null ? cell.getResourcePreciousMetal() * 3.0 : 0.0);
             case MINING_EXPLOITATION -> Math.min(cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0, (cell.getResourceMetal() != null ? cell.getResourceMetal() : 0.0) + 10.0);

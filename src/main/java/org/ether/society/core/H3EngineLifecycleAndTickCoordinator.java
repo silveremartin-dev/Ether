@@ -83,6 +83,7 @@ final class H3EngineLifecycleAndTickCoordinator {
                 engine.eventSystem.setEnableHistoricalMilestones(scenario.isRandomEventsEnabled());
                 engine.eventSystem.setEnableEarthHistoricalLeaders(scenario.isEarthHistoricalLeadersEnabled());
                 engine.eventSystem.setEnableProceduralLeaders(scenario.isProceduralLeadersEnabled());
+                engine.eventSystem.setEnableChronicleSingularityObserver(scenario.isChronicleSingularityObserverEnabled());
             } else {
                 engine.eventSystem.setEnableRandomEvents(true);
                 engine.eventSystem.setEnableHistoricalMilestones(true);
@@ -176,11 +177,10 @@ final class H3EngineLifecycleAndTickCoordinator {
         DODDataGenerator.initializeAgentBuffer(engine.worldBuffer, engine.agentBuffer, cohortSize, sSeed);
 
         if (engine.statisticsKernel != null && engine.worldBuffer != null) {
-            float avgTech = engine.getAverageTechnology();
             engine.currentGDP = engine.statisticsKernel.calculateGDP(
-                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman(), avgTech);
+                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
             engine.currentGini = engine.statisticsKernel.calculateGini(
-                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman(), avgTech);
+                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
             if (engine.agentBuffer != null) {
                 float foodPerCapVal = (float) engine.getFoodPerCapita();
                 float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
@@ -243,27 +243,32 @@ final class H3EngineLifecycleAndTickCoordinator {
                 float dtSlow = multiFreq ? Math.max(dtTick, slowModulo * dtTick) : dtTick;
                 engine.simulationPipeline.executeTick(
                         engine, engine.cells, engine.worldBuffer, engine.agentBuffer,
-                        engine.profiler, engine.performanceConfig, (long) dtSlow, engine.getAverageTechnology()
+                        engine.profiler, engine.performanceConfig, (long) dtSlow
                 );
 
-                engine.profiler.beginPhase("5_StatisticsAndHistory");
-                updateGlobalAggregatesCache(engine);
+                // 5. Statistics, Telemetry & History Snapshots (Zero-cost when no subscriber)
+                boolean hasSubscribers = !engine.tickListeners.isEmpty() || engine.isHeadlessTelemetrySubscribed();
+                if (hasSubscribers) {
+                    engine.profiler.beginPhase("5_StatisticsAndHistory");
+                    updateGlobalAggregatesCache(engine);
 
-                float avgTech = engine.getAverageTechnology();
-                engine.currentGini = engine.statisticsKernel.calculateGini(
-                        engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman(), avgTech);
-                engine.densityDistribution = engine.statisticsKernel.calculateDistribution(
-                        engine.worldBuffer.getBiomassHuman(), 20, 1000.0f);
-                engine.currentGDP = engine.statisticsKernel.calculateGDP(
-                        engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman(), avgTech);
-                float foodPerCapVal = (float) engine.getFoodPerCapita();
-                float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
-                engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(
-                        engine.worldBuffer, foodSatVal);
-                engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(
-                        engine.agentBuffer.getBirths(), engine.agentBuffer.getMass());
+                    engine.currentGini = engine.statisticsKernel.calculateGini(
+                            engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
+                    engine.densityDistribution = engine.statisticsKernel.calculateDistribution(
+                            engine.worldBuffer.getBiomassHuman(), 20, 1000.0f);
+                    engine.currentGDP = engine.statisticsKernel.calculateGDP(
+                            engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
+                    float foodPerCapVal = (float) engine.getFoodPerCapita();
+                    float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
+                    engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(
+                            engine.worldBuffer, foodSatVal);
+                    engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(
+                            engine.agentBuffer.getBirths(), engine.agentBuffer.getMass());
 
-                engine.historyManager.captureSnapshot(engine);
+                    engine.historyManager.captureSnapshot(engine);
+                    engine.profiler.endPhase("5_StatisticsAndHistory");
+                }
+
                 if (engine.historyManager != null && engine.historyManager.shouldCaptureWorldSnapshot(engine.tickCounter, false, yearChanged)) {
                     engine.historyManager.captureWorldSnapshot(engine);
                 }
@@ -277,6 +282,9 @@ final class H3EngineLifecycleAndTickCoordinator {
                         engine.getTotalPopulation(), engine.getTotalFood(), engine.cells);
                 engine.eventSystem.checkCellEvents(
                         engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(), engine.cells);
+                engine.eventSystem.checkSingularities(
+                        engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(),
+                        engine.cells, engine.currentScenario);
                 int eventCountAfter = engine.eventSystem.peekEvents().size();
 
                 if (engine.pauseAtNextEvent.get() && eventCountAfter > eventCountBefore) {
@@ -396,7 +404,7 @@ final class H3EngineLifecycleAndTickCoordinator {
             engine.densityDistribution = engine.statisticsKernel.calculateDistribution(
                     engine.worldBuffer.getBiomassHuman(), 20, 1000.0f);
             engine.currentGDP = engine.statisticsKernel.calculateGDP(
-                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman(), engine.getAverageTechnology());
+                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
             if (engine.agentBuffer != null) {
                 float foodPerCapVal = (float) engine.getFoodPerCapita();
                 float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);

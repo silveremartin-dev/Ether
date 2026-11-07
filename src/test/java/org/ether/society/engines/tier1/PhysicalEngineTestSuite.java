@@ -39,7 +39,6 @@ public class PhysicalEngineTestSuite {
         H3Cell cell = new H3Cell(0x8828308281fffffL, 48.8566, 2.3522);
         cell.setBiome(Biome.PLAINS);
         cell.setPopulation(1000);
-        cell.setTechnologyLevel(5.0);
         cell.setResourceCapital(5000.0);
         cell.setResourceMetal(500.0);
         cell.setBiomassNatural(300.0);
@@ -106,7 +105,6 @@ public class PhysicalEngineTestSuite {
      */
     public void testNuclearSafetyRadiotoxicityEngine() {
         H3Cell cell = testCells.get(0);
-        cell.setTechnologyLevel(4.6); // Modern atomic era (fission power flux regime)
         cell.setResourceUranium(100.0); // Fissile uranium stock for active nuclear reactor
         cell.setResourceCapital(300000.0); // Capital stock supporting high-voltage electric grid
         double initialPollution = cell.getPollutionLevel();
@@ -160,30 +158,5 @@ public class PhysicalEngineTestSuite {
         assertTrue(transmittance < 0.35, "Soot optical depth tau=1.2 must attenuate solar irradiance by >65%");
         NuclearWarfareClimateEngine.processNuclearWarfareClimate(testCells);
         assertTrue(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() > 0.0);
-    }
-
-    @Test
-    @DisplayName("Technological Singularity & Trans-Human Engine Test")
-    /*
-     * Test technological singularity engine operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
-    public void testTechnologicalSingularityEngine() {
-        H3Cell cell = testCells.get(0);
-        cell.setPopulation(100);
-        cell.setTechnologyLevel(5.0);
-        cell.setResourceCapital(300000.0);
-        cell.setPollutionLevel(50.0);
-        cell.setLifespan(70.0);
-
-        TechnologicalSingularityEngine.processTechnologicalSingularity(testCells);
-
-        assertTrue(cell.getResourceCapital() > 300000.0, "Singularity nanotech assembly must boost capital stock");
-        assertTrue(cell.getPollutionLevel() < 50.0, "Singularity automated remediation must reduce pollution");
-        assertTrue(cell.getLifespan() > 70.0, "Trans-human health expansion must increase lifespan");
     }
 }

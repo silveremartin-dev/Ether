@@ -80,8 +80,9 @@ public class MetallurgyEnthalpyEngine {
                 double annualThroughputKgPerWorker = 100.0 * Math.clamp(0.4 + 1.8 * Math.log1p(powerW / 100.0), 0.35, 50.0);
                 double maxLaborRefinedKg = metallurgists * annualThroughputKgPerWorker * furnaceGate * dtSafe;
 
-                // Smooth C^infty transition between Bronze regime (T_furnace ~ 1085 C) and Iron/Steel/Electroalloy regimes (T >= 1538 C)
-                double ironRegimeWeight = SmoothMath.sigmoid(powerW / 200.0 + capPerCapita / 50.0, 1.8, 0.35);
+                // Smooth C^\infty transition between Bronze regime (T_furnace ~ 1085 C) and Iron/Steel/Electroalloy regimes (T >= 1538 C)
+                // Gated by mechanical blast draft power beyond somatic/hearth baseline (powerW > 340 W) and capital deepening
+                double ironRegimeWeight = SmoothMath.sigmoid(Math.max(0.0, powerW - 340.0) / 100.0 + capPerCapita / 80.0, 1.5, 0.35);
                 double electroAlloyWeight = SmoothMath.sigmoid(powerW, 2500.0, 400.0);
 
                 double localPolymetallicTin = cell.getResourceRareEarthsOr(0.0) + cell.getResourcePreciousMetalOr(0.0) * 2.0;

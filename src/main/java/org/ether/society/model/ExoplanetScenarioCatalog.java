@@ -159,7 +159,7 @@ public final class ExoplanetScenarioCatalog {
         sMercuryEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
         sMercuryEngines.put("OreGradeThermodynamicsEngine", true);
         sMercuryEngines.put("HotellingResourceDepletionEngine", true);
-        sMercuryEngines.put("KardashevPureEngine", true);
+        
         list.add(sMercury);
 
         // 5. TITAN (2150)

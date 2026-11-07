@@ -51,7 +51,7 @@ class DODDataGeneratorTest {
             c.setEnergyFire(10.0);
             c.setEnergySlaves(0.0);
             c.setEnergyFoodConsumed(100.0);
-            c.setTechnologyLevel(1.5 + i * 0.1);
+            c.setResourceCapital(500.0 + i * 100.0);
             c.setGiniIndex(0.32);
             c.setLifespan(60.0);
             c.setFertility(2.1);
@@ -68,7 +68,7 @@ class DODDataGeneratorTest {
             assertEquals(250.0f, buffer.getFoodResource()[i], 1e-3);
             assertEquals(300.0f, buffer.getWaterResource()[i], 1e-3);
             assertEquals(45.0f, buffer.getMetalResource()[i], 1e-3);
-            assertEquals(1.5f + i * 0.1f, buffer.getTechnologyLevel()[i], 1e-3);
+            assertEquals(500.0f + i * 100.0f, buffer.getResourceCapital()[i], 1e-3);
             assertEquals(0.32f, buffer.getGiniIndex()[i], 1e-3);
             assertEquals(60.0f, buffer.getLifespan()[i], 1e-3);
         }
@@ -81,7 +81,7 @@ class DODDataGeneratorTest {
         WorldBuffer world = new WorldBuffer(capacity);
         world.getH3Indexes()[0] = 55555L;
         world.getBiomassHuman()[0] = 1500.0f; // 1500 people
-        world.getTechnologyLevel()[0] = 2.0f;
+        world.getResourceCapital()[0] = 300000.0f;
 
         world.getH3Indexes()[1] = 66666L;
         world.getBiomassHuman()[1] = 0.0f; // Unpopulated cell
@@ -96,7 +96,6 @@ class DODDataGeneratorTest {
             assertEquals(0, agents.getHexIds()[c]);
             assertEquals(55555L, agents.getH3Indexes()[c]);
             assertEquals(500.0f, agents.getMass()[c], 1e-3);
-            assertEquals(2.0f, agents.getTechLevel()[c], 1e-3);
             assertTrue(agents.getAge()[c] >= 22.0f && agents.getAge()[c] <= 28.0f,
                     "Community cohort mean age must reflect pre-industrial stable distribution (22-28 yrs)");
             

@@ -31,32 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class HistoricalAndHybridEnginesDirectTest {
 
-    @Test
-    @DisplayName("AiAutonomousRegulationPureEngine: remediates pollution and boosts work at high tech")
-    public void testAiAutonomousRegulation() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell advanced = new H3Cell(0x8828308281fffffL, 45.0, 5.0);
-        advanced.setTechnologyLevel(7.0);
-        advanced.setResourceWork(100.0);
-        advanced.setPollutionLevel(50.0);
-        cells.add(advanced);
-
-        H3Cell primitive = new H3Cell(0x8828308283fffffL, 46.0, 6.0);
-        primitive.setTechnologyLevel(2.0);
-        primitive.setResourceWork(100.0);
-        primitive.setPollutionLevel(50.0);
-        cells.add(primitive);
-
-        AiAutonomousRegulationPureEngine.processHybrid(cells, 1.0);
-
-        // High-tech cell has automated pollution remediation and work output boost
-        assertTrue(advanced.getResourceWork() > 100.0, "Work must increase under AI regulation");
-        assertTrue(advanced.getPollutionLevel() < 50.0, "Pollution must decrease under AI regulation");
-
-        // Primitive cell remains unchanged by AI regulation
-        assertEquals(100.0, primitive.getResourceWork(), 0.001);
-        assertEquals(50.0, primitive.getPollutionLevel(), 0.001);
-    }
 
     @Test
     @DisplayName("HandyNasaHybridEngine: verifies population-driven natural biomass depletion")
@@ -103,18 +77,19 @@ public class HistoricalAndHybridEnginesDirectTest {
     }
 
     @Test
-    @DisplayName("MilitaryTechShockEngine: accelerates military work and technology during shock window")
+    @DisplayName("MilitaryTechShockEngine: accelerates military work and capital during shock window")
     public void testMilitaryTechShock() {
         List<H3Cell> cells = new ArrayList<>();
         H3Cell shockCell = new H3Cell(0x8828308281fffffL, 34.0, 135.0);
-        shockCell.setTechnologyLevel(3.5);
+        shockCell.setPopulation(1000);
+        shockCell.setResourceCapital(1500.0 * 1000.0);
         shockCell.setResourceWork(200.0);
         cells.add(shockCell);
 
         MilitaryTechShockEngine.processHybrid(cells, 1.0);
 
         assertTrue(shockCell.getResourceWork() > 200.0, "Military work must accelerate during technological shock");
-        assertTrue(shockCell.getTechnologyLevel() > 3.5, "Technology consolidation must advance");
+        assertTrue(shockCell.getResourceCapital() > 1500.0 * 1000.0, "Capital consolidation must advance");
     }
 
     @Test

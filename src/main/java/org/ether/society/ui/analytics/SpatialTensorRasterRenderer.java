@@ -99,7 +99,7 @@ public final class SpatialTensorRasterRenderer {
                     col = new Color(30, 41, 59);
                 }
             } else if (chLower.contains("technologie") || chLower.contains("technology") || chLower.contains("outillage") || chLower.contains("ç§‘æŠ€")) {
-                double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+                double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
                 double norm = Math.min(1.0, tech / 100.0);
                 col = getTechColor(norm);
             } else if (chLower.contains("tempÃ©rature") || chLower.contains("temperature") || chLower.contains("climat") || chLower.contains("æ°”æ¸©")) {
@@ -114,6 +114,11 @@ public final class SpatialTensorRasterRenderer {
                 double bio = c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0;
                 double norm = Math.max(0.0, Math.min(1.0, bio / 1000.0));
                 col = getAgricultureColor(norm);
+            } else if (chLower.contains("isogloss") || chLower.contains("linguist") || chLower.contains("lang") || chLower.contains("è¯­è¨€")) {
+                long clade = (c.getLanguageGroup() != null && !c.getLanguageGroup().isBlank())
+                        ? (long) Math.abs(c.getLanguageGroup().hashCode())
+                        : (c.getId() != null ? (long) Math.abs(c.getId().hashCode()) : 0L);
+                col = getPolityColor(clade);
             } else if (chLower.contains("souverainetÃ©") || chLower.contains("sovereignty") || chLower.contains("ä¸»æƒ")) {
                 long polity = (c.getLanguageGroup() != null) ? (long) Math.abs(c.getLanguageGroup().hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode()) : 0L);
                 col = getPolityColor(polity);
@@ -128,8 +133,10 @@ public final class SpatialTensorRasterRenderer {
                 double norm = Math.max(0.0, Math.min(1.0, 1.0 - (friction / 5.0)));
                 col = getTechColor(norm);
             } else if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("åˆ¶åº¦")) {
-                double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
-                col = getTechColor(Math.min(1.0, tech / 80.0));
+                long pop = c.getPopulation() != null ? c.getPopulation() : 0;
+                double kpc = (c.getResourceCapital() != null && pop > 0) ? (c.getResourceCapital() / pop) : 0.0;
+                double instNorm = Math.min(1.0, (Math.log10(Math.max(1.0, pop)) / 6.0) * 0.6 + (Math.min(1.0, kpc / 1500.0) * 0.4));
+                col = getTechColor(instNorm);
             } else if (chLower.contains("Ã©colog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("ç”Ÿæ€")) {
                 double soc = c.getSoilOrganicCarbon() != null ? c.getSoilOrganicCarbon() : 50.0;
                 col = getAgricultureColor(Math.max(0.0, Math.min(1.0, soc / 100.0)));

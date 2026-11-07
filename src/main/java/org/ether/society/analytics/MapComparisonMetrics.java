@@ -316,7 +316,7 @@ public class MapComparisonMetrics {
         } else if (chLower.contains("biomass") || chLower.contains("agricol") || chLower.contains("agr")) {
             return c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0;
         } else if (chLower.contains("tech") || chLower.contains("outill")) {
-            return c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+            return org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
         } else {
             long pop = c.getPopulationOr(0);
             double area = Math.max(1.0, c.getCellAreaKm2());

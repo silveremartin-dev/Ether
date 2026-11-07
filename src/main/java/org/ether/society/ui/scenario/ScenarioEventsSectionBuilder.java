@@ -127,6 +127,37 @@ public class ScenarioEventsSectionBuilder {
         colYear.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         colYear.setPrefWidth(80);
 
+        StringConverter<Integer> durationConverter = new StringConverter<>() {
+            @Override
+            public String toString(Integer val) {
+                if (val == null || val <= 0) {
+                    return I18n.getOrDefault("scenario.event.duration.permanent", "Permanent (∞)");
+                }
+                return val + " " + I18n.getOrDefault("scenario.event.duration.days_suffix", "j");
+            }
+
+            @Override
+            public Integer fromString(String string) {
+                if (string == null || string.isBlank()) return -1;
+                String trimmed = string.trim().toLowerCase(java.util.Locale.ROOT);
+                if (trimmed.contains("perm") || trimmed.contains("∞") || trimmed.equals("0") || trimmed.equals("-1")) {
+                    return -1;
+                }
+                String digits = trimmed.replaceAll("[^0-9-]", "");
+                try {
+                    int d = Integer.parseInt(digits);
+                    return d <= 0 ? -1 : d;
+                } catch (NumberFormatException ex) {
+                    return -1;
+                }
+            }
+        };
+
+        TableColumn<ClimateEvent, Integer> colDuration = new TableColumn<>(I18n.getOrDefault("scenario.col.duration", "Durée"));
+        colDuration.setCellValueFactory(cellData -> cellData.getValue().durationDaysProperty().asObject());
+        colDuration.setCellFactory(TextFieldTableCell.forTableColumn(durationConverter));
+        colDuration.setPrefWidth(110);
+
         TableColumn<ClimateEvent, Double> colLat = new TableColumn<>(I18n.getOrDefault("scenario.col.lat", "Latitude"));
         colLat.setCellValueFactory(cellData -> cellData.getValue().latitudeProperty().asObject());
         colLat.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
@@ -147,13 +178,13 @@ public class ScenarioEventsSectionBuilder {
         colMag.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         colMag.setPrefWidth(90);
 
-        eventsTable.getColumns().setAll(colType, colName, colYear, colLat, colLon, colDepth, colMag);
+        eventsTable.getColumns().setAll(colType, colName, colYear, colDuration, colLat, colLon, colDepth, colMag);
 
         addEventBtn = new Button(I18n.getOrDefault("scenario.btn.add_event", "➕ Add Event"));
         addEventBtn.getStyleClass().add("button-secondary");
         addEventBtn.setOnAction(e -> {
             int currentStartYear = startYearSupplier != null ? startYearSupplier.get() : -8000;
-            eventsList.add(new ClimateEvent("VOLCANO", "Volcanic Eruption", currentStartYear + 50, 0.0, 0.0, 10.0, 0.5));
+            eventsList.add(new ClimateEvent("VOLCANO", "Volcanic Eruption", currentStartYear + 50, 0.0, 0.0, 10.0, 0.5, 365));
             notifyChange();
         });
 
@@ -231,15 +262,15 @@ public class ScenarioEventsSectionBuilder {
 
         List<ClimateEvent> filtered = new ArrayList<>();
         // Canonical major biophysical events
-        if (startYear <= -1600) filtered.add(new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95));
-        if (startYear <= 79)    filtered.add(new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85));
-        if (startYear <= 536)   filtered.add(new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 0.90));
-        if (startYear <= 1257)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 0.98));
-        if (startYear <= 1347)  filtered.add(new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 45.0, 35.0, 0.0, 0.90));
-        if (startYear <= 1783)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 0.88));
-        if (startYear <= 1815)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, -8.2, 118.0, 10.0, 0.95));
-        if (startYear <= 1883)  filtered.add(new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, -6.1, 105.4, 10.0, 0.90));
-        if (startYear <= 1918)  filtered.add(new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 0.75));
+        if (startYear <= -1600) filtered.add(new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95, 365));
+        if (startYear <= 79)    filtered.add(new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85, 365));
+        if (startYear <= 536)   filtered.add(new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 0.90, 365));
+        if (startYear <= 1257)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 0.98, 365));
+        if (startYear <= 1347)  filtered.add(new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 45.0, 35.0, 0.0, 0.90, 730));
+        if (startYear <= 1783)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 0.88, 365));
+        if (startYear <= 1815)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, -8.2, 118.0, 10.0, 0.95, 365));
+        if (startYear <= 1883)  filtered.add(new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, -6.1, 105.4, 10.0, 0.90, 365));
+        if (startYear <= 1918)  filtered.add(new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 0.75, 730));
 
         if (replaceAll) {
             eventsList.setAll(filtered);
@@ -264,7 +295,7 @@ public class ScenarioEventsSectionBuilder {
             if (hi.getYearStart() >= startYear) {
                 String type = hi.getArchetype() != null ? "LEADER_" + hi.getArchetype().name() : "LEADER_INSTITUTIONAL_REFORMER";
                 String title = (hi.getArchetype() != null ? hi.getArchetype().getIcon() + " " : "") + hi.getName() + " : " + hi.getDescription();
-                filtered.add(new ClimateEvent(type, title, hi.getYearStart(), hi.getLatitude(), hi.getLongitude(), 0.0, hi.getMagnitude()));
+                filtered.add(new ClimateEvent(type, title, hi.getYearStart(), hi.getLatitude(), hi.getLongitude(), 0.0, hi.getMagnitude(), hi.getDurationYears() * 365));
             }
         }
 

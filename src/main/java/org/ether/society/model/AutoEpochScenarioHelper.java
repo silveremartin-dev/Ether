@@ -114,7 +114,6 @@ public final class AutoEpochScenarioHelper {
         states.put("TasmanianCulturalRegressionEngine", year <= 1800L);
 
         states.put("AutoRegulationPureEngine", year >= 1900L);
-        states.put("AiAutonomousRegulationPureEngine", year >= 2020L);
         return states;
     }
 
@@ -132,6 +131,7 @@ public final class AutoEpochScenarioHelper {
         target.setRandomEventsEnabled(source.isRandomEventsEnabled());
         target.setEarthHistoricalLeadersEnabled(source.isEarthHistoricalLeadersEnabled());
         target.setProceduralLeadersEnabled(source.isProceduralLeadersEnabled());
+        target.setChronicleSingularityObserverEnabled(source.isChronicleSingularityObserverEnabled());
     }
 
     public static String capitalize(String str) {

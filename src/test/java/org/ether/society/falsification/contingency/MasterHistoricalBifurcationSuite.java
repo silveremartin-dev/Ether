@@ -273,7 +273,6 @@ public class MasterHistoricalBifurcationSuite {
         hiroshima.setLongitude(132.45);
         hiroshima.setPopulation(50000);
         hiroshima.setResourceCapital(2000000.0);
-        hiroshima.setTechnologyLevel(6.0);
 
         eventSystem.checkEvents(1945, 1, 2_000_000_000L, 1_000_000_000.0, List.of(hiroshima));
 

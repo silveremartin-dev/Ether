@@ -34,13 +34,31 @@ import java.util.List;
 public class TechTreeEngine {
     private static final Logger logger = LoggerFactory.getLogger(TechTreeEngine.class);
 
-    public record PhysicalEra(String name, double minPowerWattsPerCapita, double minMaterialYieldMPa, String description) {}
+    public record PhysicalEra(String i18nKeyPrefix, String defaultName, double minPowerWattsPerCapita, double minMaterialYieldMPa, String defaultDescription) {
+        public String name() {
+            return org.ether.society.i18n.I18n.getOrDefault(i18nKeyPrefix + ".name", defaultName);
+        }
 
-    public static final PhysicalEra PALEOLITHIC = new PhysicalEra("Paléolithique", 100.0, 10.0, "Chasseurs-cueilleurs nomades, taille de la pierre (10 MPa) et feu (100W/hab).");
-    public static final PhysicalEra NEOLITHIC = new PhysicalEra("Néolithique", 250.0, 50.0, "Domestication, poterie, cuivre natif (50 MPa) et traction animale (250W/hab).");
-    public static final PhysicalEra ANTIQUITY = new PhysicalEra("Antiquité", 600.0, 150.0, "Métallurgie du bronze (150 MPa), fer forgé (300 MPa) et canaux (600W/hab).");
-    public static final PhysicalEra MEDIEVAL = new PhysicalEra("Moyen Âge", 1500.0, 400.0, "Charrue lourde, moulins à eau/vent (400 MPa) et éthanol/bois (1500W/hab).");
-    public static final PhysicalEra INDUSTRIAL = new PhysicalEra("Révolution Industrielle", 8000.0, 800.0, "Machine à vapeur, acier Bessemer (800 MPa) et charbon (8000W/hab).");
+        public String description() {
+            return org.ether.society.i18n.I18n.getOrDefault(i18nKeyPrefix + ".desc", defaultDescription);
+        }
+    }
+
+    public static final PhysicalEra PALEOLITHIC = new PhysicalEra(
+            "era.paleolithic", "Paleolithic", 100.0, 10.0,
+            "Mobile hunter-gatherer bands, lithic flaking (10 MPa), and domestic hearth fire (100 W/capita).");
+    public static final PhysicalEra NEOLITHIC = new PhysicalEra(
+            "era.neolithic", "Neolithic", 250.0, 50.0,
+            "Domestication, kiln ceramics, native copper (50 MPa), and draft animal traction (250 W/capita).");
+    public static final PhysicalEra ANTIQUITY = new PhysicalEra(
+            "era.antiquity", "Classical Antiquity", 600.0, 150.0,
+            "Bronze metallurgy (150 MPa), bloomery wrought iron (300 MPa), and hydraulic canals (600 W/capita).");
+    public static final PhysicalEra MEDIEVAL = new PhysicalEra(
+            "era.medieval", "Middle Ages", 1500.0, 400.0,
+            "Heavy moldboard plow, water/wind mills (400 MPa), and forestry charcoal (1,500 W/capita).");
+    public static final PhysicalEra INDUSTRIAL = new PhysicalEra(
+            "era.industrial", "Industrial Revolution", 8000.0, 800.0,
+            "High-pressure steam engines, Bessemer steel (800 MPa), and fossil coal grids (8,000 W/capita).");
 
     /**
      * Determines physical historical era based on per-capita mechanical/thermal power dissipation.
@@ -98,10 +116,12 @@ public class TechTreeEngine {
                 double kO = orig.getResourceCapitalOr(0.0) / popO;
                 double kD = dest.getResourceCapitalOr(0.0) / popD;
                 double diff = kO - kD;
-                if (Math.abs(diff) > 1.0) {
+                if (diff > 1.0) {
                     double transfer = 0.01 * diff / Math.max(1.0, route.totalFrictionCost() * 0.1) * dt;
-                    orig.setResourceCapital(Math.max(0.0, orig.getResourceCapitalOr(0.0) - transfer * popO));
                     dest.setResourceCapital(Math.max(0.0, dest.getResourceCapitalOr(0.0) + transfer * popD));
+                } else if (diff < -1.0) {
+                    double transfer = 0.01 * (-diff) / Math.max(1.0, route.totalFrictionCost() * 0.1) * dt;
+                    orig.setResourceCapital(Math.max(0.0, orig.getResourceCapitalOr(0.0) + transfer * popO));
                 }
             }
         }

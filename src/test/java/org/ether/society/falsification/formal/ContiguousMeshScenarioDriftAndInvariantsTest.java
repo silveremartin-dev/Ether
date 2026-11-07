@@ -75,7 +75,6 @@ public class ContiguousMeshScenarioDriftAndInvariantsTest {
             cell.setWaterResource(1200.0);
             cell.setWoodResource(600.0);
             cell.setPopulation(500);
-            cell.setTechnologyLevel(1.5);
             cell.setResourceCapital(100.0);
             cells.add(cell);
         }

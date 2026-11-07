@@ -10,6 +10,11 @@ pub unsafe fn process_flux(world: &mut WorldBufferRaw, dt_seconds: f32) {
     let prices = std::slice::from_raw_parts_mut(world.local_price, capacity);
     let elev = std::slice::from_raw_parts(world.elevation, capacity);
     let neighbors = std::slice::from_raw_parts(world.neighbor_indexes, capacity * 6);
+    let mut comm_flux = if !world.commercial_flux_volume.is_null() {
+        Some(std::slice::from_raw_parts_mut(world.commercial_flux_volume, capacity))
+    } else {
+        None
+    };
 
     // 1. Vectorized Price calculation
     for i in 0..capacity {
@@ -55,6 +60,11 @@ pub unsafe fn process_flux(world: &mut WorldBufferRaw, dt_seconds: f32) {
 
             delta_food[i] -= flux;
             delta_food[n] += flux;
+
+            if let Some(ref mut cf) = comm_flux {
+                cf[i] += flux.abs();
+                cf[n] += flux.abs();
+            }
         }
     }
 

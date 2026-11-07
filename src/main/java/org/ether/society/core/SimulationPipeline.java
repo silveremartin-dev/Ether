@@ -104,7 +104,8 @@ public class SimulationPipeline {
     }
 
     /**
-     * Executes the complete deterministic cliodynamic pipeline for a single monthly simulation tick.
+     * Executes the complete deterministic cliodynamic pipeline for a single monthly simulation tick
+     * directly from conserved physical and biological buffers, with zero synthetic technology input.
      */
     public void executeTick(H3SimulationEngine engine,
                             List<H3Cell> cells,
@@ -112,8 +113,7 @@ public class SimulationPipeline {
                             AgentBuffer agentBuffer,
                             SimulationProfiler profiler,
                             SimulationPerformanceConfig perfConfig,
-                            long dtSlow,
-                            double avgTech) {
+                            long dtSlow) {
         if (cells == null || cells.isEmpty()) return;
 
         Scenario activeScenario = engine != null ? engine.getCurrentScenario() : null;
@@ -323,10 +323,6 @@ public class SimulationPipeline {
 
         // Step 3.4: Recombinant Technology, Information Entropy & Ozone
         SelectiveBreedingEngine.processSelectiveBreeding(populatedCells, dtYears);
-        if (scenario != null && scenario.getTypeBEngineStates() != null
-                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("TechnologicalSingularityEngine"))) {
-            TechnologicalSingularityEngine.processTechnologicalSingularity(populatedCells, dtYears);
-        }
         InformationEntropyEngine.processInformationEntropy(populatedCells);
 
         List<TradeNetworkEngine.TradeRoute> tradeRoutes = null;

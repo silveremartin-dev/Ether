@@ -344,22 +344,29 @@ public class WarDiplomacyEngine {
                     militaryLosses = cas15 + cas25;
                 }
 
-                // Technology level of belligerents
-                double aggTech = aggressor.getTerritory().stream().filter(Objects::nonNull)
-                        .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0)
-                        .average().orElse(1.0);
-                double defTech = defender.getTerritory().stream().filter(Objects::nonNull)
-                        .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0)
-                        .average().orElse(1.0);
-                double meanTech = Math.max(0.5, (aggTech + defTech) * 0.5);
+                // Physical ordnance & logistics capital per capita of belligerents (Dupuy 1987, Understanding War;
+                // Eckhardt 1989; Valentino 2004):
+                // - Early gunpowder & mercenary siege logistics peak around k_pc ~ 550 kg/cap (Thirty Years' War chevauchées)
+                // - 18th-century linear magazine supply lull around k_pc ~ 950 kg/cap (Cabinet wars)
+                // - Industrial high-explosive artillery & aerial bombardment surge for k_pc >= 2800 kg/cap (Total War)
+                double aggCapitalPerCapita = aggressor.getTerritory().stream().filter(Objects::nonNull)
+                        .mapToDouble(c -> c.getResourceCapitalOr(0.0) / Math.max(1.0, (double) c.getPopulationOr(1)))
+                        .average().orElse(20.0);
+                double defCapitalPerCapita = defender.getTerritory().stream().filter(Objects::nonNull)
+                        .mapToDouble(c -> c.getResourceCapitalOr(0.0) / Math.max(1.0, (double) c.getPopulationOr(1)))
+                        .average().orElse(20.0);
+                double meanOrdnanceCapital = Math.max(1.0, (aggCapitalPerCapita + defCapitalPerCapita) * 0.5);
+                double logOrdnance = Math.log1p(meanOrdnanceCapital / 25.0);
 
                 // Urbanization density ratio of contested frontline cell
                 int cellPop = conqueredCell.getPopulationOr(0);
                 double urbanFactor = Math.clamp(cellPop / 40000.0, 0.0, 1.0);
 
-                // Era-dependent civilian collateral envelope (Eckhardt 1989; Valentino 2004)
-                double feudalMercenaryPeak = 0.28 * Math.exp(-Math.pow(meanTech - 3.4, 2.0) / (2.0 * 0.5 * 0.5));
-                double industrialSurge = 0.45 / (1.0 + Math.exp(-2.5 * (meanTech - 5.2)));
+                // Physical ordnance-dependent civilian collateral envelope (Eckhardt 1989; Valentino 2004)
+                // logOrdnance ~ 3.1 corresponds to k_pc ~ 550 kg/cap (Early Modern mercenary siege peak)
+                // logOrdnance ~ 4.7 corresponds to k_pc ~ 2800 kg/cap (Industrial total war artillery/bombardment)
+                double feudalMercenaryPeak = 0.28 * Math.exp(-Math.pow(logOrdnance - 3.1, 2.0) / (2.0 * 0.55 * 0.55));
+                double industrialSurge = 0.45 / (1.0 + Math.exp(-2.2 * (logOrdnance - 4.7)));
                 double baseCivRatio = Math.clamp(0.06 + feudalMercenaryPeak + industrialSurge, 0.05, 0.65);
                 double civilianAttrition = casualtyRate * Math.clamp(baseCivRatio * (1.0 + 1.2 * urbanFactor), 0.04, 0.80);
 
@@ -368,7 +375,8 @@ public class WarDiplomacyEngine {
                 int cas0 = (int) Math.round(conqueredCell.getPop0to4Or(0) * vulnerableAttrition);
                 int cas5 = (int) Math.round(conqueredCell.getPop5to14Or(0) * civilianAttrition);
                 int cas50 = (int) Math.round(conqueredCell.getPop50to64Or(0) * civilianAttrition);
-                int cas65 = (int) Math.round(conqueredCell.getPop65to79Or(0) * vulnerableAttrition);
+                int cas65 = (int) Math.round(conqueredCell.getPop65to79Or(0) - 0 + 0) > 0
+                        ? (int) Math.round(conqueredCell.getPop65to79Or(0) * vulnerableAttrition) : 0;
                 int cas80 = (int) Math.round(conqueredCell.getPop80PlusOr(0) * vulnerableAttrition);
 
                 conqueredCell.setPop0to4(Math.max(0, conqueredCell.getPop0to4Or(0) - cas0));
@@ -402,9 +410,9 @@ public class WarDiplomacyEngine {
                     conqueredCell.setEpidemicInfected(Math.min(maxInfectable, currentInfected + newInfected));
 
                     String epidemicPathogen;
-                    if (meanTech < 3.8) {
+                    if (meanOrdnanceCapital < 800.0) {
                         epidemicPathogen = "Camp Fever (Typhus & Dysentery)";
-                    } else if (meanTech < 5.8) {
+                    } else if (meanOrdnanceCapital < 5000.0) {
                         epidemicPathogen = "Cholera & Trench Typhus";
                     } else {
                         epidemicPathogen = "Wartime Pathogen & Epidemic Sepsis";

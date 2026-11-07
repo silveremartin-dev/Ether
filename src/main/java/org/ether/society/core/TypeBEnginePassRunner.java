@@ -46,7 +46,6 @@ public final class TypeBEnginePassRunner {
     private final TainterComplexityCollapseEngine tainterComplexityCollapseEngine = new TainterComplexityCollapseEngine();
     private final TurchinGoldstoneSDTEngine turchinGoldstoneSDTEngine = new TurchinGoldstoneSDTEngine();
     private final WestBettencourtAllometryEngine westBettencourtAllometryEngine = new WestBettencourtAllometryEngine();
-    private final SovereignAIGovernanceEngine sovereignAIGovernanceEngine = new SovereignAIGovernanceEngine();
 
     /**
      * Resets all mutable static simulation states, caches, and plugin registries across engines.
@@ -326,9 +325,6 @@ public final class TypeBEnginePassRunner {
         if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
             TasmanianCulturalRegressionEngine.processHybrid(populatedCells, dtYears);
         }
-        if (Boolean.TRUE.equals(states.get("AiAutonomousRegulationPureEngine")) || Boolean.TRUE.equals(states.get("AutoRegulationPureEngine"))) {
-            AiAutonomousRegulationPureEngine.processHybrid(populatedCells, dtYears);
-        }
         if (Boolean.TRUE.equals(states.get("CulturalMaterialismPureEngine"))) {
             CulturalMaterialismPureEngine.processHybrid(populatedCells, dtYears);
         }
@@ -338,9 +334,6 @@ public final class TypeBEnginePassRunner {
         if (Boolean.TRUE.equals(states.get("HandyNasaPureEngine"))) {
             HandyNasaPureEngine.processHybrid(populatedCells, dtYears);
         }
-        if (Boolean.TRUE.equals(states.get("KardashevPureEngine"))) {
-            KardashevPureEngine.processHybrid(populatedCells, dtYears);
-        }
         if (Boolean.TRUE.equals(states.get("LeslieWhitePureEngine"))) {
             LeslieWhitePureEngine.processHybrid(populatedCells, dtYears);
         }
@@ -349,12 +342,6 @@ public final class TypeBEnginePassRunner {
         }
         if (Boolean.TRUE.equals(states.get("NordhausDicePureEngine"))) {
             NordhausDicePureEngine.processHybrid(populatedCells, dtYears);
-        }
-        if (Boolean.TRUE.equals(states.get("PsychohistoryPureEngine"))) {
-            PsychohistoryPureEngine.processHybrid(populatedCells, dtYears);
-        }
-        if (Boolean.TRUE.equals(states.get("SovereignAIGovernanceEngine"))) {
-            sovereignAIGovernanceEngine.process(populatedCells, dtYears);
         }
         if (Boolean.TRUE.equals(states.get("World3HybridEngine"))) {
             World3HybridEngine.processPlugin(populatedCells, dtMonthly);

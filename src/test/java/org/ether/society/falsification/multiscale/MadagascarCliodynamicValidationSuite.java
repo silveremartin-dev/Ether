@@ -113,7 +113,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
                 float agri_i = buffer.getBiomassAgriculture()[i];
                 float water_i = buffer.getWaterResource()[i];
                 float food_i = buffer.getFoodResource()[i];
-                float tech_i = buffer.getTechnologyLevel()[i];
+                float tech_i = (float) buffer.computeEmergentTechnologyDiagnostic(i);
 
                 currentPop += pop_i;
                 currentWood += wood_i;
@@ -344,7 +344,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
                 curPop += buffer.getBiomassHuman()[i];
                 curWood += buffer.getWoodResource()[i];
                 curAgri += buffer.getBiomassAgriculture()[i];
-                curTech += buffer.getTechnologyLevel()[i];
+                curTech += buffer.computeEmergentTechnologyDiagnostic(i);
             }
             double annualGrowth = (curPop - prevPop) / Math.max(1.0, prevPop);
             prevPop = curPop;
@@ -363,7 +363,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
         for (int i = 0; i < buffer.getCapacity(); i++) {
             finalWood += buffer.getWoodResource()[i];
             finalAgri += buffer.getBiomassAgriculture()[i];
-            finalTech += buffer.getTechnologyLevel()[i];
+            finalTech += buffer.computeEmergentTechnologyDiagnostic(i);
         }
         finalTech /= buffer.getCapacity();
 
@@ -416,7 +416,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
         for (int i = 0; i < buffer.getCapacity(); i++) {
             initialPop += buffer.getBiomassHuman()[i];
             initialCapital += buffer.getResourceCapital()[i];
-            initialTech += buffer.getTechnologyLevel()[i];
+            initialTech += buffer.computeEmergentTechnologyDiagnostic(i);
         }
         initialTech /= buffer.getCapacity();
 
@@ -430,7 +430,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
         for (int i = 0; i < buffer.getCapacity(); i++) {
             finalPop += buffer.getBiomassHuman()[i];
             finalCapital += buffer.getResourceCapital()[i];
-            finalTech += buffer.getTechnologyLevel()[i];
+            finalTech += buffer.computeEmergentTechnologyDiagnostic(i);
         }
         finalTech /= buffer.getCapacity();
 
@@ -576,8 +576,8 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
         WorldBuffer bufB = engineB.getWorldBuffer();
 
         for (int i = 0; i < bufA.getCapacity(); i++) {
-            meanTechA += bufA.getTechnologyLevel()[i];
-            meanTechB += bufB.getTechnologyLevel()[i];
+            meanTechA += bufA.computeEmergentTechnologyDiagnostic(i);
+            meanTechB += bufB.computeEmergentTechnologyDiagnostic(i);
         }
         meanTechA /= bufA.getCapacity();
         meanTechB /= bufB.getCapacity();
@@ -692,7 +692,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
                 float w = buffer.getWoodResource()[i];
                 float a = buffer.getBiomassAgriculture()[i];
                 float k = buffer.getResourceCapital()[i];
-                float t = buffer.getTechnologyLevel()[i];
+                float t = (float) buffer.computeEmergentTechnologyDiagnostic(i);
 
                 currentPop += p;
                 currentWood += w;
@@ -742,7 +742,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
             finalWood += buffer.getWoodResource()[i];
             finalAgri += buffer.getBiomassAgriculture()[i];
             finalCap += buffer.getResourceCapital()[i];
-            finalTech += buffer.getTechnologyLevel()[i];
+            finalTech += buffer.computeEmergentTechnologyDiagnostic(i);
         }
         finalTech /= buffer.getCapacity();
 
@@ -901,12 +901,12 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
         for (int i = 0; i < 331; i++) {
             finalPopA += bufA.getBiomassHuman()[i];
             finalAgriA += bufA.getBiomassAgriculture()[i];
-            finalTechA += bufA.getTechnologyLevel()[i];
+            finalTechA += bufA.computeEmergentTechnologyDiagnostic(i);
             finalWoodA += bufA.getWoodResource()[i];
 
             finalPopAB += bufAB.getBiomassHuman()[i];
             finalAgriAB += bufAB.getBiomassAgriculture()[i];
-            finalTechAB += bufAB.getTechnologyLevel()[i];
+            finalTechAB += bufAB.computeEmergentTechnologyDiagnostic(i);
             finalWoodAB += bufAB.getWoodResource()[i];
         }
         finalTechA /= 331.0;

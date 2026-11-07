@@ -73,6 +73,15 @@ public class DODDataGenerator {
             buffer.getFertility()[i] = cell.getFertility() != null ? cell.getFertility().floatValue() : 4.5f;
             buffer.getGiniIndex()[i] = cell.getGiniIndex() != null ? cell.getGiniIndex().floatValue() : 0.20f;
             buffer.getResourceCapital()[i] = cell.getResourceCapital() != null ? cell.getResourceCapital().floatValue() : 0.0f;
+
+            buffer.getResourceCoal()[i] = cell.getResourceCoal() != null ? cell.getResourceCoal().floatValue() : 0.0f;
+            buffer.getResourceOil()[i] = cell.getResourceOil() != null ? cell.getResourceOil().floatValue() : 0.0f;
+            buffer.getResourceGas()[i] = cell.getResourceGas() != null ? cell.getResourceGas().floatValue() : 0.0f;
+            buffer.getResourceUranium()[i] = cell.getResourceUranium() != null ? cell.getResourceUranium().floatValue() : 0.0f;
+            buffer.getFreshwaterAquifer()[i] = cell.getFreshwaterAquifer() != null ? cell.getFreshwaterAquifer().floatValue() : 0.0f;
+            buffer.getSoilDepth()[i] = cell.getSoilDepth() != null ? cell.getSoilDepth().floatValue() : 1.0f;
+            buffer.getSoilOrganicCarbon()[i] = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon().floatValue() : 25.0f;
+            buffer.getCommercialFluxVolume()[i] = cell.getTradeNetwork() != null ? cell.getTradeNetwork().floatValue() : 0.0f;
         }
 
         org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();

@@ -243,7 +243,7 @@ public final class HeadlessCliOptions {
                 o.ticksToRun = Integer.parseInt(args[++i]);
                 o.ticksExplicitlySet = true;
             } else if (a.startsWith("--cells=") || a.equals("-c") || a.equals("--cells")) {
-                logger.warn("Arbitrary cell count subsampling (--cells) is deprecated; use --res=<level> instead.");
+                logger.warn("Arbitrary cell count subsampling (--cells) is unsupported; use --res=<level> instead.");
                 if (!a.contains("=") && i + 1 < args.length && !args[i + 1].startsWith("-")) i++;
             } else if (a.startsWith("--res=") || a.startsWith("--resolution=") || a.equals("-r") || a.equals("--res") || a.equals("--resolution")) {
                 logger.info("Spatial resolution is governed directly by scenario preset definition; CLI override ignored.");

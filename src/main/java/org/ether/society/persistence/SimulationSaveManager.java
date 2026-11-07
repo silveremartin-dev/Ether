@@ -44,6 +44,8 @@ public class SimulationSaveManager {
     private static final String STATE_FILE = "state.bin.gz";
     /** Internal state: history file (String). */
     private static final String HISTORY_FILE = "history.json";
+    private static final String CHRONICLES_JSON_FILE = "chronicles.json";
+    private static final String CHRONICLES_CSV_FILE = "chronicles.csv";
     /** Internal state: snapshots dir (String). */
     private static final String SNAPSHOTS_DIR = "snapshots";
 
@@ -174,6 +176,26 @@ public class SimulationSaveManager {
             // 4. Save Historical Telemetry & Analytics (history.json) atomically
             if (engine.getHistoryManager() != null && engine.getHistoryManager().getHistory() != null) {
                 EtherJsonUtil.writePrettyAtomic(savePath.resolve(HISTORY_FILE), engine.getHistoryManager().getHistory().getSnapshots());
+            }
+
+            // 4.b Save Chronicle History & Timeline (chronicles.json and chronicles.csv)
+            if (engine.getEventSystem() != null) {
+                List<org.ether.society.events.ActiveEvent> chronicleEvents = engine.getEventSystem().getChronicleHistory();
+                if (chronicleEvents != null && !chronicleEvents.isEmpty()) {
+                    EtherJsonUtil.writePrettyAtomic(savePath.resolve(CHRONICLES_JSON_FILE), chronicleEvents);
+                    Path csvPath = savePath.resolve(CHRONICLES_CSV_FILE);
+                    StringBuilder csv = new StringBuilder();
+                    csv.append("Year,Month,Day,Type,Magnitude,Latitude,Longitude,DurationDays,Title\n");
+                    for (org.ether.society.events.ActiveEvent evt : chronicleEvents) {
+                        String cleanTitle = evt.getTitle() != null ? evt.getTitle().replace("\"", "\"\"") : "";
+                        csv.append(String.format(java.util.Locale.ROOT, "%d,%d,%d,%s,%.2f,%.4f,%.4f,%d,\"%s\"\n",
+                                evt.getYear(), evt.getMonth(), evt.getDay(),
+                                evt.getType() != null ? evt.getType() : "EVENT",
+                                evt.getMagnitude(), evt.getLatitude(), evt.getLongitude(),
+                                evt.getDurationDays(), cleanTitle));
+                    }
+                    Files.writeString(csvPath, csv.toString(), java.nio.charset.StandardCharsets.UTF_8);
+                }
             }
 
             // 5. Save Metadata (metadata.json) atomically

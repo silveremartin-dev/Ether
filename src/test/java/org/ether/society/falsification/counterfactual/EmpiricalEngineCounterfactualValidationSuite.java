@@ -89,7 +89,6 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             nc.setResourceMetal(c.getResourceMetal());
             nc.setResourceWork(c.getResourceWork());
             nc.setEnergyFoodConsumed(c.getEnergyFoodConsumed());
-            nc.setTechnologyLevel(c.getTechnologyLevel());
             nc.setGiniIndex(c.getGiniIndex());
             nc.setMovementFriction(c.getMovementFriction());
             nc.setBiome(c.getBiome());
@@ -313,10 +312,6 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 sc.setPopulationDensityType("INDUSTRIAL_1800");
                 new PreComputePhase(sc).execute(initialCells);
 
-                for (H3Cell c : initialCells) {
-                    c.setTechnologyLevel(2.0);
-                }
-
                 List<H3Cell> controlGrid = cloneCellGrid(initialCells);
                 List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
 
@@ -327,17 +322,17 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                     for (H3Cell c : controlGrid) {
                         int pop = c.getPopulation() != null ? c.getPopulation() : 0;
                         if (pop >= 100) {
-                            double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
-                            c.setTechnologyLevel(tech + 0.0008 * deltaYears);
+                            double cap = c.getResourceCapital() != null ? c.getResourceCapital() : 1.0;
+                            c.setResourceCapital(cap + 0.08 * pop * deltaYears);
                         }
                     }
                     engine.process(treatmentGrid, deltaYears);
                 }
 
                 double avgTechControl = controlGrid.stream().filter(c -> c.getPopulation() != null && c.getPopulation() >= 100)
-                        .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0).average().orElse(1.0);
+                        .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 1.0).average().orElse(1.0);
                 double avgTechTreatment = treatmentGrid.stream().filter(c -> c.getPopulation() != null && c.getPopulation() >= 100)
-                        .mapToDouble(c -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0).average().orElse(1.0);
+                        .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 1.0).average().orElse(1.0);
 
                 controlTechTerminal[s] = avgTechControl;
                 treatmentTechTerminal[s] = avgTechTreatment;
@@ -514,7 +509,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                     c.setElevation(50.0);
                     c.setPopulation(1_500);
                     c.setFoodResource(20_000.0);
-                    c.setTechnologyLevel(2.0);
+                    c.setResourceCapital(75_000.0);
                 }
 
                 List<H3Cell> controlGrid = cloneCellGrid(initialCells);
@@ -570,9 +565,8 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
                 for (H3Cell c : initialCells) {
                     c.setPopulation(1_000);
-                    c.setResourceCapital(500.0);
+                    c.setResourceCapital(50_000.0);
                     c.setFoodResource(15_000.0);
-                    c.setTechnologyLevel(3.0);
                 }
 
                 List<H3Cell> controlGrid = cloneCellGrid(initialCells);
@@ -629,8 +623,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 for (H3Cell c : initialCells) {
                     c.setPopulation(2_000);
                     c.setResourceMetal(500.0);
-                    c.setTechnologyLevel(3.0);
-                    c.setResourceCapital(100.0);
+                    c.setResourceCapital(100_000.0);
                 }
 
                 List<H3Cell> controlGrid = cloneCellGrid(initialCells);
@@ -770,7 +763,7 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             List<H3Cell> cells = generator.generatePlanet(createEarthPreset(101L));
             for (H3Cell c : cells) {
                 c.setPopulation(1_000);
-                c.setTechnologyLevel(0.0); // No technology
+                c.setResourceCapital(0.0); // No capital
                 c.setBiomassNatural(0.0);  // Depleted biomass
                 c.setResourceMetal(0.0);   // Depleted ore
             }
@@ -799,7 +792,6 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             List<H3Cell> cells = generator.generatePlanet(createEarthPreset(101L));
             for (H3Cell c : cells) {
                 c.setPopulation(50_000); // Massive army
-                c.setTechnologyLevel(5.0); // High explosive/kinetic technology
                 c.setResourceCapital(10_000.0); // Fortified infrastructure
             }
 

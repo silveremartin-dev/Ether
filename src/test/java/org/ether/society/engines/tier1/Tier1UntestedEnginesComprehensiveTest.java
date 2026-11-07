@@ -44,7 +44,6 @@ public class Tier1UntestedEnginesComprehensiveTest {
         cell.setBiomassNatural(300.0);
         cell.setAccessibleAquifer(1000.0);
         cell.setPollutionLevel(0.0);
-        cell.setTechnologyLevel(1.0);
         cell.setResourceCapital(100.0);
         cell.setSoilOrganicCarbon(20.0);
         cell.setMovementFriction(0.25);
@@ -134,7 +133,6 @@ public class Tier1UntestedEnginesComprehensiveTest {
     void testInfrastructureEnergyEngine() {
         List<H3Cell> cells = new ArrayList<>();
         H3Cell developedCell = createMockCell(0x851f1d4bffffff5L, Biome.PLAINS, 100.0, 18.0, 2000);
-        developedCell.setTechnologyLevel(3.5);
         developedCell.setResourceCapital(5000.0);
         developedCell.setMovementFriction(0.25);
         cells.add(developedCell);
@@ -181,8 +179,7 @@ public class Tier1UntestedEnginesComprehensiveTest {
 
         List<H3Cell> cells = new ArrayList<>();
         H3Cell circularCity = createMockCell(0x851f1d4bfffffa1L, Biome.PLAINS, 100.0, 18.0, 5000);
-        circularCity.setTechnologyLevel(6.0);
-        circularCity.setResourceCapital(3000.0);
+        circularCity.setResourceCapital(30000.0);
         cells.add(circularCity);
 
         double initialCap = circularCity.getResourceCapital();
@@ -201,7 +198,7 @@ public class Tier1UntestedEnginesComprehensiveTest {
 
         List<H3Cell> cells = new ArrayList<>();
         H3Cell farmCell = createMockCell(0x851f1d4bfffffa2L, Biome.PLAINS, 100.0, 20.0, 1000);
-        farmCell.setTechnologyLevel(4.0);
+        farmCell.setResourceCapital(5000.0);
         farmCell.setBiomassAgriculture(500.0);
         cells.add(farmCell);
 

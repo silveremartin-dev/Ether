@@ -49,14 +49,12 @@ public class NativeRustBridgeTest {
             world.getWaterResource()[i] = 1000.0f;
             world.getBiomassNatural()[i] = 500.0f;
             world.getResourceCapital()[i] = 200.0f;
-            world.getTechnologyLevel()[i] = 2.5f;
 
             if (i < capacity / 2) {
                 agents.getHexIds()[i] = i;
                 agents.getMass()[i] = 120.0f;
                 agents.getEnergy()[i] = 75.0f;
                 agents.getAge()[i] = 25.0f;
-                agents.getTechLevel()[i] = 2.5f;
             }
         }
 

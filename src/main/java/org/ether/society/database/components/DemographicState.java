@@ -13,7 +13,6 @@ package org.ether.society.database.components;
  * @param lifespan life expectancy at birth in years
  * @param fertility total fertility rate (children per female)
  * @param giniIndex Gini inequality coefficient [0.0..1.0]
- * @param technologyLevel aggregate technological progress index
  * @param homininSpecies hominin clade identifier (1 = Sapiens, 2 = Neanderthal, 3 = Denisovan)
  *
  * @author Silvere Martin-Michiellot
@@ -24,16 +23,10 @@ public record DemographicState(
         double lifespan,
         double fertility,
         double giniIndex,
-        double technologyLevel,
         int homininSpecies
 ) {
     /** Baseline demographic state for human agrarian/tribal societies. */
     public static final DemographicState DEFAULT = new DemographicState(
-            0, 40.0, 6.0, 0.0, 0.0, 1
+            0, 40.0, 6.0, 0.0, 1
     );
-
-    /** Compatibility constructor for 5-argument calls. */
-    public DemographicState(int population, double lifespan, double fertility, double giniIndex, int homininSpecies) {
-        this(population, lifespan, fertility, giniIndex, 0.0, homininSpecies);
-    }
 }

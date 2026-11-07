@@ -22,7 +22,6 @@ public class MarineSubmersionEngineTest {
         flooded.setSeaLevelOffsetMeters(2.0); // 2m sea level rise > 1m elevation -> flooded
         flooded.setPopulation(5000);
         flooded.setResourceCapital(10000.0);
-        flooded.setTechnologyLevel(3.0);
         flooded.setBiome(Biome.PLAINS);
 
         // Safe inland neighbor cell

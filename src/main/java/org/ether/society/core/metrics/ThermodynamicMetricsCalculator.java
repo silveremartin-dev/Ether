@@ -161,28 +161,32 @@ public final class ThermodynamicMetricsCalculator {
     }
 
     /**
-     * Evaluates systemic Boltzmann-Shannon socio-thermodynamic entropy.
+     * Evaluates systemic Boltzmann-Shannon socio-thermodynamic entropy directly from population size $N$
+     * and per-capita physical capital density $k_{\text{pc}} = K/N$ (Georgescu-Roegen 1971, <i>The Entropy Law and the Economic Process</i>).
      *
      * @return systemic entropy index in $[0, 1000]$
      */
     public double getSystemicEntropy() {
-        float tech = engine.getAverageTechnology();
         long pop = engine.getTotalPopulation();
         if (pop <= 0) return 0.0;
-        return Math.min(1000.0, (Math.log1p(pop) * 25.0) + (tech * 2.5));
+        double kpc = getBuiltCapitalTotal() / pop;
+        return Math.min(1000.0, (Math.log1p(pop) * 25.0) + (2.5 * Math.log1p(kpc / 25.0)));
     }
 
     /**
-     * Evaluates industrial and anthropogenic pollution level.
+     * Evaluates industrial and anthropogenic pollution level directly from population $N$,
+     * per-capita machinery density $k_{\text{pc}} = K/N$, and non-somatic power dissipation $p = P_{\text{watts}}/N$
+     * (Smil 2008; Ayres &amp; Warr 2009).
      *
      * @return global pollution index
      */
     public double getPollutionLevel() {
-        float tech = engine.getAverageTechnology();
         long pop = engine.getTotalPopulation();
         if (pop <= 0) return 0.0;
-        // Continuous logistic industrial emissions response (Smil 2008) with smooth activation
-        double industrialIntensity = Math.tanh(Math.max(0.0, tech - 2.5) * 0.8) / (1.0 + Math.exp(-2.5 * (tech - 4.5)));
+        double kpc = getBuiltCapitalTotal() / pop;
+        // Continuous C^1 logistic industrial emissions response: activates with coal/steam furnaces (k_pc >= 900 kg/cap)
+        double industrialIntensity = Math.tanh(Math.max(0.0, kpc - 350.0) / 1200.0)
+                / (1.0 + Math.exp(-(kpc - 2200.0) / 600.0));
         return (pop / 100000.0) * industrialIntensity * 50.0;
     }
 
@@ -222,26 +226,30 @@ public final class ThermodynamicMetricsCalculator {
 
     /**
      * Evaluates trophic footprint multiplier $\mu = \text{Mobilized Raw Biomass} / \text{Ingested Energy}$
-     * as a continuous dietary transition function across technological stages.
+     * as a continuous $C^1$ dietary transition function (Bennett's Law, Bennett 1941; Smil 2013) driven by
+     * physical capital per capita $k_{\text{pc}} = K/N$ (animal husbandry &amp; cold-chain feedlot infrastructure).
      *
      * @return continuous trophic multiplier in $[1.05, 3.20]$
      */
     public double getTrophicMultiplier() {
-        float tech = engine.getAverageTechnology();
-        double mu = 1.05 + 2.15 / (1.0 + Math.exp(-1.25 * (tech - 2.80)));
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = getBuiltCapitalTotal() / pop;
+        double mu = 1.05 + 2.15 / (1.0 + Math.exp(-(kpc - 1500.0) / 600.0));
         return Math.clamp(mu, 1.05, 3.20);
     }
 
     /**
-     * Evaluates gross raw biomass mobilized per capita per year in $\text{kg/capita/yr}$.
+     * Evaluates gross raw biomass mobilized per capita per year in $\text{kg/capita/yr}$ directly from
+     * physical capital per capita $k_{\text{pc}} = K/N$.
      *
      * @return mobilized biomass per capita in $\text{kg/yr}$
      */
     public double getBiomassMobilizedPerCapitaKg() {
         double trophicMul = getTrophicMultiplier();
-        float tech = engine.getAverageTechnology();
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = getBuiltCapitalTotal() / pop;
         // Continuous caloric density transition from wild game/tubers (17.5 MJ/kg) to domestic grains/fats (14.0 MJ/kg)
-        double energyDensity = 17.5 - 3.5 / (1.0 + Math.exp(-1.50 * (tech - 2.20)));
+        double energyDensity = 17.5 - 3.5 / (1.0 + Math.exp(-(kpc - 600.0) / 250.0));
         return (PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_MJ * trophicMul) / energyDensity;
     }
 

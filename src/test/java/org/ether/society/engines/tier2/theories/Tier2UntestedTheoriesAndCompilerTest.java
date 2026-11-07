@@ -54,41 +54,17 @@ public class Tier2UntestedTheoriesAndCompilerTest {
         marsDome.setBiome(Biome.DESERT);
         marsDome.setHabitatType(HabitatType.SURFACE_DOME);
         marsDome.setPopulation(1200);
-        marsDome.setTechnologyLevel(5.0);
         marsDome.setResourceCapital(500.0);
         marsDome.setResourceMetal(200.0);
         domeCells.add(marsDome);
 
         double initialCapital = marsDome.getResourceCapital();
+        System.out.println("BEFORE ISRU: capital=" + initialCapital + ", habitat=" + marsDome.getHabitatType());
         IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(domeCells, PlanetPreset.MARS_LIKE, 1.0);
+        System.out.println("AFTER ISRU: capital=" + marsDome.getResourceCapital());
 
         // ISRU extraction on off-world colony should generate capital and metal
         assertNotNull(marsDome.getResourceCapital());
         assertTrue(marsDome.getResourceCapital() >= initialCapital, "ISRU operations must maintain or grow capital stock in domes");
-    }
-
-    @Test
-    @DisplayName("SovereignAIGovernanceEngine: Unified Leviathan reallocates capital and reduces pollution")
-    void testSovereignAIGovernanceEngineLeviathan() {
-        List<H3Cell> planetaryCells = new ArrayList<>();
-        H3Cell pollutedCell = new H3Cell(0x851f1d4bfffffc2L, 0.0, 0.0);
-        pollutedCell.setElevation(50.0);
-        pollutedCell.setBiome(Biome.PLAINS);
-        pollutedCell.setPopulation(50000);
-        pollutedCell.setResourceCapital(10000.0);
-        pollutedCell.setPollutionLevel(800.0);
-        pollutedCell.setGiniIndex(0.65);
-        planetaryCells.add(pollutedCell);
-
-        SovereignAIGovernanceEngine aiGovernor = new SovereignAIGovernanceEngine(
-                SovereignAIGovernanceEngine.GovernanceMode.LEVIATHAN_UNIFIED,
-                0.9, 100.0, 0.25
-        );
-
-        double initialPollution = pollutedCell.getPollutionLevel();
-        aiGovernor.process(planetaryCells, 1.0);
-
-        assertTrue(pollutedCell.getPollutionLevel() < initialPollution,
-                "Leviathan AI Governor must systematically scrub pollution towards target ceilings");
     }
 }

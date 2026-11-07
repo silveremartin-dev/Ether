@@ -29,18 +29,48 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
 
     @Override
     public String getName() {
-        return "ArthurCombinatorialTechnologyEngine";
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.arthur_combinatorial.name",
+                "Arthur Combinatorial Capital Recombination Engine");
+    }
+
+    @Override
+    public String getDescription() {
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.arthur_combinatorial.desc",
+                "Autocatalytic physical tooling and machinery accumulation driven by combinatorial diversity (1 + k_pc/k_ref)^alpha and cooperative network scale ln(1 + N/N_0).");
     }
 
     @Override
     public String getEquationsTooltip() {
-        return """
-               [Arthur Combinatorial Technology Evolution Model (2009)]
-               • Combinatorial Space:    dT/dt = α · (T^2 / 2) · σ(Pop, Capital)
-               • Novelty Recombination:  K_new = K · (1 + r · (K/N) · ln(N))
-               Ref: W. B. Arthur (2009) "The Nature of Technology: What It Is and How It Evolves"
-               """;
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.arthur_combinatorial.tooltip",
+                """
+                [Arthur Combinatorial Physical Capital Evolution Model (2009)]
+                • Capital Dynamics:     dK/dt = μ_comb · N · (1 + k_pc/k_ref)^α · ln(1 + N/N_0) / (1 + k_pc/k_max) - δ_obs · K
+                • Physical Constants:   k_ref = 120 kg/cap, α = 1.35, N_0 = 100 persons, k_max = 50,000 kg/cap, δ_obs = 0.008 yr^-1
+                • Units:                K [kg physical capital], k_pc = K/N [kg/capita], N [individuals]
+                Ref: W. B. Arthur (2009) "The Nature of Technology"; M. Kremer (1993, QJE)
+                """);
     }
+
+    /** Reference agrarian iron/masonry tool-set mass \(k_{\text{ref}} = 120.0\,\text{kg/capita}\) (Krausmann et al. 2017). */
+    public static final double REFERENCE_TOOLSET_MASS_KG_PC = 120.0;
+
+    /** Superlinear combinatorial synergy exponent \(\alpha = 1.35\) (Arthur &amp; Polak 2006). */
+    public static final double COMBINATORIAL_SYNERGY_EXPONENT = 1.35;
+
+    /** Cooperative division-of-labor network scale \(N_0 = 100.0\,\text{persons}\) (Henrich 2004). */
+    public static final double COOPERATIVE_NETWORK_SCALE_POP = 100.0;
+
+    /** Thermodynamic saturation ceiling of physical capital \(k_{\max} = 50\,000.0\,\text{kg/capita}\). */
+    public static final double THERMODYNAMIC_CAPITAL_SATURATION_KG_PC = 50000.0;
+
+    /** Base physical tool synthesis coefficient \(\mu_{\text{comb}} = 0.045\,\text{kg/(person}\cdot\text{yr)}\). */
+    public static final double BASE_SYNTHESIS_RATE = 0.045;
+
+    /** Structural entropy and obsolescence wear rate \(\delta_{\text{obs}} = 0.008\,\text{yr}^{-1}\). */
+    public static final double OBSOLESCENCE_DECAY_RATE = 0.008;
 
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
@@ -51,19 +81,18 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
             int pop = cell.getPopulationOr(0);
             if (pop <= 0) continue;
 
-            double capital = cell.getResourceCapitalOr(10.0);
+            double capital = SmoothMath.softplus(cell.getResourceCapitalOr(10.0), 0.0, 10.0);
             double kPerCapita = capital / pop;
 
-            // Combinatorial capital formation scales with structural tool density and network interaction
-            double rAndDIntensity = SmoothMath.smoothClamp(kPerCapita / 100.0, 0.0, 5.0, 0.1);
-            double popNetworkFactor = Math.min(3.0, Math.log1p(pop) / 5.0);
-            double capitalIncrement = capital * 0.002 * Math.max(0.05, rAndDIntensity) * popNetworkFactor * deltaYears;
-            cell.setResourceCapital(capital + capitalIncrement);
+            // Single C^infinity combinatorial capital differential equation (W. Brian Arthur 2009; Kremer 1993):
+            // dK/dt = mu_comb * N * (1 + k_pc / k_ref)^alpha * ln(1 + N / N_0) / (1 + k_pc / k_max) - delta_obs * K
+            double combinatorialDiversity = Math.pow(1.0 + kPerCapita / REFERENCE_TOOLSET_MASS_KG_PC, COMBINATORIAL_SYNERGY_EXPONENT);
+            double cooperativeNetwork = Math.log1p(pop / COOPERATIVE_NETWORK_SCALE_POP);
+            double saturationDamping = 1.0 / (1.0 + kPerCapita / THERMODYNAMIC_CAPITAL_SATURATION_KG_PC);
 
-            // W. Brian Arthur (2009) Combinatorial Tech Evolution: dT/dt = alpha * (T^2 / 2) * ln(1 + Pop)
-            double currentTech = cell.getTechnologyLevelOr(1.0);
-            double combinatorialDelta = 0.001 * (currentTech * currentTech / 2.0) * Math.log1p(pop) * deltaYears;
-            cell.setTechnologyLevel(currentTech + combinatorialDelta);
+            double grossSynthesis = BASE_SYNTHESIS_RATE * pop * combinatorialDiversity * cooperativeNetwork * saturationDamping;
+            double netDeltaK = (grossSynthesis - OBSOLESCENCE_DECAY_RATE * capital) * deltaYears;
+            cell.setResourceCapital(SmoothMath.softplus(capital + netDeltaK, 0.0, 10.0));
         }
     }
 }

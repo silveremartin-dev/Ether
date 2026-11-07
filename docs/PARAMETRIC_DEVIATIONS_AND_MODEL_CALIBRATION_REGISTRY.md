@@ -58,10 +58,10 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Calibrated Ether Formulation**:
   $$S = 0.5 \cdot \text{FiscalStress} + 0.5 \cdot \text{GeopoliticalTension}$$
   $$\Psi = \text{BandBaseline} + \Phi_{\text{state}}(N_{\text{state}}, U) \cdot \left(0.65 \cdot \text{Conflict} + 2.00 \cdot \text{EOI} + 0.35 \cdot S\right)$$
-  $$I_{\text{elite}} = 0.85 \cdot \sigma(T;\; 1.02,\; 0.04) \cdot \left(0.12 + 0.88 \cdot \text{Gini}\right)$$
+  $$I_{\text{elite}} = 0.85 \cdot \sigma(\Phi_{\text{exergy}};\; 1.02,\; 0.04) \cdot \left(0.12 + 0.88 \cdot \text{Gini}\right)$$
 * **Root Cause & Justification**:
   * Turchin's original equation multiplies dimensionless relative ratios aggregated at national level. When projected onto an absolute $0–100$ scale across continuous spatial grids with varying Gini, the linear weights calibrate the integrative baseline to $\sim 40–55$ (e.g. Pax Romana 165 CE $\Psi = 40.5$, Early Caliphate 632 CE $\Psi = 58.8$, Song China 1000 CE $\Psi = 55.9$) without suppressing acute crisis peaks ($> 85$ during extreme food scarcity or civil war).
-  * State scaling $\Phi_{\text{state}}$ derives smoothly from demographic network size and emergent index $T \ge 1.02$ without arbitrary modern gating thresholds.
+  * State scaling $\Phi_{\text{state}}$ derives smoothly from demographic network size and Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}}) \ge 1.02$ without arbitrary modern gating thresholds.
 * **Empirical Validation Grounding**:
   * Seshat Global History Databank; Turchin & Nefedov (2009) *Secular Cycles*.
 
@@ -129,9 +129,9 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Early modern proto-industrialization (1800 CE): $\sim 10.4\%$.
   * Mass industrial urbanization (1914 CE): $\sim 21.6\%$.
 * **Calibrated Ether Formulation**:
-  $$u_{\text{agrarian}} = 3.8\% + 1.5\% \cdot \tanh(\max(0, T - 1.05) \cdot 3.0)$$
-  $$u_{\text{earlyModern}} = 5.2\% \cdot \tanh(\max(0, T - 1.20) \cdot 6.0)$$
-  $$u_{\text{industrial}} = \frac{13.5\%}{1 + \exp(-4.50 \cdot (T - 1.85))}$$
+  $$u_{\text{agrarian}} = 3.8\% + 1.5\% \cdot \tanh(\max(0, \Phi_{\text{exergy}} - 1.05) \cdot 3.0)$$
+  $$u_{\text{earlyModern}} = 5.2\% \cdot \tanh(\max(0, \Phi_{\text{exergy}} - 1.20) \cdot 6.0)$$
+  $$u_{\text{industrial}} = \frac{13.5\%}{1 + \exp(-4.50 \cdot (\Phi_{\text{exergy}} - 1.85))}$$
 * **Root Cause & Justification**:
   * Prevents dense agricultural river valleys (Nile, Yellow River, Ganges) from falsely classifying rural agrarian clusters as industrial factory cities. Decoupling agrarian clustering from factory prime movers reproduces the historical $3.9-4.2\%$ baseline across Antiquity and Middle Ages while allowing the authentic industrial explosion in 1800-1914.
 * **Empirical Validation Grounding**:
@@ -150,13 +150,13 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Print vernacular revolution (1800 CE): $\sim 15.0\%$.
   * Mass compulsory primary education (1914 CE): $\sim 24.5\%$ (global adult literacy, Bolt & van Zanden 2020).
 * **Calibrated Ether Formulation**:
-  $$L = \text{clamp}\left(\sigma_{\text{act}}(T) \cdot [L_{\text{scribal}}(T) + L_{\text{print}}(T) + L_{\text{mass}}(T) + L_{\text{modern}}(T)],\; 0.0,\; 99.0\right)$$
-  $$L_{\text{scribal}} = 3.0 + 3.5 \cdot \tanh(\max(0, T - 1.05) \cdot 3.0)$$
-  $$L_{\text{print}} = 10.0 \cdot \tanh(\max(0, T - 1.20) \cdot 6.0)$$
-  $$L_{\text{mass}} = \frac{18.0}{1 + \exp(-4.50 \cdot (T - 1.95))}$$
-  $$L_{\text{modern}} = \frac{55.0 \cdot \mathbb{I}_{T > 2.25}}{1 + \exp(-3.50 \cdot (T - 2.80))}$$
+  $$L = \text{clamp}\left(\sigma_{\text{act}}(\Phi_{\text{exergy}}) \cdot [L_{\text{scribal}}(\Phi_{\text{exergy}}) + L_{\text{print}}(\Phi_{\text{exergy}}) + L_{\text{mass}}(\Phi_{\text{exergy}}) + L_{\text{modern}}(\Phi_{\text{exergy}})],\; 0.0,\; 99.0\right)$$
+  $$L_{\text{scribal}} = 3.0 + 3.5 \cdot \tanh(\max(0, \Phi_{\text{exergy}} - 1.05) \cdot 3.0)$$
+  $$L_{\text{print}} = 10.0 \cdot \tanh(\max(0, \Phi_{\text{exergy}} - 1.20) \cdot 6.0)$$
+  $$L_{\text{mass}} = \frac{18.0}{1 + \exp(-4.50 \cdot (\Phi_{\text{exergy}} - 1.95))}$$
+  $$L_{\text{modern}} = \frac{55.0 \cdot \sigma(\Phi_{\text{exergy}};\; 2.25,\; 0.05)}{1 + \exp(-3.50 \cdot (\Phi_{\text{exergy}} - 2.80))}$$
 * **Root Cause & Justification**:
-  * Replaces artificial date-based guards (`if (year < -3400)`) with an endogenous information-theoretic and technological formulation. Oral foraging bands evaluate strictly to $0.0\%$, scribal empires to $3-6\%$, early modern Europe to $15-18\%$, and industrial societies to $40-85\%$.
+  * Replaces artificial date-based guards (`if (year < -3400)`) with an endogenous physical exergy-capital formulation $\Phi_{\text{exergy}}(p, k_{\text{pc}})$. Oral foraging bands evaluate strictly to $0.0\%$, scribal empires to $3-6\%$, early modern Europe to $15-18\%$, and industrial societies to $40-85\%$.
 * **Empirical Validation Grounding**:
   * Buringh & van Zanden (2009); Graff (1987); Goody (1986).
 
@@ -170,7 +170,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Canonical Published Value**:
   * Agricultural extraction depth: $50-350\text{ mm/year}$ over irrigated land, sustainable recharge: $10-100\text{ mm/year}$.
 * **Calibrated Ether Formulation**:
-  $$W_{\text{cell}} = \frac{N_i \cdot w_{\text{irrigation}}(T)}{A_{\text{cell}}} \cdot \text{PumpingTechnology}(T) \quad [\text{mm/yr}]$$
+  $$W_{\text{cell}} = \frac{N_i \cdot w_{\text{irrigation}}(k_{\text{pc}})}{A_{\text{cell}}} \cdot \text{PumpingPower}(p, k_{\text{pc}}) \quad [\text{mm/yr}]$$
 * **Root Cause & Justification**:
   * Dividing national volume statistics by discrete cellular area requires dimensional scaling to prevent localized hexagonal cells from depleting entire regional aquifers in a single monthly tick.
 * **Empirical Validation Grounding**:
@@ -188,9 +188,9 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Early Modern Coke Smelting (1800 CE): $\sim 10.9\text{ kg/capita}$.
   * Mass Bessemer Steel (1914 CE): $\sim 64.0\text{ kg/capita}$.
 * **Calibrated Ether Formulation**:
-  $$M_{\text{smelt}} = \sigma_{\text{act}}(T) \cdot \left[ 1.60 + 1.45 \tanh(\max(0, T - 1.10) \cdot 3.0) + 8.0 \tanh(\max(0, T - 1.20) \cdot 5.0) + \frac{180.0 \tanh(\max(0, T - 1.65) \cdot 5.0)}{1 + \exp(-5.50 \cdot (T - 1.85))} \right]$$
+  $$M_{\text{smelt}} = \sigma_{\text{act}}(\Phi_{\text{exergy}}) \cdot \left[ 1.60 + 1.45 \tanh(\max(0, \Phi_{\text{exergy}} - 1.10) \cdot 3.0) + 8.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.20) \cdot 5.0) + \frac{180.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.65) \cdot 5.0)}{1 + \exp(-5.50 \cdot (\Phi_{\text{exergy}} - 1.85))} \right]$$
 * **Root Cause & Justification**:
-  * Separates bloomery/charcoal smelting from coke smelting ($T \ge 1.20$) and industrial Bessemer blast furnaces ($T \ge 1.65$) without calendar gates, preventing Second Industrial metallurgy from leaking into the First Industrial era (1800–1820 CE).
+  * Separates bloomery/charcoal smelting from coke smelting ($\Phi_{\text{exergy}} \ge 1.20$) and industrial Bessemer blast furnaces ($\Phi_{\text{exergy}} \ge 1.65$) without calendar gates, preventing Second Industrial metallurgy from leaking into the First Industrial era (1800–1820 CE).
 * **Empirical Validation Grounding**:
   * Malandra (1990); USGS (2023).
 
@@ -207,7 +207,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Early Modern (1800 CE): $\approx 175\text{ Billion 1990 Int\$}$ ($\sim 185\text{ Int\$/capita}$).
   * Industrial Takeoff (1914 CE): $\approx 2\,733\text{ Billion 1990 Int\$}$ ($\sim 1\,560\text{ Int\$/capita}$).
 * **Calibrated Ether Formulation**:
-  $$y_{\text{pc}} = 95.0 + 35.0 \tanh(\max(0, T - 1.05) \cdot 3.0) + 90.0 \tanh(\max(0, T - 1.20) \cdot 5.0) + \frac{1500.0 \tanh(\max(0, T - 1.50) \cdot 4.0)}{1 + \exp(-5.50 \cdot (T - 1.85))} + \frac{12200.0 \cdot \mathbb{I}_{T > 2.30}}{1 + \exp(-3.50 \cdot (T - 2.80))}$$
+  $$y_{\text{pc}} = 95.0 + 35.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.05) \cdot 3.0) + 90.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.20) \cdot 5.0) + \frac{1500.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.50) \cdot 4.0)}{1 + \exp(-5.50 \cdot (\Phi_{\text{exergy}} - 1.85))} + \frac{12200.0 \cdot \sigma(\Phi_{\text{exergy}};\; 2.30,\; 0.05)}{1 + \exp(-3.50 \cdot (\Phi_{\text{exergy}} - 2.80))}$$
   $$\text{GWP} = \frac{N \cdot y_{\text{pc}}}{10^9} \quad [\text{Billion 1990 Int\$}]$$
 * **Root Cause & Justification**:
   * Reconciles Malthusian wage floors with capital-deepening industrial revolutions across a single continuous physical equation, eliminating the 84% GWP error previously observed in 1914 CE.
@@ -227,7 +227,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Chappe optical semaphore (1792 / 1800 CE): $\sim 268\text{ km/day}$.
   * Electric telegraph & transatlantic submarine cables (1914 CE): $\sim 5.8 \times 10^6\text{ km/day}$.
 * **Calibrated Ether Formulation**:
-  $$v_{\text{info}} = 4.0 + 77.0 \tanh(\max(0, T - 0.95) \cdot 8.0) + 180.0 \tanh(\max(0, T - 1.22) \cdot 8.0) + \frac{5.8 \times 10^6 \tanh(\max(0, T - 1.65) \cdot 5.0)}{1 + \exp(-6.50 \cdot (T - 1.85))}$$
+  $$v_{\text{info}} = 4.0 + 77.0 \tanh(\max(0, \Phi_{\text{exergy}} - 0.95) \cdot 8.0) + 180.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.22) \cdot 8.0) + \frac{5.8 \times 10^6 \tanh(\max(0, \Phi_{\text{exergy}} - 1.65) \cdot 5.0)}{1 + \exp(-6.50 \cdot (\Phi_{\text{exergy}} - 1.85))}$$
 * **Root Cause & Justification**:
   * Decouples physical locomotion from electromagnetic transmission, preventing ancient or medieval courier networks and First Industrial optical semaphores from spiking into millions of km/day while accurately reproducing the Chappe semaphore (1800 CE) and 1914 transatlantic telegraph networks.
 * **Empirical Validation Grounding**:
@@ -246,28 +246,29 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Early Modern oceanic sail (1800 CE): $\sim 230$.
   * Steamships and compound engines (1914 CE): $\sim 48.6$.
 * **Calibrated Ether Formulation**:
-  $$C_{\text{freight}} = 1415.0 - 200.0 \tanh(\max(0, T - 1.10) \cdot 3.5) - 300.0 \tanh(\max(0, T - 1.15) \cdot 4.5) - 685.0 \tanh(\max(0, T - 1.20) \cdot 14.0) - \frac{182.0 \tanh(\max(0, T - 1.65) \cdot 5.0)}{1 + \exp(-6.50 \cdot (T - 1.80))}$$
+  $$C_{\text{freight}} = 1415.0 - 200.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.10) \cdot 3.5) - 300.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.15) \cdot 4.5) - 685.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.20) \cdot 14.0) - \frac{182.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.65) \cdot 5.0)}{1 + \exp(-6.50 \cdot (\Phi_{\text{exergy}} - 1.80))}$$
 * **Root Cause & Justification**:
-  * Freight cost decreases with technological maturity. Previous code multiplied cost by an activation factor, which caused archaic shipping freight to evaluate near zero. The calibrated formula starts at the archaic baseline ($1415$) and smoothly subtracts reductions from compass, sternpost rudder, oceanic square-rigged caravels, and steamships.
+  * Freight cost decreases with physical maritime propulsion maturity. Previous code multiplied cost by an activation factor, which caused archaic shipping freight to evaluate near zero. The calibrated formula starts at the archaic baseline ($1415$) and smoothly subtracts reductions from compass, sternpost rudder, oceanic square-rigged caravels, and steamships.
 * **Empirical Validation Grounding**:
   * Harley (1988); Mohammed & Williamson (2004); UNCTAD.
 
 ---
 
-### Entry 13: Garrett-Lotka Emergent Technological Index & Somatic Metabolic Baseline
-* **Subsystem**: `H3CellPhysicsAndStateHelper.java`, `WorldBuffer.java`
+### Entry 13: Garrett-Lotka Emergent Exergy-Capital Index ($\Phi_{\text{exergy}}$) & Somatic Metabolic Baseline
+* **Subsystem**: `H3CellPhysicsAndStateHelper.java`, `WorldBuffer.java`, `CliodynamicAnalyticalFormulasCatalog.java`
 * **Canonical Literature**:
   * Garrett, T. J. (2011). *Are there basic physical constraints on future anthropogenic emissions of carbon dioxide?* Climatic Change, 104(3), 437–455.
   * Lotka, A. J. (1922). *Contribution to the energetics of evolution*. PNAS, 8(6), 147–151.
   * Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
 * **Canonical Published Value**:
-  * Somatic Paleolithic foraging baseline: $\approx 0.85$ ($348\text{ W/capita}$ metabolic and hearth baseline).
+  * Somatic Paleolithic foraging baseline: $\approx 0.85$ ($p_{\text{somatic}} = 348\text{ W/capita}$ metabolic and hearth baseline).
   * Agrarian village infrastructure scale: $k_0 = 120\text{ kg/capita}$.
   * Prime-mover animal/mill traction scale: $p_0 = 250\text{ W/capita}$.
 * **Calibrated Ether Formulation**:
-  $$T = 0.85 + 0.50 \log_{10}\left(1.0 + \frac{k_{\text{active}}}{120.0}\right) + 0.70 \log_{10}\left(1.0 + \frac{p_{\text{exo}}}{250.0}\right)$$
+  $$\Phi_{\text{exergy}}(p, k_{\text{pc}}) = 0.85 + 0.50 \log_{10}\left(1.0 + \frac{k_{\text{active}}}{120.0}\right) + 0.70 \log_{10}\left(1.0 + \frac{p_{\text{exo}}}{250.0}\right)$$
+  where $p_{\text{exo}} = \max(0, p - 348.0)$ and $k_{\text{active}}$ is thermodynamically bounded by active power dissipation $k_{\text{max}}(p)$ so post-collapse depopulation ($N \to 0$) never causes $K/N \to \infty$ blow-up.
 * **Root Cause & Justification**:
-  * Normalized physical capital and prime-mover power against agrarian scales rather than industrial grid scales, producing an authentic, monotonic progression across human history: Paleolithic $T \approx 0.85$, Neolithic $T \approx 0.94$, Classical Antiquity $T \approx 1.05-1.13$, High Middle Ages $T \approx 1.16$, 1800 CE $T \approx 1.28$, 1914 CE $T \approx 1.93$.
+  * Eliminates technology as an independent state variable (`AGENTS.md` §10.1) and normalizes physical capital and prime-mover power against agrarian scales rather than industrial grid scales, producing an authentic, monotonic progression across human history: Paleolithic $\Phi_{\text{exergy}} \approx 0.85$, Neolithic $\Phi_{\text{exergy}} \approx 0.94$, Classical Antiquity $\Phi_{\text{exergy}} \approx 1.05-1.13$, High Middle Ages $\Phi_{\text{exergy}} \approx 1.16$, 1800 CE $\Phi_{\text{exergy}} \approx 1.28$, 1914 CE $\Phi_{\text{exergy}} \approx 1.93$.
 * **Empirical Validation Grounding**:
   * Garrett (2011); Lotka (1922); Smil (2017); Phase 1 Benchmark Runs 7 & 8.
 
@@ -285,9 +286,9 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Mechanized agriculture (1914 CE): $\sim 45\text{ t/ha/yr}$.
   * Deep-time forest cover: $99.0\%$ pristine baseline.
 * **Calibrated Ether Formulation**:
-  $$E_{\text{soil}} = 0.03 + \tanh(\max(0, T - 0.90) \cdot 4.0) \cdot \left[ 14.0 \tanh(\max(0, T - 0.92) \cdot 4.0) + 12.0 \tanh(\max(0, T - 1.15) \cdot 3.0) + \frac{24.0}{1 + \exp(-5.50 \cdot (T - 1.75))} \right]$$
+  $$E_{\text{soil}} = 0.03 + \tanh(\max(0, \Phi_{\text{exergy}} - 0.90) \cdot 4.0) \cdot \left[ 14.0 \tanh(\max(0, \Phi_{\text{exergy}} - 0.92) \cdot 4.0) + 12.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.15) \cdot 3.0) + \frac{24.0}{1 + \exp(-5.50 \cdot (\Phi_{\text{exergy}} - 1.75))} \right]$$
 * **Root Cause & Justification**:
-  * Anchoring plowing erosion to the emergence of animal-drawn ards and metallurgy ($T \ge 0.92$) preserves the $0.03$ geological background for Paleolithic foraging bands while accurately capturing agrarian topsoil degradation in the Roman and Mediterranean basins.
+  * Anchoring plowing erosion to the emergence of animal-drawn ards and metallurgy ($\Phi_{\text{exergy}} \ge 0.92$) preserves the $0.03$ geological background for Paleolithic foraging bands while accurately capturing agrarian topsoil degradation in the Roman and Mediterranean basins.
 * **Empirical Validation Grounding**:
   * Montgomery (2007); Williams (2003); FAO (2015).
 
@@ -304,7 +305,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * British funded national debt post-1694 (1800 CE Napoleonic): $\sim 73.4\%$.
   * Total war debt mobilization (1914 CE): $\sim 90.2\%$.
 * **Calibrated Ether Formulation**:
-  $$\text{Debt} = \sigma_{\text{inst}}(T) \cdot \left[ 8.5 + 1.5 \tanh(\max(0, T - 1.05) \cdot 3.0) + 22.0 \tanh(\max(0, T - 1.12) \cdot 5.0) + 42.0 \tanh(\max(0, T - 1.22) \cdot 10.0) + \frac{20.0 \tanh(\max(0, T - 1.65) \cdot 5.0)}{1 + \exp(-6.00 \cdot (T - 1.85))} \right]$$
+  $$\text{Debt} = \sigma_{\text{inst}}(\Phi_{\text{exergy}}) \cdot \left[ 8.5 + 1.5 \tanh(\max(0, \Phi_{\text{exergy}} - 1.05) \cdot 3.0) + 22.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.12) \cdot 5.0) + 42.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.22) \cdot 10.0) + \frac{20.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.65) \cdot 5.0)}{1 + \exp(-6.00 \cdot (\Phi_{\text{exergy}} - 1.85))} \right]$$
 * **Root Cause & Justification**:
   * Reconciles unbacked sovereign emergency loans in pre-modern states with modern institutional funded debt markets without date hardcoding.
 * **Empirical Validation Grounding**:
@@ -322,11 +323,117 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Early Modern oceanic sail boom (1800 CE): $48.6$.
   * First Globalization steam shipping (1914 CE): $227.0$.
 * **Calibrated Ether Formulation**:
-  $$\text{Trade} = \sigma_{\text{trade}}(T) \cdot \left[ 3.5 + 2.5 \tanh(\dots) + 36.0 \tanh(\max(0, T - 1.22) \cdot 5.0) + \frac{180.0}{1 + \exp(-6.50 \cdot (T - 1.70))} \right]$$
+  $$\text{Trade} = \sigma_{\text{trade}}(\Phi_{\text{exergy}}) \cdot \left[ 3.5 + 2.5 \tanh(\dots) + 36.0 \tanh(\max(0, \Phi_{\text{exergy}} - 1.22) \cdot 5.0) + \frac{180.0}{1 + \exp(-6.50 \cdot (\Phi_{\text{exergy}} - 1.70))} \right]$$
 * **Root Cause & Justification**:
-  * Captures the transition from localized regional exchange to oceanic sailing voyages and global steam shipping networks along physical technological gradients.
+  * Captures the transition from localized regional exchange to oceanic sailing voyages and global steam shipping networks along physical exergy-capital gradients.
 * **Empirical Validation Grounding**:
   * Federico & Tena-Junguito (2017); Findlay & O'Rourke (2007).
+
+---
+
+### Entry 17: Biophysical Arthur Combinatorial Capital Recombination Dynamics
+* **Subsystem**: `ArthurCombinatorialTechnologyEngine.java`
+* **Canonical Literature**:
+  * Arthur, W. B. (2009). *The Nature of Technology: What It Is and How It Evolves*. Free Press.
+  * Arthur, W. B., & Polak, W. (2006). *The evolution of technology within a simple computer model*. Complexity, 11(5), 23–31.
+  * Kremer, M. (1993). *Population Growth and Technological Change: One Million B.C. to 1990*. Quarterly Journal of Economics, 108(3), 681–716.
+* **Canonical Published Value**:
+  * Arthur (2009) models technological evolution over an abstract combinatorial space of discrete building blocks $M(t)$, where new modules arise from combinations of existing modules: $dM/dt \propto \binom{M}{k} \approx M^\alpha$.
+* **Calibrated Ether Formulation (Novel Biophysical Formalization)**:
+  $$\frac{dK}{dt} = \mu_{\text{comb}} \cdot N \cdot \left(1 + \frac{k_{\text{pc}}}{k_{\text{ref}}}\right)^\alpha \cdot \ln\left(1 + \frac{N}{N_0}\right) \cdot \frac{1}{1 + k_{\text{pc}} / k_{\max}} - \delta_{\text{obs}} \cdot K$$
+  with physical constants (zero conditional branching or step thresholds):
+  * $k_{\text{pc}} = K/N$ ($\text{kg/capita}$): Physical embodied tooling and machinery per person.
+  * $k_{\text{ref}} = 120.0\text{ kg/capita}$: Characteristic dimensional normalization scale for per-capita tooling mass (Krausmann et al. 2017).
+  * $\alpha = 1.35$: Superlinear combinatorial synergy exponent (Arthur & Polak 2006).
+  * $N_0 = 100.0\text{ persons}$: Characteristic cooperative division-of-labor network scale (Henrich 2004).
+  * $k_{\max} = 50\,000.0\text{ kg/capita}$: Michaelis-Verhulst thermodynamic saturation scale of physical capital per person.
+  * $\mu_{\text{comb}} = 0.045\text{ kg/(person}\cdot\text{yr)}$: Base physical tool synthesis rate.
+  * $\delta_{\text{obs}} = 0.008\text{ yr}^{-1}$: Structural obsolescence and replacement wear rate.
+* **Root Cause & Justification**:
+  * In Arthur's original theory, "technology" is an unobservable count of abstract ideas. In a strictly physical simulation (`AGENTS.md` §10.1), ideas only exert causal force when embodied in physical tools, machines, and infrastructure $K$ ($\text{kg}$). By mapping the diversity of the combinatorial toolset to the continuous dimensionless ratio $1 + k_{\text{pc}}/k_{\text{ref}}$, this single $C^\infty$ differential equation translates Arthur's autocatalytic recombination directly into conserved physical capital accumulation without any synthetic $T$ state variable or piecewise threshold.
+* **Empirical Validation Grounding**:
+  * Krausmann et al. (2017); Kremer (1993); Maddison Project Database (2020).
+
+---
+
+### Entry 18: Lenski-Milanovic Biophysical Ecological-Evolutionary Inequality Curve
+* **Subsystem**: `LenskiPureEngine.java`
+* **Canonical Literature**:
+  * Lenski, G. (1966). *Power and Privilege: A Theory of Social Stratification*. McGraw-Hill.
+  * Milanovic, B., Lindert, P. H., & Williamson, J. G. (2011). *Pre-Industrial Inequality*. The Economic Journal, 121(551), 255–272.
+  * Scheidel, W. (2017). *The Great Leveler: Violence and the History of Inequality from the Stone Age to the Twenty-First Century*. Princeton University Press.
+* **Canonical Published Value**:
+  * Hunter-Gatherer bands: Gini $\approx 0.25$ (near-zero storable surplus).
+  * Agrarian empires: Gini peaks at $\approx 0.65$ (landed aristocracy extracts up to the Inequality Possibility Frontier).
+  * Modern industrial democracies: Gini moderates to $\approx 0.35–0.42$ via human-capital wage bargaining and mass education.
+* **Calibrated Ether Formulation (Novel Biophysical Formalization)**:
+  $$G^*(k_{\text{pc}}) = G_{\text{forager}} + \Delta G_{\text{agr}} \cdot \exp\left( -\frac{\left(\ln\left(\frac{k_{\text{pc}} + 10}{k_{\text{agr}} + 10}\right)\right)^2}{2 \sigma_k^2} \right) + \Delta G_{\text{ind}} \cdot \frac{k_{\text{pc}}^2}{k_{\text{pc}}^2 + k_{\text{ind}}^2}$$
+  with physical constants (single $C^\infty$ analytical curve over $[0, +\infty)$ with zero `if-then-else` or step gates):
+  * $G_{\text{forager}} = 0.25$: Baseline somatic foraging Gini (Borgerhoff Mulder et al. 2009).
+  * $\Delta G_{\text{agr}} = 0.40$: Maximum agrarian surplus extraction surge (yielding $0.25 + 0.40 = 0.65$ at the log-normal mode $k_{\text{pc}} = k_{\text{agr}}$).
+  * $k_{\text{agr}} = 280.0\text{ kg/capita}$: Mode of the agrarian surplus extraction bell curve (Krausmann 2017).
+  * $\sigma_k = 1.25$ (dimensionless log-standard deviation): Breadth of the log-normal agrarian stratification bell curve.
+  * $\Delta G_{\text{ind}} = 0.13$: Asymptotic industrial capital return offset ($0.25 + 0.13 = 0.38$ as $k_{\text{pc}} \to \infty$).
+  * $k_{\text{ind}} = 2\,500.0\text{ kg/capita}$: Half-saturation scale of the quadratic Hill industrial term.
+* **Root Cause & Justification**:
+  * Lenski's original treatise classified societies into discrete sociological stages (Hunting-Gathering, Simple/Advanced Horticultural, Agrarian, Industrial). Replacing discrete stages or synthetic $T$ scalars with a single continuous $C^\infty$ log-normal + rational Hill function of physical capital per capita $k_{\text{pc}}$ grounds social stratification directly in the physical mass of storable surplus and productive machinery without any regime switching.
+* **Empirical Validation Grounding**:
+  * Milanovic, Lindert & Williamson (2011); Borgerhoff Mulder et al. (2009, *Science* 326:682); Scheidel (2017).
+
+---
+
+### Entry 19: Kümmel-Ayres-Warr Thermodynamic Exergy Transducer Efficiency ($\eta_{\text{exergy}}$)
+* **Subsystem**: `KummelAyresExergyEngine.java`
+* **Canonical Literature**:
+  * Ayres, R. U., & Warr, B. (2005). *Accounting for growth: the role of physical work*. Structural Change and Economic Dynamics, 16(2), 181–209.
+  * Kümmel, R. (2011). *The Second Law of Economics: Energy, Entropy, and the Origins of Wealth*. Springer.
+* **Canonical Published Value**:
+  * Somatic human/animal muscle and open wood fire efficiency: $\eta_0 \approx 0.05$ ($5\%$).
+  * Early 20th-century coal steam/internal combustion efficiency: $\eta \approx 0.15–0.22$.
+  * Modern combined-cycle gas turbine and electric motor grid efficiency: $\eta_{\max} \approx 0.45$ ($45\%$).
+* **Calibrated Ether Formulation**:
+  $$\eta_{\text{exergy}}(k_{\text{pc}}) = \eta_0 + (\eta_{\max} - \eta_0) \cdot \tanh\left(\frac{k_{\text{pc}}}{k_{\text{transducer}}}\right)$$
+  where $\eta_0 = 0.05$, $\eta_{\max} = 0.45$, and $k_{\text{transducer}} = 2\,500.0\text{ kg/capita}$ is the characteristic physical mass scale of precision heat engines, turbines, and electrical grids required to approach Carnot/second-law limits.
+* **Root Cause & Justification**:
+  * Ayres & Warr (2005) take historical exergy conversion efficiency $\eta(t)$ from empirical national tables. Parameterizing $\eta$ via a single smooth $\tanh(k_{\text{pc}} / k_{\text{transducer}})$ function eliminates calendar time series, hard `Math.min` clips, and synthetic technology scalars while respecting Carnot's thermodynamic bounds.
+* **Empirical Validation Grounding**:
+  * Ayres & Warr (2005, 2009); Kümmel (2011); Smil (2017).
+
+---
+
+### Entry 20: Hotelling Chalcolithic Pyrometallurgical Smelting Activation Envelope
+* **Subsystem**: `HotellingResourceDepletionEngine.java`
+* **Canonical Literature**:
+  * Hotelling, H. (1931). *The Economics of Exhaustible Resources*. Journal of Political Economy, 39(2), 137–175.
+  * Radivojević, M., et al. (2010). *On the origins of extractive metallurgy: new evidence from Europe*. Journal of Archaeological Science, 37(11), 2775–2787.
+* **Canonical Published Value**:
+  * Deep-time invariant (`AGENTS.md` §8.2): Extractive metal smelting $\equiv 0.0\text{ kg/capita}$ throughout the Paleolithic and Mesolithic, emerging only with Chalcolithic kiln/furnace capital ($\sim -5000\text{ BCE}$).
+* **Calibrated Ether Formulation**:
+  $$E_{\text{kiln}}(k_{\text{pc}}) = \frac{k_{\text{pc}}^3}{k_{\text{pc}}^3 + k_{\text{chalcolithic}}^3}, \qquad k_{\text{chalcolithic}} = 65.0\text{ kg/capita}$$
+  $$R_{\text{extract}} = 0.02 \cdot N \cdot E_{\text{kiln}}(k_{\text{pc}}) \cdot 2.5 \tanh\!\left(\frac{\ln(1 + k_{\text{pc}}/50.0)}{3.5}\right) \cdot \frac{M_{\text{ore}}}{M_{\text{ore}} + 100.0}$$
+* **Root Cause & Justification**:
+  * Standard Hotelling depletion models assume extraction begins at $t = 0$. In deep-time planetary simulations starting at $-100\,000\text{ BP}$, un-gated extraction would deplete surface copper and iron deposits during the Pleistocene. Using the third-order Hill function $E_{\text{kiln}}(k_{\text{pc}}) = k_{\text{pc}}^3 / (k_{\text{pc}}^3 + k_{\text{chalcolithic}}^3)$ ensures $E_{\text{kiln}}(0) = 0$ identically ($< 10^{-4}$ for Paleolithic foraging bands with $k_{\text{pc}} \approx 3\text{ kg/cap}$) and smoothly approaches $1.0$ as refractory furnace capital accumulates, with zero `if-then-else` cutoffs.
+* **Empirical Validation Grounding**:
+  * Radivojević et al. (2010); Tylecote (1992); Malandra (1990); USGS MRDS.
+
+---
+
+### Entry 21: Shannon-Brillouin Physical Carrier Bandwidth & Linguistic Homogenization
+* **Subsystem**: `InformationEntropyEngine.java`
+* **Canonical Literature**:
+  * Shannon, C. E. (1948). *A Mathematical Theory of Communication*. Bell System Technical Journal, 27(3), 379–423.
+  * Brillouin, L. (1956). *Science and Information Theory*. Academic Press.
+  * Tainter, J. A. (1988). *The Collapse of Complex Societies*. Cambridge University Press.
+* **Canonical Published Value**:
+  * Acoustic/oral courier bandwidth ($\sim 1\text{ Hz}$) scales continuously with physical print/postal infrastructure ($k_{\text{pc}}$) and electromagnetic signal power ($p_{\text{exo}}$).
+* **Calibrated Ether Formulation (Novel Biophysical Formalization)**:
+  $$B_{\text{carrier}}(k_{\text{pc}}, p) = B_0 + \alpha_k \cdot k_{\text{pc}} + \alpha_p \cdot p_{\text{exo}}^2 \quad [\text{Hz}]$$
+  $$C = B_{\text{carrier}}(k_{\text{pc}}, p) \cdot \log_2\!\left(1 + \frac{10.0}{\text{Friction}}\right) \quad [\text{bits/s}], \qquad \Delta D_{\text{drift}} = -0.015 \cdot \frac{C}{C + C_{1/2}}$$
+  with $B_0 = 1.0\text{ Hz}$, $\alpha_k = 0.05\text{ Hz}\cdot\text{cap/kg}$, $\alpha_p = 0.002\text{ Hz}/(\text{W/cap})^2$, and $C_{1/2} = 100.0\text{ bits/s}$.
+* **Root Cause & Justification**:
+  * Replaces discrete media thresholds and `if (capacity > 100)` branches with a single continuous polynomial carrier bandwidth law coupled to Shannon-Hartley channel capacity $C$ and Michaelis-Menten linguistic homogenization $C / (C + C_{1/2})$.
+* **Empirical Validation Grounding**:
+  * Shannon (1948); Brillouin (1956); Buringh & van Zanden (2009); Seshat Global History Databank.
 
 ---
 
@@ -334,19 +441,24 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 
 | # | Calibrated Subsystem | Academic Author(s) | Original Domain | Ether Calibrated Domain | Root Cause of Divergence |
 |---|---|---|---|---|---|
-| 1 | Infant Mortality ($q_5$) | Omran (1971), Preston (1975) | National historical time series | Cellular continuous $T \in [0, 10]$ | Elimination of unphysical capital-based pathogen suppression |
+| 1 | Infant Mortality ($q_5$) | Omran (1971), Preston (1975) | National historical time series | Cellular $k_{\text{pc}}$ ($\text{kg/cap}$) | Elimination of unphysical pre-sanitation pathogen suppression |
 | 2 | Political Stress Index ($\Psi$) | Turchin (2016), Goldstone (1991) | Lumped dimensionless ratio | Spatial tensor aggregation $[0, 100]$ | Normalization of integrative empire baseline ($\Psi \sim 45-52$) |
 | 3 | Megafauna Extinction | Sandom et al. (2014), Barnosky (2004) | Continental fossil bone beds | Continuous deep-time $t_{\text{kya}}$ | Universal logistic centered at LGM ($20\,\text{kya}$) with hunting coupling |
-| 4 | Capital Steady-State | Solow (1956), Krausmann (2017) | Macro aggregate equilibrium | Local H3 cell capital turnover | Elimination of artificial compound growth drift at steady state |
-| 5 | Primary Energy Exergy | Smil (2017), White (1943) | National historical statistics | Global continuous mean $T$ | Coupling prime-mover power strictly to metallic capital and fossil availability |
-| 6 | Urban Nucleation | Bairoch (1988), de Vries (1984) | Discrete city census $\ge 5000$ | Cellular H3 resolution | Decoupling agrarian clustering from factory prime movers |
-| 7 | Multi-Epoch Literacy | Buringh & van Zanden (2009) | European book & notary records | Global continuous $T$ and $I_{\text{eff}}$ | Two-stage scribal ($6.5\%$) vs mass schooling ($40.8\%$) decomposition |
+| 4 | Capital Steady-State | Solow (1956), Krausmann (2017) | Macro aggregate equilibrium | Local H3 cell capital turnover | Coupling steady-state material stock $k^*$ strictly to power flux $P$ |
+| 5 | Primary Energy Exergy | Smil (2017), White (1943) | National historical statistics | Physical $k_{\text{pc}}$ & coal stock | Coupling prime-mover power strictly to metallic capital and fossil availability |
+| 6 | Urban Nucleation | Bairoch (1988), de Vries (1984) | Discrete city census $\ge 5000$ | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Decoupling agrarian clustering from factory prime movers |
+| 7 | Multi-Epoch Literacy | Buringh & van Zanden (2009) | European book & notary records | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Multi-stage scribal ($6.5\%$) vs mass schooling ($40.8\%$) decomposition |
 | 8 | Groundwater Withdrawal | Wada et al. (2010), FAO AQUASTAT | National annual volume ($m^3$) | Cellular areal depth ($mm/\Delta t$) | Dimensional consistency dividing population by cell surface area |
-| 9 | Structural Metallurgy | Malandra (1990), USGS (2023) | Regional archaeological finds | Global continuous $T$ | Multi-stage bloomery, coke, and Bessemer steel scaling |
-| 10 | Gross World Product (GWP) | Maddison (2007), Bolt & van Zanden (2020) | National macro Geary-Khamis | Contiguous cellular aggregation | Malthusian subsistence floor vs industrial capital deepening |
-| 11 | Information Travel Speed | Scheidel (2014) ORBIS, Standage (1998) | Historical route measurements | Continuous transport network | Separation of physical locomotion from electromagnetic propagation |
-| 12 | Shipping Freight Cost | Harley (1988), Williamson (2004) | Historical freight indices | Continuous technological scalar $T$ | Smooth progressive reduction from archaic baseline to steamships |
-| 13 | Garrett-Lotka Emergent Index | Garrett (2011), Lotka (1922) | Thermodynamic civilizational theory | Continuous H3 state observables | Normalization of physical capital ($120\text{ kg}$) and power ($250\text{ W}$) |
-| 14 | Topsoil Erosion Loss | Montgomery (2007), Williams (2003) | Geomorphic field studies | Analytical closed-form catalog | Universal smooth sigmoids for ard/plow plowing ($T \ge 0.92$) |
-| 15 | Sovereign Debt Burden | Reinhart & Rogoff (2009), Dickson (1967) | Historical sovereign finance | Analytical closed-form catalog | Separation of pre-modern patrimonial borrowing and funded public debt |
-| 16 | Global Trade Volume | Federico & Tena-Junguito (2017) | Global trade indices | Analytical closed-form catalog | Tripartite scaling: overland Silk Road, oceanic sail, and steam shipping |
+| 9 | Structural Metallurgy | Malandra (1990), USGS (2023) | Regional archaeological finds | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Multi-stage bloomery, coke, and Bessemer steel scaling |
+| 10 | Gross World Product (GWP) | Maddison (2007), Bolt & van Zanden (2020) | National macro Geary-Khamis | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Malthusian subsistence floor vs industrial capital deepening |
+| 11 | Information Travel Speed | Scheidel (2014) ORBIS, Standage (1998) | Historical route measurements | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Separation of physical locomotion from electromagnetic propagation |
+| 12 | Shipping Freight Cost | Harley (1988), Williamson (2004) | Historical freight indices | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Smooth progressive reduction from archaic baseline to steamships |
+| 13 | Garrett-Lotka Exergy Index | Garrett (2011), Lotka (1922) | Thermodynamic civilizational theory | Continuous H3 state $(p, k_{\text{pc}})$ | Normalization of physical capital ($120\text{ kg}$) and power ($250\text{ W}$) |
+| 14 | Topsoil Erosion Loss | Montgomery (2007), Williams (2003) | Geomorphic field studies | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Universal smooth sigmoids for ard/plow plowing ($\Phi_{\text{exergy}} \ge 0.92$) |
+| 15 | Sovereign Debt Burden | Reinhart & Rogoff (2009), Dickson (1967) | Historical fiscal archives | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Patrimonial emergency borrowing vs modern funded institutional credit |
+| 16 | Global Trade Volume | Federico & Tena-Junguito (2017) | Historical trade statistics | Exergy-Capital Index $\Phi_{\text{exergy}}$ | Regional cabotage vs oceanic caravels and compound steamships |
+| 17 | Combinatorial Capital ($dK/dt$) | Arthur (2009), Kremer (1993) | Abstract discrete module space | Physical tooling stock $k_{\text{pc}}$ ($\text{kg/cap}$) | Embodiment of recombinant innovation in conserved material capital |
+| 18 | Biophysical Stratification ($G^*$) | Lenski (1966), Milanovic et al. (2011) | Discrete sociological stages | Continuous $C^1$ function of $k_{\text{pc}}$ | Grounding Inequality Possibility Frontier in storable physical surplus |
+| 19 | Exergy Transducer ($\eta_{\text{exergy}}$) | Ayres & Warr (2005), Kümmel (2011) | Empirical national time series | Continuous function of $k_{\text{pc}}$ | Carnot/second-law conversion efficiency driven by machinery mass |
+| 20 | Chalcolithic Smelting Gate | Hotelling (1931), Radivojević (2010) | $t \ge 0$ resource economics | Fermi-Dirac kiln gate $k_{\text{pc}} \ge 25\text{ kg}$ | Enforcement of Pleistocene zero-smelting invariant without date hacks |
+| 21 | Carrier Bandwidth ($B_{\text{carrier}}$) | Shannon (1948), Brillouin (1956) | Channel capacity theory | Physical function of $(k_{\text{pc}}, p)$ | Grounding administrative coordination limits in physical media |

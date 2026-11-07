@@ -67,9 +67,10 @@ public class MaritimeHighwayEngine {
                 // scaled by integration step dtYears and bounded by Solow maritime capital saturation
                 double currentCap = cell.getResourceCapitalOr(0.0);
                 int pop = cell.getPopulationOr(1);
-                double tech = cell.getTechnologyLevelOr(1.5);
                 double capPerCapita = currentCap / Math.max(1.0, (double) pop);
-                double maritimeEquilibriumCap = 65.0 * Math.pow(Math.max(1.0, tech), 1.6);
+                double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
+                double propulsionFactor = 1.0 + Math.log10(1.0 + Math.max(0.0, powerW - 300.0) / 150.0);
+                double maritimeEquilibriumCap = 120.0 * Math.pow(propulsionFactor, 2.0);
                 double saturation = Math.clamp(1.0 - (capPerCapita / maritimeEquilibriumCap), 0.02, 1.0);
                 double dtYears = Math.clamp(timeStepDays / 365.25, 0.002, 1.0);
                 cell.setResourceCapital(currentCap * (1.0 + capitalBoostRate * dtYears * saturation));

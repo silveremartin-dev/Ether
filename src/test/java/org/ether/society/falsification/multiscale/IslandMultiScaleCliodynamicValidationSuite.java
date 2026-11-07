@@ -98,7 +98,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
 
                 // Strict sanity assertions per tick
                 assertFalse(Double.isNaN(buffer.getBiomassHuman()[i]), "NaN Pop at year " + year);
-                assertFalse(Double.isNaN(buffer.getTechnologyLevel()[i]), "NaN Tech at year " + year);
+                assertFalse(Double.isNaN(buffer.computeEmergentTechnologyDiagnostic(i)), "NaN Tech at year " + year);
                 assertTrue(buffer.getBiomassHuman()[i] >= 0.0, "Negative Pop at year " + year);
                 assertTrue(buffer.getWaterResource()[i] >= 0.0, "Negative Water at year " + year);
                 assertTrue(buffer.getFoodResource()[i] >= 0.0, "Negative Food at year " + year);
@@ -264,7 +264,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         double techWith = 0.0;
         for (int i = 0; i < engineWith.getWorldBuffer().getCapacity(); i++) {
             popWith += engineWith.getWorldBuffer().getBiomassHuman()[i];
-            techWith += engineWith.getWorldBuffer().getTechnologyLevel()[i];
+            techWith += engineWith.getWorldBuffer().computeEmergentTechnologyDiagnostic(i);
         }
         techWith /= engineWith.getWorldBuffer().getCapacity();
 
@@ -272,7 +272,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         double techWithout = 0.0;
         for (int i = 0; i < engineWithout.getWorldBuffer().getCapacity(); i++) {
             popWithout += engineWithout.getWorldBuffer().getBiomassHuman()[i];
-            techWithout += engineWithout.getWorldBuffer().getTechnologyLevel()[i];
+            techWithout += engineWithout.getWorldBuffer().computeEmergentTechnologyDiagnostic(i);
         }
         techWithout /= engineWithout.getWorldBuffer().getCapacity();
 

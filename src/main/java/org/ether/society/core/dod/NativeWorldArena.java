@@ -60,6 +60,16 @@ public class NativeWorldArena implements AutoCloseable {
         private final MemorySegment storageSeg;
         private final MemorySegment institutionalComplexitySeg;
 
+        // Extended Geological, Pedological & Logistics Rasters (Point 8)
+        private final MemorySegment resourceCoalSeg;
+        private final MemorySegment resourceOilSeg;
+        private final MemorySegment resourceGasSeg;
+        private final MemorySegment resourceUraniumSeg;
+        private final MemorySegment freshwaterAquiferSeg;
+        private final MemorySegment soilDepthSeg;
+        private final MemorySegment soilOrganicCarbonSeg;
+        private final MemorySegment commercialFluxVolumeSeg;
+
         // Agent primitive arrays segments
         private final MemorySegment hexIdsSeg;
         private final MemorySegment agentH3Seg;
@@ -115,9 +125,17 @@ public class NativeWorldArena implements AutoCloseable {
             this.localPriceSeg = arena.allocate(cap * Float.BYTES, 64);
             this.storageSeg = arena.allocate(cap * Float.BYTES, 64);
             this.institutionalComplexitySeg = arena.allocate(cap * Float.BYTES, 64);
+            this.resourceCoalSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.resourceOilSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.resourceGasSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.resourceUraniumSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.freshwaterAquiferSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.soilDepthSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.soilOrganicCarbonSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.commercialFluxVolumeSeg = arena.allocate(cap * Float.BYTES, 64);
 
-            // Populate WorldBufferRaw struct in native memory (248 bytes)
-            this.worldStructSeg = arena.allocate(248, 8);
+            // Populate WorldBufferRaw struct in native memory (312 bytes)
+            this.worldStructSeg = arena.allocate(312, 8);
             worldStructSeg.set(ValueLayout.JAVA_LONG, 0, cap);
             worldStructSeg.set(ValueLayout.ADDRESS, 8, h3IndexesSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 16, neighborIndexesSeg);
@@ -149,6 +167,14 @@ public class NativeWorldArena implements AutoCloseable {
             worldStructSeg.set(ValueLayout.ADDRESS, 224, localPriceSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 232, storageSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 240, institutionalComplexitySeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 248, resourceCoalSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 256, resourceOilSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 264, resourceGasSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 272, resourceUraniumSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 280, freshwaterAquiferSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 288, soilDepthSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 296, soilOrganicCarbonSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 304, commercialFluxVolumeSeg);
 
             // Agent Buffer allocation
             long aCap = agentCapacity;
@@ -205,6 +231,14 @@ public class NativeWorldArena implements AutoCloseable {
             if (wb.getInstitutionalComplexity() != null) MemorySegment.copy(wb.getInstitutionalComplexity(), 0, institutionalComplexitySeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getLocalPrice() != null) MemorySegment.copy(wb.getLocalPrice(), 0, localPriceSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getEnergyFoodConsumed() != null) MemorySegment.copy(wb.getEnergyFoodConsumed(), 0, energyFoodConsumedSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getResourceCoal() != null) MemorySegment.copy(wb.getResourceCoal(), 0, resourceCoalSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getResourceOil() != null) MemorySegment.copy(wb.getResourceOil(), 0, resourceOilSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getResourceGas() != null) MemorySegment.copy(wb.getResourceGas(), 0, resourceGasSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getResourceUranium() != null) MemorySegment.copy(wb.getResourceUranium(), 0, resourceUraniumSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getFreshwaterAquifer() != null) MemorySegment.copy(wb.getFreshwaterAquifer(), 0, freshwaterAquiferSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getSoilDepth() != null) MemorySegment.copy(wb.getSoilDepth(), 0, soilDepthSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getSoilOrganicCarbon() != null) MemorySegment.copy(wb.getSoilOrganicCarbon(), 0, soilOrganicCarbonSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getCommercialFluxVolume() != null) MemorySegment.copy(wb.getCommercialFluxVolume(), 0, commercialFluxVolumeSeg, ValueLayout.JAVA_FLOAT, 0, count);
 
             if (wb.getNeighborIndexes() != null) {
                 int[][] nbrs = wb.getNeighborIndexes();
@@ -258,6 +292,7 @@ public class NativeWorldArena implements AutoCloseable {
             if (wb.getInstitutionalComplexity() != null) MemorySegment.copy(institutionalComplexitySeg, ValueLayout.JAVA_FLOAT, 0, wb.getInstitutionalComplexity(), 0, count);
             if (wb.getLocalPrice() != null) MemorySegment.copy(localPriceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getLocalPrice(), 0, count);
             if (wb.getEnergyFoodConsumed() != null) MemorySegment.copy(energyFoodConsumedSeg, ValueLayout.JAVA_FLOAT, 0, wb.getEnergyFoodConsumed(), 0, count);
+            if (wb.getCommercialFluxVolume() != null) MemorySegment.copy(commercialFluxVolumeSeg, ValueLayout.JAVA_FLOAT, 0, wb.getCommercialFluxVolume(), 0, count);
 
             if (ab != null) {
                 int aCount = Math.min(agentCapacity, ab.getCapacity());

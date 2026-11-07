@@ -231,8 +231,8 @@ public class CellTooltip extends VBox {
         double tech = 1.0;
         if (world != null && bufferIndex != null && bufferIndex >= 0 && bufferIndex < world.getCapacity()) {
             tech = world.computeEmergentTechnologyDiagnostic(bufferIndex);
-        } else if (cell != null && cell.getTechnologyLevel() != null) {
-            tech = cell.getTechnologyLevel();
+        } else if (cell != null) {
+            tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell);
         }
         techLabel.setText(String.format("%-14s Niv. %.2f", "Technologie :", tech));
 

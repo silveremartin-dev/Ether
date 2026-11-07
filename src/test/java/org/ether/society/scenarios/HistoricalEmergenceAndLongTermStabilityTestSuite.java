@@ -351,7 +351,7 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
             long totalPop = globalCells.stream().mapToLong(H3Cell::getPopulation).sum();
             long populatedCount = globalCells.stream().filter(c -> c.getPopulation() > 0).count();
             double totalCap = globalCells.stream().mapToDouble(H3Cell::getResourceCapital).sum();
-            double avgTech = globalCells.stream().mapToDouble(H3Cell::getTechnologyLevel).average().orElse(0.0);
+            double avgTech = globalCells.stream().mapToDouble(org.ether.society.database.H3CellPhysicsAndStateHelper::computeEmergentTechnologyDiagnostic).average().orElse(0.0);
             double avgTemp = globalCells.stream().mapToDouble(H3Cell::getTemperature).average().orElse(0.0);
 
             if (t % 5 == 0 || t == 1) {

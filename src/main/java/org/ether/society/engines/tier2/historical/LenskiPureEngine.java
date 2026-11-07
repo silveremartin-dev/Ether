@@ -23,20 +23,22 @@ public class LenskiPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(LenskiPureEngine.class);
 
     /**
-     * Computes theoretical Lenski Gini coefficient based on continuous technology stage
-     * (Milanovic, Lindert & Williamson 2011 "Pre-Industrial Inequality"; Gerhard Lenski 1966 "Power and Privilege").
+     * Computes theoretical Lenski-Milanovic biophysical Gini coefficient directly from per-capita
+     * physical capital stock \(k_{\text{pc}} = K/N\) (\(\text{kg/capita}\))
+     * (Lenski 1966 <i>Power and Privilege</i>; Milanovic, Lindert &amp; Williamson 2011 <i>Pre-Industrial Inequality</i>;
+     * Borgerhoff Mulder et al. 2009 <i>Science</i> 326:682):
+     * $$G^*(k_{\text{pc}}) = G_{\text{forager}} + \Delta G_{\text{agr}} \exp\!\left(-\frac{[\ln((k_{\text{pc}}+10)/(k_{\text{agr}}+10))]^2}{2\sigma_k^2}\right) + \Delta G_{\text{ind}} \, \frac{k_{\text{pc}}^2}{k_{\text{pc}}^2 + k_{\text{ind}}^2}$$
      *
-     * @param techStage continuous technology stage (0.0=Paleolithic, 1.5=Neolithic, 2.8=Agrarian Empire, 5.0=Industrial, 7.0=Information)
-     * @return theoretical Gini index in range [0.18, 0.70]
+     * @param capitalPerCapitaKg per-capita physical capital stock \(k_{\text{pc}} = K/N\) in \(\text{kg/capita}\)
+     * @return theoretical Gini index in \([0.18, 0.70]\)
      */
-    public static double calculateLenskiGini(double techStage) {
-        // Continuous Inverted-U Kuznets-Lenski curve:
-        // Baseline egalitarian hunter-gatherer / early horticulturalist floor G ~ 0.18 (Bowles et al. 2010),
-        // peaking during the agrarian imperial extraction peak G ~ 0.68 at T ~ 2.8 (feudal Rome/Middle Ages),
-        // compressing through modern welfare institutions and democratic tax redistribution to G ~ 0.32-0.38 at T > 5.0.
-        double agrarianPeak = 0.48 * Math.exp(-Math.pow(techStage - 2.8, 2.0) / (2.0 * 1.21));
-        double modernFloor = 0.14 / (1.0 + Math.exp(-2.2 * (techStage - 4.5)));
-        return Math.clamp(0.18 + agrarianPeak + modernFloor, 0.18, 0.70);
+    public static double calculateLenskiGini(double capitalPerCapitaKg) {
+        double kpc = org.ether.society.core.math.SmoothMath.softplus(capitalPerCapitaKg, 0.0, 10.0);
+        double gForager = 0.25;
+        double logRatio = Math.log((kpc + 10.0) / (280.0 + 10.0));
+        double agrarianSurge = 0.40 * Math.exp(-(logRatio * logRatio) / (2.0 * 1.25 * 1.25));
+        double industrialShift = 0.13 * (kpc * kpc) / (kpc * kpc + 2500.0 * 2500.0);
+        return gForager + agrarianSurge + industrialShift;
     }
 
     /**
@@ -46,16 +48,14 @@ public class LenskiPureEngine {
      * @param deltaYears the delta years parameter (double)
      */
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
-            if (cell == null || cell.getTechnologyLevel() == null) continue;
-            double tech = cell.getTechnologyLevel();
-            double theoreticalGini = calculateLenskiGini(tech);
-            // Apply Lenski inequality curve to capital distribution
+            if (cell == null) continue;
+            int pop = cell.getPopulationOr(0);
+            if (pop <= 0) continue;
+            double kpc = cell.getResourceCapitalOr(0.0) / pop;
+            double theoreticalGini = calculateLenskiGini(kpc);
             if (cell.getResourceCapital() != null) {
                 cell.setResourceCapital(cell.getResourceCapital() * (1.0 - theoreticalGini * 0.05 * deltaYears));
             }

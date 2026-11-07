@@ -47,7 +47,7 @@ public class IsruAutarkyAndSpaceColonizationEngine {
             // 1. ISRU Extraction & Transformation Rate
             // Local mineral exploitation efficiency scales with capital intensity
             double capPerCap = capital / pop;
-            double isruEfficiency = SmoothMath.smoothClamp(0.20 + (capPerCap * 0.005), 0.20, 2.50, 0.05);
+            double isruEfficiency = SmoothMath.smoothClamp(0.20 + (capPerCap * 0.005), 0.20, 2.50, 20.0);
             double metalYield = pop * 0.50 * isruEfficiency * dt;
             double capitalGrowth = pop * 2.0 * isruEfficiency * dt;
 

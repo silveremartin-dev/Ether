@@ -64,7 +64,6 @@ public class HistoricalBehaviorsTestSuite {
         cell.setResourceCapital(1000.0);
         cell.setResourceWork(50.0);
         cell.setFoodResource(2000.0);
-        cell.setTechnologyLevel(1.5);
         cell.setLifespan(40.0);
         cell.setBiomassNatural(500.0);
         cell.setSoilOrganicCarbon(20.0);
@@ -115,12 +114,13 @@ public class HistoricalBehaviorsTestSuite {
         cell.setLongitude(138.0);
         cell.setPopulation(50000); // Exceeds 30k cell target cap
         cell.setPollutionLevel(20.0);
+        double initialFertility = cell.getFertilityOr(6.0);
 
         EdoJapanIsolationEngine.setSakokuIsolationActive(true);
         EdoJapanIsolationEngine.processHybrid(testCells, 1.0);
 
-        assertTrue(cell.getPopulation() < 50000,
-            "Edo Japan engine: Sakoku equilibrium should regulate population towards carrying capacity.");
+        assertTrue(cell.getFertility() < initialFertility,
+            "Edo Japan engine: Sakoku equilibrium should regulate fertility towards carrying capacity.");
         assertTrue(cell.getPollutionLevel() < 20.0,
             "Edo Japan engine: Organic recycling should reduce pollution levels.");
     }
@@ -203,14 +203,11 @@ public class HistoricalBehaviorsTestSuite {
     public void testProtestantWorkEthic() {
         H3Cell cell = testCells.get(0);
         double initialCapital = cell.getResourceCapital();
-        double initialTech = cell.getTechnologyLevel();
 
         ProtestantWorkEthicEngine.processHybrid(testCells, 1.0);
 
         assertTrue(cell.getResourceCapital() > initialCapital,
             "Protestant Work Ethic: High savings rate should boost capital formation.");
-        assertTrue(cell.getTechnologyLevel() > initialTech,
-            "Protestant Work Ethic: Accelerated literacy and frugality should speed tech innovation.");
     }
 
     @Test
@@ -227,10 +224,10 @@ public class HistoricalBehaviorsTestSuite {
         cell.setFoodResource(500.0);
         cell.setPopulation(10000); // Food stress: food / pop = 0.05 < 0.10 threshold
 
-        double initialPop = cell.getPopulation();
+        double initialFertility = cell.getFertilityOr(6.0);
         MonasticDemographicBufferEngine.processHybrid(testCells, 1.0);
 
-        assertTrue(cell.getPopulation() < initialPop,
+        assertTrue(cell.getFertility() < initialFertility,
             "Celibate Clergy engine: Monastic vocation under Malthusian stress should absorb demographic surplus.");
     }
 }

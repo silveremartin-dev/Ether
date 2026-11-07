@@ -12,86 +12,98 @@ import org.ether.society.core.math.SmoothMath;
  * Uses flat primitive arrays (AOSOA pattern) for GPU compatibility.
  */
 public class WorldBuffer {
-    /** Internal state: capacity (int). */
+    /** Number of allocated hexagonal cells in this contiguous buffer. */
     private final int capacity;
     
-    // Mapping
-    /** Internal state: h3indexes (long[]). */
+    /** Uber H3 64-bit spatial index for each cell slot. */
     private final long[] h3Indexes;
-    private final int[][] neighborIndexes; // [capacity][6] for GPU adjacency
+    /** Precomputed Ring-1 topological neighbor slot indices {@code [capacity][6]} for \(O(1)\) stencil operations. */
+    private final int[][] neighborIndexes;
     
-    // Terrain & Climate (32-bit floats for GPU)
-    /** Internal state: elevation (float[]). */
+    /** Mean surface elevation relative to Mean Sea Level (\(\text{m}\)). */
     private final float[] elevation;
-    /** Internal state: temperature (float[]). */
+    /** Mean surface air temperature (\(^\circ\text{C}\)). */
     private final float[] temperature;
-    /** Internal state: rainfall (float[]). */
+    /** Annual precipitation depth (\(\text{mm/yr}\)). */
     private final float[] rainfall;
-    private final byte[] biomes; // Store as ordinal for space
+    /** Discrete biome classification ordinal ({@link Biome}). */
+    private final byte[] biomes;
     
-    // Resources (Basic)
-    /** Internal state: food resource (float[]). */
+    /** Available caloric food stockpile (\(\text{GJ}\)). */
     private final float[] foodResource;
-    /** Internal state: water resource (float[]). */
+    /** Available potable and irrigation water volume (\(10^3\,\text{m}^3\)). */
     private final float[] waterResource;
-    /** Internal state: wood resource (float[]). */
+    /** Available forestry timber and fuelwood stock (\(\text{t}\)). */
     private final float[] woodResource;
-    /** Internal state: metal resource (float[]). */
+    /** Extractable metalliferous ore reserve (\(\text{t}\)). */
     private final float[] metalResource;
-    /** Internal state: clay resource (float[]). */
+    /** Extractable ceramic/silicate clay reserve (\(\text{t}\)). */
     private final float[] clayResource;
     
-    // Biomass (Detailed)
-    /** Internal state: biomass human (float[]). */
+    /** Extractable fossil coal deposit reserve (\(\text{t}\)). */
+    private final float[] resourceCoal;
+    /** Extractable crude petroleum/hydrocarbon reserve (\(\text{t}\)). */
+    private final float[] resourceOil;
+    /** Extractable natural gas reserve (\(10^3\,\text{m}^3\)). */
+    private final float[] resourceGas;
+    /** Extractable fissile uranium/thorium ore reserve (\(\text{t}\)). */
+    private final float[] resourceUranium;
+    /** Deep groundwater table aquifer storage capacity and volume (\(10^3\,\text{m}^3\)). */
+    private final float[] freshwaterAquifer;
+    /** Total topsoil depth (\(\text{m}\)). */
+    private final float[] soilDepth;
+    /** Soil organic carbon stock (\(\text{t/ha}\)). */
+    private final float[] soilOrganicCarbon;
+    /** Commercial logistics transport flux throughput volume (\(\text{t/yr}\) or \(\text{GJ/yr}\)). */
+    private final float[] commercialFluxVolume;
+    
+    /** Living human somatic biomass stock (\(\text{t}\)). */
     private final float[] biomassHuman;
-    /** Internal state: biomass livestock (float[]). */
+    /** Domesticated livestock and draft animal biomass stock (\(\text{t}\)). */
     private final float[] biomassLivestock;
-    /** Internal state: biomass fish (float[]). */
+    /** Marine and freshwater ichthyological biomass stock (\(\text{t}\)). */
     private final float[] biomassFish;
-    /** Internal state: biomass agriculture (float[]). */
+    /** Cultivated crop standing agricultural biomass stock (\(\text{t}\)). */
     private final float[] biomassAgriculture;
-    /** Internal state: biomass natural (float[]). */
+    /** Wild uncultivated flora and fauna standing biomass stock (\(\text{t}\)). */
     private final float[] biomassNatural;
     
-    // Energy (Detailed)
-    /** Internal state: energy wind (float[]). */
+    /** Captured aeolian mechanical/electrical energy (\(\text{GJ/yr}\)). */
     private final float[] energyWind;
-    /** Internal state: energy solar (float[]). */
+    /** Captured radiative solar energy (\(\text{GJ/yr}\)). */
     private final float[] energySolar;
-    /** Internal state: energy fire (float[]). */
+    /** Thermal combustion energy from biomass and fossil fuels (\(\text{GJ/yr}\)). */
     private final float[] energyFire;
-    /** Internal state: energy slaves (float[]). */
+    /** Coerced human somatic labor work flux (\(\text{GJ/yr}\)). */
     private final float[] energySlaves;
-    /** Internal state: energy food consumed (float[]). */
+    /** Endosomatic metabolic caloric energy consumed by the population (\(\text{GJ/yr}\)). */
     private final float[] energyFoodConsumed;
     
-    // Socio-Economic Indices
-    /** Internal state: lifespan (float[]). */
+    /** Cohort life expectancy at birth \(e_0\) (\(\text{years}\)). */
     private final float[] lifespan;
-    /** Internal state: fertility (float[]). */
+    /** Total fertility rate (\(\text{births/woman}\)). */
     private final float[] fertility;
-    /** Internal state: gini index (float[]). */
+    /** Lorenz wealth and caloric distribution Gini coefficient \(\in [0, 1]\). */
     private final float[] giniIndex;
-    /** Internal state: technology level (float[]). */
-    private final float[] technologyLevel;
-    /** Internal state: resource capital (float[]). */
+    /** Accumulated physical built capital stock \(K\) (\(\text{kg}\)). */
     private final float[] resourceCapital;
     
-    // Logistics
-    /** Internal state: flux pressure (float[]). */
+    /** Finite-volume thermodynamic migration and logistics pressure gradient. */
     private final float[] fluxPressure;
-    /** Internal state: local price (float[]). */
+    /** Local commodity clearing price index. */
     private final float[] localPrice;
-    private final float[] storage;                 // Neolithic storage (granaries)
-    private final float[] institutionalComplexity; // Tainter's complexity index
+    /** Granary and silo preservation storage capacity (\(\text{GJ}\)). */
+    private final float[] storage;
+    /** Tainter administrative and institutional complexity index \(\in [0, 1]\). */
+    private final float[] institutionalComplexity;
 
     /** Allometric organism profile governing metabolic scaling across cells. */
     private org.ether.society.model.OrganismBiophysicalProfile organismProfile = org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS;
 
     /**
-     * World buffer.
+     * Allocates a contiguous Structure-of-Arrays (SoA) world buffer for {@code capacity} hexagonal cells.
      *
-     * @param capacity the capacity parameter (int)
+     * @param capacity total number of H3 cells to allocate
      */
     public WorldBuffer(int capacity) {
         this.capacity = capacity;
@@ -107,6 +119,14 @@ public class WorldBuffer {
         this.woodResource = new float[capacity];
         this.metalResource = new float[capacity];
         this.clayResource = new float[capacity];
+        this.resourceCoal = new float[capacity];
+        this.resourceOil = new float[capacity];
+        this.resourceGas = new float[capacity];
+        this.resourceUranium = new float[capacity];
+        this.freshwaterAquifer = new float[capacity];
+        this.soilDepth = new float[capacity];
+        this.soilOrganicCarbon = new float[capacity];
+        this.commercialFluxVolume = new float[capacity];
         
         this.biomassHuman = new float[capacity];
         this.biomassLivestock = new float[capacity];
@@ -123,7 +143,6 @@ public class WorldBuffer {
         this.lifespan = new float[capacity];
         this.fertility = new float[capacity];
         this.giniIndex = new float[capacity];
-        this.technologyLevel = new float[capacity];
         this.resourceCapital = new float[capacity];
         
         this.fluxPressure = new float[capacity];
@@ -220,13 +239,6 @@ public class WorldBuffer {
     /** @return Lorenz curve economic Gini inequality coefficient [0.0..1.0] */
     public float[] getGiniIndex() { return giniIndex; }
 
-    /**
-     * Retrieves the legacy technology level buffer array.
-     *
-     * @return raw float array representing technology levels for backwards compatibility
-     */
-    public float[] getTechnologyLevel() { return technologyLevel; }
-
     /** @return gross physical built structural capital stock in physical units (K) */
     public float[] getResourceCapital() { return resourceCapital; }
 
@@ -293,15 +305,14 @@ public class WorldBuffer {
      */
     public float computeEmergentTechnologyDiagnostic(int index) {
         if (index < 0 || index >= capacity) return 0.0f;
-        if (technologyLevel != null && technologyLevel[index] > 0.0f) {
-            return technologyLevel[index];
-        }
         float pop = biomassHuman[index];
-        if (pop <= 0.001f) return 0.0f;
-        double powerW = computeCellPowerWattsPerCapita(index);
-        double kpc = Math.max(0.0, resourceCapital[index] / pop);
-        return (float) org.ether.society.database.H3CellPhysicsAndStateHelper.computeGarrettLotkaEmergentIndex(
-                powerW, kpc, organismProfile.basalMetabolicPowerWatts());
+        if (pop > 0.001f) {
+            double powerW = computeCellPowerWattsPerCapita(index);
+            double kpc = Math.max(0.0, resourceCapital[index] / pop);
+            return (float) org.ether.society.database.H3CellPhysicsAndStateHelper.computeGarrettLotkaEmergentIndex(
+                    powerW, kpc, organismProfile.basalMetabolicPowerWatts());
+        }
+        return 0.0f;
     }
 
     /**
@@ -455,7 +466,6 @@ public class WorldBuffer {
                 this.lifespan[index],
                 this.fertility[index],
                 this.giniIndex[index],
-                this.technologyLevel[index],
                 1
         );
     }
@@ -471,7 +481,6 @@ public class WorldBuffer {
         this.lifespan[index] = (float) state.lifespan();
         this.fertility[index] = (float) state.fertility();
         this.giniIndex[index] = (float) state.giniIndex();
-        this.technologyLevel[index] = (float) state.technologyLevel();
     }
 
     /**
@@ -482,16 +491,16 @@ public class WorldBuffer {
      */
     public MineralState getMineralState(int index) {
         return new MineralState(
-                0.0,
-                0.0,
-                0.0,
-                0.0,
+                this.resourceCoal[index],
+                this.resourceOil[index],
+                this.resourceGas[index],
+                this.resourceUranium[index],
                 this.metalResource[index],
                 0.0,
                 0.0,
                 87.0,
-                0.0,
-                0.0
+                this.freshwaterAquifer[index],
+                this.freshwaterAquifer[index]
         );
     }
 
@@ -503,6 +512,28 @@ public class WorldBuffer {
      */
     public void setMineralState(int index, MineralState state) {
         if (state == null) return;
+        this.resourceCoal[index] = (float) state.resourceCoal();
+        this.resourceOil[index] = (float) state.resourceOil();
+        this.resourceGas[index] = (float) state.resourceGas();
+        this.resourceUranium[index] = (float) state.resourceUranium();
         this.metalResource[index] = (float) state.resourceMetal();
+        this.freshwaterAquifer[index] = (float) state.freshwaterAquifer();
     }
+
+    /** @return extractable coal reserve array */
+    public float[] getResourceCoal() { return resourceCoal; }
+    /** @return extractable petroleum reserve array */
+    public float[] getResourceOil() { return resourceOil; }
+    /** @return extractable natural gas reserve array */
+    public float[] getResourceGas() { return resourceGas; }
+    /** @return extractable uranium reserve array */
+    public float[] getResourceUranium() { return resourceUranium; }
+    /** @return freshwater aquifer storage array */
+    public float[] getFreshwaterAquifer() { return freshwaterAquifer; }
+    /** @return topsoil depth array */
+    public float[] getSoilDepth() { return soilDepth; }
+    /** @return soil organic carbon array */
+    public float[] getSoilOrganicCarbon() { return soilOrganicCarbon; }
+    /** @return commercial logistics flux volume array */
+    public float[] getCommercialFluxVolume() { return commercialFluxVolume; }
 }

@@ -25,43 +25,41 @@ import java.util.TreeMap;
 public class SimulationRunRecord {
 
     public static class MetricSnapshot {
-        /** Internal state: population (long). */
+        /** Total living human population count across the active domain. */
         private final long population;
-        /** Internal state: food (double). */
+        /** Per-capita caloric food availability (\(\text{kcal/day}\) or \(\text{GJ}\)). */
         private final double food;
-        /** Internal state: avg tech (double). */
+        /** Read-only Garrett-Lotka emergent exergy-capital diagnostic \(\Phi_{\text{exergy}}(p, k_{\text{pc}})\). */
         private final double avgTech;
-        /** Internal state: stability (double). */
+        /** Mean institutional and social cohesion stability score \(\in [0, 100]\). */
         private final double stability;
-        /** Internal state: populated cell count (int). */
+        /** Number of inhabited H3 cells (\(N_i > 0\)). */
         private final int populatedCellCount;
-        /** Internal state: map (final). */
+        /** Full key-value dictionary of recorded physical and cliodynamic telemetry indicators. */
         private final Map<String, Double> metricsMap;
 
         /**
-         * Metric snapshot.
+         * Constructs a telemetry snapshot with core physical aggregates.
          *
-         * @param population the population parameter (long)
-         * @param food the food parameter (double)
-         * @param avgTech the avg tech parameter (double)
-         * @param stability the stability parameter (double)
-         * @param populatedCellCount the populated cell count parameter (int)
-         * @return the resulting computation or state reference
+         * @param population         total human population \(N\)
+         * @param food               food availability per capita
+         * @param avgTech            emergent Garrett-Lotka exergy-capital index \(\Phi_{\text{exergy}}\)
+         * @param stability          institutional stability score \(\in [0, 100]\)
+         * @param populatedCellCount number of inhabited cells
          */
         public MetricSnapshot(long population, double food, double avgTech, double stability, int populatedCellCount) {
             this(population, food, avgTech, stability, populatedCellCount, null);
         }
 
         /**
-         * Metric snapshot.
+         * Constructs a telemetry snapshot with core physical aggregates and an extended indicator map.
          *
-         * @param population the population parameter (long)
-         * @param food the food parameter (double)
-         * @param avgTech the avg tech parameter (double)
-         * @param stability the stability parameter (double)
-         * @param populatedCellCount the populated cell count parameter (int)
-         * @param metricsMap the metrics map parameter (Double&gt;)
-         * @return the resulting computation or state reference
+         * @param population         total human population \(N\)
+         * @param food               food availability per capita
+         * @param avgTech            emergent Garrett-Lotka exergy-capital index \(\Phi_{\text{exergy}}\)
+         * @param stability          institutional stability score \(\in [0, 100]\)
+         * @param populatedCellCount number of inhabited cells
+         * @param metricsMap         extended map of telemetry variables
          */
         public MetricSnapshot(long population, double food, double avgTech, double stability, int populatedCellCount, Map<String, Double> metricsMap) {
             this.population = population;
@@ -79,48 +77,24 @@ public class SimulationRunRecord {
             this.metricsMap.putIfAbsent("populatedCellCount", (double) populatedCellCount);
         }
 
-        /**
-         * Get population.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return total living human population \(N\) */
         public long getPopulation() { return population; }
-        /**
-         * Get food.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return caloric food availability */
         public double getFood() { return food; }
-        /**
-         * Get avg tech.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return read-only Garrett-Lotka emergent exergy-capital diagnostic \(\Phi_{\text{exergy}}\) */
         public double getAvgTech() { return avgTech; }
-        /**
-         * Get stability.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return institutional stability score \(\in [0, 100]\) */
         public double getStability() { return stability; }
-        /**
-         * Get populated cell count.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return count of inhabited H3 cells */
         public int getPopulatedCellCount() { return populatedCellCount; }
-        /**
-         * Get metrics map.
-         *
-         * @return the resulting computation or state reference
-         */
+        /** @return unmodifiable view of all recorded telemetry indicators */
         public Map<String, Double> getMetricsMap() { return Collections.unmodifiableMap(metricsMap); }
 
         /**
-         * Get value.
+         * Retrieves a recorded metric value by canonical identifier or descriptor key.
          *
-         * @param key the key parameter (String)
-         * @return the resulting computation or state reference
+         * @param key canonical metric identifier or display label
+         * @return recorded metric value, or {@code 0.0} if absent
          */
         public double getValue(String key) {
             if (key == null) return (double) population;
@@ -151,6 +125,9 @@ public class SimulationRunRecord {
     /** Internal state: map (final). */
     private final Map<String, String> parameterMatrix;
     private final TreeMap<Integer, MetricSnapshot> timeSeriesData;
+
+    /** Maximum number of full 2D spatial cell snapshots retained in JVM heap memory. */
+    public static final int MAX_SPATIAL_SNAPSHOTS_IN_MEMORY = 16;
 
     private final TreeMap<Integer, List<org.ether.society.database.H3Cell>> spatialSnapshots = new TreeMap<>();
 
@@ -194,18 +171,36 @@ public class SimulationRunRecord {
     }
 
     /**
-     * Add spatial snapshot.
+     * Add spatial snapshot with bounded in-memory eviction policy to prevent JVM heap exhaustion.
+     * Preserves the initial baseline ($t = t_0$) and the most recent milestones.
      *
-     * @param year the year parameter (int)
-     * @param cells the cells parameter (List&lt;org.ether.society.database.H3Cell&gt;)
+     * @param year simulation calendar year
+     * @param cells cell collection to capture
      */
     public void addSpatialSnapshot(int year, List<org.ether.society.database.H3Cell> cells) {
         if (cells != null && !cells.isEmpty()) {
+            if (spatialSnapshots.size() >= MAX_SPATIAL_SNAPSHOTS_IN_MEMORY && !spatialSnapshots.containsKey(year)) {
+                // Keep initial baseline (first key), evict an intermediate milestone to bound RAM consumption
+                Integer firstKey = spatialSnapshots.firstKey();
+                for (Integer key : spatialSnapshots.keySet()) {
+                    if (!key.equals(firstKey)) {
+                        spatialSnapshots.remove(key);
+                        break;
+                    }
+                }
+            }
             List<org.ether.society.database.H3Cell> snapshot = cells.stream()
                 .map(org.ether.society.database.H3Cell::snapshot)
                 .toList();
             spatialSnapshots.put(year, snapshot);
         }
+    }
+
+    /**
+     * Explicitly frees in-memory spatial snapshots to relieve garbage collection pressure.
+     */
+    public void clearSpatialSnapshots() {
+        spatialSnapshots.clear();
     }
 
     /**

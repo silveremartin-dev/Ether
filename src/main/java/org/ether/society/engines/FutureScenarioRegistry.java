@@ -95,14 +95,6 @@ public class FutureScenarioRegistry {
             } else if (preset.id().equals("PEAK_PHOSPHORUS")) {
                 // Phosphate depletion
                 cell.setResourceMetal(5.0); // Depleted mineral ore
-            } else if (preset.id().equals("SOVEREIGN_AI_LEVIATHAN")) {
-                // Automatically register the Sovereign AI plugin
-                ProceduralEngineRegistry.registerPlugin("SovereignAIGovernance",
-                        new SovereignAIGovernanceEngine(SovereignAIGovernanceEngine.GovernanceMode.LEVIATHAN_UNIFIED, 0.9, 50.0, 0.20));
-            } else if (preset.id().equals("SOVEREIGN_AI_MULTIPOLAR")) {
-                // Automatically register Multi-Agent AI plugin
-                ProceduralEngineRegistry.registerPlugin("SovereignAIGovernance",
-                        new SovereignAIGovernanceEngine(SovereignAIGovernanceEngine.GovernanceMode.GEO_POLITICAL_COMPETITION, 0.8, 100.0, 0.25));
             }
         }
     }

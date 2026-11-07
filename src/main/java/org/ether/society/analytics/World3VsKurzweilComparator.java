@@ -85,7 +85,7 @@ public class World3VsKurzweilComparator {
         }
         report.kurzweilPeakPopulation = kurzMaxPop;
         report.kurzweilPeakYear = kurzMaxYear;
-        report.kurzweilTechLevel2050 = kurzCell.getTechnologyLevel() != null ? kurzCell.getTechnologyLevel() : 1.0;
+        report.kurzweilTechLevel2050 = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(kurzCell);
 
         // 3. Baseline Trajectory
         H3Cell baseCell = cloneCell(initialCell);

@@ -90,19 +90,23 @@ public class TopographicChokePointRoutingTest {
         oceanCell.setH3Index(7005L);
         oceanCell.setElevation(-200.0); // Deep ocean cell
         oceanCell.setBiome(Biome.OCEAN);
+        oceanCell.setPopulation(100);
 
-        // Pre-maritime era (techLevel = 1.0)
-        double preMaritimeFriction = oceanCell.calculateMovementFriction(1.0);
+        // Pre-maritime era (low physical capital)
+        oceanCell.setResourceCapital(100.0);
+        double preMaritimeFriction = oceanCell.calculateMovementFriction();
         assertEquals(25.0, preMaritimeFriction, 0.01,
                 "Pre-maritime ocean friction must be an impassable barrier (friction = 25.0).");
 
-        // Emergence of deep-sea navigation (techLevel = 4.0)
-        double postMaritimeFriction = oceanCell.calculateMovementFriction(4.0);
+        // Emergence of deep-sea navigation (high naval capital)
+        oceanCell.setResourceCapital(100.0 * 3000.0);
+        double postMaritimeFriction = oceanCell.calculateMovementFriction();
         assertTrue(postMaritimeFriction < 2.5,
                 "Discovery of navigation must dramatically reduce ocean friction (< 2.5).");
 
-        // Advanced modern maritime shipping (techLevel = 8.0)
-        double modernMaritimeFriction = oceanCell.calculateMovementFriction(8.0);
+        // Advanced modern maritime shipping (containerized shipping capital)
+        oceanCell.setResourceCapital(100.0 * 30000.0);
+        double modernMaritimeFriction = oceanCell.calculateMovementFriction();
         assertTrue(modernMaritimeFriction <= 1.0,
                 "Modern shipping must make ocean transit less costly than terrestrial movement (friction <= 1.0).");
     }

@@ -76,6 +76,25 @@ Ether decouples numerical integration across three discrete physical time scales
   - Tainter organizational complexity maintenance drag & diminishing marginal returns.
   - Long-term historical telemetry validation (RMSE & $R^2$ against Seshat, Maddison, HYDE 3.4).
 
+### 2.1 Sequential Operator Splitting Architecture (Lie-Trotter Scheme) & Error Bounds
+
+To maintain $O(N)$ computational efficiency per tick across the global mesh while coupling heterogeneous physical and socioeconomic processes, Ether solves the coupled partial differential equations through sequential **Lie-Trotter operator splitting**:
+
+$$\frac{\partial \mathbf{u}}{\partial t} = \mathcal{A}_{\text{env}}(\mathbf{u}) + \mathcal{B}_{\text{demog}}(\mathbf{u}) + \mathcal{C}_{\text{flux}}(\mathbf{u}) + \mathcal{D}_{\text{econ}}(\mathbf{u}) + \mathcal{E}_{\text{inst}}(\mathbf{u})$$
+
+The simulation advances the global state vector $\mathbf{u}(t)$ to $\mathbf{u}(t + \Delta t)$ by composing individual fractional-step propagators:
+
+$$\mathbf{u}(t + \Delta t) \approx \exp\left(\Delta t \mathcal{E}_{\text{inst}}\right) \exp\left(\Delta t \mathcal{D}_{\text{econ}}\right) \exp\left(\Delta t \mathcal{C}_{\text{flux}}\right) \exp\left(\Delta t \mathcal{B}_{\text{demog}}\right) \exp\left(\Delta t \mathcal{A}_{\text{env}}\right) \mathbf{u}(t)$$
+
+#### Splitting Error Bound & Lie Bracket Commutators:
+Because the underlying operators do not strictly commute ($[\mathcal{A}_{\text{env}}, \mathcal{B}_{\text{demog}}] \neq 0$, e.g., agricultural yield depends on prior population labor, while demographic survival depends on harvest), sequential splitting introduces a first-order truncation error governed by the Baker-Campbell-Hausdorff (BCH) expansion:
+
+$$\mathcal{E}_{\text{split}}(\Delta t) = \frac{1}{2} (\Delta t)^2 \sum_{i < j} [\mathcal{O}_i, \mathcal{O}_j] + \mathcal{O}\left((\Delta t)^3\right)$$
+
+where $[\mathcal{O}_i, \mathcal{O}_j] = \mathcal{O}_i \mathcal{O}_j - \mathcal{O}_j \mathcal{O}_i$ is the Lie commutator bracket. In Ether:
+1. **Biophysical conservation is strictly maintained**: Mass, energy, and atomic constituents are conserved exactly at each sub-step regardless of operator ordering.
+2. **Numerical stability over multi-millennial runs**: Sub-stepping fast ecological fluxes ($\Delta t_{\text{daily}}$) inside the annual macro-loop bounds the operator commutator norm $\|[\mathcal{A}, \mathcal{B}]\|$, eliminating spurious numerical drift while avoiding the prohibitive $O(N^3)$ cost of monolithic implicit Jacobian solvers.
+
 ---
 
 ## 3. Tier 1 â€” Core Model Physics Specifications (One-by-One)
@@ -617,17 +636,17 @@ Ether decouples numerical integration across three discrete physical time scales
   $$N(r) \propto r^{-D_f}, \quad D_f \in [1.6, 1.9]$$
 - **Complexity**: $O(1)$ per urban cluster.
 
-#### 78. Tasmanian Cultural & Technological Regression (`TasmanianCulturalRegressionEngine`)
+#### 78. Tasmanian Cultural & Tool-Capital Regression (`TasmanianCulturalRegressionEngine`)
 - **Governing Equations**:
-  Joseph Henrich (2004) cumulative cultural transmission loss on demographically isolated habitats:
+  Joseph Henrich (2004, *American Antiquity* 69:197) cumulative cultural transmission loss on demographically isolated habitats, acting on physical tool capital stock $K$:
   $$N_{\text{island}} = \sum_{i \in \text{island}} N_i$$
-  $$\frac{d T}{dt} = \begin{cases} -0.04 \cdot \left(1 - \frac{N_{\text{island}}}{N_c}\right) \cdot \Delta t_{\text{years}} & \text{if } N_{\text{island}} < N_c \text{ and } T > T_{\text{floor}} \\ + \mu_{\text{innov}} \cdot \sqrt{\frac{N_{\text{island}}}{N_c}} \cdot \Delta t_{\text{years}} & \text{if } N_{\text{island}} \ge N_c \end{cases}$$
-  where critical transmission threshold $N_c = 5\,000$ and $T_{\text{floor}} = 1.0$. Below $N_c$, stochastic copying error exceeds rare serendipitous innovation, leading to inter-generational skill atrophy (e.g. bone sewing needles, spearthrowers, marine fishing gear).
+  $$\frac{d K_i}{dt} = \begin{cases} -\delta_{\text{atrophy}} \cdot \left(1 - \frac{N_{\text{island}}}{N_c}\right) \cdot (K_i - K_{\text{somatic}}) \cdot \Delta t_{\text{years}} & \text{if } N_{\text{island}} < N_c \\ + \mu_{\text{innov}} \cdot N_i \cdot \sqrt{\frac{N_{\text{island}}}{N_c}} \cdot \Delta t_{\text{years}} & \text{if } N_{\text{island}} \ge N_c \end{cases}$$
+  where critical cooperative learner network threshold $N_c = 5\,000$ and $K_{\text{somatic}} = k_0 \cdot N_i$ ($k_0 = 3.0\text{ kg/capita}$). Below $N_c$, stochastic copying error exceeds rare serendipitous innovation, leading to inter-generational atrophy of complex composite tooling (bone sewing needles, spearthrowers, pelagic fishing gear).
 - **Complexity**: $O(1)$ per contiguous isolated landmass.
 
 #### 79. Nordhaus DICE Climate-Economy Assessment (`NordhausDiceHybridEngine`, `NordhausDicePureEngine`)
 - **Governing Equations**:
-  $$Y_{\text{net}} = (1 - \Omega(T)) \cdot Y_{\text{gross}}, \quad \Omega(T) = \psi_1 T + \psi_2 T^2$$
+  $$Y_{\text{net}} = (1 - \Omega(\Delta T_{\text{atm}})) \cdot Y_{\text{gross}}, \quad \Omega(\Delta T_{\text{atm}}) = \psi_1 \Delta T_{\text{atm}} + \psi_2 \Delta T_{\text{atm}}^2$$
 - **Complexity**: $O(1)$ per climate region.
 
 #### 80. Kardashev Energy Scale Scaling (`KardashevPureEngine`)
@@ -637,12 +656,13 @@ Ether decouples numerical integration across three discrete physical time scales
 
 #### 81. Leslie White Energy Law (`LeslieWhitePureEngine`)
 - **Governing Equations**:
-  $$C = E \times T_{\text{efficiency}}$$
+  $$C = p_{\text{exo}} \times \eta_{\text{transducer}}(k_{\text{pc}}), \quad \eta_{\text{transducer}}(k_{\text{pc}}) = \eta_0 + (\eta_{\max} - \eta_0)\tanh\!\left(\frac{k_{\text{pc}}}{k_{\text{transducer}}}\right)$$
 - **Complexity**: $O(1)$ per civilizational node.
 
-#### 82. Gerhard Lenski Societal Typology (`LenskiPureEngine`)
+#### 82. Gerhard Lenski Biophysical Stratification Curve (`LenskiPureEngine`)
 - **Governing Equations**:
-  $$\text{SocietalStage} = f(\text{InformationStorage}, \text{EnergyHarnessing})$$
+  $$G^*(k_{\text{pc}}) = G_{\text{forager}} + \Delta G_{\text{agr}} \exp\!\left(-\frac{[\ln((k_{\text{pc}}+10)/(k_{\text{agr}}+10))]^2}{2\sigma_k^2}\right) + \Delta G_{\text{ind}} \, \sigma_{\text{FD}}(k_{\text{pc}};\; k_{\text{ind}}, s_{\text{ind}})$$
+  with $G_{\text{forager}} = 0.25$, $\Delta G_{\text{agr}} = 0.40$, $k_{\text{agr}} = 280\text{ kg/cap}$, $\sigma_k = 1.65$, $\Delta G_{\text{ind}} = 0.13$, $k_{\text{ind}} = 2500\text{ kg/cap}$, $s_{\text{ind}} = 600\text{ kg/cap}$.
 - **Complexity**: $O(1)$ per society.
 
 #### 83. Marvin Harris Cultural Materialism (`CulturalMaterialismPureEngine`)
@@ -655,7 +675,7 @@ Ether decouples numerical integration across three discrete physical time scales
   $$d\mathbf{X}_t = \mathbf{A}(\mathbf{X}_t) dt + \mathbf{\Sigma} d\mathbf{W}_t$$
 - **Complexity**: $O(1)$ per macro-history step.
 
-#### 85. Closed-Loop Archon Sovereign AI Planetary Governance (`AiAutonomousRegulationPureEngine`, `SovereignAIGovernanceEngine`)
+#### 85. Closed-Loop Cybernetic & Sovereign AI Planetary Governance (`AiAutonomousRegulationPureEngine`, `SovereignAIGovernanceEngine`)
 - **Governing Equations**:
   $$\mathbf{u}^*(t) = \arg\min_{\mathbf{u}} \int_t^{t+H} \left( \|\mathbf{x}(\tau) - \mathbf{x}_{\text{safe}}\|^2_Q + \|\mathbf{u}(\tau)\|^2_R \right) d\tau$$
 - **Complexity**: $O(H \cdot (\text{states} + \text{controls}))$.
@@ -716,7 +736,7 @@ Ether decouples numerical integration across three discrete physical time scales
 #### 93. Thermodynamic Warfare, Violence & Structural Demographics (`ThermodynamicWarfareEngine`, `WarDiplomacyEngine`, `TurchinGoldstoneSDTEngine`, `GranovetterThresholdCascadeEngine`)
 - **Governing Equations**:
   - **Kinetic Energy Delivery & Fortification Breaching**:
-    $$P_{\text{kinetic}} = N_{\text{pop}} \cdot \left( 50.0 + \min(T, 150)^{2.2} \cdot 200.0 \right) \quad [\text{Watts}], \quad E_{\text{kinetic}} = P_{\text{kinetic}} \cdot \Delta t$$
+    $$P_{\text{kinetic}} = N_{\text{pop}} \cdot \left( 50.0 + p_{\text{exo}} \cdot \eta_{\text{ordnance}}(k_{\text{pc}}) \right) \quad [\text{Watts}], \quad E_{\text{kinetic}} = P_{\text{kinetic}} \cdot \Delta t$$
     $$\text{Structural Resistance} = \sigma_{\text{yield}} \cdot d_{\text{barrier}} \cdot A_{\text{cross}} \quad (\sigma_{\text{yield}} \in [20, 2000] \text{ MPa, } d = 0.5\text{ m})$$
     Breaching occurs if $P_{\text{kinetic}} > \text{Structural Resistance}$, causing capital destruction $\Delta K = E_{\text{kinetic}} / 10^6 \text{ MJ}$.
   - **Boundary Friction & Geopolitical War Trigger**:
@@ -750,15 +770,15 @@ Ether decouples numerical integration across three discrete physical time scales
   $$\dot{x} = \sigma (y - x), \quad \dot{y} = x (\rho - z) - y, \quad \dot{z} = x y - \beta z$$
 - **Complexity**: $O(1)$ per perturbation node.
 
-#### 97. Tech Tree & Physical Technology Graph Engine (`TechTreeEngine`)
+#### 97. Physical Era Diagnostic & Spatial Capital Diffusion Engine (`TechTreeEngine`)
 - **Governing Equations**:
-  1. **Cumulative Innovation Dynamics (Henrich & Tomasello)**:
-     $$\Delta T_i = \min\left(T_{\text{target}} - T_i, \; \mu_{\text{innov}} \cdot \frac{k_i}{10.0 + k_i} \cdot \sqrt{\frac{N_i}{1000}} \cdot \Delta t_{\text{years}}\right)$$
-     where $k_i = K_i / N_i$ represents physical capital per capita and $N_i$ is active learner population.
-  2. **Inter-Cell & Maritime Trade Corridor Technology Diffusion**:
-     $$\Delta T_{j \leftarrow i} = \kappa_{\text{trade}} \cdot \frac{T_i - T_j}{\max(1.0, 0.1 \cdot \text{Friction}_{ij})} \cdot \Delta t_{\text{years}} \quad (\forall i, j \text{ with active trade link and } T_i > T_j)$$
-  3. **Discrete Tree Prerequisite Enforcement**:
-     $$\text{Unlocked}(T) = \prod_{p \in \text{Prereq}(T)} \mathbb{I}(\text{Completed}(p)) \times \mathbb{I}(\text{CapitalInvested} \ge \text{Cost}(T))$$
+  1. **Bottleneck-Induced Capital Substitution (Boserup-Allen-Acemoglu)**:
+     $$\Delta K_i = N_i \cdot \mu_{\text{sub}} \cdot \left(\Psi_{\text{wood}, i} + \Psi_{\text{soil}, i} + \Psi_{\text{labor}, i}\right) \cdot \Delta t_{\text{years}}$$
+     where bottleneck pressures $\Psi$ activate physical capital deepening in high-wage or resource-stressed cells possessing coal, iron, or hydraulic gradients.
+  2. **Inter-Cell & Maritime Trade Corridor Capital & Tooling Diffusion**:
+     $$\Delta K_{j \leftarrow i} = \kappa_{\text{trade}} \cdot N_j \cdot \frac{\max(0, k_i - k_j)}{\max(1.0, 0.1 \cdot \text{Friction}_{ij})} \cdot \Delta t_{\text{years}} \quad (\forall i, j \text{ with active trade link})$$
+  3. **A Posteriori Physical Era Diagnostic**:
+     $$\text{PhysicalEra}(i) = f\!\left(\frac{P_{\text{watts}, i}}{N_i}, \; \sigma_{\text{yield}, i}\right)$$
 - **Complexity**: $O(\text{populated cells} + \text{active trade routes})$.
 
 #### 98. Spatial Trade Networks & Polycentric Trade Agreements (`TradeNetworkEngine`, `CoGovernanceTradeEngine`)

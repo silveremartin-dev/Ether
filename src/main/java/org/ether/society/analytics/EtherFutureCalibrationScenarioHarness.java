@@ -109,8 +109,6 @@ public final class EtherFutureCalibrationScenarioHarness {
         engines.put("HotellingResourceDepletionEngine", true);             // Optimal non-renewable resource extraction rent
         engines.put("PhysicalLeontiefInputOutputEngine", true);            // Biophysical material balance input-output matrix
         engines.put("DynamicMaritimeRoutingGraph", true);                  // Global container trade choke-points (Suez, Malacca, Panama)
-        engines.put("SovereignAIGovernanceEngine", true);                  // Digital coordination & institutional computation capacity
-        engines.put("TechnologicalSingularityEngine", false);              // Neutral: disabled by default to evaluate biophysical trajectory
 
         // ── 2. FORMALLY REJECTED / FALSIFIED MODELS (STRICTLY DISABLED) ──
         // Model 1: Malthusian Static Subsistence Trap (Falsified by Boserup, Green Revolution, & Technological substitution)
@@ -124,9 +122,7 @@ public final class EtherFutureCalibrationScenarioHarness {
         engines.put("ScottAgainstTheGrainPureEngine", false);
         // Model 5: Pure Geographic Determinism Diamond (Falsified by Acemoglu-Robinson institutional primacy)
         engines.put("DiamondGeographicDeterminismEngine", false);
-        // Model 6: Psychohistory Rigid Determinism (Falsified science-fiction construct)
-        engines.put("PsychohistoryPureEngine", false);
-        // Model 7: Unregulated Hardin Tragedy of Commons (Falsified by Ostrom polycentric institutional arrangements)
+        // Model 6: Unregulated Hardin Tragedy of Commons (Falsified by Ostrom polycentric institutional arrangements)
         engines.put("HardinTragedyOfCommonsEngine", false);
 
         s.setTypeBEngineStates(engines);

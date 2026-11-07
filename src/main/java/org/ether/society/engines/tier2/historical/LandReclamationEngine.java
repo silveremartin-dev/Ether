@@ -57,16 +57,15 @@ public class LandReclamationEngine {
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
-            double tech = cell.getTechnologyLevelOr(0.0);
             double capital = cell.getResourceCapitalOr(0.0);
             boolean isCoastal = Boolean.TRUE.equals(cell.getIsCoastal());
             boolean isPolder = Boolean.TRUE.equals(cell.getIsPolder());
             boolean hasFloating = Boolean.TRUE.equals(cell.getHasFloatingInfrastructure());
             Biome biome = cell.getBiome();
 
-            // 1. Poldérisation check (Coastal water / shallow elevation reclamation)
+            // 1. Poldérisation check (Coastal dike & drainage reclamation governed by physical capital stock)
             if (!isPolder && (isCoastal || biome == Biome.BEACH || (cell.getElevation() != null && cell.getElevation() <= 0))) {
-                if (tech >= polderTechThreshold && capital >= polderCapitalThreshold) {
+                if (capital >= polderCapitalThreshold) {
                     cell.setIsPolder(true);
                     if (biome == Biome.OCEAN || biome == Biome.BEACH) {
                         cell.setBiome(Biome.PLAINS);
@@ -76,11 +75,10 @@ public class LandReclamationEngine {
                 }
             }
 
-            // 2. Deep-sea Seasteading / Floating Infrastructure check
+            // 2. Deep-sea Seasteading / Floating Infrastructure check (governed by marine structural capital stock)
             if (!hasFloating && (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN)) {
-                if (tech >= seasteadingTechThreshold && capital >= seasteadingCapitalThreshold) {
+                if (capital >= seasteadingCapitalThreshold) {
                     cell.setHasFloatingInfrastructure(true);
-                    // Floating energy & water collection bonus bounded by physical insolation
                     double solar = cell.getEnergySolarOr(0.0);
                     cell.setEnergySolar(Math.min(1000.0, solar + 50.0 * dtYears));
                 }

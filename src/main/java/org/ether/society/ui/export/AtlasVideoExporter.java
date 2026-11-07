@@ -384,7 +384,7 @@ public class AtlasVideoExporter {
             case AGE_PYRAMID -> c.getPopElderly() != null && c.getPopulation() != null && c.getPopulation() > 0 ? ((double) c.getPopElderly() / c.getPopulation()) * 100.0 : 15.0;
             case EPIDEMIC -> c.getPollutionLevel() != null ? c.getPollutionLevel() * 0.8 : 0.0;
             case HEALTH_LIFE_EXPECTANCY -> c.getLifespan() != null ? c.getLifespan() : 45.0;
-            case EDUCATION_LEVEL -> c.getTechnologyLevel() != null ? Math.min(100.0, c.getTechnologyLevel() * 12.0) : 10.0;
+            case EDUCATION_LEVEL -> Math.min(100.0, org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) * 12.0);
             case MALTHUSIAN_PRESSURE -> {
                 double food = c.getFoodResource() != null ? c.getFoodResource() : 10.0;
                 double pop = c.getPopulation() != null ? c.getPopulation() : 0.0;
@@ -395,7 +395,7 @@ public class AtlasVideoExporter {
             case WOOD -> c.getWoodResource() != null ? c.getWoodResource() : 100.0;
             case MINERAL_RESOURCES -> c.getResourceMetal() != null ? c.getResourceMetal() : 0.0;
             case MINING_EXPLOITATION -> c.getResourceWork() != null ? c.getResourceWork() : 0.0;
-            case TECHNOLOGY -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+            case TECHNOLOGY -> org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
             case CULTURE -> c.getOwner() != null ? Math.abs(c.getOwner().hashCode() % 100) : 1.0;
             case POLITICAL -> c.getOwner() != null ? 100.0 : 0.0;
             case INEQUALITY -> c.getGiniIndex() != null ? c.getGiniIndex() : 0.35;
@@ -403,14 +403,14 @@ public class AtlasVideoExporter {
             case FLUX -> c.getFluxPressure();
             case HAPPINESS -> c.getLifespan() != null ? Math.clamp(c.getLifespan(), 10.0, 100.0) : 65.0;
             case CONFLICT -> c.getOwner() != null ? 75.0 : 5.0;
-            case INSTITUTIONAL_MATURITY -> c.getTechnologyLevel() != null ? c.getTechnologyLevel() * 10.0 : 5.0;
+            case INSTITUTIONAL_MATURITY -> org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) * 10.0;
             case GDP_WEALTH -> {
                 double pop = c.getPopulation() != null ? c.getPopulation() : 0.0;
-                double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+                double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
                 yield pop * tech * 15.0;
             }
             case ELITE_DENSITY -> c.getOwner() != null ? c.getOwner().getEliteOverproduction() * 100.0 : (c.getGiniIndex() != null ? c.getGiniIndex() * 10.0 : 2.5);
-            case COLLECTIVE_MEMORY -> c.getTechnologyLevel() != null ? Math.pow(c.getTechnologyLevel(), 2.0) * 100.0 : 10.0;
+            case COLLECTIVE_MEMORY -> Math.pow(org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c), 2.0) * 100.0;
             case COLLAPSE_RISK -> {
                 double pop = c.getPopulation() != null ? c.getPopulation() : 0.0;
                 double food = c.getFoodResource() != null ? c.getFoodResource() : 1.0;

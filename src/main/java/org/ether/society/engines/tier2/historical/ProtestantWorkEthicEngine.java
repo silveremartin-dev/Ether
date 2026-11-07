@@ -40,7 +40,7 @@ public class ProtestantWorkEthicEngine {
 
             // Accelerated capital formation via frugal savings (Weber 1905; Becker & Woessmann 2009)
             // Human capital weighting derived continuously from capital per capita
-            double literacyWeight = SmoothMath.smoothClamp(capital / (pop * 2000.0), 0.10, 1.0, 0.05);
+            double literacyWeight = SmoothMath.smoothClamp(capital / (pop * 2000.0), 0.10, 1.0, 10.0);
             double capitalGain = (pop * 0.10 * (1.0 + (capitalSavingsMultiplier - 1.0) * literacyWeight)) * deltaYears;
             cell.setResourceCapital(capital + capitalGain);
         }

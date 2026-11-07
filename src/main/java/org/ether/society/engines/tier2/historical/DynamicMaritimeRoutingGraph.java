@@ -32,7 +32,7 @@ public class DynamicMaritimeRoutingGraph {
 
     // Cache state for dynamic graph invalidation
     /** Internal state: cached avg tech (double). */
-    private static double cachedAvgTech = -1.0;
+    private static double cachedAvgCapital = -1.0;
     /** Internal state: cached node count (int). */
     private static int cachedNodeCount = -1;
     /** Internal state: last recalculation tick (long). */
@@ -66,8 +66,8 @@ public class DynamicMaritimeRoutingGraph {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
-        double currentAvgTech = cells.stream()
-                .mapToDouble(c -> c.getTechnologyLevelOr(0.0))
+        double currentAvgCapital = cells.stream()
+                .mapToDouble(c -> c.getResourceCapitalOr(0.0))
                 .average().orElse(0.0);
 
         int currentNodeCount = (int) cells.stream()
@@ -76,11 +76,11 @@ public class DynamicMaritimeRoutingGraph {
                 .count();
 
         // Trigger recalculation if average tech changes significantly (>0.2) or node topology changes
-        boolean techShift = Math.abs(currentAvgTech - cachedAvgTech) > 0.2;
+        boolean capitalShift = cachedAvgCapital > 0.0 && Math.abs(currentAvgCapital - cachedAvgCapital) / cachedAvgCapital > 0.15;
         boolean topologyShift = Math.abs(currentNodeCount - cachedNodeCount) > 25;
 
-        if (techShift || topologyShift || routingGraph.isEmpty()) {
-            cachedAvgTech = currentAvgTech;
+        if (capitalShift || topologyShift || routingGraph.isEmpty()) {
+            cachedAvgCapital = currentAvgCapital;
             cachedNodeCount = currentNodeCount;
             return true;
         }
@@ -93,7 +93,7 @@ public class DynamicMaritimeRoutingGraph {
      */
     private static void rebuildRoutingGraph(List<H3Cell> cells) {
         logger.info("🌊 Dynamically recalculating Trans-Oceanic Maritime Routing Graph (Avg Tech: {}, Nodes: {})...",
-                String.format("%.2f", cachedAvgTech), cachedNodeCount);
+                String.format("%.1f kg", cachedAvgCapital), cachedNodeCount);
 
         routingGraph.clear();
 
@@ -132,7 +132,7 @@ public class DynamicMaritimeRoutingGraph {
                 double avgCapital = (sCap + tCap) / 2.0;
 
                 double significantWaveHeightMeters = calculateSignificantWaveHeight(midElevation, midLatitude);
-                double fleetWaveClearanceMeters = calculateFleetWaveClearance(avgCapital, cachedAvgTech);
+                double fleetWaveClearanceMeters = calculateFleetWaveClearance(avgCapital);
 
                 // Safe open-water range governed by hydrodynamic wave tolerance ratio (Hs / H_clearance):
                 // If ocean swell (Hs) exceeds hull clearance, open-sea transit causes severe wave drag/capsizing risk,
@@ -149,7 +149,7 @@ public class DynamicMaritimeRoutingGraph {
                 }
 
                 if (distKm <= maxRangeKm) {
-                    double cost = calculateNavigationCost(source, target, distKm, cachedAvgTech, waveOvertoppingRatio);
+                    double cost = calculateNavigationCost(source, target, distKm, avgCapital, waveOvertoppingRatio);
                     neighborCosts.put(target.getH3Index(), cost);
                 }
             }
@@ -195,38 +195,25 @@ public class DynamicMaritimeRoutingGraph {
     /**
      * Calculates vessel fleet hull wave clearance tolerance (in meters) from capital density and technology.
      */
-    public static double calculateFleetWaveClearance(double capitalPerCapita, double techLevel) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        // Physical hull clearance scales with physical capital K (hull displacement, draft, keel stability) and navigation tech:
-        // Primitive coastal rafts/canoes (K ~ 10 kg/hab, tech ~ 1.0) -> clearance ~ 1.2m (restricted to shallow coastal waters Hs <= 1.2m)
-        // Caravels/Galleons (K ~ 150 kg/hab, tech ~ 4.0) -> clearance ~ 4.0m (crosses Atlantic swells Hs <= 4.0m)
-        // Industrial ironclads/super-freighters (K >= 800 kg/hab, tech >= 6.0) -> clearance >= 8.5m (crosses any oceanic sea state)
+    public static double calculateFleetWaveClearance(double capitalPerCapita) {
         double kFactor = Math.max(1.0, capitalPerCapita);
-        double techFactor = Math.max(0.0, techLevel);
-        return 1.0 + (0.8 * Math.log(1.0 + kFactor)) + (0.5 * techFactor);
+        return 1.0 + (1.25 * Math.log10(1.0 + kFactor));
     }
 
     /**
-     * Calculates navigation cost between two maritime nodes based on distance, temperature, ice, tech, and wave risk.
+     * Calculates navigation cost between two maritime nodes based on distance, temperature, ice, hull capital, and wave risk.
      */
-    private static double calculateNavigationCost(H3Cell source, H3Cell target, double distKm, double tech, double waveOvertoppingRatio) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
+    private static double calculateNavigationCost(H3Cell source, H3Cell target, double distKm, double avgCapital, double waveOvertoppingRatio) {
         double avgTemp = ((source.getTemperatureOr(15.0))
                 + (target.getTemperatureOr(15.0))) / 2.0;
 
-        // Base velocity increases logarithmically with technology level (knot speed scaling)
-        double vesselSpeedKmH = 10.0 * (1.0 + Math.log(1.0 + Math.max(0.0, tech)));
+        // Base velocity increases logarithmically with physical hull displacement capital (knot speed scaling)
+        double vesselSpeedKmH = 8.0 + 4.5 * Math.log10(1.0 + Math.max(1.0, avgCapital));
 
-        // Ice drag penalty (thermodynamic water freezing)
-        double iceDragMultiplier = 1.0;
-        if (avgTemp <= 0.0) {
-            // High tech icebreakers mitigate ice drag; primitive ships are severely slowed or stopped
-            iceDragMultiplier = tech >= 6.0 ? 1.5 : 5.0;
-        }
+        // Smooth cryospheric sea-ice drag penalty (thermodynamic water freezing)
+        double iceFormation = 1.0 / (1.0 + Math.exp(2.0 * avgTemp));
+        double icebreakerMitigation = 1.0 / (1.0 + Math.exp(-(avgCapital - 2500.0) / 500.0));
+        double iceDragMultiplier = 1.0 + iceFormation * (4.0 - 3.5 * icebreakerMitigation);
 
         // Hydrodynamic wave energy & swell drag penalty (overtopping hull clearance)
         double waveDragMultiplier = 1.0;
@@ -235,8 +222,7 @@ public class DynamicMaritimeRoutingGraph {
             waveDragMultiplier = Math.pow(waveOvertoppingRatio, 3.0);
         }
 
-        double travelTimeHours = (distKm / vesselSpeedKmH) * iceDragMultiplier * waveDragMultiplier;
-        return travelTimeHours;
+        return (distKm / vesselSpeedKmH) * iceDragMultiplier * waveDragMultiplier;
     }
 
     /**
@@ -305,7 +291,7 @@ public class DynamicMaritimeRoutingGraph {
      */
     public static void clearCache() {
         routingGraph.clear();
-        cachedAvgTech = -1.0;
+        cachedAvgCapital = -1.0;
         cachedNodeCount = -1;
     }
 }

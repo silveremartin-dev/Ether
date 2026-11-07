@@ -128,7 +128,6 @@ public class JavaRustParityAndFalsificationSuiteTest {
         wb.getBiomassNatural()[i] = bioNat;
         wb.getBiomassAgriculture()[i] = bioAgri;
         wb.getResourceCapital()[i] = cap;
-        wb.getTechnologyLevel()[i] = tech;
     }
 
     private void populateAgent(AgentBuffer ab, int i, float mass, float energy, float age, float tech) {
@@ -136,7 +135,6 @@ public class JavaRustParityAndFalsificationSuiteTest {
         ab.getMass()[i] = mass;
         ab.getEnergy()[i] = energy;
         ab.getAge()[i] = age;
-        ab.getTechLevel()[i] = tech;
         for (int d = 0; d < 4; d++) {
             float culVal = 0.4f + (d * 0.15f);
             ab.getCulture()[d][i] = culVal;

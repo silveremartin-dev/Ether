@@ -49,6 +49,16 @@ pub struct WorldBufferRaw {
     pub local_price: *mut c_float,
     pub storage: *mut c_float,
     pub institutional_complexity: *mut c_float,
+
+    // Extended Geological, Pedological & Logistics Rasters (Point 8)
+    pub resource_coal: *mut c_float,
+    pub resource_oil: *mut c_float,
+    pub resource_gas: *mut c_float,
+    pub resource_uranium: *mut c_float,
+    pub freshwater_aquifer: *mut c_float,
+    pub soil_depth: *mut c_float,
+    pub soil_organic_carbon: *mut c_float,
+    pub commercial_flux_volume: *mut c_float,
 }
 
 unsafe impl Send for WorldBufferRaw {}

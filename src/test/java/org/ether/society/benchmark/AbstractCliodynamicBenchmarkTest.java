@@ -96,8 +96,7 @@ public abstract class AbstractCliodynamicBenchmarkTest {
             cell.setWaterResource(2000.0);
             cell.setBiomassNatural(8000.0);
             cell.setBiomassAgriculture(1000.0);
-            cell.setResourceCapital(500.0);
-            cell.setTechnologyLevel(techLevel);
+            cell.setResourceCapital(500.0 * Math.max(0.5, techLevel));
             cell.setPopulation((int) initialPopPerCell);
             cells.add(cell);
         }
@@ -120,7 +119,6 @@ public abstract class AbstractCliodynamicBenchmarkTest {
             buffer.getFoodResource()[i] = c.getFoodResource() != null ? c.getFoodResource().floatValue() : 3000.0f;
             buffer.getResourceCapital()[i] = c.getResourceCapital() != null ? c.getResourceCapital().floatValue() : 200.0f;
             buffer.getGiniIndex()[i] = 0.30f;
-            buffer.getTechnologyLevel()[i] = c.getTechnologyLevel() != null ? c.getTechnologyLevel().floatValue() : 1.5f;
             buffer.getTemperature()[i] = c.getTemperature() != null ? c.getTemperature().floatValue() : 20.0f;
             buffer.getRainfall()[i] = c.getRainfall() != null ? c.getRainfall().floatValue() : 900.0f;
             buffer.getBiomes()[i] = (byte) c.getBiome().ordinal();
@@ -142,7 +140,6 @@ public abstract class AbstractCliodynamicBenchmarkTest {
                 agents.getHexIds()[i] = i;
                 agents.getMass()[i] = pop;
                 agents.getEnergy()[i] = 200.0f;
-                agents.getTechLevel()[i] = world.getTechnologyLevel()[i];
             }
         }
         return agents;

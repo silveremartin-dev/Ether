@@ -39,46 +39,53 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
     public static final double GAMMA_E = 0.50; // Useful exergy elasticity
 
     /**
-     * Get name.
+     * Returns the localized display name of the Kümmel-Ayres-Warr biophysical exergy engine.
      *
-     * @return the resulting computation or state reference
+     * @return localized engine name
      */
     @Override
     public String getName() {
-        return "Kümmel / Ayres-Warr Biophysical Exergy Economics";
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.kummel_ayres.name",
+                "Kümmel / Ayres-Warr Biophysical Exergy Economics");
     }
 
     /**
-     * Get description.
+     * Returns the localized scientific description of the engine.
      *
-     * @return the resulting computation or state reference
+     * @return localized engine description
      */
     @Override
     public String getDescription() {
-        return "Thermodynamic macroeconomic production function Y = A · K^α · L^β · E_useful^γ where useful work/exergy is the prime driver of industrial output.";
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.kummel_ayres.desc",
+                "Thermodynamic macroeconomic production function Y = A · K^α · L^β · E_useful^γ where useful work/exergy is the prime driver of industrial output.");
     }
 
     /**
-     * Get equations tooltip.
+     * Returns the localized mathematical tooltip detailing equations, physical units, and references.
      *
-     * @return the resulting computation or state reference
+     * @return localized equations tooltip
      */
     @Override
     public String getEquationsTooltip() {
-        return """
-               [Kümmel & Ayres-Warr Useful Exergy Production Function]
-               • Output Function:  Y_i = A_i · K_i^0.25 · L_i^0.25 · (E_useful,i)^0.50
-               • Useful Exergy:    E_useful,i = E_primary,i · η_thermodynamic(t)
-               • Constraint:       α + β + γ = 1.0 (Euler Homogeneity)
-               Units: Y [$/an], K [Joules capital matériel], L [heures-homme], E_useful [Joules utiles / Watt-heures]
-               Ref: R. Kümmel (2011) "The Second Law of Economics", Ayres & Warr (2009) "The Economic Growth Engine"
-               """;
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.kummel_ayres.tooltip",
+                """
+                [Kümmel & Ayres-Warr Useful Exergy Production Function]
+                • Output Function:        Y_i = A_i · K_i^0.25 · L_i^0.25 · (E_useful,i)^0.50
+                • Transducer Efficiency:  η_exergy(k_pc) = 0.05 + 0.40 · tanh(k_pc / 2500 kg/cap)
+                • Useful Exergy Flux:     E_useful,i = P_primary,i · η_exergy(k_pc)
+                • Euler Homogeneity:      α + β + γ = 1.0
+                Units: Y [Int$/yr], K [kg physical capital], L [person-hours], E_useful [Watts]
+                Ref: R. Kümmel (2011) "The Second Law of Economics"; Ayres & Warr (2009) "The Economic Growth Engine"
+                """);
     }
 
     /**
-     * Get category.
+     * Returns the engine ontological tier and domain classification.
      *
-     * @return the resulting computation or state reference
+     * @return localized category label
      */
     @Override
     public String getCategory() {
@@ -86,10 +93,10 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
     }
 
     /**
-     * Process.
+     * Integrates thermodynamic useful exergy production and capital formation over \(\Delta t\) years.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param cells      contiguous list of active H3 hexagonal cells
+     * @param deltaYears integration time step \(\Delta t\) in Julian years
      */
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
@@ -110,10 +117,12 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
             double powerPerCapitaWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double totalPrimaryWatts = powerPerCapitaWatts * pop;
 
-            // Thermodynamic conversion efficiency: ranges from 5% (muscular/fire) to 40% (modern thermal cycle)
-            double techLevel = cell.getTechnologyLevelOr(1.0);
-            double etaThermo = Math.min(0.45, 0.05 + 0.05 * Math.log(1.0 + techLevel));
-            double usefulExergy = Math.max(1.0, totalPrimaryWatts * etaThermo);
+            // Thermodynamic conversion efficiency eta_exergy(k_pc) (Ayres & Warr 2005; Kümmel 2011):
+            // Single C^infinity hyperbolic tangent saturation from somatic/open-fire baseline (eta_0 = 0.05)
+            // to Carnot/combined-cycle limit (eta_max = 0.45) with characteristic machinery mass k_transducer = 2500 kg/cap.
+            double kPerCapita = capital / pop;
+            double etaThermo = 0.05 + (0.45 - 0.05) * Math.tanh(kPerCapita / 2500.0);
+            double usefulExergy = org.ether.society.core.math.SmoothMath.softplus(totalPrimaryWatts * etaThermo, 1.0, 5.0);
 
             // Kümmel-Ayres production function Y = A * K^α * L^β * E_useful^γ
             double tfp = 1.0;

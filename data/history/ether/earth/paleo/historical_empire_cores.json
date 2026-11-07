@@ -1,0 +1,399 @@
+{
+  "description": "Historical empire core coordinates, altimetric cultural anchors and reach radii across epochs (-100,000 BP to 2060 CE)",
+  "provenance": "Klein Goldewijk et al. (2017) HYDE 3.4; Turchin et al. (2018) Seshat Global History Databank; Cavalli-Sforza (1994)",
+  "epochs": [
+    {
+      "maxYear": -40000,
+      "epoch": "MIS 3 Clade Spheres (-50,000 BP)",
+      "cores": [
+        {"name": "Sapiens East African Core", "lon": 36.0, "lat": 0.5, "color": "0xD35400", "sigma": 25.0},
+        {"name": "Sapiens Southern African LSA", "lon": 22.0, "lat": -34.0, "color": "0xE67E22", "sigma": 22.0},
+        {"name": "Sapiens Levant IUP", "lon": 35.5, "lat": 32.5, "color": "0xF39C12", "sigma": 18.0},
+        {"name": "Neanderthal Western Europe", "lon": 1.5, "lat": 45.0, "color": "0x1F618D", "sigma": 20.0},
+        {"name": "Neanderthal Zagros", "lon": 44.0, "lat": 36.0, "color": "0x1A5276", "sigma": 18.0},
+        {"name": "Denisovan Altai / Siberia", "lon": 84.5, "lat": 51.4, "color": "0x229954", "sigma": 22.0},
+        {"name": "Archaic Sundaland", "lon": 105.0, "lat": -2.0, "color": "0x7D3C98", "sigma": 25.0},
+        {"name": "Sahul Aboriginal Domain", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0}
+      ]
+    },
+    {
+      "maxYear": -18000,
+      "epoch": "LGM / Gravettian Horizons (-25,000 & -20,000 BP)",
+      "cores": [
+        {"name": "Franco-Cantabrian Solutrean/Gravettian", "lon": 1.0, "lat": 45.0, "color": "0xE74C3C", "sigma": 18.0},
+        {"name": "Central European Pavlovian / Gravettian", "lon": 16.5, "lat": 48.8, "color": "0x3498DB", "sigma": 18.0},
+        {"name": "Mediterranean Epigravettian", "lon": 15.5, "lat": 41.7, "color": "0x9B59B6", "sigma": 16.0},
+        {"name": "Levant Kebaran / Ohalo II", "lon": 35.5, "lat": 32.7, "color": "0xF39C12", "sigma": 16.0},
+        {"name": "Kostenki-Don Steppe", "lon": 39.0, "lat": 51.4, "color": "0x1ABC9C", "sigma": 20.0},
+        {"name": "Yana / Arctic Siberia Mammoth Hunters", "lon": 135.4, "lat": 70.7, "color": "0x16A085", "sigma": 22.0},
+        {"name": "Bluefish / Beringian Standstill", "lon": -140.7, "lat": 67.1, "color": "0x00BCD4", "sigma": 20.0},
+        {"name": "East Asian / South China Paleolithic", "lon": 115.0, "lat": 30.0, "color": "0x2ECC71", "sigma": 24.0},
+        {"name": "South Asian Paleolithic", "lon": 78.0, "lat": 22.0, "color": "0xD35400", "sigma": 22.0},
+        {"name": "East African LSA", "lon": 36.0, "lat": 0.5, "color": "0xE67E22", "sigma": 25.0},
+        {"name": "South African LSA", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Sahul Australian Foragers", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0}
+      ]
+    },
+    {
+      "maxYear": -10500,
+      "epoch": "Younger Dryas (-10,900 BP)",
+      "cores": [
+        {"name": "Natufian Levant", "lon": 35.5, "lat": 33.0, "color": "0xF39C12", "sigma": 12.0},
+        {"name": "Upper Tigris", "lon": 41.5, "lat": 38.1, "color": "0xE67E22", "sigma": 12.0},
+        {"name": "Franco-Cantabrian Magdalenian", "lon": 1.0, "lat": 45.0, "color": "0xE74C3C", "sigma": 14.0},
+        {"name": "Clovis High Plains", "lon": -103.3, "lat": 34.3, "color": "0x3498DB", "sigma": 18.0},
+        {"name": "Clovis Texas", "lon": -97.7, "lat": 30.9, "color": "0x2980B9", "sigma": 16.0},
+        {"name": "Monte Verde South America", "lon": -73.2, "lat": -41.5, "color": "0x1ABC9C", "sigma": 15.0},
+        {"name": "Yellow River Late Paleo", "lon": 114.0, "lat": 34.5, "color": "0x2ECC71", "sigma": 16.0},
+        {"name": "Incipient Jomon", "lon": 139.5, "lat": 35.7, "color": "0x9B59B6", "sigma": 12.0},
+        {"name": "South African Robberg/Oakhurst", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Sahul / Australian Foragers", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "Nile Valley Epipaleolithic", "lon": 32.5, "lat": 25.5, "color": "0xD35400", "sigma": 18.0},
+        {"name": "Maghreb Iberomaurusian", "lon": -2.4, "lat": 34.8, "color": "0xE67E22", "sigma": 18.0},
+        {"name": "Indian Mesolithic / Bhimbetka", "lon": 77.6, "lat": 22.9, "color": "0xD35400", "sigma": 20.0},
+        {"name": "Siberian Dyuktai Tradition", "lon": 130.0, "lat": 62.0, "color": "0x16A085", "sigma": 22.0},
+        {"name": "West / Central African LSA", "lon": 10.0, "lat": 5.0, "color": "0xE67E22", "sigma": 22.0}
+      ]
+    },
+    {
+      "maxYear": -9000,
+      "epoch": "Early Holocene (-10,000 BP)",
+      "cores": [
+        {"name": "Göbekli Tepe", "lon": 38.92, "lat": 37.22, "color": "0xE67E22", "sigma": 12.0},
+        {"name": "Jericho PPNA", "lon": 35.44, "lat": 31.87, "color": "0xF39C12", "sigma": 12.0},
+        {"name": "Peiligang Yellow River", "lon": 113.6, "lat": 34.4, "color": "0x2ECC71", "sigma": 15.0},
+        {"name": "Shangshan Yangtze", "lon": 120.0, "lat": 29.5, "color": "0x27AE60", "sigma": 15.0},
+        {"name": "Lepenski Vir Danube", "lon": 22.0, "lat": 44.5, "color": "0x3498DB", "sigma": 12.0},
+        {"name": "Folsom Great Plains", "lon": -103.0, "lat": 36.0, "color": "0x3F51B5", "sigma": 16.0},
+        {"name": "Paiján Peru", "lon": -79.3, "lat": -7.7, "color": "0x009688", "sigma": 14.0},
+        {"name": "South African Wilton/Oakhurst", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australian Aboriginal Nations", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "South Asian Foragers", "lon": 77.6, "lat": 22.9, "color": "0xD35400", "sigma": 20.0},
+        {"name": "East / Central Africa", "lon": 36.0, "lat": 0.5, "color": "0xE67E22", "sigma": 22.0},
+        {"name": "Siberian Early Holocene", "lon": 130.0, "lat": 62.0, "color": "0x16A085", "sigma": 22.0}
+      ]
+    },
+    {
+      "maxYear": -7000,
+      "epoch": "Early Neolithic (-8,000 BP)",
+      "cores": [
+        {"name": "Çatalhöyük", "lon": 32.83, "lat": 37.67, "color": "0xD35400", "sigma": 14.0},
+        {"name": "Ain Ghazal", "lon": 35.95, "lat": 31.98, "color": "0xF39C12", "sigma": 12.0},
+        {"name": "Jiahu", "lon": 113.6, "lat": 33.6, "color": "0xE74C3C", "sigma": 15.0},
+        {"name": "Sesklo Greece", "lon": 22.8, "lat": 39.3, "color": "0x3498DB", "sigma": 14.0},
+        {"name": "Mehrgarh Indus", "lon": 68.05, "lat": 29.28, "color": "0x9C27B0", "sigma": 14.0},
+        {"name": "Nabta Playa", "lon": 30.58, "lat": 22.53, "color": "0x27AE60", "sigma": 14.0},
+        {"name": "South Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "North American Archaic", "lon": -100.0, "lat": 38.0, "color": "0x3F51B5", "sigma": 22.0},
+        {"name": "South American Archaic", "lon": -75.0, "lat": -10.0, "color": "0x009688", "sigma": 20.0},
+        {"name": "East / Central Africa", "lon": 36.0, "lat": 0.5, "color": "0xE67E22", "sigma": 22.0},
+        {"name": "Northeast Asia", "lon": 125.0, "lat": 50.0, "color": "0x16A085", "sigma": 22.0}
+      ]
+    },
+    {
+      "maxYear": -4500,
+      "epoch": "Middle Neolithic (-6,000 BP)",
+      "cores": [
+        {"name": "Eridu Ubaid", "lon": 45.99, "lat": 30.82, "color": "0xE74C3C", "sigma": 15.0},
+        {"name": "Susa I", "lon": 48.26, "lat": 32.19, "color": "0xF39C12", "sigma": 14.0},
+        {"name": "Badari Egypt", "lon": 31.37, "lat": 26.99, "color": "0xD35400", "sigma": 14.0},
+        {"name": "Banpo Yangshao", "lon": 109.06, "lat": 34.27, "color": "0x2ECC71", "sigma": 16.0},
+        {"name": "Vinča Copper", "lon": 20.62, "lat": 44.76, "color": "0x3498DB", "sigma": 15.0},
+        {"name": "Carnac Megalithic", "lon": -3.00, "lat": 47.60, "color": "0x9B59B6", "sigma": 14.0},
+        {"name": "South Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "North American Archaic Mounds", "lon": -90.0, "lat": 35.0, "color": "0x3F51B5", "sigma": 20.0},
+        {"name": "South American Caral Precursor", "lon": -77.0, "lat": -10.0, "color": "0x009688", "sigma": 20.0},
+        {"name": "Mehrgarh III", "lon": 68.0, "lat": 29.0, "color": "0x9C27B0", "sigma": 18.0},
+        {"name": "Northeast Asia", "lon": 125.0, "lat": 50.0, "color": "0x16A085", "sigma": 22.0}
+      ]
+    },
+    {
+      "maxYear": -2500,
+      "epoch": "Early Bronze Age: Narmer Egypt, Uruk/Sumer, Caral, Liangzhu (-3,000 BP)",
+      "cores": [
+        {"name": "Early Dynastic Egypt / Memphis", "lon": 31.20, "lat": 29.85, "color": "0xD35400", "sigma": 15.0},
+        {"name": "Sumerian City-States / Uruk IV", "lon": 45.64, "lat": 31.32, "color": "0xE74C3C", "sigma": 14.0},
+        {"name": "Proto-Elamite Susa", "lon": 48.26, "lat": 32.19, "color": "0xF39C12", "sigma": 14.0},
+        {"name": "Kot Diji / Early Harappan", "lon": 68.70, "lat": 27.50, "color": "0x9B59B6", "sigma": 16.0},
+        {"name": "Liangzhu Culture / Yangtze", "lon": 120.00, "lat": 30.38, "color": "0x2ECC71", "sigma": 16.0},
+        {"name": "Longshan Culture / Yellow River", "lon": 114.50, "lat": 34.80, "color": "0x27AE60", "sigma": 16.0},
+        {"name": "Early Cycladic / Helladic Greece", "lon": 23.70, "lat": 37.90, "color": "0x3498DB", "sigma": 14.0},
+        {"name": "Yamnaya Steppe Pastoralists", "lon": 36.00, "lat": 48.00, "color": "0x2980B9", "sigma": 20.0},
+        {"name": "Norte Chico / Caral-Supe Peru", "lon": -77.52, "lat": -10.89, "color": "0x1ABC9C", "sigma": 15.0},
+        {"name": "Early Kerma / Nubia", "lon": 32.00, "lat": 19.50, "color": "0xE67E22", "sigma": 16.0},
+        {"name": "Southern Africa LSA", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "North American Archaic", "lon": -90.0, "lat": 35.0, "color": "0x3F51B5", "sigma": 20.0}
+      ]
+    },
+    {
+      "maxYear": -1700,
+      "epoch": "Middle Bronze Age: Hammurabi, Thebes Egypt, Erlitou Xia (-1,900 BP)",
+      "cores": [
+        {"name": "Hammurabi Old Babylonian Empire", "lon": 44.42, "lat": 32.54, "color": "0xE74C3C", "sigma": 15.0},
+        {"name": "Middle Kingdom Egypt / Thebes", "lon": 32.65, "lat": 25.72, "color": "0xD35400", "sigma": 16.0},
+        {"name": "Mature Harappan / Mohenjo-Daro", "lon": 68.14, "lat": 27.33, "color": "0x9B59B6", "sigma": 16.0},
+        {"name": "Xia Dynasty / Erlitou", "lon": 112.70, "lat": 34.70, "color": "0x2ECC71", "sigma": 16.0},
+        {"name": "Minoan Knossos / Crete", "lon": 25.16, "lat": 35.30, "color": "0x3498DB", "sigma": 12.0},
+        {"name": "Old Hittite Kingdom / Hattusa", "lon": 34.60, "lat": 40.00, "color": "0xF39C12", "sigma": 14.0},
+        {"name": "Kingdom of Kerma / Kush", "lon": 32.40, "lat": 19.60, "color": "0xE67E22", "sigma": 15.0},
+        {"name": "Caral / Kotosh Peru", "lon": -77.50, "lat": -10.90, "color": "0x1ABC9C", "sigma": 15.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "North America Poverty Point", "lon": -90.0, "lat": 35.0, "color": "0x3F51B5", "sigma": 20.0}
+      ]
+    },
+    {
+      "maxYear": -1200,
+      "epoch": "Late Bronze Age: New Kingdom Egypt, Shang China, Hittites (-1,500 BP)",
+      "cores": [
+        {"name": "New Kingdom Egypt (Thutmose III)", "lon": 32.65, "lat": 25.72, "color": "0xD35400", "sigma": 18.0},
+        {"name": "Shang Dynasty Anyang/Yin", "lon": 114.30, "lat": 36.10, "color": "0x2ECC71", "sigma": 18.0},
+        {"name": "Hittite Empire", "lon": 34.60, "lat": 40.00, "color": "0xF39C12", "sigma": 16.0},
+        {"name": "Mycenaean Greece", "lon": 22.75, "lat": 37.73, "color": "0x3498DB", "sigma": 14.0},
+        {"name": "Kassite Babylon", "lon": 44.42, "lat": 32.54, "color": "0xE74C3C", "sigma": 15.0},
+        {"name": "Mitanni Kingdom", "lon": 40.50, "lat": 36.80, "color": "0xE67E22", "sigma": 15.0},
+        {"name": "Early Vedic Aryan Punjab", "lon": 75.80, "lat": 30.90, "color": "0x9B59B6", "sigma": 16.0},
+        {"name": "Olmec Early San Lorenzo", "lon": -94.76, "lat": 17.75, "color": "0x1ABC9C", "sigma": 14.0},
+        {"name": "Chavin Precursor Andes", "lon": -77.18, "lat": -9.60, "color": "0x16A085", "sigma": 14.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "North America", "lon": -90.0, "lat": 35.0, "color": "0x3F51B5", "sigma": 20.0}
+      ]
+    },
+    {
+      "maxYear": -600,
+      "epoch": "Early Iron Age: Neo-Assyrian, Phoenician, Western Zhou (-1,000 BP)",
+      "cores": [
+        {"name": "Neo-Assyrian Empire Nimrud/Nineveh", "lon": 43.15, "lat": 36.36, "color": "0xE74C3C", "sigma": 18.0},
+        {"name": "Phoenician Thalassocracy Tyre/Sidon", "lon": 35.20, "lat": 33.27, "color": "0x9B59B6", "sigma": 14.0},
+        {"name": "Western Zhou Dynasty Haojing", "lon": 108.70, "lat": 34.20, "color": "0x2ECC71", "sigma": 20.0},
+        {"name": "Greek Archaic City-States", "lon": 23.70, "lat": 37.90, "color": "0x3498DB", "sigma": 15.0},
+        {"name": "21st Dynasty Egypt / Tanis", "lon": 31.88, "lat": 31.00, "color": "0xD35400", "sigma": 15.0},
+        {"name": "Vedic Kuru-Panchala Janapadas", "lon": 77.20, "lat": 28.60, "color": "0xF39C12", "sigma": 18.0},
+        {"name": "Kingdom of Kush / Napata", "lon": 31.80, "lat": 18.50, "color": "0xE67E22", "sigma": 16.0},
+        {"name": "Olmec San Lorenzo / La Venta", "lon": -94.76, "lat": 17.75, "color": "0x1ABC9C", "sigma": 14.0},
+        {"name": "Chavin de Huantar Andes", "lon": -77.18, "lat": -9.60, "color": "0x16A085", "sigma": 14.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "North America", "lon": -90.0, "lat": 35.0, "color": "0x3F51B5", "sigma": 20.0}
+      ]
+    },
+    {
+      "maxYear": -100,
+      "epoch": "Hellenistic & Maurya: Ashoka, Seleucid, Ptolemaic, Rome (-300 BP)",
+      "cores": [
+        {"name": "Maurya Empire Pataliputra", "lon": 85.14, "lat": 25.61, "color": "0xF59E0B", "sigma": 22.0},
+        {"name": "Seleucid Empire Antioch", "lon": 36.20, "lat": 36.20, "color": "0x3498DB", "sigma": 18.0},
+        {"name": "Ptolemaic Egypt Alexandria", "lon": 29.92, "lat": 31.20, "color": "0xD35400", "sigma": 16.0},
+        {"name": "Roman Republic Rome", "lon": 12.50, "lat": 41.90, "color": "0xDC2626", "sigma": 16.0},
+        {"name": "Carthaginian Republic", "lon": 10.32, "lat": 36.85, "color": "0x9B59B6", "sigma": 15.0},
+        {"name": "Qin & Warring States Xianyang", "lon": 108.70, "lat": 34.34, "color": "0x2ECC71", "sigma": 20.0},
+        {"name": "Antigonid Macedonia", "lon": 22.50, "lat": 40.75, "color": "0x2980B9", "sigma": 14.0},
+        {"name": "Preclassic Maya El Mirador", "lon": -89.80, "lat": 17.75, "color": "0x06B6D4", "sigma": 14.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "North America", "lon": -90.0, "lat": 35.0, "color": "0x3F51B5", "sigma": 20.0}
+      ]
+    },
+    {
+      "maxYear": 250,
+      "epoch": "Pax Romana & Han Dynasty (Year 0 - 200 CE)",
+      "cores": [
+        {"name": "Roman Empire Rome / Augustus", "lon": 12.50, "lat": 41.90, "color": "0xDC2626", "sigma": 24.0},
+        {"name": "Western Han Dynasty Chang'an", "lon": 108.94, "lat": 34.26, "color": "0xEF4444", "sigma": 24.0},
+        {"name": "Parthian Empire Ctesiphon", "lon": 44.58, "lat": 33.09, "color": "0x10B981", "sigma": 18.0},
+        {"name": "Kushan Empire Taxila", "lon": 72.82, "lat": 33.75, "color": "0xF59E0B", "sigma": 18.0},
+        {"name": "Satavahana Dynasty Deccan", "lon": 80.50, "lat": 16.50, "color": "0xD97706", "sigma": 18.0},
+        {"name": "Kingdom of Aksum", "lon": 38.72, "lat": 14.13, "color": "0xE67E22", "sigma": 15.0},
+        {"name": "Maya Lowlands Tikal Precursor", "lon": -89.62, "lat": 17.22, "color": "0x06B6D4", "sigma": 14.0},
+        {"name": "Teotihuacan Basin of Mexico", "lon": -98.88, "lat": 19.69, "color": "0x0891B2", "sigma": 14.0},
+        {"name": "Yayoi Japan", "lon": 130.40, "lat": 33.60, "color": "0x9B59B6", "sigma": 12.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "Hopewell Culture North America", "lon": -90.0, "lat": 35.0, "color": "0x3F51B5", "sigma": 20.0}
+      ]
+    },
+    {
+      "maxYear": 750,
+      "epoch": "Late Antique: Justinian Byzantium, Sasanian Khosrow, Northern Wei (536 CE)",
+      "cores": [
+        {"name": "Byzantine Empire Constantinople", "lon": 28.98, "lat": 41.01, "color": "0x9333EA", "sigma": 22.0},
+        {"name": "Sasanian Empire Ctesiphon", "lon": 44.58, "lat": 33.09, "color": "0x10B981", "sigma": 18.0},
+        {"name": "Northern Wei / Liang Luoyang", "lon": 112.45, "lat": 34.62, "color": "0xEF4444", "sigma": 22.0},
+        {"name": "Harsha Empire / Post-Gupta India", "lon": 79.92, "lat": 27.05, "color": "0xF59E0B", "sigma": 20.0},
+        {"name": "Merovingian Frankish Kingdom", "lon": 2.35, "lat": 48.86, "color": "0x2563EB", "sigma": 16.0},
+        {"name": "Visigothic Kingdom Toledo", "lon": -4.02, "lat": 39.86, "color": "0x3B82F6", "sigma": 15.0},
+        {"name": "Classic Maya Tikal & Calakmul", "lon": -89.62, "lat": 17.22, "color": "0x06B6D4", "sigma": 14.0},
+        {"name": "Tiwanaku Altiplano Andes", "lon": -68.67, "lat": -16.55, "color": "0x1ABC9C", "sigma": 15.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0},
+        {"name": "North America", "lon": -90.0, "lat": 35.0, "color": "0x3F51B5", "sigma": 20.0}
+      ]
+    },
+    {
+      "maxYear": 1150,
+      "epoch": "High Medieval: Song Dynasty, Fatimid Caliphate, Holy Roman Empire (1000 CE)",
+      "cores": [
+        {"name": "Song Dynasty Kaifeng", "lon": 114.35, "lat": 34.79, "color": "0xEF4444", "sigma": 24.0},
+        {"name": "Fatimid Caliphate Cairo", "lon": 31.24, "lat": 30.04, "color": "0x10B981", "sigma": 20.0},
+        {"name": "Holy Roman Empire", "lon": 11.58, "lat": 48.14, "color": "0x2563EB", "sigma": 18.0},
+        {"name": "Byzantine Empire Basil II", "lon": 28.98, "lat": 41.01, "color": "0x9333EA", "sigma": 18.0},
+        {"name": "Chola Empire Thanjavur", "lon": 79.13, "lat": 10.79, "color": "0xF59E0B", "sigma": 18.0},
+        {"name": "Kievan Rus Kiev", "lon": 30.52, "lat": 50.45, "color": "0x3B82F6", "sigma": 18.0},
+        {"name": "Cordoba Caliphate Al-Andalus", "lon": -4.78, "lat": 37.89, "color": "0x059669", "sigma": 16.0},
+        {"name": "Maya Toltec Chichen Itza", "lon": -88.57, "lat": 20.68, "color": "0x06B6D4", "sigma": 14.0},
+        {"name": "Cahokia Mississippian Metropolis", "lon": -90.06, "lat": 38.66, "color": "0x3F51B5", "sigma": 15.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0}
+      ]
+    },
+    {
+      "maxYear": 1400,
+      "epoch": "Late Medieval: Mansa Musa Mali & Mongol Khanates (1324 CE)",
+      "cores": [
+        {"name": "Mali Empire Mansa Musa / Niani", "lon": -8.30, "lat": 11.38, "color": "0xF59E0B", "sigma": 22.0},
+        {"name": "Yuan Dynasty Khanbaliq/Beijing", "lon": 116.41, "lat": 39.90, "color": "0xEF4444", "sigma": 25.0},
+        {"name": "Ilkhanate Tabriz", "lon": 46.29, "lat": 38.08, "color": "0x10B981", "sigma": 20.0},
+        {"name": "Golden Horde Sarai", "lon": 47.25, "lat": 47.15, "color": "0x3B82F6", "sigma": 22.0},
+        {"name": "Delhi Sultanate", "lon": 77.21, "lat": 28.61, "color": "0xD97706", "sigma": 20.0},
+        {"name": "Kingdom of France", "lon": 2.35, "lat": 48.86, "color": "0x2563EB", "sigma": 16.0},
+        {"name": "Mamluk Sultanate Cairo", "lon": 31.24, "lat": 30.04, "color": "0x059669", "sigma": 18.0},
+        {"name": "Kingdom of England", "lon": -0.13, "lat": 51.51, "color": "0xDC2626", "sigma": 14.0},
+        {"name": "Aztec Mexica Tenochtitlan Foundation", "lon": -99.13, "lat": 19.43, "color": "0x06B6D4", "sigma": 14.0},
+        {"name": "Inca Cusco Foundation", "lon": -71.97, "lat": -13.53, "color": "0x1ABC9C", "sigma": 15.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0}
+      ]
+    },
+    {
+      "maxYear": 1550,
+      "epoch": "Columbian Horizon: Aztec, Inca, Ming, Renaissance Europe (1492 CE)",
+      "cores": [
+        {"name": "Aztec Triple Alliance Tenochtitlan", "lon": -99.13, "lat": 19.43, "color": "0x06B6D4", "sigma": 18.0},
+        {"name": "Inca Empire Tawantinsuyu", "lon": -71.97, "lat": -13.53, "color": "0x10B981", "sigma": 22.0},
+        {"name": "Ming Dynasty Beijing", "lon": 116.41, "lat": 39.90, "color": "0xEF4444", "sigma": 25.0},
+        {"name": "Ottoman Empire Bayezid II", "lon": 28.98, "lat": 41.01, "color": "0x059669", "sigma": 20.0},
+        {"name": "Spanish Crown Castile & Aragon", "lon": -3.70, "lat": 40.42, "color": "0xDC2626", "sigma": 16.0},
+        {"name": "Kingdom of France", "lon": 2.35, "lat": 48.86, "color": "0x2563EB", "sigma": 16.0},
+        {"name": "Holy Roman Empire", "lon": 13.40, "lat": 52.52, "color": "0x3B82F6", "sigma": 16.0},
+        {"name": "Songhai Empire Gao/Timbuktu", "lon": -0.05, "lat": 16.27, "color": "0xF59E0B", "sigma": 18.0},
+        {"name": "Vijayanagara Empire Hampi", "lon": 76.46, "lat": 15.33, "color": "0xD97706", "sigma": 18.0},
+        {"name": "Southern Africa", "lon": 22.0, "lat": -34.0, "color": "0xF1C40F", "sigma": 22.0},
+        {"name": "Australia", "lon": 134.0, "lat": -24.0, "color": "0xC0392B", "sigma": 28.0}
+      ]
+    },
+    {
+      "maxYear": 1700,
+      "epoch": "Westphalia & Early Modern: Tokugawa, Qing, Mughal, Ottoman (1639 CE)",
+      "cores": [
+        {"name": "Tokugawa Shogunate Edo", "lon": 139.69, "lat": 35.69, "color": "0xE11D48", "sigma": 15.0},
+        {"name": "Ming / Qing Dynasty China", "lon": 116.41, "lat": 39.90, "color": "0xEF4444", "sigma": 25.0},
+        {"name": "Mughal Empire Shah Jahan", "lon": 77.21, "lat": 28.61, "color": "0xF59E0B", "sigma": 22.0},
+        {"name": "Ottoman Empire Murad IV", "lon": 28.98, "lat": 41.01, "color": "0x059669", "sigma": 20.0},
+        {"name": "Safavid Empire Isfahan", "lon": 51.68, "lat": 32.65, "color": "0x10B981", "sigma": 18.0},
+        {"name": "Kingdom of France Louis XIII", "lon": 2.35, "lat": 48.86, "color": "0x2563EB", "sigma": 16.0},
+        {"name": "Spanish Global Empire", "lon": -3.70, "lat": 40.42, "color": "0xDC2626", "sigma": 18.0},
+        {"name": "Tsardom of Russia Moscow", "lon": 37.62, "lat": 55.75, "color": "0x7C3AED", "sigma": 24.0},
+        {"name": "Kingdom of England", "lon": -0.13, "lat": 51.51, "color": "0x3B82F6", "sigma": 14.0},
+        {"name": "Viceroyalty of New Spain", "lon": -99.13, "lat": 19.43, "color": "0xD97706", "sigma": 18.0},
+        {"name": "Viceroyalty of Peru", "lon": -77.04, "lat": -12.05, "color": "0xEA580C", "sigma": 18.0}
+      ]
+    },
+    {
+      "maxYear": 1850,
+      "epoch": "Industrial Revolution & Napoleonic / Sovereign Empires (1800 CE)",
+      "cores": [
+        {"name": "British Empire (Great Britain & Ireland)", "lon": -0.13, "lat": 51.51, "color": "0xDC2626", "sigma": 22.0},
+        {"name": "British East India Company (Bengal & India)", "lon": 88.36, "lat": 22.57, "color": "0xDC2626", "sigma": 20.0},
+        {"name": "British North America: Canada & Quebec", "lon": -71.21, "lat": 46.81, "color": "0xDC2626", "sigma": 22.0},
+        {"name": "British Rupert's Land & Hudson's Bay Company", "lon": -97.0, "lat": 54.0, "color": "0xDC2626", "sigma": 28.0},
+        {"name": "British Cape Colony (South Africa)", "lon": 18.42, "lat": -33.92, "color": "0xDC2626", "sigma": 18.0},
+        {"name": "British Colony of New South Wales (Sydney)", "lon": 151.21, "lat": -33.87, "color": "0xDC2626", "sigma": 18.0},
+        {"name": "French Republic & Sister Republics", "lon": 2.35, "lat": 48.86, "color": "0x2563EB", "sigma": 18.0},
+        {"name": "Qing Empire China Jiaqing", "lon": 116.41, "lat": 39.90, "color": "0xEF4444", "sigma": 28.0},
+        {"name": "Russian Empire Saint Petersburg & European Russia", "lon": 30.32, "lat": 59.93, "color": "0x7C3AED", "sigma": 26.0},
+        {"name": "Russian Empire: Siberia & Urals", "lon": 73.0, "lat": 55.0, "color": "0x7C3AED", "sigma": 30.0},
+        {"name": "Russian Empire: Far East & Yakutsk", "lon": 129.7, "lat": 62.0, "color": "0x7C3AED", "sigma": 35.0},
+        {"name": "Russian America: Alaska, Sitka & Kodiak", "lon": -135.33, "lat": 57.05, "color": "0x7C3AED", "sigma": 24.0},
+        {"name": "Austrian Habsburg Monarchy", "lon": 16.37, "lat": 48.21, "color": "0xF59E0B", "sigma": 16.0},
+        {"name": "Kingdom of Prussia", "lon": 13.40, "lat": 52.52, "color": "0x1E293B", "sigma": 15.0},
+        {"name": "United States of America", "lon": -77.04, "lat": 38.91, "color": "0x3B82F6", "sigma": 22.0},
+        {"name": "Sublime Ottoman Empire", "lon": 28.98, "lat": 41.01, "color": "0x059669", "sigma": 22.0},
+        {"name": "Alaouite Sultanate of Morocco", "lon": -6.8, "lat": 34.0, "color": "0x059669", "sigma": 18.0},
+        {"name": "Spanish Crown Spain", "lon": -3.70, "lat": 40.42, "color": "0xEA580C", "sigma": 16.0},
+        {"name": "Spanish Empire: Viceroyalty of New Spain", "lon": -99.13, "lat": 19.43, "color": "0xEA580C", "sigma": 24.0},
+        {"name": "Spanish Empire: Viceroyalty of Peru", "lon": -77.04, "lat": -12.05, "color": "0xEA580C", "sigma": 22.0},
+        {"name": "Spanish Empire: Viceroyalty of Rio de la Plata", "lon": -58.38, "lat": -34.60, "color": "0xEA580C", "sigma": 20.0},
+        {"name": "Spanish Captaincy General of the Philippines", "lon": 121.0, "lat": 14.6, "color": "0xEA580C", "sigma": 18.0},
+        {"name": "Kingdom of Portugal", "lon": -9.14, "lat": 38.72, "color": "0x10B981", "sigma": 14.0},
+        {"name": "Portuguese State of Brazil", "lon": -43.17, "lat": -22.90, "color": "0x10B981", "sigma": 26.0},
+        {"name": "Dutch East Indies / VOC Java & Nusantara", "lon": 106.85, "lat": -6.21, "color": "0x10B981", "sigma": 24.0},
+        {"name": "Maratha Confederacy Pune", "lon": 73.86, "lat": 18.52, "color": "0xD97706", "sigma": 18.0},
+        {"name": "Tokugawa Shogunate Japan", "lon": 139.69, "lat": 35.69, "color": "0xE11D48", "sigma": 14.0},
+        {"name": "Joseon Dynasty Korea", "lon": 126.98, "lat": 37.57, "color": "0x8B5CF6", "sigma": 12.0},
+        {"name": "Qajar Dynasty Persia", "lon": 51.39, "lat": 35.69, "color": "0x0D9488", "sigma": 16.0},
+        {"name": "Durrani Afghan Empire", "lon": 69.17, "lat": 34.53, "color": "0x0284C7", "sigma": 16.0},
+        {"name": "Central Asian Khanates: Bukhara, Kokand, Khiva", "lon": 69.0, "lat": 41.0, "color": "0x0284C7", "sigma": 22.0},
+        {"name": "Kingdom of Siam Rattanakosin", "lon": 100.50, "lat": 13.75, "color": "0xF97316", "sigma": 15.0},
+        {"name": "Nguyen Dynasty Vietnam", "lon": 105.8, "lat": 21.0, "color": "0x16A085", "sigma": 16.0},
+        {"name": "Konbaung Dynasty Burma", "lon": 96.1, "lat": 16.8, "color": "0xD97706", "sigma": 16.0},
+        {"name": "Sokoto Caliphate Sahel", "lon": 5.23, "lat": 13.06, "color": "0x15803D", "sigma": 18.0},
+        {"name": "Kingdom of Kongo & Central Africa", "lon": 15.0, "lat": -5.0, "color": "0x15803D", "sigma": 22.0},
+        {"name": "Ethiopian Solomonic Empire Gondar", "lon": 37.47, "lat": 12.60, "color": "0x84CC16", "sigma": 15.0},
+        {"name": "Merina Kingdom Madagascar", "lon": 47.0, "lat": -19.0, "color": "0x84CC16", "sigma": 18.0},
+        {"name": "Southern African Kingdoms: Xhosa, Zulu, Khoisan", "lon": 28.5, "lat": -31.5, "color": "0xF59E0B", "sigma": 18.0},
+        {"name": "Omani Swahili Sultanate Zanzibar", "lon": 39.0, "lat": -6.0, "color": "0x0D9488", "sigma": 18.0},
+        {"name": "Indigenous Australian Domains", "lon": 133.5, "lat": -24.0, "color": "0xC0392B", "sigma": 32.0},
+        {"name": "Maori Iwi Domains New Zealand", "lon": 175.0, "lat": -39.0, "color": "0xE67E22", "sigma": 16.0},
+        {"name": "Great Plains Indigenous Nations: Lakota / Comanche", "lon": -105.0, "lat": 45.0, "color": "0x06B6D4", "sigma": 25.0},
+        {"name": "Arctic Inuit / Thule Domain", "lon": -90.0, "lat": 68.0, "color": "0x607D8B", "sigma": 30.0}
+      ]
+    },
+    {
+      "maxYear": 1925,
+      "epoch": "Belle Époque & Global Empires (1900 CE)",
+      "cores": [
+        {"name": "British Empire Global", "lon": -0.13, "lat": 51.51, "color": "0xDC2626", "sigma": 26.0},
+        {"name": "French Colonial Empire", "lon": 2.35, "lat": 48.86, "color": "0x2563EB", "sigma": 20.0},
+        {"name": "German Empire Berlin", "lon": 13.40, "lat": 52.52, "color": "0x1E293B", "sigma": 16.0},
+        {"name": "Russian Empire Nicholas II", "lon": 30.32, "lat": 59.93, "color": "0x7C3AED", "sigma": 28.0},
+        {"name": "United States", "lon": -77.04, "lat": 38.91, "color": "0x3B82F6", "sigma": 25.0},
+        {"name": "Empire of Japan Meiji", "lon": 139.69, "lat": 35.69, "color": "0xE11D48", "sigma": 16.0},
+        {"name": "Austro-Hungarian Empire", "lon": 16.37, "lat": 48.21, "color": "0xF59E0B", "sigma": 16.0},
+        {"name": "Qing Empire China", "lon": 116.41, "lat": 39.90, "color": "0xEF4444", "sigma": 25.0}
+      ]
+    },
+    {
+      "maxYear": 1975,
+      "epoch": "Cold War & Decolonization (1950 CE)",
+      "cores": [
+        {"name": "Western Bloc / NATO (USA)", "lon": -77.04, "lat": 38.91, "color": "0x2563EB", "sigma": 30.0},
+        {"name": "Eastern Bloc / Warsaw Pact (USSR)", "lon": 37.62, "lat": 55.75, "color": "0xDC2626", "sigma": 30.0},
+        {"name": "People's Republic of China", "lon": 116.41, "lat": 39.90, "color": "0xEF4444", "sigma": 26.0},
+        {"name": "Republic of India (Nehru)", "lon": 77.21, "lat": 28.61, "color": "0xF59E0B", "sigma": 22.0},
+        {"name": "Non-Aligned Movement (Bandung)", "lon": 106.85, "lat": -6.21, "color": "0x10B981", "sigma": 20.0},
+        {"name": "Western Europe", "lon": 2.35, "lat": 48.86, "color": "0x3B82F6", "sigma": 16.0},
+        {"name": "Latin America", "lon": -47.93, "lat": -15.78, "color": "0x059669", "sigma": 22.0}
+      ]
+    },
+    {
+      "maxYear": 999999,
+      "epoch": "Contemporary & Future Multipolar World (2000 - 2060 CE)",
+      "cores": [
+        {"name": "North America (USA/Canada)", "lon": -77.0, "lat": 38.9, "color": "0x2563EB", "sigma": 30.0},
+        {"name": "European Union Brussels", "lon": 4.35, "lat": 50.85, "color": "0x3B82F6", "sigma": 18.0},
+        {"name": "China / East Asia", "lon": 116.4, "lat": 39.9, "color": "0xDC2626", "sigma": 30.0},
+        {"name": "India / South Asia", "lon": 77.2, "lat": 28.6, "color": "0xF59E0B", "sigma": 22.0},
+        {"name": "Russia / Northern Eurasia", "lon": 37.6, "lat": 55.7, "color": "0x7C3AED", "sigma": 32.0},
+        {"name": "Latin America", "lon": -47.9, "lat": -15.8, "color": "0x10B981", "sigma": 25.0},
+        {"name": "Middle East & North Africa", "lon": 31.2, "lat": 30.0, "color": "0xEA580C", "sigma": 18.0},
+        {"name": "Sub-Saharan Africa", "lon": 3.38, "lat": 6.52, "color": "0xD97706", "sigma": 24.0},
+        {"name": "ASEAN Southeast Asia", "lon": 106.8, "lat": -6.2, "color": "0x06B6D4", "sigma": 22.0},
+        {"name": "Oceania / Australia", "lon": 149.1, "lat": -35.3, "color": "0x14B8A6", "sigma": 24.0}
+      ]
+    }
+  ]
+}

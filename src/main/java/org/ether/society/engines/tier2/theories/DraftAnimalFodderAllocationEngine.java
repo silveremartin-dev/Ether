@@ -70,14 +70,15 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
             int pop = cell.getPopulationOr(0);
             if (pop < 50) continue;
 
-            double tech = cell.getTechnologyLevelOr(1.0);
             double capital = cell.getResourceCapitalOr(10.0);
+            double kpc = capital / pop;
+            double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double food = cell.getFoodResourceOr(1000.0);
 
-            // Continuous draft animal presence index phi_draft in [0, 1]
-            // Rises with agrarian animal traction (Tech >= 1.5) and phases out with tractor mechanization (Tech >= 4.5)
-            double draftPresence = (1.0 / (1.0 + Math.exp(-3.0 * (tech - 1.5))))
-                    * (1.0 / (1.0 + Math.exp(3.0 * (tech - 4.5))));
+            // Continuous draft animal presence index phi_draft in [0, 1] (Smil 2017; Wrigley 2010):
+            // Rises with agrarian harness/plow capital (kpc >= 40 kg/cap) and phases out with internal combustion tractor power (p >= 1400 W/cap)
+            double draftPresence = (1.0 / (1.0 + Math.exp(-(kpc - 40.0) / 15.0)))
+                    * (1.0 / (1.0 + Math.exp((powerW - 1400.0) / 300.0)));
 
             if (draftPresence > 0.02) {
                 // Draft animal adoption scales with capital per capita
@@ -89,12 +90,13 @@ public class DraftAnimalFodderAllocationEngine implements ProceduralEnginePlugin
 
                 cell.setFoodResource(Math.max(0.0, food * Math.exp(-fodderCostFraction * deltaYears * 0.1)));
                 cell.setResourceCapital(capital + (capital * productivityBoost));
-            } else if (tech >= 4.5) {
-                // Mechanization transition: internal combustion engines replace horses, reclaiming fodder acreage
-                // Reclaims agricultural biomass growth without unbounded multiplicative food compounding
+            } else if (powerW >= 1400.0 || kpc >= 2800.0) {
+                // Mechanization transition (Wrigley 2010; Smil 2017): internal combustion tractors replace horses,
+                // reclaiming fodder acreage smoothly as mechanical power p >= 1400 W/cap or k_pc >= 2800 kg/cap
                 double agriBiomass = cell.getBiomassAgricultureOr(0.0);
                 if (agriBiomass > 0.0) {
-                    double reclamationBoost = Math.min(0.02 * agriBiomass, 0.005 * agriBiomass * (tech - 4.0) * deltaYears);
+                    double tractorSubstitution = 1.0 / (1.0 + Math.exp(-(kpc - 2800.0) / 700.0));
+                    double reclamationBoost = Math.min(0.02 * agriBiomass, 0.015 * agriBiomass * tractorSubstitution * deltaYears);
                     cell.setBiomassAgriculture(agriBiomass + reclamationBoost);
                 }
             }

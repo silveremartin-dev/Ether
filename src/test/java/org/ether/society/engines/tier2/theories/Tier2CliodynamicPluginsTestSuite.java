@@ -252,7 +252,7 @@ public class Tier2CliodynamicPluginsTestSuite {
         mesopotamianCell.setTemperature(26.0);
         mesopotamianCell.setElevation(50.0);
         mesopotamianCell.setFoodResource(5000.0);
-        mesopotamianCell.setTechnologyLevel(2.0);
+        mesopotamianCell.setResourceCapital(250000.0);
 
         org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine.processSoilSalinization(List.of(mesopotamianCell), 10.0);
         assertTrue(mesopotamianCell.getFoodResource() < 5000.0, "Intensive irrigation in arid lowland must trigger salinization yield penalty");
@@ -275,9 +275,8 @@ public class Tier2CliodynamicPluginsTestSuite {
 
         H3Cell medievalCell = new H3Cell();
         medievalCell.setPopulation(2000);
-        medievalCell.setResourceCapital(10000.0);
+        medievalCell.setResourceCapital(100000.0); // 50 kg/cap -> agrarian draft animal regime
         medievalCell.setFoodResource(2000.0);
-        medievalCell.setTechnologyLevel(3.0);
 
         engine.process(List.of(medievalCell), 1.0);
         assertTrue(medievalCell.getResourceCapital() > 10000.0, "Draft animals must augment available capital and labor productivity");

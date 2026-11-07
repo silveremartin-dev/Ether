@@ -37,30 +37,48 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
 
     @Override
     public String getName() {
-        return "Hotelling Resource Depletion & Scarcity Rent";
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.hotelling_depletion.name",
+                "Hotelling Resource Depletion & Scarcity Rent");
     }
 
     @Override
     public String getDescription() {
-        return "Models the depletion economics and escalating scarcity rents of non-renewable mineral/fossil assets.";
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.hotelling_depletion.desc",
+                "Models the depletion economics, Hill pyrometallurgical kiln activation, and escalating scarcity rents of non-renewable mineral assets.");
     }
 
     @Override
     public String getEquationsTooltip() {
-        return """
-               [Hotelling Exhaustible Resource Valuation Rule (JPE 1931)]
-               • Scarcity Rent:     [P(t) - MC] = [P_0 - MC] · exp(r · t)
-               • Marginal Cost:     MC(Q) = MC_0 / (1 - Q_extracted / Q_initial)^1.5
-               • Depletion Flow:    dQ/dt = -min(Q_remaining · 0.05, Demand · (P / P_substitute)^-ε) · Δt
-               Units: P, MC [$/tonne], Q [tonnes minerais/pétrole], r [%/an]
-               Ref: H. Hotelling (1931) "The Economics of Exhaustible Resources"
-               """;
+        return org.ether.society.i18n.I18n.getOrDefault(
+                "engine.hotelling_depletion.tooltip",
+                """
+                [Hotelling Exhaustible Resource Valuation & Chalcolithic Kiln Rule]
+                • Kiln Hill Envelope:  E_kiln(k_pc) = k_pc^3 / (k_pc^3 + k_chalcolithic^3),  k_chalcolithic = 65 kg/cap
+                • Extraction Flux:     R_extract = 0.02 · N · E_kiln(k_pc) · 2.5·tanh(ln(1 + k_pc/50)/3.5) · M_ore/(M_ore + 100)
+                • Scarcity Rent:       MC(M_ore) = 1 + 4 · tanh((M_0 / M_rem)^0.5 / 5)
+                Units: M_ore [tonnes ore], k_pc = K/N [kg/capita], r [yr^-1]
+                Ref: H. Hotelling (1931, JPE); M. Radivojević et al. (2010, J. Archaeol. Sci.)
+                """);
     }
 
     @Override
     public String getCategory() {
         return "Tier 2: Resource Economics";
     }
+
+    /**
+     * Minimum physical smelting &amp; furnace capital threshold $k_{\text{chalcolithic}} = 65.0\,\text{kg/capita}$
+     * required for Chalcolithic/Bronze Age extractive metallurgy (Tylecote 1992, <i>A History of Metallurgy</i>;
+     * Craddock 1995). Below this physical furnace stock, ore remains unmined in deep time ($\text{AGENTS.md}$ §8).
+     */
+    public static final double CHALCOLITHIC_FURNACE_CAPITAL_KG_PC = 65.0;
+
+    /**
+     * Sigmoid scale width $s_k = 20.0\,\text{kg/capita}$ for smooth $C^1$ onset of metallurgical ore extraction.
+     */
+    public static final double FURNACE_CAPITAL_SCALE_KG_PC = 20.0;
 
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
@@ -69,30 +87,30 @@ public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
             double metalDeposit = cell.getResourceMetalOr(0.0);
-            if (metalDeposit <= 1.0) continue;
-
             int pop = cell.getPopulationOr(0);
-            double tech = cell.getTechnologyLevelOr(1.0);
+            if (pop <= 0 || metalDeposit <= 0.0) continue;
 
-            // Deep-time baseline invariant (AGENTS.md §8): extractive metal smelting requires Chalcolithic/Bronze Age
-            // metallurgy (T >= 1.8) and actual resident labor force (pop >= 50). Uninhabited cells cannot mine themselves.
-            if (pop < 50 || tech < 1.8) continue;
+            double currentCapital = cell.getResourceCapitalOr(0.0);
+            double kPerCapita = currentCapital / (double) pop;
 
-            double industrialDemand = pop * 0.02 * (tech / 5.0);
+            // Smooth C^infinity Hill pyrometallurgical kiln activation (n = 3, k_chalcolithic = 65 kg/cap):
+            // Identically 0 at k_pc = 0 (~1e-4 in Paleolithic foraging, ~0.5 at 65 kg/cap, -> 1.0 in industrial regimes)
+            // with zero if-then-else threshold cutoffs.
+            double kRatioCubed = Math.pow(kPerCapita / CHALCOLITHIC_FURNACE_CAPITAL_KG_PC, 3.0);
+            double smeltingActivation = kRatioCubed / (1.0 + kRatioCubed);
 
-            // Deplete ore deposit based on extraction demand, strictly scaling with deltaYears
-            double maxExtraction = metalDeposit * 0.05 * deltaYears;
-            double extractionDemand = industrialDemand * deltaYears;
-            double extraction = Math.min(metalDeposit, Math.min(maxExtraction, extractionDemand));
-            if (extraction <= 0.0) continue;
+            // Industrial ore demand scales smoothly with physical machinery per capita (Ashby 2012, Materials and the Environment)
+            double demandSaturation = 2.5 * Math.tanh(Math.log1p(kPerCapita / 50.0) / 3.5);
+            double oreAvailability = metalDeposit / (metalDeposit + 100.0);
+            double extraction = pop * 0.02 * smeltingActivation * demandSaturation * oreAvailability * deltaYears;
+            extraction = Math.min(metalDeposit, extraction);
 
             cell.setResourceMetal(Math.max(0.0, metalDeposit - extraction));
 
-            // Scarcity rent escalates infrastructure/capital creation as remaining reserves dwindle
-            double remainingFraction = Math.max(0.01, (metalDeposit - extraction) / (metalDeposit + 100.0));
-            double costMultiplier = Math.clamp(Math.pow(1.0 / remainingFraction, 0.5), 1.0, 5.0);
+            // Scarcity rent escalates infrastructure/capital creation as remaining reserves dwindle (Hotelling 1931)
+            double remainingFraction = (metalDeposit - extraction + 1.0) / (metalDeposit + 101.0);
+            double costMultiplier = 1.0 + 4.0 * Math.tanh(Math.pow(1.0 / remainingFraction, 0.5) / 5.0);
 
-            double currentCapital = cell.getResourceCapitalOr(10.0);
             // Resource scarcity rents flow into local extraction capital accumulation
             cell.setResourceCapital(currentCapital + (extraction * 2.0 * costMultiplier));
         }

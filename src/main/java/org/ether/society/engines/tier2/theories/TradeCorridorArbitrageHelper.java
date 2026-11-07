@@ -283,7 +283,11 @@ final class TradeCorridorArbitrageHelper {
 
                 if (rawScore >= 0.25) {
                     chokePointCount++;
-                    double tollRatePerTransit = 1.5 * Math.max(0.5, 1.0 + (cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() * 0.1 : 0.0));
+                    int pop = Math.max(1, cell.getPopulationOr(1));
+                    double kPerCapita = cell.getResourceCapitalOr(0.0) / pop;
+                    // Port, customs house, and canal lock infrastructure capital scales transit toll extraction capacity
+                    double portInfrastructureFactor = 1.0 + 0.08 * Math.log1p(kPerCapita / 50.0);
+                    double tollRatePerTransit = 1.5 * Math.max(0.5, portInfrastructureFactor);
                     double transitToll = rawScore * frequency * tollRatePerTransit * dtYears;
 
                     cell.setTransitTollRevenue(cell.getTransitTollRevenueOr(0.0) + transitToll);

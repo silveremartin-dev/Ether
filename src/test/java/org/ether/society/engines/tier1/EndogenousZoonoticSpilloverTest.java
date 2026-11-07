@@ -37,7 +37,7 @@ public class EndogenousZoonoticSpilloverTest {
         highRiskCell.setBiomassLivestock(1200.0); // Dense domestic livestock herd
         highRiskCell.setFoodResource(10.0);       // Caloric deficit / starvation
         highRiskCell.setLifespan(38.0);
-        highRiskCell.setTechnologyLevel(1.0);
+        highRiskCell.setResourceCapital(50.0);
         cells.add(highRiskCell);
 
         // Run monthly ticks
@@ -69,7 +69,7 @@ public class EndogenousZoonoticSpilloverTest {
         safeCell.setBiomassLivestock(0.0);     // No livestock
         safeCell.setFoodResource(50_000.0);    // Abundant granary reserves
         safeCell.setLifespan(45.0);
-        safeCell.setTechnologyLevel(2.0);
+        safeCell.setResourceCapital(500.0);
         cells.add(safeCell);
 
         for (int m = 0; m < 36; m++) {

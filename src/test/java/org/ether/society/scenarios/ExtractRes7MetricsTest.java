@@ -83,7 +83,6 @@ public class ExtractRes7MetricsTest {
         }
 
         float[] bio = endBuffer.getBiomassHuman();
-        float[] techs = endBuffer.getTechnologyLevel();
         float[] builtInfra = endBuffer.getInstitutionalComplexity();
 
         double popSumFromBuffer = 0;
@@ -96,7 +95,7 @@ public class ExtractRes7MetricsTest {
             if (p > 0) {
                 popSumFromBuffer += p;
                 populatedCells++;
-                techWeightedSum += techs[i] * p;
+                techWeightedSum += endBuffer.computeEmergentTechnologyDiagnostic(i) * p;
                 if (p > 100.0f || builtInfra[i] > 5.0f) urbanCells++;
             }
         }

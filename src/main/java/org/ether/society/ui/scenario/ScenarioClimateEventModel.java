@@ -1,7 +1,8 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.ui.scenario;
 
@@ -11,9 +12,10 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.ether.society.model.ClimateEvent;
 
 /**
- * Observable JavaFX model representing a scheduled biophysical or historical planetary event
+ * Observable JavaFX model representing a scheduled biophysical, climatic, or historical planetary event
  * inside the scenario setup calendar table.
  *
  * @author Silvere Martin-Michiellot
@@ -27,9 +29,10 @@ public class ScenarioClimateEventModel {
     private final DoubleProperty longitude;
     private final DoubleProperty depth;
     private final DoubleProperty magnitude;
+    private final IntegerProperty durationDays;
 
     /**
-     * Constructs a scheduled climate/historical event.
+     * Constructs a scheduled climate/historical event with explicit duration.
      *
      * @param type event typology (VOLCANO, PANDEMIC, DROUGHT, LEADER, etc.)
      * @param name descriptive title or historical event name
@@ -37,9 +40,10 @@ public class ScenarioClimateEventModel {
      * @param lat latitude coordinate in degrees [-90°, +90°]
      * @param lon longitude coordinate in degrees [-180°, +180°]
      * @param depth hypocenter depth in km (for earthquakes/volcanoes)
-     * @param mag magnitude or normalized impact intensity [0.0, 1.0]
+     * @param mag magnitude or normalized impact intensity [0.0, 10.0]
+     * @param durationDays active duration in simulation days (<= 0 indicates permanent milestone)
      */
-    public ScenarioClimateEventModel(String type, String name, int year, double lat, double lon, double depth, double mag) {
+    public ScenarioClimateEventModel(String type, String name, int year, double lat, double lon, double depth, double mag, int durationDays) {
         this.type = new SimpleStringProperty(type);
         this.name = new SimpleStringProperty(name);
         this.year = new SimpleIntegerProperty(year);
@@ -47,6 +51,14 @@ public class ScenarioClimateEventModel {
         this.longitude = new SimpleDoubleProperty(lon);
         this.depth = new SimpleDoubleProperty(depth);
         this.magnitude = new SimpleDoubleProperty(mag);
+        this.durationDays = new SimpleIntegerProperty(durationDays);
+    }
+
+    /**
+     * Constructs a scheduled event defaulting duration based on type.
+     */
+    public ScenarioClimateEventModel(String type, String name, int year, double lat, double lon, double depth, double mag) {
+        this(type, name, year, lat, lon, depth, mag, ClimateEvent.getDefaultDurationDaysForType(type));
     }
 
     public StringProperty typeProperty() { return type; }
@@ -56,6 +68,7 @@ public class ScenarioClimateEventModel {
     public DoubleProperty longitudeProperty() { return longitude; }
     public DoubleProperty depthProperty() { return depth; }
     public DoubleProperty magnitudeProperty() { return magnitude; }
+    public IntegerProperty durationDaysProperty() { return durationDays; }
 
     public String getType() { return type.get(); }
     public void setType(String v) { type.set(v); }
@@ -71,4 +84,6 @@ public class ScenarioClimateEventModel {
     public void setDepth(double v) { depth.set(v); }
     public double getMagnitude() { return magnitude.get(); }
     public void setMagnitude(double v) { magnitude.set(v); }
+    public int getDurationDays() { return durationDays.get(); }
+    public void setDurationDays(int v) { durationDays.set(v); }
 }

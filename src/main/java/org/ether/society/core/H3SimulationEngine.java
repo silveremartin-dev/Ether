@@ -470,6 +470,13 @@ public final class H3SimulationEngine implements ISimulationEngine {
     public double getUrbanizationRate() { return metricsAggregator.getUrbanizationRate(); } public double getLiteracyRate() { return metricsAggregator.getLiteracyRate(); }
     public double getAtmosphericCO2Ppm() { return metricsAggregator.getAtmosphericCO2Ppm(); } public double getTemperatureAnomaly() { return metricsAggregator.getTemperatureAnomaly(); }
 
+    private boolean headlessTelemetrySubscribed = false;
+
+    /** @return true if headless telemetry subscription is active */
+    public boolean isHeadlessTelemetrySubscribed() { return headlessTelemetrySubscribed; }
+    /** @param subscribed enable or disable headless telemetry evaluation */
+    public void setHeadlessTelemetrySubscribed(boolean subscribed) { this.headlessTelemetrySubscribed = subscribed; }
+
     public WorldBuffer getWorldBuffer() { return worldBuffer; }
     public void setWorldBuffer(WorldBuffer worldBuffer) { this.worldBuffer = worldBuffer; }
     public AgentBuffer getAgentBuffer() { return agentBuffer; }

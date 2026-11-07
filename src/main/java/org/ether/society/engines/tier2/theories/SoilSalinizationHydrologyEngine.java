@@ -111,11 +111,18 @@ public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
             // Salinization is acute in arid/semi-arid plains and lowlands (Rain < 450mm, Temp > 18°C)
             if (rainfall < 450.0 && temp > 18.0 && elevation < 800.0) {
                 double currentSalinity = cell.getSoilSalinityOr(0.0);
-                double tech = cell.getTechnologyLevelOr(1.0);
+                double kPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, (double) pop);
                 double food = cell.getFoodResourceOr(1000.0);
 
-                // 1. Irrigation intensity scales with population density and agrarian technology (pre-industrial drainage limits)
-                double irrigationIntensity = Math.min(3.0, (pop / 200.0)) * (tech <= 4.0 ? 1.2 : 0.4);
+                // Smooth C^1 transition to pressurized subsurface tile drainage (Jacobsen & Adams 1958; FAO 1985):
+                // Below k_pc = 1200 kg/cap (gravity-fed flood canals), drainage leaching is minimal and irrigation water
+                // load per unit crop is high; above k_pc = 1200 kg/cap (modern subsurface tile drainage & drip pumps),
+                // solute leaching increases and flood application decreases.
+                double modernDrainageActivation = 1.0 / (1.0 + Math.exp(-(kPerCapita - 1200.0) / 350.0));
+
+                // 1. Irrigation intensity scales with population density and gravity-canal vs drip efficiency
+                double irrigationEfficiencyFactor = 1.2 * (1.0 - modernDrainageActivation) + 0.4 * modernDrainageActivation;
+                double irrigationIntensity = Math.min(3.0, (pop / 200.0)) * irrigationEfficiencyFactor;
 
                 // 2. Capillary groundwater upward flux driven by potential evapotranspiration (PET >> Precipitation)
                 double accessibleAquifer = cell.getAccessibleAquiferOr(0.0);
@@ -126,8 +133,9 @@ public class SoilSalinizationHydrologyEngine implements ProceduralEnginePlugin {
                 // 3. Salt deposition rate (irrigation canal solute load + upward capillary rise)
                 double saltInputRate = (irrigationIntensity * 0.15) + (capillaryFlux * 0.08);
 
-                // 4. Subsurface drainage leaching (modern tile drainage mitigates; pre-industrial lacks drainage)
-                double drainageLeaching = (tech > 5.0 ? 0.08 : 0.005) + (rainfall > 400.0 ? (rainfall - 400.0) * 0.002 : 0.0);
+                // 4. Subsurface drainage leaching (smoothly scales from 0.005/yr gravity seepage to 0.08/yr tile drainage)
+                double drainageLeaching = (0.005 + 0.075 * modernDrainageActivation)
+                        + (rainfall > 400.0 ? (rainfall - 400.0) * 0.002 : 0.0);
                 double saltLeachedRate = drainageLeaching * currentSalinity;
 
                 // 5. Dynamic mass balance integration: d[Salts]/dt

@@ -122,6 +122,7 @@ public class ScenarioSetupPanel extends BorderPane {
     CheckBox randomEventsCheckBox;
     CheckBox earthLeadersCheckBox;
     CheckBox proceduralLeadersCheckBox;
+    CheckBox chronicleObserverCheckBox;
 
     // Events section
     ScenarioEventsSectionBuilder eventsSectionBuilder;
@@ -137,6 +138,10 @@ public class ScenarioSetupPanel extends BorderPane {
 
     /** Internal model for a scheduled planetary event. */
     public static class ClimateEvent extends ScenarioClimateEventModel {
+        public ClimateEvent(String type, String name, int year, double lat, double lon, double depth, double mag, int durationDays) {
+            super(type, name, year, lat, lon, depth, mag, durationDays);
+        }
+
         public ClimateEvent(String type, String name, int year, double lat, double lon, double depth, double mag) {
             super(type, name, year, lat, lon, depth, mag);
         }

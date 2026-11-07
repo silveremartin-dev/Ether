@@ -38,6 +38,8 @@ public class H3Globe3DRenderer {
     private Color[] polyColorBuf = new Color[0];
     private boolean[] polyBorderBuf = new boolean[0];
     private Integer[] polyIndexBuf = new Integer[0];
+    private final double[] strokePx = new double[6];
+    private final double[] strokePy = new double[6];
 
     private WritableImage cachedSmoothImage;
     private boolean smoothImageDirty = true;
@@ -122,7 +124,7 @@ public class H3Globe3DRenderer {
             WritableImage smoothImg = getOrUpdateSmoothMapImage(cells, colorResolver, showHillshading, showSolarTerminator, minLat, maxLat, minLng, maxLng);
             drawSmoothGlobeSurface(gc, cx, cy, radius, radRotationY, radTilt, centerLat, centerLng, minLat, maxLat, minLng, maxLng, showSolarTerminator, smoothImg);
 
-            if (showHexGrid) {
+            if (showHexGrid && screenCellRadius >= 3.5) {
                 for (int i = 0; i < cellCount; i++) {
                     H3Cell cell = cells.get(i);
                     double lat = cell.getLatitude();
@@ -157,8 +159,8 @@ public class H3Globe3DRenderer {
                         continue;
                     }
 
-                    double[] px = new double[6];
-                    double[] py = new double[6];
+                    double[] px = strokePx;
+                    double[] py = strokePy;
 
                     double ux, uy, uz;
                     if (Math.abs(ny) < 0.99) {

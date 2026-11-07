@@ -114,15 +114,14 @@ public class Tier2AdvancedCliodynamicsTest {
         List<H3Cell> cells = new ArrayList<>();
         H3Cell researchHub = new H3Cell();
         researchHub.setPopulation(50_000);
-        researchHub.setTechnologyLevel(5.0);
         researchHub.setResourceCapital(10_000.0);
         cells.add(researchHub);
 
-        double techBefore = researchHub.getTechnologyLevel();
+        double capBefore = researchHub.getResourceCapital();
         engine.process(cells, 1.0);
-        double techAfter = researchHub.getTechnologyLevel();
+        double capAfter = researchHub.getResourceCapital();
 
-        assertTrue(techAfter > techBefore, "Combinatorial tech space must accelerate technological progress");
+        assertTrue(capAfter > capBefore, "Combinatorial capital dynamics must accelerate physical capital accumulation");
     }
 }
 

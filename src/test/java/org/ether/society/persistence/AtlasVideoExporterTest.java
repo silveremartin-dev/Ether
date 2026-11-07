@@ -109,7 +109,7 @@ class AtlasVideoExporterTest {
             c.setWaterResource(80.0);
             c.setDynamicAlbedo(0.25);
             c.setMovementFriction(1.0);
-            c.setTechnologyLevel(2.5);
+            c.setResourceCapital(1500.0);
             c.setResourceMetal(50.0);
             list.add(c);
         }

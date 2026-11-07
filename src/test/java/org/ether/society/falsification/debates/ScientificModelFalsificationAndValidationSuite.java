@@ -99,7 +99,7 @@ public class ScientificModelFalsificationAndValidationSuite {
 
                 // Boserupian branch: population density triggers multi-cropping, terrace irrigation and biomass growth
                 boserupEngine.process(boserupGrid, 2.0);
-                org.ether.society.engines.tier1.EcologicalDegradationEngine.processEcologicalDegradation(boserupGrid, boserupGrid.get(0).getTechnologyLevel(), 2.0);
+                org.ether.society.engines.tier1.EcologicalDegradationEngine.processEcologicalDegradation(boserupGrid, org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(boserupGrid.get(0)), 2.0);
                 BiologicalDemographicsEngine.processBiologicalDemographics(boserupGrid, 2.0);
 
                 // Endogenous demographic response to expanding Boserup carrying capacity (Bocquet-Appel 2011; Boserup 1965)
@@ -119,9 +119,9 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             double finalMalthusPop = malthusGrid.stream().mapToDouble(H3Cell::getPopulation).sum();
             double finalBoserupPop = boserupGrid.stream().mapToDouble(H3Cell::getPopulation).sum();
-            double finalBoserupTech = boserupGrid.stream().mapToDouble(H3Cell::getTechnologyLevel).average().orElse(1.0);
+            double finalBoserupCap = boserupGrid.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(1.0);
 
-            logger.info("  -> Malthusian Pop: {}, Boserup Pop: {}, Boserup Tech: {}", finalMalthusPop, finalBoserupPop, finalBoserupTech);
+            logger.info("  -> Malthusian Pop: {}, Boserup Pop: {}, Boserup Cap: {}", finalMalthusPop, finalBoserupPop, finalBoserupCap);
 
             // Confrontation with historical reality: HYDE 3.4 shows demographic take-off from 1750 (790M) to 1850 (1260M)
             Map<Integer, Double> historicalPop = HistoricalValidationKernel.getBenchmarkDataset("worldPopulation");
@@ -145,7 +145,7 @@ public class ScientificModelFalsificationAndValidationSuite {
                     "Boserupian intensification prevents demographic collapse through endogenous technological adaptation.");
             assertTrue(finalBoserupPop > finalMalthusPop * 1000.0,
                     "Boserupian regime sustains orders of magnitude higher carrying capacity than collapsed Malthusian trap.");
-            assertTrue(finalBoserupTech > 1.2, "Demographic density must trigger technological upgrades.");
+            assertTrue(finalBoserupCap > 1000.0, "Demographic density must trigger physical capital upgrades.");
             assertTrue(boserupGrid.get(0).getBiomassAgriculture() > malthusGrid.get(0).getBiomassAgriculture(),
                     "Boserupian multi-cropping must increase standing agricultural capacity above static baseline.");
         }
@@ -191,7 +191,7 @@ public class ScientificModelFalsificationAndValidationSuite {
             farmCell.setBiomassAgriculture(30_000_000.0);
             farmCell.setSoilOrganicCarbon(5.0); // Severely depleted natural carbon/nitrogen
             farmCell.setResourceMetal(0.0);     // No mineral phosphate rock
-            farmCell.setTechnologyLevel(1.0);   // Pre-industrial: no Haber-Bosch ammonia synthesis
+            farmCell.setResourceCapital(500.0); // Pre-industrial: no Haber-Bosch ammonia synthesis
 
             List<H3Cell> cells = List.of(farmCell);
 
@@ -353,17 +353,15 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             H3Cell richOreCell = new H3Cell(0x8428308287fffffL, 45.0, 10.0);
             richOreCell.setPopulation(10000);
-            richOreCell.setResourceCapital(1000.0);
+            richOreCell.setResourceCapital(10000.0);
             richOreCell.setResourceMetal(5000.0);
             richOreCell.setBiomassNatural(2000.0); // Abundant exergy source (wood & coal proxy)
-            richOreCell.setTechnologyLevel(3.0);
 
             H3Cell depletedOreCell = new H3Cell(0x8428308288fffffL, 45.0, 10.0);
             depletedOreCell.setPopulation(10000);
             depletedOreCell.setResourceCapital(1000.0);
             depletedOreCell.setResourceMetal(10.0);
             depletedOreCell.setBiomassNatural(1.0); // Starved exergy source -> useful exergy starvation
-            depletedOreCell.setTechnologyLevel(1.0);
 
             List<H3Cell> cells = List.of(richOreCell, depletedOreCell);
             for (int yr = 0; yr < 20; yr++) {
@@ -483,14 +481,12 @@ public class ScientificModelFalsificationAndValidationSuite {
             highlandInclusive.setGiniIndex(0.25);
             highlandInclusive.setMovementFriction(4.5);
             highlandInclusive.setResourceCapital(100.0);
-            highlandInclusive.setTechnologyLevel(2.0);
 
             H3Cell coastalExtractive = new H3Cell(0x8828308283fffffL, 45.0, 5.0);
             coastalExtractive.setPopulation(10000);
             coastalExtractive.setGiniIndex(0.75);
             coastalExtractive.setMovementFriction(1.0);
             coastalExtractive.setResourceCapital(100.0);
-            coastalExtractive.setTechnologyLevel(2.0);
 
             List<H3Cell> testCells = List.of(highlandInclusive, coastalExtractive);
 
@@ -507,7 +503,7 @@ public class ScientificModelFalsificationAndValidationSuite {
         }
 
         @Test
-        @DisplayName("5.2 Long-Term (300 yr): Multi-Century Reversal of Fortune (Inclusive Technology Overcomes Friction)")
+        @DisplayName("5.2 Long-Term (300 yr): Multi-Century Reversal of Fortune (Inclusive Capital Overcomes Friction)")
         public void testMultiCenturyReversalOfFortune() {
             logger.info("🧪 [Scenario 5.2] Testing Acemoglu 300-Year Reversal of Fortune...");
 
@@ -529,7 +525,7 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             for (int yr = 0; yr < 300; yr++) {
                 instEngine.process(testCells, 1.0);
-                double effFrictionA = Math.max(1.0, highlandInclusive.getMovementFriction() / (1.0 + 0.1 * highlandInclusive.getTechnologyLevel()));
+                double effFrictionA = Math.max(1.0, highlandInclusive.getMovementFriction() / (1.0 + 0.1 * org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(highlandInclusive)));
                 double effFrictionB = 1.0;
 
                 highlandInclusive.setResourceCapital(highlandInclusive.getResourceCapital() + (5.0 / effFrictionA));
@@ -537,8 +533,8 @@ public class ScientificModelFalsificationAndValidationSuite {
             }
 
             logger.info("  -> Highland Inclusive Capital (300 yr): {}, Coastal Extractive Capital: {}", highlandInclusive.getResourceCapital(), coastalExtractive.getResourceCapital());
-            assertTrue(highlandInclusive.getResourceCapital() > coastalExtractive.getResourceCapital(), "Long-term technological innovation overcomes physical transport barriers.");
-            assertTrue(highlandInclusive.getTechnologyLevel() >= coastalExtractive.getTechnologyLevel(), "Inclusive institutions compound technological innovation, driving long-term Reversal of Fortune.");
+            assertTrue(highlandInclusive.getResourceCapital() > coastalExtractive.getResourceCapital(), "Long-term physical capital accumulation overcomes physical transport barriers.");
+            assertTrue(org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(highlandInclusive) >= org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(coastalExtractive), "Inclusive institutions compound capital accumulation, driving long-term Reversal of Fortune.");
         }
     }
 
@@ -737,8 +733,8 @@ public class ScientificModelFalsificationAndValidationSuite {
             H3Cell romeCapital = grid.get(0); // Gaul lowland hub
             romeCapital.setPopulation(80000);
             romeCapital.setPop15to24(16000);
-            romeCapital.updateAgePyramidFromTotal(2.5);
             romeCapital.setResourceCapital(15000.0);
+            romeCapital.updateAgePyramidFromTotal();
 
             H3Cell alpinePassCell = grid.get(10); // Transalpine crest pass (2200m)
             alpinePassCell.setGiniIndex(0.28);
@@ -827,8 +823,8 @@ public class ScientificModelFalsificationAndValidationSuite {
             mountainCellA.setMovementFriction(1.5);
             mountainCellA.setPopulation(8500);
             mountainCellA.setPop15to24(1700);
-            mountainCellA.updateAgePyramidFromTotal(2.5);
             mountainCellA.setResourceCapital(1500.0);
+            mountainCellA.updateAgePyramidFromTotal();
             mountainCellA.setGiniIndex(0.35);
 
             H3Cell mountainCrestBTarget = grid.get(10); // Pyrenean crest ridge
@@ -928,10 +924,9 @@ public class ScientificModelFalsificationAndValidationSuite {
         for (int i = 0; i < 10; i++) {
             H3Cell c = new H3Cell(0x882830828100000L + i, 43.6 + (i * 0.15), 0.5 + ((i % 3) * 0.2));
             c.setPopulation(8000 + (i * 600));
-            c.setTechnologyLevel(2.5);
-            c.updateAgePyramidFromTotal(2.5);
             c.setFoodResource(25000.0);
             c.setResourceCapital(1500.0);
+            c.updateAgePyramidFromTotal();
             c.setElevation(80.0 + (i * 10.0));
             c.setMovementFriction(1.0);
             c.setGiniIndex(0.35);
@@ -942,10 +937,9 @@ public class ScientificModelFalsificationAndValidationSuite {
         for (int i = 0; i < 8; i++) {
             H3Cell c = new H3Cell(0x882830828200000L + i, 42.8 + (i * 0.05), 0.5 + ((i % 2) * 0.2));
             c.setPopulation(900 + (i * 70));
-            c.setTechnologyLevel(2.0);
-            c.updateAgePyramidFromTotal(2.0);
             c.setFoodResource(4000.0);
             c.setResourceCapital(200.0);
+            c.updateAgePyramidFromTotal();
             c.setElevation(2200.0 + (i * 50.0));
             c.setMovementFriction(5.0);
             c.setGiniIndex(0.35);
@@ -956,10 +950,9 @@ public class ScientificModelFalsificationAndValidationSuite {
         for (int i = 0; i < 12; i++) {
             H3Cell c = new H3Cell(0x882830828300000L + i, 42.1 - (i * 0.15), 0.5 + ((i % 3) * 0.2));
             c.setPopulation(7500 + (i * 400));
-            c.setTechnologyLevel(2.4);
-            c.updateAgePyramidFromTotal(2.4);
             c.setFoodResource(22000.0);
             c.setResourceCapital(1200.0);
+            c.updateAgePyramidFromTotal();
             c.setElevation(450.0 + (i * 15.0));
             c.setMovementFriction(1.3);
             c.setGiniIndex(0.35);
@@ -976,11 +969,10 @@ public class ScientificModelFalsificationAndValidationSuite {
             // Po Valley alluvial basin (45.0°N to 45.4°N, 9.5°E to 10.5°E, elevation 80-120m, fertile alluvium)
             H3Cell c = new H3Cell(0x8828308280fffffL + i, 45.0 + (i * 0.008), 9.5 + (i * 0.02));
             c.setPopulation(popPerCell);
-            c.setTechnologyLevel(tech);
-            c.updateAgePyramidFromTotal(tech);
             c.setFoodResource(initialFood);
             c.setBiomassAgriculture(initialFood * 1.2);
             c.setResourceCapital(popPerCell * 0.5);
+            c.updateAgePyramidFromTotal();
             c.setGiniIndex(0.35);
             c.setMovementFriction(1.0);
             c.setElevation(95.0 + (i % 5) * 5.0);

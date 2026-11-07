@@ -18,13 +18,12 @@ public class ArthurCombinatorialTechnologyEngineTest {
         ArthurCombinatorialTechnologyEngine engine = new ArthurCombinatorialTechnologyEngine();
         H3Cell cell = new H3Cell(613503380827930850L, 51.5, -0.1);
         cell.setPopulation(5000);
-        cell.setTechnologyLevel(2.0);
         cell.setResourceCapital(1000.0);
 
         engine.process(List.of(cell), 1.0);
 
-        assertTrue(cell.getTechnologyLevel() > 2.0, "Combinatorial innovation must advance technology level");
-        assertTrue(Double.isFinite(cell.getTechnologyLevel()), "Technology level must remain finite");
+        assertTrue(cell.getResourceCapital() > 1000.0, "Combinatorial innovation must advance productive capital stock");
+        assertTrue(Double.isFinite(cell.getResourceCapital()), "Productive capital stock must remain finite");
     }
 
     @Test
@@ -32,14 +31,13 @@ public class ArthurCombinatorialTechnologyEngineTest {
         ArthurCombinatorialTechnologyEngine engine = new ArthurCombinatorialTechnologyEngine();
         H3Cell cell = new H3Cell(613503380827930851L, 51.6, -0.2);
         cell.setPopulation(1000);
-        cell.setTechnologyLevel(1.5);
         cell.setResourceCapital(-100.0); // Negative capital (debt/deficit)
 
         assertDoesNotThrow(() -> {
             engine.process(List.of(cell), 1.0);
         }, "Negative capital must not cause Math.sqrt(negative) NaN exception or crash");
 
-        assertFalse(Double.isNaN(cell.getTechnologyLevel()), "Technology level must never become NaN under negative capital");
+        assertFalse(Double.isNaN(cell.getResourceCapitalOr(0.0)), "Capital stock must never become NaN under negative capital");
     }
 
     @Test
@@ -50,7 +48,6 @@ public class ArthurCombinatorialTechnologyEngineTest {
 
         H3Cell nullCell = new H3Cell(613503380827930852L, 0.0, 0.0);
         nullCell.setPopulation(null);
-        nullCell.setTechnologyLevel(null);
         nullCell.setResourceCapital(null);
 
         assertDoesNotThrow(() -> {

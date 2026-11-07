@@ -147,6 +147,14 @@ final class H3BufferSyncHelper {
         if (worldBuffer.getBiomassNatural() != null) cell.setBiomassNatural((double) worldBuffer.getBiomassNatural()[i]);
         if (worldBuffer.getBiomassLivestock() != null) cell.setBiomassLivestock((double) worldBuffer.getBiomassLivestock()[i]);
         if (worldBuffer.getBiomassFish() != null) cell.setBiomassFish((double) worldBuffer.getBiomassFish()[i]);
+        if (worldBuffer.getResourceCoal() != null) cell.setResourceCoal((double) worldBuffer.getResourceCoal()[i]);
+        if (worldBuffer.getResourceOil() != null) cell.setResourceOil((double) worldBuffer.getResourceOil()[i]);
+        if (worldBuffer.getResourceGas() != null) cell.setResourceGas((double) worldBuffer.getResourceGas()[i]);
+        if (worldBuffer.getResourceUranium() != null) cell.setResourceUranium((double) worldBuffer.getResourceUranium()[i]);
+        if (worldBuffer.getFreshwaterAquifer() != null) cell.setFreshwaterAquifer((double) worldBuffer.getFreshwaterAquifer()[i]);
+        if (worldBuffer.getSoilDepth() != null) cell.setSoilDepth((double) worldBuffer.getSoilDepth()[i]);
+        if (worldBuffer.getSoilOrganicCarbon() != null) cell.setSoilOrganicCarbon((double) worldBuffer.getSoilOrganicCarbon()[i]);
+        if (worldBuffer.getCommercialFluxVolume() != null) cell.setTradeNetwork((double) worldBuffer.getCommercialFluxVolume()[i]);
 
         if (cell.getBiome() != null) {
             biomes[i] = (byte) cell.getBiome().ordinal();
@@ -197,7 +205,7 @@ final class H3BufferSyncHelper {
                 && (performanceConfig.isEnableParallelExecution() || performanceConfig.getParallelThreadCount() > 1);
         if (parallel) {
             IntStream.range(0, limit).parallel().forEach(i -> syncSingleCellToBufferElement(
-                    i, cells.get(i), pop, food, water, wood, metal, clay, gini, capital,
+                    i, cells.get(i), worldBuffer, pop, food, water, wood, metal, clay, gini, capital,
                     lifespan, fertility, biomassAgri, biomassNat, biomassLivestock, biomassFish, biomes, cellPopModified));
             for (int i = 0; i < limit; i++) {
                 if (cellPopModified[i]) {
@@ -208,7 +216,7 @@ final class H3BufferSyncHelper {
         } else {
             for (int i = 0; i < limit; i++) {
                 if (syncSingleCellToBufferElement(
-                        i, cells.get(i), pop, food, water, wood, metal, clay, gini, capital,
+                        i, cells.get(i), worldBuffer, pop, food, water, wood, metal, clay, gini, capital,
                         lifespan, fertility, biomassAgri, biomassNat, biomassLivestock, biomassFish, biomes, cellPopModified)) {
                     popModified = true;
                 }
@@ -274,6 +282,7 @@ final class H3BufferSyncHelper {
     private static boolean syncSingleCellToBufferElement(
             int i,
             H3Cell cell,
+            WorldBuffer worldBuffer,
             float[] pop,
             float[] food,
             float[] water,
@@ -310,6 +319,14 @@ final class H3BufferSyncHelper {
         if (gini != null && cell.getGiniIndex() != null) gini[i] = cell.getGiniIndex().floatValue();
         if (capital != null && cell.getResourceCapital() != null) capital[i] = cell.getResourceCapital().floatValue();
         if (lifespan != null && cell.getLifespan() != null) lifespan[i] = cell.getLifespan().floatValue();
+        if (cell.getResourceCoal() != null && worldBuffer.getResourceCoal() != null) worldBuffer.getResourceCoal()[i] = cell.getResourceCoal().floatValue();
+        if (cell.getResourceOil() != null && worldBuffer.getResourceOil() != null) worldBuffer.getResourceOil()[i] = cell.getResourceOil().floatValue();
+        if (cell.getResourceGas() != null && worldBuffer.getResourceGas() != null) worldBuffer.getResourceGas()[i] = cell.getResourceGas().floatValue();
+        if (cell.getResourceUranium() != null && worldBuffer.getResourceUranium() != null) worldBuffer.getResourceUranium()[i] = cell.getResourceUranium().floatValue();
+        if (cell.getFreshwaterAquifer() != null && worldBuffer.getFreshwaterAquifer() != null) worldBuffer.getFreshwaterAquifer()[i] = cell.getFreshwaterAquifer().floatValue();
+        if (cell.getSoilDepth() != null && worldBuffer.getSoilDepth() != null) worldBuffer.getSoilDepth()[i] = cell.getSoilDepth().floatValue();
+        if (cell.getSoilOrganicCarbon() != null && worldBuffer.getSoilOrganicCarbon() != null) worldBuffer.getSoilOrganicCarbon()[i] = cell.getSoilOrganicCarbon().floatValue();
+        if (cell.getTradeNetwork() != null && worldBuffer.getCommercialFluxVolume() != null) worldBuffer.getCommercialFluxVolume()[i] = cell.getTradeNetwork().floatValue();
         if (fertility != null && cell.getFertility() != null) fertility[i] = cell.getFertility().floatValue();
         if (biomassAgri != null && cell.getBiomassAgriculture() != null) biomassAgri[i] = cell.getBiomassAgriculture().floatValue();
         if (biomassNat != null && cell.getBiomassNatural() != null) biomassNat[i] = cell.getBiomassNatural().floatValue();

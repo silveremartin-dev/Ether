@@ -72,6 +72,7 @@ final class ScenarioOperationsHelper {
             copy.setRandomEventsEnabled(src.isRandomEventsEnabled());
             copy.setEarthHistoricalLeadersEnabled(src.isEarthHistoricalLeadersEnabled());
             copy.setProceduralLeadersEnabled(src.isProceduralLeadersEnabled());
+            copy.setChronicleSingularityObserverEnabled(src.isChronicleSingularityObserverEnabled());
             copy.setCustomDensityBase64(src.getCustomDensityBase64());
             copy.setCultureVectorDimensions(src.getCultureVectorDimensions());
             copy.setCulturalDiffusionRate(src.getCulturalDiffusionRate());

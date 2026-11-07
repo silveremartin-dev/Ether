@@ -126,7 +126,6 @@ final class HistoricalRuptureArmEvaluator {
         c.setRainfall(1200.0);
         c.setFoodResource(20000000.0);
         c.setBiomassNatural(800.0);
-        c.setTechnologyLevel(1.0);
         c.setBiome(Biome.SAVANNAH);
         return c;
     }
@@ -192,7 +191,6 @@ final class HistoricalRuptureArmEvaluator {
         c.setResourceCapital(100.0);
         c.setResourceWork(100.0);
         c.setResourceMetal(50.0);
-        c.setTechnologyLevel(2.0);
         return c;
     }
 
@@ -278,12 +276,10 @@ final class HistoricalRuptureArmEvaluator {
         H3Cell u7 = new H3Cell();
         u7.setPopulation(50000);
         u7.setResourceCapital(2000000.0);
-        u7.setTechnologyLevel(6.0);
 
         H3Cell f7 = new H3Cell();
         f7.setPopulation(150000);
         f7.setResourceCapital(2000000.0);
-        f7.setTechnologyLevel(6.0);
 
         double unforced1945Capital = u7.getResourceCapital();
 

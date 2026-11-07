@@ -121,7 +121,7 @@ final class ScenarioPreviewCellColorEvaluator {
             double norm = Math.clamp(food / 100000.0, 0.0, 1.0);
             return Color.hsb(120.0, 0.70 + norm * 0.30, 0.60 + norm * 0.35);
         } else if (derivedOffset == 4 || mode.contains("informationnel") || mode.contains("info") || mode.contains("i(x)")) {
-            double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+            double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
             double norm = Math.clamp(tech / 10.0, 0.0, 1.0);
             return Color.hsb(270.0 + norm * 60.0, 0.85, 0.90);
         } else if (derivedOffset == 5 || mode.contains("empreinte") || mode.contains("footprint")
@@ -326,7 +326,7 @@ final class ScenarioPreviewCellColorEvaluator {
                         sum += (c.getFoodResource() != null ? c.getFoodResource() : 0.0);
                     } else if (derivedOffset == 4 || safeName.contains("Info") || safeName.contains("I(x)")
                             || safeName.contains("informationnel") || safeName.contains("Information")) {
-                        sum += (c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0);
+                        sum += org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
                     } else if (derivedOffset == 6 || safeName.contains("Friction") || safeName.contains("friction")
                             || safeName.contains("Reibung") || safeName.contains("Fricción")) {
                         sum += (c.getMovementFriction() != null ? c.getMovementFriction() : 1.0);

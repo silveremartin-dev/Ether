@@ -80,8 +80,8 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
         engineA.stepForward(YEARS);
         engineB.stepForward(YEARS);
 
-        double finalTechA = engineA.getWorldBuffer().getTechnologyLevel()[0];
-        double finalTechB = engineB.getWorldBuffer().getTechnologyLevel()[0];
+        double finalTechA = engineA.getWorldBuffer().computeEmergentTechnologyDiagnostic(0);
+        double finalTechB = engineB.getWorldBuffer().computeEmergentTechnologyDiagnostic(0);
 
         logger.info("=== TASMANIAN CULTURAL REGRESSION TEST (40 Years, N=250) ===");
         logger.info("  Initial Tech: 2.50");
@@ -167,12 +167,10 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
         for (H3Cell c : britain) {
             c.setResourceCapital(35.0 * c.getPopulation());
             c.setResourceMetal(800.0);
-            c.setTechnologyLevel(3.0);
         }
         for (H3Cell c : ireland) {
             c.setResourceCapital(10.0 * c.getPopulation());
             c.setResourceMetal(200.0);
-            c.setTechnologyLevel(1.8);
             c.setBiomassAgriculture(2500.0);
         }
 
@@ -201,7 +199,7 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
 
         for (int i = irelandStartIndex; i < bufA.getCapacity(); i++) {
             irelandCapitalWithTrade += bufA.getResourceCapital()[i];
-            irelandTechWithTrade += bufA.getTechnologyLevel()[i];
+            irelandTechWithTrade += bufA.computeEmergentTechnologyDiagnostic(i);
         }
         irelandTechWithTrade /= ireland.size();
 
@@ -507,7 +505,6 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
             c.setResourceMetal(2000.0 * areaScale);
             c.setFoodResource(2000.0 * areaScale);
             c.setBiomassAgriculture(1500.0 * areaScale);
-            c.setTechnologyLevel(3.0);
         }
 
         // Ireland: Agrarian pastoral economy, cattle and grain exports, capital/tool deficit
@@ -516,7 +513,6 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
             c.setResourceMetal(150.0 * areaScale);
             c.setFoodResource(4500.0 * areaScale); // Agrarian surplus
             c.setBiomassAgriculture(3800.0 * areaScale);
-            c.setTechnologyLevel(1.8);
         }
 
         List<H3Cell> britishIslesMesh = new ArrayList<>();
@@ -550,7 +546,7 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
             britainFinalFood += c.getFoodResource();
         }
         for (H3Cell c : ireland) {
-            irelandFinalTech += c.getTechnologyLevel();
+            irelandFinalTech += org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
             irelandFinalCap += c.getResourceCapital();
         }
         irelandFinalTech /= ireland.size();
@@ -679,7 +675,7 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
             finalMadagascarPop += c.getBiomassHuman();
             finalMadagascarCap += c.getResourceCapital();
             finalMadagascarFish += c.getBiomassFish();
-            finalMadagascarTech += c.getTechnologyLevel();
+            finalMadagascarTech += org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
         }
         finalMadagascarTech /= 91.0;
 
@@ -688,7 +684,7 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
             finalComorosPop += c.getBiomassHuman();
             finalComorosCap += c.getResourceCapital();
             finalComorosFish += c.getBiomassFish();
-            finalComorosTech += c.getTechnologyLevel();
+            finalComorosTech += org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
         }
         finalComorosTech /= 37.0;
 
@@ -697,7 +693,7 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
             finalSwahiliPop += c.getBiomassHuman();
             finalSwahiliCap += c.getResourceCapital();
             finalSwahiliFish += c.getBiomassFish();
-            finalSwahiliTech += c.getTechnologyLevel();
+            finalSwahiliTech += org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
         }
         finalSwahiliTech /= 61.0;
 

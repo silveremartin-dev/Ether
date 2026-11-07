@@ -96,7 +96,7 @@ public final class StatVariableExtractor {
                     case "tech":
                     case "technology":
                     case "technologylevel":
-                        res[i] = c.getTechnologyLevel() != null ? c.getTechnologyLevel().floatValue() : 0.0f;
+                        res[i] = (float) org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
                         break;
                     case "lifespan":
                         res[i] = c.getLifespan() != null ? c.getLifespan().floatValue() : 40.0f;

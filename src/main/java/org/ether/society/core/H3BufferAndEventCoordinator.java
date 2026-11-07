@@ -155,19 +155,6 @@ public final class H3BufferAndEventCoordinator {
     }
 
     /**
-     * Legacy backward-compatibility method.
-     *
-     * @param cells          H3 cell list
-     * @param nations        polity list
-     * @param populatedCount populated cell count
-     * @deprecated Replaced by {@link #initializePoliticalEntities(List, List, Scenario)}
-     */
-    @Deprecated
-    public static void initializePoliticalSeeding(List<H3Cell> cells, List<Polity> nations, int populatedCount) {
-        // Intentionally deprecated: do not seed dummy 1-cell 'Realm of Hex' nations
-    }
-
-    /**
      * Checks and triggers scheduled scenario climate or cataclysm events for the current simulation year.
      *
      * @param currentScenario        active scenario
@@ -211,10 +198,12 @@ public final class H3BufferAndEventCoordinator {
                             displayTitle,
                             evt.getType().toUpperCase(),
                             evt.getLatitude(), evt.getLongitude(),
-                            currentYear, timeManager.getCurrentMonth(), 1, 25.0, evt.getMagnitude()
+                            currentYear, timeManager.getCurrentMonth(), 1, 25.0, evt.getMagnitude(),
+                            evt.getDurationDays()
                     );
                     eventSystem.recordSpatialEvent(ae);
-                    logger.info("🌋 [Tick {}] Scenario event triggered: {} (Year {})", tickCounter, evt.getName(), currentYear);
+                    logger.info("🌋 [Tick {}] Scenario event triggered: {} (Year {}, Duration: {} d)",
+                            tickCounter, evt.getName(), currentYear, evt.getDurationDays());
                     applyClimateEventImpact(evt, cells, worldBuffer, agentBuffer);
                 }
             }
@@ -223,6 +212,7 @@ public final class H3BufferAndEventCoordinator {
 
     /**
      * Applies physical, demographic, and capital shocks from a triggered {@link ClimateEvent} to affected cells and DOD buffers.
+     * Delegates strictly to the central headless {@link EventPhysicalImpactExecutor}.
      *
      * @param evt         climate or cataclysm event
      * @param cells       H3 cell list
@@ -234,121 +224,21 @@ public final class H3BufferAndEventCoordinator {
             List<H3Cell> cells,
             WorldBuffer worldBuffer,
             AgentBuffer agentBuffer) {
-        if (cells == null || cells.isEmpty()) return;
-        double evtLat = evt.getLatitude();
-        double evtLng = evt.getLongitude();
-        double mag = evt.getMagnitude();
-        int totalCells = cells.size();
-        float[] cellSurvival = null;
-        boolean anyAgentMortality = false;
-
-        for (int i = 0; i < totalCells; i++) {
-            H3Cell cell = cells.get(i);
-            if (cell == null) continue;
-            double distKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
-                    cell.getLatitudeOr(0.0), cell.getLongitudeOr(0.0), evtLat, evtLng);
-
-            String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
-            double impactRadiusDeg = (type.contains("pandemic") || type.contains("plague") || type.contains("epidemic"))
-                    ? (evt.getName() != null && (evt.getName().toLowerCase().contains("grippe") || evt.getName().toLowerCase().contains("flu")) ? 180.0 : 85.0)
-                    : Math.max(5.0, mag * 3.0);
-            double impactRadiusKm = impactRadiusDeg * 111.32;
-            if (distKm <= impactRadiusKm) {
-                double attenuation = 1.0 - (distKm / impactRadiusKm);
-                int lost = 0;
-                int prevPop = cell.getPopulationOr(0);
-
-                if (type.contains("nuclear") || type.contains("strike")) {
-                    cell.setTemperature(Math.max(-50.0, cell.getTemperatureOr(15.0) - 0.6 * mag * attenuation));
-                    if (prevPop > 0) {
-                        lost = (int) Math.round(prevPop * Math.min(0.95, 0.85 * attenuation));
-                        H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, prevPop - lost));
-                    }
-                    if (cell.getResourceCapital() != null) {
-                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-1.2 * attenuation)));
-                    }
-                    if (cell.getFoodResource() != null) {
-                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * Math.exp(-1.6 * attenuation)));
-                    }
-                    cell.setPollutionLevel(Math.min(1.0, cell.getPollutionLevelOr(0.0) + 0.8 * attenuation));
-                } else if (type.contains("volcano") || type.contains("ice")) {
-                    cell.setTemperature(Math.max(-50.0, cell.getTemperatureOr(15.0) - 0.5 * mag * attenuation));
-                } else if (type.contains("cyclone") || type.contains("hurricane") || type.contains("storm") || type.contains("flood")) {
-                    if (cell.getResourceCapital() != null) {
-                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.15 * mag * attenuation)));
-                    }
-                    if (cell.getFoodResource() != null) {
-                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * Math.exp(-0.25 * mag * attenuation)));
-                    }
-                    if (prevPop > 0) {
-                        lost = (int) Math.round(prevPop * (1.0 - Math.exp(-0.04 * mag * attenuation)));
-                        H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, prevPop - lost));
-                    }
-                } else if (type.contains("epidemic") || type.contains("pandemic") || type.contains("plague")) {
-                    if (prevPop > 0) {
-                        double virulence = 0.15;
-                        String tLower = evt.getName() != null ? evt.getName().toLowerCase() : "";
-                        if (tLower.contains("grippe") || tLower.contains("influenza") || tLower.contains("flu")) {
-                            virulence = 0.035;
-                        } else if (tLower.contains("peste") || tLower.contains("black death") || tLower.contains("plague")) {
-                            virulence = 0.35;
-                        }
-                        lost = (int) Math.round(prevPop * (1.0 - Math.exp(-virulence * mag * attenuation)));
-                        H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, prevPop - lost));
-                    }
-                    if (cell.getResourceCapital() != null) {
-                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.05 * mag * attenuation)));
-                    }
-                } else if (type.contains("earthquake") || type.contains("tsunami") || type.contains("meteor")) {
-                    if (cell.getResourceCapital() != null) {
-                        cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.08 * mag * attenuation)));
-                    }
-                    if (prevPop > 0) {
-                        lost = (int) Math.round(prevPop * (1.0 - Math.exp(-0.05 * mag * attenuation)));
-                        H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, prevPop - lost));
-                    }
-                } else if (type.contains("famine") || type.contains("drought")) {
-                    if (cell.getFoodResource() != null) {
-                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * Math.exp(-0.10 * mag * attenuation)));
-                    }
-                }
-
-                if (worldBuffer != null && i < worldBuffer.getCapacity()) {
-                    if (cell.getTemperature() != null) worldBuffer.getTemperature()[i] = cell.getTemperature().floatValue();
-                    if (cell.getResourceCapital() != null) worldBuffer.getResourceCapital()[i] = cell.getResourceCapital().floatValue();
-                    if (cell.getFoodResource() != null) worldBuffer.getFoodResource()[i] = cell.getFoodResource().floatValue();
-                    if (cell.getPopulation() != null) worldBuffer.getBiomassHuman()[i] = cell.getPopulation().floatValue();
-                }
-
-                if (agentBuffer != null && lost > 0 && prevPop > 0) {
-                    if (cellSurvival == null) {
-                        cellSurvival = new float[totalCells];
-                        Arrays.fill(cellSurvival, 1.0f);
-                    }
-                    cellSurvival[i] = 1.0f - Math.clamp((float) lost / Math.max(1.0f, (float) prevPop), 0.0f, 1.0f);
-                    anyAgentMortality = true;
-                }
-            }
-        }
-
-        if (anyAgentMortality && agentBuffer != null && cellSurvival != null) {
-            int cap = agentBuffer.getCapacity();
-            int[] hexIds = agentBuffer.getHexIds();
-            float[] mass = agentBuffer.getMass();
-            float[] deaths = agentBuffer.getDeaths();
-            for (int a = 0; a < cap; a++) {
-                int hId = hexIds[a];
-                if (hId >= 0 && hId < totalCells && mass[a] > 0.0f) {
-                    float surv = cellSurvival[hId];
-                    if (surv < 1.0f) {
-                        float oldM = mass[a];
-                        float newM = oldM * surv;
-                        mass[a] = newM;
-                        deaths[a] += (oldM - newM);
-                    }
-                }
-            }
-        }
+        if (evt == null || cells == null || cells.isEmpty()) return;
+        EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(
+                cells,
+                worldBuffer,
+                agentBuffer,
+                null,
+                evt.getType(),
+                evt.getName(),
+                evt.getMagnitude(),
+                evt.getLatitude(),
+                evt.getLongitude(),
+                evt.getDepth(),
+                0.0,
+                evt.getDurationDays()
+        );
     }
 
     /**

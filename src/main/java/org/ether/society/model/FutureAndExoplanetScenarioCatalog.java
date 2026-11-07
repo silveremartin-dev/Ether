@@ -208,10 +208,10 @@ public final class FutureAndExoplanetScenarioCatalog {
             • Élimination des pénuries matérielles, transition vers l'échelle de Kardashev Type I et régulation systémique.
             """);
         Map<String, Boolean> s6Engines = s6.getTypeBEngineStates();
-        s6Engines.put("TechnologicalSingularityEngine", true);
-        s6Engines.put("AiAutonomousRegulationPureEngine", true);
+        
+        
         s6Engines.put("KurzweilAcceleratingReturnsEngine", true);
-        s6Engines.put("KardashevPureEngine", true);
+        
         s6Engines.put("ArthurCombinatorialTechnologyEngine", true);
         s6Engines.put("AcemogluRobinsonInstitutionsEngine", true);
         list.add(s6);

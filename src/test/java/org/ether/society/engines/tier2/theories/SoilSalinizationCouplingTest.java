@@ -40,7 +40,7 @@ public class SoilSalinizationCouplingTest {
         mesopotamianCell.setAccessibleAquifer(150.0); // Shallow water table providing capillary solute flux
         mesopotamianCell.setFoodResource(5000.0);
         mesopotamianCell.setBiomassAgriculture(1000.0);
-        mesopotamianCell.setTechnologyLevel(1.5); // Pre-industrial Bronze Age (lacks tile drainage)
+        mesopotamianCell.setResourceCapital(80000.0); // Pre-industrial Bronze Age (k_pc = 100 kg/cap < 1200 tile drainage threshold)
         mesopotamianCell.setSoilSalinity(0.5); // Baseline low salinity
         cells.add(mesopotamianCell);
 
@@ -75,7 +75,7 @@ public class SoilSalinizationCouplingTest {
         drainedCell.setTemperature(22.0);
         drainedCell.setElevation(100.0);
         drainedCell.setAccessibleAquifer(0.0); // Deep water table, no capillary rise
-        drainedCell.setTechnologyLevel(7.0);  // Modern industrial drainage tile infrastructure
+        drainedCell.setResourceCapital(3000000.0); // Modern industrial drainage tile infrastructure (k_pc = 5000 kg/cap)
         drainedCell.setSoilSalinity(12.0);    // Previously heavily salinized soil
         drainedCell.setFoodResource(2000.0);
         cells.add(drainedCell);

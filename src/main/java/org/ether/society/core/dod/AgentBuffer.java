@@ -17,7 +17,6 @@ public class AgentBuffer {
     private final float[] mass;         // Population density
     private final float[] energy;       // Internal energy stock
     private final float[] sigmaCost;    // Entropy/Structure cost
-    private final float[] techLevel;    // T (Efficiency)
     private final float[] age;          // Cumulative age of the cohort
     private final float[] births;       // Number of births since last cycle
     private final float[] deaths;       // Number of deaths since last cycle
@@ -52,7 +51,6 @@ public class AgentBuffer {
         this.mass = new float[capacity];
         this.energy = new float[capacity];
         this.sigmaCost = new float[capacity];
-        this.techLevel = new float[capacity];
         this.age = new float[capacity];
         this.births = new float[capacity];
         this.deaths = new float[capacity];
@@ -105,12 +103,6 @@ public class AgentBuffer {
      * @return the resulting computation or state reference
      */
     public float[] getSigmaCost() { return sigmaCost; }
-    /**
-     * Get tech level.
-     *
-     * @return the resulting computation or state reference
-     */
-    public float[] getTechLevel() { return techLevel; }
     /**
      * Get age.
      *

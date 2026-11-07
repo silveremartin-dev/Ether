@@ -81,7 +81,7 @@ public class ThematicShaderRenderer {
         if (c.getFreshwaterAquifer() != null && c.getFreshwaterAquifer() > 0.1) {
             baseCap *= (1.0 + 1.5 * (c.getFreshwaterAquifer() / 1000.0));
         }
-        double tech = c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0;
+        double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
         baseCap *= Math.max(0.5, tech * 0.8);
         return Math.max(10.0, baseCap);
     }
@@ -147,7 +147,7 @@ public class ThematicShaderRenderer {
 
     public Color getEnergyCapacityColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 55);
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+        double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell);
         double norm = Math.min(1.0, tech / 10.0);
         return Color.color(0.1 + norm * 0.9, 0.4 + norm * 0.5, 0.2);
     }
@@ -155,7 +155,7 @@ public class ThematicShaderRenderer {
     public Color getEntropyPollutionColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(10, 20, 40);
         int pop = cell.getPopulation() != null ? cell.getPopulation() : 0;
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+        double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell);
         double pollution = (pop * 0.05 + tech * 1.5) / 500.0;
         double norm = Math.min(1.0, pollution);
         return Color.color(norm, 0.2, 0.8 * (1.0 - norm));
@@ -180,7 +180,7 @@ public class ThematicShaderRenderer {
 
     public Color getEducationLevelColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 20, 40);
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+        double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell);
         double edu = Math.min(1.0, tech / 8.0);
         return Color.color(0.2 + edu * 0.6, 0.3, 0.5 + edu * 0.5);
     }
@@ -213,7 +213,7 @@ public class ThematicShaderRenderer {
 
     public Color getCollectiveMemoryColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 25, 45);
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+        double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell);
         double mem = Math.min(1.0, tech / 10.0);
         return Color.color(0.1, 0.5 + mem * 0.5, 0.8 + mem * 0.2);
     }

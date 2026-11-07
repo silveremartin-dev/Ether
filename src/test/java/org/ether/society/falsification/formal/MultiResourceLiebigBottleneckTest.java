@@ -54,7 +54,7 @@ public class MultiResourceLiebigBottleneckTest {
         cellOptimal.setTemperature(20.0);
         cellOptimal.setRainfall(800.0); // Abundant precipitation (800 mm/yr)
         cellOptimal.setSoilOrganicCarbon(45.0);
-        cellOptimal.setTechnologyLevel(3.0);
+        cellOptimal.setResourceCapital(5000.0 * 300.0);
         cellOptimal.setPopulation(5000);
         cellOptimal.setBiomassAgriculture(500_000.0);
         cellOptimal.setResourceMetal(2000.0);
@@ -66,7 +66,6 @@ public class MultiResourceLiebigBottleneckTest {
         cellWaterStarved.setTemperature(20.0);
         cellWaterStarved.setRainfall(5.0); // 5 mm/yr (hyper-arid)
         cellWaterStarved.setSoilOrganicCarbon(45.0);
-        cellWaterStarved.setTechnologyLevel(8.0); // Ultra-advanced technology
         cellWaterStarved.setResourceCapital(1_000_000.0); // 1,000,000 capital units (massive monetary capital)
         cellWaterStarved.setEnergySolar(100_000_000.0); // 100 million GJ (virtual infinite exergy)
         cellWaterStarved.setPopulation(5000);

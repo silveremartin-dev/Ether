@@ -53,7 +53,6 @@ public class BaselineUnitScenarioTestSuite {
         cell.setPopulation(1000);
         cell.setFoodResource(5000.0);
         cell.setResourceCapital(100.0);
-        cell.setTechnologyLevel(1.0);
         cell.setLifespan(50.0);
 
         testCells.add(cell);
@@ -106,7 +105,7 @@ public class BaselineUnitScenarioTestSuite {
         control.setElevation(100.0);
         control.setTemperature(15.0);
         control.setFoodResource(5000.0);
-        control.setTechnologyLevel(1.0);
+        control.setResourceCapital(100.0);
 
         BiologicalDemographicsEngine.processBiologicalDemographics(List.of(hostile, control), 1.0);
 

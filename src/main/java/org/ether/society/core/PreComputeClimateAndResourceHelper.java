@@ -259,16 +259,18 @@ final class PreComputeClimateAndResourceHelper {
                     double wildPasture = calculateHerbaceousPastureCarryingCapacity(
                             cell.getTemperatureOr(15.0), cell.getRainfallOr(500.0), cell.getElevationOr(0.0), areaScale);
                     int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
-                    double t = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-                    double neolithicShare = (t >= 1.25) ? (1.0 / (1.0 + Math.exp(-6.0 * (t - 1.30)))) : 0.0;
-                    double domesticLivestock = (p > 0 && t >= 1.25) ? (p * 0.25 * neolithicShare) : 0.0;
+                    double kPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, (double) p);
+                    // Smooth C^1 Neolithic domestication envelope: activates above Paleolithic somatic tool stock (k_pc >= 15 kg/cap)
+                    double neolithicShare = 1.0 / (1.0 + Math.exp(-(kPerCapita - 15.0) / 5.0));
+                    double domesticLivestock = (p > 0 && kPerCapita >= 6.0) ? (p * 0.25 * neolithicShare) : 0.0;
                     cell.setBiomassLivestock(Math.max(wildPasture, domesticLivestock));
                 }
                 if (cell.getBiomassAgriculture() == null || cell.getBiomassAgriculture() == 0.0) {
                     int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
-                    double t = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
-                    double neolithicShare = (t >= 1.25) ? (1.0 / (1.0 + Math.exp(-6.0 * (t - 1.30)))) : 0.0;
-                    cell.setBiomassAgriculture((p > 0 && t >= 1.25) ? (p * 420.0 * neolithicShare * (1.0 + 0.05 * Math.max(0.0, t - 1.3))) : 0.0);
+                    double kPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, (double) p);
+                    double neolithicShare = 1.0 / (1.0 + Math.exp(-(kPerCapita - 15.0) / 5.0));
+                    double agrYieldBonus = 1.0 + 0.05 * Math.log1p(Math.max(0.0, kPerCapita - 15.0) / 25.0);
+                    cell.setBiomassAgriculture((p > 0 && kPerCapita >= 6.0) ? (p * 420.0 * neolithicShare * agrYieldBonus) : 0.0);
                 }
             }
             return;
@@ -304,11 +306,12 @@ final class PreComputeClimateAndResourceHelper {
 
             double wildLivestock = calculateHerbaceousPastureCarryingCapacity(temp, rain, elev, areaScale);
             int p = cell.getPopulationOr(0);
-            double t = cell.getTechnologyLevelOr(1.0);
-            double neolithicShare = (t >= 1.25) ? (1.0 / (1.0 + Math.exp(-6.0 * (t - 1.30)))) : 0.0;
-            double domesticLivestock = (p > 0 && t >= 1.25) ? (p * 0.25 * neolithicShare) : 0.0;
+            double kPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, (double) p);
+            double neolithicShare = 1.0 / (1.0 + Math.exp(-(kPerCapita - 15.0) / 5.0));
+            double domesticLivestock = (p > 0 && kPerCapita >= 6.0) ? (p * 0.25 * neolithicShare) : 0.0;
             cell.setBiomassLivestock(Math.max(wildLivestock, domesticLivestock));
-            cell.setBiomassAgriculture((p > 0 && t >= 1.25) ? (p * 420.0 * neolithicShare * (1.0 + 0.05 * Math.max(0.0, t - 1.3))) : 0.0);
+            double agrYieldBonus = 1.0 + 0.05 * Math.log1p(Math.max(0.0, kPerCapita - 15.0) / 25.0);
+            cell.setBiomassAgriculture((p > 0 && kPerCapita >= 6.0) ? (p * 420.0 * neolithicShare * agrYieldBonus) : 0.0);
 
             double wood;
             if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.GLACIER || biome == Biome.DESERT) {
@@ -355,17 +358,17 @@ final class PreComputeClimateAndResourceHelper {
             scenario.setClimateEvents(events);
         }
 
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Antonine (Variole dans l'Empire Romain)", 165, 41.9, 12.5, 0.0, 0.85));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 0.90));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste de Justinien (Yersinia Pestis)", 541, 41.0, 29.0, 0.0, 0.90));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 0.98));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 45.0, 35.0, 0.0, 0.90));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Ã‰ruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 0.88));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Ã‰ruption du Tambora (AnnÃ©e sans Ã©tÃ©)", 1815, -8.2, 118.0, 10.0, 0.95));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Explosion du Krakatoa (DÃ©troit de la Sonde)", 1883, -6.1, 105.4, 10.0, 0.90));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 0.75));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Antonine (Variole dans l'Empire Romain)", 165, 41.9, 12.5, 0.0, 0.85, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 0.90, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste de Justinien (Yersinia Pestis)", 541, 41.0, 29.0, 0.0, 0.90, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 0.98, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 45.0, 35.0, 0.0, 0.90, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 0.88, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, -8.2, 118.0, 10.0, 0.95, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, -6.1, 105.4, 10.0, 0.90, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 0.75, 730));
     }
 
     private static void addEventIfInRange(List<ClimateEvent> events, long startYear, long endYear, ClimateEvent ev) {

@@ -108,6 +108,9 @@ public class ScenarioConfigSyncHandler {
             if (panel.proceduralLeadersCheckBox != null) {
                 panel.proceduralLeadersCheckBox.setSelected(s.isProceduralLeadersEnabled());
             }
+            if (panel.chronicleObserverCheckBox != null) {
+                panel.chronicleObserverCheckBox.setSelected(s.isChronicleSingularityObserverEnabled());
+            }
 
             if (panel.demographicSectionBuilder != null && panel.demographicSectionBuilder.getDemoSourceCombo() != null) {
                 String autoSrc = panel.demographicSectionBuilder.pickDemoSourceForEpoch(s.getStartDateYear(), panel.activePlanetPreset);
@@ -118,7 +121,8 @@ public class ScenarioConfigSyncHandler {
                 panel.eventsList.clear();
                 if (s.getClimateEvents() != null && !s.getClimateEvents().isEmpty()) {
                     for (org.ether.society.model.ClimateEvent ce : s.getClimateEvents()) {
-                        panel.eventsList.add(new ScenarioSetupPanel.ClimateEvent(ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude()));
+                        panel.eventsList.add(new ScenarioSetupPanel.ClimateEvent(
+                                ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
                     }
                 }
             }
@@ -181,11 +185,13 @@ public class ScenarioConfigSyncHandler {
         s.setRandomEventsEnabled(panel.randomEventsCheckBox == null || panel.randomEventsCheckBox.isSelected());
         s.setEarthHistoricalLeadersEnabled(panel.earthLeadersCheckBox == null || panel.earthLeadersCheckBox.isSelected());
         s.setProceduralLeadersEnabled(panel.proceduralLeadersCheckBox == null || panel.proceduralLeadersCheckBox.isSelected());
+        s.setChronicleSingularityObserverEnabled(panel.chronicleObserverCheckBox != null && panel.chronicleObserverCheckBox.isSelected());
 
         if (panel.eventsList != null) {
             List<org.ether.society.model.ClimateEvent> sEvents = new ArrayList<>();
             for (ScenarioSetupPanel.ClimateEvent ce : panel.eventsList) {
-                sEvents.add(new org.ether.society.model.ClimateEvent(ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude()));
+                sEvents.add(new org.ether.society.model.ClimateEvent(
+                        ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
             }
             s.setClimateEvents(sEvents);
         }

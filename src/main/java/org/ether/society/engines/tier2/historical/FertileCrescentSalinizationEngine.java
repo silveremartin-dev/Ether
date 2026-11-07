@@ -52,17 +52,19 @@ public class FertileCrescentSalinizationEngine {
             if (rainfall >= 650.0 || temp < 12.0 || elev > 1200.0) continue;
 
             double food = cell.getFoodResourceOr(1000.0);
-            double tech = cell.getTechnologyLevelOr(1.0);
+            int pop = Math.max(1, cell.getPopulationOr(100));
+            double kpc = cell.getResourceCapitalOr(50.0) / pop;
 
-            // Continuous sigmoidal drainage technology envelope (Jacobsen & Adams 1958; Gelburd 1985)
-            // Canal irrigation susceptibility emerges around tech 1.0 and is alleviated by subsurface tile drainage post-tech 3.5
-            double drainageAttenuation = 1.0 / (1.0 + Math.exp(2.0 * (tech - 3.5)));
-            double techEncounter = 1.0 / (1.0 + Math.exp(-3.0 * (tech - 0.8)));
-            double techSusceptibility = techEncounter * drainageAttenuation;
+            // Continuous sigmoidal hydraulic irrigation & drainage capital envelope (Jacobsen & Adams 1958; Hillel 1998):
+            // Gravity canal irrigation susceptibility emerges with earthen canal capital (kpc >= 25 kg/cap)
+            // and is alleviated by pressurized subsurface tile drainage and pumping (kpc >= 2500 kg/cap).
+            double drainageAttenuation = 1.0 / (1.0 + Math.exp((kpc - 2500.0) / 500.0));
+            double canalActivation = 1.0 / (1.0 + Math.exp(-(kpc - 25.0) / 10.0));
+            double irrigationSusceptibility = canalActivation * drainageAttenuation;
 
-            if (techSusceptibility > 0.05) {
+            if (irrigationSusceptibility > 0.05) {
                 double aridityMultiplier = Math.clamp((650.0 - rainfall) / 400.0, 0.25, 1.5);
-                double effectiveRate = salinizationRatePerCentury * aridityMultiplier * techSusceptibility;
+                double effectiveRate = salinizationRatePerCentury * aridityMultiplier * irrigationSusceptibility;
                 double salinizationFactor = Math.max(0.20, Math.exp(-effectiveRate * (deltaYears / 100.0)));
                 cell.setFoodResource(food * salinizationFactor);
                 double curSalinity = cell.getSoilSalinityOr(0.0);

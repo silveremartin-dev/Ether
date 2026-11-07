@@ -151,8 +151,8 @@ public final class MetricCatalogHelper {
         register.accept(new MetricDescriptor(
             "educationLevel", "Education & Literacy Level", MetricDescriptor.Category.DEMOGRAPHICS, "%",
             "Share of population proficient in technical skills, numeracy, and writing.",
-            cell -> cell != null && cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() * 10.0 : 0.0,
-            cells -> cells.stream().mapToDouble(c -> c != null && c.getTechnologyLevel() != null ? c.getTechnologyLevel() * 10.0 : 0.0).average().orElse(0.0)
+            cell -> cell != null ? Math.min(100.0, org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell) * 10.0) : 0.0,
+            cells -> cells.stream().mapToDouble(c -> c != null ? Math.min(100.0, org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) * 10.0) : 0.0).average().orElse(0.0)
         ));
 
         // --- 🏛️ 3. SOCIETY & INSTITUTIONS ---
@@ -179,9 +179,9 @@ public final class MetricCatalogHelper {
 
         register.accept(new MetricDescriptor(
             "avgTechLevel", "Average Technological Level", MetricDescriptor.Category.SOCIETY_POLITICS, "Lvl",
-            "Global average level of scientific, metallurgical, and productive technological advancement.",
-            cell -> cell != null && cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0,
-            cells -> cells.stream().mapToDouble(c -> c != null && c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 1.0).average().orElse(1.0)
+            "Global average level of scientific, metallurgical, and productive technological advancement (emergent a posteriori diagnostic).",
+            cell -> cell != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell) : 1.0,
+            cells -> cells.stream().mapToDouble(c -> c != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) : 1.0).average().orElse(1.0)
         ));
 
         register.accept(new MetricDescriptor(
@@ -197,8 +197,8 @@ public final class MetricCatalogHelper {
         register.accept(new MetricDescriptor(
             "institutionalMaturity", "Institutional Maturity", MetricDescriptor.Category.SOCIETY_POLITICS, "Idx",
             "Degree of administrative, bureaucratic, and codified legal complexity of the state.",
-            cell -> cell != null && cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0,
-            cells -> cells.stream().mapToDouble(c -> c != null && c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0).average().orElse(0.0)
+            cell -> cell != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell) : 0.0,
+            cells -> cells.stream().mapToDouble(c -> c != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) : 0.0).average().orElse(0.0)
         ));
 
         // --- 💎 4. ECONOMY & WEALTH ---
@@ -235,8 +235,8 @@ public final class MetricCatalogHelper {
         register.accept(new MetricDescriptor(
             "collectiveMemory", "Collective Memory Stock", MetricDescriptor.Category.COGNITION, "TB",
             "Cumulative storage volume of recorded knowledge, scientific archives, and cultural heritage.",
-            cell -> cell != null && cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0,
-            cells -> cells.stream().mapToDouble(c -> c != null && c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0).sum()
+            cell -> cell != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell) : 0.0,
+            cells -> cells.stream().mapToDouble(c -> c != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) : 0.0).sum()
         ));
 
         register.accept(new MetricDescriptor(
@@ -265,8 +265,8 @@ public final class MetricCatalogHelper {
         register.accept(new MetricDescriptor(
             "systemInterdependence", "Systemic Interdependence & Fragility", MetricDescriptor.Category.COMPLEXITY, "%",
             "Interconnectivity index and vulnerability of supply networks and trade corridors.",
-            cell -> cell != null && cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 0.0,
-            cells -> cells.stream().mapToDouble(c -> c != null && c.getTechnologyLevel() != null ? c.getTechnologyLevel() : 0.0).average().orElse(0.0)
+            cell -> cell != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell) : 0.0,
+            cells -> cells.stream().mapToDouble(c -> c != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) : 0.0).average().orElse(0.0)
         ));
 
         register.accept(new MetricDescriptor(
@@ -342,8 +342,8 @@ public final class MetricCatalogHelper {
         register.accept(new MetricDescriptor(
             "divisionLabor", "Division of Labor & Specialization", MetricDescriptor.Category.SOCIETY_POLITICS, "Idx",
             "Structural diversity of specialized vocational niches and productive roles.",
-            cell -> cell != null && cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() * 2.5 : 1.0,
-            cells -> cells.stream().mapToDouble(c -> c != null && c.getTechnologyLevel() != null ? c.getTechnologyLevel() * 2.5 : 1.0).average().orElse(1.0)
+            cell -> cell != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell) * 2.5 : 1.0,
+            cells -> cells.stream().mapToDouble(c -> c != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) * 2.5 : 1.0).average().orElse(1.0)
         ));
 
         register.accept(new MetricDescriptor(
@@ -363,8 +363,8 @@ public final class MetricCatalogHelper {
         register.accept(new MetricDescriptor(
             "productsCount", "Manufactured Product Diversity", MetricDescriptor.Category.ECONOMY, "types",
             "Number of distinct commodity and manufactured artifact types produced in the economy.",
-            cell -> cell != null && cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() * 5.0 : 1.0,
-            cells -> cells.stream().mapToDouble(c -> c != null && c.getTechnologyLevel() != null ? c.getTechnologyLevel() * 5.0 : 1.0).average().orElse(1.0)
+            cell -> cell != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell) * 5.0 : 1.0,
+            cells -> cells.stream().mapToDouble(c -> c != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) * 5.0 : 1.0).average().orElse(1.0)
         ));
 
         register.accept(new MetricDescriptor(

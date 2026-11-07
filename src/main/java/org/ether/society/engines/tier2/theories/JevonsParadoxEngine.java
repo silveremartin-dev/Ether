@@ -25,10 +25,20 @@ public class JevonsParadoxEngine {
     private static double reboundCoefficient = 0.80; // 80% rebound effect
 
     /**
-     * Process Jevons rebound across spatial cells with continuous efficiency activation.
+     * Characteristic physical transducer capital $K_{\text{Jevons}} = 350.0\,\text{kg/capita}$ (waterwheels, furnaces,
+     * early steam engines; Jevons 1865, <i>The Coal Question</i>; Saunders 1992, Khazzoom-Brookes postulate).
+     */
+    public static final double JEVONS_HALF_SATURATION_CAPITAL_KG_PC = 350.0;
+
+    /**
+     * Process Jevons rebound across spatial cells with continuous $C^1$ physical transducer efficiency activation.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * <p>Grounded in the Khazzoom-Brookes postulate (Saunders 1992) and Ayres-Warr (2009) thermodynamic conversion
+     * efficiency $\eta_{\text{transducer}}(k_{\text{pc}})$: as physical machinery density $k_{\text{pc}} = K/N$ rises,
+     * the marginal cost of useful work falls, triggering a rebound in aggregate primary energy demand.</p>
+     *
+     * @param cells the spatial cells list
+     * @param deltaYears time step in years
      */
     public static void processJevonsRebound(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty()) return;
@@ -36,22 +46,25 @@ public class JevonsParadoxEngine {
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 
-            double tech = cell.getTechnologyLevelOr(0.0);
-            // Continuous technology efficiency factor eta_eff in [0, 1]
-            // Replaces knife-edge `tech > 2.0` with continuous Hill function (K=2.0, n=2)
-            double techEfficiencyFactor = (tech * tech) / (4.0 + tech * tech);
-            if (techEfficiencyFactor > 0.05) {
-                // High technology efficiency drives expanded aggregate physical energy demand
-                double reboundDemand = tech * reboundCoefficient * techEfficiencyFactor * 0.005 * deltaYears;
+            int pop = Math.max(1, cell.getPopulationOr(100));
+            double kPerCapita = cell.getResourceCapitalOr(0.0) / pop;
+
+            // Continuous C^1 Hill transducer efficiency factor eta_eff in [0, 1] driven by physical machinery k_pc
+            double kRatio = kPerCapita / JEVONS_HALF_SATURATION_CAPITAL_KG_PC;
+            double transducerEfficiencyFactor = (kRatio * kRatio) / (1.0 + kRatio * kRatio);
+            if (transducerEfficiencyFactor > 0.05) {
+                // Log-machinery intensity replaces synthetic tech scalar: log(1 + k_pc / 50)
+                double machineryIntensity = Math.log1p(kPerCapita / 50.0);
+                double reboundDemand = machineryIntensity * reboundCoefficient * transducerEfficiencyFactor * 0.005 * deltaYears;
 
                 // Boost electrical/mechanical capacity in the cell (industrial exergy rebound)
                 double habitatKw = cell.getHabitatEnergyKwOr(0.0);
                 cell.setHabitatEnergyKw(habitatKw + reboundDemand * 100.0);
 
                 // Biologically bounded somatic food intake: human metabolic limits (~2500 kcal/day)
-                // prevent runaway somatic calorie consumption while preserving legacy compatibility
+                // prevent runaway somatic calorie consumption
                 double currentFoodEnergy = cell.getEnergyFoodConsumedOr(0.0);
-                double maxMetabolicFood = Math.max(10.0, cell.getPopulationOr(100) * 1.5);
+                double maxMetabolicFood = Math.max(10.0, pop * 1.5);
                 cell.setEnergyFoodConsumed(Math.min(maxMetabolicFood, currentFoodEnergy + reboundDemand));
             }
         }

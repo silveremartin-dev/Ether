@@ -123,11 +123,12 @@ public final class H3CellPhysicsAndStateHelper {
         // Smooth bathymetric transition across coastline (elev = 0 m)
         double landWeight = SmoothMath.sigmoid(elev, 0.0, 5.0);
 
-        // Marine navigation friction mitigated by port/naval physical capital and sea-ice resistance
+        // Marine navigation friction mitigated by port/naval physical capital above archaic somatic threshold (500 kg)
         double seaIcePenalty = 12.0 * SmoothMath.sigmoid(-tempC, 1.5, 1.0);
+        double navalCapital = SmoothMath.softplus(capital - 500.0, 20.0);
         double seaFriction = SmoothMath.smoothClamp(
-                (25.0 + seaIcePenalty) / (1.0 + 0.22 * Math.log1p(capital / 80.0)),
-                0.40, 25.0, 10.0);
+                (25.0 + seaIcePenalty) / (1.0 + 0.85 * Math.pow(navalCapital / 1000.0, 0.48)),
+                0.40, 25.0, 500.0);
 
         // Terrestrial Minetti incline cost + canopy impedance + cryospheric snow resistance
         double posElev = SmoothMath.softplus(elev, 0.0, 15.0);
@@ -145,17 +146,6 @@ public final class H3CellPhysicsAndStateHelper {
         double computed = landWeight * landFriction + (1.0 - landWeight) * seaFriction;
         cell.setMovementFriction(computed);
         return computed;
-    }
-
-    /**
-     * Calculates terrain movement friction with legacy technology level argument.
-     *
-     * @param cell target H3 cell
-     * @param techLevel technology level
-     * @return movement friction multiplier
-     */
-    public static double calculateMovementFriction(H3Cell cell, double techLevel) {
-        return calculateMovementFriction(cell);
     }
 
     /**
@@ -254,16 +244,6 @@ public final class H3CellPhysicsAndStateHelper {
         cell.setPopYouth(p0to4 + p5to14);
         cell.setPopAdult(p15to24 + p25to49 + p50to64);
         cell.setPopElderly(p65to79 + p80Plus);
-    }
-
-    /**
-     * Legacy adapter updating demographic age pyramid with explicit technology parameter.
-     *
-     * @param cell target H3 cell
-     * @param techLevel technology level
-     */
-    public static void updateAgePyramidFromTotal(H3Cell cell, double techLevel) {
-        updateAgePyramidFromObservables(cell);
     }
 
     /**

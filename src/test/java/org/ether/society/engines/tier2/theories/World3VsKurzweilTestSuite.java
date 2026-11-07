@@ -46,7 +46,6 @@ public class World3VsKurzweilTestSuite {
         initialCell.setResourceCapital(5000.0);
         initialCell.setResourceMetal(1000.0);
         initialCell.setPollutionLevel(100.0);
-        initialCell.setTechnologyLevel(2.0);
         initialCell.setFoodResource(10000.0);
         initialCell.setLifespan(70.0);
     }
@@ -67,7 +66,7 @@ public class World3VsKurzweilTestSuite {
         assertNotNull(report, "Comparator should return a non-null comparison report.");
         assertTrue(report.world3PeakPopulation > 0, "World3 peak population should be positive.");
         assertTrue(report.kurzweilPeakPopulation > 0, "Kurzweil peak population should be positive.");
-        assertTrue(report.kurzweilTechLevel2050 > initialCell.getTechnologyLevel(), "Kurzweil LOAR should accelerate tech level.");
+        assertTrue(report.kurzweilTechLevel2050 > org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(initialCell), "Kurzweil LOAR should accelerate tech level.");
         assertNotNull(report.dominantDriverSummary, "Summary should describe dominant system driver.");
     }
 }

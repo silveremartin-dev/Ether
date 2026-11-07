@@ -26,8 +26,8 @@ import java.util.List;
 public class LeslieWhitePureEngine {
     private static final Logger logger = LoggerFactory.getLogger(LeslieWhitePureEngine.class);
 
-    public static double calculateCulturalComplexity(double energyPerCapita, double technologyLevel) {
-        return energyPerCapita * technologyLevel;
+    public static double calculateCulturalComplexity(double energyPerCapita, double toolEfficiencyFactor) {
+        return energyPerCapita * toolEfficiencyFactor;
     }
 
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {

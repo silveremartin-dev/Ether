@@ -17,7 +17,6 @@ public class PhysicalLeontiefInputOutputEngineTest {
     public void testLeontiefCapitalExpansionUnderAbundantResources() {
         H3Cell cell = new H3Cell(613503380827930830L, 48.0, 2.0);
         cell.setPopulation(10000);
-        cell.setTechnologyLevel(2.0);
         cell.setResourceCapital(5000.0);
         cell.setResourceMetal(5000.0);
         cell.setEnergySolar(500.0);
@@ -34,7 +33,6 @@ public class PhysicalLeontiefInputOutputEngineTest {
     public void testLeontiefBottleneckWhenEnergyConstrained() {
         H3Cell cell = new H3Cell(613503380827930831L, 48.1, 2.1);
         cell.setPopulation(10000);
-        cell.setTechnologyLevel(2.0);
         cell.setResourceCapital(5000.0);
         cell.setResourceMetal(5000.0);
         // Zero energy -> bottleneck: min(metal / a_m, energy / a_e) = 0

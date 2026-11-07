@@ -71,7 +71,7 @@ public class PhysicalEnergyGridEngine {
         double fossilReserves = coalStock + oilStock + gasStock;
         double fossilAvailability = (fossilReserves > 0.0)
                 ? Math.tanh(fossilReserves / SmoothMath.softmax(5.0, pop * 0.02, 0.5))
-                : 1.0;
+                : 0.0;
         double steamCoalWatts = 600.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 1800.0, 0.02) / 2500.0) * fossilAvailability;
 
         // 6. Smooth Modern Electric / Hydrocarbon / Fissile Grid - Gated by 20th/21st century capital (kpc >= 4000 kg/cap)

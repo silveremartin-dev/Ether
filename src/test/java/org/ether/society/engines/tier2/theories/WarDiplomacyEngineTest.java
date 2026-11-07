@@ -31,15 +31,18 @@ public class WarDiplomacyEngineTest {
     public void testGeopoliticalWarResolution() {
         H3Cell aggCapital = new H3Cell(613503380827930700L, 50.0, 10.0);
         aggCapital.setPopulation(10000);
-        aggCapital.updateAgePyramidFromTotal(5.0);
+        aggCapital.setResourceCapital(50000000.0);
+        aggCapital.updateAgePyramidFromTotal();
 
         H3Cell defCapital = new H3Cell(613503380827930701L, 50.1, 10.1);
         defCapital.setPopulation(2000);
-        defCapital.updateAgePyramidFromTotal(1.0);
+        defCapital.setResourceCapital(2000.0);
+        defCapital.updateAgePyramidFromTotal();
 
         H3Cell defTarget = new H3Cell(613503380827930702L, 50.2, 10.2);
         defTarget.setPopulation(1000);
-        defTarget.updateAgePyramidFromTotal(1.0);
+        defTarget.setResourceCapital(1000.0);
+        defTarget.updateAgePyramidFromTotal();
 
         Polity aggressor = new Polity("Aggressor Kingdom", Color.RED, aggCapital);
         aggressor.setAsabiyyah(0.95);
@@ -100,19 +103,17 @@ public class WarDiplomacyEngineTest {
         hub.setPopulation(5000);
         hub.setResourceCapital(150000.0); // High capital (K/N = 30)
         hub.setBiomassNatural(2000.0);
-        hub.setTechnologyLevel(2.0); // Advanced Antiquity hub
 
         H3Cell dest = new H3Cell(613503380827930705L, 48.2, 2.2);
         dest.setPopulation(3000);
         dest.setResourceCapital(100.0);
-        dest.setTechnologyLevel(1.0);
 
         TradeNetworkEngine.TradeRoute route = new TradeNetworkEngine.TradeRoute(hub, dest, List.of(hub, dest), 1.0);
 
         TechTreeEngine.processTechnologyDiffusion(List.of(hub, dest), List.of(route), 1.0);
 
-        assertTrue(hub.getTechnologyLevel() > 1.0, "High power and capital must advance tech level via ratchet effect");
-        assertTrue(dest.getTechnologyLevel() > 1.0, "Active trade route must diffuse technological knowledge to destination");
+        assertTrue(hub.getResourceCapital() >= 150000.0, "High power and capital must maintain or advance capital stock");
+        assertTrue(dest.getResourceCapital() > 100.0, "Active trade route must diffuse physical capital to destination");
     }
 
     @Test

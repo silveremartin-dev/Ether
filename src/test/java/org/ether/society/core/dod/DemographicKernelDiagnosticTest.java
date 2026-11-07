@@ -19,7 +19,6 @@ public class DemographicKernelDiagnosticTest {
         world.getRainfall()[0] = 800.0f;
         world.getTemperature()[0] = 15.0f;
         world.getWaterResource()[0] = 500.0f;
-        world.getTechnologyLevel()[0] = 8.0f;
         world.getLifespan()[0] = 55.0f;
         world.getResourceCapital()[0] = 10_000.0f * 3500.0f;
 

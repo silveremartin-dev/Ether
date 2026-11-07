@@ -74,7 +74,7 @@ To resolve these disputes without falling into arbitrary heuristic tuning, the *
 ## 2. Experimental Methodology & Numerical Integration
 
 ### 2.1 Spatiotemporal Discretization on Hexagonal Uber H3 Grid
-The planetary surface is discretized using the **Uber H3 Hierarchical Hexagonal Spatial Index** at resolutions 6 through 8 ($175,000+$ active terrestrial cells). Hexagons provide uniform spatial adjacency ($w_{ij} = 1$ for all 6 direct neighbors), eliminating the coordinate singularity and directional distortion inherent to rectangular equirectangular meshes.
+The planetary surface is discretized using the **Uber H3 Hierarchical Hexagonal Spatial Index** at **resolutions 4 and 5** for global planetary runs ($41,162$ to $288,122$ total cells, up to $\sim 10^6$ cells with coastal/sub-grid refinement) and **resolutions 6 and 7** for high-resolution regional windowed domains (e.g., Europe, Fertile Crescent, Mediterranean, Madagascar, Japan). Hexagons provide uniform spatial adjacency ($w_{ij} = 1$ for all 6 direct neighbors), eliminating the coordinate singularity and directional distortion inherent to rectangular equirectangular meshes.
 
 ### 2.2 Multi-Scale Temporal Decoupling
 Numerical integration is executed via the `MultiScaleSymplecticIntegrator` across three discrete physical time scales:

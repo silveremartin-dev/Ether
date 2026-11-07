@@ -49,7 +49,6 @@ public class JancoviciBihouixPhysicalSuiteTest {
         cell.setResourceMetal(50.0);
         cell.setResourceCapital(1000.0);
         cell.setResourceWork(100.0);
-        cell.setTechnologyLevel(4.0);
         cell.setEnergyFoodConsumed(10.0);
         cell.setPollutionLevel(10.0);
 

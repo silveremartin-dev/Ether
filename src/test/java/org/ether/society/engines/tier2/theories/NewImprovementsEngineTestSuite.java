@@ -46,7 +46,6 @@ public class NewImprovementsEngineTestSuite {
         cell1.setPopulation(5000);
         cell1.setFoodResource(400.0);
         cell1.setBiomassNatural(100.0); // Low veg -> high erosion
-        cell1.setTechnologyLevel(6.0);
         cell1.setResourceCapital(100.0);
         cell1.setResourceMetal(500.0);
         cell1.setWoodResource(200.0);
@@ -60,7 +59,6 @@ public class NewImprovementsEngineTestSuite {
         cell2.setPopulation(2000);
         cell2.setFoodResource(300.0);
         cell2.setBiomassNatural(800.0);
-        cell2.setTechnologyLevel(5.5);
         cell2.setResourceCapital(50.0);
         cell2.setResourceMetal(300.0);
         cell2.setWoodResource(100.0);
@@ -139,8 +137,8 @@ public class NewImprovementsEngineTestSuite {
         List<H3Cell> industrialCluster = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             H3Cell hiTech = new H3Cell(0x882830828100000L + i, 45.0, 5.0);
-            hiTech.setTechnologyLevel(6.0); // tech - 4.0 = 2.0 contribution per cell -> 60.0 total
             hiTech.setPopulation(10000);
+            hiTech.setResourceCapital(4500.0 * 10000.0); // (4500 - 2500)/1000 = 2.0 contribution per cell -> 60.0 total
             hiTech.setTemperature(20.0);
             hiTech.setRainfall(1000.0);
             industrialCluster.add(hiTech);

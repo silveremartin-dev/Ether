@@ -39,7 +39,19 @@ public final class MacroeconomicMetricsCalculator {
     }
 
     /**
-     * Evaluates Ricardian land rent index driven by demographic density and technology.
+     * Evaluates the Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ directly
+     * from physical cellular power dissipation $p = P_{\text{watts}}/N$ and built capital $k_{\text{pc}} = K/N$.
+     */
+    private double computePhysicalExergyCapitalIndex() {
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        double powerW = aggregator.getEnergyPerCapita();
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeEmergentTechnologyLevel(powerW, kpc);
+    }
+
+    /**
+     * Evaluates Ricardian land rent index (Ricardo 1817; Von Thünen 1826) driven by demographic density
+     * and physical infrastructure capital per capita $k_{\text{pc}} = K/N$.
      *
      * @return land rent index
      */
@@ -49,35 +61,34 @@ public final class MacroeconomicMetricsCalculator {
         double cellAreaKm2 = (engine.getCurrentScenario() != null && engine.getCurrentScenario().getCellSizeKm2() > 0)
                 ? engine.getCurrentScenario().getCellSizeKm2() : 36.12906216;
         double densityPerKm2 = populatedCells > 0 ? (double) pop / (populatedCells * Math.max(1.0, cellAreaKm2)) : 0.0;
-        return Math.min(100.0, densityPerKm2 * 1.2 + engine.getAverageTechnology() * 2.5);
+        double kpc = pop > 0 ? aggregator.getBuiltCapitalTotal() / pop : 0.0;
+        return Math.min(100.0, densityPerKm2 * 1.2 + 2.5 * Math.log1p(kpc / 20.0));
     }
 
     /**
-     * Evaluates silver coinage purity (%) based on metallurgical minting technology and state fiscal stress
+     * Evaluates silver coinage purity (%) based on metallurgical minting capital and state fiscal stress
      * (Butcher &amp; Ponting 2014) using continuous smooth activation.
-     * Enforces Deep-Time Invariant ($0.0\%$) prior to coinage emergence ($T \le 1.80$).
      *
      * @return coinage silver purity in $[0.0, 99.0]$ %
      */
     public double getCurrencyDebasement() {
-        float tech = engine.getAverageTechnology();
         double stability = aggregator.getHappinessIndex();
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeCurrencyDebasement(tech, stability);
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeCurrencyDebasement(
+                computePhysicalExergyCapitalIndex(), stability);
     }
 
     /**
-     * Evaluates Robert C. Allen (2001) Real Unskilled Worker Purchasing Power (Welfare Ratio Index, $100 = \text{Subsistence}$)
-     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
+     * Evaluates Robert C. Allen (2001) Real Unskilled Worker Purchasing Power (Welfare Ratio Index, $100 = \text{Subsistence}$).
      *
      * @return real unskilled wage index
      */
     public double getRealUnskilledWageIndex() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeRealUnskilledWageIndex(engine.getAverageTechnology());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeRealUnskilledWageIndex(
+                computePhysicalExergyCapitalIndex());
     }
 
     /**
-     * Evaluates Reinhart &amp; Rogoff (2009) Sovereign Debt Burden (% of GWP)
-     * using continuous analytical fiscal state emergence ($T_0 = 1.65$).
+     * Evaluates Reinhart &amp; Rogoff (2009) Sovereign Debt Burden (% of GWP).
      *
      * @return sovereign debt burden in $[0.0, 250.0]$ %
      */
@@ -85,38 +96,37 @@ public final class MacroeconomicMetricsCalculator {
         double trade = getGlobalTradeVolumeIndex();
         double literacy = aggregator.getLiteracyRate();
         double stability = aggregator.getHappinessIndex();
-        float tech = engine.getAverageTechnology();
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeSovereignDebtBurden(
-                trade, literacy, stability, tech);
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeSovereignDebtBurden(
+                trade, literacy, stability, computePhysicalExergyCapitalIndex());
     }
 
     /**
-     * Evaluates Federico &amp; Tena-Junguito (2017) Global Trade Volume Index ($100 = 1913\text{ Level}$)
-     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
+     * Evaluates Federico &amp; Tena-Junguito (2017) Global Trade Volume Index ($100 = 1913\text{ Level}$).
      *
      * @return global trade volume index
      */
     public double getGlobalTradeVolumeIndex() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeGlobalTradeVolume(engine.getAverageTechnology());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeGlobalTradeVolume(
+                computePhysicalExergyCapitalIndex());
     }
 
     /**
-     * Evaluates Malandra (1990) / USGS Per-Capita Metal Smelting Output ($\text{kg/capita/yr}$)
-     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
+     * Evaluates Malandra (1990) / USGS Per-Capita Metal Smelting Output ($\text{kg/capita/yr}$).
      *
      * @return metal smelting output in $\text{kg/capita/yr}$
      */
     public double getMetalSmeltingPerCapitaKg() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeMetalSmeltingPerCapita(engine.getAverageTechnology());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeMetalSmeltingPerCapita(
+                computePhysicalExergyCapitalIndex());
     }
 
     /**
-     * Evaluates Harley (1988) / Mohammed &amp; Williamson (2004) Real Maritime Shipping Freight Cost Index ($100 = 1913\text{ Level}$)
-     * using the single source of truth in PostHocCliodynamicMetricsExtractor.
+     * Evaluates Harley (1988) / Mohammed &amp; Williamson (2004) Real Maritime Shipping Freight Cost Index ($100 = 1913\text{ Level}$).
      *
      * @return real maritime freight cost index
      */
     public double getShippingFreightCostIndex() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeShippingFreightCostIndex(engine.getAverageTechnology());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeShippingFreightCostIndex(
+                computePhysicalExergyCapitalIndex());
     }
 }

@@ -111,8 +111,10 @@ public class H3Cell extends H3CellSocioDemographicBase {
     @Column(nullable = false) private Double resourceClay = 0.0;
     @Column(nullable = false) private Double resourceWork = 0.0;
     @Column(nullable = false) private Double resourceCapital = 0.0;
-    @Column(nullable = false) private Double soilOrganicCarbon = 0.0;
+    @Column(nullable = false) private Double soilOrganicCarbon = 25.0;
     @Column(nullable = false) private Double soilSalinity = 0.0;
+    @Column(nullable = false) private Double soilDepth = 1.0;
+    @Column(nullable = false) private Double tradeNetwork = 0.0;
     @Column(nullable = false) private Double resourceCoal = 0.0;
     @Column(nullable = false) private Double resourceOil = 0.0;
     @Column(nullable = false) private Double resourceGas = 0.0;
@@ -127,7 +129,6 @@ public class H3Cell extends H3CellSocioDemographicBase {
     @Column(nullable = false) private Double lifespan = 40.0;
     @Column(nullable = false) private Double fertility = 6.0;
     @Column(nullable = false) private Double giniIndex = 0.0;
-    @Column(nullable = false) private Double technologyLevel = 0.0;
     /** Hominin species clade: 1 = Homo Sapiens, 2 = Homo Neanderthalensis, 3 = Denisovan / Archaic. */
     @Column(nullable = false) private Integer homininSpecies = 1;
 
@@ -181,10 +182,6 @@ public class H3Cell extends H3CellSocioDemographicBase {
         return H3CellPhysicsAndStateHelper.calculateMovementFriction(this);
     }
 
-    public double calculateMovementFriction(double techLevel) {
-        return H3CellPhysicsAndStateHelper.calculateMovementFriction(this, techLevel);
-    }
-
     /**
      * Calculates dynamic surface albedo based on snow cover, soil moisture, and natural vegetation density.
      *
@@ -202,10 +199,6 @@ public class H3Cell extends H3CellSocioDemographicBase {
     }
 
     public void updateAgePyramidFromTotal() {
-        updateAgePyramidFromObservables();
-    }
-
-    public void updateAgePyramidFromTotal(double legacyTech) {
         updateAgePyramidFromObservables();
     }
 
@@ -364,6 +357,10 @@ public class H3Cell extends H3CellSocioDemographicBase {
     public void setSoilOrganicCarbon(Double val) { this.soilOrganicCarbon = val; }
     public Double getSoilSalinity() { return soilSalinity != null ? soilSalinity : 0.0; }
     public void setSoilSalinity(Double val) { this.soilSalinity = val != null ? val : 0.0; }
+    public Double getSoilDepth() { return soilDepth != null ? soilDepth : 1.0; }
+    public void setSoilDepth(Double val) { this.soilDepth = val != null ? val : 1.0; }
+    public Double getTradeNetwork() { return tradeNetwork != null ? tradeNetwork : 0.0; }
+    public void setTradeNetwork(Double val) { this.tradeNetwork = val != null ? val : 0.0; }
     public Double getResourceCoal() { return resourceCoal != null ? resourceCoal : 0.0; }
     public void setResourceCoal(Double val) { this.resourceCoal = val != null ? Math.max(0.0, val) : 0.0; }
     public Double getResourceOil() { return resourceOil != null ? resourceOil : 0.0; }
@@ -394,10 +391,6 @@ public class H3Cell extends H3CellSocioDemographicBase {
     public void setFertility(Double val) { this.fertility = val; }
     public Double getGiniIndex() { return giniIndex; }
     public void setGiniIndex(Double val) { this.giniIndex = val; }
-
-    public Double getTechnologyLevel() { return technologyLevel != null ? technologyLevel : 0.0; }
-    public void setTechnologyLevel(Double val) { this.technologyLevel = val != null ? val : 0.0; }
-    public void setTechnologyLevel(double val) { this.technologyLevel = val; }
 
     public Integer getHomininSpecies() { return homininSpecies != null ? homininSpecies : 1; }
     public void setHomininSpecies(Integer val) { this.homininSpecies = val != null ? val : 1; }
@@ -449,6 +442,8 @@ public class H3Cell extends H3CellSocioDemographicBase {
     public double getResourceCapitalOr(double defaultValue) { return resourceCapital != null ? resourceCapital : defaultValue; }
     public double getSoilOrganicCarbonOr(double defaultValue) { return soilOrganicCarbon != null ? soilOrganicCarbon : defaultValue; }
     public double getSoilSalinityOr(double defaultValue) { return soilSalinity != null ? soilSalinity : defaultValue; }
+    public double getSoilDepthOr(double defaultValue) { return soilDepth != null ? soilDepth : defaultValue; }
+    public double getTradeNetworkOr(double defaultValue) { return tradeNetwork != null ? tradeNetwork : defaultValue; }
     public double getResourceCoalOr(double defaultValue) { return resourceCoal != null ? resourceCoal : defaultValue; }
     public double getResourceOilOr(double defaultValue) { return resourceOil != null ? resourceOil : defaultValue; }
     public double getResourceGasOr(double defaultValue) { return resourceGas != null ? resourceGas : defaultValue; }
@@ -461,7 +456,6 @@ public class H3Cell extends H3CellSocioDemographicBase {
     public double getLifespanOr(double defaultValue) { return lifespan != null ? lifespan : defaultValue; }
     public double getFertilityOr(double defaultValue) { return fertility != null ? fertility : defaultValue; }
     public double getGiniIndexOr(double defaultValue) { return giniIndex != null ? giniIndex : defaultValue; }
-    public double getTechnologyLevelOr(double defaultValue) { return technologyLevel != null ? technologyLevel : defaultValue; }
     public double getMovementFrictionOr(double defaultValue) { return movementFriction != null ? movementFriction : defaultValue; }
     public double getChokePointScoreOr(double defaultValue) { return chokePointScore != null ? chokePointScore : defaultValue; }
     public double getTransitTollRevenueOr(double defaultValue) { return transitTollRevenue != null ? transitTollRevenue : defaultValue; }

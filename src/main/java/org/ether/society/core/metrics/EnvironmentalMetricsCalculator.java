@@ -39,27 +39,44 @@ public final class EnvironmentalMetricsCalculator {
     }
 
     /**
-     * Evaluates soil N-P-K stoichiometric fertility quality ($5$ to $100$).
+     * Evaluates the Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ directly
+     * from physical cellular power dissipation $p = P_{\text{watts}}/N$ and built capital $k_{\text{pc}} = K/N$.
+     */
+    private double computePhysicalExergyCapitalIndex() {
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        double powerW = aggregator.getEnergyPerCapita();
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeEmergentTechnologyLevel(powerW, kpc);
+    }
+
+    /**
+     * Evaluates soil N-P-K stoichiometric fertility quality ($5$ to $100$) directly from resource depletion
+     * and synthetic fertilizer capital stock $k_{\text{pc}} = K/N$ (Smil 2001, <i>Enriching the Earth</i>: Haber-Bosch synthesis).
      *
      * @return soil NPK quality index
      */
     public double getSoilNPKQuality() {
-        float tech = engine.getAverageTechnology();
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
         double resDep = aggregator.getResourceDepletionRate();
-        return Math.max(5.0, 100.0 - (resDep * 0.6) + Math.min(15.0, tech * 0.1));
+        double haberBoschRestoration = 15.0 / (1.0 + Math.exp(-(kpc - 3200.0) / 800.0));
+        return Math.max(5.0, 100.0 - (resDep * 0.6) + haberBoschRestoration);
     }
 
     /**
-     * Evaluates anthropogenic carbon footprint index (Smil 2017 energy transition lifecycle).
+     * Evaluates anthropogenic carbon footprint index (Smil 2017 energy transition lifecycle) directly from
+     * captured primary energy and physical machinery density $k_{\text{pc}} = K/N$.
      *
      * @return carbon footprint index
      */
     public double getCarbonFootprint() {
         double energy = aggregator.getEnergyCaptured();
-        float tech = engine.getAverageTechnology();
-        // Continuous fossil share curve: logistic ramp during industrialization, logistic phase-out at high tech
-        double fossilAscent = 0.85 / (1.0 + Math.exp(-2.5 * (tech - 4.2)));
-        double cleanTransition = 1.0 / (1.0 + Math.exp(1.8 * (tech - 7.5)));
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        // Continuous C^1 fossil share curve: logistic ramp during coal/hydrocarbon industrialization (k_pc >= 1500 kg/cap),
+        // logistic phase-out during renewable/nuclear decarbonization (k_pc >= 35,000 kg/cap)
+        double fossilAscent = 0.85 / (1.0 + Math.exp(-(kpc - 1800.0) / 500.0));
+        double cleanTransition = 1.0 / (1.0 + Math.exp((kpc - 35000.0) / 8000.0));
         double fossilShare = Math.max(0.05, fossilAscent * cleanTransition);
         return (energy * fossilShare) / 1000.0;
     }
@@ -133,23 +150,25 @@ public final class EnvironmentalMetricsCalculator {
                 if (elapsedYears == 0) {
                     return t0Co2;
                 }
-                // Endogenous annual emission accumulation over simulation ticks
-                float avgTech = engine.getAverageTechnology();
-                if (avgTech <= 2.50) {
+                // Endogenous annual emission accumulation over simulation ticks driven by physical machinery k_pc
+                long pop = Math.max(1L, engine.getTotalPopulation());
+                double kpc = aggregator.getBuiltCapitalTotal() / pop;
+                if (kpc <= 900.0) {
                     return t0Co2;
                 }
-                double fossilShare = Math.min(0.85, 0.08 + (avgTech - 2.50) * 0.18);
+                double fossilShare = Math.min(0.85, 0.08 + Math.tanh((kpc - 900.0) / 2500.0) * 0.77);
                 double annualEmissionsPpm = (aggregator.getEnergyCaptured() * 3.15576e-5 * fossilShare * 0.05) / 7.82;
                 return t0Co2 + Math.min(250.0, annualEmissionsPpm * elapsedYears);
             }
         }
-        float avgTech = engine.getAverageTechnology();
-        // Pre-industrial Holocene carbon cycle baseline (Ruddiman 2003: ~260 ppm early Holocene -> ~280 ppm late Holocene agrarian)
-        double holoceneBaselinePpm = 260.0 + 20.0 * Math.tanh(Math.max(0.0, avgTech - 1.45) * 2.2);
-        if (avgTech <= 2.50) {
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        // Pre-industrial Holocene carbon cycle baseline (Ruddiman 2003: ~260 ppm early Holocene -> ~280 ppm late Holocene agrarian clearing at k_pc >= 25 kg/cap)
+        double holoceneBaselinePpm = 260.0 + 20.0 * Math.tanh(Math.max(0.0, kpc - 25.0) / 150.0);
+        if (kpc <= 900.0) {
             return holoceneBaselinePpm;
         }
-        double fossilShare = Math.min(0.85, 0.08 + (avgTech - 2.50) * 0.18);
+        double fossilShare = Math.min(0.85, 0.08 + Math.tanh((kpc - 900.0) / 2500.0) * 0.77);
         double cumulativeEmissionsPpm = Math.min(220.0, aggregator.getEnergyCaptured() * 3.15576e-5 * fossilShare * 0.05 * 10.0);
         return holoceneBaselinePpm + cumulativeEmissionsPpm;
     }
@@ -174,7 +193,7 @@ public final class EnvironmentalMetricsCalculator {
      * @return topsoil loss percentage in $[0.03, 85.0]$ %
      */
     public double getTopsoilErosionLossPct() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeTopsoilErosionLoss(engine.getAverageTechnology());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeTopsoilErosionLoss(computePhysicalExergyCapitalIndex());
     }
 
     /**
@@ -183,7 +202,7 @@ public final class EnvironmentalMetricsCalculator {
      * @return forest retention percentage in $[0.0, 100.0]$ %
      */
     public double getForestCoverRemainingPct() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeForestCoverRemaining(engine.getAverageTechnology());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeForestCoverRemaining(computePhysicalExergyCapitalIndex());
     }
 
     /**
@@ -192,6 +211,6 @@ public final class EnvironmentalMetricsCalculator {
      * @return fossil energy share in $[0.0, 90.0]$ %
      */
     public double getFossilSharePrimaryEnergyPct() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeFossilSharePrimaryEnergy(engine.getAverageTechnology());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeFossilSharePrimaryEnergy(computePhysicalExergyCapitalIndex());
     }
 }

@@ -25,7 +25,6 @@ public class UrbanKernelTest {
         buffer.getH3Indexes()[0] = 0x882681a339fffffL;
         buffer.getBiomassHuman()[0] = 50_000.0f; // Megacity
         buffer.getResourceCapital()[0] = 1_000_000.0f; // 20 units capital per capita
-        buffer.getTechnologyLevel()[0] = 5.0f; // Industrial era
         buffer.getLocalPrice()[0] = 1.0f;
 
         UrbanKernel kernel = new UrbanKernel();
@@ -48,7 +47,6 @@ public class UrbanKernelTest {
         buffer.getH3Indexes()[0] = 0x882681a339fffffL;
         buffer.getBiomassHuman()[0] = 5.0f; // Isolated small clan (below 10.0 threshold)
         buffer.getResourceCapital()[0] = 50.0f;
-        buffer.getTechnologyLevel()[0] = 1.0f;
         buffer.getInstitutionalComplexity()[0] = 0.0f;
 
         UrbanKernel kernel = new UrbanKernel();
@@ -68,7 +66,6 @@ public class UrbanKernelTest {
         buffer.getH3Indexes()[0] = 0x882681a339fffffL;
         buffer.getBiomassHuman()[0] = 10_000_000.0f; // Hyper-dense 10M ecumenopolis
         buffer.getResourceCapital()[0] = 1e9f;
-        buffer.getTechnologyLevel()[0] = 10.0f;
         buffer.getLocalPrice()[0] = 5.0f;
 
         UrbanKernel kernel = new UrbanKernel();

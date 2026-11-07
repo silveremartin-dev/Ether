@@ -120,6 +120,13 @@ public final class GodModeInterventionCoordinator {
                 mapCanvas.flyTo(lat, lng);
             }
         } else {
+            if (engine != null && engine.getCurrentScenario() != null) {
+                if (engine.getCurrentScenario().getClimateEvents() == null) {
+                    engine.getCurrentScenario().setClimateEvents(new java.util.ArrayList<>());
+                }
+                engine.getCurrentScenario().getClimateEvents().add(new org.ether.society.model.ClimateEvent(
+                        type, name, targetYear, lat, lng, 10.0, mag, durationDays));
+            }
             logger.info("God Mode intervention SCHEDULED for Year {}: {} - {}", targetYear, name, details);
         }
     }

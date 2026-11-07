@@ -29,7 +29,6 @@ public class HydrologicalEngineeringEngineTest {
         H3Cell lakeCell = new H3Cell(2001L, 19.43, -99.13); // Mexico Basin coordinates
         lakeCell.setBiome(Biome.LAKE);
         lakeCell.setPopulation(3000);
-        lakeCell.setTechnologyLevel(4.0); // > 3.5 threshold
         lakeCell.setResourceCapital(200.0); // > 150.0 threshold
         lakeCell.setFoodResource(200.0);
         lakeCell.setSoilOrganicCarbon(50.0);
@@ -49,7 +48,6 @@ public class HydrologicalEngineeringEngineTest {
         H3Cell aralCell = new H3Cell(2002L, 45.0, 60.0);
         aralCell.setBiome(Biome.LAKE);
         aralCell.setPopulation(2000);
-        aralCell.setTechnologyLevel(3.2); // > 3.0 threshold
         aralCell.setResourceCapital(120.0); // > 100.0 threshold
         aralCell.setRainfall(150.0); // < 300 mm threshold
         aralCell.setTemperature(25.0); // >= 10 C
@@ -70,7 +68,6 @@ public class HydrologicalEngineeringEngineTest {
         H3Cell mountainCell = new H3Cell(2003L, 46.0, 8.0); // Alpine coordinates
         mountainCell.setElevation(800.0); // >= 300m threshold
         mountainCell.setMovementFriction(1.5); // >= 1.3
-        mountainCell.setTechnologyLevel(5.0); // >= 4.5 threshold
         mountainCell.setResourceCapital(300.0); // >= 250.0 threshold
         mountainCell.setWaterResource(100.0);
         mountainCell.setEnergySolar(50.0);

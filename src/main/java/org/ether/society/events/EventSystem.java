@@ -38,11 +38,14 @@ public class EventSystem {
     private boolean enableEarthHistoricalLeaders = true;
     /** Internal state: enable procedural leaders (boolean). */
     private boolean enableProceduralLeaders = true;
+    /** Internal state: enable chronicle singularity observer (boolean, disabled by default). */
+    private boolean enableChronicleSingularityObserver = false;
 
     // Catalogs and Generators
     private final HistoricalInterventionCatalog historicalCatalog = HistoricalInterventionCatalog.getInstance();
     private final ProceduralLeaderGenerator proceduralLeaderGenerator = new ProceduralLeaderGenerator();
     private final NaturalDisasterEvaluator naturalDisasterEvaluator = new NaturalDisasterEvaluator(this, random);
+    private final SpatialPhaseTransitionChronicleObserver phaseTransitionObserver = new SpatialPhaseTransitionChronicleObserver();
     private final List<HistoricalIntervention> activeInterventions = new CopyOnWriteArrayList<>();
     private final java.util.Set<String> firedInterventionIds = new java.util.HashSet<>();
 
@@ -102,6 +105,18 @@ public class EventSystem {
         this.enableProceduralLeaders = enableProceduralLeaders;
     }
 
+    public boolean isEnableChronicleSingularityObserver() {
+        return enableChronicleSingularityObserver;
+    }
+
+    public void setEnableChronicleSingularityObserver(boolean enableChronicleSingularityObserver) {
+        this.enableChronicleSingularityObserver = enableChronicleSingularityObserver;
+    }
+
+    public SpatialPhaseTransitionChronicleObserver getPhaseTransitionObserver() {
+        return phaseTransitionObserver;
+    }
+
     private void initializeHistoricalEvents() {
         historicalEvents.addAll(DefaultHistoricalEventsCatalog.getCanonicalEvents());
     }
@@ -118,6 +133,7 @@ public class EventSystem {
         chronicleHistory.clear();
         activeInterventions.clear();
         naturalDisasterEvaluator.reset();
+        phaseTransitionObserver.reset();
         this.random.setSeed(currentSeed);
         this.proceduralLeaderGenerator.setSeed(currentSeed);
     }
@@ -392,6 +408,33 @@ public class EventSystem {
 
     public void checkCellEvents(int year, List<H3Cell> cells) {
         checkCellEvents(year, 0, cells);
+    }
+
+    /**
+     * Evaluates spatial and societal singularities across cells when the chronicle observer is enabled.
+     *
+     * @param year     current simulation year
+     * @param month    current simulation month
+     * @param cells    active cell list
+     * @param scenario current scenario configuration
+     */
+    public void checkSingularities(int year, int month, List<H3Cell> cells, org.ether.society.model.Scenario scenario) {
+        checkPhaseTransitions(year, month, cells, scenario);
+    }
+
+    /**
+     * Evaluates spatial phase transitions across active domain cells and emits calibrated chronicle events.
+     *
+     * @param year     current simulation year
+     * @param month    current simulation month
+     * @param cells    active cell list
+     * @param scenario current scenario configuration
+     */
+    public void checkPhaseTransitions(int year, int month, List<H3Cell> cells, org.ether.society.model.Scenario scenario) {
+        if (!enableChronicleSingularityObserver || cells == null || cells.isEmpty()) {
+            return;
+        }
+        phaseTransitionObserver.evaluatePhaseTransitions(year, month, cells, this, scenario, random);
     }
 
     public void triggerEvent(String message) {

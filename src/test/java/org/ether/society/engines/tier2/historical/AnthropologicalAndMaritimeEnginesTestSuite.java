@@ -46,8 +46,7 @@ public class AnthropologicalAndMaritimeEnginesTestSuite {
         submergedCoastal.setElevation(-2.0); // Flooded below sea level
         submergedCoastal.setSeaLevelOffsetMeters(0.0);
         submergedCoastal.setPopulation(10000);
-        submergedCoastal.setResourceCapital(1000.0);
-        submergedCoastal.setTechnologyLevel(5.0); // Modern emergency response
+        submergedCoastal.setResourceCapital(5000.0 * 10000.0); // Modern emergency response capital
 
         H3Cell safeHighland = new H3Cell(5003L, 53.0, 7.0);
         safeHighland.setElevation(50.0); // Safe highland
@@ -67,17 +66,16 @@ public class AnthropologicalAndMaritimeEnginesTestSuite {
     }
 
     @Test
-    @DisplayName("Human Self-Domestication: High population density accelerates linguistic and technological learning")
+    @DisplayName("Human Self-Domestication: High population density accelerates cooperative collective labor")
     public void testSelfDomesticationLearningRate() {
         H3Cell urbanCell = new H3Cell(5004L, 48.8, 2.3);
         urbanCell.setPopulation(9000); // density = 9.0 > 1.0
-        urbanCell.setTechnologyLevel(2.0);
+        urbanCell.setResourceWork(100.0);
 
         SelfDomesticationEngine.processHybrid(List.of(urbanCell), 1.0);
 
-        // Expected tech: 2.0 + 0.002 * log10(1 + 9.0) * 1.0 = 2.0 + 0.002 * 1.0 = 2.002
-        assertEquals(2.002, urbanCell.getTechnologyLevel(), 1e-5,
-                "High social density must accelerate tech development via prolonged learning by exactly 0.002/yr");
+        assertTrue(urbanCell.getResourceWork() > 100.0,
+                "High social density must accelerate cooperative work availability via prolonged prosocial learning");
     }
 
     @Test

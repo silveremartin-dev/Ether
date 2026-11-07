@@ -116,6 +116,7 @@ public class Scenario extends AbstractScenarioTensorAndEngineConfig {
     private boolean randomEventsEnabled = true;
     private boolean earthHistoricalLeadersEnabled = true;
     private boolean proceduralLeadersEnabled = true;
+    private boolean chronicleSingularityObserverEnabled = false;
     private String customDensityBase64;
 
     /**
@@ -330,6 +331,9 @@ public class Scenario extends AbstractScenarioTensorAndEngineConfig {
 
     public boolean isProceduralLeadersEnabled() { return proceduralLeadersEnabled; }
     public void setProceduralLeadersEnabled(boolean proceduralLeadersEnabled) { this.proceduralLeadersEnabled = proceduralLeadersEnabled; }
+
+    public boolean isChronicleSingularityObserverEnabled() { return chronicleSingularityObserverEnabled; }
+    public void setChronicleSingularityObserverEnabled(boolean chronicleSingularityObserverEnabled) { this.chronicleSingularityObserverEnabled = chronicleSingularityObserverEnabled; }
 
     public String getCustomDensityBase64() { return customDensityBase64; }
     public void setCustomDensityBase64(String customDensityBase64) { this.customDensityBase64 = customDensityBase64; }

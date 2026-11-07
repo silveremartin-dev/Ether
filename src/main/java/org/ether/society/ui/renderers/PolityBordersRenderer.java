@@ -72,7 +72,7 @@ public class PolityBordersRenderer {
      */
     public Color getInstitutionalMaturityColor(H3Cell cell) {
         if (cell == null || cell.getElevation() == null || cell.getElevation() <= 0) return Color.rgb(15, 20, 40);
-        double tech = cell.getTechnologyLevel() != null ? cell.getTechnologyLevel() : 1.0;
+        double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(cell);
         double mat = Math.min(1.0, tech / 10.0);
         return Color.color(0.4 + mat * 0.5, 0.2, 0.6 + mat * 0.4);
     }

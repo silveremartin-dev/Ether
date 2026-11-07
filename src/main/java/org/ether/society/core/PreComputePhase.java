@@ -373,7 +373,7 @@ public class PreComputePhase {
             if (pop > 0 && (c.getWaterResource() == null || c.getWaterResource() < 300.0)) {
                 c.setWaterResource(Math.max(c.getWaterResourceOr(0.0), 500.0));
             }
-            double neolithicShare = org.ether.society.core.math.SmoothMath.sigmoid(effectiveKPerCapita, 300.0, 100.0);
+            double neolithicShare = org.ether.society.core.math.SmoothMath.sigmoid(effectiveKPerCapita, 11.0, 2.0);
             if (c.getBiomassLivestock() == null || c.getBiomassLivestock() <= 0.0) {
                 c.setBiomassLivestock(pop > 0 ? (pop * 0.25 * neolithicShare) : 0.0);
             }

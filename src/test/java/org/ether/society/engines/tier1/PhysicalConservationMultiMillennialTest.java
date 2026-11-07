@@ -64,12 +64,10 @@ public class PhysicalConservationMultiMillennialTest {
             buffer.getFoodResource()[i] = 3000.0f;
             buffer.getResourceCapital()[i] = 100.0f;
             buffer.getGiniIndex()[i] = 0.30f;
-            buffer.getTechnologyLevel()[i] = 2.0f;
 
             agents.getHexIds()[i] = i;
             agents.getMass()[i] = 50.0f;
             agents.getEnergy()[i] = 200.0f;
-            agents.getTechLevel()[i] = 2.0f;
         }
 
         var initialSnapshot = guard.captureSnapshot(buffer);

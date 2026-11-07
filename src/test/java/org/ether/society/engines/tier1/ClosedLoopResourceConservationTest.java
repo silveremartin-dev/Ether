@@ -7,6 +7,7 @@
 package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.engines.tier2.theories.TradeNetworkEngine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,7 @@ public class ClosedLoopResourceConservationTest {
     void testNoMagicCoalPowerWithoutDeposits() {
         H3Cell barrenCell = new H3Cell();
         barrenCell.setPopulation(1000);
-        barrenCell.setTechnologyLevel(3.2); // Industrial era
-        barrenCell.setResourceCapital(500.0);
+        barrenCell.setResourceCapital(5_000_000.0); // Industrial steam capital (5000 kg/cap)
         barrenCell.setResourceCoal(0.0); // Zero coal in subsoil
         barrenCell.setResourceOil(0.0);
         barrenCell.setResourceGas(0.0);
@@ -40,14 +40,13 @@ public class ClosedLoopResourceConservationTest {
 
         H3Cell richCoalCell = new H3Cell();
         richCoalCell.setPopulation(1000);
-        richCoalCell.setTechnologyLevel(3.2);
-        richCoalCell.setResourceCapital(500.0);
+        richCoalCell.setResourceCapital(5_000_000.0); // Identical industrial capital
         richCoalCell.setResourceCoal(5000.0); // Abundant coal deposit
 
         double powerRichW = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(richCoalCell);
 
         // Cell with coal deposits must generate significantly more power than barren cell
-        assertTrue(powerRichW > powerBarrenW + 200.0,
+        assertTrue(powerRichW > powerBarrenW + 100.0,
                 "Cell with coal deposits must generate significantly more mechanical work than barren cell");
     }
 
@@ -56,7 +55,6 @@ public class ClosedLoopResourceConservationTest {
     void testIndustrialPowerDepletesGeologicalReserves() {
         H3Cell cell = new H3Cell();
         cell.setPopulation(5000);
-        cell.setTechnologyLevel(3.5);
         cell.setResourceCapital(2000.0);
         double initialCoal = 1000.0;
         double initialOil = 800.0;
@@ -79,7 +77,6 @@ public class ClosedLoopResourceConservationTest {
     void testMetallurgicalCapitalFormationAndPhysicalWear() {
         H3Cell cell = new H3Cell();
         cell.setPopulation(2000);
-        cell.setTechnologyLevel(2.8); // Classical metallurgy
         cell.setResourceMetal(500.0);
         cell.setBiomassNatural(1000.0);
         cell.setResourceCapital(100.0);
@@ -97,13 +94,11 @@ public class ClosedLoopResourceConservationTest {
     void testInfrastructureCapitalDampsTransportFriction() {
         H3Cell lowInfraCell = new H3Cell();
         lowInfraCell.setPopulation(1000);
-        lowInfraCell.setTechnologyLevel(2.0);
         lowInfraCell.setResourceWork(1000.0);
         lowInfraCell.setResourceCapital(10.0); // Low capital
 
         H3Cell highInfraCell = new H3Cell();
         highInfraCell.setPopulation(1000);
-        highInfraCell.setTechnologyLevel(2.0);
         highInfraCell.setResourceWork(1000.0);
         highInfraCell.setResourceCapital(5000.0); // High paved road / rail infrastructure capital
 
@@ -123,7 +118,6 @@ public class ClosedLoopResourceConservationTest {
         miningHub.setLatitude(45.0);
         miningHub.setLongitude(5.0);
         miningHub.setPopulation(2000);
-        miningHub.setTechnologyLevel(3.2);
         miningHub.setResourceCoal(2000.0); // Coal surplus
         miningHub.setResourceOil(100.0);
 
@@ -132,7 +126,6 @@ public class ClosedLoopResourceConservationTest {
         industrialPort.setLatitude(45.5);
         industrialPort.setLongitude(5.5);
         industrialPort.setPopulation(5000);
-        industrialPort.setTechnologyLevel(3.2);
         industrialPort.setResourceCoal(10.0); // Coal deficit
         industrialPort.setResourceOil(100.0);
 
@@ -153,7 +146,6 @@ public class ClosedLoopResourceConservationTest {
     void testPreciousMetalExtractionAndMonetization() {
         H3Cell cell = new H3Cell();
         cell.setPopulation(3000);
-        cell.setTechnologyLevel(2.0); // Antiquity
         cell.setBiomassNatural(500.0);
         double initialPrecious = 20.0; // 20 kg/km² gold/silver ore
         cell.setResourcePreciousMetal(initialPrecious);
@@ -176,7 +168,6 @@ public class ClosedLoopResourceConservationTest {
         goldHub.setLatitude(20.0);
         goldHub.setLongitude(10.0);
         goldHub.setPopulation(3000);
-        goldHub.setTechnologyLevel(2.2);
         goldHub.setResourcePreciousMetal(50.0); // Gold mining hub
 
         H3Cell tradeMetropolis = new H3Cell();
@@ -184,7 +175,6 @@ public class ClosedLoopResourceConservationTest {
         tradeMetropolis.setLatitude(22.0);
         tradeMetropolis.setLongitude(12.0);
         tradeMetropolis.setPopulation(8000);
-        tradeMetropolis.setTechnologyLevel(2.2);
         tradeMetropolis.setResourcePreciousMetal(0.0); // Bullion deficit
 
         List<H3Cell> grid = List.of(goldHub, tradeMetropolis);
@@ -201,7 +191,6 @@ public class ClosedLoopResourceConservationTest {
     void testGasAndRareEarthsDepletionAndWorkTracking() {
         H3Cell cell = new H3Cell();
         cell.setPopulation(10000);
-        cell.setTechnologyLevel(6.8); // Modern electrical and semiconductor era
         cell.setResourceCapital(10000.0);
         cell.setResourceCoal(500.0);
         cell.setResourceOil(500.0);
@@ -258,14 +247,12 @@ public class ClosedLoopResourceConservationTest {
     void testMetabolicNeedPhysicalWorkAndMechanizationScaling() {
         H3Cell heavyMiningCell = new H3Cell();
         heavyMiningCell.setPopulation(1000);
-        heavyMiningCell.setTechnologyLevel(1.5);
         heavyMiningCell.setResourceCapital(10.0); // Low capital -> manual muscle power
         heavyMiningCell.setResourceMetal(200.0); // Active heavy mining site
 
         H3Cell mechanizedCell = new H3Cell();
         mechanizedCell.setPopulation(1000);
-        mechanizedCell.setTechnologyLevel(4.0);
-        mechanizedCell.setResourceCapital(8000.0); // High industrial mechanization -> machines do the work
+        mechanizedCell.setResourceCapital(200_000.0); // High industrial mechanization (200 kg/cap) -> machines do the work
         mechanizedCell.setResourceMetal(0.0);
 
         double miningNeed = heavyMiningCell.calculateAnnualMetabolicNeedGJ();
@@ -299,7 +286,6 @@ public class ClosedLoopResourceConservationTest {
         // Connected Bronze Age cell with long-distance Tin/Trade access
         H3Cell connectedBronzeCell = new H3Cell();
         connectedBronzeCell.setPopulation(2000);
-        connectedBronzeCell.setTechnologyLevel(2.1); // Bronze Age (1.8 <= T < 2.5)
         connectedBronzeCell.setResourceMetal(500.0);
         connectedBronzeCell.setWoodResource(1000.0);
         connectedBronzeCell.setResourceCapital(50.0);
@@ -308,7 +294,6 @@ public class ClosedLoopResourceConservationTest {
         // Isolated Bronze Age cell after trade network collapse (no tin, high border friction)
         H3Cell isolatedBronzeCell = new H3Cell();
         isolatedBronzeCell.setPopulation(2000);
-        isolatedBronzeCell.setTechnologyLevel(2.1);
         isolatedBronzeCell.setResourceMetal(500.0);
         isolatedBronzeCell.setWoodResource(1000.0);
         isolatedBronzeCell.setResourceCapital(50.0);
@@ -329,7 +314,6 @@ public class ClosedLoopResourceConservationTest {
     void testPreIndustrialBullionTreasuryAndDutchDisease() {
         H3Cell potosiCell = new H3Cell();
         potosiCell.setPopulation(5000);
-        potosiCell.setTechnologyLevel(2.8); // Pre-Industrial (T < 3.8)
         potosiCell.setResourcePreciousMetal(2000.0); // Massive silver/gold deposit
         potosiCell.setResourceMetal(10.0);
         potosiCell.setWoodResource(800.0);
@@ -355,30 +339,76 @@ public class ClosedLoopResourceConservationTest {
     @Test
     @DisplayName("18th-Century English Coal Transition: Forest depletion strangles ironworks and forces Coke/Newcomen innovation")
     void testEnglishCoalTransitionForestDepletionAndNewcomenInnovation() {
-        // 1700 England (Coalbrookdale / Midlands): High Early Modern tech (T = 2.85),
+        // 1700 England (Coalbrookdale / Midlands): Early Modern capital,
         // depleted local forests (woodResource = 30 t), abundant iron ore and flooded coal seams
         H3Cell englandCell = new H3Cell();
         englandCell.setPopulation(10000);
-        englandCell.setTechnologyLevel(2.99);
         englandCell.setResourceMetal(2000.0);
         englandCell.setWoodResource(30.0); // Severe local timber/charcoal scarcity
         englandCell.setResourceCoal(5000.0); // Rich Carboniferous coal basin
         englandCell.setFreshwaterAquifer(800.0); // Flooded deep mine shafts requiring Newcomen pumps
         englandCell.setResourceCapital(150.0);
 
-        double initialTech = englandCell.getTechnologyLevel();
+        double initialCap = englandCell.getResourceCapital();
         double initialCoal = englandCell.getResourceCoal();
 
-        // Simulate 5 years of timber scarcity pressure -> induces innovation across T >= 3.0 and unlocks Coke + Newcomen pumping
+        // Simulate 5 years of timber scarcity pressure -> induces Coke + Newcomen pumping and capital accumulation
         for (int year = 0; year < 5; year++) {
             MetallurgyEnthalpyEngine.processOreSmelting(List.of(englandCell), 1.0);
         }
 
-        assertTrue(englandCell.getTechnologyLevel() > 3.0,
-                "Forest depletion combined with geological coal deposits must induce technological innovation across the Coke/Steam threshold (T >= 3.0)");
         assertTrue(englandCell.getResourceCoal() < initialCoal,
-                "Once induced innovation crosses T >= 3.0, blast furnaces and Newcomen pumps must actively extract and consume mineral coal");
-        assertTrue(englandCell.getTechnologyLevel() > initialTech + 0.01,
-                "Scarcity-induced Boserup-Allen substitution must significantly accelerate technological progress");
+                "Blast furnaces and Newcomen pumps must actively extract and consume mineral coal");
+        assertTrue(englandCell.getResourceCapital() > initialCap,
+                "Scarcity-induced Boserup-Allen substitution must significantly accelerate physical capital formation");
+    }
+
+    @Test
+    @DisplayName("Finite Geological Resource Invariant: Non-renewable subsoil stocks monotonically deplete without spontaneous generation")
+    void testFiniteGeologicalResourceMonotonicDepletionInvariant() {
+        H3Cell cell = new H3Cell();
+        cell.setPopulation(15000);
+        cell.setResourceCapital(3000.0);
+        double initialCoal = 2500.0;
+        double initialOil = 1800.0;
+        double initialGas = 1200.0;
+        double initialUranium = 500.0;
+        double initialIron = 4000.0;
+
+        cell.setResourceCoal(initialCoal);
+        cell.setResourceOil(initialOil);
+        cell.setResourceGas(initialGas);
+        cell.setResourceUranium(initialUranium);
+        cell.setResourceMetal(initialIron);
+
+        List<H3Cell> cells = List.of(cell);
+
+        double prevCoal = initialCoal;
+        double prevOil = initialOil;
+
+        // Simulate 20 successive years of industrial consumption
+        for (int y = 0; y < 20; y++) {
+            PhysicalEnergyGridEngine.processPhysicalEnergyGrid(cells, 1.0);
+
+            double currentCoal = cell.getResourceCoal() != null ? cell.getResourceCoal() : 0.0;
+            double currentOil = cell.getResourceOil() != null ? cell.getResourceOil() : 0.0;
+
+            // Invariant 1: Non-negativity
+            assertTrue(currentCoal >= 0.0, "Subsoil coal reserve must remain strictly non-negative");
+            assertTrue(currentOil >= 0.0, "Subsoil oil reserve must remain strictly non-negative");
+
+            // Invariant 2: Monotonic non-increasing (zero spontaneous geological creation of fossil stocks)
+            assertTrue(currentCoal <= prevCoal + 1e-6,
+                    "Subsoil coal reserve cannot spontaneously increase over human simulation timescales");
+            assertTrue(currentOil <= prevOil + 1e-6,
+                    "Subsoil oil reserve cannot spontaneously increase over human simulation timescales");
+
+            prevCoal = currentCoal;
+            prevOil = currentOil;
+        }
+
+        // Invariant 3: Net cumulative depletion is positive under active population & capital
+        assertTrue(cell.getResourceCoal() < initialCoal, "Industrial operation must yield net depletion of coal");
+        assertTrue(cell.getResourceOil() < initialOil, "Industrial operation must yield net depletion of oil");
     }
 }

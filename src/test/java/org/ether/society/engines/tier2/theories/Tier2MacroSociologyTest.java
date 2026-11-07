@@ -118,7 +118,6 @@ public class Tier2MacroSociologyTest {
         H3Cell inclusivePolity = new H3Cell();
         inclusivePolity.setPopulation(2000);
         inclusivePolity.setGiniIndex(0.25); // Inclusive, low inequality
-        inclusivePolity.setTechnologyLevel(4.0);
         inclusivePolity.setResourceCapital(500.0);
         cells.add(inclusivePolity);
 

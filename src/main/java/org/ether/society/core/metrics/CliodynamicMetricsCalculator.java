@@ -58,12 +58,25 @@ public final class CliodynamicMetricsCalculator {
     }
 
     /**
-     * Evaluates the Sociopolitical Instability Index (PSI) based on Peter Turchin's Structural-Demographic Theory (SDT).
+     * Evaluates the Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ directly
+     * from physical cellular power dissipation $p = P_{\text{watts}}/N$ and built capital $k_{\text{pc}} = K/N$.
+     */
+    private double computePhysicalExergyCapitalIndex() {
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        double powerW = aggregator.getEnergyPerCapita();
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeEmergentTechnologyLevel(powerW, kpc);
+    }
+
+    /**
+     * Evaluates the Sociopolitical Instability Index (PSI) based on Peter Turchin's Structural-Demographic Theory (SDT),
+     * driven by physical capital per capita $k_{\text{pc}} = K/N$, Gini stratification, and urbanization.
      *
      * @return sociopolitical instability index in $[0, 100]$
      */
     public double getSociopoliticalInstabilityIndex() {
-        float tech = engine.getAverageTechnology();
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
         float gini = engine.getCurrentGini();
         double safeGini = Double.isNaN(gini) ? 0.17 : gini;
         double urbanRate = aggregator.getUrbanizationRate();
@@ -71,8 +84,9 @@ public final class CliodynamicMetricsCalculator {
         // 1. Anthropological pre-state inter-band skirmish baseline (Keeley 1996; Kohler et al. 2017)
         double bandSkirmishBaseline = 5.0 + 11.0 * safeGini;
 
-        // 2. Endogenous state polity emergence factor Phi_state(T, U) (Turchin 2003, 2016):
-        double stateEmergenceFactor = Math.tanh(Math.max(0.0, tech - 1.55) * 1.35 + (urbanRate / 12.0));
+        // 2. Endogenous state polity emergence factor Phi_state(k_pc, U) (Turchin 2003, 2016):
+        // Smoothly activates above sedentary surplus capital threshold k_pc >= 40 kg/cap
+        double stateEmergenceFactor = Math.tanh(Math.max(0.0, kpc - 40.0) / 150.0 + (urbanRate / 12.0));
         if (stateEmergenceFactor <= 0.001) {
             return Math.clamp(bandSkirmishBaseline, 0.0, 100.0);
         }
@@ -87,14 +101,15 @@ public final class CliodynamicMetricsCalculator {
     }
 
     /**
-     * Evaluates the number of active urban city-states (emerging endogenously with urban agglomeration).
+     * Evaluates the number of active urban city-states (emerging endogenously with urban agglomeration and physical capital).
      *
      * @return count of city-states
      */
     public int getCityStatesCount() {
         double urbanRate = aggregator.getUrbanizationRate();
-        float tech = engine.getAverageTechnology();
-        if (urbanRate < 0.5 || tech < 1.6f) {
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        if (urbanRate < 0.5 || kpc < 35.0) {
             return 0;
         }
         if (engine.getNations() != null && !engine.getNations().isEmpty()) {
@@ -105,35 +120,42 @@ public final class CliodynamicMetricsCalculator {
     }
 
     /**
-     * Evaluates institutional governance maturity index ($0$ to $100$).
+     * Evaluates institutional governance maturity index ($0$ to $100$) from physical administrative capital $k_{\text{pc}} = K/N$
+     * and literacy rate.
      *
      * @return institutional maturity
      */
     public double getInstitutionalMaturity() {
-        float tech = engine.getAverageTechnology();
-        return Math.min(100.0, tech * 0.45);
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        return Math.min(100.0, 8.0 * Math.log1p(kpc / 15.0));
     }
 
     /**
-     * Evaluates Durkheimian division of labor and occupational specialization index ($0$ to $100$).
+     * Evaluates Durkheimian division of labor and occupational specialization index ($0$ to $100$)
+     * from metabolic energy surplus $\Phi$, physical tool density $k_{\text{pc}}$, and demographic scale $\log_{10}(N)$
+     * (Durkheim 1893; Carneiro 1967).
      *
      * @return division of labor index
      */
     public double getDivisionOfLaborIndex() {
-        float tech = engine.getAverageTechnology();
         long pop = engine.getTotalPopulation();
+        double kpc = pop > 0 ? aggregator.getBuiltCapitalTotal() / pop : 0.0;
         double surplus = aggregator.getNetSurplusFraction();
-        return Math.min(100.0, (surplus * 60.0) + (tech * 0.25) + Math.log10(Math.max(1, pop)) * 3.0);
+        return Math.min(100.0, (surplus * 60.0) + (2.5 * Math.log1p(kpc / 20.0)) + Math.log10(Math.max(1, pop)) * 3.0);
     }
 
     /**
-     * Evaluates Seshat administrative hierarchy complexity level ($1.0$ to $6.0$) as a continuous scalar.
+     * Evaluates Seshat administrative hierarchy complexity level ($1.0$ to $6.0$) as a continuous function
+     * of physical capital per capita $k_{\text{pc}} = K/N$ and demographic scale (Turchin et al. 2018).
      *
      * @return hierarchy level score in $[1, 6]$
      */
     public int getMaxHierarchyLevel() {
-        float tech = engine.getAverageTechnology();
-        double h = 1.0 + 5.0 / (1.0 + Math.exp(-1.35 * (tech - 2.90)));
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        double logK = Math.log1p(kpc / 10.0);
+        double h = 1.0 + 5.0 / (1.0 + Math.exp(-1.10 * (logK - 3.20)));
         return (int) Math.round(Math.clamp(h, 1.0, 6.0));
     }
 
@@ -143,25 +165,29 @@ public final class CliodynamicMetricsCalculator {
      * @return largest polity population
      */
     public long getLargestCulturalUnitSize() {
+        long pop = engine.getTotalPopulation();
+        double kpc = pop > 0 ? aggregator.getBuiltCapitalTotal() / pop : 0.0;
+        double integrationShare = Math.min(0.85, 0.20 + 0.06 * Math.log1p(kpc / 25.0));
         if (!engine.getNations().isEmpty()) {
             return engine.getNations().stream()
                     .mapToLong(Polity::getTotalPopulation)
                     .max()
-                    .orElse((long) (engine.getTotalPopulation() * Math.min(0.85, 0.2 + (engine.getAverageTechnology() / 300.0))));
+                    .orElse((long) (pop * integrationShare));
         }
-        long pop = engine.getTotalPopulation();
-        return (long) (pop * Math.min(0.85, 0.2 + (engine.getAverageTechnology() / 300.0)));
+        return (long) (pop * integrationShare);
     }
 
     /**
-     * Evaluates Tainter organizational complexity of the largest polity.
+     * Evaluates Tainter organizational complexity of the largest polity from population,
+     * administrative hierarchy, and physical capital per capita (Tainter 1988, <i>The Collapse of Complex Societies</i>).
      *
      * @return largest organization complexity score
      */
     public double getLargestOrganizationComplexity() {
         long largestPop = getLargestCulturalUnitSize();
         if (largestPop <= 0) return 0.0;
-        float avgTech = engine.getAverageTechnology();
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
         int hierarchy = getMaxHierarchyLevel();
         double stateCap = 0.5;
         if (!engine.getNations().isEmpty()) {
@@ -172,7 +198,7 @@ public final class CliodynamicMetricsCalculator {
                 stateCap = largest.getStateCapacity();
             }
         }
-        return largestPop * (1.0 + avgTech * 0.4) * stateCap * (Math.log(1.0 + hierarchy) / Math.log(2.0));
+        return largestPop * (1.0 + 0.35 * Math.log1p(kpc / 20.0)) * stateCap * (Math.log(1.0 + hierarchy) / Math.log(2.0));
     }
 
     /**
@@ -183,8 +209,9 @@ public final class CliodynamicMetricsCalculator {
     public double getLargestOrganizationEntropy() {
         double complexity = getLargestOrganizationComplexity();
         double pollution = aggregator.getPollutionLevel();
-        float tech = engine.getAverageTechnology();
-        return (complexity * 0.05 + tech * 1.2) * (1.0 + pollution / 100.0);
+        long pop = Math.max(1L, engine.getTotalPopulation());
+        double kpc = aggregator.getBuiltCapitalTotal() / pop;
+        return (complexity * 0.05 + 1.2 * Math.log1p(kpc / 15.0)) * (1.0 + pollution / 100.0);
     }
 
     /**
@@ -209,17 +236,18 @@ public final class CliodynamicMetricsCalculator {
     }
 
     /**
-     * Evaluates Turchin elite overproduction index ($0.0$ to $4.5$).
+     * Evaluates Turchin elite overproduction index ($0.0$ to $4.5$) directly from physical capital surplus
+     * $k_{\text{pc}} = K/N$ and Lorenz Gini stratification.
      *
      * @return elite overproduction index
      */
     public double getEliteOverproductionIndex() {
-        float tech = engine.getAverageTechnology();
-        double stateActivation = SmoothMath.sigmoid(tech, 1.02, 0.04);
+        double phiExergy = computePhysicalExergyCapitalIndex();
+        double stateActivation = SmoothMath.sigmoid(phiExergy, 1.02, 0.04);
         if (stateActivation <= 0.01) return 0.0;
         float gini = engine.getCurrentGini();
         double safeGini = Double.isNaN(gini) ? 0.40 : gini;
-        double eoi = stateActivation * (1.05 + 1.25 * Math.max(0.0, safeGini - 0.30) + 0.25 * Math.tanh(Math.max(0.0, tech - 2.50)));
+        double eoi = stateActivation * (1.05 + 1.25 * Math.max(0.0, safeGini - 0.30) + 0.25 * Math.tanh(Math.max(0.0, phiExergy - 2.50)));
         return Double.isNaN(eoi) ? 0.0 : Math.clamp(eoi, 0.0, 4.5);
     }
 
@@ -290,8 +318,8 @@ public final class CliodynamicMetricsCalculator {
      * @return political stress index in $[0.0, 100.0]$
      */
     public double getPoliticalStressIndex() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computePoliticalStressIndex(
-                engine.getAverageTechnology(), aggregator.getHappinessIndex());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computePoliticalStressIndex(
+                computePhysicalExergyCapitalIndex(), aggregator.getHappinessIndex());
     }
 
     /**
@@ -300,7 +328,7 @@ public final class CliodynamicMetricsCalculator {
      * @return normalized social cohesion score in $[0.0, 1.0]$
      */
     public double getAsabiyyahSocialCohesionScore() {
-        return org.ether.society.analytics.PostHocCliodynamicMetricsExtractor.computeAsabiyyahSocialCohesion(
-                engine.getAverageTechnology(), aggregator.getHappinessIndex());
+        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeAsabiyyahSocialCohesion(
+                computePhysicalExergyCapitalIndex(), aggregator.getHappinessIndex());
     }
 }
