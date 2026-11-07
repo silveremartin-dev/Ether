@@ -152,7 +152,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return precious metal purity percentage in [0.0, 100.0]
      */
     public static double computeCurrencyDebasement(double tech, double stability) {
-        double mintingActivation = Math.tanh(Math.max(0.0, tech - 1.05) * 4.00);
+        double mintingActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 4.00);
         if (mintingActivation <= 0.0) return 0.0;
 
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
@@ -273,7 +273,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * and total war debt mobilization (1914 CE: ~90.2%).
      */
     public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double tech) {
-        double institutionalActivation = Math.tanh(Math.max(0.0, tech - 1.05) * 3.50);
+        double institutionalActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 3.50);
         if (institutionalActivation <= 0.0) return 0.0;
 
         double fiscalShock = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
@@ -295,7 +295,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeGlobalTradeVolume(double tech) {
-        double tradeActivation = Math.tanh(Math.max(0.0, tech - 1.05) * 4.00);
+        double tradeActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 4.00);
         if (tradeActivation <= 0.0) return 0.0;
 
         // Federico & Tena-Junguito (2017) 'World trade, 1800-1938' (Index 100 = 1913):
@@ -317,7 +317,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeTopsoilErosionLoss(double tech) {
-        double lossActivation = Math.tanh(Math.max(0.0, tech - 1.05) * 3.00);
+        double lossActivation = Math.tanh(Math.max(0.0, tech - 0.90) * 3.00);
         if (lossActivation <= 0.0) return 0.03;
 
         // Montgomery (2007) / FAO (2015) Cumulative Topsoil Loss (% relative to Holocene baseline):
@@ -354,7 +354,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // 1800 CE: ~65%
         // 1914 CE: ~49%
         // Modern: ~38%
-        double clearingActivation = Math.tanh(Math.max(0.0, tech - 1.05) * 2.00);
+        double clearingActivation = Math.tanh(Math.max(0.0, tech - 0.90) * 2.00);
         if (clearingActivation <= 0.0) return 99.0;
         double traditionalClearing = 22.0 * Math.tanh(Math.max(0.0, tech - 1.15) * 1.50)
                 + 14.0 * Math.tanh(Math.max(0.0, tech - 1.45) * 4.00);
@@ -378,8 +378,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return dispatch propagation velocity in kilometers per day (km/day)
      */
     public static double computeInformationTravelSpeed(double tech) {
-        // Pedestrian baseline: 4 km/day in prehistory (T < 1.05)
-        double courierActivation = Math.tanh(Math.max(0.0, tech - 1.05) * 4.00);
+        // Pedestrian baseline: 4 km/day in prehistory (T < 0.95)
+        double courierActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 4.00);
         double courierSpeed = 4.0 + 82.0 * courierActivation + 4.0 * Math.tanh(Math.max(0.0, tech - 1.25) * 3.0);
 
         // Chappe optical semaphore telegraph (1792: T >= 1.45): +180 km/day in 1800 CE (T ~ 1.55) -> 268 km/day
@@ -396,7 +396,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeMetalSmeltingPerCapita(double tech) {
-        double smeltActivation = Math.tanh(Math.max(0.0, tech - 1.00) * 4.00);
+        double smeltActivation = Math.tanh(Math.max(0.0, tech - 0.92) * 4.00);
         if (smeltActivation <= 0.0) return 0.0;
 
         // Malandra (1990) / USGS (2023): Antiquity (~1.6 kg) -> Medieval (~1.8-3.0 kg)
@@ -429,7 +429,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeShippingFreightCostIndex(double tech) {
-        double navActivation = Math.tanh(Math.max(0.0, tech - 1.05) * 4.00);
+        double navActivation = Math.tanh(Math.max(0.0, tech - 0.95) * 4.00);
         if (navActivation <= 0.0) return 0.0;
 
         // Harley (1988), Mohammed & Williamson (2004), UNCTAD (2024):

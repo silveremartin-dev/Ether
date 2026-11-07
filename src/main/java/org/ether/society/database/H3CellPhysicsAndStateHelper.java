@@ -75,11 +75,11 @@ public final class H3CellPhysicsAndStateHelper {
         // Garrett-Lotka macroscopic scaling calibration across human civilization epochs:
         // Somatic Paleolithic foraging baseline (~0.85, Smil 2017)
         double somaticBaseline = 0.85;
-        // Agrarian infrastructure & settlements: normalizes gross active physical capital against agrarian baseline (k0 = 500 kg/cap)
-        double agrarianCapitalFactor = 0.65 * Math.log10(1.0 + kActive / 500.0);
-        // Exosomatic prime-mover power above somatic basal+hearth (~350 W): normalized to industrial prime-mover scale (p0 = 1500 W)
+        // Agrarian infrastructure & settlements: normalizes gross active physical capital against agrarian baseline (k0 = 120 kg/cap)
+        double agrarianCapitalFactor = 0.50 * Math.log10(1.0 + kActive / 120.0);
+        // Exosomatic prime-mover power above somatic basal+hearth (~350 W): normalized to prime-mover traction/mill scale (p0 = 250 W)
         double exosomaticPowerAboveHearth = SmoothMath.softplus(pEff - 348.0, 5.0);
-        double industrialPowerFactor = 1.25 * Math.log10(1.0 + exosomaticPowerAboveHearth / 1500.0);
+        double industrialPowerFactor = 0.70 * Math.log10(1.0 + exosomaticPowerAboveHearth / 250.0);
         double raw = somaticBaseline + agrarianCapitalFactor + industrialPowerFactor;
         return SmoothMath.smoothClamp(raw, 0.0, 10.0, 20.0);
     }

@@ -64,12 +64,14 @@ public class PhysicalEnergyGridEngine {
         // 4. Smooth Wind / Watermill kinetic & charcoal metallurgical harvesting (activates smoothly above kpc ~ 520 kg/cap, up to +220 W/cap)
         double millAndCharcoalWatts = 220.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 520.0, 0.05) / 420.0);
 
-        // 5. Smooth Industrial Fossil Power (Coal, Oil, Gas) - Gated strictly by physical fossil reserves and steam/heat engine capital (kpc >= 1800 kg/cap)
+        // 5. Smooth Industrial Fossil Power (Coal, Oil, Gas) - Gated strictly by steam/heat engine capital (kpc >= 1800 kg/cap)
         double coalStock = cell.getResourceCoalOr(0.0);
         double oilStock = cell.getResourceOilOr(0.0);
         double gasStock = cell.getResourceGasOr(0.0);
-        double fossilReserves = Math.max(0.0, coalStock + oilStock + gasStock);
-        double fossilAvailability = Math.tanh(fossilReserves / SmoothMath.softmax(5.0, pop * 0.02, 0.5));
+        double fossilReserves = coalStock + oilStock + gasStock;
+        double fossilAvailability = (fossilReserves > 0.0)
+                ? Math.tanh(fossilReserves / SmoothMath.softmax(5.0, pop * 0.02, 0.5))
+                : 1.0;
         double steamCoalWatts = 600.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 1800.0, 0.02) / 2500.0) * fossilAvailability;
 
         // 6. Smooth Modern Electric / Hydrocarbon / Fissile Grid - Gated by 20th/21st century capital (kpc >= 4000 kg/cap)
