@@ -8,26 +8,12 @@ package org.ether.society.falsification.debates;
 
 import org.ether.society.analytics.HistoricalValidationKernel;
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.Polity;
 import org.ether.society.engines.ProceduralEngineRegistry;
-import org.ether.society.engines.tier1.BiologicalDemographicsEngine;
-import org.ether.society.engines.tier1.SoilNutrientNPKEngine;
-import org.ether.society.engines.tier2.historical.NordhausDicePureEngine;
-import org.ether.society.engines.tier2.historical.OstromCommonsPureEngine;
-import org.ether.society.engines.tier2.historical.PinkerViolenceDeclinePureEngine;
-import org.ether.society.engines.tier2.historical.ScottAgainstTheGrainPureEngine;
-import org.ether.society.engines.tier2.historical.SmilMaterialTransitionsPureEngine;
-import org.ether.society.engines.tier2.historical.TasmanianCulturalRegressionEngine;
-import org.ether.society.engines.tier2.historical.World3PureEngine;
-import org.ether.society.engines.tier2.theories.AcemogluRobinsonInstitutionsEngine;
 import org.ether.society.engines.tier2.theories.BoserupAgriculturalIntensificationEngine;
-import org.ether.society.engines.tier2.theories.CliodynamicsEngine;
 import org.ether.society.engines.tier2.theories.GranovetterThresholdCascadeEngine;
-import org.ether.society.engines.tier2.theories.KummelAyresExergyEngine;
-import org.ether.society.engines.tier2.theories.LanguageLinguisticEngine;
 import org.ether.society.engines.tier2.theories.StructuralDemographicBifurcationEngine;
 import org.ether.society.engines.tier2.theories.TurchinGoldstoneSDTEngine;
-import org.ether.society.engines.tier2.theories.WarDiplomacyEngine;
-import org.ether.society.database.Polity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -41,6 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.ether.society.falsification.debates.FalsificationDebateFixtures.*;
+import static org.ether.society.falsification.debates.GrataloupBoundaryDebateHelper.*;
+import static org.ether.society.falsification.debates.InstitutionalDebatesHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -77,45 +66,12 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             List<H3Cell> malthusGrid = createGeographicalAgrarianGrid(50, 8000, 1.2, 100.0);
             List<H3Cell> boserupGrid = createGeographicalAgrarianGrid(50, 8000, 1.2, 12000.0);
-
             BoserupAgriculturalIntensificationEngine boserupEngine = new BoserupAgriculturalIntensificationEngine();
 
             Map<Integer, Double> malthusTrajectory = new HashMap<>();
             Map<Integer, Double> boserupTrajectory = new HashMap<>();
 
-            for (int t = 0; t < 50; t++) {
-                int simYear = 1750 + (t * 2);
-
-                // Malthusian branch: static crop biomass without intensification -> food depletion triggers Malthusian famine
-                org.ether.society.engines.tier1.EcologicalDegradationEngine.processEcologicalDegradation(malthusGrid, 1.2, 2.0);
-                for (H3Cell c : malthusGrid) {
-                    double pop = c.getPopulation();
-                    double food = c.getFoodResourceOr(0.0);
-                    if (pop * 1.5 > food) {
-                        c.setFoodResource(Math.max(0.0, food - (pop * 1.5 - food) * 0.1));
-                        c.setPopulation(Math.max(1, (int) (pop * 0.85)));
-                    }
-                }
-
-                // Boserupian branch: population density triggers multi-cropping, terrace irrigation and biomass growth
-                boserupEngine.process(boserupGrid, 2.0);
-                org.ether.society.engines.tier1.EcologicalDegradationEngine.processEcologicalDegradation(boserupGrid, org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(boserupGrid.get(0)), 2.0);
-                BiologicalDemographicsEngine.processBiologicalDemographics(boserupGrid, 2.0);
-
-                // Endogenous demographic response to expanding Boserup carrying capacity (Bocquet-Appel 2011; Boserup 1965)
-                for (H3Cell c : boserupGrid) {
-                    double pop = c.getPopulation();
-                    double carryingCap = c.getBiomassAgriculture() * 35.0;
-                    if (pop < carryingCap) {
-                        double netGrowth = pop * (1.0 - (pop / carryingCap)) * 0.006 * 2.0;
-                        int newPop = (int) Math.round(pop + netGrowth);
-                        c.setPopulation(newPop);
-                    }
-                }
-
-                malthusTrajectory.put(simYear, malthusGrid.stream().mapToDouble(H3Cell::getPopulation).sum());
-                boserupTrajectory.put(simYear, boserupGrid.stream().mapToDouble(H3Cell::getPopulation).sum());
-            }
+            runMalthusVsBoserupSimulation(malthusGrid, boserupGrid, boserupEngine, malthusTrajectory, boserupTrajectory);
 
             double finalMalthusPop = malthusGrid.stream().mapToDouble(H3Cell::getPopulation).sum();
             double finalBoserupPop = boserupGrid.stream().mapToDouble(H3Cell::getPopulation).sum();
@@ -123,13 +79,11 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             logger.info("  -> Malthusian Pop: {}, Boserup Pop: {}, Boserup Cap: {}", finalMalthusPop, finalBoserupPop, finalBoserupCap);
 
-            // Confrontation with historical reality: HYDE 3.4 shows demographic take-off from 1750 (790M) to 1850 (1260M)
             Map<Integer, Double> historicalPop = HistoricalValidationKernel.getBenchmarkDataset("worldPopulation");
             assertNotNull(historicalPop, "HYDE 3.4 population dataset must be loaded");
             assertTrue(historicalPop.get(1850) > historicalPop.get(1750),
                     "Historical HYDE 3.4 shows demographic take-off between 1750 and 1850, falsifying the static Malthusian trap.");
 
-            // Rigorous Statistical Validation: Pearson correlation against HYDE 3.4 empirical trajectory
             double boserupPearson = HistoricalValidationKernel.calculatePearsonCorrelation(boserupTrajectory, historicalPop);
             double malthusPearson = HistoricalValidationKernel.calculatePearsonCorrelation(malthusTrajectory, historicalPop);
             logger.info("  -> Boserup Pearson vs HYDE 3.4: {}, Malthus Pearson: {}", boserupPearson, malthusPearson);
@@ -154,52 +108,22 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("1.2 Parameter Sweep: Density Threshold Bifurcation (Sparse vs Dense Regimes)")
         public void testDensityThresholdBifurcation() {
             logger.info("🧪 [Scenario 1.2] Testing Boserup Density Threshold Bifurcation (Sparse vs Dense)...");
+            BoserupBifurcationResult res = runDensityThresholdBifurcation();
 
-            H3Cell sparseCell = new H3Cell(0x8428308280fffffL, 45.0, 10.0);
-            sparseCell.setPopulation(1500); // 0.85 hab/km² (Res 4 = 1770 km²) -> Stage 1: Foraging
-            sparseCell.setResourceCapital(1500 * 50.0);
-            sparseCell.setBiomassAgriculture(50.0);
-
-            H3Cell denseCell = new H3Cell(0x8428308281fffffL, 45.0, 10.0);
-            denseCell.setPopulation(100000); // 56.5 hab/km² -> Stage 4: Multi-crop Irrigation (> 50 hab/km²)
-            denseCell.setResourceCapital(100000 * 50.0);
-            denseCell.setBiomassAgriculture(50.0);
-
-            BoserupAgriculturalIntensificationEngine boserupEngine = new BoserupAgriculturalIntensificationEngine();
-            List<H3Cell> cells = List.of(sparseCell, denseCell);
-
-            double initialSparseCap = sparseCell.getResourceCapital();
-            double initialDenseCap = denseCell.getResourceCapital();
-
-            for (int t = 0; t < 20; t++) {
-                boserupEngine.process(cells, 1.0);
-            }
-
-            logger.info("  -> Sparse Cell Capital: {}, Dense Cell Capital: {}", sparseCell.getResourceCapital(), denseCell.getResourceCapital());
-            assertTrue((sparseCell.getResourceCapital() - initialSparseCap) / initialSparseCap < 0.01, "Sparse populations experience no Boserupian pressure to intensify (< 1% growth).");
-            assertTrue(denseCell.getResourceCapital() > initialDenseCap * 1.5, "Dense populations must cross bifurcation threshold into intensive agriculture capital deepening.");
-            assertTrue(denseCell.getBiomassAgriculture() > sparseCell.getBiomassAgriculture(), "Intensive agriculture raises crop biomass ceiling.");
+            logger.info("  -> Sparse Cell Capital: {}, Dense Cell Capital: {}", res.finalSparseCap(), res.finalDenseCap());
+            assertTrue((res.finalSparseCap() - res.initialSparseCap()) / res.initialSparseCap() < 0.01,
+                    "Sparse populations experience no Boserupian pressure to intensify (< 1% growth).");
+            assertTrue(res.finalDenseCap() > res.initialDenseCap() * 1.5,
+                    "Dense populations must cross bifurcation threshold into intensive agriculture capital deepening.");
+            assertTrue(res.denseAgri() > res.sparseAgri(), "Intensive agriculture raises crop biomass ceiling.");
         }
 
         @Test
         @DisplayName("1.3 Liebig-NPK Soil Depletion Limits Boserupian Intensification without Fertilizer")
         public void testLiebigNutrientDepletionConstraintOnBoserup() {
             logger.info("🧪 [Scenario 1.3] Testing Liebig-NPK Nutrient Depletion via SoilNutrientNPKEngine...");
+            double finalAgriBiomass = runLiebigNPKSimulation();
 
-            H3Cell farmCell = new H3Cell(0x8428308285fffffL, 45.0, 10.0);
-            farmCell.setPopulation(50000);
-            farmCell.setBiomassAgriculture(30_000_000.0);
-            farmCell.setSoilOrganicCarbon(5.0); // Severely depleted natural carbon/nitrogen
-            farmCell.setResourceMetal(0.0);     // No mineral phosphate rock
-            farmCell.setResourceCapital(500.0); // Pre-industrial: no Haber-Bosch ammonia synthesis
-
-            List<H3Cell> cells = List.of(farmCell);
-
-            for (int yr = 0; yr < 10; yr++) {
-                SoilNutrientNPKEngine.processSoilNutrients(cells, 1.0);
-            }
-
-            double finalAgriBiomass = farmCell.getBiomassAgriculture();
             logger.info("  -> Final Agricultural Biomass under Liebig-NPK exhaustion: {}", finalAgriBiomass);
             assertTrue(finalAgriBiomass < 30_000_000.0, "Liebig N-P-K nutrient exhaustion must penalize standing crop yield.");
         }
@@ -208,20 +132,8 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("1.4 Gregory Clark / Geertz Involution: Labor Productivity Drop under Boserupian Terracing")
         public void testBoserupLaborInvolutionAndHourlyWagePenalty() {
             logger.info("🧪 [Scenario 1.4] Testing Boserup-Geertz Labor Involution (Declining Hourly Return)...");
+            double remainingWorkSurplus = runBoserupInvolutionSimulation();
 
-            H3Cell intensiveTerraceCell = new H3Cell(0x8828308282fffffL, 45.0, 10.0);
-            intensiveTerraceCell.setPopulation(120000); // Extreme density > 50 hab/km²
-            intensiveTerraceCell.setResourceWork(50.0);
-            intensiveTerraceCell.setBiomassAgriculture(50.0);
-
-            BoserupAgriculturalIntensificationEngine boserupEngine = new BoserupAgriculturalIntensificationEngine();
-            List<H3Cell> cells = List.of(intensiveTerraceCell);
-
-            for (int yr = 0; yr < 40; yr++) {
-                boserupEngine.process(cells, 1.0);
-            }
-
-            double remainingWorkSurplus = intensiveTerraceCell.getResourceWork();
             logger.info("  -> Remaining Free Work Capacity after Terracing Drag: {}", remainingWorkSurplus);
             assertTrue(remainingWorkSurplus < 25.0, "Intensive terracing absorbs massive labor capacity, creating an agricultural involution trap.");
         }
@@ -244,28 +156,11 @@ public class ScientificModelFalsificationAndValidationSuite {
             imperialCells.forEach(empire::addCell);
 
             List<H3Cell> pinkerCells = createGeographicalAgrarianGrid(50, 15000, 3.5, 45000.0);
-
             TurchinGoldstoneSDTEngine sdtEngine = new TurchinGoldstoneSDTEngine();
             List<Double> pinkerMortalityHistory = new ArrayList<>();
             List<Double> turchinPsiHistory = new ArrayList<>();
 
-            for (int year = 0; year < 150; year++) {
-                // Rising inequality mimicking secular cycles (Gini rises from 0.35 to 0.65)
-                double currentGini = 0.35 + 0.30 * (1.0 / (1.0 + Math.exp(-(year - 75.0) / 15.0)));
-                imperialCells.forEach(c -> c.setGiniIndex(currentGini));
-                pinkerCells.forEach(c -> c.setGiniIndex(currentGini));
-
-                // Pinker production engine: assumes state strength & literacy pacify despite inequality
-                PinkerViolenceDeclinePureEngine.processHybrid(pinkerCells, 1.0);
-                double violentDeathRate = PinkerViolenceDeclinePureEngine.calculateViolentDeathRatePerCapita(
-                        0.70, 0.85, 0.50);
-                pinkerMortalityHistory.add(violentDeathRate);
-
-                // Turchin SDT production engine: inequality triggers elite overproduction and political instability
-                empire.updateCliodynamicsCycle();
-                sdtEngine.process(imperialCells, 1.0);
-                turchinPsiHistory.add(empire.getPoliticalInstability());
-            }
+            runTurchinVsPinkerSimulation(imperialCells, pinkerCells, sdtEngine, empire, pinkerMortalityHistory, turchinPsiHistory);
 
             double finalPinkerMortality = pinkerMortalityHistory.get(pinkerMortalityHistory.size() - 1);
             double maxPsi = turchinPsiHistory.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
@@ -302,9 +197,9 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             H3Cell collapsingCapital = new H3Cell(0x8828308284fffffL, 45.0, 10.0);
             collapsingCapital.setPopulation(50000);
-            collapsingCapital.setGiniIndex(0.68); // Extreme inequality
+            collapsingCapital.setGiniIndex(0.68);
             collapsingCapital.setResourceCapital(100.0);
-            collapsingCapital.setFoodResource(50.0); // Extreme famine -> PSI > 8.0
+            collapsingCapital.setFoodResource(50.0);
 
             StructuralDemographicBifurcationEngine bifurcationEngine = new StructuralDemographicBifurcationEngine();
             List<H3Cell> cells = List.of(collapsingCapital);
@@ -330,17 +225,10 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("3.1 Baseline: Infrastructure Turnover Time Constant via SmilMaterialTransitionsPureEngine")
         public void testSmilExergyInertiaVsNeoclassicalPriceSubstitution() {
             logger.info("🧪 [Scenario 3.1] Testing 60-year Smil Infrastructure Inertia via Production Engine...");
+            SmilInertiaResult res = runSmilInertiaSimulation();
 
-            List<H3Cell> smilCells = createGeographicalAgrarianGrid(50, 50000, 80.0, 100000.0);
-            smilCells.forEach(c -> c.setResourceCapital(10000.0));
-
-            for (int yr = 0; yr < 20; yr++) {
-                SmilMaterialTransitionsPureEngine.processHybrid(smilCells, 1.0);
-            }
-
-            double remainingCapital = smilCells.get(0).getResourceCapital();
-            logger.info("  -> Smil Constrained Capital after 20 yr: {}", remainingCapital);
-            assertTrue(remainingCapital > 7000.0 && remainingCapital < 10000.0,
+            logger.info("  -> Smil Constrained Capital after 20 yr: {}", res.remainingCapital());
+            assertTrue(res.remainingCapital() > 7000.0 && res.remainingCapital() < 10000.0,
                     "Physical infrastructure cannot be substituted overnight due to 60-year material inertia.");
         }
 
@@ -348,28 +236,10 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("3.2 EROEI Thermodynamic Cliff: Net Energy Collapse when EROEI < 5:1 via KummelAyresExergyEngine")
         public void testEroeiThermodynamicCliff() {
             logger.info("🧪 [Scenario 3.2] Testing EROEI Thermodynamic Cliff via KummelAyresExergyEngine...");
+            EroeiCliffResult res = runEroeiCliffSimulation();
 
-            KummelAyresExergyEngine exergyEngine = new KummelAyresExergyEngine();
-
-            H3Cell richOreCell = new H3Cell(0x8428308287fffffL, 45.0, 10.0);
-            richOreCell.setPopulation(10000);
-            richOreCell.setResourceCapital(10000.0);
-            richOreCell.setResourceMetal(5000.0);
-            richOreCell.setBiomassNatural(2000.0); // Abundant exergy source (wood & coal proxy)
-
-            H3Cell depletedOreCell = new H3Cell(0x8428308288fffffL, 45.0, 10.0);
-            depletedOreCell.setPopulation(10000);
-            depletedOreCell.setResourceCapital(1000.0);
-            depletedOreCell.setResourceMetal(10.0);
-            depletedOreCell.setBiomassNatural(1.0); // Starved exergy source -> useful exergy starvation
-
-            List<H3Cell> cells = List.of(richOreCell, depletedOreCell);
-            for (int yr = 0; yr < 20; yr++) {
-                exergyEngine.process(cells, 1.0);
-            }
-
-            logger.info("  -> Rich Ore Capital: {}, Depleted Ore Capital: {}", richOreCell.getResourceCapital(), depletedOreCell.getResourceCapital());
-            assertTrue(depletedOreCell.getResourceCapital() < richOreCell.getResourceCapital(),
+            logger.info("  -> Rich Ore Capital: {}, Depleted Ore Capital: {}", res.richCap(), res.depletedCap());
+            assertTrue(res.depletedCap() < res.richCap(),
                     "Thermodynamic EROEI drop must divert capital into extraction work, reducing surplus net capital.");
         }
 
@@ -377,15 +247,11 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("3.3 Nordhaus DICE Quadratic Damage vs World3 Limits Comparison")
         public void testNordhausDiceVsLimits() {
             logger.info("🧪 [Scenario 3.3] Benchmarking Nordhaus DICE Pure Engine against Physical Capital Limits...");
+            NordhausDiceResult res = runNordhausDiceSimulation();
 
-            NordhausDicePureEngine dice = new NordhausDicePureEngine();
-            for (int yr = 0; yr < 50; yr++) {
-                dice.processTick(1.0);
-            }
-
-            logger.info("  -> DICE 50-Year GDP: {}, Temp Anomaly: +{}°C", dice.getGdp(), dice.getTemperatureAnomaly());
-            assertTrue(dice.getGdp() > 100.0, "Nordhaus DICE assumes positive growth despite climate anomalies");
-            assertTrue(dice.getTemperatureAnomaly() > 1.2, "Carbon emissions must drive temperature upward in DICE");
+            logger.info("  -> DICE 50-Year GDP: {}, Temp Anomaly: +{}°C", res.gdp(), res.tempAnomaly());
+            assertTrue(res.gdp() > 100.0, "Nordhaus DICE assumes positive growth despite climate anomalies");
+            assertTrue(res.tempAnomaly() > 1.2, "Carbon emissions must drive temperature upward in DICE");
         }
     }
 
@@ -400,19 +266,9 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("4.1 Baseline: Ostrom Polycentric Governance Protects Stressed Common Pool Aquifers")
         public void testOstromSustainabilityVsHardinCollapse() {
             logger.info("🧪 [Scenario 4.1] Testing Ostrom Commons Protection via OstromCommonsPureEngine...");
+            List<H3Cell> commonCells = createAquiferGrid(20, 30.0);
+            double avgProtectedAquifer = runOstromWatershedSimulation(commonCells, 20);
 
-            List<H3Cell> commonCells = new ArrayList<>();
-            for (int i = 0; i < 20; i++) {
-                H3Cell aquiferCell = new H3Cell(0x8428308287fffffL + i, 45.0 + (i * 0.05), 10.0 + (i * 0.05));
-                aquiferCell.setAccessibleAquifer(30.0); // Critical water stress (< 50 m3/km2)
-                commonCells.add(aquiferCell);
-            }
-
-            for (int yr = 0; yr < 20; yr++) {
-                OstromCommonsPureEngine.processHybrid(commonCells, 1.0);
-            }
-
-            double avgProtectedAquifer = commonCells.stream().mapToDouble(H3Cell::getAccessibleAquifer).average().orElse(0.0);
             logger.info("  -> Protected Watershed Basin Aquifer after Ostrom Governance: {}", avgProtectedAquifer);
             assertTrue(avgProtectedAquifer > 30.0,
                     "Ostrom polycentric governance must enforce recharge quotas to prevent tragedy of the commons across the basin.");
@@ -422,24 +278,10 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("4.2 Uncoordinated Hardin Open-Access Aquifer Collapse vs Ostrom Quotas")
         public void testHardinTragedyCollapseWithoutOstromGovernance() {
             logger.info("🧪 [Scenario 4.2] Testing Hardin Open-Access Depletion without Ostrom Quotas across 20-cell basin...");
+            List<H3Cell> hardinCells = createAquiferGrid(20, 30.0);
+            hardinCells.forEach(c -> c.setPopulation(50000));
+            double avgHardinAquifer = runHardinDepletionSimulation(hardinCells, 10, 0.0008);
 
-            List<H3Cell> hardinCells = new ArrayList<>();
-            for (int i = 0; i < 20; i++) {
-                H3Cell hardinCell = new H3Cell(0x8428308287fffffL + i, 45.0 + (i * 0.05), 10.0 + (i * 0.05));
-                hardinCell.setAccessibleAquifer(30.0);
-                hardinCell.setPopulation(50000);
-                hardinCells.add(hardinCell);
-            }
-
-            // In open-access Hardin scenario without institutional quotas, competitive pumping depletes aquifer
-            for (int yr = 0; yr < 10; yr++) {
-                for (H3Cell hardinCell : hardinCells) {
-                    double pumpingDemand = (hardinCell.getPopulation() * 0.0008);
-                    hardinCell.setAccessibleAquifer(Math.max(0.0, hardinCell.getAccessibleAquifer() - pumpingDemand));
-                }
-            }
-
-            double avgHardinAquifer = hardinCells.stream().mapToDouble(H3Cell::getAccessibleAquifer).average().orElse(0.0);
             logger.info("  -> Hardin Depleted Watershed Basin Aquifer: {}", avgHardinAquifer);
             assertTrue(avgHardinAquifer < 5.0,
                     "Open access common pool resources collapse under competitive uncoordinated pumping across the watershed.");
@@ -450,8 +292,8 @@ public class ScientificModelFalsificationAndValidationSuite {
         public void testOstromDunbarScaleBreakdownWithoutNestedFederalism() {
             logger.info("🧪 [Scenario 4.3] Testing Ostrom CPR Scale Breakdown beyond Dunbar Threshold (N > 150)...");
 
-            int smallCommunityN = 40;  // Face-to-face trust network (Dunbar compliant)
-            int largeCommunityN = 600; // Anonymous mass without nested polycentric federalism
+            int smallCommunityN = 40;
+            int largeCommunityN = 600;
 
             double trustSmall = Math.max(0.0, 1.0 - (smallCommunityN / 200.0));
             double trustLarge = Math.max(0.05, 1.0 - (largeCommunityN / 200.0));
@@ -473,32 +315,10 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("5.1 Short-Term (50 yr): Institutional Accumulation Constrained by Physical Transport Friction")
         public void testInstitutionalAndGeographicalFrictionInterplay() {
             logger.info("🧪 [Scenario 5.1] Testing Acemoglu Inclusive Institutions vs Geographic Friction (50 yr)...");
+            AcemogluShortTermResult res = runAcemogluShortTermSimulation();
 
-            AcemogluRobinsonInstitutionsEngine instEngine = new AcemogluRobinsonInstitutionsEngine();
-
-            H3Cell highlandInclusive = new H3Cell(0x8828308281fffffL, 5.0, 30.0);
-            highlandInclusive.setPopulation(10000);
-            highlandInclusive.setGiniIndex(0.25);
-            highlandInclusive.setMovementFriction(4.5);
-            highlandInclusive.setResourceCapital(100.0);
-
-            H3Cell coastalExtractive = new H3Cell(0x8828308283fffffL, 45.0, 5.0);
-            coastalExtractive.setPopulation(10000);
-            coastalExtractive.setGiniIndex(0.75);
-            coastalExtractive.setMovementFriction(1.0);
-            coastalExtractive.setResourceCapital(100.0);
-
-            List<H3Cell> testCells = List.of(highlandInclusive, coastalExtractive);
-
-            for (int yr = 0; yr < 50; yr++) {
-                instEngine.process(testCells, 1.0);
-                highlandInclusive.setResourceCapital(highlandInclusive.getResourceCapital() + (5.0 / highlandInclusive.getMovementFriction()));
-                coastalExtractive.setResourceCapital(coastalExtractive.getResourceCapital() + (5.0 / coastalExtractive.getMovementFriction()));
-            }
-
-            logger.info("  -> Highland Inclusive Capital (50 yr): {}, Coastal Extractive Capital (50 yr): {}", highlandInclusive.getResourceCapital(), coastalExtractive.getResourceCapital());
-            // Quantitative non-passoire verification: coastal port has early capital advantage due to low transport friction
-            assertTrue(coastalExtractive.getResourceCapital() > highlandInclusive.getResourceCapital(),
+            logger.info("  -> Highland Inclusive Capital (50 yr): {}, Coastal Extractive Capital (50 yr): {}", res.highlandCapital(), res.coastalCapital());
+            assertTrue(res.coastalCapital() > res.highlandCapital(),
                     "In the short term, geographic transport friction dominates institutional effects.");
         }
 
@@ -506,35 +326,12 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("5.2 Long-Term (300 yr): Multi-Century Reversal of Fortune (Inclusive Capital Overcomes Friction)")
         public void testMultiCenturyReversalOfFortune() {
             logger.info("🧪 [Scenario 5.2] Testing Acemoglu 300-Year Reversal of Fortune...");
+            AcemogluLongTermResult res = runAcemogluLongTermSimulation();
 
-            AcemogluRobinsonInstitutionsEngine instEngine = new AcemogluRobinsonInstitutionsEngine();
-
-            H3Cell highlandInclusive = new H3Cell(0x8828308281fffffL, 5.0, 30.0);
-            highlandInclusive.setPopulation(10000);
-            highlandInclusive.setGiniIndex(0.25);
-            highlandInclusive.setMovementFriction(4.5);
-            highlandInclusive.setResourceCapital(10000 * 100.0);
-
-            H3Cell coastalExtractive = new H3Cell(0x8828308283fffffL, 45.0, 5.0);
-            coastalExtractive.setPopulation(10000);
-            coastalExtractive.setGiniIndex(0.75);
-            coastalExtractive.setMovementFriction(1.0);
-            coastalExtractive.setResourceCapital(10000 * 100.0);
-
-            List<H3Cell> testCells = List.of(highlandInclusive, coastalExtractive);
-
-            for (int yr = 0; yr < 300; yr++) {
-                instEngine.process(testCells, 1.0);
-                double effFrictionA = Math.max(1.0, highlandInclusive.getMovementFriction() / (1.0 + 0.1 * org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(highlandInclusive)));
-                double effFrictionB = 1.0;
-
-                highlandInclusive.setResourceCapital(highlandInclusive.getResourceCapital() + (5.0 / effFrictionA));
-                coastalExtractive.setResourceCapital(coastalExtractive.getResourceCapital() + (5.0 / effFrictionB));
-            }
-
-            logger.info("  -> Highland Inclusive Capital (300 yr): {}, Coastal Extractive Capital: {}", highlandInclusive.getResourceCapital(), coastalExtractive.getResourceCapital());
-            assertTrue(highlandInclusive.getResourceCapital() > coastalExtractive.getResourceCapital(), "Long-term physical capital accumulation overcomes physical transport barriers.");
-            assertTrue(org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(highlandInclusive) >= org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(coastalExtractive), "Inclusive institutions compound capital accumulation, driving long-term Reversal of Fortune.");
+            logger.info("  -> Highland Inclusive Capital (300 yr): {}, Coastal Extractive Capital: {}", res.highlandCapital(), res.coastalCapital());
+            assertTrue(res.highlandCapital() > res.coastalCapital(), "Long-term physical capital accumulation overcomes physical transport barriers.");
+            assertTrue(res.highlandTech() >= res.coastalTech(),
+                    "Inclusive institutions compound capital accumulation, driving long-term Reversal of Fortune.");
         }
     }
 
@@ -549,60 +346,22 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("6.1 Early Grain State Transition Induces Health Penalty via ScottAgainstTheGrainPureEngine")
         public void testZoonoticEpidemicShockOnEarlyGrainState() {
             logger.info("🧪 [Scenario 6.1] Testing Scott Cereal State Health Penalty via Production Engine...");
+            ScottZoonoticResult res = runEarlyGrainStateSimulation();
 
-            H3Cell earlyGrainTown = new H3Cell(0x8828308285fffffL, 31.3, 45.6);
-            earlyGrainTown.setPopulation(5000);
-            earlyGrainTown.setResourceCapital(5000 * 150.0); // K/N = 150 kg/capita (early sedentary grain state window)
-            earlyGrainTown.setLifespan(40.0);
-            earlyGrainTown.setPollutionLevel(0.0);
-
-            H3Cell mobileForagerCamp = new H3Cell(0x8828308287fffffL, 31.0, 47.0);
-            mobileForagerCamp.setPopulation(100);
-            mobileForagerCamp.setResourceCapital(100 * 20.0); // K/N = 20 kg/capita (mobile foraging outside coercive grain window)
-            mobileForagerCamp.setLifespan(40.0);
-            mobileForagerCamp.setPollutionLevel(0.0);
-
-            List<H3Cell> cells = List.of(earlyGrainTown, mobileForagerCamp);
-
-            for (int yr = 0; yr < 10; yr++) {
-                ScottAgainstTheGrainPureEngine.processHybrid(cells, 1.0);
-            }
-
-            logger.info("  -> Early Grain Town Lifespan: {}, Forager Lifespan: {}", earlyGrainTown.getLifespan(), mobileForagerCamp.getLifespan());
-            assertTrue(earlyGrainTown.getLifespan() < 40.0, "Early grain states suffer disease and health drops.");
-            assertEquals(40.0, mobileForagerCamp.getLifespan(), 1e-4, "Mobile foragers escape early agrarian state health penalties.");
+            logger.info("  -> Early Grain Town Lifespan: {}, Forager Lifespan: {}", res.earlyGrainTownLifespan(), res.mobileForagerCampLifespan());
+            assertTrue(res.earlyGrainTownLifespan() < 40.0, "Early grain states suffer disease and health drops.");
+            assertEquals(40.0, res.mobileForagerCampLifespan(), 1e-4, "Mobile foragers escape early agrarian state health penalties.");
         }
 
         @Test
         @DisplayName("6.2 Zomia Escape: Peasant Flight to Non-State Highland Frontier under Tax Drag")
         public void testPeasantEscapeToZomiaHighlands() {
             logger.info("🧪 [Scenario 6.2] Testing Peasant Escape to Non-State Spaces (Zomia)...");
+            ZomiaEscapeResult res = runZomiaEscapeSimulation();
 
-            H3Cell valleyCell = new H3Cell(0x8828308285fffffL, 31.3, 45.6);
-            valleyCell.setPopulation(10000);
-            valleyCell.setResourceCapital(10000 * 150.0); // K/N = 150 kg/capita
-            valleyCell.setLifespan(40.0);
-
-            H3Cell highlandZomia = new H3Cell(0x8828308287fffffL, 31.0, 47.0);
-            highlandZomia.setPopulation(2000);
-            highlandZomia.setResourceCapital(2000 * 20.0); // K/N = 20 kg/capita
-            highlandZomia.setLifespan(40.0);
-
-            List<H3Cell> cells = List.of(valleyCell, highlandZomia);
-
-            for (int yr = 0; yr < 20; yr++) {
-                ScottAgainstTheGrainPureEngine.processHybrid(cells, 1.0);
-                // Health and coercive drag triggers migration to non-state highland
-                if (valleyCell.getLifespan() != null && valleyCell.getLifespan() < 35.0) {
-                    int migrants = 150;
-                    valleyCell.setPopulation(valleyCell.getPopulation() - migrants);
-                    highlandZomia.setPopulation(highlandZomia.getPopulation() + migrants);
-                }
-            }
-
-            logger.info("  -> Final Valley State Pop: {}, Final Zomia Highland Pop: {}", valleyCell.getPopulation(), highlandZomia.getPopulation());
-            assertTrue(valleyCell.getPopulation() < 10000, "High state health penalties drive demographic flight.");
-            assertTrue(highlandZomia.getPopulation() > 2000, "Ungoverned hill spaces absorb fleeing populations.");
+            logger.info("  -> Final Valley State Pop: {}, Final Zomia Highland Pop: {}", res.valleyPop(), res.highlandZomiaPop());
+            assertTrue(res.valleyPop() < 10000, "High state health penalties drive demographic flight.");
+            assertTrue(res.highlandZomiaPop() > 2000, "Ungoverned hill spaces absorb fleeing populations.");
         }
 
         @Test
@@ -612,7 +371,6 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             int walledCityPop = 20000;
             int openMarshPop = 2000;
-
             int postRaidWalledCityPop = (int) (walledCityPop * (1.0 - 0.02));
             int postRaidMarshPop = (int) (openMarshPop * (1.0 - 0.40));
 
@@ -633,48 +391,20 @@ public class ScientificModelFalsificationAndValidationSuite {
         @DisplayName("7.1 Population Bottleneck (N < 5000) Induces Technological Regression via Production Engine")
         public void testHenrichTasmanianCulturalLoss() {
             logger.info("🧪 [Scenario 7.1] Testing Henrich Cultural Transmission Bottleneck via TasmanianCulturalRegressionEngine...");
+            TasmanianRegressionResult res = runTasmanianRegressionSimulation();
 
-            List<H3Cell> islandCells = new ArrayList<>();
-            for (int i = 0; i < 7; i++) {
-                H3Cell cell = new H3Cell(0x8428308289fffffL + i, -42.0 + (i * 0.1), 147.0 + (i * 0.1));
-                cell.setPopulation(420); // 7 * 420 = 2940 < 5000 threshold
-                cell.setResourceCapital(420 * 100.0);
-                islandCells.add(cell);
-            }
-            double initialCap = islandCells.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
-
-            for (int yr = 0; yr < 30; yr++) {
-                TasmanianCulturalRegressionEngine.processHybrid(islandCells, 1.0);
-            }
-
-            double avgFinalCap = islandCells.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
-            logger.info("  -> Isolated 7-Cell Archipelago Final Capital: {} (initial {})", avgFinalCap, initialCap);
-            assertTrue(avgFinalCap < initialCap, "Sub-critical isolated archipelago must suffer skill and capital regression.");
+            logger.info("  -> Isolated 7-Cell Archipelago Final Capital: {} (initial {})", res.avgFinalCap(), res.initialCap());
+            assertTrue(res.avgFinalCap() < res.initialCap(), "Sub-critical isolated archipelago must suffer skill and capital regression.");
         }
 
         @Test
         @DisplayName("7.2 Demographic Reconnection & Cultural Rebound (N > 20000)")
         public void testCulturalRepertoireReboundOnReconnection() {
             logger.info("🧪 [Scenario 7.2] Testing Cultural Repertoire Resurgence upon Demographic Reconnection across 7-cell archipelago...");
+            ReconnectedArchipelagoResult res = runReconnectedArchipelagoSimulation();
 
-            List<H3Cell> connectedGrid = new ArrayList<>();
-            for (int i = 0; i < 7; i++) {
-                H3Cell cell = new H3Cell(0x8428308289fffffL + i, -42.0 + (i * 0.1), 147.0 + (i * 0.1));
-                cell.setPopulation(3500); // 7 * 3500 = 24500 > 5000 threshold
-                cell.setResourceCapital(3500 * 100.0);
-                connectedGrid.add(cell);
-            }
-            double initialCap = connectedGrid.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
-
-            // With large connected population, regression engine stops penalizing technology
-            for (int yr = 0; yr < 30; yr++) {
-                TasmanianCulturalRegressionEngine.processHybrid(connectedGrid, 1.0);
-            }
-
-            double avgCap = connectedGrid.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
-            logger.info("  -> Reconnected Archipelago Average Capital: {}", avgCap);
-            assertEquals(initialCap, avgCap, 1e-4,
-                    "Reconnected archipelago above threshold suffers zero technological regression.");
+            logger.info("  -> Reconnected Archipelago Average Capital: {}", res.avgCap());
+            assertEquals(res.initialCap(), res.avgCap(), 1e-4, "Reconnected archipelago above threshold suffers zero technological regression.");
         }
 
         @Test
@@ -684,7 +414,6 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             double boneFishHookUtility = 10.0;
             double sealClubUtility = 85.0;
-
             double optimalEffortAllocation = sealClubUtility / (sealClubUtility + boneFishHookUtility);
 
             logger.info("  -> Effort allocated to seal clubbing: {}%", optimalEffortAllocation * 100.0);
@@ -695,291 +424,58 @@ public class ScientificModelFalsificationAndValidationSuite {
     // =========================================================================
     // 8. DEBATE 8: GRATALOUP-MARSHALL NATURAL OROGRAPHIC BOUNDARIES vs. FLUID FRONTIER EXPANSION
     // =========================================================================
-    /**
-     * <h2>Debate 8: Grataloup-Marshall Natural Orographic Boundaries vs. Fluid Frontier Expansion</h2>
-     * <p>
-     * Evaluates the biogeographical and geohistorical hypothesis formalized by Christian Grataloup (2020, 2023)
-     * and Tim Marshall (2015), postulating that orographic crests (Pyrenees, Alps, Carpathians) act as
-     * high-friction thermodynamic and cliodynamic attractors for long-run political boundaries and isoglosses.
-     * </p>
-     * <p>
-     * Benchmark operates on a multi-cell Franco-Iberian spatial lattice calibrated against HYDE 3.4 demographic
-     * densities and ETOPO altimetry profiles, integrated over multi-decade simulation cycles (25 ticks).
-     * </p>
-     *
-     * @see org.ether.society.engines.tier2.theories.WarDiplomacyEngine
-     * @see org.ether.society.engines.tier2.theories.CliodynamicsEngine
-     * @see org.ether.society.engines.tier2.theories.LanguageLinguisticEngine
-     */
     @Nested
     @DisplayName("Debate 8: Grataloup-Marshall Natural Orographic Boundaries vs. Fluid Frontier Expansion")
     class GrataloupNaturalBoundariesDebate {
 
-        /**
-         * Verifies that under Pax Romana imperial centralization (Year 100 CE), high state capacity and
-         * abundant bullion enable multi-tick force projection and trans-orographic sovereignty across mountain barriers.
-         */
         @Test
         @DisplayName("8.1 Pax Romana Multi-Tick Regime: High State Capacity & Bullion Overcome Mountain Friction")
         public void testPaxRomanaHighStateCapacityOvercomesMountainFriction() {
             logger.info("🧪 [Scenario 8.1] Testing Pax Romana Multi-Tick Force Projection Across Orographic Barrier...");
 
-            org.ether.society.model.Scenario romanScenario = new org.ether.society.model.Scenario();
-            romanScenario.setName("Pax Romana Expansion");
-            romanScenario.setStartDateYear(100L);
+            PaxRomanaResult result = executePaxRomanaScenario();
 
-            List<H3Cell> grid = createEmpiricalFrancoIberianGrid();
+            logger.info("  -> Transalpine Pass Boundary Friction: {}", result.boundaryFriction());
+            assertTrue(result.boundaryFriction() >= 3.5, "Alpine pass must generate steep topographic friction");
 
-            H3Cell romeCapital = grid.get(0); // Gaul lowland hub
-            romeCapital.setPopulation(80000);
-            romeCapital.setPop15to24(16000);
-            romeCapital.setResourceCapital(15000.0);
-            romeCapital.updateAgePyramidFromTotal();
-
-            H3Cell alpinePassCell = grid.get(10); // Transalpine crest pass (2200m)
-            alpinePassCell.setGiniIndex(0.28);
-            H3Cell defCapital = grid.get(18); // Cisalpine / frontier chiefdom
-            defCapital.setGiniIndex(0.28);
-
-            Polity romanEmpire = new Polity("Roman Empire", javafx.scene.paint.Color.RED, romeCapital);
-            romanEmpire.setStateCapacity(0.95);
-            romanEmpire.setAsabiyyah(0.95);
-            romanEmpire.setTreasuryBullion(25000.0); // Abundant bullion for legionary logistics
-
-            // Rome controls lowland cells and projects through the pass
-            for (int i = 1; i < 6; i++) {
-                romanEmpire.addCell(grid.get(i));
-            }
-
-            Polity barbarianChiefdom = new Polity("Cisalpine Chiefdom", javafx.scene.paint.Color.GREEN, defCapital);
-            barbarianChiefdom.addCell(alpinePassCell);
-            barbarianChiefdom.setStateCapacity(0.20);
-            barbarianChiefdom.setPoliticalInstability(0.50);
-            barbarianChiefdom.setAsabiyyah(0.55);
-            barbarianChiefdom.setTreasuryBullion(10.0);
-
-            romanScenario.getCulturalAffinityMatrix().put(romanEmpire.getId() + ":" + barbarianChiefdom.getId(), 0.0);
-
-            double borderFriction = WarDiplomacyEngine.calculateBoundaryFriction(romeCapital, alpinePassCell);
-            logger.info("  -> Transalpine Pass Boundary Friction: {}", borderFriction);
-            assertTrue(borderFriction >= 3.5, "Alpine pass must generate steep topographic friction");
-
-            // Multi-tick cliodynamic integration (20 annual cycles)
-            for (int tick = 0; tick < 20; tick++) {
-                CliodynamicsEngine.updateCliodynamics(List.of(romanEmpire, barbarianChiefdom), grid);
-                WarDiplomacyEngine.processGeopoliticalConflicts(
-                        List.of(romanEmpire, barbarianChiefdom),
-                        grid,
-                        romanScenario
-                );
-            }
-
-            logger.info("  -> Barbarian Cells post-multi-tick: {}", barbarianChiefdom.getTerritory().size());
-            assertEquals(1, barbarianChiefdom.getTerritory().size(),
+            logger.info("  -> Barbarian Cells post-multi-tick: {}", result.chiefdomRemainingCells());
+            assertEquals(1, result.chiefdomRemainingCells(),
                     "Pax Romana with high state capacity and massive bullion treasury conquers across mountain passes.");
-            assertTrue(romanEmpire.getTerritory().contains(alpinePassCell),
+            assertTrue(result.romeControlsPass(),
                     "Roman Empire annexes alpine pass cell despite elevated boundary friction.");
         }
 
-        /**
-         * Verifies that under post-Roman decentralized feudalism (843-1000 CE), borders freeze on mountain crests
-         * while lowland plains remain fluid, validating Christian Grataloup's geohistorical attractor hypothesis.
-         */
         @Test
         @DisplayName("8.2 Post-Roman Feudal Multi-Tick Bifurcation: Mountain Crest Crystallizes Borders (Grataloup Attractor)")
         public void testPostRomanFeudalBifurcationCrystallizesOnMountainCrest() {
             logger.info("🧪 [Scenario 8.2] Testing Post-Roman Border Freezing along Mountain Crest vs Lowland Plains...");
 
-            org.ether.society.model.Scenario feudalScenario = new org.ether.society.model.Scenario();
-            feudalScenario.setName("Feudal Europe (843 CE Post-Verdun)");
-            feudalScenario.setStartDateYear(843L);
-
-            List<H3Cell> grid = createEmpiricalFrancoIberianGrid();
-
-            // Lowlands pair (Paris Basin / Aquitaine Plains, z < 100m, friction 1.0)
-            H3Cell plainCellA = grid.get(0);
-            H3Cell plainCellBTarget = grid.get(1);
-            plainCellBTarget.setGiniIndex(0.28);
-            H3Cell plainCellBCapital = grid.get(2);
-            plainCellBCapital.setGiniIndex(0.28);
-
-            Polity feudalPlainsAggressor = new Polity("Francia Plains", javafx.scene.paint.Color.BLUE, plainCellA);
-            feudalPlainsAggressor.addCell(grid.get(3));
-            feudalPlainsAggressor.addCell(grid.get(4));
-            feudalPlainsAggressor.setStateCapacity(0.70);
-            feudalPlainsAggressor.setAsabiyyah(0.95);
-            feudalPlainsAggressor.setTreasuryBullion(250.0);
-
-            Polity feudalPlainsDefender = new Polity("Burgundia Plains", javafx.scene.paint.Color.YELLOW, plainCellBCapital);
-            feudalPlainsDefender.addCell(plainCellBTarget);
-            feudalPlainsDefender.setStateCapacity(0.20);
-            feudalPlainsDefender.setPoliticalInstability(0.50);
-            feudalPlainsDefender.setAsabiyyah(0.55);
-            feudalPlainsDefender.setTreasuryBullion(20.0);
-
-            // Mountain corridor pair (Pyrenean Foothills vs Pyrenean High Crest, z > 2200m, friction 5.0)
-            H3Cell mountainCellA = new H3Cell(0x882830828400000L, 43.1, 0.5); // Foothill base
-            mountainCellA.setElevation(250.0);
-            mountainCellA.setMovementFriction(1.5);
-            mountainCellA.setPopulation(8500);
-            mountainCellA.setPop15to24(1700);
-            mountainCellA.setResourceCapital(1500.0);
-            mountainCellA.updateAgePyramidFromTotal();
-            mountainCellA.setGiniIndex(0.35);
-
-            H3Cell mountainCrestBTarget = grid.get(10); // Pyrenean crest ridge
-            mountainCrestBTarget.setElevation(2400.0);
-            mountainCrestBTarget.setMovementFriction(5.0);
-            mountainCrestBTarget.setGiniIndex(0.28);
-
-            H3Cell mountainCellBCapital = grid.get(18); // Iberian side capital
-            mountainCellBCapital.setElevation(500.0);
-            mountainCellBCapital.setMovementFriction(2.0);
-            mountainCellBCapital.setGiniIndex(0.28);
-
-            Polity feudalMountainAggressor = new Polity("Francia South", javafx.scene.paint.Color.BLUE, mountainCellA);
-            feudalMountainAggressor.addCell(grid.get(7));
-            feudalMountainAggressor.addCell(grid.get(8));
-            feudalMountainAggressor.setStateCapacity(0.70);
-            feudalMountainAggressor.setAsabiyyah(0.95);
-            feudalMountainAggressor.setTreasuryBullion(250.0);
-
-            Polity feudalMountainDefender = new Polity("Hispania North", javafx.scene.paint.Color.ORANGE, mountainCellBCapital);
-            feudalMountainDefender.addCell(mountainCrestBTarget);
-            feudalMountainDefender.setStateCapacity(0.20);
-            feudalMountainDefender.setPoliticalInstability(0.50);
-            feudalMountainDefender.setAsabiyyah(0.55);
-            feudalMountainDefender.setTreasuryBullion(20.0);
-
-            feudalScenario.getCulturalAffinityMatrix().put(feudalPlainsAggressor.getId() + ":" + feudalPlainsDefender.getId(), 0.0);
-            feudalScenario.getCulturalAffinityMatrix().put(feudalMountainAggressor.getId() + ":" + feudalMountainDefender.getId(), 0.0);
-
-            int initialPlainDefenderCells = feudalPlainsDefender.getTerritory().size();
-            int initialMountainDefenderCells = feudalMountainDefender.getTerritory().size();
-
-            // Multi-tick cliodynamic integration (25 annual cycles)
-            for (int tick = 0; tick < 25; tick++) {
-                CliodynamicsEngine.updateCliodynamics(List.of(feudalPlainsAggressor, feudalPlainsDefender), grid);
-                CliodynamicsEngine.updateCliodynamics(List.of(feudalMountainAggressor, feudalMountainDefender), grid);
-
-                WarDiplomacyEngine.processGeopoliticalConflicts(
-                        List.of(feudalPlainsAggressor, feudalPlainsDefender),
-                        grid,
-                        feudalScenario
-                );
-                WarDiplomacyEngine.processGeopoliticalConflicts(
-                        List.of(feudalMountainAggressor, feudalMountainDefender),
-                        grid,
-                        feudalScenario
-                );
-            }
-
-            int plainConquests = initialPlainDefenderCells - feudalPlainsDefender.getTerritory().size();
-            int mountainConquests = initialMountainDefenderCells - feudalMountainDefender.getTerritory().size();
+            FeudalBifurcationResult result = executeFeudalBifurcationScenario();
 
             logger.info("  -> Multi-Tick Lowland Plain Conquests: {}, Mountain Crest Conquests: {}",
-                    plainConquests, mountainConquests);
+                    result.plainConquests(), result.mountainConquests());
 
-            assertEquals(1, plainConquests, "Feudal armies readily conquer adjacent lowland plains cells over multi-tick campaigns.");
-            assertEquals(0, mountainConquests, "Feudal armies are stopped dead across 25 ticks by the Pyrenean/Alpine crest friction (sigma_friction > 5.0).");
+            assertEquals(1, result.plainConquests(), "Feudal armies readily conquer adjacent lowland plains cells over multi-tick campaigns.");
+            assertEquals(0, result.mountainConquests(), "Feudal armies are stopped dead across 25 ticks by the Pyrenean/Alpine crest friction (sigma_friction > 5.0).");
 
-            // Calculate Topographic Alignment Index (Gamma_orography)
-            double gammaOrography = (double) (plainConquests - mountainConquests) / Math.max(1, plainConquests + mountainConquests);
-            logger.info("  -> Topographic Boundary Alignment Index (Gamma): {}", gammaOrography);
-            assertTrue(gammaOrography >= 0.90, "Boundary stabilization strongly aligns with high-elevation orographic ridges (Christian Grataloup hypothesis).");
+            logger.info("  -> Topographic Boundary Alignment Index (Gamma): {}", result.gammaOrography());
+            assertTrue(result.gammaOrography() >= 0.90, "Boundary stabilization strongly aligns with high-elevation orographic ridges (Christian Grataloup hypothesis).");
         }
 
-        /**
-         * Verifies that high mountain relief preserves linguistic identity and dialect isoglosses
-         * over multi-decade cycles against cultural and geopolitical homogenization.
-         */
         @Test
         @DisplayName("8.3 Linguistic Isogloss & Cultural Resistance in Mountain Basins")
         public void testLinguisticIsoglossMountainResistance() {
             logger.info("🧪 [Scenario 8.3] Testing Multi-Tick Linguistic Isogloss Preservation along Mountain Barriers...");
 
             List<H3Cell> grid = createEmpiricalFrancoIberianGrid();
-            H3Cell plainSubjectCell = grid.get(0); // Lowland plain cell
-            H3Cell mountainIsolateCell = grid.get(10); // Pyrenean valley isolate
+            H3Cell mountainIsolateCell = grid.get(10);
 
-            LanguageLinguisticEngine.resetState();
-            LanguageLinguisticEngine.setBaseSeed(12345L);
-
-            // 25 cultural cycles
-            for (int cycle = 0; cycle < 25; cycle++) {
-                LanguageLinguisticEngine.processLinguisticDrift(grid, null);
-            }
+            runLinguisticDriftSimulation(grid, 25, 12345L);
 
             assertEquals("Dialect-Vasconic-Proto-Basque", mountainIsolateCell.getLanguageGroup(),
                     "Mountainous valley preserves its linguistic isogloss across multi-decade drift.");
             assertTrue(mountainIsolateCell.getLinguisticDriftOr(0.0) <= 0.05,
                     "High-elevation isolate maintains minimal linguistic drift.");
         }
-    }
-
-    // --- HELPER FIXTURES ---
-    private static List<H3Cell> createEmpiricalFrancoIberianGrid() {
-        List<H3Cell> cells = new ArrayList<>();
-        // 1. Gaul / Francia Lowland Plain Cells (10 cells, 60-180m, friction 1.0, HYDE pop 8,000-14,000)
-        for (int i = 0; i < 10; i++) {
-            H3Cell c = new H3Cell(0x882830828100000L + i, 43.6 + (i * 0.15), 0.5 + ((i % 3) * 0.2));
-            c.setPopulation(8000 + (i * 600));
-            c.setFoodResource(25000.0);
-            c.setResourceCapital(1500.0);
-            c.updateAgePyramidFromTotal();
-            c.setElevation(80.0 + (i * 10.0));
-            c.setMovementFriction(1.0);
-            c.setGiniIndex(0.35);
-            c.setLanguageGroup("Dialect-Gallo-Romance");
-            cells.add(c);
-        }
-        // 2. Pyrenean / Alpine Orographic Crest Cells (8 cells, 1,800-2,600m, friction 4.5-5.5, HYDE pop 800-1,500)
-        for (int i = 0; i < 8; i++) {
-            H3Cell c = new H3Cell(0x882830828200000L + i, 42.8 + (i * 0.05), 0.5 + ((i % 2) * 0.2));
-            c.setPopulation(900 + (i * 70));
-            c.setFoodResource(4000.0);
-            c.setResourceCapital(200.0);
-            c.updateAgePyramidFromTotal();
-            c.setElevation(2200.0 + (i * 50.0));
-            c.setMovementFriction(5.0);
-            c.setGiniIndex(0.35);
-            c.setLanguageGroup("Dialect-Vasconic-Proto-Basque");
-            cells.add(c);
-        }
-        // 3. Hispania / Ebro Meseta Cells (12 cells, 350-650m, friction 1.2-1.5, HYDE pop 7,000-12,000)
-        for (int i = 0; i < 12; i++) {
-            H3Cell c = new H3Cell(0x882830828300000L + i, 42.1 - (i * 0.15), 0.5 + ((i % 3) * 0.2));
-            c.setPopulation(7500 + (i * 400));
-            c.setFoodResource(22000.0);
-            c.setResourceCapital(1200.0);
-            c.updateAgePyramidFromTotal();
-            c.setElevation(450.0 + (i * 15.0));
-            c.setMovementFriction(1.3);
-            c.setGiniIndex(0.35);
-            c.setLanguageGroup("Dialect-Ibero-Romance");
-            cells.add(c);
-        }
-        return cells;
-    }
-
-    // --- HELPER FIXTURES: Authentically Grounded Geographical Grid (Po Valley Basin) ---
-    private static List<H3Cell> createGeographicalAgrarianGrid(int count, int popPerCell, double tech, double initialFood) {
-        List<H3Cell> cells = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            // Po Valley alluvial basin (45.0°N to 45.4°N, 9.5°E to 10.5°E, elevation 80-120m, fertile alluvium)
-            H3Cell c = new H3Cell(0x8828308280fffffL + i, 45.0 + (i * 0.008), 9.5 + (i * 0.02));
-            c.setPopulation(popPerCell);
-            c.setFoodResource(initialFood);
-            c.setBiomassAgriculture(initialFood * 1.2);
-            c.setResourceCapital(popPerCell * 0.5);
-            c.updateAgePyramidFromTotal();
-            c.setGiniIndex(0.35);
-            c.setMovementFriction(1.0);
-            c.setElevation(95.0 + (i % 5) * 5.0);
-            c.setAccessibleAquifer(5000.0);
-            c.setFreshwaterAquifer(5000.0);
-            cells.add(c);
-        }
-        return cells;
     }
 }

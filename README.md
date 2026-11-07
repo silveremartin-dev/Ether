@@ -87,6 +87,34 @@ To enable seamless multi-millennial planetary integrations across fine-grained H
 * **Auto-Vectorized SIMD**: Explicit target CPU feature compilation (`target-cpu=native`, AVX2 / AVX-512) providing vectorized evaluation of thermodynamic state transitions.
 * **Bit-Exact IEEE-754 Determinism**: Matches the Java reference implementation with bit-identical fidelity ($\Delta_{\text{IEEE-754}} = 0.0$), guaranteeing scientific reproducibility across local and distributed cluster execution modes.
 
+### ⚡ Empirical Engine Benchmark: Native Rust Core vs. Java 25 SIMD Vector vs. Classical OOP
+
+Measured on local workstation hardware (4 vCPUs, Windows 11, Java 25 Vector Incubator, Native Rust AVX-512):
+
+| Engine Architecture | Grid Scale | Throughput (TPS) | Per-Tick Latency | Cell Latency | Speedup vs Java DoD | Execution Model |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Java 25 SIMD Vector DoD** | 10,000 h3 | **36.71 TPS** | **27.24 ms** | **2,724.2 ns / cell** | 1.00x *(Baseline)* | Contiguous primitive arrays (WorldBuffer) |
+| **Native Rust Core (AVX-512)** | 10,000 h3 | **49.96 TPS** | **20.02 ms** | **2,001.7 ns / cell** | **1.36x faster** | Compiled C-ABI, Rayon work-stealing |
+| | | | | | | |
+| **Java 25 SIMD Vector DoD** | 41,162 h3 *(Res 3)* | **10.02 TPS** | **99.78 ms** | **2,424.2 ns / cell** | 1.00x *(Baseline)* | Contiguous primitive arrays (WorldBuffer) |
+| **Native Rust Core (AVX-512)** | 41,162 h3 *(Res 3)* | **13.80 TPS** | **72.47 ms** | **1,760.5 ns / cell** | **1.38x faster** | Compiled C-ABI, Rayon work-stealing |
+| | | | | | | |
+| **Java 25 SIMD Vector DoD** | 288,122 h3 *(Res 4)* | **1.67 TPS** | **600.39 ms** | **2,083.8 ns / cell** | 1.00x *(Baseline)* | Contiguous primitive arrays (WorldBuffer) |
+| **Native Rust Core (AVX-512)** | 288,122 h3 *(Res 4)* | **2.07 TPS** | **482.18 ms** | **1,673.5 ns / cell** | **1.25x faster** | Compiled C-ABI, Rayon work-stealing |
+
+### 🏛️ The 9-Dimensional Geocultural Tensor Architecture
+
+Ether spatializes civilizational and cultural structures across **9 orthogonal tensor dimensions**, systematically evaluated against historical ground-truth rasters (data/maps/ether/earth/<epoch>/):
+1. 🗣️ **Linguistic Isoglosses (Dim 0)** (earth_<year>_isogloss.png) — Glottolog 4.8 / Nichols (1992)
+2. 🧬 **Kinship & Clan Structure (Dim 1)** (earth_<year>_kinship.png) — D-PLACE / Goody (1983)
+3. 🔮 **Sacred Rituals & Solidarity (Dim 2)** (earth_<year>_rituals.png) — Seshat / Turchin (2003)
+4. 👑 **Sovereignty & Borders (Dim 3)** (earth_<year>_sovereignty.png) — Grataloup / Tilly (1990)
+5. ⚙️ **Materiality & Tooling (Dim 4)** (earth_<year>_technology.png) — Maddison / Ashby (2011)
+6. 🛣️ **Trade & Market Access (Dim 5)** (earth_<year>_tradenetwork.png) — Scheidel ORBIS / Krugman (1991)
+7. ⚖️ **Administrative Hierarchy (Dim 6)** (earth_<year>_institutional.png) — Seshat Databank (Turchin 2018)
+8. ⚠️ **Carrying Capacity & Ecology (Dim 7)** (earth_<year>_ecological.png) — HYDE 3.4 / Boserup (1965)
+9. 🧪 **Sanitary & Pathogen Memory (Dim 8)** (earth_<year>_pathogen.png) — Omran (1971) / Preston (1975)
+
 ---
 
 ## âš¡ Empirical Planetary Simulation Engine Benchmarks (Ground Truth)

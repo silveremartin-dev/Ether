@@ -296,4 +296,15 @@ public class SimulationRunRecord {
     public int getEndYear() {
         return timeSeriesData.isEmpty() ? 0 : timeSeriesData.lastKey();
     }
+
+    /**
+     * Retrieves the populated cell count from the final recorded metric snapshot.
+     *
+     * @return cell count in final snapshot, or 0 if no snapshots exist
+     */
+    public int getFinalCellCount() {
+        if (timeSeriesData.isEmpty()) return 0;
+        MetricSnapshot last = timeSeriesData.lastEntry().getValue();
+        return last != null ? last.getPopulatedCellCount() : 0;
+    }
 }
