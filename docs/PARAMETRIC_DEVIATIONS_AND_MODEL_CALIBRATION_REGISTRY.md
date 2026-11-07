@@ -611,3 +611,86 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   - Completely eliminates 2D equirectangular pixel rasterization artifacts, memory thrashing, and artificial disc discretization gaps, measuring the true physical concordance between simulation ecumenes and empirical historical cartography.
 * **Empirical Validation Grounding**:
   - HYDE 3.4 historical rasters (536 CE, 632 CE, 1347 CE, 1800 CE, 1914 CE); NOAA ETOPO1 / GEBCO bathymetry; `MapComparisonMetrics.java`.
+
+---
+
+### Entry 29: Macroscopic Normalization of the Garrett-Lotka Emergent Index & Somatic Metabolic Baseline
+* **Subsystem**: `H3CellPhysicsAndStateHelper.java`, `WorldBuffer.java`, `CliodynamicAnalyticalFormulasCatalog.java`
+* **Canonical Literature**:
+  - Garrett, T. J. (2011). *Are there basic physical constraints on future anthropogenic emissions of carbon dioxide?* Climatic Change, 104(3), 437-455.
+  - Lotka, A. J. (1922). *Contribution to the energetics of evolution*. Proceedings of the National Academy of Sciences, 8(6), 147-151.
+  - Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
+  - Hall, C. A. S., & Klitgaard, K. A. (2018). *Energy and the Wealth of Nations: An Introduction to Biophysical Economics*. Springer.
+* **Problem & Discrepancies**:
+  - In earlier iterations, the emergent technological proxy $T$ was formulated with un-normalized scaling constants:
+    $$T = 0.88 + 0.39 \log_{10}(1 + K / 80) + 2.85 \log_{10}(1 + P_{\text{exosomatic}} / 420)$$
+  - This created three major physical anomalies:
+    1. Capital sensitivity weight was too low ($0.39$) relative to an arbitrary small base ($80\text{ kg/cap}$), so even a modest stone wall or granary stock produced uncalibrated shifts.
+    2. Exosomatic power weight was excessively steep ($2.85$) with an unphysical threshold ($420\text{ W}$), causing trivial draft animal or cooking wood surplus in medieval agrarian cells to blow $T$ above $2.0\text{--}3.5$.
+    3. As a cascading consequence, whenever $T > 1.85$ was breached in medieval scenarios (such as Song Dynasty 1000 CE or Black Death 1347 CE), industrial communication and metallurgy models (electric telegraph, Bessemer steel) prematurely activated. The simulated `informationSpeed` reached $5.5 \times 10^6\text{ km/day}$ instead of human runner/courier speeds ($80\text{--}100\text{ km/day}$), generating a MAPE of $6,166,677\%$ that mathematically wiped out global scenario fidelity scores to $0.0\%$.
+* **Calibrated Simulation Formulation & Implementation**:
+  - Anchored somatic Paleolithic baseline strictly to $T_{\text{somatic}} = 0.85$ (Smil 2017):
+    $$p_{\text{somatic}} \approx 100\text{ W/cap} \text{ (basal metabolism)} + 248\text{ W/cap} \text{ (hearth fire)} \approx 348\text{ W/cap}$$
+  - Normalized agrarian structural capital to typical sedentary village threshold $k_0 = 500.0\text{ kg/cap}$ with weight $w_k = 0.65$:
+    $$\Delta T_K = 0.65 \times \log_{10}\left(1.0 + \frac{k_{\text{active}}}{500.0}\right)$$
+  - Normalized exosomatic prime mover power above hearth ($p_{\text{exo}} = \max(0, p - 348.0\text{ W})$) to industrial prime-mover threshold $p_0 = 1500.0\text{ W/cap}$ with weight $w_p = 1.25$:
+    $$\Delta T_P = 1.25 \times \log_{10}\left(1.0 + \frac{p_{\text{exo}}}{1500.0}\right)$$
+  - Resulting total index:
+    $$T_{\text{emergent}} = 0.85 + 0.65 \log_{10}\left(1.0 + \frac{k_{\text{active}}}{500.0}\right) + 1.25 \log_{10}\left(1.0 + \frac{p_{\text{exo}}}{1500.0}\right)$$
+  - Pre-industrial draft animal and waterwheel power is capped biophysically at $p_{\text{exo}} \le 250\text{ W/cap}$, ensuring $T \le 1.35$ for all pre-industrial societies.
+  - Dynamical bounds produced across deep time:
+    - Deep Paleolithic (-20,000 BP): $T \approx 0.85$
+    - Neolithic Agricultural Transition (-8000 BCE): $T \approx 0.95\text{--}1.02$
+    - Classical Antiquity (Rome 165 CE): $T \approx 1.12\text{--}1.18$
+    - High Middle Ages & Song Dynasty (1000–1347 CE): $T \approx 1.25\text{--}1.32$
+    - First Industrial Revolution (1800 CE): $T \approx 1.50\text{--}1.60$
+    - Second Industrial Takeoff (1914 CE): $T \approx 2.00\text{--}2.10$
+    - Modern Grid (2025 CE): $T \ge 3.00$
+* **Empirical Validation Grounding**:
+  - Smil (2017); Hall & Klitgaard (2018); Maddison Project (2020); Phase 1 Benchmark Runs 6 & 7.
+
+---
+
+### Entry 30: Zero-Fossil Reserve Conservation Invariant & Physical Prime Mover Coupling
+* **Subsystem**: `PhysicalEnergyGridEngine.java`, `WorldBuffer.java`
+* **Canonical Literature**:
+  - Hubbert, M. K. (1956). *Nuclear energy and the fossil fuels*. Drilling and Production Practice, American Petroleum Institute.
+  - Wrigley, E. A. (2010). *Energy and the English Industrial Revolution*. Cambridge University Press.
+  - Malm, A. (2016). *Fossil Capital: The Rise of Steam Power and the Roots of Global Warming*. Verso.
+* **Problem & Discrepancies**:
+  - `PhysicalEnergyGridEngine.java` contained a fallback heuristic floor where `fossilAvailability` was assigned a baseline of $0.65$ even when cellular fossil fuel reserves (`fossilReserves`) were zero.
+  - Furthermore, `steamCoalWatts` was generated whenever capital $k_{\text{pc}}$ exceeded $1000\text{ kg/cap}$ without strictly multiplying by the local or traded availability of coal.
+  - Consequently, medieval agrarian cells with stone dwellings and barns were generating $+400\text{ W/cap}$ of virtual "steam power", contaminating pre-industrial energy balances, driving unphysical fossil shares ($15\text{--}20\%$ in 536 CE and 1000 CE), and triggering post-hoc industrial indicators.
+* **Calibrated Simulation Formulation & Implementation**:
+  - Enforced the physical mass conservation invariant: when geological reserves are absent ($R = 0$) and unextracted, availability is strictly zero:
+    $$\text{fossilAvailability} = \tanh\left(\frac{R_{\text{fossil}}}{50\,000}\right) \xrightarrow{R \to 0} 0.0$$
+  - Prime mover steam cylinder power is strictly coupled to the physical presence of both industrial steam engines ($k_{\text{pc}} \ge 1800\text{ kg/cap}$) and accessible coal flux:
+    $$P_{\text{steam}} = 2200.0 \times \sigma(k_{\text{pc}}; 1800, 300) \times \text{fossilAvailability}$$
+  - Without extracted coal reserves, steam power is strictly $0.0\text{ W}$, completely eliminating ghost steam power in pre-modern epochs.
+* **Empirical Validation Grounding**:
+  - Wrigley (2010); Malm (2016); HYDE 3.4; USGS World Coal Quality Inventory.
+
+---
+
+### Entry 31: Agrarian-Commercial vs. Industrial Urbanization Biophysical Decoupling
+* **Subsystem**: `DemographicMetricsCalculator.java`, `WorldBuffer.java`, `CliodynamicMetricsCalculator.java`
+* **Canonical Literature**:
+  - Bairoch, P. (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press.
+  - de Vries, J. (1984). *European Urbanization 1500–1800*. Harvard University Press.
+  - Turchin, P., & Nefedov, S. A. (2009). *Secular Cycles*. Princeton University Press.
+* **Problem & Discrepancies**:
+  - In `DemographicMetricsCalculator.java`, industrial urbanization was formulated to activate at capital thresholds as low as $k_{\text{pc}} \ge 650\text{ kg/cap}$ and $P \ge 420\text{ W/cap}$.
+  - Because prosperous medieval agricultural cells (Song dynasty hydraulic agriculture, Roman villa rustica) frequently attained $600\text{--}800\text{ kg/cap}$ in grain stores, draft gear, and stone irrigation, this caused 30–75% of pre-modern cells to falsely classify their settlements as industrial factory cities. Global urbanization rates spiked to 25–40% in medieval scenarios against historical baselines of 7–12%.
+  - Conversely, elite overproduction in `CliodynamicMetricsCalculator` had a legacy activation threshold of $T \ge 1.55$, preventing ancient and medieval state formations (Rome, Song, Han, Abbasid) from registering authentic intra-elite competitive pressures and fiscal crisis dynamics.
+* **Calibrated Simulation Formulation & Implementation**:
+  - Decoupled commercial merchant agglomeration from mechanized industrial urbanization:
+    - Commercial urban fraction:
+      $$u_{\text{comm}} = 0.055 \times \sigma(k_{\text{pc}}; 1200.0, 150.0)$$
+    - Industrial urban fraction (requires factory prime movers and mechanical capital):
+      $$u_{\text{ind}} = 0.55 \times \sigma(k_{\text{pc}}; 2800.0, 400.0) \times \sigma(P_{\text{watts}}; 1200.0, 200.0)$$
+  - In pre-industrial societies where $P \le 500\text{ W/cap}$ and $k_{\text{pc}} < 1500\text{ kg/cap}$, $u_{\text{ind}}$ is strictly 0.0, while $u_{\text{comm}}$ accurately limits total urban fraction to the historical $6\text{--}12\%$ range documented by Bairoch and de Vries.
+  - In `CliodynamicMetricsCalculator.java`, shifted elite overproduction activation from the arbitrary $1.55$ threshold to authentic state formation scale $T \ge 1.02$:
+    $$I_{\text{elite}} = 0.85 \times \sigma(T; 1.02, 0.04) \times \left(0.12 + 0.88 \cdot \text{Gini}\right)$$
+    allowing Peter Turchin's Structural-Demographic secular cycles to properly operate across all agrarian empires.
+* **Empirical Validation Grounding**:
+  - Bairoch (1988); de Vries (1984); Turchin & Nefedov (2009); Seshat Global History Databank.

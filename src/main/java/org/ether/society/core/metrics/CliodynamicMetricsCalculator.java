@@ -11,6 +11,7 @@ import org.ether.society.core.SimulationMetricsAggregator;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
 import org.ether.society.model.PhysicalConstants;
+import org.ether.society.core.math.SmoothMath;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -214,11 +215,11 @@ public final class CliodynamicMetricsCalculator {
      */
     public double getEliteOverproductionIndex() {
         float tech = engine.getAverageTechnology();
-        double stateActivation = Math.tanh(Math.max(0.0, tech - 1.55) * 1.45);
-        if (stateActivation <= 0.0) return 0.0;
+        double stateActivation = SmoothMath.sigmoid(tech, 1.02, 0.04);
+        if (stateActivation <= 0.01) return 0.0;
         float gini = engine.getCurrentGini();
         double safeGini = Double.isNaN(gini) ? 0.40 : gini;
-        double eoi = stateActivation * (1.0 + 1.45 * Math.max(0.0, safeGini - 0.30) + 0.25 * Math.tanh(Math.max(0.0, tech - 2.50)));
+        double eoi = stateActivation * (1.05 + 1.25 * Math.max(0.0, safeGini - 0.30) + 0.25 * Math.tanh(Math.max(0.0, tech - 2.50)));
         return Double.isNaN(eoi) ? 0.0 : Math.clamp(eoi, 0.0, 4.5);
     }
 

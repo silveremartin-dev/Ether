@@ -74,17 +74,19 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // First & Second Industrial Revolution (1914 CE): ~1,650-1,700 Int$ global aggregate
         // Modern 2026: ~13,500-14,000 Int$ global aggregate
         double preIndustrial = 95.0
-                + 35.0 * Math.tanh(Math.max(0.0, tech - 1.60) * 1.50)
-                + 40.0 * Math.tanh(Math.max(0.0, tech - 2.30) * 1.50);
+                + 35.0 * Math.tanh(Math.max(0.0, tech - 1.15) * 2.00);
 
-        // First and Second Industrial Revolution takeoff (coal, steam, rail, Bessemer steel, electrification)
-        double industrialActivation = Math.tanh(Math.max(0.0, tech - 2.35) * 2.0);
-        double industrialTakeoff = industrialActivation * (1450.0 / (1.0 + Math.exp(-3.50 * (tech - 3.15))));
+        // First Industrial Revolution (1800 CE: T ~ 1.55): +80-100 Int$ -> ~190-200 Int$
+        double firstIndustrial = 90.0 * Math.tanh(Math.max(0.0, tech - 1.45) * 4.00);
 
-        // Stage 2: Post-WWII & 20th/21st century technological acceleration (electrification, petrochem, digital)
-        double modernAcceleration = (tech > 4.20) ? 12200.0 / (1.0 + Math.exp(-1.80 * (tech - 6.80))) : 0.0;
+        // Second Industrial Revolution takeoff (coal, steam, rail, Bessemer steel, electrification: 1914 CE: T ~ 2.05)
+        double industrialActivation = Math.tanh(Math.max(0.0, tech - 1.80) * 6.00);
+        double industrialTakeoff = industrialActivation * (1800.0 / (1.0 + Math.exp(-8.00 * (tech - 1.90))));
 
-        double gdpPerCap = preIndustrial + industrialTakeoff + modernAcceleration;
+        // Stage 3: Post-WWII & 20th/21st century technological acceleration (electrification, petrochem, digital)
+        double modernAcceleration = (tech > 2.25) ? 12200.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
+
+        double gdpPerCap = preIndustrial + firstIndustrial + industrialTakeoff + modernAcceleration;
         return ((double) pop * gdpPerCap) / 1e9; // Billion 1990 Int$
     }
 
@@ -94,10 +96,11 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // 1800 CE (~17.0-18.0 GJ/capita)
         // 1914 CE (~30.0-32.0 GJ/capita, ~62 EJ global)
         // Modern 2026 (~76.5-80.0 GJ/capita, ~600 EJ global)
-        double preIndustrialGJ = 15.2 + 1.2 * Math.tanh(Math.max(0.0, tech - 1.50) * 1.50);
-        double coalSteamGJ = 3.5 * Math.tanh(Math.max(0.0, tech - 2.20) * 2.00);
-        double industrialGridGJ = 11.5 / (1.0 + Math.exp(-3.20 * (tech - 3.20)));
-        double modernHydrocarbonsGJ = (tech > 4.60) ? 46.0 / (1.0 + Math.exp(-2.00 * (tech - 6.20))) : 0.0;
+        double preIndustrialGJ = 15.2 + 1.2 * Math.tanh(Math.max(0.0, tech - 1.15) * 1.50);
+        double coalSteamGJ = 2.6 * Math.tanh(Math.max(0.0, tech - 1.45) * 4.00);
+        double industrialGridGJ = 22.0 * Math.tanh(Math.max(0.0, tech - 1.80) * 4.00)
+                / (1.0 + Math.exp(-6.00 * (tech - 1.95)));
+        double modernHydrocarbonsGJ = (tech > 2.25) ? 46.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
         double gigajoulesPerCap = preIndustrialGJ + coalSteamGJ + industrialGridGJ + modernHydrocarbonsGJ;
         return ((double) pop * gigajoulesPerCap * 1e9) / 1e18; // Exajoules
     }
