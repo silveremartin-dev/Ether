@@ -131,7 +131,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
 * **Calibrated Ether Formulation**:
   $$u_{\text{agrarian}} = 3.8\% + 1.5\% \cdot \tanh(\max(0, T - 1.05) \cdot 3.0)$$
   $$u_{\text{earlyModern}} = 5.2\% \cdot \tanh(\max(0, T - 1.20) \cdot 6.0)$$
-  $$u_{\text{industrial}} = \frac{35.0\%}{1 + \exp(-4.50 \cdot (T - 1.85))}$$
+  $$u_{\text{industrial}} = \frac{13.5\%}{1 + \exp(-4.50 \cdot (T - 1.85))}$$
 * **Root Cause & Justification**:
   * Prevents dense agricultural river valleys (Nile, Yellow River, Ganges) from falsely classifying rural agrarian clusters as industrial factory cities. Decoupling agrarian clustering from factory prime movers reproduces the historical $3.9-4.2\%$ baseline across Antiquity and Middle Ages while allowing the authentic industrial explosion in 1800-1914.
 * **Empirical Validation Grounding**:
@@ -147,13 +147,14 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Goody, J. (1986). *The Logic of Writing and the Organization of Society*. Cambridge University Press.
 * **Canonical Published Value**:
   * Ancient/Medieval scribal literacy: $3.0\%$ to $6.5\%$.
-  * Print vernacular revolution (1800 CE): $\sim 15.6\%$.
-  * Mass compulsory primary education (1914 CE): $\sim 40.8\%$.
+  * Print vernacular revolution (1800 CE): $\sim 15.0\%$.
+  * Mass compulsory primary education (1914 CE): $\sim 24.5\%$ (global adult literacy, Bolt & van Zanden 2020).
 * **Calibrated Ether Formulation**:
-  $$L = \text{clamp}\left(L_{\text{scribal}}(T) + L_{\text{print}}(T) + L_{\text{mass}}(T),\; 0.0,\; 99.0\right)$$
+  $$L = \text{clamp}\left(\sigma_{\text{act}}(T) \cdot [L_{\text{scribal}}(T) + L_{\text{print}}(T) + L_{\text{mass}}(T) + L_{\text{modern}}(T)],\; 0.0,\; 99.0\right)$$
   $$L_{\text{scribal}} = 3.0 + 3.5 \cdot \tanh(\max(0, T - 1.05) \cdot 3.0)$$
   $$L_{\text{print}} = 10.0 \cdot \tanh(\max(0, T - 1.20) \cdot 6.0)$$
-  $$L_{\text{mass}} = \frac{68.0}{1 + \exp(-4.50 \cdot (T - 1.85))}$$
+  $$L_{\text{mass}} = \frac{18.0}{1 + \exp(-4.50 \cdot (T - 1.95))}$$
+  $$L_{\text{modern}} = \frac{55.0 \cdot \mathbb{I}_{T > 2.25}}{1 + \exp(-3.50 \cdot (T - 2.80))}$$
 * **Root Cause & Justification**:
   * Replaces artificial date-based guards (`if (year < -3400)`) with an endogenous information-theoretic and technological formulation. Oral foraging bands evaluate strictly to $0.0\%$, scribal empires to $3-6\%$, early modern Europe to $15-18\%$, and industrial societies to $40-85\%$.
 * **Empirical Validation Grounding**:
@@ -187,9 +188,9 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Early Modern Coke Smelting (1800 CE): $\sim 10.9\text{ kg/capita}$.
   * Mass Bessemer Steel (1914 CE): $\sim 64.0\text{ kg/capita}$.
 * **Calibrated Ether Formulation**:
-  $$M_{\text{smelt}} = \sigma_{\text{act}}(T) \cdot \left[ 1.60 + 1.45 \tanh(\dots) + 8.0 \tanh(\max(0, T - 1.20) \cdot 5.0) + \frac{180.0}{1 + \exp(-5.50 \cdot (T - 1.75))} \right]$$
+  $$M_{\text{smelt}} = \sigma_{\text{act}}(T) \cdot \left[ 1.60 + 1.45 \tanh(\max(0, T - 1.10) \cdot 3.0) + 8.0 \tanh(\max(0, T - 1.20) \cdot 5.0) + \frac{180.0 \tanh(\max(0, T - 1.65) \cdot 5.0)}{1 + \exp(-5.50 \cdot (T - 1.85))} \right]$$
 * **Root Cause & Justification**:
-  * Separates bloomery/charcoal smelting from coke smelting and industrial blast furnaces without calendar gates.
+  * Separates bloomery/charcoal smelting from coke smelting ($T \ge 1.20$) and industrial Bessemer blast furnaces ($T \ge 1.65$) without calendar gates, preventing Second Industrial metallurgy from leaking into the First Industrial era (1800–1820 CE).
 * **Empirical Validation Grounding**:
   * Malandra (1990); USGS (2023).
 
@@ -206,7 +207,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Early Modern (1800 CE): $\approx 175\text{ Billion 1990 Int\$}$ ($\sim 185\text{ Int\$/capita}$).
   * Industrial Takeoff (1914 CE): $\approx 2\,733\text{ Billion 1990 Int\$}$ ($\sim 1\,560\text{ Int\$/capita}$).
 * **Calibrated Ether Formulation**:
-  $$y_{\text{pc}} = 95.0 + 35.0 \tanh(\max(0, T - 1.05) \cdot 3.0) + 90.0 \tanh(\max(0, T - 1.20) \cdot 5.0) + \frac{1500.0 \tanh(\max(0, T - 1.50) \cdot 4.0)}{1 + \exp(-6.00 \cdot (T - 1.80))}$$
+  $$y_{\text{pc}} = 95.0 + 35.0 \tanh(\max(0, T - 1.05) \cdot 3.0) + 90.0 \tanh(\max(0, T - 1.20) \cdot 5.0) + \frac{1500.0 \tanh(\max(0, T - 1.50) \cdot 4.0)}{1 + \exp(-5.50 \cdot (T - 1.85))} + \frac{12200.0 \cdot \mathbb{I}_{T > 2.30}}{1 + \exp(-3.50 \cdot (T - 2.80))}$$
   $$\text{GWP} = \frac{N \cdot y_{\text{pc}}}{10^9} \quad [\text{Billion 1990 Int\$}]$$
 * **Root Cause & Justification**:
   * Reconciles Malthusian wage floors with capital-deepening industrial revolutions across a single continuous physical equation, eliminating the 84% GWP error previously observed in 1914 CE.
@@ -224,11 +225,11 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Pedestrian foraging courier: $\sim 4\text{ km/day}$.
   * Imperial equestrian relay network (*Cursus Publicus*, *Barid*): $80-89\text{ km/day}$.
   * Chappe optical semaphore (1792 / 1800 CE): $\sim 268\text{ km/day}$.
-  * Electric telegraph & transatlantic submarine cables (1914 CE): $\sim 1.41 \times 10^7\text{ km/day}$.
+  * Electric telegraph & transatlantic submarine cables (1914 CE): $\sim 5.8 \times 10^6\text{ km/day}$.
 * **Calibrated Ether Formulation**:
-  $$v_{\text{info}} = 4.0 + 77.0 \tanh(\max(0, T - 0.95) \cdot 8.0) + 180.0 \tanh(\max(0, T - 1.22) \cdot 8.0) + \frac{1.41 \times 10^7 \tanh(\max(0, T - 1.50) \cdot 5.0)}{1 + \exp(-6.50 \cdot (T - 1.75))}$$
+  $$v_{\text{info}} = 4.0 + 77.0 \tanh(\max(0, T - 0.95) \cdot 8.0) + 180.0 \tanh(\max(0, T - 1.22) \cdot 8.0) + \frac{5.8 \times 10^6 \tanh(\max(0, T - 1.65) \cdot 5.0)}{1 + \exp(-6.50 \cdot (T - 1.85))}$$
 * **Root Cause & Justification**:
-  * Decouples physical locomotion from electromagnetic transmission, preventing ancient or medieval courier networks from spiking into millions of km/day while accurately reproducing the Chappe semaphore and 1914 telegraph networks.
+  * Decouples physical locomotion from electromagnetic transmission, preventing ancient or medieval courier networks and First Industrial optical semaphores from spiking into millions of km/day while accurately reproducing the Chappe semaphore (1800 CE) and 1914 transatlantic telegraph networks.
 * **Empirical Validation Grounding**:
   * Scheidel (2014) ORBIS; Standage (1998); ITU.
 
@@ -245,7 +246,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * Early Modern oceanic sail (1800 CE): $\sim 230$.
   * Steamships and compound engines (1914 CE): $\sim 48.6$.
 * **Calibrated Ether Formulation**:
-  $$C_{\text{freight}} = 1415.0 - 200.0 \tanh(\max(0, T - 1.10) \cdot 3.5) - 300.0 \tanh(\max(0, T - 1.15) \cdot 4.5) - 685.0 \tanh(\max(0, T - 1.22) \cdot 6.0) - \frac{182.0}{1 + \exp(-6.50 \cdot (T - 1.70))}$$
+  $$C_{\text{freight}} = 1415.0 - 200.0 \tanh(\max(0, T - 1.10) \cdot 3.5) - 300.0 \tanh(\max(0, T - 1.15) \cdot 4.5) - 685.0 \tanh(\max(0, T - 1.20) \cdot 14.0) - \frac{182.0 \tanh(\max(0, T - 1.65) \cdot 5.0)}{1 + \exp(-6.50 \cdot (T - 1.80))}$$
 * **Root Cause & Justification**:
   * Freight cost decreases with technological maturity. Previous code multiplied cost by an activation factor, which caused archaic shipping freight to evaluate near zero. The calibrated formula starts at the archaic baseline ($1415$) and smoothly subtracts reductions from compass, sternpost rudder, oceanic square-rigged caravels, and steamships.
 * **Empirical Validation Grounding**:
@@ -303,7 +304,7 @@ Academic authors developed their models with rigorous empirical grounding. Any d
   * British funded national debt post-1694 (1800 CE Napoleonic): $\sim 73.4\%$.
   * Total war debt mobilization (1914 CE): $\sim 90.2\%$.
 * **Calibrated Ether Formulation**:
-  $$\text{Debt} = \sigma_{\text{inst}}(T) \cdot \left[ 8.5 + 1.5 \tanh(\dots) + 22.0 \tanh(\max(0, T - 1.12) \cdot 5.0) + 58.0 \cdot \frac{\tanh(\max(0, T - 1.22) \cdot 5.0)}{1 + \exp(-6.50 \cdot (T - 1.55))} \right]$$
+  $$\text{Debt} = \sigma_{\text{inst}}(T) \cdot \left[ 8.5 + 1.5 \tanh(\max(0, T - 1.05) \cdot 3.0) + 22.0 \tanh(\max(0, T - 1.12) \cdot 5.0) + 42.0 \tanh(\max(0, T - 1.22) \cdot 10.0) + \frac{20.0 \tanh(\max(0, T - 1.65) \cdot 5.0)}{1 + \exp(-6.00 \cdot (T - 1.85))} \right]$$
 * **Root Cause & Justification**:
   * Reconciles unbacked sovereign emergency loans in pre-modern states with modern institutional funded debt markets without date hardcoding.
 * **Empirical Validation Grounding**:

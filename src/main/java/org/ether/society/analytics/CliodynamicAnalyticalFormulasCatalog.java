@@ -81,10 +81,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
 
         // Second Industrial Revolution takeoff (coal, steam, rail, Bessemer steel, electrification: 1914 CE: T ~ 1.85-2.05)
         double industrialActivation = Math.tanh(Math.max(0.0, tech - 1.50) * 4.00);
-        double industrialTakeoff = industrialActivation * (1500.0 / (1.0 + Math.exp(-6.00 * (tech - 1.80))));
+        double industrialTakeoff = industrialActivation * (1500.0 / (1.0 + Math.exp(-5.50 * (tech - 1.85))));
 
         // Stage 3: Post-WWII & 20th/21st century technological acceleration (electrification, petrochem, digital)
-        double modernAcceleration = (tech > 2.25) ? 12200.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
+        double modernAcceleration = (tech > 2.30) ? 12200.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
 
         double gdpPerCap = preIndustrial + firstIndustrial + industrialTakeoff + modernAcceleration;
         return ((double) pop * gdpPerCap) / 1e9; // Billion 1990 Int$
@@ -138,11 +138,13 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Buringh & van Zanden (2009) / Graff (1987):
         // Scribal / Antiquity & Middle Ages (T ~ 1.05 - 1.20): ~3.0 - 6.5%
         double scribal = 3.0 + 3.5 * Math.tanh(Math.max(0.0, tech - 1.05) * 3.00);
-        // Print vernacular revolution (Gutenberg post-1450, early modern: T >= 1.20): +9-12% in 1800 CE (T ~ 1.28)
+        // Print vernacular revolution (Gutenberg post-1450, early modern: T >= 1.20): +9-12% in 1800 CE (T ~ 1.28) -> ~15%
         double printRevolution = 10.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 6.00);
-        // Mass education acts (post-1870 primary schooling: T >= 1.50): reaching ~40.8% in 1914, >85% modern
-        double massLiteracy = 68.0 / (1.0 + Math.exp(-4.50 * (tech - 1.85)));
-        return Math.clamp(techActivation * (scribal + printRevolution + massLiteracy), 0.0, 99.0);
+        // Mass education acts (post-1870 primary schooling: T >= 1.50): reaching ~24.5% global adult literacy in 1914
+        double massLiteracy = 18.0 / (1.0 + Math.exp(-4.50 * (tech - 1.95)));
+        // Modern 20th/21st century universal schooling (T >= 2.25): reaching ~85-88% modern
+        double modernLiteracy = (tech > 2.25) ? 55.0 / (1.0 + Math.exp(-3.50 * (tech - 2.80))) : 0.0;
+        return Math.clamp(techActivation * (scribal + printRevolution + massLiteracy + modernLiteracy), 0.0, 99.0);
     }
 
     /**
@@ -290,9 +292,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Modern institutional funded debt (Dickson 1967, British consols post-1694: T >= 1.22):
         // Reaches ~73% in 1800 (T ~ 1.28) and ~90-110% in 1914 (T ~ 1.93)
         double modernFundedActivation = Math.tanh(Math.max(0.0, tech - 1.22) * 5.00);
-        double modernFundedDebt = modernFundedActivation * (58.0 / (1.0 + Math.exp(-6.50 * (tech - 1.55))));
+        double modernFundedDebt = modernFundedActivation * 42.0 * Math.tanh(Math.max(0.0, tech - 1.22) * 10.00);
+        double totalWarDebt = Math.tanh(Math.max(0.0, tech - 1.65) * 5.0) * (20.0 / (1.0 + Math.exp(-6.00 * (tech - 1.85))));
 
-        double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt;
+        double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt + totalWarDebt;
         return Math.clamp(institutionalActivation * debtBurden, 0.0, 250.0);
     }
 
@@ -388,9 +391,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Chappe optical semaphore telegraph (1792: T >= 1.22): +180 km/day in 1800 CE (T ~ 1.28) -> 268 km/day
         double opticalTelegraph = 180.0 * Math.tanh(Math.max(0.0, tech - 1.22) * 8.00);
 
-        // Standage (1998) electric telegraph & submarine cables (1844-1866, global network in 1914: strictly T >= 1.50)
-        double electricActivation = Math.tanh(Math.max(0.0, tech - 1.50) * 5.00);
-        double electricAndCables = electricActivation * (6.8e6 / (1.0 + Math.exp(-6.50 * (tech - 1.75))));
+        // Standage (1998) electric telegraph & submarine cables (1844-1866, global network in 1914: strictly T >= 1.65)
+        double electricActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 5.00);
+        double electricAndCables = electricActivation * (5.8e6 / (1.0 + Math.exp(-6.50 * (tech - 1.85))));
 
         // Telephony and high-bandwidth telecom (T >= 2.5)
         double modernTelecom = (tech > 2.50) ? 2.86e8 / (1.0 + Math.exp(-3.00 * (tech - 3.20))) : 0.0;
@@ -405,12 +408,13 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Malandra (1990) / USGS (2023): Antiquity (~1.6 kg) -> Medieval (~1.8-3.0 kg)
         double preIndustrial = 1.60 + 1.45 * Math.tanh(Math.max(0.0, tech - 1.10) * 3.00);
 
-        // Coke smelting & puddling (Darby 1709, Cort 1784: T >= 1.20): +8.0 kg by 1800 CE (T ~ 1.28)
+        // Coke smelting & puddling (Darby 1709, Cort 1784: T >= 1.20): +8.0 kg by 1800 CE (T ~ 1.28) -> ~10.9 kg
         double cokeActivation = Math.tanh(Math.max(0.0, tech - 1.20) * 6.00);
         double cokePuddling = cokeActivation * 8.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 5.00);
 
-        // Industrial Bessemer steel & mass metallurgy (post-1860: T >= 1.50): reaching ~64 kg in 1914 (T ~ 1.93), ~210 kg modern
-        double industrialBessemer = 180.0 / (1.0 + Math.exp(-5.50 * (tech - 1.75)));
+        // Industrial Bessemer steel & mass metallurgy (post-1860: strictly T >= 1.65): reaching ~64 kg in 1914 (T ~ 1.93), ~210 kg modern
+        double bessemerActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 5.00);
+        double industrialBessemer = bessemerActivation * (180.0 / (1.0 + Math.exp(-5.50 * (tech - 1.85))));
 
         return Math.clamp(smeltActivation * (preIndustrial + cokePuddling + industrialBessemer), 0.0, 350.0);
     }
@@ -425,8 +429,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
 
         // Smil (2017) / Ritchie (2020):
         // Emerges into the First Industrial Revolution (~14% at T ~ 1.28 in 1800) and dominant in 1914 (~78% at T ~ 1.93).
-        double earlySteam = 14.5 * Math.tanh(Math.max(0.0, tech - 1.22) * 10.00);
-        double modernTransition = 68.0 / (1.0 + Math.exp(-6.00 * (tech - 1.70)));
+        double earlySteam = 14.5 * Math.tanh(Math.max(0.0, tech - 1.22) * 8.00);
+        double modernTransitionActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 5.00);
+        double modernTransition = modernTransitionActivation * (68.0 / (1.0 + Math.exp(-6.00 * (tech - 1.85))));
 
         return Math.clamp(industrialActivation * (earlySteam + modernTransition), 0.0, 95.0);
     }
@@ -440,8 +445,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double classicalCost = 1415.0;
         double medievalReduction = 200.0 * Math.tanh(Math.max(0.0, tech - 1.10) * 3.50)
                 + 300.0 * Math.tanh(Math.max(0.0, tech - 1.15) * 4.50);
-        double oceanicReduction = 685.0 * Math.tanh(Math.max(0.0, tech - 1.22) * 6.00);
-        double steamReduction = 182.0 / (1.0 + Math.exp(-6.50 * (tech - 1.70)));
+        double oceanicReduction = 685.0 * Math.tanh(Math.max(0.0, tech - 1.20) * 14.00);
+        double steamActivation = Math.tanh(Math.max(0.0, tech - 1.65) * 5.00);
+        double steamReduction = steamActivation * (182.0 / (1.0 + Math.exp(-6.50 * (tech - 1.80))));
         double cost = classicalCost - medievalReduction - oceanicReduction - steamReduction;
 
         return Math.clamp(cost, 20.0, 1600.0);
