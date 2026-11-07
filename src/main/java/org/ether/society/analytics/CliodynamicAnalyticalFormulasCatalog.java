@@ -147,7 +147,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double firstIndustrial = 90.0 * Math.tanh(sp(phiExergy, 1.20) * 5.00);
 
         double industrialActivation = Math.tanh(sp(phiExergy, 1.50) * 4.00);
-        double industrialTakeoff = industrialActivation * (1500.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.85))));
+        double industrialTakeoff = industrialActivation * (1950.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.72))));
 
         double modernActivation = SmoothMath.sigmoid(phiExergy, 2.35, 0.04);
         double modernAcceleration = modernActivation * (12200.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
@@ -166,9 +166,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      */
     public static double computePrimaryEnergyEJ(long pop, double phiExergy) {
         double preIndustrialGJ = 15.2 + 1.2 * Math.tanh(sp(phiExergy, 1.05) * 2.00);
-        double coalSteamGJ = 2.6 * Math.tanh(sp(phiExergy, 1.20) * 5.00);
-        double industrialGridGJ = 20.0 * Math.tanh(sp(phiExergy, 1.50) * 4.00)
-                / (1.0 + Math.exp(-5.50 * (phiExergy - 1.80)));
+        double coalSteamGJ = 2.6 * Math.tanh(sp(phiExergy, 1.35) * 5.00);
+        double industrialGridGJ = 28.0 * Math.tanh(sp(phiExergy, 1.50) * 4.00)
+                / (1.0 + Math.exp(-5.50 * (phiExergy - 1.72)));
         double modernHydrocarbonsGJ = SmoothMath.sigmoid(phiExergy, 2.30, 0.04) * (46.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
         double gigajoulesPerCap = preIndustrialGJ + coalSteamGJ + industrialGridGJ + modernHydrocarbonsGJ;
         return ((double) pop * gigajoulesPerCap * 1e9) / 1e18;
@@ -184,8 +184,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computeUrbanizationRate(double phiExergy) {
         double exergyActivation = Math.tanh(sp(phiExergy, 0.95) * 3.50);
         double agrarian = 3.8 + 1.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
-        double earlyModern = 5.2 * Math.tanh(sp(phiExergy, 1.20) * 6.00);
-        double massIndustrial = 13.5 / (1.0 + Math.exp(-4.50 * (phiExergy - 1.90)));
+        double earlyModern = 5.2 * Math.tanh(sp(phiExergy, 1.35) * 6.00);
+        double massIndustrial = 15.0 / (1.0 + Math.exp(-5.00 * (phiExergy - 1.72)));
         double modernMetropolis = SmoothMath.sigmoid(phiExergy, 2.30, 0.04) * (35.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
         return Math.clamp(exergyActivation * (agrarian + earlyModern + massIndustrial + modernMetropolis), 0.0, 90.0);
     }
@@ -247,7 +247,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computeRealUnskilledWageIndex(double phiExergy) {
         double preIndustrialWelfare = 10.0 * Math.tanh(sp(phiExergy, 1.15) * 2.00)
                 + 12.0 * Math.tanh(sp(phiExergy, 1.40) * 3.00);
-        double secondIndustrialBreakout = 295.0 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.95)));
+        double secondIndustrialBreakout = 300.0 / (1.0 + Math.exp(-12.0 * (phiExergy - 1.68)));
         return Math.clamp(100.0 + preIndustrialWelfare + secondIndustrialBreakout, 50.0, 1000.0);
     }
 
@@ -362,8 +362,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeAgriculturalEroei(double phiExergy) {
-        double agActivation = Math.tanh(sp(phiExergy, 0.95) * 4.0);
-        double neolithicHorticultureBonus = 10.5 * Math.exp(-Math.pow((phiExergy - 1.05), 2) / 0.02);
+        double agActivation = SmoothMath.sigmoid(phiExergy, 0.895, 0.010);
+        double neolithicHorticultureBonus = 8.5 * Math.exp(-Math.pow((phiExergy - 0.92), 2) / 0.003);
         double traditionalEquilibrium = 4.3 + 1.2 * Math.tanh(sp(phiExergy, 1.25) * 2.50);
         double industrialGreenRev = 7.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.75)));
         double eroei = traditionalEquilibrium + neolithicHorticultureBonus + industrialGreenRev;
@@ -417,22 +417,23 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computeFossilSharePrimaryEnergy(double phiExergy) {
         double industrialActivation = Math.tanh(sp(phiExergy, 1.35) * 6.00);
         double earlySteam = 14.5 * Math.tanh(sp(phiExergy, 1.36) * 8.00);
-        double modernTransitionActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
-        double modernTransition = modernTransitionActivation * (68.0 / (1.0 + Math.exp(-6.00 * (phiExergy - 1.85))));
+        double modernTransitionActivation = Math.tanh(sp(phiExergy, 1.55) * 5.00);
+        double modernTransition = modernTransitionActivation * (76.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.72))));
 
         return Math.clamp(industrialActivation * (earlySteam + modernTransition), 0.0, 95.0);
     }
 
     public static double computeShippingFreightCostIndex(double phiExergy) {
+        double maritimeActivation = SmoothMath.sigmoid(phiExergy, 0.97, 0.015);
         double classicalCost = 1415.0;
         double medievalReduction = 140.0 * Math.tanh(sp(phiExergy, 1.10) * 3.50)
                 + 180.0 * Math.tanh(sp(phiExergy, 1.15) * 4.50);
         double oceanicReduction = 685.0 * Math.tanh(sp(phiExergy, 1.36) * 12.00);
         double steamActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
-        double steamReduction = steamActivation * (182.0 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.80))));
+        double steamReduction = steamActivation * (360.0 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.72))));
         double cost = classicalCost - medievalReduction - oceanicReduction - steamReduction;
 
-        return Math.clamp(cost, 20.0, 1600.0);
+        return Math.clamp(maritimeActivation * cost, 0.0, 1600.0);
     }
 
     public static double computeLifeExpectancy(double phiExergy, double food) {
