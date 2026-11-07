@@ -51,14 +51,9 @@ final class PlanetaryBenchmarkAxisExecutors {
 
         long genStart = System.nanoTime();
         PlanetPreset preset = PlanetPreset.EARTH_LIKE.withResolution(resolution);
-        List<H3Cell> generated = ProceduralGenerator.getInstance().generatePlanet(preset);
-
         List<H3Cell> cells = windowed
-                ? generated.stream()
-                    .filter(c -> c.getLatitude() >= 25.0 && c.getLatitude() <= 45.0
-                            && c.getLongitude() >= -10.0 && c.getLongitude() <= 45.0)
-                    .collect(Collectors.toList())
-                : generated;
+                ? ProceduralGenerator.getInstance().generateRegionalPlanet(preset, 30.0, 38.0, 34.0, 48.0)
+                : ProceduralGenerator.getInstance().generatePlanet(preset);
         System.out.printf("    Grid Topology: %,d cells initialized in %.2f s.\n", cells.size(), (System.nanoTime() - genStart) / 1e9);
 
         Scenario scenario = buildBaseBenchmarkScenario("bench_spatial_" + resolution, label, resolution, 30.0, 100_000L, threads);
@@ -154,26 +149,17 @@ final class PlanetaryBenchmarkAxisExecutors {
     static BackendResult executeBackendRun(String label, int resolution, int cells, int threads, int ticks, double baselineTps) {
         System.out.printf("\n>>> Axis 3 Run: %-32s | Cells: %,d | Threads: %2d | Ticks: %d\n", label, cells, threads, ticks);
 
-        if (label.contains("Rust")) {
-            WorldBuffer world = new WorldBuffer(cells);
-            AgentBuffer agents = new AgentBuffer(cells);
-            populateDoDBuffers(world, agents, cells);
-            long durationNanos = runDoDKernels(world, agents, cells, ticks);
-
-            double durationMs = durationNanos / 1e6;
-            double tps = ticks / (durationNanos / 1e9);
-            double msPerTick = durationMs / ticks;
-            double latencyNs = (double) durationNanos / (ticks * cells);
-            double speedup = baselineTps > 0 ? tps / baselineTps : 1.0;
-
-            System.out.printf("    Measured: %7.1f ms | %6.2f TPS | %6.1f ns/cell | Speedup: %.2fx\n",
-                    durationMs, tps, latencyNs, speedup);
-            return new BackendResult(label, resolution, cells, threads, ticks, durationMs, tps, msPerTick, latencyNs, speedup);
-        }
-
         List<H3Cell> cellList = ProceduralGenerator.getInstance().generatePlanet(PlanetPreset.EARTH_LIKE.withResolution(resolution));
         Scenario scenario = buildBaseBenchmarkScenario("bench_backend_" + threads, "Backend " + label, resolution, 30.0, 100_000L, threads);
-        H3SimulationEngine engine = initEngine(scenario, cellList, threads, true);
+
+        SimulationPerformanceConfig.ExecutionEngineMode mode = SimulationPerformanceConfig.ExecutionEngineMode.JAVA_STANDARD;
+        if (label.contains("Rust")) {
+            mode = SimulationPerformanceConfig.ExecutionEngineMode.RUST_NATIVE;
+        } else if (label.contains("SIMD")) {
+            mode = SimulationPerformanceConfig.ExecutionEngineMode.JAVA_VECTOR_SIMD;
+        }
+
+        H3SimulationEngine engine = initEngine(scenario, cellList, threads, true, mode);
         engine.stepForward(2);
 
         long startNanos = System.nanoTime();
@@ -183,14 +169,14 @@ final class PlanetaryBenchmarkAxisExecutors {
         double durationMs = durationNanos / 1e6;
         double tps = ticks / (durationNanos / 1e9);
         double msPerTick = durationMs / ticks;
-        double latencyNs = (double) durationNanos / (ticks * cells);
+        double latencyNs = (double) durationNanos / (ticks * cellList.size());
         double speedup = baselineTps > 0 ? tps / baselineTps : 1.0;
 
-        System.out.printf("    Measured: %7.1f ms | %6.2f TPS | %7.1f ms/tick | Speedup: %.2fx\n",
+        System.out.printf("    Measured Full Engine: %7.1f ms | %6.2f TPS | %7.1f ms/tick | Speedup: %.2fx\n",
                 durationMs, tps, msPerTick, speedup);
         engine.shutdown();
 
-        return new BackendResult(label, resolution, cells, threads, ticks, durationMs, tps, msPerTick, latencyNs, speedup);
+        return new BackendResult(label, resolution, cellList.size(), threads, ticks, durationMs, tps, msPerTick, latencyNs, speedup);
     }
 
     static CouplingTierResult executeCouplingTierRun(String label, boolean enableTier2, int resolution, int threads, int ticks, double baselineMs) {
@@ -263,9 +249,14 @@ final class PlanetaryBenchmarkAxisExecutors {
     }
 
     private static H3SimulationEngine initEngine(Scenario scenario, List<H3Cell> cells, int threads, boolean enableTier2) {
+        return initEngine(scenario, cells, threads, enableTier2, SimulationPerformanceConfig.ExecutionEngineMode.JAVA_VECTOR_SIMD);
+    }
+
+    private static H3SimulationEngine initEngine(Scenario scenario, List<H3Cell> cells, int threads, boolean enableTier2, SimulationPerformanceConfig.ExecutionEngineMode mode) {
         SimulationPerformanceConfig perfConfig = scenario.toPerformanceConfig();
         perfConfig.setParallelThreadCount(threads);
         perfConfig.setEnableTier2Cliodynamics(enableTier2);
+        perfConfig.setExecutionEngineMode(mode != null ? mode : SimulationPerformanceConfig.ExecutionEngineMode.JAVA_VECTOR_SIMD);
 
         Configuration config;
         try {

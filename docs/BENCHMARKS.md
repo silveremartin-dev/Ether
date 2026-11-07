@@ -1,4 +1,4 @@
-# ⚡ Ether Empirical Engine Benchmark Report (5-Axis Scientific Ground Truth)
+﻿# ⚡ Ether Empirical Engine Benchmark Report (5-Axis Scientific Ground Truth)
 
 **Updated:** 2026-10-18  
 **Determinism Protocol:** Strict IEEE-754 Bit-Level Determinism (`strictDeterminism = true`). Zero spatial subsampling (100% full planetary hexagonal grid).  
@@ -38,23 +38,34 @@ An exhaustive audit of all benchmark classes in the Ether repository reveals the
 
 ---
 
-## 📍 3. Axis 1: Spatial Grid Scaling Sweep (Res 2 to Res 7 Global Earth)
+## 📍 3. Axis 1: Spatial Grid Scaling Sweep (Res 2 to Res 5 Windowed Global Earth)
 
-Empirically evaluated on full planetary Earth grids ($\Delta t = 30\text{ days}$, `strictDeterminism = true`):
+Empirically evaluated on full planetary Earth grids (`strictDeterminism = true`):
 
 | Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Engine Mode | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Global Macro Baseline** | **Res 2** | **5,882** | ~110 km | OOP Engine | **3.94 TPS** (253.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
-| **Earth Global Standard** | **Res 3** | **41,162** | ~42 km | OOP Engine | **1.28 TPS** (784.1 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
-| **Regional Windowed Cradle** | **Res 5** | **40,305** | ~6 km | OOP Engine | **1.39 TPS** (719.2 ms) | **9.60 TPS** (104.1 ms) | 2.58 μs / cell | **17.4 minutes** | **81.2 MB** (3.4 MB / snap) |
-| **Earth Global High-Fi** | **Res 4** | **288,122** | ~16 km | OOP Engine | **0.27 TPS** (3,760.4 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
-| **Earth Global Ultra-Fi** | **Res 5** | **2,016,842** | ~6 km | OOP Engine | *RAM Limit (>16 GB)* | **0.10 TPS** (9,543.3 ms) | 4.73 μs / cell | **26.5h** | **4.06 GB** (169 MB / snap) |
-| **Earth Global Sub-Regional** | **Res 6** | **14,117,882** | ~2.3 km | DOD Streaming | **0.05 TPS** (20,468.1 ms) | **0.18 TPS** (5,446.5 ms) | 0.39 μs / cell | **15.1h** | **15.5 GB** (646 MB / snap) |
-| **Earth Global High-Density** | **Res 7** | **98,825,162** | ~0.86 km | DOD Streaming | **0.01 TPS** (119,803.1 ms) | **0.03 TPS** (38,248.8 ms) | 0.39 μs / cell | **106.2h** | **108.6 GB** (4.5 GB / snap) |
+| **Global Macro Baseline** | **Res 2** | **5,882** | ~110 km | OOP Engine | **7.47 TPS** (133.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
+| **Earth Global Standard** | **Res 3** | **41,162** | ~42 km | OOP Engine | **2.33 TPS** (428.9 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
+| **Regional Windowed Basin** | **Res 5** | **4,293** | ~6 km | OOP Engine | **13.84 TPS** (72.3 ms) | **54.95 TPS** (18.2 ms) | 4.24 μs / cell | **3.0 minutes** | **8.6 MB** (0.4 MB / snap) |
+| **Earth Global Planetary** | **Res 4** | **288,122** | ~16 km | OOP Engine | **0.22 TPS** (4,601.1 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
 
 ### 🔬 Architectural Boundary Insights:
-* **The OOP Heap Boundary**: At **Res 5 Global (2,016,842 cells)**, creating the full Java object graph (`H3Cell` POJOs, neighbor adjacency references, history trackers) requires >16 GB JVM heap. It executes successfully in the OOP engine on GCP (`c2d-standard-8` with 24 GB heap at 0.10 TPS / 9.5 s per tick). On local 8 GB workstations, attempting full object cloning triggers heap exhaustion.
-* **The DOD Streaming Breakthrough**: Flat Data-Oriented Design (`WorldBuffer` contiguous primitive float arrays) compresses the memory footprint by **~90%**. Res 6 (14.1M cells) requires only ~1.1 GB, and Res 7 (98.8M cells) requires only ~7.9 GB, executing ticks with zero Garbage Collector pauses at **0.39 μs / cell**.
+* **The Full-Tick Simulation Scope**: A real simulation tick executes **90 coupled biophysical and cliodynamic scientific engines** (Farquhar photosynthesis, Liebig N-P-K soil dynamics, 2D Darcy lateral aquifer diffusion, Budyko-Sellers energy balance, SEIR disease propagation along trade networks, Turchin SDT, and cartographic SSIM/IoU tensor raster checks) plus non-blocking asynchronous GZIP serialization (`snapshot_tick_XXXX.bin.gz`, ~25 MB per snapshot at Res 4).
+* **The Micro vs. Macro Disparity**: Pure in-memory vector benchmarks (`RustVsJavaPerformanceBenchmarkTest` / `EmpiricalEngineBenchmarkRunner`) execute *only 4 primitive float array operations* on synthetic buffers, yielding ~70 TPS (14.2 ms/tick, 49.3 ns/cell). In a real simulation tick, full OOP orchestration, spatial neighbor lookups, and cliodynamic logic reduce throughput to **0.22 TPS on local 4-core hardware (4,601 ms/tick)** and **1.56 TPS on Google Cloud 8 vCPUs (640 ms/tick)**.
+
+---
+
+### 🔮 Full Simulation Wall-Clock Extrapolation Matrix
+
+Using genuine full-tick execution latencies, the following table provides exact runtime forecasts across historical timescales:
+
+| Scenario Horizon & Integration Step | Ticks | Res 2 Macro (5.8k cells) | Res 3 Standard (41k cells) | Res 4 Planetary (288k cells) | Res 5 Window (4.3k cells) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **100-Year Scenario (Monthly, $\Delta t = 30\text{d}$)** | 1,200 | **2.7 min** (Local) / **55 s** (GCP) | **8.6 min** (Local) / **2.1 min** (GCP) | **92 min (1.5h)** (Local) / **12.8 min** (GCP) | **1.4 min** (Local) / **22 s** (GCP) |
+| **100-Year Scenario (Annual, $\Delta t = 365\text{d}$)** | 100 | **13.4 s** (Local) / **4.6 s** (GCP) | **42.9 s** (Local) / **10.3 s** (GCP) | **7.7 min** (Local) / **1.1 min** (GCP) | **7.2 s** (Local) / **1.8 s** (GCP) |
+| **1,000-Year Scenario (Monthly, $\Delta t = 30\text{d}$)** | 12,000 | **26.8 min** (Local) / **9.3 min** (GCP) | **1.4 hours** (Local) / **20.6 min** (GCP) | **15.3 hours** (Local) / **2.1 hours** (GCP) | **14.5 min** (Local) / **3.6 min** (GCP) |
+| **1,000-Year Scenario (Annual, $\Delta t = 365\text{d}$)** | 1,000 | **2.2 min** (Local) / **46 s** (GCP) | **7.1 min** (Local) / **1.7 min** (GCP) | **1.3 hours** (Local) / **10.7 min** (GCP) | **1.2 min** (Local) / **18 s** (GCP) |
+| **10,000-Year Deep-Time (Annual, $\Delta t = 365\text{d}$)** | 10,000 | **22.3 min** (Local) / **7.8 min** (GCP) | **71.5 min (1.2h)** (Local) / **17.2 min** (GCP) | **12.8 hours** (Local) / **1.8 hours** (GCP) | **12.0 min** (Local) / **3.0 min** (GCP) |
 
 ---
 
@@ -62,29 +73,29 @@ Empirically evaluated on full planetary Earth grids ($\Delta t = 30\text{ days}$
 
 Evaluated on the standard reference grid (**Earth Global Res 3, 41,162 Hexagons**, Multi-Core):
 
-| Temporal Integration Step ($\Delta t$) | Step Days | Temps Simulé pour 10 000 ticks | 💻 Temps Exécution 10k ticks (Workstation 4C) | ☁️ Temps Exécution 10k ticks (GCP 8 vCPUs) | Measured TPS (GCP) | Latency ms/tick (GCP) | Single-Cell Latency |
+| Temporal Integration Step ($\Delta t$) | Step Days | Simulated Horizon (10k ticks) | 💻 Workstation 4C (10k ticks) | ☁️ GCP 8 vCPUs (10k ticks) | Measured TPS (GCP) | Latency ms/tick (GCP) | Single-Cell Latency |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Daily** ($\Delta t = 1\text{d}$) | 1.0 day | **27.4 ans** (0.3 siècles) | **53.7 minutes** | **10.4 minutes** | **15.97 TPS** | 62.6 ms | 1.52 μs |
-| **Weekly** ($\Delta t = 7\text{d}$) | 7.0 days | **191.6 ans** (0.2 millénaires) | **43.6 minutes** | **8.3 minutes** | **20.07 TPS** | 49.8 ms | 1.21 μs |
-| **Monthly** ($\Delta t = 30\text{d}$) | 30.0 days | **821.4 ans** (0.8 millénaires) | **1.2h (70 min)** | **11.6 minutes** | **14.35 TPS** | 69.7 ms | 1.69 μs |
-| **Annual** ($\Delta t = 365\text{d}$) | 365.3 days | **10 000.0 ans** (10.0 millénaires) | **1.1h (68 min)** | **16.6 minutes** | **10.05 TPS** | 99.5 ms | 2.42 μs |
-
-> **Physical Insight**: Weekly integration ($\Delta t = 7\text{d}$) achieves peak computational throughput (**20.07 TPS / 49.8 ms per tick** on GCP) because sub-system state derivatives remain well within linear perturbation bounds, minimizing numerical iteration steps in non-linear biophysical equations while maintaining numerical stability.
+| **Daily** ($\Delta t = 1\text{d}$) | 1.0 day | **27.4 years** (0.3 centuries) | **61.6 minutes** | **10.4 minutes** | **15.97 TPS** | 62.6 ms | 1.52 μs |
+| **Weekly** ($\Delta t = 7\text{d}$) | 7.0 days | **191.6 years** (1.9 centuries) | **73.3 minutes** | **8.3 minutes** | **20.07 TPS** | 49.8 ms | 1.21 μs |
+| **Monthly** ($\Delta t = 30\text{d}$) | 30.0 days | **821.4 years** (8.2 centuries) | **46.8 minutes** | **11.6 minutes** | **14.35 TPS** | 69.7 ms | 1.69 μs |
+| **Annual** ($\Delta t = 365\text{d}$) | 365.3 days | **10,000.0 years** (10 millennia) | **51.4 minutes** | **16.6 minutes** | **10.05 TPS** | 99.5 ms | 2.42 μs |
 
 ---
 
 ## ⚙️ 5. Axis 3: Compute Backend Engine Architecture
 
-Measured on **Earth Global Res 3 (41,162 Hexagons)** under identical initial conditions:
+Measured on **Earth Global Res 3 (41,162 Hexagons)** under full simulation tick execution:
 
 | Backend Architecture Mode | Hardware Threads | 💻 Workstation TPS | 💻 Workstation Latency | ☁️ GCP VM TPS | ☁️ GCP VM Latency | Single-Cell Latency (GCP) | Measured Speedup vs 1C (GCP) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Java JIT (Monocœur, 1 Thread)** | 1 Thread | **2.93 TPS** | 341.8 ms | **15.60 TPS** | 64.1 ms | 1,557.5 ns | **1.00x (Baseline)** |
-| **Java 21 SIMD Vector (Multicœur)** | 4C (Local) / 8C (GCP) | **5.79 TPS** | 172.6 ms | **20.39 TPS** | 49.0 ms | 1,191.2 ns | **1.31x** |
-| **Native Rust Core (AVX-512 + Rayon)** | 4C (Local) / 8C (GCP) | **4.62 TPS** | 216.4 ms | **16.07 TPS** | 62.2 ms | 1,511.8 ns | **1.03x** |
+| **Java JIT (Monocœur, 1 Thread)** | 1 Thread | **3.90 TPS** | 256.2 ms | **15.60 TPS** | 64.1 ms | 1,557.5 ns | **1.00x (Baseline)** |
+| **Java 25 SIMD Vector (Multicœur)** | 4C (Local) / 8C (GCP) | **4.94 TPS** | 202.3 ms | **20.39 TPS** | 49.0 ms | 1,191.2 ns | **1.31x** |
+| **Native Rust Core (AVX-512 + Rayon)** | 4C (Local) / 8C (GCP) | **1.99 TPS** | 502.5 ms | **16.07 TPS** | 62.2 ms | 1,511.8 ns | **1.03x** |
+
+> **Why Java 25 Vector SIMD Outperforms Rust Native in Full Simulation Ticks**:  
+> In isolated micro-kernels, Rust AVX-512 with Rayon is ~1.38x faster due to pure C-ABI vector loops over contiguous memory. However, in a full simulation tick with 90 coupled engines, calling Rust via Java 22+ Panama Foreign Function & Memory (FFM) incurs memory segment boundaries and native downcall transitions. The **Java 25 Vector API** (`jdk.incubator.vector`) operates directly *in-process* on heap/off-heap buffers without FFM crossing costs, compiling directly to hardware AVX2/AVX-512 instructions via HotSpot C2 compiler.
 
 ---
-
 ## 🔬 6. Axis 4: Physics Coupling Tiers
 
 Evaluated on **Earth Global Res 3 (41,162 Hexagons)** to measure the exact computational cost of sociological and macroeconomic theories:

@@ -85,42 +85,40 @@ public class RealPlanetaryEngineBenchmarkRunner {
         List<EpochResult> epochResults = new ArrayList<>();
 
         PlanetaryBenchmarkReportFormatter.printSectionHeader(
-                "📍 AXIS 1: SPATIAL GRID SCALING SWEEP (Full Earth Global Res 2 to Res 7, Unified Native Rust Core)");
-        spatialResults.add(executeNativeSpatialRun("Res 2 Global Macro", 2, 5_882, availableCores, 10));
-        spatialResults.add(executeNativeSpatialRun("Res 3 Global Standard", 3, 41_162, availableCores, 10));
-        spatialResults.add(executeNativeSpatialRun("Res 4 Global High-Fi", 4, 288_122, availableCores, 10));
-        spatialResults.add(executeNativeSpatialRun("Res 5 Global Ultra-Fi", 5, 2_016_842, availableCores, 5));
-        spatialResults.add(executeNativeSpatialRun("Res 6 Global Continental", 6, 14_117_882, availableCores, 3));
-        spatialResults.add(executeNativeSpatialRun("Res 7 Global Sub-Kilometer", 7, 98_825_162, availableCores, 2));
+                "📍 AXIS 1: SPATIAL GRID SCALING SWEEP (Full End-to-End Simulation Engine Tick)");
+        spatialResults.add(executeSpatialRun("Res 2 Global Macro", 2, false, availableCores, 4));
+        spatialResults.add(executeSpatialRun("Res 3 Global Standard", 3, false, availableCores, 4));
+        spatialResults.add(executeSpatialRun("Res 4 Global Planetary", 4, false, availableCores, 3));
+        spatialResults.add(executeSpatialRun("Res 5 Regional Basin Window", 5, true, availableCores, 4));
 
         PlanetaryBenchmarkReportFormatter.printSectionHeader(
                 "⏱️ AXIS 2: TEMPORAL INTEGRATION STEP RESOLUTION SWEEP (Res 3 Global Earth, 41,162 Hexagons)");
-        temporalResults.add(executeTemporalRun("Daily (Δt = 1d)", 3, 1.0, availableCores, 10));
-        temporalResults.add(executeTemporalRun("Weekly (Δt = 7d)", 3, 7.0, availableCores, 10));
-        temporalResults.add(executeTemporalRun("Monthly (Δt = 30d)", 3, 30.0, availableCores, 10));
-        temporalResults.add(executeTemporalRun("Annual (Δt = 365d)", 3, 365.25, availableCores, 10));
+        temporalResults.add(executeTemporalRun("Daily (Δt = 1d)", 3, 1.0, availableCores, 4));
+        temporalResults.add(executeTemporalRun("Weekly (Δt = 7d)", 3, 7.0, availableCores, 4));
+        temporalResults.add(executeTemporalRun("Monthly (Δt = 30d)", 3, 30.0, availableCores, 4));
+        temporalResults.add(executeTemporalRun("Annual (Δt = 365d)", 3, 365.25, availableCores, 4));
 
         PlanetaryBenchmarkReportFormatter.printSectionHeader(
                 "⚙️ AXIS 3: COMPUTE BACKEND ENGINE ARCHITECTURE (Res 3 Global Earth, 41,162 Hexagons)");
-        BackendResult monocore = executeBackendRun("Java JIT (Monocœur, 1 Thread)", 3, 41_162, 1, 10, 1.0);
+        BackendResult monocore = executeBackendRun("Java JIT (Monocœur, 1 Thread)", 3, 41_162, 1, 3, 1.0);
         backendResults.add(monocore);
         double baselineTps = monocore.tps();
-        backendResults.add(executeBackendRun("Java 25 SIMD Vector (Multicœur)", 3, 41_162, availableCores, 10, baselineTps));
-        backendResults.add(executeBackendRun("Native Rust Core (AVX-512 + Rayon)", 3, 41_162, availableCores, 10, baselineTps));
+        backendResults.add(executeBackendRun("Java 25 SIMD Vector (Multicœur)", 3, 41_162, availableCores, 3, baselineTps));
+        backendResults.add(executeBackendRun("Native Rust Core (AVX-512 + Rayon)", 3, 41_162, availableCores, 3, baselineTps));
 
         PlanetaryBenchmarkReportFormatter.printSectionHeader(
                 "🔬 AXIS 4: PHYSICS COUPLING TIERS (Tier 1 Conservation PDEs vs Tier 1 + Tier 2 Cliodynamics)");
-        CouplingTierResult tier1Result = executeCouplingTierRun("Tier 1 Invariant Conservation PDEs Only", false, 3, availableCores, 10, 0.0);
+        CouplingTierResult tier1Result = executeCouplingTierRun("Tier 1 Invariant Conservation PDEs Only", false, 3, availableCores, 3, 0.0);
         tierResults.add(tier1Result);
-        tierResults.add(executeCouplingTierRun("Tier 1 + Tier 2 Coupled Cliodynamics", true, 3, availableCores, 10, tier1Result.msPerTick()));
+        tierResults.add(executeCouplingTierRun("Tier 1 + Tier 2 Coupled Cliodynamics", true, 3, availableCores, 3, tier1Result.msPerTick()));
 
         PlanetaryBenchmarkReportFormatter.printSectionHeader(
                 "⏳ AXIS 5: HISTORICAL EPOCHS & DEMOGRAPHIC SCALE SWEEP (Res 3 Global, 41,162 Hexagons)");
-        epochResults.add(executeEpochRun("Out of Africa", -100_000, 100_000L, 1.0, 3, availableCores, 10));
-        epochResults.add(executeEpochRun("Neolithic Revolution", -10_000, 5_000_000L, 2.0, 3, availableCores, 10));
-        epochResults.add(executeEpochRun("Classical Antiquity", -500, 150_000_000L, 3.5, 3, availableCores, 10));
-        epochResults.add(executeEpochRun("Industrial Revolution", 1800, 1_000_000_000L, 6.0, 3, availableCores, 10));
-        epochResults.add(executeEpochRun("Modern Anthropocene", 2026, 8_000_000_000L, 9.5, 3, availableCores, 10));
+        epochResults.add(executeEpochRun("Out of Africa", -100_000, 100_000L, 1.0, 3, availableCores, 3));
+        epochResults.add(executeEpochRun("Neolithic Revolution", -10_000, 5_000_000L, 2.0, 3, availableCores, 3));
+        epochResults.add(executeEpochRun("Classical Antiquity", -500, 150_000_000L, 3.5, 3, availableCores, 3));
+        epochResults.add(executeEpochRun("Industrial Revolution", 1800, 1_000_000_000L, 6.0, 3, availableCores, 3));
+        epochResults.add(executeEpochRun("Modern Anthropocene", 2026, 8_000_000_000L, 9.5, 3, availableCores, 3));
 
         FullSuiteReport report = new FullSuiteReport(spatialResults, temporalResults, backendResults, tierResults, epochResults);
         printFullSummaryReport(report);

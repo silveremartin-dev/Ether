@@ -160,13 +160,13 @@ public final class CulturalKnowledgeMetricsCalculator {
                 double cellI = Math.max(baseI0, endogenousI);
 
                 // 1. Scribal literacy (early symbolic pictograms, cuneiform, hieroglyphs, alphabets: 1-4.2% Buringh & van Zanden 2009)
-                double scribal = 4.2 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
+                double scribal = 3.8 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
 
-                // 2. Vernacular print literacy (Gutenberg movable type press, merchant bookkeeping, early modern: 5-26%)
-                double vernacular = 22.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
+                // 2. Vernacular print literacy (Gutenberg movable type press, merchant bookkeeping, early modern: 5-18%)
+                double vernacular = 14.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
 
                 // 3. Mass universal primary education (industrial schooling, telecommunications, digital age: up to 99.5%)
-                double massEdu = 73.3 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
+                double massEdu = 81.7 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
 
                 double cellLit = Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
                 weightedLit += p * cellLit;
@@ -195,9 +195,9 @@ public final class CulturalKnowledgeMetricsCalculator {
                     : 0.0;
             double cellI = Math.max(baseI0, endogenousI);
 
-            double scribal = 4.2 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
-            double vernacular = 22.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
-            double massEdu = 73.3 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
+            double scribal = 3.8 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
+            double vernacular = 14.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
+            double massEdu = 81.7 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
 
             double cellLit = Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
             weightedLit += p * cellLit;

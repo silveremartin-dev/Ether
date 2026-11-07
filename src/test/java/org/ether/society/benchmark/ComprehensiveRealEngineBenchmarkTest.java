@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-@org.junit.jupiter.api.Tag("benchmark")
 public class ComprehensiveRealEngineBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(ComprehensiveRealEngineBenchmarkTest.class);
 
