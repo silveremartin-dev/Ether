@@ -95,8 +95,14 @@ public class MacroHistoricalEpochsFalsificationTest {
 
         for (ScenarioRunConfig cfg : TARGET_CONFIGS) {
             String filter = System.getProperty("phase1.scenario");
-            if (filter != null && !filter.isBlank() && !cfg.presetKey().equalsIgnoreCase(filter)) {
-                continue;
+            if (filter != null && !filter.isBlank()) {
+                List<String> allowed = Arrays.stream(filter.split(","))
+                        .map(String::trim)
+                        .map(String::toLowerCase)
+                        .toList();
+                if (!allowed.contains(cfg.presetKey().toLowerCase())) {
+                    continue;
+                }
             }
             System.out.println("================================================================================");
             System.out.printf("🚀 RUNNING PHASE 1 BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
