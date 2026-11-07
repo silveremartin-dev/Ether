@@ -187,10 +187,13 @@ public class ThermodynamicMigrationEngine {
                     H3Cell destination = cells.get(destIdx);
                     if (destination == null) continue;
                     org.ether.society.model.Biome destBiome = destination.getBiome();
+                    double waterDest = destination.getWaterResourceOr(0.0);
                     if (destBiome == org.ether.society.model.Biome.OCEAN
                             || destBiome == org.ether.society.model.Biome.DEEP_OCEAN
                             || destBiome == org.ether.society.model.Biome.GLACIER
-                            || (destination.getElevation() != null && destination.getElevation() < 0.0)) {
+                            || (destination.getElevation() != null && destination.getElevation() < 0.0)
+                            || (destBiome == org.ether.society.model.Biome.DESERT
+                                && waterDest < 10.0 && destination.getResourceCapitalOr(0.0) < 100.0)) {
                         continue;
                     }
 
@@ -198,7 +201,6 @@ public class ThermodynamicMigrationEngine {
                     double foodDest = destination.getFoodResourceOr(0.0)
                             + destination.getBiomassAgricultureOr(0.0) * 0.0105
                             + destination.getBiomassNaturalOr(0.0) * 0.12;
-                    double waterDest = destination.getWaterResourceOr(0.0);
                     double phiDest = (foodDest + waterDest * 0.2) / Math.max(10.0, popDest + 1.0);
 
                     double deltaPhi = phiDest - phiOrigin;
@@ -291,9 +293,19 @@ public class ThermodynamicMigrationEngine {
                             double distSq = dLatKm * dLatKm + dLonKm * dLonKm;
                             if (distSq > maxRadiusSq) continue;
 
+                            org.ether.society.model.Biome destBiome = destination.getBiome();
+                            double waterDest = destination.getWaterResourceOr(0.0);
+                            if (destBiome == org.ether.society.model.Biome.OCEAN
+                                    || destBiome == org.ether.society.model.Biome.DEEP_OCEAN
+                                    || destBiome == org.ether.society.model.Biome.GLACIER
+                                    || (destination.getElevation() != null && destination.getElevation() < 0.0)
+                                    || (destBiome == org.ether.society.model.Biome.DESERT
+                                        && waterDest < 10.0 && destination.getResourceCapitalOr(0.0) < 100.0)) {
+                                continue;
+                            }
+
                             int popDest = destination.getPopulationOr(0);
                             double foodDest = destination.getFoodResourceOr(0.0);
-                            double waterDest = destination.getWaterResourceOr(0.0);
                             double phiDest = (foodDest + waterDest) / (popDest + 1.0);
 
                             double deltaPhi = phiDest - phiOrigin;

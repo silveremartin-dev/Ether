@@ -261,9 +261,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computePoliticalStressIndex(double phiExergy, double stability) {
         double stateActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double basePsi = 18.0 * Math.tanh(sp(phiExergy, 1.00) * 2.50);
-        double crisisEscalation = 36.0 * stress;
-        double modernFactor = 12.0 * Math.tanh(sp(phiExergy, 1.50) * 3.00);
+        double basePsi = 26.0 * Math.tanh(sp(phiExergy, 0.98) * 2.80);
+        double crisisEscalation = 24.0 * stress + 20.0 * Math.pow(stress, 1.2);
+        double modernFactor = 14.0 * Math.tanh(sp(phiExergy, 1.50) * 3.00);
         return Math.clamp(stateActivation * (basePsi + crisisEscalation + modernFactor), 0.0, 100.0);
     }
 
@@ -290,10 +290,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return sociopolitical instability index in $[0.0, 100.0]$
      */
     public static double computeSociopoliticalInstability(double phiExergy, double stability) {
-        double bandBaseline = 7.2 - 3.5 * Math.clamp(stability / 100.0, 0.0, 1.0);
+        double bandBaseline = 9.0 - 4.0 * Math.clamp(stability / 100.0, 0.0, 1.0);
         double stateActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double stateInstability = stateActivation * (18.0 * stress + 22.0 * Math.pow(stress, 1.3) + 12.0 * Math.tanh(sp(phiExergy, 1.45) * 2.0));
+        double stateInstability = stateActivation * (16.0 + 20.0 * stress + 24.0 * Math.pow(stress, 1.3) + 12.0 * Math.tanh(sp(phiExergy, 1.45) * 2.0));
         return Math.clamp(bandBaseline + stateInstability, 0.0, 100.0);
     }
 
@@ -327,10 +327,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         double preModernDebt = 8.5 + 1.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00)
                 + 3.0 * Math.tanh(sp(phiExergy, 1.10) * 3.0) * Math.pow(fiscalShock, 1.3);
 
-        double medievalWarDebt = 22.0 * Math.tanh(sp(phiExergy, 1.12) * 5.00) * (0.5 + 0.5 * fiscalShock);
+        double medievalWarDebt = 10.0 * Math.tanh(sp(phiExergy, 1.18) * 4.00) * (0.3 + 0.7 * fiscalShock);
 
-        double modernFundedActivation = Math.tanh(sp(phiExergy, 1.22) * 5.00);
-        double modernFundedDebt = modernFundedActivation * 42.0 * Math.tanh(sp(phiExergy, 1.22) * 10.00);
+        double modernFundedActivation = Math.tanh(sp(phiExergy, 1.36) * 5.00);
+        double modernFundedDebt = modernFundedActivation * 42.0 * Math.tanh(sp(phiExergy, 1.38) * 8.00);
         double totalWarDebt = Math.tanh(sp(phiExergy, 1.65) * 5.0) * (20.0 / (1.0 + Math.exp(-6.00 * (phiExergy - 1.85))));
 
         double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt + totalWarDebt;
@@ -340,11 +340,11 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computeGlobalTradeVolume(double phiExergy) {
         double tradeActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
 
-        double preIndustrialTrade = 3.5 + 2.5 * Math.tanh(sp(phiExergy, 1.05) * 3.50)
-                + 5.5 * Math.tanh(sp(phiExergy, 1.12) * 4.00);
+        double preIndustrialTrade = 3.2 + 2.0 * Math.tanh(sp(phiExergy, 1.05) * 3.00)
+                + 3.5 * Math.tanh(sp(phiExergy, 1.15) * 3.50);
 
-        double oceanicSailActivation = Math.tanh(sp(phiExergy, 1.22) * 6.00);
-        double oceanicSailBoom = oceanicSailActivation * 36.0 * Math.tanh(sp(phiExergy, 1.22) * 5.00);
+        double oceanicSailActivation = Math.tanh(sp(phiExergy, 1.36) * 6.00);
+        double oceanicSailBoom = oceanicSailActivation * 36.0 * Math.tanh(sp(phiExergy, 1.36) * 5.00);
 
         double steamShippingBoom = 180.0 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.70)));
 
@@ -354,9 +354,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeTopsoilErosionLoss(double phiExergy) {
-        double lossActivation = Math.tanh(sp(phiExergy, 0.90) * 4.00);
-        double agrarianPlowing = 14.0 * Math.tanh(sp(phiExergy, 0.92) * 4.00)
-                + 12.0 * Math.tanh(sp(phiExergy, 1.15) * 3.00);
+        double lossActivation = Math.tanh(sp(phiExergy, 0.85) * 4.00);
+        double agrarianPlowing = 14.5 * Math.tanh(sp(phiExergy, 0.88) * 3.50)
+                + 6.5 * Math.tanh(sp(phiExergy, 1.15) * 3.00);
         double modernMechanizedLoss = 24.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.75)));
         return Math.clamp(lossActivation * (agrarianPlowing + modernMechanizedLoss), 0.03, 70.0);
     }
@@ -386,9 +386,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      */
     public static double computeInformationTravelSpeed(double phiExergy) {
         double courierActivation = Math.tanh(sp(phiExergy, 0.95) * 8.00);
-        double courierSpeed = 4.0 + 77.0 * courierActivation + 8.0 * Math.tanh(sp(phiExergy, 1.10) * 3.0);
+        double courierSpeed = 4.0 + 74.0 * courierActivation + 10.0 * Math.tanh(sp(phiExergy, 1.10) * 3.0);
 
-        double opticalTelegraph = 180.0 * Math.tanh(sp(phiExergy, 1.22) * 8.00);
+        double opticalTelegraph = 160.0 * Math.tanh(sp(phiExergy, 1.38) * 8.00);
 
         double electricActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
         double electricAndCables = electricActivation * (5.8e6 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.85))));
@@ -399,11 +399,11 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     }
 
     public static double computeMetalSmeltingPerCapita(double phiExergy) {
-        double smeltActivation = Math.tanh(sp(phiExergy, 0.92) * 4.00);
-        double preIndustrial = 1.60 + 1.45 * Math.tanh(sp(phiExergy, 1.10) * 3.00);
+        double smeltActivation = Math.tanh(sp(phiExergy, 0.90) * 4.00);
+        double preIndustrial = 1.45 + 1.25 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
 
-        double cokeActivation = Math.tanh(sp(phiExergy, 1.20) * 6.00);
-        double cokePuddling = cokeActivation * 8.0 * Math.tanh(sp(phiExergy, 1.20) * 5.00);
+        double cokeActivation = Math.tanh(sp(phiExergy, 1.35) * 6.00);
+        double cokePuddling = cokeActivation * 8.0 * Math.tanh(sp(phiExergy, 1.36) * 5.00);
 
         double bessemerActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
         double industrialBessemer = bessemerActivation * (180.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.85))));
@@ -415,8 +415,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * Calibrated Fossil Fuel Share in Primary Energy (%) (Smil 2017; Ritchie 2020).
      */
     public static double computeFossilSharePrimaryEnergy(double phiExergy) {
-        double industrialActivation = Math.tanh(sp(phiExergy, 1.22) * 6.00);
-        double earlySteam = 14.5 * Math.tanh(sp(phiExergy, 1.22) * 8.00);
+        double industrialActivation = Math.tanh(sp(phiExergy, 1.35) * 6.00);
+        double earlySteam = 14.5 * Math.tanh(sp(phiExergy, 1.36) * 8.00);
         double modernTransitionActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
         double modernTransition = modernTransitionActivation * (68.0 / (1.0 + Math.exp(-6.00 * (phiExergy - 1.85))));
 
@@ -425,9 +425,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
 
     public static double computeShippingFreightCostIndex(double phiExergy) {
         double classicalCost = 1415.0;
-        double medievalReduction = 200.0 * Math.tanh(sp(phiExergy, 1.10) * 3.50)
-                + 300.0 * Math.tanh(sp(phiExergy, 1.15) * 4.50);
-        double oceanicReduction = 685.0 * Math.tanh(sp(phiExergy, 1.20) * 14.00);
+        double medievalReduction = 140.0 * Math.tanh(sp(phiExergy, 1.10) * 3.50)
+                + 180.0 * Math.tanh(sp(phiExergy, 1.15) * 4.50);
+        double oceanicReduction = 685.0 * Math.tanh(sp(phiExergy, 1.36) * 12.00);
         double steamActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
         double steamReduction = steamActivation * (182.0 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.80))));
         double cost = classicalCost - medievalReduction - oceanicReduction - steamReduction;

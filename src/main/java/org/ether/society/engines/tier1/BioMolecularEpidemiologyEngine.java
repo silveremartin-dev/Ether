@@ -129,12 +129,12 @@ public class BioMolecularEpidemiologyEngine {
                 activeEpidemicCells++;
                 infected = Math.min(pop, infected);
 
-                // Case fatality elevated by malnutrition / low immunoglobulin synthesis
-                double caseFatalityRate = Math.clamp(0.015 * (1.5 - immunoglobulinSynthesisRate), 0.003, 0.12);
+                // Case fatality elevated by malnutrition / low immunoglobulin synthesis and virulent pathogens (Benedictow 2004; Harper 2017)
+                double caseFatalityRate = Math.clamp(0.065 * (1.60 - 0.60 * immunoglobulinSynthesisRate), 0.025, 0.35);
                 int deaths = Math.min(infected, (int) Math.round(infected * caseFatalityRate * dtMonthlyRatio));
 
-                // Recovery rate (acute infectious wave clears into acquired immunity over 2-3 months)
-                double recoveryRate = 0.45 * dtMonthlyRatio;
+                // Recovery rate (acute infectious wave clears into acquired immunity over 3-4 months)
+                double recoveryRate = 0.28 * dtMonthlyRatio;
                 int recovered = Math.min(infected - deaths, (int) Math.round(infected * recoveryRate));
 
                 int totalRecovered = (cell.getEpidemicRecoveredOr(0)) + recovered;
