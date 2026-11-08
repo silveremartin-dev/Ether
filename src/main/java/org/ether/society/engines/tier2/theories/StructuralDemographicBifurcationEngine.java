@@ -168,23 +168,26 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
             double capital = cell.getResourceCapitalOr(100.0);
             double food = cell.getFoodResourceOr(1000.0);
 
-            // 1. Mass Mobilization Potential (MMP): Food scarcity relative to population
-            double requiredFood = pop * 2.0;
-            double mmp = Math.max(0.5, (requiredFood / Math.max(10.0, food)));
+            // 1. Mass Mobilization Potential (MMP): Food scarcity relative to subsistence & demographic density
+            double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
+            double density = pop / Math.max(0.1, areaKm2);
+            double foodPerCap = food / Math.max(1.0, pop);
+            double mmp = Math.clamp((1.5 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0), 0.2, 5.0);
 
-            // 2. Elite Mobilization Potential (EMP): Wealth concentration and elite surplus
-            double emp = Math.max(0.5, (capital / 100.0) * (gini * gini * 3.0));
+            // 2. Elite Mobilization Potential (EMP): Wealth concentration and elite competition (Gini > 0.35)
+            double emp = Math.clamp(Math.pow(Math.max(0.0, gini - 0.20) / 0.25, 2.0), 0.2, 5.0);
 
-            // 3. State Fiscal Distress (SF): Continuous logistic overextension relative to taxable base
-            double sf = 1.0 + 1.5 / (1.0 + Math.exp(-0.01 * (capital - 500.0)));
+            // 3. State Fiscal Distress (SF): Fiscal overhead and state overextension per capita
+            double kPerCap = capital / Math.max(1.0, pop);
+            double sf = Math.clamp(1.0 + 1.5 / (1.0 + Math.exp(-0.05 * (kPerCap - 30.0))), 0.5, 3.0);
 
-            // Composite PSI
+            // Composite PSI (Political Stress Index, Turchin 2016)
             double psi = mmp * emp * sf;
             sumPSI += psi;
 
             // 4. Poisson Jump Hazard Rate: λ(t) = λ₀ · exp(0.4 · max(0, PSI - PSI_crit))
             if (psi > psiThreshold) {
-                double excessPsi = psi - psiThreshold;
+                double excessPsi = Math.min(10.0, psi - psiThreshold);
                 double hazardRate = baseJumpIntensity * Math.exp(0.4 * excessPsi);
                 double jumpProbability = 1.0 - Math.exp(-hazardRate * deltaYears);
 

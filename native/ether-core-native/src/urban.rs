@@ -1,5 +1,5 @@
 use crate::buffers::WorldBufferRaw;
-use crate::environmental::{sigmoid, smooth_clamp, softmax, softmin, softplus};
+use crate::environmental::{sigmoid, softplus};
 use rayon::prelude::*;
 
 /// Updates Physical Capital Accumulation, Agglomeration, and Tainter Institutional Entropy.
@@ -10,9 +10,9 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
         return;
     }
 
-    let dt_in_years = dt_years.max(0.0001);
-    let decay_capital = (0.95_f64.powf(dt_in_years as f64)) as f32;
-    let decay_complexity = (0.90_f64.powf(dt_in_years as f64)) as f32;
+    let dt_in_years = dt_years.max(0.0001) as f64;
+    let decay_capital = 0.95_f64.powf(dt_in_years);
+    let decay_complexity = 0.90_f64.powf(dt_in_years);
 
     let pop = std::slice::from_raw_parts(world.biomass_human, n);
     let biomes = if !world.biomes.is_null() {
@@ -20,8 +20,18 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
     } else {
         &[]
     };
-    let prices = if !world.local_price.is_null() {
-        std::slice::from_raw_parts(world.local_price, n)
+    let nat = if !world.biomass_natural.is_null() {
+        std::slice::from_raw_parts(world.biomass_natural, n)
+    } else {
+        &[]
+    };
+    let wood = if !world.wood_resource.is_null() {
+        std::slice::from_raw_parts(world.wood_resource, n)
+    } else {
+        &[]
+    };
+    let agri = if !world.biomass_agriculture.is_null() {
+        std::slice::from_raw_parts(world.biomass_agriculture, n)
     } else {
         &[]
     };
@@ -40,10 +50,10 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
         let active_settlement = sigmoid(p as f64, 12.0, 0.5);
         if p <= 0.001 || active_settlement < 1e-6 {
             if cap_val > 0.0 {
-                *((cap_ptr as *mut f32).add(i)) = (cap_val * decay_capital).max(0.0);
+                *((cap_ptr as *mut f32).add(i)) = ((cap_val as f64) * decay_capital).max(0.0) as f32;
             }
             if comp_val > 0.0 {
-                *((comp_ptr as *mut f32).add(i)) = (comp_val * decay_complexity).max(0.0);
+                *((comp_ptr as *mut f32).add(i)) = ((comp_val as f64) * decay_complexity).max(0.0) as f32;
             }
             return;
         }
@@ -56,52 +66,41 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
         let new_comp = (active_settlement * target_complexity
             + (1.0 - active_settlement) * (comp_val as f64) * (decay_complexity as f64)) as f32;
 
-        // 2. Institutional Maintenance Overhead
-        let capped_comp = softmin(5.0, new_comp as f64, 4.0);
-        let baseline_depreciation = 0.02_f64;
-        let complexity_overhead = 0.001_f64 * capped_comp.max(0.0).powf(1.5);
-        let depreciation_rate = softmin(0.08, baseline_depreciation + complexity_overhead, 40.0);
+        // 2. Physical Capital Steady-State Convergence (Solow-Swan mechanical power constraint, Solow 1956, Garrett 2011, Krausmann et al. 2017)
+        let nat_val = if !nat.is_empty() { nat[i] } else { 0.0 };
+        let wood_val = if !wood.is_empty() { wood[i] } else { 0.0 };
+        let agri_val = if !agri.is_empty() { agri[i] } else { 0.0 };
 
-        // 3. Gross Physical Capital Formation
-        let price_raw = if !prices.is_empty() && prices[i] > 0.01 {
-            prices[i] as f64
-        } else {
-            1.0
-        };
-        let price_factor = smooth_clamp(price_raw, 0.95, 1.15, 25.0);
-        let intensive_kpc = softmax(1.0, capital_per_capita, 2.0);
-        let cobb_douglas_out = 12.0
-            * price_factor
-            * intensive_kpc.powf(0.30)
-            * (1.0 + 0.25 * (capital_per_capita / 150.0).tanh());
-        let agglomeration_bonus = 1.0 + 0.15 * ((1.0 + p_f64 / 250.0).ln() * 0.35).tanh();
-        let savings_rate = 0.08 + 0.06 * (capital_per_capita / 300.0).tanh();
-        let gross_investment = p_f64 * savings_rate * cobb_douglas_out * agglomeration_bonus;
+        let basal_w = 4.24 * 65.0_f64.powf(0.75); // Matches OrganismBiophysicalProfile.HOMO_SAPIENS (97.06238 W)
+        let wood_thermal_w = 212.0 * ((nat_val as f64 + wood_val as f64 + 50.0) / 50.0).tanh();
+        let draft_w = 25.0 * (softplus(capital_per_capita - 150.0, 0.05) / 250.0).tanh();
+        let mill_and_charcoal_w = 220.0 * (softplus(capital_per_capita - 520.0, 0.05) / 420.0).tanh();
+        let steam_coal_w = 600.0 * (softplus(capital_per_capita - 1000.0, 0.02) / 1800.0).tanh();
+        let modern_grid_w = 1350.0 * (softplus(capital_per_capita - 4000.0, 0.01) / 10000.0).tanh();
+        let power_per_capita_w = (basal_w + 39.0 + wood_thermal_w + draft_w + mill_and_charcoal_w + steam_coal_w + modern_grid_w) as f32 as f64;
 
-        // 4. Smooth Complexity Overextension & Conflict Drag
-        let excess_comp = softplus((new_comp as f64) - 3.8, 8.0);
-        let war_damage_rate = 0.012 * excess_comp;
-        let total_depreciation_rate = softmin(0.09, depreciation_rate + war_damage_rate, 40.0);
-        let actual_maintenance_cost = (cap_val as f64) * total_depreciation_rate;
+        let mut k_star = 5.0
+            + 580.0 * (softplus(power_per_capita_w - 348.0, 0.2) / 38.0).tanh()
+            + 62.0 * (softplus(power_per_capita_w - 400.0, 0.1) / 100.0).powf(1.95);
 
-        let raw_net_acc = (gross_investment - actual_maintenance_cost) * (dt_in_years as f64);
-        let war_drag = softmin(0.016, 0.008 * excess_comp, 100.0);
-        let max_annual_rate = softmax(0.004, 0.020 - war_drag, 200.0);
-        let max_growth_cap = max_annual_rate * (cap_val as f64) * (dt_in_years as f64);
-        let bounded_net_acc = softmin(raw_net_acc, max_growth_cap, 10.0);
+        let band_constraint = sigmoid(p_f64, 50.0, 15.0);
+        k_star = 5.0 * (1.0 - band_constraint) + k_star * band_constraint;
 
-        let active_updated_cap = ((cap_val as f64) + bounded_net_acc).max(0.0);
+        let agri_activation = sigmoid(agri_val as f64, 100.0, 30.0);
+        let industrial_activation = sigmoid(power_per_capita_w, 480.0, 80.0);
+        let sedentary_capability = agri_activation.max(industrial_activation);
+        k_star = 5.0 + (k_star - 5.0) * sedentary_capability;
+
+        let delta_annual = 0.04_f64;
+        let d_capital_per_capita = delta_annual * (k_star - capital_per_capita) * (dt_in_years as f64);
+        let target_capital = (capital_per_capita + d_capital_per_capita).max(0.0) * p_f64;
         let decayed_cap = (cap_val as f64) * (decay_capital as f64);
         *((cap_ptr as *mut f32).add(i)) =
-            (active_settlement * active_updated_cap + (1.0 - active_settlement) * decayed_cap) as f32;
+            (active_settlement * target_capital + (1.0 - active_settlement) * decayed_cap) as f32;
 
-        // 5. Smooth Tainter Simplification
-        let deficit_share = sigmoid(
-            actual_maintenance_cost - gross_investment,
-            0.0,
-            (0.1 * gross_investment + 0.1).max(1.0),
-        );
+        // 3. Smooth Tainter Simplification: when complexity overextends beyond physical capital, complexity contracts
+        let maintenance_drag = sigmoid(new_comp as f64, 4.0, 0.8);
         *((comp_ptr as *mut f32).add(i)) =
-            ((new_comp as f64) * (1.0 - deficit_share * (1.0 - decay_capital as f64))) as f32;
+            (new_comp as f64 * (1.0 - 0.05 * maintenance_drag * (dt_in_years as f64))) as f32;
     });
 }

@@ -220,6 +220,7 @@ public class NativeWorldArena implements AutoCloseable {
             if (wb.getBiomes() != null) MemorySegment.copy(wb.getBiomes(), 0, biomesSeg, ValueLayout.JAVA_BYTE, 0, count);
             if (wb.getFoodResource() != null) MemorySegment.copy(wb.getFoodResource(), 0, foodResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getWaterResource() != null) MemorySegment.copy(wb.getWaterResource(), 0, waterResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getWoodResource() != null) MemorySegment.copy(wb.getWoodResource(), 0, woodResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getBiomassHuman() != null) MemorySegment.copy(wb.getBiomassHuman(), 0, biomassHumanSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getBiomassLivestock() != null) MemorySegment.copy(wb.getBiomassLivestock(), 0, biomassLivestockSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getBiomassNatural() != null) MemorySegment.copy(wb.getBiomassNatural(), 0, biomassNaturalSeg, ValueLayout.JAVA_FLOAT, 0, count);

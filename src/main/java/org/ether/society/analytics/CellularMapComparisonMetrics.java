@@ -12,9 +12,11 @@ import org.ether.society.data.ResourceDepositMapReader;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Discrete H3 Cellular Map Comparison Engine.
@@ -574,6 +576,28 @@ public final class CellularMapComparisonMetrics {
             obsGrid.computeIfAbsent((bx << 32) | (by & 0xFFFFFFFFL), k -> new ArrayList<>()).add(op);
         }
 
+        // Precompute spatial bucket footprints to prune cells that have zero proximity to any simulated or observed points
+        Set<Long> activeQueryBuckets = new HashSet<>();
+        for (Long k : simGrid.keySet()) {
+            long bx = (k >> 32);
+            long by = (k & 0xFFFFFFFFL);
+            for (long dx = -1; dx <= 1; dx++) {
+                for (long dy = -1; dy <= 1; dy++) {
+                    activeQueryBuckets.add(((bx + dx) << 32) | ((by + dy) & 0xFFFFFFFFL));
+                }
+            }
+        }
+        for (Long k : obsGrid.keySet()) {
+            long bx = (k >> 32);
+            long by = (k & 0xFFFFFFFFL);
+            for (long dx = -1; dx <= 1; dx++) {
+                for (long dy = -1; dy <= 1; dy++) {
+                    activeQueryBuckets.add(((bx + dx) << 32) | ((by + dy) & 0xFFFFFFFFL));
+                }
+            }
+        }
+
+        double maxDistKmSq = maxDistKm * maxDistKm;
         double sumIntersection = 0.0;
         double sumUnion = 0.0;
 
@@ -585,6 +609,16 @@ public final class CellularMapComparisonMetrics {
 
             long cBx = (long) Math.floor((lat + 90.0) / bucketSizeDeg);
             long cBy = (long) Math.floor((lng + 180.0) / bucketSizeDeg);
+            long cellBucketKey = (cBx << 32) | (cBy & 0xFFFFFFFFL);
+
+            // If the cell's bucket has no overlap with active query footprint, both simField and obsField are strictly 0.0
+            if (!activeQueryBuckets.contains(cellBucketKey)) {
+                continue;
+            }
+
+            double cosLat = Math.cos(Math.toRadians(lat));
+            double degToKmLat = 111.139;
+            double degToKmLng = 111.139 * cosLat;
 
             double simField = 0.0;
             double obsField = 0.0;
@@ -592,16 +626,17 @@ public final class CellularMapComparisonMetrics {
             for (long dx = -1; dx <= 1; dx++) {
                 long nx = cBx + dx;
                 for (long dy = -1; dy <= 1; dy++) {
-                    long ny = (cBy + dy + 180) % 180;
                     long key = (nx << 32) | ((cBy + dy) & 0xFFFFFFFFL);
 
                     List<Point> sBucket = simGrid.get(key);
                     if (sBucket != null) {
                         for (Point sp : sBucket) {
-                            if (Math.abs(lat - sp.lat) > 1.8) continue;
-                            double d = org.ether.society.engines.tier1.ThermodynamicMigrationEngine.calculateHaversineDistance(lat, lng, sp.lat, sp.lng);
-                            if (d <= maxDistKm) {
-                                simField += sp.weight * Math.exp(-(d * d) / twoSigmaSq);
+                            double dLatKm = (lat - sp.lat) * degToKmLat;
+                            if (Math.abs(dLatKm) > maxDistKm) continue;
+                            double dLngKm = (lng - sp.lng) * degToKmLng;
+                            double dSq = dLatKm * dLatKm + dLngKm * dLngKm;
+                            if (dSq <= maxDistKmSq) {
+                                simField += sp.weight * Math.exp(-dSq / twoSigmaSq);
                             }
                         }
                     }
@@ -609,10 +644,12 @@ public final class CellularMapComparisonMetrics {
                     List<Point> oBucket = obsGrid.get(key);
                     if (oBucket != null) {
                         for (Point op : oBucket) {
-                            if (Math.abs(lat - op.lat) > 1.8) continue;
-                            double d = org.ether.society.engines.tier1.ThermodynamicMigrationEngine.calculateHaversineDistance(lat, lng, op.lat, op.lng);
-                            if (d <= maxDistKm) {
-                                obsField += op.weight * Math.exp(-(d * d) / twoSigmaSq);
+                            double dLatKm = (lat - op.lat) * degToKmLat;
+                            if (Math.abs(dLatKm) > maxDistKm) continue;
+                            double dLngKm = (lng - op.lng) * degToKmLng;
+                            double dSq = dLatKm * dLatKm + dLngKm * dLngKm;
+                            if (dSq <= maxDistKmSq) {
+                                obsField += op.weight * Math.exp(-dSq / twoSigmaSq);
                             }
                         }
                     }
