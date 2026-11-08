@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -205,12 +206,12 @@ public class ScenarioFalsificationReportTest {
         spatialSynthesis.append("\n---\n");
 
         File outReport = new File(reportsDir, "scenario_falsification_report.md");
-        try (PrintWriter pw = new PrintWriter(outReport)) {
+        try (PrintWriter pw = new PrintWriter(outReport, StandardCharsets.UTF_8)) {
             pw.println(audit.reportMarkdown());
             pw.println(spatialSynthesis.toString());
         }
         // Mirror to scratch
-        try (PrintWriter pw = new PrintWriter(new File(scratchDir, "scenario_falsification_report.md"))) {
+        try (PrintWriter pw = new PrintWriter(new File(scratchDir, "scenario_falsification_report.md"), StandardCharsets.UTF_8)) {
             pw.println(audit.reportMarkdown());
             pw.println(spatialSynthesis.toString());
         }
@@ -249,11 +250,11 @@ public class ScenarioFalsificationReportTest {
             }
 
             File singleReportFile = new File(reportsDir, "report_" + safeName + ".md");
-            try (PrintWriter pw = new PrintWriter(singleReportFile)) {
+            try (PrintWriter pw = new PrintWriter(singleReportFile, StandardCharsets.UTF_8)) {
                 pw.print(singleFullReport.toString());
             }
             // Mirror to scratch
-            try (PrintWriter pw = new PrintWriter(new File(scratchDir, "report_" + safeName + ".md"))) {
+            try (PrintWriter pw = new PrintWriter(new File(scratchDir, "report_" + safeName + ".md"), StandardCharsets.UTF_8)) {
                 pw.print(singleFullReport.toString());
             }
             System.out.println("[SUCCESS] Individual scenario report written to: " + singleReportFile.getAbsolutePath());

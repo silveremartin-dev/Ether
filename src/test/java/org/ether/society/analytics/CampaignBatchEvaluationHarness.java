@@ -81,7 +81,7 @@ public class CampaignBatchEvaluationHarness {
 
         // Save raw audit markdown report to scratch
         File outReport = new File("scratch/auto_audit_report.md");
-        try (PrintWriter pw = new PrintWriter(new FileWriter(outReport))) {
+        try (PrintWriter pw = new PrintWriter(outReport, java.nio.charset.StandardCharsets.UTF_8)) {
             pw.println(audit.reportMarkdown());
         }
 

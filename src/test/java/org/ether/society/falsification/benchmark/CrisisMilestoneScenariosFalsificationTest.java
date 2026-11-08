@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -158,7 +159,7 @@ public class CrisisMilestoneScenariosFalsificationTest {
             singleReport.append("- **Characterization**: `").append(spatialResult.getDiagnosticSummary()).append("`\n\n");
 
             File singleReportFile = new File(reportsDir, "report_legacy_" + cfg.presetKey() + ".md");
-            try (PrintWriter pw = new PrintWriter(singleReportFile)) {
+            try (PrintWriter pw = new PrintWriter(singleReportFile, StandardCharsets.UTF_8)) {
                 pw.print(singleReport.toString());
             } catch (Exception ex) {
                 System.err.println("Failed to write single report: " + ex.getMessage());
@@ -198,7 +199,7 @@ public class CrisisMilestoneScenariosFalsificationTest {
             synthesis.append("\n---\n");
 
             File synthesisFile = new File(reportsDir, "scenario_legacy_falsification_synthesis.md");
-            try (PrintWriter pw = new PrintWriter(synthesisFile)) {
+            try (PrintWriter pw = new PrintWriter(synthesisFile, StandardCharsets.UTF_8)) {
                 pw.print(synthesis.toString());
             } catch (Exception ex) {
                 System.err.println("Failed to write synthesis report: " + ex.getMessage());

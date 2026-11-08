@@ -315,6 +315,161 @@ public final class CellularMapComparisonMetrics {
         }
     }
 
+    /**
+     * Compares an H3 discrete cellular mesh against an empirical cultural/geophysical ground-truth raster
+     * by evaluating cell-centroid values directly against raster samples without equirectangular re-projection artifacts.
+     *
+     * @param cells list of simulation cells
+     * @param groundTruthRaster authentic empirical reference raster
+     * @param channelKey target cultural or physical channel key
+     * @param minLat minimum latitude
+     * @param maxLat maximum latitude
+     * @param minLng minimum longitude
+     * @param maxLng maximum longitude
+     * @param windowed whether restricted to regional bounding box
+     * @return quantitative comparison result over the cellular mesh
+     */
+    public static MapComparisonMetrics.MapComparisonResult compareCellsToChannelRaster(
+            List<H3Cell> cells, BufferedImage groundTruthRaster, String channelKey,
+            double minLat, double maxLat, double minLng, double maxLng, boolean windowed) {
+        if (cells == null || cells.isEmpty() || groundTruthRaster == null) {
+            return new MapComparisonMetrics.MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Empty inputs");
+        }
+
+        String chLower = channelKey != null ? channelKey.toLowerCase(Locale.ROOT) : "";
+        double maxSim = 1.0;
+        for (H3Cell c : cells) {
+            if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
+            double v = extractCulturalCellValue(c, chLower);
+            if (v > maxSim) maxSim = v;
+        }
+
+        int n = cells.size();
+        double[] gridA = new double[n];
+        double[] gridB = new double[n];
+        int validCount = 0;
+        double sumSqErr = 0.0;
+        double maxDelta = 0.0;
+        double maxDeltaLng = 0.0;
+        double maxDeltaLat = 0.0;
+        int matchCount = 0;
+        int unionCount = 0;
+
+        for (H3Cell c : cells) {
+            if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
+
+            double simVal = extractCulturalCellValue(c, chLower);
+            double simNorm = Math.clamp(simVal / maxSim * 255.0, 0.0, 255.0);
+
+            double obsVal = ResourceDepositMapReader.sampleDensityFromImageTensor(groundTruthRaster, lat, lng);
+            double obsNorm = Math.clamp(obsVal * 255.0, 0.0, 255.0);
+
+            boolean simActive = (simVal > 0.001);
+            boolean obsActive = (obsVal > 0.005);
+
+            if (simActive || obsActive) {
+                unionCount++;
+                if (simActive && obsActive) {
+                    matchCount++;
+                }
+            }
+
+            gridA[validCount] = simNorm;
+            gridB[validCount] = obsNorm;
+
+            double diff = Math.abs(simNorm - obsNorm);
+            sumSqErr += diff * diff;
+            if (diff > maxDelta) {
+                maxDelta = diff;
+                maxDeltaLng = lng;
+                maxDeltaLat = lat;
+            }
+            validCount++;
+        }
+
+        if (validCount == 0) {
+            return new MapComparisonMetrics.MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "No valid cells in domain");
+        }
+
+        double rmse = Math.sqrt(sumSqErr / validCount);
+        double jaccardIndex = (unionCount > 0) ? (double) matchCount / unionCount : 1.0;
+        double diceCoeff = (unionCount > 0) ? (2.0 * matchCount) / (matchCount + unionCount) : 1.0;
+
+        // Pearson R
+        double meanA = calculateMean(gridA, validCount);
+        double meanB = calculateMean(gridB, validCount);
+
+        double num = 0.0, denA = 0.0, denB = 0.0;
+        for (int i = 0; i < validCount; i++) {
+            double dA = gridA[i] - meanA;
+            double dB = gridB[i] - meanB;
+            num += dA * dB;
+            denA += dA * dA;
+            denB += dB * dB;
+        }
+        double pearsonR = (denA > 0 && denB > 0) ? (num / (Math.sqrt(denA) * Math.sqrt(denB))) : 1.0;
+
+        // SSIM
+        double varA = denA / validCount;
+        double varB = denB / validCount;
+        double covAB = num / validCount;
+        double c1 = 0.01 * 0.01 * 255.0 * 255.0;
+        double c2 = 0.03 * 0.03 * 255.0 * 255.0;
+        double ssim = ((2.0 * meanA * meanB + c1) * (2.0 * covAB + c2)) /
+                ((meanA * meanA + meanB * meanB + c1) * (varA + varB + c2));
+        ssim = Math.max(-1.0, Math.min(1.0, ssim));
+
+        // KL Divergence
+        double sumA = 0.0, sumB = 0.0;
+        for (int i = 0; i < validCount; i++) {
+            sumA += Math.max(1e-6, gridA[i]);
+            sumB += Math.max(1e-6, gridB[i]);
+        }
+        double klDiv = 0.0;
+        for (int i = 0; i < validCount; i++) {
+            double p = Math.max(1e-6, gridA[i]) / sumA;
+            double q = Math.max(1e-6, gridB[i]) / sumB;
+            klDiv += p * Math.log(p / q);
+        }
+
+        String summary;
+        if (rmse < 25.0 && pearsonR > 0.60 && jaccardIndex > 0.50) {
+            summary = "HIGH CELLULAR FIDELITY - Robust alignment with empirical cultural raster.";
+        } else if (pearsonR > 0.40) {
+            summary = "MODERATE CELLULAR FIDELITY - General regional structure aligned.";
+        } else {
+            summary = "HIGH DIVERGENCE - Significant tensor drift detected.";
+        }
+
+        return new MapComparisonMetrics.MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
+    }
+
+    private static double extractCulturalCellValue(H3Cell c, String chLower) {
+        long pop = c.getPopulationOr(0);
+        if (chLower.contains("tech") || chLower.contains("material")) {
+            return H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
+        } else if (chLower.contains("institut") || chLower.contains("admin")) {
+            double kpc = (c.getResourceCapital() != null && pop > 0) ? (c.getResourceCapital() / pop) : 0.0;
+            return (Math.log10(Math.max(1.0, pop)) / 6.0) * 0.6 + (Math.min(1.0, kpc / 1500.0) * 0.4);
+        } else if (chLower.contains("ecolog") || chLower.contains("carri")) {
+            return c.getSoilOrganicCarbonOr(25.0);
+        } else if (chLower.contains("pathog") || chLower.contains("sanit")) {
+            return (double) c.getEpidemicRecoveredOr(0);
+        } else if (chLower.contains("trade") || chLower.contains("market")) {
+            return c.getTradeNetworkOr(c.getMovementFriction() != null ? (5.0 - c.getMovementFriction()) : 1.0);
+        } else {
+            // Categorical dimensions (isogloss, kinship, rituals, sovereignty): active demographic presence
+            double area = Math.max(1.0, c.getCellAreaKm2());
+            return Math.log10(1.0 + ((double) pop / area));
+        }
+    }
+
     private static double calculateMean(double[] arr, int len) {
         double sum = 0.0;
         for (int i = 0; i < len; i++) {

@@ -56,6 +56,25 @@ public class MapComparisonMetrics {
     }
 
     /**
+     * Compares an H3 discrete cellular mesh directly against an authentic empirical cultural/geophysical ground-truth raster.
+     *
+     * @param cells list of simulation cells with spatial coordinates and tensor values
+     * @param groundTruthRaster authentic empirical reference raster
+     * @param channelKey target cultural or physical channel key
+     * @param minLat minimum latitude (-90 to 90)
+     * @param maxLat maximum latitude (-90 to 90)
+     * @param minLng minimum longitude (-180 to 180)
+     * @param maxLng maximum longitude (-180 to 180)
+     * @param windowed whether the evaluation is restricted to a regional bounding box
+     * @return quantitative comparison result over the cellular domain
+     */
+    public static MapComparisonResult compareCellsToChannelRaster(
+            java.util.List<org.ether.society.database.H3Cell> cells, BufferedImage groundTruthRaster, String channelKey,
+            double minLat, double maxLat, double minLng, double maxLng, boolean windowed) {
+        return CellularMapComparisonMetrics.compareCellsToChannelRaster(cells, groundTruthRaster, channelKey, minLat, maxLat, minLng, maxLng, windowed);
+    }
+
+    /**
      * Directly compares two H3 cellular meshes (e.g. Scenario A vs Scenario B) across physical channels,
      * computing direct Pearson spatial correlation, ecumene overlap (Dice/Jaccard), SSIM, and RMSE
      * without any intermediate 2D equirectangular rasterization.

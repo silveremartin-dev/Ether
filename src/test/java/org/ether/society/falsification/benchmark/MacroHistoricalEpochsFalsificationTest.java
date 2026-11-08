@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -275,7 +276,7 @@ public class MacroHistoricalEpochsFalsificationTest {
             singleReport.append("\n---\n\n");
 
             File singleReportFile = new File(reportsDir, "report_phase1_" + cfg.presetKey() + ".md");
-            try (PrintWriter pw = new PrintWriter(singleReportFile)) {
+            try (PrintWriter pw = new PrintWriter(singleReportFile, StandardCharsets.UTF_8)) {
                 pw.print(singleReport.toString());
             } catch (Exception ex) {
                 System.err.println("Failed to write single report: " + ex.getMessage());
@@ -294,25 +295,15 @@ public class MacroHistoricalEpochsFalsificationTest {
             );
 
             StringBuilder synthesis = new StringBuilder();
-            synthesis.append(globalAudit.reportMarkdown()).append("\n\n");
+            String rawReport = globalAudit.reportMarkdown();
 
-            synthesis.append("## ⚡ Planetary Simulation Engine Performance Synthesis Across 9 Historical Scenarios\n\n");
-            synthesis.append("> Empirical computational throughput, execution latency, and memory footprint recorded across all 9 canonical scenarios.\n\n");
-            synthesis.append("| Scenario | Spatial Domain | Cells | Duration | TPS | ms/tick | Latency/Cell | Cell Throughput | Peak Heap |\n");
-            synthesis.append("|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
-            for (SimpleBenchmarkItem it : benchmarkItems) {
-                ScenarioRunConfig cfg = configMap.get(it.getRunId());
-                EnginePerformanceMetrics pf = performanceResults.get(it.getRunId());
-                if (cfg != null && pf != null) {
-                    synthesis.append(String.format(Locale.US,
-                            "| **%s** | Res %d%s | %,d | %.1f s | **%.2f** | %.1f ms | **%.3f μs** | %,.0f cells/s | %d / %d MB |\n",
-                            it.getName(), cfg.resolution(), cfg.windowed() ? " (Win)" : "", pf.cellCount(),
-                            pf.durationSec(), pf.tps(), pf.msPerTick(), pf.latencyUsPerCell(),
-                            pf.cellThroughputPerSec(), pf.usedHeapMb(), pf.maxHeapMb()
-                    ));
-                }
-            }
-            synthesis.append("\n---\n\n");
+            // Extract Section 1 (Ranking) and Section 2 (Gap Matrix) to present executive summaries upfront
+            String deepSectionHeader = "## 📊 3. Deep Diagnostic Analysis by Scenario";
+            int deepIdx = rawReport.indexOf(deepSectionHeader);
+            String executivePrefix = (deepIdx > 0) ? rawReport.substring(0, deepIdx) : rawReport;
+            String deepSuffix = (deepIdx > 0) ? rawReport.substring(deepIdx) : "";
+
+            synthesis.append(executivePrefix).append("\n");
 
             synthesis.append("## 🗺️ 2D Cartographic Fidelity & Spatial Discrepancy Synthesis\n\n");
             synthesis.append("> Direct H3 cellular spatial sampling between spherical cell centroids and empirical reference rasters (HYDE 3.4).\n\n");
@@ -350,10 +341,33 @@ public class MacroHistoricalEpochsFalsificationTest {
                     }
                 }
             }
-            synthesis.append("\n---\n");
+            synthesis.append("\n---\n\n");
+
+            synthesis.append("## ⚡ Planetary Simulation Engine Performance Synthesis Across 9 Historical Scenarios\n\n");
+            synthesis.append("> Empirical computational throughput, execution latency, and memory footprint recorded across all 9 canonical scenarios.\n\n");
+            synthesis.append("| Scenario | Spatial Domain | Cells | Duration | TPS | ms/tick | Latency/Cell | Cell Throughput | Peak Heap |\n");
+            synthesis.append("|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
+            for (SimpleBenchmarkItem it : benchmarkItems) {
+                ScenarioRunConfig cfg = configMap.get(it.getRunId());
+                EnginePerformanceMetrics pf = performanceResults.get(it.getRunId());
+                if (cfg != null && pf != null) {
+                    synthesis.append(String.format(Locale.US,
+                            "| **%s** | Res %d%s | %,d | %.1f s | **%.2f** | %.1f ms | **%.3f μs** | %,.0f cells/s | %d / %d MB |\n",
+                            it.getName(), cfg.resolution(), cfg.windowed() ? " (Win)" : "", pf.cellCount(),
+                            pf.durationSec(), pf.tps(), pf.msPerTick(), pf.latencyUsPerCell(),
+                            pf.cellThroughputPerSec(), pf.usedHeapMb(), pf.maxHeapMb()
+                    ));
+                }
+            }
+            synthesis.append("\n---\n\n");
+
+            // Append detailed per-scenario diagnostic analysis and statistical tests
+            if (!deepSuffix.isBlank()) {
+                synthesis.append(deepSuffix).append("\n");
+            }
 
             File synthesisFile = new File(reportsDir, "scenario_phase1_falsification_synthesis.md");
-            try (PrintWriter pw = new PrintWriter(synthesisFile)) {
+            try (PrintWriter pw = new PrintWriter(synthesisFile, StandardCharsets.UTF_8)) {
                 pw.print(synthesis.toString());
             } catch (Exception ex) {
                 System.err.println("Failed to write synthesis report: " + ex.getMessage());
@@ -433,17 +447,9 @@ public class MacroHistoricalEpochsFalsificationTest {
                 BufferedImage gtRaster = ImageIO.read(targetFile);
                 if (gtRaster == null) continue;
 
-                int targetW = gtRaster.getWidth();
-                int targetH = gtRaster.getHeight();
-                BufferedImage simRaster = SpatialTensorRasterRenderer.rasterizeCellsToImage(cells, def.key(), targetW, targetH);
-                if (simRaster == null) continue;
-
-                MapComparisonResult res;
-                if (windowed) {
-                    res = MapComparisonMetrics.compareImagesWindowed(simRaster, gtRaster, minLat, maxLat, minLng, maxLng);
-                } else {
-                    res = MapComparisonMetrics.compareImages(simRaster, gtRaster);
-                }
+                // Direct spherical H3 cellular mesh comparison against empirical cultural ground-truth raster
+                MapComparisonResult res = MapComparisonMetrics.compareCellsToChannelRaster(
+                        cells, gtRaster, def.key(), minLat, maxLat, minLng, maxLng, windowed);
 
                 String status;
                 if (res.getPearsonR() >= 0.70 && res.getSsim() >= 0.60) {
