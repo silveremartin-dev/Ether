@@ -24,7 +24,7 @@ import java.util.Map;
  * {@code org.ether.society.engines.tier2.historical}, or optional anthropogenic modules in
  * {@code org.ether.society.engines.tier1}. Engines whose domain validity conditions are not
  * satisfied by the target {@code planetKey} and {@code year} (spanning from the Plio-Pleistocene
- * hominin horizon at \(-3\,000\,000\text{ BP}\) to prospective post-\(2025\text{ CE}\) futures)
+ * hominin horizon at \(-3\,000\,000\text{ BP}\) through the prospective horizon at \(2200\text{ CE}\))
  * are explicitly unchecked ({@code false}) by default.</p>
  *
  * @author Silvere Martin-Michiellot
@@ -37,6 +37,8 @@ public final class AutoEpochScenarioHelper {
     }
 
     public static final List<EpochMilestone> EARTH_KEY_MILESTONES = List.of(
+            new EpochMilestone(-3000000L, "epoch.name.plio_pleistocene", "🦴 Plio-Pleistocene Hominins (-3M BP)", "epoch.desc.plio_pleistocene", "Early hominin emergence, Oldowan lithic percussion, savanna foraging, kin selection."),
+            new EpochMilestone(-300000L, "epoch.name.archaic_sapiens", "🔥 Archaic Homo Sapiens (-300k BP)", "epoch.desc.archaic_sapiens", "Anatomically modern humans, controlled fire, symbolic ochre, proto-linguistic drift."),
             new EpochMilestone(-100000L, "epoch.name.out_of_africa", "🌍 Out of Africa (-100k BP)", "epoch.desc.out_of_africa", "Early Sapiens migration across the Old World, hunter-gatherer bands, megafauna interactions."),
             new EpochMilestone(-74000L, "epoch.name.toba", "🌋 Toba Bottleneck (-74k BP)", "epoch.desc.toba", "Supervolcano eruption, volcanic winter, demographic bottleneck & coastal refugia."),
             new EpochMilestone(-50000L, "epoch.name.sahul", "🦘 Sahul Colonization (-50k BP)", "epoch.desc.sahul", "Wallace line crossing, colonization of Australia & megafaunal extinctions."),
@@ -55,7 +57,9 @@ public final class AutoEpochScenarioHelper {
             new EpochMilestone(1800L, "epoch.name.industrial_rev", "⚙️ Industrial Revolution (1800 AD)", "epoch.desc.industrial_rev", "Steam power, coal extraction, demographic transition, fossil energy regime."),
             new EpochMilestone(1950L, "epoch.name.great_acceleration", "🚀 Great Acceleration (1950 AD)", "epoch.desc.great_acceleration", "Global hydrocarbon exploitation, deep aquifer pumping, exponential demographic boom."),
             new EpochMilestone(2026L, "epoch.name.modern_baseline", "🌍 Anthropocene Baseline (2026 AD)", "epoch.desc.modern_baseline", "Present-day empirical satellite baseline, global trade networks, energy transition."),
-            new EpochMilestone(2050L, "epoch.name.mid_century", "🤖 Energy & Demographics (2050 AD)", "epoch.desc.mid_century", "Demographic stabilization, post-fossil transition, resource circularity.")
+            new EpochMilestone(2050L, "epoch.name.mid_century", "🤖 Energy & Demographics (2050 AD)", "epoch.desc.mid_century", "Demographic stabilization, post-fossil transition, resource circularity."),
+            new EpochMilestone(2100L, "epoch.name.end_century", "🌡️ Late 21st Century Horizon (2100 AD)", "epoch.desc.end_century", "Long-term climate equilibrium, coastal adaptation, closed-loop industrial ecology."),
+            new EpochMilestone(2200L, "epoch.name.prospective_2200", "🪐 Multi-Century Prospective Horizon (2200 AD)", "epoch.desc.prospective_2200", "Deep prospective thermodynamic equilibrium, planetary engineering, off-Earth ISRU autarky.")
     );
 
     /**
@@ -168,7 +172,6 @@ public final class AutoEpochScenarioHelper {
         states.put("NuclearSafetyRadiotoxicityEngine", !isEarth || year >= 1950L);
         states.put("MarineSubmersionEngine", isEarth && year >= 1950L);
         states.put("World3CouplingEngine", isEarth && year >= 1950L);
-        states.put("NordhausDiceHybridEngine", isEarth && year >= 1950L);
         states.put("KurzweilAcceleratingReturnsEngine", isEarth && year >= 1990L);
         states.put("CliodynamicAdvisorEngine", isEarth && year >= 2020L);
         states.put("IsruAutarkyAndSpaceColonizationEngine", !isEarth || year >= 2050L);
@@ -189,6 +192,7 @@ public final class AutoEpochScenarioHelper {
         states.put("World3PureEngine", false);
         states.put("HandyNasaHybridEngine", false);
         states.put("HandyNasaPureEngine", false);
+        states.put("NordhausDiceHybridEngine", false);
         states.put("NordhausDicePureEngine", false);
         states.put("NuclearWarfareClimateEngine", false);
         states.put("GeoengineeringAlbedoFeedbackEngine", false);

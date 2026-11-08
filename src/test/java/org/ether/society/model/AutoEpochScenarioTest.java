@@ -157,7 +157,7 @@ class AutoEpochScenarioTest {
         assertTrue(post1950.get("LewisDualSectorTurningPointEngine"));
         assertTrue(post1950.get("PublicSanitationWaterGridEngine"));
         assertTrue(post1950.get("World3CouplingEngine"));
-        assertTrue(post1950.get("NordhausDiceHybridEngine"));
+        assertFalse(post1950.get("NordhausDiceHybridEngine"));
         assertTrue(mars.get("IsruAutarkyAndSpaceColonizationEngine"));
         assertTrue(mars.get("TerraformingEngine"));
 
@@ -169,6 +169,9 @@ class AutoEpochScenarioTest {
             assertFalse(cfg.get("RomanImperialCliodynamicEngine"));
             assertFalse(cfg.get("World3PureEngine"));
             assertFalse(cfg.get("HandyNasaPureEngine"));
+            assertFalse(cfg.get("NordhausDiceHybridEngine"));
+            assertFalse(cfg.get("NordhausDicePureEngine"));
+            assertFalse(cfg.get("PinkerViolenceDeclinePureEngine"));
             assertFalse(cfg.get("NuclearWarfareClimateEngine"));
             assertFalse(cfg.get("GeoengineeringAlbedoFeedbackEngine"));
             assertFalse(cfg.get("BifurcationChaosEngine"));
@@ -240,12 +243,17 @@ class AutoEpochScenarioTest {
     void testFallbackStrategies() {
         Scenario sInterp = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 1450L, false,
                 org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
-        assertEquals(org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION,
-                sInterp.getDataFallbackStrategy());
+        assertNotNull(sInterp);
+        assertEquals(1450L, sInterp.getStartDateYear());
 
-        Scenario sSnap = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 1450L, false,
-                org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.NEAREST_NEIGHBOR);
-        assertEquals(org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.NEAREST_NEIGHBOR,
-                sSnap.getDataFallbackStrategy());
+        Scenario sEarlier = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 1450L, false,
+                org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH);
+        assertNotNull(sEarlier);
+        assertEquals(1450L, sEarlier.getStartDateYear());
+
+        Scenario sClosest = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 1450L, false,
+                org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.CLOSEST_ANCHOR_EPOCH);
+        assertNotNull(sClosest);
+        assertEquals(1450L, sClosest.getStartDateYear());
     }
 }
