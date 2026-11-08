@@ -271,9 +271,15 @@ public class ScenarioEngineConfigSectionBuilder {
     }
 
     public void autoSelectEnginesForYear(long year) {
+        Map<String, Boolean> calibrated = org.ether.society.model.AutoEpochScenarioHelper.calibrateTypeBEngines("earth", year);
         for (Map.Entry<String, CheckBox> entry : typeBCheckBoxMap.entrySet()) {
-            long appYear = ScenarioEngineCatalog.getEngineApparitionYear(entry.getKey());
-            entry.getValue().setSelected(year >= appYear);
+            Boolean state = calibrated.get(entry.getKey());
+            if (state != null) {
+                entry.getValue().setSelected(state);
+            } else {
+                long appYear = ScenarioEngineCatalog.getEngineApparitionYear(entry.getKey());
+                entry.getValue().setSelected(year >= appYear);
+            }
         }
         notifyParamChange();
     }

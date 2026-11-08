@@ -182,7 +182,7 @@
     "HydrologicalEngineeringEngine" : true,
     "TurchinGoldstoneSDTEngine" : true,
     "StructuralDemographicBifurcationEngine" : true,
-    "FertileCrescentSalinizationEngine" : true
+    "SoilSalinizationHydrologyEngine" : true
   },
   "typeBEngineParameters" : { },
   "climateEvents" : [ ],

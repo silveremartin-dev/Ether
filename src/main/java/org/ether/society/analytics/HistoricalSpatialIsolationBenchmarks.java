@@ -41,7 +41,7 @@ import static org.ether.society.analytics.WindowedVsGlobalSpatialFalsificationHa
  */
 public final class HistoricalSpatialIsolationBenchmarks {
 
-    private static final int BENCHMARK_H3_RESOLUTION = 3;
+    private static final int BENCHMARK_H3_RESOLUTION = 4;
 
     private HistoricalSpatialIsolationBenchmarks() {
         // Utility class

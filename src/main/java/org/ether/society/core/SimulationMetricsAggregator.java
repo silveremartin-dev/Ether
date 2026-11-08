@@ -258,6 +258,8 @@ public final class SimulationMetricsAggregator {
 
     /** @return Federico &amp; Tena-Junguito (2017) global trade volume index ($100 = 1913$ level) */
     public double getGlobalTradeVolumeIndex() { return macroeconomicCalculator.getGlobalTradeVolumeIndex(); }
+    /** @return domestic inland fluvial and canal freight transport volume index */
+    public double getInlandFluvialFreightVolume() { return macroeconomicCalculator.getInlandFluvialFreightVolume(); }
 
     /** @return Malandra (1990) / USGS per-capita metal smelting output in $\text{kg/capita/yr}$ */
     public double getMetalSmeltingPerCapitaKg() { return macroeconomicCalculator.getMetalSmeltingPerCapitaKg(); }

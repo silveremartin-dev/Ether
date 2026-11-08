@@ -36,7 +36,7 @@ echo "    - 3 Archaeological Detective Scenarios (Harappa, Rome 3rd c., Maya)"
 echo "    - Multi-Scale Sensitivity Matrix (Spatial Res 2-6, Temporal dt 1-1825d)"
 echo "--------------------------------------------------------------------------------"
 
-java -Xms4g -Xmx24g \
+java -Xms12g -Xmx40g \
      --add-modules=jdk.incubator.vector \
      -cp /opt/ether/society-simulation.jar \
      org.ether.society.analytics.HistoricalScenarioCalibrationHarness \
@@ -143,17 +143,23 @@ for ITEM in "${SCENARIOS[@]}"; do
         TICKS=52
     fi
     
+    if [[ "${RUN_ID}" == RUN-REGIONAL-* ]]; then
+        TARGET_RES=6
+    else
+        TARGET_RES=4
+    fi
+
     echo "--------------------------------------------------------------------------------"
     echo ">>> Simulating Scenario: ${NAME}"
     echo "    Run Identifier: ${RUN_ID}"
     echo "    Epoch Horizon : Year ${START} -> Year ${END} (${YEARS} years)"
     echo "    Time Step     : dt = ${DT} days"
     echo "    Total Ticks   : ${TICKS} ticks"
-    echo "    Spatial Grid  : Uber H3 Resolution 4 (288,122 cells)"
+    echo "    Spatial Grid  : Uber H3 Resolution ${TARGET_RES} (Global=4, Windowed=6)"
     echo "    Snapshots Cap : 24 snapshots max"
     echo "--------------------------------------------------------------------------------"
     
-    java -Xms4g -Xmx12g \
+    java -Xms12g -Xmx40g \
          --add-modules=jdk.incubator.vector \
          -cp /opt/ether/society-simulation.jar \
          org.ether.society.cli.HeadlessRunner \
@@ -162,7 +168,7 @@ for ITEM in "${SCENARIOS[@]}"; do
          --end-year "${END}" \
          --dt "${DT}" \
          --ticks "${TICKS}" \
-         --resolution 4 \
+         --resolution "${TARGET_RES}" \
          --max-snapshots 24 \
          --save "${RUN_ID}" \
          --multi-core \

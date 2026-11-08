@@ -175,7 +175,7 @@
   "typeBEngineStates" : {
     "TurchinGoldstoneSDTEngine" : true,
     "TainterComplexityCollapseEngine" : true,
-    "FertileCrescentSalinizationEngine" : true,
+    "SoilSalinizationHydrologyEngine" : true,
     "SpatialMetapopulationSEIREngine" : true,
     "GranovetterThresholdCascadeEngine" : true,
     "LanchesterKineticWarfareEngine" : true

@@ -15,11 +15,11 @@ import java.util.List;
 /**
  * World3 Coupled Dynamic System Engine (Meadows et al., MIT / Club of Rome 1972).
  * Formally implements the 5 coupled sub-systems:
- * 1. Population & Gompertz-Meadows Life Expectancy LE = LE_base * min(M_food, M_heal, M_poll, M_crowd)
- * 2. Industrial Capital (IC) & FCAOR (Fraction of Capital Allocated to Obtaining Resources)
+ * 1. Population &amp; Gompertz-Meadows Life Expectancy LE = LE_base * min(M_food, M_heal, M_poll, M_crowd)
+ * 2. Industrial Capital (IC) &amp; FCAOR (Fraction of Capital Allocated to Obtaining Resources)
  * 3. Non-Renewable Resources (NR) Depletion Rate (NRUR)
- * 4. Agricultural Land Yield (LY) & Soil Degradation / Erosion
- * 5. Persistent Pollution Generation (PPG) & Biospheric Assimilation (PPA)
+ * 4. Agricultural Land Yield (LY) &amp; Soil Degradation / Erosion
+ * 5. Persistent Pollution Generation (PPG) &amp; Biospheric Assimilation (PPA)
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -33,7 +33,7 @@ public class World3CouplingEngine {
     /**
      * Process world3system.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param cells      the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
      */
     public static void processWorld3Coupling(List<H3Cell> cells, double deltaYears) {
@@ -41,12 +41,8 @@ public class World3CouplingEngine {
     }
 
     public static void processWorld3System(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
@@ -54,10 +50,11 @@ public class World3CouplingEngine {
             double capital = cell.getResourceCapitalOr(0.0);
             double resource = cell.getResourceMetalOr(0.0);
             double pollution = cell.getPollutionLevelOr(0.0);
+            double areaKm2 = Math.max(10.0, cell.getEffectiveSurfaceAreaKm2());
 
             // 1. FCAOR: Fraction of Capital Allocated to Obtaining Resources
             double resourceRatio = Math.max(0.01, Math.min(1.0, resource / initialGlobalResourceStock));
-            double fcaor = 0.05 + 0.90 * Math.pow(1.0 - resourceRatio, 2.0); // Non-linear resource extraction effort curve
+            double fcaor = 0.05 + 0.90 * Math.pow(1.0 - resourceRatio, 2.0);
 
             // 2. Net Industrial Output (IO)
             double industrialOutput = capital * (1.0 - fcaor);
@@ -71,9 +68,9 @@ public class World3CouplingEngine {
             double lifeExpectancy = 40.0 * Math.min(mFood, Math.min(mHeal, Math.min(mPoll, mCrowd)));
             cell.setLifespan(Math.max(15.0, Math.min(120.0, lifeExpectancy)));
 
-            // 4. Persistent Pollution Generation (PPG) vs Assimilation (PPA)
-            double ppg = industrialOutput * 0.01 * deltaYears;
-            double ppaFactor = Math.exp(-0.05 * Math.max(0.001, deltaYears)); // Stable biospheric assimilation
+            // 4. Persistent Pollution Generation (PPG) vs Assimilation (PPA) normalized by cell area
+            double ppg = (industrialOutput / areaKm2) * 0.01 * deltaYears;
+            double ppaFactor = Math.exp(-0.05 * Math.max(0.001, deltaYears));
             cell.setPollutionLevel(Math.max(0.0, pollution * ppaFactor + ppg));
 
             // 5. Non-Renewable Resource Depletion (NRUR)
@@ -88,12 +85,9 @@ public class World3CouplingEngine {
      * @return the resulting computation or state reference
      */
     public static double getInitialGlobalResourceStock() { return initialGlobalResourceStock; }
+
     /**
      * Set initial global resource stock operation.
-     * <p>
-     * Executes operational logic for {@code World3CouplingEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
      *
      * @param stock the stock argument (double)
      */
@@ -103,5 +97,3 @@ public class World3CouplingEngine {
         initialGlobalResourceStock = 1000.0;
     }
 }
-
-

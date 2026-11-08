@@ -38,14 +38,11 @@ public class InfrastructureEnergyEngine {
             if (cell == null) continue;
             double capital = cell.getResourceCapitalOr(0.0);
 
-            // Continuous transport friction reduction from transport infrastructure capital (Donaldson 2018; Allen & Arkolakis 2014):
-            // Effective friction tau(K) is a closed-form state function of terrain and capital stock density
+            // Closed-form terrain and infrastructure friction evaluation (H3CellPhysicsAndStateHelper)
+            // Prevents unbounded multiplicative decay across ticks
             if (capital > 200.0) {
                 pavedCells++;
-                double baseFriction = cell.getMovementFrictionOr(1.0);
-                double capitalDensity = capital / Math.max(10.0, cell.getEffectiveSurfaceAreaKm2());
-                double infrastructureDiscount = 0.10 + 0.90 / (1.0 + 0.25 * Math.log1p(capitalDensity));
-                cell.setMovementFriction(Math.max(0.05, Math.min(baseFriction, baseFriction * infrastructureDiscount)));
+                org.ether.society.database.H3CellPhysicsAndStateHelper.calculateMovementFriction(cell);
             }
         }
 

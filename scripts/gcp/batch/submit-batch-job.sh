@@ -31,7 +31,7 @@ SCENARIO="${1:-OUT_OF_AFRICA}"
 TICKS="${2:-1000}"
 CELLS="${3:-5000}"
 WORKERS="${4:-1}"
-MACHINE_TYPE="${5:-e2-standard-4}"
+MACHINE_TYPE="${5:-n2-custom-12-49152}"
 USE_SPOT="${6:-true}"
 PROJECT_ID="${7:-ether-509812}"
 REGION="${8:-europe-west1}"
@@ -79,7 +79,7 @@ JOB_SPEC=$(cat << EOF
               "imageUri": "${IMAGE}",
               "entrypoint": "/bin/sh",
               "commands": ["-c",
-                "java -Xms2g -Xmx10g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar ether.jar --headless --scenario=\${SCENARIO} --ticks=\${TICKS} --cells=\${CELLS} --profile && gsutil -m rsync -r /app/saves/ gs://${GCS_BUCKET}/${JOB_NAME}/task-\${BATCH_TASK_INDEX}/"
+                "java -Xms12g -Xmx40g -XX:+UseG1GC --add-modules jdk.incubator.vector -jar ether.jar --headless --scenario=\${SCENARIO} --ticks=\${TICKS} --cells=\${CELLS} --profile && gsutil -m rsync -r /app/saves/ gs://${GCS_BUCKET}/${JOB_NAME}/task-\${BATCH_TASK_INDEX}/"
               ],
               "volumes": []
             },
@@ -94,8 +94,8 @@ JOB_SPEC=$(cat << EOF
           }
         ],
         "computeResource": {
-          "cpuMilli": 4000,
-          "memoryMib": 12288
+          "cpuMilli": 12000,
+          "memoryMib": 45056
         },
         "maxRetryCount": 1,
         "maxRunDuration": "86400s"

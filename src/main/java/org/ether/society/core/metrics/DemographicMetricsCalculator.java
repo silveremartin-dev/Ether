@@ -256,22 +256,18 @@ public final class DemographicMetricsCalculator {
                 float kpc = cellCap / p;
                 double powerW = wb.computeCellPowerWattsPerCapita(i);
 
-                // Urban nucleation: Bairoch (1988) defines urban settlements at >= 5,000 nucleated inhabitants.
-                // Multi-scale resolution coupling: considers absolute cell agglomeration (p >= 5,000) and local areal density.
-                double agglomerationFactor = SmoothMath.sigmoid(p, 5000.0, 1500.0);
+                // Urban nucleation: Bairoch (1988) & de Vries (1984) metabolic surplus & physical capital agglomeration
                 double density = p / cellAreaKm2;
+                double agglomerationFactor = SmoothMath.sigmoid(p, 5000.0, 1500.0);
                 double densityFactor = SmoothMath.sigmoid(density, 12.0, 4.0);
                 double nucleationFactor = Math.max(agglomerationFactor, densityFactor);
 
-                // Agrarian urbanization: non-farming artisans supported by agricultural surplus (Bairoch 1988, Allen 2000)
                 double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
                 double agrarianUrbanShare = 0.052 * capAgrarianActivation * nucleationFactor;
 
-                // Commercial / early-modern urbanization: merchant capital & proto-industrial trade (de Vries 1984)
                 double capCommercialActivation = SmoothMath.sigmoid(kpc, 1200.0, 250.0);
                 double commercialUrbanShare = 0.055 * capCommercialActivation * nucleationFactor;
 
-                // Industrial urbanization: powered by mechanical energy grids & factory machinery (Bairoch 1988, de Vries 1984)
                 double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 1200.0, 250.0);
                 double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2800.0, 500.0);
                 double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);

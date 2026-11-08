@@ -13,11 +13,23 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Helper class providing default milestones, Type B engine catalog configurations,
- * and text formatting routines for {@link AutoEpochScenarioGenerator}.
+ * Helper class providing default milestones, Tier 2 Type B engine domain validity
+ * configurations, and text formatting routines for {@link AutoEpochScenarioGenerator}.
+ *
+ * <p>Per {@code AGENTS.md} §8.2, §11.3, §12.4, and §13, Tier 2 Type B engines model context-dependent
+ * socio-historical, institutional, capital-dependent, or geopolitical mechanisms rather than
+ * permanent universal thermodynamic laws (Tier 1). Every engine key in
+ * {@link #calibrateTypeBEngines(String, long)} corresponds strictly 1-to-1 to an executable
+ * Java class in {@code org.ether.society.engines.tier2.theories},
+ * {@code org.ether.society.engines.tier2.historical}, or optional anthropogenic modules in
+ * {@code org.ether.society.engines.tier1}. Engines whose domain validity conditions are not
+ * satisfied by the target {@code planetKey} and {@code year} (spanning from the Plio-Pleistocene
+ * hominin horizon at \(-3\,000\,000\text{ BP}\) to prospective post-\(2025\text{ CE}\) futures)
+ * are explicitly unchecked ({@code false}) by default.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
+ * @see org.ether.society.ui.scenario.ScenarioEngineCatalog
  */
 public final class AutoEpochScenarioHelper {
 
@@ -46,74 +58,142 @@ public final class AutoEpochScenarioHelper {
             new EpochMilestone(2050L, "epoch.name.mid_century", "🤖 Energy & Demographics (2050 AD)", "epoch.desc.mid_century", "Demographic stabilization, post-fossil transition, resource circularity.")
     );
 
+    /**
+     * Calibrates the default activation state ({@code true} / {@code false}) for all 86 verified
+     * Tier 2 Type B optional engines according to their documented spatiotemporal, technological,
+     * capital, and geopolitical validity conditions ({@code AGENTS.md} §13 and
+     * {@code docs/TYPE_B_ENGINES_VALIDITY_CONDITIONS_CATALOG.md}).
+     *
+     * <p>Engines whose domain validity conditions are not satisfied by the target {@code planetKey}
+     * and {@code year} (spanning from \(-3\,000\,000\text{ BP}\) to prospective futures) are
+     * explicitly unchecked ({@code false}) by default rather than masked by hidden internal sigmoids.</p>
+     *
+     * @param planetKey canonical planet identifier (e.g. {@code "earth"}, {@code "mars"}, {@code "moon"})
+     * @param year      scenario start year in astronomical calendar convention (negative = BCE/BP, positive = CE)
+     * @return map of all 86 verified Type B engine identifiers to their default boolean activation state
+     */
     public static Map<String, Boolean> calibrateTypeBEngines(String planetKey, long year) {
         Map<String, Boolean> states = new HashMap<>();
-        boolean isEarth = "earth".equalsIgnoreCase(planetKey);
+        boolean isEarth = planetKey == null || "earth".equalsIgnoreCase(planetKey.trim());
 
-        boolean isPaleo = isEarth && (year <= -10000L);
-        states.put("PaleoLanguageDriftEngine", isPaleo);
-        states.put("KarstCaveShelterEngine", isPaleo);
-        states.put("ParietalArtAsabiyyahEngine", isPaleo && year <= -15000L);
-        states.put("SnowpackMobilityEngine", isPaleo);
-        states.put("CanidDomesticationEngine", isPaleo && year >= -30000L);
-        states.put("LithicTradeProvenanceEngine", isPaleo);
-        states.put("MeatCuringReservesEngine", isPaleo);
-        states.put("ExogamousKinshipEngine", isPaleo);
-        states.put("ArchaicIntrogressionEngine", isPaleo && year <= -30000L);
-        states.put("TailoredClothingThermalEngine", isPaleo);
-        states.put("OchreTanningTechnologyEngine", isPaleo);
-        states.put("AtlatlArcheryBallisticsEngine", isPaleo && year >= -40000L);
-        states.put("CoastalMarineRefugiaEngine", isPaleo);
-        states.put("SeasonalAggregationSanctuaryEngine", isPaleo);
-        states.put("PassiveSnareSmallGameEngine", isPaleo);
-        states.put("AridWaterStorageStashEngine", isPaleo);
-        states.put("ResinHaftingAdhesivesEngine", isPaleo);
-        states.put("OsseousIndustryCarvingEngine", isPaleo);
-        states.put("PlantFiberCordageEngine", isPaleo);
-        states.put("MegafaunaPitfallTrapEngine", isPaleo);
-        states.put("AcousticFluteResonanceEngine", isPaleo && year <= -20000L);
-        states.put("SymbolicBeadNetworkEngine", isPaleo);
-        states.put("PortableArtFigurineEngine", isPaleo && year <= -15000L);
-        states.put("CaveLightingPyrotechnicsEngine", isPaleo);
-        states.put("RiverCanoeTransportEngine", isPaleo);
-        states.put("PermafrostColdCacheEngine", isPaleo);
-        states.put("PlantDetoxificationLeachingEngine", isPaleo);
-        states.put("TopographicGameDriveEngine", isPaleo && year >= -25000L);
-        states.put("LunarCalendarTallyEngine", isPaleo);
-        states.put("MammothBoneHabitationEngine", isPaleo && year <= -15000L);
-        states.put("FireHardenedSpearEngine", isPaleo);
-        states.put("ParasiteControlRepellentEngine", isPaleo);
-        states.put("WildCerealGrindingEngine", isPaleo && year >= -25000L);
-        states.put("VolcanicTephraRefugiaEngine", isPaleo && (year <= -70000L && year >= -80000L));
-        states.put("DemographicLifeTableEngine", true);
-        states.put("ToolKitMaintenanceEngine", isPaleo);
-        states.put("FireStickFarmingEngine", isPaleo);
-        states.put("HomininCompetitiveExclusionEngine", isPaleo && year <= -30000L);
-        states.put("ShellMiddenAccumulationEngine", isPaleo || (year <= -3000L));
-        states.put("PelagicFishingHookEngine", isPaleo || (year <= -3000L));
-        states.put("GeophyteDiggingStickEngine", isPaleo);
-        states.put("BirchTarPyrolysisKilnEngine", isPaleo);
-        states.put("SkinKayakSubArcticEngine", isPaleo);
-        states.put("SalmonRunHarpoonEngine", isPaleo);
-        states.put("CaveBearNicheCompetitionEngine", isPaleo && year <= -30000L);
-        states.put("OchreMiningQuarryEngine", isPaleo);
-        states.put("WindCuringSteppeCacheEngine", isPaleo);
-        states.put("LashingsHideThongEngine", isPaleo);
-        states.put("MicrolithBladeletProductionEngine", isPaleo);
-        states.put("HighAltitudeHypoxiaEngine", true);
-        states.put("MortuaryBurialRegaliaEngine", isPaleo);
-        states.put("ProtoCeramicFiringEngine", isPaleo && year >= -30000L);
-        states.put("EyedNeedleSewingEngine", isPaleo);
-        states.put("KelpHighwayNavigationEngine", isPaleo && year >= -25000L);
-        states.put("CaveHyenaScavengingEngine", isPaleo && year <= -30000L);
+        // =========================================================================
+        // 1. DEEP-TIME BIOCULTURAL, EVOLUTIONARY & FORAGER-MOBILITY ENGINES (8)
+        // Valid from Plio-Pleistocene hominin emergence (-3,000,000 BP) onward
+        // =========================================================================
+        states.put("SelfDomesticationEngine", isEarth && year >= -3000000L);
+        states.put("SexualSelectionMatingEngine", isEarth && year >= -3000000L);
+        states.put("KinSelectionHamiltonEngine", isEarth && year >= -3000000L);
+        states.put("PriceMultilevelSelectionEngine", isEarth && year >= -3000000L);
+        states.put("LanguageLinguisticEngine", isEarth && year >= -300000L);
+        states.put("CulturalSociologyEngine", isEarth && year >= -300000L);
+        states.put("DynamicMaritimeRoutingGraph", isEarth && year >= -60000L);
+        states.put("TasmanianCulturalRegressionEngine", false); // Specialized demographic isolation / treadmill loss test
 
-        boolean isHistorical = year >= -3000L && year <= 1800L;
-        states.put("FrontierAsabiyyahEngine", isHistorical);
-        states.put("SelfDomesticationEngine", true);
-        states.put("KinSelectionHamiltonEngine", true);
-        states.put("TasmanianCulturalRegressionEngine", year <= 1800L);
+        // =========================================================================
+        // 2. NEOLITHIC, BRONZE AGE & CLASSICAL AGRARIAN-STATE ENGINES (24)
+        // =========================================================================
+        boolean isAgrarianOrLater = isEarth && year >= -8000L;
+        states.put("BoserupAgriculturalIntensificationEngine", isAgrarianOrLater);
+        states.put("ScottAgainstTheGrainPureEngine", isEarth && year >= -4000L && year <= 1500L);
 
-        states.put("AutoRegulationPureEngine", year >= 1900L);
+        boolean isStateEraOrLater = isEarth && year >= -3000L;
+        states.put("DraftAnimalFodderAllocationEngine", isStateEraOrLater);
+        states.put("TradeNetworkEngine", isStateEraOrLater);
+        states.put("WarDiplomacyEngine", isStateEraOrLater);
+        states.put("ThermodynamicWarfareEngine", isStateEraOrLater);
+        states.put("MaritimeHighwayEngine", isStateEraOrLater);
+        states.put("HydrologicalEngineeringEngine", isStateEraOrLater);
+        states.put("SoilSalinizationHydrologyEngine", isStateEraOrLater);
+        states.put("SpatialCityFractalEngine", isStateEraOrLater);
+        states.put("VonThunenAgriculturalRingsEngine", isStateEraOrLater);
+        states.put("WestBettencourtAllometryEngine", isStateEraOrLater);
+        states.put("TurchinGoldstoneSDTEngine", isStateEraOrLater);
+        states.put("StructuralDemographicBifurcationEngine", isStateEraOrLater);
+        states.put("TainterComplexityCollapseEngine", isStateEraOrLater);
+        states.put("CliodynamicsEngine", isStateEraOrLater);
+        states.put("ArthurCombinatorialTechnologyEngine", !isEarth || year >= -3000L);
+        states.put("GranovetterThresholdCascadeEngine", isStateEraOrLater);
+        states.put("SchellingAxelrodSegregationEngine", isStateEraOrLater);
+        states.put("SpatialMetapopulationSEIREngine", isStateEraOrLater);
+        states.put("HarrisCulturalMaterialismEngine", isStateEraOrLater);
+        states.put("LenskiEcologicalEvolutionaryEngine", isStateEraOrLater);
+        states.put("WhiteEnergyEvolutionEngine", isStateEraOrLater);
+        states.put("FrontierAsabiyyahEngine", isEarth && year >= -3000L && year <= 1800L);
+        states.put("AxialAgeMoralizingGodsEngine", isEarth && year >= -1000L);
+
+        // =========================================================================
+        // 3. IRON AGE, MEDIEVAL & EARLY MODERN MERCANTILE ENGINES (13)
+        // =========================================================================
+        states.put("BarfieldNomadicSteppeEmpireEngine", isEarth && year >= -1000L && year <= 1750L);
+        states.put("AcemogluRobinsonInstitutionsEngine", isEarth && year >= -500L);
+        states.put("KrugmanCorePeripheryEngine", isEarth && year >= -500L);
+        states.put("CoGovernanceTradeEngine", isEarth && year >= 1000L);
+        states.put("LandReclamationEngine", isEarth && year >= 1200L);
+        states.put("MilitaryTechShockEngine", isEarth && year >= 1200L);
+        states.put("PhysicalMediaPrintingEngine", isEarth && year >= 1450L);
+        states.put("AsymmetricColonialTradeEngine", isEarth && year >= 1492L && year <= 1960L);
+        states.put("CrosbyColumbianExchangeEngine", isEarth && year >= 1492L && year <= 1750L);
+        states.put("ProtestantWorkEthicEngine", isEarth && year >= 1550L && year <= 1950L);
+        states.put("SovereignTreasuryBondEngine", isEarth && year >= 1650L);
+        states.put("NavalHydrodynamicsFreightEngine", isEarth && year >= 1700L);
+        states.put("InnisStaplesThesisEngine", isEarth && year >= 1700L);
+
+        // =========================================================================
+        // 4. INDUSTRIAL, FOSSIL-EXERGY & MODERN MACROECONOMIC ENGINES (13)
+        // =========================================================================
+        states.put("PomeranzGreatDivergenceEngine", isEarth && year >= 1750L);
+        states.put("RicardoDifferentialLandRentEngine", isEarth && year >= 1750L);
+        states.put("KondratievSchumpeterLongWaveEngine", isEarth && year >= 1780L);
+
+        boolean isIndustrialOrLater = isEarth && year >= 1800L;
+        states.put("KummelAyresExergyEngine", !isEarth || year >= 1800L);
+        states.put("PolanyiFictitiousCommoditiesEngine", isIndustrialOrLater);
+        states.put("HotellingResourceDepletionEngine", isIndustrialOrLater);
+        states.put("UrbanThermodynamicsEngine", isEarth && year >= 1850L);
+        states.put("PublicSanitationWaterGridEngine", isEarth && year >= 1850L);
+        states.put("SmilMaterialTransitionsPureEngine", isEarth && year >= 1850L);
+        states.put("CordenNearyDutchDiseaseEngine", isEarth && year >= 1850L);
+        states.put("LewisDualSectorTurningPointEngine", isEarth && year >= 1850L);
+        states.put("JevonsParadoxEngine", isEarth && year >= 1865L);
+        states.put("BagehotFractionalReserveEngine", isEarth && year >= 1873L);
+
+        // =========================================================================
+        // 5. CONTEMPORARY, GREAT ACCELERATION & PROSPECTIVE ENGINES (13)
+        // =========================================================================
+        states.put("PhysicalLeontiefInputOutputEngine", !isEarth || year >= 1900L);
+        states.put("PhysicalSupplyChainEngine", !isEarth || year >= 1900L);
+        states.put("WienerCyberneticHomeostasisEngine", !isEarth || year >= 1900L);
+        states.put("InformationEntropyEngine", !isEarth || year >= 1900L);
+        states.put("EcotoxicologyFertilityEngine", isEarth && year >= 1950L);
+        states.put("NuclearSafetyRadiotoxicityEngine", !isEarth || year >= 1950L);
+        states.put("MarineSubmersionEngine", isEarth && year >= 1950L);
+        states.put("World3CouplingEngine", isEarth && year >= 1950L);
+        states.put("NordhausDiceHybridEngine", isEarth && year >= 1950L);
+        states.put("KurzweilAcceleratingReturnsEngine", isEarth && year >= 1990L);
+        states.put("CliodynamicAdvisorEngine", isEarth && year >= 2020L);
+        states.put("IsruAutarkyAndSpaceColonizationEngine", !isEarth || year >= 2050L);
+        states.put("TerraformingEngine", !isEarth || year >= 2100L);
+
+        // =========================================================================
+        // 6. SPECIALIZED REGIONAL, COUNTERFACTUAL & PURE-THEORY SANDBOX ENGINES (15)
+        // Unchecked (false) by default on general global auto-scenarios; enabled only
+        // in dedicated regional/thematic presets or when explicitly checked by the user.
+        // =========================================================================
+        states.put("AmerindianEcosystemEngine", false);
+        states.put("RomanImperialCliodynamicEngine", false);
+        states.put("MonasticDemographicBufferEngine", false);
+        states.put("EdoJapanIsolationEngine", false);
+        states.put("OstromCommonsPureEngine", false);
+        states.put("PinkerViolenceDeclinePureEngine", false);
+        states.put("World3HybridEngine", false);
+        states.put("World3PureEngine", false);
+        states.put("HandyNasaHybridEngine", false);
+        states.put("HandyNasaPureEngine", false);
+        states.put("NordhausDicePureEngine", false);
+        states.put("NuclearWarfareClimateEngine", false);
+        states.put("GeoengineeringAlbedoFeedbackEngine", false);
+        states.put("BifurcationChaosEngine", false);
+
         return states;
     }
 

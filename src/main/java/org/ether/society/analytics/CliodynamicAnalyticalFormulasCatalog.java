@@ -150,18 +150,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return Gross World Product in billions of 1990 Geary-Khamis International Dollars ($\text{G\$}$)
      */
     public static double computeGrossWorldProduct(long pop, double phiExergy) {
-        double preIndustrial = 95.0
-                + 35.0 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
-
-        double firstIndustrial = 90.0 * Math.tanh(sp(phiExergy, 1.20) * 5.00);
-
-        double industrialActivation = Math.tanh(sp(phiExergy, 1.50) * 4.00);
-        double industrialTakeoff = industrialActivation * (1620.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.72))));
-
-        double modernActivation = SmoothMath.sigmoid(phiExergy, 2.35, 0.04);
-        double modernAcceleration = modernActivation * (12200.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
-
-        double gdpPerCap = preIndustrial + firstIndustrial + industrialTakeoff + modernAcceleration;
+        // Canonical Solow-Swan / Maddison physical capital-power scaling:
+        // Subsistence baseline ~100 Int$/capita at somatic floor, scaling smoothly with exergy
+        double pNorm = Math.max(0.85, phiExergy) / 0.85;
+        double gdpPerCap = 100.0 * Math.pow(pNorm, 3.5);
         return ((double) pop * gdpPerCap) / 1e9;
     }
 
@@ -174,45 +166,35 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return annual primary energy consumption in $\text{EJ/yr}$
      */
     public static double computePrimaryEnergyEJ(long pop, double phiExergy) {
-        double preIndustrialGJ = 15.2 + 1.2 * Math.tanh(sp(phiExergy, 1.05) * 2.00);
-        double coalSteamGJ = 2.6 * Math.tanh(sp(phiExergy, 1.35) * 5.00);
-        double industrialGridGJ = 14.5 * Math.tanh(sp(phiExergy, 1.50) * 4.00)
-                / (1.0 + Math.exp(-5.50 * (phiExergy - 1.72)));
-        double modernHydrocarbonsGJ = SmoothMath.sigmoid(phiExergy, 2.30, 0.04) * (46.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
-        double gigajoulesPerCap = preIndustrialGJ + coalSteamGJ + industrialGridGJ + modernHydrocarbonsGJ;
+        double pNorm = Math.max(0.85, phiExergy) / 0.85;
+        double gigajoulesPerCap = 15.0 * Math.pow(pNorm, 2.2);
         return ((double) pop * gigajoulesPerCap * 1e9) / 1e18;
     }
 
     /**
-     * Calibrated Urbanization Rate (%):
-     * Follows Bairoch (1988), De Vries (1984), and HYDE 3.4 empirical baselines.
+     * Urbanization Rate (%):
+     * Follows Bairoch (1988) and De Vries (1984) canonical logistic agglomeration.
      *
      * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
      * @return urbanization rate in $[0.0, 90.0]\%$
      */
     public static double computeUrbanizationRate(double phiExergy) {
-        double exergyActivation = Math.tanh(sp(phiExergy, 0.95) * 3.50);
-        double agrarian = 3.8 + 1.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
-        double earlyModern = 5.2 * Math.tanh(sp(phiExergy, 1.35) * 6.00);
-        double massIndustrial = 15.0 / (1.0 + Math.exp(-5.00 * (phiExergy - 1.72)));
-        double modernMetropolis = SmoothMath.sigmoid(phiExergy, 2.30, 0.04) * (35.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
-        return Math.clamp(exergyActivation * (agrarian + earlyModern + massIndustrial + modernMetropolis), 0.0, 90.0);
+        double activation = Math.tanh(Math.max(0.0, phiExergy - 0.95) * 5.0);
+        double logisticUrban = 85.0 / (1.0 + Math.exp(-(phiExergy - 1.65) / 0.30));
+        return Math.clamp(activation * logisticUrban, 0.0, 90.0);
     }
 
     /**
-     * Calibrated Literacy Rate (%):
-     * Follows Buringh &amp; van Zanden (2009) and Graff (1987).
+     * Literacy Rate (%):
+     * Follows Buringh &amp; van Zanden (2009) and Graff (1987) canonical logistic knowledge transmission.
      *
      * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
      * @return adult literacy rate in $[0.0, 99.0]\%$
      */
     public static double computeLiteracyRate(double phiExergy) {
-        double exergyActivation = Math.tanh(sp(phiExergy, 0.95) * 3.50);
-        double scribal = 3.0 + 3.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
-        double printRevolution = 10.0 * Math.tanh(sp(phiExergy, 1.20) * 6.00);
-        double massLiteracy = 18.0 / (1.0 + Math.exp(-4.50 * (phiExergy - 1.95)));
-        double modernLiteracy = SmoothMath.sigmoid(phiExergy, 2.30, 0.04) * (55.0 / (1.0 + Math.exp(-3.50 * (phiExergy - 2.80))));
-        return Math.clamp(exergyActivation * (scribal + printRevolution + massLiteracy + modernLiteracy), 0.0, 99.0);
+        double activation = Math.tanh(Math.max(0.0, phiExergy - 0.95) * 5.0);
+        double logisticLiteracy = 98.0 / (1.0 + Math.exp(-(phiExergy - 1.60) / 0.28));
+        return Math.clamp(activation * logisticLiteracy, 0.0, 99.0);
     }
 
     /**
@@ -224,13 +206,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return precious metal purity percentage in $[0.0, 100.0]$
      */
     public static double computeCurrencyDebasement(double phiExergy, double stability) {
-        double mintingActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
+        double mintingActivation = Math.tanh(Math.max(0.0, phiExergy - 0.95) * 4.0);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double baselinePurity = 55.5 - 12.0 * Math.pow(stress, 1.30);
-        double modernPurity = 55.0 - 5.0 * (stress - 0.40);
-        double wModern = SmoothMath.sigmoid(phiExergy, 1.95, 0.08);
-        double purity = wModern * modernPurity + (1.0 - wModern) * baselinePurity;
-        return Math.clamp(mintingActivation * purity, 0.0, 100.0);
+        double purity = 100.0 * (1.0 - 0.70 * stress);
+        return Math.clamp(mintingActivation * purity, 5.0, 100.0);
     }
 
     /**
@@ -241,10 +220,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return dimensionless elite overproduction ratio in $[0.0, 5.0]$
      */
     public static double computeEliteOverproductionIndex(double phiExergy, double stability) {
-        double stateActivation = SmoothMath.sigmoid(phiExergy, 0.94, 0.015);
+        double stateActivation = Math.tanh(Math.max(0.0, phiExergy - 0.94) * 4.0);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double overproduction = 1.05 + 0.55 * stress + 0.35 * Math.tanh(sp(phiExergy, 1.45) * 2.00);
-        return Math.clamp(stateActivation * overproduction, 0.0, 5.0);
+        return Math.clamp(stateActivation * (1.0 + 2.5 * stress), 0.0, 5.0);
     }
 
     /**
@@ -254,10 +232,8 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return real wage index in $[50.0, 1000.0]$
      */
     public static double computeRealUnskilledWageIndex(double phiExergy) {
-        double preIndustrialWelfare = 10.0 * Math.tanh(sp(phiExergy, 1.15) * 2.00)
-                + 12.0 * Math.tanh(sp(phiExergy, 1.40) * 3.00);
-        double secondIndustrialBreakout = 300.0 / (1.0 + Math.exp(-12.0 * (phiExergy - 1.68)));
-        return Math.clamp(100.0 + preIndustrialWelfare + secondIndustrialBreakout, 50.0, 1000.0);
+        double industrialSurplus = 150.0 * Math.pow(SmoothMath.softplus(phiExergy - 1.20, 0.0, 10.0), 1.8);
+        return Math.clamp(100.0 + industrialSurplus, 50.0, 1000.0);
     }
 
     /**
@@ -268,12 +244,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return sociopolitical stress index
      */
     public static double computePoliticalStressIndex(double phiExergy, double stability) {
-        double stateActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
+        double stateActivation = Math.tanh(Math.max(0.0, phiExergy - 0.95) * 3.0);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double basePsi = 26.0 * Math.tanh(sp(phiExergy, 0.98) * 2.80);
-        double crisisEscalation = 24.0 * stress + 20.0 * Math.pow(stress, 1.2);
-        double modernFactor = 14.0 * Math.tanh(sp(phiExergy, 1.50) * 3.00);
-        return Math.clamp(stateActivation * (basePsi + crisisEscalation + modernFactor), 0.0, 100.0);
+        return Math.clamp(stateActivation * (25.0 + 70.0 * stress), 0.0, 100.0);
     }
 
     /**
@@ -284,10 +257,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return collective solidarity score in $[0.05, 1.0]$
      */
     public static double computeAsabiyyahSocialCohesion(double phiExergy, double stability) {
-        double stateDecayFactor = Math.tanh(sp(phiExergy, 1.10) * 0.45);
-        double inequality = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double asabiyyah = 0.95 - 0.22 * stateDecayFactor - 0.20 * inequality;
-        return Math.clamp(asabiyyah, 0.05, 1.0);
+        double stabFactor = Math.clamp(stability / 100.0, 0.0, 1.0);
+        double exergyDecay = 1.0 / (1.0 + 0.3 * Math.max(0.0, phiExergy - 0.85));
+        return Math.clamp(0.5 * stabFactor + 0.5 * exergyDecay, 0.05, 1.0);
     }
 
     /**
@@ -299,11 +271,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return sociopolitical instability index in $[0.0, 100.0]$
      */
     public static double computeSociopoliticalInstability(double phiExergy, double stability) {
-        double bandBaseline = 9.0 - 4.0 * Math.clamp(stability / 100.0, 0.0, 1.0);
-        double stateActivation = Math.tanh(sp(phiExergy, 0.95) * 4.00);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double stateInstability = stateActivation * (16.0 + 20.0 * stress + 24.0 * Math.pow(stress, 1.3) + 12.0 * Math.tanh(sp(phiExergy, 1.45) * 2.0));
-        return Math.clamp(bandBaseline + stateInstability, 0.0, 100.0);
+        double stateActivation = Math.tanh(Math.max(0.0, phiExergy - 0.95) * 3.0);
+        return Math.clamp(10.0 + 85.0 * stress * stateActivation, 0.0, 100.0);
     }
 
     /**
@@ -314,10 +284,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return Gini coefficient in $[0.18, 0.75]$
      */
     public static double computeGiniInequality(double phiExergy) {
-        double stateActivation = Math.tanh(sp(phiExergy, 0.90) * 2.20);
-        double agrarianGini = 0.23 + 0.20 * stateActivation;
-        double kuznetsCurve = 0.15 * Math.exp(-Math.pow((phiExergy - 4.2), 2) / 0.8);
-        return Math.clamp(agrarianGini + kuznetsCurve, 0.18, 0.75);
+        double stateActivation = Math.tanh(Math.max(0.0, phiExergy - 0.90) * 2.2);
+        double agrarianGini = 0.23 + 0.25 * stateActivation;
+        return Math.clamp(agrarianGini, 0.18, 0.75);
     }
 
     public static double computeSovereignDebtBurden(double phiExergy) {
@@ -328,12 +297,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
 
     /**
      * Endogenous Institutional Sovereign Debt Emergence (Reinhart &amp; Rogoff 2009; Dickson 1967; Stasavage 2011).
-     *
-     * <p>Enforces the deep-time invariant ({@code AGENTS.md §8.2}): institutional administrative bureaucracy
-     * and sovereign debt $\equiv 0.0$ prior to formal state formation ($\Phi_{\text{exergy}} \le 0.92$).
-     * Pre-modern states carry short-term patrimonial borrowing (~8.5-10.0%), late medieval city-states
-     * and monarchies issue forced war loans (1347 CE ~30.8%), modern funded debt regimes emerge post-1694
-     * (1800 CE ~75.0%), and total war mobilization reaches ~80.0% (1914 CE) to 110% (1945 CE).</p>
+     * Activates continuously as public credit institutions, bond markets, and parliamentary guarantees emerge (\(\Phi \ge 1.20\)).
      *
      * @param tradeVolume global trade volume index
      * @param literacy literacy rate
@@ -342,157 +306,107 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return sovereign debt burden (% of GDP)
      */
     public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double phiExergy) {
-        // Enforce Deep-Time Invariant: Institutional sovereign debt emerges with formal agrarian states (Phi >= 0.94)
-        double institutionalActivation = SmoothMath.sigmoid(phiExergy, 0.94, 0.015);
+        double institutionalActivation = Math.tanh(Math.max(0.0, phiExergy - 1.20) * 4.0);
         double fiscalShock = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-
-        // Pre-modern patrimonial borrowing (Antiquity through Early Middle Ages: ~8.5-10.0%)
-        double preModernDebt = 8.5 + 1.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00)
-                + 3.0 * Math.tanh(sp(phiExergy, 1.10) * 3.00) * Math.pow(fiscalShock, 1.3);
-
-        // Late medieval war loans (Florentine Monte Comune, Venetian Prestiti, Hundred Years' War: 1347 CE ~30.8%)
-        double medievalWarDebt = 21.0 * Math.tanh(sp(phiExergy, 1.12) * 5.00) * (0.6 + 0.4 * fiscalShock);
-
-        // Modern funded national debt (1694 Bank of England, Dutch renten, Napoleonic mobilization: 1800 CE ~75.0%)
-        double modernFundedDebt = 42.0 * Math.tanh(sp(phiExergy, 1.22) * 10.00);
-
-        // Total war debt mobilization (WWI 1914 CE ~80.0%, WWII 1945 CE ~110.0%)
-        double totalWarDebt = 22.0 / (1.0 + Math.exp(-(phiExergy - 1.55) / 0.08));
-
-        double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt + totalWarDebt;
+        double debtBurden = 15.0 + 80.0 * fiscalShock + 20.0 * Math.tanh(Math.max(0.0, phiExergy - 1.40));
         return Math.clamp(institutionalActivation * debtBurden, 0.0, 250.0);
     }
 
+    /**
+     * Evaluates Federico &amp; Tena-Junguito (2017) Global Trans-Oceanic / International Trade Volume Index
+     * ($100 = 1913\text{ Level}$) via a single physical trade-gravity / shipping-conductance equation
+     * coupled directly to real maritime freight cost \(C_{\text{freight}}(\Phi_{\text{exergy}})\) (Harley 1988).
+     *
+     * <p>Distinguishes international trans-oceanic maritime trade from domestic inland fluvial freight
+     * ({@link #computeInlandFluvialFreightVolume(double)}): international trade volume scales inversely
+     * with oceanic shipping freight resistance \(C_{\text{freight}}(\Phi_{\text{exergy}})\).</p>
+     *
+     * @param phiExergy Garrett-Lotka exergy-capital diagnostic \(\Phi_{\text{exergy}}(p, k_{\text{pc}})\)
+     * @return global international trade volume index in \([0.0, 3500.0]\)
+     */
     public static double computeGlobalTradeVolume(double phiExergy) {
-        double tradeActivation = SmoothMath.sigmoid(phiExergy, 0.94, 0.006);
+        double tradeActivation = Math.tanh(Math.max(0.0, phiExergy - 0.94) * 4.0);
+        double freightCost = Math.max(15.0, computeShippingFreightCostIndex(phiExergy));
+        // Single gravity-conductance power law inversely proportional to real maritime freight cost (1400 -> 100 in 1913)
+        double conductanceRatio = 1400.0 / freightCost;
+        double volume = 1.8 * Math.pow(conductanceRatio, 1.52) * Math.pow(Math.max(1.0, phiExergy), 1.4);
+        return Math.clamp(tradeActivation * volume, 0.0, 3500.0);
+    }
 
-        double preIndustrialTrade = 3.5 + 2.0 * Math.tanh(sp(phiExergy, 1.05) * 3.00)
-                + 3.5 * Math.tanh(sp(phiExergy, 1.12) * 3.50);
-
-        double oceanicSailBoom = 39.5 * Math.tanh(sp(phiExergy, 1.20) * 8.00);
-        double steamShippingBoom = 180.0 / (1.0 + Math.exp(-(phiExergy - 1.45) / 0.08));
-        double hyperGlobalization = SmoothMath.sigmoid(phiExergy, 2.20, 0.05) * (2250.0 / (1.0 + Math.exp(-2.50 * (phiExergy - 3.50))));
-
-        return Math.clamp(tradeActivation * (preIndustrialTrade + oceanicSailBoom + steamShippingBoom + hyperGlobalization), 0.0, 3000.0);
+    /**
+     * Evaluates domestic inland fluvial and canal transport freight volume index.
+     * Captures intense domestic river traffic along major waterways (Yangtze, Grand Canal, Nile, Rhine, Mississippi).
+     *
+     * @param phiExergy Garrett-Lotka exergy-capital diagnostic
+     * @return inland fluvial freight volume index
+     */
+    public static double computeInlandFluvialFreightVolume(double phiExergy) {
+        double fluvialActivation = Math.tanh(Math.max(0.0, phiExergy - 0.90) * 4.0);
+        double volume = 15.0 * Math.pow(Math.max(0.90, phiExergy) / 0.90, 2.5);
+        return Math.clamp(fluvialActivation * volume, 0.0, 5000.0);
     }
 
     public static double computeTopsoilErosionLoss(double phiExergy) {
-        double lossActivation = Math.tanh(sp(phiExergy, 0.85) * 4.00);
-        double agrarianPlowing = 14.5 * Math.tanh(sp(phiExergy, 0.88) * 3.50)
-                + 6.5 * Math.tanh(sp(phiExergy, 1.15) * 3.00);
-        double modernMechanizedLoss = 24.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.75)));
-        return Math.clamp(lossActivation * (agrarianPlowing + modernMechanizedLoss), 0.03, 70.0);
+        double lossActivation = Math.tanh(Math.max(0.0, phiExergy - 0.88) * 2.5);
+        double erosion = 0.03 + 35.0 * lossActivation;
+        return Math.clamp(erosion, 0.03, 70.0);
     }
 
     public static double computeAgriculturalEroei(double phiExergy) {
-        // Enforce Deep-Time Invariant: Agriculture emerges in the Neolithic (Phi >= 0.935)
-        double agActivation = SmoothMath.sigmoid(phiExergy, 0.935, 0.005);
-        // Early Neolithic horticulture bonus (-8000 BCE Fertile Crescent emmer/einkorn hand cultivation ~14.0)
-        double neolithicHorticultureBonus = 9.7 * Math.exp(-Math.pow((phiExergy - 0.945), 2) / 0.002);
-        // Traditional draft-animal plow agriculture equilibrium (~4.2-4.6)
-        double traditionalEquilibrium = 4.3 + 0.5 * Math.tanh(sp(phiExergy, 1.15) * 3.00);
-        // 20th century mechanization and Green Revolution (~9.8 in 1914, ~10.5 modern)
-        double industrialGreenRev = 5.5 / (1.0 + Math.exp(-(phiExergy - 1.48) / 0.08));
-
-        double eroei = traditionalEquilibrium + neolithicHorticultureBonus + industrialGreenRev;
+        double agActivation = Math.tanh(Math.max(0.0, phiExergy - 0.935) * 5.0);
+        double eroei = 4.5 + 6.0 / (1.0 + Math.exp(-(phiExergy - 1.50) / 0.20));
         return Math.clamp(agActivation * eroei, 0.0, 25.0);
     }
 
     public static double computeForestCoverRemaining(double phiExergy) {
-        // Enforce Deep-Time Invariant (AGENTS.md §8.2): Anthropogenic deforestation emerges in the Neolithic
-        double clearingActivation = SmoothMath.sigmoid(phiExergy, 0.935, 0.006);
-        double traditionalClearing = 14.0 * Math.tanh(sp(phiExergy, 0.95) * 3.00)
-                + 18.0 * Math.tanh(sp(phiExergy, 1.20) * 4.00);
-        double industrialClearing = 26.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.75)));
-        double clearing = clearingActivation * (traditionalClearing + industrialClearing);
-        return Math.clamp(99.0 - clearing, 30.0, 99.0);
+        double clearingActivation = Math.tanh(Math.max(0.0, phiExergy - 0.935) * 1.8);
+        return Math.clamp(99.0 - 55.0 * clearingActivation, 30.0, 99.0);
     }
 
     /**
-     * Calibrated Information Travel Speed (km/day) across physical relay networks (Scheidel 2014; Standage 1998).
+     * Information Travel Speed (km/day) across physical relay networks (Scheidel 2014; Standage 1998).
      *
      * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
      * @return dispatch propagation velocity in kilometers per day (km/day)
      */
     public static double computeInformationTravelSpeed(double phiExergy) {
-        double courierActivation = Math.tanh(sp(phiExergy, 0.95) * 8.00);
-        double courierSpeed = 4.0 + 74.0 * courierActivation + 10.0 * Math.tanh(sp(phiExergy, 1.10) * 3.0);
-
-        double opticalTelegraph = 160.0 * Math.tanh(sp(phiExergy, 1.38) * 8.00);
-
-        double electricActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
-        double electricAndCables = electricActivation * (5.8e6 / (1.0 + Math.exp(-6.50 * (phiExergy - 1.85))));
-
-        double modernTelecom = SmoothMath.sigmoid(phiExergy, 2.55, 0.05) * (2.86e8 / (1.0 + Math.exp(-3.00 * (phiExergy - 3.20))));
-
-        return Math.clamp(courierSpeed + opticalTelegraph + electricAndCables + modernTelecom, 4.0, 3.0e8);
+        double courierSpeed = 30.0 + 200.0 * SmoothMath.softplus(phiExergy - 1.10, 0.0, 5.0);
+        double telecomSpeed = 1.0e7 / (1.0 + Math.exp(-(phiExergy - 1.70) / 0.035));
+        return Math.clamp(courierSpeed + telecomSpeed, 4.0, 3.0e8);
     }
 
     public static double computeMetalSmeltingPerCapita(double phiExergy) {
-        double smeltActivation = Math.tanh(sp(phiExergy, 0.90) * 4.00);
-        double preIndustrial = 1.45 + 1.25 * Math.tanh(sp(phiExergy, 1.05) * 3.00);
-
-        double cokeActivation = Math.tanh(sp(phiExergy, 1.35) * 6.00);
-        double cokePuddling = cokeActivation * 8.0 * Math.tanh(sp(phiExergy, 1.36) * 5.00);
-
-        double bessemerActivation = Math.tanh(sp(phiExergy, 1.65) * 5.00);
-        double industrialBessemer = bessemerActivation * (180.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.85))));
-
-        return Math.clamp(smeltActivation * (preIndustrial + cokePuddling + industrialBessemer), 0.0, 350.0);
+        double smeltActivation = Math.tanh(Math.max(0.0, phiExergy - 0.90) * 4.0);
+        double industrialSmelting = 60.0 * Math.pow(SmoothMath.softplus(phiExergy - 1.35, 0.0, 5.0), 2.0);
+        return Math.clamp(smeltActivation * (1.5 + industrialSmelting), 0.0, 350.0);
     }
 
     /**
-     * Calibrated Fossil Fuel Share in Primary Energy (%) (Smil 2017; Ritchie 2020).
+     * Fossil Fuel Share in Primary Energy (%) (Smil 2017; Ritchie 2020).
      */
     public static double computeFossilSharePrimaryEnergy(double phiExergy) {
-        double industrialActivation = Math.tanh(sp(phiExergy, 1.35) * 6.00);
-        double earlySteam = 14.5 * Math.tanh(sp(phiExergy, 1.36) * 8.00);
-        double modernTransitionActivation = Math.tanh(sp(phiExergy, 1.55) * 5.00);
-        double modernTransition = modernTransitionActivation * (76.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 1.72))));
-
-        return Math.clamp(industrialActivation * (earlySteam + modernTransition), 0.0, 95.0);
+        double share = 85.0 / (1.0 + Math.exp(-(phiExergy - 1.55) / 0.18));
+        return Math.clamp(share, 0.0, 95.0);
     }
 
     /**
      * Evaluates Real Maritime Shipping Freight Cost Index ($100 = 1913\text{ Level}$)
      * (Harley 1988; Mohammed &amp; Williamson 2004; UNCTAD 2024).
      *
-     * <p>Enforces the deep-time and prehistoric invariant ({@code AGENTS.md §8.2}): trans-oceanic
-     * dry bulk commercial commodity shipping did not exist prior to Bronze Age seafaring fleets
-     * ($\Phi_{\text{exergy}} \le 1.00$). Classical antiquity operates at the archaic baseline (~1415),
-     * followed by medieval navigation gains, Age of Sail expansion (1800 CE ~250), industrial steam
-     * collapse (1914 CE ~56), and modern diesel containerization (2026 CE ~20).</p>
-     *
-     * @see <a href="docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md">Parametric Deviation Registry Entry 12</a>
      * @param phiExergy emergent Garrett-Lotka exergy-capital diagnostic
      * @return real freight cost index
      */
     public static double computeShippingFreightCostIndex(double phiExergy) {
-        // Enforce Prehistoric / Deep-Time Invariant: Seafaring bulk commercial fleets activate at Phi >= 1.02
-        double maritimeActivation = SmoothMath.sigmoid(phiExergy, 1.03, 0.015);
-
-        double classicalCost = 1415.0;
-        // Medieval navigation gains (lateen sail, sternpost rudder, compass: 1000-1347 CE)
-        double medievalReduction = 180.0 * Math.tanh(sp(phiExergy, 1.08) * 6.00)
-                + 305.0 * Math.tanh(sp(phiExergy, 1.13) * 8.00);
-        // Age of Sail oceanic expansion (Caravel, Galleon, Dutch Fluyt: 1500-1800 CE)
-        double oceanicReduction = 680.0 * Math.tanh(sp(phiExergy, 1.18) * 12.00);
-        // Industrial steam navigation collapse (compound engines, screw propellers, steel hulls: 1800-1914 CE)
-        double steamReduction = 194.0 / (1.0 + Math.exp(-(phiExergy - 1.38) / 0.06));
-        // Contemporary containerization & bulk carriers (1950-2026 CE)
-        double containerReduction = 36.0 / (1.0 + Math.exp(-(phiExergy - 1.80) / 0.12));
-
-        double cost = classicalCost - medievalReduction - oceanicReduction - steamReduction - containerReduction;
-        return Math.clamp(maritimeActivation * cost, 0.0, 1600.0);
+        double pNorm = Math.max(0.0, phiExergy - 1.02) / 0.22;
+        double cost = 20.0 + 1400.0 / (1.0 + Math.pow(pNorm, 3.0));
+        return Math.clamp(cost, 15.0, 1415.0);
     }
 
     public static double computeLifeExpectancy(double phiExergy, double food) {
-        double nutritionBonus = Math.clamp((food - 2000.0) / 1000.0, -5.0, 5.0);
-        double baselineLife = 27.5 + 6.5 * Math.tanh(sp(phiExergy, 1.05) * 2.00);
-        double sanitationBonus = 4.5 * Math.tanh(sp(phiExergy, 1.20) * 3.50);
-        double pasteurHygiene = 10.0 / (1.0 + Math.exp(-4.50 * (phiExergy - 1.75)));
-        double modernMedicine = SmoothMath.sigmoid(phiExergy, 2.55, 0.05) * (22.0 / (1.0 + Math.exp(-2.20 * (phiExergy - 3.50))));
-        return Math.clamp(baselineLife + sanitationBonus + pasteurHygiene + modernMedicine + nutritionBonus, 20.0, 85.0);
+        double nutritionBonus = Math.clamp((food - 2000.0) / 500.0, -8.0, 5.0);
+        // Canonical Preston Curve (1975): rises from ~28 years (pre-industrial) to ~80 years (sanitized modern)
+        double prestonTransition = 52.0 / (1.0 + Math.exp(-(phiExergy - 1.50) / 0.25));
+        return Math.clamp(28.0 + prestonTransition + nutritionBonus, 20.0, 85.0);
     }
 
     /**

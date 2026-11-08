@@ -88,7 +88,8 @@ final class GroundTruthAuditReportBuilder {
 
         StringBuilder fullReport = new StringBuilder();
         fullReport.append("# 📊 CLIODYNAMIC AUDIT & HISTORICAL CALIBRATION REPORT\n\n");
-        fullReport.append("**Reference Baseline**: Empirical Cliodynamic Reality (-100,000 BP ➔ 2026 CE)\n\n");
+        fullReport.append("**Reference Baseline**: Empirical Cliodynamic Reality (-100,000 BP ➔ 2026 CE)\n");
+        fullReport.append("**Verification Standard**: Continuous Temporal Confidence Tolerance Envelope $\\tau(t)$ [AGENTS.md §11] (Deep Time: $\\pm 50\\%$, Antiquity: $\\pm 25\\text{-}35\\%$, Modern: $\\pm 5\\%$)\n\n");
 
         int earliestDivergence = -1;
         StringBuilder explanationSummary = new StringBuilder();
@@ -251,7 +252,7 @@ final class GroundTruthAuditReportBuilder {
         return new AuditResult(fullReport.toString(), earliestDivergence, explanationSummary.toString());
     }
 
-    private static double computeRegionalScaleFactor(SimulationRunRecord run,
+    public static double computeRegionalScaleFactor(SimulationRunRecord run,
                                                      Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
                                                      HistoricalValidationKernel.InterpolationMethod method) {
         if (run != null && run.getParameterMatrix() != null) {

@@ -117,8 +117,12 @@ public class KrugmanCorePeripheryEngine implements ProceduralEnginePlugin {
             double accessAdvantage = accessibilityIndex / (1.0 + accessibilityIndex);
             double centripetalFactor = 2.0 * capitalAdvantage * accessAdvantage;
 
-            // Agglomeration feedback (centripetal force): enhances local market potential and reduces transport friction
+            // Agglomeration feedback (centripetal force): enhances local market potential, reduces transport friction,
+            // and shifts capital from high-friction periphery toward low-friction core hubs (Krugman 1991, eq. dK_i/dt)
             cell.setMovementFriction(Math.max(0.1, friction * (1.0 - 0.02 * centripetalFactor * deltaYears)));
+            double centrifugalCongestion = 0.01 * (relCapital / Math.max(1.0, accessibilityIndex));
+            double netAgglomerationRate = (0.015 * centripetalFactor - centrifugalCongestion) * deltaYears;
+            cell.setResourceCapital(Math.max(1.0, capital * (1.0 + Math.clamp(netAgglomerationRate, -0.05, 0.08))));
         }
     }
 }

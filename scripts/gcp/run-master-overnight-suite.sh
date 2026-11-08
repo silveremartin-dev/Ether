@@ -15,6 +15,7 @@ INSTANCE_NAME="${3:-ether-master}"
 H3_RESOLUTION="${4:-5}"
 DT_DAYS="${5:-7.0}"
 JAR_PATH="${6:-target/society-simulation-1.0.0-beta.2-executable.jar}"
+MACHINE_TYPE="${7:-n2-custom-12-49152}"
 
 echo "================================================================================"
 echo " 🚀 ETHER ENGINE: MASTER OVERNIGHT HIGH-FIDELITY BATCH CAMPAIGN (GCP SPOT)     "
@@ -33,8 +34,14 @@ if [ ! -f "${JAR_PATH}" ]; then
     mvn clean package -DskipTests
 fi
 
-# Step 2: Start GCP VM
-echo -e "\n[1/5] Starting GCP Compute Instance (${INSTANCE_NAME})..."
+# Step 2: Upgrade & Start GCP VM
+echo -e "\n[1/5] Ensuring GCP Compute Instance (${INSTANCE_NAME}) is upgraded to ${MACHINE_TYPE} and starting..."
+CURRENT_TYPE=$(gcloud compute instances describe "${INSTANCE_NAME}" --zone="${ZONE}" --project="${PROJECT_ID}" --format="get(machineType)" 2>/dev/null || echo "")
+if [[ "${CURRENT_TYPE}" != *"${MACHINE_TYPE}"* ]]; then
+    echo "Upgrading ${INSTANCE_NAME} to ${MACHINE_TYPE} (16 vCPU, 64GB RAM)..."
+    gcloud compute instances stop "${INSTANCE_NAME}" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet || true
+    gcloud compute instances set-machine-type "${INSTANCE_NAME}" --machine-type="${MACHINE_TYPE}" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet || true
+fi
 gcloud compute instances start "${INSTANCE_NAME}" --zone="${ZONE}" --project="${PROJECT_ID}"
 sleep 15
 

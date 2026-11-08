@@ -180,7 +180,7 @@
     "DeforestationErosionEngine" : true,
     "TurchinGoldstoneSDTEngine" : true,
     "TainterComplexityCollapseEngine" : true,
-    "FertileCrescentSalinizationEngine" : true,
+    "SoilSalinizationHydrologyEngine" : true,
     "FrontierAsabiyyahEngine" : true
   },
   "typeBEngineParameters" : { },

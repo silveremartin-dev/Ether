@@ -190,8 +190,8 @@ final class ScenarioEngineParamControlsHelper {
                     "Seuil pluviomÃ©trique sous lequel l'assÃ¨chement dÃ©marre", onParamChangedCallback);
             addDoubleParamSpinner(grid, spinners, 3, "damMinElevation", "Altitude Min Barrage (m):", 300.0, 50.0, 2000.0, 50.0,
                     "Altitude minimale pour construire un barrage de montagne", onParamChangedCallback);
-        } else if ("FertileCrescentSalinizationEngine".equals(engineKey)) {
-            addDoubleParamSpinner(grid, spinners, 0, "salinizationRate", "Taux Salinisation / SiÃ¨cle:", 0.02, 0.001, 0.10, 0.005,
+        } else if ("SoilSalinizationHydrologyEngine".equals(engineKey)) {
+            addDoubleParamSpinner(grid, spinners, 0, "salinizationRate", "Taux Salinisation / Siècle:", 0.02, 0.001, 0.10, 0.005,
                     "Vitesse d'accumulation des sels par irrigation intensive", onParamChangedCallback);
         } else if ("LandReclamationEngine".equals(engineKey)) {
             addDoubleParamSpinner(grid, spinners, 0, "polderTechThreshold", "Tech Seuil PoldÃ©risation:", 4.0, 1.0, 10.0, 0.5,

@@ -383,6 +383,26 @@ public class HistoricalValidationKernel {
         return HistoricalBenchmarkDatasetRepository.getInterpolatedBenchmarkValue(key, year, method);
     }
 
+    /**
+     * Computes the continuous, differentiable \(C^1\) temporal confidence tolerance envelope \(\tau(t)\).
+     *
+     * <p>Formula (AGENTS.md §11):
+     * \[\tau(t) = \tau_{\text{mod}} + \frac{\tau_{\text{paleo}} - \tau_{\text{mod}}}{1 + \exp\left(\frac{t - t_{\text{trans}}}{s_{\text{trans}}}\right)}\]
+     * with \(\tau_{\text{paleo}} = 0.50\) (50% relative uncertainty in prehistoric and ancient eras),
+     * \(\tau_{\text{mod}} = 0.05\) (5% asymptotic relative uncertainty in the modern satellite and census era),
+     * \(t_{\text{trans}} = 1200\text{ CE}\), and \(s_{\text{trans}} = 300\text{ years}\).</p>
+     *
+     * @param year calendar year (BCE negative, CE positive)
+     * @return relative error tolerance fraction in [0.05, 0.50]
+     */
+    public static double computeContinuousTemporalTolerance(double year) {
+        double tauPaleo = 0.50;
+        double tauMod = 0.05;
+        double tTrans = 1200.0;
+        double sTrans = 300.0;
+        return tauMod + (tauPaleo - tauMod) / (1.0 + Math.exp((year - tTrans) / sTrans));
+    }
+
     /** @return empirical historical world population dataset (millions) */
     public static Map<Integer, Double> getHistoricalWorldPopulation() { return getBenchmarkDataset("worldPopulation"); }
 

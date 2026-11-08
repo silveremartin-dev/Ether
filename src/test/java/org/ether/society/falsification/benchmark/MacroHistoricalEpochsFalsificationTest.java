@@ -303,7 +303,21 @@ public class MacroHistoricalEpochsFalsificationTest {
             String executivePrefix = (deepIdx > 0) ? rawReport.substring(0, deepIdx) : rawReport;
             String deepSuffix = (deepIdx > 0) ? rawReport.substring(deepIdx) : "";
 
+            // Generate visual synthesis charts in docs/images/charts/
+            try {
+                BenchmarkSynthesisChartGenerator.generateAllSynthesisCharts(new File("docs/images/charts"));
+            } catch (Exception ex) {
+                System.err.println("Warning: Failed to generate synthesis charts: " + ex.getMessage());
+            }
+
             synthesis.append(executivePrefix).append("\n");
+            synthesis.append("## 📈 Visual Synthesis: Fidelity Curves, 27-Variable Profile & 2D Cartographic Quality\n\n");
+            synthesis.append("![1. Master 45-Scenario Fidelity Curve](../images/charts/chart1_45_scenarios_fidelity_curve.png)\n\n");
+            synthesis.append("![2. Quality Profile of All 27 Canonical State Variables](../images/charts/chart2_27_variables_quality_profile.png)\n\n");
+            synthesis.append("![3. 2D Cartographic Raster Fidelity & 9D Geocultural Tensor Quality Curves](../images/charts/chart3_cartographic_2d_quality_curves.png)\n\n");
+            synthesis.append("![4. Multi-Scenario x 27-Variable Heatmap Matrix](../images/charts/chart4_multi_scenario_heatmap_matrix.png)\n\n");
+            synthesis.append("![5. Pillars 6 & 7 Validation Summary](../images/charts/chart5_pillars_6_and_7_validation_summary.png)\n\n");
+            synthesis.append("![6. H3 Scaling & Computational ROI Pareto Frontier](../images/charts/chart6_engine_scaling_and_roi_pareto.png)\n\n");
 
             synthesis.append("## 🗺️ 2D Cartographic Fidelity & Spatial Discrepancy Synthesis\n\n");
             synthesis.append("> Direct H3 cellular spatial sampling between spherical cell centroids and empirical reference rasters (HYDE 3.4).\n\n");

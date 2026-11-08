@@ -57,11 +57,12 @@ Top journals strictly mandate reproducible code and data availability:
 * Archive the source code, tests, and benchmark JSON on **Zenodo** ([https://zenodo.org](https://zenodo.org)) to obtain an immutable software DOI (e.g. `10.5281/zenodo.XXXXXXX`).
 * Ensure all benchmark datasets (`historical_cliodynamic_benchmarks.json`, Seshat data loaders, HYDE 3.4 scripts) are referenced in the *Data Availability Statement*.
 
-### Step 3: Formatting & LaTeX Conversion (if required)
-* The manuscript is currently in standard GitHub Flavored Academic Markdown.
-* If targeting *Nature Computational Science* or *PNAS*, compile to LaTeX using the journal's official template (e.g., `nature.cls` or `pnas-new.cls`) via Pandoc:
+### Step 3: Formatting, Single-Column Wide Layout & LaTeX / HTML Export
+* The manuscript (`docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md`) is formatted in **single-column wide layout** using standard GitHub Flavored Academic Markdown tables, Mermaid flowcharts, and full-width high-DPI figures (`1680 px`).
+* **Why Single-Column Full-Width is Recommended**: Because the paper contains coupled differential equation systems, 7-to-9 column empirical validation matrices, and 6 multi-panel synthesis figures (`docs/images/charts/chart1` through `chart6`), a single-column wide format avoids line-wrapping, formula clipping, and unreadable micro-figures during peer review and preprint reading (*Nature Portfolio* and *JASSS* both mandate single-column manuscripts for initial submission and review).
+* To compile a standalone full-width HTML or PDF manuscript via Pandoc:
   ```bash
-  pandoc ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md -o manuscript.tex --template=nature_template.tex --citeproc
+  pandoc ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md -o manuscript.pdf --pdf-engine=xelatex -V geometry:margin=2cm -V classoption=onecolumn --citeproc
   ```
 
 ---

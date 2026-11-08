@@ -10,8 +10,11 @@ import org.ether.society.analytics.HistoricalValidationKernel;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
 import org.ether.society.engines.ProceduralEngineRegistry;
+import org.ether.society.engines.tier2.theories.AxialAgeMoralizingGodsEngine;
+import org.ether.society.engines.tier2.theories.BarfieldNomadicSteppeEmpireEngine;
 import org.ether.society.engines.tier2.theories.BoserupAgriculturalIntensificationEngine;
 import org.ether.society.engines.tier2.theories.GranovetterThresholdCascadeEngine;
+import org.ether.society.engines.tier2.theories.PomeranzGreatDivergenceEngine;
 import org.ether.society.engines.tier2.theories.StructuralDemographicBifurcationEngine;
 import org.ether.society.engines.tier2.theories.TurchinGoldstoneSDTEngine;
 import org.junit.jupiter.api.BeforeEach;
@@ -476,6 +479,406 @@ public class ScientificModelFalsificationAndValidationSuite {
                     "Mountainous valley preserves its linguistic isogloss across multi-decade drift.");
             assertTrue(mountainIsolateCell.getLinguisticDriftOr(0.0) <= 0.05,
                     "High-elevation isolate maintains minimal linguistic drift.");
+        }
+    }
+
+    // =========================================================================
+    // 9. DEBATE 9: IBN KHALDUN AUTARKIC COHESION vs. BARFIELD SHADOW EXTORTION
+    // =========================================================================
+    @Nested
+    @DisplayName("Debate 9: Ibn Khaldun Asabiyyah vs. Barfield Nomadic Steppe Shadow Empire")
+    class KhaldunVsBarfieldSteppeDebate {
+
+        @Test
+        @DisplayName("9.1 Baseline: Khaldunian Autarkic Statehood (H0) Falsified by Insufficient Pastoral Surplus vs Barfield Symbiosis (H1)")
+        public void testBarfieldExtortionWithSedentaryNeighborVsAutarkicCollapse() {
+            logger.info("🧪 [Scenario 9.1] Testing Barfield Shadow Empire Symbiosis vs Khaldunian Autarkic H0...");
+
+            int sampleSize = 25;
+            double[] h1ConnectedCapitals = new double[sampleSize];
+            double[] h0IsolatedCapitals = new double[sampleSize];
+            double[] h1ConnectedCohesions = new double[sampleSize];
+            double[] h0IsolatedCohesions = new double[sampleSize];
+
+            // Run paired cohorts of nomadic pastoralists across 25 independent spatial cells
+            for (int i = 0; i < sampleSize; i++) {
+                // H1 Branch: Steppe pastoralist cell paired with wealthy sedentary agrarian core
+                H3Cell steppeCellConnected = new H3Cell(0x852834730000000L + i, 45.0 + i * 0.05, 105.0);
+                steppeCellConnected.setPopulation(5000);
+                steppeCellConnected.setResourceCapital(250000.0); // 50 kg/cap (pastoral regime)
+                steppeCellConnected.setBiomassLivestock(60000.0);
+                steppeCellConnected.setBiomassAgriculture(2000.0); // low crops, pastoral signature
+                steppeCellConnected.setResourceWork(60.0);
+
+                H3Cell sedentaryCore = new H3Cell(0x852834770000000L + i, 35.0 + i * 0.05, 110.0);
+                sedentaryCore.setPopulation(80000);
+                sedentaryCore.setResourceCapital(16000000.0); // 200 kg/cap (sedentary agrarian regime)
+                sedentaryCore.setBiomassAgriculture(450000.0);
+                sedentaryCore.setBiomassLivestock(20000.0);
+
+                List<H3Cell> connectedGrid = List.of(steppeCellConnected, sedentaryCore);
+
+                // H0 Branch: Identical steppe pastoralist cell isolated in autarky without sedentary neighbor
+                H3Cell steppeCellIsolated = new H3Cell(0x8528347b0000000L + i, 48.0 + i * 0.05, 90.0);
+                steppeCellIsolated.setPopulation(5000);
+                steppeCellIsolated.setResourceCapital(250000.0);
+                steppeCellIsolated.setBiomassLivestock(60000.0);
+                steppeCellIsolated.setBiomassAgriculture(2000.0);
+                steppeCellIsolated.setResourceWork(60.0);
+
+                List<H3Cell> isolatedGrid = List.of(steppeCellIsolated);
+
+                // Run 25 annual simulation steps
+                for (int year = 0; year < 25; year++) {
+                    BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(connectedGrid, 1.0);
+                    BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(isolatedGrid, 1.0);
+                }
+
+                h1ConnectedCapitals[i] = steppeCellConnected.getResourceCapital();
+                h0IsolatedCapitals[i] = steppeCellIsolated.getResourceCapital();
+                h1ConnectedCohesions[i] = steppeCellConnected.getResourceWork();
+                h0IsolatedCohesions[i] = steppeCellIsolated.getResourceWork();
+            }
+
+            double meanH1Cap = java.util.Arrays.stream(h1ConnectedCapitals).average().orElse(0.0);
+            double meanH0Cap = java.util.Arrays.stream(h0IsolatedCapitals).average().orElse(0.0);
+            double meanH1Work = java.util.Arrays.stream(h1ConnectedCohesions).average().orElse(0.0);
+            double meanH0Work = java.util.Arrays.stream(h0IsolatedCohesions).average().orElse(0.0);
+
+            // Compute Cohen's d standardized effect size between H1 (symbiosis) and H0 (autarky)
+            double cohensDCapital = org.ether.society.falsification.counterfactual.CounterfactualBenchmarkFixtures.calculateCohensD(
+                    h0IsolatedCapitals, h1ConnectedCapitals);
+            double cohensDCohesion = org.ether.society.falsification.counterfactual.CounterfactualBenchmarkFixtures.calculateCohensD(
+                    h0IsolatedCohesions, h1ConnectedCohesions);
+
+            logger.info("  -> Mean H1 Capital: {}, Mean H0 Capital: {}, Cohen's d Capital: {}",
+                    meanH1Cap, meanH0Cap, cohensDCapital);
+            logger.info("  -> Mean H1 Work Cohesion: {}, Mean H0 Work Cohesion: {}, Cohen's d Cohesion: {}",
+                    meanH1Work, meanH0Work, cohensDCohesion);
+
+            // Barfield Prediction: Nomadic confederation bordering sedentary core sustains hierarchy via extortion
+            assertTrue(meanH1Cap > 350000.0,
+                    "Nomadic confederations bordering wealthy sedentary agrarian states accumulate massive extorted capital.");
+            assertTrue(meanH1Work > 85.0,
+                    "Redistributed tribute subsidies fund martial coordination, horse cavalry, and centralized chieftain loyalty.");
+
+            // Falsification of Autarkic Statehood (H0): Without external tribute, pastoralists suffer centrifugal fracture
+            assertTrue(meanH0Cap < 160000.0,
+                    "Autarkic pastoralism without sedentary subsidies suffers steady capital depletion (< 160k).");
+            assertTrue(meanH0Work < 20.0,
+                    "Absence of external agrarian subsidies triggers severe centrifugal clan fracture (work cohesion < 20).");
+
+            // Formal H0 Rejection with Very Large Effect Size (|d| > 3.0)
+            assertTrue(Math.abs(cohensDCapital) > 3.0,
+                    "Tributary capital accumulation decisively rejects Khaldunian autarkic statehood H0 (|d| > 3.0).");
+            assertTrue(Math.abs(cohensDCohesion) > 3.0,
+                    "Chieftain coordination and loyalty effect size decisively rejects autarkic H0 (|d| > 3.0).");
+        }
+
+        @Test
+        @DisplayName("9.2 Synchronous Collapse: Agrarian Dynastic Implosion Triggers Immediate Nomadic Centrifugal Fracture")
+        public void testSedentaryImperialCollapseTriggersNomadicCentrifugalFracture() {
+            logger.info("🧪 [Scenario 9.2] Testing Barfield Synchronous Collapse (Sedentary Implosion -> Steppe Fracture)...");
+
+            // Setup: Steppe Confederation alongside Unified Agrarian Empire (e.g. Xiongnu & Han, or Turks & Tang)
+            H3Cell steppeCell = new H3Cell(0x852834731111111L, 45.0, 105.0);
+            steppeCell.setPopulation(6000);
+            steppeCell.setResourceCapital(300000.0);
+            steppeCell.setBiomassLivestock(75000.0);
+            steppeCell.setBiomassAgriculture(2500.0);
+            steppeCell.setResourceWork(65.0);
+
+            H3Cell sedentaryCore = new H3Cell(0x852834772222222L, 35.0, 110.0);
+            sedentaryCore.setPopulation(100000);
+            sedentaryCore.setResourceCapital(20000000.0);
+            sedentaryCore.setBiomassAgriculture(500000.0);
+            sedentaryCore.setBiomassLivestock(25000.0);
+
+            List<H3Cell> empireDomain = new ArrayList<>(List.of(steppeCell, sedentaryCore));
+
+            // Phase 1: 15 Years of Symbiotic Extortion (Flourishing Steppe Empire)
+            for (int yr = 0; yr < 15; yr++) {
+                BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(empireDomain, 1.0);
+            }
+
+            double preCollapseCapital = steppeCell.getResourceCapital();
+            double preCollapseWork = steppeCell.getResourceWork();
+            logger.info("  -> Phase 1 Steppe Prosperity: Capital = {}, Work Cohesion = {}", preCollapseCapital, preCollapseWork);
+            assertTrue(preCollapseWork > 75.0, "Steppe confederation achieves high political cohesion during sedentary unity.");
+
+            // Phase 2: Sedentary Agrarian Empire suffers Catastrophic Dynastic Collapse / Civil War
+            // (e.g. Fall of Han Dynasty 220 CE, An Lushan Rebellion 755 CE, or Fall of Tang 907 CE)
+            sedentaryCore.setPopulation(500); // Warlord mass mortality / rural flight
+            sedentaryCore.setResourceCapital(200.0); // Fiscal treasury looted / destroyed
+            sedentaryCore.setBiomassAgriculture(10.0);
+
+            // Phase 3: 25 Years post-collapse
+            for (int yr = 0; yr < 25; yr++) {
+                BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(empireDomain, 1.0);
+            }
+
+            double postCollapseCapital = steppeCell.getResourceCapital();
+            double postCollapseWork = steppeCell.getResourceWork();
+            logger.info("  -> Phase 3 Steppe Post-Collapse: Capital = {}, Work Cohesion = {}", postCollapseCapital, postCollapseWork);
+
+            // Under Khaldunian H0, nomadic martial statehood should expand when sedentary resistance collapses.
+            // Under Barfield H1, the cut in external tribute causes the nomadic confederation to fracture centrifugally.
+            assertTrue(postCollapseWork < preCollapseWork * 0.40,
+                    "Collapse of sedentary fiscal surplus forces nomadic shadow empire into catastrophic centrifugal fracture (> 60% loss of cohesion).");
+            assertTrue(postCollapseCapital < preCollapseCapital * 0.70,
+                    "Loss of external tribute terminates luxury redistribution, depleting nomadic elite capital by > 30%.");
+        }
+
+        @Test
+        @DisplayName("9.3 Steppe Scale Bifurcation: Decentralized Pastoral Bands vs Imperial Extortion Confederation")
+        public void testPastoralScaleBifurcationLocalBandsVsImperialConfederation() {
+            logger.info("🧪 [Scenario 9.3] Testing Nomadic Scale Bifurcation (Small Bands vs Imperial Confederation)...");
+
+            // Small pastoral band (N = 100, local subsistence herd, no equestrian strike power)
+            H3Cell localBand = new H3Cell(0x852834733333333L, 47.0, 102.0);
+            localBand.setPopulation(100);
+            localBand.setResourceCapital(3000.0); // 30 kg/cap
+            localBand.setBiomassLivestock(80.0);
+            localBand.setBiomassAgriculture(50.0); // livestock / (agri + 1) = 80/51 = 1.56, but small pop
+            localBand.setResourceWork(40.0);
+
+            // Imperial steppe confederation (N = 8,000, massive equestrian mobility)
+            H3Cell imperialConfederation = new H3Cell(0x852834734444444L, 46.0, 104.0);
+            imperialConfederation.setPopulation(8000);
+            imperialConfederation.setResourceCapital(400000.0); // 50 kg/cap
+            imperialConfederation.setBiomassLivestock(120000.0);
+            imperialConfederation.setBiomassAgriculture(1000.0); // livestock / (agri + 1) = 120, huge pastoral signature
+            imperialConfederation.setResourceWork(60.0);
+
+            H3Cell sedentaryEmpire = new H3Cell(0x852834775555555L, 34.0, 111.0);
+            sedentaryEmpire.setPopulation(90000);
+            sedentaryEmpire.setResourceCapital(18000000.0);
+            sedentaryEmpire.setBiomassAgriculture(500000.0);
+            sedentaryEmpire.setBiomassLivestock(15000.0);
+
+            List<H3Cell> cells = List.of(localBand, imperialConfederation, sedentaryEmpire);
+
+            for (int yr = 0; yr < 10; yr++) {
+                BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(cells, 1.0);
+            }
+
+            logger.info("  -> Small Band Final Capital: {}, Work: {}", localBand.getResourceCapital(), localBand.getResourceWork());
+            logger.info("  -> Imperial Confederation Final Capital: {}, Work: {}", imperialConfederation.getResourceCapital(), imperialConfederation.getResourceWork());
+
+            // Imperial confederation extorts vast tribute to fund hierarchy
+            assertTrue(imperialConfederation.getResourceCapital() > 400000.0 * 1.20,
+                    "Imperial nomadic confederation mobilizes large-scale extortion, expanding capital by > 20%.");
+            assertTrue(imperialConfederation.getResourceWork() > 70.0,
+                    "Coordination work reaches high imperial levels.");
+        }
+    }
+
+    // =========================================================================
+    // 10. AXIAL AGE MORALIZING GODS & PROSOCIAL POLICING VALIDATION
+    // =========================================================================
+    @Nested
+    @DisplayName("Study 10: Axial Age Moralizing Gods & Large-Scale Anonymous Prosociality")
+    class AxialAgeMoralizingGodsValidation {
+
+        @Test
+        @DisplayName("10.1 Seshat 100k Population Transition: Moralizing Gods Abate Transaction Friction and Boost Capital")
+        public void testSeshatTransitionMoralizingGodsAbateFriction() {
+            logger.info("🧪 [Scenario 10.1] Testing Seshat 100k Population Transition for Moralizing Gods...");
+
+            // Small archaic polity (N = 1,500, below Seshat anonymous scale)
+            H3Cell archaicPolity = new H3Cell(0x85283471fffffffL, 30.0, 35.0);
+            archaicPolity.setPopulation(1500);
+            archaicPolity.setResourceCapital(150000.0); // 100 kg/cap
+            archaicPolity.setMovementFriction(1.0);
+            archaicPolity.setTradeNetwork(10.0);
+
+            // Large Axial Age mega-city / imperial core (N = 180,000, above Seshat 100k threshold)
+            H3Cell axialPolity = new H3Cell(0x85283475fffffffL, 34.0, 112.0);
+            axialPolity.setPopulation(180000);
+            axialPolity.setResourceCapital(27000000.0); // 150 kg/cap
+            axialPolity.setMovementFriction(1.0);
+            axialPolity.setTradeNetwork(10.0);
+
+            List<H3Cell> grid = List.of(archaicPolity, axialPolity);
+
+            // Execute 15 annual simulation steps
+            for (int year = 0; year < 15; year++) {
+                AxialAgeMoralizingGodsEngine.processMoralizingNorms(grid, 1.0);
+            }
+
+            logger.info("  -> Archaic Friction: {}, Trade Net: {}", archaicPolity.getMovementFriction(), archaicPolity.getTradeNetwork());
+            logger.info("  -> Axial Friction: {}, Trade Net: {}", axialPolity.getMovementFriction(), axialPolity.getTradeNetwork());
+
+            // Archaic polity below Dunbar-Hamilton Anonymous Ceiling: no moralizing big god transition
+            assertEquals(1.0, archaicPolity.getMovementFriction(), 1e-3,
+                    "Small-scale archaic polity below 100k population experiences negligible moralizing god friction abatement.");
+            assertEquals(10.0, archaicPolity.getTradeNetwork(), 1e-3,
+                    "Trade network expansion remains unboosted without moralizing religious trust scaling.");
+
+            // Axial mega-polity above 100k population (Seshat / Whitehouse 2019):
+            assertTrue(axialPolity.getMovementFriction() < 0.85,
+                    "Large-scale anonymous society adopts moralizing gods, abating transaction friction significantly (friction < 0.85).");
+            assertTrue(axialPolity.getTradeNetwork() > 25.0,
+                    "Interpersonal trust scaling under moralizing divine policing propels trade network integration.");
+            assertTrue(axialPolity.getResourceCapital() > 27000000.0 * 1.15,
+                    "Reduction in opportunistic defection accelerates physical capital accumulation by > 15%.");
+        }
+    }
+
+    // =========================================================================
+    // 11. DEBATE 11: POMERANZ GREAT DIVERGENCE (COAL & GHOST ACREAGE) vs ACEMOGLU INSTITUTIONAL PRIMACY
+    // =========================================================================
+    @Nested
+    @DisplayName("Debate 11: Pomeranz Great Divergence (Coal & Ghost Acreage) vs. Acemoglu Institutional Primacy")
+    class PomeranzVsAcemogluDivergenceDebate {
+
+        @Test
+        @DisplayName("11.1 Baseline: Pure Institutional Primacy (H0) Falsified Without Coal Proximity and Ghost Acreage vs Pomeranz Takeoff (H1)")
+        public void testPomeranzCoalWaterAndGhostAcreageVsPureInstitutions() {
+            logger.info("🧪 [Scenario 11.1] Testing Pomeranz Coal-Water & Ghost Acreage vs Pure Institutional H0...");
+
+            int sampleSize = 25;
+            double[] h1PomeranzCapitals = new double[sampleSize];
+            double[] h0InstitutionalOnlyCapitals = new double[sampleSize];
+            double[] h1Biomasses = new double[sampleSize];
+            double[] h0Biomasses = new double[sampleSize];
+
+            // Run paired cohorts of proto-industrial commercial polities across 25 independent spatial cells
+            for (int i = 0; i < sampleSize; i++) {
+                // H1 Branch: Britain / Western Europe conditions:
+                // High commercial capital (100 kg/cap), rich coal beds adjacent to low-friction navigable water (friction 0.35),
+                // and transoceanic trade networks importing colonial "ghost acreage" biomass (trade = 35.0).
+                H3Cell pomeranzTakeoffCell = new H3Cell(0x852834735000000L + i, 53.0 + i * 0.05, -2.0);
+                pomeranzTakeoffCell.setPopulation(5000);
+                pomeranzTakeoffCell.setResourceCapital(500000.0); // 100 kg/cap
+                pomeranzTakeoffCell.setResourceCoal(2500.0);      // shallow accessible coal
+                pomeranzTakeoffCell.setMovementFriction(0.35);    // canal / coastal low water friction
+                pomeranzTakeoffCell.setTradeNetwork(35.0);        // transatlantic ghost acreage trade
+                pomeranzTakeoffCell.setBiomassNatural(20000.0);
+
+                // H0 Branch: Yangtze Delta (Jiangnan) conditions:
+                // Identical institutional sophistication and high per-capita capital (100 kg/cap),
+                // but coal is landlocked thousands of km away (coal = 0.0 locally, high overland friction = 0.85),
+                // and autarkic trade without transoceanic colonial ghost acreage (trade = 10.0).
+                H3Cell institutionalOnlyCell = new H3Cell(0x852834775000000L + i, 31.0 + i * 0.05, 120.0);
+                institutionalOnlyCell.setPopulation(5000);
+                institutionalOnlyCell.setResourceCapital(500000.0); // 100 kg/cap
+                institutionalOnlyCell.setResourceCoal(0.0);         // no proximate coal
+                institutionalOnlyCell.setMovementFriction(0.85);    // high inland overland transport friction
+                institutionalOnlyCell.setTradeNetwork(10.0);        // no transoceanic ghost acreage
+                institutionalOnlyCell.setBiomassNatural(20000.0);
+
+                List<H3Cell> h1Grid = List.of(pomeranzTakeoffCell);
+                List<H3Cell> h0Grid = List.of(institutionalOnlyCell);
+
+                // Run 30 annual simulation steps
+                for (int year = 0; year < 30; year++) {
+                    PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(h1Grid, 1.0);
+                    PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(h0Grid, 1.0);
+                }
+
+                h1PomeranzCapitals[i] = pomeranzTakeoffCell.getResourceCapital();
+                h0InstitutionalOnlyCapitals[i] = institutionalOnlyCell.getResourceCapital();
+                h1Biomasses[i] = pomeranzTakeoffCell.getBiomassNatural();
+                h0Biomasses[i] = institutionalOnlyCell.getBiomassNatural();
+            }
+
+            double meanH1Cap = java.util.Arrays.stream(h1PomeranzCapitals).average().orElse(0.0);
+            double meanH0Cap = java.util.Arrays.stream(h0InstitutionalOnlyCapitals).average().orElse(0.0);
+            double meanH1Bio = java.util.Arrays.stream(h1Biomasses).average().orElse(0.0);
+            double meanH0Bio = java.util.Arrays.stream(h0Biomasses).average().orElse(0.0);
+
+            double cohensDCapital = org.ether.society.falsification.counterfactual.CounterfactualBenchmarkFixtures.calculateCohensD(
+                    h0InstitutionalOnlyCapitals, h1PomeranzCapitals);
+
+            logger.info("  -> Mean H1 Capital: {}, Mean H0 Capital: {}, Cohen's d: {}", meanH1Cap, meanH0Cap, cohensDCapital);
+            logger.info("  -> Mean H1 Biomass: {}, Mean H0 Biomass: {}", meanH1Bio, meanH0Bio);
+
+            // Pomeranz Prediction: Coal proximity and transatlantic ghost acreage spark capital explosion
+            assertTrue(meanH1Cap > 1500000.0,
+                    "Pomeranz coal-water proximity and ghost acreage trigger industrial capital breakout (> 1.5M).");
+            assertTrue(meanH1Bio > meanH0Bio,
+                    "Coal fuel substitution preserves standing domestic biomass compared to wood-starved involution.");
+
+            // Falsification of Pure Institutional Primacy (H0):
+            // Despite identical initial institutions and capital per head, absent coal and ghost acreage causes involution stagnation
+            assertTrue(meanH0Cap < 500000.0,
+                    "Inland organic economies without coal proximity suffer involutionary stagnation (capital <= initial).");
+
+            // Formal H0 Rejection with Very Large Effect Size (|d| > 3.0)
+            assertTrue(Math.abs(cohensDCapital) > 3.0,
+                    "Biophysical divergence decisively falsifies pure institutional primacy H0 (|d| > 3.0).");
+        }
+
+        @Test
+        @DisplayName("11.2 Historical Yangtze Involution vs British Takeoff Calibration")
+        public void testYangtzeInvolutionVsBritishTakeoff() {
+            logger.info("🧪 [Scenario 11.2] Testing Historical Yangtze Involution vs British Takeoff Calibration...");
+
+            H3Cell britishMidlands = new H3Cell(0x852834736666666L, 52.5, -1.9);
+            britishMidlands.setPopulation(10000);
+            britishMidlands.setResourceCapital(1000000.0); // 100 kg/cap
+            britishMidlands.setResourceCoal(5000.0);
+            britishMidlands.setMovementFriction(0.30);    // navigable river/canals
+            britishMidlands.setTradeNetwork(40.0);        // imperial ghost acreage
+
+            H3Cell yangtzeJiangnan = new H3Cell(0x852834776666666L, 31.2, 121.4);
+            yangtzeJiangnan.setPopulation(10000);
+            yangtzeJiangnan.setResourceCapital(1000000.0); // 100 kg/cap
+            yangtzeJiangnan.setResourceCoal(0.0);         // distant coal in Shaanxi
+            yangtzeJiangnan.setMovementFriction(0.80);    // overland coal transport barrier
+            yangtzeJiangnan.setTradeNetwork(12.0);        // autarkic regional agrarian loop
+
+            List<H3Cell> cells = List.of(britishMidlands, yangtzeJiangnan);
+
+            for (int yr = 0; yr < 50; yr++) {
+                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(cells, 1.0);
+            }
+
+            double britainKpc = britishMidlands.getResourceCapital() / britishMidlands.getPopulation();
+            double yangtzeKpc = yangtzeJiangnan.getResourceCapital() / yangtzeJiangnan.getPopulation();
+
+            logger.info("  -> Britain Final K/pc: {}, Yangtze Final K/pc: {}", britainKpc, yangtzeKpc);
+
+            assertTrue(britainKpc > 500.0, "British Midlands achieves industrial takeoff with capital deepening > 500 kg/cap.");
+            assertTrue(yangtzeKpc <= 100.0, "Yangtze Jiangnan remains trapped in labor-absorbing ecological involution.");
+            assertTrue(britainKpc > yangtzeKpc * 5.0, "The Great Divergence produces > 5x capital gap between Britain and Yangtze.");
+        }
+
+        @Test
+        @DisplayName("11.3 Ghost Acreage Ablation Counterfactual")
+        public void testGhostAcreageAblationCounterfactual() {
+            logger.info("🧪 [Scenario 11.3] Testing Transatlantic Ghost Acreage Ablation Counterfactual...");
+
+            // Cell with coal and ghost acreage (Historical Britain)
+            H3Cell fullBritain = new H3Cell(0x852834737777777L, 53.0, -2.0);
+            fullBritain.setPopulation(8000);
+            fullBritain.setResourceCapital(800000.0);
+            fullBritain.setResourceCoal(3000.0);
+            fullBritain.setMovementFriction(0.35);
+            fullBritain.setTradeNetwork(35.0);
+
+            // Counterfactual Cell: British coal without Atlantic ghost acreage (Isolated autarkic island)
+            H3Cell ablatedBritain = new H3Cell(0x852834777777777L, 53.0, -2.0);
+            ablatedBritain.setPopulation(8000);
+            ablatedBritain.setResourceCapital(800000.0);
+            ablatedBritain.setResourceCoal(3000.0);
+            ablatedBritain.setMovementFriction(0.35);
+            ablatedBritain.setTradeNetwork(5.0); // ablated transatlantic imports
+
+            List<H3Cell> fullGrid = List.of(fullBritain);
+            List<H3Cell> ablatedGrid = List.of(ablatedBritain);
+
+            for (int yr = 0; yr < 40; yr++) {
+                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(fullGrid, 1.0);
+                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(ablatedGrid, 1.0);
+            }
+
+            logger.info("  -> Full Britain Capital: {}, Ablated Britain Capital: {}",
+                    fullBritain.getResourceCapital(), ablatedBritain.getResourceCapital());
+
+            assertTrue(fullBritain.getResourceCapital() > ablatedBritain.getResourceCapital() * 1.30,
+                    "Colonial ghost acreage adds > 30% capital advantage by releasing domestic agricultural land constraints.");
         }
     }
 }

@@ -62,7 +62,7 @@ public class PlanetaryBoundariesEngine {
         double freshwaterRisk = Math.min(1.0, (totalAquiferDeficit / cells.size()) / 400.0);
         double npkRisk = Math.min(1.0, (totalSocDeficit / cells.size()) / 80.0);
         double pollutionRisk = Math.min(1.0, (totalPollution / cells.size()) / 500.0);
-        double biosphereRisk = Math.min(1.0, 1.0 - TrophicEcosystemEngine.getGlobalBiodiversityIndex());
+        double biosphereRisk = Math.min(1.0, 1.0 - UnifiedNeutralBiodiversityEngine.getGlobalBiodiversityIndex());
         double aerosolRisk = Math.min(1.0, NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() / 2.0);
 
         return new BoundaryStatus(

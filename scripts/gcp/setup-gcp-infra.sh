@@ -9,8 +9,8 @@ set -euo pipefail
 PROJECT_ID="${1:-ether-509812}"
 ZONE="${2:-europe-west1-b}"
 REGION="${3:-europe-west1}"
-MASTER_TYPE="${4:-c2-standard-4}"
-WORKER_TYPE="${5:-c2-standard-4}"
+MASTER_TYPE="${4:-n2-custom-12-49152}"
+WORKER_TYPE="${5:-c2-standard-8}"
 CREATE_WORKER="${6:-true}"
 
 echo "=========================================================="
@@ -77,7 +77,10 @@ if ! gcloud compute instances describe ether-master --zone="${ZONE}" --project="
         --metadata-from-file="startup-script=${STARTUP_SCRIPT}"
     echo "VM ether-master created."
 else
-    echo "VM ether-master already exists."
+    echo "[4b/5] Ensuring Master VM (${MASTER_TYPE}) machine type is upgraded..."
+    gcloud compute instances stop ether-master --zone="${ZONE}" --project="${PROJECT_ID}" --quiet || true
+    gcloud compute instances set-machine-type ether-master --machine-type="${MASTER_TYPE}" --zone="${ZONE}" --project="${PROJECT_ID}" --quiet || true
+    gcloud compute instances start ether-master --zone="${ZONE}" --project="${PROJECT_ID}" --quiet || true
 fi
 
 if [ "${CREATE_WORKER}" = "true" ]; then

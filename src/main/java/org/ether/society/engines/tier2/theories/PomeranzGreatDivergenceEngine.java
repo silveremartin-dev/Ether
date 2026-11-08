@@ -1,0 +1,133 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
+ */
+package org.ether.society.engines.tier2.theories;
+
+import org.ether.society.core.math.SmoothMath;
+import org.ether.society.database.H3Cell;
+import org.ether.society.engines.ProceduralEnginePlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+/**
+ * Kenneth Pomeranz Great Divergence &amp; Ecological Ghost Acreage Engine.
+ *
+ * <p>Implements Kenneth Pomeranz's foundational comparative historical cliodynamics
+ * (2000, <i>The Great Divergence: China, Europe, and the Making of the Modern World Economy</i>; Robert Allen 2009):</p>
+ * <ul>
+ *   <li><b>Symmetric Pre-Industrial Commercialization:</b> As of ~1750 CE, core advanced regions of Eurasia
+ *       (Britain and the Yangtze River Delta) shared comparable levels of life expectancy, literacy,
+ *       free product and labor markets, and proto-industrial textile crafts.</li>
+ *   <li><b>The Coal Transport Proximity Factor:</b> British industrial breakout was catalyzed by the accidental
+ *       geographic proximity of thick, surface coal deposits to navigable water and iron ore, driving down
+ *       thermal energy costs. By contrast, Chinese coal was situated 1,500 km away in the arid, landlocked northwest (Shanxi).</li>
+ *   <li><b>Colonial "Ghost Acreage":</b> Transoceanic colonial imports (American timber, cotton, and sugar)
+ *       substituted for millions of hectares of domestic agrarian/forest land, preventing Britain from choking
+ *       on domestic ecological resource limits, whereas the Yangtze delta was constrained to labor-intensive involution.</li>
+ * </ul>
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
+ * @see <a href="https://press.princeton.edu">Pomeranz, K. (2000), The Great Divergence</a>
+ * @see AsymmetricColonialTradeEngine
+ * @see KummelAyresExergyEngine
+ */
+public class PomeranzGreatDivergenceEngine implements ProceduralEnginePlugin {
+
+    private static final Logger logger = LoggerFactory.getLogger(PomeranzGreatDivergenceEngine.class);
+
+    /** Minimum trade connectivity representing transoceanic colonial ghost acreage access. */
+    public static final double GHOST_ACREAGE_TRADE_THRESHOLD = 25.0;
+
+    /** Minimum coal stock threshold for local mineral fuel breakout. */
+    public static final double COAL_BREAKOUT_STOCK_THRESHOLD = 500.0;
+
+    @Override
+    public String getName() {
+        return "PomeranzGreatDivergenceEngine";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Models Kenneth Pomeranz (2000) Great Divergence: industrial breakout driven by low-friction coal proximity and colonial ghost acreage relieving domestic ecological ceilings.";
+    }
+
+    @Override
+    public String getEquationsTooltip() {
+        return """
+               [Kenneth Pomeranz Great Divergence (Pomeranz 2000, Allen 2009)]
+               • Coal Access:         Φ_coal = σ(Coal - 500, 100) · (1.0 - σ(Friction - 0.70, 0.15))
+               • Ghost Acreage:       Φ_ghost = σ(TradeNet - 25, 5) · σ(k_pc - 100, 30)
+               • Divergence Relief:   Ω_div = Φ_coal · (1.0 + 0.80 · Φ_ghost)
+               • Takeoff vs Stagnate: If Ω_div > 0.15 -> ΔK = +0.055 · Ω_div · K · dt (Industrial Takeoff)
+                                      Else if High Pop -> ΔK = +0.005 · K · dt (Involution Drag)
+               Ref: K. Pomeranz (2000), "The Great Divergence", Princeton University Press.
+               """;
+    }
+
+    @Override
+    public String getCategory() {
+        return "Tier 2: Cliodynamics & Comparative History";
+    }
+
+    @Override
+    public void process(List<H3Cell> cells, double deltaYears) {
+        processGreatDivergenceDynamics(cells, deltaYears);
+    }
+
+    /**
+     * Evaluates Pomeranz coal proximity and colonial ghost acreage relief across cells.
+     *
+     * @param cells      simulation cells
+     * @param deltaYears time step duration in astronomical Julian years
+     */
+    public static void processGreatDivergenceDynamics(List<H3Cell> cells, double deltaYears) {
+        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+
+        for (H3Cell cell : cells) {
+            if (cell == null) continue;
+            int pop = cell.getPopulationOr(0);
+            if (pop <= 50) continue;
+
+            double capital = cell.getResourceCapitalOr(0.0);
+            double kpc = capital / (double) pop;
+            if (kpc < 50.0) continue;
+
+            double trade = cell.getTradeNetworkOr(0.0);
+            double friction = cell.getMovementFrictionOr(1.0);
+            double coal = cell.getResourceCoalOr(0.0);
+
+            // 1. Coal transport proximity factor: high coal reserves accessible via low-friction water corridors
+            double coalAvailability = SmoothMath.sigmoid(coal, COAL_BREAKOUT_STOCK_THRESHOLD, 100.0);
+            double transportAccessibility = 1.0 - SmoothMath.sigmoid(friction, 0.70, 0.15);
+            double coalProximityFactor = coalAvailability * transportAccessibility;
+
+            // 2. Transoceanic Colonial "Ghost Acreage": trade networks importing foreign timber & cotton
+            double ghostAcreageFactor = SmoothMath.sigmoid(trade, GHOST_ACREAGE_TRADE_THRESHOLD, 5.0)
+                    * SmoothMath.sigmoid(kpc, 100.0, 30.0);
+
+            // 3. Combined Pomeranz Relief Potential
+            double divergencePotential = coalProximityFactor * (1.0 + 0.80 * ghostAcreageFactor);
+
+            if (divergencePotential > 0.15) {
+                // Breakout Regime (Britain): cheap thermal energy + ecological land relief drives exponential capital growth
+                double takeoffGrowth = 0.055 * divergencePotential * deltaYears;
+                cell.setResourceCapital(capital * (1.0 + takeoffGrowth));
+
+                // Relieves local forest cutting: natural biomass spared by coal substitution
+                double naturalBiomass = cell.getBiomassNaturalOr(0.0);
+                cell.setBiomassNatural(naturalBiomass + (pop * 0.02 * divergencePotential * deltaYears));
+            } else if (kpc >= 80.0 && pop >= 1000) {
+                // Involution Stagnation Regime (Yangtze Delta): high density and literacy, but landlocked coal
+                // and lack of external ghost acreage constrain society to labor-intensive organic ceiling
+                double involutionDrag = 0.015 * deltaYears;
+                cell.setResourceCapital(Math.max(10.0, capital * (1.0 - involutionDrag * 0.40)));
+            }
+        }
+    }
+}

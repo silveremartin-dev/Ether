@@ -71,7 +71,7 @@ final class TradeCorridorArbitrageHelper {
             arbitrageCapitalTools(orig, dest, origPop, destPop, conductance, bulkRetention, dtYears);
         }
 
-        // Route corridor spillovers
+        // Route corridor spillovers & separation of Inland Fluvial Freight vs. Maritime Trans-Oceanic Trade
         double routeValue = 12.0 * (1.0 + techLevel * 0.35) / friction * dtYears;
         double marineFactor = 1.0;
         if (orig != null && orig.getBiomassFish() != null) {
@@ -79,10 +79,21 @@ final class TradeCorridorArbitrageHelper {
         }
         routeValue *= marineFactor;
 
+        if (route.isMaritimeRoute()) {
+            TradeNetworkEngine.addMaritimeOceanicVolume(routeValue * conductance);
+        } else {
+            TradeNetworkEngine.addInlandFluvialVolume(routeValue * conductance);
+        }
+
         int pathLen = Math.max(1, route.pathCells().size());
         double perCellSpillover = routeValue / Math.sqrt(pathLen);
 
         for (H3Cell cell : route.pathCells()) {
+            if (cell == null) continue;
+            // Record active trade corridor intensity on the cell tensor for spatial raster telemetry
+            double curTradeIntensity = cell.getTradeNetworkOr(0.0);
+            cell.setTradeNetwork(Math.clamp(curTradeIntensity * 0.85 + Math.min(1.0, conductance * 2.5), 0.0, 10.0));
+
             int cellPop = cell.getPopulationOr(0);
             if (cellPop <= 0) continue;
 

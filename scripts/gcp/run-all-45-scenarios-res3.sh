@@ -137,7 +137,7 @@ for ITEM in "${SCENARIOS[@]}"; do
     echo "    Snapshots Cap : 24 snapshots max"
     echo "--------------------------------------------------------------------------------"
     
-    java -Xms4g -Xmx24g \
+    java -Xms12g -Xmx40g \
          --add-modules=jdk.incubator.vector \
          -cp /opt/ether/society-simulation.jar \
          org.ether.society.cli.HeadlessRunner \

@@ -33,14 +33,22 @@ public class TradeNetworkEngine {
      * @param destination       destination hub cell
      * @param pathCells         ordered sequence of H3 cells traversed
      * @param totalFrictionCost cumulative terrain movement friction along the corridor
+     * @param isMaritimeRoute   true if route crosses oceanic basins or links distant coastal sea-lanes;
+     *                          false if route is an inland continental or fluvial river/canal corridor
      */
-    public record TradeRoute(H3Cell origin, H3Cell destination, List<H3Cell> pathCells, double totalFrictionCost) {}
+    public record TradeRoute(H3Cell origin, H3Cell destination, List<H3Cell> pathCells, double totalFrictionCost, boolean isMaritimeRoute) {
+        public TradeRoute(H3Cell origin, H3Cell destination, List<H3Cell> pathCells, double totalFrictionCost) {
+            this(origin, destination, pathCells, totalFrictionCost, classifyMaritimeCorridor(origin, destination, pathCells));
+        }
+    }
 
     private static final List<TradeRoute> latestRoutes = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     private static double cumulativeTradedFood = 0.0;
     private static double cumulativeTradedCapital = 0.0;
     private static double cumulativeTradedMetal = 0.0;
+    private static double latestInlandFluvialVolume = 0.0;
+    private static double latestMaritimeOceanicVolume = 0.0;
     private static final Set<Long> previouslyScoredChokeCells = new HashSet<>();
 
     /**
@@ -50,6 +58,8 @@ public class TradeNetworkEngine {
         cumulativeTradedFood = 0.0;
         cumulativeTradedCapital = 0.0;
         cumulativeTradedMetal = 0.0;
+        latestInlandFluvialVolume = 0.0;
+        latestMaritimeOceanicVolume = 0.0;
         latestRoutes.clear();
         previouslyScoredChokeCells.clear();
     }
@@ -60,10 +70,47 @@ public class TradeNetworkEngine {
     public static double getCumulativeTradedCapital() { return cumulativeTradedCapital; }
     /** @return cumulative metal traded across ticks ($\text{kg}$) */
     public static double getCumulativeTradedMetal() { return cumulativeTradedMetal; }
+    /** @return active domestic inland fluvial/continental freight volume */
+    public static double getLatestInlandFluvialVolume() { return latestInlandFluvialVolume; }
+    /** @return active international maritime/trans-oceanic trade volume */
+    public static double getLatestMaritimeOceanicVolume() { return latestMaritimeOceanicVolume; }
 
     static void addCumulativeTradedFood(double delta) { cumulativeTradedFood += delta; }
     static void addCumulativeTradedCapital(double delta) { cumulativeTradedCapital += delta; }
     static void addCumulativeTradedMetal(double delta) { cumulativeTradedMetal += delta; }
+    static void addInlandFluvialVolume(double delta) { latestInlandFluvialVolume += delta; }
+    static void addMaritimeOceanicVolume(double delta) { latestMaritimeOceanicVolume += delta; }
+
+    /**
+     * Classifies whether a trade route is an international maritime/oceanic sea-lane
+     * or an inland continental/fluvial river corridor.
+     */
+    static boolean classifyMaritimeCorridor(H3Cell origin, H3Cell destination, List<H3Cell> pathCells) {
+        if (pathCells != null && !pathCells.isEmpty()) {
+            int oceanCount = 0;
+            for (H3Cell c : pathCells) {
+                if (c == null) continue;
+                String biomeName = c.getBiome() != null ? c.getBiome().name() : "";
+                if ("OCEAN".equals(biomeName)
+                        || "DEEP_OCEAN".equals(biomeName)
+                        || (c.getElevation() != null && c.getElevation() < 0.0)) {
+                    oceanCount++;
+                }
+            }
+            if (oceanCount > 0) {
+                return true;
+            }
+        }
+        boolean origCoastal = origin != null && Boolean.TRUE.equals(origin.getIsCoastal());
+        boolean destCoastal = destination != null && Boolean.TRUE.equals(destination.getIsCoastal());
+        if (origCoastal && destCoastal && origin != null && destination != null) {
+            double distKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
+                    origin.getLatitudeOr(0.0), origin.getLongitudeOr(0.0),
+                    destination.getLatitudeOr(0.0), destination.getLongitudeOr(0.0));
+            return distKm > 800.0;
+        }
+        return false;
+    }
 
     /**
      * Returns an unmodifiable snapshot of the latest computed trade routes.
@@ -130,6 +177,8 @@ public class TradeNetworkEngine {
         }
 
         List<TradeRoute> activeRoutes = new ArrayList<>();
+        latestInlandFluvialVolume = 0.0;
+        latestMaritimeOceanicVolume = 0.0;
 
         // 2. Continuous Gravity Model for bilateral trade corridor establishment (Anderson 1979; Head & Mayer 2014)
         for (int i = 0; i < hubs.size() - 1; i++) {

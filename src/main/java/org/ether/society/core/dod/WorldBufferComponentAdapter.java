@@ -183,7 +183,7 @@ public final class WorldBufferComponentAdapter {
         OrganismBiophysicalProfile organismProfile = buffer.getOrganismProfile();
         double basalW = organismProfile.basalMetabolicPowerWatts();
         double kpc = Math.max(0.0, buffer.getResourceCapital()[index] / pop);
-        // 1. Somatic basal + mechanical labor + domestic hearth/firewood thermal baseline (~347 W/cap in foraging bands, Smil 2017)
+        // 1. Somatic basal + mechanical labor + domestic hearth/firewood thermal baseline (~348 W/cap in foraging bands, Smil 2017)
         double woodThermalW = 212.0 * Math.tanh((buffer.getBiomassNatural()[index] + buffer.getWoodResource()[index] + 50.0) / 50.0);
         // 2. Agrarian draft traction & plows (activates smoothly above kpc ~ 150 kg/cap, up to +25 W/cap global average)
         double draftW = 25.0 * Math.tanh(SmoothMath.softplus(kpc - 150.0, 0.05) / 250.0);
@@ -193,7 +193,7 @@ public final class WorldBufferComponentAdapter {
         double steamCoalW = 600.0 * Math.tanh(SmoothMath.softplus(kpc - 1000.0, 0.02) / 1800.0);
         // 5. Modern electric/hydrocarbon/nuclear/solar grid (activates smoothly above kpc ~ 4000 kg/cap, up to +1350 W/cap)
         double modernGridW = 1350.0 * Math.tanh(SmoothMath.softplus(kpc - 4000.0, 0.01) / 10000.0);
-        return (float) (basalW + 35.0 + woodThermalW + draftW + millAndCharcoalW + steamCoalW + modernGridW);
+        return (float) (basalW + 39.0 + woodThermalW + draftW + millAndCharcoalW + steamCoalW + modernGridW);
     }
 
     /**

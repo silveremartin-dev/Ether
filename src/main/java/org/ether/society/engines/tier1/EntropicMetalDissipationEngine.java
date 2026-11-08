@@ -50,9 +50,10 @@ public class EntropicMetalDissipationEngine {
             double dissipated = metal - remainingMetal;
             cell.setResourceMetal(remainingMetal);
 
-            // Dissipated metals add to micro-pollution level
+            // Dissipated metals add to micro-pollution concentration normalized by cell surface area (km^2)
             if (cell.getPollutionLevel() != null && dissipated > 0.0) {
-                cell.setPollutionLevel(cell.getPollutionLevel() + dissipated * 0.1);
+                double areaKm2 = Math.max(10.0, cell.getEffectiveSurfaceAreaKm2());
+                cell.setPollutionLevel(cell.getPollutionLevel() + (dissipated / areaKm2) * 0.1);
             }
         }
     }

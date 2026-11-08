@@ -226,11 +226,12 @@ public class SimulationPipeline {
         double currentCo2Ppm = (engine != null && engine.getMetricsAggregator() != null)
                 ? engine.getMetricsAggregator().getAtmosphericCO2Ppm()
                 : 280.0;
-        executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, currentCo2Ppm);
+        double currentYear = (engine != null) ? (double) engine.getCurrentYear() : 0.0;
+        executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, currentCo2Ppm, currentYear, activeScenario);
 
         // Pass 2: Terrestrial Soil, Water & Ecosystem Fused Pass
         if (!landCells.isEmpty()) {
-            executeFusedTerrestrialPass(landCells, dtYears, dtMonthly);
+            executeFusedTerrestrialPass(landCells, dtYears, dtMonthly, currentCo2Ppm, currentYear);
         }
 
         // Pass 3: Anthropogenic Inhabited Cliodynamics & JIT-Compiled Scenario Theories Fused Pass
@@ -249,6 +250,14 @@ public class SimulationPipeline {
         profiler.endPhase("4_ProceduralEngines");
     }
 
+    private static boolean isTypeBEngineEnabled(Scenario scenario, String engineId, boolean defaultIfUnconfigured) {
+        if (scenario == null || scenario.getTypeBEngineStates() == null
+                || !scenario.getTypeBEngineStates().containsKey(engineId)) {
+            return defaultIfUnconfigured;
+        }
+        return Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(engineId));
+    }
+
     /**
      * Pass 1: Atmosphere, Radiation, Energy & Climate Feedbacks (Planetary Grid Domain).
      */
@@ -257,17 +266,24 @@ public class SimulationPipeline {
                                              AgentBuffer agentBuffer,
                                              double dtYears, double dtMonthly,
                                              SimulationPerformanceConfig perfConfig,
-                                             double co2Ppm) {
+                                             double co2Ppm,
+                                             double currentYear,
+                                             Scenario scenario) {
         RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(allCells);
         AtmosphericOxygenEngine.processAtmosphericOxygen(allCells, 0.21, 1.0);
         AlbedoClimateEngine.processAlbedoFeedback(allCells, dtYears);
 
         greenhouseRadiativeEngine.applyToGrid(allCells);
+        MaximumEntropyProductionEngine.processMaximumEntropyProduction(allCells, dtYears);
 
-        TerraformingEngine.processTerraforming(allCells, dtMonthly);
+        if (isTypeBEngineEnabled(scenario, "TerraformingEngine", true)) {
+            TerraformingEngine.processTerraforming(allCells, dtMonthly);
+        }
         PhysicalLawEngine.applyPhysicalLaws(allCells, dtMonthly);
-        GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(allCells, dtMonthly);
-        ThermohalineOceanEngine.processThermohalineCirculation(allCells, 0.0);
+        if (isTypeBEngineEnabled(scenario, "GeoengineeringAlbedoFeedbackEngine", true)) {
+            GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(allCells, dtMonthly);
+        }
+        ThermohalineStommelAMOCEngine.processThermohalineCirculation(allCells, dtYears, currentYear);
         OceanAcidificationEngine.processOceanAcidification(allCells, co2Ppm);
 
         ThermodynamicMigrationEngine.processThermodynamicMigration(allCells, perfConfig, worldBuffer, agentBuffer);
@@ -276,17 +292,25 @@ public class SimulationPipeline {
     /**
      * Pass 2: Soil Nutrients, Hydrology, Erosion & Terrestrial Ecosystems (Land Domain).
      */
-    private void executeFusedTerrestrialPass(List<H3Cell> landCells, double dtYears, double dtMonthly) {
+    private void executeFusedTerrestrialPass(List<H3Cell> landCells, double dtYears, double dtMonthly, double co2Ppm, double currentYear) {
         GlacialIsostaticAdjustmentEngine.processGlacialIsostasy(landCells, dtYears);
         SoilWaterRetentionEngine.processSoilWaterRetention(landCells);
         CrustalGeothermalEngine.processCrustalGeothermal(landCells);
         PermafrostThawEngine.processPermafrostThaw(landCells);
         SoilNutrientNPKEngine.processSoilNutrients(landCells, dtYears);
+        EcologicalStoichiometryEngine.processEcologicalStoichiometry(landCells, co2Ppm, dtYears);
+        MetabolicEcologyEngine.processMetabolicEcology(landCells, dtYears);
         DeforestationErosionEngine.processDeforestationErosion(landCells, dtYears);
         AquiferDepletionEngine.processAquiferDepletion(landCells, dtYears);
         org.ether.society.engines.tier1.ManningStricklerHydrodynamicsEngine.processRiverHydrodynamics(landCells, dtYears);
         EcologicalDegradationEngine.processEcologicalDegradation(landCells, dtYears);
         MegafaunaEcosystemEngine.processMegafaunaEcosystem(landCells, dtYears);
+        DynamicEnergyBudgetEngine.processEcologicalDEB(landCells, dtYears);
+        UnifiedNeutralBiodiversityEngine.processNeutralBiodiversity(landCells, dtYears);
+        ConstructalFlowArchitectureEngine.processConstructalFlow(landCells, dtYears);
+
+        CharneyVegetationAlbedoEngine.processCharneyVegetationAlbedo(landCells, dtYears, currentYear);
+        StreamPowerErosionEngine.processStreamPowerErosion(landCells, dtYears);
 
         TrophicEcosystemEngine.processTrophicEcosystem(landCells, dtMonthly);
         DynamicHydrographicSiltationEngine.processHydrographicSiltation(landCells, dtMonthly);
@@ -298,43 +322,58 @@ public class SimulationPipeline {
     private void executeFusedAnthropogenicPass(H3SimulationEngine engine, List<H3Cell> populatedCells, double dtYears, double dtMonthly, Scenario scenario) {
         // Step 3.1: Physiological & Bioclimatic Survival
         WetBulbTemperatureEngine.processWetBulbHyperthermia(populatedCells, dtYears);
-        PressurizedHabitatEngine.processPressurizedHabitats(populatedCells, null, dtYears);
+        PressurizedHabitatEngine.processPressurizedHabitats(populatedCells, scenario != null ? scenario.getPlanetPreset() : null, dtYears);
+        DynamicEnergyBudgetEngine.processHumanDEB(populatedCells, dtYears);
         BiologicalDemographicsEngine.processBiologicalDemographics(populatedCells, dtYears);
         BioMolecularEpidemiologyEngine.processBioMolecularImmunity(populatedCells, dtYears);
-        EcotoxicologyFertilityEngine.processEcotoxicologyFertility(populatedCells, dtYears);
+        if (isTypeBEngineEnabled(scenario, "EcotoxicologyFertilityEngine", true)) {
+            EcotoxicologyFertilityEngine.processEcotoxicologyFertility(populatedCells, dtYears);
+        }
 
         // Step 3.2: Energy Grid, Metallurgy & Physical Industry
+        ThermodynamicPrimeMoversEngine.processPrimeMovers(populatedCells, dtYears);
         PhysicalEnergyGridEngine.processPhysicalEnergyGrid(populatedCells, dtYears);
         NetEnergyEROEIEngine.processNetEnergyEROEI(populatedCells, dtYears);
         MetallurgyEnthalpyEngine.processOreSmelting(populatedCells, dtYears);
         ResourceRecyclingEngine.processResourceRecycling(populatedCells, dtYears);
-        NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(populatedCells, engine != null ? engine.getTickCounter() : 0L, dtYears);
+        if (isTypeBEngineEnabled(scenario, "NuclearSafetyRadiotoxicityEngine", true)) {
+            NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(populatedCells, engine != null ? engine.getTickCounter() : 0L, dtYears);
+        }
 
         // Step 3.3: Transport, Kinetic Warfare & Infrastructure
         PhysicsTransportEngine.processPhysicsTransport(populatedCells, dtYears);
-        if (scenario != null && scenario.getTypeBEngineStates() != null && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("ThermodynamicWarfareEngine"))) {
+        if (isTypeBEngineEnabled(scenario, "ThermodynamicWarfareEngine", false)) {
             ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears);
         }
-        if (scenario != null && scenario.getTypeBEngineStates() != null
-                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("NuclearWarfareClimateEngine"))) {
+        if (isTypeBEngineEnabled(scenario, "NuclearWarfareClimateEngine", false)) {
             NuclearWarfareClimateEngine.processNuclearWarfareClimate(populatedCells);
         }
         InfrastructureEnergyEngine.processInfrastructureEnergy(populatedCells);
 
         // Step 3.4: Recombinant Technology, Information Entropy & Ozone
         SelectiveBreedingEngine.processSelectiveBreeding(populatedCells, dtYears);
-        InformationEntropyEngine.processInformationEntropy(populatedCells);
+        if (isTypeBEngineEnabled(scenario, "InformationEntropyEngine", true)) {
+            InformationEntropyEngine.processInformationEntropy(populatedCells);
+        }
 
         List<TradeNetworkEngine.TradeRoute> tradeRoutes = null;
-        if (scenario != null && scenario.getTypeBEngineStates() != null
-                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("TradeNetworkEngine"))) {
+        if (isTypeBEngineEnabled(scenario, "TradeNetworkEngine", false)) {
             tradeRoutes = TradeNetworkEngine.generateTradeNetworks(populatedCells, 1.0, dtYears);
         }
         TechTreeEngine.processTechnologyDiffusion(populatedCells, tradeRoutes, dtYears);
-        LanguageLinguisticEngine.processLinguisticDrift(populatedCells, tradeRoutes);
+        if (isTypeBEngineEnabled(scenario, "LanguageLinguisticEngine", true)) {
+            LanguageLinguisticEngine.processLinguisticDrift(populatedCells, tradeRoutes);
+        }
         if (engine != null && engine.getNations() != null && !engine.getNations().isEmpty()) {
-            CliodynamicsEngine.updateCliodynamics(engine.getNations(), populatedCells, dtYears);
-            WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), populatedCells, scenario);
+            if (isTypeBEngineEnabled(scenario, "CliodynamicsEngine", true)) {
+                CliodynamicsEngine.updateCliodynamics(engine.getNations(), populatedCells, dtYears);
+            }
+            if (isTypeBEngineEnabled(scenario, "WarDiplomacyEngine", true)) {
+                WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), populatedCells, scenario);
+            }
+            if (isTypeBEngineEnabled(scenario, "SovereignTreasuryBondEngine", true)) {
+                SovereignTreasuryBondEngine.processPolityFiscalCycles(engine.getNations(), populatedCells, dtYears);
+            }
         }
         OzoneLayerDepletionEngine.processOzoneLayerDepletion(populatedCells);
 

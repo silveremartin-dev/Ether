@@ -8,6 +8,7 @@ package org.ether.society.core.metrics;
 
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.core.SimulationMetricsAggregator;
+import org.ether.society.database.H3Cell;
 
 import java.util.Objects;
 
@@ -102,12 +103,38 @@ public final class MacroeconomicMetricsCalculator {
 
     /**
      * Evaluates Federico &amp; Tena-Junguito (2017) Global Trade Volume Index ($100 = 1913\text{ Level}$).
+     * Couples the maritime shipping conductance baseline with active oceanic trade corridors from
+     * {@link org.ether.society.engines.tier2.theories.TradeNetworkEngine} so that domestic inland fluvial
+     * freight (e.g. Yangtze / Grand Canal) does not inflate international trans-oceanic trade.
      *
      * @return global trade volume index
      */
     public double getGlobalTradeVolumeIndex() {
-        return org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeGlobalTradeVolume(
+        double baseMaritimeVolume = org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeGlobalTradeVolume(
                 computePhysicalExergyCapitalIndex());
+        double activeOceanicCorridors = org.ether.society.engines.tier2.theories.TradeNetworkEngine.getLatestMaritimeOceanicVolume();
+        if (activeOceanicCorridors > 0.0) {
+            double corridorBonus = 0.05 * Math.log1p(activeOceanicCorridors / 1000.0);
+            return Math.clamp(baseMaritimeVolume * (1.0 + Math.min(0.25, corridorBonus)), 0.0, 3500.0);
+        }
+        return baseMaritimeVolume;
+    }
+
+    /**
+     * Evaluates domestic inland fluvial and canal freight transport volume index, combining
+     * physical inland waterway capacity with active continental/fluvial corridors from
+     * {@link org.ether.society.engines.tier2.theories.TradeNetworkEngine}.
+     *
+     * @return inland fluvial freight index
+     */
+    public double getInlandFluvialFreightVolume() {
+        double baseFluvialVolume = org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog.computeInlandFluvialFreightVolume(
+                computePhysicalExergyCapitalIndex());
+        double activeFluvialCorridors = org.ether.society.engines.tier2.theories.TradeNetworkEngine.getLatestInlandFluvialVolume();
+        if (activeFluvialCorridors > 0.0) {
+            return Math.clamp(baseFluvialVolume + 0.10 * Math.log1p(activeFluvialCorridors), 0.0, 5000.0);
+        }
+        return baseFluvialVolume;
     }
 
     /**

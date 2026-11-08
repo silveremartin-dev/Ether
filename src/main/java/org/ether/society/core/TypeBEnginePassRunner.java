@@ -46,6 +46,20 @@ public final class TypeBEnginePassRunner {
     private final TainterComplexityCollapseEngine tainterComplexityCollapseEngine = new TainterComplexityCollapseEngine();
     private final TurchinGoldstoneSDTEngine turchinGoldstoneSDTEngine = new TurchinGoldstoneSDTEngine();
     private final WestBettencourtAllometryEngine westBettencourtAllometryEngine = new WestBettencourtAllometryEngine();
+    private final AxialAgeMoralizingGodsEngine axialAgeMoralizingGodsEngine = new AxialAgeMoralizingGodsEngine();
+    private final BarfieldNomadicSteppeEmpireEngine barfieldNomadicSteppeEmpireEngine = new BarfieldNomadicSteppeEmpireEngine();
+    private final org.ether.society.engines.tier2.theories.WienerCyberneticHomeostasisEngine wienerCyberneticHomeostasisEngine = new org.ether.society.engines.tier2.theories.WienerCyberneticHomeostasisEngine();
+    private final org.ether.society.engines.tier2.theories.PolanyiFictitiousCommoditiesEngine polanyiFictitiousCommoditiesEngine = new org.ether.society.engines.tier2.theories.PolanyiFictitiousCommoditiesEngine();
+    private final org.ether.society.engines.tier2.theories.BagehotFractionalReserveEngine bagehotFractionalReserveEngine = new org.ether.society.engines.tier2.theories.BagehotFractionalReserveEngine();
+    private final org.ether.society.engines.tier2.theories.CordenNearyDutchDiseaseEngine cordenNearyDutchDiseaseEngine = new org.ether.society.engines.tier2.theories.CordenNearyDutchDiseaseEngine();
+    private final org.ether.society.engines.tier2.theories.InnisStaplesThesisEngine innisStaplesThesisEngine = new org.ether.society.engines.tier2.theories.InnisStaplesThesisEngine();
+    private final org.ether.society.engines.tier2.theories.HarrisCulturalMaterialismEngine harrisCulturalMaterialismEngine = new org.ether.society.engines.tier2.theories.HarrisCulturalMaterialismEngine();
+    private final org.ether.society.engines.tier2.theories.LenskiEcologicalEvolutionaryEngine lenskiEcologicalEvolutionaryEngine = new org.ether.society.engines.tier2.theories.LenskiEcologicalEvolutionaryEngine();
+    private final org.ether.society.engines.tier2.theories.WhiteEnergyEvolutionEngine whiteEnergyEvolutionEngine = new org.ether.society.engines.tier2.theories.WhiteEnergyEvolutionEngine();
+    private final org.ether.society.engines.tier2.theories.RicardoDifferentialLandRentEngine ricardoDifferentialLandRentEngine = new org.ether.society.engines.tier2.theories.RicardoDifferentialLandRentEngine();
+    private final org.ether.society.engines.tier2.theories.LewisDualSectorTurningPointEngine lewisDualSectorTurningPointEngine = new org.ether.society.engines.tier2.theories.LewisDualSectorTurningPointEngine();
+    private final org.ether.society.engines.tier2.theories.KondratievSchumpeterLongWaveEngine kondratievSchumpeterLongWaveEngine = new org.ether.society.engines.tier2.theories.KondratievSchumpeterLongWaveEngine();
+    private final org.ether.society.engines.tier2.theories.PomeranzGreatDivergenceEngine pomeranzGreatDivergenceEngine = new org.ether.society.engines.tier2.theories.PomeranzGreatDivergenceEngine();
 
     /**
      * Resets all mutable static simulation states, caches, and plugin registries across engines.
@@ -55,6 +69,8 @@ public final class TypeBEnginePassRunner {
         NuclearWarfareClimateEngine.resetState();
         BifurcationChaosEngine.resetState();
         TrophicEcosystemEngine.resetState();
+        org.ether.society.engines.tier1.UnifiedNeutralBiodiversityEngine.resetState();
+        org.ether.society.engines.tier1.ThermohalineStommelAMOCEngine.resetState();
         GeoengineeringAlbedoFeedbackEngine.resetState();
         TerraformingEngine.resetState();
         PhysicalLawEngine.resetState();
@@ -242,6 +258,60 @@ public final class TypeBEnginePassRunner {
         if (Boolean.TRUE.equals(states.get("WestBettencourtAllometryEngine"))) {
             westBettencourtAllometryEngine.process(populatedCells, dtYears);
         }
+        if (Boolean.TRUE.equals(states.get("PublicSanitationWaterGridEngine"))) {
+            PublicSanitationWaterGridEngine.processSanitationGrids(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("PhysicalMediaPrintingEngine"))) {
+            PhysicalMediaPrintingEngine.processMediaProduction(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("NavalHydrodynamicsFreightEngine"))) {
+            NavalHydrodynamicsFreightEngine.processNavalFreight(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("VonThunenAgriculturalRingsEngine"))) {
+            VonThunenAgriculturalRingsEngine.processAgriculturalRings(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("AxialAgeMoralizingGodsEngine"))) {
+            axialAgeMoralizingGodsEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("BarfieldNomadicSteppeEmpireEngine"))) {
+            barfieldNomadicSteppeEmpireEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("WienerCyberneticHomeostasisEngine")) || Boolean.TRUE.equals(states.get("AutoRegulationPureEngine"))) {
+            wienerCyberneticHomeostasisEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("PolanyiFictitiousCommoditiesEngine"))) {
+            polanyiFictitiousCommoditiesEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("BagehotFractionalReserveEngine"))) {
+            bagehotFractionalReserveEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("CordenNearyDutchDiseaseEngine"))) {
+            cordenNearyDutchDiseaseEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("InnisStaplesThesisEngine"))) {
+            innisStaplesThesisEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("HarrisCulturalMaterialismEngine")) || Boolean.TRUE.equals(states.get("CulturalMaterialismPureEngine"))) {
+            harrisCulturalMaterialismEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("LenskiEcologicalEvolutionaryEngine")) || Boolean.TRUE.equals(states.get("LenskiPureEngine"))) {
+            lenskiEcologicalEvolutionaryEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("WhiteEnergyEvolutionEngine")) || Boolean.TRUE.equals(states.get("LeslieWhitePureEngine"))) {
+            whiteEnergyEvolutionEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("RicardoDifferentialLandRentEngine"))) {
+            ricardoDifferentialLandRentEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("LewisDualSectorTurningPointEngine"))) {
+            lewisDualSectorTurningPointEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("KondratievSchumpeterLongWaveEngine"))) {
+            kondratievSchumpeterLongWaveEngine.process(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("PomeranzGreatDivergenceEngine"))) {
+            pomeranzGreatDivergenceEngine.process(populatedCells, dtYears);
+        }
 
         executeHistoricalAndSpecializedEngines(populatedCells, dtYears, dtMonthly, states);
     }
@@ -250,11 +320,15 @@ public final class TypeBEnginePassRunner {
                                                         double dtYears,
                                                         double dtMonthly,
                                                         Map<String, Boolean> states) {
-        if (Boolean.TRUE.equals(states.get("AmerindianEcosystemEngine"))) {
+        if (Boolean.TRUE.equals(states.get("AmerindianEcosystemEngine"))
+                || Boolean.TRUE.equals(states.get("CrosbyColumbianExchangeEngine"))) {
             AmerindianEcosystemEngine.processHybrid(populatedCells, dtMonthly);
         }
         if (Boolean.TRUE.equals(states.get("AsymmetricColonialTradeEngine"))) {
             AsymmetricColonialTradeEngine.processHybrid(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("CoGovernanceTradeEngine"))) {
+            CoGovernanceTradeEngine.processTradeAndGovernance(populatedCells, dtYears);
         }
         if (Boolean.TRUE.equals(states.get("DynamicMaritimeRoutingGraph"))) {
             DynamicMaritimeRoutingGraph.processHybrid(populatedCells, dtMonthly * 365.25);
@@ -271,14 +345,17 @@ public final class TypeBEnginePassRunner {
         if (Boolean.TRUE.equals(states.get("IsruAutarkyAndSpaceColonizationEngine"))) {
             IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(populatedCells, null, dtMonthly);
         }
+        if (Boolean.TRUE.equals(states.get("JevonsParadoxEngine"))) {
+            JevonsParadoxEngine.processJevonsRebound(populatedCells, dtYears);
+        }
         if (Boolean.TRUE.equals(states.get("KinSelectionHamiltonEngine"))) {
             KinSelectionHamiltonEngine.processHybrid(populatedCells, dtYears);
         }
+        if (Boolean.TRUE.equals(states.get("KurzweilAcceleratingReturnsEngine"))) {
+            KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(populatedCells, dtYears);
+        }
         if (Boolean.TRUE.equals(states.get("LandReclamationEngine"))) {
             LandReclamationEngine.processHybrid(populatedCells, dtMonthly * 365.25);
-        }
-        if (Boolean.TRUE.equals(states.get("LenskiPureEngine"))) {
-            LenskiPureEngine.processHybrid(populatedCells, dtYears);
         }
         if (Boolean.TRUE.equals(states.get("MarineSubmersionEngine"))) {
             MarineSubmersionEngine.processHybrid(populatedCells, dtMonthly * 365.25);
@@ -325,23 +402,20 @@ public final class TypeBEnginePassRunner {
         if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
             TasmanianCulturalRegressionEngine.processHybrid(populatedCells, dtYears);
         }
-        if (Boolean.TRUE.equals(states.get("CulturalMaterialismPureEngine"))) {
-            CulturalMaterialismPureEngine.processHybrid(populatedCells, dtYears);
-        }
         if (Boolean.TRUE.equals(states.get("HandyNasaHybridEngine"))) {
             HandyNasaHybridEngine.processPlugin(populatedCells, dtYears);
         }
         if (Boolean.TRUE.equals(states.get("HandyNasaPureEngine"))) {
             HandyNasaPureEngine.processHybrid(populatedCells, dtYears);
         }
-        if (Boolean.TRUE.equals(states.get("LeslieWhitePureEngine"))) {
-            LeslieWhitePureEngine.processHybrid(populatedCells, dtYears);
-        }
         if (Boolean.TRUE.equals(states.get("MilitaryTechShockEngine"))) {
             MilitaryTechShockEngine.processHybrid(populatedCells, dtYears);
         }
         if (Boolean.TRUE.equals(states.get("NordhausDicePureEngine"))) {
             NordhausDicePureEngine.processHybrid(populatedCells, dtYears);
+        }
+        if (Boolean.TRUE.equals(states.get("World3CouplingEngine"))) {
+            World3CouplingEngine.processWorld3Coupling(populatedCells, dtYears);
         }
         if (Boolean.TRUE.equals(states.get("World3HybridEngine"))) {
             World3HybridEngine.processPlugin(populatedCells, dtMonthly);

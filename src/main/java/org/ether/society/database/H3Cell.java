@@ -146,6 +146,15 @@ public class H3Cell extends H3CellSocioDemographicBase {
     public H3Cell() {}
 
     /**
+     * Constructs an H3Cell with default coordinates (0, 0).
+     *
+     * @param h3Index H3 64-bit hexagonal index
+     */
+    public H3Cell(Long h3Index) {
+        this(h3Index, 0.0, 0.0);
+    }
+
+    /**
      * Constructs an H3Cell at the given index and geographic coordinates.
      *
      * @param h3Index   H3 64-bit hexagonal index

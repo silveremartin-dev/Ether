@@ -7,8 +7,10 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.engines.ProceduralEnginePlugin;
+import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,11 +86,17 @@ public class ArthurCombinatorialTechnologyEngine implements ProceduralEnginePlug
             double capital = SmoothMath.softplus(cell.getResourceCapitalOr(10.0), 0.0, 10.0);
             double kPerCapita = capital / pop;
 
-            // Single C^infinity combinatorial capital differential equation (W. Brian Arthur 2009; Kremer 1993):
-            // dK/dt = mu_comb * N * (1 + k_pc / k_ref)^alpha * ln(1 + N / N_0) / (1 + k_pc / k_max) - delta_obs * K
+            // Single C^infinity combinatorial capital differential equation (W. Brian Arthur 2009; Kremer 1993; Garrett 2011):
+            // dK/dt = mu_comb * N * (1 + k_pc / k_ref)^alpha * ln(1 + N / N_0) / (1 + (k_pc / k_energized)^2) - delta_obs * K
+            double powerWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
+            double kEnergized = Math.min(THERMODYNAMIC_CAPITAL_SATURATION_KG_PC,
+                    Math.max(REFERENCE_TOOLSET_MASS_KG_PC,
+                            powerWatts / H3CellPhysicsAndStateHelper.GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT));
+
             double combinatorialDiversity = Math.pow(1.0 + kPerCapita / REFERENCE_TOOLSET_MASS_KG_PC, COMBINATORIAL_SYNERGY_EXPONENT);
             double cooperativeNetwork = Math.log1p(pop / COOPERATIVE_NETWORK_SCALE_POP);
-            double saturationDamping = 1.0 / (1.0 + kPerCapita / THERMODYNAMIC_CAPITAL_SATURATION_KG_PC);
+            double ratioToCeiling = kPerCapita / kEnergized;
+            double saturationDamping = 1.0 / (1.0 + ratioToCeiling * ratioToCeiling);
 
             double grossSynthesis = BASE_SYNTHESIS_RATE * pop * combinatorialDiversity * cooperativeNetwork * saturationDamping;
             double netDeltaK = (grossSynthesis - OBSOLESCENCE_DECAY_RATE * capital) * deltaYears;

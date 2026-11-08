@@ -73,11 +73,17 @@ public final class CounterfactualBenchmarkFixtures {
             nc.setPopulation(c.getPopulation());
             nc.setResourceCapital(c.getResourceCapital());
             nc.setResourceMetal(c.getResourceMetal());
+            nc.setResourceCoal(c.getResourceCoal());
             nc.setResourceWork(c.getResourceWork());
             nc.setEnergyFoodConsumed(c.getEnergyFoodConsumed());
             nc.setGiniIndex(c.getGiniIndex());
             nc.setMovementFriction(c.getMovementFriction());
             nc.setBiome(c.getBiome());
+            nc.setBiomassAgriculture(c.getBiomassAgriculture());
+            nc.setBiomassLivestock(c.getBiomassLivestock());
+            nc.setBiomassNatural(c.getBiomassNatural());
+            nc.setTradeNetwork(c.getTradeNetwork());
+            nc.setSoilOrganicCarbon(c.getSoilOrganicCarbon());
             cloned.add(nc);
         }
         return cloned;
@@ -338,6 +344,11 @@ public final class CounterfactualBenchmarkFixtures {
 
             List<H3Cell> controlGrid = cloneCellGrid(initialCells);
             List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+            // Seed index patient-zero epidemic focus in the largest urban port of the treatment grid (e.g. 165 CE Antonine / 1347 Black Death entry port)
+            treatmentGrid.stream()
+                    .filter(c -> c.getPopulation() != null && c.getPopulation() > 500)
+                    .max(Comparator.comparingInt(H3Cell::getPopulation))
+                    .ifPresent(epicenter -> epicenter.setEpidemicInfected(Math.max(100, epicenter.getPopulation() / 20)));
 
             int simYears = 50;
             double deltaYears = 1.0;
@@ -457,5 +468,358 @@ public final class CounterfactualBenchmarkFixtures {
         double meanControl = Arrays.stream(controlMetalTerminal).average().orElse(0.0);
         double meanTreatment = Arrays.stream(treatmentMetalTerminal).average().orElse(0.0);
         return new BenchmarkResult(controlMetalTerminal, treatmentMetalTerminal, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runPolanyiBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlAgri = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentAgri = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(1_000);
+                c.setResourceCapital(150_000.0); // kpc = 150 > 80
+                c.setTradeNetwork(30.0);         // trade > 15
+                c.setBiomassAgriculture(10_000.0);
+                c.setFoodResource(20_000.0);
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 30;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                PolanyiFictitiousCommoditiesEngine.processPolanyiTransformation(treatmentGrid, deltaYears);
+            }
+
+            controlAgri[s] = controlGrid.stream().mapToDouble(c -> c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0).average().orElse(0.0);
+            treatmentAgri[s] = treatmentGrid.stream().mapToDouble(c -> c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlAgri, treatmentAgri);
+        double meanControl = Arrays.stream(controlAgri).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentAgri).average().orElse(0.0);
+        return new BenchmarkResult(controlAgri, treatmentAgri, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runBagehotBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlCap = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentCap = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(1_000);
+                c.setResourceCapital(200_000.0);
+                c.setTradeNetwork(30.0);    // commercial banking integration (> 15)
+                c.setResourceMetal(0.0); // unbuffered liquidity crisis (zero bullion reserves)
+                c.setFoodResource(500.0);   // acute systemic stress
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 15;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                BagehotFractionalReserveEngine.processBagehotBankingLiquidity(treatmentGrid, deltaYears);
+            }
+
+            controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+            treatmentCap[s] = treatmentGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlCap, treatmentCap);
+        double meanControl = Arrays.stream(controlCap).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentCap).average().orElse(0.0);
+        return new BenchmarkResult(controlCap, treatmentCap, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runCordenNearyBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlCap = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentCap = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(1_000);
+                c.setResourceCapital(50_000.0);
+                c.setResourceMetal(30_000.0); // Massive resource rent surge
+                c.setBiomassAgriculture(10_000.0);
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 25;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                CordenNearyDutchDiseaseEngine.processDutchDiseaseDynamics(treatmentGrid, deltaYears);
+            }
+
+            controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+            treatmentCap[s] = treatmentGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlCap, treatmentCap);
+        double meanControl = Arrays.stream(controlCap).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentCap).average().orElse(0.0);
+        return new BenchmarkResult(controlCap, treatmentCap, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runInnisBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlTrade = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentTrade = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(500);
+                c.setBiomassNatural(25_000.0);
+                c.setResourceMetal(5_000.0);
+                c.setTradeNetwork(5.0);
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 30;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                InnisStaplesThesisEngine.processStaplesDynamics(treatmentGrid, deltaYears);
+            }
+
+            controlTrade[s] = controlGrid.stream().mapToDouble(c -> c.getTradeNetwork() != null ? c.getTradeNetwork() : 0.0).average().orElse(0.0);
+            treatmentTrade[s] = treatmentGrid.stream().mapToDouble(c -> c.getTradeNetwork() != null ? c.getTradeNetwork() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlTrade, treatmentTrade);
+        double meanControl = Arrays.stream(controlTrade).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentTrade).average().orElse(0.0);
+        return new BenchmarkResult(controlTrade, treatmentTrade, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runBarfieldSteppeBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlNomadCap = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentNomadCap = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            int half = initialCells.size() / 2;
+            for (int i = 0; i < initialCells.size(); i++) {
+                H3Cell c = initialCells.get(i);
+                if (i < half) {
+                    // Sedentary agrarian core
+                    c.setPopulation(5_000);
+                    c.setResourceCapital(500_000.0);
+                    c.setBiomassAgriculture(50_000.0);
+                } else {
+                    // Nomadic steppe pastoralists
+                    c.setPopulation(1_000);
+                    c.setBiomassLivestock(10_000.0);
+                    c.setBiomassAgriculture(50.0);
+                    c.setResourceCapital(10_000.0);
+                    c.setResourceWork(40.0);
+                }
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 20;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(treatmentGrid, deltaYears);
+            }
+
+            controlNomadCap[s] = controlGrid.subList(half, controlGrid.size()).stream()
+                    .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+            treatmentNomadCap[s] = treatmentGrid.subList(half, treatmentGrid.size()).stream()
+                    .mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlNomadCap, treatmentNomadCap);
+        double meanControl = Arrays.stream(controlNomadCap).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentNomadCap).average().orElse(0.0);
+        return new BenchmarkResult(controlNomadCap, treatmentNomadCap, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runWienerCyberneticBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlWork = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentWork = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(1_000);
+                c.setFoodResource(1_500.0); // 1.5 food/cap > 1.2 target
+                c.setResourceCapital(50_000.0);
+                c.setResourceWork(80.0);
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 15;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                WienerCyberneticHomeostasisEngine.processCyberneticHomeostasis(treatmentGrid, deltaYears);
+            }
+
+            controlWork[s] = controlGrid.stream().mapToDouble(c -> c.getResourceWork() != null ? c.getResourceWork() : 0.0).average().orElse(0.0);
+            treatmentWork[s] = treatmentGrid.stream().mapToDouble(c -> c.getResourceWork() != null ? c.getResourceWork() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlWork, treatmentWork);
+        double meanControl = Arrays.stream(controlWork).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentWork).average().orElse(0.0);
+        return new BenchmarkResult(controlWork, treatmentWork, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runRicardoBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlCap = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentCap = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(1_500);
+                c.setResourceCapital(100_000.0);
+                c.setBiomassAgriculture(500.0); // High population pressure on marginal land
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 25;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                RicardoDifferentialLandRentEngine.processDifferentialRentDynamics(treatmentGrid, deltaYears);
+            }
+
+            controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+            treatmentCap[s] = treatmentGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlCap, treatmentCap);
+        double meanControl = Arrays.stream(controlCap).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentCap).average().orElse(0.0);
+        return new BenchmarkResult(controlCap, treatmentCap, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runLewisBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlCap = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentCap = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(1_000);
+                c.setResourceCapital(300_000.0); // kpc = 300 > 250 (post Lewis turning point)
+                c.setTradeNetwork(30.0);
+                c.setResourceWork(50.0);
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 20;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                LewisDualSectorTurningPointEngine.processDualSectorDynamics(treatmentGrid, deltaYears);
+            }
+
+            controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+            treatmentCap[s] = treatmentGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlCap, treatmentCap);
+        double meanControl = Arrays.stream(controlCap).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentCap).average().orElse(0.0);
+        return new BenchmarkResult(controlCap, treatmentCap, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runKondratievBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlCap = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentCap = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(1_000);
+                c.setResourceCapital(200_000.0); // kpc = 200 > 120
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 25;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                KondratievSchumpeterLongWaveEngine.processLongWaveDynamics(treatmentGrid, 1850.0 + year, deltaYears);
+            }
+
+            controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+            treatmentCap[s] = treatmentGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlCap, treatmentCap);
+        double meanControl = Arrays.stream(controlCap).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentCap).average().orElse(0.0);
+        return new BenchmarkResult(controlCap, treatmentCap, meanControl, meanTreatment, d, 0.0);
+    }
+
+    public static BenchmarkResult runPomeranzBenchmark() {
+        ProceduralGenerator generator = new ProceduralGenerator();
+        double[] controlCap = new double[MONTE_CARLO_SEEDS.length];
+        double[] treatmentCap = new double[MONTE_CARLO_SEEDS.length];
+
+        for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
+            long seed = MONTE_CARLO_SEEDS[s];
+            List<H3Cell> initialCells = generator.generatePlanet(createEarthPreset(seed));
+            for (H3Cell c : initialCells) {
+                c.setPopulation(1_000);
+                c.setResourceCapital(100_000.0);
+                c.setResourceCoal(2_000.0); // Proximate coal deposits
+                c.setMovementFriction(0.35); // Navigable water corridor
+                c.setTradeNetwork(35.0);     // Transoceanic ghost acreage
+            }
+
+            List<H3Cell> controlGrid = cloneCellGrid(initialCells);
+            List<H3Cell> treatmentGrid = cloneCellGrid(initialCells);
+
+            int simYears = 25;
+            double deltaYears = 1.0;
+            for (int year = 0; year < simYears; year++) {
+                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(treatmentGrid, deltaYears);
+            }
+
+            controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+            treatmentCap[s] = treatmentGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+        }
+
+        double d = calculateCohensD(controlCap, treatmentCap);
+        double meanControl = Arrays.stream(controlCap).average().orElse(0.0);
+        double meanTreatment = Arrays.stream(treatmentCap).average().orElse(0.0);
+        return new BenchmarkResult(controlCap, treatmentCap, meanControl, meanTreatment, d, 0.0);
     }
 }

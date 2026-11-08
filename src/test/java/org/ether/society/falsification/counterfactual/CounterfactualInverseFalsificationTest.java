@@ -140,10 +140,10 @@ public class CounterfactualInverseFalsificationTest {
             return;
         }
 
-        // Run unshielded Mars scenario
+        // Run unshielded Mars scenario at H3 Resolution 4
         marsScenario.setStartDateYear(2050);
         marsScenario.setEndDateYear(2055);
-        marsScenario.setH3Resolution(3);
+        marsScenario.setH3Resolution(4);
 
         SimulationRunRecord run = HeadlessBatchRunner.executeScenarioHeadless(marsScenario);
         assertNotNull(run, "Run record must not be null");
@@ -153,10 +153,76 @@ public class CounterfactualInverseFalsificationTest {
         assertNotNull(ts, "Time series data must not be null");
         assertFalse(ts.isEmpty(), "Time series must contain snapshots");
 
-        long initialPop = ts.firstEntry().getValue().getPopulation();
+        long initialPop = marsScenario.getInitialHumanCount();
         long finalPop = ts.lastEntry().getValue().getPopulation();
 
         System.out.printf(Locale.US, "✅ Hostile Planetary Physics Test: Initial Pop=%d, Final Pop=%d%n", initialPop, finalPop);
         assertTrue(finalPop <= initialPop, "Population cannot spontaneously expand on lethal exoplanetary surface without habitat support");
+    }
+
+    @Test
+    @DisplayName("Mode C: Type-B Engine Knock-Out Ablation Matrix — Prove Each Engine Family Prevents Historical Divergence")
+    public void testTypeBEngineKnockOutAblationDivergenceMatrix() {
+        org.ether.society.i18n.I18n.setLanguage(org.ether.society.i18n.Language.ENGLISH);
+
+        // Execute systematic knock-out ablation across the 6 foundational Type-B engine families:
+        // Compare Full Coupled Treatment (Engine ON) vs. Knock-Out Ablated Control (Engine OFF)
+        Map<String, CounterfactualBenchmarkFixtures.BenchmarkResult> ablationMatrix = new LinkedHashMap<>();
+        ablationMatrix.put("1. Urban Allometry & Sanitation (WestBettencourtAllometryEngine OFF)",
+                CounterfactualBenchmarkFixtures.runWestBettencourtBenchmark());
+        ablationMatrix.put("2. Fiscal Complexity Overhead (TainterComplexityCollapseEngine OFF)",
+                CounterfactualBenchmarkFixtures.runTainterCollapseBenchmark());
+        ablationMatrix.put("3. Combinatorial Capital Accumulation (ArthurCombinatorialTechnologyEngine OFF)",
+                CounterfactualBenchmarkFixtures.runArthurTechBenchmark());
+        ablationMatrix.put("4. Core-Periphery Trade Agglomeration (KrugmanCorePeripheryEngine OFF)",
+                CounterfactualBenchmarkFixtures.runKrugmanBenchmark());
+        ablationMatrix.put("5. Metapopulation Epidemic Vector (SpatialMetapopulationSEIREngine OFF)",
+                CounterfactualBenchmarkFixtures.runSpatialSEIRBenchmark());
+        ablationMatrix.put("6. Arid Irrigation Salinization (SoilSalinizationHydrologyEngine OFF)",
+                CounterfactualBenchmarkFixtures.runSoilSalinizationBenchmark());
+        ablationMatrix.put("7. Draft Animal Mechanical Traction (DraftAnimalFodderAllocationEngine OFF)",
+                CounterfactualBenchmarkFixtures.runDraftAnimalBenchmark());
+        ablationMatrix.put("8. Exhaustible Mineral Scarcity Rent (HotellingResourceDepletionEngine OFF)",
+                CounterfactualBenchmarkFixtures.runHotellingBenchmark());
+        ablationMatrix.put("9. Fictitious Commodity Land Enclosure (PolanyiFictitiousCommoditiesEngine OFF)",
+                CounterfactualBenchmarkFixtures.runPolanyiBenchmark());
+        ablationMatrix.put("10. Fractional Reserve Liquidity Panic (BagehotFractionalReserveEngine OFF)",
+                CounterfactualBenchmarkFixtures.runBagehotBenchmark());
+        ablationMatrix.put("11. Resource Curse & Dutch Disease (CordenNearyDutchDiseaseEngine OFF)",
+                CounterfactualBenchmarkFixtures.runCordenNearyBenchmark());
+        ablationMatrix.put("12. Staple Export Corridor Lock-in (InnisStaplesThesisEngine OFF)",
+                CounterfactualBenchmarkFixtures.runInnisBenchmark());
+        ablationMatrix.put("13. Nomadic Steppe Extortion & Shadow Empire (BarfieldNomadicSteppeEmpireEngine OFF)",
+                CounterfactualBenchmarkFixtures.runBarfieldSteppeBenchmark());
+        ablationMatrix.put("14. Cybernetic Homeostatic Oscillation Damping (WienerCyberneticHomeostasisEngine OFF)",
+                CounterfactualBenchmarkFixtures.runWienerCyberneticBenchmark());
+        ablationMatrix.put("15. Differential Land Rent & Margin Pressure (RicardoDifferentialLandRentEngine OFF)",
+                CounterfactualBenchmarkFixtures.runRicardoBenchmark());
+        ablationMatrix.put("16. Dual-Sector Surplus Labor Transition (LewisDualSectorTurningPointEngine OFF)",
+                CounterfactualBenchmarkFixtures.runLewisBenchmark());
+        ablationMatrix.put("17. Infrastructure Long Wave Cycle (KondratievSchumpeterLongWaveEngine OFF)",
+                CounterfactualBenchmarkFixtures.runKondratievBenchmark());
+        ablationMatrix.put("18. Energy Proximity & Ghost Acreage Breakout (PomeranzGreatDivergenceEngine OFF)",
+                CounterfactualBenchmarkFixtures.runPomeranzBenchmark());
+
+        System.out.println("==========================================================================================================");
+        System.out.println(" 🔬 PILLAR 4 MODE C: TYPE-B ENGINE KNOCK-OUT ABLATION DIVERGENCE MATRIX (ENGINE ON vs. UNCHECKED / OFF)");
+        System.out.println("==========================================================================================================");
+
+        for (var entry : ablationMatrix.entrySet()) {
+            String family = entry.getKey();
+            var res = entry.getValue();
+            double relDivergencePct = Math.abs(res.meanTreatment() - res.meanControl())
+                    / Math.max(1e-6, Math.abs(res.meanTreatment())) * 100.0;
+
+            System.out.printf(Locale.US,
+                    "%-72s | Control(OFF)=%10.2f | Coupled(ON)=%10.2f | ΔDivergence=%6.1f%% | |d|=%5.2f | KS=%5.3f%n",
+                    family, res.meanControl(), res.meanTreatment(), relDivergencePct, Math.abs(res.cohensD()), res.ksDistance());
+
+            assertNotEquals(res.meanControl(), res.meanTreatment(), 1e-6,
+                    "Unchecking Type-B engine family [" + family + "] must induce measurable trajectory divergence");
+            assertTrue(Math.abs(res.cohensD()) >= 0.50 || relDivergencePct >= 5.0,
+                    "Knock-out of [" + family + "] must produce significant structural divergence (|d| >= 0.50 or Δ >= 5%)");
+        }
     }
 }

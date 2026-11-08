@@ -7,7 +7,9 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.engines.ProceduralEnginePlugin;
+import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,10 +74,14 @@ public class WestBettencourtAllometryEngine implements ProceduralEnginePlugin {
 
             double normalizedPop = Math.max(1.0, (double) pop / refPop);
 
-            // Super-linear capital & innovation output (West & Bettencourt 2007: Y ∝ N^1.15)
+            // Super-linear capital & innovation output (West & Bettencourt 2007: Y ∝ N^1.15), bounded by thermodynamic power capacity (Garrett 2011)
             double superlinearFactor = Math.pow(normalizedPop, SUPERLINEAR_EXPONENT - 1.0); // N^0.15 boost per capita
             double currentCapital = cell.getResourceCapitalOr(10.0);
-            cell.setResourceCapital(currentCapital + (currentCapital * 0.02 * superlinearFactor * deltaYears));
+            double kPerCapita = currentCapital / pop;
+            double powerWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
+            double kEnergized = Math.max(120.0, powerWatts / H3CellPhysicsAndStateHelper.GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT);
+            double thermodynamicHeadroom = Math.max(0.0, 1.0 - (kPerCapita / kEnergized));
+            cell.setResourceCapital(currentCapital + (currentCapital * 0.02 * superlinearFactor * thermodynamicHeadroom * deltaYears));
 
             // Sub-linear infrastructure maintenance cost efficiency (N^-0.15 savings per capita)
             double sublinearFactor = Math.pow(normalizedPop, SUBLINEAR_EXPONENT - 1.0);

@@ -166,8 +166,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         base.setName("EastMed_Neolithic_Base");
         base.setStartDateYear(-8000);
         base.setEndDateYear(-7970);
-        base.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(3));
-        base.setH3Resolution(3);
+        base.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(4));
+        base.setH3Resolution(4);
         base.setTemporalResolutionDays(30.0);
         base.setSeed(424242L);
         HistoricalMapGenerator.populateScenarioHistoricalMaps(base);
@@ -202,7 +202,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         double shiftRes = computeCentroidShiftKm(gMap, wMapRes, wCellsRes);
         double reflRes = computeBoundaryReflectionIndex(gMap, wMapRes, wCellsRes);
         boolean passRes = pRes >= 0.85 && mapeRes < 0.25;
-        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "DYNAMIC_RESERVOIR", 3, 30.0,
+        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "DYNAMIC_RESERVOIR", 4, 30.0,
                 pRes, mapeRes, shiftRes, reflRes, passRes, "Sponge layer smoothly absorbs outbound flux"));
 
         // Test B: CLOSED_BARRIER (Reflective Neumann)
@@ -218,7 +218,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         double shiftClosed = computeCentroidShiftKm(gMap, wMapClosed, wCellsClosed);
         double reflClosed = computeBoundaryReflectionIndex(gMap, wMapClosed, wCellsClosed);
         boolean passClosed = pClosed >= 0.70 && mapeClosed < 0.25;
-        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "CLOSED_BARRIER", 3, 30.0,
+        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "CLOSED_BARRIER", 4, 30.0,
                 pClosed, mapeClosed, shiftClosed, reflClosed, passClosed, "Reflective boundary induces marginal boundary pileup"));
 
         // Test C: PERIODIC_TOROIDAL (Periodic Wrap-Around)
@@ -234,7 +234,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         double shiftTor = computeCentroidShiftKm(gMap, wMapTor, wCellsTor);
         double reflTor = computeBoundaryReflectionIndex(gMap, wMapTor, wCellsTor);
         boolean passTor = pTor >= 0.60 && mapeTor < 0.25;
-        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "PERIODIC_TOROIDAL", 3, 30.0,
+        list.add(new BenchmarkResult("Eastern Mediterranean Neolithic", "Boundary Regime", "PERIODIC_TOROIDAL", 4, 30.0,
                 pTor, mapeTor, shiftTor, reflTor, passTor, "Toroidal wrap reinjects migrants on opposite edge"));
 
         recGlobal.getSpatialSnapshots().clear();
@@ -259,6 +259,12 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
 
         double minLat = 28.0, maxLat = 42.0;
         double minLng = 26.0, maxLng = 48.0;
+
+        // Focused regional window around Levant / Nile Delta for High-Res 5, 6, 7 comparison
+        double rMinLat = 30.0, rMaxLat = 34.0;
+        double rMinLng = 31.0, rMaxLng = 35.0;
+        Map<Long, Double> globalRes4LevantMap = new java.util.HashMap<>();
+        List<H3Cell> globalRes4Cells = new ArrayList<>();
 
         // Test Res 3, 4 with Global Sphere vs Window
         for (int res : new int[] { 3, 4 }) {
@@ -289,6 +295,11 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
             List<H3Cell> gCells = recGlobal.getSpatialSnapshotAt(finalYear);
             List<H3Cell> wCells = recWin.getSpatialSnapshotAt(finalYear);
 
+            if (res == 4 && gCells != null) {
+                globalRes4LevantMap = extractPopDensityMap(gCells, rMinLat, rMaxLat, rMinLng, rMaxLng);
+                globalRes4Cells = new ArrayList<>(gCells);
+            }
+
             Map<Long, Double> gMap = extractPopDensityMap(gCells, minLat, maxLat, minLng, maxLng);
             Map<Long, Double> wMap = extractPopDensityMap(wCells, minLat, maxLat, minLng, maxLng);
 
@@ -305,7 +316,13 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
                     p, mape, shift, refl, pass, String.format("H3 Res %d evaluated (global vs windowed sub-grid)", res)));
         }
 
-        // Test High-Res 5, 6, 7 (Windowed High-Resolution Execution over focused regional window)
+        // Test High-Res 5, 6, 7 (Windowed High-Resolution Execution compared against Global Res 4 parent cells)
+        com.uber.h3core.H3Core h3Core = null;
+        try {
+            h3Core = com.uber.h3core.H3Core.newInstance();
+        } catch (Exception ignored) {
+        }
+
         for (int res : new int[] { 5, 6, 7 }) {
             Scenario winHigh = new Scenario();
             winHigh.setName("Spatial_Win_HighRes_" + res);
@@ -317,9 +334,6 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
             winHigh.setSeed(2000L + res);
             HistoricalMapGenerator.populateScenarioHistoricalMaps(winHigh);
 
-            // Focused regional window around Levant / Nile Delta
-            double rMinLat = 30.0, rMaxLat = 34.0;
-            double rMinLng = 31.0, rMaxLng = 35.0;
             winHigh.setClippingEnabled(true);
             winHigh.setMinLat(rMinLat); winHigh.setMaxLat(rMaxLat);
             winHigh.setMinLng(rMinLng); winHigh.setMaxLng(rMaxLng);
@@ -329,16 +343,29 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
             int finalYear = (int) winHigh.getEndDateYear();
             List<H3Cell> wCells = recHigh.getSpatialSnapshotAt(finalYear);
 
-            double p = 0.965 - (res - 5) * 0.012;
-            double mape = 0.045 + (res - 5) * 0.008;
-            double shift = 3.2 - (res - 5) * 0.6;
-            double refl = 1.015;
-            boolean pass = wCells != null && !wCells.isEmpty();
+            // Aggregate High-Res child cells to their Resolution 4 parent H3 hexagons for genuine comparison against Global Res 4
+            Map<Long, Double> wAggregatedToRes4 = new java.util.HashMap<>();
+            if (wCells != null && h3Core != null) {
+                for (H3Cell c : wCells) {
+                    if (c.getLatitude() >= rMinLat && c.getLatitude() <= rMaxLat &&
+                        c.getLongitude() >= rMinLng && c.getLongitude() <= rMaxLng) {
+                        long parentRes4 = h3Core.cellToParent(c.getH3Index(), 4);
+                        double pop = c.getPopulation() != null ? c.getPopulation().doubleValue() : 0.0;
+                        wAggregatedToRes4.merge(parentRes4, pop, Double::sum);
+                    }
+                }
+            }
+
+            double p = computeSpatialPearsonCorrelation(globalRes4LevantMap, wAggregatedToRes4);
+            double mape = computeCoreMAPE(globalRes4LevantMap, wAggregatedToRes4);
+            double shift = computeCentroidShiftKm(globalRes4LevantMap, wAggregatedToRes4, globalRes4Cells);
+            double refl = computeBoundaryReflectionIndex(globalRes4LevantMap, wAggregatedToRes4, globalRes4Cells);
+            boolean pass = wCells != null && !wCells.isEmpty() && p >= 0.75;
 
             recHigh.getSpatialSnapshots().clear();
 
             list.add(new BenchmarkResult("Spatial Resolution Scaling", "Spatial Resolution (High-Res)", "DYNAMIC_RESERVOIR", res, 30.0,
-                    p, mape, shift, refl, pass, String.format("H3 Res %d regional simulation executed across %d cells", res, wCells != null ? wCells.size() : 0)));
+                    p, mape, shift, refl, pass, String.format("H3 Res %d regional simulation executed across %d cells vs Global Res 4 parent mesh", res, wCells != null ? wCells.size() : 0)));
         }
 
         return list;
@@ -356,13 +383,13 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     public static List<BenchmarkResult> runTemporalStepSweepBenchmark() {
         List<BenchmarkResult> list = new ArrayList<>();
 
-        // Baseline reference: Monthly Δt = 30d
+        // Baseline reference: Monthly Δt = 30d at Resolution 4
         Scenario refSc = new Scenario();
         refSc.setName("Temporal_Ref_30d");
         refSc.setStartDateYear(-2000);
         refSc.setEndDateYear(-1995);
-        refSc.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(3));
-        refSc.setH3Resolution(3);
+        refSc.setPlanetPreset(PlanetPreset.EARTH_LIKE.withResolution(4));
+        refSc.setH3Resolution(4);
         refSc.setTemporalResolutionDays(30.0);
         refSc.setSeed(9876L);
         HistoricalMapGenerator.populateScenarioHistoricalMaps(refSc);
@@ -398,7 +425,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
             recTest.getSpatialSnapshots().clear();
 
             String label = dt <= 1.0 ? "Daily (1d)" : (dt <= 7.0 ? "Weekly (7d)" : (dt <= 30.0 ? "Monthly (30d)" : (dt <= 90.0 ? "Quarterly (90d)" : "Annual (365d)")));
-            list.add(new BenchmarkResult("Temporal Step Sensitivity", "Temporal Discretization", "DYNAMIC_RESERVOIR", 3, dt,
+            list.add(new BenchmarkResult("Temporal Step Sensitivity", "Temporal Discretization", "DYNAMIC_RESERVOIR", 4, dt,
                     p, mape, shift, refl, pass, String.format("Time step %s vs Monthly baseline", label)));
         }
         recRef.getSpatialSnapshots().clear();

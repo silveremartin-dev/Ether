@@ -109,7 +109,7 @@ public final class ScenarioDefaultValueManager {
             if ("tenochtitlanCapital".equals(paramKey)) return 150.0;
             if ("aralRainfallThreshold".equals(paramKey)) return 300.0;
             if ("damMinElevation".equals(paramKey)) return 300.0;
-        } else if ("FertileCrescentSalinizationEngine".equals(engineKey)) {
+        } else if ("SoilSalinizationHydrologyEngine".equals(engineKey)) {
             if ("salinizationRate".equals(paramKey)) return 0.02;
         } else if ("LandReclamationEngine".equals(engineKey)) {
             if ("polderTechThreshold".equals(paramKey)) return 4.0;

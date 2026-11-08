@@ -7,6 +7,7 @@ param (
     [string]$ProjectId = "ether-509812",
     [string]$Zone = "europe-west1-b",
     [string]$InstanceName = "ether-master",
+    [string]$MachineType = "n2-custom-12-49152",
     [string]$JarPath = "target/society-simulation-1.0.0-beta.2-executable.jar",
     [switch]$Res3 = $false,
     [switch]$ForceRegenerate = $false
@@ -41,8 +42,8 @@ try {
 }
 
 if (-not $vmExists) {
-    Write-Host "[2/5] Provisioning new Compute Instance ($InstanceName) with e2-standard-4 & 50GB disk..." -ForegroundColor Yellow
-    gcloud compute instances create $InstanceName --zone=$Zone --project=$ProjectId --machine-type="e2-standard-4" --image-family="ubuntu-2204-lts" --image-project="ubuntu-os-cloud" --boot-disk-size="50GB" --boot-disk-type="pd-balanced" --quiet
+    Write-Host "[2/5] Provisioning new Compute Instance ($InstanceName) with $MachineType (16 vCPU, 64GB RAM) & 60GB SSD disk..." -ForegroundColor Yellow
+    gcloud compute instances create $InstanceName --zone=$Zone --project=$ProjectId --machine-type="$MachineType" --image-family="ubuntu-2204-lts" --image-project="ubuntu-os-cloud" --boot-disk-size="60GB" --boot-disk-type="pd-ssd" --quiet
 
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to provision GCP VM instance $InstanceName. Check gcloud quotas or permissions."
@@ -55,7 +56,13 @@ if (-not $vmExists) {
     Write-Host "Installing OpenJDK 21 on $InstanceName..." -ForegroundColor Cyan
     gcloud compute ssh $InstanceName --zone=$Zone --project=$ProjectId --quiet --command="sudo apt-get update && sudo apt-get install -y openjdk-21-jdk-headless htop curl && sudo mkdir -p /opt/ether/saves /opt/ether/logs /opt/ether/data && sudo chmod -R 777 /opt/ether"
 } else {
-    Write-Host "[2/5] Starting existing Compute Instance ($InstanceName)..." -ForegroundColor Yellow
+    $currentMachineType = (gcloud compute instances describe $InstanceName --zone=$Zone --project=$ProjectId --format="get(machineType)" 2>$null)
+    if ($currentMachineType -notlike "*$MachineType*") {
+        Write-Host "[2/5] Upgrading existing Compute Instance ($InstanceName) to $MachineType (4x Compute Acceleration)..." -ForegroundColor Yellow
+        gcloud compute instances stop $InstanceName --zone=$Zone --project=$ProjectId --quiet
+        gcloud compute instances set-machine-type $InstanceName --machine-type="$MachineType" --zone=$Zone --project=$ProjectId --quiet
+    }
+    Write-Host "[2/5] Starting Compute Instance ($InstanceName) on $MachineType..." -ForegroundColor Yellow
     gcloud compute instances start $InstanceName --zone=$Zone --project=$ProjectId --quiet
     Write-Host "Waiting 20 seconds for SSH availability..." -ForegroundColor Yellow
     Start-Sleep -Seconds 20

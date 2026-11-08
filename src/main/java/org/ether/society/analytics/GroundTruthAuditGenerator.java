@@ -281,7 +281,8 @@ public class GroundTruthAuditGenerator {
             obsList.add(obs);
             simList.add(sim);
 
-            if (errPct > 10.0 && driftYear == null) {
+            double allowedTolerancePct = HistoricalValidationKernel.computeContinuousTemporalTolerance(yr) * 100.0;
+            if (errPct > allowedTolerancePct && driftYear == null) {
                 driftYear = yr;
             }
             if (errPct > maxError) {

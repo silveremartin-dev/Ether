@@ -165,7 +165,7 @@ public class HistoricalBehaviorsTestSuite {
         H3Cell cell = testCells.get(0);
         double initialFood = cell.getFoodResource();
 
-        FertileCrescentSalinizationEngine.processHybrid(testCells, 100.0); // 1 century of irrigation
+        org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine.processSoilSalinization(testCells, 100.0); // 1 century of irrigation
 
         assertTrue(cell.getFoodResource() < initialFood,
             "Fertile Crescent engine: Canal irrigation topsoil salinization should degrade food yields over time.");

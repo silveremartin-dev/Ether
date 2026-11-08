@@ -43,9 +43,9 @@ public class HighResolutionPlanetaryRunFalsificationTest {
         }
         assertNotNull(ramessesScenario, "Ramesses II scenario must exist in built-in scenarios");
 
-        // Bound scenario duration to 1 year (12 monthly ticks) and Res 5 for regression test speed
+        // Bound scenario duration to 1 year (12 monthly ticks) and Res 6 for regional window
         ramessesScenario.setEndDateYear(-1278);
-        ramessesScenario.setH3Resolution(5);
+        ramessesScenario.setH3Resolution(6);
 
         // Execute headless real physics run
         SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(ramessesScenario);
@@ -72,9 +72,9 @@ public class HighResolutionPlanetaryRunFalsificationTest {
         }
         assertNotNull(blackDeathScenario, "Black Death 1347 scenario must exist in built-in scenarios");
 
-        // Bound duration for test execution (1347 to 1353: the 6 critical plague pandemic years)
+        // Bound duration for test execution (1347 to 1353: the 6 critical plague pandemic years) at Res 4
         blackDeathScenario.setEndDateYear(1353);
-        blackDeathScenario.setH3Resolution(2);
+        blackDeathScenario.setH3Resolution(4);
         blackDeathScenario.setTargetCohortSize(25000);
 
         // Execute headless real physics run
@@ -102,10 +102,9 @@ public class HighResolutionPlanetaryRunFalsificationTest {
         }
         assertNotNull(earthBAUScenario, "Earth 2026 future baseline scenario must exist in built-in scenarios");
 
-        // Bound planetary scenario duration to 1 year (12 monthly ticks) for regression test speed
+        // Bound planetary scenario duration to 1 year (12 monthly ticks) at Res 4
         earthBAUScenario.setEndDateYear(earthBAUScenario.getStartDateYear() + 1);
-        // Optimize resolution and cohort granularity for regression test performance
-        earthBAUScenario.setH3Resolution(2);
+        earthBAUScenario.setH3Resolution(4);
         earthBAUScenario.setTargetCohortSize(50000);
 
         // Execute headless real physics run
@@ -133,9 +132,9 @@ public class HighResolutionPlanetaryRunFalsificationTest {
         }
         assertNotNull(ww1Scenario, "World Wars 1914 scenario must exist in built-in scenarios");
 
-        // Run from 1914 to 1920 (WWI + Spanish Flu peak interval)
+        // Run from 1914 to 1920 (WWI + Spanish Flu peak interval) at Res 4
         ww1Scenario.setEndDateYear(1920);
-        ww1Scenario.setH3Resolution(2);
+        ww1Scenario.setH3Resolution(4);
         ww1Scenario.setTargetCohortSize(50000);
 
         SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(ww1Scenario);
@@ -161,9 +160,9 @@ public class HighResolutionPlanetaryRunFalsificationTest {
         }
         assertNotNull(sc, "Bronze Age Collapse scenario must exist in built-in scenarios");
 
-        // Run from -1200 to -1198 (2 years covering initial shock)
+        // Run from -1200 to -1198 (2 years covering initial shock) at Res 6 regional window
         sc.setEndDateYear(-1198);
-        sc.setH3Resolution(3);
+        sc.setH3Resolution(6);
         sc.setTargetCohortSize(10000);
 
         SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(sc);
@@ -183,9 +182,9 @@ public class HighResolutionPlanetaryRunFalsificationTest {
         }
         assertNotNull(sc, "Antonine Plague scenario must exist in built-in scenarios");
 
-        // Run from 165 to 167 (2 years initial pandemic wave)
+        // Run from 165 to 167 (2 years initial pandemic wave) at Res 6 regional window
         sc.setEndDateYear(167);
-        sc.setH3Resolution(3);
+        sc.setH3Resolution(6);
         sc.setTargetCohortSize(20000);
 
         SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(sc);
@@ -205,9 +204,9 @@ public class HighResolutionPlanetaryRunFalsificationTest {
         }
         assertNotNull(sc, "Pax Romana Augustus scenario must exist in built-in scenarios");
 
-        // Run from An 0 to An 2 (2 years of stable continuity baseline)
+        // Run from An 0 to An 2 (2 years of stable continuity baseline) at Res 4
         sc.setEndDateYear(2);
-        sc.setH3Resolution(3);
+        sc.setH3Resolution(4);
         sc.setTargetCohortSize(20000);
 
         SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(sc);

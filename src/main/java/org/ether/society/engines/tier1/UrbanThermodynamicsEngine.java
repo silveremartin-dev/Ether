@@ -43,13 +43,9 @@ public class UrbanThermodynamicsEngine {
             // Urban Heat Island (T_uhi) formula: deltaT = 0.5 * log10(pop / 1000) (Oke 1982)
             double uhiDeltaT = 0.5 * Math.log10(pop / 1000.0);
             double currentTemp = cell.getTemperatureOr(15.0);
-            double elev = cell.getElevationOr(0.0);
-            double lat = cell.getLatitudeOr(0.0);
-            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
-            double targetTemp = baselineTemp + uhiDeltaT;
 
-            // Apply UHI relaxation towards equilibrium target temperature
-            cell.setTemperature(currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor);
+            // Apply UHI warming relaxation towards local thermodynamic equilibrium
+            cell.setTemperature(currentTemp + uhiDeltaT * thermalRelaxationFactor);
 
             // High population density accelerates localized aquifer depletion
             if (pop > 50000) {
