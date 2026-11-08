@@ -170,7 +170,7 @@ public final class AutoEpochScenarioHelper {
         states.put("BagehotFractionalReserveEngine", isEarth && year >= 1873L && withinHorizon);
 
         // =========================================================================
-        // 5. CONTEMPORARY, GREAT ACCELERATION & PROSPECTIVE ENGINES (14)
+        // 5. CONTEMPORARY, GREAT ACCELERATION & OFF-EARTH HABITAT ENGINES (12)
         // =========================================================================
         states.put("PhysicalLeontiefInputOutputEngine", (!isEarth || year >= 1900L) && withinHorizon);
         states.put("PhysicalSupplyChainEngine", (!isEarth || year >= 1900L) && withinHorizon);
@@ -184,15 +184,11 @@ public final class AutoEpochScenarioHelper {
         // Silicon photolithography Moore's Law up to atomic/Landauer physical limits (1990-2060 CE)
         states.put("KurzweilAcceleratingReturnsEngine", isEarth && year >= 1990L && year <= 2060L);
         states.put("CliodynamicAdvisorEngine", isEarth && year >= 2020L && withinHorizon);
-        // Prospective stratospheric aerosol geoengineering (2035-2200 CE)
-        states.put("GeoengineeringAlbedoFeedbackEngine", isEarth && year >= 2035L && withinHorizon);
-        // Prospective off-Earth ISRU autarky and space colonization (2050-2200 CE on Earth, all epochs on Moon/Mars)
-        states.put("IsruAutarkyAndSpaceColonizationEngine", (!isEarth || year >= 2050L) && withinHorizon);
-        // Prospective planetary engineering and terraforming (2100-2200 CE on Earth, all epochs on Moon/Mars)
-        states.put("TerraformingEngine", (!isEarth || year >= 2100L) && withinHorizon);
+        // Off-Earth sealed dome In-Situ Resource Utilization (ISRU): false on Earth, active only on Moon/Mars outposts
+        states.put("IsruAutarkyAndSpaceColonizationEngine", !isEarth && withinHorizon);
 
         // =========================================================================
-        // 6. SPECIALIZED REGIONAL, COUNTERFACTUAL & PURE-THEORY SANDBOX ENGINES (14)
+        // 6. SPECIALIZED REGIONAL, COUNTERFACTUAL, SPECULATIVE & PURE-THEORY ENGINES (16)
         // Unchecked (false) by default on general global auto-scenarios; enabled only
         // in dedicated regional/thematic presets or when explicitly checked by the user.
         // =========================================================================
@@ -209,6 +205,8 @@ public final class AutoEpochScenarioHelper {
         states.put("NordhausDiceHybridEngine", false);
         states.put("NordhausDicePureEngine", false);
         states.put("NuclearWarfareClimateEngine", false);
+        states.put("GeoengineeringAlbedoFeedbackEngine", false);
+        states.put("TerraformingEngine", false);
         states.put("BifurcationChaosEngine", false);
 
         return states;

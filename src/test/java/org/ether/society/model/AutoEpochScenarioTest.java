@@ -170,27 +170,28 @@ class AutoEpochScenarioTest {
         assertFalse(post1950.get("GeoengineeringAlbedoFeedbackEngine"));
         assertFalse(post1950.get("NordhausDiceHybridEngine"));
 
-        // Future 2050 CE: Geoengineering & ISRU activate; Lewis & Kurzweil still active; Terraforming not yet active on Earth
+        // Future 2050 CE: Lewis & Kurzweil still active; speculative geoengineering, terraforming & Earth ISRU stay unchecked (false)
         assertTrue(future2050.get("LewisDualSectorTurningPointEngine"));
         assertTrue(future2050.get("KurzweilAcceleratingReturnsEngine"));
         assertTrue(future2050.get("World3CouplingEngine"));
-        assertTrue(future2050.get("GeoengineeringAlbedoFeedbackEngine")); // Activates [2035, 2200 CE]
-        assertTrue(future2050.get("IsruAutarkyAndSpaceColonizationEngine")); // Activates [2050, 2200 CE]
-        assertFalse(future2050.get("TerraformingEngine")); // Activates at 2100 CE on Earth
+        assertFalse(future2050.get("GeoengineeringAlbedoFeedbackEngine"));
+        assertFalse(future2050.get("IsruAutarkyAndSpaceColonizationEngine"));
+        assertFalse(future2050.get("TerraformingEngine"));
 
-        // Deep Prospective 2200 CE: Transitional 20th/21st-century regimes deactivate; long-term & space/geoengineering stay active
+        // Deep Prospective 2200 CE: Transitional 20th/21st-century regimes deactivate; speculative engines remain unchecked (false) by default
         assertFalse(prospective2200.get("LewisDualSectorTurningPointEngine")); // Ends 2050 CE
         assertFalse(prospective2200.get("CordenNearyDutchDiseaseEngine")); // Ends 2060 CE
         assertFalse(prospective2200.get("KurzweilAcceleratingReturnsEngine")); // Ends 2060 CE
         assertFalse(prospective2200.get("World3CouplingEngine")); // Ends 2100 CE
         assertTrue(prospective2200.get("PublicSanitationWaterGridEngine"));
-        assertTrue(prospective2200.get("GeoengineeringAlbedoFeedbackEngine"));
-        assertTrue(prospective2200.get("IsruAutarkyAndSpaceColonizationEngine"));
-        assertTrue(prospective2200.get("TerraformingEngine"));
+        assertFalse(prospective2200.get("GeoengineeringAlbedoFeedbackEngine"));
+        assertFalse(prospective2200.get("IsruAutarkyAndSpaceColonizationEngine"));
+        assertFalse(prospective2200.get("TerraformingEngine"));
+        // On Mars, sealed-dome ISRU autarky is active, whereas planetary Terraforming stays unchecked by default
         assertTrue(mars.get("IsruAutarkyAndSpaceColonizationEngine"));
-        assertTrue(mars.get("TerraformingEngine"));
+        assertFalse(mars.get("TerraformingEngine"));
 
-        // Category VI: Specialized regional, counterfactual & pure-theory sandbox engines ALWAYS unchecked by default
+        // Category VI: Specialized regional, counterfactual, speculative & pure-theory sandbox engines ALWAYS unchecked by default
         for (Map<String, Boolean> cfg : List.of(plio, paleo, medieval, earlyModern, industrial1800, post1950, future2050, prospective2200, mars)) {
             assertFalse(cfg.get("TasmanianCulturalRegressionEngine"));
             assertFalse(cfg.get("AmerindianEcosystemEngine"));
@@ -202,6 +203,8 @@ class AutoEpochScenarioTest {
             assertFalse(cfg.get("NordhausDicePureEngine"));
             assertFalse(cfg.get("PinkerViolenceDeclinePureEngine"));
             assertFalse(cfg.get("NuclearWarfareClimateEngine"));
+            assertFalse(cfg.get("GeoengineeringAlbedoFeedbackEngine"));
+            assertFalse(cfg.get("TerraformingEngine"));
             assertFalse(cfg.get("BifurcationChaosEngine"));
         }
     }
