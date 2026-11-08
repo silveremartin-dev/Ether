@@ -82,26 +82,28 @@ public final class AutoEpochScenarioHelper {
 
         // =========================================================================
         // 1. DEEP-TIME BIOCULTURAL, EVOLUTIONARY & FORAGER-MOBILITY ENGINES (8)
-        // Valid from Plio-Pleistocene hominin emergence (-3,000,000 BP) onward
+        // Valid from Plio-Pleistocene hominin emergence (-3,000,000 BP) through 2200 CE
         // =========================================================================
-        states.put("SelfDomesticationEngine", isEarth && year >= -3000000L);
-        states.put("SexualSelectionMatingEngine", isEarth && year >= -3000000L);
-        states.put("KinSelectionHamiltonEngine", isEarth && year >= -3000000L);
-        states.put("PriceMultilevelSelectionEngine", isEarth && year >= -3000000L);
-        states.put("LanguageLinguisticEngine", isEarth && year >= -300000L);
-        states.put("CulturalSociologyEngine", isEarth && year >= -300000L);
-        states.put("DynamicMaritimeRoutingGraph", isEarth && year >= -60000L);
+        boolean withinHorizon = year <= 2200L;
+        states.put("SelfDomesticationEngine", isEarth && year >= -3000000L && withinHorizon);
+        states.put("SexualSelectionMatingEngine", isEarth && year >= -3000000L && withinHorizon);
+        states.put("KinSelectionHamiltonEngine", isEarth && year >= -3000000L && withinHorizon);
+        states.put("PriceMultilevelSelectionEngine", isEarth && year >= -3000000L && withinHorizon);
+        states.put("LanguageLinguisticEngine", isEarth && year >= -300000L && withinHorizon);
+        states.put("CulturalSociologyEngine", isEarth && year >= -300000L && withinHorizon);
+        states.put("DynamicMaritimeRoutingGraph", isEarth && year >= -60000L && withinHorizon);
         states.put("TasmanianCulturalRegressionEngine", false); // Specialized demographic isolation / treadmill loss test
 
         // =========================================================================
         // 2. NEOLITHIC, BRONZE AGE & CLASSICAL AGRARIAN-STATE ENGINES (24)
         // =========================================================================
-        boolean isAgrarianOrLater = isEarth && year >= -8000L;
+        boolean isAgrarianOrLater = isEarth && year >= -8000L && withinHorizon;
         states.put("BoserupAgriculturalIntensificationEngine", isAgrarianOrLater);
         states.put("ScottAgainstTheGrainPureEngine", isEarth && year >= -4000L && year <= 1500L);
 
-        boolean isStateEraOrLater = isEarth && year >= -3000L;
-        states.put("DraftAnimalFodderAllocationEngine", isStateEraOrLater);
+        boolean isStateEraOrLater = isEarth && year >= -3000L && withinHorizon;
+        // Draft animal fodder allocation applies from Bronze Age plow (-3000 BCE) until tractor mechanization (1950 CE)
+        states.put("DraftAnimalFodderAllocationEngine", isEarth && year >= -3000L && year <= 1950L);
         states.put("TradeNetworkEngine", isStateEraOrLater);
         states.put("WarDiplomacyEngine", isStateEraOrLater);
         states.put("ThermodynamicWarfareEngine", isStateEraOrLater);
@@ -115,7 +117,7 @@ public final class AutoEpochScenarioHelper {
         states.put("StructuralDemographicBifurcationEngine", isStateEraOrLater);
         states.put("TainterComplexityCollapseEngine", isStateEraOrLater);
         states.put("CliodynamicsEngine", isStateEraOrLater);
-        states.put("ArthurCombinatorialTechnologyEngine", !isEarth || year >= -3000L);
+        states.put("ArthurCombinatorialTechnologyEngine", (!isEarth || year >= -3000L) && withinHorizon);
         states.put("GranovetterThresholdCascadeEngine", isStateEraOrLater);
         states.put("SchellingAxelrodSegregationEngine", isStateEraOrLater);
         states.put("SpatialMetapopulationSEIREngine", isStateEraOrLater);
@@ -123,62 +125,74 @@ public final class AutoEpochScenarioHelper {
         states.put("LenskiEcologicalEvolutionaryEngine", isStateEraOrLater);
         states.put("WhiteEnergyEvolutionEngine", isStateEraOrLater);
         states.put("FrontierAsabiyyahEngine", isEarth && year >= -3000L && year <= 1800L);
-        states.put("AxialAgeMoralizingGodsEngine", isEarth && year >= -1000L);
+        states.put("AxialAgeMoralizingGodsEngine", isEarth && year >= -1000L && withinHorizon);
 
         // =========================================================================
         // 3. IRON AGE, MEDIEVAL & EARLY MODERN MERCANTILE ENGINES (13)
         // =========================================================================
         states.put("BarfieldNomadicSteppeEmpireEngine", isEarth && year >= -1000L && year <= 1750L);
-        states.put("AcemogluRobinsonInstitutionsEngine", isEarth && year >= -500L);
-        states.put("KrugmanCorePeripheryEngine", isEarth && year >= -500L);
-        states.put("CoGovernanceTradeEngine", isEarth && year >= 1000L);
-        states.put("LandReclamationEngine", isEarth && year >= 1200L);
-        states.put("MilitaryTechShockEngine", isEarth && year >= 1200L);
-        states.put("PhysicalMediaPrintingEngine", isEarth && year >= 1450L);
+        states.put("AcemogluRobinsonInstitutionsEngine", isEarth && year >= -500L && withinHorizon);
+        states.put("KrugmanCorePeripheryEngine", isEarth && year >= -500L && withinHorizon);
+        states.put("CoGovernanceTradeEngine", isEarth && year >= 1000L && withinHorizon);
+        states.put("LandReclamationEngine", isEarth && year >= 1200L && withinHorizon);
+        states.put("MilitaryTechShockEngine", isEarth && year >= 1200L && withinHorizon);
+        // Gutenberg physical paper press (1450 CE) superseded after 2010 CE by digital InformationEntropyEngine
+        states.put("PhysicalMediaPrintingEngine", isEarth && year >= 1450L && year <= 2010L);
         states.put("AsymmetricColonialTradeEngine", isEarth && year >= 1492L && year <= 1960L);
         states.put("CrosbyColumbianExchangeEngine", isEarth && year >= 1492L && year <= 1750L);
         states.put("ProtestantWorkEthicEngine", isEarth && year >= 1550L && year <= 1950L);
-        states.put("SovereignTreasuryBondEngine", isEarth && year >= 1650L);
-        states.put("NavalHydrodynamicsFreightEngine", isEarth && year >= 1700L);
-        states.put("InnisStaplesThesisEngine", isEarth && year >= 1700L);
+        states.put("SovereignTreasuryBondEngine", isEarth && year >= 1650L && withinHorizon);
+        states.put("NavalHydrodynamicsFreightEngine", isEarth && year >= 1700L && withinHorizon);
+        // Raw colonial frontier staple extraction (fur, cod, timber) from 1700 CE to 1960 CE
+        states.put("InnisStaplesThesisEngine", isEarth && year >= 1700L && year <= 1960L);
 
         // =========================================================================
         // 4. INDUSTRIAL, FOSSIL-EXERGY & MODERN MACROECONOMIC ENGINES (13)
         // =========================================================================
-        states.put("PomeranzGreatDivergenceEngine", isEarth && year >= 1750L);
-        states.put("RicardoDifferentialLandRentEngine", isEarth && year >= 1750L);
-        states.put("KondratievSchumpeterLongWaveEngine", isEarth && year >= 1780L);
+        // Pomeranz Great Divergence: 18th-19th century coal & ghost acreage takeoff (1750-1914 CE)
+        states.put("PomeranzGreatDivergenceEngine", isEarth && year >= 1750L && year <= 1914L);
+        // Ricardian landlord rent squeeze prior to Haber-Bosch synthetic yields (1750-1950 CE)
+        states.put("RicardoDifferentialLandRentEngine", isEarth && year >= 1750L && year <= 1950L);
+        states.put("KondratievSchumpeterLongWaveEngine", isEarth && year >= 1780L && withinHorizon);
 
-        boolean isIndustrialOrLater = isEarth && year >= 1800L;
-        states.put("KummelAyresExergyEngine", !isEarth || year >= 1800L);
+        boolean isIndustrialOrLater = isEarth && year >= 1800L && withinHorizon;
+        states.put("KummelAyresExergyEngine", (!isEarth || year >= 1800L) && withinHorizon);
         states.put("PolanyiFictitiousCommoditiesEngine", isIndustrialOrLater);
         states.put("HotellingResourceDepletionEngine", isIndustrialOrLater);
-        states.put("UrbanThermodynamicsEngine", isEarth && year >= 1850L);
-        states.put("PublicSanitationWaterGridEngine", isEarth && year >= 1850L);
-        states.put("SmilMaterialTransitionsPureEngine", isEarth && year >= 1850L);
-        states.put("CordenNearyDutchDiseaseEngine", isEarth && year >= 1850L);
-        states.put("LewisDualSectorTurningPointEngine", isEarth && year >= 1850L);
-        states.put("JevonsParadoxEngine", isEarth && year >= 1865L);
-        states.put("BagehotFractionalReserveEngine", isEarth && year >= 1873L);
+        states.put("UrbanThermodynamicsEngine", isEarth && year >= 1850L && withinHorizon);
+        states.put("PublicSanitationWaterGridEngine", isEarth && year >= 1850L && withinHorizon);
+        states.put("SmilMaterialTransitionsPureEngine", isEarth && year >= 1850L && withinHorizon);
+        // Hydrocarbon/mineral export Dutch Disease during the fossil era (1850-2060 CE)
+        states.put("CordenNearyDutchDiseaseEngine", isEarth && year >= 1850L && year <= 2060L);
+        // Lewis rural peasant labor surplus absorption (1850-2050 CE, completed globally by mid-21st century)
+        states.put("LewisDualSectorTurningPointEngine", isEarth && year >= 1850L && year <= 2050L);
+        states.put("JevonsParadoxEngine", isEarth && year >= 1865L && withinHorizon);
+        states.put("BagehotFractionalReserveEngine", isEarth && year >= 1873L && withinHorizon);
 
         // =========================================================================
-        // 5. CONTEMPORARY, GREAT ACCELERATION & PROSPECTIVE ENGINES (13)
+        // 5. CONTEMPORARY, GREAT ACCELERATION & PROSPECTIVE ENGINES (14)
         // =========================================================================
-        states.put("PhysicalLeontiefInputOutputEngine", !isEarth || year >= 1900L);
-        states.put("PhysicalSupplyChainEngine", !isEarth || year >= 1900L);
-        states.put("WienerCyberneticHomeostasisEngine", !isEarth || year >= 1900L);
-        states.put("InformationEntropyEngine", !isEarth || year >= 1900L);
-        states.put("EcotoxicologyFertilityEngine", isEarth && year >= 1950L);
-        states.put("NuclearSafetyRadiotoxicityEngine", !isEarth || year >= 1950L);
-        states.put("MarineSubmersionEngine", isEarth && year >= 1950L);
-        states.put("World3CouplingEngine", isEarth && year >= 1950L);
-        states.put("KurzweilAcceleratingReturnsEngine", isEarth && year >= 1990L);
-        states.put("CliodynamicAdvisorEngine", isEarth && year >= 2020L);
-        states.put("IsruAutarkyAndSpaceColonizationEngine", !isEarth || year >= 2050L);
-        states.put("TerraformingEngine", !isEarth || year >= 2100L);
+        states.put("PhysicalLeontiefInputOutputEngine", (!isEarth || year >= 1900L) && withinHorizon);
+        states.put("PhysicalSupplyChainEngine", (!isEarth || year >= 1900L) && withinHorizon);
+        states.put("WienerCyberneticHomeostasisEngine", (!isEarth || year >= 1900L) && withinHorizon);
+        states.put("InformationEntropyEngine", (!isEarth || year >= 1900L) && withinHorizon);
+        states.put("EcotoxicologyFertilityEngine", isEarth && year >= 1950L && withinHorizon);
+        states.put("NuclearSafetyRadiotoxicityEngine", (!isEarth || year >= 1950L) && withinHorizon);
+        states.put("MarineSubmersionEngine", isEarth && year >= 1950L && withinHorizon);
+        // MIT Club of Rome World3 model calibrated for the 20th-21st century industrial horizon (1950-2100 CE)
+        states.put("World3CouplingEngine", isEarth && year >= 1950L && year <= 2100L);
+        // Silicon photolithography Moore's Law up to atomic/Landauer physical limits (1990-2060 CE)
+        states.put("KurzweilAcceleratingReturnsEngine", isEarth && year >= 1990L && year <= 2060L);
+        states.put("CliodynamicAdvisorEngine", isEarth && year >= 2020L && withinHorizon);
+        // Prospective stratospheric aerosol geoengineering (2035-2200 CE)
+        states.put("GeoengineeringAlbedoFeedbackEngine", isEarth && year >= 2035L && withinHorizon);
+        // Prospective off-Earth ISRU autarky and space colonization (2050-2200 CE on Earth, all epochs on Moon/Mars)
+        states.put("IsruAutarkyAndSpaceColonizationEngine", (!isEarth || year >= 2050L) && withinHorizon);
+        // Prospective planetary engineering and terraforming (2100-2200 CE on Earth, all epochs on Moon/Mars)
+        states.put("TerraformingEngine", (!isEarth || year >= 2100L) && withinHorizon);
 
         // =========================================================================
-        // 6. SPECIALIZED REGIONAL, COUNTERFACTUAL & PURE-THEORY SANDBOX ENGINES (15)
+        // 6. SPECIALIZED REGIONAL, COUNTERFACTUAL & PURE-THEORY SANDBOX ENGINES (14)
         // Unchecked (false) by default on general global auto-scenarios; enabled only
         // in dedicated regional/thematic presets or when explicitly checked by the user.
         // =========================================================================
@@ -195,7 +209,6 @@ public final class AutoEpochScenarioHelper {
         states.put("NordhausDiceHybridEngine", false);
         states.put("NordhausDicePureEngine", false);
         states.put("NuclearWarfareClimateEngine", false);
-        states.put("GeoengineeringAlbedoFeedbackEngine", false);
         states.put("BifurcationChaosEngine", false);
 
         return states;

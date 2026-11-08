@@ -118,7 +118,10 @@ class AutoEpochScenarioTest {
         Map<String, Boolean> paleo = AutoEpochScenarioHelper.calibrateTypeBEngines("earth", -20000L);
         Map<String, Boolean> medieval = AutoEpochScenarioHelper.calibrateTypeBEngines("earth", 1200L);
         Map<String, Boolean> earlyModern = AutoEpochScenarioHelper.calibrateTypeBEngines("earth", 1680L);
+        Map<String, Boolean> industrial1800 = AutoEpochScenarioHelper.calibrateTypeBEngines("earth", 1800L);
         Map<String, Boolean> post1950 = AutoEpochScenarioHelper.calibrateTypeBEngines("earth", 1960L);
+        Map<String, Boolean> future2050 = AutoEpochScenarioHelper.calibrateTypeBEngines("earth", 2050L);
+        Map<String, Boolean> prospective2200 = AutoEpochScenarioHelper.calibrateTypeBEngines("earth", 2200L);
         Map<String, Boolean> mars = AutoEpochScenarioHelper.calibrateTypeBEngines("mars", 2026L);
 
         // Category I: Deep-Time Biocultural, Evolutionary & Forager-Mobility Engines (-3,000,000 BP onward)
@@ -133,36 +136,62 @@ class AutoEpochScenarioTest {
         assertFalse(plio.get("TurchinGoldstoneSDTEngine"));
         assertFalse(paleo.get("TurchinGoldstoneSDTEngine"));
         assertTrue(medieval.get("TurchinGoldstoneSDTEngine"));
+        assertTrue(medieval.get("DraftAnimalFodderAllocationEngine"));
         assertTrue(earlyModern.get("TurchinGoldstoneSDTEngine"));
         assertTrue(post1950.get("TurchinGoldstoneSDTEngine"));
+        assertFalse(post1950.get("DraftAnimalFodderAllocationEngine")); // Superseded by tractor mechanization after 1950 CE
         assertFalse(mars.get("BarfieldNomadicSteppeEmpireEngine"));
 
-        // Category III: Early Modern & Mercantile engines active from 1450/1650 CE onward on Earth
+        // Category III: Early Modern & Mercantile engines active within their realistic windows on Earth
         assertFalse(paleo.get("PhysicalMediaPrintingEngine"));
         assertFalse(medieval.get("PhysicalMediaPrintingEngine"));
         assertFalse(medieval.get("SovereignTreasuryBondEngine"));
         assertTrue(earlyModern.get("PhysicalMediaPrintingEngine"));
         assertTrue(earlyModern.get("SovereignTreasuryBondEngine"));
         assertTrue(earlyModern.get("CrosbyColumbianExchangeEngine"));
+        assertTrue(post1950.get("PhysicalMediaPrintingEngine"));
+        assertFalse(future2050.get("PhysicalMediaPrintingEngine")); // Superseded by digital InformationEntropyEngine after 2010 CE
         assertFalse(mars.get("CrosbyColumbianExchangeEngine"));
 
-        // Category IV & V: Industrial & Great Acceleration engines active only in industrial/post-1900/post-1950 regimes
+        // Category IV & V: Industrial, Modern & Prospective engines with realistic upper & lower bounds up to 2200 CE
         assertFalse(medieval.get("PomeranzGreatDivergenceEngine"));
         assertFalse(earlyModern.get("PomeranzGreatDivergenceEngine"));
+        assertTrue(industrial1800.get("PomeranzGreatDivergenceEngine")); // Active [1750, 1914 CE]
+        assertTrue(industrial1800.get("RicardoDifferentialLandRentEngine")); // Active [1750, 1950 CE]
+        assertFalse(post1950.get("PomeranzGreatDivergenceEngine")); // Deactivates after 1914 CE
+        assertFalse(post1950.get("RicardoDifferentialLandRentEngine")); // Deactivates after 1950 CE
         assertFalse(medieval.get("PublicSanitationWaterGridEngine"));
         assertFalse(earlyModern.get("PublicSanitationWaterGridEngine"));
         assertFalse(medieval.get("World3CouplingEngine"));
         assertFalse(earlyModern.get("World3CouplingEngine"));
-        assertTrue(post1950.get("PomeranzGreatDivergenceEngine"));
-        assertTrue(post1950.get("LewisDualSectorTurningPointEngine"));
+        assertTrue(post1950.get("LewisDualSectorTurningPointEngine")); // Active [1850, 2050 CE]
         assertTrue(post1950.get("PublicSanitationWaterGridEngine"));
-        assertTrue(post1950.get("World3CouplingEngine"));
+        assertTrue(post1950.get("World3CouplingEngine")); // Active [1950, 2100 CE]
+        assertFalse(post1950.get("GeoengineeringAlbedoFeedbackEngine"));
         assertFalse(post1950.get("NordhausDiceHybridEngine"));
+
+        // Future 2050 CE: Geoengineering & ISRU activate; Lewis & Kurzweil still active; Terraforming not yet active on Earth
+        assertTrue(future2050.get("LewisDualSectorTurningPointEngine"));
+        assertTrue(future2050.get("KurzweilAcceleratingReturnsEngine"));
+        assertTrue(future2050.get("World3CouplingEngine"));
+        assertTrue(future2050.get("GeoengineeringAlbedoFeedbackEngine")); // Activates [2035, 2200 CE]
+        assertTrue(future2050.get("IsruAutarkyAndSpaceColonizationEngine")); // Activates [2050, 2200 CE]
+        assertFalse(future2050.get("TerraformingEngine")); // Activates at 2100 CE on Earth
+
+        // Deep Prospective 2200 CE: Transitional 20th/21st-century regimes deactivate; long-term & space/geoengineering stay active
+        assertFalse(prospective2200.get("LewisDualSectorTurningPointEngine")); // Ends 2050 CE
+        assertFalse(prospective2200.get("CordenNearyDutchDiseaseEngine")); // Ends 2060 CE
+        assertFalse(prospective2200.get("KurzweilAcceleratingReturnsEngine")); // Ends 2060 CE
+        assertFalse(prospective2200.get("World3CouplingEngine")); // Ends 2100 CE
+        assertTrue(prospective2200.get("PublicSanitationWaterGridEngine"));
+        assertTrue(prospective2200.get("GeoengineeringAlbedoFeedbackEngine"));
+        assertTrue(prospective2200.get("IsruAutarkyAndSpaceColonizationEngine"));
+        assertTrue(prospective2200.get("TerraformingEngine"));
         assertTrue(mars.get("IsruAutarkyAndSpaceColonizationEngine"));
         assertTrue(mars.get("TerraformingEngine"));
 
         // Category VI: Specialized regional, counterfactual & pure-theory sandbox engines ALWAYS unchecked by default
-        for (Map<String, Boolean> cfg : List.of(plio, paleo, medieval, earlyModern, post1950, mars)) {
+        for (Map<String, Boolean> cfg : List.of(plio, paleo, medieval, earlyModern, industrial1800, post1950, future2050, prospective2200, mars)) {
             assertFalse(cfg.get("TasmanianCulturalRegressionEngine"));
             assertFalse(cfg.get("AmerindianEcosystemEngine"));
             assertFalse(cfg.get("EdoJapanIsolationEngine"));
@@ -173,7 +202,6 @@ class AutoEpochScenarioTest {
             assertFalse(cfg.get("NordhausDicePureEngine"));
             assertFalse(cfg.get("PinkerViolenceDeclinePureEngine"));
             assertFalse(cfg.get("NuclearWarfareClimateEngine"));
-            assertFalse(cfg.get("GeoengineeringAlbedoFeedbackEngine"));
             assertFalse(cfg.get("BifurcationChaosEngine"));
         }
     }
