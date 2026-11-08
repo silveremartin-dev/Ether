@@ -164,6 +164,9 @@ public class TradeNetworkEngine {
             }
             if (!tooClose) {
                 hubs.add(c);
+                if (hubs.size() >= 32) {
+                    break;
+                }
             }
         }
 
@@ -252,15 +255,7 @@ public class TradeNetworkEngine {
             }
 
             if (candidates.isEmpty()) {
-                for (H3Cell neighbor : cells) {
-                    if (neighbor == current) continue;
-                    double stepDistKm = ThermodynamicMigrationEngine.calculateHaversineDistance(
-                            neighbor.getLatitudeOr(0.0), neighbor.getLongitudeOr(0.0),
-                            current.getLatitudeOr(0.0), current.getLongitudeOr(0.0));
-                    if (stepDistKm <= 660.0) {
-                        candidates.add(neighbor);
-                    }
-                }
+                break;
             }
 
             for (H3Cell neighbor : candidates) {
