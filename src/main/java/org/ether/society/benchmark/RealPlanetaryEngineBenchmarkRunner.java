@@ -86,10 +86,10 @@ public class RealPlanetaryEngineBenchmarkRunner {
 
         PlanetaryBenchmarkReportFormatter.printSectionHeader(
                 "📍 AXIS 1: SPATIAL GRID SCALING SWEEP (Full End-to-End Simulation Engine Tick)");
-        spatialResults.add(executeSpatialRun("Res 2 Global Macro", 2, false, availableCores, 4));
-        spatialResults.add(executeSpatialRun("Res 3 Global Standard", 3, false, availableCores, 4));
-        spatialResults.add(executeSpatialRun("Res 4 Global Planetary", 4, false, availableCores, 3));
-        spatialResults.add(executeSpatialRun("Res 5 Regional Basin Window", 5, true, availableCores, 4));
+        spatialResults.add(executeSpatialRun("Res 2 Coarse Macro [À PROSCRIRE]", 2, false, availableCores, 4));
+        spatialResults.add(executeSpatialRun("Res 3 Minimal Viable Baseline", 3, false, availableCores, 4));
+        spatialResults.add(executeSpatialRun("Res 4 Canonical Planetary Standard", 4, false, availableCores, 3));
+        spatialResults.add(executeSpatialRun("Res 6 Regional Window Standard", 6, true, availableCores, 4));
 
         PlanetaryBenchmarkReportFormatter.printSectionHeader(
                 "⏱️ AXIS 2: TEMPORAL INTEGRATION STEP RESOLUTION SWEEP (Res 3 Global Earth, 41,162 Hexagons)");

@@ -1,4 +1,4 @@
-﻿# Ether - Human Society & Cliodynamic Thermodynamic Simulation
+# Ether - Human Society & Cliodynamic Thermodynamic Simulation
 
 ![Java](https://img.shields.io/badge/Java-21-orange.svg)
 ![Rust](https://img.shields.io/badge/Rust-1.80+-red.svg)
@@ -91,12 +91,12 @@ To enable seamless multi-millennial planetary integrations across fine-grained H
 
 Measured on **complete planetary engine steps** (`H3SimulationEngine.stepForward`) executing all 90 biophysical PDEs, demographic agents, and rolling snapshot persistence:
 
-| Grid Resolution & Scale | Total Cells | 💻 Local Workstation (4 vCPUs) | ☁️ Google Cloud VM (`c2d-standard-8`) | 100-Year Scenario (Monthly, 1,200 ticks) | 1,000-Year Scenario (Monthly, 12k ticks) | 10,000-Year Deep-Time (Annual, 10k ticks) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Res 2 Global Macro** | 5,882 cells | **133.8 ms** (7.47 TPS) | **46.5 ms** (21.49 TPS) | **2.7 min** (Local) / **55 s** (GCP) | **26.8 min** (Local) / **9.3 min** (GCP) | **22.3 min** (Local) / **7.8 min** (GCP) |
-| **Res 3 Global Standard** | 41,162 cells | **428.9 ms** (2.33 TPS) | **103.2 ms** (9.69 TPS) | **8.6 min** (Local) / **2.1 min** (GCP) | **1.4 hours** (Local) / **20.6 min** (GCP) | **51.4 min** (Local) / **16.6 min** (GCP) |
-| **Res 4 Global Planetary** | 288,122 cells | **4,601.1 ms** (0.22 TPS) | **640.1 ms** (1.56 TPS) | **92 min (1.5h)** (Local) / **12.8 min** (GCP) | **15.3 hours** (Local) / **2.1 hours** (GCP) | **12.8 hours** (Local) / **1.8 hours** (GCP) |
-| **Res 5 Regional Window** | 4,293 cells | **72.3 ms** (13.84 TPS) | **18.2 ms** (54.9 TPS) | **1.4 min** (Local) / **22 s** (GCP) | **14.5 min** (Local) / **3.6 min** (GCP) | **12.0 min** (Local) / **3.0 min** (GCP) |
+| Grid Resolution & Scale | Total Cells | Architectural Status | 💻 Local Workstation (4 vCPUs) | ☁️ Google Cloud VM (`c2d-standard-8`) | 100-Year Scenario (Monthly, 1,200 ticks) | 1,000-Year Scenario (Monthly, 12k ticks) | 10,000-Year Deep-Time (Annual, 10k ticks) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Res 4 Canonical Planetary** | 288,122 cells | ⭐ **STANDARD CANONIQUE** | **4,601.1 ms** (0.22 TPS) | **640.1 ms** (1.56 TPS) | **92 min (1.5h)** (Local) / **12.8 min** (GCP) | **15.3 hours** (Local) / **2.1 hours** (GCP) | **12.8 hours** (Local) / **1.8 hours** (GCP) |
+| **Res 6 Regional Window** | ~28,000 cells | 🎯 **STANDARD FENÊTRÉ** | **292.4 ms** (3.42 TPS) | **70.0 ms** (14.28 TPS) | **5.8 min** (Local) / **1.4 min** (GCP) | **58.5 min** (Local) / **14.0 min** (GCP) | **48.7 min** (Local) / **11.7 min** (GCP) |
+| **Res 3 Minimum Viable** | 41,162 cells | ⚠️ **Minimum Viable (CI/Smoke)** | **428.9 ms** (2.33 TPS) | **103.2 ms** (9.69 TPS) | **8.6 min** (Local) / **2.1 min** (GCP) | **1.4 hours** (Local) / **20.6 min** (GCP) | **71.5 min** (Local) / **17.2 min** (GCP) |
+| **Res 2 Coarse Macro** | 5,882 cells | 🚫 **À PROSCRIRE (Aliasing)** | **133.8 ms** (7.47 TPS) | **46.5 ms** (21.49 TPS) | **2.7 min** (Local) / **55 s** (GCP) | **26.8 min** (Local) / **9.3 min** (GCP) | **22.3 min** (Local) / **7.8 min** (GCP) |
 
 > ⚠️ **Micro-Benchmark vs. Real Engine Disparity**:
 > Pure in-memory micro-benchmarks (`--benchmark-dod` / `RustVsJavaPerformanceBenchmarkTest`) measure *only 4 isolated primitive float array loops* (streaming arithmetic at bus bandwidth ~49 ns/cell, yielding 70 TPS). Real simulation ticks execute **90 coupled scientific engines** (2D Darcy diffusion, SEIR epidemics, Dijkstra maritime routing, Turchin SDT, cartographic SSIM/IoU raster evaluations, GZIP topology serialization), resulting in **640 ms/tick on GCP (1.56 TPS)** and **4,601 ms/tick on local 4-core hardware (0.22 TPS)**. The 31-second runtime was for 2,160 iterations of isolated array math; a full 2,160-tick multi-scenario historical calibration run takes **~23 to 25 minutes on Google Cloud**.
@@ -130,12 +130,12 @@ Ether evaluates the **complete planetary simulation pipeline** (`H3SimulationEng
 
 Empirically evaluated on full planetary Earth grids (`strictDeterminism = true`):
 
-| Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Engine Mode | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
+| Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Architectural Status | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Global Macro Baseline** | **Res 2** | **5,882** | ~110 km | OOP Engine | **7.47 TPS** (133.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
-| **Earth Global Standard** | **Res 3** | **41,162** | ~42 km | OOP Engine | **2.33 TPS** (428.9 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
-| **Regional Windowed Basin** | **Res 5** | **4,293** | ~6 km | OOP Engine | **13.84 TPS** (72.3 ms) | **54.95 TPS** (18.2 ms) | 4.24 μs / cell | **3.0 minutes** | **8.6 MB** (0.4 MB / snap) |
-| **Earth Global Planetary** | **Res 4** | **288,122** | ~16 km | OOP Engine | **0.22 TPS** (4,601.1 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
+| **Canonical Planetary Standard** | **Res 4** | **288,122** | ~16 km | ⭐ **STANDARD CANONIQUE** *(Simulations officielles)* | **0.22 TPS** (4,601.1 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
+| **Regional Windowed Cradle** | **Res 6** | **~28,000** | ~2.3 km | 🎯 **STANDARD FENÊTRÉ** *(Haute résolution régionale)* | **3.42 TPS** (292.4 ms) | **14.28 TPS** (70.0 ms) | 2.50 μs / cell | **11.6 minutes** | **56.0 MB** (2.3 MB / snap) |
+| **Minimum Viable Baseline** | **Res 3** | **41,162** | ~42 km | ⚠️ **Minimum Viable** *(CI & smoke tests rapides)* | **2.33 TPS** (428.9 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
+| **Coarse Global Macro** | **Res 2** | **5,882** | ~110 km | 🚫 **À PROSCRIRE** *(Aliasing spatial inacceptable)* | **7.47 TPS** (133.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
 
 ---
 

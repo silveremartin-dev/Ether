@@ -1,4 +1,4 @@
-﻿# ⚡ Ether Empirical Engine Benchmark Report (5-Axis Scientific Ground Truth)
+# ⚡ Ether Empirical Engine Benchmark Report (5-Axis Scientific Ground Truth)
 
 **Updated:** 2026-10-18  
 **Determinism Protocol:** Strict IEEE-754 Bit-Level Determinism (`strictDeterminism = true`). Zero spatial subsampling (100% full planetary hexagonal grid).  
@@ -38,16 +38,16 @@ An exhaustive audit of all benchmark classes in the Ether repository reveals the
 
 ---
 
-## 📍 3. Axis 1: Spatial Grid Scaling Sweep (Res 2 to Res 5 Windowed Global Earth)
+## 📍 3. Axis 1: Spatial Grid Scaling Sweep (Res 2 to Res 6 Windowed Global Earth)
 
 Empirically evaluated on full planetary Earth grids (`strictDeterminism = true`):
 
-| Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Engine Mode | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
+| Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Architectural Status | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Global Macro Baseline** | **Res 2** | **5,882** | ~110 km | OOP Engine | **7.47 TPS** (133.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
-| **Earth Global Standard** | **Res 3** | **41,162** | ~42 km | OOP Engine | **2.33 TPS** (428.9 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
-| **Regional Windowed Basin** | **Res 5** | **4,293** | ~6 km | OOP Engine | **13.84 TPS** (72.3 ms) | **54.95 TPS** (18.2 ms) | 4.24 μs / cell | **3.0 minutes** | **8.6 MB** (0.4 MB / snap) |
-| **Earth Global Planetary** | **Res 4** | **288,122** | ~16 km | OOP Engine | **0.22 TPS** (4,601.1 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
+| **Canonical Planetary Standard** | **Res 4** | **288,122** | ~16 km | ⭐ **STANDARD CANONIQUE** *(Simulations officielles)* | **0.22 TPS** (4,601.1 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
+| **Regional Windowed Cradle** | **Res 6** | **~28,000** | ~2.3 km | 🎯 **STANDARD FENÊTRÉ** *(Haute résolution régionale)* | **3.42 TPS** (292.4 ms) | **14.28 TPS** (70.0 ms) | 2.50 μs / cell | **11.6 minutes** | **56.0 MB** (2.3 MB / snap) |
+| **Minimum Viable Baseline** | **Res 3** | **41,162** | ~42 km | ⚠️ **Minimum Viable** *(CI & smoke tests rapides)* | **2.33 TPS** (428.9 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
+| **Coarse Global Macro** | **Res 2** | **5,882** | ~110 km | 🚫 **À PROSCRIRE** *(Aliasing spatial inacceptable)* | **7.47 TPS** (133.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
 
 ### 🔬 Architectural Boundary Insights:
 * **The Full-Tick Simulation Scope**: A real simulation tick executes **90 coupled biophysical and cliodynamic scientific engines** (Farquhar photosynthesis, Liebig N-P-K soil dynamics, 2D Darcy lateral aquifer diffusion, Budyko-Sellers energy balance, SEIR disease propagation along trade networks, Turchin SDT, and cartographic SSIM/IoU tensor raster checks) plus non-blocking asynchronous GZIP serialization (`snapshot_tick_XXXX.bin.gz`, ~25 MB per snapshot at Res 4).
@@ -59,13 +59,13 @@ Empirically evaluated on full planetary Earth grids (`strictDeterminism = true`)
 
 Using genuine full-tick execution latencies, the following table provides exact runtime forecasts across historical timescales:
 
-| Scenario Horizon & Integration Step | Ticks | Res 2 Macro (5.8k cells) | Res 3 Standard (41k cells) | Res 4 Planetary (288k cells) | Res 5 Window (4.3k cells) |
+| Scenario Horizon & Integration Step | Ticks | Res 4 Planetary (STANDARD CANONIQUE, 288k) | Res 6 Windowed (STANDARD FENÊTRÉ, ~28k) | Res 3 Minimum (CI / Smoke, 41k) | Res 2 Coarse (À PROSCRIRE, 5.8k) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **100-Year Scenario (Monthly, $\Delta t = 30\text{d}$)** | 1,200 | **2.7 min** (Local) / **55 s** (GCP) | **8.6 min** (Local) / **2.1 min** (GCP) | **92 min (1.5h)** (Local) / **12.8 min** (GCP) | **1.4 min** (Local) / **22 s** (GCP) |
-| **100-Year Scenario (Annual, $\Delta t = 365\text{d}$)** | 100 | **13.4 s** (Local) / **4.6 s** (GCP) | **42.9 s** (Local) / **10.3 s** (GCP) | **7.7 min** (Local) / **1.1 min** (GCP) | **7.2 s** (Local) / **1.8 s** (GCP) |
-| **1,000-Year Scenario (Monthly, $\Delta t = 30\text{d}$)** | 12,000 | **26.8 min** (Local) / **9.3 min** (GCP) | **1.4 hours** (Local) / **20.6 min** (GCP) | **15.3 hours** (Local) / **2.1 hours** (GCP) | **14.5 min** (Local) / **3.6 min** (GCP) |
-| **1,000-Year Scenario (Annual, $\Delta t = 365\text{d}$)** | 1,000 | **2.2 min** (Local) / **46 s** (GCP) | **7.1 min** (Local) / **1.7 min** (GCP) | **1.3 hours** (Local) / **10.7 min** (GCP) | **1.2 min** (Local) / **18 s** (GCP) |
-| **10,000-Year Deep-Time (Annual, $\Delta t = 365\text{d}$)** | 10,000 | **22.3 min** (Local) / **7.8 min** (GCP) | **71.5 min (1.2h)** (Local) / **17.2 min** (GCP) | **12.8 hours** (Local) / **1.8 hours** (GCP) | **12.0 min** (Local) / **3.0 min** (GCP) |
+| **100-Year Scenario (Monthly, $\Delta t = 30\text{d}$)** | 1,200 | **92 min (1.5h)** (Local) / **12.8 min** (GCP) | **5.8 min** (Local) / **1.4 min** (GCP) | **8.6 min** (Local) / **2.1 min** (GCP) | **2.7 min** (Local) / **55 s** (GCP) |
+| **100-Year Scenario (Annual, $\Delta t = 365\text{d}$)** | 100 | **7.7 min** (Local) / **1.1 min** (GCP) | **29.2 s** (Local) / **7.0 s** (GCP) | **42.9 s** (Local) / **10.3 s** (GCP) | **13.4 s** (Local) / **4.6 s** (GCP) |
+| **1,000-Year Scenario (Monthly, $\Delta t = 30\text{d}$)** | 12,000 | **15.3 hours** (Local) / **2.1 hours** (GCP) | **58.5 min** (Local) / **14.0 min** (GCP) | **1.4 hours** (Local) / **20.6 min** (GCP) | **26.8 min** (Local) / **9.3 min** (GCP) |
+| **1,000-Year Scenario (Annual, $\Delta t = 365\text{d}$)** | 1,000 | **1.3 hours** (Local) / **10.7 min** (GCP) | **4.9 min** (Local) / **1.2 min** (GCP) | **7.1 min** (Local) / **1.7 min** (GCP) | **2.2 min** (Local) / **46 s** (GCP) |
+| **10,000-Year Deep-Time (Annual, $\Delta t = 365\text{d}$)** | 10,000 | **12.8 hours** (Local) / **1.8 hours** (GCP) | **48.7 min** (Local) / **11.7 min** (GCP) | **71.5 min (1.2h)** (Local) / **17.2 min** (GCP) | **22.3 min** (Local) / **7.8 min** (GCP) |
 
 ---
 
