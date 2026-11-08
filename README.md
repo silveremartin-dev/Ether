@@ -179,13 +179,13 @@ Evaluated on **Earth Global Res 3 (41,162 Hexagons)**:
 
 Measured on **Earth Global Res 3 (41,162 Hexagons)** across 5 landmark historical epochs:
 
-| Historical Epoch Preset | Associated Year | Initial Population ($T_0$) | Initial Tech Level | 💻 Workstation TPS | 💻 Workstation ms/tick | Final Population ($T_{final}$) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Out of Africa** | **100,000 BCE** | **100,000** | 1.0 (Paleolithic) | **4.91 TPS** | 203.6 ms | 99,791 |
-| **Neolithic Revolution** | **10,000 BCE** | **5,000,000** | 2.0 (Early Agrarian) | **1.97 TPS** | 506.6 ms | 4,967,746 |
-| **Classical Antiquity** | **500 BCE** | **150,000,000** | 3.5 (Agrarian Empires) | **0.16 TPS** | 6,102.7 ms | 148,742,725 |
-| **Industrial Revolution** | **1800 CE** | **1,000,000,000** | 6.0 (Steam & Coal) | **0.05 TPS** | 19,463.1 ms | 970,099,899 |
-| **Modern Anthropocene** | **2026 CE** | **8,000,000,000** | 9.5 (Globalized) | **0.01 TPS** | 98,096.1 ms | 1,267,564,468 |
+| Historical Epoch Preset | Associated Year | Initial Population ($T_0$) | Initial Tech Level | 💻 Workstation TPS | ☁️ GCP VM TPS | ☁️ GCP VM ms/tick | Final Population ($T_{final}$) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Out of Africa** | **100,000 BCE** | **100,000** | 1.0 (Paleolithic) | **4.91 TPS** | **9.43 TPS** | 106.0 ms | 96,041 |
+| **Neolithic Revolution** | **10,000 BCE** | **5,000,000** | 2.0 (Early Agrarian) | **1.97 TPS** | **5.92 TPS** | 168.8 ms | 4,763,058 |
+| **Classical Antiquity** | **500 BCE** | **150,000,000** | 3.5 (Agrarian Empires) | **0.16 TPS** | **0.59 TPS** | 1,697.0 ms | 140,771,780 |
+| **Industrial Revolution** | **1800 CE** | **1,000,000,000** | 6.0 (Steam & Coal) | **0.05 TPS** | **0.09 TPS** | 11,223.9 ms | 922,081,272 |
+| **Modern Anthropocene** | **2026 CE** | **8,000,000,000** | 9.5 (Globalized) | **0.01 TPS** | **0.06 TPS** | 17,639.9 ms | 1,276,229,172 |
 
 > 💡 **Pure In-Memory DOD Micro-Kernels vs. Full Simulation Engine**:  
 > In complete isolation from physical PDE diffusion, cartographic rasters, and disk serialization, pure DOD contiguous array kernels run at **55 to 195 TPS** (Res 2–3) and **7.4 TPS** (Res 4). Real simulation ticks execute **90 coupled scientific engines**, cartographic comparisons, and snapshot compression. See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the detailed micro-benchmark vs macro-engine distinction and the full code audit.
@@ -246,21 +246,21 @@ All snapshots, world state matrices (`topology.bin.gz`, `state.bin.gz`, `metadat
 ### 🚀 Planetary Engine Compute Performance: Native Rust Core vs. Java 25 SIMD
 Following the architectural rewrite to Data-Oriented Design (DOD) with contiguous memory buffers (`WorldBuffer`, `AgentBuffer`), lock-free Rayon parallelism, and Panama Foreign Function & Memory (FFM) native downcalls:
 * **Planetary Mesh (Resolution 4: 288,122 active cells)**:
-  - **Native Rust Core (AVX-512 + Rayon)**: **70.39 TPS** (14.21 ms/tick, **49.3 ns / cell**) — **19.65x speedup** on Google Cloud (`ether-master`, `c2-standard-8`, 8 vCPUs, 32 GB RAM).
-  - **Java 25 SIMD Vector DoD**: **3.58 TPS** (279.12 ms/tick, 968.8 ns / cell).
+  - **Native Rust Core (AVX-512 + Rayon)**: **10.62 TPS** (94.13 ms/tick, **326.7 ns / cell**) — **3.58x speedup** on Google Cloud (`ether-master`, `c2-standard-8`, 8 vCPUs, 32 GB RAM).
+  - **Java 25 SIMD Vector DoD**: **2.97 TPS** (336.97 ms/tick, 1,169.5 ns / cell).
 * **Regional Window (Resolution 3: 41,162 active cells)**:
-  - **Native Rust Core (AVX-512 + Rayon)**: **350.49 TPS** (2.85 ms/tick, **69.3 ns / cell**) — **14.00x speedup**.
-  - **Java 25 SIMD Vector DoD**: **25.04 TPS** (39.94 ms/tick, 970.2 ns / cell).
+  - **Native Rust Core (AVX-512 + Rayon)**: **71.48 TPS** (13.99 ms/tick, **339.9 ns / cell**) — **3.41x speedup**.
+  - **Java 25 SIMD Vector DoD**: **20.96 TPS** (47.72 ms/tick, 1,159.3 ns / cell).
 * **Sub-Scale Benchmark (10,000 active cells)**:
-  - **Native Rust Core**: **889.41 TPS** (1.12 ms/tick, **112.4 ns / cell**) — **16.96x speedup**.
-  - **Java 25 SIMD Vector DoD**: **52.44 TPS** (19.07 ms/tick, 1,907.0 ns / cell).
+  - **Native Rust Core**: **246.70 TPS** (4.05 ms/tick, **405.3 ns / cell**) — **4.57x speedup**.
+  - **Java 25 SIMD Vector DoD**: **53.99 TPS** (18.52 ms/tick, 1,852.0 ns / cell).
 
 ---
 
-## ðŸ”¬ Scientific Engine Architecture & Ontological Separation
+## 🔬 Scientific Engine Architecture & Ontological Separation
 
 Ether couples two rigorous tiers of scientific engines:
-* **Tier 1 â€” Core Fundamental Planetary Physics (~30-40 Engines)**:
+* **Tier 1 — Core Fundamental Planetary Physics (~30-40 Engines)**:
   - Celestial mechanics & Milankovitch insolation cycles (100k/41k/23k yr)
   - Stefan-Boltzmann radiative balance & Clausius-Clapeyron moisture
   - 3-cell atmospheric circulation (Hadley/Ferrel/Polar) with Coriolis wind fields
