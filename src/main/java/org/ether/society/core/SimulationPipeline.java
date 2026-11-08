@@ -256,14 +256,6 @@ public class SimulationPipeline {
                 && scenario.getTypeBEngineStates().containsKey(engineId)) {
             return Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(engineId));
         }
-        if (scenario != null) {
-            String planet = scenario.getPlanetPreset() != null ? scenario.getPlanetPreset().name() : "earth";
-            long year = scenario.getStartDateYear();
-            Map<String, Boolean> calibrated = org.ether.society.model.AutoEpochScenarioHelper.calibrateTypeBEngines(planet, year);
-            if (calibrated != null && calibrated.containsKey(engineId)) {
-                return Boolean.TRUE.equals(calibrated.get(engineId));
-            }
-        }
         return false;
     }
 
