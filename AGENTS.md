@@ -252,3 +252,27 @@ Because **Tier 2 Type B** engines model specific historical, institutional, tech
    * Whenever obsolete code is deleted:
      1. All callers, catalogs (`ScenarioHistoricalEnginesCatalog`, `ScenarioOptionalEnginesCatalog`), factories, runners (`TypeBEnginePassRunner`), scenario initializers (`AutoEpochScenarioHelper`), and SPI descriptors (`META-INF/services/org.ether.society.engines.ProceduralEnginePlugin`) MUST be updated to point directly to the canonical replacement.
      2. All corresponding unit tests and benchmark test suites must be updated to test the active canonical engine directly without leaving references to deleted classes.
+
+
+---
+
+## 🎯 15. The Tri-Pronged Calibration & Bug Fixing Directive (Zero Overfitting Mandate)
+During all calibration, benchmark falsification, and testing phases, any code modification across engines, kernels, and metrics MUST strictly adhere to the following three mutually exclusive rules:
+
+1. **Category A: Genuine Algorithmic & Dimensional Bug Fixes (Permitted & Mandatory)**:
+   * Applies strictly to authentic code or mathematical implementation bugs:
+     * Physical unit mismatches and dimensional scaling errors (e.g., Watts vs. Joules/sec, years vs. days vs. monthly steps $\Delta t$, kg vs. metric tons, per capita vs. aggregate).
+     * Formula transcription errors deviating from cited academic literature.
+     * Temporal integration step scaling bugs ($\Delta t$ compounding errors) or numerical integration order errors.
+     * Off-by-one errors, inverted signs, array index/coordinate misalignments, or null pointer dereferences.
+   * These must be cleanly fixed directly at their algorithmic root cause.
+
+2. **Category B: Universally Invariant Empirical Calibration Constants (Permitted with Strict Registration)**:
+   * When an empirical scaling constant, coefficient, or threshold in a canonical equation requires calibration because literature values were under-specified or empirically ill-tuned:
+     * **Universal Invariance Mandate**: The calibrated constant MUST hold universal structural validity across **ALL scenarios, epochs (from $-100\,000\text{ BP}$ to prospective horizons), and spatial locations**. It is **STRICTLY PROHIBITED** to attach, gate, or conditionalize a constant to a specific epoch, scenario, or historical contingency.
+     * **Mandatory Dual-Registration**: Every calibrated deviation or non-standard constant MUST be recorded in `docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md` and updated in `docs/SIMULATION_EQUATIONS_AND_VARIABLES.md` with academic justification and empirical dataset provenance.
+
+3. **Category C: Absolute Ban on Ad-Hoc Adjustments & Overfitting (Strictly Enforced)**:
+   * It is **STRICTLY FORBIDDEN** to modify, patch, fudge, or tweak any other aspect of the code, differential equations, or simulation states to force simulation trajectories through empirical data points.
+   * If an observed discrepancy between simulation telemetry and empirical history cannot be resolved as an authentic bug (Category A) or as a universally invariant, documented calibration constant (Category B), **NO CODE CHANGE IS PERMITTED**.
+   * In such cases, the residual discrepancy must be reported transparently as an epistemic limit or emergent divergence; the problem originates elsewhere in the coupled complex system, and introducing ad-hoc patches constitutes fatal overfitting.
