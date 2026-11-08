@@ -332,8 +332,6 @@ public class SimulationPipeline {
         // Step 3.1: Physiological & Bioclimatic Survival
         WetBulbTemperatureEngine.processWetBulbHyperthermia(populatedCells, dtYears);
         PressurizedHabitatEngine.processPressurizedHabitats(populatedCells, scenario != null ? scenario.getPlanetPreset() : null, dtYears);
-        DynamicEnergyBudgetEngine.processHumanDEB(populatedCells, dtYears);
-        BiologicalDemographicsEngine.processBiologicalDemographics(populatedCells, dtYears);
         BioMolecularEpidemiologyEngine.processBioMolecularImmunity(populatedCells, dtYears);
         if (isTypeBEngineEnabled(scenario, "EcotoxicologyFertilityEngine")) {
             EcotoxicologyFertilityEngine.processEcotoxicologyFertility(populatedCells, dtYears);

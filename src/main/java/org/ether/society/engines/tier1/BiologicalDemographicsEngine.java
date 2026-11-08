@@ -58,19 +58,19 @@ public class BiologicalDemographicsEngine {
             double elev = cell.getElevationOr(0.0);
             double tempC = cell.getTemperatureOr(15.0);
 
-            // Smooth C^infty Altitude Hypoxia Hazard (barometric PO2 drop above ~3000 m, West 2012)
+            // Altitude Hypoxia Hazard (barometric PO2 drop above ~3000 m, West 2012)
             double epas1Adaptation = cell.getMovementFriction() != null
                     ? Math.clamp(1.0 - (cell.getMovementFriction() / 3.0), 0.0, 1.0)
                     : 0.05;
-            double excessElevKm = SmoothMath.softplus((elev - 3000.0) / 1000.0, 2.5);
-            double altitudeVulnerability = SmoothMath.softmax(0.10, 1.0 - epas1Adaptation * 0.85, 10.0);
+            double excessElevKm = Math.max(0.0, (elev - 3000.0) / 1000.0);
+            double altitudeVulnerability = Math.max(0.10, 1.0 - epas1Adaptation * 0.85);
             double hypoxiaHazard = excessElevKm * 0.08 * altitudeVulnerability;
 
-            // Smooth C^infty Extreme Cold Hazard (hypothermia / frostbite below -10°C, mitigated by shelter capital)
+            // Extreme Cold Hazard (hypothermia / frostbite below -10°C, mitigated by shelter capital)
             double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
             double shelterProtection = 1.0 - 0.70 * Math.tanh(capPerCap / 150.0);
-            double subZeroExcess = SmoothMath.softplus(-10.0 - tempC, 0.8);
-            double coldHazard = SmoothMath.softmin(0.25, subZeroExcess * 0.012 * shelterProtection, 15.0);
+            double subZeroExcess = Math.max(0.0, -10.0 - tempC);
+            double coldHazard = Math.min(0.25, subZeroExcess * 0.012 * shelterProtection);
 
             double environmentalHazard = hypoxiaHazard + coldHazard;
             if (environmentalHazard > 1e-6) {
