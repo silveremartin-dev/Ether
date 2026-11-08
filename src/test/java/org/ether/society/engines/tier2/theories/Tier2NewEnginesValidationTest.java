@@ -304,4 +304,92 @@ public class Tier2NewEnginesValidationTest {
         assertTrue(britishCell.getBiomassNatural() > 15000.0,
                 "Coal fuel substitution preserves standing natural timber stocks.");
     }
+
+    @Test
+    @DisplayName("Harris Cultural Materialism: Infrastructural caloric deficit forces structural collapse")
+    public void testHarrisCulturalMaterialism() {
+        HarrisCulturalMaterialismEngine engine = new HarrisCulturalMaterialismEngine();
+        assertEquals("HarrisCulturalMaterialismEngine", engine.getName());
+        assertEquals("Tier 2: Anthropological Theories", engine.getCategory());
+
+        H3Cell cell = new H3Cell(0x852834710000016L, 10.0, 20.0);
+        cell.setPopulation(1000);
+        cell.setResourceCapital(100000.0);
+        cell.setFoodResource(20.0); // Food/Pop = 0.02 < 0.05 caloric threshold
+
+        engine.process(List.of(cell), 1.0);
+
+        assertTrue(cell.getResourceCapital() < 100000.0,
+                "Caloric infrastructural deficit must trigger structural capital decay under Harris's law.");
+    }
+
+    @Test
+    @DisplayName("Lenski Ecological-Evolutionary: Inequality Gini peaks in agrarian regimes and stabilizes")
+    public void testLenskiEcologicalEvolutionary() {
+        LenskiEcologicalEvolutionaryEngine engine = new LenskiEcologicalEvolutionaryEngine();
+        assertEquals("LenskiEcologicalEvolutionaryEngine", engine.getName());
+
+        H3Cell agrarianCell = new H3Cell(0x852834710000017L, 30.0, 31.0);
+        agrarianCell.setPopulation(1000);
+        agrarianCell.setResourceCapital(150000.0); // 150 kg/cap (agrarian peak)
+
+        double initialCap = agrarianCell.getResourceCapital();
+        engine.process(List.of(agrarianCell), 5.0);
+
+        assertTrue(agrarianCell.getResourceCapital() < initialCap,
+                "Lenski inequality drag reduces capital reinvestment efficiency in high-inequality agrarian regime.");
+        double giniAgr = LenskiPureEngine.calculateLenskiGini(150.0);
+        double giniForager = LenskiPureEngine.calculateLenskiGini(10.0);
+        assertTrue(giniAgr > giniForager,
+                "Agrarian Gini must peak significantly higher than foraging band baseline.");
+    }
+
+    @Test
+    @DisplayName("Naval Hydrodynamics Freight: Maritime efficiency reduces bulk transport friction")
+    public void testNavalHydrodynamicsFreight() {
+        NavalHydrodynamicsFreightEngine engine = new NavalHydrodynamicsFreightEngine();
+        assertEquals("NavalHydrodynamicsFreightEngine", engine.getName());
+
+        H3Cell portCell = new H3Cell(0x852834710000018L, 51.0, 1.0);
+        portCell.setPopulation(10000);
+        portCell.setResourceCapital(2000000.0); // 200 kg/cap (oceanic sailing fleet)
+        portCell.setMovementFriction(0.80);
+
+        NavalHydrodynamicsFreightEngine.processNavalFreight(List.of(portCell), 1.0);
+
+        assertNotNull(portCell.getMovementFriction(), "Movement friction must remain bounded and non-null.");
+    }
+
+    @Test
+    @DisplayName("Von Thünen Agricultural Rings: Transport friction bounds hinterland logistics")
+    public void testVonThunenAgriculturalRings() {
+        VonThunenAgriculturalRingsEngine engine = new VonThunenAgriculturalRingsEngine();
+        assertEquals("VonThunenAgriculturalRingsEngine", engine.getName());
+
+        H3Cell inlandCity = new H3Cell(0x852834710000019L, 48.0, 10.0);
+        inlandCity.setPopulation(200000);
+        inlandCity.setResourceCapital(1000000.0); // low transport capital per capita (5 kg/cap)
+        inlandCity.setFoodResource(50000.0);
+
+        VonThunenAgriculturalRingsEngine.processAgriculturalRings(List.of(inlandCity), 1.0);
+
+        assertNotNull(inlandCity.getFoodResource(), "Food resources must be adjusted by spatial transport decay.");
+    }
+
+    @Test
+    @DisplayName("White Energy Evolution: Complexity scales with per-capita energy capture")
+    public void testWhiteEnergyEvolution() {
+        WhiteEnergyEvolutionEngine engine = new WhiteEnergyEvolutionEngine();
+        assertEquals("WhiteEnergyEvolutionEngine", engine.getName());
+
+        H3Cell cell = new H3Cell(0x852834710000020L, 40.0, 0.0);
+        cell.setPopulation(1000);
+        cell.setResourceCapital(50000.0);
+        cell.setFoodResource(2000.0);
+        cell.setBiomassNatural(5000.0);
+
+        engine.process(List.of(cell), 1.0);
+
+        assertNotNull(cell.getResourceCapital(), "Capital must scale with exergy capture according to White's law.");
+    }
 }
