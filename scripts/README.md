@@ -7,6 +7,8 @@ All scripts are categorized into modular subdirectories:
 - **`run/`**: Desktop GUI launchers, Docker lifecycles, headless engine runners, and cluster orchestrators.
 - **`test/`**: Epistemic falsification test runners, bifurcation benchmarks, and calibration suites.
 - **`gcp/`**: Google Cloud Platform Batch, Spot VMs, and distributed hyperscale runners.
+- **`i18n/`**: Localization validation, missing key detection, and translation hygiene tools.
+- **`ingest/`**: External empirical and predictive dataset ingestion pipelines (e.g. IIASA SSPs).
 
 ---
 
