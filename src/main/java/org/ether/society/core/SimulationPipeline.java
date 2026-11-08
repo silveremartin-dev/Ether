@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * High-Performance Declarative Simulation Pipeline.
@@ -250,12 +251,20 @@ public class SimulationPipeline {
         profiler.endPhase("4_ProceduralEngines");
     }
 
-    private static boolean isTypeBEngineEnabled(Scenario scenario, String engineId, boolean defaultIfUnconfigured) {
-        if (scenario == null || scenario.getTypeBEngineStates() == null
-                || !scenario.getTypeBEngineStates().containsKey(engineId)) {
-            return defaultIfUnconfigured;
+    private static boolean isTypeBEngineEnabled(Scenario scenario, String engineId) {
+        if (scenario != null && scenario.getTypeBEngineStates() != null
+                && scenario.getTypeBEngineStates().containsKey(engineId)) {
+            return Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(engineId));
         }
-        return Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(engineId));
+        if (scenario != null) {
+            String planet = scenario.getPlanetPreset() != null ? scenario.getPlanetPreset().name() : "earth";
+            long year = scenario.getStartDateYear();
+            Map<String, Boolean> calibrated = org.ether.society.model.AutoEpochScenarioHelper.calibrateTypeBEngines(planet, year);
+            if (calibrated != null && calibrated.containsKey(engineId)) {
+                return Boolean.TRUE.equals(calibrated.get(engineId));
+            }
+        }
+        return false;
     }
 
     /**
@@ -276,11 +285,11 @@ public class SimulationPipeline {
         greenhouseRadiativeEngine.applyToGrid(allCells);
         MaximumEntropyProductionEngine.processMaximumEntropyProduction(allCells, dtYears);
 
-        if (isTypeBEngineEnabled(scenario, "TerraformingEngine", true)) {
+        if (isTypeBEngineEnabled(scenario, "TerraformingEngine")) {
             TerraformingEngine.processTerraforming(allCells, dtMonthly);
         }
         PhysicalLawEngine.applyPhysicalLaws(allCells, dtMonthly);
-        if (isTypeBEngineEnabled(scenario, "GeoengineeringAlbedoFeedbackEngine", true)) {
+        if (isTypeBEngineEnabled(scenario, "GeoengineeringAlbedoFeedbackEngine")) {
             GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(allCells, dtMonthly);
         }
         ThermohalineStommelAMOCEngine.processThermohalineCirculation(allCells, dtYears, currentYear);
@@ -326,7 +335,7 @@ public class SimulationPipeline {
         DynamicEnergyBudgetEngine.processHumanDEB(populatedCells, dtYears);
         BiologicalDemographicsEngine.processBiologicalDemographics(populatedCells, dtYears);
         BioMolecularEpidemiologyEngine.processBioMolecularImmunity(populatedCells, dtYears);
-        if (isTypeBEngineEnabled(scenario, "EcotoxicologyFertilityEngine", true)) {
+        if (isTypeBEngineEnabled(scenario, "EcotoxicologyFertilityEngine")) {
             EcotoxicologyFertilityEngine.processEcotoxicologyFertility(populatedCells, dtYears);
         }
 
@@ -336,42 +345,42 @@ public class SimulationPipeline {
         NetEnergyEROEIEngine.processNetEnergyEROEI(populatedCells, dtYears);
         MetallurgyEnthalpyEngine.processOreSmelting(populatedCells, dtYears);
         ResourceRecyclingEngine.processResourceRecycling(populatedCells, dtYears);
-        if (isTypeBEngineEnabled(scenario, "NuclearSafetyRadiotoxicityEngine", true)) {
+        if (isTypeBEngineEnabled(scenario, "NuclearSafetyRadiotoxicityEngine")) {
             NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(populatedCells, engine != null ? engine.getTickCounter() : 0L, dtYears);
         }
 
         // Step 3.3: Transport, Kinetic Warfare & Infrastructure
         PhysicsTransportEngine.processPhysicsTransport(populatedCells, dtYears);
-        if (isTypeBEngineEnabled(scenario, "ThermodynamicWarfareEngine", false)) {
+        if (isTypeBEngineEnabled(scenario, "ThermodynamicWarfareEngine")) {
             ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears);
         }
-        if (isTypeBEngineEnabled(scenario, "NuclearWarfareClimateEngine", false)) {
+        if (isTypeBEngineEnabled(scenario, "NuclearWarfareClimateEngine")) {
             NuclearWarfareClimateEngine.processNuclearWarfareClimate(populatedCells);
         }
         InfrastructureEnergyEngine.processInfrastructureEnergy(populatedCells);
 
         // Step 3.4: Recombinant Technology, Information Entropy & Ozone
         SelectiveBreedingEngine.processSelectiveBreeding(populatedCells, dtYears);
-        if (isTypeBEngineEnabled(scenario, "InformationEntropyEngine", true)) {
+        if (isTypeBEngineEnabled(scenario, "InformationEntropyEngine")) {
             InformationEntropyEngine.processInformationEntropy(populatedCells);
         }
 
         List<TradeNetworkEngine.TradeRoute> tradeRoutes = null;
-        if (isTypeBEngineEnabled(scenario, "TradeNetworkEngine", false)) {
+        if (isTypeBEngineEnabled(scenario, "TradeNetworkEngine")) {
             tradeRoutes = TradeNetworkEngine.generateTradeNetworks(populatedCells, 1.0, dtYears);
         }
         TechTreeEngine.processTechnologyDiffusion(populatedCells, tradeRoutes, dtYears);
-        if (isTypeBEngineEnabled(scenario, "LanguageLinguisticEngine", true)) {
+        if (isTypeBEngineEnabled(scenario, "LanguageLinguisticEngine")) {
             LanguageLinguisticEngine.processLinguisticDrift(populatedCells, tradeRoutes);
         }
         if (engine != null && engine.getNations() != null && !engine.getNations().isEmpty()) {
-            if (isTypeBEngineEnabled(scenario, "CliodynamicsEngine", true)) {
+            if (isTypeBEngineEnabled(scenario, "CliodynamicsEngine")) {
                 CliodynamicsEngine.updateCliodynamics(engine.getNations(), populatedCells, dtYears);
             }
-            if (isTypeBEngineEnabled(scenario, "WarDiplomacyEngine", true)) {
+            if (isTypeBEngineEnabled(scenario, "WarDiplomacyEngine")) {
                 WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), populatedCells, scenario);
             }
-            if (isTypeBEngineEnabled(scenario, "SovereignTreasuryBondEngine", true)) {
+            if (isTypeBEngineEnabled(scenario, "SovereignTreasuryBondEngine")) {
                 SovereignTreasuryBondEngine.processPolityFiscalCycles(engine.getNations(), populatedCells, dtYears);
             }
         }
