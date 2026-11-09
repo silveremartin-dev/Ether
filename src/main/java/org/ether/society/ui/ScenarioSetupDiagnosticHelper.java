@@ -92,6 +92,9 @@ final class ScenarioSetupDiagnosticHelper {
         long initPop = panel.demographicSectionBuilder != null
                 ? panel.demographicSectionBuilder.getInitialHumanCount()
                 : 1_000_000L;
+        int cohortSize = panel.targetCohortSizeSpinner != null && panel.targetCohortSizeSpinner.getValue() != null
+                ? panel.targetCohortSizeSpinner.getValue()
+                : 150;
 
         panel.liveDiagnosticSection.updateDiagnostics(
                 p,
@@ -104,6 +107,7 @@ final class ScenarioSetupDiagnosticHelper {
                 panel.culturalSectionBuilder != null ? panel.culturalSectionBuilder::getCulturalTensorTitle : i -> "Cultural Tensor #" + (i + 1),
                 startY,
                 initPop,
+                cohortSize,
                 getValidationErrors(panel),
                 ScenarioSanityValidator.getOrCreateJitReport()
         );

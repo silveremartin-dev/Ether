@@ -11,7 +11,7 @@ if sys.stdout.encoding != 'utf-8':
     except Exception:
         pass
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 I18N_DIR = BASE_DIR / "src" / "main" / "resources" / "i18n"
 JAVA_SRC_DIR = BASE_DIR / "src" / "main" / "java"
 

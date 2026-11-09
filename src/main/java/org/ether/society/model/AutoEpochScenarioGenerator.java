@@ -113,6 +113,9 @@ public class AutoEpochScenarioGenerator {
         s.setInitialFoodReserveMonths(foodMonths);
         s.setInitialInformationPerCapita(infoI0);
         s.setCultureVectorDimensions(9);
+        if (s.getTargetCohortSize() <= 0) {
+            s.setTargetCohortSize(AutoEpochScenarioHelper.calibrateDefaultTargetCohortSize(pKey, targetYear, popN0));
+        }
 
         if (isEarth) {
             s.setPopulationDensityType(s.getCustomDensityBase64() != null ? "IMPORT_CUSTOM" : "UNBIASED_NATURAL");

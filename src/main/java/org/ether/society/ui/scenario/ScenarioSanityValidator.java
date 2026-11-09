@@ -155,6 +155,22 @@ public class ScenarioSanityValidator {
                                              java.util.function.IntFunction<String> tensorTitleFunc,
                                              long startYear, long initialPopulation,
                                              List<String> configErrors, EngineConflictReport jitReport) {
+        updateLiveDiagnostics(contentBox, headerLabel, p, eco, demoSrc, elevImg, customDensityImage,
+                dimsCount, customTensorImages, tensorTitleFunc, startYear, initialPopulation, 150, configErrors, jitReport);
+    }
+
+    /**
+     * Executes live biophysical diagnostic and updates the visual diagnostic card including cohort granularity.
+     */
+    public static void updateLiveDiagnostics(VBox contentBox, Label headerLabel,
+                                             PlanetPreset p, EcologyPreset eco,
+                                             String demoSrc, javafx.scene.image.Image elevImg,
+                                             javafx.scene.image.Image customDensityImage,
+                                             int dimsCount, java.util.Map<Integer, javafx.scene.image.Image> customTensorImages,
+                                             java.util.function.IntFunction<String> tensorTitleFunc,
+                                             long startYear, long initialPopulation,
+                                             int targetCohortSize,
+                                             List<String> configErrors, EngineConflictReport jitReport) {
         if (contentBox == null) return;
         if (p == null) p = PlanetPreset.EARTH_LIKE;
         String planetName = p.name();
@@ -384,6 +400,28 @@ public class ScenarioSanityValidator {
         // =========================================================================
         // 4. SCENARIO CONFIGURATION & SETUP INTEGRITY
         // =========================================================================
+        if (initialPopulation > 0 && targetCohortSize > 0) {
+            long estimatedNodes = initialPopulation / Math.max(1, targetCohortSize);
+            if (estimatedNodes > 500_000) {
+                validationItems.add(String.format(java.util.Locale.FRANCE,
+                        I18n.getOrDefault("scenario.warning.cohort_too_dense",
+                                "⚠️ Volume d'agents très élevé (%,d cohortes) : Débit de calcul potentiellement ralenti. Recommandé : augmenter la taille cible des cohortes (ex : 5 000 à 50 000 hab/cohorte)."),
+                        estimatedNodes));
+                alertCount++;
+            } else if (targetCohortSize > initialPopulation) {
+                validationItems.add(String.format(java.util.Locale.FRANCE,
+                        I18n.getOrDefault("scenario.warning.cohort_exceeds_pop",
+                                "⚠️ Taille de cohorte (%,d hab) supérieure à la population globale (%,d hab)."),
+                        targetCohortSize, initialPopulation));
+                alertCount++;
+            } else {
+                validationItems.add(String.format(java.util.Locale.FRANCE,
+                        I18n.getOrDefault("scenario.diagnostic.cohort_scale_ok",
+                                "✅ Granularité des cohortes optimale (%,d hab/cohorte, ~%,d nœuds agents)"),
+                        targetCohortSize, estimatedNodes));
+            }
+        }
+
         if (configErrors == null || configErrors.isEmpty()) {
             validationItems.add(I18n.getOrDefault("scenario.diagnostic.validation_ok", "✅ Configuration et couches du scénario 100% conformes et prêtes à l'exécution"));
         } else {

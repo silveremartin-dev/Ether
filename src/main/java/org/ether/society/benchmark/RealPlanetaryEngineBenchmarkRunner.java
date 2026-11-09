@@ -60,12 +60,19 @@ public class RealPlanetaryEngineBenchmarkRunner {
             double msPerTick, double latencyUsPerCell, long finalPopulation
     ) {}
 
+    public record CohortResult(
+            String cohortLabel, int targetCohortSize, int activeAgentNodes,
+            int cellCount, int ticks, double durationSec, double tps,
+            double msPerTick, double speedupVsDunbar, long finalPopulation
+    ) {}
+
     public record FullSuiteReport(
             List<SpatialResult> spatialResults,
             List<TemporalResult> temporalResults,
             List<BackendResult> backendResults,
             List<CouplingTierResult> tierResults,
-            List<EpochResult> epochResults
+            List<EpochResult> epochResults,
+            List<CohortResult> cohortResults
     ) {}
 
     public static void main(String[] args) {
@@ -120,9 +127,25 @@ public class RealPlanetaryEngineBenchmarkRunner {
         epochResults.add(executeEpochRun("Industrial Revolution", 1800, 1_000_000_000L, 6.0, 3, availableCores, 3));
         epochResults.add(executeEpochRun("Modern Anthropocene", 2026, 8_000_000_000L, 9.5, 3, availableCores, 3));
 
-        FullSuiteReport report = new FullSuiteReport(spatialResults, temporalResults, backendResults, tierResults, epochResults);
+        PlanetaryBenchmarkReportFormatter.printSectionHeader(
+                "👥 AXIS 6: DEMOGRAPHIC COHORT SIZE GRANULARITY SWEEP (Res 3 Global, 41,162 Hexagons, N = 100M Pop)");
+        List<CohortResult> cohortResults = new ArrayList<>();
+        // Measure Dunbar standard (150 hab/cohort) as the reference baseline
+        CohortResult dunbarBaseline = executeCohortRun("Dunbar Baseline Standard", 150, 3, 100_000_000L, availableCores, 3, 1.0);
+        double baselineCohortTps = dunbarBaseline.tps();
+        cohortResults.add(executeCohortRun("Micro-Bands & Foragers", 25, 3, 100_000_000L, availableCores, 3, baselineCohortTps));
+        cohortResults.add(dunbarBaseline);
+        cohortResults.add(executeCohortRun("Agrarian Agglomeration", 1_000, 3, 100_000_000L, availableCores, 3, baselineCohortTps));
+        cohortResults.add(executeCohortRun("Urban Macro-Cohort", 10_000, 3, 100_000_000L, availableCores, 3, baselineCohortTps));
+        cohortResults.add(executeCohortRun("Continental Macro-Cohort", 50_000, 3, 100_000_000L, availableCores, 3, baselineCohortTps));
+
+        FullSuiteReport report = new FullSuiteReport(spatialResults, temporalResults, backendResults, tierResults, epochResults, cohortResults);
         printFullSummaryReport(report);
         return report;
+    }
+
+    public static CohortResult executeCohortRun(String label, int targetCohortSize, int resolution, long population, int threads, int ticks, double baselineTps) {
+        return PlanetaryBenchmarkAxisExecutors.executeCohortRun(label, targetCohortSize, resolution, population, threads, ticks, baselineTps);
     }
 
     public static SpatialResult executeSpatialRun(String label, int resolution, boolean windowed, int threads, int ticks) {

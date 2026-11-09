@@ -233,6 +233,37 @@ final class PlanetaryBenchmarkAxisExecutors {
         return new EpochResult(label, year, initPop, techLevel, cells.size(), ticks, elapsedSec, tps, msPerTick, latencyUsPerCell, finalPop);
     }
 
+    static RealPlanetaryEngineBenchmarkRunner.CohortResult executeCohortRun(
+            String label, int targetCohortSize, int resolution, long population, int threads, int ticks, double baselineTps) {
+        System.out.printf("\n>>> Axis 6 Run: %-32s | Cohort: %,6d | Cells: Res %d | Pop: %,d | Ticks: %d\n",
+                label, targetCohortSize, resolution, population, ticks);
+
+        PlanetPreset preset = PlanetPreset.EARTH_LIKE.withResolution(resolution);
+        List<H3Cell> cellList = ProceduralGenerator.getInstance().generatePlanet(preset);
+        Scenario scenario = buildBaseBenchmarkScenario("bench_cohort_" + targetCohortSize, "Cohort " + label, resolution, 30.0, population, threads);
+        scenario.setTargetCohortSize(targetCohortSize);
+
+        H3SimulationEngine engine = initEngine(scenario, cellList, threads, true);
+        engine.stepForward(2);
+
+        int activeNodes = engine.getAgentBuffer() != null ? engine.getAgentBuffer().getCapacity() : 0;
+        long startNanos = System.nanoTime();
+        engine.stepForward(ticks);
+        double elapsedSec = (System.nanoTime() - startNanos) / 1e9;
+
+        double tps = ticks / elapsedSec;
+        double msPerTick = (elapsedSec * 1000.0) / ticks;
+        double speedup = baselineTps > 0 ? tps / baselineTps : 1.0;
+        long finalPop = engine.getTotalPopulation();
+
+        System.out.printf("    Measured: %6.2f s | %6.2f TPS | %7.1f ms/tick | Active Nodes: %,d | Pop: %,d | Speedup vs Dunbar: %.2fx\n",
+                elapsedSec, tps, msPerTick, activeNodes, finalPop, speedup);
+        engine.shutdown();
+
+        return new RealPlanetaryEngineBenchmarkRunner.CohortResult(label, targetCohortSize, activeNodes, cellList.size(), ticks,
+                elapsedSec, tps, msPerTick, speedup, finalPop);
+    }
+
     private static Scenario buildBaseBenchmarkScenario(String presetKey, String name, int resolution, double stepDays, long initPop, int threads) {
         Scenario scenario = new Scenario();
         scenario.setPresetKey(presetKey);

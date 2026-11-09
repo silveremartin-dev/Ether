@@ -116,6 +116,17 @@ final class PlanetaryBenchmarkReportFormatter {
                     r.epochName(), epochYearStr, r.initialPopulation(), r.techLevel(),
                     r.tps(), r.msPerTick(), r.finalPopulation());
         }
+
+        System.out.println("\n👥 AXIS 6: DEMOGRAPHIC COHORT SIZE GRANULARITY SWEEP (Res 3 Global, 41,162 Hexagons, N = 100M Pop)");
+        System.out.printf("%-28s | %-12s | %-14s | %-9s | %-10s | %-18s | %-12s\n",
+                "Cohort Granularity Regime", "Hab/Cohort", "Active Nodes", "TPS", "ms/Tick", "Speedup vs Dunbar", "Final Pop");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------");
+        for (RealPlanetaryEngineBenchmarkRunner.CohortResult r : report.cohortResults()) {
+            String speedupStr = String.format(Locale.US, "%.2fx", r.speedupVsDunbar());
+            System.out.printf("%-28s | %,12d | %,14d | %6.2f TPS | %7.1f ms | %-18s | %,12d\n",
+                    r.cohortLabel(), r.targetCohortSize(), r.activeAgentNodes(),
+                    r.tps(), r.msPerTick(), speedupStr, r.finalPopulation());
+        }
         System.out.println("==============================================================================================================================================");
     }
 }

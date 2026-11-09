@@ -22,7 +22,7 @@ if sys.stdout.encoding != 'utf-8':
         pass
 
 # Paths
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 I18N_DIR = BASE_DIR / "src" / "main" / "resources" / "i18n"
 JAVA_UI_DIR = BASE_DIR / "src" / "main" / "java" / "org" / "ether" / "society" / "ui"
 JAVA_SRC_DIR = BASE_DIR / "src" / "main" / "java" / "org" / "ether" / "society"

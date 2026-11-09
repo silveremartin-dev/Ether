@@ -98,7 +98,12 @@ final class H3EngineLifecycleAndTickCoordinator {
 
         H3BufferAndEventCoordinator.initializePoliticalEntities(cells, engine.nations, scenario);
 
-        int cohortSize = scenario != null && scenario.getTargetCohortSize() > 0 ? scenario.getTargetCohortSize() : 150;
+        int cohortSize = scenario != null && scenario.getTargetCohortSize() > 0
+                ? scenario.getTargetCohortSize()
+                : org.ether.society.model.AutoEpochScenarioHelper.calibrateDefaultTargetCohortSize(
+                        scenario != null && scenario.getPlanetPreset() != null ? scenario.getPlanetPreset().getCanonicalPlanet() : "earth",
+                        scenario != null ? scenario.getStartDateYear() : -8000L,
+                        scenario != null ? scenario.getInitialHumanCount() : 0L);
         if (engine.demographicKernel != null) {
             engine.demographicKernel.setTargetCohortSize(cohortSize);
             long sSeed = scenario != null && scenario.getSeed() != 0L ? scenario.getSeed() : 42L;
@@ -146,7 +151,11 @@ final class H3EngineLifecycleAndTickCoordinator {
                 H3BufferAndEventCoordinator.initializePopulation(newCells, engine.currentScenario, engine.nations);
             }
             int cohortSize = engine.currentScenario != null && engine.currentScenario.getTargetCohortSize() > 0
-                    ? engine.currentScenario.getTargetCohortSize() : 150;
+                    ? engine.currentScenario.getTargetCohortSize()
+                    : org.ether.society.model.AutoEpochScenarioHelper.calibrateDefaultTargetCohortSize(
+                            engine.currentScenario != null && engine.currentScenario.getPlanetPreset() != null ? engine.currentScenario.getPlanetPreset().getCanonicalPlanet() : "earth",
+                            engine.currentScenario != null ? engine.currentScenario.getStartDateYear() : -8000L,
+                            engine.currentScenario != null ? engine.currentScenario.getInitialHumanCount() : 0L);
             if (engine.demographicKernel != null) {
                 engine.demographicKernel.setTargetCohortSize(cohortSize);
             }

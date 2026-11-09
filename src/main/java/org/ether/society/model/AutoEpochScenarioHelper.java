@@ -87,10 +87,10 @@ public final class AutoEpochScenarioHelper {
         boolean withinHorizon = year <= 2200L;
         states.put("SelfDomesticationEngine", isEarth && year >= -3000000L && withinHorizon);
         states.put("SexualSelectionMatingEngine", isEarth && year >= -3000000L && withinHorizon);
-        states.put("KinSelectionHamiltonEngine", isEarth && year >= -3000000L && withinHorizon);
+        states.put("KinSelectionHamiltonEngine", (!isEarth || year >= -3000000L) && withinHorizon);
         states.put("PriceMultilevelSelectionEngine", isEarth && year >= -3000000L && withinHorizon);
-        states.put("LanguageLinguisticEngine", isEarth && year >= -300000L && withinHorizon);
-        states.put("CulturalSociologyEngine", isEarth && year >= -300000L && withinHorizon);
+        states.put("LanguageLinguisticEngine", (!isEarth || year >= -300000L) && withinHorizon);
+        states.put("CulturalSociologyEngine", (!isEarth || year >= -300000L) && withinHorizon);
         states.put("DynamicMaritimeRoutingGraph", isEarth && year >= -60000L && withinHorizon);
         states.put("TasmanianCulturalRegressionEngine", false); // Specialized demographic isolation / treadmill loss test
 
@@ -104,18 +104,18 @@ public final class AutoEpochScenarioHelper {
         boolean isStateEraOrLater = isEarth && year >= -3000L && withinHorizon;
         // Draft animal fodder allocation applies from Bronze Age plow (-3000 BCE) until tractor mechanization (1950 CE)
         states.put("DraftAnimalFodderAllocationEngine", isEarth && year >= -3000L && year <= 1950L);
-        states.put("TradeNetworkEngine", isStateEraOrLater);
+        states.put("TradeNetworkEngine", !isEarth || isStateEraOrLater);
         states.put("WarDiplomacyEngine", isStateEraOrLater);
         states.put("ThermodynamicWarfareEngine", isStateEraOrLater);
         states.put("MaritimeHighwayEngine", isStateEraOrLater);
         states.put("HydrologicalEngineeringEngine", isStateEraOrLater);
         states.put("SoilSalinizationHydrologyEngine", isStateEraOrLater);
-        states.put("SpatialCityFractalEngine", isStateEraOrLater);
+        states.put("SpatialCityFractalEngine", !isEarth || isStateEraOrLater);
         states.put("VonThunenAgriculturalRingsEngine", isStateEraOrLater);
-        states.put("WestBettencourtAllometryEngine", isStateEraOrLater);
+        states.put("WestBettencourtAllometryEngine", !isEarth || isStateEraOrLater);
         states.put("TurchinGoldstoneSDTEngine", isStateEraOrLater);
         states.put("StructuralDemographicBifurcationEngine", isStateEraOrLater);
-        states.put("TainterComplexityCollapseEngine", isStateEraOrLater);
+        states.put("TainterComplexityCollapseEngine", !isEarth || isStateEraOrLater);
         states.put("CliodynamicsEngine", isStateEraOrLater);
         states.put("ArthurCombinatorialTechnologyEngine", (!isEarth || year >= -3000L) && withinHorizon);
         states.put("GranovetterThresholdCascadeEngine", isStateEraOrLater);
@@ -210,6 +210,79 @@ public final class AutoEpochScenarioHelper {
         states.put("BifurcationChaosEngine", false);
 
         return states;
+    }
+
+    /**
+     * Calibrates the default demographic cohort granularity ({@code targetCohortSize})
+     * across historical epochs and extraterrestrial habitats.
+     *
+     * <p>Granularity guidelines:
+     * <ul>
+     *   <li>Deep Paleolithic / Prehistory (\(t < -10\,000\text{ BP}\)): 30 to 50 hab/cohort.</li>
+     *   <li>Neolithic & Early Bronze Age (\(-10\,000 \le t < -3\,000\text{ BCE}\)): 150 hab/cohort (Dunbar standard).</li>
+     *   <li>Late Bronze & Iron Age (\(-3\,000 \le t < -500\text{ BCE}\)): 500 hab/cohort.</li>
+     *   <li>Classical Antiquity (\(-500\text{ BCE} \le t < 500\text{ CE}\)): 1,000 hab/cohort.</li>
+     *   <li>Middle Ages & Early Modern (\(500 \le t < 1750\text{ CE}\)): 1,500 to 2,000 hab/cohort.</li>
+     *   <li>Industrial Revolution (\(1750 \le t < 1900\text{ CE}\)): 5,000 hab/cohort.</li>
+     *   <li>20th Century & Great Acceleration (\(1900 \le t < 2026\text{ CE}\)): 8,000 to 20,000 hab/cohort.</li>
+     *   <li>Modern Anthropocene & Prospective Futures (\(t \ge 2026\text{ CE}\)): 25,000 to 50,000 hab/cohort.</li>
+     *   <li>Non-Earth Outposts (Moon, Mars, etc.): 10 to 250 hab/cohort for micro-outposts (\(N < 100\,000\)),
+     *       up to 1,000 for large planetary colonies.</li>
+     * </ul>
+     * </p>
+     *
+     * @param planetKey         canonical planet identifier (e.g. "earth", "mars", "moon")
+     * @param year              scenario start year
+     * @param initialHumanCount initial population (if available, &le; 0 to ignore)
+     * @return recommended target cohort size in [hab/cohort]
+     */
+    public static int calibrateDefaultTargetCohortSize(String planetKey, long year, long initialHumanCount) {
+        boolean isEarth = planetKey == null || "earth".equalsIgnoreCase(planetKey.trim());
+        int size;
+        if (!isEarth) {
+            if (initialHumanCount > 0 && initialHumanCount < 5_000L) {
+                size = 10;
+            } else if (initialHumanCount > 0 && initialHumanCount < 50_000L) {
+                size = 25;
+            } else if (initialHumanCount > 0 && initialHumanCount < 500_000L) {
+                size = 50;
+            } else if (initialHumanCount > 0 && initialHumanCount < 5_000_000L) {
+                size = 250;
+            } else {
+                size = 100;
+            }
+        } else {
+            if (year < -50000L) {
+                size = 30;
+            } else if (year < -10000L) {
+                size = 50;
+            } else if (year < -3000L) {
+                size = 150;
+            } else if (year < -500L) {
+                size = 500;
+            } else if (year < 500L) {
+                size = 1000;
+            } else if (year < 1500L) {
+                size = 1500;
+            } else if (year < 1750L) {
+                size = 2000;
+            } else if (year < 1900L) {
+                size = 5000;
+            } else if (year < 1950L) {
+                size = 8000;
+            } else if (year < 2000L) {
+                size = 10000;
+            } else if (year < 2026L) {
+                size = 25000;
+            } else {
+                size = 50000;
+            }
+        }
+
+        if (initialHumanCount > 0 && size > initialHumanCount) {
+            size = (int) Math.max(1, initialHumanCount / 4);
+        }
+        return Math.max(1, size);
     }
 
     public static void copyTemplateProperties(Scenario source, Scenario target) {

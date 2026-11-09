@@ -45,6 +45,7 @@ public class ComprehensiveRealEngineBenchmarkTest {
         assertFalse(report.backendResults().isEmpty(), "Backend results must not be empty");
         assertFalse(report.tierResults().isEmpty(), "Coupling tier results must not be empty");
         assertFalse(report.epochResults().isEmpty(), "Epoch results must not be empty");
+        assertFalse(report.cohortResults().isEmpty(), "Cohort results must not be empty");
 
         for (RealPlanetaryEngineBenchmarkRunner.SpatialResult r : report.spatialResults()) {
             // Validate measurement integrity without imposing arbitrary hardware-dependent throughput gates
@@ -53,6 +54,12 @@ public class ComprehensiveRealEngineBenchmarkTest {
             assertTrue(!Double.isNaN(r.msPerTick()) && !Double.isInfinite(r.msPerTick()) && r.msPerTick() >= 0.0,
                     "Per-tick latency must be a valid non-negative empirical measurement for " + r.testLabel());
             assertTrue(r.finalPopulation() > 0, "Simulation run must preserve non-zero human/planetary population for " + r.testLabel());
+        }
+
+        for (RealPlanetaryEngineBenchmarkRunner.CohortResult c : report.cohortResults()) {
+            assertTrue(!Double.isNaN(c.tps()) && !Double.isInfinite(c.tps()) && c.tps() > 0.0,
+                    "Cohort throughput must be positive for " + c.cohortLabel());
+            assertTrue(c.finalPopulation() > 0, "Cohort run must preserve non-zero human population for " + c.cohortLabel());
         }
 
         // Backend measurement check: ensure valid empirical throughput recording

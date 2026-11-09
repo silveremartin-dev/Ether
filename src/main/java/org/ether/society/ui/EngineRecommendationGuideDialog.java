@@ -77,9 +77,10 @@ public class EngineRecommendationGuideDialog extends Stage {
         contentBox.getChildren().add(createCard(
                 I18n.getOrDefault("engine.guide.card1.title", "👥 1. TAILLE DES COHORTES DÉMOGRAPHIQUES (DUNBAR & AGENTS DOD)"),
                 I18n.getOrDefault("engine.guide.card1.body", "La taille des cohortes définit le nombre moyen d'individus regroupés par nœud agent au sein du buffer vectorisé DOD :\n"
-                        + "• Minimum (1 à 30 hab/cohorte) : Bandes paléolithiques nomades, petits clans de chasseurs-cueilleurs et micro-communautés d'avant-postes spatiaux. Précision maximale mais volume d'agents très élevé.\n"
-                        + "• Recommandé par Défaut (150 hab/cohorte) : Nombre de Dunbar anthropologique. Représente la taille naturelle des villages néolithiques, des tribus agraires et des quartiers urbains de base. Offre l'équilibre idéal fidélité / fluidité.\n"
-                        + "• Maximum / Macro (1 000 à 50 000 hab/cohorte) : Grandes métropoles antiques, empires médiévaux et macro-simulations industrielles contemporaines pour maximiser le débit de calcul sur de larges populations."),
+                        + "• Minimum (1 à 30 hab/cohorte) : Bandes paléolithiques nomades, petits clans de chasseurs-cueilleurs et micro-communautés d'avant-postes spatiaux (Lune, Mars). Précision maximale mais volume d'agents très élevé.\n"
+                        + "• Recommandé Dunbar (150 hab/cohorte) : Nombre de Dunbar anthropologique. Représente la taille naturelle des villages néolithiques, des tribus agraires et des quartiers urbains de base. Recommandé pour l'histoire ancienne.\n"
+                        + "• Intermédiaire (1 000 à 5 000 hab/cohorte) : Grandes métropoles antiques, empires médiévaux et périodes pré-industrielles.\n"
+                        + "• Macro-cohortes (10 000 à 100 000+ hab/cohorte) : Simulations industrielles contemporaines et transitions futures pour maximiser le débit de calcul (TPS) sur des populations de 1 à 10 milliards d'individus."),
                 "-fx-text-fill: #38bdf8;"
         ));
 

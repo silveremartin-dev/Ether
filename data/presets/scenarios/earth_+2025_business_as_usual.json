@@ -247,7 +247,7 @@
   "initialInformationPerCapita" : 1.0E7,
   "populationDensityType" : "URBAN_CLUSTERS",
   "cellSizeKm2" : 100.0,
-  "targetCohortSize" : 5000,
+  "targetCohortSize" : 25000,
   "temporalResolutionDays" : 30.0,
   "climateHarshness" : 0.5,
   "startDateYear" : 2025,

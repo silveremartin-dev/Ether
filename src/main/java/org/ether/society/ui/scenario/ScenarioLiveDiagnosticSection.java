@@ -84,6 +84,26 @@ public class ScenarioLiveDiagnosticSection {
                                   long initPop,
                                   List<String> validationErrors,
                                   EngineConflictReport jitReport) {
+        updateDiagnostics(planet, eco, demoSource, elevImg, densityImg, dimsCount,
+                customTensorImages, tensorTitleSupplier, startYear, initPop, 150, validationErrors, jitReport);
+    }
+
+    /**
+     * Updates real-time diagnostic items, warnings, and cohort sizing based on current scenario parameters.
+     */
+    public void updateDiagnostics(PlanetPreset planet,
+                                  EcologyPreset eco,
+                                  String demoSource,
+                                  Image elevImg,
+                                  Image densityImg,
+                                  int dimsCount,
+                                  Map<Integer, Image> customTensorImages,
+                                  IntFunction<String> tensorTitleSupplier,
+                                  long startYear,
+                                  long initPop,
+                                  int targetCohortSize,
+                                  List<String> validationErrors,
+                                  EngineConflictReport jitReport) {
         if (liveDiagnosticContentBox == null) return;
         ScenarioSanityValidator.updateLiveDiagnostics(
                 liveDiagnosticContentBox,
@@ -98,6 +118,7 @@ public class ScenarioLiveDiagnosticSection {
                 tensorTitleSupplier,
                 startYear,
                 initPop,
+                targetCohortSize,
                 validationErrors,
                 jitReport
         );

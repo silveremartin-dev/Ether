@@ -247,7 +247,7 @@
   "initialInformationPerCapita" : 5.0,
   "populationDensityType" : "LGM_REFUGIA",
   "cellSizeKm2" : 100.0,
-  "targetCohortSize" : 1500,
+  "targetCohortSize" : 50,
   "temporalResolutionDays" : 30.0,
   "climateHarshness" : 0.5,
   "startDateYear" : -20000,

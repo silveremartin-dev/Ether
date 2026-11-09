@@ -133,22 +133,23 @@ public class ScenarioSpatiotemporalSectionBuilder {
 
         // Target Cohort Size (Row 1)
         cohortSizeLabel = new Label();
-        targetCohortSizeSpinner = new Spinner<>(1, 100000, 150, 25);
+        targetCohortSizeSpinner = new Spinner<>(1, 10000000, 150, 25);
         targetCohortSizeSpinner.setEditable(true);
         targetCohortSizeSpinner.setMaxWidth(Double.MAX_VALUE);
         targetCohortSizeSpinner.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cohort_size",
                 "👥 Taille Cible des Cohortes Démographiques (Nœuds Agents DOD) [hab/cohorte] :\n" +
                 "Détermine la taille moyenne des groupes d'habitants représentés par un même nœud agent.\n" +
-                "• 1 à 30 hab/cohorte : Bandes nomades & chasseurs-cueilleurs\n" +
-                "• 150 hab/cohorte : Nombre de Dunbar (Villages sédentaires & communautés de base - Recommandé)\n" +
-                "• 10 000 à 50 000 hab/cohorte : Macro-cohortes, métropoles & calcul accéléré")));
+                "• 1 à 30 hab/cohorte : Bandes nomades, petits clans & avant-postes spatiaux\n" +
+                "• 150 hab/cohorte : Nombre de Dunbar (Villages sédentaires & communautés agraires - Recommandé Préhistoire / Antiquité)\n" +
+                "• 1 000 à 5 000 hab/cohorte : Agglomérations médiévales & empires pré-industriels\n" +
+                "• 10 000 à 100 000+ hab/cohorte : Macro-cohortes contemporaines & calcul accéléré sur populations à l'échelle du milliard")));
         Tooltip.install(cohortSizeLabel, targetCohortSizeSpinner.getTooltip());
         targetCohortSizeSpinner.valueProperty().addListener((obs, oldV, newV) -> {
             if (host != null) host.notifyParamChange();
         });
 
         cohortSizeHintLabel = new Label(I18n.getOrDefault("scenario.cohort.hint",
-                "• 1–30 : Micro-tribus nomades | 150 : Recommandé par défaut (Nombre de Dunbar) | 10k–50k : Macro-cohortes."));
+                "• 1–30 : Nomades / Avant-postes | 150 : Dunbar standard | 1k–5k : Régional | 10k–100k+ : Macro-cohortes."));
         cohortSizeHintLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
         cohortSizeHintLabel.setWrapText(true);
         VBox cohortBox = new VBox(2, targetCohortSizeSpinner, cohortSizeHintLabel);
@@ -375,7 +376,7 @@ public class ScenarioSpatiotemporalSectionBuilder {
         if (temporalResolutionLabel != null) temporalResolutionLabel.setText(I18n.getOrDefault("scenario.label.temporal_resolution", "Time Step Δt (Temporal Resolution):"));
         if (temporalResolutionHintLabel != null) temporalResolutionHintLabel.setText(I18n.getOrDefault("scenario.temporal.hint", "• 1 Mois : Recommandé par défaut (équilibre saisons/vitesse) | 1 Jour/Sem. : Épidémies & météo | 1 An : Multi-millénaire."));
         if (cohortSizeLabel != null) cohortSizeLabel.setText(I18n.getOrDefault("scenario.label.cohort_size", "Cohort Size:"));
-        if (cohortSizeHintLabel != null) cohortSizeHintLabel.setText(I18n.getOrDefault("scenario.cohort.hint", "• 1–30 : Micro-tribus nomades | 150 : Recommandé par défaut (Nombre de Dunbar) | 10k–50k : Macro-cohortes."));
+        if (cohortSizeHintLabel != null) cohortSizeHintLabel.setText(I18n.getOrDefault("scenario.cohort.hint", "• 1–30 : Nomades / Avant-postes | 150 : Dunbar standard | 1k–5k : Régional | 10k–100k+ : Macro-cohortes."));
         if (referenceModelLabel != null) referenceModelLabel.setText(I18n.getOrDefault("scenario.label.reference_model", "Prospective / Empirical Baseline Model:"));
         if (referenceModelHintLabel != null) referenceModelHintLabel.setText(I18n.getOrDefault("scenario.reference_model.hint", "• < -10k BP: Paléo Sources | -10k to 2024: HYDE 3.4 & Maddison | 2025+: IPCC SSP1-5 or Ether Calibrated."));
 
