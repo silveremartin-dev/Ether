@@ -154,13 +154,20 @@ public class WarDiplomacyEngine {
                     double warDesire = ((baseWarDesire * affinityMultiplier) / frictionDamping) - warExhaustion;
 
                     // Continuous escalation threshold (Bueno de Mesquita 1981): border skirmishes escalate when net war desire is positive
-                    if (warDesire > 0.30) {
+                    double escalationProbability = org.ether.society.core.math.SmoothMath.sigmoid(warDesire, 0.0, 0.12);
+                    if (escalationProbability > 0.50) {
                         resolveBorderBattle(aggressor, defender, contact);
                         if (scenario != null) {
                             // Border clash degrades bilateral diplomatic affinity dynamically
-                            scenario.adjustPairwiseAffinity(aggressor.getName(), defender.getName(), -10.0);
-                            scenario.adjustPairwiseAffinity(aggressor.getId(), defender.getId(), -10.0);
+                            double affinityDrop = 2.0 + 10.0 * escalationProbability;
+                            scenario.adjustPairwiseAffinity(aggressor.getName(), defender.getName(), -affinityDrop);
+                            scenario.adjustPairwiseAffinity(aggressor.getId(), defender.getId(), -affinityDrop);
                         }
+                    } else if (scenario != null && warDesire < -0.05) {
+                        // Peacetime bilateral diplomatic reconciliation
+                        double affinityGain = 0.5 * Math.min(2.0, -warDesire);
+                        scenario.adjustPairwiseAffinity(aggressor.getName(), defender.getName(), affinityGain);
+                        scenario.adjustPairwiseAffinity(aggressor.getId(), defender.getId(), affinityGain);
                     }
                 }
             }
@@ -193,7 +200,7 @@ public class WarDiplomacyEngine {
             return null;
         }
 
-        // Spatial Grid Binning for n2 territory (1.5° x 1.5° grid cells)
+        // Spatial Grid Binning for n2 territory (1.5Ã‚Â° x 1.5Ã‚Â° grid cells)
         final double binSize = 1.5;
         Map<Long, List<H3Cell>> spatialBins2 = new HashMap<>();
         for (H3Cell c2 : n2.getTerritory()) {
@@ -315,7 +322,7 @@ public class WarDiplomacyEngine {
         double totalPowerSq = Math.max(1.0, aggPowerSq + defPowerSq);
         double conquestProb = aggPowerSq / totalPowerSq;
 
-        if (conquestProb > 0.55) {
+        if (conquestProb > 0.50) {
             // Aggressor conquers the contested border frontline cell
             H3Cell conqueredCell = contact.contestedCell();
             if (conqueredCell == null || conqueredCell == defender.getCapital()) {
@@ -332,7 +339,7 @@ public class WarDiplomacyEngine {
                 // Cliodynamic Warfare Demographics:
                 // 1. Direct combat casualties fall predominantly on the young recruitment cohorts (males 15-24 and 25-49)
                 // 2. Era-dependent & conflict-type civilian collateral attrition (Eckhardt 1989; Valentino 2004)
-                //    - Feudal/Mercenary peak (Thirty Years' War plundering & chevauchées at T ~ 3.4)
+                //    - Feudal/Mercenary peak (Thirty Years' War plundering & chevauchÃƒÂ©es at T ~ 3.4)
                 //    - 18th-century linear army lull (Cabinet wars at T ~ 4.2)
                 //    - Industrial total war & urban siege surge (strategic bombing & mass artillery at T >= 5.0)
                 // 3. Post-battle camp disease outbreak (Zinsser 1935; Smallman-Raynor & Cliff 2004)
@@ -354,7 +361,7 @@ public class WarDiplomacyEngine {
 
                 // Physical ordnance & logistics capital per capita of belligerents (Dupuy 1987, Understanding War;
                 // Eckhardt 1989; Valentino 2004):
-                // - Early gunpowder & mercenary siege logistics peak around k_pc ~ 550 kg/cap (Thirty Years' War chevauchées)
+                // - Early gunpowder & mercenary siege logistics peak around k_pc ~ 550 kg/cap (Thirty Years' War chevauchÃƒÂ©es)
                 // - 18th-century linear magazine supply lull around k_pc ~ 950 kg/cap (Cabinet wars)
                 // - Industrial high-explosive artillery & aerial bombardment surge for k_pc >= 2800 kg/cap (Total War)
                 double aggCapitalPerCapita = aggressor.getTerritory().stream().filter(Objects::nonNull)
@@ -417,14 +424,7 @@ public class WarDiplomacyEngine {
                     int maxInfectable = Math.max(1, (int) (newTotal * 0.45));
                     conqueredCell.setEpidemicInfected(Math.min(maxInfectable, currentInfected + newInfected));
 
-                    String epidemicPathogen;
-                    if (meanOrdnanceCapital < 800.0) {
-                        epidemicPathogen = "Camp Fever (Typhus & Dysentery)";
-                    } else if (meanOrdnanceCapital < 5000.0) {
-                        epidemicPathogen = "Cholera & Trench Typhus";
-                    } else {
-                        epidemicPathogen = "Wartime Pathogen & Epidemic Sepsis";
-                    }
+                    String epidemicPathogen = "Camp Fever (Typhus & Dysentery)";
                     conqueredCell.setActivePathogenName(epidemicPathogen);
 
                     // Acute sanitation & public health shock depressing life expectancy

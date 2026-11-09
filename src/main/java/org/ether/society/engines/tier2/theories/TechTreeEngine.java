@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Physical Historical Era Diagnostic &amp; Diffusion Engine.
  *
- * <p>In strict conformance with {@code AGENTS.md} §10.1, technology is NOT stored or mutated
+ * <p>In strict conformance with {@code AGENTS.md} Â§10.1, technology is NOT stored or mutated
  * as an independent state variable. This engine provides:</p>
  * <ul>
  *   <li><b>A posteriori physical era diagnostic</b>: maps continuous per-capita power dissipation
@@ -155,21 +155,19 @@ public class TechTreeEngine {
         double organicScarcityStress = SmoothMath.smoothClamp(1.0 - (wood / Math.max(1.0, organicDemand)), 0.0, 1.0, 0.05);
 
         // 2. Latent higher-order resource potential available to resolve the bottleneck
-        double latentSubstitutePotential = 0.0;
-        if (capPerCapita < 100.0 && metal > 5.0) {
-            latentSubstitutePotential = Math.min(1.0, Math.log1p(metal) / 5.0);
-        } else if (capPerCapita >= 100.0 && capPerCapita < 500.0 && metal > 10.0) {
-            double reeTin = cell.getResourceRareEarthsOr(0.0);
-            double tinScarcity = SmoothMath.smoothClamp(1.0 - (reeTin / 2.0), 0.0, 1.0, 0.05);
-            organicScarcityStress = Math.max(organicScarcityStress, tinScarcity);
-            latentSubstitutePotential = Math.min(1.0, Math.log1p(metal) / 5.0);
-        } else if (capPerCapita >= 500.0 && capPerCapita < 2500.0 && coal > 5.0) {
-            latentSubstitutePotential = Math.min(1.0, Math.log1p(coal) / 5.0);
-        } else if (capPerCapita >= 2500.0 && (oilGas > 5.0 || uranium > 1.0)) {
-            double coalScarcity = SmoothMath.smoothClamp(1.0 - (coal / Math.max(10.0, pop * 0.05)), 0.0, 1.0, 0.05);
-            organicScarcityStress = Math.max(organicScarcityStress, coalScarcity);
-            latentSubstitutePotential = Math.min(1.0, Math.log1p(oilGas + uranium * 10.0) / 5.0);
-        }
+        // Continuous C^1 Fermi-Dirac technological regime substitution (Allen 2009; Clark 2007; Wrigley 2010)
+        double potMetal = (metal > 0.0) ? (metal / (metal + 15.0)) : 0.0;
+        double potCoal = (coal > 0.0) ? (coal / (coal + 50.0)) : 0.0;
+        double potHydro = (oilGas + uranium * 10.0 > 0.0) ? ((oilGas + uranium * 10.0) / (oilGas + uranium * 10.0 + 100.0)) : 0.0;
+
+        double wCoal = SmoothMath.sigmoid(capPerCapita, 500.0, 150.0);
+        double wHydro = SmoothMath.sigmoid(capPerCapita, 2000.0, 500.0);
+        double wMetal = 1.0 - 0.7 * wCoal;
+
+        double latentSubstitutePotential = Math.clamp(
+                wMetal * potMetal + wCoal * (1.0 - wHydro) * potCoal + wHydro * potHydro,
+                0.0, 1.0
+        );
 
         // Physical capital deepening rate under scarcity bottlenecks (Allen 2009; Clark 2007)
         return 5.0 * organicScarcityStress * latentSubstitutePotential * Math.max(0.0001, dtYears);

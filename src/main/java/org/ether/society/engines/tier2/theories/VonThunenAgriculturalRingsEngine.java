@@ -13,17 +13,17 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * <h1>Von Thünen Agricultural Rings &amp; Overland Transport Friction Engine</h1>
+ * <h1>Von ThÃ¼nen Agricultural Rings &amp; Overland Transport Friction Engine</h1>
  * <p>
  * Models the geographic logistics of agricultural food transport and urban agglomeration limits.
  * Replaces synthetic urbanization rate sigmoids with authentic spatial transport decay
- * (Von Thünen 1826; Krugman 1991).
+ * (Von ThÃ¼nen 1826; Krugman 1991).
  * </p>
  *
  * <h2>Scientific Foundations</h2>
  * <ul>
- *   <li><b>Johann Heinrich von Thünen (1826)</b> <i>Der isolirte Staat in Beziehung auf Landwirthschaft und Nationalökonomie</i>, Perthes, Hamburg.</li>
- *   <li><b>Paul Krugman (1991)</b> <i>Increasing Returns and Economic Geography</i>, J. Political Econ. 99(3): 483–499.</li>
+ *   <li><b>Johann Heinrich von ThÃ¼nen (1826)</b> <i>Der isolirte Staat in Beziehung auf Landwirthschaft und NationalÃ¶konomie</i>, Perthes, Hamburg.</li>
+ *   <li><b>Paul Krugman (1991)</b> <i>Increasing Returns and Economic Geography</i>, J. Political Econ. 99(3): 483â€“499.</li>
  *   <li><b>Paul Bairoch (1988)</b> <i>Cities and Economic Development: From the Dawn of History to the Present</i>, Univ. of Chicago Press.</li>
  * </ul>
  *
@@ -83,14 +83,12 @@ public class VonThunenAgriculturalRingsEngine implements ProceduralEnginePlugin 
                 // Coastal cities access low-friction maritime grain fleets (Rome, Alexandria, Song Hangzhou)
                 maxSustainableAgglomeration = 500_000.0 + capitalPerCapita * 2500.0;
             } else {
-                // Inland cities strictly bounded by Von Thünen terrestrial friction
-                if (capitalPerCapita < 100.0) {
-                    maxSustainableAgglomeration = 25_000.0; // Bronze/Iron Age inland city limit
-                } else if (capitalPerCapita < 800.0) {
-                    maxSustainableAgglomeration = 80_000.0; // Early modern inland city limit
-                } else {
-                    maxSustainableAgglomeration = 80_000.0 + (capitalPerCapita - 800.0) * 5000.0; // Railroad industrial expansion
-                }
+                // Inland cities strictly bounded by Von ThÃ¼nen terrestrial friction
+                // Continuous C^1 transport radius expansion eliminating piecewise threshold cliffs (Von Thünen 1826)
+                double ancientInlandBase = 25_000.0;
+                double earlyModernExpansion = 55_000.0 * org.ether.society.core.math.SmoothMath.sigmoid(capitalPerCapita, 250.0, 75.0);
+                double industrialRailExpansion = 5000.0 * org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 800.0, 0.0, 100.0);
+                maxSustainableAgglomeration = ancientInlandBase + earlyModernExpansion + industrialRailExpansion;
             }
 
             // If inland population exceeds sustainable hinterland grain supply, food friction spikes

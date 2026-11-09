@@ -41,7 +41,7 @@ import java.util.List;
  * </ol>
  * </p>
  *
- * <p>Strictly compliant with Ether Determinism Directives ({@code AGENTS.md} §3 &amp; §8):
+ * <p>Strictly compliant with Ether Determinism Directives ({@code AGENTS.md} Â§3 &amp; Â§8):
  * empirical data sources are preserved as authoritative invariants, and procedural derivations
  * employ closed-form physical equations with zero pseudo-random noise.</p>
  *
@@ -192,8 +192,7 @@ public class PreComputePhase {
                 if (gc.getLatitude() == null || gc.getLongitude() == null) continue;
                 double rho = ResourceDepositMapReader.sampleDensityFromImageTensor(densityImg, gc.getLatitude(), gc.getLongitude());
                 if (rho > 0.0) {
-                    double eff = rho * computeCellHabitability(gc);
-                    if (eff > 0.0) s += eff;
+                    s += rho;
                 }
             }
             gSum3 = s > 0.0 ? s : 1.0;
@@ -255,11 +254,8 @@ public class PreComputePhase {
                     c.setElevation(Math.max(15.0, c.getElevation() != null ? Math.abs(c.getElevation()) : 50.0));
                     c.setBiome(Biome.PLAINS);
                 }
-                double effectiveRho = rho * computeCellHabitability(c);
-                if (effectiveRho > 0.0) {
-                    weights[i] = effectiveRho;
-                    total += effectiveRho;
-                }
+                weights[i] = rho;
+                total += rho;
             }
         }
         if (total <= 0.0) {
@@ -299,14 +295,8 @@ public class PreComputePhase {
 
         long assigned = 0;
         int populated = 0;
-        int topCellIdx = -1;
-        double topWeight = -1.0;
         for (int i = 0; i < cells.size(); i++) {
             if (weights[i] <= 0.0) continue;
-            if (weights[i] > topWeight) {
-                topWeight = weights[i];
-                topCellIdx = i;
-            }
             long p = Math.round(effectiveWorldPop * (weights[i] / denominator));
             if (p <= 0) {
                 p = 1L;
@@ -317,13 +307,23 @@ public class PreComputePhase {
             assigned += p;
             populated++;
         }
-        if (!scenario.isClippingEnabled() && topCellIdx >= 0 && assigned != effectiveWorldPop && effectiveWorldPop > 0) {
-            H3Cell topCell = cells.get(topCellIdx);
-            long adjusted = Math.max(1L, (long) topCell.getPopulationOr(0) + (effectiveWorldPop - assigned));
-            if (topCell.getPopulationOr(0) == 0 && adjusted > 0) populated++;
-            topCell.setPopulation((int) Math.min(Integer.MAX_VALUE, adjusted));
-            topCell.setBiomassHuman((double) adjusted);
-            assigned = effectiveWorldPop;
+        // Continuous proportional dasymetric adjustment across all populated cells (Stevens et al. 2015)
+        // Eliminates single-cell dumping artifacts while conserving total population exactly.
+        if (!scenario.isClippingEnabled() && assigned != effectiveWorldPop && effectiveWorldPop > 0 && assigned > 0) {
+            double adjRatio = (double) effectiveWorldPop / (double) assigned;
+            long reAssigned = 0;
+            for (int i = 0; i < cells.size(); i++) {
+                if (weights[i] <= 0.0) continue;
+                H3Cell c = cells.get(i);
+                int curP = c.getPopulationOr(0);
+                if (curP > 0) {
+                    long newP = Math.max(1L, Math.round(curP * adjRatio));
+                    c.setPopulation((int) Math.min(Integer.MAX_VALUE, newP));
+                    c.setBiomassHuman((double) newP);
+                    reAssigned += newP;
+                }
+            }
+            assigned = reAssigned;
         }
         logger.info("Empirical Earth density raster applied: {} humans across {} cells (year {}, clipping={})",
                 assigned, populated, startYear, scenario.isClippingEnabled());

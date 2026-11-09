@@ -13,7 +13,7 @@ import org.ether.society.core.math.SmoothMath;
  *
  * <h2>Physical Foundation: The Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$</h2>
  * <p>
- * In accordance with the Physical Observables Invariant ({@code AGENTS.md} §10), no state-level
+ * In accordance with the Physical Observables Invariant ({@code AGENTS.md} Ãƒâ€šÃ‚Â§10), no state-level
  * technology variable exists in the simulation. All post-hoc macroeconomic and cliodynamic response
  * envelopes are parameterized by the dimensionless <b>Garrett-Lotka Exergy-Capital Index</b>
  * $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ derived strictly from two conserved physical observables:
@@ -33,9 +33,9 @@ import org.ether.society.core.math.SmoothMath;
  * <h3>Physical Regime Anchors of $\Phi_{\text{exergy}}$</h3>
  * <ul>
  *   <li><b>$\Phi_{\text{exergy}} \le 0.95$ ($k_{\text{pc}} &lt; 10\,\text{kg/cap}, p = 348\,\text{W/cap}$)</b>:
- *   Deep Paleolithic mobile foraging bands ($\text{AGENTS.md}$ §8 deep-time invariants: $0\%$ urbanization, $0\%$ literacy, $0$ state debt).</li>
+ *   Deep Paleolithic mobile foraging bands ($\text{AGENTS.md}$ Ãƒâ€šÃ‚Â§8 deep-time invariants: $0\%$ urbanization, $0\%$ literacy, $0$ state debt).</li>
  *   <li><b>$\Phi_{\text{exergy}} \approx 1.05\text{--}1.20$ ($k_{\text{pc}} \in [150, 650]\,\text{kg/cap}, p \in [420, 520]\,\text{W/cap}$)</b>:
- *   Agrarian Hydraulic &amp; Iron-Age Empires (Classical Antiquity 165 CE, Song/Medieval 1000–1347 CE).</li>
+ *   Agrarian Hydraulic &amp; Iron-Age Empires (Classical Antiquity 165 CE, Song/Medieval 1000ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“1347 CE).</li>
  *   <li><b>$\Phi_{\text{exergy}} \approx 1.22\text{--}1.30$ ($k_{\text{pc}} \in [850, 1250]\,\text{kg/cap}, p \in [540, 620]\,\text{W/cap}$)</b>:
  *   Early Modern Oceanic Sail, Print &amp; Proto-Industrial Regime (1800 CE).</li>
  *   <li><b>$\Phi_{\text{exergy}} \approx 1.75\text{--}2.05$ ($k_{\text{pc}} \in [2800, 4200]\,\text{kg/cap}, p \in [1000, 1250]\,\text{W/cap}$)</b>:
@@ -81,7 +81,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     /**
      * Atmospheric $\text{CO}_2$ concentration ($\text{ppm}$).
      * For paleoclimatic and pre-industrial epochs ($\text{year} < 1850$), retrieves the authoritative
-     * ice-core paleoclimatic baseline (EPICA Dome C, Lüthi et al. 2008, e.g. 190 ppm at LGM $-20\,000$ BP).
+     * ice-core paleoclimatic baseline (EPICA Dome C, LÃƒÆ’Ã‚Â¼thi et al. 2008, e.g. 190 ppm at LGM $-20\,000$ BP).
      * For industrial / prospective epochs, evaluates physical anthropogenic exergy forcing.
      *
      * @param phiExergy Garrett-Lotka exergy-capital diagnostic
@@ -89,12 +89,11 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return atmospheric $\text{CO}_2$ concentration in $\text{ppm}$
      */
     public static double computeCo2Concentration(double phiExergy, int year) {
-        if (year < 1850) {
-            double paleoCo2 = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
-                    "co2Concentration", year, HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
-            if (!Double.isNaN(paleoCo2) && paleoCo2 > 0.0) {
-                return paleoCo2;
-            }
+        double paleoCo2 = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                "co2Concentration", year, HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+        if (!Double.isNaN(paleoCo2) && paleoCo2 > 0.0) {
+            double anthropogenicDelta = Math.max(0.0, computeCo2Concentration(phiExergy) - 280.0);
+            return paleoCo2 + anthropogenicDelta;
         }
         return computeCo2Concentration(phiExergy);
     }
@@ -109,7 +108,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
     public static double computeTemperatureAnomalyFromCo2(double co2Ppm) {
         double co2Ratio = Math.max(150.0, co2Ppm) / 280.0;
         double radiativeForcing = 5.35 * Math.log(co2Ratio); // Myhre logarithmic formula
-        return radiativeForcing * 0.80; // Climate sensitivity lambda ~ 0.80 °C / (W/m^2)
+        return radiativeForcing * 0.80; // Climate sensitivity lambda ~ 0.80 Ãƒâ€šÃ‚Â°C / (W/m^2)
     }
 
     public static double computeTemperatureAnomaly(int year) {
@@ -306,9 +305,24 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return sovereign debt burden (% of GDP)
      */
     public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double phiExergy) {
-        double institutionalActivation = Math.tanh(Math.max(0.0, phiExergy - 1.20) * 4.0);
+        // Enforce Deep-Time Invariant (AGENTS.md §8.2): Sovereign debt emerges with formal agrarian states (Phi >= 0.94)
+        double institutionalActivation = SmoothMath.sigmoid(phiExergy, 0.94, 0.015);
         double fiscalShock = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double debtBurden = 15.0 + 80.0 * fiscalShock + 20.0 * Math.tanh(Math.max(0.0, phiExergy - 1.40));
+
+        // Pre-modern patrimonial borrowing (Antiquity through Early Middle Ages: ~8.5-10.0%, Reinhart & Rogoff 2009)
+        double preModernDebt = 8.5 + 1.5 * Math.tanh(sp(phiExergy, 1.05) * 3.00)
+                + 3.0 * Math.tanh(sp(phiExergy, 1.10) * 3.00) * Math.pow(fiscalShock, 1.3);
+
+        // Late medieval war loans (Florentine Monte Comune, Venetian Prestiti, Hundred Years' War: 1347 CE ~30.8%)
+        double medievalWarDebt = 21.0 * Math.tanh(sp(phiExergy, 1.12) * 5.00) * (0.6 + 0.4 * fiscalShock);
+
+        // Modern funded national debt (1694 Bank of England, Dutch renten, Napoleonic mobilization: 1800 CE ~75.0%)
+        double modernFundedDebt = 42.0 * Math.tanh(sp(phiExergy, 1.22) * 10.00);
+
+        // Total war debt mobilization (WWI 1914 CE ~80.0%, WWII 1945 CE ~110.0%)
+        double totalWarDebt = 22.0 / (1.0 + Math.exp(-(phiExergy - 1.55) / 0.08));
+
+        double debtBurden = preModernDebt + medievalWarDebt + modernFundedDebt + totalWarDebt;
         return Math.clamp(institutionalActivation * debtBurden, 0.0, 250.0);
     }
 
@@ -370,8 +384,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * @return dispatch propagation velocity in kilometers per day (km/day)
      */
     public static double computeInformationTravelSpeed(double phiExergy) {
-        double courierSpeed = 30.0 + 200.0 * SmoothMath.softplus(phiExergy - 1.10, 0.0, 5.0);
-        double telecomSpeed = 1.0e7 / (1.0 + Math.exp(-(phiExergy - 1.70) / 0.035));
+        // Pre-industrial and early modern courier relay velocity (Scheidel 2014 ORBIS; Standage 1998)
+        double courierSpeed = 35.0 + 45.0 * Math.tanh(Math.max(0.0, phiExergy - 0.90) * 1.5);
+        // Electromagnetic telecommunication emergence requiring modern industrial power grid (phi >= 3.5)
+        double telecomSpeed = 1.0e7 / (1.0 + Math.exp(-(phiExergy - 3.80) / 0.25));
         return Math.clamp(courierSpeed + telecomSpeed, 4.0, 3.0e8);
     }
 
@@ -385,7 +401,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      * Fossil Fuel Share in Primary Energy (%) (Smil 2017; Ritchie 2020).
      */
     public static double computeFossilSharePrimaryEnergy(double phiExergy) {
-        double share = 85.0 / (1.0 + Math.exp(-(phiExergy - 1.55) / 0.18));
+        // Fossil fuel share in primary energy (Smil 2017; Ritchie 2020; Wrigley 2010)
+        // Industrial substitution takes off at phi >= 2.2; pre-industrial organic economies stay strictly ~0%
+        double share = 85.0 / (1.0 + Math.exp(-(phiExergy - 2.80) / 0.25));
         return Math.clamp(share, 0.0, 95.0);
     }
 

@@ -96,6 +96,13 @@ public class SimulationRunRecord {
          * @param key canonical metric identifier or display label
          * @return recorded metric value, or {@code 0.0} if absent
          */
+        public boolean hasValue(String key) {
+            if (key == null) return false;
+            MetricDescriptor desc = MetricRegistry.getInstance().getDescriptor(key);
+            String id = desc != null ? desc.getId() : key;
+            return metricsMap.containsKey(id) || metricsMap.containsKey(key);
+        }
+
         public double getValue(String key) {
             if (key == null) return (double) population;
             MetricDescriptor desc = MetricRegistry.getInstance().getDescriptor(key);
@@ -109,7 +116,7 @@ public class SimulationRunRecord {
             // Backward compatibility fallbacks
             if (key.contains("Population")) return (double) population;
             if (key.contains("Tech")) return avgTech;
-            if (key.contains("Asabiyyah") || key.contains("Stabilité")) return stability;
+            if (key.contains("Asabiyyah") || key.contains("StabilitÃ©")) return stability;
             if (key.contains("Food") || key.contains("Alimentaire")) return food;
             return 0.0;
         }

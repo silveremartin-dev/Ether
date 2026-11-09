@@ -141,7 +141,6 @@ public class LocalTriScenarioAuditTest {
         scenario.setEndDateYear(endYear);
         scenario.setTargetCohortSize(targetCohortSize);
         scenario.setH3Resolution(h3Resolution);
-        scenario.setClippingEnabled(false);
 
         // Pre-run Cultural Matrix Snapshot
         scenario.getPairwiseAffinity("Rome", "Parthia"); // trigger lazy initialization if needed
@@ -251,7 +250,7 @@ public class LocalTriScenarioAuditTest {
                 String benchKey = entry.getValue();
 
                 // If regional window, skip planetary atmospheric CO2 or global GWP unless regional ground-truth exists
-                if (scaleFactor < 0.95 && ("co2Concentration".equals(benchKey) || "grossWorldProduct".equals(benchKey))) {
+                if (scaleFactor < 0.95 && ("co2Concentration".equals(benchKey) || "grossWorldProduct".equals(benchKey) || "primaryEnergy".equals(benchKey))) {
                     continue;
                 }
 

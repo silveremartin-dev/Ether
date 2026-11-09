@@ -59,15 +59,9 @@ final class TradeCorridorArbitrageHelper {
         if (orig != null && dest != null && origPop > 0 && destPop > 0) {
             arbitrageFood(orig, dest, conductance, foodRetention, dtYears);
             arbitrageBaseMetals(orig, dest, conductance, bulkRetention, dtYears);
-            if (techLevel >= 2.8) {
-                arbitrageFossilEnergy(orig, dest, conductance, bulkRetention, dtYears);
-            }
-            if (techLevel >= 1.5) {
-                arbitragePreciousSpecie(orig, dest, origPrecious, destPrecious, conductance, dtYears);
-            }
-            if (techLevel >= 4.0) {
-                arbitrageRareEarths(orig, dest, conductance, bulkRetention, dtYears);
-            }
+            arbitragePreciousSpecie(orig, dest, origPrecious, destPrecious, conductance, dtYears);
+            arbitrageFossilEnergy(orig, dest, conductance, bulkRetention, dtYears);
+            arbitrageRareEarths(orig, dest, conductance, bulkRetention, dtYears);
             arbitrageCapitalTools(orig, dest, origPop, destPop, conductance, bulkRetention, dtYears);
         }
 

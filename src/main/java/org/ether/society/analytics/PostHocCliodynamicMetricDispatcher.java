@@ -33,9 +33,11 @@ public final class PostHocCliodynamicMetricDispatcher {
         if (snap == null || metricKey == null) return 0.0;
 
         // Check if value was already explicitly recorded (e.g. in live GUI mode)
-        double preRecorded = snap.getValue(metricKey);
-        if (preRecorded != 0.0 && !Double.isNaN(preRecorded)) {
-            return preRecorded;
+        if (snap.hasValue(metricKey)) {
+            double preRecorded = snap.getValue(metricKey);
+            if (!Double.isNaN(preRecorded)) {
+                return preRecorded;
+            }
         }
 
         long pop = snap.getPopulation();
