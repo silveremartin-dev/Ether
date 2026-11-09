@@ -40,7 +40,7 @@ final class GroundTruthAuditReportBuilder {
     /**
      * Builds the ordered map of display labels to canonical 27-variable benchmark keys.
      */
-    private static Map<String, String> buildCanonicalBenchmarkKeyMap() {
+    public static Map<String, String> buildCanonicalBenchmarkKeyMap() {
         Map<String, String> benchmarkKeys = new LinkedHashMap<>();
         benchmarkKeys.put("👥 Global Demographic Population (worldPopulation)", "worldPopulation");
         benchmarkKeys.put("💰 Gross World Product (grossWorldProduct)", "grossWorldProduct");
