@@ -6,8 +6,12 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.EngineTier;
+import org.ether.society.core.engine.SimulationEngineModule;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.ProceduralEnginePlugin;
+import org.ether.society.model.Scenario;
 import org.ether.society.util.DeterministicPRNG;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +41,91 @@ import java.util.Random;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class StructuralDemographicBifurcationEngine implements ProceduralEnginePlugin {
+public class StructuralDemographicBifurcationEngine implements ProceduralEnginePlugin, SimulationEngineModule {
     private static final Logger logger = LoggerFactory.getLogger(StructuralDemographicBifurcationEngine.class);
+
+    @Override
+    public String id() {
+        return "StructuralDemographicBifurcationEngine";
+    }
+
+    @Override
+    public String name() {
+        return getName();
+    }
+
+    @Override
+    public EngineTier tier() {
+        return EngineTier.TIER_2_CLIODYNAMIC;
+    }
+
+    @Override
+    public boolean isEnabled(Scenario scenario) {
+        return scenario != null && scenario.getTypeBEngineStates() != null
+                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(id()));
+    }
+
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        processBuffer(buffer, dtYears);
+    }
+
+    @Override
+    public void reset() {
+        totalCrisesTriggered = 0;
+        meanPlanetaryPSI = 0.0;
+    }
+
+    public void processBuffer(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || deltaYears <= 0) return;
+        float[] popArr = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] foodArr = buffer.getFoodResource();
+        if (popArr == null) return;
+
+        double sumPSI = 0.0;
+        int activeCount = 0;
+        int count = buffer.getCapacity();
+
+        for (int i = 0; i < count; i++) {
+            float pop = popArr[i];
+            if (pop < 50.0f) continue;
+            activeCount++;
+
+            float capital = capArr != null ? capArr[i] : 100.0f;
+            float food = foodArr != null ? foodArr[i] : 1000.0f;
+
+            double areaKm2 = 1770.49;
+            double density = pop / areaKm2;
+            double foodPerCap = food / Math.max(1.0, pop);
+            double mmp = Math.clamp((1.5 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0), 0.2, 5.0);
+
+            double gini = 0.35;
+            double emp = Math.clamp(Math.pow(Math.max(0.0, gini - 0.20) / 0.25, 2.0), 0.2, 5.0);
+
+            double kPerCap = capital / Math.max(1.0, pop);
+            double sf = Math.clamp(1.0 + 1.5 / (1.0 + Math.exp(-0.05 * (kPerCap - 30.0))), 0.5, 3.0);
+
+            double psi = mmp * emp * sf;
+            sumPSI += psi;
+
+            if (psi > psiThreshold) {
+                double excessPsi = Math.min(10.0, psi - psiThreshold);
+                double hazardRate = baseJumpIntensity * Math.exp(0.4 * excessPsi);
+                double jumpProbability = 1.0 - Math.exp(-hazardRate * deltaYears);
+
+                double prng = DeterministicPRNG.nextDouble(baseSeed, 0L, i, 105L);
+                if (prng < jumpProbability) {
+                    totalCrisesTriggered++;
+                    if (capArr != null) {
+                        capArr[i] = (float) Math.max(10.0, capital * 0.75);
+                    }
+                    popArr[i] = (float) Math.max(20.0, pop * 0.85);
+                }
+            }
+        }
+        meanPlanetaryPSI = activeCount > 0 ? sumPSI / activeCount : 0.0;
+    }
 
     /** Internal state: psi threshold (double). */
     private final double psiThreshold;

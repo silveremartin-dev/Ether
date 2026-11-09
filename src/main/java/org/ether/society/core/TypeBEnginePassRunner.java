@@ -5,13 +5,13 @@
 package org.ether.society.core;
 
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.database.H3Cell;
-import org.ether.society.engines.*;
+import org.ether.society.core.engine.SimulationEngineModule;
+import org.ether.society.core.engine.SimulationEngineRegistry;
+import org.ether.society.engines.ProceduralEngineRegistry;
 import org.ether.society.engines.compiler.*;
 import org.ether.society.engines.tier1.*;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.tier2.theories.*;
-import org.ether.society.generation.*;
 import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,53 +23,23 @@ import java.util.Map;
  * Encapsulates JIT compilation, global state reset, and per-tick execution of pluggable
  * Tier 2 cliodynamic, macroeconomic, and historical scenario engines for {@link SimulationPipeline}.
  *
+ * <p>Delegates engine execution dynamically to {@link SimulationEngineRegistry}, completely
+ * eliminating hardcoded engine execution chains and manual reset lists.</p>
+ *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see SimulationPipeline
+ * @see SimulationEngineRegistry
  */
 public final class TypeBEnginePassRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(TypeBEnginePassRunner.class);
 
-    private final KummelAyresExergyEngine kummelAyresExergyEngine = new KummelAyresExergyEngine();
-    private final StructuralDemographicBifurcationEngine structuralDemographicBifurcationEngine = new StructuralDemographicBifurcationEngine();
-    private final TurchinGoldstoneSDTEngine turchinGoldstoneSDTEngine = new TurchinGoldstoneSDTEngine();
-    private final org.ether.society.engines.tier2.theories.LenskiEcologicalEvolutionaryEngine lenskiEcologicalEvolutionaryEngine = new org.ether.society.engines.tier2.theories.LenskiEcologicalEvolutionaryEngine();
-    private final org.ether.society.engines.tier2.theories.PomeranzGreatDivergenceEngine pomeranzGreatDivergenceEngine = new org.ether.society.engines.tier2.theories.PomeranzGreatDivergenceEngine();
-
     /**
-     * Resets all mutable static simulation states, caches, and plugin registries across engines.
+     * Resets all mutable simulation states, caches, and plugin registries across all registered engines.
      */
     public static void resetGlobalSimulationState() {
-        KurzweilAcceleratingReturnsEngine.resetState();
-        NuclearWarfareClimateEngine.resetState();
-        BifurcationChaosEngine.resetState();
-        TrophicEcosystemEngine.resetState();
-        org.ether.society.engines.tier1.UnifiedNeutralBiodiversityEngine.resetState();
-        org.ether.society.engines.tier1.ThermohalineStommelAMOCEngine.resetState();
-        GeoengineeringAlbedoFeedbackEngine.resetState();
-        TerraformingEngine.resetState();
-        PhysicalLawEngine.resetState();
-        World3CouplingEngine.resetState();
-        CulturalSociologyEngine.resetState();
-        ThermodynamicMigrationEngine.clearSpatialCache();
-        DynamicMaritimeRoutingGraph.clearCache();
-        PhysicalSupplyChainEngine.resetState();
-        AmerindianEcosystemEngine.resetState();
-        EdoJapanIsolationEngine.resetState();
-        CoGovernanceTradeEngine.resetState();
-        RomanImperialCliodynamicEngine.resetState();
-        TradeNetworkEngine.resetCumulativeStats();
-        InfrastructureInertiaEngine.resetState();
-        EntropicMetalDissipationEngine.resetState();
-        NuclearSafetyRadiotoxicityEngine.resetState();
-        OreGradeThermodynamicsEngine.resetState();
-        MonasticDemographicBufferEngine.resetState();
-        ProtestantWorkEthicEngine.resetState();
-        SmilMaterialTransitionsPureEngine.resetState();
-        TasmanianCulturalRegressionEngine.resetState();
-        JevonsParadoxEngine.resetState();
-        LanguageLinguisticEngine.resetState();
+        SimulationEngineRegistry.getInstance().resetAll();
         ProceduralEngineRegistry.clearPlugins();
     }
 
@@ -82,7 +52,10 @@ public final class TypeBEnginePassRunner {
      * @return compiled JIT kernel, or {@code null} if no symbolic theories are active
      */
     public CompiledEngineKernel configureAndCompile(Scenario scenario, long seed) {
-        structuralDemographicBifurcationEngine.setSeed(seed);
+        SimulationEngineModule sde = SimulationEngineRegistry.getInstance().getEngine("StructuralDemographicBifurcationEngine");
+        if (sde instanceof StructuralDemographicBifurcationEngine sdb) {
+            sdb.setSeed(seed);
+        }
         NuclearSafetyRadiotoxicityEngine.setBaseSeed(seed);
         NuclearWarfareClimateEngine.setBaseSeed(seed);
         LanguageLinguisticEngine.setBaseSeed(seed);
@@ -171,25 +144,10 @@ public final class TypeBEnginePassRunner {
         if (compiledKernel != null) {
             compiledKernel.executeFusedKernel(worldBuffer, (float) dtMonthly);
         }
-        if (scenario == null || scenario.getTypeBEngineStates() == null) {
-            return;
-        }
-        Map<String, Boolean> states = scenario.getTypeBEngineStates();
 
-        if (Boolean.TRUE.equals(states.get("KummelAyresExergyEngine"))) {
-            kummelAyresExergyEngine.processBuffer(worldBuffer, dtYears);
-        }
-        if (Boolean.TRUE.equals(states.get("PomeranzGreatDivergenceEngine"))) {
-            pomeranzGreatDivergenceEngine.processBuffer(worldBuffer, dtYears);
-        }
-        if (Boolean.TRUE.equals(states.get("TurchinGoldstoneSDTEngine"))) {
-            turchinGoldstoneSDTEngine.processBuffer(worldBuffer, dtYears);
-        }
-        if (Boolean.TRUE.equals(states.get("PublicSanitationWaterGridEngine"))) {
-            PublicSanitationWaterGridEngine.processSanitationGrids(worldBuffer, dtYears);
-        }
-        if (Boolean.TRUE.equals(states.get("LenskiEcologicalEvolutionaryEngine")) || Boolean.TRUE.equals(states.get("LenskiPureEngine"))) {
-            lenskiEcologicalEvolutionaryEngine.processBuffer(worldBuffer, dtYears);
+        List<SimulationEngineModule> activeTier2 = SimulationEngineRegistry.getInstance().getActiveTier2Engines(scenario);
+        for (SimulationEngineModule engine : activeTier2) {
+            engine.tick(worldBuffer, dtYears, dtMonthly);
         }
     }
 }

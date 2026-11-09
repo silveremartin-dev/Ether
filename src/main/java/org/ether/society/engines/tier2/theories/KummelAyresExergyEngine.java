@@ -9,7 +9,10 @@ package org.ether.society.engines.tier2.theories;
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
+import org.ether.society.core.engine.EngineTier;
+import org.ether.society.core.engine.SimulationEngineModule;
 import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
+import org.ether.society.model.Scenario;
 import org.ether.society.engines.ProceduralEnginePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +36,43 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
+public class KummelAyresExergyEngine implements ProceduralEnginePlugin, SimulationEngineModule {
     private static final Logger logger = LoggerFactory.getLogger(KummelAyresExergyEngine.class);
 
     public static final double ALPHA_K = 0.25; // Capital elasticity
     public static final double BETA_L = 0.25;  // Labor elasticity
     public static final double GAMMA_E = 0.50; // Useful exergy elasticity
+
+    @Override
+    public String id() {
+        return "KummelAyresExergyEngine";
+    }
+
+    @Override
+    public String name() {
+        return getName();
+    }
+
+    @Override
+    public EngineTier tier() {
+        return EngineTier.TIER_2_CLIODYNAMIC;
+    }
+
+    @Override
+    public boolean isEnabled(Scenario scenario) {
+        return scenario != null && scenario.getTypeBEngineStates() != null
+                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(id()));
+    }
+
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        processBuffer(buffer, dtYears);
+    }
+
+    @Override
+    public void reset() {
+        // Stateless physical operator
+    }
 
     /**
      * Returns the localized display name of the Kümmel-Ayres-Warr biophysical exergy engine.

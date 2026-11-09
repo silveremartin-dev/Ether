@@ -6,8 +6,12 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.EngineTier;
+import org.ether.society.core.engine.SimulationEngineModule;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
+import org.ether.society.model.Scenario;
 import org.ether.society.core.math.SmoothMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +35,66 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class PhysicalCapitalDiffusionEngine {
+public class PhysicalCapitalDiffusionEngine implements SimulationEngineModule {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalCapitalDiffusionEngine.class);
+
+    @Override
+    public String id() {
+        return "PhysicalCapitalDiffusionEngine";
+    }
+
+    @Override
+    public String name() {
+        return "Physical Capital Diffusion Engine";
+    }
+
+    @Override
+    public EngineTier tier() {
+        return EngineTier.TIER_2_CLIODYNAMIC;
+    }
+
+    @Override
+    public boolean isEnabled(Scenario scenario) {
+        return scenario != null && scenario.getTypeBEngineStates() != null
+                && (Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(id()))
+                || Boolean.TRUE.equals(scenario.getTypeBEngineStates().get("TechTreeEngine")));
+    }
+
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        processBuffer(buffer, dtYears);
+    }
+
+    @Override
+    public void reset() {
+        // Stateless physical operator
+    }
+
+    public void processBuffer(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || dtYears <= 0) return;
+        float[] popArr = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] woodArr = buffer.getBiomassNatural();
+        float[] metalArr = buffer.getMetalResource();
+        if (popArr == null || capArr == null) return;
+
+        int count = buffer.getCapacity();
+        for (int i = 0; i < count; i++) {
+            float pop = popArr[i];
+            if (pop <= 0.0f) continue;
+
+            float capPerCapita = capArr[i] / pop;
+            float wood = woodArr != null ? woodArr[i] : 1000.0f;
+            float metal = metalArr != null ? metalArr[i] : 0.0f;
+
+            double organicDemand = pop * 0.15;
+            double organicScarcityStress = SmoothMath.smoothClamp(1.0 - (wood / Math.max(1.0, organicDemand)), 0.0, 1.0, 0.05);
+
+            double potMetal = (metal > 0.0) ? (metal / (metal + 15.0)) : 0.0;
+            double deltaK = 5.0 * organicScarcityStress * potMetal * Math.max(0.0001, dtYears);
+            capArr[i] += (float) (deltaK * pop);
+        }
+    }
 
     public record PhysicalEra(String i18nKeyPrefix, String defaultName, double minPowerWattsPerCapita, double minMaterialYieldMPa, String defaultDescription) {
         public String name() {

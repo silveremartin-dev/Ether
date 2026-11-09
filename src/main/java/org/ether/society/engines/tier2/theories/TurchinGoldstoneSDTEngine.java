@@ -7,8 +7,11 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.EngineTier;
+import org.ether.society.core.engine.SimulationEngineModule;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.ProceduralEnginePlugin;
+import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +28,39 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
+public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin, SimulationEngineModule {
     private static final Logger logger = LoggerFactory.getLogger(TurchinGoldstoneSDTEngine.class);
+
+    @Override
+    public String id() {
+        return "TurchinGoldstoneSDTEngine";
+    }
+
+    @Override
+    public String name() {
+        return getName();
+    }
+
+    @Override
+    public EngineTier tier() {
+        return EngineTier.TIER_2_CLIODYNAMIC;
+    }
+
+    @Override
+    public boolean isEnabled(Scenario scenario) {
+        return scenario != null && scenario.getTypeBEngineStates() != null
+                && Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(id()));
+    }
+
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        processBuffer(buffer, dtYears);
+    }
+
+    @Override
+    public void reset() {
+        // Stateless physical operator
+    }
 
     @Override
     public String getName() {
