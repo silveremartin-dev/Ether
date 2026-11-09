@@ -131,10 +131,13 @@ public class RealPlanetaryEngineBenchmarkRunner {
                 "👥 AXIS 6: DEMOGRAPHIC COHORT SIZE GRANULARITY SWEEP (Res 3 Global, 41,162 Hexagons, N = 100M Pop)");
         List<CohortResult> cohortResults = new ArrayList<>();
         // Measure Dunbar standard (150 hab/cohort) as the reference baseline
-        CohortResult dunbarBaseline = executeCohortRun("Dunbar Baseline Standard", 150, 3, 100_000_000L, availableCores, 3, 1.0);
+        CohortResult dunbarBaseline = executeCohortRun("Dunbar Baseline Standard", 150, 3, 100_000_000L, availableCores, 3, 0.0);
         double baselineCohortTps = dunbarBaseline.tps();
+        CohortResult dunbarWithSpeedup = new CohortResult(dunbarBaseline.cohortLabel(), dunbarBaseline.targetCohortSize(),
+                dunbarBaseline.activeAgentNodes(), dunbarBaseline.cellCount(), dunbarBaseline.ticks(),
+                dunbarBaseline.durationSec(), dunbarBaseline.tps(), dunbarBaseline.msPerTick(), 1.0, dunbarBaseline.finalPopulation());
         cohortResults.add(executeCohortRun("Micro-Bands & Foragers", 25, 3, 100_000_000L, availableCores, 3, baselineCohortTps));
-        cohortResults.add(dunbarBaseline);
+        cohortResults.add(dunbarWithSpeedup);
         cohortResults.add(executeCohortRun("Agrarian Agglomeration", 1_000, 3, 100_000_000L, availableCores, 3, baselineCohortTps));
         cohortResults.add(executeCohortRun("Urban Macro-Cohort", 10_000, 3, 100_000_000L, availableCores, 3, baselineCohortTps));
         cohortResults.add(executeCohortRun("Continental Macro-Cohort", 50_000, 3, 100_000_000L, availableCores, 3, baselineCohortTps));
