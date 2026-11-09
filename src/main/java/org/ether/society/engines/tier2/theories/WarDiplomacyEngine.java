@@ -136,10 +136,13 @@ public class WarDiplomacyEngine {
                     double imperialProjection = Math.max(0.0, aggressor.getStateCapacity() - 0.5) * 0.4;
                     double baseWarDesire = (aggressor.getAsabiyyah() * 0.6) + imperialProjection + (defender.getPoliticalInstability() * 0.4) - (defender.getStateCapacity() * 0.3);
 
-                    // Cliodynamic Cultural Affinity Matrix Modulation:
+                    // Cliodynamic Cultural Affinity Matrix Modulation (by Name and by ID):
                     double affinityMultiplier = 1.0;
                     if (scenario != null) {
-                        double affinity = scenario.getPairwiseAffinity(aggressor.getId(), defender.getId());
+                        double affinity = scenario.getPairwiseAffinity(aggressor.getName(), defender.getName());
+                        if (affinity == 50.0) {
+                            affinity = scenario.getPairwiseAffinity(aggressor.getId(), defender.getId());
+                        }
                         affinityMultiplier = Math.clamp(1.5 - (affinity / 100.0) * 1.3, 0.1, 2.0);
                     }
 
@@ -153,6 +156,11 @@ public class WarDiplomacyEngine {
                     // Continuous escalation threshold (Bueno de Mesquita 1981): border skirmishes escalate when net war desire is positive
                     if (warDesire > 0.30) {
                         resolveBorderBattle(aggressor, defender, contact);
+                        if (scenario != null) {
+                            // Border clash degrades bilateral diplomatic affinity dynamically
+                            scenario.adjustPairwiseAffinity(aggressor.getName(), defender.getName(), -10.0);
+                            scenario.adjustPairwiseAffinity(aggressor.getId(), defender.getId(), -10.0);
+                        }
                     }
                 }
             }

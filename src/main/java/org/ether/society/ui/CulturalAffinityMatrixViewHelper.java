@@ -4,6 +4,8 @@
  */
 package org.ether.society.ui;
 
+import org.ether.society.model.CulturalEntity;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -21,7 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.ether.society.i18n.I18n;
-import org.ether.society.ui.CulturalAffinityMatrixDialog.CulturalEntity;
+import org.ether.society.model.CulturalEntity;
 import org.ether.society.util.DeterministicPRNG;
 
 import java.util.List;

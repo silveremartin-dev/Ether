@@ -5,6 +5,9 @@
  */
 package org.ether.society.model;
 
+import java.util.Locale;
+
+
 import org.ether.society.config.SimulationPerformanceConfig;
 
 import java.io.Serializable;
@@ -220,13 +223,45 @@ public abstract class AbstractScenarioTensorAndEngineConfig implements Serializa
     public double getPairwiseAffinity(String idA, String idB) {
         if (idA == null || idB == null) return 50.0;
         if (idA.equalsIgnoreCase(idB)) return 100.0;
+        if (culturalAffinityMatrix == null || culturalAffinityMatrix.isEmpty()) {
+            ensureCulturalAffinityMatrixInitialized();
+        }
         if (culturalAffinityMatrix != null) {
-            String key1 = idA + ":" + idB;
-            String key2 = idB + ":" + idA;
-            if (culturalAffinityMatrix.containsKey(key1)) return culturalAffinityMatrix.get(key1);
-            if (culturalAffinityMatrix.containsKey(key2)) return culturalAffinityMatrix.get(key2);
+            String k1 = idA.toLowerCase(Locale.ROOT) + ":" + idB.toLowerCase(Locale.ROOT);
+            String k2 = idB.toLowerCase(Locale.ROOT) + ":" + idA.toLowerCase(Locale.ROOT);
+            Double val = culturalAffinityMatrix.get(k1);
+            if (val == null) val = culturalAffinityMatrix.get(k2);
+            if (val != null) {
+                return val <= 1.0 ? val * 100.0 : val;
+            }
         }
         return 50.0;
+    }
+
+    public void adjustPairwiseAffinity(String idA, String idB, double delta) {
+        if (idA == null || idB == null) return;
+        double current = getPairwiseAffinity(idA, idB);
+        double updated = Math.clamp(current + delta, 0.0, 100.0);
+        String k1 = idA.toLowerCase(Locale.ROOT) + ":" + idB.toLowerCase(Locale.ROOT);
+        String k2 = idB.toLowerCase(Locale.ROOT) + ":" + idA.toLowerCase(Locale.ROOT);
+        if (culturalAffinityMatrix == null) culturalAffinityMatrix = new HashMap<>();
+        culturalAffinityMatrix.put(k1, updated);
+        culturalAffinityMatrix.put(k2, updated);
+    }
+
+    private synchronized void ensureCulturalAffinityMatrixInitialized() {
+        if (culturalAffinityMatrix != null && !culturalAffinityMatrix.isEmpty()) return;
+        try {
+            String pKey = (this instanceof Scenario sc && sc.getPlanetPreset() != null) ? sc.getPlanetPreset().name() : "earth";
+            long startYear = (this instanceof Scenario sc) ? sc.getStartDateYear() : 0L;
+            Map<String, Double> init = AutoEpochScenarioHelper.initializeCulturalAffinityMatrix(pKey, startYear);
+            if (init != null && !init.isEmpty()) {
+                if (culturalAffinityMatrix == null) culturalAffinityMatrix = new HashMap<>();
+                culturalAffinityMatrix.putAll(init);
+            }
+        } catch (Exception ignored) {
+            // Non-blocking fallback
+        }
     }
 
     public double getCulturalDiffusionRate() { return culturalDiffusionRate; }

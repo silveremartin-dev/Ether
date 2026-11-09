@@ -133,6 +133,10 @@ public class AutoEpochScenarioGenerator {
         Map<String, Boolean> typeBStates = calibrateTypeBEngines(pKey, targetYear);
         s.setTypeBEngineStates(typeBStates);
 
+        // 6b. Cultural Affinity Matrix Calibration
+        Map<String, Double> affinityMatrix = AutoEpochScenarioHelper.initializeCulturalAffinityMatrix(pKey, targetYear);
+        s.setCulturalAffinityMatrix(affinityMatrix);
+
         // 7. Cartographic Raster Bases
         if (isEarth) {
             try {

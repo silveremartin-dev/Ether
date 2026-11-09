@@ -56,11 +56,7 @@ public final class ExoplanetScenarioCatalog {
             • Habitats pressurisés enfouis dans les cavités basaltiques assurant un blindage thermique et radiatif total.
             • Hub logistique pour l'expansion cis-lunaire et les chantiers orbitaux.
             """);
-        Map<String, Boolean> sMoonEngines = sMoon.getTypeBEngineStates();
-        sMoonEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sMoonEngines.put("KurzweilAcceleratingReturnsEngine", true);
-        sMoonEngines.put("OreGradeThermodynamicsEngine", true);
-        sMoonEngines.put("ArthurCombinatorialTechnologyEngine", true);
+        sMoon.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("moon", 2035L));
         list.add(sMoon);
 
         // 2. MARS (2050)
@@ -89,12 +85,7 @@ public final class ExoplanetScenarioCatalog {
             • Autarcie progressive grâce à l'ISRU (In-Situ Resource Utilization) et aux technologies combinatoires.
             • Résilience face aux tempêtes de poussière martiennes et aux risques de brèche structurelle.
             """);
-        Map<String, Boolean> sMarsEngines = sMars.getTypeBEngineStates();
-        sMarsEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sMarsEngines.put("ArthurCombinatorialTechnologyEngine", true);
-        sMarsEngines.put("KurzweilAcceleratingReturnsEngine", true);
-        sMarsEngines.put("OreGradeThermodynamicsEngine", true);
-        sMarsEngines.put("HotellingResourceDepletionEngine", true);
+        sMars.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("mars", 2050L));
         list.add(sMars);
 
         // 3. VENUS (2080)
@@ -123,10 +114,7 @@ public final class ExoplanetScenarioCatalog {
             • Récolte de vapeur d'eau et de composés soufrés par condensation en haute altitude.
             • Équilibre aérostatique dynamique et résistance à la super-rotation zonale des vents.
             """);
-        Map<String, Boolean> sVenusEngines = sVenus.getTypeBEngineStates();
-        sVenusEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sVenusEngines.put("KurzweilAcceleratingReturnsEngine", true);
-        sVenusEngines.put("ArthurCombinatorialTechnologyEngine", true);
+        sVenus.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("venus", 2080L));
         list.add(sVenus);
 
         // 4. MERCURY (2120)
@@ -155,11 +143,7 @@ public final class ExoplanetScenarioCatalog {
             • Habitats mobiles de terminateur ou cités souterraines profondes protégées des gradients thermiques jour/nuit extrêmes.
             • Exportation d'énergie et de métaux lourds vers le reste du système solaire par catapultes électromagnétiques.
             """);
-        Map<String, Boolean> sMercuryEngines = sMercury.getTypeBEngineStates();
-        sMercuryEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sMercuryEngines.put("OreGradeThermodynamicsEngine", true);
-        sMercuryEngines.put("HotellingResourceDepletionEngine", true);
-        
+        sMercury.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("mercury", 2120L));
         list.add(sMercury);
 
         // 5. TITAN (2150)
@@ -188,10 +172,7 @@ public final class ExoplanetScenarioCatalog {
             • Protection radiatif naturelle grâce à l'atmosphère épaisse (1,45 atm) sous très faible gravité (0,14g).
             • Utilisation de générateurs thermoélectriques nucléaires et de réacteurs à fusion deutérium pour le chauffage vital.
             """);
-        Map<String, Boolean> sTitanEngines = sTitan.getTypeBEngineStates();
-        sTitanEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sTitanEngines.put("ArthurCombinatorialTechnologyEngine", true);
-        sTitanEngines.put("KurzweilAcceleratingReturnsEngine", true);
+        sTitan.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("titan", 2150L));
         list.add(sTitan);
 
         // 6. SUPER-EARTH (2200)
@@ -220,11 +201,7 @@ public final class ExoplanetScenarioCatalog {
             • Exploitation d'une biomasse extraterrestre exubérante et de gisements géologiques super-abondants.
             • Essor de cités-dômes modulaires et émergence de nouvelles institutions coloniales autonomes.
             """);
-        Map<String, Boolean> sSuperEarthEngines = sSuperEarth.getTypeBEngineStates();
-        sSuperEarthEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sSuperEarthEngines.put("ArthurCombinatorialTechnologyEngine", true);
-        sSuperEarthEngines.put("AcemogluRobinsonInstitutionsEngine", true);
-        sSuperEarthEngines.put("KurzweilAcceleratingReturnsEngine", true);
+        sSuperEarth.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("super_earth", 2200L));
         list.add(sSuperEarth);
 
         // 7. EYEBALL WORLD (2220)
@@ -253,10 +230,7 @@ public final class ExoplanetScenarioCatalog {
             • Ceinture de mégalopoles thermiquement isolées exploitant l'énergie solaire ininterrompue côté jour et les glaces permanentes côté nuit.
             • Équilibre précaire des flux hydrologiques et gestion rigoureuse de la capacité de charge locale.
             """);
-        Map<String, Boolean> sEyeballEngines = sEyeball.getTypeBEngineStates();
-        sEyeballEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sEyeballEngines.put("KurzweilAcceleratingReturnsEngine", true);
-        sEyeballEngines.put("World3HybridEngine", true);
+        sEyeball.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("eyeball_world", 2220L));
         list.add(sEyeball);
 
         // 8. WATER WORLD / OCEANIA (2100)
@@ -285,10 +259,7 @@ public final class ExoplanetScenarioCatalog {
             • Cités modulaires auto-lestées résistantes aux houles géantes et aux super-tempêtes océaniques.
             • Économie maritime décentralisée et réseaux de transport sous-marin automatisés.
             """);
-        Map<String, Boolean> sOceaniaEngines = sOceania.getTypeBEngineStates();
-        sOceaniaEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sOceaniaEngines.put("ArthurCombinatorialTechnologyEngine", true);
-        sOceaniaEngines.put("UrbanThermodynamicsEngine", true);
+        sOceania.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("oceania", 2100L));
         list.add(sOceania);
 
         // 9. ICE WORLD / BOREAS (2120)
@@ -317,10 +288,7 @@ public final class ExoplanetScenarioCatalog {
             • Cités troglodytiques taillées dans la glace consolidée et la roche ignée avec biosphères hydroponiques étanches.
             • Économie d'énergie thermique maximale et recyclage thermodynamique intégral.
             """);
-        Map<String, Boolean> sBoreasEngines = sBoreas.getTypeBEngineStates();
-        sBoreasEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
-        sBoreasEngines.put("ArthurCombinatorialTechnologyEngine", true);
-        sBoreasEngines.put("HotellingResourceDepletionEngine", true);
+        sBoreas.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("boreas", 2120L));
         list.add(sBoreas);
 
         // 10. ARCHIPELAGO / SEASTEADING (2055)
@@ -349,11 +317,7 @@ public final class ExoplanetScenarioCatalog {
             • Mix énergétique 100% renouvelable combinant énergie houlomotrice, solaire flottant et biocarburants marins.
             • Équilibre écologique entre préservation des récifs coralliens et densité urbaine insulaire.
             """);
-        Map<String, Boolean> sArchipelagoEngines = sArchipelago.getTypeBEngineStates();
-        sArchipelagoEngines.put("AcemogluRobinsonInstitutionsEngine", true);
-        sArchipelagoEngines.put("ArthurCombinatorialTechnologyEngine", true);
-        sArchipelagoEngines.put("UrbanThermodynamicsEngine", true);
-        sArchipelagoEngines.put("IsruAutarkyAndSpaceColonizationEngine", true);
+        sArchipelago.getTypeBEngineStates().putAll(AutoEpochScenarioHelper.calibrateTypeBEngines("archipelago", 2055L));
         list.add(sArchipelago);
     }
 }

@@ -8,6 +8,7 @@ package org.ether.society.ui;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ether.society.i18n.I18n;
+import org.ether.society.model.CulturalEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,10 @@ public final class CulturalEpochRegistryLoader {
 
     public static List<Long> discoverAllEpochs() {
         List<Long> epochs = new ArrayList<>();
-        Path earthDir = Paths.get("data", "ether", "earth");
+        Path earthDir = Paths.get("data", "maps", "ether", "earth");
+        if (!Files.exists(earthDir)) {
+            earthDir = Paths.get("data", "ether", "earth");
+        }
         if (Files.exists(earthDir) && Files.isDirectory(earthDir)) {
             try (var stream = Files.list(earthDir)) {
                 stream.filter(Files::isDirectory)
@@ -57,21 +61,7 @@ public final class CulturalEpochRegistryLoader {
         return epochs;
     }
 
-    public static long closestSupportedEpoch(long yr) {
-        List<Long> supported = discoverAllEpochs();
-        if (supported.isEmpty()) return -100000L;
-        long best = supported.get(0);
-        long minDiff = Math.abs(yr - best);
-        for (long s : supported) {
-            long d = Math.abs(yr - s);
-            if (d < minDiff) {
-                minDiff = d;
-                best = s;
-            }
-        }
-        return best;
-    }
-
+    
     public static String formatEpochName(long yr) {
         if (yr == -100000L) return I18n.getOrDefault("cultural.epoch.eemian", "–100 000 BP (Sortie d'Afrique / Éémien)");
         if (yr == -74000L)  return I18n.getOrDefault("cultural.epoch.toba", "–74 000 BP (Goulot d'Étranglement de Toba)");
@@ -104,15 +94,43 @@ public final class CulturalEpochRegistryLoader {
         return String.format("+%,d CE", yr).replace(',', ' ');
     }
 
-    public static List<CulturalAffinityMatrixDialog.CulturalEntity> loadEpochRegistry(long epoch) {
-        List<CulturalAffinityMatrixDialog.CulturalEntity> activeEntities = new ArrayList<>();
-        Path p = Paths.get("data", "ether", "earth", String.valueOf(epoch), "cultural_registry.json");
-        if (!Files.exists(p)) {
+public static long closestSupportedEpoch(long yr) {
+        List<Long> supported = discoverAllEpochs();
+        if (supported.isEmpty()) return -100000L;
+        long best = supported.get(0);
+        long minDiff = Math.abs(yr - best);
+        for (long s : supported) {
+            long d = Math.abs(yr - s);
+            if (d < minDiff) {
+                minDiff = d;
+                best = s;
+            }
+        }
+        return best;
+    }
+
+    public static Path resolveCulturalRegistryPath(String planet, long epoch) {
+        String pKey = (planet == null || planet.isBlank()) ? "earth" : planet.trim().toLowerCase();
+        Path p = Paths.get("data", "maps", "ether", pKey, String.valueOf(epoch), "cultural_registry.json");
+        if (Files.exists(p)) return p;
+        p = Paths.get("data", "ether", pKey, String.valueOf(epoch), "cultural_registry.json");
+        if (Files.exists(p)) return p;
+        return null;
+    }
+
+    public static List<CulturalEntity> loadEpochRegistry(long epoch) {
+        return loadEpochRegistry("earth", epoch);
+    }
+
+    public static List<CulturalEntity> loadEpochRegistry(String planet, long epoch) {
+        List<CulturalEntity> activeEntities = new ArrayList<>();
+        Path p = resolveCulturalRegistryPath(planet, epoch);
+        if (p == null) {
             long closest = closestSupportedEpoch(epoch);
-            p = Paths.get("data", "ether", "earth", String.valueOf(closest), "cultural_registry.json");
+            p = resolveCulturalRegistryPath(planet, closest);
         }
 
-        if (Files.exists(p)) {
+        if (p != null && Files.exists(p)) {
             try {
                 JsonNode root = MAPPER.readTree(p.toFile());
                 JsonNode entitiesNode = root.get("entities");
@@ -141,11 +159,11 @@ public final class CulturalEpochRegistryLoader {
                         String kinship = eNode.path("kinshipType").asText("Bilateral Foragers");
                         String lithic = eNode.path("lithicTechnocomplex").asText("Middle Paleolithic");
 
-                        activeEntities.add(new CulturalAffinityMatrixDialog.CulturalEntity(id, colorHex, colorRgb, traits, nameEn, nameFr, nameDe, nameEs, nameZh, kinship, lithic));
+                        activeEntities.add(new CulturalEntity(id, colorHex, colorRgb, traits, nameEn, nameFr, nameDe, nameEs, nameZh, kinship, lithic));
                     }
                 }
             } catch (Exception ex) {
-                logger.warn("Failed to parse cultural_registry.json for epoch {}: {}", epoch, ex.getMessage());
+                logger.warn("Failed to parse cultural_registry.json for {} epoch {}: {}", planet, epoch, ex.getMessage());
             }
         }
 
@@ -171,14 +189,14 @@ public final class CulturalEpochRegistryLoader {
         return activeEntities;
     }
 
-    public static void generateDistinctCulturalTraits(List<CulturalAffinityMatrixDialog.CulturalEntity> entities, long currentEpoch) {
+    public static void generateDistinctCulturalTraits(List<CulturalEntity> entities, long currentEpoch) {
         if (entities == null || entities.isEmpty()) return;
-        List<CulturalAffinityMatrixDialog.CulturalEntity> updated = new ArrayList<>();
+        List<CulturalEntity> updated = new ArrayList<>();
         int n = entities.size();
         for (int idx = 0; idx < n; idx++) {
-            CulturalAffinityMatrixDialog.CulturalEntity orig = entities.get(idx);
+            CulturalEntity orig = entities.get(idx);
             double[] traits = org.ether.society.data.CliopatriaPolityVectorReader.computePolityTraits(orig.nameEn(), orig.id(), currentEpoch);
-            updated.add(new CulturalAffinityMatrixDialog.CulturalEntity(
+            updated.add(new CulturalEntity(
                     orig.id(), orig.colorHex(), orig.colorRgb(), traits,
                     orig.nameEn(), orig.nameFr(), orig.nameDe(), orig.nameEs(), orig.nameZh(),
                     orig.kinshipType(), orig.lithicTechnocomplex()
@@ -188,7 +206,7 @@ public final class CulturalEpochRegistryLoader {
         entities.addAll(updated);
     }
 
-    public static void buildProceduralEntitiesFallback(long epoch, List<CulturalAffinityMatrixDialog.CulturalEntity> activeEntities) {
+    public static void buildProceduralEntitiesFallback(long epoch, List<CulturalEntity> activeEntities) {
         activeEntities.clear();
         String[] colors = {"#E67E22", "#D35400", "#F39C12", "#2980B9", "#1F4788", "#27AE60", "#8E44AD", "#E11D48", "#0EA5E9"};
         int[][] rgb = {
@@ -213,7 +231,7 @@ public final class CulturalEpochRegistryLoader {
         };
 
         for (int i = 0; i < ids.length; i++) {
-            activeEntities.add(new CulturalAffinityMatrixDialog.CulturalEntity(
+            activeEntities.add(new CulturalEntity(
                 ids[i], colors[i], rgb[i], traits[i],
                 namesEn[i], namesFr[i], namesDe[i], namesEs[i], namesZh[i],
                 "Bilateral Exogamous Bands", "Mode 3 Technocomplex"

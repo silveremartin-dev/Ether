@@ -5,6 +5,8 @@
  */
 package org.ether.society.ui;
 
+import org.ether.society.model.CulturalEntity;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -44,45 +46,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
      * @param kinshipType         kinship & social structure classification
      * @param lithicTechnocomplex lithic or metallurgical technocomplex classification
      */
-    public record CulturalEntity(
-            String id,
-            String colorHex,
-            int[] colorRgb,
-            double[] traits,
-            String nameEn,
-            String nameFr,
-            String nameDe,
-            String nameEs,
-            String nameZh,
-            String kinshipType,
-            String lithicTechnocomplex
-    ) {
-        public String getLocalizedName() {
-            String lang = I18n.getCurrentLanguage() != null ? I18n.getCurrentLanguage().getCode() : "en";
-            if ("fr".equalsIgnoreCase(lang)) return nameFr != null ? nameFr : nameEn;
-            if ("de".equalsIgnoreCase(lang)) return nameDe != null ? nameDe : nameEn;
-            if ("es".equalsIgnoreCase(lang)) return nameEs != null ? nameEs : nameEn;
-            if ("zh".equalsIgnoreCase(lang)) return nameZh != null ? nameZh : nameEn;
-            return nameEn != null ? nameEn : id;
-        }
-
-        public double distanceTo(CulturalEntity other) {
-            if (other == null || this.traits == null || other.traits == null) return 1.0;
-            double sumSq = 0.0;
-            int n = Math.min(this.traits.length, other.traits.length);
-            for (int i = 0; i < n; i++) {
-                double diff = this.traits[i] - other.traits[i];
-                sumSq += diff * diff;
-            }
-            return Math.sqrt(sumSq);
-        }
-
-        public double affinityWith(CulturalEntity other) {
-            if (other != null && this.id.equals(other.id)) return 1.0;
-            double dist = distanceTo(other);
-            return Math.exp(-3.5 * dist);
-        }
-    }
+    
 
     private final ComboBox<Long> epochSelector = new ComboBox<>();
     private final Label titleLabel = new Label();

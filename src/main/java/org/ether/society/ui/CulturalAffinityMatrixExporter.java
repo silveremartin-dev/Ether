@@ -5,6 +5,8 @@
  */
 package org.ether.society.ui;
 
+import org.ether.society.model.CulturalEntity;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -34,8 +36,8 @@ public final class CulturalAffinityMatrixExporter {
     }
 
     public static void exportMatrixCsv(Window owner, long currentEpoch,
-                                       List<CulturalAffinityMatrixDialog.CulturalEntity> activeEntities,
-                                       BiFunction<CulturalAffinityMatrixDialog.CulturalEntity, CulturalAffinityMatrixDialog.CulturalEntity, Double> affinityProvider) {
+                                       List<CulturalEntity> activeEntities,
+                                       BiFunction<CulturalEntity, CulturalEntity, Double> affinityProvider) {
         if (activeEntities == null || activeEntities.isEmpty()) return;
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("cultural.matrix.export_title", "Exporter la Matrice d'Affinité Culturelle (CSV)"));
@@ -45,14 +47,14 @@ public final class CulturalAffinityMatrixExporter {
         if (file != null) {
             try (PrintWriter pw = new PrintWriter(new FileWriter(file))) {
                 pw.print("EntityID");
-                for (CulturalAffinityMatrixDialog.CulturalEntity col : activeEntities) {
+                for (CulturalEntity col : activeEntities) {
                     pw.print("," + col.id());
                 }
                 pw.println();
 
-                for (CulturalAffinityMatrixDialog.CulturalEntity row : activeEntities) {
+                for (CulturalEntity row : activeEntities) {
                     pw.print(row.id());
-                    for (CulturalAffinityMatrixDialog.CulturalEntity col : activeEntities) {
+                    for (CulturalEntity col : activeEntities) {
                         pw.printf(Locale.ROOT, ",%.4f", affinityProvider.apply(row, col));
                     }
                     pw.println();
@@ -65,8 +67,8 @@ public final class CulturalAffinityMatrixExporter {
     }
 
     public static void exportMatrixJson(Window owner, long currentEpoch, long scenarioStartYear,
-                                        List<CulturalAffinityMatrixDialog.CulturalEntity> activeEntities,
-                                        BiFunction<CulturalAffinityMatrixDialog.CulturalEntity, CulturalAffinityMatrixDialog.CulturalEntity, Double> affinityProvider) {
+                                        List<CulturalEntity> activeEntities,
+                                        BiFunction<CulturalEntity, CulturalEntity, Double> affinityProvider) {
         if (activeEntities == null || activeEntities.isEmpty()) return;
         FileChooser chooser = new FileChooser();
         chooser.setTitle(I18n.getOrDefault("cultural.matrix.export_json_title", "Exporter la Matrice d'Affinité Culturelle (JSON)"));
@@ -82,9 +84,9 @@ public final class CulturalAffinityMatrixExporter {
                 root.put("entities", activeEntities);
 
                 Map<String, Map<String, Double>> matrix = new LinkedHashMap<>();
-                for (CulturalAffinityMatrixDialog.CulturalEntity row : activeEntities) {
+                for (CulturalEntity row : activeEntities) {
                     Map<String, Double> rowMap = new LinkedHashMap<>();
-                    for (CulturalAffinityMatrixDialog.CulturalEntity col : activeEntities) {
+                    for (CulturalEntity col : activeEntities) {
                         rowMap.put(col.id(), affinityProvider.apply(row, col));
                     }
                     matrix.put(row.id(), rowMap);

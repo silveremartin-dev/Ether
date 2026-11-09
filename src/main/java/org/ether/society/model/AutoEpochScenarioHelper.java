@@ -5,6 +5,8 @@
  */
 package org.ether.society.model;
 
+import org.ether.society.ui.CulturalEpochRegistryLoader;
+
 import org.ether.society.model.AutoEpochScenarioGenerator.EpochMilestone;
 
 import java.util.HashMap;
@@ -306,4 +308,57 @@ public final class AutoEpochScenarioHelper {
         if (str == null || str.isEmpty()) return "";
         return str.substring(0, 1).toUpperCase(Locale.ROOT) + str.substring(1).toLowerCase(Locale.ROOT);
     }
+
+    /**
+     * Initializes the baseline pairwise cultural affinity matrix across all historical entities
+     * registered for the target epoch and planet.
+     *
+     * <p>Affinities are computed from normalized ethnographic feature vectors:
+     * \(\text{Affinity}(e_1, e_2) = \exp(-3.5 \times \text{distanceEuclidean}(e_1, e_2)) \times 100.0\).</p>
+     *
+     * @param planetKey canonical planet key ("earth", "mars", etc.)
+     * @param year      scenario start year
+     * @return map of bilateral cultural affinities keyed by both entity ID and display names in \([0.0, 100.0]\)
+     */
+    public static Map<String, Double> initializeCulturalAffinityMatrix(String planetKey, long year) {
+        Map<String, Double> matrix = new HashMap<>();
+        boolean isEarth = planetKey == null || "earth".equalsIgnoreCase(planetKey.trim());
+        if (isEarth) {
+            List<CulturalEntity> entities = CulturalEpochRegistryLoader.loadEpochRegistry(year);
+            if (entities != null && !entities.isEmpty()) {
+                int n = entities.size();
+                for (int i = 0; i < n; i++) {
+                    CulturalEntity e1 = entities.get(i);
+                    for (int j = i + 1; j < n; j++) {
+                        CulturalEntity e2 = entities.get(j);
+                        double aff = e1.affinityWith(e2) * 100.0;
+
+                        String kId1 = e1.id().toLowerCase(Locale.ROOT) + ":" + e2.id().toLowerCase(Locale.ROOT);
+                        String kId2 = e2.id().toLowerCase(Locale.ROOT) + ":" + e1.id().toLowerCase(Locale.ROOT);
+                        matrix.put(kId1, aff);
+                        matrix.put(kId2, aff);
+
+                        if (e1.nameEn() != null && e2.nameEn() != null) {
+                            String kName1 = e1.nameEn().toLowerCase(Locale.ROOT) + ":" + e2.nameEn().toLowerCase(Locale.ROOT);
+                            String kName2 = e2.nameEn().toLowerCase(Locale.ROOT) + ":" + e1.nameEn().toLowerCase(Locale.ROOT);
+                            matrix.put(kName1, aff);
+                            matrix.put(kName2, aff);
+                        }
+
+                        if (e1.nameFr() != null && e2.nameFr() != null) {
+                            String kFr1 = e1.nameFr().toLowerCase(Locale.ROOT) + ":" + e2.nameFr().toLowerCase(Locale.ROOT);
+                            String kFr2 = e2.nameFr().toLowerCase(Locale.ROOT) + ":" + e1.nameFr().toLowerCase(Locale.ROOT);
+                            matrix.put(kFr1, aff);
+                            matrix.put(kFr2, aff);
+                        }
+                    }
+                }
+            }
+        } else {
+            matrix.put("colony:outpost", 75.0);
+            matrix.put("outpost:colony", 75.0);
+        }
+        return matrix;
+    }
+
 }
