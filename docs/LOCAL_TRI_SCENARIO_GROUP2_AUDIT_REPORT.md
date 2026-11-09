@@ -12,9 +12,9 @@
 
 | Scenario Key | Epoch Horizon | Elapsed Time | Total Ticks | Throughput (TPS) | Snapshots | Final Population | Final Capital |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `fertile_crescent` | -8000 -> -7980 | 11.49 s | 244 | 21.2 it/s | 21 | 294 | 0.0 |
-| `late_antique_ice_age` | 536 -> 556 | 249.18 s | 244 | 1.0 it/s | 21 | 219,866,876 | 0.0 |
-| `industrial_1800` | 1800 -> 1820 | 374.42 s | 244 | 0.7 it/s | 21 | 1,235,104,582 | 0.0 |
+| `fertile_crescent` | -8000 -> -7980 | 9.37 s | 244 | 26.0 it/s | 21 | 294 | 0.0 |
+| `late_antique_ice_age` | 536 -> 556 | 208.70 s | 244 | 1.2 it/s | 21 | 219,866,876 | 0.0 |
+| `industrial_1800` | 1800 -> 1820 | 358.62 s | 244 | 0.7 it/s | 21 | 1,235,104,582 | 0.0 |
 
 ---
 
@@ -23,7 +23,7 @@
 ### 🔎 Scenario: `fertile_crescent` (Fertile Crescent & Neolithic Agriculture (-8000 BCE))
 
 * **Horizon**: -8000 to -7980 CE (20 years / 244 monthly ticks)
-* **Local Execution Duration**: 11.49 seconds (mean throughput: 21.23 TPS)
+* **Local Execution Duration**: 9.37 seconds (mean throughput: 26.05 TPS)
 
 #### 🤝 Cultural Affinity Matrix (Before -> After Transformation):
 
@@ -94,23 +94,23 @@
 ### 🔎 Scenario: `late_antique_ice_age` (Late Antique Little Ice Age & Justinian Plague (536 CE))
 
 * **Horizon**: 536 to 556 CE (20 years / 244 monthly ticks)
-* **Local Execution Duration**: 249.18 seconds (mean throughput: 0.98 TPS)
+* **Local Execution Duration**: 208.70 seconds (mean throughput: 1.17 TPS)
 
 #### 🤝 Cultural Affinity Matrix (Before -> After Transformation):
 
 * **Pairwise Cultural Connections**: 2 pairs at t0 -> 22 pairs at tend
-* **Mean Bilateral Affinity**: 75.00/100 (t0) -> 40.72/100 (tend)
+* **Mean Bilateral Affinity**: 75.00/100 (t0) -> 40.74/100 (tend)
 * **Warfare / Diplomatic Modifications**: 0 pair(s) modified
 
 #### 🗺️ 2D Spatial Raster Fidelity against Empirical Ground Truth:
 
 | Cartographic Metric | Computed Value | Scientific Threshold | Status |
 |---|:---:|:---:|:---:|
-| **SSIM (Structural Similarity)** | **0.9118** | $\ge 0.50$ | 🟢 Conformant |
-| **Pearson Spatial Correlation (r)** | **+0.9897** | $\ge +0.60$ | 🟢 Gradient Match |
+| **SSIM (Structural Similarity)** | **0.9154** | $\ge 0.50$ | 🟢 Conformant |
+| **Pearson Spatial Correlation (r)** | **+0.9909** | $\ge +0.60$ | 🟢 Gradient Match |
 | **Jaccard Inhabited Overlap (IoU)** | **99.87%** | $\ge 50.0\%$ | 🟢 Conformant |
-| **RMSE (Pixel Error Residual)** | **13.99** | $< 25.0$ | 🟢 Low Residual |
-| **Peak Spatial Discrepancy (Δ_max)** | **116.34** | `Lat: 35.8°N, Lng: 51.4°E` | 📍 Hotspot |
+| **RMSE (Pixel Error Residual)** | **13.69** | $< 25.0$ | 🟢 Low Residual |
+| **Peak Spatial Discrepancy (Δ_max)** | **97.65** | `Lat: 35.8°N, Lng: 51.4°E` | 📍 Hotspot |
 
 #### 📈 1D Historical State Variables (Full 27-Variable Cliodynamic Audit):
 
@@ -170,7 +170,7 @@
 ### 🔎 Scenario: `industrial_1800` (Industrial Revolution & Fossil Energy (1800 CE))
 
 * **Horizon**: 1800 to 1820 CE (20 years / 244 monthly ticks)
-* **Local Execution Duration**: 374.42 seconds (mean throughput: 0.65 TPS)
+* **Local Execution Duration**: 358.62 seconds (mean throughput: 0.68 TPS)
 
 #### 🤝 Cultural Affinity Matrix (Before -> After Transformation):
 
@@ -185,7 +185,7 @@
 | **SSIM (Structural Similarity)** | **0.8224** | $\ge 0.50$ | 🟢 Conformant |
 | **Pearson Spatial Correlation (r)** | **+0.9814** | $\ge +0.60$ | 🟢 Gradient Match |
 | **Jaccard Inhabited Overlap (IoU)** | **100.00%** | $\ge 50.0\%$ | 🟢 Conformant |
-| **RMSE (Pixel Error Residual)** | **29.91** | $< 25.0$ | 🔴 High Spatial Residual |
+| **RMSE (Pixel Error Residual)** | **29.90** | $< 25.0$ | 🔴 High Spatial Residual |
 | **Peak Spatial Discrepancy (Δ_max)** | **85.33** | `Lat: 34.2°N, Lng: 85.3°E` | 📍 Hotspot |
 
 #### 📈 1D Historical State Variables (Full 27-Variable Cliodynamic Audit):
@@ -239,7 +239,7 @@
 - ⚠️ 1D Metric 'metalSmeltingPerCapita': MAPE 81.9% vs baseline [Peak: 93.6% (1820 CE) in 1800 CE, Engine: H3SimulationEngine]
 - ⚠️ 1D Metric 'fossilSharePrimaryEnergy': MAPE 98.6% vs baseline [Peak: 99.6% (1820 CE) in 1800 CE, Engine: EcologyEngine (Biomass)]
 - ⚠️ 1D Metric 'shippingFreightCostIndex': MAPE 313.1% vs baseline [Peak: 576.8% (1820 CE) in 1800 CE, Engine: H3SimulationEngine]
-- ⚠️ 2D Spatial Residual Anomaly: RMSE = 29.91 (Peak delta: 85.3 at Lat 34.2, Lng 85.3)
+- ⚠️ 2D Spatial Residual Anomaly: RMSE = 29.90 (Peak delta: 85.3 at Lat 34.2, Lng 85.3)
 
 ##### ⚪ Category C (Macro-Structural Boundaries & Discretization Limits):
 - ℹ️ Cultural Matrix Stagnation: Zero bilateral affinity shifts occurred during 20-year horizon (peaceful border stasis)
