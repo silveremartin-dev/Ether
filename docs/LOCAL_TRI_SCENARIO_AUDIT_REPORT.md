@@ -2,7 +2,7 @@
 
 **Execution Host**: Local Physical Machine (Intel Core i3-1005G1, 2 Cores / 4 Threads, 20 GB RAM)
 
-**Evaluation Scope**: 3 Representative Canonical Scenarios (Exoplanetary, Classical Crisis, Industrial Revolution)
+**Evaluation Scope**: 3 Canonical Standard Scenarios (Antonine Plague 165 CE, Song Dynasty 1000 CE, Black Death 1347 CE)
 
 **Mathematical Invariants Contract**: Zero unseeded noise, Strict bitwise determinism, Conservation of matter & energy.
 
@@ -12,86 +12,83 @@
 
 | Scenario Key | Epoch Horizon | Elapsed Time | Total Ticks | Throughput (TPS) | Snapshots | Final Population | Final Capital |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `shackleton` | 2035 -> 2040 | 13.09 s | 61 | 4.7 it/s | 6 | 54 | 0.0 |
-| `antonine` | 165 -> 175 | 74.76 s | 122 | 1.6 it/s | 11 | 200,273,813 | 0.0 |
-| `industrial` | 1800 -> 1805 | 18.41 s | 61 | 3.3 it/s | 6 | 326,679,947 | 0.0 |
+| `antonine_plague_165` | 165 -> 185 | 195.05 s | 244 | 1.3 it/s | 21 | 196,125,883 | 0.0 |
+| `song_dynasty` | 1000 -> 1020 | 195.01 s | 244 | 1.3 it/s | 21 | 428,441,525 | 0.0 |
+| `black_death_1347` | 1347 -> 1367 | 276.42 s | 244 | 0.9 it/s | 21 | 644,618,099 | 0.0 |
 
 ---
 
 ## 🔍 2. Detailed Diagnostic & Falsification Breakdown by Category (A, B, C)
 
-### Scenario: `shackleton` (Shackleton Lunar Base & Marius Hills Lava Tubes (2035))
+### Scenario: `antonine_plague_165` (Antonine Plague & Imperial Crisis under Marcus Aurelius (165-180 CE))
 
-* **Horizon**: 2035 to 2040 CE (5 years)
-* **Local Execution Time**: 13.09 seconds (mean throughput: 4.7 TPS)
+* **Horizon**: 165 to 185 CE (20 years)
+* **Local Execution Time**: 195.05 seconds (mean throughput: 1.3 TPS)
 
 #### Empirical Historical Divergence (MAPEs vs Ground Truth):
-* **worldPopulation**: `99.42%`
-* **co2Concentration**: `38.11%`
-* **primaryEnergy**: `100.00%`
-* **grossWorldProduct**: `100.00%`
-* **urbanizationRate**: `40.58%`
-* **literacyRate**: `13.69%`
+* **worldPopulation**: `4.00%`
+* **co2Concentration**: `0.32%`
+* **primaryEnergy**: `4.46%`
+* **grossWorldProduct**: `20.80%`
+* **urbanizationRate**: `27.63%`
+* **literacyRate**: `6.19%`
 
 #### Categorical Audit:
 
 * **Category A (Code Bugs / Data Errors)**: ✅ **0 Defect**. No NaN, no crash, no memory leak, cultural matrix and cohort buffers initialized cleanly.
 * **Category B (Macro Feedback Loops & Couplings)**: ℹ️ Observations:
-  - Variable 'worldPopulation' shows elevated MAPE (99.4%) vs empirical baseline
-  - Variable 'co2Concentration' shows elevated MAPE (38.1%) vs empirical baseline
-  - Variable 'primaryEnergy' shows elevated MAPE (100.0%) vs empirical baseline
-  - Variable 'grossWorldProduct' shows elevated MAPE (100.0%) vs empirical baseline
-  - Variable 'urbanizationRate' shows elevated MAPE (40.6%) vs empirical baseline
+  - Variable 'urbanizationRate' shows elevated MAPE (27.6%) vs empirical baseline
 * **Category C (Macro-Scale Structural Boundaries)**:
-  - H3 Res 2 spatial aggregation smooths sub-regional micro-fluctuations
+  - H3 Res 3 spatial aggregation smooths sub-regional micro-fluctuations
   - Step integration (dt = 30 days) averages seasonal day-to-day weather extremes
 
-### Scenario: `antonine` (Antonine Plague & Imperial Crisis under Marcus Aurelius (165-180 CE))
+### Scenario: `song_dynasty` (Song Dynasty & Hydraulic Pre-Industrialization (1000 CE))
 
-* **Horizon**: 165 to 175 CE (10 years)
-* **Local Execution Time**: 74.76 seconds (mean throughput: 1.6 TPS)
+* **Horizon**: 1000 to 1020 CE (20 years)
+* **Local Execution Time**: 195.01 seconds (mean throughput: 1.3 TPS)
 
 #### Empirical Historical Divergence (MAPEs vs Ground Truth):
-* **worldPopulation**: `3.72%`
-* **co2Concentration**: `0.31%`
-* **primaryEnergy**: `3.15%`
-* **grossWorldProduct**: `14.88%`
-* **urbanizationRate**: `31.09%`
-* **literacyRate**: `6.12%`
+* **worldPopulation**: `33.79%`
+* **co2Concentration**: `0.02%`
+* **primaryEnergy**: `43.82%`
+* **grossWorldProduct**: `7.02%`
+* **urbanizationRate**: `47.24%`
+* **literacyRate**: `69.31%`
 
 #### Categorical Audit:
 
 * **Category A (Code Bugs / Data Errors)**: ✅ **0 Defect**. No NaN, no crash, no memory leak, cultural matrix and cohort buffers initialized cleanly.
 * **Category B (Macro Feedback Loops & Couplings)**: ℹ️ Observations:
-  - Variable 'urbanizationRate' shows elevated MAPE (31.1%) vs empirical baseline
+  - Variable 'worldPopulation' shows elevated MAPE (33.8%) vs empirical baseline
+  - Variable 'primaryEnergy' shows elevated MAPE (43.8%) vs empirical baseline
+  - Variable 'urbanizationRate' shows elevated MAPE (47.2%) vs empirical baseline
+  - Variable 'literacyRate' shows elevated MAPE (69.3%) vs empirical baseline
 * **Category C (Macro-Scale Structural Boundaries)**:
-  - H3 Res 2 spatial aggregation smooths sub-regional micro-fluctuations
+  - H3 Res 3 spatial aggregation smooths sub-regional micro-fluctuations
   - Step integration (dt = 30 days) averages seasonal day-to-day weather extremes
 
-### Scenario: `industrial` (Song Dynasty & Hydraulic Pre-Industrialization (1000 CE))
+### Scenario: `black_death_1347` (The Black Death & Post-Feudal Economic Inversion (1347 CE))
 
-* **Horizon**: 1800 to 1805 CE (5 years)
-* **Local Execution Time**: 18.41 seconds (mean throughput: 3.3 TPS)
+* **Horizon**: 1347 to 1367 CE (20 years)
+* **Local Execution Time**: 276.42 seconds (mean throughput: 0.9 TPS)
 
 #### Empirical Historical Divergence (MAPEs vs Ground Truth):
-* **worldPopulation**: `66.09%`
-* **co2Concentration**: `1.11%`
-* **primaryEnergy**: `72.42%`
-* **grossWorldProduct**: `78.46%`
-* **urbanizationRate**: `34.97%`
-* **literacyRate**: `51.35%`
+* **worldPopulation**: `24.31%`
+* **co2Concentration**: `0.60%`
+* **primaryEnergy**: `45.76%`
+* **grossWorldProduct**: `6.03%`
+* **urbanizationRate**: `40.81%`
+* **literacyRate**: `119.07%`
 
 #### Categorical Audit:
 
 * **Category A (Code Bugs / Data Errors)**: ✅ **0 Defect**. No NaN, no crash, no memory leak, cultural matrix and cohort buffers initialized cleanly.
 * **Category B (Macro Feedback Loops & Couplings)**: ℹ️ Observations:
-  - Variable 'worldPopulation' shows elevated MAPE (66.1%) vs empirical baseline
-  - Variable 'primaryEnergy' shows elevated MAPE (72.4%) vs empirical baseline
-  - Variable 'grossWorldProduct' shows elevated MAPE (78.5%) vs empirical baseline
-  - Variable 'urbanizationRate' shows elevated MAPE (35.0%) vs empirical baseline
-  - Variable 'literacyRate' shows elevated MAPE (51.3%) vs empirical baseline
+  - Variable 'primaryEnergy' shows elevated MAPE (45.8%) vs empirical baseline
+  - Variable 'urbanizationRate' shows elevated MAPE (40.8%) vs empirical baseline
+  - Variable 'literacyRate' shows elevated MAPE (119.1%) vs empirical baseline
 * **Category C (Macro-Scale Structural Boundaries)**:
-  - H3 Res 2 spatial aggregation smooths sub-regional micro-fluctuations
+  - H3 Res 3 spatial aggregation smooths sub-regional micro-fluctuations
   - Step integration (dt = 30 days) averages seasonal day-to-day weather extremes
 
 ---

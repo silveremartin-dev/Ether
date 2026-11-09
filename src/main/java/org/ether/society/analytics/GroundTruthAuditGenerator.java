@@ -211,6 +211,10 @@ public class GroundTruthAuditGenerator {
                                                              Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
                                                              HistoricalValidationKernel.InterpolationMethod method,
                                                              double regionalExtensiveScaleFactor) {
+        if (regionalExtensiveScaleFactor < 0.0) {
+            return new VariableDriftAnalysis(label, 0.0, "⚪ Non-Earth Realm", "—", "—", "—", getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
+        }
+
         if (timeSeries == null || timeSeries.isEmpty()) {
             return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
         }

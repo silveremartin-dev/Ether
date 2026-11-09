@@ -54,36 +54,45 @@ public class LocalTriScenarioAuditTest {
     ) {}
 
     @Test
-    @DisplayName("Execute Tri-Scenario Local Physical Audit (Moon 2035, Antonine 165, Industrial 1800)")
+    @DisplayName("Execute Tri-Scenario Local Physical Audit (Antonine Plague, Song Dynasty, Black Death)")
     public void testExecuteTriScenarioAudit() throws IOException {
         System.out.println("================================================================================");
         System.out.println("🚀 LOCAL TRI-SCENARIO PHYSICAL EXECUTION & IN-DEPTH DIAGNOSTIC AUDIT");
         System.out.println("================================================================================");
 
+        int resolution = 3;
+        String resProp = System.getProperty("audit.resolution");
+        if (resProp != null && !resProp.isBlank()) {
+            try {
+                resolution = Integer.parseInt(resProp.trim());
+            } catch (NumberFormatException ignored) {}
+        }
+        System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution);
+
         List<ScenarioAuditResult> results = new ArrayList<>();
 
-        // 1. Moon / Exoplanet (Shackleton 2035 or Mars 2050)
+        // 1. Classical Imperial Crisis: Antonine Plague (165 - 185 CE, 20 years)
         results.add(executeScenarioRun(
-                "shackleton",
-                2035, 2040,
-                10,
-                2
-        ));
-
-        // 2. Antonine Plague 165
-        results.add(executeScenarioRun(
-                "antonine",
-                165, 175,
+                "antonine_plague_165",
+                165, 185,
                 1000,
-                2
+                resolution
         ));
 
-        // 3. Industrial Revolution 1800
+        // 2. Medieval Hydraulic Pre-Industrialization: Song Dynasty (1000 - 1020 CE, 20 years)
         results.add(executeScenarioRun(
-                "industrial",
-                1800, 1805,
-                5000,
-                2
+                "song_dynasty",
+                1000, 1020,
+                2000,
+                resolution
+        ));
+
+        // 3. Post-Feudal Pandemic & Wage Inversion: Black Death (1347 - 1367 CE, 20 years)
+        results.add(executeScenarioRun(
+                "black_death_1347",
+                1347, 1367,
+                1500,
+                resolution
         ));
 
         // Assert all runs succeeded
@@ -158,22 +167,48 @@ public class LocalTriScenarioAuditTest {
         List<String> catB = new ArrayList<>();
         List<String> catC = new ArrayList<>();
 
+        // Check for Category A anomalies (crashes, NaNs, uninitialized buffers)
+        if (Double.isNaN(endPop) || Double.isInfinite(endPop) || endPop <= 0) {
+            catA.add("Population invalid or non-positive: " + endPop);
+        }
+        if (Double.isNaN(endCapital) || Double.isInfinite(endCapital)) {
+            catA.add("Capital stock invalid (NaN/Infinite): " + endCapital);
+        }
+        if (Double.isNaN(endEnergy) || Double.isInfinite(endEnergy)) {
+            catA.add("Energy stock invalid (NaN/Infinite): " + endEnergy);
+        }
+
         String[] auditedKeys = {
                 "worldPopulation", "co2Concentration", "primaryEnergy",
                 "grossWorldProduct", "urbanizationRate", "literacyRate"
         };
 
-        for (String k : auditedKeys) {
-            Map<Integer, Double> bench = HistoricalValidationKernel.getBenchmarkDataset(k);
-            if (bench != null && !bench.isEmpty()) {
-                GroundTruthAuditGenerator.VariableDriftAnalysis drift = GroundTruthAuditGenerator.computeVariableDrift(
-                        k, k, bench, record.getTimeSeriesData(),
-                        HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC
-                );
-                if (drift != null && !Double.isNaN(drift.mape)) {
-                    mapes.put(k, drift.mape);
-                    if (drift.mape > 25.0) {
-                        catB.add(String.format(Locale.US, "Variable '%s' shows elevated MAPE (%.1f%%) vs empirical baseline", k, drift.mape));
+        double scaleFactor = GroundTruthAuditReportBuilder.computeRegionalScaleFactor(
+                record, record.getTimeSeriesData(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+
+        if (scaleFactor < 0.0) {
+            // Non-Earth Realm: Terrestrial historical datasets (HYDE/Maddison) do NOT apply
+            catC.add("Exoplanetary simulation: Terrestrial Earth datasets (HYDE/Maddison) are not applicable");
+        } else {
+            for (String k : auditedKeys) {
+                // If regional window, skip planetary atmospheric CO2 or global GWP unless regional ground-truth exists
+                if (scaleFactor < 0.95 && ("co2Concentration".equals(k) || "grossWorldProduct".equals(k))) {
+                    continue;
+                }
+                Map<Integer, Double> bench = HistoricalValidationKernel.getBenchmarkDataset(k);
+                if (bench != null && !bench.isEmpty()) {
+                    GroundTruthAuditGenerator.VariableDriftAnalysis drift = GroundTruthAuditGenerator.computeVariableDrift(
+                            k, k, bench, record.getTimeSeriesData(),
+                            HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC,
+                            scaleFactor
+                    );
+                    if (drift != null && !Double.isNaN(drift.mape)
+                            && !"⚪ Non-Earth Realm".equals(drift.status)
+                            && !"⚪ N/A".equals(drift.status)) {
+                        mapes.put(k, drift.mape);
+                        if (drift.mape > 25.0) {
+                            catB.add(String.format(Locale.US, "Variable '%s' shows elevated MAPE (%.1f%%) vs empirical baseline", k, drift.mape));
+                        }
                     }
                 }
             }
@@ -207,7 +242,7 @@ public class LocalTriScenarioAuditTest {
         StringBuilder sb = new StringBuilder();
         sb.append("# 🔬 LOCAL TRI-SCENARIO PHYSICAL EXECUTION & IN-DEPTH DIAGNOSTIC REPORT\n\n");
         sb.append("**Execution Host**: Local Physical Machine (Intel Core i3-1005G1, 2 Cores / 4 Threads, 20 GB RAM)\n\n");
-        sb.append("**Evaluation Scope**: 3 Representative Canonical Scenarios (Exoplanetary, Classical Crisis, Industrial Revolution)\n\n");
+        sb.append("**Evaluation Scope**: 3 Canonical Standard Scenarios (Antonine Plague 165 CE, Song Dynasty 1000 CE, Black Death 1347 CE)\n\n");
         sb.append("**Mathematical Invariants Contract**: Zero unseeded noise, Strict bitwise determinism, Conservation of matter & energy.\n\n");
         sb.append("---\n\n");
 

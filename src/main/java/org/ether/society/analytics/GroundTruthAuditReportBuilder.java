@@ -122,23 +122,36 @@ final class GroundTruthAuditReportBuilder {
 
             double regionalExtensiveScaleFactor = computeRegionalScaleFactor(run, timeSeries, method);
 
-            for (Map.Entry<String, String> entry : benchmarkKeys.entrySet()) {
-                String label = entry.getKey();
-                String benchKey = entry.getValue();
-                Map<Integer, Double> benchmark = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
-                VariableDriftAnalysis drift = GroundTruthAuditGenerator.computeVariableDrift(
-                        label, benchKey, benchmark, timeSeries, method, regionalExtensiveScaleFactor);
-                drifts.add(drift);
-                mapes.put(label, drift.mape);
-                if (drift.mape > 0.0) {
-                    totalMape += drift.mape;
-                    validVariables++;
+            if (regionalExtensiveScaleFactor < 0.0) {
+                // Non-Earth scenario: Terrestrial historical datasets (HYDE/Maddison) do NOT apply
+                for (Map.Entry<String, String> entry : benchmarkKeys.entrySet()) {
+                    String label = entry.getKey();
+                    VariableDriftAnalysis drift = new VariableDriftAnalysis(
+                            label, 0.0, "⚪ Non-Earth Realm", "—", "—", "—", "—",
+                            0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns"
+                    );
+                    drifts.add(drift);
+                    mapes.put(label, 0.0);
                 }
-                if (!"—".equals(drift.driftOnsetYear)) {
-                    try {
-                        int yr = Integer.parseInt(drift.driftOnsetYear.replaceAll("[^0-9-]", ""));
-                        if (scenarioDiv == -1 || yr < scenarioDiv) scenarioDiv = yr;
-                    } catch (Exception ignored) {}
+            } else {
+                for (Map.Entry<String, String> entry : benchmarkKeys.entrySet()) {
+                    String label = entry.getKey();
+                    String benchKey = entry.getValue();
+                    Map<Integer, Double> benchmark = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
+                    VariableDriftAnalysis drift = GroundTruthAuditGenerator.computeVariableDrift(
+                            label, benchKey, benchmark, timeSeries, method, regionalExtensiveScaleFactor);
+                    drifts.add(drift);
+                    mapes.put(label, drift.mape);
+                    if (drift.mape > 0.0) {
+                        totalMape += drift.mape;
+                        validVariables++;
+                    }
+                    if (!"—".equals(drift.driftOnsetYear)) {
+                        try {
+                            int yr = Integer.parseInt(drift.driftOnsetYear.replaceAll("[^0-9-]", ""));
+                            if (scenarioDiv == -1 || yr < scenarioDiv) scenarioDiv = yr;
+                        } catch (Exception ignored) {}
+                    }
                 }
             }
 
@@ -256,6 +269,14 @@ final class GroundTruthAuditReportBuilder {
                                                      Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
                                                      HistoricalValidationKernel.InterpolationMethod method) {
         if (run != null && run.getParameterMatrix() != null) {
+            String planet = run.getParameterMatrix().get("Préréglage Planétaire");
+            if (planet == null) planet = run.getParameterMatrix().get("Planet");
+            if (planet != null) {
+                String pLower = planet.toLowerCase(Locale.ROOT);
+                if (!pLower.contains("terre") && !pLower.contains("earth")) {
+                    return -1.0; // Marker: Non-Earth Realm (Terrestrial benchmarks do not apply)
+                }
+            }
             String domain = run.getParameterMatrix().get("Spatial Domain");
             if ("PLANETARY_MESH".equals(domain)) {
                 return 1.0;
