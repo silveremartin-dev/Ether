@@ -197,7 +197,8 @@ pub unsafe fn process_demographics_full(
         let max_bio_fertility = ((1.0 - neolithic_weight) * forager_fertility + neolithic_weight * agrarian_fertility) as f32;
         let fertility_modulation = fecundity_age_factor * nutritional_factor.min(1.0) * cultural_fertility_mult * density_feedback;
 
-        let birth_rate = max_bio_fertility * fertility_modulation.clamp(0.0, 1.25);
+        // Maximum biological fecundity bound (Wood 1994, Dynamics of Human Reproduction, max biological CBR ~ 48‰)
+        let birth_rate = (max_bio_fertility * fertility_modulation.clamp(0.0, 1.25)).min(0.048);
         let new_births = m * birth_rate * dt_in_years;
         births[i] = m * birth_rate;
 

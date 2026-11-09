@@ -6,6 +6,7 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.ProceduralEnginePlugin;
@@ -73,6 +74,63 @@ public class PomeranzGreatDivergenceEngine implements ProceduralEnginePlugin {
     @Override
     public String getCategory() {
         return "Tier 2: Cliodynamics & Comparative History";
+    }
+
+    @Override
+    public void processBuffer(WorldBuffer buffer, double deltaYears) {
+        processGreatDivergenceDynamics(buffer, deltaYears);
+    }
+
+    /**
+     * Evaluates Pomeranz coal proximity and colonial ghost acreage relief directly over WorldBuffer.
+     *
+     * @param buffer contiguous world buffer
+     * @param deltaYears time step duration in astronomical Julian years
+     */
+    public static void processGreatDivergenceDynamics(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || deltaYears <= 0.0) return;
+        int n = buffer.getCapacity();
+        float[] popArr = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] coalArr = buffer.getResourceCoal();
+        float[] natArr = buffer.getBiomassNatural();
+        float[] commArr = buffer.getCommercialFluxVolume();
+
+        for (int i = 0; i < n; i++) {
+            float p = popArr[i];
+            if (p <= 0.5f) continue;
+            float capital = (capArr != null) ? capArr[i] : 0.0f;
+            double kpc = capital / p;
+            if (kpc < 50.0) continue;
+
+            double coal = (coalArr != null) ? coalArr[i] : 0.0;
+            double trade = (commArr != null) ? commArr[i] : 0.0;
+            double friction = 0.50; // navigable water baseline
+
+            double coalAvailability = SmoothMath.sigmoid(coal, COAL_BREAKOUT_STOCK_THRESHOLD, 100.0);
+            double transportAccessibility = 1.0 - SmoothMath.sigmoid(friction, 0.70, 0.15);
+            double coalProximityFactor = coalAvailability * transportAccessibility;
+
+            double ghostAcreageFactor = SmoothMath.sigmoid(trade, GHOST_ACREAGE_TRADE_THRESHOLD, 5.0)
+                    * SmoothMath.sigmoid(kpc, 100.0, 30.0);
+
+            double divergencePotential = coalProximityFactor * (1.0 + 0.80 * ghostAcreageFactor);
+
+            if (divergencePotential > 0.15) {
+                double takeoffGrowth = 0.055 * divergencePotential * deltaYears;
+                if (capArr != null) {
+                    capArr[i] = (float) (capital * (1.0 + takeoffGrowth));
+                }
+                if (natArr != null) {
+                    natArr[i] = (float) (natArr[i] + (p * 0.02 * divergencePotential * deltaYears));
+                }
+            } else if (kpc >= 80.0 && p >= 10.0f) {
+                double involutionDrag = 0.015 * deltaYears;
+                if (capArr != null) {
+                    capArr[i] = (float) Math.max(10.0, capital * (1.0 - involutionDrag * 0.40));
+                }
+            }
+        }
     }
 
     @Override

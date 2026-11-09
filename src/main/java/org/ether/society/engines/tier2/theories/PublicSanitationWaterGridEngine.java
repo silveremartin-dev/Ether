@@ -5,6 +5,7 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.ProceduralEnginePlugin;
 import org.slf4j.Logger;
@@ -46,6 +47,48 @@ public class PublicSanitationWaterGridEngine implements ProceduralEnginePlugin {
     @Override
     public String getName() {
         return "PublicSanitationWaterGridEngine";
+    }
+
+    @Override
+    public void processBuffer(WorldBuffer buffer, double deltaYears) {
+        processSanitationGrids(buffer, deltaYears);
+    }
+
+    /**
+     * Executes one tick of sanitation coverage and pathogen mortality attenuation directly over WorldBuffer.
+     *
+     * @param buffer     contiguous world buffer
+     * @param deltaYears time step fraction in years
+     */
+    public static void processSanitationGrids(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || deltaYears <= 0.0) return;
+        int n = buffer.getCapacity();
+        float[] pop = buffer.getBiomassHuman();
+        float[] cap = buffer.getResourceCapital();
+        float[] water = buffer.getWaterResource();
+        float[] lifespan = buffer.getLifespan();
+
+        for (int i = 0; i < n; i++) {
+            float p = pop[i];
+            if (p <= 0.001f) continue;
+            float capital = (cap != null) ? cap[i] : 0.0f;
+            float kPerCap = capital / p;
+            float wAvail = (water != null) ? water[i] : 1.0f;
+
+            double densityPerKm2 = (p / 0.06) / 36.13;
+            double crowdingPathogenPressure = Math.min(1.0, densityPerKm2 / 200.0);
+            double sanitationCoverage = 0.0;
+            if (kPerCap > 200.0) {
+                sanitationCoverage = Math.min(0.98, (kPerCap - 200.0) / 2000.0);
+            }
+            double targetLifespan = 30.0 + 48.0 * sanitationCoverage * Math.min(1.0, (double) wAvail)
+                    - 8.0 * crowdingPathogenPressure * (1.0 - sanitationCoverage);
+            float currentLifespan = (lifespan != null && lifespan[i] > 10.0f) ? lifespan[i] : 35.0f;
+            float updatedLifespan = (float) (currentLifespan + (targetLifespan - currentLifespan) * Math.min(1.0, deltaYears * 0.1));
+            if (lifespan != null) {
+                lifespan[i] = Math.clamp(updatedLifespan, 22.0f, 85.0f);
+            }
+        }
     }
 
     @Override

@@ -276,3 +276,12 @@ During all calibration, benchmark falsification, and testing phases, any code mo
    * It is **STRICTLY FORBIDDEN** to modify, patch, fudge, or tweak any other aspect of the code, differential equations, or simulation states to force simulation trajectories through empirical data points.
    * If an observed discrepancy between simulation telemetry and empirical history cannot be resolved as an authentic bug (Category A) or as a universally invariant, documented calibration constant (Category B), **NO CODE CHANGE IS PERMITTED**.
    * In such cases, the residual discrepancy must be reported transparently as an epistemic limit or emergent divergence; the problem originates elsewhere in the coupled complex system, and introducing ad-hoc patches constitutes fatal overfitting.
+
+4. **Mandatory Epistemic Response Protocol for Category B & C Diagnostic Analyses**:
+   * Whenever a Category B (Macro Dynamics Feedback Loops & Empirical Divergences) or Category C (Macro-Structural Boundaries & Discretization Limits) anomaly is reported or analyzed, the analysis MUST systematically address the following mandatory question:
+     * **Mandatory Diagnostic Question**: *« Est-ce qu'on a de quoi modéliser fidèlement par un modèle de meilleure qualité ou un modèle supplémentaire autonome basé sur des équations reconnues de la littérature ? »*
+   * **Required 4-Fold Diagnostic Structure for Every Anomaly**:
+     1. **Empirical Constat**: Exact quantitative divergence (MAPE %, peak drift onset, spatial RMSE).
+     2. **Physical / Dynamical Root Cause**: Exact mechanistic reason for the divergence in the coupled system.
+     3. **Authoritative Literature Model & Differential Equations**: Specific published academic equations (authors, year, exact mathematical ODE/PDE formulation, state variables, SI units) capable of modeling the phenomenon authentically without ad-hoc curve fitting.
+     4. **Computational ROI & Implementation Viability**: Evaluation of $O(1)$ complexity, $C^1$ continuity, and suitability for the continuous H3 tensor mesh.

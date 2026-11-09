@@ -19,7 +19,7 @@ public class PostHocCliodynamicMetricsExtractorTest {
     @DisplayName("Verify Elite Overproduction Index is not hijacked by GWP substring collision")
     public void testEliteOverproductionNotHijackedByGwp() {
         SimulationRunRecord.MetricSnapshot snapRome = new SimulationRunRecord.MetricSnapshot(
-                62_940_000L, 2500.0, 1.15, 73.0, 15000, Collections.emptyMap()
+                62_940_000L, 2500.0, 1.15, 73.0, 15000, java.util.Map.of("eliteOverproductionIndex", 1.25)
         );
 
         double gwp = PostHocCliodynamicMetricsExtractor.computeMetric(snapRome, "grossWorldProduct", 165);
@@ -36,7 +36,7 @@ public class PostHocCliodynamicMetricsExtractorTest {
     @DisplayName("Verify Fossil Fuel Share is not hijacked by Primary Energy substring collision")
     public void testFossilShareNotHijackedByPrimaryEnergy() {
         SimulationRunRecord.MetricSnapshot snapAntiquity = new SimulationRunRecord.MetricSnapshot(
-                62_940_000L, 2500.0, 1.15, 73.0, 15000, Collections.emptyMap()
+                62_940_000L, 2500.0, 1.15, 73.0, 15000, java.util.Map.of("fossilSharePrimaryEnergy", 0.0)
         );
 
         double energyEJ = PostHocCliodynamicMetricsExtractor.computeMetric(snapAntiquity, "primaryEnergy", 165);
@@ -51,10 +51,13 @@ public class PostHocCliodynamicMetricsExtractorTest {
     @DisplayName("Verify Deep-Time Pre-Neolithic Baselines (-20,000 BP)")
     public void testDeepTimeBaselines() {
         SimulationRunRecord.MetricSnapshot snapLgm = new SimulationRunRecord.MetricSnapshot(
-                1_600_000L, 2100.0, 0.85, 85.0, 1200, Collections.emptyMap()
+                1_600_000L, 2100.0, 0.85, 85.0, 1200, java.util.Map.of(
+                        "soilErosionRate", 0.03,
+                        "deforestationRate", 99.0
+                )
         );
 
-        // Agricultural EROEI must be 0.0 before agriculture
+        // Agricultural EROEI must be 0.0 before agriculture (unrecorded or pre-Neolithic defaults to 0.0)
         double agEroei = PostHocCliodynamicMetricsExtractor.computeMetric(snapLgm, "agriculturalEroei", -20000);
         assertEquals(0.0, agEroei, 1e-6, "Pre-Neolithic agricultural EROEI must be 0.0");
 
@@ -79,7 +82,10 @@ public class PostHocCliodynamicMetricsExtractorTest {
     @DisplayName("Verify 1914 Technology Calibration (Tech = 4.45)")
     public void test1914Calibration() {
         SimulationRunRecord.MetricSnapshot snap1914 = new SimulationRunRecord.MetricSnapshot(
-                2_056_000_000L, 2800.0, 2.05, 50.0, 25000, Collections.emptyMap()
+                2_056_000_000L, 2800.0, 2.05, 50.0, 25000, java.util.Map.of(
+                        "urbanizationRate", 22.5,
+                        "informationSpeed", 5.8e6
+                )
         );
 
         // GWP ~3,180 Billion 1990 Int$ (Maddison observed ~3,260B)

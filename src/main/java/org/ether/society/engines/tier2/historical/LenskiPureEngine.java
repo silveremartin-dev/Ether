@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Gerhard Lenski Ecological-Evolutionary Model Variant B9.1 (Pure) & B9.2 (Hybrid).
- * Lenski Law: Gini inequality peaks in Agrarian societies and is modulated by technology stage.
+ * Gerhard Lenski &amp; Branko Milanovic Inequality Possibility Frontier (IPF)
+ * coupled with Thomas Piketty (2014) $r > g$ dynamic capital extraction and
+ * Walter Scheidel (2017) leveling shocks.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -23,26 +26,60 @@ public class LenskiPureEngine {
     private static final Logger logger = LoggerFactory.getLogger(LenskiPureEngine.class);
 
     /**
-     * Computes theoretical Lenski-Milanovic biophysical Gini coefficient directly from per-capita
-     * physical capital stock \(k_{\text{pc}} = K/N\) (\(\text{kg/capita}\))
-     * (Lenski 1966 <i>Power and Privilege</i>; Milanovic, Lindert &amp; Williamson 2011 <i>Pre-Industrial Inequality</i>;
-     * Borgerhoff Mulder et al. 2009 <i>Science</i> 326:682):
-     * $$G^*(k_{\text{pc}}) = G_{\text{forager}} + \Delta G_{\text{agr}} \exp\!\left(-\frac{[\ln((k_{\text{pc}}+10)/(k_{\text{agr}}+10))]^2}{2\sigma_k^2}\right) + \Delta G_{\text{ind}} \, \frac{k_{\text{pc}}^2}{k_{\text{pc}}^2 + k_{\text{ind}}^2}$$
+     * Evaluates dynamic Piketty-Milanovic-Scheidel inequality dynamics over WorldBuffer.
      *
-     * @param capitalPerCapitaKg per-capita physical capital stock \(k_{\text{pc}} = K/N\) in \(\text{kg/capita}\)
-     * @return theoretical Gini index in \([0.18, 0.70]\)
+     * @param buffer contiguous world buffer
+     * @param deltaYears time step fraction in years
      */
-    public static double calculateLenskiGini(double capitalPerCapitaKg) {
-        double kpc = org.ether.society.core.math.SmoothMath.softplus(capitalPerCapitaKg, 0.0, 10.0);
-        double gForager = 0.25;
-        double logRatio = Math.log((kpc + 10.0) / (280.0 + 10.0));
-        double agrarianSurge = 0.40 * Math.exp(-(logRatio * logRatio) / (2.0 * 1.25 * 1.25));
-        double industrialShift = 0.13 * (kpc * kpc) / (kpc * kpc + 2500.0 * 2500.0);
-        return gForager + agrarianSurge + industrialShift;
+    public static void processLenskiPikettyInequality(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || deltaYears <= 0.0) return;
+        int n = buffer.getCapacity();
+        float[] popArr = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] giniArr = buffer.getGiniIndex();
+        float[] compArr = buffer.getInstitutionalComplexity();
+
+        for (int i = 0; i < n; i++) {
+            float p = popArr[i];
+            if (p <= 0.001f) continue;
+            float capital = (capArr != null) ? capArr[i] : 10.0f;
+            float kPerCap = capital / p;
+
+            // Inequality Possibility Frontier (Milanovic et al. 2011): G_max = 1 - s_min / y
+            double sMin = 15.0; // minimum physical maintenance capital
+            double gMax = Math.clamp(1.0 - (sMin / Math.max(sMin + 1.0, (double) kPerCap)), 0.0, 0.85);
+
+            // Piketty (2014) r - g dynamic extraction: r = 0.05, g ~ capital growth
+            double complexity = (compArr != null) ? compArr[i] : 0.0;
+            double rMinusG = 0.05 - 0.02 * Math.tanh(kPerCap / 1000.0);
+            double muExtract = 0.20 + 0.70 * SmoothMath.sigmoid(rMinusG, 0.0, 0.02) * SmoothMath.sigmoid(complexity, 0.25, 0.10);
+            double targetGini = Math.clamp(0.20 + muExtract * gMax, 0.20, 0.75);
+
+            if (giniArr != null) {
+                float currentGini = giniArr[i] > 0.0f ? giniArr[i] : 0.35f;
+                giniArr[i] = (float) Math.clamp(currentGini + 0.04 * (targetGini - currentGini) * deltaYears, 0.18, 0.80);
+            }
+        }
     }
 
     /**
-     * Process hybrid.
+     * Computes theoretical Lenski-Milanovic biophysical Gini coefficient directly from per-capita
+     * physical capital stock \(k_{\text{pc}} = K/N\) (\(\text{kg/capita}\)).
+     *
+     * @param capitalPerCapitaKg per-capita physical capital stock \(k_{\text{pc}} = K/N\) in \(\text{kg/capita}\)
+     * @return theoretical Gini index in \([0.18, 0.75]\)
+     */
+    public static double calculateLenskiGini(double capitalPerCapitaKg) {
+        double kpc = SmoothMath.softplus(capitalPerCapitaKg, 0.0, 10.0);
+        double sMin = 15.0;
+        double gMax = Math.clamp(1.0 - (sMin / Math.max(sMin + 1.0, kpc)), 0.0, 0.85);
+        double rMinusG = 0.05 - 0.02 * Math.tanh(kpc / 1000.0);
+        double muExtract = 0.20 + 0.70 * SmoothMath.sigmoid(rMinusG, 0.0, 0.02);
+        return Math.clamp(0.20 + muExtract * gMax, 0.20, 0.75);
+    }
+
+    /**
+     * Process hybrid over cell list.
      *
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
@@ -56,8 +93,11 @@ public class LenskiPureEngine {
             if (pop <= 0) continue;
             double kpc = cell.getResourceCapitalOr(0.0) / pop;
             double theoreticalGini = calculateLenskiGini(kpc);
+            double currentGini = cell.getGiniIndexOr(0.35f);
+            double updatedGini = Math.clamp(currentGini + 0.04 * (theoreticalGini - currentGini) * deltaYears, 0.18, 0.80);
+            cell.setGiniIndex(updatedGini);
             if (cell.getResourceCapital() != null) {
-                cell.setResourceCapital(cell.getResourceCapital() * (1.0 - theoreticalGini * 0.05 * deltaYears));
+                cell.setResourceCapital(cell.getResourceCapital() * (1.0 - updatedGini * 0.05 * deltaYears));
             }
         }
     }

@@ -159,8 +159,12 @@ public final class CulturalKnowledgeMetricsCalculator {
                         : 0.0;
                 double cellI = Math.max(baseI0, endogenousI);
 
-                // Canonical Michaelis-Menten / Hill educational saturation curve (Graff 1987; Buringh 2009):
-                double cellLit = 99.5 * (cellI / (cellI + 15000.0));
+                // Canonical multi-tier knowledge & literacy emergence (Graff 1987; Buringh 2009):
+                // Enforces deep-time oral baseline: writing emergence requires I > 25 bits/hab (cuneiform/hieroglyphs)
+                double scribal = 3.8 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
+                double vernacular = 14.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
+                double massEdu = 81.7 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
+                double cellLit = Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
                 weightedLit += p * cellLit;
             }
             if (totalPop > 0.0) {

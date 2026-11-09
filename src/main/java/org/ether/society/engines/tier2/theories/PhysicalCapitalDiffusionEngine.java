@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Physical Historical Era Diagnostic &amp; Diffusion Engine.
+ * Physical Capital Diffusion &amp; Induced Innovation Engine.
  *
- * <p>In strict conformance with {@code AGENTS.md} Â§10.1, technology is NOT stored or mutated
+ * <p>In strict conformance with {@code AGENTS.md} §10.1, technology is NOT stored or mutated
  * as an independent state variable. This engine provides:</p>
  * <ul>
  *   <li><b>A posteriori physical era diagnostic</b>: maps continuous per-capita power dissipation
@@ -31,8 +31,8 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class TechTreeEngine {
-    private static final Logger logger = LoggerFactory.getLogger(TechTreeEngine.class);
+public class PhysicalCapitalDiffusionEngine {
+    private static final Logger logger = LoggerFactory.getLogger(PhysicalCapitalDiffusionEngine.class);
 
     public record PhysicalEra(String i18nKeyPrefix, String defaultName, double minPowerWattsPerCapita, double minMaterialYieldMPa, String defaultDescription) {
         public String name() {
@@ -79,14 +79,14 @@ public class TechTreeEngine {
     /**
      * Executes physical era progression and spatial power diffusion with default monthly step.
      */
-    public static void processTechnologyDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {
-        processTechnologyDiffusion(cells, activeRoutes, 1.0 / 12.0);
+    public static void processCapitalDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {
+        processCapitalDiffusion(cells, activeRoutes, 1.0 / 12.0);
     }
 
     /**
      * Executes spatial capital equalization along active trade routes and bottleneck-induced capital deepening.
      */
-    public static void processTechnologyDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes, double dtYears) {
+    public static void processCapitalDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes, double dtYears) {
         if (cells == null || cells.isEmpty()) return;
         double dt = Math.max(0.0001, dtYears);
 

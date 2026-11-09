@@ -273,7 +273,8 @@ public class DemographicKernel {
             float maxBiologicalFertility = (float) ((1.0 - neolithicWeight) * foragerFertility + neolithicWeight * agrarianFertility);
             float fertilityModulation = fecundityAgeFactor * Math.min(1.0f, nutritionalFactor) * culturalFertilityMultiplier * densityFeedback;
 
-            float birthRate = maxBiologicalFertility * Math.clamp(fertilityModulation, 0.0f, 1.25f);
+            // Maximum biological fecundity bound (Wood 1994, Dynamics of Human Reproduction, max biological CBR ~ 48‰)
+            float birthRate = (float) Math.min(0.048 / lifespanScale, maxBiologicalFertility * Math.clamp(fertilityModulation, 0.0f, 1.25f));
             float newBirths = m * birthRate * dtInYears;
             births[i] = m * birthRate;
 

@@ -110,7 +110,7 @@ public class WarDiplomacyEngineTest {
 
         TradeNetworkEngine.TradeRoute route = new TradeNetworkEngine.TradeRoute(hub, dest, List.of(hub, dest), 1.0);
 
-        TechTreeEngine.processTechnologyDiffusion(List.of(hub, dest), List.of(route), 1.0);
+        PhysicalCapitalDiffusionEngine.processCapitalDiffusion(List.of(hub, dest), List.of(route), 1.0);
 
         assertTrue(hub.getResourceCapital() >= 150000.0, "High power and capital must maintain or advance capital stock");
         assertTrue(dest.getResourceCapital() > 100.0, "Active trade route must diffuse physical capital to destination");

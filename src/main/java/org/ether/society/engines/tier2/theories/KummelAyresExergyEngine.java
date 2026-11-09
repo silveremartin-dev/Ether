@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
 import org.ether.society.engines.ProceduralEnginePlugin;
@@ -99,10 +101,63 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
      * @param deltaYears integration time step \(\Delta t\) in Julian years
      */
     @Override
+    public void processBuffer(WorldBuffer buffer, double deltaYears) {
+        processKummelAyresExergy(buffer, deltaYears);
+    }
+
+    /**
+     * Executes pure Data-Oriented Design (DoD) second-law Carnot exergy production over WorldBuffer.
+     *
+     * @param buffer contiguous world buffer
+     * @param deltaYears time step duration in astronomical Julian years
+     */
+    public static void processKummelAyresExergy(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || deltaYears <= 0.0) return;
+        int n = buffer.getCapacity();
+        float[] popArr = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] coalArr = buffer.getResourceCoal();
+        float[] oilArr = buffer.getResourceOil();
+        float[] gasArr = buffer.getResourceGas();
+        float[] tempArr = buffer.getTemperature();
+
+        for (int i = 0; i < n; i++) {
+            float p = popArr[i];
+            if (p <= 0.001f) continue;
+            float capital = (capArr != null) ? Math.max(1.0f, capArr[i]) : 10.0f;
+            float labor = p * 0.5f;
+
+            double tColdK = (tempArr != null) ? (tempArr[i] + 273.15) : 288.15;
+            double coal = (coalArr != null) ? coalArr[i] : 0.0;
+            double hydrocarbon = ((oilArr != null ? oilArr[i] : 0.0) + (gasArr != null ? gasArr[i] : 0.0));
+
+            // Carnot second-law thermodynamics: effective prime-mover combustion flame temperature
+            double deltaTFlame = 450.0
+                    + 700.0 * SmoothMath.sigmoid(coal, 100.0, 30.0)
+                    + 500.0 * SmoothMath.sigmoid(hydrocarbon, 100.0, 30.0);
+            double tHotK = tColdK + deltaTFlame;
+            double etaCarnot = 1.0 - (tColdK / tHotK);
+
+            double kPerCap = capital / p;
+            double recoveryFactor = 0.08 + (0.58 - 0.08) * SmoothMath.sigmoid(kPerCap, 1200.0, 400.0);
+            double etaThermo = Math.clamp(etaCarnot * recoveryFactor, 0.05, 0.50);
+
+            double primaryWatts = 100.0 * p + 50.0 * capital;
+            double usefulExergy = SmoothMath.softplus(primaryWatts * etaThermo, 1.0, 5.0);
+
+            double tfp = 1.0;
+            double economicOutput = tfp * Math.pow(capital, ALPHA_K) * Math.pow(labor, BETA_L) * Math.pow(usefulExergy, GAMMA_E);
+
+            double capitalReinvestment = economicOutput * 0.05 * deltaYears;
+            double capitalDepreciation = capital * 0.04 * deltaYears;
+            if (capArr != null) {
+                capArr[i] = (float) Math.max(1.0, capital + capitalReinvestment - capitalDepreciation);
+            }
+        }
+    }
+
+    @Override
     public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
@@ -113,23 +168,26 @@ public class KummelAyresExergyEngine implements ProceduralEnginePlugin {
             double capital = cell.getResourceCapital() != null ? Math.max(1.0, cell.getResourceCapital()) : 10.0;
             double labor = cell.getResourceWork() != null ? Math.max(1.0, cell.getResourceWork()) : (pop * 0.5);
 
-            // Calculate primary exergy from mechanical/electrical grid engine
             double powerPerCapitaWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
             double totalPrimaryWatts = powerPerCapitaWatts * pop;
 
-            // Thermodynamic conversion efficiency eta_exergy(k_pc) (Ayres & Warr 2005; Kümmel 2011):
-            // Single C^infinity hyperbolic tangent saturation from somatic/open-fire baseline (eta_0 = 0.05)
-            // to Carnot/combined-cycle limit (eta_max = 0.45) with characteristic machinery mass k_transducer = 2500 kg/cap.
-            double kPerCapita = capital / pop;
-            double etaThermo = 0.05 + (0.45 - 0.05) * Math.tanh(kPerCapita / 2500.0);
-            double usefulExergy = org.ether.society.core.math.SmoothMath.softplus(totalPrimaryWatts * etaThermo, 1.0, 5.0);
+            double tColdK = (cell.getTemperatureOr(15.0f)) + 273.15;
+            double coal = cell.getResourceCoalOr(0.0);
+            double oil = cell.getResourceOilOr(0.0);
+            double deltaTFlame = 450.0
+                    + 700.0 * SmoothMath.sigmoid(coal, 100.0, 30.0)
+                    + 500.0 * SmoothMath.sigmoid(oil, 100.0, 30.0);
+            double tHotK = tColdK + deltaTFlame;
+            double etaCarnot = 1.0 - (tColdK / tHotK);
 
-            // Kümmel-Ayres production function Y = A * K^α * L^β * E_useful^γ
+            double kPerCapita = capital / pop;
+            double recoveryFactor = 0.08 + (0.58 - 0.08) * SmoothMath.sigmoid(kPerCapita, 1200.0, 400.0);
+            double etaThermo = Math.clamp(etaCarnot * recoveryFactor, 0.05, 0.50);
+            double usefulExergy = SmoothMath.softplus(totalPrimaryWatts * etaThermo, 1.0, 5.0);
+
             double tfp = 1.0;
             double economicOutput = tfp * Math.pow(capital, ALPHA_K) * Math.pow(labor, BETA_L) * Math.pow(usefulExergy, GAMMA_E);
 
-            // Reinvest fraction of output into physical infrastructure capital with physical depreciation (Ayres & Warr 2009)
-            // dK/dt = s · Y - δ · K (where savings rate s = 0.05, depreciation rate δ = 0.04/yr)
             double capitalReinvestment = economicOutput * 0.05 * deltaYears;
             double capitalDepreciation = capital * 0.04 * deltaYears;
             cell.setResourceCapital(Math.max(1.0, capital + capitalReinvestment - capitalDepreciation));

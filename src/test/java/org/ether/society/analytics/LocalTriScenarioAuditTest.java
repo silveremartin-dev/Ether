@@ -125,7 +125,65 @@ public class LocalTriScenarioAuditTest {
         }
 
         // Generate Markdown Audit Report
-        generateTriScenarioAuditReport(results);
+        generateTriScenarioAuditReport(results, "LOCAL_TRI_SCENARIO_AUDIT_REPORT.md", "3 Canonical Standard Scenarios (Antonine Plague 165 CE, Song Dynasty 1000 CE, Black Death 1347 CE)");
+    }
+
+    @Test
+    @DisplayName("Execute Tri-Scenario Local Physical Audit Group 2 (Fertile Crescent, Late Antique Ice Age, Industrial Revolution)")
+    public void testExecuteTriScenarioAuditGroup2() throws IOException {
+        System.out.println("================================================================================");
+        System.out.println("🚀 LOCAL TRI-SCENARIO PHYSICAL EXECUTION & IN-DEPTH DIAGNOSTIC AUDIT (GROUP 2)");
+        System.out.println("================================================================================");
+
+        int resolution = 3;
+        String resProp = System.getProperty("audit.resolution");
+        if (resProp != null && !resProp.isBlank()) {
+            try {
+                resolution = Integer.parseInt(resProp.trim());
+            } catch (NumberFormatException ignored) {}
+        }
+        System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution);
+
+        List<ScenarioAuditResult> results = new ArrayList<>();
+
+        // 1. Holocene Agricultural Revolution: Fertile Crescent (-8000 to -7980 BCE, 20 years)
+        results.add(executeScenarioRun(
+                "fertile_crescent",
+                -8000, -7980,
+                500,
+                resolution,
+                "data/maps/ether/earth/-8000/earth_-8000_density.png"
+        ));
+
+        // 2. Late Antique Little Ice Age & Justinian Plague (536 - 556 CE, 20 years)
+        results.add(executeScenarioRun(
+                "late_antique_ice_age",
+                536, 556,
+                1000,
+                resolution,
+                "data/maps/ether/earth/536/earth_536_density.png"
+        ));
+
+        // 3. First Industrial Revolution & Fossil Energy (1800 - 1820 CE, 20 years)
+        results.add(executeScenarioRun(
+                "industrial_1800",
+                1800, 1820,
+                2500,
+                resolution,
+                "data/maps/ether/earth/1800/earth_1800_density.png"
+        ));
+
+        assertEquals(3, results.size());
+        for (ScenarioAuditResult r : results) {
+            assertNotNull(r);
+            assertTrue(r.snapshotsCount() > 0, "Scenario " + r.key() + " must produce telemetry snapshots");
+            assertTrue(r.endPopulation() > 0, "Scenario " + r.key() + " population must remain positive");
+            assertFalse(Double.isNaN(r.endPopulation()), "Population must not be NaN");
+            assertFalse(Double.isInfinite(r.endPopulation()), "Population must not be Infinite");
+            assertTrue(r.categoryAAnomalies().isEmpty(), "No Category A code bugs or crashes allowed in " + r.key());
+        }
+
+        generateTriScenarioAuditReport(results, "LOCAL_TRI_SCENARIO_GROUP2_AUDIT_REPORT.md", "Group 2 Scenarios (Fertile Crescent -8000 BCE, Late Antique Ice Age 536 CE, Industrial Revolution 1800 CE)");
     }
 
     private ScenarioAuditResult executeScenarioRun(String presetKey, long startYear, long endYear,
@@ -357,11 +415,11 @@ public class LocalTriScenarioAuditTest {
         return null;
     }
 
-    private void generateTriScenarioAuditReport(List<ScenarioAuditResult> results) {
+    private void generateTriScenarioAuditReport(List<ScenarioAuditResult> results, String fileName, String scopeDescription) {
         StringBuilder sb = new StringBuilder();
         sb.append("# 🔬 LOCAL TRI-SCENARIO PHYSICAL EXECUTION & COMPREHENSIVE ANOMALY AUDIT\n\n");
         sb.append("**Execution Host**: Local Physical Machine (Intel Core i3-1005G1, 2 Cores / 4 Threads, 20 GB RAM)\n\n");
-        sb.append("**Evaluation Scope**: 3 Canonical Standard Scenarios (Antonine Plague 165 CE, Song Dynasty 1000 CE, Black Death 1347 CE)\n\n");
+        sb.append("**Evaluation Scope**: ").append(scopeDescription).append("\n\n");
         sb.append("**Mathematical Invariants Contract**: Zero unseeded noise, Strict bitwise determinism, Conservation of matter & energy.\n\n");
         sb.append("---\n\n");
 
@@ -477,7 +535,7 @@ public class LocalTriScenarioAuditTest {
 
         File outDir = new File("docs");
         if (outDir.exists()) {
-            File outFile = new File(outDir, "LOCAL_TRI_SCENARIO_AUDIT_REPORT.md");
+            File outFile = new File(outDir, fileName);
             try (FileWriter fw = new FileWriter(outFile, StandardCharsets.UTF_8)) {
                 fw.write(sb.toString());
             } catch (IOException e) {

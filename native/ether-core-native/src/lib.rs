@@ -5,6 +5,7 @@ pub mod demographic;
 pub mod environmental;
 pub mod flux;
 pub mod prng;
+pub mod tier2;
 pub mod urban;
 
 use buffers::{AgentBufferRaw, WorldBufferRaw};
@@ -83,4 +84,11 @@ pub unsafe extern "C" fn ether_culture_tick_full(
 ) {
     if world_ptr.is_null() || agents_ptr.is_null() { return; }
     culture::process_culture_full(&mut *world_ptr, &mut *agents_ptr, dt_years, diffusion_rate, forcing_rate, mutation_rate, seed, tick_counter);
+}
+
+/// Complete FFI Export: Advances Universal Tier 2 Cliodynamics, SDT, Pomeranz Divergence & Sanitation.
+#[no_mangle]
+pub unsafe extern "C" fn ether_tier2_tick(world_ptr: *mut WorldBufferRaw, dt_years: c_float) {
+    if world_ptr.is_null() { return; }
+    tier2::process_tier2(&mut *world_ptr, dt_years);
 }

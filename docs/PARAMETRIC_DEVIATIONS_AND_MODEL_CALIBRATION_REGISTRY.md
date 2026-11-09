@@ -326,55 +326,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 13: Lenski-Milanovic Continuous Inequality Response Function
-* **Subsystem**: `LenskiPureEngine.java`
-* **Canonical Literature**:
-  * Lenski, G. (1966). *Power and Privilege: A Theory of Social Stratification*. McGraw-Hill.
-  * Milanovic, B., Lindert, P. H., & Williamson, J. G. (2011). *Pre-Industrial Inequality*. The Economic Journal, 121(551), 255–272.
-  * Scheidel, W. (2017). *The Great Leveler: Violence and the History of Inequality from the Stone Age to the Twenty-First Century*. Princeton University Press.
-* **Canonical Published Formulation**:
-  * Lenski defines qualitative discrete developmental stages: Foraging (low Gini $\approx 0.25$), Horticultural, Agrarian (peak Gini $\approx 0.65$), and Industrial (moderated Gini $\approx 0.35 - 0.40$).
-* **Calibrated Ether Formulation**:
-  $$G^*(k_{\text{pc}}) = G_{\text{forager}} + \Delta G_{\text{agr}} \cdot \exp\left( -\frac{\left(\ln\left(\frac{k_{\text{pc}} + 10.0}{k_{\text{agr}} + 10.0}\right)\right)^2}{2 \sigma_k^2} \right) + \Delta G_{\text{ind}} \cdot \frac{k_{\text{pc}}^2}{k_{\text{pc}}^2 + k_{\text{ind}}^2}$$
-* **Parameters & Physical Units**:
-  * $G^*$: Target equilibrium Gini coefficient [dimensionless, $0.0 - 1.0$].
-  * $k_{\text{pc}}$: Physical capital stock per person [$\text{kg/capita}$].
-  * $G_{\text{forager}} = 0.25$: Baseline egalitarian foraging band Gini (Borgerhoff Mulder et al. 2009).
-  * $\Delta G_{\text{agr}} = 0.40$: Maximum agrarian surplus extraction surge ($0.25 + 0.40 = 0.65$).
-  * $k_{\text{agr}} = 280.0\text{ kg/capita}$: Modal capital density of traditional agrarian surplus extraction.
-  * $\sigma_k = 1.25$: Dimensionless log-dispersion parameter.
-  * $\Delta G_{\text{ind}} = 0.13$: Modern industrial return offset ($0.25 + 0.13 = 0.38$).
-  * $k_{\text{ind}} = 2500.0\text{ kg/capita}$: Half-saturation scale of industrial capital.
-* **Justification for Deviation**:
-  * Replaces discrete stage jumps with a single $C^\infty$ continuous function of physical capital per capita $k_{\text{pc}}$, eliminating step-function discontinuities while replicating empirical Gini distributions from hunter-gatherers to modern states.
-* **Empirical Validation**:
-  * Milanovic et al. (2011); Borgerhoff Mulder et al. (2009); Scheidel (2017).
-
----
-
-### Entry 14: Kümmel-Ayres-Warr Exergy Transducer Efficiency Parameterization
-* **Subsystem**: `KummelAyresExergyEngine.java`
-* **Canonical Literature**:
-  * Ayres, R. U., & Warr, B. (2005). *Accounting for growth: the role of physical work*. Structural Change and Economic Dynamics, 16(2), 181–209.
-  * Kümmel, R. (2011). *The Second Law of Economics: Energy, Entropy, and the Origins of Wealth*. Springer.
-* **Canonical Published Formulation**:
-  * Ayres & Warr use historical empirical time-series tables for thermodynamic conversion efficiency $\eta(t)$ across national economies.
-* **Calibrated Ether Formulation**:
-  $$\eta_{\text{exergy}}(k_{\text{pc}}) = \eta_0 + (\eta_{\max} - \eta_0) \cdot \tanh\left(\frac{k_{\text{pc}}}{k_{\text{transducer}}}\right)$$
-* **Parameters & Physical Units**:
-  * $\eta_{\text{exergy}}$: Second-law conversion efficiency of raw energy to useful work [dimensionless, $0.0 - 1.0$].
-  * $\eta_0 = 0.05$: Efficiency of open wood fire and somatic human/animal muscle ($5\%$).
-  * $\eta_{\max} = 0.45$: Carnot/second-law ceiling for modern combined-cycle and electric grids ($45\%$).
-  * $k_{\text{pc}}$: Machinery capital density [$\text{kg/capita}$].
-  * $k_{\text{transducer}} = 2500.0\text{ kg/capita}$: Characteristic physical mass scale of precision heat engines and turbines.
-* **Justification for Deviation**:
-  * Replaces empirical calendar time-series tables with a continuous physical function of precision machinery mass $k_{\text{pc}}$, preserving thermodynamic bounds across counterfactual and prospective scenarios.
-* **Empirical Validation**:
-  * Ayres & Warr (2005, 2009); Kümmel (2011); Smil (2017).
-
----
-
-### Entry 15: Hotelling Chalcolithic Smelting Envelope
+### Entry 13: Hotelling Chalcolithic Smelting Envelope
 * **Subsystem**: `HotellingResourceDepletionEngine.java`
 * **Canonical Literature**:
   * Hotelling, H. (1931). *The Economics of Exhaustible Resources*. Journal of Political Economy, 39(2), 137–175.
@@ -396,7 +348,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 16: Shannon-Brillouin Physical Carrier Bandwidth
+### Entry 14: Shannon-Brillouin Physical Carrier Bandwidth
 * **Subsystem**: `InformationEntropyEngine.java`
 * **Canonical Literature**:
   * Shannon, C. E. (1948). *A Mathematical Theory of Communication*. Bell System Technical Journal, 27(3), 379–423.
@@ -419,7 +371,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 17: Turchin SDT Spatial Tensor Normalization
+### Entry 15: Turchin SDT Spatial Tensor Normalization
 * **Subsystem**: `TurchinGoldstoneSDTEngine.java`, `SimulationMetricsAggregator.java`
 * **Canonical Literature**:
   * Turchin, P. (2016). *Ages of Discord: A Structural-Demographic Analysis of American Polity*. Beresta Books.
@@ -447,7 +399,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 18: USLE Topsoil Erosion Agrarian Ard Activation
+### Entry 16: USLE Topsoil Erosion Agrarian Ard Activation
 * **Subsystem**: `PedologyKernel.java`
 * **Canonical Literature**:
   * Montgomery, D. R. (2007). *Soil erosion and agricultural sustainability*. PNAS, 104(33), 13268–13272.
@@ -468,7 +420,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 19: Krugman Core-Periphery Cellular Capital & Friction Dynamics
+### Entry 17: Krugman Core-Periphery Cellular Capital & Friction Dynamics
 * **Subsystem**: `KrugmanCorePeripheryEngine.java`
 * **Canonical Literature**:
   * Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483–499.
@@ -490,7 +442,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 20: Areal Pollution Concentration Normalization & World3 Industrial Domain Scope
+### Entry 18: Areal Pollution Concentration Normalization & World3 Industrial Domain Scope
 * **Subsystems**: `EntropicMetalDissipationEngine.java`, `World3CouplingEngine.java`, `InfrastructureEnergyEngine.java`
 * **Canonical Literature**:
   * Bihouix, P. (2014). *L'Âge des low tech: Vers une civilisation techniquement soutenable*. Éditions du Seuil.
@@ -510,7 +462,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 21: Ricardo Differential Land Rent & Margin Pressure
+### Entry 19: Ricardo Differential Land Rent & Margin Pressure
 * **Subsystem**: `RicardoDifferentialLandRentEngine.java`
 * **Canonical Literature**:
   * Ricardo, D. (1817). *On the Principles of Political Economy and Taxation*. John Murray.
@@ -532,7 +484,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 22: Lewis Dual-Sector Structural Transformation & Turning Point
+### Entry 20: Lewis Dual-Sector Structural Transformation & Turning Point
 * **Subsystem**: `LewisDualSectorTurningPointEngine.java`
 * **Canonical Literature**:
   * Lewis, W. A. (1954). *Economic Development with Unlimited Supplies of Labour*. The Manchester School, 22(2), 139–191.
@@ -554,7 +506,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 23: Kondratiev-Schumpeter Long Wave Cycles & Creative Destruction
+### Entry 21: Kondratiev-Schumpeter Long Wave Cycles & Creative Destruction
 * **Subsystem**: `KondratievSchumpeterLongWaveEngine.java`
 * **Canonical Literature**:
   * Kondratiev, N. D. (1925). *The Major Economic Cycles*. Voprosy Konyunktury, 1(1), 28–79.
@@ -577,7 +529,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 24: Pomeranz Great Divergence Coal-Water Proximity & Transatlantic Ghost Acreage Relief
+### Entry 22: Pomeranz Great Divergence Coal-Water Proximity & Transatlantic Ghost Acreage Relief
 * **Subsystem**: `PomeranzGreatDivergenceEngine.java`
 * **Canonical Literature**:
   * Pomeranz, K. (2000). *The Great Divergence: China, Europe, and the Making of the Modern World Economy*. Princeton University Press.
@@ -601,69 +553,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 25: Bueno de Mesquita Warfare Escalation & Continuous Lanchester Parity
-* **Subsystem**: `WarDiplomacyEngine.java`
-* **Canonical Literature**:
-  * Bueno de Mesquita, B. (1981). *The War Trap*. Yale University Press.
-  * Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Co.
-* **Canonical Published Formulation**:
-  * Expected utility of war decision: $E(U) = P_{\text{win}} U(\text{win}) + (1 - P_{\text{win}}) U(\text{loss}) - C_{\text{cost}}$.
-* **Calibrated Ether Formulation**:
-  * Continuous $C^1$ escalation probability replacing discrete threshold cliffs:
-    $$\mathcal{P}_{\text{escalate}} = \frac{1}{1 + \exp\left(-\frac{\text{warDesire}}{0.12}\right)}$$
-    War declaration occurs when $\mathcal{P}_{\text{escalate}} > 0.50$, accompanied by continuous affinity degradation $\Delta \text{Affinity} = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}})$ and Lanchester physical ordnance parity $\mathcal{P}_{\text{conquest}} > 0.50$.
-* **Parameters & Physical Units**:
-  * $s_{\text{desire}} = 0.12$: Characteristic scale parameter for diplomatic crisis escalation.
-  * Neutral war desire midpoint $x_0 = 0.0$.
-* **Justification for Deviation**:
-  * Eliminates arbitrary step cliff `warDesire > 0.30` and discrete `affinity - 10.0` shocks, providing smooth $C^1$ diplomatic crisis dynamics under empirical stress.
-* **Empirical Validation**:
-  * Correlates of War (COW) Project; Bueno de Mesquita (1985).
-
----
-
-### Entry 26: Von Thünen Agricultural Rings & Continuous Transport Radius Expansion
-* **Subsystem**: `VonThunenAgriculturalRingsEngine.java`
-* **Canonical Literature**:
-  * Von Thünen, J. H. (1826). *Der isolirte Staat in Beziehung auf Landwirthschaft und Nationalökonomie*. Hamburg.
-  * Bairoch, P. (1988). *Cities and Economic Development: From the Dawn of History to the Present*. University of Chicago Press.
-* **Canonical Published Formulation**:
-  * Concentric agrarian zones governed by bid rent: $R = Y(p - c) - Y F d$, with city grain hinterland constrained by overland transport friction.
-* **Calibrated Ether Formulation**:
-  * Continuous $C^1$ grain hinterland population capacity scaling smoothly with physical transport capital density $k_{\text{pc}} = K / N$:
-    $$N_{\max,\text{city}} = 25\,000 + \frac{55\,000}{1 + \exp\left(-\frac{k_{\text{pc}} - 250}{75}\right)} + 5\,000 \cdot \operatorname{softplus}\left(\frac{k_{\text{pc}} - 800}{100}\right)$$
-* **Parameters & Physical Units**:
-  * Archaic pedestrian hinterland ceiling: $25\,000$ inhabitants.
-  * Paved road & canal expansion: $+55\,000$ inhabitants ($k_0 = 250\text{ kg/cap}, s = 75\text{ kg/cap}$).
-  * Industrial railway surplus: $+5\,000\text{/softplus unit}$ ($k_1 = 800\text{ kg/cap}$).
-* **Justification for Deviation**:
-  * Replaces discrete piecewise demographic caps ($25\text{k} \to 80\text{k}$) with continuous $C^1$ transport infrastructure expansion.
-* **Empirical Validation**:
-  * Bairoch (1988); De Vries (1984); HYDE 3.4 urban cluster distributions.
-
----
-
-### Entry 27: Continuous Resource Scarcity Substitution & Induced Mechanization
-* **Subsystem**: `TechTreeEngine.java`
-* **Canonical Literature**:
-  * Allen, R. C. (2009). *The British Industrial Revolution in Global Perspective*. Cambridge University Press.
-  * Clark, G. (2007). *A Farewell to Alms: A Brief Economic History of the World*. Princeton University Press.
-  * Wrigley, E. A. (2010). *Energy and the English Industrial Revolution*. Cambridge University Press.
-* **Canonical Published Formulation**:
-  * High-wage, cheap-energy induced technological change ($w/r$ factor price ratios triggering machine substitution).
-* **Calibrated Ether Formulation**:
-  * Continuous $C^1$ Fermi-Dirac technological adoption weights and Michaelis-Menten resource scarcity multipliers replacing discrete capital tiers:
-    $$w_i(k_{\text{pc}}) = \frac{1}{1 + \exp\left(-\frac{k_{\text{pc}} - k_{0,i}}{s_i}\right)}, \quad \mathcal{M}(R_i) = \frac{R_i}{R_i + K_{m,i}}$$
-* **Parameters & Physical Units**:
-  * $k_0 \in \{120, 450, 1500\}\text{ kg/capita}$: Physical capital transition midpoints.
-* **Justification for Deviation**:
-  * Eliminates arbitrary piecewise `if (kpc < 100)` cliffs; substitutes resources continuously based on physical availability and embodied capital.
-* **Empirical Validation**:
-  * Allen (2009); Maddison Project 2020.
-
----
-
-## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 27)
+## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 24)
 
 | # | Category | Subsystem | Canonical Literature | Calibrated Ether Formulation | Specific Adaptation / Material Calibration |
 |---|---|---|---|---|---|
@@ -691,6 +581,3 @@ The foundational purpose of this registry is **epistemic transparency and algori
 | **22** | Tier 2 | Lewis Dual-Sector Model | Lewis (1954), Ranis & Fei (1961) | $\text{TurningPoint} = \sigma(k_{\text{pc}}, 250, 40) \cdot \sigma(\text{Trade}, 20, 5)$ | Continuous transition from surplus labor phase to induced capital-deepening mechanization |
 | **23** | Tier 2 | Kondratiev Long Wave | Kondratiev (1925), Schumpeter (1939) | $\phi(t) = \sin(2\pi(t-1780)/52)$, creative destruction trough | Infrastructure cycle coupled to physical capital scrapping and scrap metal recovery |
 | **24** | Tier 2 | Pomeranz Great Divergence | Pomeranz (2000), Allen (2009), Wrigley | $\mathcal{P}_{\text{div}} = \text{CoalProx} \cdot (1 + 0.8 \cdot \text{GhostAcreage})$ | Energy transport proximity & transoceanic land relief driving takeoff vs organic involution |
-| **25** | Tier 2 | Bueno de Mesquita War Escalation | Bueno de Mesquita (1981), Lanchester (1916) | $\mathcal{P}_{\text{escalate}} = \sigma(\text{warDesire}, 0, 0.12)$, $\mathcal{P}_{\text{conquest}} > 0.50$ | Replaces discrete warDesire cliffs with continuous $C^1$ sigmoid escalation & Lanchester parity |
-| **26** | Tier 2 | Von Thünen Grain Transport Radius | Von Thünen (1826), Bairoch (1988) | $N_{\max} = 25\text{k} + 55\text{k}\sigma(k, 250, 75) + 5\text{k}\text{sp}(k-800)$ | Replaces piecewise 25k/80k city caps with continuous $C^1$ transport infrastructure expansion |
-| **27** | Tier 2 | Resource Scarcity Substitution | Allen (2009), Clark (2007), Wrigley (2010) | $\sum w_i(k_{\text{pc}}) \mathcal{P}_i(R_i)$, Fermi-Dirac weights | Smooth continuous mineral energy substitution replacing discrete capital step cliffs |

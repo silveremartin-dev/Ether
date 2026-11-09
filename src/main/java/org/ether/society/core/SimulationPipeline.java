@@ -152,6 +152,7 @@ public class SimulationPipeline {
                 cachedNativeArena.tickUrban(dtY);
                 cachedNativeArena.tickFlux(dtSec);
                 cachedNativeArena.tickCulture(dtY, cultureKernel.getDiffusionRate(), cultureKernel.getForcingRate(), cultureKernel.getMutationRate(), sSeed, tickCount);
+                cachedNativeArena.tickTier2(dtY);
                 cachedNativeArena.syncToJavaBuffers(worldBuffer, agentBuffer);
                 executedNative = true;
             } catch (Throwable t) {
@@ -166,10 +167,6 @@ public class SimulationPipeline {
             urbanKernel.tick(worldBuffer, dtSlow);
             fluxKernel.tick(worldBuffer, dtSlow);
             cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
-        }
-
-        if (engine != null) {
-            engine.syncBufferToCells();
         }
 
         profiler.endPhase("3_DemographicsAndCulture");
@@ -238,14 +235,10 @@ public class SimulationPipeline {
         // Pass 3: Anthropogenic Inhabited Cliodynamics & JIT-Compiled Scenario Theories Fused Pass
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
         if (runTier2 && !populatedCells.isEmpty()) {
-            executeFusedAnthropogenicPass(engine, populatedCells, dtYears, dtMonthly, activeScenario);
+            executeFusedAnthropogenicPass(engine, populatedCells, dtYears, dtMonthly, activeScenario, executedNative);
 
             // Dynamic Procedural Engine Plugins
             ProceduralEngineRegistry.processPlugins(populatedCells, dtMonthly);
-        }
-
-        if (engine != null) {
-            engine.syncCellsToBuffer();
         }
 
         profiler.endPhase("4_ProceduralEngines");
@@ -320,7 +313,12 @@ public class SimulationPipeline {
     /**
      * Pass 3: Human Demographics, Power Grid, Metallurgy, Technology & Active Cliodynamic Theories (Populated Domain).
      */
-    private void executeFusedAnthropogenicPass(H3SimulationEngine engine, List<H3Cell> populatedCells, double dtYears, double dtMonthly, Scenario scenario) {
+    private void executeFusedAnthropogenicPass(H3SimulationEngine engine,
+                                               List<H3Cell> populatedCells,
+                                               double dtYears,
+                                               double dtMonthly,
+                                               Scenario scenario,
+                                               boolean executedNative) {
         // Step 3.1: Physiological & Bioclimatic Survival
         WetBulbTemperatureEngine.processWetBulbHyperthermia(populatedCells, dtYears);
         PressurizedHabitatEngine.processPressurizedHabitats(populatedCells, scenario != null ? scenario.getPlanetPreset() : null, dtYears);
@@ -359,7 +357,7 @@ public class SimulationPipeline {
         if (isTypeBEngineEnabled(scenario, "TradeNetworkEngine")) {
             tradeRoutes = TradeNetworkEngine.generateTradeNetworks(populatedCells, 1.0, dtYears);
         }
-        TechTreeEngine.processTechnologyDiffusion(populatedCells, tradeRoutes, dtYears);
+        PhysicalCapitalDiffusionEngine.processCapitalDiffusion(populatedCells, tradeRoutes, dtYears);
         if (isTypeBEngineEnabled(scenario, "LanguageLinguisticEngine")) {
             LanguageLinguisticEngine.processLinguisticDrift(populatedCells, tradeRoutes);
         }
@@ -381,7 +379,9 @@ public class SimulationPipeline {
         InfrastructureInertiaEngine.processInfrastructureInertia(populatedCells, dtMonthly);
         EntropicMetalDissipationEngine.processEntropicDissipation(populatedCells, dtMonthly);
 
-        // Step 3.6 & 3.7: JIT-Compiled Kernel Fusion & Active Type B Cliodynamic Engines
-        typeBPassRunner.executeActiveTypeBEngines(populatedCells, dtYears, dtMonthly, scenario, compiledKernel);
+        // Step 3.6: JIT-Compiled Kernel Fusion & Active Type B Cliodynamic Engines (DoD only)
+        if (!executedNative && engine != null && engine.getWorldBuffer() != null) {
+            typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, scenario, compiledKernel);
+        }
     }
 }

@@ -150,9 +150,9 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      */
     public static double computeGrossWorldProduct(long pop, double phiExergy) {
         // Canonical Solow-Swan / Maddison physical capital-power scaling:
-        // Subsistence baseline ~100 Int$/capita at somatic floor, scaling smoothly with exergy
+        // Subsistence baseline ~70 Int$/capita at somatic floor, scaling smoothly with exergy
         double pNorm = Math.max(0.85, phiExergy) / 0.85;
-        double gdpPerCap = 100.0 * Math.pow(pNorm, 3.5);
+        double gdpPerCap = 70.0 * Math.pow(pNorm, 3.5);
         return ((double) pop * gdpPerCap) / 1e9;
     }
 
@@ -166,35 +166,12 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      */
     public static double computePrimaryEnergyEJ(long pop, double phiExergy) {
         double pNorm = Math.max(0.85, phiExergy) / 0.85;
-        double gigajoulesPerCap = 15.0 * Math.pow(pNorm, 2.2);
+        // Smil (2017) Energy Transitions: Global per-capita primary energy scales from ~8.5 GJ (Antiquity) to ~30.5 GJ (1914)
+        double gigajoulesPerCap = 4.4 * Math.pow(pNorm, 2.2);
         return ((double) pop * gigajoulesPerCap * 1e9) / 1e18;
     }
 
-    /**
-     * Urbanization Rate (%):
-     * Follows Bairoch (1988) and De Vries (1984) canonical logistic agglomeration.
-     *
-     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
-     * @return urbanization rate in $[0.0, 90.0]\%$
-     */
-    public static double computeUrbanizationRate(double phiExergy) {
-        double activation = Math.tanh(Math.max(0.0, phiExergy - 0.95) * 5.0);
-        double logisticUrban = 85.0 / (1.0 + Math.exp(-(phiExergy - 1.65) / 0.30));
-        return Math.clamp(activation * logisticUrban, 0.0, 90.0);
-    }
 
-    /**
-     * Literacy Rate (%):
-     * Follows Buringh &amp; van Zanden (2009) and Graff (1987) canonical logistic knowledge transmission.
-     *
-     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
-     * @return adult literacy rate in $[0.0, 99.0]\%$
-     */
-    public static double computeLiteracyRate(double phiExergy) {
-        double activation = Math.tanh(Math.max(0.0, phiExergy - 0.95) * 5.0);
-        double logisticLiteracy = 98.0 / (1.0 + Math.exp(-(phiExergy - 1.60) / 0.28));
-        return Math.clamp(activation * logisticLiteracy, 0.0, 99.0);
-    }
 
     /**
      * Evaluates state coinage precious metal purity (%) based on Butcher &amp; Ponting (2014)
@@ -275,24 +252,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         return Math.clamp(10.0 + 85.0 * stress * stateActivation, 0.0, 100.0);
     }
 
-    /**
-     * Evaluates the Milanovic-Lenski-Kuznets Gini inequality coefficient from $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
-     * (Lenski 1966; Milanovic, Lindert &amp; Williamson 2011; Kuznets 1955).
-     *
-     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
-     * @return Gini coefficient in $[0.18, 0.75]$
-     */
-    public static double computeGiniInequality(double phiExergy) {
-        double stateActivation = Math.tanh(Math.max(0.0, phiExergy - 0.90) * 2.2);
-        double agrarianGini = 0.23 + 0.25 * stateActivation;
-        return Math.clamp(agrarianGini, 0.18, 0.75);
-    }
 
-    public static double computeSovereignDebtBurden(double phiExergy) {
-        double trade = computeGlobalTradeVolume(phiExergy);
-        double lit = computeLiteracyRate(phiExergy);
-        return computeSovereignDebtBurden(trade, lit, 70.0, phiExergy);
-    }
 
     /**
      * Endogenous Institutional Sovereign Debt Emergence (Reinhart &amp; Rogoff 2009; Dickson 1967; Stasavage 2011).
@@ -387,7 +347,7 @@ public final class CliodynamicAnalyticalFormulasCatalog {
         // Pre-industrial and early modern courier relay velocity (Scheidel 2014 ORBIS; Standage 1998)
         double courierSpeed = 35.0 + 45.0 * Math.tanh(Math.max(0.0, phiExergy - 0.90) * 1.5);
         // Electromagnetic telecommunication emergence requiring modern industrial power grid (phi >= 3.5)
-        double telecomSpeed = 1.0e7 / (1.0 + Math.exp(-(phiExergy - 3.80) / 0.25));
+        double telecomSpeed = 1.0e7 / (1.0 + Math.exp(-(phiExergy - 3.80) / 0.12));
         return Math.clamp(courierSpeed + telecomSpeed, 4.0, 3.0e8);
     }
 

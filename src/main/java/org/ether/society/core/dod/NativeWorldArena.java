@@ -415,14 +415,26 @@ public class NativeWorldArena implements AutoCloseable {
         }
 
         /**
-         * Executes the complete unified 5-kernel simulation cycle in native Rust with 0 GC overhead.
+         * Executes universal Tier 2 cliodynamics, SDT, Pomeranz divergence, and sanitation tick via native Rust library.
+         */
+        public void tickTier2(float dtYears) {
+            if (NativeRustBridge.tier2TickHandle == null) return;
+            try {
+                NativeRustBridge.tier2TickHandle.invokeExact(worldStructSeg, dtYears);
+            } catch (Throwable t) {
+                throw new RuntimeException("Failed native tier2 tick", t);
+            }
+        }
+
+        /**
+         * Executes the complete unified 6-kernel simulation cycle in native Rust with 0 GC overhead.
          */
         public void stepUnifiedCycle(float dtDays) {
             stepUnifiedCycle(dtDays, 42L, 1L);
         }
 
         /**
-         * Executes the complete unified 5-kernel simulation cycle in native Rust with explicit scenario seed.
+         * Executes the complete unified 6-kernel simulation cycle in native Rust with explicit scenario seed.
          */
         public void stepUnifiedCycle(float dtDays, long seed, long tickCounter) {
             float dtYears = dtDays / 365.25f;
@@ -433,6 +445,7 @@ public class NativeWorldArena implements AutoCloseable {
             tickUrban(dtYears);
             tickFlux(dtSeconds);
             tickCulture(dtYears, 0.05f, 0.02f, 0.015f, seed, tickCounter);
+            tickTier2(dtYears);
         }
 
         @Override

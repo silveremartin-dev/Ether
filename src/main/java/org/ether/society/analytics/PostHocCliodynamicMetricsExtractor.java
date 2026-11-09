@@ -99,25 +99,7 @@ public final class PostHocCliodynamicMetricsExtractor {
         return CliodynamicAnalyticalFormulasCatalog.computePrimaryEnergyEJ(pop, tech);
     }
 
-    /**
-     * Calculates the global urbanization rate (fraction of population residing in agglomerations &gt; 5000 hab).
-     *
-     * @param tech emergent technological progress index
-     * @return urbanization rate in percent (%)
-     */
-    public static double computeUrbanizationRate(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeUrbanizationRate(tech);
-    }
 
-    /**
-     * Calculates adult population literacy rate.
-     *
-     * @param tech emergent technological progress index
-     * @return literacy rate in percent (%)
-     */
-    public static double computeLiteracyRate(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeLiteracyRate(tech);
-    }
 
     /**
      * Calculates silver/gold currency debasement index (Turchin &amp; Nefedov 2009).
@@ -184,25 +166,7 @@ public final class PostHocCliodynamicMetricsExtractor {
         return CliodynamicAnalyticalFormulasCatalog.computeSociopoliticalInstability(tech, stability);
     }
 
-    /**
-     * Calculates macroeconomic Gini inequality coefficient across the demographic network.
-     *
-     * @param tech emergent technological progress index
-     * @return Gini coefficient [0.0..1.0]
-     */
-    public static double computeGiniInequality(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeGiniInequality(tech);
-    }
 
-    /**
-     * Calculates national sovereign debt burden as percentage of annual output.
-     *
-     * @param tech emergent technological progress index
-     * @return sovereign debt percentage (% of GWP)
-     */
-    public static double computeSovereignDebtBurden(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeSovereignDebtBurden(tech);
-    }
 
     /**
      * Calculates multi-variable coupled sovereign debt burden based on fiscal apparatus, trade volume, and literacy.

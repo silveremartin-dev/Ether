@@ -6,6 +6,7 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.ProceduralEnginePlugin;
 import org.ether.society.engines.tier2.historical.LenskiPureEngine;
@@ -19,10 +20,10 @@ import java.util.List;
  *
  * <p>Implements Gerhard Lenski's ecological-evolutionary theory of societal stratification
  * (Lenski 1966, <i>Power and Privilege: A Theory of Social Stratification</i>;
- * Milanovic, Lindert &amp; Williamson 2011):</p>
+ * Milanovic, Lindert &amp; Williamson 2011; Piketty 2014):</p>
  * <ul>
- *   <li>Economic inequality (Gini) is fundamentally shaped by the societal mode of production and capital density:
- *       low in foraging bands, peaking in agrarian empires, and contracting/stabilizing in industrial societies.</li>
+ *   <li>Economic inequality (Gini) is fundamentally shaped by the societal mode of production,
+ *       surplus above subsistence, and the Piketty $r > g$ dynamic extraction ratio.</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
@@ -40,21 +41,28 @@ public class LenskiEcologicalEvolutionaryEngine implements ProceduralEnginePlugi
 
     @Override
     public String getDescription() {
-        return "Models Gerhard Lenski (1966) ecological-evolutionary inequality curve: Gini index peaks in agrarian regimes and stabilizes under industrial capital.";
+        return "Models Gerhard Lenski & Milanovic (2011) / Piketty (2014) dynamic inequality possibility frontier and capital extraction ODE.";
     }
 
     @Override
     public String getEquationsTooltip() {
         return """
-               [Lenski Ecological-Evolutionary Stratification (Lenski 1966, Milanovic 2011)]
-               • Gini Curve: G*(k_pc) = G_forager + ΔG_agr · exp(-[ln((k_pc+10)/(k_agr+10))]^2 / (2σ^2)) + ΔG_ind · k_pc^2/(k_pc^2 + k_ind^2)
-               Ref: G. Lenski (1966), "Power and Privilege", McGraw-Hill.
+               [Milanovic-Piketty-Lenski Inequality Frontier (IPF / ODE)]
+               • Max Feasible Gini:  G_max(y) = 1 - s_min / y (s_min = 15 kg/cap)
+               • Extraction Ratio:   μ = μ_0 + Δμ · σ(r - g) · σ(Complexity)
+               • Dynamic Gini ODE:   dG/dt = λ · (μ · G_max - G)
+               Ref: B. Milanovic (2011) "Pre-Industrial Inequality"; T. Piketty (2014) "Capital in the 21st Century"
                """;
     }
 
     @Override
     public String getCategory() {
         return "Tier 2: Sociological Stratification";
+    }
+
+    @Override
+    public void processBuffer(WorldBuffer buffer, double deltaYears) {
+        LenskiPureEngine.processLenskiPikettyInequality(buffer, deltaYears);
     }
 
     @Override

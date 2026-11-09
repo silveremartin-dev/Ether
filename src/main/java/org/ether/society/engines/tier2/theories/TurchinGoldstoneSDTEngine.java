@@ -6,6 +6,7 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.ProceduralEnginePlugin;
 import org.slf4j.Logger;
@@ -14,25 +15,12 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Structural-Demographic Theory (SDT) & Political Stress Index Engine (Jack Goldstone & Peter Turchin).
+ * Structural-Demographic Theory (SDT) &amp; Political Stress Index Engine (Jack Goldstone &amp; Peter Turchin).
  *
  * <p>Models the secular cycles of socio-political instability, elite overproduction, and state breakdown:</p>
  * <pre>
  *   PSI = MMP · EMP · SF
  * </pre>
- * where:
- * <ul>
- *   <li><b>MMP (Mass Mobilization Potential)</b>: Driven by falling real wages, youth bulges, and urban immiseration.
- *       $$\text{MMP} = \frac{w_0}{w_{\text{real}}} \cdot \left(\frac{N_{\text{youth}}}{N_{\text{total}}}\right) \cdot U_{\text{urban}}$$
- *   </li>
- *   <li><b>EMP (Elite Mobilization Potential)</b>: Driven by elite overproduction and intra-elite competition for fixed state offices.
- *       $$\text{EMP} = \left(\frac{N_{\text{elites}}}{N_{\text{aspirants}}}\right) \cdot \text{Gini}_{\text{elite}} \cdot \text{Factionalism}$$
- *   </li>
- *   <li><b>SF (State Fiscal Distress)</b>: Driven by escalating sovereign debt and shrinking tax revenues.
- *       $$\text{SF} = \frac{\text{Debt}}{\text{Annual Revenue}} \cdot \left(1 - \text{Legitimacy}\right)$$
- *   </li>
- *   <li><b>Crisis Threshold</b>: When $\text{PSI} > \text{PSI}_{\text{critical}}$, state collapses into civil war, fiscal bankruptcy, or peasant revolts.</li>
- * </ul>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -40,31 +28,16 @@ import java.util.List;
 public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(TurchinGoldstoneSDTEngine.class);
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "Turchin-Goldstone Structural-Demographic Theory (SDT)";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Models secular political instability cycles, elite overproduction, mass immiseration, and state fiscal breakdown.";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
@@ -79,27 +52,64 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Structural Cliodynamics";
     }
 
+    @Override
+    public void processBuffer(WorldBuffer buffer, double deltaYears) {
+        processSDTDynamics(buffer, deltaYears);
+    }
+
     /**
-     * Process.
+     * Executes Turchin-Goldstone Structural-Demographic Theory directly over WorldBuffer.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param buffer contiguous world buffer
+     * @param deltaYears time step fraction in years
      */
+    public static void processSDTDynamics(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || deltaYears <= 0.0) return;
+        int n = buffer.getCapacity();
+        float[] popArr = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] giniArr = buffer.getGiniIndex();
+        float[] foodArr = buffer.getFoodResource();
+        float[] compArr = buffer.getInstitutionalComplexity();
+
+        for (int i = 0; i < n; i++) {
+            float p = popArr[i];
+            if (p < 5.0f) continue;
+            float capital = (capArr != null) ? capArr[i] : 10.0f;
+            float gini = (giniArr != null) ? giniArr[i] : 0.35f;
+            float food = (foodArr != null) ? foodArr[i] : 500.0f;
+
+            double areaKm2 = 36.13;
+            double density = (p / 0.06) / areaKm2;
+            double foodPerCap = food / Math.max(1.0, (p / 0.06));
+            double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
+            double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));
+            double kPerCap = capital / Math.max(1.0, (p / 0.06));
+            double sf = Math.max(0.2, 0.4 * (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(kPerCap / 800.0));
+            double psi = mmp * emp * sf;
+
+            double psiStress = (psi * psi) / (25.0 + psi * psi);
+            double unrestDamage = capital * 0.08 * psiStress * deltaYears;
+            if (capArr != null) {
+                capArr[i] = (float) Math.max(5.0, capital - unrestDamage);
+            }
+            if (giniArr != null) {
+                double purgeIntensity = Math.pow(psi, 3.0) / (200.0 + Math.pow(psi, 3.0));
+                giniArr[i] = (float) Math.max(0.25, gini - (0.04 * purgeIntensity * (gini - 0.25) * deltaYears));
+            }
+            if (compArr != null) {
+                compArr[i] = (float) Math.max(0.0, compArr[i] * (1.0 - 0.05 * psiStress * deltaYears));
+            }
+        }
+    }
+
     @Override
     public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty()) return;
 
         for (H3Cell cell : cells) {
@@ -111,37 +121,24 @@ public class TurchinGoldstoneSDTEngine implements ProceduralEnginePlugin {
             double capital = cell.getResourceCapitalOr(10.0);
             double food = cell.getFoodResourceOr(500.0);
 
-            // 1. Mass Mobilization Potential: food scarcity + demographic density (in hab/km²)
             double areaKm2 = cell.getEffectiveSurfaceAreaKm2();
             double density = pop / Math.max(0.1, areaKm2);
             double foodPerCap = food / Math.max(1.0, pop);
             double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
-
-            // 2. Elite Mobilization Potential: high capital inequality (Gini > 0.45)
             double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));
-
-            // 3. State Fiscal Distress (ratio of administrative overhead to resource capacity)
             double kPerCap = capital / Math.max(1.0, pop);
             double sf = Math.max(0.2, 0.4 * (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(kPerCap / 800.0));
-
             double psi = mmp * emp * sf;
 
-            // Continuous political instability capital attrition and friction dynamics (Turchin 2016 "Ages of Discord"):
-            // Destruction scales continuously with PSI^2 without artificial threshold jumps
-            double psiStress = (psi * psi) / (25.0 + psi * psi); // Smooth saturation normalized at PSI=5.0
+            double psiStress = (psi * psi) / (25.0 + psi * psi);
             double unrestDamage = capital * 0.08 * psiStress * deltaYears;
             cell.setResourceCapital(Math.max(5.0, capital - unrestDamage));
 
-            // Continuous local friction increase from civil breakdown
             double friction = cell.getMovementFrictionOr(1.0);
             cell.setMovementFriction(Math.min(10.0, friction + (0.15 * psiStress * deltaYears)));
 
-            // Continuous elite overproduction fortune compression / Gini reset (Turchin & Nefedov 2009):
             double purgeIntensity = Math.pow(psi, 3.0) / (200.0 + Math.pow(psi, 3.0));
             cell.setGiniIndex(Math.max(0.25, gini - (0.04 * purgeIntensity * (gini - 0.25) * deltaYears)));
         }
     }
 }
-
-
-

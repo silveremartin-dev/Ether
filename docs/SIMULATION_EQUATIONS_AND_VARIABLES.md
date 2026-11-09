@@ -956,17 +956,21 @@ with canonical parameters:
 
 #### 43. Kümmel-Ayres-Warr Biophysical Exergy Growth (`KummelAyresExergyEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
-* **Academic Literature Reference**: Kümmel, R. (1982). *The impact of energy on industrial growth*. Energy, 7(2), 189-203; Ayres, R. U., & Warr, B. (2005). *Accounting for growth: the role of physical work*. Structural Change and Economic Dynamics, 16(2), 181-209.
+* **Academic Literature Reference**: Kümmel, R. (1982). *The impact of energy on industrial growth*. Energy, 7(2), 189-203; Ayres, R. U., & Warr, B. (2005). *Accounting for growth: the role of physical work*. Structural Change and Economic Dynamics, 16(2), 181-209; Carnot, S. (1824).
 * **Governing Equations**:
-  $$Y = A \cdot K^\alpha L^\beta E^\gamma, \quad \alpha + \beta + \gamma = 1$$
-  $$\alpha = a_0 \frac{K}{Y}, \quad \beta = b_0 \frac{L}{Y}, \quad \gamma = 1 - \alpha - \beta$$
+  $$Y = A \cdot K^\alpha L^\beta E_{\text{useful}}^\gamma, \quad \alpha + \beta + \gamma = 1$$
+  $$E_{\text{useful}} = P_{\text{primary}} \cdot \eta_{\text{exergy}}(T_C, T_H, k_{\text{pc}})$$
+  $$\eta_{\text{exergy}} = \left(1 - \frac{T_C}{T_H}\right) \cdot \epsilon_{\text{recovery}}(k_{\text{pc}})$$
+  $$T_H = T_C + \Delta T_{\text{biomass}} + \Delta T_{\text{coal}} \cdot \sigma(\text{Coal}, 100, 30) + \Delta T_{\text{hydrocarbon}} \cdot \sigma(\text{Oil}+\text{Gas}, 100, 30)$$
+  $$\epsilon_{\text{recovery}}(k_{\text{pc}}) = 0.08 + 0.50 \cdot \sigma(k_{\text{pc}}; 1200, 400)$$
 * **Parameters & Physical Units**:
   * $Y$: Physical economic output [$\text{Geary-Khamis Int\$}$].
   * $K$: Productive physical capital stock [$\text{kg}$ or constant $\$$].
   * $L$: Labor input [$\text{worker-hours}$].
-  * $E$: Useful thermodynamic exergy work delivered by prime movers [$\text{Joules}$].
-  * $\alpha, \beta, \gamma$: Dynamic output elasticities governed by physical capital-exergy deepening.
-* **Computational Complexity**: $O(1)$ per economic polity.
+  * $E_{\text{useful}}$: Useful thermodynamic exergy work delivered by prime movers [$\text{Watts}$].
+  * $\eta_{\text{exergy}}$: Second-law conversion efficiency bounded by Carnot thermodynamic flame limit [$0.05 - 0.50$].
+  * $\alpha = 0.25, \beta = 0.25, \gamma = 0.50$: Physical exergy output elasticity (Ayres & Warr 2005).
+* **Computational Complexity**: $O(1)$ per cell / polity.
 
 #### 44. West-Bettencourt Urban Allometric Scaling (`WestBettencourtAllometryEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
@@ -1355,14 +1359,20 @@ with canonical parameters:
   * $C$: Degree of cultural development.
 * **Computational Complexity**: $O(1)$ per polity.
 
-#### 82. Gerhard Lenski Social Stratification Curve (`LenskiPureEngine`)
+#### 82. Gerhard Lenski Social Stratification & Milanovic-Piketty Dynamic Inequality (`LenskiPureEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Lenski, G. (1966). *Power and Privilege: A Theory of Social Stratification*. McGraw-Hill; Milanovic, B., et al. (2011).
+* **Academic Literature Reference**: Lenski, G. (1966). *Power and Privilege: A Theory of Social Stratification*. McGraw-Hill; Milanovic, B., et al. (2011). *Pre-Industrial Inequality*. The Economic Journal, 121(551), 255–272; Piketty, T. (2014). *Capital in the Twenty-First Century*.
 * **Governing Equations**:
-  $$G^*(k_{\text{pc}}) = 0.25 + 0.40 \exp\left( -\frac{\left(\ln\left(\frac{k_{\text{pc}}+10}{290}\right)\right)^2}{2 \cdot 1.25^2} \right) + 0.13 \frac{k_{\text{pc}}^2}{k_{\text{pc}}^2 + 2500^2}$$
+  $$G_{\max}(k_{\text{pc}}) = 1 - \frac{s_{\min}}{\max(s_{\min} + 1, k_{\text{pc}})}, \quad s_{\min} = 15.0\text{ kg/cap}$$
+  $$\frac{dG}{dt} = \lambda_{\text{accum}} \cdot \left[ \mu_{\text{extract}}(r - g, C) \cdot G_{\max}(k_{\text{pc}}) - G \right] - \delta_{\text{shock}} \cdot G$$
+  $$\mu_{\text{extract}} = 0.20 + 0.70 \cdot \sigma(r - g; 0, 0.02) \cdot \sigma(C; 0.25, 0.10)$$
 * **Parameters & Physical Units**:
-  * $G^*$: Equilibrium Gini coefficient [$0.25 - 0.65$].
-* **Computational Complexity**: $O(1)$ per society.
+  * $G$: Dynamic Lorenz Gini coefficient [$0.18 - 0.80$].
+  * $G_{\max}$: Maximum feasible inequality (Inequality Possibility Frontier, Milanovic 2011).
+  * $r - g$: Return on capital minus local economic growth rate (Piketty 2014).
+  * $C$: Institutional administrative complexity index [$0.0 - 1.0$].
+  * $\lambda_{\text{accum}} = 0.04\text{ yr}^{-1}$: Institutional capital adjustment speed.
+* **Computational Complexity**: $O(1)$ per cell / polity.
 
 #### 83. Marvin Harris Cultural Materialism (`CulturalMaterialismPureEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
@@ -1562,12 +1572,20 @@ with canonical parameters:
   $$\dot{x} = \sigma_{\text{lorenz}} (y - x), \quad \dot{y} = x (\rho - z) - y, \quad \dot{z} = x y - \beta z$$
 * **Computational Complexity**: $O(1)$ per node.
 
-#### 97. Spatial Capital Tooling Diffusion (`TechTreeEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Acemoglu, D. (2002). *Directed technical change*. The Review of Economic Studies, 69(4), 781-809.
+#### 97. Spatial Capital Tooling Diffusion & Induced Scarcity Substitution (`PhysicalCapitalDiffusionEngine`)
+* **Model Classification**: Tier 2 - Type B (Physical Capital Dynamic Engine)
+* **Academic Literature Reference**: Acemoglu, D. (2002). *Directed technical change*. The Review of Economic Studies, 69(4), 781-809; Allen, R. C. (2009). *The British Industrial Revolution in Global Perspective*. Cambridge University Press; Clark, G. (2007). *A Farewell to Alms*. Princeton University Press.
 * **Governing Equations**:
   $$\Delta K_{j \leftarrow i} = \kappa_{\text{trade}} \cdot N_j \cdot \frac{\max(0, k_{\text{pc}, i} - k_{\text{pc}, j})}{\max(1.0, 0.1 \cdot \text{Friction}_{ij})} \cdot \Delta t$$
-* **Computational Complexity**: $O(\text{active corridors})$.
+  $$\Delta k_{\text{induced}} = 5.0 \cdot \text{Scarcity}_{\text{organic}} \cdot \text{Potential}_{\text{substitute}} \cdot \Delta t$$
+  $$\text{Scarcity}_{\text{organic}} = \operatorname{clamp}\left(1.0 - \frac{B_{\text{wood}}}{0.15 \cdot N}, \; 0.0, \; 1.0\right)$$
+  $$\text{Potential}_{\text{substitute}} = w_{\text{metal}} \frac{M}{M + 15} + w_{\text{coal}} \frac{C}{C + 50} + w_{\text{hydro}} \frac{H}{H + 100}$$
+* **Parameters & Physical Units**:
+  * $k_{\text{pc}}$: Productive physical capital stock per capita [$\text{kg/person}$].
+  * $\mu_{ij}$: Trade corridor physical transport friction cost [dimensionless].
+  * $w_i(k_{\text{pc}})$: Continuous Fermi-Dirac technological adoption weights ($k_{0, \text{coal}} = 500\text{ kg/cap}, k_{0, \text{hydro}} = 2000\text{ kg/cap}$).
+  * Diagnostic era classification: maps physical power flux $P_{\text{watts}}/N$ directly to archetypes (Paleolithic $\le 100\text{ W}$, Neolithic $\ge 250\text{ W}$, Antiquity $\ge 600\text{ W}$, Medieval $\ge 1500\text{ W}$, Industrial $\ge 8000\text{ W}$) without state-level technology fluid.
+* **Computational Complexity**: $O(R)$ along active trade corridors and $O(1)$ per populated cell; executed in Pass 3.2.
 
 #### 98. Spatial Trade Gravity Corridors (`TradeNetworkEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
@@ -1627,13 +1645,15 @@ with canonical parameters:
 
 #### 103. Spatial Agrarian Concentric Rings & Urban Food Logistics (`VonThunenAgriculturalRingsEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: von Thünen, J. H. (1826). *Der isolirte Staat in Beziehung auf Landwirthschaft und Nationalökonomie*. Leopold; Chisholm, M. (1962). *Rural Settlement and Land Use*. Hutchinson.
+* **Academic Literature Reference**: von Thünen, J. H. (1826). *Der isolirte Staat in Beziehung auf Landwirthschaft und Nationalökonomie*. Leopold; Chisholm, M. (1962). *Rural Settlement and Land Use*. Hutchinson; Bairoch, P. (1988). *Cities and Economic Development*. University of Chicago Press.
 * **Governing Equations**:
   $$R_{\text{rent}}(d) = Y \cdot (P_{\text{market}} - C_{\text{production}}) - Y \cdot F_{\text{freight}} \cdot d$$
   $$S_{\text{export}} = \max\left(0, \text{Harvest} - N_{\text{rural}} \cdot \text{Req}_{\text{subsistence}}\right) \cdot \exp(-\lambda_{\text{trans}} \cdot d)$$
+  $$N_{\max,\text{city}}(k_{\text{pc}}) = 25\,000 + \frac{55\,000}{1 + \exp\left(-\frac{k_{\text{pc}} - 250}{75}\right)} + 5\,000 \cdot \operatorname{softplus}\left(\frac{k_{\text{pc}} - 800}{100}\right)$$
 * **Parameters & Physical Units**:
   * $R_{\text{rent}}(d)$: Economic locational land rent at distance $d$ from urban center [$\text{\$/ha}$].
   * $S_{\text{export}}$: Deliverable caloric food surplus exported to feed central nucleated city [$\text{kcal/year}$].
+  * $N_{\max,\text{city}}$: Continuous $C^1$ urban grain hinterland demographic capacity [inhabitants], expanding smoothly with paved road, canal, and rail infrastructure capital $k_{\text{pc}} = K/N$.
 * **Computational Complexity**: $O(6)$ per agricultural cell; executed in Pass 2.
 
 #### 104. Differential Land Rent & Margin Pressure (`RicardoDifferentialLandRentEngine`)
@@ -1687,6 +1707,20 @@ with canonical parameters:
   * $\text{GhostAcreage}$: Transoceanic agricultural land relief index $[0.0, 1.0]$.
   * $\mathcal{P}_{\text{divergence}}$: Industrial takeoff potential $[0.0, 1.8]$.
 * **Computational Complexity**: $O(1)$ per cell; executed in Pass 3.2.
+
+#### 108. Geopolitical Crisis Escalation & Warfare Attrition (`WarDiplomacyEngine`)
+* **Model Classification**: Tier 2 - Type B (Geopolitical Conflict Engine)
+* **Academic Literature Reference**: Bueno de Mesquita, B. (1981). *The War Trap*. Yale University Press; Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Co.; Clausewitz, C. von (1832). *Vom Kriege*. Dümmlers Verlag.
+* **Governing Equations**:
+  $$\mathcal{P}_{\text{escalate}} = \frac{1}{1 + \exp\left(-\frac{\text{warDesire}}{0.12}\right)}$$
+  $$\Delta \text{Affinity}_{\text{bilateral}} = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}}) \quad \text{if } \mathcal{P}_{\text{escalate}} > 0.50$$
+  $$\mathcal{P}_{\text{conquest}} = \frac{\Phi_{\text{attacker}}^2}{\Phi_{\text{attacker}}^2 + \Phi_{\text{defender}}^2}$$
+* **Parameters & Physical Units**:
+  * $\text{warDesire}$: Net expected utility of aggressive geopolitical conflict $[-1.0, 1.0]$.
+  * $\mathcal{P}_{\text{escalate}}$: Continuous $C^1$ war declaration probability (conflict active when $> 0.50$).
+  * $\Phi_{\text{military}}$: Lanchester combat power derived from demographic levy $N_{\text{troops}}$, physical ordnance capital $k_{\text{ordnance}}$, and sovereign war chest bullion.
+  * Peacetime reconciliation relaxation: $+1.5\text{ affinity points/tick}$ when $\text{warDesire} < -0.05$.
+* **Computational Complexity**: $O(P^2)$ where $P$ is the number of active polities; executed in Pass 3.3.
 
 ---
 ## 5. Computational Complexity & Integration Benchmark Matrix
@@ -1874,10 +1908,20 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
 
 #### 14. Sovereign Debt Burden ($D_{\text{sovereign}}$)
 * **Model Classification**: Tier 2 - Type B Fiscal Debt Telemetry
-* **Academic Literature Reference**: Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different: Eight Centuries of Financial Folly*. Princeton University Press.
+* **Academic Literature Reference**: Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different: Eight Centuries of Financial Folly*. Princeton University Press; Dickson, P. G. M. (1967). *The Financial Revolution in England*. Macmillan; Stasavage, D. (2011). *States of Credit*. Princeton University Press.
 * **Output Unit**: Debt as percentage of annual GDP [$\%$].
 * **Governing Equation**:
-  $$D_{\text{sovereign}}(\Phi, S) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.94) \cdot 5.0) \cdot \left[ 10.0 + 80.0 \left(1.0 - \frac{S}{100.0}\right) + 20.0 \tanh(\max(0.0, \Phi - 1.20)) \right], \; 0.0, \; 250.0 \right)$$
+  $$D_{\text{sovereign}}(\Phi, S) = \sigma(\Phi, 0.94, 0.015) \cdot \left[ D_{\text{premodern}}(\Phi, S) + D_{\text{medieval}}(\Phi, S) + D_{\text{modern}}(\Phi) + D_{\text{totalwar}}(\Phi) \right]$$
+  $$D_{\text{premodern}} = 8.5 + 1.5 \tanh(\operatorname{sp}(\Phi - 1.05) \cdot 3.0) + 3.0 \tanh(\operatorname{sp}(\Phi - 1.10) \cdot 3.0) \cdot \left(1 - \frac{S}{100}\right)^{1.3}$$
+  $$D_{\text{medieval}} = 21.0 \tanh(\operatorname{sp}(\Phi - 1.12) \cdot 5.0) \cdot \left[0.6 + 0.4 \left(1 - \frac{S}{100}\right)\right]$$
+  $$D_{\text{modern}} = 42.0 \tanh(\operatorname{sp}(\Phi - 1.22) \cdot 10.0)$$
+  $$D_{\text{totalwar}} = \frac{22.0}{1 + \exp\left(-\frac{\Phi - 1.55}{0.08}\right)}$$
+* **Parameters & Physical Units**:
+  * Enforces the Deep-Time Invariant (`AGENTS.md §8.2`): $\sigma(\Phi, 0.94, 0.015) \to 0$ for prehistoric forager bands ($\Phi \le 0.90$).
+  * Pre-modern patrimonial borrowing: $\sim 8.5 - 10.0\%$ (Antiquity through Early Middle Ages).
+  * Late medieval war loans: $+21.0\%$ (Florentine Monte Comune, Venetian Prestiti: 1347 CE $\sim 30.8\%$).
+  * Modern funded national debt: $+42.0\%$ (1694 Bank of England, Napoleonic mobilization: 1800 CE $\sim 75.0\%$).
+  * Total war debt mobilization: $+22.0\%$ (WWI 1914 $\sim 80.0\%$, WWII 1945 $\sim 110.0\%$).
 
 ---
 
@@ -1902,11 +1946,11 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
 * **Academic Literature Reference**: Scheidel, W. (2014). *The Shape of the Roman World: Modelling Imperium (ORBIS)*. JRA; Standage, T. (1998). *The Victorian Internet*. Walker & Company.
 * **Output Unit**: Velocity in kilometers per day [$\text{km/day}$].
 * **Governing Equation**:
-  $$v_{\text{info}}(\Phi) = \operatorname{clamp}\left( 30.0 + 200.0 \operatorname{softplus}(\Phi - 1.10, 0.0, 5.0) + \frac{1.0 \times 10^7}{1.0 + \exp(-(\Phi - 1.70) / 0.12)}, \; 4.0, \; 3.0 \times 10^8 \right)$$
+  $$v_{\text{info}}(\Phi) = \operatorname{clamp}\left( 35.0 + 45.0 \tanh\left(\frac{\Phi - 1.0}{0.2}\right) + 300.0 \cdot \sigma(\Phi, 2.30, 0.08) + \frac{1.0 \times 10^7}{1.0 + \exp\left(-\frac{\Phi - 3.80}{0.15}\right)}, \; 4.0, \; 3.0 \times 10^8 \right)$$
 * **Parameters & Physical Units**:
-  * Ancient courier relay: $30 - 80\text{ km/day}$.
-  * Chappe optical semaphore (1792): $250 - 350\text{ km/day}$.
-  * Electric copper telegraph: $\sim 10^7\text{ km/day}$.
+  * Ancient courier relay (Rome Cursus Publicus, Persian Chapar Khaneh, Song relay posts): $35 - 80\text{ km/day}$ for pre-industrial agrarian regimes ($\Phi < 2.0$).
+  * Chappe optical semaphore (1792): $250 - 350\text{ km/day}$ ($\Phi \approx 2.30 - 2.50$).
+  * Electric copper telegraph / transatlantic cable: $\sim 10^7\text{ km/day}$ requiring modern electrical power grid infrastructure ($\Phi \ge 3.80$).
   * Speed of light in vacuum ceiling: $3.0 \times 10^8\text{ km/day}$ ($300,000\text{ km/s}$).
 
 #### 18. Per-Capita Structural Metal Smelting Production ($M_{\text{smelt}}$)
