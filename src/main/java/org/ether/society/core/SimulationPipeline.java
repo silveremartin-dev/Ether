@@ -8,24 +8,17 @@ import org.ether.society.core.dod.*;
 import org.ether.society.core.profiling.SimulationProfiler;
 import org.ether.society.database.H3Cell;
 import org.ether.society.config.SimulationPerformanceConfig;
-import org.ether.society.generation.*;
-import org.ether.society.engines.*;
-import org.ether.society.engines.tier1.*;
-import org.ether.society.engines.tier2.theories.*;
-import org.ether.society.engines.tier2.historical.*;
-import org.ether.society.engines.compiler.*;
-import org.ether.society.model.Biome;
+import org.ether.society.engines.compiler.CompiledEngineKernel;
 import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * High-Performance Declarative Simulation Pipeline.
  * Orchestrates deterministic phase transitions for physical, demographic, and cliodynamic sub-systems
- * using a Fused 3-Pass Architecture and JIT-compiled Type B scenario kernels.
+ * using Data-Oriented Design (DOD) buffers and JIT-compiled scenario kernels.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -42,12 +35,8 @@ public class SimulationPipeline {
 
     private Scenario configuredScenario;
     private CompiledEngineKernel compiledKernel;
-    private final GreenhouseRadiativeEngine greenhouseRadiativeEngine = new GreenhouseRadiativeEngine();
     private final TypeBEnginePassRunner typeBPassRunner = new TypeBEnginePassRunner();
 
-    private List<H3Cell> cachedLandCells = null;
-    private int cachedLandCellsCount = -1;
-    private List<H3Cell> reusablePopulatedCells = null;
     private org.ether.society.core.dod.NativeRustBridge.NativeWorldArena cachedNativeArena = null;
     private int cachedNativeArenaCapacity = -1;
     private int cachedNativeArenaAgentCapacity = -1;
@@ -89,8 +78,6 @@ public class SimulationPipeline {
      */
     public void configureScenario(Scenario scenario) {
         this.configuredScenario = scenario;
-        this.cachedLandCells = null;
-        this.cachedLandCellsCount = -1;
 
         long sSeed = scenario != null && scenario.getSeed() != 0L ? scenario.getSeed() : 42L;
         if (this.cultureKernel != null) {
@@ -115,7 +102,7 @@ public class SimulationPipeline {
                             SimulationProfiler profiler,
                             SimulationPerformanceConfig perfConfig,
                             long dtSlow) {
-        if (cells == null || cells.isEmpty()) return;
+        if (worldBuffer == null) return;
 
         Scenario activeScenario = engine != null ? engine.getCurrentScenario() : null;
         if (activeScenario != configuredScenario) {
@@ -129,7 +116,7 @@ public class SimulationPipeline {
         profiler.beginPhase("3_DemographicsAndCulture");
         boolean executedNative = false;
         if (perfConfig != null && perfConfig.getExecutionEngineMode() == org.ether.society.config.SimulationPerformanceConfig.ExecutionEngineMode.RUST_NATIVE
-                && org.ether.society.core.dod.NativeRustBridge.isNativeAvailable() && worldBuffer != null && agentBuffer != null) {
+                && org.ether.society.core.dod.NativeRustBridge.isNativeAvailable() && agentBuffer != null) {
             try {
                 int cap = worldBuffer.getCapacity();
                 int aCap = agentBuffer.getCapacity();
@@ -163,225 +150,26 @@ public class SimulationPipeline {
 
         if (!executedNative) {
             environmentalKernel.tick(worldBuffer, dtSlow);
-            demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
+            if (agentBuffer != null) {
+                demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
+            }
             urbanKernel.tick(worldBuffer, dtSlow);
             fluxKernel.tick(worldBuffer, dtSlow);
-            cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
+            if (agentBuffer != null) {
+                cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
+            }
         }
 
         profiler.endPhase("3_DemographicsAndCulture");
 
-        // --- Phase 2: Core Physicalist & Cliodynamic Sub-Systems (Fused 3-Pass Architecture) ---
+        // --- Phase 2: Active Cliodynamic Sub-Systems (Data-Oriented DoD) ---
         profiler.beginPhase("4_ProceduralEngines");
 
-        // Physical Domain Partitioning (100% Deterministic: avoids useless evaluations on ocean & uninhabited cells)
-        int totalCellCount = cells.size();
-        if (cachedLandCells == null || cachedLandCellsCount != totalCellCount) {
-            cachedLandCells = new java.util.ArrayList<>(totalCellCount / 3);
-            for (int i = 0; i < totalCellCount; i++) {
-                H3Cell c = cells.get(i);
-                if (c == null) continue;
-                Double elev = c.getElevation();
-                Biome b = c.getBiome();
-                if (elev == null || elev >= 0 || (b != null && b != Biome.OCEAN)) {
-                    cachedLandCells.add(c);
-                }
-            }
-            cachedLandCellsCount = totalCellCount;
-        }
-        List<H3Cell> landCells = cachedLandCells;
-
-        if (reusablePopulatedCells == null) {
-            reusablePopulatedCells = new java.util.ArrayList<>(Math.min(10000, totalCellCount));
-        } else {
-            reusablePopulatedCells.clear();
-        }
-        List<H3Cell> populatedCells = reusablePopulatedCells;
-
-        float[] popArray = worldBuffer != null ? worldBuffer.getBiomassHuman() : null;
-        if (popArray != null) {
-            int limit = Math.min(totalCellCount, popArray.length);
-            for (int i = 0; i < limit; i++) {
-                if (popArray[i] > 0.0f) {
-                    H3Cell c = cells.get(i);
-                    if (c != null) {
-                        populatedCells.add(c);
-                    }
-                }
-            }
-        } else {
-            for (int i = 0; i < totalCellCount; i++) {
-                H3Cell c = cells.get(i);
-                if (c == null) continue;
-                Integer pop = c.getPopulation();
-                if (pop != null && pop > 0) {
-                    populatedCells.add(c);
-                }
-            }
-        }
-
-        // Pass 1: Planetary & Atmospheric Fused Pass
-        double currentCo2Ppm = (engine != null && engine.getMetricsAggregator() != null)
-                ? engine.getMetricsAggregator().getAtmosphericCO2Ppm()
-                : 280.0;
-        double currentYear = (engine != null) ? (double) engine.getCurrentYear() : 0.0;
-        executeFusedAtmosphericPass(cells, worldBuffer, agentBuffer, dtYears, dtMonthly, perfConfig, currentCo2Ppm, currentYear, activeScenario);
-
-        // Pass 2: Terrestrial Soil, Water & Ecosystem Fused Pass
-        if (!landCells.isEmpty()) {
-            executeFusedTerrestrialPass(landCells, dtYears, dtMonthly, currentCo2Ppm, currentYear);
-        }
-
-        // Pass 3: Anthropogenic Inhabited Cliodynamics & JIT-Compiled Scenario Theories Fused Pass
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
-        if (runTier2 && !populatedCells.isEmpty()) {
-            executeFusedAnthropogenicPass(engine, populatedCells, dtYears, dtMonthly, activeScenario, executedNative);
-
-            // Dynamic Procedural Engine Plugins
-            ProceduralEngineRegistry.processPlugins(populatedCells, dtMonthly);
+        if (runTier2 && !executedNative && engine != null && engine.getWorldBuffer() != null) {
+            typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, activeScenario, compiledKernel);
         }
 
         profiler.endPhase("4_ProceduralEngines");
-    }
-
-    private static boolean isTypeBEngineEnabled(Scenario scenario, String engineId) {
-        if (scenario != null && scenario.getTypeBEngineStates() != null
-                && scenario.getTypeBEngineStates().containsKey(engineId)) {
-            return Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(engineId));
-        }
-        return false;
-    }
-
-    /**
-     * Pass 1: Atmosphere, Radiation, Energy & Climate Feedbacks (Planetary Grid Domain).
-     */
-    private void executeFusedAtmosphericPass(List<H3Cell> allCells,
-                                             WorldBuffer worldBuffer,
-                                             AgentBuffer agentBuffer,
-                                             double dtYears, double dtMonthly,
-                                             SimulationPerformanceConfig perfConfig,
-                                             double co2Ppm,
-                                             double currentYear,
-                                             Scenario scenario) {
-        RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(allCells);
-        AtmosphericOxygenEngine.processAtmosphericOxygen(allCells, 0.21, 1.0);
-        AlbedoClimateEngine.processAlbedoFeedback(allCells, dtYears);
-
-        greenhouseRadiativeEngine.applyToGrid(allCells);
-        MaximumEntropyProductionEngine.processMaximumEntropyProduction(allCells, dtYears);
-
-        if (isTypeBEngineEnabled(scenario, "TerraformingEngine")) {
-            TerraformingEngine.processTerraforming(allCells, dtMonthly);
-        }
-        PhysicalLawEngine.applyPhysicalLaws(allCells, dtMonthly);
-        if (isTypeBEngineEnabled(scenario, "GeoengineeringAlbedoFeedbackEngine")) {
-            GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(allCells, dtMonthly);
-        }
-        ThermohalineStommelAMOCEngine.processThermohalineCirculation(allCells, dtYears, currentYear);
-        OceanAcidificationEngine.processOceanAcidification(allCells, co2Ppm);
-
-        ThermodynamicMigrationEngine.processThermodynamicMigration(allCells, perfConfig, worldBuffer, agentBuffer);
-    }
-
-    /**
-     * Pass 2: Soil Nutrients, Hydrology, Erosion & Terrestrial Ecosystems (Land Domain).
-     */
-    private void executeFusedTerrestrialPass(List<H3Cell> landCells, double dtYears, double dtMonthly, double co2Ppm, double currentYear) {
-        GlacialIsostaticAdjustmentEngine.processGlacialIsostasy(landCells, dtYears);
-        SoilWaterRetentionEngine.processSoilWaterRetention(landCells);
-        CrustalGeothermalEngine.processCrustalGeothermal(landCells);
-        PermafrostThawEngine.processPermafrostThaw(landCells);
-        SoilNutrientNPKEngine.processSoilNutrients(landCells, dtYears);
-        EcologicalStoichiometryEngine.processEcologicalStoichiometry(landCells, co2Ppm, dtYears);
-        MetabolicEcologyEngine.processMetabolicEcology(landCells, dtYears);
-        DeforestationErosionEngine.processDeforestationErosion(landCells, dtYears);
-        AquiferDepletionEngine.processAquiferDepletion(landCells, dtYears);
-        org.ether.society.engines.tier1.ManningStricklerHydrodynamicsEngine.processRiverHydrodynamics(landCells, dtYears);
-        EcologicalDegradationEngine.processEcologicalDegradation(landCells, dtYears);
-        MegafaunaEcosystemEngine.processMegafaunaEcosystem(landCells, dtYears);
-        DynamicEnergyBudgetEngine.processEcologicalDEB(landCells, dtYears);
-        UnifiedNeutralBiodiversityEngine.processNeutralBiodiversity(landCells, dtYears);
-        ConstructalFlowArchitectureEngine.processConstructalFlow(landCells, dtYears);
-
-        CharneyVegetationAlbedoEngine.processCharneyVegetationAlbedo(landCells, dtYears, currentYear);
-        StreamPowerErosionEngine.processStreamPowerErosion(landCells, dtYears);
-
-        TrophicEcosystemEngine.processTrophicEcosystem(landCells, dtMonthly);
-        DynamicHydrographicSiltationEngine.processHydrographicSiltation(landCells, dtMonthly);
-    }
-
-    /**
-     * Pass 3: Human Demographics, Power Grid, Metallurgy, Technology & Active Cliodynamic Theories (Populated Domain).
-     */
-    private void executeFusedAnthropogenicPass(H3SimulationEngine engine,
-                                               List<H3Cell> populatedCells,
-                                               double dtYears,
-                                               double dtMonthly,
-                                               Scenario scenario,
-                                               boolean executedNative) {
-        // Step 3.1: Physiological & Bioclimatic Survival
-        WetBulbTemperatureEngine.processWetBulbHyperthermia(populatedCells, dtYears);
-        PressurizedHabitatEngine.processPressurizedHabitats(populatedCells, scenario != null ? scenario.getPlanetPreset() : null, dtYears);
-        BioMolecularEpidemiologyEngine.processBioMolecularImmunity(populatedCells, dtYears);
-        if (isTypeBEngineEnabled(scenario, "EcotoxicologyFertilityEngine")) {
-            EcotoxicologyFertilityEngine.processEcotoxicologyFertility(populatedCells, dtYears);
-        }
-
-        // Step 3.2: Energy Grid, Metallurgy & Physical Industry
-        ThermodynamicPrimeMoversEngine.processPrimeMovers(populatedCells, dtYears);
-        PhysicalEnergyGridEngine.processPhysicalEnergyGrid(populatedCells, dtYears);
-        NetEnergyEROEIEngine.processNetEnergyEROEI(populatedCells, dtYears);
-        MetallurgyEnthalpyEngine.processOreSmelting(populatedCells, dtYears);
-        ResourceRecyclingEngine.processResourceRecycling(populatedCells, dtYears);
-        if (isTypeBEngineEnabled(scenario, "NuclearSafetyRadiotoxicityEngine")) {
-            NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(populatedCells, engine != null ? engine.getTickCounter() : 0L, dtYears);
-        }
-
-        // Step 3.3: Transport, Kinetic Warfare & Infrastructure
-        PhysicsTransportEngine.processPhysicsTransport(populatedCells, dtYears);
-        if (isTypeBEngineEnabled(scenario, "ThermodynamicWarfareEngine")) {
-            ThermodynamicWarfareEngine.processKineticWarfare(populatedCells, dtYears);
-        }
-        if (isTypeBEngineEnabled(scenario, "NuclearWarfareClimateEngine")) {
-            NuclearWarfareClimateEngine.processNuclearWarfareClimate(populatedCells);
-        }
-        InfrastructureEnergyEngine.processInfrastructureEnergy(populatedCells);
-
-        // Step 3.4: Recombinant Technology, Information Entropy & Ozone
-        SelectiveBreedingEngine.processSelectiveBreeding(populatedCells, dtYears);
-        if (isTypeBEngineEnabled(scenario, "InformationEntropyEngine")) {
-            InformationEntropyEngine.processInformationEntropy(populatedCells);
-        }
-
-        List<TradeNetworkEngine.TradeRoute> tradeRoutes = null;
-        if (isTypeBEngineEnabled(scenario, "TradeNetworkEngine")) {
-            tradeRoutes = TradeNetworkEngine.generateTradeNetworks(populatedCells, 1.0, dtYears);
-        }
-        PhysicalCapitalDiffusionEngine.processCapitalDiffusion(populatedCells, tradeRoutes, dtYears);
-        if (isTypeBEngineEnabled(scenario, "LanguageLinguisticEngine")) {
-            LanguageLinguisticEngine.processLinguisticDrift(populatedCells, tradeRoutes);
-        }
-        if (engine != null && engine.getNations() != null && !engine.getNations().isEmpty()) {
-            if (isTypeBEngineEnabled(scenario, "CliodynamicsEngine")) {
-                CliodynamicsEngine.updateCliodynamics(engine.getNations(), populatedCells, dtYears);
-            }
-            if (isTypeBEngineEnabled(scenario, "WarDiplomacyEngine")) {
-                WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), populatedCells, scenario);
-            }
-            if (isTypeBEngineEnabled(scenario, "SovereignTreasuryBondEngine")) {
-                SovereignTreasuryBondEngine.processPolityFiscalCycles(engine.getNations(), populatedCells, dtYears);
-            }
-        }
-        OzoneLayerDepletionEngine.processOzoneLayerDepletion(populatedCells);
-
-        // Step 3.5: Invariant Tier 1 Industrial Physics & Thermodynamics
-        OreGradeThermodynamicsEngine.processOreDepletion(populatedCells, dtMonthly);
-        InfrastructureInertiaEngine.processInfrastructureInertia(populatedCells, dtMonthly);
-        EntropicMetalDissipationEngine.processEntropicDissipation(populatedCells, dtMonthly);
-
-        // Step 3.6: JIT-Compiled Kernel Fusion & Active Type B Cliodynamic Engines (DoD only)
-        if (!executedNative && engine != null && engine.getWorldBuffer() != null) {
-            typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, scenario, compiledKernel);
-        }
     }
 }

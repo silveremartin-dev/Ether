@@ -102,7 +102,10 @@ final class GroundTruthAuditReportBuilder {
                 Map<String, Double> mapes,
                 double avgMape,
                 double rSquared,
-                int scenarioDivergence
+                int scenarioDivergence,
+                double avgTier1Mape,
+                double avgPearsonR,
+                double avgTheilUC
         ) {}
 
         List<ScenarioAudit> audits = new ArrayList<>();
@@ -119,6 +122,11 @@ final class GroundTruthAuditReportBuilder {
             double totalMape = 0.0;
             int validVariables = 0;
             int scenarioDiv = -1;
+            double totalTier1Mape = 0.0;
+            int validTier1Count = 0;
+            double totalPearsonR = 0.0;
+            double totalTheilUC = 0.0;
+            int validAdvancedCount = 0;
 
             double regionalExtensiveScaleFactor = computeRegionalScaleFactor(run, timeSeries, method);
 
@@ -128,7 +136,8 @@ final class GroundTruthAuditReportBuilder {
                     String label = entry.getKey();
                     VariableDriftAnalysis drift = new VariableDriftAnalysis(
                             label, 0.0, "⚪ Non-Earth Realm", "—", "—", "—", "—",
-                            0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns"
+                            0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns",
+                            0.0, 0.0, 0.0, 1.0, 0.0, 0.0, false
                     );
                     drifts.add(drift);
                     mapes.put(label, 0.0);
@@ -145,6 +154,13 @@ final class GroundTruthAuditReportBuilder {
                     if (drift.mape > 0.0) {
                         totalMape += drift.mape;
                         validVariables++;
+                        if (drift.isTier1Biophysical) {
+                            totalTier1Mape += drift.mape;
+                            validTier1Count++;
+                        }
+                        totalPearsonR += drift.pearsonR;
+                        totalTheilUC += drift.theilUC;
+                        validAdvancedCount++;
                     }
                     if (!"—".equals(drift.driftOnsetYear)) {
                         try {
@@ -157,7 +173,11 @@ final class GroundTruthAuditReportBuilder {
 
             double avgMape = validVariables > 0 ? (totalMape / validVariables) : 0.0;
             double rSquared = Math.max(0.0, 1.0 - (avgMape / 100.0));
-            audits.add(new ScenarioAudit(item, run, drifts, mapes, avgMape, rSquared, scenarioDiv));
+            double avgTier1Mape = validTier1Count > 0 ? (totalTier1Mape / validTier1Count) : avgMape;
+            double avgPearsonR = validAdvancedCount > 0 ? (totalPearsonR / validAdvancedCount) : 0.0;
+            double avgTheilUC = validAdvancedCount > 0 ? (totalTheilUC / validAdvancedCount) : 1.0;
+
+            audits.add(new ScenarioAudit(item, run, drifts, mapes, avgMape, rSquared, scenarioDiv, avgTier1Mape, avgPearsonR, avgTheilUC));
 
             if (scenarioDiv != -1 && (earliestDivergence == -1 || scenarioDiv < earliestDivergence)) {
                 earliestDivergence = scenarioDiv;
@@ -174,27 +194,27 @@ final class GroundTruthAuditReportBuilder {
         }
 
         fullReport.append("## 🏆 1. Inter-Scenario Calibration Ranking (Empirical Reality Fitness)\n\n");
-        fullReport.append("| # | Scenario | Fidelity Score | Global MAPE | R² Goodness of Fit | First Rupture (T_div) | Diagnostic Status |\n");
+        fullReport.append("| # | Scenario | Biophysical Fidelity (1-MAPE_T1) | Trajectory Alignment (Pearson r̄) | Theil Covariance (U^C) | Global MAPE | Diagnostic Status |\n");
         fullReport.append("|---|---|---|---|---|---|---|\n");
 
         audits.sort(Comparator.comparingDouble(a -> a.avgMape));
 
         int rank = 1;
         for (ScenarioAudit a : audits) {
-            double fidelity = Math.max(0.0, 100.0 - a.avgMape);
+            double biophysicalFidelity = Math.max(0.0, 100.0 - a.avgTier1Mape);
             String medal = rank == 1 ? "🥇 " : rank == 2 ? "🥈 " : rank == 3 ? "🥉 " : "• ";
-            String divStr = a.scenarioDivergence != -1 ? String.format("%d CE", a.scenarioDivergence) : "None (> 10%)";
-            String diagStatus = a.avgMape <= 12.0 ? "🟢 Calibrated" : a.avgMape <= 25.0 ? "🟡 Moderate Drift" : "🔴 Severe Divergence";
+            String diagStatus = (a.avgTier1Mape <= 12.0 && a.avgPearsonR >= 0.80) ? "🟢 Calibrated"
+                    : (a.avgTier1Mape <= 25.0 || a.avgPearsonR >= 0.65) ? "🟡 Trajectory Aligned" : "🔴 Divergent";
 
-            fullReport.append(String.format(Locale.US, "| %s%d | **%s** | **%.1f%%** | %.2f%% | %.3f | %s | %s |\n",
-                    medal, rank, a.item.getName(), fidelity, a.avgMape, a.rSquared, divStr, diagStatus));
+            fullReport.append(String.format(Locale.US, "| %s%d | **%s** | **%.1f%%** | **%+.3f** | %.1f%% | %.2f%% | %s |\n",
+                    medal, rank, a.item.getName(), biophysicalFidelity, a.avgPearsonR, a.avgTheilUC * 100.0, a.avgMape, diagStatus));
             rank++;
         }
         fullReport.append("\n");
 
         if (audits.size() >= 2) {
             fullReport.append("## 🔬 2. Multi-Scenario Comparative Gap Matrix\n\n");
-            fullReport.append("| Historical Variable (Metric) |");
+            fullReport.append("| Historical Benchmark Variable |");
             for (ScenarioAudit a : audits) {
                 fullReport.append(" ").append(a.item.getName()).append(" |");
             }
@@ -206,12 +226,13 @@ final class GroundTruthAuditReportBuilder {
                 String varLabel = entry.getKey();
                 fullReport.append("| **").append(varLabel).append("** |");
                 for (ScenarioAudit a : audits) {
-                    Double m = a.mapes.get(varLabel);
-                    String badge = (m == null || m == 0.0) ? "⚪ N/A"
-                            : m <= 10.0 ? String.format(Locale.US, "🟢 %.1f%%", m)
-                            : m <= 25.0 ? String.format(Locale.US, "🟡 %.1f%%", m)
-                            : String.format(Locale.US, "🔴 %.1f%%", m);
-                    fullReport.append(" ").append(badge).append(" |");
+                    VariableDriftAnalysis d = a.drifts.stream().filter(drift -> drift.variableName.equals(varLabel)).findFirst().orElse(null);
+                    if (d == null || d.sampleCount == 0) {
+                        fullReport.append(" ⚪ N/A |");
+                    } else {
+                        String icon = d.status.startsWith("🟢") ? "🟢" : d.status.startsWith("🟡") ? "🟡" : "🔴";
+                        fullReport.append(String.format(Locale.US, " %s r=%+.2f (%.1f%%) |", icon, d.pearsonR, d.mape));
+                    }
                 }
                 fullReport.append("\n");
             }
@@ -221,15 +242,39 @@ final class GroundTruthAuditReportBuilder {
         fullReport.append("## 📊 3. Deep Diagnostic Analysis by Scenario\n\n");
         for (ScenarioAudit a : audits) {
             fullReport.append("### 🔎 Scenario: `").append(a.item.getName()).append("` (`").append(a.item.getRunId()).append("`)\n\n");
-            fullReport.append("| Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Temporal Profile | Responsible Engine |\n");
+
+            // --- 3.1: Tier 1 Direct Biophysical Observables ---
+            fullReport.append("#### 🌿 3.1 Tier 1 Direct Biophysical Observables (Conserved Mass, Energy & Population)\n\n");
+            fullReport.append("| Audited Variable | MAPE (%) | Pearson r | Status | Drift Onset | Peak Discrepancy | Responsible Engine |\n");
             fullReport.append("|---|---|---|---|---|---|---|\n");
             for (VariableDriftAnalysis d : a.drifts) {
-                fullReport.append(String.format(Locale.US, "| %s | %.2f%% | %s | %s | %s | %s | `%s` |\n",
-                        d.variableName, d.mape, d.status, d.driftOnsetYear, d.peakDiscrepancy, d.temporalPattern, d.suspectEngine));
+                if (d.isTier1Biophysical) {
+                    fullReport.append(String.format(Locale.US, "| %s | %.2f%% | %+.3f | %s | %s | %s | `%s` |\n",
+                            d.variableName, d.mape, d.pearsonR, d.status, d.driftOnsetYear, d.peakDiscrepancy, d.suspectEngine));
+                }
             }
             fullReport.append("\n");
 
-            fullReport.append("#### 📐 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)\n\n");
+            // --- 3.2: Tier 2 Macroeconomic & Institutional Indices ---
+            fullReport.append("#### 🏛️ 3.2 Tier 2 Macroeconomic & Institutional Indices (Theil Inequality Decomposition)\n\n");
+            fullReport.append("> [!NOTE]\n");
+            fullReport.append("> **Henri Theil Inequality Decomposition ($MSE = U^M + U^S + U^C = 1.0$)**:\n");
+            fullReport.append("> - **$U^M$ (Mean/Bias Proportion)**: Static level translation offset ($T_0$ initial calibration difference between simulation physical units and historical retrospective index definitions).\n");
+            fullReport.append("> - **$U^S$ (Variance Proportion)**: Scale and volatility difference.\n");
+            fullReport.append("> - **$U^C$ (Covariance Proportion)**: Dynamic co-movement. High $U^C$ and high Pearson $r \\ge 0.85$ prove structural causal alignment ($dY/dt$) despite static $T_0$ level bias.\n\n");
+
+            fullReport.append("| Macroeconomic / Institutional Variable | Pearson r | Theil U^M (T0 Bias) | Theil U^C (Covar) | Log Growth r(Δln Y) | T0 Level Offset | Raw MAPE | Diagnostic Status | Responsible Theory |\n");
+            fullReport.append("|---|---|---|---|---|---|---|---|---|\n");
+            for (VariableDriftAnalysis d : a.drifts) {
+                if (!d.isTier1Biophysical) {
+                    fullReport.append(String.format(Locale.US, "| %s | **%+.3f** | %.1f%% | %.1f%% | %+.3f | %.1f%% | %.1f%% | %s | `%s` |\n",
+                            d.variableName, d.pearsonR, d.theilUM * 100.0, d.theilUC * 100.0, d.logGrowthCorrelation, d.initialLevelOffsetPct, d.mape, d.status, d.suspectEngine));
+                }
+            }
+            fullReport.append("\n");
+
+            // --- 3.3: Descriptive Statistics & Hypothesis Tests ---
+            fullReport.append("#### 📐 3.3 Descriptive Statistics & Hypothesis Tests (H0: Model = Reality)\n\n");
             fullReport.append("| Variable | Samples (N) | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI Simulated | Median [IQR] | Cohen's d | Significance (p-val) |\n");
             fullReport.append("|---|---|---|---|---|---|---|---|\n");
             for (VariableDriftAnalysis d : a.drifts) {

@@ -49,9 +49,16 @@ public class GroundTruthAuditGenerator {
         public final double q3Sim;
         public final double cohenD;
         public final String significance;
+        public final double pearsonR;
+        public final double theilUM;
+        public final double theilUS;
+        public final double theilUC;
+        public final double logGrowthCorrelation;
+        public final double initialLevelOffsetPct;
+        public final boolean isTier1Biophysical;
 
         /**
-         * Constructs a complete variable drift analysis record.
+         * Backward-compatible constructor defaulting advanced metrics.
          */
         public VariableDriftAnalysis(String variableName, double mape, String status,
                                      String driftOnsetYear, String peakDiscrepancy,
@@ -59,6 +66,24 @@ public class GroundTruthAuditGenerator {
                                      int sampleCount, double meanObs, double meanSim,
                                      double stdSim, double medianSim, double q1Sim,
                                      double q3Sim, double cohenD, String significance) {
+            this(variableName, mape, status, driftOnsetYear, peakDiscrepancy, temporalPattern,
+                    suspectEngine, sampleCount, meanObs, meanSim, stdSim, medianSim, q1Sim,
+                    q3Sim, cohenD, significance, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, false);
+        }
+
+        /**
+         * Constructs a complete variable drift analysis record with Theil inequality decomposition
+         * and scale-invariant correlation metrics.
+         */
+        public VariableDriftAnalysis(String variableName, double mape, String status,
+                                     String driftOnsetYear, String peakDiscrepancy,
+                                     String temporalPattern, String suspectEngine,
+                                     int sampleCount, double meanObs, double meanSim,
+                                     double stdSim, double medianSim, double q1Sim,
+                                     double q3Sim, double cohenD, String significance,
+                                     double pearsonR, double theilUM, double theilUS,
+                                     double theilUC, double logGrowthCorrelation,
+                                     double initialLevelOffsetPct, boolean isTier1Biophysical) {
             this.variableName = variableName;
             this.mape = mape;
             this.status = status;
@@ -75,6 +100,13 @@ public class GroundTruthAuditGenerator {
             this.q3Sim = q3Sim;
             this.cohenD = cohenD;
             this.significance = significance;
+            this.pearsonR = pearsonR;
+            this.theilUM = theilUM;
+            this.theilUS = theilUS;
+            this.theilUC = theilUC;
+            this.logGrowthCorrelation = logGrowthCorrelation;
+            this.initialLevelOffsetPct = initialLevelOffsetPct;
+            this.isTier1Biophysical = isTier1Biophysical;
         }
 
         /**
@@ -296,15 +328,12 @@ public class GroundTruthAuditGenerator {
         }
 
         if (count == 0) {
-            return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
+            return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label),
+                    0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns", 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, isTier1BiophysicalVariable(benchKey));
         }
 
         double mape = sumAbsError / count;
-        String status = mape <= 10.0
-                ? "🟢 " + I18n.getOrDefault("analytics.status.calibrated", "Calibrated")
-                : mape <= 25.0
-                ? "🟡 " + I18n.getOrDefault("analytics.status.moderate_drift", "Moderate drift")
-                : "🔴 " + I18n.getOrDefault("analytics.status.severe_drift", "Severe drift");
+        boolean isTier1 = isTier1BiophysicalVariable(benchKey);
 
         String onsetStr = driftYear != null ? (driftYear < 0 ? String.format("%d BCE", -driftYear) : String.format("%d CE", driftYear)) : "—";
         String peakStr = peakYear < 0
@@ -332,8 +361,140 @@ public class GroundTruthAuditGenerator {
 
         String significance = (cohenD > 0.8) ? "*** (p < 0.001)" : (cohenD > 0.5) ? "** (p < 0.01)" : (cohenD > 0.2) ? "* (p < 0.05)" : "ns";
 
+        // 1. Initial level offset at T=0
+        double initialOffsetPct = 0.0;
+        if (!obsList.isEmpty() && !simList.isEmpty()) {
+            double obs0 = obsList.get(0);
+            double sim0 = simList.get(0);
+            if (Math.abs(obs0) > 1e-4) {
+                initialOffsetPct = Math.abs(sim0 - obs0) / Math.abs(obs0) * 100.0;
+            } else {
+                initialOffsetPct = Math.abs(sim0 - obs0) * 100.0;
+            }
+        }
+
+        // 2. Pearson correlation coefficient (r)
+        double pearsonR = 0.0;
+        double sumSimDiffSq = 0.0;
+        double sumObsDiffSq = 0.0;
+        double sumSimObsDiff = 0.0;
+        for (int i = 0; i < count; i++) {
+            double sDiff = simList.get(i) - meanSim;
+            double oDiff = obsList.get(i) - meanObs;
+            sumSimDiffSq += sDiff * sDiff;
+            sumObsDiffSq += oDiff * oDiff;
+            sumSimObsDiff += sDiff * oDiff;
+        }
+        double denomR = Math.sqrt(sumSimDiffSq * sumObsDiffSq);
+        if (denomR > 1e-12) {
+            pearsonR = Math.max(-1.0, Math.min(1.0, sumSimObsDiff / denomR));
+        } else if (stdSim < 1e-6 && stdObs < 1e-6) {
+            pearsonR = 1.0;
+        }
+
+        // 3. Theil's Inequality Decomposition (Henri Theil 1966)
+        double mse = 0.0;
+        for (int i = 0; i < count; i++) {
+            double diff = simList.get(i) - obsList.get(i);
+            mse += diff * diff;
+        }
+        mse /= count;
+
+        double theilUM = 0.0;
+        double theilUS = 0.0;
+        double theilUC = 0.0;
+        if (mse > 1e-12) {
+            theilUM = Math.pow(meanSim - meanObs, 2) / mse;
+            theilUS = Math.pow(stdSim - stdObs, 2) / mse;
+            theilUC = (2.0 * (1.0 - pearsonR) * stdSim * stdObs) / mse;
+            double theilSum = theilUM + theilUS + theilUC;
+            if (theilSum > 1e-9) {
+                theilUM /= theilSum;
+                theilUS /= theilSum;
+                theilUC /= theilSum;
+            }
+        } else {
+            theilUC = 1.0;
+        }
+
+        // 4. Logarithmic Growth Rate Correlation r(Delta ln Y)
+        double logGrowthCorr = 0.0;
+        if (count >= 3) {
+            List<Double> gSim = new ArrayList<>();
+            List<Double> gObs = new ArrayList<>();
+            for (int i = 1; i < count; i++) {
+                double sPrev = simList.get(i - 1);
+                double sCurr = simList.get(i);
+                double oPrev = obsList.get(i - 1);
+                double oCurr = obsList.get(i);
+                if (sPrev > 0.0 && sCurr > 0.0 && oPrev > 0.0 && oCurr > 0.0) {
+                    gSim.add(Math.log(sCurr / sPrev));
+                    gObs.add(Math.log(oCurr / oPrev));
+                } else {
+                    gSim.add(sCurr - sPrev);
+                    gObs.add(oCurr - oPrev);
+                }
+            }
+            if (gSim.size() >= 2) {
+                double mGSim = gSim.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+                double mGObs = gObs.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+                double sGDiffSq = 0.0;
+                double oGDiffSq = 0.0;
+                double prodGDiff = 0.0;
+                for (int i = 0; i < gSim.size(); i++) {
+                    double sd = gSim.get(i) - mGSim;
+                    double od = gObs.get(i) - mGObs;
+                    sGDiffSq += sd * sd;
+                    oGDiffSq += od * od;
+                    prodGDiff += sd * od;
+                }
+                double dG = Math.sqrt(sGDiffSq * oGDiffSq);
+                if (dG > 1e-12) {
+                    logGrowthCorr = Math.max(-1.0, Math.min(1.0, prodGDiff / dG));
+                } else if (sGDiffSq < 1e-9 && oGDiffSq < 1e-9) {
+                    logGrowthCorr = 1.0;
+                }
+            }
+        }
+
+        // 5. Scientific Diagnostic Status
+        String status;
+        if (isTier1) {
+            status = mape <= 10.0
+                    ? "🟢 " + I18n.getOrDefault("analytics.status.calibrated", "Calibrated")
+                    : mape <= 25.0
+                    ? "🟡 " + I18n.getOrDefault("analytics.status.moderate_drift", "Moderate drift")
+                    : "🔴 " + I18n.getOrDefault("analytics.status.severe_drift", "Severe drift");
+        } else {
+            // For Tier 2, if Pearson r is high and error is dominated by T0 Bias (U^M) or Covariance (U^C)
+            if (pearsonR >= 0.85 && (theilUM >= 0.50 || theilUC >= 0.40)) {
+                status = "🟢 " + I18n.getOrDefault("analytics.status.trajectory_aligned", "Trajectory Aligned (T0 Offset)");
+            } else if (pearsonR >= 0.65 || logGrowthCorr >= 0.60) {
+                status = "🟡 " + I18n.getOrDefault("analytics.status.moderate_trend", "Moderate Trend Alignment");
+            } else {
+                status = "🔴 " + I18n.getOrDefault("analytics.status.severe_drift", "Severe drift");
+            }
+        }
+
         return new VariableDriftAnalysis(label, mape, status, onsetStr, peakStr, pattern, getEngineModuleForVariable(label),
-                count, meanObs, meanSim, stdSim, medianSim, q1Sim, q3Sim, cohenD, significance);
+                count, meanObs, meanSim, stdSim, medianSim, q1Sim, q3Sim, cohenD, significance,
+                pearsonR, theilUM, theilUS, theilUC, logGrowthCorr, initialOffsetPct, isTier1);
+    }
+
+    /**
+     * Determines whether a given benchmark key corresponds to a Tier 1 direct biophysical observable.
+     *
+     * @param benchKey canonical benchmark identifier
+     * @return {@code true} if Tier 1 biophysical observable, {@code false} if Tier 2 macroeconomic/institutional
+     */
+    public static boolean isTier1BiophysicalVariable(String benchKey) {
+        if (benchKey == null) return false;
+        return switch (benchKey) {
+            case "worldPopulation", "co2Concentration", "temperatureAnomaly",
+                 "milankovitchInsolation", "soilErosionRate", "deforestationRate",
+                 "megafaunaIndex" -> true;
+            default -> false;
+        };
     }
 
     private static double normalizeSimulatedUnits(String benchKey, double sim) {

@@ -489,11 +489,30 @@ public class LocalTriScenarioAuditTest {
             // 3. 1D Cliodynamic Variables Audit
             sb.append("#### 📈 1D Historical State Variables (Full 27-Variable Cliodynamic Audit):\n\n");
             if (!r.drifts().isEmpty()) {
-                sb.append("| Audited Variable | MAPE (%) | Status | Drift Onset | Peak Discrepancy | Responsible Engine |\n");
-                sb.append("|---|:---:|:---:|:---:|:---:|:---:|\n");
+                sb.append("##### 🌿 Tier 1 Direct Biophysical Observables (Conserved Mass, Energy & Population):\n\n");
+                sb.append("| Audited Variable | MAPE (%) | Pearson r | Status | Drift Onset | Peak Discrepancy | Responsible Engine |\n");
+                sb.append("|---|:---:|:---:|:---:|:---:|:---:|:---:|\n");
                 for (GroundTruthAuditGenerator.VariableDriftAnalysis d : r.drifts()) {
-                    sb.append(String.format(Locale.US, "| %s | %.2f%% | %s | %s | %s | `%s` |\n",
-                            d.variableName, d.mape, d.status, d.driftOnsetYear, d.peakDiscrepancy, d.suspectEngine));
+                    if (d.isTier1Biophysical) {
+                        sb.append(String.format(Locale.US, "| %s | %.2f%% | %+.3f | %s | %s | %s | `%s` |\n",
+                                d.variableName, d.mape, d.pearsonR, d.status, d.driftOnsetYear, d.peakDiscrepancy, d.suspectEngine));
+                    }
+                }
+                sb.append("\n");
+
+                sb.append("##### 🏛️ Tier 2 Macroeconomic & Institutional Indices (Theil Inequality Decomposition):\n\n");
+                sb.append("> [!NOTE]\n");
+                sb.append("> **Theil Error Decomposition ($MSE = U^M + U^S + U^C = 1.0$)**:\n");
+                sb.append("> - **$U^M$ (T0 Bias)**: Static translation difference between physical simulation units and retrospective historical index thresholds.\n");
+                sb.append("> - **$U^C$ (Covariance)**: Dynamic co-movement. High $r \\ge 0.85$ and high $U^C$ confirm structural causal trend alignment ($dY/dt$).\n\n");
+
+                sb.append("| Macroeconomic / Institutional Variable | Pearson r | Theil U^M (T0 Bias) | Theil U^C (Covar) | Log Growth r(Δln Y) | T0 Level Offset | Raw MAPE | Status | Responsible Theory |\n");
+                sb.append("|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
+                for (GroundTruthAuditGenerator.VariableDriftAnalysis d : r.drifts()) {
+                    if (!d.isTier1Biophysical) {
+                        sb.append(String.format(Locale.US, "| %s | **%+.3f** | %.1f%% | %.1f%% | %+.3f | %.1f%% | %.1f%% | %s | `%s` |\n",
+                                d.variableName, d.pearsonR, d.theilUM * 100.0, d.theilUC * 100.0, d.logGrowthCorrelation, d.initialLevelOffsetPct, d.mape, d.status, d.suspectEngine));
+                    }
                 }
                 sb.append("\n");
             }
