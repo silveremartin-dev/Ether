@@ -155,7 +155,7 @@ public class MacroHistoricalEpochsFalsificationTest {
             if (resProp == null || resProp.isBlank()) {
                 resProp = System.getProperty("benchmark.resolution");
             }
-            if (resProp != null && !resProp.isBlank() && !cfg.windowed()) {
+            if (resProp != null && !resProp.isBlank()) {
                 try {
                     targetRes = Integer.parseInt(resProp.trim());
                 } catch (NumberFormatException ignored) {}
@@ -221,7 +221,7 @@ public class MacroHistoricalEpochsFalsificationTest {
             singleReport.append("# 📜 COMPLETE HISTORICAL FALSIFICATION & EPISTEMIC AUDIT REPORT\n\n");
             singleReport.append("**Scenario**: `").append(cfg.displayName()).append("`\n\n");
             singleReport.append("**Simulation Run Identifier**: `").append(record.getRunId()).append("`\n\n");
-            singleReport.append("**Spatial Domain**: H3 Resolution ").append(cfg.resolution())
+            singleReport.append("**Spatial Domain**: H3 Resolution ").append(targetRes)
                     .append(cfg.windowed() ? " (Regional Window)\n\n" : " (Planetary Mesh)\n\n");
             singleReport.append("**Execution Duration**: ").append(String.format(Locale.US, "%.1f s\n\n", elapsedMs / 1000.0));
 
@@ -229,7 +229,7 @@ public class MacroHistoricalEpochsFalsificationTest {
             singleReport.append("| Performance Metric | Measured Value | Unit / Scale Reference | Evaluation |\n");
             singleReport.append("|---|:---:|:---:|:---:|\n");
             singleReport.append(String.format(Locale.US, "| **Spatial Mesh Resolution** | **Res %d%s** | %s | 🌐 Grid Domain |\n",
-                    cfg.resolution(), cfg.windowed() ? " (Windowed)" : "", cfg.windowed() ? "Regional Bounding Box" : "Full Planetary Sphere"));
+                    targetRes, cfg.windowed() ? " (Windowed)" : "", cfg.windowed() ? "Regional Bounding Box" : "Full Planetary Sphere"));
             singleReport.append(String.format(Locale.US, "| **Active Hexagonal Cells** | **%,d** | Computational Mesh Vertices | 📦 Cell Domain |\n", cellCount));
             singleReport.append(String.format(Locale.US, "| **Temporal Integration Steps** | **%,d** | Monthly Ticks (Δt = 30 days) | ⏱️ Temporal Depth |\n", totalTicks));
             singleReport.append(String.format(Locale.US, "| **Total Physics Run Time** | **%.2f s** | Wall-clock execution duration | ⏳ Wall Time |\n", durationSec));
