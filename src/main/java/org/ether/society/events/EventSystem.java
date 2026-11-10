@@ -299,9 +299,9 @@ public class EventSystem {
                         double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
                         cell.setMovementFriction(Math.max(0.2, friction * hi.getMovementFrictionMultiplier()));
                     }
-                    if (hi.getCapitalBonusGJ() > 0) {
+                    if (hi.getCapitalBonusGJ() != 0) {
                         double cap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-                        cell.setResourceCapital(cap + (hi.getCapitalBonusGJ() / (Math.max(1, hi.getDurationYears()) * 12.0)));
+                        cell.setResourceCapital(Math.max(0.0, cap + (hi.getCapitalBonusGJ() / (Math.max(1, hi.getDurationYears()) * 12.0))));
                     }
                     if (hi.getCarryingCapacityMultiplier() > 1.0) {
                         double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
