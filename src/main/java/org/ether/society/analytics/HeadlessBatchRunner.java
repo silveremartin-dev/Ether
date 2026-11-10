@@ -229,6 +229,8 @@ public class HeadlessBatchRunner {
         perfConfig.setParallelThreadCount(Math.max(1, cores));
         engine.setPerformanceConfig(perfConfig);
         engine.setTemporalScale(org.ether.society.core.TemporalScale.MONTHLY);
+        // Ensure statistics kernel (GDP, Gini, life expectancy, global aggregates cache) executes every tick in headless mode
+        engine.setHeadlessTelemetrySubscribed(true);
         if (engine.getHistoryManager() != null) {
             engine.getHistoryManager().setMaxSnapshots(12);
         }

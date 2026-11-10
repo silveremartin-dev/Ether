@@ -288,18 +288,7 @@ final class GroundTruthAuditReportBuilder {
         }
 
         fullReport.append("## 🌍 4. Orthogonal 9-Dimensional Geocultural Tensor Spatial Fidelity\n\n");
-        fullReport.append("Evaluates spatial boundary preservation, isogloss containment, and kinship structures against historical empirical rasters (Glottolog, D-PLACE, Seshat):\n\n");
-        fullReport.append("| # | Geocultural Tensor Dimension | Ground Truth Empirical Source | Primary Physical Anchor | Spatial Fidelity (r) | Boundary Overlap (Dice) |\n");
-        fullReport.append("|---|---|---|---|---|---|\n");
-        fullReport.append("| 1 | **🗣️ Linguistic Isoglosses (Dim 0)** | Glottolog 4.8 / Nichols (1992) | Topographic Roughness (z / 3500 m) | 0.912 | 0.884 |\n");
-        fullReport.append("| 2 | **🧬 Kinship & Clan Structure (Dim 1)** | D-PLACE / Goody (1983) | Social Surplus (k_pc / 1800 kg) | 0.895 | 0.867 |\n");
-        fullReport.append("| 3 | **🔮 Sacred Rituals & Solidarity (Dim 2)** | Seshat / Turchin (2003) | Frontier Ruggedness (z - 1000 m) | 0.887 | 0.852 |\n");
-        fullReport.append("| 4 | **👑 Sovereignty & Borders (Dim 3)** | Grataloup / Tilly (1990) | Hydrographic Watersheds & Coercion | 0.924 | 0.901 |\n");
-        fullReport.append("| 5 | **⚙️ Materiality & Tooling (Dim 4)** | Maddison / Ashby (2011) | Useful Exergy Dissipation (P_watts / N) | 0.941 | 0.923 |\n");
-        fullReport.append("| 6 | **🛣️ Trade & Market Access (Dim 5)** | Scheidel ORBIS / Krugman (1991) | Lowland Gradient (z - 600 m) & Density | 0.933 | 0.899 |\n");
-        fullReport.append("| 7 | **⚖️ Administrative Hierarchy (Dim 6)** | Seshat Databank (Turchin 2018) | Demographic Network Scale (log10 N) | 0.952 | 0.938 |\n");
-        fullReport.append("| 8 | **⚠️ Ecological Carrying Capacity (Dim 7)** | HYDE 3.4 / Boserup (1965) | Agro-Ecological Carrying Load (M_load) | 0.918 | 0.891 |\n");
-        fullReport.append("| 9 | **🧪 Sanitary & Pathogen Memory (Dim 8)** | Omran (1971) / Preston (1975) | Epidemiological Transition (L - 45 yrs) | 0.960 | 0.945 |\n\n");
+        fullReport.append("> Empirical 9D geocultural tensor metrics ($r$, $\\text{SSIM}$, $\\text{IoU}$) are computed directly against ground-truth epoch rasters per run and reported dynamically in the spatial geocultural synthesis section.\n\n");
 
         for (ScenarioAudit a : audits) {
             explanationSummary.append(String.format(Locale.US, "• **%s**: Fidelity %.1f%% (MAPE %.1f%%) — %s\n",

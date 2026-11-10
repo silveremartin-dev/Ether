@@ -597,33 +597,37 @@ In [`EmpiricalResidualBifurcationTest.java`](file:///c:/Silvere/Encours/Developp
 
 ### 7.4. Pillar 6: Multi-Millennial Empirical Historical Benchmarks (`ScientificModelFalsificationAndValidationSuite`)
 
-#### A. The 9 Master Historical Epochs ($-20\,000\text{ BP}$ to $1914\text{ CE}$)
-Across the 9 master historical epochs audited in [`MacroHistoricalEpochsFalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/batch/MacroHistoricalEpochsFalsificationTest.java) at **`Res 3` (global sphere: $41\,162\text{ cells}$, mean spacing $d \approx 110\text{ km}$)** and **`Res 6` (regional cradle windows: $d \approx 3.2\text{ km}$)**, every trajectory satisfies the continuous error envelope $\tau(t)$.
+#### A. The 9 Master Historical Epochs ($-20\,000\text{ BP}$ to $1914\text{ CE}$, Phase 1 `Res 3` Audit)
+Across the 9 master historical epochs executed over 20-year horizons ($240\text{ monthly ticks}$, $N=21$ annual samples) in [`MacroHistoricalEpochsFalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/batch/MacroHistoricalEpochsFalsificationTest.java) at **`Res 3` (`41\,162\text{ cells}` globally; `83\text{ cells}` for the Fertile Crescent regional window)**, we present the raw empirical outcome of the campaign without post-hoc smoothing (`docs/reports/scenario_phase1_falsification_synthesis.md`).
 
-In accordance with the Dual-Table Epistemic Architecture (Section 5.2.B), results are reported separately for conserved physical observables and retrospective institutional indices:
+In accordance with the Dual-Table Epistemic Architecture (Section 5.2.B), results expose both **genuine spatial/biophysical strengths** and **critical dynamical/engineering discrepancies** discovered by the statistical audit:
 
-##### Table 7.4.A1: Tier-1 Conserved Biophysical Observables & Cartographic Alignment
-| Master Historical Epoch | Historical Epoch | Domain / Resolution | Tier-1 Biophysical Fidelity ($1-\text{MAPE}_{\text{T1}}$) | Spatial Pearson $r_{\text{spatial}}$ | Structural Similarity ($\text{SSIM}$) | Ecumene Overlap ($\text{IoU}$) | Required Floor $100\%-\tau(t)$ | Empirical Verdict |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **1. Fertile Crescent & Neolithic Agriculture** | $-8000\text{ BCE}$ | `Res 6` Window | **$97.3\%$** | **$+0.947$** | $0.812$ | $100.0\%$ | $50.0\%$ | **PASS** (Optimal Agrarian Convergence) |
-| **2. Last Glacial Maximum & Solutrean** | $-20\,000\text{ BP}$ | `Res 3` Global | **$95.5\%$** | **$+0.955$** | $0.867$ | $100.0\%$ | $50.0\%$ | **PASS** (Glacial Biophysical Bound) |
-| **3. Antonine Plague Imperial Crisis** | $165\text{ CE}$ | `Res 3` Global | **$91.5\%$** | **$+0.993$** | $0.927$ | $100.0\%$ | $51.4\%$ | **PASS** (Epidemic Diffusion Bound) |
-| **4. Islamic Caliphate Expansion** | $632\text{ CE}$ | `Res 3` Global | **$90.8\%$** | **$+0.993$** | $0.926$ | $100.0\%$ | $56.2\%$ | **PASS** (Transcontinental Network Alignment) |
-| **5. Late Antique Little Ice Age (LALIA)** | $536\text{ CE}$ | `Res 3` Global | **$90.7\%$** | **$+0.992$** | $0.915$ | $100.0\%$ | $54.5\%$ | **PASS** (Volcanic Cooling & Farquhar Shock) |
-| **6. World Wars & Modern Transition** | $1914\text{ CE}$ | `Res 3` Global | **$90.3\%$** | **$+0.981$** | $0.787$ | $100.0\%$ | $91.2\%$ | **PASS** (Industrial Mobilization Ceiling) |
-| **7. The Black Death Eurasian Pandemic** | $1347\text{ CE}$ | `Res 3` Global | **$89.0\%$** | **$+0.990$** | $0.976$ | $100.0\%$ | $78.6\%$ | **PASS** (Demographic Inversion Envelope) |
-| **8. Industrial Revolution Takeoff** | $1800\text{ CE}$ | `Res 3` Global | **$88.2\%$** | **$+0.982$** | $0.824$ | $100.0\%$ | $89.6\%$ | **PASS** (Pomeranz Exergy Transition) |
-| **9. Song Hydraulic Pre-Industrialization** | $1000\text{ CE}$ | `Res 3` Global | **$86.1\%$** | **$+0.991$** | $0.983$ | $100.0\%$ | $68.4\%$ | **PASS** (Boserupian Canal Saturation) |
+##### Table 7.4.A1: Phase-1 Biophysical Level Fidelity, Cartographic Alignment & Mean Trajectory Statistics (`Res 3`)
+| Master Historical Epoch | Window (20 yr) | Tier-1 Fidelity ($1-\text{MAPE}_{\text{T1}}$) | Spatial Pearson $r_{\text{spatial}}$ | Structural Similarity ($\text{SSIM}$) | Mean Temporal Pearson $\bar{r}$ | Mean Theil $U^C$ (Covar) | Global All-Var MAPE | Required Tier-1 Floor $100\%-\tau(t)$ | Raw Phase-1 Audit Status |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **1. Fertile Crescent** | $-8000\text{ BCE}$ (Win) | **$97.3\%$** | **$+0.9473$** | **$0.0000$** | $+0.141$ | $0.1\%$ | $51.49\%$ | $50.0\%$ | **T1 PASS / Low SSIM** ($83$ window cells) |
+| **2. Last Glacial Maximum** | $-20\,000\text{ BP}$ | **$95.5\%$** | **$+0.9552$** | $0.3667$ | $+0.250$ | $4.8\%$ | $51.09\%$ | $50.0\%$ | **T1 PASS / Sparse Ice Grid** |
+| **3. Antonine Plague** | $165\text{ CE}$ | **$91.5\%$** | **$+0.9926$** | $0.9265$ | **$-0.208$** | $1.4\%$ | $20.58\%$ | $51.4\%$ | **T1 PASS / T2 Anti-Correlated** |
+| **4. Islamic Expansion** | $632\text{ CE}$ | **$90.8\%$** | **$+0.9934$** | $0.9255$ | **$-0.353$** | $0.7\%$ | $19.55\%$ | $56.2\%$ | **T1 PASS / T2 Anti-Correlated** |
+| **5. Late Antique Ice Age** | $536\text{ CE}$ | **$90.7\%$** | **$+0.9921$** | $0.9147$ | **$-0.287$** | $0.6\%$ | $18.94\%$ | $54.5\%$ | **T1 PASS / T2 Anti-Correlated** |
+| **6. World Wars Era** | $1914\text{ CE}$ | **$90.3\%$** | **$+0.9810$** | $0.7870$ | **$-0.418$** | $18.9\%$ | $45.27\%$ | $91.2\%$ | **BORDERLINE T1 ($-0.9\%$) / Fossil Failure** |
+| **7. Black Death Pandemic** | $1347\text{ CE}$ | **$89.0\%$** | **$+0.9900$** | $0.9755$ | **$-0.517$** | $4.0\%$ | $25.12\%$ | $78.6\%$ | **T1 PASS / Missed Pop. Crash ($r_N=-0.835$)** |
+| **8. Industrial Revolution** | $1800\text{ CE}$ | **$88.2\%$** | **$+0.9821$** | $0.8239$ | **$-0.346$** | $7.5\%$ | $47.66\%$ | $89.6\%$ | **BORDERLINE T1 ($-1.4\%$) / Fossil Failure** |
+| **9. Song Dynasty** | $1000\text{ CE}$ | **$86.1\%$** | **$+0.9912$** | $0.9833$ | **$-0.483$** | $1.1\%$ | $21.41\%$ | $68.4\%$ | **T1 PASS / T2 Anti-Correlated** |
 
-##### Table 7.4.A2: Tier-2 Macroeconomic & Institutional Indices (Theil Decomposition & Dynamic Growth Rate Correlation)
-| Macroeconomic / Institutional Variable | Mean Population Correlation $r(\Delta \ln N)$ | Theil T0 Bias $U^M$ (Translation Offset) | Theil Covariance $U^C$ (Dynamical Fit) | Causal Growth Correlation $r(\Delta \ln Y)$ | Primary Empirical Literature Grounding |
+##### Table 7.4.A2: Observed Temporal Discordances in the Raw Phase-1 Batch Audit (`536 CE` – `1914 CE`)
+| Audited Macroeconomic / Ecological Variable | Observed Pearson $r$ Range (CE Epochs) | Theil T0 Bias $U^M$ Range | Theil Covariance $U^C$ Range | Log-Growth $r(\Delta \ln Y)$ Range | Root Cause Identified in Phase-1 Code Audit |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Global Population ($N$)** | **$+0.94\text{ to }+0.99$** | $8.2\%$ | **$87.4\%$** | **$+0.92$** | HYDE 3.4 & McEvedy-Jones (1978) |
-| **Gross World Product ($\text{GWP}$)** | $+0.88$ | $88.5\%$ | $9.2\%$ | **$+0.86$** | Maddison Project (2020) 1990 GK$ conversion |
-| **Primary Energy ($E_{\text{prim}}$)** | $+0.91$ | $74.2\%$ | $21.5\%$ | **$+0.89$** | Smil (2017) & Ayres-Warr (2009) |
-| **Urbanization Rate ($U$)** | $+0.84$ | $79.1\%$ | $16.8\%$ | **$+0.81$** | Bairoch (1988) $> 5\,000$ hab urban threshold |
-| **Currency Debasement ($C_{\text{pur}}$)** | $+0.92$ | $14.5\%$ | **$81.0\%$** | **$+0.94$** | Butcher-Ponting (2014) Roman denarius silver assay |
-| **Elite Overproduction ($e$)** | $+0.87$ | $31.0\%$ | **$64.8\%$** | **$+0.90$** | Turchin (2016) *Ages of Discord* secular cycle index |
+| **Global Population ($N$)** | **$+0.871\text{ to }+0.993$** *(exc. 1347 CE: $-0.835$)* | — | — | — | Accurate macro-growth except missed *Yersinia pestis* mortality shock in `1347 CE` ($499.25\text{M}$ sim vs $432.35\text{M}$ obs). |
+| **Gross World Product ($\text{GWP}$)** | **$0.000$** ($\sigma = 0.00$) | $17.2\%\text{--}99.8\%$ | **$0.0\%$** | $0.000$ | **Headless Telemetry Subscription Bug**: `HeadlessBatchRunner` omitted `setHeadlessTelemetrySubscribed(true)`, leaving `currentGDP`, `currentGini`, and `currentLifeExpectancy` frozen at $t_0$. |
+| **Fossil Energy Share ($\text{Fossil\%}$)** | **$-0.840\text{ to }-0.963$** (`1800–1914 CE`) | $88.4\%\text{--}100.0\%$ | $0.0\%\text{--}3.7\%$ | **$-0.920\text{ to }+0.707$** | `CliodynamicAnalyticalFormulasCatalog.computeFossilSharePrimaryEnergy` requires $\Phi_{\text{exergy}} \ge 2.80$, leaving 1914 CE at **$1.27\%$** vs **$78.66\%$** empirical. |
+| **Urbanization Rate ($U$)** | **$-0.915\text{ to }-0.977$** *(exc. 165 CE: $+0.980$)* | $0.2\%\text{--}88.0\%$ | $0.0\%\text{--}48.8\%$ | **$-0.925\text{ to }+0.922$** | Over 20-year transient windows, post-initialization cellular settlement relaxation opposes secular HYDE interpolation slopes. |
+| **Information Speed & Metallurgy** | **$-0.856\text{ to }-1.000$** | $68.8\%\text{--}98.8\%$ | $0.0\%\text{--}6.1\%$ | $-0.600\text{ to }+0.963$ | Electromagnetic threshold ($\Phi_{\text{exergy}} \ge 3.80$) is uncrossed in `1914 CE` ($71.1$ sim vs $1.41 \times 10^7$ obs). |
+| **9D Geocultural Dim 7 (Ecological)** | **$0.0000$** (all 9 epochs) | N/A (Spatial) | N/A | N/A | `CellularMapComparisonMetrics` evaluates `soilOrganicCarbon` which defaults uniformly to `25.0` across uninitialized cells ($\text{Var}_A = 0 \implies r = 0$). |
+
+> [!CAUTION]
+> **Methodological Lesson & Architectural Action Item**  
+> Reporting honest raw outputs rather than smoothed baselines immediately exposed why `MAPE` alone creates an illusion of validity: while spatial 2D distributions correlate strongly ($r_{\text{spatial}} \in [+0.947, +0.993]$) and Tier-1 conserved states stay within $\sim 3\%\text{--}14\%$ magnitude error, **Theil covariance $U^C$ remains low ($0.1\%\text{--}18.9\%$) and Pearson $\bar{r}$ turns negative on 7/9 short 20-year runs**. Fixing `HeadlessBatchRunner.setHeadlessTelemetrySubscribed(true)` eliminates the frozen $\sigma=0$ mask, revealing in an unmasked `1914–1960 CE` verification run that physical capital $K$ and `GWP` collapse from $2\,333\text{ G\$}$ down toward $273\text{ G\$}$ ($\text{MAPE}=84.5\%$) due to insufficient industrial fossil capital reinvestment relative to $4\%\text{/yr}$ entropic depreciation. Recalibrating industrial exergy/capital accumulation ($\Phi_{\text{exergy}}$), restoring 1347 pandemic mortality propagation, and binding Dim 7 (`ecological`) to active cellular biomass/soil stocks remain the top scientific priorities prior to `Res 4/5` global runs.
 
 #### B. Emergent Geopolitical Empire Localization (`GeopoliticalEmpireLocalizationTest`)
 Without hardcoded territorial masks, [`GeopoliticalEmpireLocalizationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmarks/GeopoliticalEmpireLocalizationTest.java) verifies that macro-polities nucleate around their authentic riverine and thalassocratic basins with Haversine centroid drift $d_{\text{Haversine}} < 220\text{ km}$ and Jaccard IoU $\ge 0.72$:
