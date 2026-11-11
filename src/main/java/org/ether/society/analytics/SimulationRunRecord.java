@@ -143,6 +143,7 @@ public class SimulationRunRecord {
     public static final int MAX_SPATIAL_SNAPSHOTS_IN_MEMORY = 16;
 
     private final TreeMap<Integer, List<org.ether.society.database.H3Cell>> spatialSnapshots = new TreeMap<>();
+    private final TreeMap<Integer, org.ether.society.core.telemetry.TelemetryEvaluationResult.CulturalMatrixResult> culturalSnapshots = new TreeMap<>();
 
     /** Optional Tier 2 partial engine variance attribution report associated with this run. */
     private EngineContributionReport engineContributionReport;
@@ -242,6 +243,41 @@ public class SimulationRunRecord {
      */
     public TreeMap<Integer, List<org.ether.society.database.H3Cell>> getSpatialSnapshots() {
         return spatialSnapshots;
+    }
+
+    /**
+     * Records an evaluated cultural matrix snapshot for this run at a specific calendar year.
+     *
+     * @param year   calendar year
+     * @param result evaluated cultural matrix result
+     */
+    public void addCulturalSnapshot(int year, org.ether.society.core.telemetry.TelemetryEvaluationResult.CulturalMatrixResult result) {
+        if (result != null) {
+            culturalSnapshots.put(year, result);
+        }
+    }
+
+    /**
+     * @return all cultural matrix snapshots keyed by calendar year
+     */
+    public TreeMap<Integer, org.ether.society.core.telemetry.TelemetryEvaluationResult.CulturalMatrixResult> getCulturalSnapshots() {
+        return culturalSnapshots;
+    }
+
+    /**
+     * Returns cultural matrix snapshot at or nearest to the requested year.
+     *
+     * @param year target year
+     * @return cultural matrix result, or {@code null} if no cultural snapshots were recorded
+     */
+    public org.ether.society.core.telemetry.TelemetryEvaluationResult.CulturalMatrixResult getCulturalSnapshotAt(int year) {
+        if (culturalSnapshots.containsKey(year)) {
+            return culturalSnapshots.get(year);
+        }
+        var entry = culturalSnapshots.floorEntry(year);
+        if (entry != null) return entry.getValue();
+        entry = culturalSnapshots.ceilingEntry(year);
+        return entry != null ? entry.getValue() : null;
     }
 
     /**

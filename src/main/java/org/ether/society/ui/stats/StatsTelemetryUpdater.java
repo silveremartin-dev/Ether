@@ -101,7 +101,20 @@ public final class StatsTelemetryUpdater {
             if (engine.getTelemetrySubscription().isEmpty()) {
                 Set<String> subscribed = new LinkedHashSet<>(activeTelemetryVariables);
                 subscribed.add("agePyramid");
-                engine.setTelemetrySubscription(TelemetrySubscription.ofMetrics(subscribed, 1));
+
+                java.util.List<TelemetrySubscription.SpatialRasterQuery> spatialQueries = new java.util.ArrayList<>();
+                if (activeTelemetryVariables.contains("spatialMap2D") || activeTelemetryVariables.contains("spatialMap")) {
+                    spatialQueries.add(TelemetrySubscription.SpatialRasterQuery.renderedMap(
+                            "spatial_live_density", TelemetrySubscription.SpatialChannel.POPULATION_DENSITY, 128, 64));
+                }
+
+                TelemetrySubscription.CulturalMatrixQuery culturalQuery = TelemetrySubscription.CulturalMatrixQuery.DISABLED;
+                if (activeTelemetryVariables.contains("culturalMatrix") || activeTelemetryVariables.contains("culturalAffinityMatrix")) {
+                    long startYear = engine.getCurrentScenario() != null ? (long) engine.getCurrentScenario().getStartDateYear() : 0L;
+                    culturalQuery = TelemetrySubscription.CulturalMatrixQuery.withDelta(startYear);
+                }
+
+                engine.setTelemetrySubscription(new TelemetrySubscription(subscribed, spatialQueries, culturalQuery, 1));
             }
             res = engine.evaluateTelemetryNow();
         }
@@ -113,16 +126,27 @@ public final class StatsTelemetryUpdater {
         final double currentTime = year + (month / 12.0);
         final long minYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getStartDateYear() : 0L;
 
+        final boolean spatialSubscribed = activeTelemetryVariables.contains("spatialMap2D")
+                || activeTelemetryVariables.contains("spatialMap")
+                || (engine.getTelemetrySubscription() != null && engine.getTelemetrySubscription().isSpatialSubscribed());
+        final boolean culturalSubscribed = activeTelemetryVariables.contains("culturalMatrix")
+                || activeTelemetryVariables.contains("culturalAffinityMatrix")
+                || (engine.getTelemetrySubscription() != null && engine.getTelemetrySubscription().isCulturalMatrixSubscribed());
+
         Platform.runLater(() -> {
             try {
-                if (spatialHeatmapPanel != null) {
+                if (spatialHeatmapPanel != null && spatialSubscribed) {
                     spatialHeatmapPanel.setHistoryManager(engine.getHistoryManager());
                     spatialHeatmapPanel.updateCells(engine.getCells());
                     spatialHeatmapPanel.setDateLabel(String.format("%d", year));
                 }
 
                 if (dynamicCulturalMatrixPanel != null) {
-                    dynamicCulturalMatrixPanel.updateState(engine, year);
+                    if (culturalSubscribed) {
+                        dynamicCulturalMatrixPanel.updateState(engine, year, eval.getCulturalMatrixResult());
+                    } else {
+                        dynamicCulturalMatrixPanel.showUnsubscribedState();
+                    }
                 }
 
                 String disabledLabel = I18n.getOrDefault("stats.disabled", "- (Disabled)");

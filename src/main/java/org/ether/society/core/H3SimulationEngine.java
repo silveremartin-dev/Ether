@@ -546,7 +546,7 @@ public final class H3SimulationEngine implements ISimulationEngine {
      * @return immutable evaluated telemetry result
      */
     public TelemetryEvaluationResult evaluateTelemetryNow() {
-        if (compiledTelemetryPlan.isNoOp() || worldBuffer == null) {
+        if (compiledTelemetryPlan.isNoOp() || (worldBuffer == null && compiledTelemetryPlan.getInputMask() != 0)) {
             return TelemetryEvaluationResult.EMPTY;
         }
         long startYr = currentScenario != null ? currentScenario.getStartDateYear() : timeManager.getCurrentYear();

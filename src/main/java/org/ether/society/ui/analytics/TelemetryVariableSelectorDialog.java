@@ -81,6 +81,10 @@ public class TelemetryVariableSelectorDialog extends Dialog<Set<String>> {
         // ⚡ Réseaux & Information
         register("informationSpeed", "Vitesse de l'Information", "⚡ Réseaux", "Vitesse de propagation des dépêches et savoirs (km/jour)");
         register("systemInterdependence", "Interdépendance Systémique", "⚡ Réseaux", "Connectivité et vulnérabilité aux cascades de rupture");
+
+        // 🗺️ Cartographie Spatiale 2D & Matrices Culturelles
+        register("spatialMap2D", "Rasters Spatiaux 2D (Champs Physiques)", "🗺️ Cartographie & Matrices", "Extraction et rendu 2D des champs de densité, capital et biomasse");
+        register("culturalMatrix", "Matrice Culturelle (N × N Affinités)", "🗺️ Cartographie & Matrices", "Calcul des affinités ethnolinguistiques, dérive culturelle et polarisation");
     }
 
     private static void register(String id, String label, String category, String description) {

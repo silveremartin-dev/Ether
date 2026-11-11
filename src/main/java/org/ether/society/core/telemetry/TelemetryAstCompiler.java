@@ -138,6 +138,8 @@ public final class TelemetryAstCompiler {
         // Special telemetry views / diagnostics
         reg("agePyramid", MASK_POP_FOOD_WATER | MASK_AGE_PYRAMID);
         reg("densityDistribution", MASK_POP_FOOD_WATER | MASK_STAT_DENSITY_BIN);
+        reg("spatialMap2D", 0);
+        reg("culturalMatrix", 0);
         reg("engineTPS", 0);
         reg("ramMemory", 0);
         reg("cellCount", 0);
@@ -145,6 +147,9 @@ public final class TelemetryAstCompiler {
         // Aliases across MetricRegistry (27 canonical benchmarks) & MetricCardMeta (UI dashboard)
         alias("worldPopulation", "population");
         alias("gdpTotal", "grossWorldProduct");
+        alias("culturalAffinityMatrix", "culturalMatrix");
+        alias("spatialMaps", "spatialMap2D");
+        alias("spatialMap", "spatialMap2D");
         alias("giniIndex", "gini");
         alias("giniInequality", "gini");
         alias("giniCoefficient", "gini");
@@ -207,8 +212,23 @@ public final class TelemetryAstCompiler {
             return CompiledTelemetryPlan.NO_OP;
         }
 
+        TelemetrySubscription effectiveSub = subscription;
+        boolean hasCulturalId = subscription.getMetricIds().stream()
+                .anyMatch(id -> "culturalMatrix".equals(resolveCanonicalId(id)));
+        if (hasCulturalId && !subscription.isCulturalMatrixSubscribed()) {
+            effectiveSub = effectiveSub.withCulturalMatrix(TelemetrySubscription.CulturalMatrixQuery.CURRENT);
+        }
+
+        boolean hasSpatialId = subscription.getMetricIds().stream()
+                .anyMatch(id -> "spatialMap2D".equals(resolveCanonicalId(id)));
+        if (hasSpatialId && !effectiveSub.isSpatialSubscribed()) {
+            effectiveSub = effectiveSub.withSpatialQueries(List.of(
+                    TelemetrySubscription.SpatialRasterQuery.renderedMap(
+                            "spatial_density", TelemetrySubscription.SpatialChannel.POPULATION_DENSITY, 128, 64)));
+        }
+
         Set<String> canonicalTargets = new LinkedHashSet<>();
-        for (String req : subscription.getMetricIds()) {
+        for (String req : effectiveSub.getMetricIds()) {
             canonicalTargets.add(resolveCanonicalId(req));
         }
 
@@ -220,7 +240,7 @@ public final class TelemetryAstCompiler {
             visitPostOrder(target, visited, postOrder, maskAcc);
         }
 
-        return new CompiledTelemetryPlan(subscription, canonicalTargets, postOrder, maskAcc[0]);
+        return new CompiledTelemetryPlan(effectiveSub, canonicalTargets, postOrder, maskAcc[0]);
     }
 
     private static void visitPostOrder(String nodeId,

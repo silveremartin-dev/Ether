@@ -102,6 +102,27 @@ public final class TelemetrySubscription {
         }
     }
 
+    /**
+     * Specification for extracting the directional ethnolinguistic cultural affinity matrix \(N \times N\),
+     * baseline delta \(\Delta(t - t_0)\), mean affinity, and cultural polarization index.
+     *
+     * @param enabled       {@code true} if cultural matrix evaluation is requested
+     * @param computeDelta  {@code true} to evaluate cultural drift against baseline epoch $t_0$
+     * @param baselineEpoch baseline calendar year $t_0$ for cultural drift evaluation
+     */
+    public record CulturalMatrixQuery(
+            boolean enabled,
+            boolean computeDelta,
+            long baselineEpoch) {
+
+        public static final CulturalMatrixQuery DISABLED = new CulturalMatrixQuery(false, false, 0L);
+        public static final CulturalMatrixQuery CURRENT = new CulturalMatrixQuery(true, false, 0L);
+
+        public static CulturalMatrixQuery withDelta(long baselineEpoch) {
+            return new CulturalMatrixQuery(true, true, baselineEpoch);
+        }
+    }
+
     /** Canonical 27 empirical benchmark metric identifiers for explicit calibration runs. */
     public static final Set<String> CANONICAL_BENCHMARK_METRICS = Set.of(
             "population",
@@ -134,14 +155,23 @@ public final class TelemetrySubscription {
     );
 
     /** Empty default subscription: zero metrics, zero spatial queries, zero runtime overhead. */
-    public static final TelemetrySubscription NONE = new TelemetrySubscription(Set.of(), List.of(), 1);
+    public static final TelemetrySubscription NONE = new TelemetrySubscription(
+            Set.of(), List.of(), CulturalMatrixQuery.DISABLED, 1);
 
     private final Set<String> metricIds;
     private final List<SpatialRasterQuery> spatialQueries;
+    private final CulturalMatrixQuery culturalMatrixQuery;
     private final int samplingIntervalTicks;
 
     public TelemetrySubscription(Collection<String> metricIds,
                                  Collection<SpatialRasterQuery> spatialQueries,
+                                 int samplingIntervalTicks) {
+        this(metricIds, spatialQueries, CulturalMatrixQuery.DISABLED, samplingIntervalTicks);
+    }
+
+    public TelemetrySubscription(Collection<String> metricIds,
+                                 Collection<SpatialRasterQuery> spatialQueries,
+                                 CulturalMatrixQuery culturalMatrixQuery,
                                  int samplingIntervalTicks) {
         if (metricIds == null || metricIds.isEmpty()) {
             this.metricIds = Set.of();
@@ -159,6 +189,7 @@ public final class TelemetrySubscription {
         } else {
             this.spatialQueries = List.copyOf(new ArrayList<>(spatialQueries));
         }
+        this.culturalMatrixQuery = culturalMatrixQuery != null ? culturalMatrixQuery : CulturalMatrixQuery.DISABLED;
         this.samplingIntervalTicks = Math.max(1, samplingIntervalTicks);
     }
 
@@ -167,12 +198,12 @@ public final class TelemetrySubscription {
         if (metricIds == null || metricIds.isEmpty()) {
             return NONE;
         }
-        return new TelemetrySubscription(metricIds, List.of(), samplingIntervalTicks);
+        return new TelemetrySubscription(metricIds, List.of(), CulturalMatrixQuery.DISABLED, samplingIntervalTicks);
     }
 
     /** Creates an explicit subscription covering the canonical benchmark metrics. */
     public static TelemetrySubscription allCanonicalBenchmarks(int samplingIntervalTicks) {
-        return new TelemetrySubscription(CANONICAL_BENCHMARK_METRICS, List.of(), samplingIntervalTicks);
+        return new TelemetrySubscription(CANONICAL_BENCHMARK_METRICS, List.of(), CulturalMatrixQuery.DISABLED, samplingIntervalTicks);
     }
 
     /** Returns a copy with an updated sampling interval in ticks ($\ge 1$). */
@@ -181,12 +212,32 @@ public final class TelemetrySubscription {
         if (clamped == this.samplingIntervalTicks) {
             return this;
         }
-        return new TelemetrySubscription(this.metricIds, this.spatialQueries, clamped);
+        return new TelemetrySubscription(this.metricIds, this.spatialQueries, this.culturalMatrixQuery, clamped);
+    }
+
+    /** Returns a copy with an updated cultural matrix query. */
+    public TelemetrySubscription withCulturalMatrix(CulturalMatrixQuery query) {
+        return new TelemetrySubscription(this.metricIds, this.spatialQueries, query, this.samplingIntervalTicks);
+    }
+
+    /** Returns a copy with an updated spatial queries list. */
+    public TelemetrySubscription withSpatialQueries(Collection<SpatialRasterQuery> queries) {
+        return new TelemetrySubscription(this.metricIds, queries, this.culturalMatrixQuery, this.samplingIntervalTicks);
     }
 
     /** Returns {@code true} when nothing is subscribed (zero-cost idle state). */
     public boolean isEmpty() {
-        return metricIds.isEmpty() && spatialQueries.isEmpty();
+        return metricIds.isEmpty() && spatialQueries.isEmpty() && !isCulturalMatrixSubscribed();
+    }
+
+    /** Returns {@code true} if cultural matrix evaluation is actively subscribed. */
+    public boolean isCulturalMatrixSubscribed() {
+        return culturalMatrixQuery != null && culturalMatrixQuery.enabled();
+    }
+
+    /** Returns {@code true} if 2D spatial raster queries are actively subscribed. */
+    public boolean isSpatialSubscribed() {
+        return !spatialQueries.isEmpty();
     }
 
     /**
@@ -208,6 +259,10 @@ public final class TelemetrySubscription {
 
     public List<SpatialRasterQuery> getSpatialQueries() {
         return spatialQueries;
+    }
+
+    public CulturalMatrixQuery getCulturalMatrixQuery() {
+        return culturalMatrixQuery;
     }
 
     public int getSamplingIntervalTicks() {

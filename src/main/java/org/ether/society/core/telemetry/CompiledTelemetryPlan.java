@@ -80,9 +80,10 @@ public final class CompiledTelemetryPlan {
         this.inputMask = inputMask;
     }
 
-    /** @return {@code true} when this plan has zero metrics and zero spatial queries */
+    /** @return {@code true} when this plan has zero metrics, zero spatial queries, and unsubscribed cultural matrix */
     public boolean isNoOp() {
-        return topologicalOrder.isEmpty() && subscription.getSpatialQueries().isEmpty();
+        return topologicalOrder.isEmpty() && subscription.getSpatialQueries().isEmpty()
+                && !subscription.isCulturalMatrixSubscribed();
     }
 
     /** @return compiled input requirement bitmask for diagnostics and unit verification */
@@ -127,14 +128,14 @@ public final class CompiledTelemetryPlan {
             double t0Co2Ppm,
             double elapsedYears,
             double engineTps) {
-        if (isNoOp() || world == null) {
+        if (isNoOp() || (world == null && inputMask != 0)) {
             return TelemetryEvaluationResult.EMPTY;
         }
 
         // -----------------------------------------------------------------
         // 1. Single Fused O(N) WorldBuffer Pass (Bitmasked to active arrays)
         // -----------------------------------------------------------------
-        final int n = world.getCapacity();
+        final int n = world != null ? world.getCapacity() : 0;
         final boolean needPopFoodWater = (inputMask & (MASK_POP_FOOD_WATER | MASK_ENERGY_CAPITAL | MASK_URBAN_POP_WEIGHT | MASK_ENV_BIOME_SOIL)) != 0;
         final boolean needEnergyCap    = (inputMask & MASK_ENERGY_CAPITAL) != 0;
         final boolean needEnvSoil      = (inputMask & MASK_ENV_BIOME_SOIL) != 0;
@@ -422,6 +423,14 @@ public final class CompiledTelemetryPlan {
             }
         }
 
+        // -----------------------------------------------------------------
+        // 5. Optional Cultural Matrix & Polarization Evaluation (Subscription Only)
+        // -----------------------------------------------------------------
+        TelemetryEvaluationResult.CulturalMatrixResult culturalOut = null;
+        if (subscription.isCulturalMatrixSubscribed()) {
+            culturalOut = evaluateCulturalMatrix(subscription.getCulturalMatrixQuery(), year);
+        }
+
         double avgTechOut = memo.getOrDefault("avgTechLevel", ctx.phiExergy());
 
         return new TelemetryEvaluationResult(
@@ -429,6 +438,7 @@ public final class CompiledTelemetryPlan {
                 year,
                 outMetrics,
                 spatialOut,
+                culturalOut,
                 totalPopLong,
                 foodSum,
                 waterSum,
@@ -697,6 +707,78 @@ public final class CompiledTelemetryPlan {
         }
         return new TelemetryEvaluationResult.SpatialRasterResult(
                 q.queryId(), q.channel(), sum, mean, min, max, matched, img);
+    }
+
+    private TelemetryEvaluationResult.CulturalMatrixResult evaluateCulturalMatrix(
+            TelemetrySubscription.CulturalMatrixQuery q,
+            long year) {
+        if (q == null || !q.enabled()) {
+            return null;
+        }
+        String planet = "earth";
+        List<org.ether.society.model.CulturalEntity> entities =
+                org.ether.society.ui.CulturalEpochRegistryLoader.loadEpochRegistry(planet, year);
+        if (entities.isEmpty()) {
+            entities = org.ether.society.ui.CulturalEpochRegistryLoader.loadEpochRegistry(year);
+        }
+        int n = entities.size();
+        if (n == 0) {
+            return new TelemetryEvaluationResult.CulturalMatrixResult(
+                    year, planet, List.of(), new double[0][0], new double[0][0], 0.5, 0.0);
+        }
+
+        List<org.ether.society.model.CulturalEntity> baselineEntities = entities;
+        if (q.computeDelta()) {
+            baselineEntities = org.ether.society.ui.CulturalEpochRegistryLoader.loadEpochRegistry(planet, q.baselineEpoch());
+            if (baselineEntities.isEmpty()) {
+                baselineEntities = org.ether.society.ui.CulturalEpochRegistryLoader.loadEpochRegistry(q.baselineEpoch());
+            }
+            if (baselineEntities.isEmpty()) {
+                baselineEntities = entities;
+            }
+        }
+
+        double[][] affinities = new double[n][n];
+        double[][] deltas = q.computeDelta() ? new double[n][n] : new double[0][0];
+
+        double sumAffinity = 0.0;
+        double sumSqDiff = 0.0;
+        int count = n * n;
+
+        for (int i = 0; i < n; i++) {
+            org.ether.society.model.CulturalEntity eOrig = entities.get(i);
+            for (int j = 0; j < n; j++) {
+                org.ether.society.model.CulturalEntity eTarg = entities.get(j);
+                double affCurrent = eOrig.affinityTowards(eTarg);
+                affinities[i][j] = affCurrent;
+
+                sumAffinity += affCurrent;
+                sumSqDiff += (affCurrent - 0.5) * (affCurrent - 0.5);
+
+                if (q.computeDelta()) {
+                    org.ether.society.model.CulturalEntity bOrig = findEntityById(baselineEntities, eOrig.id());
+                    org.ether.society.model.CulturalEntity bTarg = findEntityById(baselineEntities, eTarg.id());
+                    double affT0 = (bOrig != null && bTarg != null) ? bOrig.affinityTowards(bTarg) : affCurrent;
+                    deltas[i][j] = affCurrent - affT0;
+                }
+            }
+        }
+
+        double mean = count > 0 ? sumAffinity / count : 0.5;
+        double variance = count > 0 ? sumSqDiff / count : 0.0;
+        double polarization = Math.sqrt(variance) * 2.0;
+
+        return new TelemetryEvaluationResult.CulturalMatrixResult(
+                year, planet, entities, affinities, deltas, mean, polarization);
+    }
+
+    private static org.ether.society.model.CulturalEntity findEntityById(
+            List<org.ether.society.model.CulturalEntity> list, String id) {
+        if (id == null || list == null) return null;
+        for (org.ether.society.model.CulturalEntity e : list) {
+            if (id.equals(e.id())) return e;
+        }
+        return null;
     }
 
     private static double extractSpatialCellValue(

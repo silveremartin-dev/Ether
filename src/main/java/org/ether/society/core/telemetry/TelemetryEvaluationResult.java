@@ -32,8 +32,32 @@ public final class TelemetryEvaluationResult {
             BufferedImage renderedMap) {
     }
 
+    /**
+     * Evaluated ethnolinguistic cultural affinity tensor, drift deltas, and polarization statistics.
+     *
+     * @param epoch              simulation calendar year
+     * @param planet             planetary identifier (e.g. "earth")
+     * @param entities           active cultural entities at this epoch
+     * @param affinities         $N \times N$ directional affinity matrix in $[0, 1]$
+     * @param deltas             $N \times N$ directional affinity drift from $t_0$ in $[-1, +1]$ (empty if not requested)
+     * @param meanAffinity       mean network affinity in $[0, 1]$
+     * @param polarizationIndex  standardized polarization index $\ge 0$
+     */
+    public record CulturalMatrixResult(
+            long epoch,
+            String planet,
+            java.util.List<org.ether.society.model.CulturalEntity> entities,
+            double[][] affinities,
+            double[][] deltas,
+            double meanAffinity,
+            double polarizationIndex) {
+
+        public static final CulturalMatrixResult EMPTY = new CulturalMatrixResult(
+                0L, "earth", java.util.List.of(), new double[0][0], new double[0][0], 0.5, 0.0);
+    }
+
     public static final TelemetryEvaluationResult EMPTY = new TelemetryEvaluationResult(
-            -1L, 0L, Map.of(), Map.of(),
+            -1L, 0L, Map.of(), Map.of(), null,
             0L, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             0.0f, 0.0f, 0.0f, 0.0f, 0,
             new int[0], new int[0]);
@@ -42,6 +66,7 @@ public final class TelemetryEvaluationResult {
     private final long year;
     private final Map<String, Double> metrics;
     private final Map<String, SpatialRasterResult> spatialResults;
+    private final CulturalMatrixResult culturalMatrixResult;
 
     private final long totalPopulation;
     private final double totalFood;
@@ -77,10 +102,37 @@ public final class TelemetryEvaluationResult {
             int populatedCellCount,
             int[] agePyramid,
             int[] densityDistribution) {
+        this(tick, year, metrics, spatialResults, null,
+                totalPopulation, totalFood, potableWater, naturalBiomass,
+                builtCapitalTotal, energyCapturedMw, avgTech, gini, gdp,
+                lifeExpectancy, fertility, populatedCellCount, agePyramid, densityDistribution);
+    }
+
+    public TelemetryEvaluationResult(
+            long tick,
+            long year,
+            Map<String, Double> metrics,
+            Map<String, SpatialRasterResult> spatialResults,
+            CulturalMatrixResult culturalMatrixResult,
+            long totalPopulation,
+            double totalFood,
+            double potableWater,
+            double naturalBiomass,
+            double builtCapitalTotal,
+            double energyCapturedMw,
+            double avgTech,
+            float gini,
+            float gdp,
+            float lifeExpectancy,
+            float fertility,
+            int populatedCellCount,
+            int[] agePyramid,
+            int[] densityDistribution) {
         this.tick = tick;
         this.year = year;
         this.metrics = metrics != null ? Collections.unmodifiableMap(metrics) : Map.of();
         this.spatialResults = spatialResults != null ? Collections.unmodifiableMap(spatialResults) : Map.of();
+        this.culturalMatrixResult = culturalMatrixResult;
         this.totalPopulation = totalPopulation;
         this.totalFood = totalFood;
         this.potableWater = potableWater;
@@ -98,13 +150,15 @@ public final class TelemetryEvaluationResult {
     }
 
     public boolean isEmpty() {
-        return metrics.isEmpty() && spatialResults.isEmpty();
+        return metrics.isEmpty() && spatialResults.isEmpty()
+                && (culturalMatrixResult == null || culturalMatrixResult.entities().isEmpty());
     }
 
     public long getTick() { return tick; }
     public long getYear() { return year; }
     public Map<String, Double> getMetrics() { return metrics; }
     public Map<String, SpatialRasterResult> getSpatialResults() { return spatialResults; }
+    public CulturalMatrixResult getCulturalMatrixResult() { return culturalMatrixResult; }
 
     public Double getMetric(String key) {
         return metrics.get(key);

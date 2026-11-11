@@ -210,4 +210,74 @@ class TelemetryAstAndSnapshotTest {
         assertTrue(gwpDrift.status.contains("Regional"), "Expected regional non-rastered status, got: " + gwpDrift.status);
         assertEquals(0, gwpDrift.sampleCount);
     }
+
+    @Test
+    @DisplayName("Cultural affinity matrix and 2D spatial maps require explicit subscription and evaluate with zero overhead when unsubscribed")
+    void testCulturalMatrixAndSpatialSubscriptionContract() throws Exception {
+        // 1. Unsubscribed contract: Cultural matrix and 2D spatial queries are null/empty
+        TelemetrySubscription emptySub = TelemetrySubscription.NONE;
+        assertFalse(emptySub.isCulturalMatrixSubscribed());
+        assertFalse(emptySub.isSpatialSubscribed());
+        assertTrue(emptySub.isEmpty());
+
+        CompiledTelemetryPlan emptyPlan = TelemetryAstCompiler.compile(emptySub);
+        assertTrue(emptyPlan.isNoOp());
+
+        List<H3Cell> cells = buildSampleWorld();
+        TelemetryEvaluationResult unsubResult = SnapshotTelemetryExtractor.extractFromCells(
+                cells, emptyPlan, 1L, 0L, 430_000L, 280.0, 10.0);
+        assertTrue(unsubResult.isEmpty());
+        assertNull(unsubResult.getCulturalMatrixResult(), "Unsubscribed cultural matrix must be strictly null");
+        assertTrue(unsubResult.getSpatialResults().isEmpty(), "Unsubscribed spatial results must be strictly empty");
+
+        // 2. Explicit subscription contract: Subscribing cultural matrix with delta & 2D spatial query
+        TelemetrySubscription subWithCulturalAnd2D = new TelemetrySubscription(
+                Set.of("population"),
+                List.of(TelemetrySubscription.SpatialRasterQuery.globalZonal("pop_density", TelemetrySubscription.SpatialChannel.POPULATION_DENSITY)),
+                TelemetrySubscription.CulturalMatrixQuery.withDelta(-1000L),
+                1
+        );
+        assertTrue(subWithCulturalAnd2D.isCulturalMatrixSubscribed());
+        assertTrue(subWithCulturalAnd2D.isSpatialSubscribed());
+        assertFalse(subWithCulturalAnd2D.isEmpty());
+
+        CompiledTelemetryPlan plan = TelemetryAstCompiler.compile(subWithCulturalAnd2D);
+        assertFalse(plan.isNoOp());
+
+        TelemetryEvaluationResult subResult = SnapshotTelemetryExtractor.extractFromCells(
+                cells, plan, 1L, 0L, 430_000L, 280.0, 10.0);
+        assertFalse(subResult.isEmpty());
+
+        // Verify 2D spatial query evaluated
+        var spatialResult = subResult.getSpatialResults().get("pop_density");
+        assertNotNull(spatialResult, "Subscribed 2D spatial result must be present");
+        assertEquals(3, spatialResult.cellCount());
+        assertEquals(430_000.0, spatialResult.sum(), 1.0);
+
+        // Verify Cultural Matrix evaluated
+        var culturalResult = subResult.getCulturalMatrixResult();
+        assertNotNull(culturalResult, "Subscribed cultural matrix result must be present");
+        assertEquals(0L, culturalResult.epoch());
+        assertEquals("earth", culturalResult.planet());
+        assertFalse(culturalResult.entities().isEmpty(), "Active cultural entities must be loaded for year 0");
+        int n = culturalResult.entities().size();
+        assertEquals(n, culturalResult.affinities().length);
+        assertEquals(n, culturalResult.deltas().length);
+
+        // Diagonal self-affinity must be 1.0 (or normalized high)
+        for (int i = 0; i < n; i++) {
+            assertEquals(1.0, culturalResult.affinities()[i][i], 0.01, "Self affinity on diagonal must be 1.0");
+        }
+        assertTrue(culturalResult.meanAffinity() >= 0.0 && culturalResult.meanAffinity() <= 1.0);
+        assertTrue(culturalResult.polarizationIndex() >= 0.0);
+
+        // 3. String-based promotion via AST compiler (convenience contract)
+        TelemetrySubscription aliasSub = TelemetrySubscription.ofMetrics(
+                Set.of("culturalMatrix", "spatialMap2D"), 1);
+        CompiledTelemetryPlan aliasPlan = TelemetryAstCompiler.compile(aliasSub);
+        assertTrue(aliasPlan.getSubscription().isCulturalMatrixSubscribed(),
+                "String 'culturalMatrix' in metricIds must be promoted to cultural matrix subscription");
+        assertTrue(aliasPlan.getSubscription().isSpatialSubscribed(),
+                "String 'spatialMap2D' in metricIds must be promoted to spatial raster subscription");
+    }
 }

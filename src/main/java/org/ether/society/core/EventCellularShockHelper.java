@@ -196,6 +196,13 @@ public final class EventCellularShockHelper {
                 }
                 if (prevPop > 0) {
                     lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-virulence * (mag / 10.0) * attenuation)));
+                    // Seed the active infectious compartment so that SpatialMetapopulationSEIREngine
+                    // can propagate the contagion across trade routes and H3 topological neighbor rings:
+                    int activeInfectedSeed = (int) Math.round(prevPop * Math.min(0.25, virulence * attenuation));
+                    if (activeInfectedSeed > 0) {
+                        int currentInfected = cell.getEpidemicInfectedOr(0);
+                        cell.setEpidemicInfected(Math.min(prevPop, Math.max(currentInfected, activeInfectedSeed)));
+                    }
                 }
                 if (cell.getResourceCapital() != null) {
                     cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.04 * attenuation)));

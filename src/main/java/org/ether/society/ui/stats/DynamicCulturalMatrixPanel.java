@@ -154,11 +154,23 @@ public class DynamicCulturalMatrixPanel extends VBox {
      * @param currentYear current simulation calendar year
      */
     public void updateState(H3SimulationEngine engine, int currentYear) {
+        updateState(engine, currentYear, null);
+    }
+
+    /**
+     * Updates the dynamic cultural affinity matrix display using pre-evaluated telemetry output if available.
+     *
+     * @param engine      active simulation engine
+     * @param currentYear current simulation calendar year
+     * @param precomputed optional pre-evaluated cultural matrix result from telemetry subscription
+     */
+    public void updateState(H3SimulationEngine engine, int currentYear,
+                            org.ether.society.core.telemetry.TelemetryEvaluationResult.CulturalMatrixResult precomputed) {
         if (engine == null) return;
         this.cachedEngine = engine;
 
         // Debounce: update only when calendar year changes or on explicit re-render
-        if (currentYear == lastRenderedYear) return;
+        if (currentYear == lastRenderedYear && precomputed == null) return;
         lastRenderedYear = currentYear;
 
         String planet = (engine.getCurrentScenario() != null && engine.getCurrentScenario().getPlanetPreset() != null)
@@ -166,8 +178,13 @@ public class DynamicCulturalMatrixPanel extends VBox {
         Scenario scenario = engine.getCurrentScenario();
         long startYear = scenario != null ? (long) scenario.getStartDateYear() : 0L;
 
-        List<CulturalEntity> entities = CulturalEpochRegistryLoader.loadEpochRegistry(planet, (long) currentYear);
-        if (entities.isEmpty()) entities = CulturalEpochRegistryLoader.loadEpochRegistry((long) currentYear);
+        List<CulturalEntity> entities;
+        if (precomputed != null && precomputed.entities() != null && !precomputed.entities().isEmpty()) {
+            entities = precomputed.entities();
+        } else {
+            entities = CulturalEpochRegistryLoader.loadEpochRegistry(planet, (long) currentYear);
+            if (entities.isEmpty()) entities = CulturalEpochRegistryLoader.loadEpochRegistry((long) currentYear);
+        }
 
         final int entityCount = entities.size();
         final List<CulturalEntity> finalEntities = entities;
@@ -187,7 +204,37 @@ public class DynamicCulturalMatrixPanel extends VBox {
                 return;
             }
 
-            renderGrid(finalEntities, scenario, startYear, currentYear);
+            renderGrid(finalEntities, scenario, startYear, currentYear, precomputed);
+        });
+    }
+
+    /**
+     * Renders unsubscribed placeholder state to inform user that telemetry calculation is idle.
+     */
+    public void showUnsubscribedState() {
+        Platform.runLater(() -> {
+            matrixGrid.getChildren().clear();
+            VBox unsubBox = new VBox(6);
+            unsubBox.setAlignment(Pos.CENTER);
+            unsubBox.setPadding(new Insets(16));
+
+            Label unsubLbl = new Label("⏸️ " + I18n.getOrDefault("stats.cultural.unsubscribed", "Matrice culturelle désactivée (non souscrite)."));
+            unsubLbl.setStyle("-fx-text-fill: #f59e0b; -fx-font-size: 11px; -fx-font-weight: bold;");
+
+            Label hintLbl = new Label(I18n.getOrDefault("stats.cultural.unsubscribed_hint",
+                    "Souscrivez à la matrice culturelle dans '⚙️ Variables' pour activer l'évaluation dynamique sans pénalité CPU."));
+            hintLbl.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 10px;");
+            hintLbl.setWrapText(true);
+
+            unsubBox.getChildren().addAll(unsubLbl, hintLbl);
+            matrixGrid.add(unsubBox, 0, 0);
+
+            epochBadge.setText(String.format(I18n.getOrDefault("stats.cultural.epoch_fmt", "Époque : %s"), "-"));
+            entitiesBadge.setText(String.format(I18n.getOrDefault("stats.cultural.active_entities_fmt", "%d Entités Actives"), 0));
+            meanAffinityBadge.setText(String.format(I18n.getOrDefault("stats.cultural.mean_affinity_fmt", "Affinité Moyenne : %.1f%%"), 0.0));
+            polarizationBadge.setText(String.format(I18n.getOrDefault("stats.cultural.polarization_fmt", "Indice de Polarisation : %.2f"), 0.0));
+            statusHintLabel.setText(I18n.getOrDefault("stats.cultural.unsubscribed_hint",
+                    "Souscrivez à la matrice culturelle dans '⚙️ Variables' pour activer l'évaluation dynamique sans pénalité CPU."));
         });
     }
 
@@ -200,6 +247,11 @@ public class DynamicCulturalMatrixPanel extends VBox {
     }
 
     private void renderGrid(List<CulturalEntity> entities, Scenario scenario, long startYear, int currentYear) {
+        renderGrid(entities, scenario, startYear, currentYear, null);
+    }
+
+    private void renderGrid(List<CulturalEntity> entities, Scenario scenario, long startYear, int currentYear,
+                            org.ether.society.core.telemetry.TelemetryEvaluationResult.CulturalMatrixResult precomputed) {
         matrixGrid.getChildren().clear();
         int n = entities.size();
         if (n == 0) return;
@@ -248,9 +300,23 @@ public class DynamicCulturalMatrixPanel extends VBox {
             for (int j = 0; j < n; j++) {
                 CulturalEntity eTarg = entities.get(j);
 
-                double affCurrent = getAffinity(scenario, eOrig, eTarg);
-                double affT0 = getAffinity(scenario, findOrFallback(entitiesT0, eOrig.id()), findOrFallback(entitiesT0, eTarg.id()));
-                double delta = affCurrent - affT0;
+                double affCurrent;
+                double affT0;
+                double delta;
+                if (precomputed != null && precomputed.affinities() != null
+                        && precomputed.affinities().length == n && i < n && j < n) {
+                    affCurrent = precomputed.affinities()[i][j];
+                    affT0 = getAffinity(scenario, findOrFallback(entitiesT0, eOrig.id()), findOrFallback(entitiesT0, eTarg.id()));
+                    if (precomputed.deltas() != null && precomputed.deltas().length == n) {
+                        delta = precomputed.deltas()[i][j];
+                    } else {
+                        delta = affCurrent - affT0;
+                    }
+                } else {
+                    affCurrent = getAffinity(scenario, eOrig, eTarg);
+                    affT0 = getAffinity(scenario, findOrFallback(entitiesT0, eOrig.id()), findOrFallback(entitiesT0, eTarg.id()));
+                    delta = affCurrent - affT0;
+                }
 
                 sumAffinity += affCurrent;
                 sumSqDiff += (affCurrent - 0.5) * (affCurrent - 0.5);
@@ -288,9 +354,12 @@ public class DynamicCulturalMatrixPanel extends VBox {
             }
         }
 
-        double mean = count > 0 ? sumAffinity / count : 0.5;
-        double variance = count > 0 ? sumSqDiff / count : 0.0;
-        double polarization = Math.sqrt(variance) * 2.0;
+        double mean = (precomputed != null && precomputed.entities() != null && precomputed.entities().size() == n)
+                ? precomputed.meanAffinity()
+                : (count > 0 ? sumAffinity / count : 0.5);
+        double polarization = (precomputed != null && precomputed.entities() != null && precomputed.entities().size() == n)
+                ? precomputed.polarizationIndex()
+                : (count > 0 ? Math.sqrt(sumSqDiff / count) * 2.0 : 0.0);
 
         meanAffinityBadge.setText(String.format(I18n.getOrDefault("stats.cultural.mean_affinity_fmt", "Affinité Moyenne : %.1f%%"), mean * 100.0));
         polarizationBadge.setText(String.format(I18n.getOrDefault("stats.cultural.polarization_fmt", "Indice de Polarisation : %.2f"), polarization));

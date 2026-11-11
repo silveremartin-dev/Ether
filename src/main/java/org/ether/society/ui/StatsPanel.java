@@ -273,7 +273,20 @@ public class StatsPanel extends VBox {
         }
         Set<String> subscribed = new java.util.LinkedHashSet<>(activeTelemetryVariables);
         subscribed.add("agePyramid");
-        engine.setTelemetrySubscription(TelemetrySubscription.ofMetrics(subscribed, samplingIntervalTicks));
+        List<TelemetrySubscription.SpatialRasterQuery> spatialQueries = new java.util.ArrayList<>();
+        if (activeTelemetryVariables.contains("spatialMap2D") || activeTelemetryVariables.contains("spatialMap")) {
+            spatialQueries.add(TelemetrySubscription.SpatialRasterQuery.renderedMap(
+                    "spatial_live_density", TelemetrySubscription.SpatialChannel.POPULATION_DENSITY, 128, 64));
+        }
+
+        TelemetrySubscription.CulturalMatrixQuery culturalQuery = TelemetrySubscription.CulturalMatrixQuery.DISABLED;
+        if (activeTelemetryVariables.contains("culturalMatrix") || activeTelemetryVariables.contains("culturalAffinityMatrix")) {
+            long startYear = engine.getCurrentScenario() != null ? (long) engine.getCurrentScenario().getStartDateYear() : 0L;
+            culturalQuery = TelemetrySubscription.CulturalMatrixQuery.withDelta(startYear);
+        }
+
+        engine.setTelemetrySubscription(new TelemetrySubscription(
+                subscribed, spatialQueries, culturalQuery, samplingIntervalTicks));
 
     }
 

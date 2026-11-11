@@ -185,6 +185,27 @@ public class HeadlessBatchRunner {
             boolean persistToDisk,
             BatchProgressListener listener,
             java.util.function.BooleanSupplier cancelSupplier) {
+        return executeScenarioWithCells(scenario, initialCells, persistToDisk, null, listener, cancelSupplier);
+    }
+
+    /**
+     * Executes a headless simulation over a pre-initialized H3 cell mesh with explicit telemetry subscription.
+     *
+     * @param scenario           scenario configuration
+     * @param initialCells       pre-initialized H3 cells (caller owns snapshot isolation if reusing across runs)
+     * @param persistToDisk      {@code true} to persist save directory and register in {@link SimulationRunRepository}
+     * @param customSubscription optional explicit telemetry subscription governing 1D metrics, 2D maps, and cultural matrix
+     * @param listener           optional progress listener
+     * @param cancelSupplier     optional cancellation supplier
+     * @return simulation run record, or {@code null} on cancellation/failure
+     */
+    public static SimulationRunRecord executeScenarioWithCells(
+            Scenario scenario,
+            List<H3Cell> initialCells,
+            boolean persistToDisk,
+            TelemetrySubscription customSubscription,
+            BatchProgressListener listener,
+            java.util.function.BooleanSupplier cancelSupplier) {
         if (scenario == null || initialCells == null || initialCells.isEmpty()) return null;
 
         org.ether.society.core.SimulationPipeline.resetGlobalSimulationState();
@@ -275,11 +296,16 @@ public class HeadlessBatchRunner {
         // Sample telemetry periodically across scenario duration (e.g. every 1 to 20 years)
         long sampleIntervalYears = Math.max(1, Math.min(20, durationYears / 25));
         int ticksPerSampleInterval = Math.max(1, (int) Math.round((sampleIntervalYears * 365.25) / stepDays));
-        engine.setTelemetrySubscription(TelemetrySubscription.allCanonicalBenchmarks(ticksPerSampleInterval));
+        TelemetrySubscription effectiveSub = (customSubscription != null)
+                ? customSubscription.withSamplingInterval(ticksPerSampleInterval)
+                : TelemetrySubscription.allCanonicalBenchmarks(ticksPerSampleInterval);
+        engine.setTelemetrySubscription(effectiveSub);
 
         // Initial snapshot at startYear
         recordTelemetrySnapshot(record, engine, (int) startYear);
-        record.addSpatialSnapshot((int) startYear, cells);
+        if (effectiveSub.isSpatialSubscribed()) {
+            record.addSpatialSnapshot((int) startYear, cells);
+        }
 
         if (listener != null) {
             listener.onProgress(scenario, 0.0, (int) startYear, (int) endYear);
@@ -308,8 +334,8 @@ public class HeadlessBatchRunner {
             if (currentSimYear > lastSampledYear || ticksExecuted >= totalTicks) {
                 recordTelemetrySnapshot(record, engine, (int) currentSimYear);
                 
-                // Capture spatial state snapshot only at key milestones (at start, midway and completion)
-                if (record.getSpatialSnapshots().size() < 8 && (currentSimYear % 25 == 0 || ticksExecuted >= totalTicks)) {
+                // Capture spatial state snapshot only when spatial channel is subscribed
+                if (effectiveSub.isSpatialSubscribed() && record.getSpatialSnapshots().size() < 8 && (currentSimYear % 25 == 0 || ticksExecuted >= totalTicks)) {
                     record.addSpatialSnapshot((int) currentSimYear, engine.getCells());
                 }
                 lastSampledYear = currentSimYear;
@@ -374,6 +400,9 @@ public class HeadlessBatchRunner {
         int populatedCells = res != null && res.getPopulatedCellCount() > 0 ? res.getPopulatedCellCount() : 0;
 
         record.addSnapshot(year, pop, foodPerCap, avgTech, stability, populatedCells, metricsMap);
+        if (res != null && res.getCulturalMatrixResult() != null) {
+            record.addCulturalSnapshot(year, res.getCulturalMatrixResult());
+        }
     }
 }
 
