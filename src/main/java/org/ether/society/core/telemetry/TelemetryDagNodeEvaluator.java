@@ -18,11 +18,12 @@ import java.util.Map;
  * historical demographics, resource balances, and thermodynamic energy metrics.</p>
  *
  * <p>Operates strictly as an $O(1)$ functional transformation of pre-accumulated physical observables
- * contained within {@link CompiledTelemetryPlan.EvalContext}.</p>
+ * contained within {@link TelemetryEvaluationContext}.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see CompiledTelemetryPlan
+ * @see TelemetryEvaluationContext
  */
 final class TelemetryDagNodeEvaluator {
 
@@ -38,7 +39,7 @@ final class TelemetryDagNodeEvaluator {
      * @param m  memoized values from upstream DAG dependencies
      * @return evaluated scalar observable
      */
-    static double evalNode(String id, CompiledTelemetryPlan.EvalContext c, Map<String, Double> m) {
+    static double evalNode(String id, TelemetryEvaluationContext c, Map<String, Double> m) {
         return switch (id) {
             case "population" -> c.popSum;
             case "populatedCellCount" -> (double) c.populatedCount;
