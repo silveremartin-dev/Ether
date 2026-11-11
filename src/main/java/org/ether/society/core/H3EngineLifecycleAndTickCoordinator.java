@@ -277,10 +277,11 @@ final class H3EngineLifecycleAndTickCoordinator {
                         engine.currentScenario, engine.timeManager, engine.tickCounter, engine.firedScenarioEventKeys,
                         engine.eventSystem, engine.cells, engine.worldBuffer, engine.agentBuffer);
                 engine.eventSystem.checkEvents(
-                        engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(),
+                        engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(), engine.timeManager.getCurrentDay(),
                         engine.getTotalPopulation(), engine.getTotalFood(), engine.cells);
                 engine.eventSystem.checkCellEvents(
-                        engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(), engine.cells);
+                        engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(), engine.timeManager.getCurrentDay(),
+                        engine.cells);
                 engine.eventSystem.checkSingularities(
                         engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(),
                         engine.cells, engine.currentScenario);

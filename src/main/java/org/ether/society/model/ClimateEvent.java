@@ -37,6 +37,10 @@ public class ClimateEvent implements Serializable {
     private String name;
     /** Internal state: target activation calendar year CE/BCE. */
     private int year;
+    /** Internal state: target activation calendar month (1-12). Defaults to 1 (January). */
+    private int month = 1;
+    /** Internal state: target activation calendar day (1-31). Defaults to 1. */
+    private int day = 1;
     /** Internal state: geographic epicenter latitude [-90.0, +90.0]. */
     private double latitude;
     /** Internal state: geographic epicenter longitude [-180.0, +180.0]. */
@@ -52,11 +56,11 @@ public class ClimateEvent implements Serializable {
      * Default constructor defaulting to a standard volcanic eruption.
      */
     public ClimateEvent() {
-        this("VOLCANO", "Volcanic Eruption", 0, 0.0, 0.0, 10.0, 5.0, getDefaultDurationDaysForType("VOLCANO"));
+        this("VOLCANO", "Volcanic Eruption", 0, 1, 1, 0.0, 0.0, 10.0, 5.0, getDefaultDurationDaysForType("VOLCANO"));
     }
 
     /**
-     * Constructs a scheduled event with automatic type-based default duration.
+     * Constructs a scheduled event with automatic type-based default duration on January 1st.
      *
      * @param type event typology
      * @param name descriptive name
@@ -67,11 +71,11 @@ public class ClimateEvent implements Serializable {
      * @param magnitude intensity or magnitude
      */
     public ClimateEvent(String type, String name, int year, double latitude, double longitude, double depth, double magnitude) {
-        this(type, name, year, latitude, longitude, depth, magnitude, getDefaultDurationDaysForType(type));
+        this(type, name, year, 1, 1, latitude, longitude, depth, magnitude, getDefaultDurationDaysForType(type));
     }
 
     /**
-     * Constructs a scheduled event with explicit duration.
+     * Constructs a scheduled event with explicit duration on January 1st.
      *
      * @param type event typology
      * @param name descriptive name
@@ -83,9 +87,29 @@ public class ClimateEvent implements Serializable {
      * @param durationDays active duration in simulation days (<= 0 for permanent)
      */
     public ClimateEvent(String type, String name, int year, double latitude, double longitude, double depth, double magnitude, int durationDays) {
+        this(type, name, year, 1, 1, latitude, longitude, depth, magnitude, durationDays);
+    }
+
+    /**
+     * Constructs a scheduled event with exact temporal resolution (year, month, day) and explicit duration.
+     *
+     * @param type event typology
+     * @param name descriptive name
+     * @param year chronological year
+     * @param month chronological month (1-12)
+     * @param day chronological day (1-31)
+     * @param latitude epicenter latitude
+     * @param longitude epicenter longitude
+     * @param depth hypocentral depth in km
+     * @param magnitude intensity or magnitude
+     * @param durationDays active duration in simulation days (<= 0 for permanent)
+     */
+    public ClimateEvent(String type, String name, int year, int month, int day, double latitude, double longitude, double depth, double magnitude, int durationDays) {
         this.type = type != null ? type : "GENERIC";
         this.name = name != null ? name : "Event";
         this.year = year;
+        this.month = Math.max(1, Math.min(12, month));
+        this.day = Math.max(1, Math.min(31, day));
         this.latitude = latitude;
         this.longitude = longitude;
         this.depth = depth;
@@ -168,6 +192,38 @@ public class ClimateEvent implements Serializable {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = Math.max(1, Math.min(12, month));
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = Math.max(1, Math.min(31, day));
+    }
+
+    /**
+     * Checks if this climate event is due to trigger at the given simulation date.
+     *
+     * @param currentYear simulation year
+     * @param currentMonth simulation month (0-11 or 1-12)
+     * @param currentDay simulation day of month (1-30/31)
+     * @return {@code true} if current date matches the event date
+     */
+    public boolean isDue(int currentYear, int currentMonth, int currentDay) {
+        if (this.year != currentYear) {
+            return false;
+        }
+        int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
+        return this.month == normSimMonth && (this.day == currentDay || currentDay <= 0);
     }
 
     public double getLatitude() {

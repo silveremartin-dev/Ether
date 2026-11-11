@@ -205,21 +205,28 @@ public class EventSystem {
     }
 
     /**
-     * Check for events occurring at the current simulation step.
+     * Check for events occurring at the current simulation step with exact date resolution (year, month, day).
+     *
+     * @param year current calendar year
+     * @param month current calendar month index (0-11)
+     * @param day current calendar day of month (1-30/31)
+     * @param totalPopulation global simulation population
+     * @param totalFood global aggregated food reserve (GJ)
+     * @param cells domain active cellular grid
      */
-    public void checkEvents(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
-        // 1. Historical milestone markers
+    public void checkEvents(int year, int month, int day, long totalPopulation, double totalFood, List<H3Cell> cells) {
+        // 1. Historical milestone markers with exact temporal trigger
         if (enableHistoricalMilestones) {
             for (HistoricalEvent event : historicalEvents) {
-                if (event.year() == year && !firedHistoricalEvents.contains(event.title())) {
+                if (event.isDue(year, month, day) && !firedHistoricalEvents.contains(event.title())) {
                     H3Cell cell = naturalDisasterEvaluator.findBestLandCell(cells, event.latitude(), event.longitude());
                     double lat = (cell != null && cell.getLatitude() != null) ? cell.getLatitude() : event.latitude();
                     double lng = (cell != null && cell.getLongitude() != null) ? cell.getLongitude() : event.longitude();
                     ActiveEvent ae = new ActiveEvent(
-                        "HIST_" + year,
+                        "HIST_" + year + "_" + event.month() + "_" + event.day(),
                         "📜 HISTORIQUE : " + event.title() + " - " + event.message(),
                         "HISTORICAL",
-                        lat, lng, year, month, 1, 25.0, 7.5
+                        lat, lng, year, month, day, 25.0, 7.5
                     );
                     recordSpatialEvent(ae);
                     firedHistoricalEvents.add(event.title());
@@ -242,7 +249,7 @@ public class EventSystem {
                         hi.getId(),
                         tagPrefix + " [Mag. " + String.format(Locale.ROOT, "%.1f", hi.getMagnitude()) + "] : " + hi.getName() + " (" + hi.getArchetype().getDisplayName() + ")",
                         "LEADER",
-                        sLat, sLng, year, month, 1, hi.getRadiusKm(), hi.getMagnitude()
+                        sLat, sLng, year, month, day, hi.getRadiusKm(), hi.getMagnitude()
                     );
                     recordSpatialEvent(ae);
                 }
@@ -260,7 +267,7 @@ public class EventSystem {
                     procLeader.getId(),
                     tagPrefix + " [Mag. " + String.format(Locale.ROOT, "%.1f", procLeader.getMagnitude()) + "] : " + procLeader.getName() + " (" + procLeader.getArchetype().getDisplayName() + ")",
                     "LEADER",
-                    procLeader.getLatitude(), procLeader.getLongitude(), year, month, 1, procLeader.getRadiusKm(), procLeader.getMagnitude()
+                    procLeader.getLatitude(), procLeader.getLongitude(), year, month, day, procLeader.getRadiusKm(), procLeader.getMagnitude()
                 );
                 recordSpatialEvent(ae);
             }
@@ -269,13 +276,19 @@ public class EventSystem {
         // 4. Apply Active Interventions Effects
         applyActiveInterventions(year, cells);
 
-        // 5. Stochastic and triggered natural disasters
+        // 5. Stochastic natural disasters (physical exogenous shocks only - famines are endogenous in Tier 1)
         if (enableRandomEvents) {
-            naturalDisasterEvaluator.checkFamine(year, month, totalPopulation, totalFood, cells);
             naturalDisasterEvaluator.checkPlague(year, month, totalPopulation, cells);
             naturalDisasterEvaluator.checkNaturalDisasters(year, month, totalPopulation, cells);
         }
         naturalDisasterEvaluator.checkAchievements(year, month, totalPopulation, cells, firedHistoricalEvents);
+    }
+
+    /**
+     * Backward-compatible checkEvents defaulting to day 1.
+     */
+    public void checkEvents(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
+        checkEvents(year, month, 1, totalPopulation, totalFood, cells);
     }
 
     private void applyActiveInterventions(int year, List<H3Cell> cells) {
@@ -333,18 +346,15 @@ public class EventSystem {
         checkEvents(year, 0, totalPopulation, totalFood, null);
     }
 
-    public void checkCellEvents(int year, int month, List<H3Cell> cells) {
+    public void checkCellEvents(int year, int month, int day, List<H3Cell> cells) {
         if (!enableRandomEvents || cells == null || cells.isEmpty()) return;
-        if (month != 0) return;
+        if (month != 0 || day != 1) return;
 
         int forestCount = 0;
         int desertCount = 0;
         int totalLandCells = 0;
         H3Cell sampleForest = null;
         H3Cell sampleDesert = null;
-        H3Cell sampleStarving = null;
-        int starvingCount = 0;
-        double monthlyNeedPerCapita = org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ / 12.0;
 
         for (H3Cell c : cells) {
             if (c == null) continue;
@@ -361,13 +371,6 @@ public class EventSystem {
                     if (sampleDesert == null || org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, streamDesert, 52L) < 0.05) sampleDesert = c;
                 }
             }
-            Integer pop = c.getPopulation();
-            Double food = c.getFoodResource();
-            if (pop != null && pop > 10 && food != null && food < pop * monthlyNeedPerCapita) {
-                starvingCount++;
-                long streamStarve = (long) year * 1000L + starvingCount;
-                if (sampleStarving == null || org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, streamStarve, 53L) < 0.05) sampleStarving = c;
-            }
         }
 
         if (totalLandCells > 0) {
@@ -379,7 +382,7 @@ public class EventSystem {
                     recordSpatialEvent(new ActiveEvent(
                         "ECO_DEFOR_" + year,
                         "⚠️ ÉCOLOGIE : Déforestation critique! Plus que " + String.format(Locale.ROOT, "%.1f%%", forestRatio * 100) + " de forêts.",
-                        "ECOLOGICAL", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0, 4.5
+                        "ECOLOGICAL", target.getLatitude(), target.getLongitude(), year, month, day, 20.0, 4.5
                     ));
                 }
             }
@@ -394,27 +397,19 @@ public class EventSystem {
                     recordSpatialEvent(new ActiveEvent(
                         "ECO_DESERT_" + year,
                         "🏜️ ÉCOLOGIE : Désertification rampante! " + String.format(Locale.ROOT, "%.1f%%", desertRatio * 100) + " des terres sont de véritables déserts.",
-                        "ECOLOGICAL", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0, 5.0
+                        "ECOLOGICAL", target.getLatitude(), target.getLongitude(), year, month, day, 20.0, 5.0
                     ));
                 }
             }
         }
+    }
 
-        double pFamine = org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, month, 63L);
-        if (starvingCount > cells.size() * 0.2 && pFamine < 0.05) {
-            H3Cell target = sampleStarving != null ? sampleStarving : naturalDisasterEvaluator.getRandomLandCell(cells);
-            if (target != null && target.getLatitude() != null && target.getLongitude() != null) {
-                recordSpatialEvent(new ActiveEvent(
-                    "FAMINE_REG_" + year,
-                    "🍂 FAMINE RÉGIONALE : Pénurie alimentaire grave affectant " + starvingCount + " mailles!",
-                    "FAMINE", target.getLatitude(), target.getLongitude(), year, month, 1, 20.0, 6.0
-                ));
-            }
-        }
+    public void checkCellEvents(int year, int month, List<H3Cell> cells) {
+        checkCellEvents(year, month, 1, cells);
     }
 
     public void checkCellEvents(int year, List<H3Cell> cells) {
-        checkCellEvents(year, 0, cells);
+        checkCellEvents(year, 0, 1, cells);
     }
 
     /**

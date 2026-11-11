@@ -30,7 +30,6 @@ public final class NaturalDisasterEvaluator {
     private long baseSeed = 42L;
 
     private int lastPlagueYear = Integer.MIN_VALUE;
-    private int lastFamineYear = Integer.MIN_VALUE;
     private int lastDroughtYear = Integer.MIN_VALUE;
     private int lastVolcanoYear = Integer.MIN_VALUE;
 
@@ -64,7 +63,6 @@ public final class NaturalDisasterEvaluator {
 
     public void reset() {
         this.lastPlagueYear = Integer.MIN_VALUE;
-        this.lastFamineYear = Integer.MIN_VALUE;
         this.lastDroughtYear = Integer.MIN_VALUE;
         this.lastVolcanoYear = Integer.MIN_VALUE;
     }
@@ -248,31 +246,6 @@ public final class NaturalDisasterEvaluator {
             }
         }
         return best != null ? best : getRandomLandCell(cells, 0L);
-    }
-
-    /**
-     * Checks famine conditions deterministically.
-     */
-    public void checkFamine(int year, int month, long totalPopulation, double totalFood, List<H3Cell> cells) {
-        if (year - lastFamineYear < 10) return;
-
-        double minReserveThreshold = totalPopulation * (org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 0.25);
-        if (totalFood < minReserveThreshold && totalPopulation > 500) {
-            double severity = 1.0 - (totalFood / Math.max(1.0, minReserveThreshold));
-            long stream = (long) year * 100L + month;
-            double pVal = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 101L);
-
-            if (severity > 0.2 && pVal < 0.08) {
-                H3Cell target = getRandomPopulatedOrLandCell(cells, stream + 1L);
-                double lat = target != null && target.getLatitude() != null ? target.getLatitude() : 0.0;
-                double lng = target != null && target.getLongitude() != null ? target.getLongitude() : 0.0;
-                String msg = severity > 0.5 ? "💀 FAMINE CRITIQUE : Famine généralisée et crise de subsistance!" : "🍂 CRISE ALIMENTAIRE : Mauvaises récoltes et déficit de ressources.";
-                double fMag = 5.0 + severity * 4.0;
-                eventSystem.recordSpatialEvent(new ActiveEvent("FAMINE_" + year, msg, "FAMINE", lat, lng, year, month, 1, 20.0, fMag, 180));
-                org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "FAMINE", msg, fMag, lat, lng, 0.0, 0.0, 180);
-                lastFamineYear = year;
-            }
-        }
     }
 
     /**

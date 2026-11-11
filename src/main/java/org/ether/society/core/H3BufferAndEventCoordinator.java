@@ -179,9 +179,11 @@ public final class H3BufferAndEventCoordinator {
             return;
         }
         int currentYear = timeManager.getCurrentYear();
+        int currentMonth = timeManager.getCurrentMonth();
+        int currentDay = timeManager.getCurrentDay();
         for (ClimateEvent evt : currentScenario.getClimateEvents()) {
-            if (evt.getYear() == currentYear) {
-                String eventKey = evt.getName() + "_" + evt.getYear() + "_" + evt.getType();
+            if (evt.isDue(currentYear, currentMonth, currentDay)) {
+                String eventKey = evt.getName() + "_" + evt.getYear() + "_" + evt.getMonth() + "_" + evt.getDay() + "_" + evt.getType();
                 if (!firedScenarioEventKeys.contains(eventKey)) {
                     firedScenarioEventKeys.add(eventKey);
                     String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
@@ -194,16 +196,16 @@ public final class H3BufferAndEventCoordinator {
                         displayTitle = "🌋 ÉVÉNEMENT : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")";
                     }
                     ActiveEvent ae = new ActiveEvent(
-                            "SCENARIO_EVT_" + currentYear + "_" + tickCounter,
+                            "SCENARIO_EVT_" + currentYear + "_" + evt.getMonth() + "_" + evt.getDay() + "_" + tickCounter,
                             displayTitle,
                             evt.getType().toUpperCase(),
                             evt.getLatitude(), evt.getLongitude(),
-                            currentYear, timeManager.getCurrentMonth(), 1, 25.0, evt.getMagnitude(),
+                            currentYear, currentMonth, currentDay, 25.0, evt.getMagnitude(),
                             evt.getDurationDays()
                     );
                     eventSystem.recordSpatialEvent(ae);
-                    logger.info("🌋 [Tick {}] Scenario event triggered: {} (Year {}, Duration: {} d)",
-                            tickCounter, evt.getName(), currentYear, evt.getDurationDays());
+                    logger.info("🌋 [Tick {}] Scenario event triggered: {} (Date {}-{:02d}-{:02d}, Duration: {} d)",
+                            tickCounter, evt.getName(), currentYear, evt.getMonth(), evt.getDay(), evt.getDurationDays());
                     applyClimateEventImpact(evt, cells, worldBuffer, agentBuffer);
                 }
             }
