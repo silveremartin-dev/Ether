@@ -165,18 +165,19 @@ public class GroundTruthAuditGenerator {
         }
 
         // 2. Physical snapshot state properties (population, technology, food, stability)
-        String lower = id.toLowerCase(Locale.ROOT);
-        if (lower.contains("populat") || lower.contains("densit")) {
-            return (double) snap.getPopulation();
-        }
-        if (lower.contains("tech") || lower.contains("outillage")) {
-            return snap.getAvgTech();
-        }
-        if (lower.contains("food") || lower.contains("alim")) {
-            return snap.getFood();
-        }
-        if (lower.contains("asabiyyah") || lower.contains("stability")) {
-            return snap.getStability() > 1.0 ? snap.getStability() / 100.0 : snap.getStability();
+        switch (id) {
+            case "worldPopulation", "population", "regionalPopulation" -> {
+                return (double) snap.getPopulation();
+            }
+            case "avgTechLevel", "techLevel", "avgTech" -> {
+                return snap.getAvgTech();
+            }
+            case "foodPerCapita", "food" -> {
+                return snap.getFood();
+            }
+            case "asabiyyahSocialCohesion", "asabiyyah", "stability" -> {
+                return snap.getStability() > 1.0 ? snap.getStability() / 100.0 : snap.getStability();
+            }
         }
 
         // Strict recorded-only extraction: unsubscribed or unrecorded variables return NaN (never fabricated by calendar formulas)
@@ -215,13 +216,16 @@ public class GroundTruthAuditGenerator {
      * @return engine module name
      */
     public static String getEngineModuleForVariable(String varName) {
-        if (varName.contains("Population") || varName.contains("worldPopulation")) return "DemographicEngine";
-        if (varName.contains("Product") || varName.contains("GWP") || varName.contains("grossWorldProduct")) return "SociologyEngine (Capital)";
-        if (varName.contains("Energy") || varName.contains("primaryEnergy") || varName.contains("CO2") || varName.contains("co2Concentration")) return "EcologyEngine (Biomass)";
-        if (varName.contains("Urbanization") || varName.contains("urbanizationRate")) return "SettlementEngine";
-        if (varName.contains("Literacy") || varName.contains("literacyRate")) return "CulturalSociologyEngine";
-        if (varName.contains("Currency") || varName.contains("currencyDebasement") || varName.contains("Instability")) return "InstitutionalEngine";
-        return "H3SimulationEngine";
+        if (varName == null) return "H3SimulationEngine";
+        return switch (varName) {
+            case "worldPopulation", "population", "regionalPopulation" -> "DemographicEngine";
+            case "grossWorldProduct", "gdp", "builtCapital", "realUnskilledWage" -> "SociologyEngine (Capital)";
+            case "primaryEnergy", "energyCaptured", "co2Concentration", "fossilSharePrimaryEnergy" -> "EcologyEngine (Biomass)";
+            case "urbanizationRate" -> "SettlementEngine";
+            case "literacyRate" -> "CulturalSociologyEngine";
+            case "currencyDebasement", "sociopoliticalInstability" -> "InstitutionalEngine";
+            default -> "H3SimulationEngine";
+        };
     }
 
     /**

@@ -205,6 +205,46 @@ final class HistoricalBenchmarkDatasetRepository {
         }
     }
 
+    private static final Map<String, String> CANONICAL_ALIASES = Map.ofEntries(
+            Map.entry("population", "worldPopulation"),
+            Map.entry("regionalPopulation", "worldPopulation"),
+            Map.entry("gdp", "grossWorldProduct"),
+            Map.entry("gdpTotal", "grossWorldProduct"),
+            Map.entry("regionalGdp", "grossWorldProduct"),
+            Map.entry("builtCapital", "grossWorldProduct"),
+            Map.entry("energyCaptured", "primaryEnergy"),
+            Map.entry("energy", "primaryEnergy"),
+            Map.entry("regionalEnergy", "primaryEnergy"),
+            Map.entry("gini", "giniInequality"),
+            Map.entry("giniIndex", "giniInequality"),
+            Map.entry("asabiyyah", "asabiyyahSocialCohesion"),
+            Map.entry("psiStressIndex", "politicalStressIndex"),
+            Map.entry("psi", "politicalStressIndex"),
+            Map.entry("conflict", "sociopoliticalInstability"),
+            Map.entry("instability", "sociopoliticalInstability"),
+            Map.entry("lifeExpectancy", "lifeExpectancyAtBirth"),
+            Map.entry("educationLevel", "literacyRate"),
+            Map.entry("carbonFootprint", "co2Concentration"),
+            Map.entry("co2", "co2Concentration"),
+            Map.entry("food", "agriculturalEroei"),
+            Map.entry("foodPerCapita", "agriculturalEroei"),
+            Map.entry("eroei", "agriculturalEroei"),
+            Map.entry("eroi", "agriculturalEroei"),
+            Map.entry("wage", "realUnskilledWage"),
+            Map.entry("debt", "sovereignDebtBurden"),
+            Map.entry("trade", "globalTradeVolume"),
+            Map.entry("temperature", "temperatureAnomaly"),
+            Map.entry("erosion", "soilErosionRate"),
+            Map.entry("deforestation", "deforestationRate"),
+            Map.entry("speed", "informationSpeed"),
+            Map.entry("megafauna", "megafaunaIndex"),
+            Map.entry("insolation", "milankovitchInsolation"),
+            Map.entry("containment", "zeroContainmentScore"),
+            Map.entry("metal", "metalSmeltingPerCapita"),
+            Map.entry("fossil", "fossilSharePrimaryEnergy"),
+            Map.entry("freight", "shippingFreightCostIndex")
+    );
+
     /**
      * Resolves a metric key or UI alias into its canonical benchmark dataset key.
      *
@@ -214,34 +254,14 @@ final class HistoricalBenchmarkDatasetRepository {
     static String resolveCanonicalKey(String key) {
         if (key == null) return null;
         if (BENCHMARK_DATASETS.containsKey(key)) return key;
-        String lower = key.toLowerCase(Locale.ROOT);
-        if (lower.contains("populat")) return "worldPopulation";
-        if (lower.contains("gdp") || lower.contains("product") || lower.contains("richesse")) return "grossWorldProduct";
-        if (lower.contains("energy") || lower.contains("energie") || lower.contains("puissance")) return "primaryEnergy";
-        if (lower.contains("urban")) return "urbanizationRate";
-        if (lower.contains("co2") || lower.contains("carbon")) return "co2Concentration";
-        if (lower.contains("literacy") || lower.contains("alphabet")) return "literacyRate";
-        if (lower.contains("currency") || lower.contains("debase") || lower.contains("monnaie")) return "currencyDebasement";
-        if (lower.contains("elite")) return "eliteOverproductionIndex";
-        if (lower.contains("wage") || lower.contains("salaire")) return "realUnskilledWage";
-        if (lower.contains("stress") || lower.contains("psi")) return "politicalStressIndex";
-        if (lower.contains("asabiyyah") || lower.contains("cohesion")) return "asabiyyahSocialCohesion";
-        if (lower.contains("instabil") || lower.contains("conflict") || lower.contains("conflit")) return "sociopoliticalInstability";
-        if (lower.contains("gini") || lower.contains("inegal")) return "giniInequality";
-        if (lower.contains("debt") || lower.contains("dette")) return "sovereignDebtBurden";
-        if (lower.contains("trade") || lower.contains("commerce")) return "globalTradeVolume";
-        if (lower.contains("temp")) return "temperatureAnomaly";
-        if (lower.contains("erosion")) return "soilErosionRate";
-        if (lower.contains("eroei") || lower.contains("eroi") || lower.contains("food")) return "agriculturalEroei";
-        if (lower.contains("forest") || lower.contains("deforest")) return "deforestationRate";
-        if (lower.contains("speed") || lower.contains("vitesse")) return "informationSpeed";
-        if (lower.contains("megafauna")) return "megafaunaIndex";
-        if (lower.contains("milankovitch") || lower.contains("insolation")) return "milankovitchInsolation";
-        if (lower.contains("containment") || lower.contains("isole")) return "zeroContainmentScore";
-        if (lower.contains("life") || lower.contains("esperance") || lower.contains("vie")) return "lifeExpectancyAtBirth";
-        if (lower.contains("metal") || lower.contains("smelt")) return "metalSmeltingPerCapita";
-        if (lower.contains("fossil")) return "fossilSharePrimaryEnergy";
-        if (lower.contains("freight") || lower.contains("shipping")) return "shippingFreightCostIndex";
+        String alias = CANONICAL_ALIASES.get(key);
+        if (alias != null) return alias;
+        var desc = MetricRegistry.getInstance().getDescriptor(key);
+        if (desc != null && BENCHMARK_DATASETS.containsKey(desc.getId())) return desc.getId();
+        if (desc != null) {
+            String descAlias = CANONICAL_ALIASES.get(desc.getId());
+            if (descAlias != null) return descAlias;
+        }
         return key;
     }
 

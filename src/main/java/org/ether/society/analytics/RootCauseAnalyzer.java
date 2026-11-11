@@ -279,7 +279,8 @@ public class RootCauseAnalyzer {
             explanation.append(org.ether.society.i18n.I18n.getOrDefault("analytics.divergence.origin_differences", "Primary origin of discrepancies: ")).append(String.join(", ", keyDifferences)).append(". ");
         }
 
-        MetricDelta popDelta = deltas.stream().filter(d -> d.getMetricName().toLowerCase().contains("pop")).findFirst().orElse(null);
+        MetricDelta popDelta = deltas.stream().filter(d -> "population".equalsIgnoreCase(d.getMetricName())
+                || "worldPopulation".equalsIgnoreCase(d.getMetricName())).findFirst().orElse(null);
         if (popDelta != null) {
             explanation.append(String.format(org.ether.society.i18n.I18n.getOrDefault("analytics.divergence.final_impact_fmt", "Final impact at Year %d: %+.1f%% on population."), finalYear, popDelta.getPercentageChange()));
         }
@@ -293,9 +294,14 @@ public class RootCauseAnalyzer {
     private List<ParameterCorrection> generateParameterCorrections(SimulationRunRecord baseline, SimulationRunRecord target,
                                                                    List<MetricDelta> deltas, int divergenceYear) {
         List<ParameterCorrection> corrections = new ArrayList<>();
-        MetricDelta popDelta = deltas.stream().filter(d -> d.getMetricName().toLowerCase().contains("pop")).findFirst().orElse(null);
-        MetricDelta techDelta = deltas.stream().filter(d -> d.getMetricName().toLowerCase().contains("tech")).findFirst().orElse(null);
-        MetricDelta stabDelta = deltas.stream().filter(d -> d.getMetricName().toLowerCase().contains("stab") || d.getMetricName().toLowerCase().contains("asabiyyah")).findFirst().orElse(null);
+        MetricDelta popDelta = deltas.stream().filter(d -> "population".equalsIgnoreCase(d.getMetricName())
+                || "worldPopulation".equalsIgnoreCase(d.getMetricName())).findFirst().orElse(null);
+        MetricDelta techDelta = deltas.stream().filter(d -> "techLevel".equalsIgnoreCase(d.getMetricName())
+                || "avgTechLevel".equalsIgnoreCase(d.getMetricName())
+                || "builtCapital".equalsIgnoreCase(d.getMetricName())).findFirst().orElse(null);
+        MetricDelta stabDelta = deltas.stream().filter(d -> "institutionalStability".equalsIgnoreCase(d.getMetricName())
+                || "stateStabilityIndex".equalsIgnoreCase(d.getMetricName())
+                || "asabiyyah".equalsIgnoreCase(d.getMetricName())).findFirst().orElse(null);
 
         if (popDelta != null && Math.abs(popDelta.getPercentageChange()) >= 5.0) {
             double changePct = popDelta.getPercentageChange();

@@ -73,7 +73,7 @@ final class CulturalAffinityMatrixViewHelper {
 
         HBox topRow = new HBox(12);
         topRow.setAlignment(Pos.CENTER_LEFT);
-        quickEditorTitle.setText(I18n.getOrDefault("cultural.matrix.quick_editor_title", "✏️ Éditeur d'Affinité Symétrique Directe :"));
+        quickEditorTitle.setText(I18n.getOrDefault("cultural.matrix.quick_editor_title", "✏️ Éditeur d'Affinité Orientée (Origine → Cible) :"));
         quickEditorTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
         quickEditorPairLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 11.5px; -fx-text-fill: #f8fafc;");
         topRow.getChildren().addAll(quickEditorTitle, quickEditorPairLabel);
@@ -249,7 +249,7 @@ final class CulturalAffinityMatrixViewHelper {
         int n = activeEntities.size();
         if (n == 0) return;
 
-        Label corner = new Label(I18n.getOrDefault("cultural.matrix.entities_label", "Entités \\ Entités"));
+        Label corner = new Label(I18n.getOrDefault("cultural.matrix.entities_label", "Origine ↓ \\ Cible →"));
         corner.getStyleClass().add("control-label");
         corner.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-padding: 4;");
         matrixGrid.add(corner, 0, 0);
@@ -348,7 +348,7 @@ final class CulturalAffinityMatrixViewHelper {
         double dist = rowEnt.distanceTo(colEnt);
 
         Color bg = computeHeatmapColor(aff);
-        boolean isSel = (i == selectedI && j == selectedJ) || (i == selectedJ && j == selectedI);
+        boolean isSel = (i == selectedI && j == selectedJ);
 
         String borderStyle = isSel
                 ? "-fx-border-color: #38bdf8; -fx-border-width: 2px; -fx-border-radius: 4;"
@@ -363,7 +363,7 @@ final class CulturalAffinityMatrixViewHelper {
         lbl.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #ffffff;");
 
         String tooltipText = String.format(
-                "🔍 %s ↔ %s\n• %s : %.1f%%\n• %s : %.3f\n• %s : %.2f\n• %s : %.2f\n\n👉 %s",
+                "🔍 %s → %s\n• %s : %.1f%%\n• %s : %.3f\n• %s : %.2f\n• %s : %.2f\n\n👉 %s",
                 rowEnt.getLocalizedName(), colEnt.getLocalizedName(),
                 I18n.getOrDefault("cultural.tooltip.affinity", "Affinité Culturelle"), aff * 100.0,
                 I18n.getOrDefault("cultural.tooltip.distance", "Distance Euclidienne"), dist,
@@ -379,12 +379,14 @@ final class CulturalAffinityMatrixViewHelper {
     static void populateByGeography(List<CulturalEntity> entities, Map<String, Double> overrides) {
         int n = entities.size();
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
                 CulturalEntity e1 = entities.get(i);
                 CulturalEntity e2 = entities.get(j);
-                double aff = Math.exp(-2.2 * (Math.abs(i - j) / (double) n));
+                double distFactor = Math.abs(i - j) / (double) n;
+                double asymmetricBias = 0.08 * (Math.sin(i * 1.7) - Math.cos(j * 1.3));
+                double aff = Math.clamp(Math.exp(-2.2 * distFactor) + asymmetricBias, 0.02, 0.98);
                 overrides.put(e1.id() + ":" + e2.id(), aff);
-                overrides.put(e2.id() + ":" + e1.id(), aff);
             }
         }
     }
@@ -392,12 +394,12 @@ final class CulturalAffinityMatrixViewHelper {
     static void populateByTraits(List<CulturalEntity> entities, Map<String, Double> overrides) {
         int n = entities.size();
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
                 CulturalEntity e1 = entities.get(i);
                 CulturalEntity e2 = entities.get(j);
-                double aff = e1.affinityWith(e2);
+                double aff = e1.affinityTowards(e2);
                 overrides.put(e1.id() + ":" + e2.id(), aff);
-                overrides.put(e2.id() + ":" + e1.id(), aff);
             }
         }
     }
@@ -408,7 +410,8 @@ final class CulturalAffinityMatrixViewHelper {
                                    long seed) {
         int n = entities.size();
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
                 CulturalEntity e1 = entities.get(i);
                 CulturalEntity e2 = entities.get(j);
                 double base = affinityFn.apply(e1, e2);
@@ -417,7 +420,6 @@ final class CulturalAffinityMatrixViewHelper {
                 double z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
                 double aff = Math.clamp(base + z * 0.12, 0.02, 0.98);
                 overrides.put(e1.id() + ":" + e2.id(), aff);
-                overrides.put(e2.id() + ":" + e1.id(), aff);
             }
         }
     }

@@ -87,6 +87,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     Tab scenariosTab;
     Tab timeSeriesTab;
     Tab spatialCartoTab;
+    Tab culturalMatrixTab;
     Tab reportTab;
 
     NumberAxis xAxis;
@@ -100,6 +101,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
     Button cancelBatchBtn;
 
     SpatialTensorComparisonPane spatialTensorComparisonPane;
+    CulturalMatrixComparisonPane culturalMatrixComparisonPane;
     Label divergenceLabel;
     Label explanationLabel;
     MarkdownViewerPane reportPreviewPane;
@@ -113,6 +115,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 updateChartAndAnalysis();
                 updateReportIfActive();
                 update2DSpatialComparison();
+                updateCulturalMatrixComparison();
             });
         }
         debouncedAnalyticsTransition.playFromStart();
@@ -265,6 +268,10 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         spatialCartoTab = new Tab(I18n.getOrDefault("analytics.tab.carto_tensors", "🗺️ Cartography & Tensors (2D)"), spatialTensorComparisonPane);
         spatialCartoTab.setClosable(false);
 
+        culturalMatrixComparisonPane = new CulturalMatrixComparisonPane();
+        culturalMatrixTab = new Tab(I18n.getOrDefault("analytics.tab.cultural_matrix", "🧩 Cultural Matrices & Affinities"), culturalMatrixComparisonPane);
+        culturalMatrixTab.setClosable(false);
+
         VBox diagHeaderBox = new VBox(6);
         diagHeaderBox.setPadding(new Insets(10));
         diagHeaderBox.getStyleClass().add("card-section");
@@ -300,7 +307,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         reportTab = new Tab(I18n.getOrDefault("analytics.tab.report", "📄 Analysis Report & Synthesis"), reportBox);
         reportTab.setClosable(false);
 
-        mainTabPane = new TabPane(scenariosTab, timeSeriesTab, spatialCartoTab, reportTab);
+        mainTabPane = new TabPane(scenariosTab, timeSeriesTab, spatialCartoTab, culturalMatrixTab, reportTab);
         mainTabPane.getStyleClass().add("primary-tab-pane");
         VBox.setVgrow(mainTabPane, Priority.ALWAYS);
         mainTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
@@ -308,6 +315,8 @@ public class ComparativeAnalyticsPanel extends BorderPane {
                 runAnalysis();
             } else if (newTab == spatialCartoTab) {
                 update2DSpatialComparison();
+            } else if (newTab == culturalMatrixTab) {
+                updateCulturalMatrixComparison();
             } else if (spatialTensorComparisonPane != null) {
                 spatialTensorComparisonPane.stopAnimation();
             }
@@ -330,6 +339,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         updateChartAndAnalysis();
         updateReportIfActive();
         update2DSpatialComparison();
+        updateCulturalMatrixComparison();
     }
 
     private void updateReportIfActive() {
@@ -340,6 +350,19 @@ public class ComparativeAnalyticsPanel extends BorderPane {
         if (spatialTensorComparisonPane != null) {
             spatialTensorComparisonPane.updateScenarioPairCombos(scenarioList);
         }
+        if (culturalMatrixComparisonPane != null) {
+            culturalMatrixComparisonPane.updateScenarioPool(scenarioList);
+        }
+    }
+
+    private void updateCulturalMatrixComparison() {
+        if (culturalMatrixComparisonPane != null) {
+            culturalMatrixComparisonPane.updateComparison();
+        }
+    }
+
+    public CulturalMatrixComparisonPane getCulturalMatrixComparisonPane() {
+        return culturalMatrixComparisonPane;
     }
 
     public SimulationRunRecord resolveRunRecord(ScenarioSelectableItem item) {

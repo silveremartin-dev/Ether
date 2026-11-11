@@ -72,6 +72,14 @@ public class SpatialTensorComparisonPane extends VBox {
     Label legendGreen;
     Label legendRed;
 
+    ToggleGroup viewModeGroup;
+    RadioButton rbPairwiseMode;
+    RadioButton rbMultiMode;
+    HBox mapPairBox;
+    ScrollPane multiScenarioScrollPane;
+    HBox multiScenarioBox;
+    private List<ScenarioSelectableItem> activeSelectedScenarios = new ArrayList<>();
+
     TextArea spatialMetricsReportArea;
 
     private final SpatialTensorUIHelper uiHelper = new SpatialTensorUIHelper();
@@ -147,7 +155,35 @@ public class SpatialTensorComparisonPane extends VBox {
         scenarioRow.setAlignment(Pos.CENTER_LEFT);
         HBox channelRow = new HBox(10, channelLabel, spatialChannelCombo);
         channelRow.setAlignment(Pos.CENTER_LEFT);
-        VBox spatialControlsBox = new VBox(6, scenarioRow, channelRow);
+
+        viewModeGroup = new ToggleGroup();
+        rbPairwiseMode = new RadioButton(I18n.getOrDefault("analytics.mode.pairwise", "👥 Pairwise Mode (A vs B)"));
+        rbPairwiseMode.setToggleGroup(viewModeGroup);
+        rbPairwiseMode.setSelected(true);
+        rbPairwiseMode.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+
+        rbMultiMode = new RadioButton(I18n.getOrDefault("analytics.mode.multi_scenarios", "🌐 All Selected Scenarios"));
+        rbMultiMode.setToggleGroup(viewModeGroup);
+        rbMultiMode.setDisable(true);
+        rbMultiMode.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+
+        viewModeGroup.selectedToggleProperty().addListener((obs, oldV, newV) -> {
+            boolean isMulti = rbMultiMode.isSelected();
+            mapPairBox.setVisible(!isMulti);
+            mapPairBox.setManaged(!isMulti);
+            multiScenarioScrollPane.setVisible(isMulti);
+            multiScenarioScrollPane.setManaged(isMulti);
+            scenarioSelectLabelB.setVisible(!isMulti);
+            scenarioSelectLabelB.setManaged(!isMulti);
+            comboScenarioB.setVisible(!isMulti);
+            comboScenarioB.setManaged(!isMulti);
+            update2DSpatialComparison();
+        });
+
+        HBox modeRow = new HBox(16, rbPairwiseMode, rbMultiMode);
+        modeRow.setAlignment(Pos.CENTER_LEFT);
+
+        VBox spatialControlsBox = new VBox(6, scenarioRow, channelRow, modeRow);
 
         mapRegenStatusLabel = new Label("");
         mapRegenStatusLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-font-size: 11px;");
@@ -185,8 +221,20 @@ public class SpatialTensorComparisonPane extends VBox {
         mapImageViewDiff = createMapView();
         VBox mapBoxDiff = createMapBox(mapLabelDiff, mapImageViewDiff);
 
-        HBox mapPairBox = new HBox(12, mapBoxA, mapBoxB, mapBoxDiff);
+        mapPairBox = new HBox(12, mapBoxA, mapBoxB, mapBoxDiff);
         mapPairBox.setAlignment(Pos.CENTER);
+
+        multiScenarioBox = new HBox(16);
+        multiScenarioBox.setAlignment(Pos.CENTER_LEFT);
+        multiScenarioBox.setPadding(new Insets(8));
+
+        multiScenarioScrollPane = new ScrollPane(multiScenarioBox);
+        multiScenarioScrollPane.setFitToHeight(true);
+        multiScenarioScrollPane.setPannable(true);
+        multiScenarioScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        multiScenarioScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        multiScenarioScrollPane.setVisible(false);
+        multiScenarioScrollPane.setManaged(false);
 
         uiHelper.attachHoverZoom(mapImageViewA, () -> mapLabelA.getText());
         uiHelper.attachHoverZoom(mapImageViewB, () -> mapLabelB.getText());
@@ -200,7 +248,7 @@ public class SpatialTensorComparisonPane extends VBox {
         spatialMetricsReportArea.getStyleClass().add("scenario-description-area");
         VBox.setVgrow(spatialMetricsReportArea, Priority.ALWAYS);
 
-        getChildren().addAll(spatialControlsBox, spatialTimelineRow, mapRegenBox, mapPairBox,
+        getChildren().addAll(spatialControlsBox, spatialTimelineRow, mapRegenBox, mapPairBox, multiScenarioScrollPane,
                 discrepancyLegendBox, spatialMetricsReportArea, spatialBottomBox);
     }
 
@@ -250,6 +298,7 @@ public class SpatialTensorComparisonPane extends VBox {
         List<ScenarioSelectableItem> selected = scenarioList.stream()
                 .filter(ScenarioSelectableItem::isSelected)
                 .toList();
+        this.activeSelectedScenarios = selected;
         List<ScenarioSelectableItem> pool = (selected.size() >= 2) ? selected : new ArrayList<>(scenarioList);
 
         ScenarioSelectableItem prevA = comboScenarioA.getValue();
@@ -264,6 +313,14 @@ public class SpatialTensorComparisonPane extends VBox {
         if (prevB != null && pool.contains(prevB)) comboScenarioB.setValue(prevB);
         else if (pool.size() > 1) comboScenarioB.setValue(pool.get(1));
         else if (!pool.isEmpty()) comboScenarioB.setValue(pool.get(0));
+
+        if (activeSelectedScenarios.size() >= 3) {
+            rbMultiMode.setDisable(false);
+            rbMultiMode.setText(String.format(I18n.getOrDefault("analytics.mode.multi_scenarios_count", "🌐 Multi-Scénarios (%d sélectionnés)"), activeSelectedScenarios.size()));
+        } else {
+            rbMultiMode.setDisable(true);
+            rbPairwiseMode.setSelected(true);
+        }
 
         update2DSpatialComparison();
     }
@@ -352,6 +409,11 @@ public class SpatialTensorComparisonPane extends VBox {
         int targetYear = dateSlider != null ? (int) dateSlider.getValue() : 0;
         final long currentReqId = spatialComparisonRequestId.incrementAndGet();
 
+        if (rbMultiMode != null && rbMultiMode.isSelected() && activeSelectedScenarios.size() >= 3) {
+            updateMultiScenarioComparison(itemA, targetYear, channelKey, currentReqId);
+            return;
+        }
+
         if (spatialMetricsReportArea != null && (spatialMetricsReportArea.getText() == null || spatialMetricsReportArea.getText().isBlank())) {
             spatialMetricsReportArea.setText(I18n.getOrDefault("analytics.status.loading_tensors", "ℹ️ Loading cartographic tensors for selected scenarios..."));
         }
@@ -391,6 +453,101 @@ public class SpatialTensorComparisonPane extends VBox {
                 mapRegenBox.setManaged(false);
             }
         }));
+    }
+
+    private void updateMultiScenarioComparison(ScenarioSelectableItem baselineItem, int targetYear, String channelKey, long currentReqId) {
+        if (multiScenarioBox == null) return;
+        multiScenarioBox.getChildren().clear();
+
+        // 1. Baseline Reference Card
+        ImageView baseView = new ImageView();
+        baseView.setFitWidth(280);
+        baseView.setFitHeight(140);
+        baseView.setPreserveRatio(true);
+        baseView.getStyleClass().add("card-section");
+
+        Label baseTitle = new Label("👑 " + I18n.getOrDefault("analytics.cultural.baseline", "Baseline: ") + baselineItem.getName());
+        baseTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8; -fx-font-size: 11px;");
+
+        VBox baseCard = new VBox(4, baseTitle, baseView);
+        baseCard.setAlignment(Pos.CENTER);
+        baseCard.setPadding(new Insets(6));
+        baseCard.setStyle("-fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 6; -fx-border-color: #38bdf8; -fx-border-radius: 6;");
+
+        uiHelper.attachHoverZoom(baseView, () -> "Baseline: " + baselineItem.getName());
+        multiScenarioBox.getChildren().add(baseCard);
+
+        StringBuilder reportSb = new StringBuilder();
+        reportSb.append(String.format(Locale.ROOT, "# Multi-Scenario Cartographic Comparison (Year %d)\n\n", targetYear));
+        reportSb.append(String.format(Locale.ROOT, "- **Channel**: %s\n", channelKey));
+        reportSb.append(String.format(Locale.ROOT, "- **Baseline Reference**: %s\n\n", baselineItem.getName()));
+        reportSb.append("| Target Scenario | Pearson r | SSIM | RMSE | Jaccard IoU | KL Divergence | Fidelity Status |\n");
+        reportSb.append("|---|---|---|---|---|---|---|\n");
+
+        for (ScenarioSelectableItem targetItem : activeSelectedScenarios) {
+            if (targetItem == baselineItem) continue;
+
+            ImageView targetView = new ImageView();
+            targetView.setFitWidth(210);
+            targetView.setFitHeight(105);
+            targetView.setPreserveRatio(true);
+            targetView.getStyleClass().add("card-section");
+
+            ImageView diffView = new ImageView();
+            diffView.setFitWidth(210);
+            diffView.setFitHeight(105);
+            diffView.setPreserveRatio(true);
+            diffView.getStyleClass().add("card-section");
+
+            Label targetTitle = new Label("📊 " + targetItem.getName());
+            targetTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #f8fafc; -fx-font-size: 11px;");
+
+            Label metricsLabel = new Label("⏳ Evaluating...");
+            metricsLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+
+            Label lblTargetMap = new Label(targetItem.getName());
+            lblTargetMap.setStyle("-fx-font-size: 9px; -fx-text-fill: #cbd5e1;");
+            Label lblDiffMap = new Label("Δ vs Baseline");
+            lblDiffMap.setStyle("-fx-font-size: 9px; -fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+
+            VBox boxTarget = new VBox(2, lblTargetMap, targetView);
+            boxTarget.setAlignment(Pos.CENTER);
+            VBox boxDiff = new VBox(2, lblDiffMap, diffView);
+            boxDiff.setAlignment(Pos.CENTER);
+
+            HBox dualMaps = new HBox(8, boxTarget, boxDiff);
+            dualMaps.setAlignment(Pos.CENTER);
+
+            VBox card = new VBox(4, targetTitle, dualMaps, metricsLabel);
+            card.setAlignment(Pos.CENTER);
+            card.setPadding(new Insets(6));
+            card.setStyle("-fx-background-color: rgba(15, 23, 42, 0.7); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.1); -fx-border-radius: 6;");
+
+            uiHelper.attachHoverZoom(targetView, () -> targetItem.getName());
+            uiHelper.attachHoverZoom(diffView, () -> "Δ(" + baselineItem.getName() + " - " + targetItem.getName() + ")");
+            multiScenarioBox.getChildren().add(card);
+
+            SpatialTensorDiffEngine.compute2DComparisonAsync(
+                    baselineItem, targetItem, targetYear, channelKey, runResolver, RASTER_IMAGE_CACHE, total -> {}
+            ).thenAccept(res -> Platform.runLater(() -> {
+                if (currentReqId != spatialComparisonRequestId.get()) return;
+                if (baseView.getImage() == null && res.imgA() != null) {
+                    baseView.setImage(res.imgA());
+                }
+                targetView.setImage(res.imgB());
+                diffView.setImage(res.imgDiff());
+                if (res.metrics() != null) {
+                    var m = res.metrics();
+                    metricsLabel.setText(String.format(Locale.ROOT, "SSIM: %.3f | RMSE: %.1f | r: %.3f | IoU: %.1f%%",
+                            m.getSsim(), m.getRmse(), m.getPearsonR(), m.getJaccardIndex() * 100.0));
+                    reportSb.append(String.format(Locale.ROOT, "| %s | %.4f | %.4f | %.2f | %.2f%% | %.4f | %s |\n",
+                            targetItem.getName(), m.getPearsonR(), m.getSsim(), m.getRmse(), m.getJaccardIndex() * 100.0, m.getKlDivergence(), m.getDiagnosticSummary()));
+                    if (spatialMetricsReportArea != null) {
+                        spatialMetricsReportArea.setText(reportSb.toString());
+                    }
+                }
+            }));
+        }
     }
 
     private void preloadAll2DTensorsAsync(ScenarioSelectableItem itemA, ScenarioSelectableItem itemB, int startYear, int endYear) {

@@ -290,10 +290,9 @@ public class CulturalAffinityMatrixDialog extends Stage {
         CulturalEntity e1 = activeEntities.get(selectedI);
         CulturalEntity e2 = activeEntities.get(selectedJ);
         double finalAff = (selectedI == selectedJ) ? 1.0 : Math.clamp(affinity, 0.0, 1.0);
+        // Directed square matrix: modify only the directional link e1 -> e2
         customAffinityOverrides.put(e1.id() + ":" + e2.id(), finalAff);
-        customAffinityOverrides.put(e2.id() + ":" + e1.id(), finalAff);
         updateCellDisplay(selectedI, selectedJ);
-        updateCellDisplay(selectedJ, selectedI);
     }
 
     private void updateCellDisplay(int i, int j) {
@@ -319,11 +318,9 @@ public class CulturalAffinityMatrixDialog extends Stage {
     private double getAffinity(CulturalEntity e1, CulturalEntity e2) {
         if (e1 == null || e2 == null) return 0.0;
         if (e1.id().equals(e2.id())) return 1.0;
-        String key1 = e1.id() + ":" + e2.id();
-        String key2 = e2.id() + ":" + e1.id();
-        if (customAffinityOverrides.containsKey(key1)) return customAffinityOverrides.get(key1);
-        if (customAffinityOverrides.containsKey(key2)) return customAffinityOverrides.get(key2);
-        return e1.affinityWith(e2);
+        String key = e1.id() + ":" + e2.id();
+        if (customAffinityOverrides.containsKey(key)) return customAffinityOverrides.get(key);
+        return e1.affinityTowards(e2);
     }
 
     private void renderEntitiesTab() {
@@ -370,7 +367,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
         CulturalEntity e2 = activeEntities.get(selectedJ);
         double aff = getAffinity(e1, e2);
         boolean isDiagonal = (selectedI == selectedJ);
-        quickEditorPairLabel.setText(String.format("🏷️ %s ↔ %s %s", e1.getLocalizedName(), e2.getLocalizedName(), isDiagonal ? "(🔒 Auto-identité)" : ""));
+        quickEditorPairLabel.setText(String.format("🏷️ %s → %s %s", e1.getLocalizedName(), e2.getLocalizedName(), isDiagonal ? "(🔒 Auto-identité)" : ""));
 
         isUpdatingEditor = true;
         quickAffinitySlider.setValue(aff * 100.0);

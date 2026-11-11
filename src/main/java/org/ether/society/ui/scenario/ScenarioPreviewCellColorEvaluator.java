@@ -106,32 +106,29 @@ final class ScenarioPreviewCellColorEvaluator {
         }
 
         int derivedOffset = idx - (dims + 1);
-        if (derivedOffset == 1 || mode.contains("capital") || mode.contains("k(x)")) {
+        if (derivedOffset == 1 || mode.contains("k(x)")) {
             double cap = c.getResourceCapital() != null ? c.getResourceCapital() : 0.0;
             double norm = Math.clamp(cap / 500000.0, 0.0, 1.0);
             return Color.hsb((1.0 - norm) * 240.0, 0.85, 0.90);
-        } else if (derivedOffset == 2 || mode.contains("énergétique") || mode.contains("energy")
-                || mode.contains("energie") || mode.contains("energético") || mode.contains("e(x)")) {
+        } else if (derivedOffset == 2 || mode.contains("e(x)")) {
             double energy = c.getEnergyFire() != null ? c.getEnergyFire() : 0.0;
             double norm = Math.clamp(energy / 1000000.0, 0.0, 1.0);
             return Color.hsb(30.0 + norm * 30.0, 0.90, 0.95);
-        } else if (derivedOffset == 3 || mode.contains("alimentaires") || mode.contains("food")
-                || mode.contains("nahrung") || mode.contains("alimentos") || mode.contains("f(x)")) {
+        } else if (derivedOffset == 3 || mode.contains("f(x)")) {
             double food = c.getFoodResource() != null ? c.getFoodResource() : 0.0;
             double norm = Math.clamp(food / 100000.0, 0.0, 1.0);
             return Color.hsb(120.0, 0.70 + norm * 0.30, 0.60 + norm * 0.35);
-        } else if (derivedOffset == 4 || mode.contains("informationnel") || mode.contains("info") || mode.contains("i(x)")) {
+        } else if (derivedOffset == 4 || mode.contains("i(x)")) {
             double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
             double norm = Math.clamp(tech / 10.0, 0.0, 1.0);
             return Color.hsb(270.0 + norm * 60.0, 0.85, 0.90);
-        } else if (derivedOffset == 5 || mode.contains("empreinte") || mode.contains("footprint")
-                || mode.contains("fußabdruck") || mode.contains("huella") || mode.contains("malthus")) {
+        } else if (derivedOffset == 5 || mode.contains("malthus")) {
             double capK0 = context.computeAutoCapitalFromYear(context.getStartYear());
             double cap = ScenarioCellPopulationDistributor.computeCellCarryingCapacity(c, capK0);
             long pop = c.getPopulation() != null ? c.getPopulation() : 0;
             double ratio = Math.clamp(pop / Math.max(1.0, cap), 0.0, 1.5);
             return Color.hsb((1.0 - Math.min(1.0, ratio)) * 120.0, 0.85, 0.90);
-        } else if (derivedOffset == 6 || mode.contains("friction") || mode.contains("reibung") || mode.contains("fricción")) {
+        } else if (derivedOffset == 6 || mode.contains("friction")) {
             double fric = c.getMovementFriction() != null ? c.getMovementFriction() : 1.0;
             double norm = Math.clamp((fric - 1.0) / 4.0, 0.0, 1.0);
             return Color.rgb((int) (norm * 255), (int) ((1.0 - norm) * 200), 50);
@@ -316,19 +313,15 @@ final class ScenarioPreviewCellColorEvaluator {
                 if (c == null) continue;
                 if (isLandCell(c, c.getElevation() != null ? c.getElevation() : 0.0)) {
                     count++;
-                    if (derivedOffset == 1 || safeName.contains("Capital") || safeName.contains("K(x)")) {
+                    if (derivedOffset == 1 || safeName.contains("K(x)")) {
                         sum += (c.getResourceCapital() != null ? c.getResourceCapital() : 0.0);
-                    } else if (derivedOffset == 2 || safeName.contains("Energy") || safeName.contains("E(x)")
-                            || safeName.contains("énergétique") || safeName.contains("Energie") || safeName.contains("Energético")) {
+                    } else if (derivedOffset == 2 || safeName.contains("E(x)")) {
                         sum += (c.getEnergyFire() != null ? c.getEnergyFire() : 0.0);
-                    } else if (derivedOffset == 3 || safeName.contains("Food") || safeName.contains("F(x)")
-                            || safeName.contains("alimentaires") || safeName.contains("Nahrung") || safeName.contains("Alimentos")) {
+                    } else if (derivedOffset == 3 || safeName.contains("F(x)")) {
                         sum += (c.getFoodResource() != null ? c.getFoodResource() : 0.0);
-                    } else if (derivedOffset == 4 || safeName.contains("Info") || safeName.contains("I(x)")
-                            || safeName.contains("informationnel") || safeName.contains("Information")) {
+                    } else if (derivedOffset == 4 || safeName.contains("I(x)")) {
                         sum += org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
-                    } else if (derivedOffset == 6 || safeName.contains("Friction") || safeName.contains("friction")
-                            || safeName.contains("Reibung") || safeName.contains("Fricción")) {
+                    } else if (derivedOffset == 6 || safeName.contains("friction")) {
                         sum += (c.getMovementFriction() != null ? c.getMovementFriction() : 1.0);
                     } else {
                         sum += ScenarioCellPopulationDistributor.computeCellCarryingCapacity(c, capK0);

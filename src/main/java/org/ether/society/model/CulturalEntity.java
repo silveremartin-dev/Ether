@@ -57,9 +57,56 @@ public record CulturalEntity(
         return Math.sqrt(sumSq);
     }
 
-    public double affinityWith(CulturalEntity other) {
-        if (other != null && this.id.equals(other.id)) return 1.0;
+    /**
+     * Computes authentic directional asymmetric cultural affinity $A(c_{\text{this}} \to c_{\text{other}}) \in [0.0, 1.0]$.
+     *
+     * <p>Accounts for:
+     * <ul>
+     *   <li>Base isotropic Mahalanobis/Euclidean distance decay across 4D ethnographic traits:
+     *       $A_0 = \exp(-3.5 \cdot d)$.</li>
+     *   <li>Social hierarchy and institutional prestige asymmetry ($\Delta t_1 = t_{\text{other}}[1] - t_{\text{this}}[1]$):
+     *       peripheral and emerging polities exhibit higher cultural aspiration towards complex imperial centers,
+     *       whereas dominant hegemonic polities exhibit an ethnocentric bias discount towards peripheries.</li>
+     *   <li>Ritual exclusivism and dogmatic intolerance penalty ($\Delta t_3 = t_{\text{this}}[3] \cdot |t_{\text{this}}[3] - t_{\text{other}}[3]|$):
+     *       strongly doctrinal or orthodox ritual traditions incur directional friction against foreign traditions,
+     *       whereas syncretic traditions maintain higher bilateral openness.</li>
+     * </ul>
+     *
+     * @param other target cultural entity
+     * @return directional affinity in $[0.0, 1.0]$
+     */
+    public double affinityTowards(CulturalEntity other) {
+        if (other == null) return 0.0;
+        if (this.id != null && this.id.equals(other.id())) return 1.0;
+        if (this.traits == null || other.traits() == null) return 0.5;
+
         double dist = distanceTo(other);
-        return Math.exp(-3.5 * dist);
+        double baseAffinity = Math.exp(-3.5 * dist);
+
+        // Trait dimensions: [0: linguisticBranch, 1: socialStructure, 2: subsistenceMode, 3: ritualTradition]
+        double t1This = this.traits.length > 1 ? this.traits[1] : 0.5;
+        double t1Other = other.traits().length > 1 ? other.traits()[1] : 0.5;
+        double statusDelta = t1Other - t1This; // positive if other is more stratified/imperial
+
+        double t3This = this.traits.length > 3 ? this.traits[3] : 0.5;
+        double t3Other = other.traits().length > 3 ? other.traits()[3] : 0.5;
+        double dogmaPenalty = t3This * Math.abs(t3This - t3Other);
+
+        // Asymmetric modulation: status attraction/discount + doctrinal intolerance discount
+        double prestigeBias = 0.12 * Math.tanh(2.5 * statusDelta);
+        double intoleranceDiscount = 0.15 * dogmaPenalty;
+
+        double directed = baseAffinity + prestigeBias - intoleranceDiscount;
+        return Math.clamp(directed, 0.01, 1.0);
+    }
+
+    /**
+     * Backward-compatible alias for directional cultural affinity.
+     *
+     * @param other target cultural entity
+     * @return affinity value in $[0.0, 1.0]$
+     */
+    public double affinityWith(CulturalEntity other) {
+        return affinityTowards(other);
     }
 }

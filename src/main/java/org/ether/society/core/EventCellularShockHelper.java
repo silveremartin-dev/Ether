@@ -12,6 +12,8 @@ import org.ether.society.engines.tier1.NuclearWarfareClimateEngine;
 import org.ether.society.model.Biome;
 import org.ether.society.model.HabitatType;
 
+import java.util.Locale;
+
 /**
  * <h1>EventCellularShockHelper</h1>
  * <p>
@@ -37,16 +39,20 @@ public final class EventCellularShockHelper {
      * @return radius in kilometers
      */
     public static double calculateDefaultRadiusKm(String type, String name, double mag) {
-        if (type.contains("PANDEMIC") || type.contains("PLAGUE") || type.contains("EPIDEMIC")) {
-            return (name.contains("grippe") || name.contains("flu")) ? (180.0 * 111.32) : (85.0 * 111.32);
+        String upperType = type != null ? type.toUpperCase(java.util.Locale.ROOT) : "";
+        String lowerName = name != null ? name.toLowerCase(java.util.Locale.ROOT) : "";
+        if (upperType.contains("PANDEMIC") || upperType.contains("PLAGUE") || upperType.contains("EPIDEMIC")) {
+            boolean isRespiratory = lowerName.contains("influenza") || lowerName.contains("flu")
+                    || lowerName.contains("grippe") || lowerName.contains("sars") || lowerName.contains("covid");
+            return isRespiratory ? (180.0 * 111.32) : (85.0 * 111.32);
         }
-        if (type.contains("VOLCANO") || type.contains("NUCLEAR")) {
+        if (upperType.contains("VOLCANO") || upperType.contains("NUCLEAR")) {
             return Math.max(250.0, mag * 200.0);
         }
-        if (type.contains("EARTHQUAKE") || type.contains("TSUNAMI")) {
+        if (upperType.contains("EARTHQUAKE") || upperType.contains("TSUNAMI")) {
             return Math.max(150.0, mag * 120.0);
         }
-        if (type.contains("TECH_SINGULARITY") || type.contains("RENAISSANCE")) {
+        if (upperType.contains("TECH_SINGULARITY") || upperType.contains("RENAISSANCE")) {
             return 3000.0;
         }
         return Math.max(50.0, mag * 100.0);
@@ -183,9 +189,9 @@ public final class EventCellularShockHelper {
                 double virulence = 0.12;
                 if (lowerName.contains("grippe") || lowerName.contains("influenza") || lowerName.contains("flu")) {
                     virulence = 0.035;
-                } else if (lowerName.contains("peste") || lowerName.contains("black death") || lowerName.contains("plague")) {
+                } else if (lowerName.contains("peste") || lowerName.contains("black death") || lowerName.contains("plague") || lowerName.contains("pestis")) {
                     virulence = 0.35;
-                } else if (lowerName.contains("covid") || lowerName.contains("sars")) {
+                } else if (lowerName.contains("covid") || lowerName.contains("sars") || lowerName.contains("corona")) {
                     virulence = 0.055;
                 }
                 if (prevPop > 0) {

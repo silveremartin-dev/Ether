@@ -329,27 +329,21 @@ public final class AutoEpochScenarioHelper {
                 int n = entities.size();
                 for (int i = 0; i < n; i++) {
                     CulturalEntity e1 = entities.get(i);
-                    for (int j = i + 1; j < n; j++) {
+                    for (int j = 0; j < n; j++) {
                         CulturalEntity e2 = entities.get(j);
-                        double aff = e1.affinityWith(e2) * 100.0;
+                        double aff = (i == j) ? 100.0 : e1.affinityTowards(e2) * 100.0;
 
-                        String kId1 = e1.id().toLowerCase(Locale.ROOT) + ":" + e2.id().toLowerCase(Locale.ROOT);
-                        String kId2 = e2.id().toLowerCase(Locale.ROOT) + ":" + e1.id().toLowerCase(Locale.ROOT);
-                        matrix.put(kId1, aff);
-                        matrix.put(kId2, aff);
+                        String kId = e1.id().toLowerCase(Locale.ROOT) + ":" + e2.id().toLowerCase(Locale.ROOT);
+                        matrix.put(kId, aff);
 
                         if (e1.nameEn() != null && e2.nameEn() != null) {
-                            String kName1 = e1.nameEn().toLowerCase(Locale.ROOT) + ":" + e2.nameEn().toLowerCase(Locale.ROOT);
-                            String kName2 = e2.nameEn().toLowerCase(Locale.ROOT) + ":" + e1.nameEn().toLowerCase(Locale.ROOT);
-                            matrix.put(kName1, aff);
-                            matrix.put(kName2, aff);
+                            String kName = e1.nameEn().toLowerCase(Locale.ROOT) + ":" + e2.nameEn().toLowerCase(Locale.ROOT);
+                            matrix.put(kName, aff);
                         }
 
                         if (e1.nameFr() != null && e2.nameFr() != null) {
-                            String kFr1 = e1.nameFr().toLowerCase(Locale.ROOT) + ":" + e2.nameFr().toLowerCase(Locale.ROOT);
-                            String kFr2 = e2.nameFr().toLowerCase(Locale.ROOT) + ":" + e1.nameFr().toLowerCase(Locale.ROOT);
-                            matrix.put(kFr1, aff);
-                            matrix.put(kFr2, aff);
+                            String kFr = e1.nameFr().toLowerCase(Locale.ROOT) + ":" + e2.nameFr().toLowerCase(Locale.ROOT);
+                            matrix.put(kFr, aff);
                         }
                     }
                 }

@@ -21,6 +21,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Spatial, Cartographic, and Root-Cause Drift Evaluator for Calibration Scenarios.
@@ -229,7 +230,8 @@ public final class HistoricalCalibrationSpatialEvaluator {
             String direction = sim > obs ? "+ Overestimation" : "- Underestimation";
 
             if (mape > 3.0) {
-                if (metric.contains("Population")) {
+                String mLower = metric.toLowerCase(Locale.ROOT);
+                if (mLower.contains("population") || "worldpopulation".equals(mLower)) {
                     double factor = obs / sim;
                     result.driftDiagnoses.add(new DriftDiagnosis(
                             metric,
@@ -241,7 +243,7 @@ public final class HistoricalCalibrationSpatialEvaluator {
                             String.format("%.2f", def.agroYieldCoeff() * factor),
                             factor
                     ));
-                } else if (metric.contains("Product") || metric.contains("GWP")) {
+                } else if (mLower.contains("product") || mLower.contains("gwp") || mLower.contains("capital")) {
                     double factor = obs / sim;
                     result.driftDiagnoses.add(new DriftDiagnosis(
                             metric,
@@ -253,7 +255,7 @@ public final class HistoricalCalibrationSpatialEvaluator {
                             String.format("%.1f bits/hab", 100.0 * factor),
                             factor
                     ));
-                } else if (metric.contains("Energy") || metric.contains("CO2")) {
+                } else if (mLower.contains("energy") || mLower.contains("co2") || mLower.contains("exergy")) {
                     double factor = obs / sim;
                     result.driftDiagnoses.add(new DriftDiagnosis(
                             metric,
@@ -265,7 +267,7 @@ public final class HistoricalCalibrationSpatialEvaluator {
                             String.format("%.4f", 0.040 * factor),
                             factor
                     ));
-                } else if (metric.contains("Urbanization")) {
+                } else if (mLower.contains("urbanization") || mLower.contains("urban")) {
                     double factor = obs / sim;
                     result.driftDiagnoses.add(new DriftDiagnosis(
                             metric,

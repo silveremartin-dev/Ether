@@ -323,27 +323,23 @@ public final class ComparativeTimeSeriesChartCoordinator {
 
     public static String mapMetricToBenchmarkKey(String metric) {
         if (metric == null) return "worldPopulation";
-        String lower = metric.toLowerCase();
-        if (lower.contains("populat") || lower.contains("densit")) return "worldPopulation";
-        if (lower.contains("richesse") || lower.contains("gdp") || lower.contains("pib") || lower.contains("capital") || lower.contains("product")) return "grossWorldProduct";
-        if (lower.contains("alimentaire") || lower.contains("food") || lower.contains("eroi")) return "agriculturalEroei";
-        if (lower.contains("énergie") || lower.contains("energy") || lower.contains("puissance")) return "primaryEnergy";
-        if (lower.contains("survie") || lower.contains("urbanis") || lower.contains("urban")) return "urbanizationRate";
-        if (lower.contains("anomal") || lower.contains("temperatureanomaly")) return "temperatureAnomaly";
-        if (lower.contains("température") || lower.contains("temperature") || lower.contains("climat")) return "temperatureAnomaly";
-        if (lower.contains("précipit") || lower.contains("precipit") || lower.contains("pluie") || lower.contains("rainfall")) return "precipitation";
-        if (lower.contains("co2") || lower.contains("carbon") || lower.contains("carbone")) return "co2Concentration";
-        if (lower.contains("technolog") || lower.contains("tech") || lower.contains("alphabét") || lower.contains("literacy") || lower.contains("éducat")) return "literacyRate";
-        if (lower.contains("asabiyyah") || lower.contains("cohésion")) return "asabiyyahSocialCohesion";
-        if (lower.contains("stabilité") || lower.contains("monnaie") || lower.contains("currency") || lower.contains("instability") || lower.contains("conflit")) return "sociopoliticalInstability";
-        if (lower.contains("gini") || lower.contains("inégal")) return "giniInequality";
-        if (lower.contains("megafauna") || lower.contains("mégafaune")) return "megafaunaIndex";
-        if (lower.contains("milankovitch") || lower.contains("insolation")) return "milankovitchInsolation";
-        if (lower.contains("containment") || lower.contains("confinement")) return "zeroContainmentScore";
-        if (lower.contains("vie") || lower.contains("life") || lower.contains("espérance")) return "lifeExpectancyAtBirth";
-        if (lower.contains("métal") || lower.contains("metal") || lower.contains("smelting")) return "metalSmeltingPerCapita";
-        if (lower.contains("commerce") || lower.contains("trade")) return "globalTradeVolume";
-        if (lower.contains("dette") || lower.contains("debt")) return "sovereignDebtBurden";
+        // 1. Direct canonical technical benchmark key match
+        if (HistoricalValidationKernel.getAllBenchmarkKeys().contains(metric)) {
+            return metric;
+        }
+        // 2. MetricRegistry resolution by technical ID or registered display name
+        var desc = MetricRegistry.getInstance().getDescriptor(metric);
+        if (desc != null) {
+            String canon = HistoricalValidationKernel.resolveCanonicalKey(desc.getId());
+            if (canon != null && HistoricalValidationKernel.getAllBenchmarkKeys().contains(canon)) {
+                return canon;
+            }
+        }
+        // 3. Technical alias resolution
+        String resolved = HistoricalValidationKernel.resolveCanonicalKey(metric);
+        if (resolved != null && HistoricalValidationKernel.getAllBenchmarkKeys().contains(resolved)) {
+            return resolved;
+        }
         return "worldPopulation";
     }
 }

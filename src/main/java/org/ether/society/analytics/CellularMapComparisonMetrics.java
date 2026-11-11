@@ -311,20 +311,23 @@ public final class CellularMapComparisonMetrics {
         return new MapComparisonMetrics.MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
     }
 
-    private static double extractCellValue(H3Cell c, String chLower) {
-        if (chLower.contains("temp") || chLower.contains("climat")) {
-            return c.getTemperature() != null ? c.getTemperature() : 15.0;
-        } else if (chLower.contains("aquif") || chLower.contains("eau") || chLower.contains("water")) {
-            return c.getFreshwaterAquifer() != null ? c.getFreshwaterAquifer() : 0.0;
-        } else if (chLower.contains("biomass") || chLower.contains("agricol") || chLower.contains("agr")) {
-            return c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0;
-        } else if (chLower.contains("tech") || chLower.contains("outill")) {
-            return H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
-        } else {
+    private static double extractCellValue(H3Cell c, String channelKey) {
+        if (channelKey == null) {
             long pop = c.getPopulationOr(0);
             double area = Math.max(1.0, c.getCellAreaKm2());
             return Math.log10(1.0 + ((double) pop / area));
         }
+        return switch (channelKey.trim().toLowerCase(Locale.ROOT)) {
+            case "temperature", "temp", "temperatureanomaly" -> c.getTemperature() != null ? c.getTemperature() : 15.0;
+            case "aquifers", "water", "freshwater", "aquifer" -> c.getFreshwaterAquifer() != null ? c.getFreshwaterAquifer() : 0.0;
+            case "agriculture", "biomassagriculture", "biomass_agr" -> c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0;
+            case "technology", "tech", "outillage" -> H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
+            default -> {
+                long pop = c.getPopulationOr(0);
+                double area = Math.max(1.0, c.getCellAreaKm2());
+                yield Math.log10(1.0 + ((double) pop / area));
+            }
+        };
     }
 
     /**
@@ -473,36 +476,43 @@ public final class CellularMapComparisonMetrics {
         return new MapComparisonMetrics.MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
     }
 
-    private static double extractCulturalCellValue(H3Cell c, String chLower) {
+    private static double extractCulturalCellValue(H3Cell c, String channelKey) {
         long pop = c.getPopulationOr(0);
-        if (chLower.contains("tech") || chLower.contains("material")) {
-            return H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
-        } else if (chLower.contains("institut") || chLower.contains("admin")) {
-            double kpc = (c.getResourceCapital() != null && pop > 0) ? (c.getResourceCapital() / pop) : 0.0;
-            return (Math.log10(Math.max(1.0, pop)) / 6.0) * 0.6 + (Math.min(1.0, kpc / 1500.0) * 0.4);
-        } else if (chLower.contains("ecolog") || chLower.contains("carri") || chLower.contains("empreint") || chLower.contains("anthrom")) {
-            // Anthropogenic ecological transformation & strain (matching HYDE 3.4 Anthrome footprint direction: high = transformed/cleared/dense)
-            double bioAgr = c.getBiomassAgricultureOr(0.0);
-            double bioLiv = c.getBiomassLivestock() != null ? c.getBiomassLivestock() : 0.0;
-            double bioNat = c.getBiomassNaturalOr(0.0);
-            double clearanceRatio = (bioAgr + bioLiv) / (bioAgr + bioLiv + bioNat + 100.0);
-            double area = Math.max(1.0, c.getCellAreaKm2());
-            double densityStrain = pop > 0 ? Math.min(1.0, Math.log1p((double) pop / area) / 6.0) : 0.0;
-            return Math.clamp(0.75 * clearanceRatio + 0.25 * densityStrain, 0.0, 1.0);
-        } else if (chLower.contains("pathog") || chLower.contains("sanit")) {
-            double area = Math.max(1.0, c.getCellAreaKm2());
-            double endemicUrbanLoad = pop > 0 ? Math.log10(1.0 + ((double) pop / area)) * 0.35 : 0.0;
-            return (double) c.getEpidemicRecoveredOr(0) + (double) c.getEpidemicInfectedOr(0) + endemicUrbanLoad;
-        } else if (chLower.contains("trade") || chLower.contains("market")) {
-            double area = Math.max(1.0, c.getCellAreaKm2());
-            double explicitTrade = c.getTradeNetworkOr(0.0) + c.getChokePointScoreOr(0.0);
-            double settlementMarket = pop > 0 ? Math.log10(1.0 + ((double) pop / area)) * 0.45 : 0.0;
-            return explicitTrade + settlementMarket;
-        } else {
-            // Categorical dimensions (isogloss, kinship, rituals, sovereignty): active demographic presence
+        if (channelKey == null) {
             double area = Math.max(1.0, c.getCellAreaKm2());
             return Math.log10(1.0 + ((double) pop / area));
         }
+        return switch (channelKey.trim().toLowerCase(Locale.ROOT)) {
+            case "technology", "material", "tech" -> H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
+            case "institutions", "admin", "institutional" -> {
+                double kpc = (c.getResourceCapital() != null && pop > 0) ? (c.getResourceCapital() / pop) : 0.0;
+                yield (Math.log10(Math.max(1.0, pop)) / 6.0) * 0.6 + (Math.min(1.0, kpc / 1500.0) * 0.4);
+            }
+            case "ecology", "anthrome", "footprint", "carrying_capacity" -> {
+                double bioAgr = c.getBiomassAgricultureOr(0.0);
+                double bioLiv = c.getBiomassLivestock() != null ? c.getBiomassLivestock() : 0.0;
+                double bioNat = c.getBiomassNaturalOr(0.0);
+                double clearanceRatio = (bioAgr + bioLiv) / (bioAgr + bioLiv + bioNat + 100.0);
+                double area = Math.max(1.0, c.getCellAreaKm2());
+                double densityStrain = pop > 0 ? Math.min(1.0, Math.log1p((double) pop / area) / 6.0) : 0.0;
+                yield Math.clamp(0.75 * clearanceRatio + 0.25 * densityStrain, 0.0, 1.0);
+            }
+            case "pathogens", "sanitary", "epidemic" -> {
+                double area = Math.max(1.0, c.getCellAreaKm2());
+                double endemicUrbanLoad = pop > 0 ? Math.log10(1.0 + ((double) pop / area)) * 0.35 : 0.0;
+                yield (double) c.getEpidemicRecoveredOr(0) + (double) c.getEpidemicInfectedOr(0) + endemicUrbanLoad;
+            }
+            case "trade", "market", "trade_network" -> {
+                double area = Math.max(1.0, c.getCellAreaKm2());
+                double explicitTrade = c.getTradeNetworkOr(0.0) + c.getChokePointScoreOr(0.0);
+                double settlementMarket = pop > 0 ? Math.log10(1.0 + ((double) pop / area)) * 0.45 : 0.0;
+                yield explicitTrade + settlementMarket;
+            }
+            default -> {
+                double area = Math.max(1.0, c.getCellAreaKm2());
+                yield Math.log10(1.0 + ((double) pop / area));
+            }
+        };
     }
 
     private static double calculateMean(double[] arr, int len) {

@@ -1713,13 +1713,14 @@ with canonical parameters:
 * **Academic Literature Reference**: Bueno de Mesquita, B. (1981). *The War Trap*. Yale University Press; Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Co.; Clausewitz, C. von (1832). *Vom Kriege*. Dümmlers Verlag.
 * **Governing Equations**:
   $$\mathcal{P}_{\text{escalate}} = \frac{1}{1 + \exp\left(-\frac{\text{warDesire}}{0.12}\right)}$$
-  $$\Delta \text{Affinity}_{\text{bilateral}} = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}}) \quad \text{if } \mathcal{P}_{\text{escalate}} > 0.50$$
+  $$\Delta \text{Affinity}_{\text{aggressor}\to\text{defender}} = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}}) \quad \text{if } \mathcal{P}_{\text{escalate}} > 0.50$$
+  $$\Delta \text{Affinity}_{\text{defender}\to\text{aggressor}} = 1.6 \cdot \Delta \text{Affinity}_{\text{aggressor}\to\text{defender}} \quad \text{(asymmetric defensive grievance)}$$
   $$\mathcal{P}_{\text{conquest}} = \frac{\Phi_{\text{attacker}}^2}{\Phi_{\text{attacker}}^2 + \Phi_{\text{defender}}^2}$$
 * **Parameters & Physical Units**:
   * $\text{warDesire}$: Net expected utility of aggressive geopolitical conflict $[-1.0, 1.0]$.
   * $\mathcal{P}_{\text{escalate}}$: Continuous $C^1$ war declaration probability (conflict active when $> 0.50$).
   * $\Phi_{\text{military}}$: Lanchester combat power derived from demographic levy $N_{\text{troops}}$, physical ordnance capital $k_{\text{ordnance}}$, and sovereign war chest bullion.
-  * Peacetime reconciliation relaxation: $+1.5\text{ affinity points/tick}$ when $\text{warDesire} < -0.05$.
+  * Peacetime reconciliation relaxation: $+0.5 \cdot \min(2.0, -\text{warDesire})$ points/tick for aggressor $\to$ defender, and $\times 0.9$ for defender $\to$ aggressor when $\text{warDesire} < -0.05$.
 * **Computational Complexity**: $O(P^2)$ where $P$ is the number of active polities; executed in Pass 3.3.
 
 ---
@@ -1759,10 +1760,39 @@ The simulation state at $T_0$ is initialized from a coupled tensor stack:
    - **Tensor 7 (Ecological Footprint & Degradation)**: $D(\mathbf{x}) \in [0, 1]$ soil salinization, erosion, deforestation.
    - **10 Geological Tensors**: Coal, Oil, Gas, Uranium, He-3, Iron/Copper, Precious Metals, Rare Earths, Geothermal Heat, Aquifers.
 
-### 6.2 Pairwise Cultural Affinity & Distance Metric
-For any two cultural entities $i$ and $j$, phenotypic/cultural distance $\text{Dist}_{ij}$ and symmetric affinity $\text{Affinity}_{ij}$ are given by:
-$$\text{Dist}_{ij} = \sqrt{\sum_{k=1}^K w_k \left( T_{i,k} - T_{j,k} \right)^2}, \quad \text{Affinity}_{ij} = \exp\left( -\lambda \cdot \text{Dist}_{ij} \right) \in (0, 1]$$
-where $\lambda \approx 3.5$, covering linguistic distance (ASJP phonological divergence), kinship incompatibility, Asabiyyah divergence, and institutional hierarchy.
+### 6.2 Directed Square Cultural Affinity Matrix & Asymmetric Evolution ($N \times N$)
+Rather than an idealized symmetric or triangular representation, inter-cultural relations in Ether are formalized as a **fully directed, asymmetric $N \times N$ square matrix** $\mathbf{A} \in [0.0, 1.0]^{N \times N}$, where $A_{i \to j}$ denotes the directional affinity, diplomatic tolerance, and assimilation openness expressed by cultural entity $i$ towards entity $j$, and in general $A_{i \to j} \ne A_{j \to i}$.
+
+#### 1. Baseline Prior Formulation from 4D Empirical Trait Space ($t = t_0$)
+At epoch initialization ($t = t_0$), each entity $i$ is parameterized by its empirical ethnographic trait vector $\mathbf{T}_i = [T_{i,0}, T_{i,1}, T_{i,2}, T_{i,3}] \in [0, 1]^4$ (Glottolog 4.8 linguistic branch, Murdock D-PLACE / Todd social stratification, ArchaeoGLOBE subsistence regime, and Seshat ritual/axial tradition):
+
+$$\text{Dist}_{ij} = \sqrt{\sum_{k=0}^3 \left( T_{i,k} - T_{j,k} \right)^2}$$
+$$A_0(i, j) = \exp\left( -\lambda \cdot \text{Dist}_{ij} \right) \quad (\lambda = 3.5)$$
+
+Directional asymmetry is derived from two socio-historical structural invariants:
+1. **Prestige & Institutional Asymmetry** ($\Delta_{\text{status}} = T_{j,1} - T_{i,1}$):
+   Peripheral and tribal polities exhibit aspirational cultural openness toward complex imperial centers ($\Delta_{\text{status}} > 0$), while dominant imperial states display an ethnocentric discounting bias toward peripheries:
+   $$\text{Bias}_{\text{prestige}}(i \to j) = 0.12 \cdot \tanh(2.5 \cdot \Delta_{\text{status}})$$
+2. **Ritual Exclusivism & Intolerance Friction** ($\Delta_{\text{dogma}} = T_{i,3} \cdot |T_{i,3} - T_{j,3}|$):
+   Doctrinally rigid or dogmatic ritual traditions ($T_{i,3} \to 1$) incur severe unilateral friction against divergent systems, whereas syncretic traditions ($T_{i,3} \to 0$) maintain higher baseline tolerance:
+   $$\text{Discount}_{\text{dogma}}(i \to j) = 0.15 \cdot \Delta_{\text{dogma}}$$
+
+The resulting directed initial affinity is continuously bounded:
+$$A(i \to j) = \operatorname{clamp}\left( A_0(i, j) + \text{Bias}_{\text{prestige}}(i \to j) - \text{Discount}_{\text{dogma}}(i \to j), \; 0.01, \; 1.0 \right)$$
+with auto-identity diagonal $A(i \to i) \equiv 1.0$.
+
+#### 2. Dynamic Asymmetric Evolution ($t > t_0$)
+The square matrix $\mathbf{A}(t)$ serves strictly as the initial state ($t_0$) and is dynamically updated across simulation ticks:
+* **Warfare & Invasions (`WarDiplomacyEngine`)**:
+  Border skirmishes degrade affinities asymmetrically:
+  $$\Delta A(i_{\text{aggressor}} \to j_{\text{defender}}) = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}})$$
+  $$\Delta A(j_{\text{defender}} \to i_{\text{aggressor}}) = 1.6 \cdot \Delta A(i_{\text{aggressor}} \to j_{\text{defender}}) \quad (\text{defensive grievance penalty})$$
+* **Peacetime Trade & Cultural Diffusion**:
+  Peaceful borders and mutual commerce generate directed reconciliation:
+  $$\Delta A(i \to j) = +0.5 \cdot \min(2.0, -\text{warDesire})$$
+  modulated by trade conductance and cultural prestige.
+* **State Persistence**:
+  Pairwise overrides are persisted in scenario presets (`culturalAffinityMatrix: { "idA:idB": value }`) and remain inspectable and editable per directed cell in the `CulturalAffinityMatrixDialog` GUI.
 
 ---
 

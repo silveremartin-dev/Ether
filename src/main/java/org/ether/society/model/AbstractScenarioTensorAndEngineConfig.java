@@ -214,10 +214,13 @@ public abstract class AbstractScenarioTensorAndEngineConfig implements Serializa
     }
 
     /**
-     * Gets pairwise cultural affinity between two polities, defaulting to $50.0$ (neutral coexistence) if unspecified.
+     * Gets directional cultural affinity from origin polity {@code idA} towards target polity {@code idB},
+     * defaulting to $50.0$ (neutral coexistence) if unspecified.
      *
-     * @param idA first polity or cultural entity identifier
-     * @param idB second polity or cultural entity identifier
+     * <p>Adheres to the directed square matrix architecture where $A(i \to j) \ne A(j \to i)$.</p>
+     *
+     * @param idA source polity or cultural entity identifier (origin)
+     * @param idB target polity or cultural entity identifier (target)
      * @return affinity value in $[0.0, 100.0]$
      */
     public double getPairwiseAffinity(String idA, String idB) {
@@ -228,9 +231,13 @@ public abstract class AbstractScenarioTensorAndEngineConfig implements Serializa
         }
         if (culturalAffinityMatrix != null) {
             String k1 = idA.toLowerCase(Locale.ROOT) + ":" + idB.toLowerCase(Locale.ROOT);
-            String k2 = idB.toLowerCase(Locale.ROOT) + ":" + idA.toLowerCase(Locale.ROOT);
             Double val = culturalAffinityMatrix.get(k1);
-            if (val == null) val = culturalAffinityMatrix.get(k2);
+            if (val != null) {
+                return val <= 1.0 ? val * 100.0 : val;
+            }
+            // Fallback for legacy symmetric scenarios where only reverse key was persisted:
+            String k2 = idB.toLowerCase(Locale.ROOT) + ":" + idA.toLowerCase(Locale.ROOT);
+            val = culturalAffinityMatrix.get(k2);
             if (val != null) {
                 return val <= 1.0 ? val * 100.0 : val;
             }
@@ -238,15 +245,23 @@ public abstract class AbstractScenarioTensorAndEngineConfig implements Serializa
         return 50.0;
     }
 
+    /**
+     * Adjusts the directed cultural affinity from origin polity {@code idA} towards target polity {@code idB}.
+     *
+     * <p>In accordance with directed square matrix semantics, this modifies exclusively the directional link
+     * $A(idA \to idB)$ without symmetrically overwriting the reverse link $A(idB \to idA)$.</p>
+     *
+     * @param idA   source polity or cultural entity identifier
+     * @param idB   target polity or cultural entity identifier
+     * @param delta affinity shift in percentage points (positive for reconciliation/trade, negative for grievance/war)
+     */
     public void adjustPairwiseAffinity(String idA, String idB, double delta) {
         if (idA == null || idB == null) return;
         double current = getPairwiseAffinity(idA, idB);
         double updated = Math.clamp(current + delta, 0.0, 100.0);
         String k1 = idA.toLowerCase(Locale.ROOT) + ":" + idB.toLowerCase(Locale.ROOT);
-        String k2 = idB.toLowerCase(Locale.ROOT) + ":" + idA.toLowerCase(Locale.ROOT);
         if (culturalAffinityMatrix == null) culturalAffinityMatrix = new HashMap<>();
         culturalAffinityMatrix.put(k1, updated);
-        culturalAffinityMatrix.put(k2, updated);
     }
 
     private synchronized void ensureCulturalAffinityMatrixInitialized() {

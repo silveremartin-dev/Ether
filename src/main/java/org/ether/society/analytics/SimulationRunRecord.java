@@ -113,14 +113,16 @@ public class SimulationRunRecord {
             if (metricsMap.containsKey(key)) {
                 return metricsMap.get(key);
             }
-            // Backward compatibility fallbacks
-            if (key.contains("Population")) return (double) population;
-            if (key.contains("Tech")) return avgTech;
-            if (key.contains("Asabiyyah") || key.contains("StabilitÃ©")) return stability;
-            if (key.contains("Food") || key.contains("Alimentaire")) return food;
-            if (key.equalsIgnoreCase("resourceCapital") || key.equalsIgnoreCase("capital") || key.equalsIgnoreCase("capitalStock")) {
-                if (metricsMap.containsKey("builtCapital")) return metricsMap.get("builtCapital");
-                if (metricsMap.containsKey("gdp")) return metricsMap.get("gdp");
+            // Canonical technical aliases fallback
+            switch (id) {
+                case "population", "worldPopulation", "totalPopulation" -> { return (double) population; }
+                case "avgTechLevel", "techLevel", "avgTech" -> { return avgTech; }
+                case "asabiyyah", "stability", "asabiyyahSocialCohesion" -> { return stability; }
+                case "foodPerCapita", "food" -> { return food; }
+                case "builtCapital", "resourceCapital", "capital", "capitalStock" -> {
+                    if (metricsMap.containsKey("builtCapital")) return metricsMap.get("builtCapital");
+                    if (metricsMap.containsKey("gdp")) return metricsMap.get("gdp");
+                }
             }
             return 0.0;
         }

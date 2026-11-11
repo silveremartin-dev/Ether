@@ -102,7 +102,7 @@ public final class ScenarioPreviewLegendBuilder {
                     I18n.getOrDefault("setup.legend.capital.3.desc", "Manufactures royales, hauts fourneaux et canaux de navigation"),
                     I18n.getOrDefault("setup.legend.capital.4.desc", "Machinisme lourd à vapeur, réseau ferré et aciéries")
                 };
-            } else if (derivedOffset == 2 || mode.contains("énergétique") || mode.contains("energy") || mode.contains("energie") || mode.contains("energético") || mode.contains("e(x)")) {
+            } else if (derivedOffset == 2 || mode.contains("e(x)")) {
                 colors = new Color[]{
                     Color.rgb(69, 26, 3), Color.rgb(180, 83, 9), Color.rgb(234, 88, 12), Color.rgb(250, 204, 21), Color.rgb(254, 240, 138)
                 };
@@ -120,7 +120,7 @@ public final class ScenarioPreviewLegendBuilder {
                     I18n.getOrDefault("setup.legend.energy.3.desc", "Régime Hydrocarbures : Pétrole, gaz et thermodynamique industrielle"),
                     I18n.getOrDefault("setup.legend.energy.4.desc", "Régime Électrique Massif : Réseaux de puissance et transition énergétique")
                 };
-            } else if (derivedOffset == 3 || mode.contains("alimentaires") || mode.contains("food") || mode.contains("nahrung") || mode.contains("alimentos") || mode.contains("f(x)")) {
+            } else if (derivedOffset == 3 || mode.contains("f(x)")) {
                 colors = new Color[]{
                     Color.rgb(163, 230, 53), Color.rgb(132, 204, 22), Color.rgb(34, 197, 94), Color.rgb(5, 150, 105), Color.rgb(6, 78, 59)
                 };
@@ -138,7 +138,7 @@ public final class ScenarioPreviewLegendBuilder {
                     I18n.getOrDefault("setup.legend.food.3.desc", "Réserves Stratégiques : Silos régionaux prévenant toute disette"),
                     I18n.getOrDefault("setup.legend.food.4.desc", "Surplus Systémique : Chaînes logistiques agroalimentaires pérennes")
                 };
-            } else if (derivedOffset == 4 || mode.contains("informationnel") || mode.contains("info") || mode.contains("i(x)")) {
+            } else if (derivedOffset == 4 || mode.contains("i(x)")) {
                 colors = new Color[]{
                     Color.rgb(55, 48, 163), Color.rgb(124, 58, 237), Color.rgb(219, 39, 119), Color.rgb(6, 182, 212), Color.rgb(224, 242, 254)
                 };
@@ -156,7 +156,7 @@ public final class ScenarioPreviewLegendBuilder {
                     I18n.getOrDefault("setup.legend.info.3.desc", "Télécommunications : Presse quotidienne, télégraphe, radio et cinéma"),
                     I18n.getOrDefault("setup.legend.info.4.desc", "Société Numérique : Internet, calcul haute performance et bases de données")
                 };
-            } else if (derivedOffset == 5 || mode.contains("empreinte") || mode.contains("footprint") || mode.contains("fußabdruck") || mode.contains("huella") || mode.contains("malthus")) {
+            } else if (derivedOffset == 5 || mode.contains("malthus")) {
                 colors = new Color[]{
                     Color.rgb(16, 185, 129), Color.rgb(132, 204, 22), Color.rgb(245, 158, 11), Color.rgb(239, 68, 68), Color.rgb(127, 29, 29)
                 };

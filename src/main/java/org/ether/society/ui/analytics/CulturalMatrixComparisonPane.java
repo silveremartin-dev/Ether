@@ -1,0 +1,761 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
+ */
+package org.ether.society.ui.analytics;
+
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
+import org.ether.society.i18n.I18n;
+import org.ether.society.model.CulturalEntity;
+import org.ether.society.model.Scenario;
+import org.ether.society.ui.CulturalEpochRegistryLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+/**
+ * <h1>Cultural Matrix &amp; Affinity Discrepancy Comparison Pane</h1>
+ *
+ * <p>Provides multi-scenario ethnographic tensor and affinity matrix comparison \(\Delta(A - B)\)
+ * within the comparative analytics suite. Supports pairwise differential heatmaps, multi-scenario
+ * divergence galleries against an empirical baseline, Frobenius norm matrix discrepancy,
+ * mean absolute delta (MAD), and asynchronous evaluation.</p>
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0
+ * @see org.ether.society.model.CulturalEntity
+ * @see org.ether.society.ui.ComparativeAnalyticsPanel
+ */
+public class CulturalMatrixComparisonPane extends VBox {
+
+    private static final Logger logger = LoggerFactory.getLogger(CulturalMatrixComparisonPane.class);
+
+    private Label baselineLabel;
+    private ComboBox<ScenarioSelectableItem> comboBaseline;
+    private Label targetLabel;
+    private ComboBox<ScenarioSelectableItem> comboTarget;
+    private Label epochLabel;
+    private ComboBox<Long> comboEpoch;
+
+    private ToggleGroup modeGroup;
+    private RadioButton rbPairwiseView;
+    private RadioButton rbMultiView;
+
+    private HBox pairwiseContainer;
+    private ScrollPane pairwiseScrollPane;
+
+    private ScrollPane multiScenarioScrollPane;
+    private HBox multiScenarioContainer;
+
+    private Label matrixLabelA;
+    private Label matrixLabelB;
+    private Label matrixLabelDelta;
+
+    private GridPane gridA;
+    private GridPane gridB;
+    private GridPane gridDelta;
+
+    private Label lblMeanA;
+    private Label lblMeanB;
+    private Label lblFrobenius;
+    private Label lblMad;
+    private Label lblMaxShift;
+    private Label cellDetailLabel;
+
+    private Button btnExportCsv;
+    private Button btnExportJson;
+    private Button btnCopyReport;
+
+    private List<ScenarioSelectableItem> allScenarios = new ArrayList<>();
+    private List<ScenarioSelectableItem> selectedScenarios = new ArrayList<>();
+    private boolean isUpdatingTexts = false;
+
+    /**
+     * Constructs the cultural matrix comparison pane and initializes controls.
+     */
+    public CulturalMatrixComparisonPane() {
+        super(8);
+        setPadding(new Insets(12));
+        initUI();
+    }
+
+    private void initUI() {
+        // --- ROW 1: Selection Controls & Modes ---
+        baselineLabel = new Label(I18n.getOrDefault("analytics.cultural.baseline", "Baseline (A):"));
+        baselineLabel.getStyleClass().add("control-label");
+        comboBaseline = new ComboBox<>();
+        comboBaseline.setPrefWidth(210);
+        comboBaseline.setOnAction(e -> updateComparison());
+
+        targetLabel = new Label(I18n.getOrDefault("analytics.cultural.target", "Target (B):"));
+        targetLabel.getStyleClass().add("control-label");
+        comboTarget = new ComboBox<>();
+        comboTarget.setPrefWidth(210);
+        comboTarget.setOnAction(e -> updateComparison());
+
+        epochLabel = new Label(I18n.getOrDefault("analytics.cultural.epoch", "Epoch:"));
+        epochLabel.getStyleClass().add("control-label");
+        comboEpoch = new ComboBox<>();
+        comboEpoch.setPrefWidth(180);
+        comboEpoch.getItems().setAll(CulturalEpochRegistryLoader.discoverAllEpochs());
+        comboEpoch.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Long item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : CulturalEpochRegistryLoader.formatEpochName(item));
+            }
+        });
+        comboEpoch.setButtonCell(comboEpoch.getCellFactory().call(null));
+        if (!comboEpoch.getItems().isEmpty()) {
+            comboEpoch.setValue(comboEpoch.getItems().get(0));
+        }
+        comboEpoch.setOnAction(e -> updateComparison());
+
+        HBox selectionRow = new HBox(10, baselineLabel, comboBaseline, targetLabel, comboTarget, epochLabel, comboEpoch);
+        selectionRow.setAlignment(Pos.CENTER_LEFT);
+
+        // --- ROW 2: View Mode Toggles ---
+        modeGroup = new ToggleGroup();
+        rbPairwiseView = new RadioButton(I18n.getOrDefault("analytics.cultural.view_pairwise", "⚖️ Detailed Differential View [A vs B & Delta]"));
+        rbPairwiseView.setToggleGroup(modeGroup);
+        rbPairwiseView.setSelected(true);
+        rbPairwiseView.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
+
+        rbMultiView = new RadioButton(I18n.getOrDefault("analytics.cultural.view_multi", "🌐 Multi-Scenario Gallery [Deltas vs Baseline]"));
+        rbMultiView.setToggleGroup(modeGroup);
+        rbMultiView.setDisable(true);
+        rbMultiView.setStyle("-fx-font-weight: bold; -fx-text-fill: #38bdf8;");
+
+        modeGroup.selectedToggleProperty().addListener((obs, oldV, newV) -> {
+            boolean isMulti = rbMultiView.isSelected();
+            pairwiseScrollPane.setVisible(!isMulti);
+            pairwiseScrollPane.setManaged(!isMulti);
+            multiScenarioScrollPane.setVisible(isMulti);
+            multiScenarioScrollPane.setManaged(isMulti);
+            targetLabel.setVisible(!isMulti);
+            targetLabel.setManaged(!isMulti);
+            comboTarget.setVisible(!isMulti);
+            comboTarget.setManaged(!isMulti);
+            updateComparison();
+        });
+
+        HBox modeRow = new HBox(16, rbPairwiseView, rbMultiView);
+        modeRow.setAlignment(Pos.CENTER_LEFT);
+
+        VBox topControlsBox = new VBox(8, selectionRow, modeRow);
+
+        // --- PAIRWISE VIEW GRIDS ---
+        matrixLabelA = new Label(I18n.getOrDefault("analytics.cultural.matrix_a", "Scenario A Cultural Matrix"));
+        matrixLabelA.getStyleClass().add("label-section-header");
+        gridA = createMatrixGrid();
+        VBox boxA = new VBox(4, matrixLabelA, gridA);
+        boxA.setAlignment(Pos.TOP_CENTER);
+
+        matrixLabelB = new Label(I18n.getOrDefault("analytics.cultural.matrix_b", "Scenario B Cultural Matrix"));
+        matrixLabelB.getStyleClass().add("label-section-header");
+        gridB = createMatrixGrid();
+        VBox boxB = new VBox(4, matrixLabelB, gridB);
+        boxB.setAlignment(Pos.TOP_CENTER);
+
+        matrixLabelDelta = new Label(I18n.getOrDefault("analytics.cultural.delta_matrix", "Discrepancy Matrix Δ(Target - Baseline)"));
+        matrixLabelDelta.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+        gridDelta = createMatrixGrid();
+        VBox boxDelta = new VBox(4, matrixLabelDelta, gridDelta);
+        boxDelta.setAlignment(Pos.TOP_CENTER);
+
+        pairwiseContainer = new HBox(16, boxA, boxB, boxDelta);
+        pairwiseContainer.setAlignment(Pos.TOP_CENTER);
+        pairwiseContainer.setPadding(new Insets(8));
+
+        pairwiseScrollPane = new ScrollPane(pairwiseContainer);
+        pairwiseScrollPane.setFitToWidth(false);
+        pairwiseScrollPane.setFitToHeight(false);
+        pairwiseScrollPane.setPannable(true);
+        pairwiseScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        pairwiseScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        VBox.setVgrow(pairwiseScrollPane, Priority.ALWAYS);
+
+        // --- MULTI-SCENARIO SCROLLPANE ---
+        multiScenarioContainer = new HBox(16);
+        multiScenarioContainer.setAlignment(Pos.TOP_LEFT);
+        multiScenarioContainer.setPadding(new Insets(8));
+
+        multiScenarioScrollPane = new ScrollPane(multiScenarioContainer);
+        multiScenarioScrollPane.setFitToHeight(true);
+        multiScenarioScrollPane.setPannable(true);
+        multiScenarioScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        multiScenarioScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        multiScenarioScrollPane.setVisible(false);
+        multiScenarioScrollPane.setManaged(false);
+        VBox.setVgrow(multiScenarioScrollPane, Priority.ALWAYS);
+
+        // --- LEGEND BAR ---
+        HBox legendBar = buildLegendBar();
+
+        // --- STATISTICAL SUMMARY CARDS ---
+        lblMeanA = new Label();
+        lblMeanA.setStyle("-fx-font-size: 11.5px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;");
+
+        lblMeanB = new Label();
+        lblMeanB.setStyle("-fx-font-size: 11.5px; -fx-text-fill: #818cf8; -fx-font-weight: bold;");
+
+        lblFrobenius = new Label();
+        lblFrobenius.setStyle("-fx-font-size: 11.5px; -fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+
+        lblMad = new Label();
+        lblMad.setStyle("-fx-font-size: 11.5px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
+
+        lblMaxShift = new Label();
+        lblMaxShift.setStyle("-fx-font-size: 11.5px; -fx-text-fill: #ec4899; -fx-font-weight: bold;");
+
+        HBox statsSummaryBox = new HBox(18, lblMeanA, lblMeanB, lblFrobenius, lblMad, lblMaxShift);
+        statsSummaryBox.setAlignment(Pos.CENTER_LEFT);
+        statsSummaryBox.setPadding(new Insets(6, 12, 6, 12));
+        statsSummaryBox.setStyle("-fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
+
+        cellDetailLabel = new Label(I18n.getOrDefault("analytics.cultural.cell_hint", "💡 Click or hover over any matrix cell for ethnographic breakdown."));
+        cellDetailLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #cbd5e1; -fx-padding: 2 4;");
+        cellDetailLabel.setWrapText(true);
+
+        // --- EXPORT TOOLBAR ---
+        btnExportCsv = new Button(I18n.getOrDefault("analytics.cultural.export_csv", "📥 Export Matrices (CSV)"));
+        btnExportCsv.setStyle("-fx-font-weight: bold; -fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 5 12; -fx-cursor: hand;");
+        btnExportCsv.setOnAction(e -> exportCsv());
+
+        btnExportJson = new Button(I18n.getOrDefault("analytics.cultural.export_json", "📥 Export JSON"));
+        btnExportJson.setStyle("-fx-font-weight: bold; -fx-background-color: #10b981; -fx-text-fill: white; -fx-padding: 5 12; -fx-cursor: hand;");
+        btnExportJson.setOnAction(e -> exportJson());
+
+        btnCopyReport = new Button(I18n.getOrDefault("analytics.cultural.copy_report", "📋 Copy Cultural Report"));
+        btnCopyReport.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 5 12; -fx-cursor: hand;");
+        btnCopyReport.setOnAction(e -> copyReportToClipboard());
+
+        HBox exportBox = new HBox(10, btnExportCsv, btnExportJson, btnCopyReport);
+        exportBox.setAlignment(Pos.CENTER_LEFT);
+
+        getChildren().addAll(topControlsBox, pairwiseScrollPane, multiScenarioScrollPane,
+                legendBar, statsSummaryBox, cellDetailLabel, exportBox);
+    }
+
+    private GridPane createMatrixGrid() {
+        GridPane grid = new GridPane();
+        grid.setHgap(3);
+        grid.setVgap(3);
+        grid.setPadding(new Insets(6));
+        grid.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6;");
+        return grid;
+    }
+
+    private HBox buildLegendBar() {
+        HBox bar = new HBox(16);
+        bar.setAlignment(Pos.CENTER);
+        bar.setPadding(new Insets(4, 12, 4, 12));
+        bar.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6;");
+
+        Label red = new Label("🟥 " + I18n.getOrDefault("analytics.cultural.delta_legend_under", "Δ < 0 (Reduced affinity / Distance increased)"));
+        red.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
+
+        Label slate = new Label("⬛ " + I18n.getOrDefault("analytics.cultural.delta_legend_zero", "Δ = 0 (Identical cultural affinity)"));
+        slate.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-font-weight: bold;");
+
+        Label green = new Label("🟩 " + I18n.getOrDefault("analytics.cultural.delta_legend_over", "Δ > 0 (Increased affinity / Mutual assimilation)"));
+        green.setStyle("-fx-text-fill: #10b981; -fx-font-size: 11px;");
+
+        bar.getChildren().addAll(red, slate, green);
+        return bar;
+    }
+
+    /**
+     * Updates the selectable scenario pool from comparative table.
+     *
+     * @param scenarioList active scenario list
+     */
+    public void updateScenarioPool(List<ScenarioSelectableItem> scenarioList) {
+        if (scenarioList == null) return;
+        this.allScenarios = new ArrayList<>(scenarioList);
+        this.selectedScenarios = scenarioList.stream().filter(ScenarioSelectableItem::isSelected).toList();
+
+        List<ScenarioSelectableItem> pool = (selectedScenarios.size() >= 2) ? selectedScenarios : allScenarios;
+
+        ScenarioSelectableItem prevA = comboBaseline.getValue();
+        ScenarioSelectableItem prevB = comboTarget.getValue();
+
+        comboBaseline.getItems().setAll(pool);
+        comboTarget.getItems().setAll(pool);
+
+        if (prevA != null && pool.contains(prevA)) comboBaseline.setValue(prevA);
+        else if (!pool.isEmpty()) comboBaseline.setValue(pool.get(0));
+
+        if (prevB != null && pool.contains(prevB)) comboTarget.setValue(prevB);
+        else if (pool.size() > 1) comboTarget.setValue(pool.get(1));
+        else if (!pool.isEmpty()) comboTarget.setValue(pool.get(0));
+
+        if (selectedScenarios.size() >= 3) {
+            rbMultiView.setDisable(false);
+            rbMultiView.setText(String.format(I18n.getOrDefault("analytics.mode.multi_scenarios_count", "🌐 Multi-Scenarios (%d selected)"), selectedScenarios.size()));
+        } else {
+            rbMultiView.setDisable(true);
+            rbPairwiseView.setSelected(true);
+        }
+
+        updateComparison();
+    }
+
+    /**
+     * Recomputes cultural matrices, delta matrix, and statistical divergence metrics.
+     */
+    public void updateComparison() {
+        if (isUpdatingTexts) return;
+
+        ScenarioSelectableItem itemA = comboBaseline.getValue();
+        ScenarioSelectableItem itemB = comboTarget.getValue();
+
+        if (itemA == null && !comboBaseline.getItems().isEmpty()) itemA = comboBaseline.getItems().get(0);
+        if (itemB == null && comboTarget.getItems().size() > 1) itemB = comboTarget.getItems().get(1);
+        if (itemB == null) itemB = itemA;
+
+        if (itemA == null || itemA.getScenario() == null) {
+            cellDetailLabel.setText(I18n.getOrDefault("analytics.cultural.no_scenarios", "⚠️ Select at least 2 scenarios to compare cultural affinity matrices."));
+            return;
+        }
+
+        Scenario scA = itemA.getScenario();
+        Scenario scB = (itemB != null && itemB.getScenario() != null) ? itemB.getScenario() : scA;
+
+        Long selectedEpoch = comboEpoch.getValue();
+        long epoch = selectedEpoch != null ? selectedEpoch : (long) scA.getStartDateYear();
+
+        List<CulturalEntity> entitiesA = CulturalEpochRegistryLoader.loadEpochRegistry(itemA.getPlanetDisplayName(), epoch);
+        if (entitiesA.isEmpty()) entitiesA = CulturalEpochRegistryLoader.loadEpochRegistry(epoch);
+
+        List<CulturalEntity> entitiesB = CulturalEpochRegistryLoader.loadEpochRegistry(itemB != null ? itemB.getPlanetDisplayName() : itemA.getPlanetDisplayName(), epoch);
+        if (entitiesB.isEmpty()) entitiesB = CulturalEpochRegistryLoader.loadEpochRegistry(epoch);
+
+        if (rbMultiView.isSelected() && selectedScenarios.size() >= 3) {
+            renderMultiScenarioView(itemA, epoch);
+        } else {
+            renderPairwiseView(itemA, itemB, scA, scB, entitiesA, entitiesB);
+        }
+    }
+
+    private void renderPairwiseView(ScenarioSelectableItem itemA, ScenarioSelectableItem itemB,
+                                    Scenario scA, Scenario scB,
+                                    List<CulturalEntity> entitiesA, List<CulturalEntity> entitiesB) {
+        matrixLabelA.setText(I18n.getOrDefault("analytics.cultural.matrix_a", "Scenario A: ") + itemA.getName());
+        matrixLabelB.setText(I18n.getOrDefault("analytics.cultural.matrix_b", "Scenario B: ") + (itemB != null ? itemB.getName() : scB.getName()));
+        matrixLabelDelta.setText(I18n.getOrDefault("analytics.cultural.delta_matrix", "Discrepancy Matrix Δ(B - A)"));
+
+        populateAffinityGrid(gridA, scA, entitiesA, false, null, itemA.getName());
+        populateAffinityGrid(gridB, scB, entitiesB, false, null, itemB != null ? itemB.getName() : scB.getName());
+
+        // Delta Grid: compares entities present in both
+        List<CulturalEntity> commonEntities = alignEntities(entitiesA, entitiesB);
+        MatrixStats stats = populateDeltaGrid(gridDelta, scA, scB, commonEntities, itemA.getName(), itemB != null ? itemB.getName() : scB.getName());
+
+        lblMeanA.setText(String.format(I18n.getOrDefault("analytics.cultural.mean_affinity_a", "Mean Affinity A: %.1f%%"), stats.meanA * 100.0));
+        lblMeanB.setText(String.format(I18n.getOrDefault("analytics.cultural.mean_affinity_b", "Mean Affinity B: %.1f%%"), stats.meanB * 100.0));
+        lblFrobenius.setText(String.format(I18n.getOrDefault("analytics.cultural.frobenius", "Frobenius Norm ||Δ||: %.3f"), stats.frobeniusNorm));
+        lblMad.setText(String.format(I18n.getOrDefault("analytics.cultural.mean_shift", "Mean Absolute Shift (MAD): %.2f%%"), stats.mad * 100.0));
+        lblMaxShift.setText(String.format(I18n.getOrDefault("analytics.cultural.max_shift", "Max Shift: %+.1f%% (%s → %s)"), stats.maxDelta * 100.0, stats.maxOrig, stats.maxTarg));
+    }
+
+    private void renderMultiScenarioView(ScenarioSelectableItem baselineItem, long epoch) {
+        multiScenarioContainer.getChildren().clear();
+        Scenario baseSc = baselineItem.getScenario();
+        List<CulturalEntity> baseEntities = CulturalEpochRegistryLoader.loadEpochRegistry(baselineItem.getPlanetDisplayName(), epoch);
+        if (baseEntities.isEmpty()) baseEntities = CulturalEpochRegistryLoader.loadEpochRegistry(epoch);
+
+        // Baseline Card
+        VBox baseCard = new VBox(6);
+        baseCard.setPadding(new Insets(8));
+        baseCard.getStyleClass().add("card-section");
+        baseCard.setStyle("-fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 8; -fx-border-color: #38bdf8; -fx-border-radius: 8;");
+        Label baseTitle = new Label("👑 " + I18n.getOrDefault("analytics.cultural.baseline", "Baseline: ") + baselineItem.getName());
+        baseTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #38bdf8;");
+        GridPane baseGrid = createMatrixGrid();
+        populateAffinityGrid(baseGrid, baseSc, baseEntities, false, null, baselineItem.getName());
+        baseCard.getChildren().addAll(baseTitle, baseGrid);
+        multiScenarioContainer.getChildren().add(baseCard);
+
+        double totalMadSum = 0;
+        int compCount = 0;
+
+        for (ScenarioSelectableItem compItem : selectedScenarios) {
+            if (compItem == baselineItem) continue;
+            Scenario compSc = compItem.getScenario();
+            if (compSc == null) continue;
+
+            List<CulturalEntity> compEntities = CulturalEpochRegistryLoader.loadEpochRegistry(compItem.getPlanetDisplayName(), epoch);
+            if (compEntities.isEmpty()) compEntities = CulturalEpochRegistryLoader.loadEpochRegistry(epoch);
+            List<CulturalEntity> common = alignEntities(baseEntities, compEntities);
+
+            VBox compCard = new VBox(6);
+            compCard.setPadding(new Insets(8));
+            compCard.getStyleClass().add("card-section");
+            compCard.setStyle("-fx-background-color: rgba(15, 23, 42, 0.7); -fx-background-radius: 8; -fx-border-color: rgba(255, 255, 255, 0.12); -fx-border-radius: 8;");
+
+            Label compTitle = new Label("📊 " + compItem.getName() + " [Δ vs Baseline]");
+            compTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #f59e0b;");
+
+            GridPane deltaGrid = createMatrixGrid();
+            MatrixStats st = populateDeltaGrid(deltaGrid, baseSc, compSc, common, baselineItem.getName(), compItem.getName());
+
+            Label stLabel = new Label(String.format("||Δ||_F = %.3f | MAD = %.1f%% | Max: %+.1f%%", st.frobeniusNorm, st.mad * 100.0, st.maxDelta * 100.0));
+            stLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+
+            compCard.getChildren().addAll(compTitle, deltaGrid, stLabel);
+            multiScenarioContainer.getChildren().add(compCard);
+
+            totalMadSum += st.mad;
+            compCount++;
+        }
+
+        lblMeanA.setText(String.format("Baseline: %s", baselineItem.getName()));
+        lblMeanB.setText(String.format("Multi-Scenarios: %d Compared", compCount));
+        lblFrobenius.setText(String.format("Average MAD vs Baseline: %.2f%%", compCount > 0 ? (totalMadSum / compCount) * 100.0 : 0.0));
+        lblMad.setText("");
+        lblMaxShift.setText("");
+    }
+
+    private void populateAffinityGrid(GridPane grid, Scenario s, List<CulturalEntity> entities,
+                                      boolean isDelta, Scenario baseScenario, String scenarioName) {
+        grid.getChildren().clear();
+        int n = entities.size();
+        if (n == 0) return;
+
+        addHeaders(grid, entities);
+
+        for (int i = 0; i < n; i++) {
+            CulturalEntity eOrig = entities.get(i);
+            for (int j = 0; j < n; j++) {
+                CulturalEntity eTarg = entities.get(j);
+                double val = getAffinity(s, eOrig, eTarg);
+
+                StackPane cell = new StackPane();
+                cell.setPrefSize(72, 28);
+                cell.setMinSize(64, 24);
+
+                Color bg = computeAffinityColor(val);
+                cell.setStyle(String.format(Locale.ROOT, "-fx-background-color: rgba(%d, %d, %d, 0.85); -fx-background-radius: 4;",
+                        (int) (bg.getRed() * 255), (int) (bg.getGreen() * 255), (int) (bg.getBlue() * 255)));
+
+                Label lbl = new Label(String.format(Locale.ROOT, "%.0f%%", val * 100.0));
+                lbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: white;");
+                cell.getChildren().add(lbl);
+
+                String ttText = String.format("%s\n%s → %s\nAffinity: %.1f%%\nKinship: %s\nTechno: %s",
+                        scenarioName, eOrig.getLocalizedName(), eTarg.getLocalizedName(), val * 100.0, eOrig.kinshipType(), eOrig.lithicTechnocomplex());
+                Tooltip.install(cell, new Tooltip(ttText));
+
+                cell.setCursor(Cursor.HAND);
+                cell.setOnMouseClicked(e -> cellDetailLabel.setText(ttText.replace("\n", " | ")));
+
+                grid.add(cell, j + 1, i + 1);
+            }
+        }
+    }
+
+    private MatrixStats populateDeltaGrid(GridPane grid, Scenario sA, Scenario sB,
+                                          List<CulturalEntity> entities, String nameA, String nameB) {
+        grid.getChildren().clear();
+        int n = entities.size();
+        if (n == 0) return new MatrixStats(0, 0, 0, 0, 0, "", "");
+
+        addHeaders(grid, entities);
+
+        double sumA = 0, sumB = 0, sumSqDelta = 0, sumAbsDelta = 0;
+        double maxDelta = 0.0;
+        String maxOrig = "", maxTarg = "";
+        int count = n * n;
+
+        for (int i = 0; i < n; i++) {
+            CulturalEntity eOrig = entities.get(i);
+            for (int j = 0; j < n; j++) {
+                CulturalEntity eTarg = entities.get(j);
+                double aA = getAffinity(sA, eOrig, eTarg);
+                double aB = getAffinity(sB, eOrig, eTarg);
+                double delta = aB - aA;
+
+                sumA += aA;
+                sumB += aB;
+                sumSqDelta += delta * delta;
+                sumAbsDelta += Math.abs(delta);
+
+                if (Math.abs(delta) > Math.abs(maxDelta)) {
+                    maxDelta = delta;
+                    maxOrig = eOrig.getLocalizedName();
+                    maxTarg = eTarg.getLocalizedName();
+                }
+
+                StackPane cell = new StackPane();
+                cell.setPrefSize(72, 28);
+                cell.setMinSize(64, 24);
+
+                String cellStyle = computeDeltaCellStyle(delta);
+                cell.setStyle(cellStyle);
+
+                Label lbl = new Label(String.format(Locale.ROOT, "%+.0f%%", delta * 100.0));
+                lbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: white;");
+                cell.getChildren().add(lbl);
+
+                String tooltip = String.format(I18n.getOrDefault("analytics.cultural.cell_tooltip_fmt",
+                                "Origin: %s\nTarget: %s\nBaseline (A): %.1f%%\nTarget (B): %.1f%%\nDelta Δ: %+.1f%%"),
+                        eOrig.getLocalizedName(), eTarg.getLocalizedName(), aA * 100.0, aB * 100.0, delta * 100.0);
+                Tooltip.install(cell, new Tooltip(tooltip));
+
+                cell.setCursor(Cursor.HAND);
+                final double finalDelta = delta;
+                cell.setOnMouseClicked(e -> cellDetailLabel.setText(String.format("Δ = %+.1f%% | %s → %s | %s: %.1f%% vs %s: %.1f%%",
+                        finalDelta * 100.0, eOrig.getLocalizedName(), eTarg.getLocalizedName(), nameA, aA * 100.0, nameB, aB * 100.0)));
+
+                grid.add(cell, j + 1, i + 1);
+            }
+        }
+
+        double meanA = sumA / count;
+        double meanB = sumB / count;
+        double frob = Math.sqrt(sumSqDelta);
+        double mad = sumAbsDelta / count;
+
+        return new MatrixStats(meanA, meanB, frob, mad, maxDelta, maxOrig, maxTarg);
+    }
+
+    private void addHeaders(GridPane grid, List<CulturalEntity> entities) {
+        int n = entities.size();
+        Label corner = new Label("Orig \\ Targ");
+        corner.setStyle("-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #94a3b8; -fx-padding: 2;");
+        grid.add(corner, 0, 0);
+
+        for (int j = 0; j < n; j++) {
+            CulturalEntity e = entities.get(j);
+            VBox colBox = new VBox(2);
+            colBox.setAlignment(Pos.CENTER);
+            Rectangle badge = createBadge(e.colorHex(), 8);
+            Label lbl = new Label(truncateName(e.getLocalizedName(), 8));
+            lbl.setStyle("-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #cbd5e1;");
+            Tooltip.install(lbl, new Tooltip(e.getLocalizedName()));
+            colBox.getChildren().addAll(badge, lbl);
+            grid.add(colBox, j + 1, 0);
+        }
+
+        for (int i = 0; i < n; i++) {
+            CulturalEntity e = entities.get(i);
+            HBox rowBox = new HBox(4);
+            rowBox.setAlignment(Pos.CENTER_LEFT);
+            Rectangle badge = createBadge(e.colorHex(), 8);
+            Label lbl = new Label(truncateName(e.getLocalizedName(), 8));
+            lbl.setStyle("-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #cbd5e1;");
+            Tooltip.install(lbl, new Tooltip(e.getLocalizedName()));
+            rowBox.getChildren().addAll(badge, lbl);
+            grid.add(rowBox, 0, i + 1);
+        }
+    }
+
+    private static Rectangle createBadge(String colorHex, double size) {
+        Rectangle r = new Rectangle(size, size);
+        r.setArcWidth(3);
+        r.setArcHeight(3);
+        try {
+            r.setFill(Color.web(colorHex != null ? colorHex : "#94a3b8"));
+        } catch (Exception ex) {
+            r.setFill(Color.GRAY);
+        }
+        return r;
+    }
+
+    private static String truncateName(String name, int maxLen) {
+        if (name == null) return "";
+        return name.length() > maxLen ? name.substring(0, maxLen - 1) + "…" : name;
+    }
+
+    private static Color computeAffinityColor(double val) {
+        // [0..1] -> Hostile (crimson) -> Neutral (slate/blue) -> Assimilated (emerald)
+        val = Math.clamp(val, 0.0, 1.0);
+        if (val < 0.5) {
+            double t = val / 0.5;
+            return Color.rgb(
+                    (int) (239 * (1.0 - t) + 30 * t),
+                    (int) (68 * (1.0 - t) + 41 * t),
+                    (int) (68 * (1.0 - t) + 59 * t)
+            );
+        } else {
+            double t = (val - 0.5) / 0.5;
+            return Color.rgb(
+                    (int) (30 * (1.0 - t) + 16 * t),
+                    (int) (41 * (1.0 - t) + 185 * t),
+                    (int) (59 * (1.0 - t) + 129 * t)
+            );
+        }
+    }
+
+    private static String computeDeltaCellStyle(double delta) {
+        if (Math.abs(delta) < 0.005) {
+            return "-fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 4;";
+        } else if (delta > 0) {
+            double alpha = Math.min(0.9, 0.25 + delta * 0.65);
+            return String.format(Locale.ROOT, "-fx-background-color: rgba(16, 185, 129, %.2f); -fx-background-radius: 4;", alpha);
+        } else {
+            double alpha = Math.min(0.9, 0.25 + Math.abs(delta) * 0.65);
+            return String.format(Locale.ROOT, "-fx-background-color: rgba(239, 68, 68, %.2f); -fx-background-radius: 4;", alpha);
+        }
+    }
+
+    private static double getAffinity(Scenario s, CulturalEntity e1, CulturalEntity e2) {
+        if (e1 == null || e2 == null) return 0.5;
+        if (e1.id().equals(e2.id())) return 1.0;
+        if (s != null && s.getCulturalAffinityMatrix() != null) {
+            String k1 = e1.id() + ":" + e2.id();
+            String k2 = e2.id() + ":" + e1.id();
+            Double v = s.getCulturalAffinityMatrix().get(k1);
+            if (v != null) return v;
+            v = s.getCulturalAffinityMatrix().get(k2);
+            if (v != null) return v;
+        }
+        return e1.affinityTowards(e2);
+    }
+
+    private static List<CulturalEntity> alignEntities(List<CulturalEntity> listA, List<CulturalEntity> listB) {
+        Set<String> idsB = new HashSet<>();
+        for (CulturalEntity eb : listB) idsB.add(eb.id());
+
+        List<CulturalEntity> common = new ArrayList<>();
+        for (CulturalEntity ea : listA) {
+            if (idsB.contains(ea.id())) {
+                common.add(ea);
+            }
+        }
+        return common.isEmpty() ? listA : common;
+    }
+
+    private record MatrixStats(double meanA, double meanB, double frobeniusNorm,
+                               double mad, double maxDelta, String maxOrig, String maxTarg) {}
+
+    private void exportCsv() {
+        ScenarioSelectableItem itemA = comboBaseline.getValue();
+        ScenarioSelectableItem itemB = comboTarget.getValue();
+        if (itemA == null || itemA.getScenario() == null) return;
+        Scenario scA = itemA.getScenario();
+        Scenario scB = itemB != null ? itemB.getScenario() : scA;
+
+        Long epoch = comboEpoch.getValue() != null ? comboEpoch.getValue() : (long) scA.getStartDateYear();
+        List<CulturalEntity> entities = alignEntities(
+                CulturalEpochRegistryLoader.loadEpochRegistry(itemA.getPlanetDisplayName(), epoch),
+                CulturalEpochRegistryLoader.loadEpochRegistry(itemB != null ? itemB.getPlanetDisplayName() : itemA.getPlanetDisplayName(), epoch)
+        );
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle(I18n.getOrDefault("analytics.cultural.export_csv", "Export Cultural Matrices (CSV)"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv"));
+        String idA = itemA.getScenario() != null && itemA.getScenario().getId() != null ? itemA.getScenario().getId() : itemA.getRunId();
+        String idB = itemB != null ? (itemB.getScenario() != null && itemB.getScenario().getId() != null ? itemB.getScenario().getId() : itemB.getRunId()) : "self";
+        fc.setInitialFileName(String.format("cultural_matrix_diff_%s_vs_%s_%d.csv", idA, idB, epoch));
+
+        File file = fc.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
+        if (file == null) return;
+
+        try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8)) {
+            fw.write("Origin_Entity,Target_Entity,Affinity_Scenario_A,Affinity_Scenario_B,Delta_B_minus_A\n");
+            for (CulturalEntity e1 : entities) {
+                for (CulturalEntity e2 : entities) {
+                    double aA = getAffinity(scA, e1, e2);
+                    double aB = getAffinity(scB, e1, e2);
+                    fw.write(String.format(Locale.US, "%s,%s,%.4f,%.4f,%+.4f\n",
+                            e1.id(), e2.id(), aA, aB, aB - aA));
+                }
+            }
+            logger.info("Exported cultural matrix discrepancy CSV to {}", file.getAbsolutePath());
+        } catch (IOException ex) {
+            logger.error("Failed to export cultural matrix CSV", ex);
+        }
+    }
+
+    private void exportJson() {
+        ScenarioSelectableItem itemA = comboBaseline.getValue();
+        ScenarioSelectableItem itemB = comboTarget.getValue();
+        if (itemA == null || itemA.getScenario() == null) return;
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle(I18n.getOrDefault("analytics.cultural.export_json", "Export JSON"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files (*.json)", "*.json"));
+        fc.setInitialFileName("cultural_matrix_comparison.json");
+
+        File file = fc.showSaveDialog(getScene() != null ? getScene().getWindow() : null);
+        if (file == null) return;
+
+        try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8)) {
+            fw.write(buildJsonReport(itemA, itemB));
+            logger.info("Exported cultural comparison JSON to {}", file.getAbsolutePath());
+        } catch (IOException ex) {
+            logger.error("Failed to export cultural comparison JSON", ex);
+        }
+    }
+
+    private String buildJsonReport(ScenarioSelectableItem itemA, ScenarioSelectableItem itemB) {
+        Long epoch = comboEpoch.getValue();
+        return String.format(Locale.US, """
+                {
+                  "baselineScenario": "%s",
+                  "targetScenario": "%s",
+                  "epoch": %d,
+                  "exportTimestamp": "%s"
+                }
+                """, itemA.getName(), itemB != null ? itemB.getName() : itemA.getName(),
+                epoch != null ? epoch : 0L, java.time.Instant.now().toString());
+    }
+
+    private void copyReportToClipboard() {
+        ScenarioSelectableItem itemA = comboBaseline.getValue();
+        ScenarioSelectableItem itemB = comboTarget.getValue();
+        if (itemA == null) return;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("# Cultural Affinity Matrix Comparison Report\n\n");
+        sb.append(String.format("- **Baseline (A)**: %s (%s)\n", itemA.getName(), itemA.getPlanetDisplayName()));
+        sb.append(String.format("- **Target (B)**: %s\n", itemB != null ? itemB.getName() : "None"));
+        sb.append(String.format("- **Selected Epoch**: %s\n", comboEpoch.getValue() != null ? CulturalEpochRegistryLoader.formatEpochName(comboEpoch.getValue()) : "N/A"));
+        sb.append(String.format("- %s\n", lblFrobenius.getText()));
+        sb.append(String.format("- %s\n", lblMad.getText()));
+        sb.append(String.format("- %s\n", lblMaxShift.getText()));
+
+        javafx.scene.input.Clipboard clipboard = javafx.scene.input.Clipboard.getSystemClipboard();
+        javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
+        content.putString(sb.toString());
+        clipboard.setContent(content);
+        cellDetailLabel.setText("✅ " + I18n.getOrDefault("analytics.copied", "Copied cultural delta report to clipboard!"));
+    }
+
+    /**
+     * Updates localized strings and combo tooltips across UI components.
+     */
+    public void updateTexts() {
+        isUpdatingTexts = true;
+        try {
+            if (baselineLabel != null) baselineLabel.setText(I18n.getOrDefault("analytics.cultural.baseline", "Baseline (A):"));
+            if (targetLabel != null) targetLabel.setText(I18n.getOrDefault("analytics.cultural.target", "Target (B):"));
+            if (epochLabel != null) epochLabel.setText(I18n.getOrDefault("analytics.cultural.epoch", "Epoch:"));
+            if (rbPairwiseView != null) rbPairwiseView.setText(I18n.getOrDefault("analytics.cultural.view_pairwise", "⚖️ Detailed Differential View [A vs B & Delta]"));
+            if (rbMultiView != null) rbMultiView.setText(String.format(I18n.getOrDefault("analytics.mode.multi_scenarios_count", "🌐 Multi-Scenarios (%d selected)"), selectedScenarios.size()));
+            if (btnExportCsv != null) btnExportCsv.setText(I18n.getOrDefault("analytics.cultural.export_csv", "📥 Export Matrices (CSV)"));
+            if (btnExportJson != null) btnExportJson.setText(I18n.getOrDefault("analytics.cultural.export_json", "📥 Export JSON"));
+            if (btnCopyReport != null) btnCopyReport.setText(I18n.getOrDefault("analytics.cultural.copy_report", "📋 Copy Cultural Report"));
+        } finally {
+            isUpdatingTexts = false;
+        }
+        updateComparison();
+    }
+}

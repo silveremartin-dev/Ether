@@ -155,6 +155,11 @@ final class SpatialTensorUIHelper {
         if (p.channelLabel != null) p.channelLabel.setText(I18n.getOrDefault("analytics.channel_label", "Tensor Channel:"));
         if (p.scenarioSelectLabelA != null) p.scenarioSelectLabelA.setText(I18n.getOrDefault("analytics.label.select_a", "Baseline (A):"));
         if (p.scenarioSelectLabelB != null) p.scenarioSelectLabelB.setText(I18n.getOrDefault("analytics.label.select_b", "Target (B):"));
+        if (p.rbPairwiseMode != null) p.rbPairwiseMode.setText(I18n.getOrDefault("analytics.mode.pairwise", "👥 Pairwise Mode (A vs B)"));
+        if (p.rbMultiMode != null) {
+            long selCount = scenarioList != null ? scenarioList.stream().filter(ScenarioSelectableItem::isSelected).count() : 0;
+            p.rbMultiMode.setText(String.format(I18n.getOrDefault("analytics.mode.multi_scenarios_count", "🌐 Multi-Scenarios (%d selected)"), selCount));
+        }
 
         if (p.playTimelineBtn != null) {
             p.playTimelineBtn.setText(p.timelineAnimator.isPlayingAnimation()

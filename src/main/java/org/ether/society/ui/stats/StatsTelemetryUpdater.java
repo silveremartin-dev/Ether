@@ -64,6 +64,30 @@ public final class StatsTelemetryUpdater {
                                                 SpatialHeatmapPanel spatialHeatmapPanel,
                                                 VarianceDistributionPanel variancePanel,
                                                 AtomicBoolean statsUpdatePending) {
+        captureAndDispatchUpdate(engine, metricCards, activeTelemetryVariables, chartsSection,
+                spatialHeatmapPanel, null, variancePanel, statsUpdatePending);
+    }
+
+    /**
+     * Synchronizes metric cards, live charts, and dynamic cultural matrix with the engine's memoized AST telemetry result.
+     *
+     * @param engine                   live H3 simulation engine
+     * @param metricCards              map of UI metric cards keyed by metric identifier
+     * @param activeTelemetryVariables subscribed variable IDs (empty means zero metrics evaluated)
+     * @param chartsSection            time-series &amp; demographic pyramid view
+     * @param spatialHeatmapPanel      spatial heatmap widget
+     * @param dynamicCulturalMatrixPanel live cultural matrix panel
+     * @param variancePanel            spatial variance histogram panel
+     * @param statsUpdatePending       debounce flag released on UI completion
+     */
+    public static void captureAndDispatchUpdate(H3SimulationEngine engine,
+                                                Map<String, MetricCard> metricCards,
+                                                Set<String> activeTelemetryVariables,
+                                                StatsChartsSection chartsSection,
+                                                SpatialHeatmapPanel spatialHeatmapPanel,
+                                                DynamicCulturalMatrixPanel dynamicCulturalMatrixPanel,
+                                                VarianceDistributionPanel variancePanel,
+                                                AtomicBoolean statsUpdatePending) {
         if (engine == null || activeTelemetryVariables == null || activeTelemetryVariables.isEmpty()) {
             if (statsUpdatePending != null) {
                 statsUpdatePending.set(false);
@@ -95,6 +119,10 @@ public final class StatsTelemetryUpdater {
                     spatialHeatmapPanel.setHistoryManager(engine.getHistoryManager());
                     spatialHeatmapPanel.updateCells(engine.getCells());
                     spatialHeatmapPanel.setDateLabel(String.format("%d", year));
+                }
+
+                if (dynamicCulturalMatrixPanel != null) {
+                    dynamicCulturalMatrixPanel.updateState(engine, year);
                 }
 
                 String disabledLabel = I18n.getOrDefault("stats.disabled", "- (Disabled)");

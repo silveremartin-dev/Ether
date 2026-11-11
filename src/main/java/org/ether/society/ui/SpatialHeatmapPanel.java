@@ -378,6 +378,24 @@ public class SpatialHeatmapPanel extends VBox {
         if (render) {
             renderMap();
         }
+
+        if (historyManager != null && historyManager.getHistory() != null && currentSnapshotIndex < historyManager.getHistory().getSnapshots().size()) {
+            int snapYear = historyManager.getHistory().getSnapshots().get(currentSnapshotIndex).year();
+            if (onSnapshotYearChanged != null) {
+                onSnapshotYearChanged.accept(snapYear);
+            }
+        }
+    }
+
+    private Consumer<Integer> onSnapshotYearChanged;
+
+    /**
+     * Registers a listener notified when the chronological snapshot scrubbing changes year.
+     *
+     * @param listener year consumer
+     */
+    public void setOnSnapshotYearChanged(Consumer<Integer> listener) {
+        this.onSnapshotYearChanged = listener;
     }
 
     private void exportVideo() {

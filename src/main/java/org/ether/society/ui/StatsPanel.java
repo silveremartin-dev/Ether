@@ -77,6 +77,7 @@ public class StatsPanel extends VBox {
     private final PluggableStatEngine pluggableStatEngine = new PluggableStatEngine();
     private final VarianceDistributionPanel variancePanel;
     private final SpatialHeatmapPanel spatialHeatmapPanel = new SpatialHeatmapPanel();
+    private final org.ether.society.ui.stats.DynamicCulturalMatrixPanel dynamicCulturalMatrixPanel = new org.ether.society.ui.stats.DynamicCulturalMatrixPanel();
 
     private boolean isLiveCollectionActive = false;
     private int samplingIntervalTicks = 1;
@@ -245,9 +246,14 @@ public class StatsPanel extends VBox {
         metricsContainer = new VBox(6);
 
         registerMetricCards(metricInspectorTitle, metricInspectorText);
+        spatialHeatmapPanel.setOnSnapshotYearChanged(snapYear -> {
+            if (dynamicCulturalMatrixPanel != null) {
+                dynamicCulturalMatrixPanel.updateState(engine, snapYear);
+            }
+        });
 
         getChildren().addAll(topControlsBox, chartsSection.getChartBox(), chartsSection.getBarBox(),
-                spatialHeatmapPanel, variancePanel, cardsControlBox, metricsContainer);
+                spatialHeatmapPanel, dynamicCulturalMatrixPanel, variancePanel, cardsControlBox, metricsContainer);
 
         updateTexts();
         syncEngineTelemetrySubscription();
@@ -373,6 +379,9 @@ public class StatsPanel extends VBox {
 
             filterMetrics();
             chartsSection.reloadChartData();
+            if (dynamicCulturalMatrixPanel != null) {
+                dynamicCulturalMatrixPanel.updateTexts();
+            }
         } finally {
             isUpdatingTexts = false;
         }
@@ -469,7 +478,11 @@ public class StatsPanel extends VBox {
 
         StatsTelemetryUpdater.captureAndDispatchUpdate(
                 engine, metricCards, activeTelemetryVariables, chartsSection,
-                spatialHeatmapPanel, variancePanel, statsUpdatePending);
+                spatialHeatmapPanel, dynamicCulturalMatrixPanel, variancePanel, statsUpdatePending);
+    }
+
+    public org.ether.society.ui.stats.DynamicCulturalMatrixPanel getDynamicCulturalMatrixPanel() {
+        return dynamicCulturalMatrixPanel;
     }
 
     private void exportCsv() {

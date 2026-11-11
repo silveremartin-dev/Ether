@@ -266,6 +266,8 @@ final class ComparativeAnalyticsViewHelper {
         if (p.scenariosTab != null) p.scenariosTab.setText(I18n.getOrDefault("analytics.tab.scenarios", "📋 Scenarios & Data"));
         if (p.timeSeriesTab != null) p.timeSeriesTab.setText(I18n.getOrDefault("analytics.tab.timeseries", "📈 Time Series (1D)"));
         if (p.spatialCartoTab != null) p.spatialCartoTab.setText(I18n.getOrDefault("analytics.tab.carto_tensors", "🗺️ Cartography & Tensors (2D)"));
+        if (p.culturalMatrixTab != null) p.culturalMatrixTab.setText(I18n.getOrDefault("analytics.tab.cultural_matrix", "🧩 Cultural Matrices & Affinities"));
+        if (p.culturalMatrixComparisonPane != null) p.culturalMatrixComparisonPane.updateTexts();
         if (p.reportTab != null) p.reportTab.setText(I18n.getOrDefault("analytics.tab.report", "📄 Analysis Report & Synthesis"));
 
         if (p.divergenceLabel != null && (p.divergenceLabel.getText() == null || p.divergenceLabel.getText().isBlank()
