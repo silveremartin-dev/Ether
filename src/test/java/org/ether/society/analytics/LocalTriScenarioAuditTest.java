@@ -129,6 +129,75 @@ public class LocalTriScenarioAuditTest {
     }
 
     @Test
+    @DisplayName("Execute Quad-Scenario Local Physical Audit (Antonine Plague, Song Dynasty, Black Death, Industrial Revolution)")
+    public void testExecuteQuadScenarioAudit() throws IOException {
+        System.out.println("================================================================================");
+        System.out.println("🚀 LOCAL QUAD-SCENARIO PHYSICAL EXECUTION & IN-DEPTH DIAGNOSTIC AUDIT");
+        System.out.println("================================================================================");
+
+        int resolution = 3;
+        String resProp = System.getProperty("audit.resolution");
+        if (resProp != null && !resProp.isBlank()) {
+            try {
+                resolution = Integer.parseInt(resProp.trim());
+            } catch (NumberFormatException ignored) {}
+        }
+        System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution);
+
+        List<ScenarioAuditResult> results = new ArrayList<>();
+
+        // 1. Classical Imperial Crisis: Antonine Plague (165 - 185 CE, 20 years)
+        results.add(executeScenarioRun(
+                "antonine_plague_165",
+                165, 185,
+                1000,
+                resolution,
+                "data/maps/ether/earth/160/earth_160_density.png"
+        ));
+
+        // 2. Medieval Hydraulic Pre-Industrialization: Song Dynasty (1000 - 1020 CE, 20 years)
+        results.add(executeScenarioRun(
+                "song_dynasty",
+                1000, 1020,
+                2000,
+                resolution,
+                "data/maps/ether/earth/1000/earth_1000_density.png"
+        ));
+
+        // 3. Post-Feudal Pandemic & Wage Inversion: Black Death (1347 - 1367 CE, 20 years)
+        results.add(executeScenarioRun(
+                "black_death_1347",
+                1347, 1367,
+                1500,
+                resolution,
+                "data/maps/ether/earth/1347/earth_1347_density.png"
+        ));
+
+        // 4. First Industrial Revolution & Fossil Energy: Industrial 1800 (1800 - 1820 CE, 20 years)
+        results.add(executeScenarioRun(
+                "industrial_1800",
+                1800, 1820,
+                2500,
+                resolution,
+                "data/maps/ether/earth/1820/earth_1820_density.png"
+        ));
+
+        // Assert all runs succeeded
+        assertEquals(4, results.size());
+        for (ScenarioAuditResult r : results) {
+            assertNotNull(r);
+            assertTrue(r.snapshotsCount() > 0, "Scenario " + r.key() + " must produce telemetry snapshots");
+            assertTrue(r.endPopulation() > 0, "Scenario " + r.key() + " population must remain positive");
+            assertFalse(Double.isNaN(r.endPopulation()), "Population must not be NaN");
+            assertFalse(Double.isInfinite(r.endPopulation()), "Population must not be Infinite");
+            assertTrue(r.categoryAAnomalies().isEmpty(), "No Category A code bugs or crashes allowed in " + r.key());
+        }
+
+        // Generate Markdown Audit Report
+        generateTriScenarioAuditReport(results, "LOCAL_QUAD_SCENARIO_AUDIT_REPORT.md", "4 Canonical Standard Scenarios (Antonine Plague 165 CE, Song Dynasty 1000 CE, Black Death 1347 CE, Industrial Revolution 1800 CE)");
+    }
+
+    @Test
     @DisplayName("Execute Tri-Scenario Local Physical Audit Group 2 (Fertile Crescent, Late Antique Ice Age, Industrial Revolution)")
     public void testExecuteTriScenarioAuditGroup2() throws IOException {
         System.out.println("================================================================================");
