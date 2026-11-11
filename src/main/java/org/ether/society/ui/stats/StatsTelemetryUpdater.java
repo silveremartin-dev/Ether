@@ -110,7 +110,7 @@ public final class StatsTelemetryUpdater {
 
                 TelemetrySubscription.CulturalMatrixQuery culturalQuery = TelemetrySubscription.CulturalMatrixQuery.DISABLED;
                 if (activeTelemetryVariables.contains("culturalMatrix") || activeTelemetryVariables.contains("culturalAffinityMatrix")) {
-                    long startYear = engine.getCurrentScenario() != null ? (long) engine.getCurrentScenario().getStartDateYear() : 0L;
+                    long startYear = engine.getCurrentScenario() != null ? engine.getCurrentScenario().getStartDateYear() : 0L;
                     culturalQuery = TelemetrySubscription.CulturalMatrixQuery.withDelta(startYear);
                 }
 

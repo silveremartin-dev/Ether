@@ -20,8 +20,6 @@ import org.ether.society.model.CulturalEntity;
 import org.ether.society.model.Scenario;
 import org.ether.society.ui.CulturalAffinityMatrixDialog;
 import org.ether.society.ui.CulturalEpochRegistryLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -39,8 +37,6 @@ import java.util.*;
  * @see org.ether.society.ui.CulturalAffinityMatrixDialog
  */
 public class DynamicCulturalMatrixPanel extends VBox {
-
-    private static final Logger logger = LoggerFactory.getLogger(DynamicCulturalMatrixPanel.class);
 
     private final Label titleLabel;
     private final Label descLabel;
@@ -110,6 +106,7 @@ public class DynamicCulturalMatrixPanel extends VBox {
         rbDeltaFromT0.setTooltip(new Tooltip(I18n.getOrDefault("stats.cultural.tooltip_mode_delta", "Afficher les dérives culturelles et variations d'affinité depuis l'année initiale t₀ du scénario.")));
 
         modeGroup.selectedToggleProperty().addListener((obs, oldV, newV) -> {
+            if (isUpdatingTexts) return;
             isDeltaMode = rbDeltaFromT0.isSelected();
             forceReRender();
         });
@@ -176,7 +173,7 @@ public class DynamicCulturalMatrixPanel extends VBox {
         String planet = (engine.getCurrentScenario() != null && engine.getCurrentScenario().getPlanetPreset() != null)
                 ? engine.getCurrentScenario().getPlanetPreset().getCanonicalPlanet() : "earth";
         Scenario scenario = engine.getCurrentScenario();
-        long startYear = scenario != null ? (long) scenario.getStartDateYear() : 0L;
+        long startYear = scenario != null ? scenario.getStartDateYear() : 0L;
 
         List<CulturalEntity> entities;
         if (precomputed != null && precomputed.entities() != null && !precomputed.entities().isEmpty()) {
