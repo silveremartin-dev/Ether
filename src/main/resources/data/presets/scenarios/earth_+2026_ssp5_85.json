@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "SSP5-8.5 Fossil-Fueled Development & Climate (2026 AD)",
   "displayDescription" : "FUTURE SCENARIO: High-Emission Baseline & Global Warming (2026 AD)\n\nSSP5-8.5 extreme climate trajectory, rapid energy demand growth, sea level rise, extreme weather events, and regional Malthusian agricultural stress."

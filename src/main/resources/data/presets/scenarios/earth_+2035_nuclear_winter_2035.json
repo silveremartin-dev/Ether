@@ -509,8 +509,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Global Thermonuclear War & Nuclear Winter (2035 AD)",
   "displayDescription" : "CRISIS SCENARIO: Thermonuclear Exchange & Stratospheric Soot Shock (2035 AD)\n\n150 Tg stratospheric soot injection, global solar irradiance collapse, abrupt freezing temperatures, crop failure, and societal breakdown."

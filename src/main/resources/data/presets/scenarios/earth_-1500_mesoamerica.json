@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Olmec Hegemony & Mesoamerican Urbanization (-1200 BP)",
   "displayDescription" : "HISTORICAL SCENARIO: Olmec Heartlands & Early Mesoamerican Urbanization (-1200 BC)\n\nMilpa maize agriculture, basalt monumentality, ritual ballgames, and ceremonial center networks across Gulf Coast tropical lowlands."

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Hellenistic Expansion & Shock of Alexander the Great (-334 BCE)",
   "displayDescription" : "âš¡ HISTORICAL SCENARIO : ConquÃªte MacÃ©donienne & Mondialisation HellÃ©nistique (-334 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃ©lise l'effondrement foudroyant de l'Empire AchÃ©mÃ©nide sous la phalange macÃ©donienne d'Alexandre. IntÃ©gration d'un corridor urbain et monÃ©taire unifiÃ© de la GrÃ¨ce Ã  l'Indus (fondation d'Alexandries, monÃ©tarisation de l'or perse, koinÃ¨ grecque).\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Vitesse de projection militaire et rÃ©duction spectaculaire de la friction logistique le long des routes royales perses.\nâ€¢ MonÃ©tarisation massive et urbanisation grecque en Orient (Alexandrie, SÃ©leucie, Antioche).\nâ€¢ Fragmentation politique immÃ©diate post-Alexandre (guerres des Diadoques) sans destruction du rÃ©seau urbain commercial.\n"

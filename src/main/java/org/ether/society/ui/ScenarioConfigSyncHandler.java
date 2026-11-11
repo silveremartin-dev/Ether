@@ -183,8 +183,8 @@ public class ScenarioConfigSyncHandler {
         } catch (NumberFormatException ignored) {}
         s.setCulturalSeed(cultSeedVal);
         s.setRandomEventsEnabled(panel.randomEventsCheckBox == null || panel.randomEventsCheckBox.isSelected());
-        s.setEarthHistoricalLeadersEnabled(panel.earthLeadersCheckBox == null || panel.earthLeadersCheckBox.isSelected());
-        s.setProceduralLeadersEnabled(panel.proceduralLeadersCheckBox == null || panel.proceduralLeadersCheckBox.isSelected());
+        s.setEarthHistoricalLeadersEnabled(panel.earthLeadersCheckBox != null && panel.earthLeadersCheckBox.isSelected());
+        s.setProceduralLeadersEnabled(panel.proceduralLeadersCheckBox != null && panel.proceduralLeadersCheckBox.isSelected());
         s.setChronicleSingularityObserverEnabled(panel.chronicleObserverCheckBox != null && panel.chronicleObserverCheckBox.isSelected());
 
         if (panel.eventsList != null) {

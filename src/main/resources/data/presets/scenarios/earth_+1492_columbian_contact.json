@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Columbian Exchange & Global Trade Network (1500 AD)",
   "displayDescription" : "HISTORICAL SCENARIO: The Great Contact & Global Biological Exchange (1500 AD)\n\nHemispheric convergence, transatlantic crop transfers (maize, potato, cassava), silver flows, and catastrophic epidemiological shocks."

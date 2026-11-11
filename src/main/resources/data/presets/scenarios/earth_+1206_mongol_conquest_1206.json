@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "The Mongol Empire & Eurasian Rupture (1206 CE)",
   "displayDescription" : "\uD83C\uDFF9 HISTORICAL SCENARIO : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃ©lise le plus grand empire territorial contigu de l'histoire humaine. Choc cinÃ©tique et dÃ©mographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sÃ©curisÃ©e de la Route de la Soie (Pax Mongolica) qui servira de vecteur Ã  la Peste Noire.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Projection militaire nomade ultra-rapide (cavalerie lÃ©gÃ¨re, rÃ©seau de relais de poste Yam).\nâ€¢ Choc de mortalitÃ© urbaine et dÃ©sertification de certaines oasis irriguÃ©es de Perse/Transoxiane.\nâ€¢ IntÃ©gration Ã©conomique trans-eurasienne de PÃ©kin Ã  Tabriz et la mer Noire.\n"

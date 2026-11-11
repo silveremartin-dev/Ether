@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Islamic Expansion & Caliphal Commercial Revolution (632 CE)",
   "displayDescription" : "HISTORICAL SCENARIO: Caliphal Unification & Arab Agricultural Revolution (632 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the rapid expansion of the Umayyad and Abbasid Caliphates from Iberia to the Indus. Collapse of the Sasanian Empire, widespread diffusion of advanced irrigation systems (qanats, norias) and new tropical cultivars (sugar cane, cotton, citrus), and flowering of Indian Ocean maritime commercial corridors.\n\n[KEY SCENARIO OBSERVABLES]\n  Rapid geopolitical consolidation driven by high Bedouin Asabiyyah and caliphal doctrine.\n  Arab Agricultural Revolution: crop diversification and hydrological mastery across arid frontiers.\n  Growth of Baghdad as a premier global metropolis (House of Wisdom) and transcontinental market integration."

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "First Industrial Revolution & Fossil Energy (1800 AD)",
   "displayDescription" : "HISTORICAL SCENARIO: The Great Divergence & Coal Steam Transition (1800 AD)\n\nTransition from organic economy to fossil energy regime, steam engine mechanization, rapid urbanization, and exponential population explosion."

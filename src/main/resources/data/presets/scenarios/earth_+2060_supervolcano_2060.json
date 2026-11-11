@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Supervolcano Eruption & Volcanic Winter (2060 AD)",
   "displayDescription" : "CATACLYSM SCENARIO: VEI-8 Supereruption & Global Decade Cooling (2060 AD)\n\nMassive sulfur dioxide injection, multidecadal volcanic winter, global monsoon disruption, infrastructure collapse, and survival bottlenecks."

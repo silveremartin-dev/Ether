@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Beringia & Peopling of the Americas (-25,000 BP)",
   "displayDescription" : "PALEOLITHIC SCENARIO: The Bering Land Bridge & American Incursion (-25,000 BC)\n\nModels isolation of Paleolithic populations on the Bering land bridge during the Last Glacial Maximum (LGM), followed by dispersal through the ice-free corridor and Pacific coastal route."

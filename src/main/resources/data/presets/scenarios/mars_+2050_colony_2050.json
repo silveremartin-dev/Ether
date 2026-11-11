@@ -255,8 +255,8 @@
   "seed": 12345,
   "culturalSeed": 54321,
   "randomEventsEnabled": true,
-  "earthHistoricalLeadersEnabled": true,
-  "proceduralLeadersEnabled": true,
+  "earthHistoricalLeadersEnabled": false,
+  "proceduralLeadersEnabled": false,
   "chronicleSingularityObserverEnabled": false,
   "displayName": "Martian Colonization: Chryse Domes & Jezero Crater (2050)",
   "displayDescription": "🔴 SCÉNARIO EXOPLANÉTAIRE : Colonisation Martienne & Dômes Sous Régolithe (2050 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nPremiers habitats humains permanents au cratère Jezero et Chryse Planitia. Utilisation du cycle de Sabatier (méthanation CO₂), extraction d'eau in-situ, dômes imprimés 3D en basalte et support de vie ECLSS en boucle fermée face à une pression quasi-nulle (0,006 atm) et aux rayonnements ionisants.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Déploiement d'avant-postes pressurisés et croissance du stock de capital technique et d'énergie par habitant.\n• Autarcie progressive grâce à l'ISRU (In-Situ Resource Utilization) et aux technologies combinatoires.\n• Résilience face aux tempêtes de poussière martiennes et aux risques de brèche structurelle.\n"

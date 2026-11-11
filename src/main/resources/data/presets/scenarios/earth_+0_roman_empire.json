@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Pax Romana & Mediterranean Trade Peak (117 AD)",
   "displayDescription" : "HISTORICAL SCENARIO: Pax Romana & Mediterranean Economic Integration (117 AD)\n\nMaximum territorial extent of the Roman Empire, imperial road networks, maritime grain trade, coin debasement dynamics, and urban sanitation."

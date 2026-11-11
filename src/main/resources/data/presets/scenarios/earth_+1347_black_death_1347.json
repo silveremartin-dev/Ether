@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "The Black Death & Post-Feudal Economic Inversion (1347 CE)",
   "displayDescription" : "\uD83D\uDC80 HISTORICAL SCENARIO : La PandÃ©mie de Peste Noire & Inversion du Rapport Capital/Travail (1347 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nVague pandÃ©mique foudroyante de Yersinia pestis anÃ©antissant 35% Ã  60% de la population europÃ©enne et moyen-orientale en moins de 5 ans. Choc dÃ©mographique provoquant la raretÃ© soudaine de la main-d'Å“uvre, la hausse spectaculaire des salaires rÃ©els et l'effondrement du servage.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Vitesse de contagion mÃ©tapopulationnelle le long des routes de commerce gÃ©noises et vÃ©nitiennes.\nâ€¢ Inversion institutionnelle : Ã©mancipation paysanne en Europe occidentale vs second servage Ã  l'Est.\nâ€¢ DÃ©prise agricole temporaire, reforestation spontanÃ©e et baisse des rentes fonciÃ¨res seigneuriales.\n"

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Pax Romana & Augustan Stability (0 -> 50 CE): Biophysical Continuity",
   "displayDescription" : "\uD83C\uDFDBï¸ SCÃ‰NARIO DE CONTINUITÃ‰ PURE (SANS ACCIDENT MAJEUR) : L'Ã‚ge d'Or AugustÃ©en (An 0 -> 50 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT - CALIBRAGE DE CONTINUITÃ‰]\nScÃ©nario de rÃ©fÃ©rence Ã©talon pour tester la stabilitÃ© des moteurs de simulation en l'absence de choc exogÃ¨ne.\nModÃ©lise 50 ans de paix continue, d'intÃ©gration commerciale mÃ©diterranÃ©enne et de croissance dÃ©mographique rÃ©guliÃ¨re\nsous l'Empire romain julio-claudien.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Croissance dÃ©mographique modÃ©rÃ©e et rÃ©guliÃ¨re sans choc Ã©pidÃ©mique ni famine.\nâ€¢ StabilitÃ© monÃ©taire et fiscale du denier d'argent.\nâ€¢ Trajectoire monotone lisse idÃ©ale pour le calibrage fin du moteur.\n"

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Late Antique Little Ice Age & Migrations (536 AD)",
   "displayDescription" : "PALEOCLIMATE SCENARIO: Volcanic Winter 536 AD & Late Antique Crisis\n\nTriple volcanic eruptions trigger severe global cooling, crop failures, Justinianic Plague pandemic, and large-scale Eurasian barbarian migrations."

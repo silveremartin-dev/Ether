@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Benchmark Standard Planetary Scenario",
   "displayDescription" : "Official Ether standardized benchmark scenario for empirical throughput, latency, and scaling validation across spatial resolutions (Res 2-7), temporal steps (1d-365d), and compute backends."

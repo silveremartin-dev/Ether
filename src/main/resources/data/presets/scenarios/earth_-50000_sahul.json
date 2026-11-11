@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Sahul & First Settlement of Australia (-50,000 BP)",
   "displayDescription" : "PALEOLITHIC SCENARIO: Maritime Crossing & Incursion into Sahul (-50,000 BC)\n\nFirst major ocean crossing of the Wallace Line by ancestors of Indigenous Australians. Models colonization of Sahul (Australia, Tasmania, New Guinea combined) and adaptation to arid environments."

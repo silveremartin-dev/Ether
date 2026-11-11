@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Green Sahara & African Humid Period (-6000 BP)",
   "displayDescription" : "PALEOCLIMATE SCENARIO: Green Sahara & Pastoral Oasis Era (-6000 BC)\n\nEnhanced African monsoon transforms the Sahara into a lush savanna with mega-lakes (Lake Mega-Chad). Pastoral communities thrive before mid-Holocene desertification."

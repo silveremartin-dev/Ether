@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "World Wars, Totalitarian Rupture & Nuclear Era (1914 CE)",
   "displayDescription" : "âš”ï¸ HISTORICAL SCENARIO : Guerre Industrielle Totale, Ruptures IdÃ©ologiques & Bombe Atomique (1914 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃ©lise la pÃ©riode de crise systÃ©mique paroxystique de la modernitÃ© industrielle (1914-1945). Mobilisation intÃ©grale de l'exergie fossile et chimique (synthÃ¨se Haber-Bosch), ruptures totalitaires (1917, 1933), destruction massive de capital en Europe/Asie, et franchissement du seuil de destruction thermonuclÃ©aire (1945).\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ DÃ©ploiement de la guerre industrielle et de la puissance de feu cinÃ©tique (artillerie lourde, aviation, blindÃ©s).\nâ€¢ Ruptures de rÃ©gime idÃ©ologiques extrÃªmes (collectivisme soviÃ©tique, militarisme fasciste) et purges dÃ©mographiques.\nâ€¢ Chute brutale du capital en 1939-1945 suivie de la reconstruction fordiste accÃ©lÃ©rÃ©e des Trente Glorieuses.\n"

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Tokugawa Isolation & Edo Stability (1603 AD)",
   "displayDescription" : "HISTORICAL SCENARIO: Pax Tokugawa & Closed Country Policy / Sakoku (1603 AD)\n\nTwo centuries of sustainable resource management, deforestation control, zero-growth urban equilibrium in Edo, and strict maritime isolation."

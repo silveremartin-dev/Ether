@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Mali Empire & Trans-Saharan Gold Routes (1324 AD)",
   "displayDescription" : "HISTORICAL SCENARIO: Mansa Musa Pilgrimage & Trans-Saharan Trade Peak (1324 AD)\n\nTrans-Saharan gold and salt trade, Timbuktu scholastic centers, caravan logistics, and West African Sahelian urbanism."

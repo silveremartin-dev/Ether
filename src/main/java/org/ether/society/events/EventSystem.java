@@ -35,9 +35,9 @@ public class EventSystem {
     /** Internal state: enable random events (boolean). */
     private boolean enableRandomEvents = true;
     /** Internal state: enable earth historical leaders (boolean). */
-    private boolean enableEarthHistoricalLeaders = true;
+    private boolean enableEarthHistoricalLeaders = false;
     /** Internal state: enable procedural leaders (boolean). */
-    private boolean enableProceduralLeaders = true;
+    private boolean enableProceduralLeaders = false;
     /** Internal state: enable chronicle singularity observer (boolean, disabled by default). */
     private boolean enableChronicleSingularityObserver = false;
 
@@ -71,6 +71,7 @@ public class EventSystem {
         this.currentSeed = seed;
         this.random.setSeed(seed);
         this.proceduralLeaderGenerator.setSeed(seed);
+        this.naturalDisasterEvaluator.setSeed(seed);
     }
 
     public boolean isEnableRandomEvents() {
@@ -352,23 +353,27 @@ public class EventSystem {
                 totalLandCells++;
                 if (b == Biome.FOREST || b == Biome.JUNGLE) {
                     forestCount++;
-                    if (sampleForest == null || random.nextDouble() < 0.05) sampleForest = c;
+                    long streamForest = (long) year * 1000L + forestCount;
+                    if (sampleForest == null || org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, streamForest, 51L) < 0.05) sampleForest = c;
                 } else if (b == Biome.DESERT) {
                     desertCount++;
-                    if (sampleDesert == null || random.nextDouble() < 0.05) sampleDesert = c;
+                    long streamDesert = (long) year * 1000L + desertCount;
+                    if (sampleDesert == null || org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, streamDesert, 52L) < 0.05) sampleDesert = c;
                 }
             }
             Integer pop = c.getPopulation();
             Double food = c.getFoodResource();
             if (pop != null && pop > 10 && food != null && food < pop * monthlyNeedPerCapita) {
                 starvingCount++;
-                if (sampleStarving == null || random.nextDouble() < 0.05) sampleStarving = c;
+                long streamStarve = (long) year * 1000L + starvingCount;
+                if (sampleStarving == null || org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, streamStarve, 53L) < 0.05) sampleStarving = c;
             }
         }
 
         if (totalLandCells > 0) {
             double forestRatio = (double) forestCount / totalLandCells;
-            if (forestRatio < 0.1 && random.nextDouble() < 0.01) {
+            double pDefor = org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, month, 61L);
+            if (forestRatio < 0.1 && pDefor < 0.01) {
                 H3Cell target = sampleForest != null ? sampleForest : naturalDisasterEvaluator.getRandomLandCell(cells);
                 if (target != null && target.getLatitude() != null && target.getLongitude() != null) {
                     recordSpatialEvent(new ActiveEvent(
@@ -382,7 +387,8 @@ public class EventSystem {
 
         if (totalLandCells > 0) {
             double desertRatio = (double) desertCount / totalLandCells;
-            if (desertRatio > 0.4 && random.nextDouble() < 0.01) {
+            double pDesert = org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, month, 62L);
+            if (desertRatio > 0.4 && pDesert < 0.01) {
                 H3Cell target = sampleDesert != null ? sampleDesert : naturalDisasterEvaluator.getRandomLandCell(cells);
                 if (target != null && target.getLatitude() != null && target.getLongitude() != null) {
                     recordSpatialEvent(new ActiveEvent(
@@ -394,7 +400,8 @@ public class EventSystem {
             }
         }
 
-        if (starvingCount > cells.size() * 0.2 && random.nextDouble() < 0.05) {
+        double pFamine = org.ether.society.util.DeterministicPRNG.nextDouble(currentSeed, year, month, 63L);
+        if (starvingCount > cells.size() * 0.2 && pFamine < 0.05) {
             H3Cell target = sampleStarving != null ? sampleStarving : naturalDisasterEvaluator.getRandomLandCell(cells);
             if (target != null && target.getLatitude() != null && target.getLongitude() != null) {
                 recordSpatialEvent(new ActiveEvent(

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Fertile Crescent & Neolithic Revolution (-8000 BP)",
   "displayDescription" : "HISTORICAL SCENARIO: The Dawn of Agriculture in the Fertile Crescent (-8000 BC)\n\nModels the major Neolithic transition from hunter-gatherer subsistence to settled agricultural communities along the Tigris, Euphrates, Nile, and Levantine coast."

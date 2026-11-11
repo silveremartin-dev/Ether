@@ -7,16 +7,29 @@ package org.ether.society.events;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
+import org.ether.society.util.DeterministicPRNG;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Procedural Outlier Generator for emergent historical leaders, innovators, and reformers.
- * Used in sandbox/procedural worlds and open-ended simulations when deterministic Earth history is disabled.
+ * All stochastic evaluations use stateless {@link DeterministicPRNG}.
+ * Leaders are strictly constrained by the historical epoch:
+ * - Paleolithic (-100,000 to -10,000 BP): Chieftains, master trackers, lithic innovators, shamans.
+ * - Agrarian/Neolithic: Hydraulic innovators, city founders, legislators.
+ * - Classical/Modern: Empire conquerors, legal reformers, industrial builders.
+ *
+ * @author Silvere Martin-Michiellot
+ * @version 1.0.0-beta.2
  */
 public class ProceduralLeaderGenerator {
-    private final Random random = new Random(42L);
+
+    private long baseSeed = 42L;
+
+    // Epoch-specific titles
+    private static final String[] LEADER_TITLES_PALEOLITHIC_TRACKER = {"Chef de Clan", "Pisteur Émérite", "Maître du Silex", "Traqueur de Mégafaune", "Guide Nomade"};
+    private static final String[] LEADER_TITLES_PALEOLITHIC_SHAMAN = {"Chamane des Grottes", "Gardien du Feu", "Vénérable Ancien", "Visionnaire Lithique"};
 
     private static final String[] LEADER_TITLES_CONQUEROR = {"Général", "Seigneur de Guerre", "Khan", "Stratège", "Conquérant", "Hégémon"};
     private static final String[] LEADER_TITLES_BUILDER = {"Grand Architecte", "Bâtisseur", "Consul", "Empereur des Travaux", "Penseur Urbain"};
@@ -26,16 +39,17 @@ public class ProceduralLeaderGenerator {
     private static final String[] LEADER_TITLES_PURGER = {"Autocrate", "Inquisiteur", "Purificateur", "Dictateur Central", "Commandeur"};
 
     /**
-     * Set seed.
+     * Sets the base seed for deterministic evaluations.
      *
-     * @param seed the seed parameter (long)
+     * @param seed base scenario seed
      */
     public void setSeed(long seed) {
-        random.setSeed(seed);
+        this.baseSeed = seed;
     }
 
     /**
      * Checks whether an emergent historical outlier should spawn this year.
+     *
      * @param year current simulation year
      * @param totalPopulation total population in world
      * @param cells land/populated cells
@@ -46,9 +60,10 @@ public class ProceduralLeaderGenerator {
             return null;
         }
 
-        // Base annual probability scales with world population complexity (roughly 1 outlier per 30 to 70 years)
+        long stream = (long) year * 7919L;
         double baseProb = Math.min(0.04, 0.01 + (totalPopulation / 100_000_000.0));
-        if (random.nextDouble() > baseProb) {
+        double pRoll = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 801L);
+        if (pRoll > baseProb) {
             return null;
         }
 
@@ -58,20 +73,20 @@ public class ProceduralLeaderGenerator {
                         && c.getPopulation() != null && c.getPopulation() > 0)
                 .sorted((a, b) -> Integer.compare(b.getPopulation(), a.getPopulation()))
                 .toList();
+
         if (populated.isEmpty()) {
-            return null; // A historical leader cannot emerge in an unpopulated world or in the ocean
+            return null;
         }
 
-        // Leaders and historical figures emerge in core demographic centers and urban/agrarian hubs (top 20% highest density cells)
         int topK = Math.max(1, (int) Math.ceil(populated.size() * 0.20));
         List<H3Cell> topHubs = populated.subList(0, topK);
 
-        // Roulette-wheel selection among top hubs proportional to population
         long totalHubPop = 0;
         for (H3Cell hub : topHubs) {
             totalHubPop += Math.max(1, hub.getPopulation());
         }
-        long randWeight = (long) (random.nextDouble() * totalHubPop);
+        double weightFrac = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 802L);
+        long randWeight = (long) (weightFrac * totalHubPop);
         long cumWeight = 0;
         H3Cell originCell = topHubs.get(0);
         for (H3Cell hub : topHubs) {
@@ -82,32 +97,41 @@ public class ProceduralLeaderGenerator {
             }
         }
 
-        // Determine Archetype based on local physical and sociological state
-        LeaderArchetype archetype = determineArchetype(originCell);
+        // Determine Archetype constrained by historical epoch
+        LeaderArchetype archetype = determineArchetype(originCell, year);
 
-        // Emergent leaders have substantial societal magnitude (5.0 to 9.5) to test the Great Man hypothesis
-        double rawMag = 5.5 + (random.nextGaussian() * 1.2) + (random.nextDouble() * 2.0);
-        double magnitude = Math.max(5.0, Math.min(9.5, rawMag));
+        double zMag = DeterministicPRNG.nextGaussian(baseSeed, (long) year, stream);
+        double uMag = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 804L);
+        double rawMag = 5.5 + (zMag * 1.2) + (uMag * 2.0);
+        double magnitude = Math.clamp(rawMag, 5.0, 9.5);
 
-        int duration = (int) (archetype.getDefaultDurationYears() * (0.7 + (random.nextDouble() * 0.6)));
+        double uDur = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 805L);
+        int duration = (int) (archetype.getDefaultDurationYears() * (0.7 + (uDur * 0.6)));
         double radiusKm = 300.0 + (magnitude * 150.0);
 
-        String id = "PROC_LEADER_" + year + "_" + Math.abs(random.nextInt(10000));
-        String title = generateTitle(archetype);
+        int leaderRandId = DeterministicPRNG.nextInt(baseSeed, (long) year, stream, 10000);
+        String id = "PROC_LEADER_" + year + "_" + Math.abs(leaderRandId);
+        String title = generateTitle(archetype, year);
         String name = org.ether.society.i18n.I18n.getOrDefault("leader.proc.name_format", "{0} (Year {1})", title, year);
         String desc = org.ether.society.i18n.I18n.getOrDefault("leader.proc.desc_format", "Emergence of a major historical figure ({1}) in Year {0} with macro-regional impact.", year, archetype.getDisplayName());
 
-        HistoricalIntervention intervention = new HistoricalIntervention(
+        return new HistoricalIntervention(
                 id, name, desc, year, duration,
                 originCell.getLatitude(), originCell.getLongitude(),
                 radiusKm, archetype, magnitude
         );
-
-        return intervention;
     }
 
-    private LeaderArchetype determineArchetype(H3Cell cell) {
-        double r = random.nextDouble();
+    private LeaderArchetype determineArchetype(H3Cell cell, int year) {
+        long stream = (long) year * 7919L + (cell.getH3Index() != 0 ? cell.getH3Index() : 1L);
+        double r = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 810L);
+
+        // Deep Paleolithic: Strictly tribal chieftains, hunters, and spiritual sages
+        if (year < -10000) {
+            if (r < 0.55) return LeaderArchetype.MILITARY_CONQUEROR; // Clan war leader / megafauna hunt master
+            return LeaderArchetype.MORAL_RELIGIOUS_SAGE; // Cave artist, shaman, oral keeper
+        }
+
         Biome biome = cell.getBiome();
 
         // Nomadic / Savannah / Plains / Hills encourage conquerors or sages
@@ -116,8 +140,8 @@ public class ProceduralLeaderGenerator {
             if (r < 0.70) return LeaderArchetype.MORAL_RELIGIOUS_SAGE;
         }
 
-        // River / agricultural / lowlands encourage hydraulic & builders
-        if (cell.getElevation() != null && cell.getElevation() < 400 && cell.getWaterResource() != null && cell.getWaterResource() > 0.3) {
+        // River / agricultural / lowlands encourage hydraulic & builders (only if sedentary or Holocene)
+        if (year >= -10000 && cell.getElevation() != null && cell.getElevation() < 400 && cell.getWaterResource() != null && cell.getWaterResource() > 0.3) {
             if (r < 0.35) return LeaderArchetype.HYDRAULIC_AGRARIAN_INNOVATOR;
             if (r < 0.65) return LeaderArchetype.INFRASTRUCTURE_BUILDER;
         }
@@ -137,16 +161,27 @@ public class ProceduralLeaderGenerator {
         return LeaderArchetype.TOTALITARIAN_PURGER;
     }
 
-    private String generateTitle(LeaderArchetype archetype) {
-        int idx = random.nextInt(5) + 1;
+    private String generateTitle(LeaderArchetype archetype, int year) {
+        long stream = (long) year * 7919L + archetype.ordinal();
+        if (year < -10000) {
+            if (archetype == LeaderArchetype.MILITARY_CONQUEROR) {
+                int idx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream, LEADER_TITLES_PALEOLITHIC_TRACKER.length);
+                return LEADER_TITLES_PALEOLITHIC_TRACKER[idx];
+            } else {
+                int idx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream, LEADER_TITLES_PALEOLITHIC_SHAMAN.length);
+                return LEADER_TITLES_PALEOLITHIC_SHAMAN[idx];
+            }
+        }
+
+        int idx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream, 5) + 1;
         String key = "leader.title." + archetype.name().toLowerCase() + "." + idx;
         return org.ether.society.i18n.I18n.getOrDefault(key, switch (archetype) {
-            case MILITARY_CONQUEROR -> LEADER_TITLES_CONQUEROR[random.nextInt(LEADER_TITLES_CONQUEROR.length)];
-            case INFRASTRUCTURE_BUILDER -> LEADER_TITLES_BUILDER[random.nextInt(LEADER_TITLES_BUILDER.length)];
-            case INSTITUTIONAL_REFORMER -> LEADER_TITLES_REFORMER[random.nextInt(LEADER_TITLES_REFORMER.length)];
-            case HYDRAULIC_AGRARIAN_INNOVATOR -> LEADER_TITLES_HYDRAULIC[random.nextInt(LEADER_TITLES_HYDRAULIC.length)];
-            case MORAL_RELIGIOUS_SAGE -> LEADER_TITLES_SAGE[random.nextInt(LEADER_TITLES_SAGE.length)];
-            case TOTALITARIAN_PURGER -> LEADER_TITLES_PURGER[random.nextInt(LEADER_TITLES_PURGER.length)];
+            case MILITARY_CONQUEROR -> LEADER_TITLES_CONQUEROR[DeterministicPRNG.nextInt(baseSeed, (long) year, stream, LEADER_TITLES_CONQUEROR.length)];
+            case INFRASTRUCTURE_BUILDER -> LEADER_TITLES_BUILDER[DeterministicPRNG.nextInt(baseSeed, (long) year, stream, LEADER_TITLES_BUILDER.length)];
+            case INSTITUTIONAL_REFORMER -> LEADER_TITLES_REFORMER[DeterministicPRNG.nextInt(baseSeed, (long) year, stream, LEADER_TITLES_REFORMER.length)];
+            case HYDRAULIC_AGRARIAN_INNOVATOR -> LEADER_TITLES_HYDRAULIC[DeterministicPRNG.nextInt(baseSeed, (long) year, stream, LEADER_TITLES_HYDRAULIC.length)];
+            case MORAL_RELIGIOUS_SAGE -> LEADER_TITLES_SAGE[DeterministicPRNG.nextInt(baseSeed, (long) year, stream, LEADER_TITLES_SAGE.length)];
+            case TOTALITARIAN_PURGER -> LEADER_TITLES_PURGER[DeterministicPRNG.nextInt(baseSeed, (long) year, stream, LEADER_TITLES_PURGER.length)];
         });
     }
 }

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Technological Singularity & AGI Transition (2045 AD)",
   "displayDescription" : "FUTURE SCENARIO: Post-Scarcity & Superintelligence Transition (2045 AD)\n\nExponential technological growth, automated production, molecular nanotechnology, space resource extraction, and post-human societal transformations."

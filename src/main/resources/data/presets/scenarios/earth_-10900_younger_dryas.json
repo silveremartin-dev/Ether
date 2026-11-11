@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Younger Dryas & Natufian Forager Shock (-10,900 BP)",
   "displayDescription" : "PALEOCLIMATE SCENARIO: The Younger Dryas & Levant Foraging Pressure (-10,900 BC)\n\nAbrupt 5-8°C cooling in the North Atlantic triggered by Lake Agassiz freshwater outburst. Severe drought in the Levant reduces wild cereals, forcing Natufian foragers toward pre-agricultural sedentism."

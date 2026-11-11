@@ -255,8 +255,8 @@
   "seed": 12345,
   "culturalSeed": 54321,
   "randomEventsEnabled": true,
-  "earthHistoricalLeadersEnabled": true,
-  "proceduralLeadersEnabled": true,
+  "earthHistoricalLeadersEnabled": false,
+  "proceduralLeadersEnabled": false,
   "chronicleSingularityObserverEnabled": false,
   "displayName": "Shackleton Lunar Base & Marius Hills Lava Tubes (2035)",
   "displayDescription": "⚪ SCÉNARIO EXOPLANÉTAIRE : Base Lunaire Polaire & Tubes de Lave Sous-Terrain (2035 ap. J.-C.)\n\n[DESCRIPTION DES CONDITIONS INITIALES (T₀)]\nImplantation humaine permanente au pôle Sud lunaire (cratère Shackleton) pour l'extraction de glace d'eau et sanctuarisation dans les tunnels de lave de Marius Hills sous vide absolu.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Exploitation industrielle de la glace polaire et de l'Hélium-3 pour les réacteurs à fusion.\n• Habitats pressurisés enfouis dans les cavités basaltiques assurant un blindage thermique et radiatif total.\n• Hub logistique pour l'expansion cis-lunaire et les chantiers orbitaux.\n"

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Ether Prospective Projection (2026-2100): Standard Biophysical Dynamics",
   "displayDescription" : "\uD83C\uDF10 SCÃ‰NARIO FUTUR : Projection Biophysique Standard du Moteur Ether (2026-2100)\n\n[DESCRIPTION DES TERMES DE FORÃ‡AGE PHYSIQUE & Ã‰COLOGIQUE (Tâ‚€ = 2026)]\nTrajectoire prospective non-contrainte issue de la physique standard du moteur Ether.\nIntÃ¨gre l'Ã©tat biophysique rÃ©el de 2026 (COâ‚‚ Ã  423 ppm, tempÃ©rature +1.28Â°C, dÃ©plÃ©tion pÃ©troliÃ¨re Hotelling,\nabaissement des teneurs minÃ©rales de Bihouix, exergue KÃ¼mmel-Ayres et rendements dÃ©croissants).\n\n[OBJECTIF SCIENTIFIQUE & FALSIFICATION]\nCe scÃ©nario unique sert de base de projection endogÃ¨ne du moteur Ether, comparÃ© ensuite\naux 5 modÃ¨les exogÃ¨nes de rÃ©fÃ©rence du GIEC/IIASA (SSP1, SSP2, SSP3, SSP4, SSP5) et aux projections ONU (UN WPP 2024).\n"

@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Song Dynasty Industrialization & Maritime Trade (1000 AD)",
   "displayDescription" : "HISTORICAL SCENARIO: Proto-Industrial Revolution & Maritime Silk Road (1000 AD)\n\nSong Dynasty economic boom, paper currency (Jiaozi), coke-fueled iron smelting, compass navigation, and commercialized river/maritime networks."

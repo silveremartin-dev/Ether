@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "The Great Acceleration & Anthropocene (1950 CE)",
   "displayDescription" : "\uD83D\uDE80 HISTORICAL SCENARIO : The Great Acceleration, Petrochemical Takeoff & Satellite Earth Monitoring (1950-2024 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the post-WWII explosion of human biophysical throughput documented by Steffen et al. (2015), Maddison (2020), and Smil (2017). Characterized by exponential demographic expansion (2.5B to 8.1B), Green Revolution synthetic nitrogen agriculture (Haber-Bosch), petrochemical prime movers, mass global telecommunications, and the Keeling CO2 rise from 310 ppm to 425 ppm.\n\n[KEY OBSERVABLES & GOLD STANDARD DATASETS]\n• 100% empirical instrumental coverage: NOAA Mauna Loa CO2, UN World Population Prospects, ERA5 reanalysis, World Bank GWP, FAO agricultural land balance, USGS mineral statistics.\n• Primary calibration anchor with historiographical observational uncertainty sigma_obs < 1.5%.\n"

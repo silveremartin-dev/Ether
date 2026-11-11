@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Great Acceleration & Anthropocene Baseline (2000 AD)",
   "displayDescription" : "CONTEMPORARY SCENARIO: Global Acceleration & Planetary Boundaries (2000 AD)\n\nGlobalized hyper-connectivity, 6.1 billion human population, Haber-Bosch synthetic nitrogen reliance, CO2 greenhouse forcing, and digital information grids."

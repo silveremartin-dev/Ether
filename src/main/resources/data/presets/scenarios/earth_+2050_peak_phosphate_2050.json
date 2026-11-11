@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Global Phosphorus Scarcity & Malthusian Crisis (2050 AD)",
   "displayDescription" : "CRISIS SCENARIO: Depletion of Mineral Fertilizers & Food System Stress (2050 AD)\n\nExhaustion of high-grade rock phosphate reserves, fertilizer price spikes, agricultural yield contraction, and global demographic tension."

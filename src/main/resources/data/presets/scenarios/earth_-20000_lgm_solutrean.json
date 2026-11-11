@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Last Glacial Maximum & Solutrean (-20,000 BP)",
   "displayDescription" : "PALEOLITHIC SCENARIO: Glacial Climax & Solutrean Refugia (-20,000 BP)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the climax of the Last Glacial Maximum (LGM) with global sea levels depressed by 120 meters (exposing Doggerland, Sundaland, Sahul, and Beringia), massive continental ice sheets (Laurentide, Fennoscandian), and specialized Solutrean lithic technology.\n\n[KEY SCENARIO OBSERVABLES]\n  Human population refuge concentration in thermal pockets (Iberian peninsula, Franco-Cantabrian corridor, Balkans).\n  Technological adaptation to extreme periglacial cold (tailored clothing with eyed needles, permafrost food caches).\n  Post-glacial demographic expansion following BÃ¸lling-AllerÃ¸d warming."

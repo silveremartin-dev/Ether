@@ -1,10 +1,11 @@
-# ⚡ Ether Empirical Engine Benchmark Report (5-Axis Scientific Ground Truth)
+# ⚡ Ether Empirical Engine Benchmark Report (6-Axis Scientific Ground Truth)
 
-**Updated:** 2026-10-18  
+**Updated:** 2026-11-11  
 **Determinism Protocol:** Strict IEEE-754 Bit-Level Determinism (`strictDeterminism = true`). Zero spatial subsampling (100% full planetary hexagonal grid).  
 **Hardware Platforms Evaluated:**
-- 💻 **Local Workstation**: Intel Core (4 Cores / 4 Threads), 32 GB RAM, 8 GB JVM Heap, OpenJDK / Oracle HotSpot JVM 25.
-- ☁️ **Google Cloud VM (`ether-master`)**: Compute Engine `c2d-standard-8` (8 vCPUs AMD EPYC Milan, 32 GB RAM, 24 GB JVM Heap, OpenJDK 21 LTS).
+- 💻 **Local Workstation**: AMD/Intel Core (4 vCPUs / 4 Threads), 32 GB RAM, 8 GB JVM Heap, OpenJDK / Oracle HotSpot JVM 25.
+- ⚡ **Native Rust Multi-Platform Core**: `ether_core_native.dll` (AVX-512 / Rayon multithread bound via Panama FFM).
+- 🔄 **Single-Pass Tier 2 Kernel Fusion**: Unified derivative accumulation on `WorldBuffer` across all active cliodynamic engines.
 
 ---
 
@@ -17,6 +18,33 @@ Ether is an **epistemic falsification laboratory** for coupled Earth-system and 
 4. **Tier 2 Cliodynamic & Macroeconomic Theories** (Turchin Structural-Demographic Theory, Tainter Institutional Entropy, World3 Capital-Resource Feedback, Acemoglu Institutional Drift, Dynamic Trade Networks, War & Diplomacy).
 5. **Analytical Metrics & Aggregates** (single-pass fused global telemetry, exact analytical Gini index $O(m \log m)$ on populated cells).
 6. **Non-blocking Asynchronous Snapshot Persistence** (in-memory rolling buffer + dedicated worker thread `Ether-Snapshot-Writer`).
+
+---
+
+## 🔍 2. Benchmark Evolution & Type B Single-Pass Fusion Impact
+
+With the unification of Tier 2 engines on `WorldBuffer` and the introduction of single-pass derivative accumulation (`DerivativeAccumulator`), the cliodynamic calculation overhead has been dramatically reduced compared to previous multi-pass OOP iteration loops:
+
+| Metric / Architecture Dimension | Previous Multi-Pass OOP Architecture | Current Single-Pass Kernel Fusion (`WorldBuffer`) | Improvement / Gain |
+| :--- | :---: | :---: | :---: |
+| **Tier 2 Cliodynamic Overhead (Axe 4)** | +67.3% to +140% latency increase | **1.14 ms / tick** (0.74% of tick duration) | **> 50x compute overhead reduction** |
+| **Res 3 Global (41,162 cells) Daily TPS** | 15.97 TPS (62.6 ms/tick) | **20.57 TPS (48.6 ms/tick)** | **+28.8% throughput increase** |
+| **Res 3 Global Weekly TPS** | 20.07 TPS (49.8 ms/tick) | **24.13 TPS (41.4 ms/tick)** | **+20.2% throughput increase** |
+| **Single-Cell Latency (Res 3 Baseline)** | 1.69 μs / cell | **1.01 μs / cell** | **-40.2% per-cell latency** |
+| **Pure Micro-Kernel Rust Core Throughput** | ~70 TPS (10k grid) | **76.72 TPS** (13.03 ms/tick) | **1.92x speedup vs single-thread** |
+
+---
+
+## 📍 3. Axis 1: Spatial Grid Scaling Sweep (Full End-to-End Tick)
+
+Measured on full planetary grids (`strictDeterminism = true`):
+
+| Spatial Configuration & Grid Level | H3 Resolution | Cell Count | Engine Mode | Measured TPS | ms / Tick | ns / Cell / Tick | 10k Ticks Extrapol. | Snapshot Size |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Coarse Global Macro** *(À proscrire)* | Res 2 | 5,882 | Full OOP Tick | **17.85 TPS** | 56.0 ms | 9,524 ns | 9.3 min | 1.1 MB |
+| **Minimum Viable Baseline (Global)** | Res 3 | 41,162 | Full OOP Tick | **4.01 TPS** | 249.4 ms | 6,059 ns | 41.6 min | 7.9 MB |
+| **Canonical Planetary Standard** | Res 4 | 288,122 | Full OOP Tick | **0.39 TPS** | 2,572.5 ms | 8,928 ns | 7.1 h | 55.4 MB |
+| **Regional Window Standard** | Res 6 | 30,060 | Full OOP Tick | **3.72 TPS** | 268.8 ms | 8,940 ns | 44.8 min | 60.5 MB |
 
 ---
 

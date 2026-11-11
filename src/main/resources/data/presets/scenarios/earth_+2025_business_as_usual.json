@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Terre 2025-2055 : Trajectoire Tendancielle Biophysique (Business As Usual)",
   "displayDescription" : "\uD83C\uDF10 SCÃ‰NARIO FUTUR : Trajectoire Tendancielle Biophysique & Ressources RÃ©elles (2025-2055)\n\n[DESCRIPTION DES CONDITIONS INITIALES & FRICTIONS (Tâ‚€)]\nModÃ©lisation de la poursuite de l'histoire humaine Ã  partir de l'Ã©tat macro-physique rÃ©el de 2025 sans prÃ©sumer d'aucun moratoire normatif ni plafond artificiel. IntÃ¨gre les frictions gÃ©opolitiques contemporaines de transit (dÃ©troit d'Ormuz, mer Rouge, sanctions d'Europe orientale), la dÃ©plÃ©tion cumulative des gisements conventionnels (~48% du pÃ©trole dÃ©jÃ  extrait, transition vers le schiste et l'offshore profond), et le taux d'apprentissage industriel des Ã©nergies bas-carbone.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Extraction continue des combustibles fossiles et des minerais gouvernÃ©e par la thermodynamique d'abaissement des teneurs (Bihouix) et la rente d'Hotelling.\nâ€¢ Ajustement endogÃ¨ne de l'exergue utile (KÃ¼mmel-Ayres) entre capital fossile et dÃ©ploiement spontanÃ© des renouvelables/nuclÃ©aire.\nâ€¢ Ã‰volution non-contrainte des Ã©missions de COâ‚‚, forÃ§age radiatif continu et rÃ©troactions climatiques sur les rendements agricoles et le stress hydrique.\n"

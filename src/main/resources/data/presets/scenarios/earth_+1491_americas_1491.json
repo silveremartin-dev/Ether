@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Pre-Columbian Americas Peak & Indigenous Networks (1491 AD)",
   "displayDescription" : "HISTORICAL SCENARIO: Pre-Columbian Hemispheric Baseline (1491 AD)\n\nHigh-density Inca terrace engineering, Aztec chinampa hydro-agriculture, Mississippian mound centers, and Amazonian Terra Preta anthropogenic soils."

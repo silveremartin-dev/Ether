@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Early Iron Age & Ancient Mediterranean (-1000 BCE)",
   "displayDescription" : "âš”ï¸ HISTORICAL SCENARIO : Transition Technologique vers la SidÃ©rurgie & RÃ©seaux PhÃ©niciens (-1000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃ©lise la transition de l'Ã‚ge du Bronze vers la mÃ©tallurgie du fer aprÃ¨s l'effondrement du Bronze RÃ©cent. Diffusion de l'alphabet phÃ©nicien, essor des citÃ©s-Ã‰tats grecques, expansion de l'Empire NÃ©o-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ DÃ©mocratisation de l'outillage et des armes grÃ¢ce Ã  l'abondance gÃ©ologique du minerai de fer.\nâ€¢ Essor du commerce maritime thalassocratique en MÃ©diterranÃ©e (PhÃ©niciens, Grecs, Ã‰trusques).\nâ€¢ Rupture de la dÃ©pendance stratÃ©gique au cuivre/Ã©tain et multiplication des centres de pouvoir rÃ©gionaux.\n"

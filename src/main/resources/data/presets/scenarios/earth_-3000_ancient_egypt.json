@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Unification of Egypt & Early Dynasties (-3100 BP)",
   "displayDescription" : "HISTORICAL SCENARIO: Unification of Upper & Lower Egypt (-3100 BC)\n\nEmergence of the first territorial state along the Nile corridor, organized around inundation agriculture, centralized storage, and divine kingship."

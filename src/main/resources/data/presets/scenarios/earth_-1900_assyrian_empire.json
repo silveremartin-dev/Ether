@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Bronze Age Collapse & Neo-Assyrian Empire (-1200 BP)",
   "displayDescription" : "HISTORICAL SCENARIO: Late Bronze Age Collapse & Neo-Assyrian Imperial Expansion (-1200 BC)\n\nSimulates systemic breakdown of Eastern Mediterranean trade networks, drought crisis, and rise of iron metallurgy and empire building."

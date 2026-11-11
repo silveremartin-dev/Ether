@@ -114,8 +114,8 @@ public class Scenario extends AbstractScenarioTensorAndEngineConfig {
     private long seed = 12345L;
     private long culturalSeed = 54321L;
     private boolean randomEventsEnabled = true;
-    private boolean earthHistoricalLeadersEnabled = true;
-    private boolean proceduralLeadersEnabled = true;
+    private boolean earthHistoricalLeadersEnabled = false;
+    private boolean proceduralLeadersEnabled = false;
     private boolean chronicleSingularityObserverEnabled = false;
     private String customDensityBase64;
 

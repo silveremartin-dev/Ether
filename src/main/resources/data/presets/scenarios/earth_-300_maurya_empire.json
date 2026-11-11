@@ -255,8 +255,8 @@
   "seed" : 12345,
   "culturalSeed" : 54321,
   "randomEventsEnabled" : true,
-  "earthHistoricalLeadersEnabled" : true,
-  "proceduralLeadersEnabled" : true,
+  "earthHistoricalLeadersEnabled" : false,
+  "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Maurya Empire & Iron Age Silk Road (-322 BP)",
   "displayDescription" : "HISTORICAL SCENARIO: Maurya Imperial Unification & Pan-Asian Trade Routes (-322 BC)\n\nUnification of the Indian subcontinent under Chandragupta and Ashoka, edict codification, and expansion of land and maritime Silk Road trade."
