@@ -70,7 +70,7 @@ public final class DefaultHistoricalMilestonesCatalog {
         list.add(new ClimateEvent("milestone_polity", "Unification des Tribus Mongoles par Gengis Khan (Khouriltaï)", 1206, 47.92, 106.92, 0.0, 8.5));
         list.add(new ClimateEvent("milestone_polity", "Signature de la Magna Carta à Runnymede (Limitation Royale)", 1215, 51.44, -0.56, 0.0, 7.5));
         list.add(new ClimateEvent("disaster_volcano", "Éruption Ultra-Plinienne Cataclysmique du Samalas (Lombok)", 1257, -8.41, 116.46, 0.0, 8.5));
-        list.add(new ClimateEvent("disaster_famine", "Grande Famine Européenne de 1315-1317", 1315, 50.0, 10.0, 0.0, 6.0));
+        list.add(new ClimateEvent("disaster_climate", "Refroidissement Pluvieux Extrême & Crise de Subsistance Européenne", 1315, 50.0, 10.0, 0.0, 6.0));
         list.add(new ClimateEvent("milestone_golden_age", "Apogée de l'Empire du Mali & Pèlerinage de Mansa Musa", 1324, 12.63, -8.00, 0.0, 7.5));
         list.add(new ClimateEvent("milestone_polity", "Fondation de Tenochtitlan par les Aztèques (Mexique)", 1325, 19.43, -99.13, 0.0, 7.0));
         list.add(new ClimateEvent("disaster_pandemic", "Pandémie Dévastatrice de la Peste Noire en Eurasie", 1347, 38.19, 15.55, 0.0, 9.0));

@@ -517,7 +517,7 @@
         "day":  1
     },
     {
-        "type":  "disaster_famine",
+        "type":  "disaster_climate",
         "name":  "Ã‰vÃ©nement Climatique Aride de 4.2 ka BP (SÃ©cheresse MÃ©sopotamie/Nil)",
         "year":  -2200,
         "latitude":  33.0,
@@ -1342,7 +1342,7 @@
         "day":  1
     },
     {
-        "type":  "disaster_famine",
+        "type":  "disaster_climate",
         "name":  "Grande Famine EuropÃ©enne de 1315-1317",
         "year":  1315,
         "latitude":  50.0,

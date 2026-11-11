@@ -73,7 +73,6 @@ public final class GodModeEventCatalog {
         new EventTypeItem("METEOR", "godmode.type.meteor", "godmode.event.meteor", "godmode.event.meteor.desc", 7, 9.0, false),
         new EventTypeItem("HEATWAVE", "godmode.type.heatwave", "godmode.event.heatwave", "godmode.event.heatwave.desc", 30, 5.0, false),
         new EventTypeItem("ICE_AGE", "godmode.type.ice_age", "godmode.event.ice_age", "godmode.event.ice_age.desc", 18250, 5.0, false),
-        new EventTypeItem("FAMINE", "godmode.type.famine", "godmode.event.famine", "godmode.event.famine.desc", 180, 6.0, false),
         new EventTypeItem("PANDEMIC", "godmode.type.pandemic", "godmode.event.pandemic", "godmode.event.pandemic.desc", 730, 8.0, false),
         new EventTypeItem("BIODIVERSITY_COLLAPSE", "godmode.type.biodiversity_collapse", "godmode.event.biodiversity_collapse", "godmode.event.biodiversity_collapse.desc", 3650, 6.0, false),
         new EventTypeItem("SOLAR_EMP", "godmode.type.solar_emp", "godmode.event.solar_emp", "godmode.event.solar_emp.desc", 30, 8.5, false),

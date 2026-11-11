@@ -92,7 +92,7 @@ public class ScenarioEventsSectionBuilder {
 
         List<String> eventTypes = List.of(
             "VOLCANO", "EARTHQUAKE", "TSUNAMI", "FLOOD", "DROUGHT",
-            "PANDEMIC", "FAMINE", "HEATWAVE", "ICE_AGE", "METEOR",
+            "PANDEMIC", "HEATWAVE", "ICE_AGE", "METEOR",
             "SOLAR_EMP", "NUCLEAR_STRIKE", "NUCLEAR_WINTER", "CYBER_ATTACK",
             "ECONOMIC_CRASH", "BIODIVERSITY_COLLAPSE", "GEOENGINEERING",
             "RENAISSANCE_BOOM", "TECH_SINGULARITY", "ALIEN_CONTACT",
@@ -103,7 +103,7 @@ public class ScenarioEventsSectionBuilder {
             "milestone_archaeology", "milestone_polity", "milestone_technology",
             "milestone_golden_age", "milestone_ethnography",
             "disaster_volcano", "disaster_earthquake", "disaster_tsunami", "disaster_flood",
-            "disaster_drought", "disaster_pandemic", "disaster_famine", "disaster_heatwave",
+            "disaster_drought", "disaster_pandemic", "disaster_heatwave",
             "disaster_ice_age", "disaster_meteor", "disaster_solar_emp", "disaster_nuclear_strike",
             "disaster_nuclear_winter", "disaster_cyber_attack", "disaster_economic_crash",
             "disaster_biodiversity_collapse", "disaster_geoengineering", "disaster_alien_contact",
@@ -363,7 +363,6 @@ public class ScenarioEventsSectionBuilder {
                     case "FLOOD", "disaster_flood", "flood" -> "💧 " + I18n.getOrDefault("godmode.type.flood", "Flood");
                     case "DROUGHT", "disaster_drought", "drought" -> "☀️ " + I18n.getOrDefault("godmode.type.drought", "Drought");
                     case "PANDEMIC", "disaster_pandemic", "pandemic" -> "🦠 " + I18n.getOrDefault("godmode.type.pandemic", "Pandemic");
-                    case "FAMINE", "disaster_famine", "famine" -> "🌾 " + I18n.getOrDefault("godmode.type.famine", "Famine");
                     case "HEATWAVE", "disaster_heatwave", "heatwave" -> "🌡️ " + I18n.getOrDefault("godmode.type.heatwave", "Heatwave");
                     case "ICE_AGE", "disaster_ice_age", "ice_age" -> "❄️ " + I18n.getOrDefault("godmode.type.ice_age", "Ice Age");
                     case "METEOR", "disaster_meteor", "meteor" -> "☄️ " + I18n.getOrDefault("godmode.type.meteor", "Meteor");

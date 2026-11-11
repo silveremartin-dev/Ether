@@ -52,7 +52,6 @@ public class WikidataEventsFetcher {
             case "earthquake" -> "disaster_earthquake";
             case "tsunami" -> "disaster_tsunami";
             case "pandemic" -> "disaster_pandemic";
-            case "famine" -> "disaster_famine";
             case "heatwave" -> "disaster_heatwave";
             case "ice_age" -> "disaster_ice_age";
             case "meteor" -> "disaster_meteor";
