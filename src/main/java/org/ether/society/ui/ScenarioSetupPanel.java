@@ -138,12 +138,16 @@ public class ScenarioSetupPanel extends BorderPane {
 
     /** Internal model for a scheduled planetary event. */
     public static class ClimateEvent extends ScenarioClimateEventModel {
+        public ClimateEvent(String type, String name, int year, int month, int day, double lat, double lon, double depth, double mag, int durationDays) {
+            super(type, name, year, month, day, lat, lon, depth, mag, durationDays);
+        }
+
         public ClimateEvent(String type, String name, int year, double lat, double lon, double depth, double mag, int durationDays) {
-            super(type, name, year, lat, lon, depth, mag, durationDays);
+            super(type, name, year, 1, 1, lat, lon, depth, mag, durationDays);
         }
 
         public ClimateEvent(String type, String name, int year, double lat, double lon, double depth, double mag) {
-            super(type, name, year, lat, lon, depth, mag);
+            super(type, name, year, 1, 1, lat, lon, depth, mag);
         }
     }
 

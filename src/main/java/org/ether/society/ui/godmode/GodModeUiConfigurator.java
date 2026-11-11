@@ -151,6 +151,8 @@ public final class GodModeUiConfigurator {
             TextField eventNameField,
             Label lblTargetYear,
             Spinner<Integer> targetYearSpinner,
+            Spinner<Integer> targetMonthSpinner,
+            Spinner<Integer> targetDaySpinner,
             Slider targetYearSlider,
             Label dateRangeLabel,
             Label lblLat,
@@ -187,9 +189,13 @@ public final class GodModeUiConfigurator {
         grid.add(eventDescriptionLabel, 1, 1);
         grid.addRow(2, lblEventTitle, eventNameField);
 
-        HBox yearRow = new HBox(8, targetYearSpinner, targetYearSlider);
-        yearRow.setAlignment(Pos.CENTER_LEFT);
-        VBox yearBox = new VBox(3, yearRow, dateRangeLabel);
+        Label lblM = new Label("M:");
+        lblM.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+        Label lblJ = new Label("J:");
+        lblJ.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
+        HBox dateRow = new HBox(6, targetYearSpinner, lblM, targetMonthSpinner, lblJ, targetDaySpinner, targetYearSlider);
+        dateRow.setAlignment(Pos.CENTER_LEFT);
+        VBox yearBox = new VBox(3, dateRow, dateRangeLabel);
         grid.addRow(3, lblTargetYear, yearBox);
 
         grid.addRow(4, lblLat, latSpinner);

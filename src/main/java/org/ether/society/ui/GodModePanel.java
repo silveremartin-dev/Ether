@@ -67,6 +67,8 @@ public class GodModePanel extends VBox {
     private final TextField eventNameField;
     private final Label dateRangeLabel;
     private final Spinner<Integer> targetYearSpinner;
+    private final Spinner<Integer> targetMonthSpinner;
+    private final Spinner<Integer> targetDaySpinner;
     private final Slider targetYearSlider;
     private final Spinner<Double> latSpinner;
     private final Spinner<Double> lngSpinner;
@@ -148,6 +150,18 @@ public class GodModePanel extends VBox {
         targetYearSpinner.setPrefWidth(95);
         targetYearSpinner.setMaxWidth(110);
 
+        int currentMo = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() + 1 : 1;
+        int currentD = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
+        targetMonthSpinner = new Spinner<>(1, 12, Math.max(1, Math.min(12, currentMo)), 1);
+        targetMonthSpinner.setEditable(true);
+        targetMonthSpinner.setPrefWidth(60);
+        targetMonthSpinner.setMaxWidth(70);
+
+        targetDaySpinner = new Spinner<>(1, 31, Math.max(1, Math.min(31, currentD)), 1);
+        targetDaySpinner.setEditable(true);
+        targetDaySpinner.setPrefWidth(60);
+        targetDaySpinner.setMaxWidth(70);
+
         targetYearSlider = new Slider(minYr, maxYr, Math.max(minYr, Math.min(maxYr, currentYr)));
         targetYearSlider.setBlockIncrement(1);
         targetYearSlider.setMajorTickUnit(Math.max(1, (maxYr - minYr) / 5.0));
@@ -216,7 +230,7 @@ public class GodModePanel extends VBox {
 
         VBox injectorBox = GodModeUiConfigurator.buildInjectorSection(
                 injectorTitleLabel, lblEventType, eventTypeCombo, eventDescriptionLabel,
-                lblEventTitle, eventNameField, lblTargetYear, targetYearSpinner, targetYearSlider, dateRangeLabel,
+                lblEventTitle, eventNameField, lblTargetYear, targetYearSpinner, targetMonthSpinner, targetDaySpinner, targetYearSlider, dateRangeLabel,
                 lblLat, latSpinner, lblLng, lngSpinner, lblMag, magnitudeSpinner,
                 lblRadius, radiusKmSpinner, lblDurationDays, durationDaysSpinner, lblDurationUnit,
                 scheduleBtn, triggerNowBtn
@@ -446,6 +460,8 @@ public class GodModePanel extends VBox {
                 eventTypeCombo.getValue(),
                 eventNameField.getText(),
                 targetYearSpinner.getValue(),
+                targetMonthSpinner.getValue(),
+                targetDaySpinner.getValue(),
                 latSpinner.getValue(),
                 lngSpinner.getValue(),
                 magnitudeSpinner.getValue(),

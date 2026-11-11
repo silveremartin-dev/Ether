@@ -25,6 +25,8 @@ public class ScenarioClimateEventModel {
     private final StringProperty type;
     private final StringProperty name;
     private final IntegerProperty year;
+    private final IntegerProperty month;
+    private final IntegerProperty day;
     private final DoubleProperty latitude;
     private final DoubleProperty longitude;
     private final DoubleProperty depth;
@@ -32,21 +34,25 @@ public class ScenarioClimateEventModel {
     private final IntegerProperty durationDays;
 
     /**
-     * Constructs a scheduled climate/historical event with explicit duration.
+     * Constructs a scheduled climate/historical event with explicit date and duration.
      *
      * @param type event typology (VOLCANO, PANDEMIC, DROUGHT, LEADER, etc.)
      * @param name descriptive title or historical event name
      * @param year chronological year CE/BCE
+     * @param month calendar month (1-12)
+     * @param day calendar day (1-31)
      * @param lat latitude coordinate in degrees [-90°, +90°]
      * @param lon longitude coordinate in degrees [-180°, +180°]
      * @param depth hypocenter depth in km (for earthquakes/volcanoes)
      * @param mag magnitude or normalized impact intensity [0.0, 10.0]
      * @param durationDays active duration in simulation days (<= 0 indicates permanent milestone)
      */
-    public ScenarioClimateEventModel(String type, String name, int year, double lat, double lon, double depth, double mag, int durationDays) {
+    public ScenarioClimateEventModel(String type, String name, int year, int month, int day, double lat, double lon, double depth, double mag, int durationDays) {
         this.type = new SimpleStringProperty(type);
         this.name = new SimpleStringProperty(name);
         this.year = new SimpleIntegerProperty(year);
+        this.month = new SimpleIntegerProperty(Math.max(1, Math.min(12, month)));
+        this.day = new SimpleIntegerProperty(Math.max(1, Math.min(31, day)));
         this.latitude = new SimpleDoubleProperty(lat);
         this.longitude = new SimpleDoubleProperty(lon);
         this.depth = new SimpleDoubleProperty(depth);
@@ -55,15 +61,31 @@ public class ScenarioClimateEventModel {
     }
 
     /**
-     * Constructs a scheduled event defaulting duration based on type.
+     * Constructs a scheduled climate/historical event defaulting date to January 1st.
+     */
+    public ScenarioClimateEventModel(String type, String name, int year, double lat, double lon, double depth, double mag, int durationDays) {
+        this(type, name, year, 1, 1, lat, lon, depth, mag, durationDays);
+    }
+
+    /**
+     * Constructs a scheduled event with explicit date and defaulting duration based on type.
+     */
+    public ScenarioClimateEventModel(String type, String name, int year, int month, int day, double lat, double lon, double depth, double mag) {
+        this(type, name, year, month, day, lat, lon, depth, mag, ClimateEvent.getDefaultDurationDaysForType(type));
+    }
+
+    /**
+     * Constructs a scheduled event defaulting duration based on type and date to January 1st.
      */
     public ScenarioClimateEventModel(String type, String name, int year, double lat, double lon, double depth, double mag) {
-        this(type, name, year, lat, lon, depth, mag, ClimateEvent.getDefaultDurationDaysForType(type));
+        this(type, name, year, 1, 1, lat, lon, depth, mag, ClimateEvent.getDefaultDurationDaysForType(type));
     }
 
     public StringProperty typeProperty() { return type; }
     public StringProperty nameProperty() { return name; }
     public IntegerProperty yearProperty() { return year; }
+    public IntegerProperty monthProperty() { return month; }
+    public IntegerProperty dayProperty() { return day; }
     public DoubleProperty latitudeProperty() { return latitude; }
     public DoubleProperty longitudeProperty() { return longitude; }
     public DoubleProperty depthProperty() { return depth; }
@@ -76,6 +98,10 @@ public class ScenarioClimateEventModel {
     public void setName(String v) { name.set(v); }
     public int getYear() { return year.get(); }
     public void setYear(int v) { year.set(v); }
+    public int getMonth() { return month.get(); }
+    public void setMonth(int v) { month.set(Math.max(1, Math.min(12, v))); }
+    public int getDay() { return day.get(); }
+    public void setDay(int v) { day.set(Math.max(1, Math.min(31, v))); }
     public double getLatitude() { return latitude.get(); }
     public void setLatitude(double v) { latitude.set(v); }
     public double getLongitude() { return longitude.get(); }

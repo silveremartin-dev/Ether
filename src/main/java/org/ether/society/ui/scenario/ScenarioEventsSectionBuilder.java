@@ -125,7 +125,17 @@ public class ScenarioEventsSectionBuilder {
         TableColumn<ClimateEvent, Integer> colYear = new TableColumn<>(I18n.getOrDefault("scenario.col.year", "Year"));
         colYear.setCellValueFactory(cellData -> cellData.getValue().yearProperty().asObject());
         colYear.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        colYear.setPrefWidth(80);
+        colYear.setPrefWidth(75);
+
+        TableColumn<ClimateEvent, Integer> colMonth = new TableColumn<>(I18n.getOrDefault("scenario.col.month", "Mois"));
+        colMonth.setCellValueFactory(cellData -> cellData.getValue().monthProperty().asObject());
+        colMonth.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        colMonth.setPrefWidth(50);
+
+        TableColumn<ClimateEvent, Integer> colDay = new TableColumn<>(I18n.getOrDefault("scenario.col.day", "Jour"));
+        colDay.setCellValueFactory(cellData -> cellData.getValue().dayProperty().asObject());
+        colDay.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        colDay.setPrefWidth(50);
 
         StringConverter<Integer> durationConverter = new StringConverter<>() {
             @Override
@@ -178,7 +188,7 @@ public class ScenarioEventsSectionBuilder {
         colMag.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         colMag.setPrefWidth(90);
 
-        eventsTable.getColumns().setAll(colType, colName, colYear, colDuration, colLat, colLon, colDepth, colMag);
+        eventsTable.getColumns().setAll(colType, colName, colYear, colMonth, colDay, colDuration, colLat, colLon, colDepth, colMag);
 
         addEventBtn = new Button(I18n.getOrDefault("scenario.btn.add_event", "➕ Add Event"));
         addEventBtn.getStyleClass().add("button-secondary");
@@ -261,16 +271,16 @@ public class ScenarioEventsSectionBuilder {
         boolean replaceAll = promptEventLoadConfirmation(promptConfirmation, "scenario.events.load.biophysical_title");
 
         List<ClimateEvent> filtered = new ArrayList<>();
-        // Canonical major biophysical events
-        if (startYear <= -1600) filtered.add(new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95, 365));
-        if (startYear <= 79)    filtered.add(new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85, 365));
-        if (startYear <= 536)   filtered.add(new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 0.90, 365));
-        if (startYear <= 1257)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 0.98, 365));
-        if (startYear <= 1347)  filtered.add(new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 45.0, 35.0, 0.0, 0.90, 730));
-        if (startYear <= 1783)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 0.88, 365));
-        if (startYear <= 1815)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, -8.2, 118.0, 10.0, 0.95, 365));
-        if (startYear <= 1883)  filtered.add(new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, -6.1, 105.4, 10.0, 0.90, 365));
-        if (startYear <= 1918)  filtered.add(new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 0.75, 730));
+        // Canonical major biophysical events with exact historical dates
+        if (startYear <= -1600) filtered.add(new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 1, 1, 36.4, 25.4, 10.0, 0.95, 365));
+        if (startYear <= 79)    filtered.add(new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 8, 24, 40.8, 14.4, 8.0, 0.85, 365));
+        if (startYear <= 536)   filtered.add(new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 3, 1, 64.0, -18.0, 10.0, 0.90, 365));
+        if (startYear <= 1257)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, 5, 1, -8.4, 116.4, 12.0, 0.98, 365));
+        if (startYear <= 1347)  filtered.add(new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 10, 1, 45.0, 35.0, 0.0, 0.90, 730));
+        if (startYear <= 1783)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 6, 8, 64.0, -18.2, 8.0, 0.88, 365));
+        if (startYear <= 1815)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, 4, 10, -8.2, 118.0, 10.0, 0.95, 365));
+        if (startYear <= 1883)  filtered.add(new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, 8, 27, -6.1, 105.4, 10.0, 0.90, 365));
+        if (startYear <= 1918)  filtered.add(new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 3, 4, 39.0, -98.0, 0.0, 0.75, 730));
 
         if (replaceAll) {
             eventsList.setAll(filtered);

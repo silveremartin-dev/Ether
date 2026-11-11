@@ -122,7 +122,7 @@ public class ScenarioConfigSyncHandler {
                 if (s.getClimateEvents() != null && !s.getClimateEvents().isEmpty()) {
                     for (org.ether.society.model.ClimateEvent ce : s.getClimateEvents()) {
                         panel.eventsList.add(new ScenarioSetupPanel.ClimateEvent(
-                                ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
+                                ce.getType(), ce.getName(), ce.getYear(), ce.getMonth(), ce.getDay(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
                     }
                 }
             }
@@ -191,7 +191,7 @@ public class ScenarioConfigSyncHandler {
             List<org.ether.society.model.ClimateEvent> sEvents = new ArrayList<>();
             for (ScenarioSetupPanel.ClimateEvent ce : panel.eventsList) {
                 sEvents.add(new org.ether.society.model.ClimateEvent(
-                        ce.getType(), ce.getName(), ce.getYear(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
+                        ce.getType(), ce.getName(), ce.getYear(), ce.getMonth(), ce.getDay(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
             }
             s.setClimateEvents(sEvents);
         }

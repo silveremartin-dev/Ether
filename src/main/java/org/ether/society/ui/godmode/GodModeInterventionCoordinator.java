@@ -66,6 +66,8 @@ public final class GodModeInterventionCoordinator {
             GodModeEventCatalog.EventTypeItem item,
             String rawEventName,
             int spinnerTargetYear,
+            int spinnerTargetMonth,
+            int spinnerTargetDay,
             double lat,
             double lng,
             double mag,
@@ -84,14 +86,16 @@ public final class GodModeInterventionCoordinator {
         int currentMonth = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentMonth() : 0;
         int currentDay = engine != null && engine.getTimeManager() != null ? engine.getTimeManager().getCurrentDay() : 1;
         int targetYear = immediate ? currentYear : spinnerTargetYear;
+        int targetMonth = immediate ? currentMonth : Math.max(0, Math.min(11, spinnerTargetMonth - 1));
+        int targetDay = immediate ? currentDay : Math.max(1, Math.min(31, spinnerTargetDay));
 
         if (!validateGeographyCompatibility(engine, type, name, lat, lng)) {
             return;
         }
 
         String daysUnit = durationDays > 1 ? "jours" : "jour";
-        String details = String.format(Locale.ROOT, "Lat: %.2f°, Lng: %.2f°, Mag: %.1f, R: %.0fkm, Durée: %d %s",
-                lat, lng, mag, radiusKm, durationDays, daysUnit);
+        String details = String.format(Locale.ROOT, "Date: %d-%02d-%02d, Lat: %.2f°, Lng: %.2f°, Mag: %.1f, R: %.0fkm, Durée: %d %s",
+                targetYear, targetMonth + 1, targetDay, lat, lng, mag, radiusKm, durationDays, daysUnit);
 
         timeline.addEntry(targetYear, type, name, details, true, lat, lng, mag, durationDays);
         if (onTimelineUpdated != null) onTimelineUpdated.run();
@@ -100,13 +104,13 @@ public final class GodModeInterventionCoordinator {
             ActiveEvent ae = new ActiveEvent(
                     "GM_" + System.currentTimeMillis(),
                     "⚡ GOD MODE: " + name,
-                    type, lat, lng, targetYear, currentMonth, currentDay,
+                    type, lat, lng, targetYear, targetMonth, targetDay,
                     Math.max(15.0, durationDays * 0.5), mag, durationDays
             );
             engine.getEventSystem().recordSpatialEvent(ae);
         }
 
-        if (immediate || targetYear <= currentYear) {
+        if (immediate || (targetYear == currentYear && targetMonth == currentMonth && targetDay <= currentDay) || targetYear < currentYear) {
             GodModeDisasterExecutor.executePhysicalForcing(engine, type, mag, lat, lng, radiusKm);
             if (engine != null && engine.getWorldBuffer() != null && engine.getCells() != null) {
                 DODDataGenerator.populateWorldBuffer(engine.getCells(), engine.getWorldBuffer());
@@ -115,7 +119,8 @@ public final class GodModeInterventionCoordinator {
                     engine.getHistoryManager().captureWorldSnapshot(engine);
                 }
             }
-            logger.info("God Mode intervention EXECUTED immediately (Year {}): {} - {}", currentYear, name, details);
+            logger.info("God Mode intervention EXECUTED immediately (Date {}-{:02d}-{:02d}): {} - {}",
+                    currentYear, currentMonth + 1, currentDay, name, details);
             if (mapCanvas != null) {
                 mapCanvas.flyTo(lat, lng);
             }
@@ -125,10 +130,31 @@ public final class GodModeInterventionCoordinator {
                     engine.getCurrentScenario().setClimateEvents(new java.util.ArrayList<>());
                 }
                 engine.getCurrentScenario().getClimateEvents().add(new org.ether.society.model.ClimateEvent(
-                        type, name, targetYear, lat, lng, 10.0, mag, durationDays));
+                        type, name, targetYear, targetMonth + 1, targetDay, lat, lng, 10.0, mag, durationDays));
             }
-            logger.info("God Mode intervention SCHEDULED for Year {}: {} - {}", targetYear, name, details);
+            logger.info("God Mode intervention SCHEDULED for Date {}-{:02d}-{:02d}: {} - {}",
+                    targetYear, targetMonth + 1, targetDay, name, details);
         }
+    }
+
+    /**
+     * Backward-compatible scheduleOrExecuteEvent defaulting to month 1 and day 1.
+     */
+    public static void scheduleOrExecuteEvent(
+            boolean immediate,
+            GodModeEventCatalog.EventTypeItem item,
+            String rawEventName,
+            int spinnerTargetYear,
+            double lat,
+            double lng,
+            double mag,
+            double radiusKm,
+            int durationDays,
+            H3SimulationEngine engine,
+            ScenarioTimeline timeline,
+            H3MapCanvas mapCanvas,
+            Runnable onTimelineUpdated) {
+        scheduleOrExecuteEvent(immediate, item, rawEventName, spinnerTargetYear, 1, 1, lat, lng, mag, radiusKm, durationDays, engine, timeline, mapCanvas, onTimelineUpdated);
     }
 
     /**
