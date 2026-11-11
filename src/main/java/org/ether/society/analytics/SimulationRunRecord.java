@@ -118,6 +118,10 @@ public class SimulationRunRecord {
             if (key.contains("Tech")) return avgTech;
             if (key.contains("Asabiyyah") || key.contains("StabilitÃ©")) return stability;
             if (key.contains("Food") || key.contains("Alimentaire")) return food;
+            if (key.equalsIgnoreCase("resourceCapital") || key.equalsIgnoreCase("capital") || key.equalsIgnoreCase("capitalStock")) {
+                if (metricsMap.containsKey("builtCapital")) return metricsMap.get("builtCapital");
+                if (metricsMap.containsKey("gdp")) return metricsMap.get("gdp");
+            }
             return 0.0;
         }
     }

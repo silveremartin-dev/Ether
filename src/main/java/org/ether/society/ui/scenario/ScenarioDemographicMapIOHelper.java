@@ -41,6 +41,7 @@ final class ScenarioDemographicMapIOHelper {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioDemographicMapIOHelper.class);
 
     static final Map<String, String> DENSITY_LABELS = Map.ofEntries(
+            Map.entry("EARTH_EMPIRICAL_RASTER", "🌍 Pre-Generated Earth Empirical Raster (HYDE 3.4 / Paleo)"),
             Map.entry("UNBIASED_NATURAL", "⚖ Natural Bio-Climatic Equilibrium (Unbiased)"),
             Map.entry("COASTAL_MARITIME", "🌊 Coastal & Maritime Focus"),
             Map.entry("RIVER_VALLEYS", "🏞 River Valleys & Alluvial Basins"),
@@ -54,6 +55,7 @@ final class ScenarioDemographicMapIOHelper {
     );
 
     static final Map<String, String> DENSITY_DESCRIPTIONS = Map.ofEntries(
+            Map.entry("EARTH_EMPIRICAL_RASTER", "🌍 Pre-Generated Earth Empirical Raster: Authoritative cartographic raster precomputed from HYDE 3.4, EPICA Dome C, and Paleolithic archaeological hearths."),
             Map.entry("UNBIASED_NATURAL", "⚖ Natural Bio-Climatic Equilibrium: Pure physical model without artificial bias. Population settles strictly according to real environmental suitability (biomes, temperature, waterways, relief)."),
             Map.entry("COASTAL_MARITIME", "🌊 Coastal & Maritime Focus: Encourages human settlement along ocean coastlines, river deltas, and maritime margins."),
             Map.entry("RIVER_VALLEYS", "🏞 River Valleys & Alluvial Basins: High population concentration along major hydrographic river networks and fertile alluvial basins."),
@@ -415,10 +417,19 @@ final class ScenarioDemographicMapIOHelper {
             builder.getCustomInfoSpinner().getValueFactory().setValue(s.getInitialInformationPerCapita());
         }
 
+        boolean isEarth = s.getPlanetPreset() != null
+                && ("earth".equalsIgnoreCase(s.getPlanetPreset().getCanonicalPlanet())
+                || "earth".equalsIgnoreCase(s.getPlanetPreset().elevationMapSource()));
+        if (isEarth && (s.getCustomDensityBase64() == null || s.getCustomDensityBase64().isBlank())) {
+            org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(s);
+        }
+
         if (s.getCustomDensityBase64() != null && !s.getCustomDensityBase64().isBlank()) {
             try {
                 builder.setCustomDensityImage(ImageMapLoader.base64PngToImage(s.getCustomDensityBase64()));
-                if (builder.getDensityMapFileLabel() != null) builder.getDensityMapFileLabel().setText("Embedded Base64");
+                if (builder.getDensityMapFileLabel() != null) {
+                    builder.getDensityMapFileLabel().setText(isEarth ? "earth_" + s.getStartDateYear() + "_density.png" : "Embedded Base64");
+                }
                 if (builder.getRadioImportDemo() != null) builder.getRadioImportDemo().setSelected(true);
             } catch (Exception ex) {
                 logger.warn("Could not decode scenario embedded density map", ex);
@@ -442,7 +453,12 @@ final class ScenarioDemographicMapIOHelper {
         if (builder.getInitialHumanCountSpinner() != null && builder.getInitialHumanCountSpinner().getValue() != null) {
             s.setInitialHumanCount(builder.getInitialHumanCountSpinner().getValue());
         }
-        if (builder.getDensityPatternCombo() != null && builder.getDensityPatternCombo().getValue() != null) {
+        if (builder.getRadioImportDemo() != null && builder.getRadioImportDemo().isSelected()) {
+            boolean isEarth = s.getPlanetPreset() != null && "earth".equalsIgnoreCase(s.getPlanetPreset().getCanonicalPlanet());
+            if (isEarth) {
+                s.setPopulationDensityType("EARTH_EMPIRICAL_RASTER");
+            }
+        } else if (builder.getDensityPatternCombo() != null && builder.getDensityPatternCombo().getValue() != null) {
             s.setPopulationDensityType(builder.getDensityPatternCombo().getValue());
         }
         if (builder.getTechPresetCombo() != null && builder.getTechPresetCombo().getValue() != null) {

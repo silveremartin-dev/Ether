@@ -3,17 +3,7 @@
   "culturalDiffusionRate" : 0.08,
   "culturalMutationRate" : 0.01,
   "customTensorMapsBase64" : [ ],
-  "tensorProceduralModes" : [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-  ],
+  "tensorProceduralModes" : [ false, false, false, false, false, false, false, false, false ],
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
@@ -129,7 +119,7 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "The Great Acceleration & Anthropocene (1950 CE)",
-  "description" : "\uD83D\uDE80 HISTORICAL SCENARIO : The Great Acceleration, Petrochemical Takeoff & Satellite Earth Monitoring (1950-2024 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the post-WWII explosion of human biophysical throughput documented by Steffen et al. (2015), Maddison (2020), and Smil (2017). Characterized by exponential demographic expansion (2.5B to 8.1B), Green Revolution synthetic nitrogen agriculture (Haber-Bosch), petrochemical prime movers, mass global telecommunications, and the Keeling CO2 rise from 310 ppm to 425 ppm.\n\n[KEY OBSERVABLES & GOLD STANDARD DATASETS]\n• 100% empirical instrumental coverage: NOAA Mauna Loa CO2, UN World Population Prospects, ERA5 reanalysis, World Bank GWP, FAO agricultural land balance, USGS mineral statistics.\n• Primary calibration anchor with historiographical observational uncertainty sigma_obs < 1.5%.\n",
+  "description" : "\uD83D\uDE80 HISTORICAL SCENARIO : The Great Acceleration, Petrochemical Takeoff & Satellite Earth Monitoring (1950-2024 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the post-WWII explosion of human biophysical throughput documented by Steffen et al. (2015), Maddison (2020), and Smil (2017). Characterized by exponential demographic expansion (2.5B to 8.1B), Green Revolution synthetic nitrogen agriculture (Haber-Bosch), petrochemical prime movers, mass global telecommunications, and the Keeling CO2 rise from 310 ppm to 425 ppm.\n\n[KEY OBSERVABLES & GOLD STANDARD DATASETS]\nâ€¢ 100% empirical instrumental coverage: NOAA Mauna Loa CO2, UN World Population Prospects, ERA5 reanalysis, World Bank GWP, FAO agricultural land balance, USGS mineral statistics.\nâ€¢ Primary calibration anchor with historiographical observational uncertainty sigma_obs < 1.5%.\n",
   "presetKey" : "great_acceleration_1950",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
@@ -161,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & ERA5",
+    "tempSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 & ERA5",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -206,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & ERA5",
+      "tempSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 & ERA5",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -230,10 +220,10 @@
     "seed" : 12345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
-  "useRealEarthData" : false,
+  "useRealEarthData" : true,
   "planetRadiusKm" : 6371.0,
   "rotationPeriodHours" : 24.0,
   "revolutionPeriodDays" : 365.25,
@@ -245,7 +235,7 @@
   "initialEnergyPerCapita" : 7500.0,
   "initialFoodReserveMonths" : 6.0,
   "initialInformationPerCapita" : 250000.0,
-  "populationDensityType" : "URBAN_CLUSTERS",
+  "populationDensityType" : "EARTH_EMPIRICAL_RASTER",
   "cellSizeKm2" : 100.0,
   "targetCohortSize" : 10000,
   "temporalResolutionDays" : 30.0,
@@ -259,5 +249,5 @@
   "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "The Great Acceleration & Anthropocene (1950 CE)",
-  "displayDescription" : "\uD83D\uDE80 HISTORICAL SCENARIO : The Great Acceleration, Petrochemical Takeoff & Satellite Earth Monitoring (1950-2024 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the post-WWII explosion of human biophysical throughput documented by Steffen et al. (2015), Maddison (2020), and Smil (2017). Characterized by exponential demographic expansion (2.5B to 8.1B), Green Revolution synthetic nitrogen agriculture (Haber-Bosch), petrochemical prime movers, mass global telecommunications, and the Keeling CO2 rise from 310 ppm to 425 ppm.\n\n[KEY OBSERVABLES & GOLD STANDARD DATASETS]\n• 100% empirical instrumental coverage: NOAA Mauna Loa CO2, UN World Population Prospects, ERA5 reanalysis, World Bank GWP, FAO agricultural land balance, USGS mineral statistics.\n• Primary calibration anchor with historiographical observational uncertainty sigma_obs < 1.5%.\n"
+  "displayDescription" : "\uD83D\uDE80 HISTORICAL SCENARIO : The Great Acceleration, Petrochemical Takeoff & Satellite Earth Monitoring (1950-2024 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the post-WWII explosion of human biophysical throughput documented by Steffen et al. (2015), Maddison (2020), and Smil (2017). Characterized by exponential demographic expansion (2.5B to 8.1B), Green Revolution synthetic nitrogen agriculture (Haber-Bosch), petrochemical prime movers, mass global telecommunications, and the Keeling CO2 rise from 310 ppm to 425 ppm.\n\n[KEY OBSERVABLES & GOLD STANDARD DATASETS]\nâ€¢ 100% empirical instrumental coverage: NOAA Mauna Loa CO2, UN World Population Prospects, ERA5 reanalysis, World Bank GWP, FAO agricultural land balance, USGS mineral statistics.\nâ€¢ Primary calibration anchor with historiographical observational uncertainty sigma_obs < 1.5%.\n"
 }

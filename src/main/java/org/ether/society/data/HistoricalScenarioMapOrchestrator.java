@@ -181,9 +181,6 @@ final class HistoricalScenarioMapOrchestrator {
      * @return coastline-masked density {@link BufferedImage}
      */
     static BufferedImage rasterizeDensityMapForYear(String type, Scenario scenario, long targetYear) {
-        if (scenario != null && scenario.isUseRealEarthData() && (targetYear < -10000 || targetYear > 2024)) {
-            throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical HYDE 3.4 dataset unavailable for year " + targetYear);
-        }
         if (targetYear < -10000) {
             return applyAltimetryCoastlineMask(PaleolithicDensityGenerator.generatePrehistoricSyntheticDensityMap(targetYear, type));
         }
@@ -191,6 +188,9 @@ final class HistoricalScenarioMapOrchestrator {
         if (realHydeImg != null) {
             logger.info("Ingested authentic HYDE 3.4 5-arc-minute Esri ASCII raster grid for year {}", targetYear);
             return applyAltimetryCoastlineMask(realHydeImg);
+        }
+        if (scenario != null && scenario.isUseRealEarthData() && targetYear >= -10000 && targetYear <= 2024) {
+            throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical HYDE 3.4 dataset missing for year " + targetYear);
         }
         return applyAltimetryCoastlineMask(PaleolithicDensityGenerator.generatePrehistoricSyntheticDensityMap(targetYear, type));
     }

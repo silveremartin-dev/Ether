@@ -119,7 +119,7 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Benchmark Standard Planetary Scenario",
-  "description" : "Ã°Å¸Å’Â SCÃƒâ€°NARIO OFFICIEL DE BENCHMARK PLANÃƒâ€°TAIRE ETHER\n\n[CONTEXTE DE VALIDATION SCIENTIFIQUE]\nScÃƒÂ©nario ÃƒÂ©talon servant de rÃƒÂ©fÃƒÂ©rence pour les bancs de tests empiriques multi-axes d'Ether :\nÃ¢â‚¬Â¢ Axe 1 : Ãƒâ€°chelonnage spatial multi-rÃƒÂ©solution (H3 Res 2 ÃƒÂ  Res 7, plein ÃƒÂ©cran global ou fenÃƒÂªtrÃƒÂ© rÃƒÂ©gional).\nÃ¢â‚¬Â¢ Axe 2 : RÃƒÂ©solution temporelle multi-frÃƒÂ©quence (Journalier 1j, Hebdomadaire 7j, Mensuel 30j, Annuel 365j).\nÃ¢â‚¬Â¢ Axe 3 : Architectures d'exÃƒÂ©cution matÃƒÂ©rielles (Java JIT monocÃ…â€œur, Java 21 SIMD multicÃ…â€œur, Rust natif FFI).\nÃ¢â‚¬Â¢ Axe 4 : Couplage des thÃƒÂ©ories physiques (Tier 1 lois de conservation seules vs Tier 1 + Tier 2 cliodynamique).\nÃ¢â‚¬Â¢ Axe 5 : Ãƒâ€°poques historiques et volume de population (PalÃƒÂ©olithique ÃƒÂ  AnthropocÃƒÂ¨ne moderne).\n\n[CONDITIONS INITIALES (TÃ¢â€šâ‚¬)]\nÃ¢â‚¬Â¢ Population Initiale : 100 000 habitants rÃƒÂ©partis selon la gÃƒÂ©ographie et la biomasse terrestre.\nÃ¢â‚¬Â¢ RÃƒÂ©solution spatiale H3 par dÃƒÂ©faut : 3 (modifiable de Res 2 ÃƒÂ  Res 7).\nÃ¢â‚¬Â¢ Pas temporel ÃŽâ€t par dÃƒÂ©faut : 30 jours (1 mois).\nÃ¢â‚¬Â¢ DÃƒÂ©terminisme strict IEEE-754 activÃƒÂ© par dÃƒÂ©faut (strictDeterminism = true).\n",
+  "description" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â SCÃƒÆ’Ã¢â‚¬Â°NARIO OFFICIEL DE BENCHMARK PLANÃƒÆ’Ã¢â‚¬Â°TAIRE ETHER\n\n[CONTEXTE DE VALIDATION SCIENTIFIQUE]\nScÃƒÆ’Ã‚Â©nario ÃƒÆ’Ã‚Â©talon servant de rÃƒÆ’Ã‚Â©fÃƒÆ’Ã‚Â©rence pour les bancs de tests empiriques multi-axes d'Ether :\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 1 : ÃƒÆ’Ã¢â‚¬Â°chelonnage spatial multi-rÃƒÆ’Ã‚Â©solution (H3 Res 2 ÃƒÆ’Ã‚Â  Res 7, plein ÃƒÆ’Ã‚Â©cran global ou fenÃƒÆ’Ã‚ÂªtrÃƒÆ’Ã‚Â© rÃƒÆ’Ã‚Â©gional).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 2 : RÃƒÆ’Ã‚Â©solution temporelle multi-frÃƒÆ’Ã‚Â©quence (Journalier 1j, Hebdomadaire 7j, Mensuel 30j, Annuel 365j).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 3 : Architectures d'exÃƒÆ’Ã‚Â©cution matÃƒÆ’Ã‚Â©rielles (Java JIT monocÃƒâ€¦Ã¢â‚¬Å“ur, Java 21 SIMD multicÃƒâ€¦Ã¢â‚¬Å“ur, Rust natif FFI).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 4 : Couplage des thÃƒÆ’Ã‚Â©ories physiques (Tier 1 lois de conservation seules vs Tier 1 + Tier 2 cliodynamique).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 5 : ÃƒÆ’Ã¢â‚¬Â°poques historiques et volume de population (PalÃƒÆ’Ã‚Â©olithique ÃƒÆ’Ã‚Â  AnthropocÃƒÆ’Ã‚Â¨ne moderne).\n\n[CONDITIONS INITIALES (TÃƒÂ¢Ã¢â‚¬Å¡Ã¢â€šÂ¬)]\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Population Initiale : 100 000 habitants rÃƒÆ’Ã‚Â©partis selon la gÃƒÆ’Ã‚Â©ographie et la biomasse terrestre.\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ RÃƒÆ’Ã‚Â©solution spatiale H3 par dÃƒÆ’Ã‚Â©faut : 3 (modifiable de Res 2 ÃƒÆ’Ã‚Â  Res 7).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Pas temporel ÃƒÅ½Ã¢â‚¬Ât par dÃƒÆ’Ã‚Â©faut : 30 jours (1 mois).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ DÃƒÆ’Ã‚Â©terminisme strict IEEE-754 activÃƒÆ’Ã‚Â© par dÃƒÆ’Ã‚Â©faut (strictDeterminism = true).\n",
   "presetKey" : "benchmark_standard",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
@@ -151,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Ã°Å¸Å’Â Terre Ã¢â‚¬â€ WorldClim v2.1 Bio1 & ERA5 (Composite)",
+    "tempSource" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 Bio1 & ERA5 (Composite)",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "Ã°Å¸Å’Â Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "Ã°Å¸Å’Â Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -178,10 +178,10 @@
     "seed" : 0,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
-  "useRealEarthData" : false,
+  "useRealEarthData" : true,
   "planetRadiusKm" : 6371.0,
   "rotationPeriodHours" : 24.0,
   "revolutionPeriodDays" : 365.25,
@@ -193,7 +193,7 @@
   "initialEnergyPerCapita" : 20.0,
   "initialFoodReserveMonths" : 6.0,
   "initialInformationPerCapita" : 5.0,
-  "populationDensityType" : "GLOBAL_EXPONENTIAL",
+  "populationDensityType" : "EARTH_EMPIRICAL_RASTER",
   "cellSizeKm2" : 0.0,
   "targetCohortSize" : 150,
   "temporalResolutionDays" : 30.0,
@@ -207,5 +207,5 @@
   "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Benchmark Standard Planetary Scenario",
-  "displayDescription" : "Ã°Å¸Å’Â SCÃƒâ€°NARIO OFFICIEL DE BENCHMARK PLANÃƒâ€°TAIRE ETHER\n\n[CONTEXTE DE VALIDATION SCIENTIFIQUE]\nScÃƒÂ©nario ÃƒÂ©talon servant de rÃƒÂ©fÃƒÂ©rence pour les bancs de tests empiriques multi-axes d'Ether :\nÃ¢â‚¬Â¢ Axe 1 : Ãƒâ€°chelonnage spatial multi-rÃƒÂ©solution (H3 Res 2 ÃƒÂ  Res 7, plein ÃƒÂ©cran global ou fenÃƒÂªtrÃƒÂ© rÃƒÂ©gional).\nÃ¢â‚¬Â¢ Axe 2 : RÃƒÂ©solution temporelle multi-frÃƒÂ©quence (Journalier 1j, Hebdomadaire 7j, Mensuel 30j, Annuel 365j).\nÃ¢â‚¬Â¢ Axe 3 : Architectures d'exÃƒÂ©cution matÃƒÂ©rielles (Java JIT monocÃ…â€œur, Java 21 SIMD multicÃ…â€œur, Rust natif FFI).\nÃ¢â‚¬Â¢ Axe 4 : Couplage des thÃƒÂ©ories physiques (Tier 1 lois de conservation seules vs Tier 1 + Tier 2 cliodynamique).\nÃ¢â‚¬Â¢ Axe 5 : Ãƒâ€°poques historiques et volume de population (PalÃƒÂ©olithique ÃƒÂ  AnthropocÃƒÂ¨ne moderne).\n\n[CONDITIONS INITIALES (TÃ¢â€šâ‚¬)]\nÃ¢â‚¬Â¢ Population Initiale : 100 000 habitants rÃƒÂ©partis selon la gÃƒÂ©ographie et la biomasse terrestre.\nÃ¢â‚¬Â¢ RÃƒÂ©solution spatiale H3 par dÃƒÂ©faut : 3 (modifiable de Res 2 ÃƒÂ  Res 7).\nÃ¢â‚¬Â¢ Pas temporel ÃŽâ€t par dÃƒÂ©faut : 30 jours (1 mois).\nÃ¢â‚¬Â¢ DÃƒÂ©terminisme strict IEEE-754 activÃƒÂ© par dÃƒÂ©faut (strictDeterminism = true).\n"
+  "displayDescription" : "ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â SCÃƒÆ’Ã¢â‚¬Â°NARIO OFFICIEL DE BENCHMARK PLANÃƒÆ’Ã¢â‚¬Â°TAIRE ETHER\n\n[CONTEXTE DE VALIDATION SCIENTIFIQUE]\nScÃƒÆ’Ã‚Â©nario ÃƒÆ’Ã‚Â©talon servant de rÃƒÆ’Ã‚Â©fÃƒÆ’Ã‚Â©rence pour les bancs de tests empiriques multi-axes d'Ether :\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 1 : ÃƒÆ’Ã¢â‚¬Â°chelonnage spatial multi-rÃƒÆ’Ã‚Â©solution (H3 Res 2 ÃƒÆ’Ã‚Â  Res 7, plein ÃƒÆ’Ã‚Â©cran global ou fenÃƒÆ’Ã‚ÂªtrÃƒÆ’Ã‚Â© rÃƒÆ’Ã‚Â©gional).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 2 : RÃƒÆ’Ã‚Â©solution temporelle multi-frÃƒÆ’Ã‚Â©quence (Journalier 1j, Hebdomadaire 7j, Mensuel 30j, Annuel 365j).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 3 : Architectures d'exÃƒÆ’Ã‚Â©cution matÃƒÆ’Ã‚Â©rielles (Java JIT monocÃƒâ€¦Ã¢â‚¬Å“ur, Java 21 SIMD multicÃƒâ€¦Ã¢â‚¬Å“ur, Rust natif FFI).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 4 : Couplage des thÃƒÆ’Ã‚Â©ories physiques (Tier 1 lois de conservation seules vs Tier 1 + Tier 2 cliodynamique).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Axe 5 : ÃƒÆ’Ã¢â‚¬Â°poques historiques et volume de population (PalÃƒÆ’Ã‚Â©olithique ÃƒÆ’Ã‚Â  AnthropocÃƒÆ’Ã‚Â¨ne moderne).\n\n[CONDITIONS INITIALES (TÃƒÂ¢Ã¢â‚¬Å¡Ã¢â€šÂ¬)]\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Population Initiale : 100 000 habitants rÃƒÆ’Ã‚Â©partis selon la gÃƒÆ’Ã‚Â©ographie et la biomasse terrestre.\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ RÃƒÆ’Ã‚Â©solution spatiale H3 par dÃƒÆ’Ã‚Â©faut : 3 (modifiable de Res 2 ÃƒÆ’Ã‚Â  Res 7).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Pas temporel ÃƒÅ½Ã¢â‚¬Ât par dÃƒÆ’Ã‚Â©faut : 30 jours (1 mois).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ DÃƒÆ’Ã‚Â©terminisme strict IEEE-754 activÃƒÆ’Ã‚Â© par dÃƒÆ’Ã‚Â©faut (strictDeterminism = true).\n"
 }

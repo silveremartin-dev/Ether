@@ -59,9 +59,7 @@ public class ScenarioConfigSyncHandler {
             }
 
             if (isEarth && s.getCustomDensityBase64() == null) {
-                java.util.concurrent.CompletableFuture.runAsync(() -> {
-                    org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(s);
-                });
+                org.ether.society.data.HistoricalMapGenerator.populateScenarioHistoricalMaps(s);
             }
 
             if (s.getEcologyPreset() != null && panel.ecologyPresetCombo != null) {

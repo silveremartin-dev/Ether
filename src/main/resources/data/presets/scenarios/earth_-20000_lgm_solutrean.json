@@ -3,17 +3,7 @@
   "culturalDiffusionRate" : 0.05,
   "culturalMutationRate" : 0.01,
   "customTensorMapsBase64" : [ ],
-  "tensorProceduralModes" : [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-  ],
+  "tensorProceduralModes" : [ false, false, false, false, false, false, false, false, false ],
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
@@ -129,7 +119,7 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Last Glacial Maximum & Solutrean (-20,000 BP)",
-  "description" : "PALEOLITHIC SCENARIO: Glacial Climax & Solutrean Refugia (-20,000 BP)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the climax of the Last Glacial Maximum (LGM) with global sea levels depressed by 120 meters (exposing Doggerland, Sundaland, Sahul, and Beringia), massive continental ice sheets (Laurentide, Fennoscandian), and specialized Solutrean lithic technology.\n\n[KEY SCENARIO OBSERVABLES]\n  Human population refuge concentration in thermal pockets (Iberian peninsula, Franco-Cantabrian corridor, Balkans).\n  Technological adaptation to extreme periglacial cold (tailored clothing with eyed needles, permafrost food caches).\n  Post-glacial demographic expansion following BÃ¸lling-AllerÃ¸d warming.",
+  "description" : "PALEOLITHIC SCENARIO: Glacial Climax & Solutrean Refugia (-20,000 BP)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the climax of the Last Glacial Maximum (LGM) with global sea levels depressed by 120 meters (exposing Doggerland, Sundaland, Sahul, and Beringia), massive continental ice sheets (Laurentide, Fennoscandian), and specialized Solutrean lithic technology.\n\n[KEY SCENARIO OBSERVABLES]\n  Human population refuge concentration in thermal pockets (Iberian peninsula, Franco-Cantabrian corridor, Balkans).\n  Technological adaptation to extreme periglacial cold (tailored clothing with eyed needles, permafrost food caches).\n  Post-glacial demographic expansion following BÃƒÂ¸lling-AllerÃƒÂ¸d warming.",
   "presetKey" : "lgm_solutrean",
   "referenceTrajectoryModel" : "PALEO_SOURCES",
   "planetPreset" : {
@@ -161,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre (-20000 BP) â€” Climat Glaciaire LGM & Inlandsis",
+    "tempSource" : "\uD83C\uDF0D Terre (-20000 BP) Ã¢â‚¬â€ Climat Glaciaire LGM & Inlandsis",
     "tempSeed" : 12449,
     "precipUseImport" : true,
-    "precipSource" : "Terre (-20000 BP) â€” AriditÃ© Glaciaire & Steppe Ã  Mammouths",
+    "precipSource" : "Terre (-20000 BP) Ã¢â‚¬â€ AriditÃƒÂ© Glaciaire & Steppe ÃƒÂ  Mammouths",
     "precipSeed" : 13349,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-20000 BP) â€” Forte SaisonnalitÃ© Glaciaire",
+    "seasonSource" : "\uD83C\uDF0D Terre (-20000 BP) Ã¢â‚¬â€ Forte SaisonnalitÃƒÂ© Glaciaire",
     "seasonSeed" : 14349,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : -20000,
-    "presetDescription" : "❄ EARTH (-20,000 BP / Last Glacial Maximum Peak): Global temperature anomaly -5°C to -6°C, ice sheets up to 3 km thick over North America and Fennoscandia, sea level at -125m, vast arid mammoth steppe-tundras."
+    "presetDescription" : "â„ EARTH (-20,000 BP / Last Glacial Maximum Peak): Global temperature anomaly -5Â°C to -6Â°C, ice sheets up to 3 km thick over North America and Fennoscandia, sea level at -125m, vast arid mammoth steppe-tundras."
   },
   "ecologyPreset" : {
     "name" : "Terre (-20 000 / Maximum Glaciaire)",
@@ -206,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre (-20000 BP) â€” Climat Glaciaire LGM & Inlandsis",
+      "tempSource" : "\uD83C\uDF0D Terre (-20000 BP) Ã¢â‚¬â€ Climat Glaciaire LGM & Inlandsis",
       "tempSeed" : 12449,
       "precipUseImport" : true,
-      "precipSource" : "Terre (-20000 BP) â€” AriditÃ© Glaciaire & Steppe Ã  Mammouths",
+      "precipSource" : "Terre (-20000 BP) Ã¢â‚¬â€ AriditÃƒÂ© Glaciaire & Steppe ÃƒÂ  Mammouths",
       "precipSeed" : 13349,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre (-20000 BP) â€” Forte SaisonnalitÃ© Glaciaire",
+      "seasonSource" : "\uD83C\uDF0D Terre (-20000 BP) Ã¢â‚¬â€ Forte SaisonnalitÃƒÂ© Glaciaire",
       "seasonSeed" : 14349,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : -20000,
-      "presetDescription" : "❄ EARTH (-20,000 BP / Last Glacial Maximum Peak): Global temperature anomaly -5°C to -6°C, ice sheets up to 3 km thick over North America and Fennoscandia, sea level at -125m, vast arid mammoth steppe-tundras."
+      "presetDescription" : "â„ EARTH (-20,000 BP / Last Glacial Maximum Peak): Global temperature anomaly -5Â°C to -6Â°C, ice sheets up to 3 km thick over North America and Fennoscandia, sea level at -125m, vast arid mammoth steppe-tundras."
     },
     "terrestrialBiomassGtC" : 320.0,
     "soilOrganicCarbonGtC" : 1300.0,
@@ -230,10 +220,10 @@
     "seed" : 12349,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -20000,
-    "presetDescription" : "❄ EARTH (-20,000 BP / Last Glacial Maximum Peak): Global temperature anomaly -5°C to -6°C, ice sheets up to 3 km thick over North America and Fennoscandia, sea level at -125m, vast arid mammoth steppe-tundras."
+    "presetDescription" : "â„ EARTH (-20,000 BP / Last Glacial Maximum Peak): Global temperature anomaly -5Â°C to -6Â°C, ice sheets up to 3 km thick over North America and Fennoscandia, sea level at -125m, vast arid mammoth steppe-tundras."
   },
   "ecologyPresetName" : "Terre (Terran)",
-  "useRealEarthData" : false,
+  "useRealEarthData" : true,
   "planetRadiusKm" : 6371.0,
   "rotationPeriodHours" : 24.0,
   "revolutionPeriodDays" : 365.25,
@@ -245,7 +235,7 @@
   "initialEnergyPerCapita" : 7.0,
   "initialFoodReserveMonths" : 2.5,
   "initialInformationPerCapita" : 5.0,
-  "populationDensityType" : "LGM_REFUGIA",
+  "populationDensityType" : "EARTH_EMPIRICAL_RASTER",
   "cellSizeKm2" : 100.0,
   "targetCohortSize" : 50,
   "temporalResolutionDays" : 30.0,
@@ -259,5 +249,5 @@
   "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Last Glacial Maximum & Solutrean (-20,000 BP)",
-  "displayDescription" : "PALEOLITHIC SCENARIO: Glacial Climax & Solutrean Refugia (-20,000 BP)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the climax of the Last Glacial Maximum (LGM) with global sea levels depressed by 120 meters (exposing Doggerland, Sundaland, Sahul, and Beringia), massive continental ice sheets (Laurentide, Fennoscandian), and specialized Solutrean lithic technology.\n\n[KEY SCENARIO OBSERVABLES]\n  Human population refuge concentration in thermal pockets (Iberian peninsula, Franco-Cantabrian corridor, Balkans).\n  Technological adaptation to extreme periglacial cold (tailored clothing with eyed needles, permafrost food caches).\n  Post-glacial demographic expansion following BÃ¸lling-AllerÃ¸d warming."
+  "displayDescription" : "PALEOLITHIC SCENARIO: Glacial Climax & Solutrean Refugia (-20,000 BP)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModels the climax of the Last Glacial Maximum (LGM) with global sea levels depressed by 120 meters (exposing Doggerland, Sundaland, Sahul, and Beringia), massive continental ice sheets (Laurentide, Fennoscandian), and specialized Solutrean lithic technology.\n\n[KEY SCENARIO OBSERVABLES]\n  Human population refuge concentration in thermal pockets (Iberian peninsula, Franco-Cantabrian corridor, Balkans).\n  Technological adaptation to extreme periglacial cold (tailored clothing with eyed needles, permafrost food caches).\n  Post-glacial demographic expansion following BÃƒÂ¸lling-AllerÃƒÂ¸d warming."
 }

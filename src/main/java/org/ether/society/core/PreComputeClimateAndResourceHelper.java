@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Package-private helper computing initial paleoclimate forcings, Miami Net Primary Production (NPP),
@@ -45,8 +46,12 @@ final class PreComputeClimateAndResourceHelper {
         long year = scenario.getStartDateYear();
 
         boolean isGlacialMax = year <= -12000;
-        boolean isYoungerDryas = (year >= -10900 && year <= -9700) || "YOUNGER_DRYAS".equals(scenario.getPopulationDensityType());
-        boolean isGreenSahara = (year >= -8000 && year <= -5000) || "GREEN_SAHARA".equals(scenario.getPopulationDensityType());
+        String pKey = scenario.getPresetKey() != null ? scenario.getPresetKey().toLowerCase(Locale.ROOT) : "";
+        String sName = scenario.getName() != null ? scenario.getName().toLowerCase(Locale.ROOT) : "";
+        boolean isYoungerDryas = (year >= -10900 && year <= -9700)
+                || pKey.contains("younger_dryas") || sName.contains("younger dryas") || sName.contains("dryas");
+        boolean isGreenSahara = (year >= -8000 && year <= -5000)
+                || pKey.contains("green_sahara") || sName.contains("green sahara") || sName.contains("sahara vert");
 
         boolean hasExistingClimate = cells.stream().anyMatch(c -> c != null && c.getTemperature() != null && c.getRainfall() != null);
         if (hasExistingClimate) {

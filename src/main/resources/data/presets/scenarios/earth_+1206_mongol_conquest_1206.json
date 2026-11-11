@@ -3,17 +3,7 @@
   "culturalDiffusionRate" : 0.05,
   "culturalMutationRate" : 0.01,
   "customTensorMapsBase64" : [ ],
-  "tensorProceduralModes" : [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-  ],
+  "tensorProceduralModes" : [ false, false, false, false, false, false, false, false, false ],
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
@@ -129,7 +119,7 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "The Mongol Empire & Eurasian Rupture (1206 CE)",
-  "description" : "\uD83C\uDFF9 HISTORICAL SCENARIO : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃ©lise le plus grand empire territorial contigu de l'histoire humaine. Choc cinÃ©tique et dÃ©mographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sÃ©curisÃ©e de la Route de la Soie (Pax Mongolica) qui servira de vecteur Ã  la Peste Noire.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Projection militaire nomade ultra-rapide (cavalerie lÃ©gÃ¨re, rÃ©seau de relais de poste Yam).\nâ€¢ Choc de mortalitÃ© urbaine et dÃ©sertification de certaines oasis irriguÃ©es de Perse/Transoxiane.\nâ€¢ IntÃ©gration Ã©conomique trans-eurasienne de PÃ©kin Ã  Tabriz et la mer Noire.\n",
+  "description" : "\uD83C\uDFF9 HISTORICAL SCENARIO : ConquÃƒÂªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃƒÂ©lise le plus grand empire territorial contigu de l'histoire humaine. Choc cinÃƒÂ©tique et dÃƒÂ©mographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sÃƒÂ©curisÃƒÂ©e de la Route de la Soie (Pax Mongolica) qui servira de vecteur ÃƒÂ  la Peste Noire.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ Projection militaire nomade ultra-rapide (cavalerie lÃƒÂ©gÃƒÂ¨re, rÃƒÂ©seau de relais de poste Yam).\nÃ¢â‚¬Â¢ Choc de mortalitÃƒÂ© urbaine et dÃƒÂ©sertification de certaines oasis irriguÃƒÂ©es de Perse/Transoxiane.\nÃ¢â‚¬Â¢ IntÃƒÂ©gration ÃƒÂ©conomique trans-eurasienne de PÃƒÂ©kin ÃƒÂ  Tabriz et la mer Noire.\n",
   "presetKey" : "mongol_conquest_1206",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
@@ -161,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+    "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -206,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+      "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -230,10 +220,10 @@
     "seed" : 12345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
-  "useRealEarthData" : false,
+  "useRealEarthData" : true,
   "planetRadiusKm" : 6371.0,
   "rotationPeriodHours" : 24.0,
   "revolutionPeriodDays" : 365.25,
@@ -245,7 +235,7 @@
   "initialEnergyPerCapita" : 250.0,
   "initialFoodReserveMonths" : 5.0,
   "initialInformationPerCapita" : 600.0,
-  "populationDensityType" : "EURASIA_STEPPE",
+  "populationDensityType" : "EARTH_EMPIRICAL_RASTER",
   "cellSizeKm2" : 100.0,
   "targetCohortSize" : 1500,
   "temporalResolutionDays" : 30.0,
@@ -259,5 +249,5 @@
   "proceduralLeadersEnabled" : false,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "The Mongol Empire & Eurasian Rupture (1206 CE)",
-  "displayDescription" : "\uD83C\uDFF9 HISTORICAL SCENARIO : ConquÃªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃ©lise le plus grand empire territorial contigu de l'histoire humaine. Choc cinÃ©tique et dÃ©mographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sÃ©curisÃ©e de la Route de la Soie (Pax Mongolica) qui servira de vecteur Ã  la Peste Noire.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ Projection militaire nomade ultra-rapide (cavalerie lÃ©gÃ¨re, rÃ©seau de relais de poste Yam).\nâ€¢ Choc de mortalitÃ© urbaine et dÃ©sertification de certaines oasis irriguÃ©es de Perse/Transoxiane.\nâ€¢ IntÃ©gration Ã©conomique trans-eurasienne de PÃ©kin Ã  Tabriz et la mer Noire.\n"
+  "displayDescription" : "\uD83C\uDFF9 HISTORICAL SCENARIO : ConquÃƒÂªte Mongole de Gengis Khan & Pax Mongolica (1206 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃƒÂ©lise le plus grand empire territorial contigu de l'histoire humaine. Choc cinÃƒÂ©tique et dÃƒÂ©mographique majeur en Asie centrale, Perse et Chine, suivi de l'unification sÃƒÂ©curisÃƒÂ©e de la Route de la Soie (Pax Mongolica) qui servira de vecteur ÃƒÂ  la Peste Noire.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ Projection militaire nomade ultra-rapide (cavalerie lÃƒÂ©gÃƒÂ¨re, rÃƒÂ©seau de relais de poste Yam).\nÃ¢â‚¬Â¢ Choc de mortalitÃƒÂ© urbaine et dÃƒÂ©sertification de certaines oasis irriguÃƒÂ©es de Perse/Transoxiane.\nÃ¢â‚¬Â¢ IntÃƒÂ©gration ÃƒÂ©conomique trans-eurasienne de PÃƒÂ©kin ÃƒÂ  Tabriz et la mer Noire.\n"
 }

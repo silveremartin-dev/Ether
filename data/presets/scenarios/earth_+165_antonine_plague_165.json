@@ -3,17 +3,7 @@
   "culturalDiffusionRate" : 0.05,
   "culturalMutationRate" : 0.01,
   "customTensorMapsBase64" : [ ],
-  "tensorProceduralModes" : [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false
-  ],
+  "tensorProceduralModes" : [ false, false, false, false, false, false, false, false, false ],
   "tensorSeeds" : { },
   "tensorProceduralParameters" : { },
   "customTensorNames" : { },
@@ -129,7 +119,7 @@
   "maxLng" : 45.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Antonine Plague & Imperial Crisis under Marcus Aurelius (165-180 CE)",
-  "description" : "\uD83C\uDFDBï¸ HISTORICAL SCENARIO COURT : La Peste Antonine sous Marc AurÃ¨le (165-180 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nVague Ã©pidÃ©mique majeure (variole) frappant l'Empire romain Ã  son apogÃ©e dÃ©mographique (72-75 millions d'habitants).\nImportÃ©e par les lÃ©gions revenant de CtÃ©siphon, l'Ã©pidÃ©mie anÃ©antit 15% Ã  20% de la population,\nprovoquant une pÃ©nurie brutale de main-d'Å“uvre agricole, l'effondrement des revenus fiscaux et les guerres marcomanes.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ MortalitÃ© Ã©pidÃ©mique rapide et chute de 72M Ã  ~60M sur 15 ans.\nâ€¢ Hausse des salaires rÃ©els agricoles et contraction fiscale de l'Ã‰tat romain.\nâ€¢ Hausse du stress politique impÃ©rial (Turchin PSI).\n",
+  "description" : "\uD83C\uDFDBÃ¯Â¸Â HISTORICAL SCENARIO COURT : La Peste Antonine sous Marc AurÃƒÂ¨le (165-180 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nVague ÃƒÂ©pidÃƒÂ©mique majeure (variole) frappant l'Empire romain ÃƒÂ  son apogÃƒÂ©e dÃƒÂ©mographique (72-75 millions d'habitants).\nImportÃƒÂ©e par les lÃƒÂ©gions revenant de CtÃƒÂ©siphon, l'ÃƒÂ©pidÃƒÂ©mie anÃƒÂ©antit 15% ÃƒÂ  20% de la population,\nprovoquant une pÃƒÂ©nurie brutale de main-d'Ã…â€œuvre agricole, l'effondrement des revenus fiscaux et les guerres marcomanes.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ MortalitÃƒÂ© ÃƒÂ©pidÃƒÂ©mique rapide et chute de 72M ÃƒÂ  ~60M sur 15 ans.\nÃ¢â‚¬Â¢ Hausse des salaires rÃƒÂ©els agricoles et contraction fiscale de l'Ãƒâ€°tat romain.\nÃ¢â‚¬Â¢ Hausse du stress politique impÃƒÂ©rial (Turchin PSI).\n",
   "presetKey" : "antonine_plague_165",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
@@ -161,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+    "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -206,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1900 BP) â€” Ã‚ge du Bronze Moyen",
+      "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre â€” WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -230,7 +220,7 @@
     "seed" : 12345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : true,
@@ -245,7 +235,7 @@
   "initialEnergyPerCapita" : 140.0,
   "initialFoodReserveMonths" : 5.0,
   "initialInformationPerCapita" : 450.0,
-  "populationDensityType" : "ROMAN_EMPIRE",
+  "populationDensityType" : "EARTH_EMPIRICAL_RASTER",
   "cellSizeKm2" : 100.0,
   "targetCohortSize" : 1000,
   "temporalResolutionDays" : 30.0,
@@ -259,5 +249,5 @@
   "proceduralLeadersEnabled" : true,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Antonine Plague & Imperial Crisis under Marcus Aurelius (165-180 CE)",
-  "displayDescription" : "\uD83C\uDFDBï¸ HISTORICAL SCENARIO COURT : La Peste Antonine sous Marc AurÃ¨le (165-180 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nVague Ã©pidÃ©mique majeure (variole) frappant l'Empire romain Ã  son apogÃ©e dÃ©mographique (72-75 millions d'habitants).\nImportÃ©e par les lÃ©gions revenant de CtÃ©siphon, l'Ã©pidÃ©mie anÃ©antit 15% Ã  20% de la population,\nprovoquant une pÃ©nurie brutale de main-d'Å“uvre agricole, l'effondrement des revenus fiscaux et les guerres marcomanes.\n\n[OBSERVABLES CLÃ‰S DU SCÃ‰NARIO]\nâ€¢ MortalitÃ© Ã©pidÃ©mique rapide et chute de 72M Ã  ~60M sur 15 ans.\nâ€¢ Hausse des salaires rÃ©els agricoles et contraction fiscale de l'Ã‰tat romain.\nâ€¢ Hausse du stress politique impÃ©rial (Turchin PSI).\n"
+  "displayDescription" : "\uD83C\uDFDBÃ¯Â¸Â HISTORICAL SCENARIO COURT : La Peste Antonine sous Marc AurÃƒÂ¨le (165-180 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nVague ÃƒÂ©pidÃƒÂ©mique majeure (variole) frappant l'Empire romain ÃƒÂ  son apogÃƒÂ©e dÃƒÂ©mographique (72-75 millions d'habitants).\nImportÃƒÂ©e par les lÃƒÂ©gions revenant de CtÃƒÂ©siphon, l'ÃƒÂ©pidÃƒÂ©mie anÃƒÂ©antit 15% ÃƒÂ  20% de la population,\nprovoquant une pÃƒÂ©nurie brutale de main-d'Ã…â€œuvre agricole, l'effondrement des revenus fiscaux et les guerres marcomanes.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ MortalitÃƒÂ© ÃƒÂ©pidÃƒÂ©mique rapide et chute de 72M ÃƒÂ  ~60M sur 15 ans.\nÃ¢â‚¬Â¢ Hausse des salaires rÃƒÂ©els agricoles et contraction fiscale de l'Ãƒâ€°tat romain.\nÃ¢â‚¬Â¢ Hausse du stress politique impÃƒÂ©rial (Turchin PSI).\n"
 }

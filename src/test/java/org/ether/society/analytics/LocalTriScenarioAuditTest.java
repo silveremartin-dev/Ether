@@ -263,7 +263,10 @@ public class LocalTriScenarioAuditTest {
             var snap = record.getTimeSeriesData().get(lastYear);
             if (snap != null) {
                 endPop = snap.getValue("worldPopulation");
-                endCapital = snap.getValue("resourceCapital");
+                endCapital = snap.getValue("builtCapital");
+                if (endCapital == 0.0) {
+                    endCapital = snap.getValue("resourceCapital");
+                }
                 endEnergy = snap.getValue("primaryEnergy");
             }
         }
