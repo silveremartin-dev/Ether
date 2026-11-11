@@ -6,6 +6,10 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.engines.ProceduralEnginePlugin;
@@ -26,8 +30,30 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class BoserupAgriculturalIntensificationEngine implements ProceduralEnginePlugin {
+public class BoserupAgriculturalIntensificationEngine extends AbstractSimulationEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(BoserupAgriculturalIntensificationEngine.class);
+
+    public BoserupAgriculturalIntensificationEngine() {
+        super("BoserupAgriculturalIntensificationEngine", "Ester Boserup Agricultural Intensification", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null) return;
+        float pop = buffer.getBiomassHuman()[i];
+        if (pop > 0.001f) {
+            double density = pop / 100.0;
+            double densityNorm = Math.pow(Math.max(0.0, density), 1.4);
+            double xi = densityNorm / (Math.pow(20.0, 1.4) + densityNorm);
+            double capitalDeepeningRate = pop * 2.0 * xi * dtYears;
+            acc.dResourceCapital += (float) capitalDeepeningRate;
+        }
+    }
 
     @Override
     public String getName() {

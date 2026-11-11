@@ -94,6 +94,22 @@ public class ScenarioFalsificationReportRunner {
                 ComparativeTelemetryDataLoader.ensureHistoryLoadedForSave(dirName, scName, repo);
                 SimulationRunRecord run = repo.getRun(dirName);
                 if (run != null && run.getTimeSeriesData() != null && !run.getTimeSeriesData().isEmpty()) {
+                    if (run.getEngineContributionReport() == null && !Boolean.getBoolean("skipEngineContributions")) {
+                        Path scenarioPath = d.resolve("scenario.json");
+                        if (Files.exists(scenarioPath)) {
+                            try {
+                                org.ether.society.model.Scenario sc = EtherJsonUtil.getMapper()
+                                        .readValue(scenarioPath.toFile(), org.ether.society.model.Scenario.class);
+                                EngineContributionReport contrib = Tier2EngineContributionAnalyzer.analyze(sc, true, run);
+                                if (contrib != null) {
+                                    run.setEngineContributionReport(contrib);
+                                    Tier2EngineContributionAnalyzer.saveReport(d, contrib);
+                                }
+                            } catch (Exception ex) {
+                                System.err.println("Warning: Could not compute Tier 2 engine contributions for " + dirName + ": " + ex.getMessage());
+                            }
+                        }
+                    }
                     items.add(new SimpleBenchmarkItem(scName, dirName));
                 }
             }

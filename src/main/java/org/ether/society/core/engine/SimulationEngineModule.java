@@ -62,4 +62,27 @@ public interface SimulationEngineModule {
      * Guarantees zero cross-scenario state leakage.
      */
     void reset();
+
+    /**
+     * Determines whether this engine supports cell-local derivative accumulation
+     * for single-pass Kernel Fusion over {@link WorldBuffer}.
+     *
+     * @return {@code true} if this engine implements {@link #accumulateCellularDerivatives}
+     */
+    default boolean supportsCellularDerivatives() {
+        return false;
+    }
+
+    /**
+     * Accumulates local derivative increments for a single cell slot during the fused DoD pass.
+     *
+     * @param buffer      contiguous world memory buffer
+     * @param cellIndex   index of the cell in the contiguous buffer
+     * @param dtYears     elapsed time step in Julian years
+     * @param dtMonthly   elapsed time step as a monthly fraction
+     * @param accumulator target derivative accumulator
+     */
+    default void accumulateCellularDerivatives(WorldBuffer buffer, int cellIndex, double dtYears, double dtMonthly, DerivativeAccumulator accumulator) {
+        // Default no-op for non-cellular or whole-buffer stencil engines
+    }
 }

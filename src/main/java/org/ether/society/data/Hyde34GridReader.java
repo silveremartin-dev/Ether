@@ -36,6 +36,13 @@ public class Hyde34GridReader {
     public static final int ETHER_HEIGHT = 1024;
 
     private static final java.util.Map<Long, BufferedImage> GRID_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<Long, float[][]> COUNT_CACHE = java.util.Collections.synchronizedMap(
+            new java.util.LinkedHashMap<>(8, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(java.util.Map.Entry<Long, float[][]> eldest) {
+                    return size() > 8;
+                }
+            });
 
     /**
      * Clear cache.
@@ -43,6 +50,7 @@ public class Hyde34GridReader {
      */
     public static void clearCache() {
         GRID_CACHE.clear();
+        COUNT_CACHE.clear();
     }
 
     public static class HydeGridMetadata {
@@ -55,28 +63,24 @@ public class Hyde34GridReader {
     }
 
     /**
-     * Reads an Esri ASCII Grid file (.asc) and samples it into a 1024x512 BufferedImage density map.
+     * Parsed Esri ASCII Grid container pairing metadata with the raw float matrix indexed {@code [nrows][ncols]}.
      */
-    public static BufferedImage readAsciiGridToImage(InputStream inputStream) {
-        return readAsciiGridToImage(inputStream, 0L);
-    }
+    public record ParsedAsciiGrid(HydeGridMetadata meta, float[][] data, float maxVal) {}
 
     /**
-     * Read ascii grid to image.
+     * Parses an Esri ASCII Grid (.asc) stream without downsampling, converting NoData and negative sentinels to {@code 0.0f}.
      *
-     * @param inputStream the input stream parameter (InputStream)
-     * @param targetYear the target year parameter (long)
-     * @return the resulting computation or state reference
+     * @param inputStream source ASCII grid stream
+     * @return parsed grid container, or {@code null} on failure
      */
-    public static BufferedImage readAsciiGridToImage(InputStream inputStream, long targetYear) {
+    public static ParsedAsciiGrid parseAsciiGrid(InputStream inputStream) {
         if (inputStream == null) return null;
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             HydeGridMetadata meta = new HydeGridMetadata();
             String line;
             int headerLines = 0;
 
-            // 1. Read header parameters
             while (headerLines < 6 && (line = reader.readLine()) != null) {
                 line = line.trim();
                 if (line.isEmpty()) continue;
@@ -96,9 +100,8 @@ public class Hyde34GridReader {
                 }
             }
 
-            // 2. Allocate data grid
             float[][] grid = new float[meta.nrows][meta.ncols];
-            float maxVal = 0.0001f;
+            float maxVal = 0.0f;
 
             for (int r = 0; r < meta.nrows; r++) {
                 line = reader.readLine();
@@ -106,96 +109,148 @@ public class Hyde34GridReader {
                 int len = line.length();
                 int c = 0;
                 int pos = 0;
+                float[] row = grid[r];
                 while (pos < len && c < meta.ncols) {
                     while (pos < len && line.charAt(pos) <= ' ') pos++;
                     if (pos >= len) break;
                     int start = pos;
                     while (pos < len && line.charAt(pos) > ' ') pos++;
-                    try {
-                        float v = Float.parseFloat(line.substring(start, pos));
-                        if (v == meta.nodataValue || v < 0) v = 0.0f;
-                        grid[r][c] = v;
-                        if (v > maxVal) maxVal = v;
-                    } catch (NumberFormatException ignored) {
-                        grid[r][c] = 0.0f;
-                    }
+                    float v = fastParseFloat(line, start, pos, (float) meta.nodataValue);
+                    row[c] = v;
+                    if (v > maxVal) maxVal = v;
                     c++;
                 }
             }
 
-            // 3. Resample 4320x2160 real grid to ETHER_WIDTH x ETHER_HEIGHT Canvas with Area-Weighted Footprint
-            BufferedImage img = new BufferedImage(ETHER_WIDTH, ETHER_HEIGHT, BufferedImage.TYPE_INT_RGB);
-            float[][] resampled = new float[ETHER_HEIGHT][ETHER_WIDTH];
-            double rScale = (double) meta.nrows / ETHER_HEIGHT;
-            double cScale = (double) meta.ncols / ETHER_WIDTH;
-
-            for (int y = 0; y < ETHER_HEIGHT; y++) {
-                int r0 = (int) (y * rScale);
-                int r1 = Math.min(meta.nrows - 1, (int) Math.ceil((y + 1) * rScale));
-                for (int x = 0; x < ETHER_WIDTH; x++) {
-                    int c0 = (int) (x * cScale);
-                    int c1 = Math.min(meta.ncols - 1, (int) Math.ceil((x + 1) * cScale));
-
-                    float sumVal = 0.0f;
-                    int count = 0;
-                    float peakVal = 0.0f;
-                    for (int r = r0; r <= r1; r++) {
-                        for (int c = c0; c <= c1; c++) {
-                            float v = grid[r][c];
-                            if (v > 0.0f && v != meta.nodataValue) {
-                                sumVal += v;
-                                if (v > peakVal) peakVal = v;
-                            }
-                            count++;
-                        }
-                    }
-                    // Blend mean footprint density with local peak to preserve discrete archaeological clusters
-                    resampled[y][x] = (count > 0) ? (0.6f * (sumVal / count) + 0.4f * peakVal) : 0.0f;
-                }
-            }
-
-            // 4. For early/prehistoric agricultural & forager epochs (<= -3000 BP), apply gentle territorial catchment diffusion
-            if (targetYear <= -3000L) {
-                float[][] diffused = new float[ETHER_HEIGHT][ETHER_WIDTH];
-                int blurR = (targetYear <= -8000L) ? 3 : 2;
-                for (int y = 0; y < ETHER_HEIGHT; y++) {
-                    for (int x = 0; x < ETHER_WIDTH; x++) {
-                        float sum = 0.0f, wSum = 0.0f;
-                        for (int dy = -blurR; dy <= blurR; dy++) {
-                            int py = Math.clamp(y + dy, 0, ETHER_HEIGHT - 1);
-                            for (int dx = -blurR; dx <= blurR; dx++) {
-                                int px = (x + dx + ETHER_WIDTH) % ETHER_WIDTH;
-                                float weight = (float) Math.exp(-(dx * dx + dy * dy) / (2.0 * blurR * blurR));
-                                sum += resampled[py][px] * weight;
-                                wSum += weight;
-                            }
-                        }
-                        diffused[y][x] = (wSum > 0) ? (sum / wSum) : resampled[y][x];
-                    }
-                }
-                resampled = diffused;
-            }
-
-            // 5. Render Logarithmic Grayscale
-            double effMax = Math.max(10.0, maxVal * 0.85);
-            for (int y = 0; y < ETHER_HEIGHT; y++) {
-                for (int x = 0; x < ETHER_WIDTH; x++) {
-                    float val = resampled[y][x];
-                    if (val <= 0.02f) {
-                        img.setRGB(x, y, 0x000000);
-                    } else {
-                        double logNorm = Math.log1p(val * 4.0) / Math.log1p(effMax * 4.0);
-                        int gray = (int) Math.clamp(logNorm * 238.0 + 17.0, 17.0, 255.0);
-                        img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
-                    }
-                }
-            }
-
-            return img;
+            return new ParsedAsciiGrid(meta, grid, maxVal);
         } catch (Exception e) {
             logger.warn("Failed to parse HYDE 3.4 ASCII grid: {}", e.getMessage());
             return null;
         }
+    }
+
+    private static float fastParseFloat(String line, int start, int end, float nodata) {
+        if (start >= end) return 0.0f;
+        int i = start;
+        boolean neg = false;
+        char c0 = line.charAt(i);
+        if (c0 == '-') {
+            neg = true;
+            i++;
+        } else if (c0 == '+') {
+            i++;
+        }
+        if (i >= end) return 0.0f;
+
+        // Check for NaN or standard nodata values (e.g. -9999)
+        if (neg && (end - start) >= 5 && line.regionMatches(start, "-9999", 0, 5)) {
+            return 0.0f;
+        }
+
+        double intPart = 0.0;
+        while (i < end) {
+            char ch = line.charAt(i);
+            if (ch < '0' || ch > '9') break;
+            intPart = intPart * 10.0 + (ch - '0');
+            i++;
+        }
+
+        if (i < end && line.charAt(i) == '.') {
+            i++;
+            double fracPart = 0.0;
+            double divisor = 1.0;
+            while (i < end) {
+                char ch = line.charAt(i);
+                if (ch < '0' || ch > '9') break;
+                fracPart = fracPart * 10.0 + (ch - '0');
+                divisor *= 10.0;
+                i++;
+            }
+            intPart += (fracPart / divisor);
+        }
+
+        if (i < end && (line.charAt(i) == 'e' || line.charAt(i) == 'E')) {
+            i++;
+            boolean expNeg = false;
+            if (i < end && line.charAt(i) == '-') { expNeg = true; i++; }
+            else if (i < end && line.charAt(i) == '+') { i++; }
+            int exp = 0;
+            while (i < end) {
+                char ch = line.charAt(i);
+                if (ch < '0' || ch > '9') break;
+                exp = exp * 10 + (ch - '0');
+                i++;
+            }
+            intPart *= Math.pow(10.0, expNeg ? -exp : exp);
+        }
+
+        float res = (float) (neg ? -intPart : intPart);
+        if (res == nodata || res < 0.0f || !Float.isFinite(res)) {
+            return 0.0f;
+        }
+        return res;
+    }
+
+    /**
+     * Reads an Esri ASCII Grid file (.asc) and conservatively downsamples it into a 2048x1024 BufferedImage density map.
+     */
+    public static BufferedImage readAsciiGridToImage(InputStream inputStream) {
+        return readAsciiGridToImage(inputStream, 0L);
+    }
+
+    /**
+     * Reads a HYDE 3.4 population count grid ({@code popc_*.asc}), conservatively transfers counts
+     * onto the $2048 \times 1024$ spherical grid via {@link ConservativeRasterResampler#resampleExtensive},
+     * converts conserved headcounts per pixel into true areal density ($\text{inh/km}^2$), and encodes
+     * a continuous logarithmic grayscale tensor image.
+     *
+     * @param inputStream the Esri ASCII grid input stream
+     * @param targetYear  target simulation epoch year
+     * @return conservatively downsampled grayscale density {@link BufferedImage}, or {@code null} on failure
+     */
+    public static BufferedImage readAsciiGridToImage(InputStream inputStream, long targetYear) {
+        ParsedAsciiGrid parsed = parseAsciiGrid(inputStream);
+        if (parsed == null) return null;
+
+        HydeGridMetadata meta = parsed.meta();
+        // 1. Exact spherical-area-conservative regridding of extensive counts (4320x2160 -> 2048x1024)
+        float[][] conservedCounts = ConservativeRasterResampler.resampleExtensive(
+                parsed.data(), meta.ncols, meta.nrows, (float) meta.nodataValue, ETHER_WIDTH, ETHER_HEIGHT);
+
+        // 2. Convert conserved per-pixel headcounts to true physical areal density (inhabitants / km^2)
+        double[][] densityKm2 = new double[ETHER_HEIGHT][ETHER_WIDTH];
+        double maxDensity = 0.0;
+        for (int y = 0; y < ETHER_HEIGHT; y++) {
+            double areaKm2 = Math.max(1e-6, ConservativeRasterResampler.sphericalPixelAreaKm2(y, ETHER_WIDTH, ETHER_HEIGHT));
+            float[] cntRow = conservedCounts[y];
+            double[] densRow = densityKm2[y];
+            for (int x = 0; x < ETHER_WIDTH; x++) {
+                double d = cntRow[x] / areaKm2;
+                densRow[x] = d;
+                if (d > maxDensity) maxDensity = d;
+            }
+        }
+
+        // 3. Render Logarithmic Grayscale preserving spatial dynamic range
+        BufferedImage img = new BufferedImage(ETHER_WIDTH, ETHER_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        double effMax = Math.max(0.1, maxDensity * 0.90);
+        double logDenom = Math.log1p(effMax * 4.0);
+
+        for (int y = 0; y < ETHER_HEIGHT; y++) {
+            double[] densRow = densityKm2[y];
+            for (int x = 0; x < ETHER_WIDTH; x++) {
+                double val = densRow[x];
+                if (val <= 1e-4) {
+                    img.setRGB(x, y, 0x000000);
+                } else {
+                    double logNorm = Math.log1p(val * 4.0) / logDenom;
+                    int gray = (int) Math.clamp(Math.round(logNorm * 238.0 + 17.0), 17L, 255L);
+                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                }
+            }
+        }
+
+        return img;
     }
 
     /**
@@ -250,6 +305,66 @@ public class Hyde34GridReader {
             }
         }
         return closest;
+    }
+
+    /**
+     * Streams locally available HYDE 3.4 population counts ({@code popc_*.asc}) for the nearest epoch
+     * to {@code year} and transfers exact conserved headcounts onto the $2048 \times 1024$ grid without
+     * triggering network downloads. Returns {@code null} if local HYDE 3.4 files are absent.
+     *
+     * @param year historical year ($-10000$ to $2024$)
+     * @return conserved headcount matrix indexed {@code [y][x]}, or {@code null} if unavailable locally
+     */
+    public static float[][] readConservedPopulationCountsIfPresent(long year) {
+        long effectiveYear = findNearestHydeYear(year);
+        float[][] cached = COUNT_CACHE.get(effectiveYear);
+        if (cached != null) {
+            return cached;
+        }
+        String yearTag = DataDownloaderService.getHydeYearTag(effectiveYear);
+        String zipName = yearTag + "_pop.zip";
+        File zipFile = new File("user_data/maps/hyde34/" + zipName);
+        if (!zipFile.exists()) {
+            zipFile = org.ether.society.config.EtherPaths.resolveSourceFile("hyde34/" + zipName);
+        }
+        if (!zipFile.exists() && effectiveYear == 0) {
+            zipFile = org.ether.society.config.EtherPaths.resolveSourceFile("hyde34/0AD_pop.zip");
+        }
+
+        ParsedAsciiGrid parsed = null;
+        if (zipFile.exists() && zipFile.isFile() && zipFile.length() > 100000) {
+            try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
+                ZipEntry entry;
+                while ((entry = zis.getNextEntry()) != null) {
+                    String entryName = entry.getName().toLowerCase(Locale.ROOT);
+                    if (entryName.startsWith("popc_") && entryName.endsWith(".asc")) {
+                        parsed = parseAsciiGrid(zis);
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Error reading HYDE 3.4 population counts from '{}': {}", zipFile.getName(), e.getMessage());
+            }
+        }
+        if (parsed == null) {
+            String ascName = "popc_" + yearTag + ".asc";
+            File ascFile = org.ether.society.config.EtherPaths.resolveSourceFile("hyde34/" + ascName);
+            if (ascFile.exists() && ascFile.isFile()) {
+                try (InputStream is = new FileInputStream(ascFile)) {
+                    parsed = parseAsciiGrid(is);
+                } catch (Exception e) {
+                    logger.warn("Error reading HYDE 3.4 ASC counts '{}': {}", ascFile.getName(), e.getMessage());
+                }
+            }
+        }
+        if (parsed == null) {
+            return null;
+        }
+        HydeGridMetadata meta = parsed.meta();
+        float[][] conserved = ConservativeRasterResampler.resampleExtensive(
+                parsed.data(), meta.ncols, meta.nrows, (float) meta.nodataValue, ETHER_WIDTH, ETHER_HEIGHT);
+        COUNT_CACHE.put(effectiveYear, conserved);
+        return conserved;
     }
 
     /**

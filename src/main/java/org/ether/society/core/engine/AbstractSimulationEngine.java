@@ -4,6 +4,7 @@
  */
 package org.ether.society.core.engine;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.model.Scenario;
 
 /**
@@ -58,5 +59,64 @@ public abstract class AbstractSimulationEngine implements SimulationEngineModule
     @Override
     public void reset() {
         // Default no-op for stateless engines
+    }
+
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        if (!supportsCellularDerivatives() || buffer == null) return;
+        int capacity = buffer.getCapacity();
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        for (int i = 0; i < capacity; i++) {
+            acc.clear();
+            accumulateCellularDerivatives(buffer, i, dtYears, dtMonthly, acc);
+            applyAccumulatorToCell(buffer, i, acc);
+        }
+    }
+
+    /**
+     * Applies accumulated derivative increments to the specified cell slot in {@link WorldBuffer}.
+     *
+     * @param buffer contiguous world memory buffer
+     * @param i      cell slot index
+     * @param acc    computed derivative accumulator
+     */
+    public static void applyAccumulatorToCell(WorldBuffer buffer, int i, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        if (acc.dResourceCapital != 0.0f) {
+            float[] cap = buffer.getResourceCapital();
+            cap[i] = (float) Math.max(0.0, cap[i] + acc.dResourceCapital);
+        }
+        if (acc.dBiomassHuman != 0.0f) {
+            float[] pop = buffer.getBiomassHuman();
+            pop[i] = (float) Math.max(0.0, pop[i] + acc.dBiomassHuman);
+        }
+        if (acc.dEnergyFoodConsumed != 0.0f) {
+            float[] energy = buffer.getEnergyFoodConsumed();
+            energy[i] = (float) Math.max(0.0, energy[i] + acc.dEnergyFoodConsumed);
+        }
+        if (acc.dEnergyFire != 0.0f) {
+            float[] fire = buffer.getEnergyFire();
+            fire[i] = (float) Math.max(0.0, fire[i] + acc.dEnergyFire);
+        }
+        if (acc.dGiniIndex != 0.0f) {
+            float[] gini = buffer.getGiniIndex();
+            gini[i] = (float) Math.min(1.0, Math.max(0.0, gini[i] + acc.dGiniIndex));
+        }
+        if (acc.dPollutionLevel != 0.0f) {
+            float[] pol = buffer.getPollutionLevel();
+            pol[i] = (float) Math.max(0.0, pol[i] + acc.dPollutionLevel);
+        }
+        if (acc.dFoodResource != 0.0f) {
+            float[] food = buffer.getFoodResource();
+            food[i] = (float) Math.max(0.0, food[i] + acc.dFoodResource);
+        }
+        if (acc.dWaterResource != 0.0f) {
+            float[] water = buffer.getWaterResource();
+            water[i] = (float) Math.max(0.0, water[i] + acc.dWaterResource);
+        }
+        if (acc.dInstitutionalComplexity != 0.0f) {
+            float[] inst = buffer.getInstitutionalComplexity();
+            inst[i] = (float) Math.min(1.0, Math.max(0.0, inst[i] + acc.dInstitutionalComplexity));
+        }
     }
 }

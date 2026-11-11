@@ -10,6 +10,9 @@ import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.NativeRustBridge;
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.telemetry.CompiledTelemetryPlan;
+import org.ether.society.core.telemetry.TelemetryEvaluationResult;
+import org.ether.society.core.telemetry.TelemetrySubscription;
 import org.ether.society.data.DODDataGenerator;
 import org.ether.society.database.H3Cell;
 import org.ether.society.events.DomainEventBus;
@@ -58,8 +61,9 @@ final class H3EngineLifecycleAndTickCoordinator {
                 ? scenario.toPerformanceConfig()
                 : new SimulationPerformanceConfig(true);
         try {
+            String defaultHw = NativeRustBridge.isNativeAvailable() ? "NATIVE_RUST" : "JAVA_VECTOR_SIMD";
             String hwPref = Preferences.userRoot().node("org/ether/society/ui")
-                    .get("ether_hardware_mode", "JAVA_VECTOR_SIMD");
+                    .get("ether_hardware_mode", defaultHw);
             if ("NATIVE_RUST".equalsIgnoreCase(hwPref) && NativeRustBridge.isNativeAvailable()) {
                 engine.performanceConfig.setExecutionEngineMode(SimulationPerformanceConfig.ExecutionEngineMode.RUST_NATIVE);
             } else if ("CPU_JIT".equalsIgnoreCase(hwPref) || "GPU_OFF".equalsIgnoreCase(hwPref)) {
@@ -185,19 +189,15 @@ final class H3EngineLifecycleAndTickCoordinator {
         long sSeed = engine.currentScenario != null ? engine.currentScenario.getSeed() : 42L;
         DODDataGenerator.initializeAgentBuffer(engine.worldBuffer, engine.agentBuffer, cohortSize, sSeed);
 
-        if (engine.statisticsKernel != null && engine.worldBuffer != null) {
-            engine.currentGDP = engine.statisticsKernel.calculateGDP(
-                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
-            engine.currentGini = engine.statisticsKernel.calculateGini(
-                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
-            if (engine.agentBuffer != null) {
-                float foodPerCapVal = (float) engine.getFoodPerCapita();
-                float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
-                engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(
-                        engine.worldBuffer, foodSatVal);
-                engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(
-                        engine.agentBuffer.getBirths(), engine.agentBuffer.getMass());
-            }
+        engine.initialPopulationBaseline = initialPop;
+        engine.initialCo2Baseline = (engine.currentScenario != null && engine.currentScenario.getPlanetPreset() != null
+                && engine.currentScenario.getPlanetPreset().co2Ppm() > 0.0)
+                ? engine.currentScenario.getPlanetPreset().co2Ppm()
+                : 280.0;
+
+        // Evaluate initial statistics ONLY when telemetry subscription is non-empty
+        if (!engine.getCompiledTelemetryPlan().isNoOp() && engine.worldBuffer != null) {
+            engine.evaluateTelemetryNow();
         }
     }
 
@@ -255,30 +255,20 @@ final class H3EngineLifecycleAndTickCoordinator {
                         engine.profiler, engine.performanceConfig, (long) dtSlow
                 );
 
-                // 5. Statistics, Telemetry & History Snapshots (Zero-cost when no subscriber)
-                boolean hasSubscribers = !engine.tickListeners.isEmpty() || engine.isHeadlessTelemetrySubscribed();
-                if (hasSubscribers) {
+                // 5. Statistics, Telemetry & History Snapshots (Zero-cost when unsubscribed or skipped by subsampling)
+                TelemetrySubscription activeSub = engine.getTelemetrySubscription();
+                CompiledTelemetryPlan telemetryPlan = engine.getCompiledTelemetryPlan();
+                if (!telemetryPlan.isNoOp() && activeSub.shouldEvaluateAtTick(engine.tickCounter)) {
                     engine.profiler.beginPhase("5_StatisticsAndHistory");
-                    updateGlobalAggregatesCache(engine);
-
-                    engine.currentGini = engine.statisticsKernel.calculateGini(
-                            engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
-                    engine.densityDistribution = engine.statisticsKernel.calculateDistribution(
-                            engine.worldBuffer.getBiomassHuman(), 20, 1000.0f);
-                    engine.currentGDP = engine.statisticsKernel.calculateGDP(
-                            engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
-                    float foodPerCapVal = (float) engine.getFoodPerCapita();
-                    float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
-                    engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(
-                            engine.worldBuffer, foodSatVal);
-                    engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(
-                            engine.agentBuffer.getBirths(), engine.agentBuffer.getMass());
-
-                    engine.historyManager.captureSnapshot(engine);
+                    TelemetryEvaluationResult evalRes = engine.evaluateTelemetryNow();
+                    if (engine.historyManager != null) {
+                        engine.historyManager.captureSnapshot(engine, evalRes);
+                    }
                     engine.profiler.endPhase("5_StatisticsAndHistory");
                 }
 
                 if (engine.historyManager != null && engine.historyManager.shouldCaptureWorldSnapshot(engine.tickCounter, false, yearChanged)) {
+                    H3BufferSyncHelper.syncBufferToCells(engine.worldBuffer, engine.cells, engine.performanceConfig);
                     engine.historyManager.captureWorldSnapshot(engine);
                 }
 

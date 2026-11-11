@@ -322,30 +322,7 @@ public final class HistoricalClimateRasterizer {
      * @return RGB BufferedImage of biomes
      */
     public static BufferedImage rasterizeBiomesMap(long year) {
-        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(WIDTH, HEIGHT);
-        BufferedImage elevMask = HistoricalMapGenerator.loadElevationMask();
-
-        for (int y = 0; y < HEIGHT; y++) {
-            double lat = 90.0 - (y + 0.5) * 180.0 / HEIGHT;
-            for (int x = 0; x < WIDTH; x++) {
-                double lon = -180.0 + (x + 0.5) * 360.0 / WIDTH;
-                double elevM = (etopo != null) ? etopo[y][x] : ((elevMask != null && (elevMask.getRGB(x, y) & 0xFF) > 128) ? 100.0 : -100.0);
-                boolean isLand = elevM >= 0.0;
-
-                if (!isLand) {
-                    img.setRGB(x, y, (elevM < -2000.0) ? BIOME_DEEP_OCEAN : BIOME_OCEAN);
-                    continue;
-                }
-
-                double tempC = WorldClimEmpiricalRasterLoader.getTemperature(lat, lon, elevM, year);
-                double rainMm = WorldClimEmpiricalRasterLoader.getPrecipitation(lat, lon, elevM, year);
-
-                int bColor = WorldClimEmpiricalRasterLoader.classifyBiome(tempC, rainMm, elevM, lat, lon, year);
-                img.setRGB(x, y, bColor);
-            }
-        }
-        return img;
+        return PaleoClimateMapRasterizer.rasterizeBiomesMap(year);
     }
 
     /**

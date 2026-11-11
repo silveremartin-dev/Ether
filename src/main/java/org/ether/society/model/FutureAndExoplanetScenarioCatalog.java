@@ -242,7 +242,7 @@ public final class FutureAndExoplanetScenarioCatalog {
             • Re-localisation agricole d'urgence, baisse de la population vers la capacité de charge organique et recyclage des flux.
             """);
         Map<String, Boolean> s8Engines = s8.getTypeBEngineStates();
-        s8Engines.put("World3HybridEngine", true);
+        s8Engines.put("World3HybridEngine", false);
         s8Engines.put("EcotoxicologyFertilityEngine", true);
         s8Engines.put("SmilMaterialTransitionsPureEngine", true);
         s8Engines.put("HotellingResourceDepletionEngine", true);
@@ -284,7 +284,7 @@ public final class FutureAndExoplanetScenarioCatalog {
         Map<String, Boolean> s9Engines = s9.getTypeBEngineStates();
         s9Engines.put("VolcanicTephraRefugiaEngine", true);
         s9Engines.put("BifurcationChaosEngine", true);
-        s9Engines.put("World3HybridEngine", true);
+        s9Engines.put("World3HybridEngine", false);
         list.add(s9);
 
         ExoplanetScenarioCatalog.appendExoplanetScenarios(list);

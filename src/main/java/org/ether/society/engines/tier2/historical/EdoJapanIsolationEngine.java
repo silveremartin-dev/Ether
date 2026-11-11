@@ -6,7 +6,13 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
+import org.ether.society.engines.ProceduralEnginePlugin;
+import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +29,47 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class EdoJapanIsolationEngine {
+public class EdoJapanIsolationEngine extends AbstractSimulationEngine implements ProceduralEnginePlugin {
     private static final Logger logger = LoggerFactory.getLogger(EdoJapanIsolationEngine.class);
+
+    public EdoJapanIsolationEngine() {
+        super("EdoJapanIsolationEngine", "Edo Japan Sakoku Isolation & Forestry", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public boolean isEnabled(Scenario scenario) {
+        if (scenario != null && scenario.getTypeBEngineStates() != null) {
+            return Boolean.TRUE.equals(scenario.getTypeBEngineStates().get(id()));
+        }
+        return sakokuIsolationActive;
+    }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (!sakokuIsolationActive || buffer == null) return;
+        float pop = buffer.getBiomassHuman() != null ? buffer.getBiomassHuman()[i] : 0.0f;
+        if (pop > 0.001f && buffer.getPollutionLevel() != null) {
+            float pol = buffer.getPollutionLevel()[i];
+            if (pol > 0.0f) {
+                acc.dPollutionLevel -= (float) Math.min(pol, 1.0 * dtYears);
+            }
+        }
+    }
+
+    @Override
+    public void process(List<H3Cell> cells, double deltaYears) {
+        processHybrid(cells, deltaYears);
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+    }
 
     /** Internal state: sakoku isolation active (boolean). */
     private static volatile boolean sakokuIsolationActive = false;

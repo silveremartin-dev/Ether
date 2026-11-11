@@ -18,6 +18,10 @@ import org.ether.society.core.dod.StatisticsKernel;
 import org.ether.society.core.dod.UrbanKernel;
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.profiling.SimulationProfiler;
+import org.ether.society.core.telemetry.CompiledTelemetryPlan;
+import org.ether.society.core.telemetry.TelemetryAstCompiler;
+import org.ether.society.core.telemetry.TelemetryEvaluationResult;
+import org.ether.society.core.telemetry.TelemetrySubscription;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
 import org.ether.society.events.EventSystem;
@@ -471,11 +475,112 @@ public final class H3SimulationEngine implements ISimulationEngine {
     public double getAtmosphericCO2Ppm() { return metricsAggregator.getAtmosphericCO2Ppm(); } public double getTemperatureAnomaly() { return metricsAggregator.getTemperatureAnomaly(); }
 
     private boolean headlessTelemetrySubscribed = false;
+    private TelemetrySubscription telemetrySubscription = TelemetrySubscription.NONE;
+    private CompiledTelemetryPlan compiledTelemetryPlan = CompiledTelemetryPlan.NO_OP;
+    private TelemetryEvaluationResult cachedTelemetryResult = TelemetryEvaluationResult.EMPTY;
+    private long lastTelemetryTick = -1L;
+    long initialPopulationBaseline = -1L;
+    double initialCo2Baseline = 280.0;
 
-    /** @return true if headless telemetry subscription is active */
+    /** @return {@code true} if headless or GUI telemetry subscription is active */
     public boolean isHeadlessTelemetrySubscribed() { return headlessTelemetrySubscribed; }
-    /** @param subscribed enable or disable headless telemetry evaluation */
-    public void setHeadlessTelemetrySubscribed(boolean subscribed) { this.headlessTelemetrySubscribed = subscribed; }
+
+    /**
+     * Enables or disables headless telemetry using canonical benchmark variables when enabling
+     * from an empty subscription, or clearing to {@link TelemetrySubscription#NONE} when disabling.
+     *
+     * @param subscribed enable or disable telemetry evaluation
+     */
+    public void setHeadlessTelemetrySubscribed(boolean subscribed) {
+        if (subscribed) {
+            if (this.telemetrySubscription.isEmpty()) {
+                setTelemetrySubscription(TelemetrySubscription.allCanonicalBenchmarks(1));
+            } else {
+                this.headlessTelemetrySubscribed = true;
+            }
+        } else {
+            setTelemetrySubscription(TelemetrySubscription.NONE);
+        }
+    }
+
+    /** @return immutable active telemetry subscription */
+    public TelemetrySubscription getTelemetrySubscription() {
+        return telemetrySubscription;
+    }
+
+    /**
+     * Replaces the active telemetry subscription and compiles a minimal DAG execution plan.
+     * Passing {@code null} or an empty subscription sets zero-cost {@link TelemetrySubscription#NONE}.
+     *
+     * @param subscription metric and spatial query contract
+     */
+    public void setTelemetrySubscription(TelemetrySubscription subscription) {
+        this.telemetrySubscription = (subscription != null) ? subscription : TelemetrySubscription.NONE;
+        this.compiledTelemetryPlan = TelemetryAstCompiler.compile(this.telemetrySubscription);
+        this.headlessTelemetrySubscribed = !this.telemetrySubscription.isEmpty();
+        this.lastTelemetryTick = -1L;
+        if (this.telemetrySubscription.isEmpty()) {
+            this.cachedTelemetryResult = TelemetryEvaluationResult.EMPTY;
+        }
+    }
+
+    /** @return pre-compiled topological DAG evaluation plan */
+    public CompiledTelemetryPlan getCompiledTelemetryPlan() {
+        return compiledTelemetryPlan;
+    }
+
+    /** @return most recent memoized telemetry evaluation output (or {@link TelemetryEvaluationResult#EMPTY}) */
+    public TelemetryEvaluationResult getCachedTelemetryResult() {
+        return cachedTelemetryResult;
+    }
+
+    /** @return simulation tick index at which {@link #cachedTelemetryResult} was last evaluated */
+    public long getLastTelemetryTick() {
+        return lastTelemetryTick;
+    }
+
+    /**
+     * Evaluates the currently compiled {@link CompiledTelemetryPlan} once against the current engine state
+     * and memoizes scalar and kernel outputs for instant reuse across UI cards and benchmark exporters.
+     *
+     * @return immutable evaluated telemetry result
+     */
+    public TelemetryEvaluationResult evaluateTelemetryNow() {
+        if (compiledTelemetryPlan.isNoOp() || worldBuffer == null) {
+            return TelemetryEvaluationResult.EMPTY;
+        }
+        long startYr = currentScenario != null ? currentScenario.getStartDateYear() : timeManager.getCurrentYear();
+        long curYr = timeManager.getCurrentYear();
+        double elapsedYrs = Math.max(0.0, (double) (curYr - startYr));
+        TelemetryEvaluationResult res = compiledTelemetryPlan.execute(
+                worldBuffer,
+                agentBuffer,
+                cells,
+                nations,
+                statisticsKernel,
+                tickCounter,
+                curYr,
+                initialPopulationBaseline,
+                initialCo2Baseline,
+                elapsedYrs,
+                currentTPS);
+
+        this.cachedTelemetryResult = res;
+        this.lastTelemetryTick = tickCounter;
+        this.lastCacheTick = tickCounter;
+        this.cachedTotalPopulation = res.getTotalPopulation();
+        this.cachedTotalFood = res.getTotalFood();
+        this.cachedPotableWater = res.getPotableWater();
+        this.cachedBiomassNatural = (float) res.getNaturalBiomass();
+        this.cachedAverageTechnology = (float) res.getAvgTech();
+        this.cachedResourceCapital = res.getBuiltCapitalTotal();
+        if (res.getGdp() > 0.0f) this.currentGDP = res.getGdp();
+        if (res.getGini() > 0.0f) this.currentGini = res.getGini();
+        if (res.getLifeExpectancy() > 0.0f) this.currentLifeExpectancy = res.getLifeExpectancy();
+        if (res.getFertility() > 0.0f) this.currentFertility = res.getFertility();
+        if (res.getDensityDistribution().length > 0) this.densityDistribution = res.getDensityDistribution();
+        return res;
+    }
 
     public WorldBuffer getWorldBuffer() { return worldBuffer; }
     public void setWorldBuffer(WorldBuffer worldBuffer) { this.worldBuffer = worldBuffer; }

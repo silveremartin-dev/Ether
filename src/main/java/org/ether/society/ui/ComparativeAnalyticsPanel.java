@@ -419,18 +419,10 @@ public class ComparativeAnalyticsPanel extends BorderPane {
             return;
         }
 
-        boolean hasGroundTruth = selectedExecuted.stream().anyMatch(i -> "HISTORICAL_GROUND_TRUTH".equals(i.getRunId()));
-        List<ScenarioSelectableItem> simulatedSelected = selectedExecuted.stream()
-                .filter(i -> !"HISTORICAL_GROUND_TRUTH".equals(i.getRunId()))
-                .toList();
-
-        if (hasGroundTruth && !simulatedSelected.isEmpty()) {
-            HistoricalValidationKernel.InterpolationMethod method = (interpolationCombo != null && interpolationCombo.getValue() != null)
-                    ? interpolationCombo.getValue() : HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC;
-            updateAuditResultLabels(GroundTruthAuditGenerator.generateMultiScenarioGroundTruthAudit(simulatedSelected, method, this::resolveRunRecord));
-        } else if (simulatedSelected.size() >= 2) {
-            updateAuditResultLabels(GroundTruthAuditGenerator.generateInterScenarioComparativeReport(simulatedSelected, analyzer, this::resolveRunRecord, runRepository));
-        }
+        HistoricalValidationKernel.InterpolationMethod method = (interpolationCombo != null && interpolationCombo.getValue() != null)
+                ? interpolationCombo.getValue() : HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC;
+        updateAuditResultLabels(GroundTruthAuditGenerator.generateUnifiedComparativeReport(
+                selectedExecuted, method, this::resolveRunRecord, analyzer, runRepository));
     }
 
     private void updateAuditResultLabels(AuditResult result) {

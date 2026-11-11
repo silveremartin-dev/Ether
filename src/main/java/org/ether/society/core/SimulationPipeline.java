@@ -139,7 +139,6 @@ public class SimulationPipeline {
                 cachedNativeArena.tickUrban(dtY);
                 cachedNativeArena.tickFlux(dtSec);
                 cachedNativeArena.tickCulture(dtY, cultureKernel.getDiffusionRate(), cultureKernel.getForcingRate(), cultureKernel.getMutationRate(), sSeed, tickCount);
-                cachedNativeArena.tickTier2(dtY);
                 cachedNativeArena.syncToJavaBuffers(worldBuffer, agentBuffer);
                 executedNative = true;
             } catch (Throwable t) {
@@ -166,7 +165,7 @@ public class SimulationPipeline {
         profiler.beginPhase("4_ProceduralEngines");
 
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
-        if (runTier2 && !executedNative && engine != null && engine.getWorldBuffer() != null) {
+        if (runTier2 && engine != null && engine.getWorldBuffer() != null) {
             typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, activeScenario, compiledKernel);
         }
 

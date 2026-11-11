@@ -171,45 +171,25 @@ public class PreComputePhase {
 
     private static final java.util.Map<String, Double> GLOBAL_RASTER_WEIGHT_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
-    private double getOrComputeGlobalRasterWeight(BufferedImage densityImg, long startYear, int h3Res) {
-        String key = "earth_" + startYear + "_res" + h3Res;
+    private double getOrComputeGlobalRasterWeight(BufferedImage densityImg, long startYear) {
+        if (densityImg == null) return 0.0;
+        String key = "earth_globe_" + startYear + "_" + densityImg.getWidth() + "x" + densityImg.getHeight();
         Double cached = GLOBAL_RASTER_WEIGHT_CACHE.get(key);
         if (cached != null && cached > 0.0) {
             return cached;
         }
-        // Base evaluation at canonical reference resolution 3 (41,162 cells) to avoid allocating tens of millions of cells for Res >= 6
-        int baseRes = 3;
-        String baseKey = "earth_" + startYear + "_res" + baseRes;
-        Double baseCached = GLOBAL_RASTER_WEIGHT_CACHE.get(baseKey);
-        double gSum3;
-        if (baseCached != null && baseCached > 0.0) {
-            gSum3 = baseCached;
-        } else {
-            PlanetPreset preset = PlanetPreset.EARTH_LIKE.withResolution(baseRes);
-            List<H3Cell> globalCells = ProceduralGenerator.getInstance().generatePlanet(preset);
-            double s = 0.0;
-            for (H3Cell gc : globalCells) {
-                if (gc.getLatitude() == null || gc.getLongitude() == null) continue;
-                double rho = ResourceDepositMapReader.sampleDensityFromImageTensor(densityImg, gc.getLatitude(), gc.getLongitude());
-                if (rho > 0.0) {
-                    s += rho;
-                }
-            }
-            gSum3 = s > 0.0 ? s : 1.0;
-            GLOBAL_RASTER_WEIGHT_CACHE.put(baseKey, gSum3);
+        double totalSum = org.ether.society.data.H3RasterAggregator.computeGlobalDensityIntegral(densityImg);
+        if (totalSum > 0.0) {
+            GLOBAL_RASTER_WEIGHT_CACHE.put(key, totalSum);
         }
-
-        // H3 hexagonal aperture-7 fractal scaling: number of cells scales as 7^(res - 3)
-        double scale = Math.pow(7.0, h3Res - baseRes);
-        double totalSum = gSum3 * scale;
-        GLOBAL_RASTER_WEIGHT_CACHE.put(key, totalSum);
         return totalSum;
     }
 
     /**
-     * Distributes initial Earth population strictly proportionally to the empirical epoch density raster:
-     * $$P_i = P_{\text{tot}} \cdot \frac{\rho_i \cdot h_i}{\sum_j \rho_j \cdot h_j}$$
-     * conserving total population exactly with ethnographic minimum band nucleation (Dunbar 1993; Binford 2001).
+     * Distributes initial Earth population strictly proportionally to the empirical epoch density raster
+     * integrated over each H3 cell's spherical hexagonal footprint:
+     * $$P_i = P_{\text{tot}} \cdot \frac{\iint_{\text{hex}_i} \rho\,dA}{\iint_{\mathbb{S}^2} \rho\,dA}$$
+     * conserving total population identically across resolutions and regional windows.
      */
     private void distributeEmpiricalEarthPopulation(List<H3Cell> cells, long totalPop, long startYear) {
         if (scenario.getCustomDensityBase64() == null || scenario.getCustomDensityBase64().isBlank()) {
@@ -241,21 +221,19 @@ public class PreComputePhase {
             }
         }
 
-        double[] weights = new double[cells.size()];
+        double[] weights = org.ether.society.data.H3RasterAggregator.aggregateDensityWeights(densityImg, cells);
         double total = 0.0;
         for (int i = 0; i < cells.size(); i++) {
             H3Cell c = cells.get(i);
             c.setPopulation(0);
             c.setBiomassHuman(0.0);
-            if (c.getLatitude() == null || c.getLongitude() == null) continue;
-            double rho = ResourceDepositMapReader.sampleDensityFromImageTensor(densityImg, c.getLatitude(), c.getLongitude());
-            if (rho > 0.0) {
+            double w = weights[i];
+            if (w > 0.0) {
                 if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN || (c.getElevation() != null && c.getElevation() < 0.0)) {
                     c.setElevation(Math.max(15.0, c.getElevation() != null ? Math.abs(c.getElevation()) : 50.0));
                     c.setBiome(Biome.PLAINS);
                 }
-                weights[i] = rho;
-                total += rho;
+                total += w;
             }
         }
         if (total <= 0.0) {
@@ -279,15 +257,14 @@ public class PreComputePhase {
             }
         }
 
-        int h3Res = scenario.getH3Resolution() > 0 ? scenario.getH3Resolution() : 3;
-        String cacheKey = "earth_" + startYear + "_res" + h3Res;
+        String cacheKey = "earth_globe_" + startYear + "_" + densityImg.getWidth() + "x" + densityImg.getHeight();
         if (!scenario.isClippingEnabled() && total > 0.0) {
             GLOBAL_RASTER_WEIGHT_CACHE.put(cacheKey, total);
         }
 
         double denominator = total;
         if (scenario.isClippingEnabled()) {
-            double gTotal = getOrComputeGlobalRasterWeight(densityImg, startYear, h3Res);
+            double gTotal = getOrComputeGlobalRasterWeight(densityImg, startYear);
             if (gTotal > 0.0) {
                 denominator = gTotal;
             }

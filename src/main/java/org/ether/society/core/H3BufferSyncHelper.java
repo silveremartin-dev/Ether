@@ -155,6 +155,7 @@ final class H3BufferSyncHelper {
         if (worldBuffer.getSoilDepth() != null) cell.setSoilDepth((double) worldBuffer.getSoilDepth()[i]);
         if (worldBuffer.getSoilOrganicCarbon() != null) cell.setSoilOrganicCarbon((double) worldBuffer.getSoilOrganicCarbon()[i]);
         if (worldBuffer.getCommercialFluxVolume() != null) cell.setTradeNetwork((double) worldBuffer.getCommercialFluxVolume()[i]);
+        if (worldBuffer.getPollutionLevel() != null) cell.setPollutionLevel((double) worldBuffer.getPollutionLevel()[i]);
 
         if (cell.getBiome() != null) {
             biomes[i] = (byte) cell.getBiome().ordinal();
@@ -327,6 +328,7 @@ final class H3BufferSyncHelper {
         if (cell.getSoilDepth() != null && worldBuffer.getSoilDepth() != null) worldBuffer.getSoilDepth()[i] = cell.getSoilDepth().floatValue();
         if (cell.getSoilOrganicCarbon() != null && worldBuffer.getSoilOrganicCarbon() != null) worldBuffer.getSoilOrganicCarbon()[i] = cell.getSoilOrganicCarbon().floatValue();
         if (cell.getTradeNetwork() != null && worldBuffer.getCommercialFluxVolume() != null) worldBuffer.getCommercialFluxVolume()[i] = cell.getTradeNetwork().floatValue();
+        if (cell.getPollutionLevel() != null && worldBuffer.getPollutionLevel() != null) worldBuffer.getPollutionLevel()[i] = cell.getPollutionLevel().floatValue();
         if (fertility != null && cell.getFertility() != null) fertility[i] = cell.getFertility().floatValue();
         if (biomassAgri != null && cell.getBiomassAgriculture() != null) biomassAgri[i] = cell.getBiomassAgriculture().floatValue();
         if (biomassNat != null && cell.getBiomassNatural() != null) biomassNat[i] = cell.getBiomassNatural().floatValue();

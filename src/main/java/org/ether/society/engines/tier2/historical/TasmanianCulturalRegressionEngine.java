@@ -6,8 +6,13 @@
  */
 package org.ether.society.engines.tier2.historical;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
+import org.ether.society.database.H3Cell;
+import org.ether.society.engines.ProceduralEnginePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +29,64 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class TasmanianCulturalRegressionEngine {
+public class TasmanianCulturalRegressionEngine extends AbstractSimulationEngine implements ProceduralEnginePlugin {
+
     private static final Logger logger = LoggerFactory.getLogger(TasmanianCulturalRegressionEngine.class);
 
     private static double isolationPopulationThreshold = 5000.0;
+    private double currentLossRate = 0.0;
+
+    public TasmanianCulturalRegressionEngine() {
+        super("TasmanianCulturalRegressionEngine", "Tasmanian Cultural Regression", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    /**
+     * Prepares the global demographic threshold before cellular derivative sweeps.
+     *
+     * @param buffer contiguous world memory buffer
+     * @param dtYears elapsed time in years
+     */
+    public void prepareTick(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getBiomassHuman() == null) {
+            currentLossRate = 0.0;
+            return;
+        }
+        float[] pop = buffer.getBiomassHuman();
+        double totalPop = 0.0;
+        int cap = buffer.getCapacity();
+        for (int i = 0; i < cap; i++) {
+            if (pop[i] > 0.0f) totalPop += pop[i];
+        }
+        double lossIntensity = SmoothMath.sigmoid(2500.0 - totalPop, 0.0, 800.0);
+        currentLossRate = 0.04 * lossIntensity * dtYears;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (currentLossRate > 1e-6 && buffer != null && buffer.getResourceCapital() != null) {
+            float cap = buffer.getResourceCapital()[i];
+            if (cap > 0.0f) {
+                acc.dResourceCapital -= (float) (cap * currentLossRate);
+            }
+        }
+    }
+
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        if (buffer == null) return;
+        prepareTick(buffer, dtYears);
+        super.tick(buffer, dtYears, dtMonthly);
+    }
+
+    @Override
+    public void process(List<H3Cell> cells, double deltaYears) {
+        processHybrid(cells, deltaYears);
+    }
 
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
@@ -39,8 +98,6 @@ public class TasmanianCulturalRegressionEngine {
             }
         }
 
-        // Henrich (2004) law: demographic connectivity determines cumulative capital retention
-        // Continuous sigmoidal transmission fidelity loss replacing piecewise linear cutoff at N = 5000
         double lossIntensity = SmoothMath.sigmoid(2500.0 - totalPop, 0.0, 800.0);
         double lossRate = 0.04 * lossIntensity * deltaYears;
         if (lossRate > 1e-6) {
@@ -54,11 +111,21 @@ public class TasmanianCulturalRegressionEngine {
         }
     }
 
-    public static double getIsolationPopulationThreshold() { return isolationPopulationThreshold; }
+    public static double getIsolationPopulationThreshold() {
+        return isolationPopulationThreshold;
+    }
 
-    public static void setIsolationPopulationThreshold(double threshold) { isolationPopulationThreshold = Math.max(100.0, threshold); }
+    public static void setIsolationPopulationThreshold(double threshold) {
+        isolationPopulationThreshold = Math.max(100.0, threshold);
+    }
 
     public static void resetState() {
         isolationPopulationThreshold = 5000.0;
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+        currentLossRate = 0.0;
     }
 }

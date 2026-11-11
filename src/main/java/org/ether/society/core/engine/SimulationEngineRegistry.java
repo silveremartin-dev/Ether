@@ -154,5 +154,16 @@ public final class SimulationEngineRegistry {
         register(new LenskiEcologicalEvolutionaryEngine());
         register(new StructuralDemographicBifurcationEngine());
         register(new PhysicalCapitalDiffusionEngine());
+
+        // --- Unified Tier 2 Cliodynamic Theories & Historical Models ---
+        register(new SmilMaterialTransitionsPureEngine());
+        register(new JevonsParadoxEngine());
+        register(new TasmanianCulturalRegressionEngine());
+        register(new CoGovernanceTradeEngine());
+        register(new KurzweilAcceleratingReturnsEngine());
+        register(new World3CouplingEngine());
+        register(new RomanImperialCliodynamicEngine());
+        register(new EdoJapanIsolationEngine());
+        register(new BoserupAgriculturalIntensificationEngine());
     }
 }

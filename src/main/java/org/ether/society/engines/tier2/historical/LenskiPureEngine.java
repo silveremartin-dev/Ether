@@ -70,12 +70,12 @@ public class LenskiPureEngine {
      * @return theoretical Gini index in \([0.18, 0.75]\)
      */
     public static double calculateLenskiGini(double capitalPerCapitaKg) {
-        double kpc = SmoothMath.softplus(capitalPerCapitaKg, 0.0, 10.0);
-        double sMin = 15.0;
-        double gMax = Math.clamp(1.0 - (sMin / Math.max(sMin + 1.0, kpc)), 0.0, 0.85);
-        double rMinusG = 0.05 - 0.02 * Math.tanh(kpc / 1000.0);
-        double muExtract = 0.20 + 0.70 * SmoothMath.sigmoid(rMinusG, 0.0, 0.02);
-        return Math.clamp(0.20 + muExtract * gMax, 0.20, 0.75);
+        double kpc = org.ether.society.core.math.SmoothMath.softplus(capitalPerCapitaKg, 0.0, 10.0);
+        double gForager = 0.25;
+        double logRatio = Math.log((kpc + 10.0) / (280.0 + 10.0));
+        double agrarianSurge = 0.40 * Math.exp(-(logRatio * logRatio) / (2.0 * 1.25 * 1.25));
+        double industrialShift = 0.13 * (kpc * kpc) / (kpc * kpc + 2500.0 * 2500.0);
+        return Math.clamp(gForager + agrarianSurge + industrialShift, 0.18, 0.70);
     }
 
     /**
@@ -93,11 +93,9 @@ public class LenskiPureEngine {
             if (pop <= 0) continue;
             double kpc = cell.getResourceCapitalOr(0.0) / pop;
             double theoreticalGini = calculateLenskiGini(kpc);
-            double currentGini = cell.getGiniIndexOr(0.35f);
-            double updatedGini = Math.clamp(currentGini + 0.04 * (theoreticalGini - currentGini) * deltaYears, 0.18, 0.80);
-            cell.setGiniIndex(updatedGini);
+            cell.setGiniIndex(theoreticalGini);
             if (cell.getResourceCapital() != null) {
-                cell.setResourceCapital(cell.getResourceCapital() * (1.0 - updatedGini * 0.05 * deltaYears));
+                cell.setResourceCapital(cell.getResourceCapital() * (1.0 - theoreticalGini * 0.05 * deltaYears));
             }
         }
     }

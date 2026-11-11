@@ -268,51 +268,31 @@ public class ScenarioSimulationLauncher {
                     throw new CancellationException("Generation cancelled by user");
                 }
 
-                updateProgress(0.05, String.format(I18n.getOrDefault("scenario.progress.ready_h3", "✅ Scenario '%s' ready! ⚡ Generating H3 grid..."), scenarioToSave.getName()));
-                logger.info("Generating H3 cells for scenario '{}' at resolution {}", scenarioToSave.getName(), cfg.resolution());
-
-                // Progress-tracked procedural planet generation (5% -> 70%)
-                List<H3Cell> cells = new ProceduralGenerator().generatePlanet(cfg, (done, total) -> {
-                    double progressVal = 0.05 + 0.65 * ((double) done / total);
-                    int percent = (int) (progressVal * 100);
-                    updateProgress(progressVal, String.format(I18n.getOrDefault("scenario.progress.relief_biomes", "🌍 Generating relief & H3 biomes: %d%% (%d / %d cells)"), percent, done, total));
-                }, () -> cancelRequested || Thread.currentThread().isInterrupted());
-
-                if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                    throw new CancellationException("Generation cancelled by user");
-                }
-
-                applyPresetMapToCells(cells, cfg, scenarioToSave);
-
-                if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                    throw new CancellationException("Generation cancelled by user");
-                }
-
-                updateProgress(0.72, I18n.getOrDefault("scenario.progress.hydrography", "🌊 Computing hydrographic network & river basins (72%)..."));
-
-                // Apply Geographical Clipping if enabled (78% -> 85%)
+                scenarioToSave.setPlanetPreset(cfg);
+                scenarioToSave.setH3Resolution(cfg.resolution());
+                scenarioToSave.setClippingEnabled(isClippingActive);
                 if (isClippingActive) {
-                    updateProgress(0.80, I18n.getOrDefault("scenario.progress.clipping", "✂️ Applying geographical clipping & boundary conditions (80%)..."));
+                    scenarioToSave.setMinLat(cMinLat);
+                    scenarioToSave.setMaxLat(cMaxLat);
+                    scenarioToSave.setMinLng(cMinLng);
+                    scenarioToSave.setMaxLng(cMaxLng);
+                }
 
-                    double marginLat = Math.max(1.0, (cMaxLat - cMinLat) * 0.08);
-                    double marginLng = Math.max(1.0, (cMaxLng - cMinLng) * 0.08);
+                updateProgress(0.05, String.format(I18n.getOrDefault("scenario.progress.ready_h3", "✅ Scenario '%s' ready! ⚡ Generating H3 grid..."), scenarioToSave.getName()));
+                logger.info("Initializing unified H3 grid & 2048x1024 rasters for scenario '{}' at resolution {}", scenarioToSave.getName(), cfg.resolution());
 
-                    List<H3Cell> clippedCells = new ArrayList<>();
-                    for (H3Cell c : cells) {
-                        if (cancelRequested || Thread.currentThread().isInterrupted()) {
-                            throw new CancellationException("Generation cancelled by user");
-                        }
-                        if (c.getLatitude() >= cMinLat && c.getLatitude() <= cMaxLat &&
-                            c.getLongitude() >= cMinLng && c.getLongitude() <= cMaxLng) {
-                            if (c.getLatitude() <= cMinLat + marginLat || c.getLatitude() >= cMaxLat - marginLat ||
-                                c.getLongitude() <= cMinLng + marginLng || c.getLongitude() >= cMaxLng - marginLng) {
-                                c.setBoundaryCell(true);
-                            }
-                            clippedCells.add(c);
-                        }
-                    }
-                    cells = clippedCells;
-                    logger.info("Clipping applied: {} cells retained out of global planet grid.", cells.size());
+                // Delegate 100% of grid/raster initialization to headless ScenarioGridInitializer (identical across GUI & CLI)
+                List<H3Cell> cells = org.ether.society.core.ScenarioGridInitializer.initializeCellsForScenario(
+                        scenarioToSave,
+                        (done, total) -> {
+                            double progressVal = 0.05 + 0.78 * ((double) done / Math.max(1, total));
+                            int percent = (int) (progressVal * 100);
+                            updateProgress(progressVal, String.format(I18n.getOrDefault("scenario.progress.relief_biomes", "🌍 Generating relief & H3 biomes: %d%% (%d / %d steps)"), percent, done, total));
+                        },
+                        () -> cancelRequested || Thread.currentThread().isInterrupted());
+
+                if (cancelRequested || Thread.currentThread().isInterrupted()) {
+                    throw new CancellationException("Generation cancelled by user");
                 }
 
                 if (cancelRequested || Thread.currentThread().isInterrupted()) {

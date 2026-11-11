@@ -152,6 +152,9 @@ public class HeadlessRunner {
             if (opts.saveEnabled) {
                 persistRun(engine, opts);
             }
+            if (opts.generateReport) {
+                generateAndWriteHeadlessReport(engine, scenario, opts);
+            }
             if (clusterManager != null) {
                 clusterManager.stop();
             }
@@ -220,13 +223,8 @@ public class HeadlessRunner {
 
     private static List<H3Cell> buildGridCells(Scenario scenario, int effectiveRes) {
         if (effectiveRes < 0) return SampleDataGenerator.generateEuropeSample();
-        PlanetPreset basePreset = scenario.getPlanetPreset() != null ? scenario.getPlanetPreset() : PlanetPreset.EARTH_LIKE;
-        PlanetPreset planetPreset = basePreset.withResolution(effectiveRes);
-        if (scenario.isClippingEnabled()) {
-            return ProceduralGenerator.getInstance().generateRegionalPlanet(
-                    planetPreset, scenario.getMinLat(), scenario.getMaxLat(), scenario.getMinLng(), scenario.getMaxLng());
-        }
-        return ProceduralGenerator.getInstance().generatePlanet(planetPreset);
+        scenario.setH3Resolution(effectiveRes);
+        return org.ether.society.core.ScenarioGridInitializer.initializeCellsForScenario(scenario, null, null);
     }
 
     private static void persistRun(H3SimulationEngine engine, HeadlessCliOptions opts) {
@@ -239,6 +237,48 @@ public class HeadlessRunner {
             }
         } catch (Exception e) {
             logger.warn("Could not persist simulation save: {}", e.getMessage());
+        }
+    }
+
+    private static void generateAndWriteHeadlessReport(H3SimulationEngine engine, Scenario scenario, HeadlessCliOptions opts) {
+        try {
+            String saveTarget = opts.customSaveName != null ? opts.customSaveName : "Headless_" + opts.scenarioName;
+            var repo = org.ether.society.analytics.SimulationRunRepository.getInstance();
+            org.ether.society.ui.analytics.ComparativeTelemetryDataLoader.ensureHistoryLoadedForSave(
+                    saveTarget, scenario.getName(), repo);
+            org.ether.society.analytics.SimulationRunRecord run = repo.getRun(saveTarget);
+            if (run == null || run.getTimeSeriesData().isEmpty()) {
+                run = org.ether.society.analytics.HeadlessBatchRunner.executeScenarioHeadless(
+                        scenario, opts.computeEngineContributions);
+            } else if (opts.computeEngineContributions && run.getEngineContributionReport() == null) {
+                var contrib = org.ether.society.analytics.Tier2EngineContributionAnalyzer.analyze(scenario, true, run);
+                if (contrib != null) {
+                    run.setEngineContributionReport(contrib);
+                    org.ether.society.analytics.Tier2EngineContributionAnalyzer.saveReport(
+                            org.ether.society.config.EtherPaths.getSavesDir().resolve(saveTarget), contrib);
+                }
+            }
+            if (run == null) return;
+
+            final org.ether.society.analytics.SimulationRunRecord finalRun = run;
+            org.ether.society.analytics.ScenarioBenchmarkItem item = new org.ether.society.analytics.ScenarioBenchmarkItem() {
+                @Override public String getName() { return scenario.getName(); }
+                @Override public String getRunId() { return finalRun.getRunId(); }
+            };
+            var audit = org.ether.society.analytics.GroundTruthAuditGenerator.generateMultiScenarioGroundTruthAudit(
+                    List.of(item),
+                    org.ether.society.analytics.HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC,
+                    ignored -> finalRun);
+            System.out.println(audit.reportMarkdown());
+
+            java.nio.file.Path reportsDir = java.nio.file.Paths.get("docs/reports");
+            java.nio.file.Files.createDirectories(reportsDir);
+            String safeFile = saveTarget.replaceAll("[^a-zA-Z0-9._-]", "_");
+            java.nio.file.Path outFile = reportsDir.resolve("headless_report_" + safeFile + ".md");
+            java.nio.file.Files.writeString(outFile, audit.reportMarkdown(), java.nio.charset.StandardCharsets.UTF_8);
+            System.out.println("Headless comparative report written to: " + outFile.toAbsolutePath());
+        } catch (Exception e) {
+            logger.warn("Could not generate headless comparative report: {}", e.getMessage());
         }
     }
 

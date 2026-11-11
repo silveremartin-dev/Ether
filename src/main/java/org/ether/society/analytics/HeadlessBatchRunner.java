@@ -8,6 +8,8 @@ package org.ether.society.analytics;
 import org.ether.society.config.Configuration;
 import org.ether.society.config.ConfigurationLoader;
 import org.ether.society.core.H3SimulationEngine;
+import org.ether.society.core.telemetry.TelemetryEvaluationResult;
+import org.ether.society.core.telemetry.TelemetrySubscription;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
 import org.ether.society.generation.PlanetPreset;
@@ -116,6 +118,26 @@ public class HeadlessBatchRunner {
     }
 
     /**
+     * Execute scenario headless with optional Tier 2 engine contribution attribution.
+     *
+     * @param scenario                   target scenario configuration
+     * @param computeEngineContributions {@code true} to run Leave-One-Out Tier 2 engine attribution and persist {@code engine_contributions.json}
+     * @return recorded simulation telemetry, or {@code null} on failure
+     */
+    public static SimulationRunRecord executeScenarioHeadless(Scenario scenario, boolean computeEngineContributions) {
+        SimulationRunRecord record = executeScenarioHeadless(scenario, null, null);
+        if (record != null && computeEngineContributions) {
+            EngineContributionReport contrib = Tier2EngineContributionAnalyzer.analyze(scenario, true, record);
+            if (contrib != null) {
+                record.setEngineContributionReport(contrib);
+                Tier2EngineContributionAnalyzer.saveReport(
+                        org.ether.society.config.EtherPaths.getSavesDir().resolve(record.getRunId()), contrib);
+            }
+        }
+        return record;
+    }
+
+    /**
      * Execute scenario headless.
      *
      * @param scenario the scenario parameter (Scenario)
@@ -136,16 +158,44 @@ public class HeadlessBatchRunner {
      * @return the resulting computation or state reference
      */
     public static SimulationRunRecord executeScenarioHeadless(Scenario scenario, BatchProgressListener listener, java.util.function.BooleanSupplier cancelSupplier) {
-        // Benchmark evaluation: Record metric snapshot and calculate residual variance
-        // Compare simulated trajectories against empirical historical ground truth
         if (scenario == null) return null;
+        int h3Res = scenario.getH3Resolution() > 0 ? scenario.getH3Resolution() : 1;
+        scenario.setH3Resolution(h3Res);
+        List<H3Cell> cells = org.ether.society.core.ScenarioGridInitializer.initializeCellsForScenario(
+                scenario, null, cancelSupplier);
+        if (cells == null || (cancelSupplier != null && cancelSupplier.getAsBoolean())) {
+            return null;
+        }
+        return executeScenarioWithCells(scenario, cells, true, listener, cancelSupplier);
+    }
+
+    /**
+     * Executes a headless simulation over a pre-initialized H3 cell mesh without regenerating cartography.
+     *
+     * @param scenario       scenario configuration
+     * @param initialCells   pre-initialized H3 cells (caller owns snapshot isolation if reusing across runs)
+     * @param persistToDisk  {@code true} to persist save directory and register in {@link SimulationRunRepository}
+     * @param listener       optional progress listener
+     * @param cancelSupplier optional cancellation supplier
+     * @return simulation run record, or {@code null} on cancellation/failure
+     */
+    public static SimulationRunRecord executeScenarioWithCells(
+            Scenario scenario,
+            List<H3Cell> initialCells,
+            boolean persistToDisk,
+            BatchProgressListener listener,
+            java.util.function.BooleanSupplier cancelSupplier) {
+        if (scenario == null || initialCells == null || initialCells.isEmpty()) return null;
 
         org.ether.society.core.SimulationPipeline.resetGlobalSimulationState();
         try {
             logger.info("⚡ Starting Real Physics Headless Batch Execution for scenario: '{}' (Years {} -> {})",
                 scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
 
-            String runId = "RUN-" + scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase() + "-" + (System.currentTimeMillis() % 10000);
+            String safeName = scenario.getName() != null
+                    ? scenario.getName().replaceAll("[^a-zA-Z0-9]", "-").toUpperCase()
+                    : "SCENARIO";
+            String runId = "RUN-" + safeName + "-" + (System.currentTimeMillis() % 10000);
 
         Map<String, String> parameterMatrix = new LinkedHashMap<>();
         parameterMatrix.put("Population Initiale", String.format("%,d", scenario.getInitialHumanCount()));
@@ -160,7 +210,7 @@ public class HeadlessBatchRunner {
 
         if (scenario.getTypeBEngineStates() != null && !scenario.getTypeBEngineStates().isEmpty()) {
             for (var entry : scenario.getTypeBEngineStates().entrySet()) {
-                if (entry.getValue()) {
+                if (Boolean.TRUE.equals(entry.getValue())) {
                     parameterMatrix.put("Engine: " + entry.getKey(), "✅ Activé");
                 }
             }
@@ -180,33 +230,13 @@ public class HeadlessBatchRunner {
         }
         long durationYears = endYear - startYear;
 
-        // 1. Generate real planetary cell grid
         int h3Res = scenario.getH3Resolution() > 0 ? scenario.getH3Resolution() : 1;
-        PlanetPreset preset = scenario.getPlanetPreset() != null 
-            ? scenario.getPlanetPreset().withResolution(h3Res) 
-            : PlanetPreset.EARTH_LIKE.withResolution(h3Res);
-        
-        List<H3Cell> cells;
+        scenario.setH3Resolution(h3Res);
         if (scenario.isClippingEnabled()) {
-            double cMinLat = scenario.getMinLat();
-            double cMaxLat = scenario.getMaxLat();
-            double cMinLng = scenario.getMinLng();
-            double cMaxLng = scenario.getMaxLng();
-            double marginLat = Math.max(1.0, (cMaxLat - cMinLat) * 0.08);
-            double marginLng = Math.max(1.0, (cMaxLng - cMinLng) * 0.08);
-
-            cells = ProceduralGenerator.getInstance().generateRegionalPlanet(preset, cMinLat, cMaxLat, cMinLng, cMaxLng);
-            // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (H3Cell c : cells) {
-                if (c.getLatitude() <= cMinLat + marginLat || c.getLatitude() >= cMaxLat - marginLat ||
-                    c.getLongitude() <= cMinLng + marginLng || c.getLongitude() >= cMaxLng - marginLng) {
-                    c.setBoundaryCell(true);
-                }
-            }
-            logger.info("HeadlessBatchRunner: Regional window generation complete with {} cells retained.", cells.size());
-        } else {
-            cells = ProceduralGenerator.getInstance().generatePlanet(preset);
+            parameterMatrix.put("Window Bounds", String.format(java.util.Locale.US, "%.4f,%.4f,%.4f,%.4f",
+                    scenario.getMinLat(), scenario.getMaxLat(), scenario.getMinLng(), scenario.getMaxLng()));
         }
+        List<H3Cell> cells = initialCells;
 
         // 2. Initialize real H3SimulationEngine with DOD kernels
         Configuration config;
@@ -224,13 +254,13 @@ public class HeadlessBatchRunner {
 
         H3SimulationEngine engine = new H3SimulationEngine(config);
         SimulationPerformanceConfig perfConfig = scenario.toPerformanceConfig();
-        int cores = Runtime.getRuntime().availableProcessors();
-        perfConfig.setEnableParallelExecution(true);
-        perfConfig.setParallelThreadCount(Math.max(1, cores));
+        if (!scenario.isStrictDeterminism()) {
+            int cores = Runtime.getRuntime().availableProcessors();
+            perfConfig.setEnableParallelExecution(true);
+            perfConfig.setParallelThreadCount(Math.max(1, cores));
+        }
         engine.setPerformanceConfig(perfConfig);
         engine.setTemporalScale(org.ether.society.core.TemporalScale.MONTHLY);
-        // Ensure statistics kernel (GDP, Gini, life expectancy, global aggregates cache) executes every tick in headless mode
-        engine.setHeadlessTelemetrySubscribed(true);
         if (engine.getHistoryManager() != null) {
             engine.getHistoryManager().setMaxSnapshots(12);
         }
@@ -245,6 +275,7 @@ public class HeadlessBatchRunner {
         // Sample telemetry periodically across scenario duration (e.g. every 1 to 20 years)
         long sampleIntervalYears = Math.max(1, Math.min(20, durationYears / 25));
         int ticksPerSampleInterval = Math.max(1, (int) Math.round((sampleIntervalYears * 365.25) / stepDays));
+        engine.setTelemetrySubscription(TelemetrySubscription.allCanonicalBenchmarks(ticksPerSampleInterval));
 
         // Initial snapshot at startYear
         recordTelemetrySnapshot(record, engine, (int) startYear);
@@ -298,7 +329,7 @@ public class HeadlessBatchRunner {
         }
 
         // Persist full simulation state, spatial topology, and intermediate snapshots to saves/RUN-*
-        if (engine.getSimulationSaveManager() != null) {
+        if (persistToDisk && engine.getSimulationSaveManager() != null) {
             try {
                 engine.getSimulationSaveManager().saveSimulation(engine, runId, scenario.getName());
             } catch (Exception ex) {
@@ -308,7 +339,9 @@ public class HeadlessBatchRunner {
 
             engine.shutdown();
 
-            SimulationRunRepository.getInstance().registerRun(record);
+            if (persistToDisk) {
+                SimulationRunRepository.getInstance().registerRun(record);
+            }
             logger.info("✅ Finished Physical Headless execution for scenario: '{}'. Real physics ticks: {}. Generated {} snapshots.", 
                 scenario.getName(), ticksExecuted, record.getTimeSeriesData().size());
 
@@ -324,15 +357,21 @@ public class HeadlessBatchRunner {
     }
 
     private static void recordTelemetrySnapshot(SimulationRunRecord record, H3SimulationEngine engine, int year) {
-        long pop = engine.getTotalPopulation();
-        double foodPerCap = engine.getFoodPerCapita();
-        double avgTech = engine.getAverageTechnology();
-        double stability = engine.getHappinessIndex();
-        int populatedCells = (int) engine.getPopulatedCellCount();
+        TelemetryEvaluationResult res = engine.getCachedTelemetryResult();
+        if (res == null || res.isEmpty() || engine.getLastTelemetryTick() != engine.getTickCounter()) {
+            res = engine.evaluateTelemetryNow();
+        }
+        Map<String, Double> metricsMap = res != null && !res.isEmpty()
+                ? res.getMetrics()
+                : MetricRegistry.getInstance().computeMetricsMap(engine);
 
-        // Comprehensive biophysical snapshot: records 100% of physical observables calculated by the engine and aggregator.
-        // Zero metric filtering or partial snapshots: all telemetry variables are captured completely.
-        Map<String, Double> metricsMap = MetricRegistry.getInstance().computeMetricsMap(engine);
+        long pop = res != null && res.getTotalPopulation() > 0 ? res.getTotalPopulation()
+                : Math.round(metricsMap.getOrDefault("population", 0.0));
+        double foodPerCap = metricsMap.getOrDefault("foodPerCapita", 0.0);
+        double avgTech = res != null && res.getAvgTech() > 0 ? res.getAvgTech()
+                : metricsMap.getOrDefault("avgTechLevel", 0.0);
+        double stability = metricsMap.getOrDefault("asabiyyah", 70.0);
+        int populatedCells = res != null && res.getPopulatedCellCount() > 0 ? res.getPopulatedCellCount() : 0;
 
         record.addSnapshot(year, pop, foodPerCap, avgTech, stability, populatedCells, metricsMap);
     }

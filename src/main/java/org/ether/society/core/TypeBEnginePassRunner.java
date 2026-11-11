@@ -5,6 +5,7 @@
 package org.ether.society.core;
 
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.SimulationEngineModule;
 import org.ether.society.core.engine.SimulationEngineRegistry;
 import org.ether.society.engines.ProceduralEngineRegistry;
@@ -71,63 +72,19 @@ public final class TypeBEnginePassRunner {
             return null;
         }
 
-        Map<String, Boolean> states = scenario.getTypeBEngineStates();
-        ScenarioEngineJITCompiler compiler = new ScenarioEngineJITCompiler();
-        int registeredEngines = 0;
-
-        if (Boolean.TRUE.equals(states.get("SmilMaterialTransitionsPureEngine"))) {
-            compiler.registerEngineStep("SmilMaterialTransitionsPureEngine", "resourceCapital",
-                    new SymbolicExpression("resourceCapital", 0.999, 0.0), 0.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("JevonsParadoxEngine"))) {
-            compiler.registerEngineStep("JevonsParadoxEngine", "energyFoodConsumed",
-                    new SymbolicExpression("energyFoodConsumed", 1.005, 0.0), 0.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("TasmanianCulturalRegressionEngine"))) {
-            compiler.registerEngineStep("TasmanianCulturalRegressionEngine", "resourceCapital",
-                    new SymbolicExpression("resourceCapital", 0.999, 0.0), 0.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("CoGovernanceTradeEngine"))) {
-            compiler.registerEngineStep("CoGovernanceTradeEngine", "pollutionLevel",
-                    new SymbolicExpression("pollutionLevel", 0.98, 0.0), 200.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("KurzweilAcceleratingReturnsEngine"))) {
-            compiler.registerEngineStep("KurzweilAcceleratingReturnsEngine", "resourceCapital",
-                    new SymbolicExpression("resourceCapital", 1.002, 0.0), 100000.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("World3CouplingEngine"))) {
-            compiler.registerEngineStep("World3CouplingEngine", "resourceCapital",
-                    new SymbolicExpression("resourceCapital", 0.998, 0.0), 0.0);
-            registeredEngines++;
-        }
-        if (Boolean.TRUE.equals(states.get("RomanImperialCliodynamicEngine"))) {
-            compiler.registerEngineStep("RomanImperialCliodynamicEngine", "resourceCapital",
-                    new SymbolicExpression("resourceCapital", 0.995, 0.0), 0.0);
-            registeredEngines++;
-        }
-
-        if (registeredEngines == 0) {
+        List<SimulationEngineModule> activeTier2 = SimulationEngineRegistry.getInstance().getActiveTier2Engines(scenario);
+        if (activeTier2.isEmpty()) {
             return null;
         }
-        try {
-            CompiledEngineKernel kernel = compiler.compile();
-            logger.info("Scenario JIT Kernel compiled for '{}' with {} fused Type B theories.",
-                    scenario.getName(), registeredEngines);
-            return kernel;
-        } catch (Exception e) {
-            logger.warn("Could not compile scenario JIT kernel: {}", e.getMessage());
-            return null;
-        }
+
+        logger.info("Fused Tier 2 Cliodynamic Kernel active for '{}' with {} enabled theories.",
+                scenario.getName(), activeTier2.size());
+        return new CompiledEngineKernel();
     }
 
     /**
-     * Executes active Tier 2 cliodynamic theories directly over the Data-Oriented WorldBuffer.
-     * Zero-allocation DoD path maximizing CPU throughput and cache locality.
+     * Executes active Tier 2 cliodynamic theories directly over the Data-Oriented WorldBuffer
+     * using Single-Pass Cellular Kernel Fusion for maximal CPU cache locality.
      *
      * @param worldBuffer    contiguous world buffer
      * @param dtYears        time step in Julian years
@@ -141,12 +98,50 @@ public final class TypeBEnginePassRunner {
                                           Scenario scenario,
                                           CompiledEngineKernel compiledKernel) {
         if (worldBuffer == null) return;
-        if (compiledKernel != null) {
-            compiledKernel.executeFusedKernel(worldBuffer, (float) dtMonthly);
-        }
 
         List<SimulationEngineModule> activeTier2 = SimulationEngineRegistry.getInstance().getActiveTier2Engines(scenario);
+        if (activeTier2.isEmpty()) return;
+
+        // Partition active engines: fused cellular derivative engines vs whole-buffer / stencil engines
+        List<SimulationEngineModule> cellularEngines = new java.util.ArrayList<>();
+        List<SimulationEngineModule> bufferEngines = new java.util.ArrayList<>();
+
         for (SimulationEngineModule engine : activeTier2) {
+            if (engine.supportsCellularDerivatives()) {
+                cellularEngines.add(engine);
+            } else {
+                bufferEngines.add(engine);
+            }
+        }
+
+        // --- SINGLE-PASS KERNEL FUSION FOR CELLULAR DERIVATIVES ---
+        if (!cellularEngines.isEmpty()) {
+            int capacity = worldBuffer.getCapacity();
+            // Pre-tick preparation for global parameters / thresholds
+            for (SimulationEngineModule e : cellularEngines) {
+                if (e instanceof TasmanianCulturalRegressionEngine t) {
+                    t.prepareTick(worldBuffer, dtYears);
+                } else if (e instanceof KurzweilAcceleratingReturnsEngine k) {
+                    k.prepareTick(dtYears);
+                }
+            }
+
+            DerivativeAccumulator acc = new org.ether.society.core.engine.DerivativeAccumulator();
+            int engineCount = cellularEngines.size();
+
+            for (int i = 0; i < capacity; i++) {
+                acc.clear();
+                for (int e = 0; e < engineCount; e++) {
+                    cellularEngines.get(e).accumulateCellularDerivatives(worldBuffer, i, dtYears, dtMonthly, acc);
+                }
+                if (acc.hasNonZeroDerivatives()) {
+                    org.ether.society.core.engine.AbstractSimulationEngine.applyAccumulatorToCell(worldBuffer, i, acc);
+                }
+            }
+        }
+
+        // --- WHOLE BUFFER / STENCIL PASSES (DIFFUSION, WATER GRID, ETC.) ---
+        for (SimulationEngineModule engine : bufferEngines) {
             engine.tick(worldBuffer, dtYears, dtMonthly);
         }
     }

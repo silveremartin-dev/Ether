@@ -6,7 +6,12 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
+import org.ether.society.engines.ProceduralEnginePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,73 +19,116 @@ import java.util.List;
 
 /**
  * Kurzweil Law of Accelerating Returns (LOAR) &amp; Paradigm Shift S-Curve Engine.
- * Formally models:
- * 1. Double Exponential Knowledge Growth: W(t) = exp(e^(c * t))
- * 2. Nested S-Curve Paradigm Shifts: Logistic envelope transition when physical silicon/lithography limits are reached.
+ *
+ * <p>Formally models:
+ * 1. Double Exponential Knowledge Growth: \(W(t) = \exp(e^{c \cdot t})\)
+ * 2. Nested S-Curve Paradigm Shifts: Logistic envelope transition when physical silicon/lithography limits are reached.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class KurzweilAcceleratingReturnsEngine {
+public class KurzweilAcceleratingReturnsEngine extends AbstractSimulationEngine implements ProceduralEnginePlugin {
+
     private static final Logger logger = LoggerFactory.getLogger(KurzweilAcceleratingReturnsEngine.class);
 
-    /** Internal state: global knowledge stock (double). */
     private static double globalKnowledgeStock = 1.0;
-    /** Internal state: acceleration rate (double). */
     private static double accelerationRate = 0.05;
 
+    private double cachedDW = 0.0;
+    private double cachedParadigmCapacity = 100_000.0;
+
+    public KurzweilAcceleratingReturnsEngine() {
+        super("KurzweilAcceleratingReturnsEngine", "Kurzweil Law of Accelerating Returns", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
     /**
-     * Process accelerating returns.
+     * Prepares global knowledge expansion step before cellular derivative accumulation.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param dtYears elapsed time in years
      */
+    public void prepareTick(double dtYears) {
+        if (dtYears <= 0) {
+            cachedDW = 0.0;
+            return;
+        }
+        cachedDW = accelerationRate * Math.min(1e6, globalKnowledgeStock) * Math.log(globalKnowledgeStock + 1.0) * dtYears;
+        globalKnowledgeStock = Math.min(1e6, globalKnowledgeStock + cachedDW);
+        cachedParadigmCapacity = 100_000.0 / (1.0 + Math.exp(-0.01 * globalKnowledgeStock));
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || cachedDW <= 0) return;
+        float pop = buffer.getBiomassHuman()[i];
+        if (pop > 0.001f) {
+            float currentCap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0f;
+            double capPerCapita = currentCap / pop;
+            double headroom = Math.max(0.0, 1.0 - capPerCapita / cachedParadigmCapacity);
+            double dCapPerCapita = cachedDW * 10.0 * headroom;
+            acc.dResourceCapital += (float) (dCapPerCapita * pop);
+        }
+    }
+
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        if (buffer == null) return;
+        prepareTick(dtYears);
+        super.tick(buffer, dtYears, dtMonthly);
+    }
+
+    @Override
+    public void process(List<H3Cell> cells, double deltaYears) {
+        processAcceleratingReturns(cells, deltaYears);
+    }
+
     public static void processAcceleratingReturns(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
 
-        // Double-exponential growth rate dW/dt = c * W * log(W + 1), bounded by Bekenstein-Landauer physical bound
         double dW = accelerationRate * Math.min(1e6, globalKnowledgeStock) * Math.log(globalKnowledgeStock + 1.0) * deltaYears;
         globalKnowledgeStock = Math.min(1e6, globalKnowledgeStock + dW);
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
             int pop = cell.getPopulation();
             double currentCap = cell.getResourceCapitalOr(0.0);
             double capPerCapita = pop > 0 ? (currentCap / pop) : 0.0;
-            // S-Curve Paradigm Shift Envelope for physical capital infrastructure
             double paradigmCapacity = 100_000.0 / (1.0 + Math.exp(-0.01 * globalKnowledgeStock));
 
-            // Continuous logistic headroom saturation (Kurzweil 2001, Marchetti 1980)
             double headroom = Math.max(0.0, 1.0 - capPerCapita / paradigmCapacity);
             double dCapPerCapita = dW * 10.0 * headroom;
             cell.setResourceCapital(currentCap + dCapPerCapita * pop);
         }
     }
 
-    /**
-     * Get global knowledge stock.
-     *
-     * @return the resulting computation or state reference
-     */
-    public static double getGlobalKnowledgeStock() { return globalKnowledgeStock; }
+    public static double getGlobalKnowledgeStock() {
+        return globalKnowledgeStock;
+    }
 
-    /**
-     * Set global knowledge stock operation.
-     * <p>
-     * Executes operational logic for {@code KurzweilAcceleratingReturnsEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param k the k argument (double)
-     */
-    public static void setGlobalKnowledgeStock(double k) { globalKnowledgeStock = Math.max(1.0, k); }
+    public static void setGlobalKnowledgeStock(double stock) {
+        globalKnowledgeStock = Math.max(0.1, stock);
+    }
+
+    public static double getAccelerationRate() {
+        return accelerationRate;
+    }
+
+    public static void setAccelerationRate(double rate) {
+        accelerationRate = Math.max(0.001, rate);
+    }
 
     public static void resetState() {
         globalKnowledgeStock = 1.0;
         accelerationRate = 0.05;
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+        cachedDW = 0.0;
     }
 }

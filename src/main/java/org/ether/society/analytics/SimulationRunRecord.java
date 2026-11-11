@@ -138,6 +138,9 @@ public class SimulationRunRecord {
 
     private final TreeMap<Integer, List<org.ether.society.database.H3Cell>> spatialSnapshots = new TreeMap<>();
 
+    /** Optional Tier 2 partial engine variance attribution report associated with this run. */
+    private EngineContributionReport engineContributionReport;
+
     public SimulationRunRecord(String runId, String scenarioName, String variantDescription,
                                Map<String, String> parameterMatrix) {
         this.runId = runId;
@@ -313,5 +316,23 @@ public class SimulationRunRecord {
         if (timeSeriesData.isEmpty()) return 0;
         MetricSnapshot last = timeSeriesData.lastEntry().getValue();
         return last != null ? last.getPopulatedCellCount() : 0;
+    }
+
+    /**
+     * Retrieves the Tier 2 engine partial contribution report associated with this run, if computed.
+     *
+     * @return engine contribution report, or {@code null}
+     */
+    public EngineContributionReport getEngineContributionReport() {
+        return engineContributionReport;
+    }
+
+    /**
+     * Associates a Tier 2 engine partial contribution report with this simulation run record.
+     *
+     * @param engineContributionReport computed contribution report
+     */
+    public void setEngineContributionReport(EngineContributionReport engineContributionReport) {
+        this.engineContributionReport = engineContributionReport;
     }
 }

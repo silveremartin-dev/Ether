@@ -20,6 +20,7 @@ import org.ether.society.analytics.MetricDescriptor;
 import org.ether.society.analytics.MetricRegistry;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.core.dod.PluggableStatEngine;
+import org.ether.society.core.telemetry.TelemetrySubscription;
 import org.ether.society.i18n.I18n;
 import org.ether.society.ui.stats.MetricCard;
 import org.ether.society.ui.stats.MetricCardMeta;
@@ -77,7 +78,7 @@ public class StatsPanel extends VBox {
     private final VarianceDistributionPanel variancePanel;
     private final SpatialHeatmapPanel spatialHeatmapPanel = new SpatialHeatmapPanel();
 
-    private boolean isLiveCollectionActive = true;
+    private boolean isLiveCollectionActive = false;
     private int samplingIntervalTicks = 1;
     private long tickCounter = 0;
     private Consumer<DisplayMode> onDisplayModeRequested;
@@ -150,8 +151,8 @@ public class StatsPanel extends VBox {
         cpuNoticeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #93c5fd; -fx-padding: 4 8; -fx-background-color: rgba(30, 58, 138, 0.4); -fx-background-radius: 4; -fx-border-color: rgba(59, 130, 246, 0.4); -fx-border-radius: 4;");
 
         btnLiveCollection = new ToggleButton();
-        btnLiveCollection.setSelected(true);
-        btnLiveCollection.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
+        btnLiveCollection.setSelected(false);
+        btnLiveCollection.setStyle("-fx-background-color: #64748b; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
         btnLiveCollection.setOnAction(e -> {
             isLiveCollectionActive = btnLiveCollection.isSelected();
             btnLiveCollection.setText(isLiveCollectionActive
@@ -160,18 +161,21 @@ public class StatsPanel extends VBox {
             btnLiveCollection.setStyle(isLiveCollectionActive
                     ? "-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;"
                     : "-fx-background-color: #64748b; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
+            syncEngineTelemetrySubscription();
         });
 
         samplingCombo = new ComboBox<>();
         samplingCombo.setStyle("-fx-font-size: 10px;");
         samplingCombo.setOnAction(e -> {
             int idx = samplingCombo.getSelectionModel().getSelectedIndex();
+            // Deferred to after interval assignment
             samplingIntervalTicks = switch (idx) {
                 case 1 -> 5;
                 case 2 -> 20;
                 case 3 -> 100;
                 default -> 1;
             };
+            syncEngineTelemetrySubscription();
         });
 
         btnConfigureTelemetry = new Button();
@@ -183,6 +187,7 @@ public class StatsPanel extends VBox {
             dlg.showAndWait().ifPresent(selected -> {
                 activeTelemetryVariables.clear();
                 activeTelemetryVariables.addAll(selected);
+                syncEngineTelemetrySubscription();
                 update();
             });
         });
@@ -245,7 +250,25 @@ public class StatsPanel extends VBox {
                 spatialHeatmapPanel, variancePanel, cardsControlBox, metricsContainer);
 
         updateTexts();
+        syncEngineTelemetrySubscription();
         I18n.languageProperty().addListener((obs, oldL, newL) -> updateTexts());
+    }
+
+
+    /**
+     * Pushes the active variable subset and subsampling frequency to the engine's compiled telemetry AST,
+     * guaranteeing zero telemetry overhead when paused or unsubscribed.
+     */
+    public void syncEngineTelemetrySubscription() {
+        if (engine == null) return;
+        if (!isLiveCollectionActive || activeTelemetryVariables.isEmpty()) {
+            engine.setTelemetrySubscription(TelemetrySubscription.NONE);
+            return;
+        }
+        Set<String> subscribed = new java.util.LinkedHashSet<>(activeTelemetryVariables);
+        subscribed.add("agePyramid");
+        engine.setTelemetrySubscription(TelemetrySubscription.ofMetrics(subscribed, samplingIntervalTicks));
+
     }
 
     /**

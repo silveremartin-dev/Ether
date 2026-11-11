@@ -96,6 +96,8 @@ public class WorldBuffer {
     private final float[] storage;
     /** Tainter administrative and institutional complexity index \(\in [0, 1]\). */
     private final float[] institutionalComplexity;
+    /** Cumulative ecotoxicological and persistent industrial pollution level. */
+    private final float[] pollutionLevel;
 
     /** Allometric organism profile governing metabolic scaling across cells. */
     private org.ether.society.model.OrganismBiophysicalProfile organismProfile = org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS;
@@ -149,6 +151,7 @@ public class WorldBuffer {
         this.localPrice = new float[capacity];
         this.storage = new float[capacity];
         this.institutionalComplexity = new float[capacity];
+        this.pollutionLevel = new float[capacity];
     }
 
     // Getters for arrays (to be used by kernels)
@@ -253,6 +256,9 @@ public class WorldBuffer {
 
     /** @return Tainter administrative bureaucracy and institutional complexity index */
     public float[] getInstitutionalComplexity() { return institutionalComplexity; }
+
+    /** @return cumulative ecotoxicological and persistent industrial pollution level buffer */
+    public float[] getPollutionLevel() { return pollutionLevel; }
 
     /**
      * Retrieves the allometric biophysical organism profile governing somatic energetics.

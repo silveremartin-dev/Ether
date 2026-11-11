@@ -83,7 +83,25 @@ public final class SpatialTensorRasterRenderer {
 
         String chLower = channel != null ? channel.toLowerCase(Locale.ROOT) : "";
 
-        for (H3Cell c : cells) {
+        int[] cellColors = new int[cells.size()];
+        java.util.Map<Long, Integer> cellIndexMap = java.util.HashMap.newHashMap(cells.size());
+        int detectedRes = -1;
+        boolean allValidH3 = true;
+        com.uber.h3core.H3Core h3Ref = null;
+        try {
+            h3Ref = org.ether.society.h3.H3Service.getInstance().getH3();
+        } catch (Throwable ignored) {
+            allValidH3 = false;
+        }
+        for (int idx = 0; idx < cells.size(); idx++) {
+            H3Cell c = cells.get(idx);
+            if (c == null) continue;
+            if (allValidH3 && c.getH3Index() != null && c.getH3Index() != 0L) {
+                if (detectedRes < 0) detectedRes = h3Ref.getResolution(c.getH3Index());
+                cellIndexMap.put(c.getH3Index(), idx);
+            } else {
+                allValidH3 = false;
+            }
             double lat = c.getLatitude();
             double lng = c.getLongitude();
             int x = (int) Math.round(((lng + 180.0) / 360.0) * targetW);
@@ -138,8 +156,14 @@ public final class SpatialTensorRasterRenderer {
                 double instNorm = Math.min(1.0, (Math.log10(Math.max(1.0, pop)) / 6.0) * 0.6 + (Math.min(1.0, kpc / 1500.0) * 0.4));
                 col = getTechColor(instNorm);
             } else if (chLower.contains("Ã©colog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("ç”Ÿæ€")) {
-                double soc = c.getSoilOrganicCarbon() != null ? c.getSoilOrganicCarbon() : 50.0;
-                col = getAgricultureColor(Math.max(0.0, Math.min(1.0, soc / 100.0)));
+                long pop = c.getPopulationOr(0);
+                double bioAgr = c.getBiomassAgricultureOr(0.0);
+                double bioLiv = c.getBiomassLivestock() != null ? c.getBiomassLivestock() : 0.0;
+                double bioNat = c.getBiomassNaturalOr(0.0);
+                double clearance = (bioAgr + bioLiv) / (bioAgr + bioLiv + bioNat + 100.0);
+                double area = Math.max(1.0, c.getCellAreaKm2());
+                double densityStrain = pop > 0 ? Math.min(1.0, Math.log1p((double) pop / area) / 6.0) : 0.0;
+                col = getAgricultureColor(Math.clamp(0.75 * clearance + 0.25 * densityStrain, 0.0, 1.0));
             } else if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("ç—…åŽŸ")) {
                 int recovered = c.getEpidemicRecovered() != null ? c.getEpidemicRecovered() : 0;
                 double norm = Math.min(1.0, recovered / 500.0);
@@ -149,10 +173,33 @@ public final class SpatialTensorRasterRenderer {
                 col = getPolityColor(customHash);
             }
 
-            g2.setColor(col);
-            g2.fillOval(x - r, y - r, r * 2, r * 2);
+            Integer cIdx = (c.getH3Index() != null) ? cellIndexMap.get(c.getH3Index()) : null;
+            if (cIdx != null) {
+                cellColors[cIdx] = col.getRGB();
+            }
+            if (!allValidH3) {
+                g2.setColor(col);
+                g2.fillOval(x - r, y - r, r * 2, r * 2);
+            }
         }
         g2.dispose();
+        if (allValidH3 && detectedRes >= 0 && h3Ref != null) {
+            final com.uber.h3core.H3Core h3Core = h3Ref;
+            final int h3Res = detectedRes;
+            final int bgArgb = new Color(15, 23, 42).getRGB();
+            int[] outPixels = new int[targetW * targetH];
+            java.util.stream.IntStream.range(0, targetH).parallel().forEach(py -> {
+                double pLat = 90.0 - ((py + 0.5) / targetH) * 180.0;
+                int rowOff = py * targetW;
+                for (int px = 0; px < targetW; px++) {
+                    double pLon = -180.0 + ((px + 0.5) / targetW) * 360.0;
+                    long h3Idx = h3Core.latLngToCell(pLat, pLon, h3Res);
+                    Integer hit = cellIndexMap.get(h3Idx);
+                    outPixels[rowOff + px] = (hit != null) ? cellColors[hit] : bgArgb;
+                }
+            });
+            img.setRGB(0, 0, targetW, targetH, outPixels, 0, targetW);
+        }
         return img;
     }
 
@@ -192,59 +239,89 @@ public final class SpatialTensorRasterRenderer {
         // Determine reference max luminance in the domain of interest to preserve absolute scale calibration
         double refMax = 255.0;
         if (referenceImage != null) {
-            int peakRef = 1;
-            for (H3Cell c : cells) {
-                if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
-                int refX = Math.clamp((int) Math.round(((c.getLongitude() + 180.0) / 360.0) * (referenceImage.getWidth() - 1)), 0, referenceImage.getWidth() - 1);
-                int refY = Math.clamp((int) Math.round(((90.0 - c.getLatitude()) / 180.0) * (referenceImage.getHeight() - 1)), 0, referenceImage.getHeight() - 1);
-                int l = referenceImage.getRGB(refX, refY) & 0xFF;
-                if (l > peakRef) peakRef = l;
+            double[] obsRef = org.ether.society.data.H3RasterAggregator.aggregateDensityMeans(referenceImage, cells);
+            double peakObs = 10.0 / 255.0;
+            for (double v : obsRef) {
+                if (v > peakObs) peakObs = v;
             }
-            refMax = Math.max(10.0, (double) peakRef);
+            refMax = Math.max(10.0, peakObs * 255.0);
         }
 
-        // Cell radius in pixels based on geographic resolution
+        // Attempt exact pixel-to-H3 inverse hexagonal rasterization (eliminates centroid oval aliasing)
+        int[] cellGrays = new int[cells.size()];
+        java.util.Map<Long, Integer> cellIndexMap = java.util.HashMap.newHashMap(cells.size());
+        int detectedRes = -1;
+        boolean allValidH3 = true;
+        com.uber.h3core.H3Core h3Ref = null;
+        try {
+            h3Ref = org.ether.society.h3.H3Service.getInstance().getH3();
+        } catch (Throwable ignored) {
+            allValidH3 = false;
+        }
+
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            if (c == null) continue;
+            if (allValidH3 && c.getH3Index() != null && c.getH3Index() != 0L) {
+                if (detectedRes < 0) detectedRes = h3Ref.getResolution(c.getH3Index());
+                cellIndexMap.put(c.getH3Index(), i);
+            } else {
+                allValidH3 = false;
+            }
+            long pop = c.getPopulation() != null ? c.getPopulation() : 0L;
+            if (pop > 0L) {
+                double simLog = Math.log10(pop + 1.0) / Math.log10(Math.max(10.0, (double) maxPop + 1.0));
+                cellGrays[i] = Math.clamp((int) Math.round(simLog * refMax), 2, 255);
+            }
+        }
+
+        if (allValidH3 && detectedRes >= 0 && h3Ref != null) {
+            final com.uber.h3core.H3Core h3Core = h3Ref;
+            final int h3Res = detectedRes;
+            int[] outPixels = new int[targetW * targetH];
+            java.util.stream.IntStream.range(0, targetH).parallel().forEach(py -> {
+                double pLat = 90.0 - ((py + 0.5) / targetH) * 180.0;
+                int rowOff = py * targetW;
+                for (int px = 0; px < targetW; px++) {
+                    double pLon = -180.0 + ((px + 0.5) / targetW) * 360.0;
+                    long h3Idx = h3Core.latLngToCell(pLat, pLon, h3Res);
+                    Integer hit = cellIndexMap.get(h3Idx);
+                    int g = (hit != null) ? cellGrays[hit] : 0;
+                    outPixels[rowOff + px] = (g << 16) | (g << 8) | g;
+                }
+            });
+            img.setRGB(0, 0, targetW, targetH, outPixels, 0, targetW);
+            g2.dispose();
+            return img;
+        }
+
         double pixelScaleKm = 40075.0 / (double) targetW;
         double approxCellRadiusKm = Math.sqrt(Math.max(1.0, 510000000.0 / Math.max(100.0, cells.size() * 10.0)) / Math.PI);
-        int r = Math.max(1, (int) Math.round(approxCellRadiusKm / pixelScaleKm));
-        if (r > 6) r = 6;
+        int r = Math.max(1, Math.min(6, (int) Math.round(approxCellRadiusKm / pixelScaleKm)));
 
-        for (H3Cell c : cells) {
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
             if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
-            long pop = c.getPopulation() != null ? c.getPopulation() : 0L;
-            if (pop <= 0L) continue;
+            int gray = cellGrays[i];
+            if (gray <= 0) continue;
 
             double lat = c.getLatitude();
             double lng = c.getLongitude();
             int x = (int) Math.round(((lng + 180.0) / 360.0) * targetW);
             int y = (int) Math.round(((90.0 - lat) / 180.0) * targetH);
-
-            double simLog = Math.log10(pop + 1.0) / Math.log10(Math.max(10.0, (double) maxPop + 1.0));
-            int gray = Math.clamp((int) Math.round(simLog * refMax), 2, 255);
-
             double cosLat = Math.max(0.25, Math.cos(Math.toRadians(lat)));
             int rx = Math.max(r, (int) Math.round(r / cosLat));
             int ry = r;
-
-            // Draw footprint ensuring proper blending and resolution-aware rasterization
-            if (rx <= 1 && ry <= 1) {
-                if (x >= 0 && x < targetW && y >= 0 && y < targetH) {
-                    int current = img.getRGB(x, y) & 0xFF;
-                    int blend = Math.max(current, gray);
-                    img.setRGB(x, y, (blend << 16) | (blend << 8) | blend);
-                }
-            } else {
-                for (int dy = -ry; dy <= ry; dy++) {
-                    int py = y + dy;
-                    if (py < 0 || py >= targetH) continue;
-                    for (int dx = -rx; dx <= rx; dx++) {
-                        int px = x + dx;
-                        if (px < 0 || px >= targetW) continue;
-                        if ((dx * dx) * (ry * ry) + (dy * dy) * (rx * rx) <= (rx * rx * ry * ry)) {
-                            int current = img.getRGB(px, py) & 0xFF;
-                            int blend = Math.max(current, gray);
-                            img.setRGB(px, py, (blend << 16) | (blend << 8) | blend);
-                        }
+            for (int dy = -ry; dy <= ry; dy++) {
+                int py = y + dy;
+                if (py < 0 || py >= targetH) continue;
+                for (int dx = -rx; dx <= rx; dx++) {
+                    int px = x + dx;
+                    if (px < 0 || px >= targetW) continue;
+                    if ((dx * dx) * (ry * ry) + (dy * dy) * (rx * rx) <= (rx * rx * ry * ry)) {
+                        int current = img.getRGB(px, py) & 0xFF;
+                        int blend = Math.max(current, gray);
+                        img.setRGB(px, py, (blend << 16) | (blend << 8) | blend);
                     }
                 }
             }

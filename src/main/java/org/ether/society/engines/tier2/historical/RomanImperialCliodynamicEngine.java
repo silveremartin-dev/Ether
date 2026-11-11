@@ -6,7 +6,12 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
+import org.ether.society.engines.ProceduralEnginePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,93 +19,90 @@ import java.util.List;
 
 /**
  * Roman Imperial Cliodynamic &amp; Expansion Engine Variant B34.1 (Pure) &amp; B34.2 (Hybrid).
- * Models ancient imperial dynamics (Rome, Han, Carthage):
- * 1. Territorial expansion increases administrative overhead costs quadratically O(R^2).
+ *
+ * <p>Models ancient imperial dynamics (Rome, Han, Carthage):
+ * 1. Territorial expansion increases administrative overhead costs quadratically \(O(R^2)\).
  * 2. Elite overproduction &amp; corruption reduce tax extraction efficiency.
  * 3. Urban lead toxicity &amp; plague shocks cause periodic demographic collapse.
- * 4. Frontier Asabiyyah mismatch along Limes borders triggers barbarian invasions.
+ * 4. Frontier Asabiyyah mismatch along Limes borders triggers barbarian invasions.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class RomanImperialCliodynamicEngine {
+public class RomanImperialCliodynamicEngine extends AbstractSimulationEngine implements ProceduralEnginePlugin {
+
     private static final Logger logger = LoggerFactory.getLogger(RomanImperialCliodynamicEngine.class);
 
-    private static double imperialRadiusKm = 1500.0; // 1500 km Roman Empire expansion radius
-    private static double eliteOverproductionFactor = 0.15; // 15% elite tax diversion
+    private static double imperialRadiusKm = 1500.0;
+    private static double eliteOverproductionFactor = 0.15;
 
-    /**
-     * Resets mutable static state between scenario executions to guarantee isolation.
-     */
+    public RomanImperialCliodynamicEngine() {
+        super("RomanImperialCliodynamicEngine", "Roman Imperial Overstretch", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null) return;
+        float pop = buffer.getBiomassHuman()[i];
+        if (pop > 0.001f) {
+            float capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0f;
+            double overstretchRate = (0.02 * Math.pow(imperialRadiusKm / 1000.0, 2.0) + 0.03 * eliteOverproductionFactor);
+            double netCapital = capital * Math.exp(-overstretchRate * dtYears);
+            acc.dResourceCapital += (float) (netCapital - capital);
+        }
+    }
+
+    @Override
+    public void process(List<H3Cell> cells, double deltaYears) {
+        processHybrid(cells, deltaYears);
+    }
+
     public static void resetState() {
         imperialRadiusKm = 1500.0;
         eliteOverproductionFactor = 0.15;
     }
 
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
+    @Override
+    public void reset() {
+        resetState();
+    }
+
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
 
-            // Universal Imperial Overstretch & Pre-Industrial Urban Mortality Law (no hardcoded GPS bounding box):
             double capital = cell.getResourceCapitalOr(500.0);
             double pop = cell.getPopulation();
 
-            // Time-step invariant continuous capital erosion from imperial overstretch (Turchin 2003; Taagepera 1978)
             double overstretchRate = (0.02 * Math.pow(imperialRadiusKm / 1000.0, 2.0) + 0.03 * eliteOverproductionFactor);
             double netCapital = capital * Math.exp(-overstretchRate * deltaYears);
             cell.setResourceCapital(Math.max(10.0, netCapital));
 
-            // Pre-modern urban mortality sink (crowding + sanitation/water contamination) dampens urban lifespan
             double urbanCrowding = pop / (10000.0 + pop);
             cell.setLifespan(Math.max(25.0, (cell.getLifespanOr(35.0)) - 0.25 * urbanCrowding * deltaYears));
         }
     }
 
-    /**
-     * Get imperial radius km.
-     *
-     * @return the resulting computation or state reference
-     */
-    public static double getImperialRadiusKm() { return imperialRadiusKm; }
+    public static double getImperialRadiusKm() {
+        return imperialRadiusKm;
+    }
 
-    /**
-     * Set imperial radius km operation.
-     * <p>
-     * Executes operational logic for {@code RomanImperialCliodynamicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param radius the radius argument (double)
-     */
-    public static void setImperialRadiusKm(double radius) { imperialRadiusKm = Math.max(100.0, radius); }
+    public static void setImperialRadiusKm(double radius) {
+        imperialRadiusKm = Math.max(100.0, radius);
+    }
 
-    /**
-     * Get elite overproduction factor.
-     *
-     * @return the resulting computation or state reference
-     */
-    public static double getEliteOverproductionFactor() { return eliteOverproductionFactor; }
+    public static double getEliteOverproductionFactor() {
+        return eliteOverproductionFactor;
+    }
 
-    /**
-     * Set elite overproduction factor operation.
-     * <p>
-     * Executes operational logic for {@code RomanImperialCliodynamicEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param v the v argument (double)
-     */
-    public static void setEliteOverproductionFactor(double v) { eliteOverproductionFactor = Math.max(0.0, Math.min(0.50, v)); }
+    public static void setEliteOverproductionFactor(double factor) {
+        eliteOverproductionFactor = Math.max(0.0, Math.min(1.0, factor));
+    }
 }

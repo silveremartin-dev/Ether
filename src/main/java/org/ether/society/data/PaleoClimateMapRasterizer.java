@@ -9,6 +9,7 @@ package org.ether.society.data;
 import org.ether.society.generation.SimplexNoise;
 
 import java.awt.image.BufferedImage;
+import java.util.stream.IntStream;
 
 /**
  * High-Precision Paleoclimatic Map Rasterizer for Historical Epochs.
@@ -325,8 +326,9 @@ public final class PaleoClimateMapRasterizer {
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(w, h);
         BufferedImage elevMask = HistoricalMapGenerator.loadElevationMask();
+        Hyde34LandUseReader.LandUseFields landUse = Hyde34LandUseReader.loadForYear(year);
 
-        for (int y = 0; y < h; y++) {
+        IntStream.range(0, h).parallel().forEach(y -> {
             double lat = 90.0 - (y + 0.5) * 180.0 / h;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + (x + 0.5) * 360.0 / w;
@@ -342,9 +344,10 @@ public final class PaleoClimateMapRasterizer {
                 double rainMm = WorldClimEmpiricalRasterLoader.getPrecipitation(lat, lon, elevM, year);
 
                 int bColor = WorldClimEmpiricalRasterLoader.classifyBiome(tempC, rainMm, elevM, lat, lon, year);
+                bColor = Hyde34LandUseReader.modulateBiomeWithLandUse(bColor, x, y, landUse);
                 img.setRGB(x, y, bColor);
             }
-        }
+        });
         return img;
     }
 
@@ -360,7 +363,7 @@ public final class PaleoClimateMapRasterizer {
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(w, h);
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
-        for (int y = 0; y < h; y++) {
+        IntStream.range(0, h).parallel().forEach(y -> {
             double lat = 90.0 - (y + 0.5) / h * 180.0;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + (x + 0.5) / w * 360.0;
@@ -371,7 +374,7 @@ public final class PaleoClimateMapRasterizer {
                 int gray = (int) Math.round(norm * 255.0);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
-        }
+        });
         return img;
     }
 
@@ -387,7 +390,7 @@ public final class PaleoClimateMapRasterizer {
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(w, h);
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
-        for (int y = 0; y < h; y++) {
+        IntStream.range(0, h).parallel().forEach(y -> {
             double lat = 90.0 - (y + 0.5) / h * 180.0;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + (x + 0.5) / w * 360.0;
@@ -398,7 +401,7 @@ public final class PaleoClimateMapRasterizer {
                 int gray = (int) Math.round(norm * 255.0);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
-        }
+        });
         return img;
     }
 
@@ -414,7 +417,7 @@ public final class PaleoClimateMapRasterizer {
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(w, h);
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
-        for (int y = 0; y < h; y++) {
+        IntStream.range(0, h).parallel().forEach(y -> {
             double lat = 90.0 - (y + 0.5) / h * 180.0;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + (x + 0.5) / w * 360.0;
@@ -425,7 +428,7 @@ public final class PaleoClimateMapRasterizer {
                 int gray = (int) Math.round(norm * 255.0);
                 img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
             }
-        }
+        });
         return img;
     }
 }

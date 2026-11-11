@@ -76,7 +76,10 @@ public final class CellularMapComparisonMetrics {
         int matchCount = 0;
         int unionCount = 0;
 
-        for (H3Cell c : cells) {
+        double[] obsMeans = org.ether.society.data.H3RasterAggregator.aggregateDensityMeans(groundTruthRaster, cells);
+
+        for (int idx = 0; idx < n; idx++) {
+            H3Cell c = cells.get(idx);
             if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
             double lat = c.getLatitude();
             double lng = c.getLongitude();
@@ -87,7 +90,7 @@ public final class CellularMapComparisonMetrics {
             double simDensity = (double) pop / area;
             double simNorm = Math.clamp(Math.log10(1.0 + simDensity) / maxSimLog * 255.0, 0.0, 255.0);
 
-            double obsVal = ResourceDepositMapReader.sampleDensityFromImageTensor(groundTruthRaster, lat, lng);
+            double obsVal = obsMeans[idx];
             double obsNorm = Math.clamp(obsVal * 255.0, 0.0, 255.0);
 
             boolean simActive = (pop > 0);
@@ -367,7 +370,10 @@ public final class CellularMapComparisonMetrics {
         int matchCount = 0;
         int unionCount = 0;
 
-        for (H3Cell c : cells) {
+        double[] obsMeans = org.ether.society.data.H3RasterAggregator.aggregateDensityMeans(groundTruthRaster, cells);
+
+        for (int idx = 0; idx < n; idx++) {
+            H3Cell c = cells.get(idx);
             if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
             double lat = c.getLatitude();
             double lng = c.getLongitude();
@@ -376,7 +382,7 @@ public final class CellularMapComparisonMetrics {
             double simVal = extractCulturalCellValue(c, chLower);
             double simNorm = Math.clamp(simVal / maxSim * 255.0, 0.0, 255.0);
 
-            double obsVal = ResourceDepositMapReader.sampleDensityFromImageTensor(groundTruthRaster, lat, lng);
+            double obsVal = obsMeans[idx];
             double obsNorm = Math.clamp(obsVal * 255.0, 0.0, 255.0);
 
             boolean simActive = (simVal > 0.001);
@@ -474,8 +480,15 @@ public final class CellularMapComparisonMetrics {
         } else if (chLower.contains("institut") || chLower.contains("admin")) {
             double kpc = (c.getResourceCapital() != null && pop > 0) ? (c.getResourceCapital() / pop) : 0.0;
             return (Math.log10(Math.max(1.0, pop)) / 6.0) * 0.6 + (Math.min(1.0, kpc / 1500.0) * 0.4);
-        } else if (chLower.contains("ecolog") || chLower.contains("carri")) {
-            return c.getSoilOrganicCarbonOr(25.0);
+        } else if (chLower.contains("ecolog") || chLower.contains("carri") || chLower.contains("empreint") || chLower.contains("anthrom")) {
+            // Anthropogenic ecological transformation & strain (matching HYDE 3.4 Anthrome footprint direction: high = transformed/cleared/dense)
+            double bioAgr = c.getBiomassAgricultureOr(0.0);
+            double bioLiv = c.getBiomassLivestock() != null ? c.getBiomassLivestock() : 0.0;
+            double bioNat = c.getBiomassNaturalOr(0.0);
+            double clearanceRatio = (bioAgr + bioLiv) / (bioAgr + bioLiv + bioNat + 100.0);
+            double area = Math.max(1.0, c.getCellAreaKm2());
+            double densityStrain = pop > 0 ? Math.min(1.0, Math.log1p((double) pop / area) / 6.0) : 0.0;
+            return Math.clamp(0.75 * clearanceRatio + 0.25 * densityStrain, 0.0, 1.0);
         } else if (chLower.contains("pathog") || chLower.contains("sanit")) {
             double area = Math.max(1.0, c.getCellAreaKm2());
             double endemicUrbanLoad = pop > 0 ? Math.log10(1.0 + ((double) pop / area)) * 0.35 : 0.0;
@@ -532,7 +545,9 @@ public final class CellularMapComparisonMetrics {
         List<Point> simPoints = new ArrayList<>();
         List<Point> obsPoints = new ArrayList<>();
 
-        for (H3Cell c : cells) {
+        double[] obsMeans = org.ether.society.data.H3RasterAggregator.aggregateDensityMeans(groundTruthRaster, cells);
+        for (int idx = 0; idx < cells.size(); idx++) {
+            H3Cell c = cells.get(idx);
             if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
             double lat = c.getLatitude();
             double lng = c.getLongitude();
@@ -543,7 +558,7 @@ public final class CellularMapComparisonMetrics {
                 simPoints.add(new Point(lat, lng, Math.min(1.0, simVal)));
             }
 
-            double obsVal = ResourceDepositMapReader.sampleDensityFromImageTensor(groundTruthRaster, lat, lng);
+            double obsVal = obsMeans[idx];
             if (obsVal > 0.005) {
                 obsPoints.add(new Point(lat, lng, Math.min(1.0, obsVal)));
             }

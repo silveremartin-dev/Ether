@@ -76,110 +76,18 @@ final class ImageMapCodecAndBufferedMapper {
             return;
         }
 
-        int wElev = elevImg != null ? elevImg.getWidth() : 0;
-        int hElev = elevImg != null ? elevImg.getHeight() : 0;
-        int wBiome = biomeImg != null ? biomeImg.getWidth() : 0;
-        int hBiome = biomeImg != null ? biomeImg.getHeight() : 0;
-        int wRes = resourceImg != null ? resourceImg.getWidth() : 0;
-        int hRes = resourceImg != null ? resourceImg.getHeight() : 0;
-        int wClimate = climateImg != null ? climateImg.getWidth() : 0;
-        int hClimate = climateImg != null ? climateImg.getHeight() : 0;
-        int wRain = rainfallImg != null ? rainfallImg.getWidth() : 0;
-        int hRain = rainfallImg != null ? rainfallImg.getHeight() : 0;
-        int wSeason = seasonalityImg != null ? seasonalityImg.getWidth() : 0;
-        int hSeason = seasonalityImg != null ? seasonalityImg.getHeight() : 0;
+        H3RasterAggregator.mapRastersToCells(
+                cells,
+                H3RasterAggregator.RasterArgbBuffer.fromBufferedImage(elevImg),
+                H3RasterAggregator.RasterArgbBuffer.fromBufferedImage(biomeImg),
+                H3RasterAggregator.RasterArgbBuffer.fromBufferedImage(resourceImg),
+                H3RasterAggregator.RasterArgbBuffer.fromBufferedImage(climateImg),
+                H3RasterAggregator.RasterArgbBuffer.fromBufferedImage(rainfallImg),
+                H3RasterAggregator.RasterArgbBuffer.fromBufferedImage(seasonalityImg),
+                minAlt,
+                maxAlt);
 
-        for (H3Cell cell : cells) {
-            double lat = cell.getLatitude();
-            double lng = cell.getLongitude();
-
-            // Map Lat/Lng to UV coordinates (0..1)
-            double u = Math.clamp((lng + 180.0) / 360.0, 0.0, 1.0);
-            double v = Math.clamp((90.0 - lat) / 180.0, 0.0, 1.0);
-
-            // 1. Sample Elevation
-            if (elevImg != null) {
-                int x = (int) Math.min(u * wElev, wElev - 1);
-                int y = (int) Math.min(v * hElev, hElev - 1);
-                int argb = elevImg.getRGB(x, y);
-                int r = (argb >> 16) & 0xFF;
-                int g = (argb >> 8) & 0xFF;
-                int b = argb & 0xFF;
-                double brightness = Math.max(r, Math.max(g, b)) / 255.0;
-                double elevation = org.ether.society.generation.PlanetPreset.waterLevelToMeters(brightness, minAlt, maxAlt);
-                cell.setElevation(elevation);
-            }
-
-            // 2. Sample Biome
-            if (biomeImg != null) {
-                int x = (int) Math.min(u * wBiome, wBiome - 1);
-                int y = (int) Math.min(v * hBiome, hBiome - 1);
-                cell.setBiome(ImageMapLoader.matchBiomeArgb(biomeImg.getRGB(x, y)));
-            } else if (elevImg != null) {
-                double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
-                if (elev < 0) cell.setBiome(Biome.OCEAN);
-                else if (elev > 0.85 * maxAlt) cell.setBiome(Biome.SNOW);
-                else if (elev > 0.65 * maxAlt) cell.setBiome(Biome.MOUNTAINS);
-                else if (elev > 0.35 * maxAlt) cell.setBiome(Biome.HILLS);
-                else cell.setBiome(Biome.PLAINS);
-            }
-
-            // 3. Sample Geology & Resources
-            if (resourceImg != null) {
-                int x = (int) Math.min(u * wRes, wRes - 1);
-                int y = (int) Math.min(v * hRes, hRes - 1);
-                int argb = resourceImg.getRGB(x, y);
-                double rNorm = ((argb >> 16) & 0xFF) / 255.0;
-                double gNorm = ((argb >> 8) & 0xFF) / 255.0;
-                double bNorm = (argb & 0xFF) / 255.0;
-
-                cell.setResourceMetal(rNorm * 1000.0);
-                cell.setResourceClay((rNorm * 0.5 + gNorm * 0.5) * 500.0);
-                cell.setWoodResource(gNorm * 1000.0);
-                cell.setBiomassNatural(gNorm * 1000.0);
-                cell.setFoodResource(gNorm * 500.0);
-                cell.setWaterResource(bNorm * 1000.0);
-                cell.setBiomassFish(bNorm * 1000.0);
-            }
-
-            // 4. Sample Climate / Temperature Map
-            if (climateImg != null) {
-                int x = (int) Math.min(u * wClimate, wClimate - 1);
-                int y = (int) Math.min(v * hClimate, hClimate - 1);
-                int argb = climateImg.getRGB(x, y);
-                double rNorm = ((argb >> 16) & 0xFF) / 255.0;
-                cell.setTemperature(-50.0 + rNorm * 100.0);
-                if (rainfallImg == null) {
-                    double gNorm = ((argb >> 8) & 0xFF) / 255.0;
-                    cell.setRainfall(gNorm * 3000.0);
-                }
-            }
-
-            // 5. Sample Separate Rainfall / Moisture Map
-            if (rainfallImg != null) {
-                int x = (int) Math.min(u * wRain, wRain - 1);
-                int y = (int) Math.min(v * hRain, hRain - 1);
-                int argb = rainfallImg.getRGB(x, y);
-                int r = (argb >> 16) & 0xFF;
-                int g = (argb >> 8) & 0xFF;
-                int b = argb & 0xFF;
-                cell.setRainfall((Math.max(r, Math.max(g, b)) / 255.0) * 3000.0);
-            }
-
-            // 6. Sample Separate Seasonality / Temp Amplitude Map
-            if (seasonalityImg != null) {
-                int x = (int) Math.min(u * wSeason, wSeason - 1);
-                int y = (int) Math.min(v * hSeason, hSeason - 1);
-                int argb = seasonalityImg.getRGB(x, y);
-                int r = (argb >> 16) & 0xFF;
-                int g = (argb >> 8) & 0xFF;
-                int b = argb & 0xFF;
-                double seasonalDelta = (Math.max(r, Math.max(g, b)) / 255.0) * 50.0;
-                cell.setTemperature(cell.getTemperature() + (Math.sin(Math.toRadians(lat)) * seasonalDelta * 0.5));
-            }
-        }
-
-        logger.info("Mapped data from BufferedImage maps to {} cells", cells.size());
+        logger.info("Mapped data from BufferedImage rasters via spherical H3 aggregation to {} cells", cells.size());
     }
 
     /**

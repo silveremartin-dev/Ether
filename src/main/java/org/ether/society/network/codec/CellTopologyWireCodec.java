@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,9 +21,11 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * High-performance binary serializer and deserializer for immutable "COLD" spatial topology.
- * Encodes static geographic, topological, geological, and demographic baselines (H3 index, lat/lon,
- * elevation, biomes, aquifers, language groups, friction) in a compact, zero-redundancy binary GZIP stream.
+ * High-performance binary serializer and deserializer for cellular world snapshots.
+ * Encodes spatial topology alongside conserved dynamic biophysical observables
+ * (human population/biomass, built capital, climate, food/water/biomass reserves,
+ * energy fluxes, demographic indicators, and fossil/soil reserves) in a compact
+ * GZIP binary stream ({@code PROTOCOL_VERSION = 1}).
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -37,7 +37,7 @@ public class CellTopologyWireCodec {
     private static final byte PROTOCOL_VERSION = 1;
 
     /**
-     * Serializes cell topology list into compact binary byte array.
+     * Serializes cell topology and dynamic cellular state into a compact binary byte array.
      */
     public static byte[] encodeTopology(List<H3Cell> cells) {
         if (cells == null || cells.isEmpty()) {
@@ -45,7 +45,7 @@ public class CellTopologyWireCodec {
         }
 
         List<H3Cell> validCells = cells.stream().filter(java.util.Objects::nonNull).toList();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(validCells.size() * 80);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(validCells.size() * 176);
         DataOutputStream dos = new DataOutputStream(baos);
 
         try {
@@ -53,7 +53,6 @@ public class CellTopologyWireCodec {
             dos.writeByte(PROTOCOL_VERSION);
             dos.writeInt(validCells.size());
 
-            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (H3Cell cell : validCells) {
                 dos.writeLong(cell.getH3Index() != null ? cell.getH3Index() : 0L);
                 dos.writeDouble(cell.getLatitude() != null ? cell.getLatitude() : 0.0);
@@ -83,6 +82,34 @@ public class CellTopologyWireCodec {
                 byte[] langBytes = lang.getBytes(StandardCharsets.UTF_8);
                 dos.writeShort(langBytes.length);
                 dos.write(langBytes);
+
+                // Full dynamic biophysical observables for post-hoc telemetry extraction
+                dos.writeInt(cell.getPopulationOr(0));
+                dos.writeDouble(cell.getBiomassHuman() != null ? cell.getBiomassHuman() : 0.0);
+                dos.writeFloat(cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture().floatValue() : 0.0f);
+                dos.writeFloat(cell.getBiomassNatural() != null ? cell.getBiomassNatural().floatValue() : 0.0f);
+                dos.writeFloat(cell.getBiomassLivestock() != null ? cell.getBiomassLivestock().floatValue() : 0.0f);
+                dos.writeFloat(cell.getBiomassFish() != null ? cell.getBiomassFish().floatValue() : 0.0f);
+                dos.writeFloat(cell.getTemperature() != null ? cell.getTemperature().floatValue() : 14.5f);
+                dos.writeFloat(cell.getRainfall() != null ? cell.getRainfall().floatValue() : 500.0f);
+                dos.writeFloat(cell.getFoodResource() != null ? cell.getFoodResource().floatValue() : 0.0f);
+                dos.writeFloat(cell.getWaterResource() != null ? cell.getWaterResource().floatValue() : 0.0f);
+                dos.writeFloat(cell.getWoodResource() != null ? cell.getWoodResource().floatValue() : 0.0f);
+                dos.writeFloat(cell.getResourceCapital() != null ? cell.getResourceCapital().floatValue() : 0.0f);
+                dos.writeFloat(cell.getEnergyWind() != null ? cell.getEnergyWind().floatValue() : 0.0f);
+                dos.writeFloat(cell.getEnergySolar() != null ? cell.getEnergySolar().floatValue() : 0.0f);
+                dos.writeFloat(cell.getEnergyFire() != null ? cell.getEnergyFire().floatValue() : 0.0f);
+                dos.writeFloat(cell.getEnergySlaves() != null ? cell.getEnergySlaves().floatValue() : 0.0f);
+                dos.writeFloat(cell.getEnergyFoodConsumed() != null ? cell.getEnergyFoodConsumed().floatValue() : 0.0f);
+                dos.writeFloat(cell.getLifespan() != null ? cell.getLifespan().floatValue() : 35.0f);
+                dos.writeFloat(cell.getFertility() != null ? cell.getFertility().floatValue() : 4.5f);
+                dos.writeFloat(cell.getGiniIndex() != null ? cell.getGiniIndex().floatValue() : 0.20f);
+                dos.writeFloat(cell.getResourceCoal() != null ? cell.getResourceCoal().floatValue() : 0.0f);
+                dos.writeFloat(cell.getResourceOil() != null ? cell.getResourceOil().floatValue() : 0.0f);
+                dos.writeFloat(cell.getResourceGas() != null ? cell.getResourceGas().floatValue() : 0.0f);
+                dos.writeFloat(cell.getResourceUranium() != null ? cell.getResourceUranium().floatValue() : 0.0f);
+                dos.writeFloat(cell.getSoilDepth() != null ? cell.getSoilDepth().floatValue() : 1.0f);
+                dos.writeFloat(cell.getTradeNetwork() != null ? cell.getTradeNetwork().floatValue() : 0.0f);
             }
 
             dos.flush();
@@ -94,7 +121,7 @@ public class CellTopologyWireCodec {
     }
 
     /**
-     * Saves compressed cell topology to a .bin.gz file.
+     * Saves compressed cell topology and dynamic snapshot state to a .bin.gz file.
      */
     public static void saveToFile(Path targetFile, List<H3Cell> cells) throws IOException {
         byte[] rawBytes = encodeTopology(cells);
@@ -107,12 +134,12 @@ public class CellTopologyWireCodec {
             gzos.write(rawBytes);
             gzos.finish();
         }
-        logger.info("Saved compressed world topology ({} cells, {} KB) -> {}",
+        logger.info("Saved compressed world snapshot ({} cells, {} KB) -> {}",
                 cells.size(), rawBytes.length / 1024, targetFile.getFileName());
     }
 
     /**
-     * Decodes binary topology payload into an instantiated list of H3Cells.
+     * Decodes binary snapshot payload into an instantiated list of H3Cells.
      */
     public static List<H3Cell> decodeTopology(byte[] data) {
         if (data == null || data.length < 9) {
@@ -129,12 +156,14 @@ public class CellTopologyWireCodec {
             }
 
             byte version = dis.readByte();
+            if (version != PROTOCOL_VERSION) {
+                throw new IllegalArgumentException("Unsupported topology protocol version: " + version + " (expected " + PROTOCOL_VERSION + ")");
+            }
             int cellCount = dis.readInt();
 
             Biome[] biomeValues = Biome.values();
             List<H3Cell> cells = new ArrayList<>(cellCount);
 
-            // Iterate over spatial cell domains and apply localized cellular state transformations
             for (int i = 0; i < cellCount; i++) {
                 long h3Index = dis.readLong();
                 double lat = dis.readDouble();
@@ -186,6 +215,34 @@ public class CellTopologyWireCodec {
                 cell.setCoastalMarineResource((double) coastalMarine);
                 cell.setLanguageGroup(lang);
 
+                // Direct reading of dynamic biophysical observables
+                cell.setPopulation(dis.readInt());
+                cell.setBiomassHuman(dis.readDouble());
+                cell.setBiomassAgriculture((double) dis.readFloat());
+                cell.setBiomassNatural((double) dis.readFloat());
+                cell.setBiomassLivestock((double) dis.readFloat());
+                cell.setBiomassFish((double) dis.readFloat());
+                cell.setTemperature((double) dis.readFloat());
+                cell.setRainfall((double) dis.readFloat());
+                cell.setFoodResource((double) dis.readFloat());
+                cell.setWaterResource((double) dis.readFloat());
+                cell.setWoodResource((double) dis.readFloat());
+                cell.setResourceCapital((double) dis.readFloat());
+                cell.setEnergyWind((double) dis.readFloat());
+                cell.setEnergySolar((double) dis.readFloat());
+                cell.setEnergyFire((double) dis.readFloat());
+                cell.setEnergySlaves((double) dis.readFloat());
+                cell.setEnergyFoodConsumed((double) dis.readFloat());
+                cell.setLifespan((double) dis.readFloat());
+                cell.setFertility((double) dis.readFloat());
+                cell.setGiniIndex((double) dis.readFloat());
+                cell.setResourceCoal((double) dis.readFloat());
+                cell.setResourceOil((double) dis.readFloat());
+                cell.setResourceGas((double) dis.readFloat());
+                cell.setResourceUranium((double) dis.readFloat());
+                cell.setSoilDepth((double) dis.readFloat());
+                cell.setTradeNetwork((double) dis.readFloat());
+
                 cells.add(cell);
             }
 
@@ -197,7 +254,7 @@ public class CellTopologyWireCodec {
     }
 
     /**
-     * Loads compressed cell topology from a .bin.gz file.
+     * Loads compressed cell snapshot from a .bin.gz file.
      */
     public static List<H3Cell> loadFromFile(Path targetFile) throws IOException {
         if (!Files.exists(targetFile)) {
@@ -216,7 +273,7 @@ public class CellTopologyWireCodec {
 
             byte[] rawBytes = baos.toByteArray();
             List<H3Cell> cells = decodeTopology(rawBytes);
-            logger.info("Loaded {} cells from world topology: {}", cells.size(), targetFile.getFileName());
+            logger.info("Loaded {} cells from world snapshot: {}", cells.size(), targetFile.getFileName());
             return cells;
         }
     }

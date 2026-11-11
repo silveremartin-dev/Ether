@@ -126,6 +126,8 @@ public final class EtopoGeoTiffReader {
                 float[] tileFloats = new float[tileW * tileH];
                 Inflater inflater = new Inflater();
                 int bytesPerRow = tileW * 4;
+                ConservativeRasterResampler.IntensiveStreamingAccumulator accum =
+                        new ConservativeRasterResampler.IntensiveStreamingAccumulator(imgW, imgH, targetW, targetH);
 
                 for (int ty = 0; ty < numTilesY; ty++) {
                     for (int tx = 0; tx < numTilesX; tx++) {
@@ -181,31 +183,12 @@ public final class EtopoGeoTiffReader {
                         int minY = ty * tileH;
                         int maxX = Math.min(minX + tileW, imgW);
                         int maxY = Math.min(minY + tileH, imgH);
-
-                        int startGX = (int) Math.floor((minX / (double) imgW) * targetW);
-                        int endGX = (int) Math.ceil((maxX / (double) imgW) * targetW);
-                        int startGY = (int) Math.floor((minY / (double) imgH) * targetH);
-                        int endGY = (int) Math.ceil((maxY / (double) imgH) * targetH);
-
-                        for (int gy = startGY; gy < endGY && gy < targetH; gy++) {
-                            double lat = 90.0 - (gy + 0.5) / (double) targetH * 180.0;
-                            int py = (int) Math.clamp(((90.0 - lat) / 180.0) * (imgH - 1), 0, imgH - 1);
-                            if (py < minY || py >= maxY) continue;
-                            int tileY = py - minY;
-
-                            for (int gx = startGX; gx < endGX && gx < targetW; gx++) {
-                                double lon = -180.0 + (gx + 0.5) / (double) targetW * 360.0;
-                                int px = (int) Math.clamp(((lon + 180.0) / 360.0) * (imgW - 1), 0, imgW - 1);
-                                if (px < minX || px >= maxX) continue;
-                                int tileX = px - minX;
-
-                                grid[gy][gx] = tileFloats[tileY * tileW + tileX];
-                            }
-                        }
+                        accum.addTile(tileFloats, minX, minY, maxX, maxY, tileW);
                     }
                 }
 
-                logger.info("Direct NOAA ETOPO 2022 relief model ({}x{}) sampled to {}x{} in {} ms.",
+                grid = accum.toGrid();
+                logger.info("Direct NOAA ETOPO 2022 relief model ({}x{}) conservatively integrated to {}x{} in {} ms.",
                         imgW, imgH, targetW, targetH, (System.currentTimeMillis() - t0));
 
                 if (targetW == 2048 && targetH == 1024) {

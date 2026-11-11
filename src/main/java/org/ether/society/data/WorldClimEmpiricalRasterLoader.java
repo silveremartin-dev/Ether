@@ -73,57 +73,68 @@ public class WorldClimEmpiricalRasterLoader {
         precipBaseline  = new float[GRID_H][GRID_W];
         seasonBaseline  = new float[GRID_H][GRID_W];
 
+        File zip5m = org.ether.society.config.EtherPaths.resolveSourceFile("worldclim/wc2.1_5m_bio.zip");
         File tempFile = org.ether.society.config.EtherPaths.resolveSourceFile("worldclim/bio_10m/wc2.1_10m_bio_1.tif");
         File precipFile = org.ether.society.config.EtherPaths.resolveSourceFile("worldclim/bio_10m/wc2.1_10m_bio_12.tif");
         File seasonFile = org.ether.society.config.EtherPaths.resolveSourceFile("worldclim/bio_10m/wc2.1_10m_bio_4.tif");
 
-        boolean hasWorldClim = tempFile.exists() && precipFile.exists() && seasonFile.exists();
+        boolean has5mZip = zip5m.exists() && zip5m.isFile();
+        boolean has10m = tempFile.exists() && precipFile.exists() && seasonFile.exists();
 
-        if (hasWorldClim) {
+        if (has5mZip || has10m) {
             try {
-                logger.info("Loading empirical WorldClim v2.1 GeoTIFF rasters via native TIFF LZW decoder...");
-                float[][] tRaw = readWorldClimTiff(tempFile);
-                float[][] pRaw = readWorldClimTiff(precipFile);
-                float[][] sRaw = readWorldClimTiff(seasonFile);
+                float[][] tRaw = null, pRaw = null, sRaw = null;
+                if (has5mZip) {
+                    logger.info("Loading empirical WorldClim v2.1 5-arc-minute (4320x2160) GeoTIFF rasters from '{}'...", zip5m.getName());
+                    try (java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zip5m)) {
+                        tRaw = readWorldClimTiffFromZip(zf, "wc2.1_5m_bio_1.tif");
+                        pRaw = readWorldClimTiffFromZip(zf, "wc2.1_5m_bio_12.tif");
+                        sRaw = readWorldClimTiffFromZip(zf, "wc2.1_5m_bio_4.tif");
+                    }
+                }
+                if ((tRaw == null || pRaw == null || sRaw == null) && has10m) {
+                    logger.info("Loading empirical WorldClim v2.1 10-arc-minute GeoTIFF rasters via native TIFF LZW decoder...");
+                    tRaw = readWorldClimTiff(tempFile);
+                    pRaw = readWorldClimTiff(precipFile);
+                    sRaw = readWorldClimTiff(seasonFile);
+                }
+                if (tRaw == null || pRaw == null || sRaw == null) {
+                    throw new IllegalStateException("WorldClim GeoTIFF streams incomplete");
+                }
 
                 int srcW = tRaw[0].length;
                 int srcH = tRaw.length;
 
+                float[][] tResampled = ConservativeRasterResampler.resampleIntensiveMasked(
+                        tRaw, srcW, srcH, GRID_W, GRID_H, tv -> tv >= -70.0f && tv <= 60.0f, Float.NaN);
+                float[][] pResampled = ConservativeRasterResampler.resampleIntensiveMasked(
+                        pRaw, srcW, srcH, GRID_W, GRID_H, pv -> pv >= 0.0f && pv <= 35000.0f, Float.NaN);
+                float[][] sResampled = ConservativeRasterResampler.resampleIntensiveMasked(
+                        sRaw, srcW, srcH, GRID_W, GRID_H, sv -> sv >= 0.0f && sv <= 50000.0f, Float.NaN);
+
                 for (int y = 0; y < GRID_H; y++) {
                     double lat = 90.0 - (y + 0.5) * 180.0 / GRID_H;
-                    int srcY = (int) Math.clamp(((y + 0.5) / GRID_H) * srcH, 0, srcH - 1);
-
                     for (int x = 0; x < GRID_W; x++) {
                         double lon = -180.0 + (x + 0.5) * 360.0 / GRID_W;
-                        int srcX = (int) Math.clamp(((x + 0.5) / GRID_W) * srcW, 0, srcW - 1);
 
-                        // 1. Mean Annual Temperature (°C)
-                        float tv = tRaw[srcY][srcX];
-                        if (Float.isNaN(tv) || tv < -70.0f || tv > 60.0f) {
-                            sstTempBaseline[y][x] = (float) computePhysicalOceanSST(lat, lon);
-                        } else {
-                            sstTempBaseline[y][x] = tv;
-                        }
+                        float tv = tResampled[y][x];
+                        sstTempBaseline[y][x] = Float.isNaN(tv)
+                                ? (float) computePhysicalOceanSST(lat, lon)
+                                : tv;
 
-                        // 2. Annual Precipitation (mm/year)
-                        float pv = pRaw[srcY][srcX];
-                        if (Float.isNaN(pv) || pv < 0.0f || pv > 35000.0f) {
-                            precipBaseline[y][x] = (float) computePhysicalMarinePrecipitation(lat, lon);
-                        } else {
-                            precipBaseline[y][x] = pv;
-                        }
+                        float pv = pResampled[y][x];
+                        precipBaseline[y][x] = Float.isNaN(pv)
+                                ? (float) computePhysicalMarinePrecipitation(lat, lon)
+                                : pv;
 
-                        // 3. Temperature Seasonality (WorldClim Bio4 = std dev * 100 -> convert to full annual peak-to-peak amplitude °C = 2 * sqrt(2) * SD)
-                        float sv = sRaw[srcY][srcX];
-                        if (Float.isNaN(sv) || sv < 0.0f || sv > 50000.0f) {
-                            seasonBaseline[y][x] = (float) computePhysicalMarineSeasonality(lat, lon);
-                        } else {
-                            double rangeC = (sv / 100.0) * 2.8284;
-                            seasonBaseline[y][x] = (float) Math.clamp(rangeC, 1.5, 65.0);
-                        }
+                        // Temperature Seasonality (WorldClim Bio4 = std dev * 100 -> peak-to-peak amplitude °C = 2 * sqrt(2) * SD)
+                        float sv = sResampled[y][x];
+                        seasonBaseline[y][x] = Float.isNaN(sv)
+                                ? (float) computePhysicalMarineSeasonality(lat, lon)
+                                : (float) Math.clamp((sv / 100.0) * 2.8284, 1.5, 65.0);
                     }
                 }
-                logger.info("Successfully ingested WorldClim v2.1 empirical datasets into 2048x1024 baseline grids.");
+                logger.info("Successfully ingested WorldClim v2.1 empirical datasets via conservative spherical regridding into 2048x1024 baseline grids.");
             } catch (Exception e) {
                 logger.error("Failed to ingest WorldClim v2.1 GeoTIFFs: {}", e.getMessage(), e);
                 initPhysicalFallbacks();
@@ -148,90 +159,85 @@ public class WorldClimEmpiricalRasterLoader {
         }
     }
 
+    private static float[][] readWorldClimTiffFromZip(java.util.zip.ZipFile zf, String entryName) throws Exception {
+        java.util.zip.ZipEntry entry = zf.getEntry(entryName);
+        if (entry == null) return null;
+        try (java.io.InputStream is = zf.getInputStream(entry)) {
+            return readWorldClimTiffFromBytes(is.readAllBytes());
+        }
+    }
+
     /**
-     * Decode WorldClim GeoTIFF Float32 rasters with LZW strip compression.
+     * Decode WorldClim GeoTIFF Float32 rasters with LZW strip compression from disk file.
      */
     public static float[][] readWorldClimTiff(File file) throws Exception {
-        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-            byte[] header = new byte[8];
-            raf.readFully(header);
-            boolean isLittleEndian = (header[0] == 'I' && header[1] == 'I');
-            long ifdOffset = isLittleEndian
-                    ? (header[4] & 0xFFL) | ((header[5] & 0xFFL) << 8) | ((header[6] & 0xFFL) << 16) | ((header[7] & 0xFFL) << 24)
-                    : ((header[4] & 0xFFL) << 24) | ((header[5] & 0xFFL) << 16) | ((header[6] & 0xFFL) << 8) | (header[7] & 0xFFL);
+        return readWorldClimTiffFromBytes(java.nio.file.Files.readAllBytes(file.toPath()));
+    }
 
-            raf.seek(ifdOffset);
-            int numEntries = isLittleEndian ? (raf.readUnsignedByte() | (raf.readUnsignedByte() << 8))
-                                            : ((raf.readUnsignedByte() << 8) | raf.readUnsignedByte());
+    /**
+     * Decode WorldClim GeoTIFF Float32 rasters with LZW strip compression from in-memory bytes.
+     */
+    public static float[][] readWorldClimTiffFromBytes(byte[] bytes) throws Exception {
+        boolean isLittleEndian = (bytes[0] == 'I' && bytes[1] == 'I');
+        ByteOrder order = isLittleEndian ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+        ByteBuffer full = ByteBuffer.wrap(bytes).order(order);
 
-            int imgW = 0, imgH = 0, compression = 0;
-            long[] stripOffsets = null;
-            long[] stripByteCounts = null;
+        int ifdOffset = full.getInt(4);
+        int numEntries = full.getShort(ifdOffset) & 0xFFFF;
 
-            for (int i = 0; i < numEntries; i++) {
-                byte[] entry = new byte[12];
-                raf.readFully(entry);
-                ByteBuffer bb = ByteBuffer.wrap(entry).order(isLittleEndian ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-                int tag = bb.getShort() & 0xFFFF;
-                int type = bb.getShort() & 0xFFFF;
-                long count = bb.getInt() & 0xFFFFFFFFL;
-                long valOrOffset = bb.getInt() & 0xFFFFFFFFL;
+        int imgW = 0, imgH = 0, compression = 0;
+        long[] stripOffsets = null;
+        long[] stripByteCounts = null;
 
-                if (tag == 256) imgW = (int) valOrOffset;
-                else if (tag == 257) imgH = (int) valOrOffset;
-                else if (tag == 259) compression = (int) valOrOffset;
-                else if (tag == 273) {
-                    stripOffsets = new long[(int) count];
-                    long saved = raf.getFilePointer();
-                    raf.seek(valOrOffset);
-                    for (int c = 0; c < count; c++) {
-                        if (type == 3) stripOffsets[c] = isLittleEndian ? (raf.readUnsignedByte() | (raf.readUnsignedByte() << 8)) : ((raf.readUnsignedByte() << 8) | raf.readUnsignedByte());
-                        else if (type == 4) {
-                            byte[] b4 = new byte[4];
-                            raf.readFully(b4);
-                            stripOffsets[c] = ByteBuffer.wrap(b4).order(isLittleEndian ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN).getInt() & 0xFFFFFFFFL;
-                        }
-                    }
-                    raf.seek(saved);
-                } else if (tag == 279) {
-                    stripByteCounts = new long[(int) count];
-                    long saved = raf.getFilePointer();
-                    raf.seek(valOrOffset);
-                    for (int c = 0; c < count; c++) {
-                        if (type == 3) stripByteCounts[c] = isLittleEndian ? (raf.readUnsignedByte() | (raf.readUnsignedByte() << 8)) : ((raf.readUnsignedByte() << 8) | raf.readUnsignedByte());
-                        else if (type == 4) {
-                            byte[] b4 = new byte[4];
-                            raf.readFully(b4);
-                            stripByteCounts[c] = ByteBuffer.wrap(b4).order(isLittleEndian ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN).getInt() & 0xFFFFFFFFL;
-                        }
-                    }
-                    raf.seek(saved);
-                }
+        for (int i = 0; i < numEntries; i++) {
+            int base = ifdOffset + 2 + i * 12;
+            int tag = full.getShort(base) & 0xFFFF;
+            int type = full.getShort(base + 2) & 0xFFFF;
+            int count = full.getInt(base + 4);
+            int valOrOffset = full.getInt(base + 8);
+
+            if (tag == 256) imgW = valOrOffset;
+            else if (tag == 257) imgH = valOrOffset;
+            else if (tag == 259) compression = valOrOffset;
+            else if (tag == 273) {
+                stripOffsets = readTiffIntArray(full, type, count, valOrOffset);
+            } else if (tag == 279) {
+                stripByteCounts = readTiffIntArray(full, type, count, valOrOffset);
             }
-
-            float[][] grid = new float[imgH][imgW];
-            byte[] outRowBytes = new byte[imgW * 4];
-
-            for (int row = 0; row < imgH; row++) {
-                long offset = stripOffsets[row];
-                int len = (int) stripByteCounts[row];
-                byte[] comp = new byte[len];
-                raf.seek(offset);
-                raf.readFully(comp);
-
-                if (compression == 5) {
-                    decodeTiffLzw(comp, outRowBytes);
-                } else {
-                    System.arraycopy(comp, 0, outRowBytes, 0, Math.min(len, outRowBytes.length));
-                }
-
-                ByteBuffer rowBb = ByteBuffer.wrap(outRowBytes).order(ByteOrder.LITTLE_ENDIAN);
-                for (int col = 0; col < imgW; col++) {
-                    grid[row][col] = rowBb.getFloat();
-                }
-            }
-            return grid;
         }
+
+        float[][] grid = new float[imgH][imgW];
+        byte[] outRowBytes = new byte[imgW * 4];
+        ByteBuffer rowBb = ByteBuffer.wrap(outRowBytes).order(order);
+
+        for (int row = 0; row < imgH; row++) {
+            int offset = (int) stripOffsets[row];
+            int len = (int) stripByteCounts[row];
+            if (compression == 5) {
+                byte[] comp = Arrays.copyOfRange(bytes, offset, offset + len);
+                decodeTiffLzw(comp, outRowBytes);
+            } else {
+                System.arraycopy(bytes, offset, outRowBytes, 0, Math.min(len, outRowBytes.length));
+            }
+            rowBb.rewind();
+            float[] dstRow = grid[row];
+            for (int col = 0; col < imgW; col++) {
+                dstRow[col] = rowBb.getFloat();
+            }
+        }
+        return grid;
+    }
+
+    private static long[] readTiffIntArray(ByteBuffer full, int type, int count, int offset) {
+        long[] arr = new long[count];
+        for (int c = 0; c < count; c++) {
+            if (type == 3) {
+                arr[c] = full.getShort(offset + c * 2) & 0xFFFFL;
+            } else if (type == 4) {
+                arr[c] = full.getInt(offset + c * 4) & 0xFFFFFFFFL;
+            }
+        }
+        return arr;
     }
 
     private static void decodeTiffLzw(byte[] compressed, byte[] uncompressed) {

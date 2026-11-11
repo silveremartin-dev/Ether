@@ -122,12 +122,57 @@ public final class HistoricalInstitutionalRasterizer {
      */
     public static BufferedImage rasterizeEcologicalFootprintMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
-        BufferedImage img = new BufferedImage(HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, BufferedImage.TYPE_INT_RGB);
+        int width = HistoricalMapGenerator.WIDTH;
+        int height = HistoricalMapGenerator.HEIGHT;
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
+
+        // 1. Holocene -> Contemporary (10,000 BCE .. 2024+ CE): derive anthropogenic Anthrome strain
+        // directly from conservatively resampled HYDE 3.4 land-use grids (cropland, irrigation, pasture,
+        // rangeland, built-up urban) + empirical density pressure.
+        if (year >= -10000L) {
+            Hyde34LandUseReader.LandUseFields lu = Hyde34LandUseReader.loadForYear(Math.min(year, 2024L));
+            if (lu != null) {
+                BufferedImage densityGrid = (year <= 2024L) ? Hyde34GridReader.loadForYear(year) : Hyde34GridReader.loadForYear(2024L);
+                for (int y = 0; y < height; y++) {
+                    double lat = 90.0 - (y + 0.5) / height * 180.0;
+                    for (int x = 0; x < width; x++) {
+                        double lon = -180.0 + (x + 0.5) / width * 360.0;
+                        int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : width) / width), 0, (mask != null ? mask.getWidth() : width) - 1);
+                        int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
+                        int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                        if (land == 0) {
+                            img.setRGB(x, y, 0x000000);
+                            continue;
+                        }
+
+                        double strain = Hyde34LandUseReader.computeAnthropogenicStrainIndex(
+                                lu.croplandFrac()[y][x],
+                                lu.irrigatedFrac()[y][x],
+                                lu.pastureFrac()[y][x],
+                                lu.rangelandFrac()[y][x],
+                                lu.urbanFrac()[y][x]);
+
+                        double popBoost = 0.0;
+                        if (densityGrid != null) {
+                            double dNorm = (densityGrid.getRGB(x, y) & 0xFF) / 255.0;
+                            popBoost = 0.18 * dNorm;
+                        }
+
+                        // Concave power compression preserves early-Holocene extensive gradients alongside modern cities
+                        double compressed = Math.pow(Math.clamp(strain + popBoost, 0.0, 1.0), 0.65);
+                        double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
+                        int gray = Math.clamp((int) Math.round((12.0 + compressed * 243.0) * occWeight), 0, 255);
+                        img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                    }
+                }
+                return HistoricalMapGenerator.applyAltimetryCoastlineMask(img);
+            }
+        }
 
         if (year >= 1900L) {
             BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernEcologicalMap(
-                    year, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask);
+                    year, width, height, mask);
             if (modernImg != null) {
                 return HistoricalMapGenerator.applyAltimetryCoastlineMask(modernImg);
             }

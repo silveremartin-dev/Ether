@@ -61,8 +61,10 @@ public class SimulationPerformanceConfig implements Serializable {
         RUST_NATIVE
     }
 
-    /** Execution engine backend mode (default: JAVA_VECTOR_SIMD) */
-    private ExecutionEngineMode executionEngineMode = ExecutionEngineMode.JAVA_VECTOR_SIMD;
+    /** Execution engine backend mode (default: RUST_NATIVE if compiled library is present, otherwise JAVA_VECTOR_SIMD) */
+    private ExecutionEngineMode executionEngineMode = org.ether.society.core.dod.NativeRustBridge.isNativeAvailable()
+            ? ExecutionEngineMode.RUST_NATIVE
+            : ExecutionEngineMode.JAVA_VECTOR_SIMD;
 
     /**
      * Simulation performance config.

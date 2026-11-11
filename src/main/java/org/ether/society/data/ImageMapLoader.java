@@ -150,110 +150,18 @@ public class ImageMapLoader {
             return;
         }
 
-        PixelReader elevReader = elevImg != null ? elevImg.getPixelReader() : null;
-        PixelReader biomeReader = biomeImg != null ? biomeImg.getPixelReader() : null;
-        PixelReader resourceReader = resourceImg != null ? resourceImg.getPixelReader() : null;
-        PixelReader climateReader = climateImg != null ? climateImg.getPixelReader() : null;
-        PixelReader rainfallReader = rainfallImg != null ? rainfallImg.getPixelReader() : null;
-        PixelReader seasonalityReader = seasonalityImg != null ? seasonalityImg.getPixelReader() : null;
+        H3RasterAggregator.mapRastersToCells(
+                cells,
+                H3RasterAggregator.RasterArgbBuffer.fromFxImage(elevImg),
+                H3RasterAggregator.RasterArgbBuffer.fromFxImage(biomeImg),
+                H3RasterAggregator.RasterArgbBuffer.fromFxImage(resourceImg),
+                H3RasterAggregator.RasterArgbBuffer.fromFxImage(climateImg),
+                H3RasterAggregator.RasterArgbBuffer.fromFxImage(rainfallImg),
+                H3RasterAggregator.RasterArgbBuffer.fromFxImage(seasonalityImg),
+                minAlt,
+                maxAlt);
 
-        double wElev = elevImg != null ? elevImg.getWidth() : 0;
-        double hElev = elevImg != null ? elevImg.getHeight() : 0;
-        double wBiome = biomeImg != null ? biomeImg.getWidth() : 0;
-        double hBiome = biomeImg != null ? biomeImg.getHeight() : 0;
-        double wRes = resourceImg != null ? resourceImg.getWidth() : 0;
-        double hRes = resourceImg != null ? resourceImg.getHeight() : 0;
-        double wClimate = climateImg != null ? climateImg.getWidth() : 0;
-        double hClimate = climateImg != null ? climateImg.getHeight() : 0;
-        double wRain = rainfallImg != null ? rainfallImg.getWidth() : 0;
-        double hRain = rainfallImg != null ? rainfallImg.getHeight() : 0;
-        double wSeason = seasonalityImg != null ? seasonalityImg.getWidth() : 0;
-        double hSeason = seasonalityImg != null ? seasonalityImg.getHeight() : 0;
-
-        for (H3Cell cell : cells) {
-            double lat = cell.getLatitude();
-            double lng = cell.getLongitude();
-
-            double u = Math.clamp((lng + 180.0) / 360.0, 0.0, 1.0);
-            double v = Math.clamp((90.0 - lat) / 180.0, 0.0, 1.0);
-
-            if (elevReader != null) {
-                int x = (int) Math.min(u * wElev, wElev - 1);
-                int y = (int) Math.min(v * hElev, hElev - 1);
-                int argb = elevReader.getArgb(x, y);
-                int r = (argb >> 16) & 0xFF;
-                int g = (argb >> 8) & 0xFF;
-                int b = argb & 0xFF;
-                double brightness = Math.max(r, Math.max(g, b)) / 255.0;
-                double elevation = org.ether.society.generation.PlanetPreset.waterLevelToMeters(brightness, minAlt, maxAlt);
-                cell.setElevation(elevation);
-            }
-
-            if (biomeReader != null) {
-                int x = (int) Math.min(u * wBiome, wBiome - 1);
-                int y = (int) Math.min(v * hBiome, hBiome - 1);
-                cell.setBiome(matchBiomeArgb(biomeReader.getArgb(x, y)));
-            } else if (elevReader != null) {
-                double elev = cell.getElevation() != null ? cell.getElevation() : 0.0;
-                if (elev < 0) cell.setBiome(Biome.OCEAN);
-                else if (elev > 0.85 * maxAlt) cell.setBiome(Biome.SNOW);
-                else if (elev > 0.65 * maxAlt) cell.setBiome(Biome.MOUNTAINS);
-                else if (elev > 0.35 * maxAlt) cell.setBiome(Biome.HILLS);
-                else cell.setBiome(Biome.PLAINS);
-            }
-
-            if (resourceReader != null) {
-                int x = (int) Math.min(u * wRes, wRes - 1);
-                int y = (int) Math.min(v * hRes, hRes - 1);
-                int argb = resourceReader.getArgb(x, y);
-                double r = ((argb >> 16) & 0xFF) / 255.0;
-                double g = ((argb >> 8) & 0xFF) / 255.0;
-                double b = (argb & 0xFF) / 255.0;
-
-                cell.setResourceMetal(r * 1000.0);
-                cell.setResourceClay((r * 0.5 + g * 0.5) * 500.0);
-                cell.setWoodResource(g * 1000.0);
-                cell.setBiomassNatural(g * 1000.0);
-                cell.setFoodResource(g * 500.0);
-                cell.setWaterResource(b * 1000.0);
-                cell.setBiomassFish(b * 1000.0);
-            }
-
-            if (climateReader != null) {
-                int x = (int) Math.min(u * wClimate, wClimate - 1);
-                int y = (int) Math.min(v * hClimate, hClimate - 1);
-                int argb = climateReader.getArgb(x, y);
-                double r = ((argb >> 16) & 0xFF) / 255.0;
-                cell.setTemperature(-50.0 + r * 100.0);
-                if (rainfallReader == null) {
-                    double g = ((argb >> 8) & 0xFF) / 255.0;
-                    cell.setRainfall(g * 3000.0);
-                }
-            }
-
-            if (rainfallReader != null) {
-                int x = (int) Math.min(u * wRain, wRain - 1);
-                int y = (int) Math.min(v * hRain, hRain - 1);
-                int argb = rainfallReader.getArgb(x, y);
-                int r = (argb >> 16) & 0xFF;
-                int g = (argb >> 8) & 0xFF;
-                int b = argb & 0xFF;
-                cell.setRainfall((Math.max(r, Math.max(g, b)) / 255.0) * 3000.0);
-            }
-
-            if (seasonalityReader != null) {
-                int x = (int) Math.min(u * wSeason, wSeason - 1);
-                int y = (int) Math.min(v * hSeason, hSeason - 1);
-                int argb = seasonalityReader.getArgb(x, y);
-                int r = (argb >> 16) & 0xFF;
-                int g = (argb >> 8) & 0xFF;
-                int b = argb & 0xFF;
-                double seasonalDelta = (Math.max(r, Math.max(g, b)) / 255.0) * 50.0;
-                cell.setTemperature(cell.getTemperature() + (Math.sin(Math.toRadians(lat)) * seasonalDelta * 0.5));
-            }
-        }
-
-        logger.info("Mapped data from map images (Elevation: {}, Biome: {}, Resource: {}, Climate: {}, Rain: {}, Season: {}) to {} cells",
+        logger.info("Mapped data from JavaFX rasters via spherical H3 aggregation (Elevation: {}, Biome: {}, Resource: {}, Climate: {}, Rain: {}, Season: {}) to {} cells",
                 elevImg != null, biomeImg != null, resourceImg != null, climateImg != null, rainfallImg != null, seasonalityImg != null, cells.size());
     }
 

@@ -10,12 +10,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ether.society.analytics.EngineContributionReport;
 import org.ether.society.analytics.HistoricalValidationKernel;
 import org.ether.society.analytics.HistorySnapshot;
 import org.ether.society.analytics.SimulationRunRecord;
 import org.ether.society.analytics.SimulationRunRepository;
+import org.ether.society.analytics.Tier2EngineContributionAnalyzer;
 import org.ether.society.config.EtherPaths;
 import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.model.Scenario;
 import org.ether.society.persistence.EtherJsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,7 +171,34 @@ public final class ComparativeTelemetryDataLoader {
             List<HistorySnapshot> snaps = mapper.readValue(histPath.toFile(),
                 new TypeReference<List<HistorySnapshot>>() {});
             if (snaps != null && !snaps.isEmpty()) {
-                SimulationRunRecord rec = new SimulationRunRecord(saveId, scenarioName, "GCP/Offline Full True Simulation", null);
+                Path saveDir = histPath.getParent();
+                Map<String, String> paramMatrix = new LinkedHashMap<>();
+                if (saveDir != null) {
+                    Path scenarioPath = saveDir.resolve("scenario.json");
+                    if (Files.exists(scenarioPath)) {
+                        try {
+                            Scenario sc = mapper.readValue(scenarioPath.toFile(), Scenario.class);
+                            if (sc != null) {
+                                paramMatrix.put("Préréglage Planétaire", sc.getPlanetPreset() != null ? sc.getPlanetPreset().name() : "EARTH_LIKE");
+                                paramMatrix.put("H3 Resolution", String.valueOf(sc.getH3Resolution()));
+                                paramMatrix.put("Strict Determinism", String.valueOf(sc.isStrictDeterminism()));
+                                paramMatrix.put("Spatial Domain", sc.isClippingEnabled() ? "REGIONAL_WINDOW" : "PLANETARY_MESH");
+                                if (sc.isClippingEnabled()) {
+                                    paramMatrix.put("Window Bounds", String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f",
+                                            sc.getMinLat(), sc.getMaxLat(), sc.getMinLng(), sc.getMaxLng()));
+                                }
+                                if (sc.getTypeBEngineStates() != null) {
+                                    for (var entry : sc.getTypeBEngineStates().entrySet()) {
+                                        if (Boolean.TRUE.equals(entry.getValue())) {
+                                            paramMatrix.put("Engine: " + entry.getKey(), "✅ Activé");
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception ignored) {}
+                    }
+                }
+                SimulationRunRecord rec = new SimulationRunRecord(saveId, scenarioName, "GCP/Offline Full True Simulation", paramMatrix);
                 final double scalingFactor = 1.0; // Rule 8 AGENTS.MD: Invariant 1.0 factor preserves authentic cellular telemetry
 
                 for (HistorySnapshot snap : snaps) {
@@ -319,6 +349,12 @@ public final class ComparativeTelemetryDataLoader {
                     metricsMap.put("epistemicDiscrepancy", 0.05);
 
                     rec.addSnapshot(snap.year(), snap.totalPopulation(), foodPerCap, snap.avgTechnology(), 100.0 - snap.conflictLevel(), 100, metricsMap);
+                }
+                if (saveDir != null) {
+                    EngineContributionReport contrib = Tier2EngineContributionAnalyzer.loadReport(saveDir);
+                    if (contrib != null) {
+                        rec.setEngineContributionReport(contrib);
+                    }
                 }
                 runRepository.saveRun(rec);
             }

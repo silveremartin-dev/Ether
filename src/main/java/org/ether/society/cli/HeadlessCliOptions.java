@@ -81,6 +81,8 @@ public final class HeadlessCliOptions {
 
     public boolean saveEnabled = true;
     public String customSaveName = null;
+    public boolean generateReport = false;
+    public boolean computeEngineContributions = true;
 
     /**
      * Parses CLI arguments into a structured {@link HeadlessCliOptions} instance.
@@ -270,6 +272,10 @@ public final class HeadlessCliOptions {
                 o.saveEnabled = true;
             } else if (a.equals("--no-save")) {
                 o.saveEnabled = false;
+            } else if (a.equals("--report")) {
+                o.generateReport = true;
+            } else if (a.equals("--skip-engine-contributions")) {
+                o.computeEngineContributions = false;
             } else if (a.equals("--profile") || a.equals("-p")) {
                 o.showProfile = true;
             } else if (a.equals("--no-profile")) {
@@ -345,7 +351,8 @@ public final class HeadlessCliOptions {
         System.out.println("  --start-year=<YEAR> / --end-year=<YEAR> / --dt=<DAYS>");
         System.out.println("  --initial-pop=<N> / --initial-tech=<N> / --seed=<LONG>");
         System.out.println("\nPersistence, Profiling & Global Preferences:");
-        System.out.println("  --save=<NAME> / --no-save / --profile / --no-profile");
+        System.out.println("  --save=<NAME> / --no-save / --report / --skip-engine-contributions");
+        System.out.println("  --profile / --no-profile");
         System.out.println("  --lang=<EN|FR|DE|ES|ZH>, -l <LANG> / --theme=<dark|light|presentation>");
         System.out.println("  --help, -h, -?                                Display this help manual");
     }

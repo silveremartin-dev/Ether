@@ -6,7 +6,6 @@
  */
 package org.ether.society.analytics;
 
-import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
 import org.ether.society.i18n.I18n;
 
 import java.util.*;
@@ -151,18 +150,21 @@ public class GroundTruthAuditGenerator {
         }
         if (id == null) id = metric;
 
-        // 1. Direct hit in precomputed metricsMap (if present and non-NaN)
-        if (snap.getMetricsMap() != null && snap.getMetricsMap().containsKey(id)) {
-            double v = snap.getMetricsMap().get(id);
-            if (!Double.isNaN(v)) {
-                if ("zeroContainmentScore".equals(id) && v > 1.0) return v / 100.0;
-                if ("asabiyyahSocialCohesion".equals(id) && v > 1.0) return v / 100.0;
-                if ("primaryEnergy".equals(id) && v > 1e12) return v * 3.15576e-5;
-                return v;
+        // 1. Direct hit or canonical alias hit in precomputed metricsMap (if present and non-NaN)
+        if (snap.getMetricsMap() != null) {
+            Double directVal = snap.getMetricsMap().get(id);
+            if (directVal != null && !Double.isNaN(directVal)) {
+                return normalizeExtractedMetric(id, directVal);
+            }
+            for (String alias : resolveMetricAliases(id)) {
+                Double aliasVal = snap.getMetricsMap().get(alias);
+                if (aliasVal != null && !Double.isNaN(aliasVal)) {
+                    return normalizeExtractedMetric(id, aliasVal);
+                }
             }
         }
 
-        // 2. Physical snapshot state properties (population, technology, food)
+        // 2. Physical snapshot state properties (population, technology, food, stability)
         String lower = id.toLowerCase(Locale.ROOT);
         if (lower.contains("populat") || lower.contains("densit")) {
             return (double) snap.getPopulation();
@@ -173,27 +175,37 @@ public class GroundTruthAuditGenerator {
         if (lower.contains("food") || lower.contains("alim")) {
             return snap.getFood();
         }
-        if (lower.contains("mégafaune") || lower.contains("megafauna")) {
-            double v = snap.getValue("megafaunaIndex");
-            if (v != 0.0) return v;
-            return ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(year, snap.getPopulation() / 1e6, 0.2);
-        }
-        if (lower.contains("milankovitch") || lower.contains("insolation")) {
-            double v = snap.getValue("milankovitchInsolation");
-            if (v != 0.0) return v;
-            return ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year);
-        }
-        if (lower.contains("confinement") || lower.contains("zerocontainment")) {
-            double v = snap.getValue("zeroContainmentScore");
-            if (v > 1.0) v /= 100.0;
-            if (v == 0.0) {
-                v = PostHocCliodynamicMetricsExtractor.computeZeroContainmentScore(year);
-            }
-            return v;
+        if (lower.contains("asabiyyah") || lower.contains("stability")) {
+            return snap.getStability() > 1.0 ? snap.getStability() / 100.0 : snap.getStability();
         }
 
-        // 3. Systematically delegate all other macroeconomic & cliodynamic indicators
-        return PostHocCliodynamicMetricsExtractor.computeMetric(snap, id, year);
+        // Strict recorded-only extraction: unsubscribed or unrecorded variables return NaN (never fabricated by calendar formulas)
+        return Double.NaN;
+    }
+
+    private static double normalizeExtractedMetric(String id, double v) {
+        if ("zeroContainmentScore".equals(id) && v > 1.0) return v / 100.0;
+        if ("asabiyyahSocialCohesion".equals(id) && v > 1.0) return v / 100.0;
+        if ("primaryEnergy".equals(id) && v > 1e12) return v * 3.15576e-5;
+        if ("co2Concentration".equals(id) && v < 100.0) return 280.0 + v;
+        return v;
+    }
+
+    private static List<String> resolveMetricAliases(String id) {
+        return switch (id) {
+            case "worldPopulation" -> List.of("population", "regionalPopulation");
+            case "grossWorldProduct" -> List.of("gdp", "gdpTotal", "regionalGdp", "builtCapital");
+            case "primaryEnergy" -> List.of("energyCaptured", "regionalEnergy");
+            case "giniInequality" -> List.of("gini", "giniIndex");
+            case "asabiyyahSocialCohesion" -> List.of("asabiyyah");
+            case "politicalStressIndex" -> List.of("psiStressIndex");
+            case "sociopoliticalInstability" -> List.of("conflict");
+            case "lifeExpectancyAtBirth" -> List.of("lifeExpectancy");
+            case "literacyRate" -> List.of("educationLevel");
+            case "co2Concentration" -> List.of("carbonFootprint");
+            case "systemComplexity" -> List.of("systemInterdependence");
+            default -> Collections.emptyList();
+        };
     }
 
     /**
@@ -243,8 +255,33 @@ public class GroundTruthAuditGenerator {
                                                              Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
                                                              HistoricalValidationKernel.InterpolationMethod method,
                                                              double regionalExtensiveScaleFactor) {
+        return computeVariableDrift(label, benchKey, benchmark, timeSeries, method, regionalExtensiveScaleFactor, null);
+    }
+
+    /**
+     * Computes statistical drift parameters for a single state variable, extracting true empirical regional
+     * ground-truth values from 2D HYDE 3.4 rasters whenever {@code windowBounds} specifies a sub-global region.
+     *
+     * @param label                        display label
+     * @param benchKey                     canonical benchmark key
+     * @param benchmark                    empirical benchmark map
+     * @param timeSeries                   simulation telemetry snapshots
+     * @param method                       interpolation method
+     * @param regionalExtensiveScaleFactor spatial realm indicator (&lt; 0.0 for non-Earth)
+     * @param windowBounds                 optional {@code double[]{minLat, maxLat, minLng, maxLng}} for regional audits
+     * @return drift analysis record
+     */
+    public static VariableDriftAnalysis computeVariableDrift(String label, String benchKey, Map<Integer, Double> benchmark,
+                                                             Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
+                                                             HistoricalValidationKernel.InterpolationMethod method,
+                                                             double regionalExtensiveScaleFactor,
+                                                             double[] windowBounds) {
         if (regionalExtensiveScaleFactor < 0.0) {
             return new VariableDriftAnalysis(label, 0.0, "⚪ Non-Earth Realm", "—", "—", "—", getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
+        }
+
+        if (windowBounds != null && RegionalRasterBenchmarkExtractor.isUnrasteredExtensiveGlobalMetric(benchKey)) {
+            return new VariableDriftAnalysis(label, 0.0, "⚪ Regional (No 2D Ground-Truth Raster)", "—", "—", "—", getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
         }
 
         if (timeSeries == null || timeSeries.isEmpty()) {
@@ -279,17 +316,20 @@ public class GroundTruthAuditGenerator {
         List<Double> obsList = new ArrayList<>();
         List<Double> simList = new ArrayList<>();
 
+        Map<Integer, Double> regionalRasterSeries = (windowBounds != null && RegionalRasterBenchmarkExtractor.supportsRegionalRaster(benchKey))
+                ? RegionalRasterBenchmarkExtractor.extractRegionalSeries(benchKey, windowBounds, sampleYears)
+                : Collections.emptyMap();
+
         for (int yr : sampleYears) {
-            double obs = HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, yr, method);
+            double obs = !regionalRasterSeries.isEmpty()
+                    ? regionalRasterSeries.getOrDefault(yr, Double.NaN)
+                    : HistoricalValidationKernel.getInterpolatedBenchmarkValue(benchKey, yr, method);
             if (Double.isNaN(obs)) continue;
 
-            if (regionalExtensiveScaleFactor > 0.0 && regionalExtensiveScaleFactor < 0.50) {
-                if ("worldPopulation".equals(benchKey) || "grossWorldProduct".equals(benchKey) || "primaryEnergy".equals(benchKey)) {
-                    obs = obs * regionalExtensiveScaleFactor;
-                }
-            }
-
             double sim = extractValue(timeSeries.get(yr), benchKey, yr);
+            if (Double.isNaN(sim) || Double.isInfinite(sim)) {
+                continue;
+            }
             if ("milankovitchInsolation".equals(benchKey) && sim <= 0.0) {
                 continue;
             }
@@ -331,6 +371,91 @@ public class GroundTruthAuditGenerator {
             return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label),
                     0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns", 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, isTier1BiophysicalVariable(benchKey));
         }
+
+        return finalizeDriftAnalysis(label, benchKey, sumAbsError, count, driftYear, peakYear, maxError, errorList, obsList, simList);
+    }
+
+    /**
+     * Computes pairwise statistical comparison over an aligned list of intersection years
+     * between any two trajectories (empirical, predictive, or simulated).
+     *
+     * @param label           variable display label
+     * @param benchKey        canonical variable key
+     * @param commonYears     ordered list of years inside the date intersection
+     * @param refExtractor    reference value extractor for a given year (returns NaN if absent)
+     * @param targetExtractor target value extractor for a given year (returns NaN if absent)
+     * @return pairwise {@link VariableDriftAnalysis}
+     */
+    public static VariableDriftAnalysis computePairwiseDrift(
+            String label,
+            String benchKey,
+            List<Integer> commonYears,
+            java.util.function.IntToDoubleFunction refExtractor,
+            java.util.function.IntToDoubleFunction targetExtractor) {
+
+        if (commonYears == null || commonYears.isEmpty() || refExtractor == null || targetExtractor == null) {
+            return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label),
+                    0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns", 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, isTier1BiophysicalVariable(benchKey));
+        }
+
+        double sumAbsError = 0.0;
+        int count = 0;
+        Integer driftYear = null;
+        int peakYear = commonYears.get(0);
+        double maxError = 0.0;
+        List<Double> errorList = new ArrayList<>();
+        List<Double> obsList = new ArrayList<>();
+        List<Double> simList = new ArrayList<>();
+
+        boolean isPercentageVariable = "temperatureAnomaly".equals(benchKey)
+                || "fossilSharePrimaryEnergy".equals(benchKey)
+                || "urbanizationRate".equals(benchKey)
+                || "literacyRate".equals(benchKey)
+                || "currencyDebasement".equals(benchKey)
+                || "sovereignDebtBurden".equals(benchKey)
+                || "soilErosionRate".equals(benchKey)
+                || "deforestationRate".equals(benchKey);
+
+        for (int yr : commonYears) {
+            double ref = refExtractor.applyAsDouble(yr);
+            double tgt = targetExtractor.applyAsDouble(yr);
+            if (Double.isNaN(ref) || Double.isNaN(tgt) || Double.isInfinite(ref) || Double.isInfinite(tgt)) {
+                continue;
+            }
+            double errPct;
+            if (Math.abs(ref) < 1e-4) {
+                errPct = (Math.abs(tgt) < 1e-3) ? 0.0 : (isPercentageVariable ? Math.min(100.0, Math.abs(tgt)) : Math.min(100.0, Math.abs(tgt) * 100.0));
+            } else {
+                double denom = isPercentageVariable ? Math.max(Math.abs(ref), 5.0) : Math.abs(ref);
+                errPct = Math.abs(tgt - ref) / denom * 100.0;
+            }
+            sumAbsError += errPct;
+            count++;
+            errorList.add(errPct);
+            obsList.add(ref);
+            simList.add(tgt);
+
+            double allowedTolerancePct = HistoricalValidationKernel.computeContinuousTemporalTolerance(yr) * 100.0;
+            if (errPct > allowedTolerancePct && driftYear == null) {
+                driftYear = yr;
+            }
+            if (errPct > maxError) {
+                maxError = errPct;
+                peakYear = yr;
+            }
+        }
+
+        if (count == 0) {
+            return new VariableDriftAnalysis(label, 0.0, "⚪ N/A", "—", "—", "—", getEngineModuleForVariable(label),
+                    0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns", 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, isTier1BiophysicalVariable(benchKey));
+        }
+
+        return finalizeDriftAnalysis(label, benchKey, sumAbsError, count, driftYear, peakYear, maxError, errorList, obsList, simList);
+    }
+
+    private static VariableDriftAnalysis finalizeDriftAnalysis(
+            String label, String benchKey, double sumAbsError, int count, Integer driftYear,
+            int peakYear, double maxError, List<Double> errorList, List<Double> obsList, List<Double> simList) {
 
         double mape = sumAbsError / count;
         boolean isTier1 = isTier1BiophysicalVariable(benchKey);
@@ -497,7 +622,7 @@ public class GroundTruthAuditGenerator {
         };
     }
 
-    private static double normalizeSimulatedUnits(String benchKey, double sim) {
+    static double normalizeSimulatedUnits(String benchKey, double sim) {
         if ("worldPopulation".equals(benchKey) && sim > 100.0) {
             return sim / 1_000_000.0;
         } else if ("grossWorldProduct".equals(benchKey) && sim > 1e6) {
@@ -543,6 +668,21 @@ public class GroundTruthAuditGenerator {
             return "📉 " + I18n.getOrDefault("analytics.pattern.convergent", "Convergent (damping)");
         }
         return "➖ " + I18n.getOrDefault("analytics.pattern.stable_offset", "Stable Offset (Uniform)");
+    }
+
+    /**
+     * Generates a unified comparative audit report across any selection of scenarios
+     * (historical ground truth, prospective SSP baselines, and/or simulated runs)
+     * strictly evaluated over their exact date intersection across all available variables.
+     */
+    public static <T extends ScenarioBenchmarkItem> AuditResult generateUnifiedComparativeReport(
+            List<T> selectedItems,
+            HistoricalValidationKernel.InterpolationMethod method,
+            Function<? super T, SimulationRunRecord> runResolver,
+            RootCauseAnalyzer analyzer,
+            SimulationRunRepository runRepository) {
+        return GroundTruthAuditReportBuilder.generateUnifiedComparativeReport(
+                selectedItems, method, runResolver, analyzer, runRepository);
     }
 
     /**

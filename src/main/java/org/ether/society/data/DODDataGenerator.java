@@ -33,7 +33,21 @@ public class DODDataGenerator {
      * @param buffer destination contiguous world state buffer
      */
     public static void populateWorldBuffer(List<H3Cell> cells, WorldBuffer buffer) {
-        logger.info("Populating WorldBuffer with {} cells...", cells.size());
+        populateWorldBuffer(cells, buffer, true);
+    }
+
+    /**
+     * Populates a {@link WorldBuffer} from a list of {@link H3Cell}s, optionally skipping
+     * Ring-1 H3 neighbor adjacency construction when only scalar/zonal telemetry reductions are needed.
+     *
+     * @param cells          ordered list of H3 hexagonal cells
+     * @param buffer         destination contiguous world state buffer
+     * @param buildNeighbors {@code true} for full simulation dynamics, {@code false} for fast telemetry extraction
+     */
+    public static void populateWorldBuffer(List<H3Cell> cells, WorldBuffer buffer, boolean buildNeighbors) {
+        if (buildNeighbors) {
+            logger.info("Populating WorldBuffer with {} cells...", cells.size());
+        }
 
         for (int i = 0; i < cells.size() && i < buffer.getCapacity(); i++) {
             H3Cell cell = cells.get(i);
@@ -82,27 +96,30 @@ public class DODDataGenerator {
             buffer.getSoilDepth()[i] = cell.getSoilDepth() != null ? cell.getSoilDepth().floatValue() : 1.0f;
             buffer.getSoilOrganicCarbon()[i] = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon().floatValue() : 25.0f;
             buffer.getCommercialFluxVolume()[i] = cell.getTradeNetwork() != null ? cell.getTradeNetwork().floatValue() : 0.0f;
+            buffer.getPollutionLevel()[i] = cell.getPollutionLevel() != null ? cell.getPollutionLevel().floatValue() : 0.0f;
         }
 
-        org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();
-        java.util.concurrent.ConcurrentHashMap<Long, Integer> indexMap = new java.util.concurrent.ConcurrentHashMap<>(cells.size());
-        java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(i -> {
-            indexMap.put(cells.get(i).getH3Index(), i);
-        });
+        if (buildNeighbors) {
+            org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();
+            java.util.concurrent.ConcurrentHashMap<Long, Integer> indexMap = new java.util.concurrent.ConcurrentHashMap<>(cells.size());
+            java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(i -> {
+                indexMap.put(cells.get(i).getH3Index(), i);
+            });
 
-        java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(i -> {
-            List<Long> neighbors = h3.getNeighbors(cells.get(i).getH3Index());
-            for (int j = 0; j < 6; j++) {
-                if (j < neighbors.size()) {
-                    buffer.getNeighborIndexes()[i][j] = indexMap.getOrDefault(neighbors.get(j), -1);
-                } else {
-                    buffer.getNeighborIndexes()[i][j] = -1;
+            java.util.stream.IntStream.range(0, cells.size()).parallel().forEach(i -> {
+                List<Long> neighbors = h3.getNeighbors(cells.get(i).getH3Index());
+                for (int j = 0; j < 6; j++) {
+                    if (j < neighbors.size()) {
+                        buffer.getNeighborIndexes()[i][j] = indexMap.getOrDefault(neighbors.get(j), -1);
+                    } else {
+                        buffer.getNeighborIndexes()[i][j] = -1;
+                    }
                 }
-            }
-        });
+            });
+            logger.info("WorldBuffer population complete.");
+        }
 
         buffer.invalidatePartitionIndices();
-        logger.info("WorldBuffer population complete.");
     }
 
     /**
