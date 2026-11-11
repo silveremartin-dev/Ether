@@ -661,8 +661,8 @@ public class CulturalMatrixComparisonPane extends VBox {
         FileChooser fc = new FileChooser();
         fc.setTitle(I18n.getOrDefault("analytics.cultural.export_csv", "Export Cultural Matrices (CSV)"));
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv"));
-        String idA = itemA.getScenario() != null && itemA.getScenario().getId() != null ? itemA.getScenario().getId() : itemA.getRunId();
-        String idB = itemB != null ? (itemB.getScenario() != null && itemB.getScenario().getId() != null ? itemB.getScenario().getId() : itemB.getRunId()) : "self";
+        String idA = itemA.getScenario() != null && itemA.getScenario().getId() != null ? String.valueOf(itemA.getScenario().getId()) : (itemA.getRunId() != null ? itemA.getRunId() : "scenario_a");
+        String idB = itemB != null ? (itemB.getScenario() != null && itemB.getScenario().getId() != null ? String.valueOf(itemB.getScenario().getId()) : (itemB.getRunId() != null ? itemB.getRunId() : "scenario_b")) : "self";
         fc.setInitialFileName(String.format("cultural_matrix_diff_%s_vs_%s_%d.csv", idA, idB, epoch));
 
         File file = fc.showSaveDialog(getScene() != null ? getScene().getWindow() : null);

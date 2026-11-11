@@ -302,6 +302,7 @@ public class LocalTriScenarioAuditTest {
         Map<String, String> canonicalKeys = GroundTruthAuditReportBuilder.buildCanonicalBenchmarkKeyMap();
         double scaleFactor = GroundTruthAuditReportBuilder.computeRegionalScaleFactor(
                 record, record.getTimeSeriesData(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+        double[] windowBounds = RegionalRasterBenchmarkExtractor.parseWindowBounds(record);
 
         if (scaleFactor < 0.0) {
             catC.add("Exoplanetary simulation: Terrestrial Earth datasets (HYDE/Maddison) are not applicable");
@@ -310,8 +311,8 @@ public class LocalTriScenarioAuditTest {
                 String label = entry.getKey();
                 String benchKey = entry.getValue();
 
-                // If regional window, skip planetary atmospheric CO2 or global GWP unless regional ground-truth exists
-                if (scaleFactor < 0.95 && ("co2Concentration".equals(benchKey) || "grossWorldProduct".equals(benchKey) || "primaryEnergy".equals(benchKey))) {
+                // If regional window, skip unrastered extensive global aggregates
+                if (windowBounds != null && RegionalRasterBenchmarkExtractor.isUnrasteredExtensiveGlobalMetric(benchKey)) {
                     continue;
                 }
 
@@ -320,10 +321,12 @@ public class LocalTriScenarioAuditTest {
                     GroundTruthAuditGenerator.VariableDriftAnalysis drift = GroundTruthAuditGenerator.computeVariableDrift(
                             label, benchKey, bench, record.getTimeSeriesData(),
                             HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC,
-                            scaleFactor
+                            scaleFactor,
+                            windowBounds
                     );
                     if (drift != null && !Double.isNaN(drift.mape)
                             && !"⚪ Non-Earth Realm".equals(drift.status)
+                            && !"⚪ Regional (No 2D Ground-Truth Raster)".equals(drift.status)
                             && !"⚪ N/A".equals(drift.status)) {
                         mapes.put(benchKey, drift.mape);
                         drifts.add(drift);

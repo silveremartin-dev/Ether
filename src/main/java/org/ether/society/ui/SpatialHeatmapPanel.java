@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * 2D &amp; 2D+1D Spatial Dynamic Territory Atlas &amp; Animated Replay Component for {@link StatsPanel}.
