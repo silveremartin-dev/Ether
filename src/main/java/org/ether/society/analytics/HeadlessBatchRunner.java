@@ -303,9 +303,7 @@ public class HeadlessBatchRunner {
 
         // Initial snapshot at startYear
         recordTelemetrySnapshot(record, engine, (int) startYear);
-        if (effectiveSub.isSpatialSubscribed()) {
-            record.addSpatialSnapshot((int) startYear, cells);
-        }
+        record.addSpatialSnapshot((int) startYear, cells);
 
         if (listener != null) {
             listener.onProgress(scenario, 0.0, (int) startYear, (int) endYear);
@@ -351,6 +349,8 @@ public class HeadlessBatchRunner {
         long finalSimYear = engine.getCurrentYear();
         if (lastSampledYear < finalSimYear || !record.getTimeSeriesData().containsKey((int) finalSimYear)) {
             recordTelemetrySnapshot(record, engine, (int) finalSimYear);
+        }
+        if (!record.getSpatialSnapshots().containsKey((int) finalSimYear)) {
             record.addSpatialSnapshot((int) finalSimYear, engine.getCells());
         }
 

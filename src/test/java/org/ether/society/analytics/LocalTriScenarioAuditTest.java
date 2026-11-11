@@ -92,7 +92,7 @@ public class LocalTriScenarioAuditTest {
                 165, 185,
                 1000,
                 resolution,
-                "data/maps/ether/earth/160/earth_160_density.png"
+                "data/maps/ether/earth/180/earth_180_density.png"
         ));
 
         // 2. Medieval Hydraulic Pre-Industrialization: Song Dynasty (1000 - 1020 CE, 20 years)
@@ -101,7 +101,7 @@ public class LocalTriScenarioAuditTest {
                 1000, 1020,
                 2000,
                 resolution,
-                "data/maps/ether/earth/1000/earth_1000_density.png"
+                "data/maps/ether/earth/1020/earth_1020_density.png"
         ));
 
         // 3. Post-Feudal Pandemic & Wage Inversion: Black Death (1347 - 1367 CE, 20 years)
@@ -110,7 +110,7 @@ public class LocalTriScenarioAuditTest {
                 1347, 1367,
                 1500,
                 resolution,
-                "data/maps/ether/earth/1347/earth_1347_density.png"
+                "data/maps/ether/earth/1360/earth_1360_density.png"
         ));
 
         // Assert all runs succeeded
@@ -152,7 +152,7 @@ public class LocalTriScenarioAuditTest {
                 165, 185,
                 1000,
                 resolution,
-                "data/maps/ether/earth/160/earth_160_density.png"
+                "data/maps/ether/earth/180/earth_180_density.png"
         ));
 
         // 2. Medieval Hydraulic Pre-Industrialization: Song Dynasty (1000 - 1020 CE, 20 years)
@@ -161,7 +161,7 @@ public class LocalTriScenarioAuditTest {
                 1000, 1020,
                 2000,
                 resolution,
-                "data/maps/ether/earth/1000/earth_1000_density.png"
+                "data/maps/ether/earth/1020/earth_1020_density.png"
         ));
 
         // 3. Post-Feudal Pandemic & Wage Inversion: Black Death (1347 - 1367 CE, 20 years)
@@ -170,7 +170,7 @@ public class LocalTriScenarioAuditTest {
                 1347, 1367,
                 1500,
                 resolution,
-                "data/maps/ether/earth/1347/earth_1347_density.png"
+                "data/maps/ether/earth/1360/earth_1360_density.png"
         ));
 
         // 4. First Industrial Revolution & Fossil Energy: Industrial 1800 (1800 - 1820 CE, 20 years)

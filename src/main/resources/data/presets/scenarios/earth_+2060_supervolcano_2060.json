@@ -238,7 +238,7 @@
   "populationDensityType" : "EARTH_EMPIRICAL_RASTER",
   "cellSizeKm2" : 100.0,
   "targetCohortSize" : 250,
-  "temporalResolutionDays" : 30.0,
+  "temporalResolutionDays" : 7.0,
   "climateHarshness" : 0.5,
   "startDateYear" : 2060,
   "endDateYear" : 2110,
