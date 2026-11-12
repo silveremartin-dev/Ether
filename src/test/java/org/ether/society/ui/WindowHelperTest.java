@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class WindowHelperTest {
 

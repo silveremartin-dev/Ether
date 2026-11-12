@@ -51,7 +51,7 @@ import java.util.function.Supplier;
  * the root {@link ResourceDistributionPanel} layout class.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class ResourceHostContextFactory {
 

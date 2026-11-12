@@ -20,7 +20,7 @@ import java.util.List;
  * with textbook fidelity.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class World3PureEngine extends AbstractSimulationEngine {
     public World3PureEngine() {

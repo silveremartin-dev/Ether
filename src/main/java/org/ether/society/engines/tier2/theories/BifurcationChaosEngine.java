@@ -23,7 +23,7 @@ import java.util.List;
  * imminent cliodynamic or ecological collapses across the H3 planetary grid.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class BifurcationChaosEngine extends AbstractSimulationEngine {
     public BifurcationChaosEngine() {

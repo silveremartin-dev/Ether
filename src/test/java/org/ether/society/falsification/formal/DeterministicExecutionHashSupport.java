@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  * double-buffered Halo boundary exchanges, and full {@link H3SimulationEngine} trajectory hashing.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HighPrecisionDiscretizationAndDeterminismTest
  */
 final class DeterministicExecutionHashSupport {

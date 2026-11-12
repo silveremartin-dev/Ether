@@ -23,7 +23,7 @@ import java.util.function.Function;
  * multi-scenario cross-matrices are delegated to {@link GroundTruthAuditReportBuilder}.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see GroundTruthAuditReportBuilder
  */
 public class GroundTruthAuditGenerator {

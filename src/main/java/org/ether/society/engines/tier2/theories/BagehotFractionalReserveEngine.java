@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://www.gutenberg.org">Bagehot, W. (1873), Lombard Street</a>
  * @see SovereignTreasuryBondEngine
  */

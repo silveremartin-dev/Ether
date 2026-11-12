@@ -38,7 +38,7 @@ import java.util.function.Consumer;
  * JavaFX container and delegated subsystem managers.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class ScenarioHostContextFactory {
 

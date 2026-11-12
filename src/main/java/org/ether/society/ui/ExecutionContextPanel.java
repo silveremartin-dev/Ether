@@ -34,7 +34,7 @@ import java.util.prefs.Preferences;
  * execution topology (Local vs Distributed Cluster, DB Persistence), and rendering mode (GUI vs Headless Batch).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ExecutionContextPanel extends BorderPane {
 

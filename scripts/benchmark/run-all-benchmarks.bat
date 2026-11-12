@@ -14,7 +14,7 @@ echo ===========================================================================
 echo Working Directory: %CD%
 
 rem Verify JAR exists or trigger build
-if not exist "target\society-simulation-1.0.0-beta.2-executable.jar" (
+if not exist "target\society-simulation-1.0.0-beta.3-executable.jar" (
     echo [*] Executable JAR not found. Building shaded JAR with Maven...
     call mvn clean package -DskipTests
     if errorlevel 1 (
@@ -24,7 +24,7 @@ if not exist "target\society-simulation-1.0.0-beta.2-executable.jar" (
 )
 
 echo [*] Launching 5-Axis Real Planetary Simulation Engine Benchmarks...
-java -XX:+UseG1GC -Xms8g -Xmx16g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -cp "target\society-simulation-1.0.0-beta.2-executable.jar" org.ether.society.benchmark.RealPlanetaryEngineBenchmarkRunner %*
+java -XX:+UseG1GC -Xms8g -Xmx16g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED -cp "target\society-simulation-1.0.0-beta.3-executable.jar" org.ether.society.benchmark.RealPlanetaryEngineBenchmarkRunner %*
 
 echo.
 echo [*] Benchmark execution completed successfully.

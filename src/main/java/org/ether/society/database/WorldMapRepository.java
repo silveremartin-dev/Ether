@@ -23,7 +23,7 @@ import java.util.Optional;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class WorldMapRepository {
     private static final Logger logger = LoggerFactory.getLogger(WorldMapRepository.class);

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://www.blackwellpublishing.com">Barfield, T. J. (1989), The Perilous Frontier</a>
  * @see FrontierAsabiyyahEngine
  * @see WarDiplomacyEngine

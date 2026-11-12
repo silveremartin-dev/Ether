@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * chunk execution frames for both Master and Worker roles in {@link ClusterCoordinator}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ClusterCoordinator
  */
 public final class ClusterNodeSessionHandler {

@@ -8,7 +8,7 @@ package org.ether.society.core.engine;
  * Categorical classification of planetary simulation engines.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public enum EngineTier {
     /**

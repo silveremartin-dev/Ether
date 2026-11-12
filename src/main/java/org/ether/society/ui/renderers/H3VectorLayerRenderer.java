@@ -33,7 +33,7 @@ import java.util.Map;
  * from raw raster canvas pixel pipelines.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class H3VectorLayerRenderer {
 

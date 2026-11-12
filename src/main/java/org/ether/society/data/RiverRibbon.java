@@ -14,7 +14,7 @@ package org.ether.society.data;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class RiverRibbon {
     public double lng1, lat1, lng2, lat2, weight, widthDeg;

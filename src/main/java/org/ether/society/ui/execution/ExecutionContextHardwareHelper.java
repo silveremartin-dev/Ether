@@ -61,12 +61,16 @@ public final class ExecutionContextHardwareHelper {
 
     /**
      * Recommends the optimal hardware mode based on host capabilities.
+     * <p>
+     * On typical multi-core workstations, Java 21+ Vector SIMD avoids Panama FFM memory segment
+     * transition costs across the 90 full-tick engines, yielding higher end-to-end throughput.
+     * </p>
      *
      * @return recommended hardware acceleration mode
      */
     public static HardwareMode getRecommendedHardwareMode() {
-        if (isRustAvailable()) return HardwareMode.NATIVE_RUST;
         if (isSimdAvailable()) return HardwareMode.JAVA_VECTOR_SIMD;
+        if (isRustAvailable()) return HardwareMode.NATIVE_RUST;
         return HardwareMode.CPU_JIT;
     }
 

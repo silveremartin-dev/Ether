@@ -27,7 +27,7 @@ import java.util.List;
  * 4. Ended by external military tech shock (Perry Black Ships 1853).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class EdoJapanIsolationEngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(EdoJapanIsolationEngine.class);

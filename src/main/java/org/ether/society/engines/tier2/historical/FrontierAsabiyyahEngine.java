@@ -20,7 +20,7 @@ import java.util.List;
  * and decays in rich imperial hinterland centers due to Pareto inequality and luxury.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class FrontierAsabiyyahEngine extends AbstractSimulationEngine {
     public FrontierAsabiyyahEngine() {

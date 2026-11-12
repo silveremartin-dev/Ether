@@ -44,7 +44,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1002/ajpa.1330370606">Ruff (1994), Morphological adaptation in hominids</a>
  * @see <a href="https://doi.org/10.1038/202234a0">Foster (1964), Nature 202</a>
  */

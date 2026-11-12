@@ -21,7 +21,7 @@ import java.util.function.IntFunction;
  * UI section managing the real-time civilizational viability diagnostic card.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioLiveDiagnosticSection {
 

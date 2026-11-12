@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 2D spatial cartographic tensor comparison, and empirical ground truth audit reports.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ComparativeAnalyticsPanel extends BorderPane {
     static final Logger logger = LoggerFactory.getLogger(ComparativeAnalyticsPanel.class);

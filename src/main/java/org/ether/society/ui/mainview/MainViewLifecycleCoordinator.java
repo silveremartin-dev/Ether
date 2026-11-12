@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * and cross-tab pipeline handoffs for {@link org.ether.society.ui.MainView}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class MainViewLifecycleCoordinator {
 

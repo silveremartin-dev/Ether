@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * Package-private benchmark axis executors for {@link RealPlanetaryEngineBenchmarkRunner}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see RealPlanetaryEngineBenchmarkRunner
  */
 final class PlanetaryBenchmarkAxisExecutors {

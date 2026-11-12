@@ -43,7 +43,7 @@ import java.util.function.BooleanSupplier;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class ScenarioGridInitializer {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioGridInitializer.class);

@@ -30,7 +30,7 @@ import java.util.List;
  * progress bars, status badges, and comparator bindings.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class ComparativeScenarioTableCoordinator {
 

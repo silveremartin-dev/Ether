@@ -17,7 +17,7 @@ import java.util.List;
  * for subscribed telemetry ticks, including delta divergence analysis against baseline epochs.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see CompiledTelemetryPlan
  * @see TelemetrySubscription.CulturalMatrixQuery
  */

@@ -19,7 +19,7 @@ import java.util.List;
  * Models irreversible physical dissipation of metals into environment due to entropy generation.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class EntropicMetalDissipationEngine extends AbstractSimulationEngine {
     public EntropicMetalDissipationEngine() {

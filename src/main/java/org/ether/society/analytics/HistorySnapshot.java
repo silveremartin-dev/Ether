@@ -1,5 +1,10 @@
 package org.ether.society.analytics;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * <h1>History Snapshot</h1>
  * <p>
@@ -8,8 +13,9 @@ package org.ether.society.analytics;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record HistorySnapshot(
         int year,
         int month,
@@ -35,7 +41,31 @@ public record HistorySnapshot(
         double potableWater,
         double fertilityRate,
         int cityStates,
-        double eliteOverproduction) {
+        double eliteOverproduction,
+        @JsonProperty("dynamicMetrics") Map<String, Double> dynamicMetrics) {
+
+    public HistorySnapshot {
+        if (dynamicMetrics == null) {
+            dynamicMetrics = Collections.emptyMap();
+        }
+    }
+
+    /**
+     * Backward-compatible 25-parameter constructor without explicit dynamic metrics map.
+     */
+    public HistorySnapshot(
+            int year, int month, long totalPopulation, double totalFood, double totalWealth,
+            double avgLifespan, double globalGini, double avgTechnology, double energyCaptured,
+            double kardashevScale, double happinessIndex, double conflictLevel, double gdpTotal,
+            double divisionLabor, double systemComplexity, double collectiveMemory, double carbonFootprint,
+            double collapseVulnerability, double tps, double resourceDepletion, double naturalBiomass,
+            double potableWater, double fertilityRate, int cityStates, double eliteOverproduction) {
+        this(year, month, totalPopulation, totalFood, totalWealth, avgLifespan, globalGini, avgTechnology,
+             energyCaptured, kardashevScale, happinessIndex, conflictLevel, gdpTotal, divisionLabor,
+             systemComplexity, collectiveMemory, carbonFootprint, collapseVulnerability, tps,
+             resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction,
+             Collections.emptyMap());
+    }
 
     /**
      * Backward-compatible 8-parameter constructor.
@@ -44,7 +74,8 @@ public record HistorySnapshot(
                            double avgLifespan, double globalGini, double avgTechnology) {
         this(year, month, totalPopulation, totalFood, totalWealth, avgLifespan, globalGini, avgTechnology,
              totalPopulation * (10.0 + avgTechnology * 0.5), (Math.log10(Math.max(1.0, totalPopulation * 1000.0)) - 6) / 10.0,
-             75.0, 5.0, totalWealth * 1.5, 15.0, 20.0, 100.0, 0.5, 5.0, 60.0, 0.0, 5000.0, 20000.0, 3.5, 1, 0.1);
+             75.0, 5.0, totalWealth * 1.5, 15.0, 20.0, 100.0, 0.5, 5.0, 60.0, 0.0, 5000.0, 20000.0, 3.5, 1, 0.1,
+             Collections.emptyMap());
     }
 
     /**
@@ -52,6 +83,9 @@ public record HistorySnapshot(
      */
     public double getMetricValue(String metric) {
         if (metric == null) return totalPopulation;
+        if (dynamicMetrics != null && dynamicMetrics.containsKey(metric)) {
+            return dynamicMetrics.get(metric);
+        }
         return switch (metric) {
             case "Human Population", "Population Humaine", "population", "worldPopulation" -> totalPopulation;
             case "Food Stock per Capita", "Nourriture / Individu", "Nourriture", "foodPerCapita" -> totalFood;

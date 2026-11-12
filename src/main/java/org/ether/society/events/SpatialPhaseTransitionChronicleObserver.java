@@ -28,7 +28,7 @@ import java.util.*;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SpatialPhaseTransitionChronicleObserver implements Serializable {
     private static final long serialVersionUID = 1L;

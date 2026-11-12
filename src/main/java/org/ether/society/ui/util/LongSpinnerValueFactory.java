@@ -13,7 +13,7 @@ import javafx.util.StringConverter;
  * demographic quantities up to billions of agents.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class LongSpinnerValueFactory extends SpinnerValueFactory<Long> {
     private final long min;

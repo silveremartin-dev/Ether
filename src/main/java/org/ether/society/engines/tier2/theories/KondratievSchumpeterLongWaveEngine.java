@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.2307/1928486">Kondratiev, N. D. (1935), The Review of Economics and Statistics</a>
  * @see ArthurCombinatorialTechnologyEngine
  * @see KummelAyresExergyEngine

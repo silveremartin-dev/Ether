@@ -21,7 +21,7 @@ package org.ether.society.database.components;
  * @param soilSalinity soil salinity / electrical conductivity in dS/m
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public record BiomassState(
         double biomassHuman,

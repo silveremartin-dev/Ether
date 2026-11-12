@@ -26,7 +26,7 @@ import java.util.TreeMap;
  * physical empirical grid cells directly inside the simulated spatial domain.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see Hyde34GridReader
  * @see Hyde34LandUseReader
  */

@@ -21,7 +21,7 @@ import java.util.function.Function;
  * <p>Extracted from {@code PlanetGeneratorPanel} to satisfy the Single Responsibility Principle (SRP).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PlanetGeospatialExportHelper {
 

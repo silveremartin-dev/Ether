@@ -23,7 +23,7 @@ import java.util.List;
  * built-in scenarios.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HistoricalScenarioMapOrchestrator
  * @see HomininPaleoOccupancyHelper
  * @see PaleoClimateMapRasterizer

@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * historical and planetary bodies (Earth, Moon, Mars, Venus, Mercury).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 @Tag("manual")
 public class PlanetaryRasterSampler {

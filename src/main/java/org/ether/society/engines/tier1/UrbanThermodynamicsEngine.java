@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * and localized aquifer drawdowns in dense population centers.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class UrbanThermodynamicsEngine extends AbstractSimulationEngine {
     public UrbanThermodynamicsEngine() {

@@ -20,7 +20,7 @@ import javafx.scene.layout.VBox;
  * Standardized UI layout and control factory helper for panel builder sections.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class UISectionBuilderHelper {
 

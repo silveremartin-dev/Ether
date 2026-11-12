@@ -14,7 +14,7 @@ import java.util.Map;
  * Canonical 27-variable benchmark keys registry for comparative analytics.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class BenchmarkCanonicalKeyRegistry {
 

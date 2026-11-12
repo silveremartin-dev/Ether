@@ -21,7 +21,7 @@ import org.ether.society.model.OrganismBiophysicalProfile;
  * of conserved primary biophysical observables with zero state-level technology dependence.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see H3Cell
  * @see H3CellStateSnapshotHelper
  */

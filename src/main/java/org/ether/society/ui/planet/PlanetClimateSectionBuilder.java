@@ -24,7 +24,7 @@ import java.util.List;
  * Macroclimate Regimes, Thermal Equator-to-Pole Gradients, and Tri-Map Climate Raster Ingestion.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PlanetClimateSectionBuilder {
 

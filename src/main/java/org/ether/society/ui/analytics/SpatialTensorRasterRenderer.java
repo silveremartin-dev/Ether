@@ -27,7 +27,7 @@ import java.util.Locale;
  * across multi-spectral demographic, metabolic, climatic, and sociological color palettes.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class SpatialTensorRasterRenderer {
 

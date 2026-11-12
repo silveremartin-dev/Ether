@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  * scenario audit archetypes (Blocks 4, 5, and 6) registered by {@link ScenarioArchetypeAuditRegistry}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ScenarioArchetypeAuditRegistry
  */
 final class ScenarioArchetypeModernAndExoCatalog {

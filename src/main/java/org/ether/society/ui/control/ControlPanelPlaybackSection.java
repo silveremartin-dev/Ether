@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  * speed scaling, and database/cluster connection status rendering.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ControlPanelPlaybackSection {
 

@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * adhering to the Single Responsibility Principle (SRP) and Cartographic Tensor Provenance standards.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PaleoGeometryRegistry {
 

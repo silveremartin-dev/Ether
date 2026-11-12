@@ -30,7 +30,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class LyapunovChaosTrackerEngine {
     private static final Logger logger = LoggerFactory.getLogger(LyapunovChaosTrackerEngine.class);

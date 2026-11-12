@@ -28,7 +28,7 @@ import java.util.List;
  * 5. Continuous Peripheral Border Defection via Distance-Decay of Imperial Power ($\Psi &gt; \mathcal{C}_{\text{state}}$).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class CliodynamicsEngine extends AbstractSimulationEngine {
     public CliodynamicsEngine() {

@@ -52,7 +52,7 @@ import org.ether.society.core.math.SmoothMath;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class CliodynamicFormulasRegistry {
 

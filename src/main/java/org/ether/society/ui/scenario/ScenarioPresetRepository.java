@@ -29,7 +29,7 @@ import java.util.List;
  * scenario repository, and dirty state tracking.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioPresetRepository {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioPresetRepository.class);

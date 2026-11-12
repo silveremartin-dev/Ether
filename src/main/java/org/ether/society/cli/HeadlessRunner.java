@@ -34,7 +34,7 @@ import java.util.prefs.Preferences;
  * to {@link HeadlessScenarioResolver}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class HeadlessRunner {
 
@@ -121,6 +121,7 @@ public class HeadlessRunner {
                 clusterManager.dispatchScenarioToCluster(scenario);
                 engine.setClusterManager(clusterManager);
             }
+
 
             System.out.printf("Initializing grid with %,d cells (H3 Res: %d)...%n", cells.size(), effectiveRes);
             engine.initializeFromScenario(scenario, cells);

@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * and procedural emergence chronicles with category filtering and interactive click-to-ping navigation.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ControlPanelEventsSection {
 

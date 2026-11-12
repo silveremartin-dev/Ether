@@ -20,7 +20,7 @@ import java.util.List;
  * isogloss centers, kinship structures, and ritual sacred sites across civilizational eras.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class HistoricalScenarioFeaturesRegistry {
 

@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HistoricalRuptureArmEvaluator
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * hydraulic civilizations (Nile, Tigris-Euphrates, Indus, Yellow River) despite intensive agriculture.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class StreamPowerErosionEngine extends AbstractSimulationEngine {
     public StreamPowerErosionEngine() {

@@ -20,7 +20,7 @@ import java.util.*;
  * gravity models (Anderson 1979; Head &amp; Mayer 2014).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see TradeCorridorArbitrageHelper
  */
 public final class TradeNetworkRouter {

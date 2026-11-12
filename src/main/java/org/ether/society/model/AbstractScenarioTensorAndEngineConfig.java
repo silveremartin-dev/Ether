@@ -25,7 +25,7 @@ import java.util.Map;
  * deserialization preserve a 100% flat, backward-compatible schema.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see Scenario
  */
 @SuppressWarnings("serial")

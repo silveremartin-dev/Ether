@@ -13,7 +13,7 @@ import org.ether.society.i18n.I18n;
  * across an active spatio-temporal radius with anisotropic cultural and watershed coupling.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HistoricalInterventionPhysicsHelper
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

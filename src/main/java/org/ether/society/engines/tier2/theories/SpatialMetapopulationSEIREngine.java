@@ -34,7 +34,7 @@ import java.util.Objects;
  * </pre>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SpatialMetapopulationSEIREngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(SpatialMetapopulationSEIREngine.class);

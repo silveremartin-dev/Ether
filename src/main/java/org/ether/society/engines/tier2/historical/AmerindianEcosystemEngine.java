@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * 3. Agricultural intensification & drought vulnerability (e.g., Maya classic collapse).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class AmerindianEcosystemEngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(AmerindianEcosystemEngine.class);

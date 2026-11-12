@@ -38,7 +38,7 @@ import java.util.function.DoubleConsumer;
  * and deterministic procedural matrix generator for {@link CulturalAffinityMatrixDialog}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see CulturalAffinityMatrixDialog
  */
 final class CulturalAffinityMatrixViewHelper {

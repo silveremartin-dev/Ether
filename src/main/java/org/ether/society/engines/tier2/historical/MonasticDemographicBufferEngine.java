@@ -20,7 +20,7 @@ import java.util.List;
  * absorbing Malthusian demographic overpressure by dampening fertility without triggering war.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class MonasticDemographicBufferEngine extends AbstractSimulationEngine {
     public MonasticDemographicBufferEngine() {

@@ -26,7 +26,7 @@ import java.util.Locale;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ClimateEvent implements Serializable {
     private static final long serialVersionUID = 2L;

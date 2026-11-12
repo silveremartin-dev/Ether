@@ -19,7 +19,7 @@ import org.ether.society.model.ClimateEvent;
  * to the headless {@link EventPhysicalImpactExecutor} in the core simulation engine.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class GodModeDisasterExecutor {
 

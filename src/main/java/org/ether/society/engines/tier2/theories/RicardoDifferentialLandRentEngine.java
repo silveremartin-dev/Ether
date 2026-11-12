@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://www.econlib.org">Ricardo, D. (1817), Principles of Political Economy and Taxation</a>
  * @see BoserupAgriculturalIntensificationEngine
  * @see SoilNutrientNPKEngine

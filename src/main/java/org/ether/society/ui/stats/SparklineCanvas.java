@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
  * green for upward slope, red for downward slope, and cyan for homeostatic stability.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SparklineCanvas extends Canvas {
 

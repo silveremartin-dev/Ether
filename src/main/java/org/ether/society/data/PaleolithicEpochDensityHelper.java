@@ -11,7 +11,7 @@ import static org.ether.society.data.PaleoGeographyCoordinatesRegistry.*;
  * Analytical cliodynamic evaluator for paleolithic synthetic population densities across epochs.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PaleolithicEpochDensityHelper {
 

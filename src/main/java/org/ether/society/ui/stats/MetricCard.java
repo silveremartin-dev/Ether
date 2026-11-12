@@ -21,7 +21,7 @@ import javafx.scene.layout.Region;
  * Features localized title, numeric formatted display, measurement unit, hover tooltip, and embedded sparkline.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class MetricCard extends HBox {
 

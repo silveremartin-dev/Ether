@@ -20,7 +20,7 @@ import java.util.List;
  * and transition latency (tau_transition).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class InfrastructureInertiaEngine extends AbstractSimulationEngine {
     public InfrastructureInertiaEngine() {

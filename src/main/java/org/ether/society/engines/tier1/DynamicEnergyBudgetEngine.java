@@ -39,7 +39,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1017/CBO9780511805400">Kooijman (2010), Dynamic Energy Budget theory</a>
  */
 public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {

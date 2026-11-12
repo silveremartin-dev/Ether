@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * and resistance to recurrent climate shocks (cyclones, droughts, epidemics).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 @DisplayName("Madagascar Insular Cliodynamic & Ecological Validation Suite")
 public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {

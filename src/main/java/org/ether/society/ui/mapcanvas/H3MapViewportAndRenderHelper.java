@@ -37,7 +37,7 @@ import java.util.Map;
  * state container.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class H3MapViewportAndRenderHelper {
 

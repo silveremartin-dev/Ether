@@ -15,7 +15,7 @@ import java.util.Locale;
  * Display names and help documentation helper for {@link ResourceClimateSectionBuilder}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class ResourceClimateSourceHelper {
 

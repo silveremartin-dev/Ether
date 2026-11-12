@@ -40,7 +40,7 @@ import java.util.List;
  * catalyzing the pastoralist migration into the Nile Valley and the genesis of the Egyptian Old Kingdom.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class CharneyVegetationAlbedoEngine extends AbstractSimulationEngine {
     public CharneyVegetationAlbedoEngine() {

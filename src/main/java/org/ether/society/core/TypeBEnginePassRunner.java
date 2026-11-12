@@ -28,7 +28,7 @@ import java.util.Map;
  * eliminating hardcoded engine execution chains and manual reset lists.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see SimulationPipeline
  * @see SimulationEngineRegistry
  */

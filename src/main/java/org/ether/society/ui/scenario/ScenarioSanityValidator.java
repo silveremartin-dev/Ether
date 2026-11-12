@@ -28,7 +28,7 @@ import java.util.List;
  * carrying capacity feasibility, and symbolic JIT engine step conflicts before simulation ignition.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioSanityValidator {
 

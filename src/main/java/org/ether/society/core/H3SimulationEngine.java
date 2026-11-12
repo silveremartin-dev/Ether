@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see H3EngineLifecycleAndTickCoordinator
  * @see H3BufferAndEventCoordinator
  * @see SimulationPipeline
@@ -447,22 +447,25 @@ public final class H3SimulationEngine implements ISimulationEngine {
 
     /** @return immutable active telemetry subscription */
     public TelemetrySubscription getTelemetrySubscription() { return telemetryCoordinator.getTelemetrySubscription(); }
-    public void setTelemetrySubscription(TelemetrySubscription subscription) { telemetryCoordinator.setTelemetrySubscription(subscription); }
+    public void setTelemetrySubscription(TelemetrySubscription subscription) {
+        telemetryCoordinator.setTelemetrySubscription(subscription);
+        if (subscription != null && !subscription.isEmpty() && worldBuffer != null) {
+            evaluateTelemetryNow();
+            if (historyManager != null && historyManager.getHistory().getSnapshots().size() == 1) {
+                historyManager.getHistory().clear();
+                historyManager.captureSnapshot(this);
+            }
+        }
+    }
 
     /** @return pre-compiled topological DAG evaluation plan */
-    public CompiledTelemetryPlan getCompiledTelemetryPlan() {
-        return telemetryCoordinator.getCompiledTelemetryPlan();
-    }
+    public CompiledTelemetryPlan getCompiledTelemetryPlan() { return telemetryCoordinator.getCompiledTelemetryPlan(); }
 
     /** @return most recent memoized telemetry evaluation output (or {@link TelemetryEvaluationResult#EMPTY}) */
-    public TelemetryEvaluationResult getCachedTelemetryResult() {
-        return telemetryCoordinator.getCachedTelemetryResult();
-    }
+    public TelemetryEvaluationResult getCachedTelemetryResult() { return telemetryCoordinator.getCachedTelemetryResult(); }
 
     /** @return simulation tick index at which {@link #cachedTelemetryResult} was last evaluated */
-    public long getLastTelemetryTick() {
-        return telemetryCoordinator.getLastTelemetryTick();
-    }
+    public long getLastTelemetryTick() { return telemetryCoordinator.getLastTelemetryTick(); }
 
     public TelemetryEvaluationResult evaluateTelemetryNow() {
         TelemetryEvaluationResult res = telemetryCoordinator.evaluateTelemetryNow(

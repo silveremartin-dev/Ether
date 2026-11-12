@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * goodness-of-fit statistics via {@link BenchmarkStatisticalHelper}.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HistoricalBenchmarkDatasetRepository
  * @see BenchmarkInterpolator
  * @see BenchmarkStatisticalHelper

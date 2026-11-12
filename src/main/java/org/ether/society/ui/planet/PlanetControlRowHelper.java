@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  * UI row builder and bidirectional synchronization helper for planet generator sliders and spinners.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PlanetControlRowHelper {
 

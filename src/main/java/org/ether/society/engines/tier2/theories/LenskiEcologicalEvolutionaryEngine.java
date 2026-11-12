@@ -33,7 +33,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see LenskiPureEngine
  */
 public class LenskiEcologicalEvolutionaryEngine extends AbstractSimulationEngine {

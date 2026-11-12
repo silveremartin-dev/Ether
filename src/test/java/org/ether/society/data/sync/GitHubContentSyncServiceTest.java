@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests hash calculation, path filtering, and non-destructive conflict protection.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class GitHubContentSyncServiceTest {
 
@@ -48,7 +48,7 @@ public class GitHubContentSyncServiceTest {
     @Test
     public void testSha256Computation() throws IOException {
         Path testFile = tempDir.resolve("sample.txt");
-        Files.writeString(testFile, "Ether Simulation Engine v1.0.0-beta.2");
+        Files.writeString(testFile, "Ether Simulation Engine v1.0.0-beta.3");
 
         String hash = GitHubContentSyncService.computeSha256(testFile);
         assertNotNull(hash);
@@ -57,7 +57,7 @@ public class GitHubContentSyncServiceTest {
 
         // Identical content must produce identical hash
         Path testFile2 = tempDir.resolve("sample2.txt");
-        Files.writeString(testFile2, "Ether Simulation Engine v1.0.0-beta.2");
+        Files.writeString(testFile2, "Ether Simulation Engine v1.0.0-beta.3");
         assertEquals(hash, GitHubContentSyncService.computeSha256(testFile2));
 
         // Altered content must produce different hash

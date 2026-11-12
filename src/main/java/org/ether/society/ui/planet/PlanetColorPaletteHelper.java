@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
  * Cartographic color gradients and hypsometric palettes for planetary visualization.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PlanetColorPaletteHelper {
 

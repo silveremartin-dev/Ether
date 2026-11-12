@@ -24,7 +24,7 @@ import java.util.List;
  * (William Stanley Jevons, 1865; Alcott, 2005).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class JevonsParadoxEngine extends AbstractSimulationEngine {
 

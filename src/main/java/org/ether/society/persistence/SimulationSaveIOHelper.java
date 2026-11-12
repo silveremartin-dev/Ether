@@ -29,7 +29,7 @@ import java.util.zip.GZIPOutputStream;
  * File I/O and disk compression helper for {@link SimulationPersistenceService}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class SimulationSaveIOHelper {
     private static final Logger logger = LoggerFactory.getLogger(SimulationSaveIOHelper.class);

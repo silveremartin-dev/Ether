@@ -97,12 +97,12 @@ final class SpatialTensorMultiScenarioRenderer {
             Label targetTitle = new Label("📊 " + targetItem.getName());
             targetTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #f8fafc; -fx-font-size: 11px;");
 
-            Label metricsLabel = new Label("⏳ Evaluating...");
+            Label metricsLabel = new Label(I18n.getOrDefault("spatial.tensor.evaluating", "⏳ Evaluating..."));
             metricsLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
 
             Label lblTargetMap = new Label(targetItem.getName());
             lblTargetMap.setStyle("-fx-font-size: 9px; -fx-text-fill: #cbd5e1;");
-            Label lblDiffMap = new Label("Δ vs Baseline");
+            Label lblDiffMap = new Label(I18n.getOrDefault("spatial.tensor.delta_baseline", "Δ vs Baseline"));
             lblDiffMap.setStyle("-fx-font-size: 9px; -fx-text-fill: #f59e0b; -fx-font-weight: bold;");
 
             VBox boxTarget = new VBox(2, lblTargetMap, targetView);

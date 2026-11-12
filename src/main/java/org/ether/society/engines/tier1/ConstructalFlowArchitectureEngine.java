@@ -43,7 +43,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1242/jeb.01974">Bejan &amp; Marden (2006), J. Exp. Biol. 209</a>
  */
 public class ConstructalFlowArchitectureEngine extends AbstractSimulationEngine {

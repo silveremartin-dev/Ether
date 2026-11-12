@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * introduce zero numerical mass creation, dissipation, or drift over civilizational timescales ($5\,000$ years).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PhysicalConservationMultiMillennialTest {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalConservationMultiMillennialTest.class);

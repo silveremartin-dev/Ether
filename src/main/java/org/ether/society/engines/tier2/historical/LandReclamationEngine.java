@@ -23,7 +23,7 @@ import java.util.List;
  *    when local technology level >= 8.5 and capital investment >= 500.0.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class LandReclamationEngine extends AbstractSimulationEngine {
     public LandReclamationEngine() {

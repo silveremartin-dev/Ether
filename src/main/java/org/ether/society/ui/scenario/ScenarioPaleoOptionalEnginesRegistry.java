@@ -19,7 +19,7 @@ import org.ether.society.ui.scenario.ScenarioEngineRegistry.EngineMeta;
  * to guarantee a strict 1-to-1 bijection between UI checkboxes and actual Java engine classes.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ScenarioHistoricalEnginesRegistry
  */
 public final class ScenarioPaleoOptionalEnginesRegistry {

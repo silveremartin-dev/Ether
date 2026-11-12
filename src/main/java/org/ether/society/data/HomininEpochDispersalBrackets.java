@@ -15,7 +15,7 @@ package org.ether.society.data;
  * Younger Dryas Ice-Free Corridor, Saqqaq Greenland, and Austronesian/Polynesian voyaging).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HomininPaleoOccupancyHelper
  * @see PaleoGeographyCoordinatesRegistry
  */

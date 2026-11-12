@@ -28,7 +28,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ProceduralPopulationSuitabilityHelper
  */
 public final class ProceduralPopulationGenerator {

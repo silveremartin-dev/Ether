@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  * 4. Telemetry (history.json) â€” Time series analytics and historical snapshots
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SimulationPersistenceService {
     private static final Logger logger = LoggerFactory.getLogger(SimulationPersistenceService.class);

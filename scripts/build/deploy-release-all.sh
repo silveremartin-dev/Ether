@@ -11,7 +11,7 @@ cd "$ROOT_DIR"
 
 VERSION="${1}"
 if [ -z "$VERSION" ]; then
-    VERSION=$(grep -m 1 -oP '(?<=<version>)[^<]+' pom.xml || echo "1.0.0-beta.2")
+    VERSION=$(grep -m 1 -oP '(?<=<version>)[^<]+' pom.xml || echo "1.0.0-beta.3")
 fi
 
 echo "============================================================"

@@ -22,7 +22,7 @@ import java.util.List;
  * Walter Scheidel (2017) leveling shocks.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class LenskiPureEngine extends AbstractSimulationEngine {
     public LenskiPureEngine() {

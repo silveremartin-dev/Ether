@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.2307/2232670">Corden & Neary (1982), The Economic Journal</a>
  * @see HotellingResourceDepletionEngine
  */

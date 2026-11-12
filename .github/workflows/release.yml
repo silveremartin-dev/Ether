@@ -9,7 +9,7 @@ on:
       version:
         description: 'Release version (e.g. 2.0.0)'
         required: true
-        default: '1.0.0-beta.1'
+        default: '1.0.0-beta.3'
       draft:
         description: 'Create as Draft Release'
         type: boolean

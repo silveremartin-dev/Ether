@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture;
  * Supports both UI-oriented JavaFX {@link Image} and headless {@link BufferedImage} async pipelines.
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class OnlineMapService {
     private static final Logger logger = LoggerFactory.getLogger(OnlineMapService.class);

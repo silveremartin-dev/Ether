@@ -17,7 +17,7 @@ import org.ether.society.ui.ScientificColorMap;
  * projection from thematic domain coloring, ensuring modularity, high maintainability, and clean SRP.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class HeatmapRenderer {
 

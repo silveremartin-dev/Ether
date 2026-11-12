@@ -16,7 +16,7 @@ import java.util.prefs.Preferences;
  * Command-line argument configuration carrier and parser for {@link HeadlessRunner}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HeadlessRunner
  */
 public final class HeadlessCliOptions {

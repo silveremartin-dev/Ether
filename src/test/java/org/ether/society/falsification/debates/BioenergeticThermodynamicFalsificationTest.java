@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * datasets and classical phenomenological models (Verhulst logistic ceilings, static Liebig minima).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 @Tag("academic")
 @Tag("scientific")

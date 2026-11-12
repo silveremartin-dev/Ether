@@ -23,7 +23,7 @@ import java.util.List;
  * Preserves exact demographic mass closure across all 7 age cohorts.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SpatialCityFractalEngine extends AbstractSimulationEngine {
     public SpatialCityFractalEngine() {

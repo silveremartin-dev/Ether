@@ -20,7 +20,7 @@ import java.util.List;
  * directly into Ether H3 cells.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class HandyNasaHybridEngine extends AbstractSimulationEngine {
     public HandyNasaHybridEngine() {

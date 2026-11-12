@@ -28,7 +28,7 @@ import java.util.SortedMap;
  * full-world {@link H3Cell} meshes simultaneously in JVM heap memory.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see SimulationHistoryCoordinator
  */
 final class VirtualSnapshotNavigableMap extends AbstractMap<Long, List<H3Cell>> implements NavigableMap<Long, List<H3Cell>> {

@@ -32,7 +32,7 @@ import java.util.Random;
  * Synchronizes eustatic water levels to the meter and handles digital elevation model raster assets.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PlanetTopographySectionBuilder {
 

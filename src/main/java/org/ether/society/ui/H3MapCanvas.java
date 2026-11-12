@@ -47,7 +47,7 @@ import java.util.function.BiConsumer;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class H3MapCanvas extends Canvas {
     private static final Logger logger = LoggerFactory.getLogger(H3MapCanvas.class);

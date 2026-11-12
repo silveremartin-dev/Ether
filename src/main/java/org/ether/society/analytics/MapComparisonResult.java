@@ -10,7 +10,7 @@ package org.ether.society.analytics;
  * Quantitative cartographic comparison result record.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class MapComparisonResult {
         /** Internal state: rmse (double). */

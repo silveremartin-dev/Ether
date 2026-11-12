@@ -14,7 +14,7 @@ import java.util.Locale;
  * seed distributions across planetary H3 meshes.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public enum PopulationDistributionPattern {
 

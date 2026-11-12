@@ -24,7 +24,7 @@ import java.util.List;
  * conflict and linguistic drift simulations.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class GrataloupBoundaryDebateHelper {
 

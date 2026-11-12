@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Maas-Hoffman yield attenuation, and drainage leaching.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SoilSalinizationCouplingTest {
 

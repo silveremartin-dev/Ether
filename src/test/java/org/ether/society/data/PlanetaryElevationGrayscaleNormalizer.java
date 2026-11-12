@@ -23,7 +23,7 @@ import java.nio.file.StandardCopyOption;
  * of {@link PlanetaryRasterSampler#elevationToHypsometricColor(double)} to invert color to altitude.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PlanetaryElevationGrayscaleNormalizer {
 

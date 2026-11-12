@@ -35,7 +35,7 @@ import org.ether.society.i18n.I18n;
  * ocean vs land percentages decoupled from planar equirectangular distortion.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PlanetPreviewPaneBuilder {
 

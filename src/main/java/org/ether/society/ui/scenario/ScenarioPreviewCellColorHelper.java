@@ -24,7 +24,7 @@ import java.util.Locale;
  * and computing live statistical diagnostics for {@link ScenarioPreviewPaneBuilder}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class ScenarioPreviewCellColorHelper {
 

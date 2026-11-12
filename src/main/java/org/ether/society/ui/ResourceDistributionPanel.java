@@ -51,7 +51,7 @@ import java.util.function.Supplier;
  * custom biome/geology map imports (PNG / WMS / ESRI World Files), and real-time 2D visualization.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ResourceDistributionPanel extends BorderPane {
     @SuppressWarnings("unused")

@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * conditional chains. Enables seamless ablation studies and uniform resetting across runs.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class SimulationEngineRegistry {
 

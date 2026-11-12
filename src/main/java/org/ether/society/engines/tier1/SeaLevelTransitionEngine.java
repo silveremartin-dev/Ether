@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * 3. Updates coastal status, movement friction, and potable water availability across all cells.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SeaLevelTransitionEngine extends AbstractSimulationEngine {
     public SeaLevelTransitionEngine() {

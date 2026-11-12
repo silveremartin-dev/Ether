@@ -25,7 +25,7 @@ import java.util.List;
  * 2. Nested S-Curve Paradigm Shifts: Logistic envelope transition when physical silicon/lithography limits are reached.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class KurzweilAcceleratingReturnsEngine extends AbstractSimulationEngine {
 

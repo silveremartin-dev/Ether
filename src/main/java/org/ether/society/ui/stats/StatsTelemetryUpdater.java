@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * evaluation of unsubscribed metrics.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see org.ether.society.ui.StatsPanel
  */
 public final class StatsTelemetryUpdater {

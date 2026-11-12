@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
  * cooling domes, orographic rain shadows, and ocean boundary current heat fluxes.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PaleoClimateMapRasterizer {
 

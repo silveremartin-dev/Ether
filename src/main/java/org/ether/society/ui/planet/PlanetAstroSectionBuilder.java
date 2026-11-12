@@ -24,7 +24,7 @@ import java.util.function.Supplier;
  * Calculates solar irradiance, stellar equilibrium blackbody temperatures, and greenhouse thermal forcings.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PlanetAstroSectionBuilder {
 

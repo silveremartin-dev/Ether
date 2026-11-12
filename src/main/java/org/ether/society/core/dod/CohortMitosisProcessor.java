@@ -11,7 +11,7 @@ import org.ether.society.util.DeterministicPRNG;
  * and O(1) amortized ring-buffer slot allocation in {@link AgentBuffer}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see DemographicKernel
  */
 public final class CohortMitosisProcessor {

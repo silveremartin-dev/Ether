@@ -72,14 +72,14 @@ Empirically evaluated on full planetary Earth grids (`strictDeterminism = true`)
 
 | Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Architectural Status | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Canonical Planetary Standard** | **Res 4** | **288,122** | ~16 km | ⭐ **STANDARD CANONIQUE** *(Simulations officielles)* | **0.22 TPS** (4,601.1 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
-| **Regional Windowed Cradle** | **Res 6** | **~28,000** | ~2.3 km | 🎯 **STANDARD FENÊTRÉ** *(Haute résolution régionale)* | **3.42 TPS** (292.4 ms) | **14.28 TPS** (70.0 ms) | 2.50 μs / cell | **11.6 minutes** | **56.0 MB** (2.3 MB / snap) |
-| **Minimum Viable Baseline** | **Res 3** | **41,162** | ~42 km | ⚠️ **Minimum Viable** *(CI & smoke tests rapides)* | **2.33 TPS** (428.9 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
-| **Coarse Global Macro** | **Res 2** | **5,882** | ~110 km | 🚫 **À PROSCRIRE** *(Aliasing spatial inacceptable)* | **7.47 TPS** (133.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
+| **Canonical Planetary Standard** | **Res 4** | **288,122** | ~16 km | ⭐ **STANDARD CANONIQUE** *(Simulations officielles)* | **0.39 TPS** (2,579.6 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
+| **Regional Windowed Cradle** | **Res 6** | **~28,000** | ~2.3 km | 🎯 **STANDARD FENÊTRÉ** *(Haute résolution régionale)* | **2.39 TPS** (418.1 ms) | **14.28 TPS** (70.0 ms) | 2.50 μs / cell | **11.6 minutes** | **56.0 MB** (2.3 MB / snap) |
+| **Minimum Viable Baseline** | **Res 3** | **41,162** | ~42 km | ⚠️ **Minimum Viable** *(CI & smoke tests rapides)* | **2.18 TPS** (458.1 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
+| **Coarse Global Macro** | **Res 2** | **5,882** | ~110 km | 🚫 **À PROSCRIRE** *(Aliasing spatial inacceptable)* | **5.80 TPS** (172.5 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
 
 ### 🔬 Architectural Boundary Insights:
 * **The Full-Tick Simulation Scope**: A real simulation tick executes **90 coupled biophysical and cliodynamic scientific engines** (Farquhar photosynthesis, Liebig N-P-K soil dynamics, 2D Darcy lateral aquifer diffusion, Budyko-Sellers energy balance, SEIR disease propagation along trade networks, Turchin SDT, and cartographic SSIM/IoU tensor raster checks) plus non-blocking asynchronous GZIP serialization (`snapshot_tick_XXXX.bin.gz`, ~25 MB per snapshot at Res 4).
-* **The Micro vs. Macro Disparity**: Pure in-memory vector benchmarks (`RustVsJavaPerformanceBenchmarkTest` / `EmpiricalEngineBenchmarkRunner`) execute *only 4 primitive float array operations* on synthetic buffers, yielding ~70 TPS (14.2 ms/tick, 49.3 ns/cell). In a real simulation tick, full OOP orchestration, spatial neighbor lookups, and cliodynamic logic reduce throughput to **0.22 TPS on local 4-core hardware (4,601 ms/tick)** and **1.56 TPS on Google Cloud 8 vCPUs (640 ms/tick)**.
+* **The Micro vs. Macro Disparity**: Pure in-memory vector benchmarks (`RustVsJavaPerformanceBenchmarkTest` / `EmpiricalEngineBenchmarkRunner`) execute *only 4 primitive float array operations* on synthetic buffers, yielding ~70 TPS (14.2 ms/tick, 49.3 ns/cell). In a real simulation tick, full OOP orchestration, spatial neighbor lookups, and cliodynamic logic reduce throughput to **0.39 TPS on local 4-core hardware (2,580 ms/tick)** and **1.56 TPS on Google Cloud 8 vCPUs (640 ms/tick)**.
 
 ---
 
@@ -157,13 +157,13 @@ Measured on **Earth Global Res 3 (41,162 Hexagons)** across 5 landmark historica
 
 Evaluated on the standard reference grid (**Earth Global Res 3, 41,162 Hexagons**, Multi-Core, identical constant population $N = 100\,000\,000$, Monthly $\Delta t = 30$ days, Tier 1 + Tier 2 coupled cliodynamics):
 
-| Cohort Granularity Regime | Target Cohort Size ($N_{\text{cohort}}$) | Active Agent Nodes | Measured TPS (GCP) | Latency ms/tick (GCP) | Speedup vs Dunbar | Final Population ($T_{\text{final}}$) | Demographic Invariance ($\Delta N / N$) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Micro-Bands & Foragers** | **25 hab/cohort** | 10,000,000 nodes | **0.16 TPS** | 6,098.1 ms | **0.19x** | 95,072,562 | $\pm 0.0003\%$ |
-| **Dunbar Baseline Standard** | **150 hab/cohort** | 5,333,328 nodes | **0.85 TPS** | 1,177.2 ms | **1.00x (Baseline)** | 95,072,818 | **0.0000% (Ref)** |
-| **Agrarian Agglomeration** | **1,000 hab/cohort** | 987,888 nodes | **3.67 TPS** | 272.6 ms | **4.32x** | 95,073,349 | $+0.0006\%$ |
-| **Urban Macro-Cohort** | **10,000 hab/cohort** | 987,888 nodes | **6.40 TPS** | 156.1 ms | **7.54x** | 95,070,119 | $-0.0028\%$ |
-| **Continental Macro-Cohort** | **50,000 hab/cohort** | 987,888 nodes | **6.74 TPS** | 148.4 ms | **7.93x** | 95,063,600 | $-0.0097\%$ |
+| Cohort Granularity Regime | Target Cohort Size ($N_{\text{cohort}}$) | Active Agent Nodes | 💻 Workstation TPS | 💻 Workstation Latency | ☁️ GCP VM TPS | Speedup vs Dunbar | Final Population ($T_{\text{final}}$) | Demographic Invariance ($\Delta N / N$) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Micro-Bands & Foragers** | **25 hab/cohort** | 10,000,000 nodes | **0.13 TPS** | 7,870.3 ms | **0.16 TPS** | **0.21x (Local)** / 0.19x | 95,072,562 | $\pm 0.0003\%$ |
+| **Dunbar Baseline Standard** | **150 hab/cohort** | 5,333,328 nodes | **0.60 TPS** | 1,664.5 ms | **0.85 TPS** | **1.00x (Baseline)** | 95,072,818 | **0.0000% (Ref)** |
+| **Agrarian Agglomeration** | **1,000 hab/cohort** | 987,888 nodes | **2.52 TPS** | 397.6 ms | **3.67 TPS** | **4.19x (Local)** / 4.32x | 95,073,349 | $+0.0006\%$ |
+| **Urban Macro-Cohort** | **10,000 hab/cohort** | 987,888 nodes | **4.37 TPS** | 228.8 ms | **6.40 TPS** | **7.28x (Local)** / 7.54x | 95,070,119 | $-0.0028\%$ |
+| **Continental Macro-Cohort** | **50,000 hab/cohort** | 987,888 nodes | **3.26 TPS** | 306.9 ms | **6.74 TPS** | **5.42x (Local)** / 7.93x | 95,063,600 | $-0.0097\%$ |
 
 > 🔬 **Epistemic Invariance & Scaling Principle**:
 > While throughput accelerates by **$7.93\times$** (from 0.85 TPS to 6.74 TPS) as cohort granularity moves from the anthropological Dunbar number (150 hab/cohort) to continental macro-cohorts (50,000 hab/cohort), **the emergent demographic trajectory remains invariant to within $< 0.01\%$**. This demonstrates that cohort aggregation is a mathematically sound, non-distortive performance scaling dimension for modern and prospective planetary simulations with multi-billion populations.

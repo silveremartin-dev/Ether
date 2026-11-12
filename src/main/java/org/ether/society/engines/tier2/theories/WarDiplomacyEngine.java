@@ -19,7 +19,7 @@ import java.util.*;
  * 3. Dynamic territorial conquest and border shifting.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class WarDiplomacyEngine extends AbstractSimulationEngine {
     public WarDiplomacyEngine() {

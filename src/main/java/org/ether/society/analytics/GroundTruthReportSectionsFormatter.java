@@ -17,7 +17,7 @@ import java.util.Map;
  * {@link GroundTruthAuditReportBuilder}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class GroundTruthReportSectionsFormatter {
 

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Postulates deterministic causal cascade: Infrastructure (Energy/Environment) -> Structure (Economy/Polity) -> Superstructure (Ideology).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class CulturalMaterialismPureEngine extends AbstractSimulationEngine {
     public CulturalMaterialismPureEngine() {

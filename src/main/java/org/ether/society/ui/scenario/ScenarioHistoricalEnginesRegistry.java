@@ -16,7 +16,7 @@ import org.ether.society.ui.scenario.ScenarioEngineRegistry.EngineMeta;
  * in {@link org.ether.society.model.AutoEpochScenarioHelper}.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class ScenarioHistoricalEnginesRegistry {
 

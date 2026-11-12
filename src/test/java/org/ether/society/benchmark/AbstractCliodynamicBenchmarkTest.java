@@ -31,7 +31,7 @@ import java.util.List;
  * over multi-century timescales ($50$ to $500$ years).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public abstract class AbstractCliodynamicBenchmarkTest {
 

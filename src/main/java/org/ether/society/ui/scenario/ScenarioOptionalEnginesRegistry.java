@@ -19,7 +19,7 @@ import org.ether.society.ui.scenario.ScenarioEngineRegistry.EngineMeta;
  * laws are documented in {@link ScenarioEngineRegistry#getCoreEngines()}.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ScenarioHistoricalEnginesRegistry
  * @see org.ether.society.model.AutoEpochScenarioHelper
  */

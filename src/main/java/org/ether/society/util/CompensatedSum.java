@@ -11,7 +11,7 @@ package org.ether.society.util;
  * over hundreds of thousands of simulation years.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class CompensatedSum {
 

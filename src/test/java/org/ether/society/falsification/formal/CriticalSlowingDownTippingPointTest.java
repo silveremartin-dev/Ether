@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 @Tag("academic")
 @Tag("scientific")

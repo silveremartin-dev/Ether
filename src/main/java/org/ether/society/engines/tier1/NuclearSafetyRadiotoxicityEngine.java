@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * 2. <b>D-T Nuclear Fusion Transition</b>: Ultra-high EROEI (>= 40:1) clean energy transition with zero long-term radiotoxicity.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class NuclearSafetyRadiotoxicityEngine extends AbstractSimulationEngine {
     public NuclearSafetyRadiotoxicityEngine() {

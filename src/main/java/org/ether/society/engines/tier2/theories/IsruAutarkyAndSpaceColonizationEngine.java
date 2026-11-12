@@ -21,7 +21,7 @@ import java.util.List;
  * Models sealed closed-loop off-world and high-frontier habitats.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class IsruAutarkyAndSpaceColonizationEngine extends AbstractSimulationEngine {
     public IsruAutarkyAndSpaceColonizationEngine() {

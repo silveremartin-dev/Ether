@@ -31,7 +31,7 @@ import java.util.Random;
  * Autonomous sub-block controller for climate raster maps (temperature, precipitation, seasonality).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PlanetClimateSubBlock {
 

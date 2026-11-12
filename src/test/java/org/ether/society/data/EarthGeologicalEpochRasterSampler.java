@@ -36,7 +36,7 @@ import static org.ether.society.data.PlanetaryRasterSampler.saveMapImage;
  * uranium, iron/copper, precious metals, and UNESCO WHYMAP aquifers.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class EarthGeologicalEpochRasterSampler {
 

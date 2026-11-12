@@ -19,7 +19,7 @@ import java.util.List;
  * (min, max, mean, sum) and rendering projected equirectangular cartographic rasters.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see CompiledTelemetryPlan
  * @see TelemetrySubscription.SpatialRasterQuery
  */

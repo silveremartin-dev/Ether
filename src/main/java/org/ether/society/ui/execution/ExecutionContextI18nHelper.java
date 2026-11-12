@@ -17,7 +17,7 @@ import org.ether.society.ui.ExecutionContextPanel.HardwareMode;
  * {@link org.ether.society.ui.ExecutionContextPanel}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see org.ether.society.ui.ExecutionContextPanel
  */
 public final class ExecutionContextI18nHelper {

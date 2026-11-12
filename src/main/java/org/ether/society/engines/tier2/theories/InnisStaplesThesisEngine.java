@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://www.utorontopress.com">Innis, H. A. (1930), The Fur Trade in Canada</a>
  * @see KrugmanCorePeripheryEngine
  * @see CordenNearyDutchDiseaseEngine

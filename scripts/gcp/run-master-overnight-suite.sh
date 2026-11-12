@@ -14,7 +14,7 @@ ZONE="${2:-europe-west1-b}"
 INSTANCE_NAME="${3:-ether-master}"
 H3_RESOLUTION="${4:-5}"
 DT_DAYS="${5:-7.0}"
-JAR_PATH="${6:-target/society-simulation-1.0.0-beta.2-executable.jar}"
+JAR_PATH="${6:-target/society-simulation-1.0.0-beta.3-executable.jar}"
 MACHINE_TYPE="${7:-n2-custom-12-49152}"
 
 echo "================================================================================"

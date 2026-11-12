@@ -16,7 +16,7 @@ package org.ether.society.database.components;
  * @param homininSpecies hominin clade identifier (1 = Sapiens, 2 = Neanderthal, 3 = Denisovan)
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public record DemographicState(
         int population,

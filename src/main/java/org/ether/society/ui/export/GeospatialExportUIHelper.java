@@ -22,7 +22,7 @@ import java.util.function.Function;
  * Integrates interactive file dialogs with multi-format raster serialization.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class GeospatialExportUIHelper {
     private static final Logger logger = LoggerFactory.getLogger(GeospatialExportUIHelper.class);

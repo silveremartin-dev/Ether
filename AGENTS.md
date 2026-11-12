@@ -58,8 +58,11 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 
 ## 🎨 5. User Interface, Localization & Accessibility Standards
 1. **Full Localization (5 Languages: EN, FR, DE, ES, ZH) & Complete Technical Tooltips**:
-   * ALL UI components (labels, sliders, buttons, combo box options, table headers, status indicators, tooltips, chart legends, and modal text) MUST be localized across all 5 supported languages (`EN`, `FR`, `DE`, `ES`, `ZH`). Absolutely NO hardcoded user-visible text in Java UI code.
+   * ALL UI components (labels, sliders, buttons, combo box options, table headers, status indicators, tooltips, chart legends, and modal text) MUST be localized across all 5 supported languages (`EN`, `FR`, `DE`, `ES`, `ZH`) as well as the default fallback bundle (`messages.properties`). Absolutely NO hardcoded user-visible text in Java UI code (`new Label("...")`, `new Button("...")`, `.setText("...")`, `.setTitle("...")`).
    * EVERY single interactive UI element MUST feature a detailed mouse-over technical tooltip explaining the underlying simulation variable, physical formula, or feature mechanism.
+   * **Mandatory Automated i18n & Hardcoded Strings Verification (`scripts/audit-i18n-and-hardcoded-strings.ps1`)**:
+     * After any UI modification, feature addition, or localization update, the automated audit script `powershell -ExecutionPolicy Bypass -File scripts/audit-i18n-and-hardcoded-strings.ps1` MUST be executed.
+     * All 6 resource bundles (`messages.properties`, `messages_en.properties`, `messages_fr.properties`, `messages_de.properties`, `messages_es.properties`, `messages_zh.properties`) MUST contain the exact same key count with **0 missing or empty keys**, and the Java UI package scan MUST report **0 hardcoded user-facing strings**.
 2. **Strict High-Contrast & Consistent Theming**:
    * **Dark Theme**: Dark background with high-luminance (bright/light) text, icons, and control strokes.
    * **Light Theme**: Light background with low-luminance (dark) text, icons, and control strokes.

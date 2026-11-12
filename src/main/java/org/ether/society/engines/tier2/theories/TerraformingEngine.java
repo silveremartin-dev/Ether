@@ -21,7 +21,7 @@ import java.util.List;
  * and off-world asteroid mining EROEI logistics.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class TerraformingEngine extends AbstractSimulationEngine {
     public TerraformingEngine() {

@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  * Lambertian hillshading, solar day/night terminator overlays, perceptually uniform palettes, and fullscreen mode.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ControlPanelRenderingSection {
 

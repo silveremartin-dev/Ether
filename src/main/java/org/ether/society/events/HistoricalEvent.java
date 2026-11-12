@@ -21,7 +21,7 @@ package org.ether.society.events;
  * @param longitude the geographic epicenter longitude in degrees
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public record HistoricalEvent(int year, int month, int day, String title, String message, double latitude, double longitude) {
 

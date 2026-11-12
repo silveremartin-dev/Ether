@@ -20,6 +20,7 @@ import org.ether.society.events.SimulationTickEvent;
 import org.ether.society.events.SimulationTickListener;
 import org.ether.society.model.Scenario;
 import org.ether.society.network.spatial.H3SpatialPartitioner;
+import org.ether.society.ui.execution.ExecutionContextHardwareHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ import java.util.prefs.Preferences;
  * for {@link H3SimulationEngine}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see H3SimulationEngine
  */
 final class H3EngineLifecycleAndTickCoordinator {
@@ -61,7 +62,7 @@ final class H3EngineLifecycleAndTickCoordinator {
                 ? scenario.toPerformanceConfig()
                 : new SimulationPerformanceConfig(true);
         try {
-            String defaultHw = NativeRustBridge.isNativeAvailable() ? "NATIVE_RUST" : "JAVA_VECTOR_SIMD";
+            String defaultHw = ExecutionContextHardwareHelper.isSimdAvailable() ? "JAVA_VECTOR_SIMD" : "CPU_JIT";
             String hwPref = Preferences.userRoot().node("org/ether/society/ui")
                     .get("ether_hardware_mode", defaultHw);
             if ("NATIVE_RUST".equalsIgnoreCase(hwPref) && NativeRustBridge.isNativeAvailable()) {
@@ -145,15 +146,12 @@ final class H3EngineLifecycleAndTickCoordinator {
      * @param newCells new list of H3 cells
      */
     static void setCells(H3SimulationEngine engine, List<H3Cell> newCells) {
-        if (engine.isRunning()) {
-            engine.pause();
-        }
+        if (engine.isRunning()) engine.pause();
         engine.cells = newCells;
         engine.nations.clear();
         if (newCells != null && !newCells.isEmpty()) {
             if (engine.currentScenario != null) {
-                PreComputePhase preCompute = new PreComputePhase(engine.currentScenario);
-                preCompute.execute(newCells);
+                new PreComputePhase(engine.currentScenario).execute(newCells);
             } else {
                 H3BufferAndEventCoordinator.initializePopulation(newCells, engine.currentScenario, engine.nations);
             }
@@ -163,9 +161,7 @@ final class H3EngineLifecycleAndTickCoordinator {
                             engine.currentScenario != null && engine.currentScenario.getPlanetPreset() != null ? engine.currentScenario.getPlanetPreset().getCanonicalPlanet() : "earth",
                             engine.currentScenario != null ? engine.currentScenario.getStartDateYear() : -8000L,
                             engine.currentScenario != null ? engine.currentScenario.getInitialHumanCount() : 0L);
-            if (engine.demographicKernel != null) {
-                engine.demographicKernel.setTargetCohortSize(cohortSize);
-            }
+            if (engine.demographicKernel != null) engine.demographicKernel.setTargetCohortSize(cohortSize);
             setupBuffersAndInitialStatistics(engine, cohortSize);
         } else {
             engine.worldBuffer = new WorldBuffer(0);
@@ -193,10 +189,15 @@ final class H3EngineLifecycleAndTickCoordinator {
         DODDataGenerator.initializeAgentBuffer(engine.worldBuffer, engine.agentBuffer, cohortSize, sSeed);
 
         engine.initialPopulationBaseline = initialPop;
-        engine.initialCo2Baseline = (engine.currentScenario != null && engine.currentScenario.getPlanetPreset() != null
-                && engine.currentScenario.getPlanetPreset().co2Ppm() > 0.0)
-                ? engine.currentScenario.getPlanetPreset().co2Ppm()
-                : 280.0;
+        double presetCo2 = (engine.currentScenario != null && engine.currentScenario.getPlanetPreset() != null)
+                ? engine.currentScenario.getPlanetPreset().co2Ppm() : 0.0;
+        if (presetCo2 > 0.0) {
+            engine.initialCo2Baseline = presetCo2;
+        } else {
+            double histCo2 = engine.currentScenario != null ? org.ether.society.analytics.HistoricalValidationKernel
+                    .getInterpolatedBenchmarkValue("co2Concentration", (double) engine.currentScenario.getStartDateYear()) : Double.NaN;
+            engine.initialCo2Baseline = (Double.isNaN(histCo2) || histCo2 <= 0.0) ? 280.0 : histCo2;
+        }
 
         // Evaluate initial statistics ONLY when telemetry subscription is non-empty
         if (!engine.getCompiledTelemetryPlan().isNoOp() && engine.worldBuffer != null) {
@@ -481,8 +482,9 @@ final class H3EngineLifecycleAndTickCoordinator {
 
     static void stepBackward(H3SimulationEngine engine, int ticks) {
         engine.pause();
-        if (engine.historyManager == null || engine.cells == null || engine.cells.isEmpty()) return;
-        seekToTick(engine, Math.max(0, engine.timeManager.getTotalTicks() - ticks));
+        if (engine.historyManager != null && engine.cells != null && !engine.cells.isEmpty()) {
+            seekToTick(engine, Math.max(0, engine.timeManager.getTotalTicks() - ticks));
+        }
     }
 
     static void seekToEnd(H3SimulationEngine engine) {
@@ -491,8 +493,7 @@ final class H3EngineLifecycleAndTickCoordinator {
             seekToTick(engine, engine.historyManager.getWorldSnapshots().lastKey());
         } else if (engine.currentScenario != null) {
             long totalDays = Math.max(0, (engine.currentScenario.getEndDateYear() - engine.currentScenario.getStartDateYear()) * 365L);
-            int stepDays = Math.max(1, (int) Math.round(engine.currentScenario.getTemporalResolutionDays()));
-            seekToTick(engine, totalDays / stepDays);
+            seekToTick(engine, totalDays / Math.max(1, (int) Math.round(engine.currentScenario.getTemporalResolutionDays())));
         }
     }
 }

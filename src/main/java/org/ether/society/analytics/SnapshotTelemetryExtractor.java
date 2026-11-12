@@ -31,7 +31,7 @@ import java.util.TreeMap;
  * simulation physics or maintaining duplicate formula logic.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see TelemetryAstCompiler
  * @see SimulationHistoryCoordinator
  */

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * entropy generation rate) to simulate alternate physical realities.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PhysicalLawEngine extends AbstractSimulationEngine {
     public PhysicalLawEngine() {

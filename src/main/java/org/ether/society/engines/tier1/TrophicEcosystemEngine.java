@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * and species hybridization vs extinction dynamics.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class TrophicEcosystemEngine extends AbstractSimulationEngine {
     public TrophicEcosystemEngine() {

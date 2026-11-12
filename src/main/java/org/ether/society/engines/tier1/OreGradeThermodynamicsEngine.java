@@ -20,7 +20,7 @@ import java.util.List;
  * Formula: E_extract = E_base * (C_ref / C_ore)^1.5
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class OreGradeThermodynamicsEngine extends AbstractSimulationEngine {
     public OreGradeThermodynamicsEngine() {

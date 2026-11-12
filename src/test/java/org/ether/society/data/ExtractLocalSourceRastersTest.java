@@ -23,7 +23,7 @@ import java.io.File;
  * and generates high-fidelity cartographic rasters for scenario timelines.
  *
  * @author Silvere Martin-Michiellot & Gemini AI
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 @Tag("manual")
 public class ExtractLocalSourceRastersTest {

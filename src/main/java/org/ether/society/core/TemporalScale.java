@@ -12,7 +12,7 @@ package org.ether.society.core;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public enum TemporalScale {
     DAILY(1, "📅 Pas Quotidien (Jour par Jour - Détaillé)"),

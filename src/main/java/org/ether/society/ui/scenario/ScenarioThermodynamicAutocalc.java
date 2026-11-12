@@ -19,7 +19,7 @@ package org.ether.society.ui.scenario;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class ScenarioThermodynamicAutocalc {
 

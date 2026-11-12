@@ -33,7 +33,7 @@ import java.util.List;
  * across geophysical, epidemiological, and geopolitical historical ruptures.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see MasterHistoricalBifurcationSuite
  */
 final class HistoricalRuptureArmEvaluator {

@@ -13,7 +13,7 @@ import java.util.List;
  * Static baseline data catalog powering {@link BenchmarkSynthesisChartGenerator}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class BenchmarkChartSeriesBuilder {
 

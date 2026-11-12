@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * atmospheric climate zones, equirectangular preview rendering, and delegated data/validation helpers.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PlanetGeneratorPanel extends BorderPane {
     private static final Logger logger = LoggerFactory.getLogger(PlanetGeneratorPanel.class);

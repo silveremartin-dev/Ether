@@ -24,7 +24,7 @@ import java.util.Locale;
  * wall-clock execution duration estimates \(\tau_{\mathrm{est}}\), and remaining duration \(\tau_{\mathrm{rem}}\).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioSelectableItem implements ScenarioBenchmarkItem {
 

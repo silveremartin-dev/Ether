@@ -12,7 +12,7 @@ import org.ether.society.model.Biome;
  * Mineral, fossil, agricultural and biological resource initializer for planetary cells.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PlanetResourcePopulator {
 

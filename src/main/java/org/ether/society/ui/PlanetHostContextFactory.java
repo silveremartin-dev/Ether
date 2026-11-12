@@ -23,7 +23,7 @@ import org.ether.society.ui.planet.PlanetTopographySectionBuilder;
  * and delegated planetary subsystem controllers.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class PlanetHostContextFactory {
 

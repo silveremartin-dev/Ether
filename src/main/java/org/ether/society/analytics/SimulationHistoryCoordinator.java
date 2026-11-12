@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see VirtualSnapshotNavigableMap
  */
 public class SimulationHistoryCoordinator {
@@ -206,11 +206,17 @@ public class SimulationHistoryCoordinator {
         double naturalBiomass = engine.getTotalBiomassNatural(); double potableWater = engine.getPotableWaterTotal(); double fertilityRate = engine.getCurrentFertility();
         int cityStates = engine.getCityStatesCount(); double eliteOverproduction = engine.getEliteOverproductionIndex();
 
+        TelemetryEvaluationResult cachedRes = engine.getCachedTelemetryResult();
+        java.util.Map<String, Double> dynamicMetrics = (cachedRes != null && !cachedRes.isEmpty())
+                ? new java.util.LinkedHashMap<>(cachedRes.getMetrics())
+                : java.util.Collections.emptyMap();
+
         history.addSnapshot(new HistorySnapshot(
                 year, month, totalPop, totalFood, totalWealth, avgLifespan, globalGini, avgTech,
                 energyCaptured, kardashevScale, happinessIndex, conflictLevel, gdpTotal, divisionLabor,
                 systemComplexity, collectiveMemory, carbonFootprint, collapseVulnerability, tps,
-                resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction
+                resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction,
+                dynamicMetrics
         ));
     }
 
@@ -255,7 +261,8 @@ public class SimulationHistoryCoordinator {
                 year, month, totalPop, totalFood, totalWealth, avgLifespan, globalGini, avgTech,
                 energyCaptured, kardashevScale, happinessIndex, conflictLevel, gdpTotal, divisionLabor,
                 systemComplexity, collectiveMemory, carbonFootprint, collapseVulnerability, tps,
-                resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction
+                resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction,
+                m != null ? new java.util.LinkedHashMap<>(m) : java.util.Collections.emptyMap()
         ));
     }
 

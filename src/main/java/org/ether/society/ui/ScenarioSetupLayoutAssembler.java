@@ -35,7 +35,7 @@ import java.util.List;
  * public coordination contract.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ScenarioSetupPanel
  */
 final class ScenarioSetupLayoutAssembler {

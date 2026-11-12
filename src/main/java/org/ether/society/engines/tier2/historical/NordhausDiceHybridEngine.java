@@ -19,7 +19,7 @@ import java.util.List;
  * Injects Nordhaus quadratic climate damage function D(T_cell) directly into Ether H3 cell capital.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class NordhausDiceHybridEngine extends AbstractSimulationEngine {
     public NordhausDiceHybridEngine() {

@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage;
  * and biomes across historical and paleolithic epochs (-100,000 BP to present-day).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class HistoricalClimateRasterizer {
 

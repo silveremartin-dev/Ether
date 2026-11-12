@@ -12,7 +12,7 @@ if "%VERSION%"=="" (
     set /p VERSION=<"%TEMP%\ether_ver.tmp"
     del "%TEMP%\ether_ver.tmp" 2>nul
 )
-if "%VERSION%"=="" set VERSION=1.0.0-beta.2
+if "%VERSION%"=="" set VERSION=1.0.0-beta.3
 
 echo [INFO] Building complete multi-platform release suite for v%VERSION%...
 

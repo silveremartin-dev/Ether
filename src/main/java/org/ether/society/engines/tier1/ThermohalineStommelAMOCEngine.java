@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * while heat accumulation in the Southern Ocean triggers a compensatory warming ($\Delta T_{\text{South}} \approx +1.5\text{ to }+2.0^\circ\text{C}$).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
     public ThermohalineStommelAMOCEngine() {

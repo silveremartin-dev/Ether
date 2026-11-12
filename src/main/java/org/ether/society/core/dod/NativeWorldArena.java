@@ -16,7 +16,7 @@ import java.lang.foreign.ValueLayout;
  * {@link WorldBuffer} and {@link AgentBuffer} across high-frequency simulation ticks.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class NativeWorldArena implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(NativeWorldArena.class);

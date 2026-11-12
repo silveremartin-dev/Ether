@@ -25,7 +25,7 @@ import java.util.Map;
  * \]
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see Tier2EngineContributionAnalyzer
  */
 public class EngineContributionReport {

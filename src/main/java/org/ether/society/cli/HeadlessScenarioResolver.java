@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * JSON presets, and {@link StartDatePreset} epochs, applying explicit CLI overrides.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HeadlessRunner
  */
 public final class HeadlessScenarioResolver {

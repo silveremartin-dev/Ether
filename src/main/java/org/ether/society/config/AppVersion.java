@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 public final class AppVersion {
     private static final Logger logger = LoggerFactory.getLogger(AppVersion.class);
 
-    private static final String DEFAULT_VERSION = "1.0.0-beta.2";
+    private static final String DEFAULT_VERSION = "1.0.0-beta.3";
     private static final Pattern BETA_PATTERN = Pattern.compile("^(\\d+\\.\\d+)(?:\\.\\d+)?[-.](?:beta|b)[-.]?(\\d+)?$", Pattern.CASE_INSENSITIVE);
     private static final Pattern RC_PATTERN = Pattern.compile("^(\\d+\\.\\d+)(?:\\.\\d+)?[-.](?:rc)[-.]?(\\d+)?$", Pattern.CASE_INSENSITIVE);
 

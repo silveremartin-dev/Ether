@@ -14,7 +14,7 @@ package org.ether.society.data;
  * Coordinates are dynamically loaded from external JSON datasets via {@link PaleoGeometryRegistry}.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PaleoGeographyCoordinatesRegistry {
 

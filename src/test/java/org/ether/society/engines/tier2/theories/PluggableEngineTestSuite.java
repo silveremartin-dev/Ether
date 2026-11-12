@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite validating the Pluggable Engine Architecture (ProceduralEngineRegistry & SimulationEngineModule).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PluggableEngineTestSuite {
 

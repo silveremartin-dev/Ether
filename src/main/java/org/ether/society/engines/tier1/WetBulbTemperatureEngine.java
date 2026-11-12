@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * 3. <b>Labor Productivity Attenuation</b>: Dunne et al. (2013), physical work capacity drops progressively between 25Â°C and 35Â°C wet-bulb.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class WetBulbTemperatureEngine extends AbstractSimulationEngine {
     public WetBulbTemperatureEngine() {

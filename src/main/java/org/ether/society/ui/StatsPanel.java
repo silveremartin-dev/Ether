@@ -47,7 +47,7 @@ import java.util.function.Consumer;
  * card layouts to {@link MetricCard}, and data export to {@link StatsCsvExporter}.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class StatsPanel extends VBox {
 
@@ -181,8 +181,8 @@ public class StatsPanel extends VBox {
 
         btnConfigureTelemetry = new Button();
         btnConfigureTelemetry.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 4 8;");
-        btnConfigureTelemetry.setText("⚙️ Variables");
-        btnConfigureTelemetry.setTooltip(new Tooltip("Choisir les variables calculées et affichées en direct"));
+        btnConfigureTelemetry.setText(I18n.getOrDefault("stats.telemetry.btn_variables", "⚙️ Variables"));
+        btnConfigureTelemetry.setTooltip(new Tooltip(I18n.getOrDefault("stats.telemetry.btn_variables_tooltip", "Choisir les variables calculées et affichées en direct")));
         btnConfigureTelemetry.setOnAction(e -> {
             var dlg = new org.ether.society.ui.analytics.TelemetryVariableSelectorDialog(activeTelemetryVariables);
             dlg.showAndWait().ifPresent(selected -> {

@@ -38,7 +38,7 @@ import static org.ether.society.ui.analytics.SpatialTensorDiskRegistry.RASTER_IM
  * Jaccard index, and Kullback-Leibler divergence).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SpatialTensorComparisonPane extends VBox {
 

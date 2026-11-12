@@ -23,7 +23,7 @@ import java.util.List;
  * physical labor, and shared capital formation.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SelfDomesticationEngine extends AbstractSimulationEngine {
     public SelfDomesticationEngine() {

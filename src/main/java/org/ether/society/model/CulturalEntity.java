@@ -22,7 +22,7 @@ import org.ether.society.i18n.I18n;
  * @param lithicTechnocomplex lithic or metallurgical technocomplex classification
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public record CulturalEntity(
         String id,

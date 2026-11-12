@@ -19,7 +19,7 @@ import org.ether.society.data.WorldClimEmpiricalRasterLoader;
  * </p>
  *
  * @author Silvere Martin-Michiellot &amp; Gemini AI
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PhysicalPlanetaryAtmosphereSolver {
 

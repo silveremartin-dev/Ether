@@ -38,7 +38,7 @@ import java.util.stream.Stream;
  * land-use-coupled Anthrome biomes, and HYDE land-use ecological footprint).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class RegenerateModifiedRastersCli {
     private static final Logger logger = LoggerFactory.getLogger(RegenerateModifiedRastersCli.class);

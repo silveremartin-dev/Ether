@@ -34,7 +34,7 @@ import java.util.Map;
  * compatibility validation, and {@link Scenario} persistence for {@link ScenarioDemographicSectionBuilder}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class ScenarioDemographicMapIOHelper {
 

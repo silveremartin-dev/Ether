@@ -40,7 +40,7 @@ import java.util.TreeMap;
  * clipboard export feedback, execution context badges, and 5-language localization updates.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ComparativeAnalyticsPanel
  */
 final class ComparativeAnalyticsViewHelper {

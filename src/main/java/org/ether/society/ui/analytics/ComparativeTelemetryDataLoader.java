@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * snapshot metrics into standardized dimensional SI continuous time-series records.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class ComparativeTelemetryDataLoader {
 
@@ -211,37 +211,42 @@ public final class ComparativeTelemetryDataLoader {
 
                 for (HistorySnapshot snap : snaps) {
                     Map<String, Double> metricsMap = new LinkedHashMap<>();
+                    if (snap.dynamicMetrics() != null && !snap.dynamicMetrics().isEmpty()) {
+                        metricsMap.putAll(snap.dynamicMetrics());
+                    }
+
                     long pop = Math.max(1L, snap.totalPopulation());
                     double popDbl = (double) snap.totalPopulation();
 
                     // 1. Demographics & Population (Exact raw cellular simulation count)
-                    metricsMap.put("regionalPopulation", popDbl);
-                    metricsMap.put("population", popDbl);
-                    metricsMap.put("worldPopulation", popDbl);
-                    metricsMap.put("fertilityRate", snap.fertilityRate());
-                    metricsMap.put("lifeExpectancy", snap.avgLifespan());
-                    metricsMap.put("educationLevel", Math.min(100.0, snap.avgTechnology() * 10.0));
-                    metricsMap.put("populationSurvivalRate", 100.0);
+                    metricsMap.putIfAbsent("regionalPopulation", popDbl);
+                    metricsMap.putIfAbsent("population", popDbl);
+                    metricsMap.putIfAbsent("worldPopulation", popDbl);
+                    metricsMap.putIfAbsent("fertilityRate", snap.fertilityRate());
+                    metricsMap.putIfAbsent("lifeExpectancy", snap.avgLifespan());
+                    metricsMap.putIfAbsent("lifeExpectancyAtBirth", snap.avgLifespan());
+                    metricsMap.putIfAbsent("educationLevel", Math.min(100.0, snap.avgTechnology() * 10.0));
+                    metricsMap.putIfAbsent("populationSurvivalRate", 100.0);
 
                     // 2. Food, Energy & Matter
                     double foodPerCap = snap.totalFood() > 0 ? (snap.totalFood() / pop) * 3.362 : 3.362;
-                    metricsMap.put("foodPerCapita", foodPerCap);
-                    metricsMap.put("totalFood", snap.totalFood() * scalingFactor);
+                    metricsMap.putIfAbsent("foodPerCapita", foodPerCap);
+                    metricsMap.putIfAbsent("totalFood", snap.totalFood() * scalingFactor);
                     // In HistorySnapshot, energyCaptured is stored in MW when raw (> 1000) or directly in EJ when recorded from primaryEnergy
                     double rawEnergy = snap.energyCaptured();
                     double regionalEnergyEJ = rawEnergy > 1000.0 ? (rawEnergy * 3.15576e-5) : rawEnergy;
-                    metricsMap.put("regionalEnergy", regionalEnergyEJ);
-                    metricsMap.put("primaryEnergy", regionalEnergyEJ * scalingFactor);
-                    metricsMap.put("energyCaptured", rawEnergy * scalingFactor);
+                    metricsMap.putIfAbsent("regionalEnergy", regionalEnergyEJ);
+                    metricsMap.putIfAbsent("primaryEnergy", regionalEnergyEJ * scalingFactor);
+                    metricsMap.putIfAbsent("energyCaptured", rawEnergy * scalingFactor);
 
                     // Epsilon smoothing on population denominator to prevent mortality singularity (Vaclav Smil 2017)
                     double safePop = Math.max(100.0, popDbl);
                     double rawEnergyPerCap = snap.energyCaptured() > 0 ? (snap.energyCaptured() / safePop) : 40.0;
                     double maxAllowed = snap.year() >= 1950 ? 600.0 : (snap.year() >= 1850 ? 300.0 : 120.0);
                     double energyPerCap = Math.max(5.0, Math.min(maxAllowed, rawEnergyPerCap));
-                    metricsMap.put("energyPerCapita", energyPerCap);
-                    metricsMap.put("resourceDepletion", snap.resourceDepletion());
-                    metricsMap.put("potableWater", snap.potableWater());
+                    metricsMap.putIfAbsent("energyPerCapita", energyPerCap);
+                    metricsMap.putIfAbsent("resourceDepletion", snap.resourceDepletion());
+                    metricsMap.putIfAbsent("potableWater", snap.potableWater());
 
                     double baseAnomaly = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
                         "temperatureAnomaly", snap.year(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
@@ -262,11 +267,11 @@ public final class ComparativeTelemetryDataLoader {
                     double tempAnomaly = Math.max(-20.0, Math.min(25.0, baseAnomaly + shockForcing));
                     double tempAbsolute = 14.0 + tempAnomaly;
 
-                    metricsMap.put("temperatureAnomaly", tempAnomaly);
-                    metricsMap.put("temperature", tempAbsolute);
-                    metricsMap.put("entropyPollution", Math.min(100.0, snap.carbonFootprint() * 0.01));
-                    metricsMap.put("precipitation", 950.0 + (tempAnomaly * 25.0));
-                    metricsMap.put("co2Concentration", 280.0 + (snap.year() >= 1850 ? Math.min(600.0, snap.carbonFootprint() * 0.005) : 0.0));
+                    metricsMap.putIfAbsent("temperatureAnomaly", tempAnomaly);
+                    metricsMap.putIfAbsent("temperature", tempAbsolute);
+                    metricsMap.putIfAbsent("entropyPollution", Math.min(100.0, snap.carbonFootprint() * 0.01));
+                    metricsMap.putIfAbsent("precipitation", 950.0 + (tempAnomaly * 25.0));
+                    metricsMap.putIfAbsent("co2Concentration", 280.0 + (snap.year() >= 1850 ? Math.min(600.0, snap.carbonFootprint() * 0.005) : 0.0));
 
                     // Urbanization Rate (Bairoch 1988, Chandler 1987)
                     double urbanRate = HistoricalValidationKernel.getInterpolatedBenchmarkValue("urbanizationRate", snap.year());
@@ -278,7 +283,7 @@ public final class ComparativeTelemetryDataLoader {
                         double techFactor = 1.0 + Math.tanh((snap.avgTechnology() - 5.0) / 10.0) * 0.10;
                         urbanRate = Math.clamp(urbanRate * techFactor, 0.0, 95.0);
                     }
-                    metricsMap.put("urbanizationRate", urbanRate);
+                    metricsMap.putIfAbsent("urbanizationRate", urbanRate);
 
                     // Literacy Rate (Buringh & van Zanden 2009)
                     double litRate = HistoricalValidationKernel.getInterpolatedBenchmarkValue("literacyRate", snap.year());
@@ -290,58 +295,62 @@ public final class ComparativeTelemetryDataLoader {
                         double techFactor = 1.0 + Math.tanh((snap.avgTechnology() - 5.0) / 10.0) * 0.08;
                         litRate = Math.clamp(litRate * techFactor, 0.0, 99.5);
                     }
-                    metricsMap.put("literacyRate", litRate);
+                    metricsMap.putIfAbsent("literacyRate", litRate);
 
                     // Sociopolitical Instability (Turchin PSI / Conflict level)
                     double psiInstability = snap.conflictLevel() > 0.0 ? snap.conflictLevel() : (snap.eliteOverproduction() * (1.0 + snap.globalGini()) * 20.0);
-                    metricsMap.put("sociopoliticalInstability", Math.max(1.0, Math.min(100.0, psiInstability)));
+                    metricsMap.putIfAbsent("sociopoliticalInstability", Math.max(1.0, Math.min(100.0, psiInstability)));
 
                     // Currency Debasement: 0.0 before minted coinage in -600 BCE (Lydian electrum)
                     double debasement = HistoricalValidationKernel.getInterpolatedBenchmarkValue("currencyDebasement", snap.year());
                     if (Double.isNaN(debasement)) debasement = snap.globalGini() * 50.0;
                     if (snap.year() < -600) debasement = 0.0;
-                    metricsMap.put("currencyDebasement", debasement);
-                    metricsMap.put("eroiAlim", Math.max(1.0, 15.0 - (snap.resourceDepletion() * 0.1)));
-                    metricsMap.put("netSurplus", 85.0);
-                    metricsMap.put("trophicMultiplier", 2.25);
-                    metricsMap.put("biomassMobilized", 1000.0);
+                    metricsMap.putIfAbsent("currencyDebasement", debasement);
+                    metricsMap.putIfAbsent("eroiAlim", Math.max(1.0, 15.0 - (snap.resourceDepletion() * 0.1)));
+                    metricsMap.putIfAbsent("netSurplus", 85.0);
+                    metricsMap.putIfAbsent("trophicMultiplier", 2.25);
+                    metricsMap.putIfAbsent("biomassMobilized", 1000.0);
 
                     // 3. Society & Politics
-                    metricsMap.put("avgTechLevel", snap.avgTechnology());
-                    metricsMap.put("technology", snap.avgTechnology());
-                    metricsMap.put("asabiyyah", Math.max(0.0, Math.min(100.0, 100.0 - snap.conflictLevel() - snap.globalGini() * 40.0)));
-                    metricsMap.put("happiness", snap.happinessIndex());
-                    metricsMap.put("conflict", snap.conflictLevel());
-                    metricsMap.put("kardashev", snap.kardashevScale());
-                    metricsMap.put("institutionalMaturity", snap.avgTechnology() * 5.0);
+                    metricsMap.putIfAbsent("avgTechLevel", snap.avgTechnology());
+                    metricsMap.putIfAbsent("technology", snap.avgTechnology());
+                    metricsMap.putIfAbsent("asabiyyah", Math.max(0.0, Math.min(100.0, 100.0 - snap.conflictLevel() - snap.globalGini() * 40.0)));
+                    metricsMap.putIfAbsent("asabiyyahSocialCohesion", snap.dynamicMetrics() != null && snap.dynamicMetrics().containsKey("asabiyyahSocialCohesion") ? snap.dynamicMetrics().get("asabiyyahSocialCohesion") : metricsMap.get("asabiyyah") / 100.0);
+                    metricsMap.putIfAbsent("politicalStressIndex", snap.dynamicMetrics() != null && snap.dynamicMetrics().containsKey("politicalStressIndex") ? snap.dynamicMetrics().get("politicalStressIndex") : metricsMap.get("sociopoliticalInstability"));
+                    metricsMap.putIfAbsent("happiness", snap.happinessIndex());
+                    metricsMap.putIfAbsent("conflict", snap.conflictLevel());
+                    metricsMap.putIfAbsent("kardashev", snap.kardashevScale());
+                    metricsMap.putIfAbsent("institutionalMaturity", snap.avgTechnology() * 5.0);
 
                     // 4. Economy & Capital
-                    metricsMap.put("gini", snap.globalGini());
-                    metricsMap.put("giniIndex", snap.globalGini());
+                    metricsMap.putIfAbsent("gini", snap.globalGini());
+                    metricsMap.putIfAbsent("giniIndex", snap.globalGini());
+                    metricsMap.putIfAbsent("giniInequality", snap.globalGini());
                     double gdpBillions = snap.gdpTotal() > 1e6 ? (snap.gdpTotal() / 1e9) : snap.gdpTotal();
-                    if (gdpBillions <= 0.0) {
+                    if (gdpBillions <= 0.0 && !metricsMap.containsKey("grossWorldProduct")) {
                         double gdpPerCapitaUSD = 450.0 + Math.pow(Math.max(0.0, snap.avgTechnology()), 1.8) * 120.0;
                         gdpBillions = (popDbl * gdpPerCapitaUSD) / 1e9;
                     }
-                    metricsMap.put("regionalGdp", gdpBillions);
-                    metricsMap.put("grossWorldProduct", gdpBillions * scalingFactor);
-                    metricsMap.put("gdp", gdpBillions * scalingFactor);
-                    metricsMap.put("gdpTotal", gdpBillions * scalingFactor);
-                    metricsMap.put("builtCapital", snap.totalWealth() > 0 ? (snap.totalWealth() / pop) : snap.totalWealth());
+                    metricsMap.putIfAbsent("regionalGdp", gdpBillions);
+                    metricsMap.putIfAbsent("grossWorldProduct", gdpBillions * scalingFactor);
+                    metricsMap.putIfAbsent("gdp", gdpBillions * scalingFactor);
+                    metricsMap.putIfAbsent("gdpTotal", gdpBillions * scalingFactor);
+                    metricsMap.putIfAbsent("builtCapital", snap.totalWealth() > 0 ? (snap.totalWealth() / pop) : snap.totalWealth());
 
                     // 5. Cognition & Culture
-                    metricsMap.put("collectiveMemory", snap.collectiveMemory());
-                    metricsMap.put("languageDiversity", Math.max(1.0, Math.log10(pop + 10.0)));
+                    metricsMap.putIfAbsent("collectiveMemory", snap.collectiveMemory());
+                    metricsMap.putIfAbsent("languageDiversity", Math.max(1.0, Math.log10(pop + 10.0)));
 
                     // 6. Cliodynamics, Collapse & Paleolithic Benchmarks
-                    metricsMap.put("eliteOverproduction", snap.eliteOverproduction());
-                    metricsMap.put("collapseRisk", snap.collapseVulnerability());
-                    metricsMap.put("collapseVulnerability", snap.collapseVulnerability());
-                    metricsMap.put("systemComplexity", snap.systemComplexity());
-                    metricsMap.put("systemInterdependence", snap.systemComplexity());
-                    metricsMap.put("carbonFootprint", snap.carbonFootprint());
-                    metricsMap.put("megafaunaIndex", ProceduralPopulationGenerator.calculateMegafaunaAbundanceIndex(snap.year(), (popDbl * scalingFactor) / 1e6, 0.2));
-                    metricsMap.put("milankovitchInsolation", ProceduralPopulationGenerator.calculateMilankovitchSummerInsolation65N(snap.year()));
+                    metricsMap.putIfAbsent("eliteOverproduction", snap.eliteOverproduction());
+                    metricsMap.putIfAbsent("eliteOverproductionIndex", snap.eliteOverproduction());
+                    metricsMap.putIfAbsent("collapseRisk", snap.collapseVulnerability());
+                    metricsMap.putIfAbsent("collapseVulnerability", snap.collapseVulnerability());
+                    metricsMap.putIfAbsent("systemComplexity", snap.systemComplexity());
+                    metricsMap.putIfAbsent("systemInterdependence", snap.systemComplexity());
+                    metricsMap.putIfAbsent("carbonFootprint", snap.carbonFootprint());
+                    metricsMap.putIfAbsent("megafaunaIndex", ProceduralPopulationGenerator.calculateMegafaunaAbundanceIndex(snap.year(), (popDbl * scalingFactor) / 1e6, 0.2));
+                    metricsMap.putIfAbsent("milankovitchInsolation", ProceduralPopulationGenerator.calculateMilankovitchSummerInsolation65N(snap.year()));
 
                     // Dynamic zero-containment score in [0.0, 1.0] (Crosby 1972, Seebens 2017)
                     double containment = 1.0;

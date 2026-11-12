@@ -28,7 +28,7 @@ import static org.ether.society.analytics.BenchmarkChartStylingHelper.*;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see BenchmarkChartStylingHelper
  * @see BenchmarkChartSeriesBuilder
  * @see BenchmarkSecondaryChartsRenderer

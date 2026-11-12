@@ -23,7 +23,7 @@ import java.util.List;
  * across H3 cells.</p>
 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PhysicalLeontiefInputOutputEngine extends AbstractSimulationEngine {
     public PhysicalLeontiefInputOutputEngine() {

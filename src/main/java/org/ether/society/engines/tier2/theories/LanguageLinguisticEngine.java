@@ -25,7 +25,7 @@ import java.util.List;
  * 3. <b>Lingua Franca Diffusion</b>: Trade corridors and imperial capitals diffuse unified languages.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class LanguageLinguisticEngine extends AbstractSimulationEngine {
     public LanguageLinguisticEngine() {

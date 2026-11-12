@@ -28,7 +28,7 @@ import java.util.List;
  * 3. <b>Metapopulation Pathogen Progression</b>: Local transmission, case fatality, and recovery coupled with nutritional state.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class BioMolecularEpidemiologyEngine extends AbstractSimulationEngine {
     public BioMolecularEpidemiologyEngine() {

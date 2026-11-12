@@ -42,7 +42,7 @@ import java.io.File;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioBundleService {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioBundleService.class);
@@ -132,7 +132,7 @@ public class ScenarioBundleService {
                 if (eco == null) eco = EcologyPreset.EARTH_STANDARD;
                 Scenario scenario = host != null ? host.getScenario() : new Scenario();
 
-                EtherScenarioBundle rawBundle = new EtherScenarioBundle("1.0.0-beta.2", planet, eco, scenario);
+                EtherScenarioBundle rawBundle = new EtherScenarioBundle("1.0.0-beta.3", planet, eco, scenario);
                 EtherScenarioBundle bundle = EtherBundleSigner.signBundle(rawBundle, "Ether Lead Planner");
 
                 ObjectMapper mapper = EtherJsonHelper.getMapper();

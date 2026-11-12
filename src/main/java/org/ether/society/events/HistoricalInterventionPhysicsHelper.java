@@ -9,7 +9,7 @@ package org.ether.society.events;
  * for {@link HistoricalIntervention} events.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HistoricalIntervention
  */
 public final class HistoricalInterventionPhysicsHelper {

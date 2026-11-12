@@ -23,7 +23,7 @@ import java.awt.image.BufferedImage;
  * - Kullback-Leibler (KL) Spatial Divergence
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class MapComparisonMetrics {
     private static final Logger logger = LoggerFactory.getLogger(MapComparisonMetrics.class);

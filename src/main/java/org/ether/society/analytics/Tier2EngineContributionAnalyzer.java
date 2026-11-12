@@ -35,7 +35,7 @@ import java.util.TreeMap;
  * (\(T_{\text{divergence}}\)), and evaluates impact on historical empirical fit (\(\Delta\text{MAPE}\)).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see EngineContributionReport
  */
 public final class Tier2EngineContributionAnalyzer {

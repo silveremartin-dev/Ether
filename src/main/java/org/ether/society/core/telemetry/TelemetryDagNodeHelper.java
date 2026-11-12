@@ -21,7 +21,7 @@ import java.util.Map;
  * contained within {@link TelemetryEvaluationContext}.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see CompiledTelemetryPlan
  * @see TelemetryEvaluationContext
  */

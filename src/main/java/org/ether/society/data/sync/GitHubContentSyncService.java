@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class GitHubContentSyncService {
     private static final Logger logger = LoggerFactory.getLogger(GitHubContentSyncService.class);
@@ -255,7 +255,7 @@ public final class GitHubContentSyncService {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(rawUrl))
-                    .header("User-Agent", "Ether-Simulation-Engine/1.0.0-beta.2")
+                    .header("User-Agent", "Ether-Simulation-Engine/1.0.0-beta.3")
                     .GET()
                     .timeout(Duration.ofSeconds(30))
                     .build();
@@ -302,7 +302,7 @@ public final class GitHubContentSyncService {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl))
-                    .header("User-Agent", "Ether-Simulation-Engine/1.0.0-beta.2")
+                    .header("User-Agent", "Ether-Simulation-Engine/1.0.0-beta.3")
                     .header("Accept", "application/vnd.github.v3+json")
                     .GET()
                     .timeout(Duration.ofSeconds(15))

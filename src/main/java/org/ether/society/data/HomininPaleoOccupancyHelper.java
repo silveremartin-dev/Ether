@@ -15,7 +15,7 @@ package org.ether.society.data;
  * and Holocene (-100,000 BP to present).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HomininEpochDispersalBrackets
  * @see PaleoGeographyCoordinatesRegistry
  */

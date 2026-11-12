@@ -42,7 +42,7 @@ import java.util.function.Supplier;
  * generation executor, ensuring deterministic grid initialization and progress bar updates.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioSimulationLauncher {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioSimulationLauncher.class);

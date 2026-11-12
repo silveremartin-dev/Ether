@@ -47,7 +47,7 @@ import java.util.function.Supplier;
  * clamped mouse drag-panning, cursor-centered scroll zooming, and downsampled telemetry rendering.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class StatsChartsSection {
 

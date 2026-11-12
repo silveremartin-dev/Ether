@@ -18,7 +18,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SimulationPerformanceConfig implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -61,10 +61,8 @@ public class SimulationPerformanceConfig implements Serializable {
         RUST_NATIVE
     }
 
-    /** Execution engine backend mode (default: RUST_NATIVE if compiled library is present, otherwise JAVA_VECTOR_SIMD) */
-    private ExecutionEngineMode executionEngineMode = org.ether.society.core.dod.NativeRustBridge.isNativeAvailable()
-            ? ExecutionEngineMode.RUST_NATIVE
-            : ExecutionEngineMode.JAVA_VECTOR_SIMD;
+    /** Execution engine backend mode (default: JAVA_VECTOR_SIMD for in-process SIMD acceleration without FFM overhead, or RUST_NATIVE) */
+    private ExecutionEngineMode executionEngineMode = ExecutionEngineMode.JAVA_VECTOR_SIMD;
 
     /**
      * Simulation performance config.

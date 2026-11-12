@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * 2. <b>Continuous Biomass & Soil Organic Carbon Depletion</b>.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class MegafaunaEcosystemEngine extends AbstractSimulationEngine {
     public MegafaunaEcosystemEngine() {

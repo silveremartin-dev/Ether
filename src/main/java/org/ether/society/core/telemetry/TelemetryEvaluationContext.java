@@ -14,7 +14,7 @@ import org.ether.society.database.H3CellPhysicsAndStateHelper;
  * simulation meshes, polities, and agent SoA arrays. Passed cleanly to memoized DAG evaluators.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see CompiledTelemetryPlan
  * @see TelemetryDagNodeHelper
  */

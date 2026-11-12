@@ -27,7 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * and HUD overlays from the main geographic render loop.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class H3BeaconOverlayRenderer {
 

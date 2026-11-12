@@ -35,7 +35,7 @@ import java.util.Optional;
  *
  * @param <T> Preset type
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PresetControlBar<T> extends VBox {
     private static final Logger logger = LoggerFactory.getLogger(PresetControlBar.class);

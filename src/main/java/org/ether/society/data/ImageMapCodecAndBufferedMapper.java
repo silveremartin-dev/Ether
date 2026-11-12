@@ -32,7 +32,7 @@ import java.util.Map;
  * and raster integrity validator supporting {@link ImageMapLoader}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ImageMapLoader
  */
 final class ImageMapCodecAndBufferedMapper {

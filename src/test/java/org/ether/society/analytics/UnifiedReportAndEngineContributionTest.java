@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * and cross-scenario) and deterministic Leave-One-Out Tier 2 engine variance attribution.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 class UnifiedReportAndEngineContributionTest {
 

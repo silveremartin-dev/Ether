@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  * and 5-language localization refreshes.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ResourceGeologySectionBuilder
  */
 final class ResourceGeologyLayerImportHelper {

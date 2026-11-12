@@ -19,7 +19,7 @@ import org.ether.society.model.ClimateEvent;
  * inside the scenario setup calendar table.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioClimateEventModel {
     private final StringProperty type;

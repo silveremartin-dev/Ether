@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class WhitePaperCompiler {
 
@@ -103,7 +103,7 @@ public class WhitePaperCompiler {
         pw.println();
         pw.println("**Author**: Antigravity Cliodynamics Core Team & SilvÃ¨re Martin-Michiellot  ");
         pw.println("**Date**: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "  ");
-        pw.println("**Engine**: Ether Planetary Simulation Laboratory (Version 1.0.0-beta.2)  ");
+        pw.println("**Engine**: Ether Planetary Simulation Laboratory (Version 1.0.0-beta.3)  ");
         pw.println("**Benchmark Ground Truth**: Seshat Databank, HYDE 3.4, Maddison Project, EPICA Ice Cores, NOAA ETOPO 2022  ");
         pw.println();
         pw.println("---");

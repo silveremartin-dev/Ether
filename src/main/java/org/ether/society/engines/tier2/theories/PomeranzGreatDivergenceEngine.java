@@ -39,7 +39,7 @@ import java.util.List;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://press.princeton.edu">Pomeranz, K. (2000), The Great Divergence</a>
  * @see AsymmetricColonialTradeEngine
  * @see KummelAyresExergyEngine

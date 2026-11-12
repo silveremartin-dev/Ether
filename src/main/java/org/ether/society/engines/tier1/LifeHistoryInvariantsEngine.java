@@ -54,7 +54,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1093/oso/9780198540724.001.0001">Charnov (1993), Life History Invariants</a>
  * @see <a href="https://doi.org/10.1111/j.1469-7998.1990.tb04316.x">Promislow &amp; Harvey (1990), J. Zool. 220</a>
  */

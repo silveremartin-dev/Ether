@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 3. Acemoglu-Robinson Inclusive vs Extractive Institutions Engine
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class Tier2MacroSociologyTest {
 

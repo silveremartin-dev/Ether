@@ -20,7 +20,7 @@ import java.util.Date;
  * Tracks all network authentication attempts, encrypted payload decryptions, and security audit violations.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class EtherSecurityAuditLogger {
     private static final Logger logger = LoggerFactory.getLogger(EtherSecurityAuditLogger.class);

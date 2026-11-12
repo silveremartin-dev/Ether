@@ -26,7 +26,7 @@ import org.ether.society.ui.PresetControlBar;
  * scenario parameter sections, header, validation banner, and pinned action bar.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class ScenarioConfigPaneBuilder {
 

@@ -30,7 +30,7 @@ import java.util.function.Function;
  * 95% confidence intervals, interquartile ranges), and pairwise root-cause divergence analyses.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see GroundTruthAuditGenerator
  * @see ComparativeReportGenerator
  */

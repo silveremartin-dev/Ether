@@ -36,7 +36,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://press.princeton.edu/books/hardcover/9780691074917/ecological-stoichiometry">Sterner &amp; Elser (2002)</a>
  */
 public class EcologicalStoichiometryEngine extends AbstractSimulationEngine {

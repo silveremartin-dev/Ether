@@ -24,7 +24,7 @@ import java.util.*;
  * and {@link Scenario} persistence for {@link ScenarioEngineConfigSectionBuilder}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class ScenarioEngineParamControlsHelper {
 

@@ -26,7 +26,7 @@ import java.util.Map;
  * renders mathematical derivations in KaTeX/LaTeX, and manages fine-grained engine parameter controls.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioEngineSelector {
 

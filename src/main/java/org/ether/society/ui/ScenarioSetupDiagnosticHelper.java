@@ -24,7 +24,7 @@ import java.util.List;
  * extracted from {@link ScenarioSetupPanel} to uphold the Single Responsibility Principle.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ScenarioSetupPanel
  */
 final class ScenarioSetupDiagnosticHelper {

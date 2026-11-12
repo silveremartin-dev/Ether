@@ -27,7 +27,7 @@ import java.util.Map;
  * Fixture grids and simulation loop helpers for the Scientific Model Falsification Suite.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class FalsificationDebateFixtures {
 

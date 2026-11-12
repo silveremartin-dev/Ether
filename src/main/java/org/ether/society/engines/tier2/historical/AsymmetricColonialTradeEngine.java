@@ -23,7 +23,7 @@ import java.util.List;
  * coupled with a small home population leads to colonial fragmentation, local elite trade diversion, and monopoly decay.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class AsymmetricColonialTradeEngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(AsymmetricColonialTradeEngine.class);

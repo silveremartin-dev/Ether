@@ -2,7 +2,7 @@
 
 **Author**: Antigravity Cliodynamics Core Team & Silvère Martin-Michiellot  
 **Date**: 2026-11-08 17:09:24  
-**Engine**: Ether Planetary Simulation Laboratory (Version 1.0.0-beta.2)  
+**Engine**: Ether Planetary Simulation Laboratory (Version 1.0.0-beta.3)  
 **Benchmark Ground Truth**: Seshat Databank, HYDE 3.4, Maddison Project, EPICA Ice Cores, NOAA ETOPO 2022  
 
 ---

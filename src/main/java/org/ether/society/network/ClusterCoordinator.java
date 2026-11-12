@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * resilience against node failures, and real-time remote tick computation offloading.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ClusterCoordinator {
     private static final Logger logger = LoggerFactory.getLogger(ClusterCoordinator.class);

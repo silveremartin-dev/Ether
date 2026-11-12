@@ -24,7 +24,7 @@ import java.util.Locale;
  * historical disaster schedules for {@link PreComputePhase}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see PreComputePhase
  */
 final class PreComputeClimateAndResourceHelper {

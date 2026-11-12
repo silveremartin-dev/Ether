@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * raster file loading, and dynamic sub-block localization for {@link ScenarioCulturalSectionBuilder}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class ScenarioCulturalStateIOHelper {
 

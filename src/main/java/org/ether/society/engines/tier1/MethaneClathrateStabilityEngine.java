@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1029/95PA02087">Dickens et al. (1995), Paleocene-Eocene Thermal Maximum Hydrate Dissociation</a>
  * @see <a href="https://doi.org/10.1029/2003GB002131">Buffett &amp; Archer (2004), Global inventory of methane clathrate</a>
  * @see <a href="https://doi.org/10.1073/pnas.0800885105">Archer et al. (2009), Ocean methane hydrates as a slow tipping point</a>

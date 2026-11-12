@@ -18,7 +18,7 @@ import java.util.Locale;
  * supporting both headless AWT {@link BufferedImage} and JavaFX {@link Image} textures.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see TemporalTensorRepository
  */
 public final class TemporalRasterInterpolator {

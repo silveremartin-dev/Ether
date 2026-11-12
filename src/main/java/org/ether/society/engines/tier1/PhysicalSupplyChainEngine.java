@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * and supply chain cascade disruptions at maritime chokepoints.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PhysicalSupplyChainEngine extends AbstractSimulationEngine {
     public PhysicalSupplyChainEngine() {

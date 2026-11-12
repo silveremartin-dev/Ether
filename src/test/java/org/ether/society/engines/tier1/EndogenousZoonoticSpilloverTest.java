@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * while healthy, livestock-free populations remain disease-free.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class EndogenousZoonoticSpilloverTest {
 

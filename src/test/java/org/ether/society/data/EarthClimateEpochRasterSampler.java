@@ -36,7 +36,7 @@ import static org.ether.society.data.PlanetaryRasterSampler.saveMapImage;
  * seasonality tensors, and MODIS-derived paleobiome classifications across multi-millennial epochs.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class EarthClimateEpochRasterSampler {
 

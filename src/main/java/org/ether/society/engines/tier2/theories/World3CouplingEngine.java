@@ -26,7 +26,7 @@ import java.util.List;
  * 3. Persistent Pollution Generation (PPG) &amp; Biospheric Assimilation (PPA)</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class World3CouplingEngine extends AbstractSimulationEngine {
 

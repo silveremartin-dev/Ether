@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 7. <b>Celibate Monastic Clergy</b>: Non-reproducing religious elites buffering Malthusian pressure.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class HistoricalBehaviorsTestSuite {
 

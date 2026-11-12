@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * 3. Enforces catastrophic failure thresholds, structural breach lethality, and ECLSS power grid requirements.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PressurizedHabitatEngine extends AbstractSimulationEngine {
     public PressurizedHabitatEngine() {

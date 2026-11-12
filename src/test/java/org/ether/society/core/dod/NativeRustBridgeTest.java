@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Validates off-heap buffer marshaling, C-ABI symbol execution, and numerical stability.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class NativeRustBridgeTest {
     private static final Logger logger = LoggerFactory.getLogger(NativeRustBridgeTest.class);

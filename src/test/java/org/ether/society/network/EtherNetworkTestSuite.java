@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * JUnit Test Suite for Ether Co-Governance Network Server & Client.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class EtherNetworkTestSuite {
 

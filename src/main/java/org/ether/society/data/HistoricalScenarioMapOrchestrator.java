@@ -28,7 +28,7 @@ import java.util.Random;
  * density ingestion, extensible procedural tensor synthesis, and batch scenario map caching.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HistoricalMapGenerator
  * @see HistoricalMapRasterRepository
  */

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1038/s41586-019-1043-4">Whitehouse et al. (2019), Nature 568:226-229</a>
  * @see KinSelectionHamiltonEngine
  * @see SchellingAxelrodSegregationEngine

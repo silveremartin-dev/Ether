@@ -1,7 +1,7 @@
 # Canonical Domain Validity Conditions Catalog for Tier 2 Type B Engines
 
 **Author**: Silvere Martin-Michiellot  
-**Version**: 1.0.0-beta.2  
+**Version**: 1.0.0-beta.3  
 **Status**: Canonical Architectural Specification (`AGENTS.md §8.2, §11.3, §12.4, §13`)  
 **Implementation**: `AutoEpochScenarioHelper.calibrateTypeBEngines(String planetKey, long year)` & `ScenarioEngineCatalog.getOptionalEngines()`
 

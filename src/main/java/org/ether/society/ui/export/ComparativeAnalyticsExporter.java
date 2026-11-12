@@ -1,4 +1,4 @@
-package org.ether.society.ui.export;
+﻿package org.ether.society.ui.export;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -211,7 +211,7 @@ public final class ComparativeAnalyticsExporter {
 
         if (export2DZipBtn != null) {
             export2DZipBtn.setDisable(true);
-            export2DZipBtn.setText("â³ Compression ZIP...");
+            export2DZipBtn.setText(I18n.getOrDefault("analytics.export.zip_progress", "⏳ Compression ZIP..."));
         }
 
         CompletableFuture.runAsync(() -> {

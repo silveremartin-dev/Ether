@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  * temporal metadata (epoch, moment, population, byte footprint), and coordinates warm restoration.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioSnapshotInspector {
 

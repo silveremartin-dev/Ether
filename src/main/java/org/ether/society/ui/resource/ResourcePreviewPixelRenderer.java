@@ -19,7 +19,7 @@ import org.ether.society.ui.resource.ResourcePreviewCanvasBuilder.HostContext;
  * extracted from {@link ResourcePreviewCanvasBuilder}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ResourcePreviewCanvasBuilder
  */
 public final class ResourcePreviewPixelRenderer {

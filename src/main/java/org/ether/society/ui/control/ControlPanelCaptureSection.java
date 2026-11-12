@@ -34,7 +34,7 @@ import java.io.File;
  * Provides high-definition raster snapshot export (PNG) and background MP4 video timelapse generation.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ControlPanelCaptureSection {
 

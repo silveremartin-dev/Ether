@@ -16,7 +16,7 @@ import java.util.List;
  * Geometric bounding box locator for spatial benchmark sub-grids.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class SpatialWindowBoundingBoxFinder {
 

@@ -19,7 +19,7 @@ import java.util.List;
  * Models circular material re-use with continuous physical functions based on capital density and technology era.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ResourceRecyclingEngine extends AbstractSimulationEngine {
     public ResourceRecyclingEngine() {

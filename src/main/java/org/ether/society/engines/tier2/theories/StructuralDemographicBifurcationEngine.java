@@ -42,7 +42,7 @@ import java.util.Random;
  * capital destruction ($\Delta K &lt; 0$), and fiscal debt repudiation.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class StructuralDemographicBifurcationEngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(StructuralDemographicBifurcationEngine.class);

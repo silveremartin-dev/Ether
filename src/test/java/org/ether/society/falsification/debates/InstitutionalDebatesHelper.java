@@ -20,7 +20,7 @@ import java.util.List;
  * Fixtures and multi-tick runners for Institutional, Common Pool, and Cultural Evolution debates.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class InstitutionalDebatesHelper {
 

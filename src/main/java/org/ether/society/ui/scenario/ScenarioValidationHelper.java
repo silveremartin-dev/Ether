@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  * Highlights invalid controls with visual warnings and maintains the error banner state.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class ScenarioValidationHelper {
 

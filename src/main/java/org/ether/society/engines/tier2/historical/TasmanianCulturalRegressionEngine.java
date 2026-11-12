@@ -27,7 +27,7 @@ import java.util.List;
  * complex physical tooling and capital stock (\(K\)).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class TasmanianCulturalRegressionEngine extends AbstractSimulationEngine {
 

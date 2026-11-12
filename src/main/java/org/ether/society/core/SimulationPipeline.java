@@ -21,7 +21,7 @@ import java.util.List;
  * using Data-Oriented Design (DOD) buffers and JIT-compiled scenario kernels.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SimulationPipeline {
     private static final Logger logger = LoggerFactory.getLogger(SimulationPipeline.class);

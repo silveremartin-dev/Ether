@@ -23,7 +23,7 @@ import static org.ether.society.analytics.BenchmarkChartStylingHelper.*;
  * {@link BenchmarkSynthesisChartGenerator}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 final class BenchmarkSecondaryChartsRenderer {
 

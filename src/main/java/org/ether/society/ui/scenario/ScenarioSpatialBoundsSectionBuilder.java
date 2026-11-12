@@ -23,7 +23,7 @@ import java.util.List;
  * and configuring boundary flow physics (Dynamic Reservoir, Closed Barrier, or Periodic Toroidal Wrap).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioSpatialBoundsSectionBuilder {
 

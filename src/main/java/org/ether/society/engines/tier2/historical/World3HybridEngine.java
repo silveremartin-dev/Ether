@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Couples local cell extraction/pollution directly into resource capital and life expectancy.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class World3HybridEngine extends AbstractSimulationEngine {
     public World3HybridEngine() {

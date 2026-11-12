@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * </p>
  * 
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 /**
@@ -85,7 +85,7 @@ public class SaveMetadata {
         this.scenarioName = scenarioName;
         this.cellCount = cellCount;
         this.h3Resolution = h3Resolution;
-        this.version = "1.0.0-beta.2";
+        this.version = "1.0.0-beta.3";
     }
 
     /**

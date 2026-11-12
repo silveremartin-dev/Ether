@@ -24,7 +24,7 @@ import java.util.List;
  * the 2048x1024 cartographic tensor grids.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see CliopatriaGeoJsonStreamingParser
  * @see CliopatriaCulturalTaxonomyRegistry
  * @see CliopatriaSubregionalCentersRegistry

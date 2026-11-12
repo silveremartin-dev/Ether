@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class RustVsJavaPerformanceBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(RustVsJavaPerformanceBenchmarkTest.class);

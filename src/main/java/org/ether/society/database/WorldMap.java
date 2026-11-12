@@ -45,7 +45,7 @@ import java.time.LocalDateTime;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @since 1.0.0
  */
 @Entity

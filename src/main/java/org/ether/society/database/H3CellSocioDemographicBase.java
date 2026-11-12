@@ -20,7 +20,7 @@ import org.ether.society.model.HabitatType;
  * {@code h3_cells_l8} relational table while keeping {@link H3Cell} concise and modular.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see H3Cell
  */
 @MappedSuperclass

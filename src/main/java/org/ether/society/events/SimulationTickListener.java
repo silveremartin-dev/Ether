@@ -13,7 +13,7 @@ package org.ether.society.events;
  * to react synchronously or asynchronously to simulation progress.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 @FunctionalInterface
 /**

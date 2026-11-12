@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * psychrometric bounds, stoichiometry limits, and positivity invariants are unconditionally preserved.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 @Tag("academic")
 @Tag("scientific")

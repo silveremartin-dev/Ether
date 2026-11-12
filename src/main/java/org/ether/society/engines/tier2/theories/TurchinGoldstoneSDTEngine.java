@@ -29,7 +29,7 @@ import java.util.List;
  * </pre>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
     public TurchinGoldstoneSDTEngine() {

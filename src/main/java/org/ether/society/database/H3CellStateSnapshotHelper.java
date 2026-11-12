@@ -18,7 +18,7 @@ import org.ether.society.database.components.MineralState;
  * without synthetic state-level technology fields ({@code AGENTS.md} Section 10.1).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see H3Cell
  * @see H3CellPhysicsAndStateHelper
  */

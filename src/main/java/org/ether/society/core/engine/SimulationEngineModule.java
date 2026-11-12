@@ -15,7 +15,7 @@ import org.ether.society.model.Scenario;
  * Data-Oriented Design {@link WorldBuffer} primitive memory tensors, and deterministic resets.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public interface SimulationEngineModule {
 

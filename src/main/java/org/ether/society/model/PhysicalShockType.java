@@ -14,7 +14,7 @@ import java.util.Locale;
  * applied to planetary mesh cells and atmospheric buffers.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public enum PhysicalShockType {
 

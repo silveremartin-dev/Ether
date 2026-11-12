@@ -1,47 +1,33 @@
-﻿# Ether 1.0.0-beta.2 — Official Release Announcement & Changelog
+﻿# Ether 1.0.0-beta.3 — Official Release Announcement & Changelog
 
-> **Release Version**: 1.0.0-beta.2  
-> **Release Date**: September 2026  
+> **Release Version**: 1.0.0-beta.3  
+> **Release Date**: November 2026  
 > **Repository**: [https://github.com/silveremartin-dev/Ether](https://github.com/silveremartin-dev/Ether)  
 > **License**: MIT License  
 
 ---
 
-## 🌟 Major Highlights of Ether
+## 🌟 Major Highlights of Ether 1.0.0-beta.3
 
-### 1. 1-Click Autonomous Standalone Deployment
-* **Zero-Database Requirement**: Run Ether immediately on any machine with Java 21+ using `install.bat` / `run.bat` (Windows) or `install.sh` / `run.sh` (Linux/macOS).
-* **Automated Standalone Packaging**: `scripts/package_release.bat` and `scripts/package_release.sh` generate ready-to-distribute portable `.zip` archives.
-* **Optional Cluster & PostGIS Integration**: Seamlessly switch between zero-config in-memory mode, local PostGIS, and distributed multi-node clusters.
+### 1. Data-Oriented Single-Pass Kernel Fusion on WorldBuffer
+* **Unified Cellular Execution**: Complete migration of all Tier 1 (biophysical PDEs) and Tier 2 (cliodynamics) cellular engines to the high-performance Data-Oriented Design (`WorldBuffer`).
+* **50x Cliodynamic Overhead Reduction**: Single-pass derivative accumulation (`DerivativeAccumulator`) replaces legacy multi-pass object loops, slashing Tier 2 cliodynamic overhead to just ~1.14 ms/tick (0.74% of tick runtime).
+* **High-Throughput Global Ticks**: Reaches 20+ TPS on Res 3 global grids (41,162 hexagons) and sub-second execution on canonical Res 4 planetary grids (288,122 hexagons).
 
-### 2. Comprehensive 80+ Simulation Engine Suite
-* **Tier 1 — Core Model Physics (~30 Engines)**:
-  - Exact astronomical Milankovitch insolation forcing (eccentricity, obliquity, precession).
-  - 3-cell atmospheric circulation (Hadley, Ferrel, Polar) with Coriolis acceleration.
-  - Stommel AMOC 2-box thermohaline ocean conveyor.
-  - 2D lateral Darcy porous aquifer depletion.
-  - Manning-Strickler open channel hydraulics & Stokes siltation.
-  - Viscoelastic Glacial Isostatic Adjustment (GIA) and PDD cryospheric melting.
-  - Farquhar FvCB photosynthesis, van Genuchten soil water retention, N-P-K nutrient exhaustion.
-  - Stull wet-bulb temperature hyperthermia mortality.
-* **Tier 2 — Optional Cliodynamic & Institutional Engines (~50 Engines)**:
-  - Turchin-Goldstone Structural-Demographic Theory (SDT) with elite overproduction dynamics.
-  - Tainter diminishing returns on organizational complexity.
-  - Kümmel-Ayres-Warr exergy growth models.
-  - West-Bettencourt urban allometric scaling ($Y \propto N^{1.15}$).
-  - NASA HANDY and Limits to Growth (World3) ecological carrying capacity collapse.
-  - Acemoglu-Robinson institutional drift, Boserupian agricultural intensification, and Price equation multi-level altruistic selection.
-  - 30+ Type B historical scenarios (Edo isolation, Roman hyperinflation, Fertile Crescent salinization, Asabiyyah decay, Wittfogel hydraulic despotism).
+### 2. Comprehensive Architectural Standardization (<= 500 Lines & Zero Defect)
+* **100% Architecture Compliance**: Strict enforcement of the 500-line limit across all 663 production Java source files, zero duplicate classes, and zero silent exception swallowing.
+* **Canonical Architectural Archetypes**: Systematic organization into formal Coordinators, Services, Repositories, Registries, and Helpers.
+* **Unified Simulation Engine Contracts**: 100% of simulation engines unified under `SimulationEngineModule` and `AbstractSimulationEngine`.
 
-### 3. Complete Localization (i18n) & High-Contrast UI
-* **100% Translation Parity across 5 Languages**: English (`EN`), French (`FR`), German (`DE`), Spanish (`ES`), and Simplified Chinese (`ZH`) with zero missing keys across 1,814 entries.
-* **Universal Technical Mouse-Over Tooltips**: Every interactive UI element displays the mathematical equations and physical mechanisms driving the simulation.
-* **Dual High-Contrast Theming**: Full Dark and Light theme parity with optimal visual contrast.
+### 3. Dynamic Multi-Metric Telemetry & Comparative Analytics
+* **Dynamic Metric Ingestion**: `HistorySnapshot` now supports dynamic telemetry mapping (`dynamicMetrics`), seamlessly linking runtime evaluations with historical ground-truth baselines.
+* **Headless Batch Falsification**: Fully autonomous CLI batch runner with comprehensive markdown report synthesis, trajectory graphs, and statistical variance tracking.
+* **Ground-Truth Calibration**: Automated comparison against authoritative empirical datasets (HYDE 3.4, Maddison Project 2020, NOAA ETOPO 2022, EPICA ice cores, Seshat).
 
-### 4. Publication-Grade Documentation & Empirical Calibrations
-* Complete Differential Equations & State Variables specification in `docs/SIMULATION_EQUATIONS_AND_VARIABLES.md`.
-* Validated against Seshat Global History Databank, HYDE 3.4, and Maddison Historical Statistics.
-* Complete bibliography and dataset provenance catalog in `docs/DATA_SOURCES_AND_INGESTION.md`.
+### 4. 1-Click Autonomous Standalone Deployment & Multi-Platform Packages
+* **Zero-Database Requirement**: Run Ether immediately on Windows, Linux, and macOS with Java 21+ using portable distribution packages.
+* **Full 5-Language Localization (i18n)**: 100% parity across English (`EN`), French (`FR`), German (`DE`), Spanish (`ES`), and Simplified Chinese (`ZH`) with rich mathematical and scientific tooltips.
+* **Dual High-Contrast Theme System**: Optimized Dark and Light themes meeting accessibility standards across all panels.
 
 ---
 

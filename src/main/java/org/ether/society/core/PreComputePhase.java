@@ -46,7 +46,7 @@ import java.util.List;
  * employ closed-form physical equations with zero pseudo-random noise.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see PreComputeClimateAndResourceHelper
  */
 public class PreComputePhase {

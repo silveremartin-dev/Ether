@@ -38,7 +38,7 @@ import java.util.function.Consumer;
  * confirmation workflows and transient toast animations from the core preset toolbar control.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class PresetDialogAndToastHelper {
 

@@ -21,7 +21,7 @@ import java.util.List;
  * and floating layer elevation shadows from 3D globe rendering.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class H3Flat2DRenderer {
 

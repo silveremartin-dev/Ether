@@ -45,7 +45,7 @@ import java.util.List;
  * physical observables (\(O(1)\) per cell/taxon).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1890/03-9000">Brown et al. (2004), Ecology 85(7)</a>
  */
 public class MetabolicEcologyEngine extends AbstractSimulationEngine {

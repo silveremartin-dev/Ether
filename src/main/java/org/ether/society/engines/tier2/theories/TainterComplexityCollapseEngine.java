@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * </pre>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class TainterComplexityCollapseEngine extends AbstractSimulationEngine {
     public TainterComplexityCollapseEngine() {

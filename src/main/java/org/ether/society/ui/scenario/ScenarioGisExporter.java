@@ -38,7 +38,7 @@ import java.util.Map;
  * and generates SHA-256 provenance manifests ensuring epistemic falsification and scientific reproducibility.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioGisExporter {
 
@@ -107,7 +107,7 @@ public class ScenarioGisExporter {
             try {
                 Map<String, Object> manifest = new LinkedHashMap<>();
                 manifest.put("manifestVersion", "1.0.0");
-                manifest.put("engineVersion", "Ether 1.0.0-beta.2");
+                manifest.put("engineVersion", "Ether 1.0.0-beta.3");
                 manifest.put("exportTimestamp", Instant.now().toString());
                 manifest.put("startYearBP", startYear);
                 manifest.put("prngSeed", seed != null ? seed : "54321");

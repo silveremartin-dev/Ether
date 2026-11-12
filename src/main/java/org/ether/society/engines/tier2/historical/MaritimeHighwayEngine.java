@@ -23,7 +23,7 @@ import java.util.List;
  * Applicable to any global, regional, or alien sea basin.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class MaritimeHighwayEngine extends AbstractSimulationEngine {
     public MaritimeHighwayEngine() {

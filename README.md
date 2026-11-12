@@ -16,7 +16,7 @@
 
 Ether runs out of the box **without requiring any external database configuration or internet connection**:
 * **100% Offline Operational**: All core baseline historical scenarios, planet archetypes, ecology models, and cliodynamic equations are embedded directly inside the JAR. You can run, experiment, modify parameters, and save completely offline.
-* **Ultra-Lightweight Distribution (~44 MB)**: Portable standalone distribution package (`dist/Ether-v1.0.0-beta.2-standalone.zip`).
+* **Ultra-Lightweight Distribution (~44 MB)**: Portable standalone distribution package (`dist/Ether-v1.0.0-beta.3-standalone.zip`).
 * **Non-Blocking Background Sync (Optional)**: When connected to the internet, official extra scenarios, maps (`data/ether/**`), chronicles (`data/ether/earth/events/`), and snapshots (`saves/**`) sync automatically in the background without stalling the interface.
 * **Branch & Customization Protection**: Local user edits (changed H3 resolution, cohort size, time steps, custom scenarios, user saves) are protected via SHA-256 and are **never overwritten**. Reference scenarios always remain accessible alongside user custom presets.
 
@@ -93,13 +93,13 @@ Measured on **complete planetary engine steps** (`H3SimulationEngine.stepForward
 
 | Grid Resolution & Scale | Total Cells | Architectural Status | 💻 Local Workstation (4 vCPUs) | ☁️ Google Cloud VM (`c2d-standard-8`) | 100-Year Scenario (Monthly, 1,200 ticks) | 1,000-Year Scenario (Monthly, 12k ticks) | 10,000-Year Deep-Time (Annual, 10k ticks) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Res 4 Canonical Planetary** | 288,122 cells | ⭐ **STANDARD CANONIQUE** | **1,015.9 ms** (0.98 TPS) | **640.1 ms** (1.56 TPS) | **20.3 min** (Local) / **12.8 min** (GCP) | **3.4 hours** (Local) / **2.1 hours** (GCP) | **2.8 hours** (Local) / **1.8 hours** (GCP) |
-| **Res 6 Regional Window** | ~30,060 cells | 🎯 **STANDARD FENÊTRÉ** | **123.1 ms** (8.12 TPS) | **70.0 ms** (14.28 TPS) | **2.5 min** (Local) / **1.4 min** (GCP) | **24.6 min** (Local) / **14.0 min** (GCP) | **20.5 min** (Local) / **11.7 min** (GCP) |
-| **Res 3 Minimum Viable** | 41,162 cells | ⚠️ **Minimum Viable (CI/Smoke)** | **148.1 ms** (6.75 TPS) | **103.2 ms** (9.69 TPS) | **3.0 min** (Local) / **2.1 min** (GCP) | **29.6 min** (Local) / **20.6 min** (GCP) | **24.7 min** (Local) / **17.2 min** (GCP) |
-| **Res 2 Coarse Macro** | 5,882 cells | 🚫 **À PROSCRIRE (Aliasing)** | **46.5 ms** (21.52 TPS) | **46.5 ms** (21.49 TPS) | **56 s** (Local) / **55 s** (GCP) | **9.3 min** (Local) / **9.3 min** (GCP) | **7.7 min** (Local) / **7.8 min** (GCP) |
+| **Res 4 Canonical Planetary** | 288,122 cells | ⭐ **STANDARD CANONIQUE** | **2,579.6 ms** (0.39 TPS) | **640.1 ms** (1.56 TPS) | **51.6 min** (Local) / **12.8 min** (GCP) | **8.6 hours** (Local) / **2.1 hours** (GCP) | **7.2 hours** (Local) / **1.8 hours** (GCP) |
+| **Res 6 Regional Window** | ~30,060 cells | 🎯 **STANDARD FENÊTRÉ** | **418.1 ms** (2.39 TPS) | **70.0 ms** (14.28 TPS) | **8.4 min** (Local) / **1.4 min** (GCP) | **1.4 hours** (Local) / **14.0 min** (GCP) | **1.2 hours** (Local) / **11.7 min** (GCP) |
+| **Res 3 Minimum Viable** | 41,162 cells | ⚠️ **Minimum Viable (CI/Smoke)** | **458.1 ms** (2.18 TPS) | **103.2 ms** (9.69 TPS) | **9.2 min** (Local) / **2.1 min** (GCP) | **1.5 hours** (Local) / **20.6 min** (GCP) | **1.3 hours** (Local) / **17.2 min** (GCP) |
+| **Res 2 Coarse Macro** | 5,882 cells | 🚫 **À PROSCRIRE (Aliasing)** | **172.5 ms** (5.80 TPS) | **46.5 ms** (21.49 TPS) | **3.5 min** (Local) / **55 s** (GCP) | **34.5 min** (Local) / **9.3 min** (GCP) | **28.8 min** (Local) / **7.8 min** (GCP) |
 
 > ⚠️ **Micro-Benchmark vs. Real Engine Disparity**:
-> Pure in-memory micro-benchmarks (`--benchmark-dod` / `RustVsJavaPerformanceBenchmarkTest`) measure *only 4 isolated primitive float array loops* (streaming arithmetic at bus bandwidth ~49 ns/cell, yielding 70 TPS). Real simulation ticks execute **90 coupled scientific engines** (2D Darcy diffusion, SEIR epidemics, Dijkstra maritime routing, Turchin SDT, cartographic SSIM/IoU raster evaluations, GZIP topology serialization), resulting in **640 ms/tick on GCP (1.56 TPS)** and **4,601 ms/tick on local 4-core hardware (0.22 TPS)**. The 31-second runtime was for 2,160 iterations of isolated array math; a full 2,160-tick multi-scenario historical calibration run takes **~23 to 25 minutes on Google Cloud**.
+> Pure in-memory micro-benchmarks (`--benchmark-dod` / `RustVsJavaPerformanceBenchmarkTest`) measure *only 4 isolated primitive float array loops* (streaming arithmetic at bus bandwidth ~49 ns/cell, yielding 70 TPS). Real simulation ticks execute **90 coupled scientific engines** (2D Darcy diffusion, SEIR epidemics, Dijkstra maritime routing, Turchin SDT, cartographic SSIM/IoU raster evaluations, GZIP topology serialization), resulting in **640 ms/tick on GCP (1.56 TPS)** and **2,580 ms/tick on local 4-core hardware (0.39 TPS)**. The 31-second runtime was for 2,160 iterations of isolated array math; a full 2,160-tick multi-scenario historical calibration run takes **~23 to 25 minutes on Google Cloud**.
 
 ### 🏛️ The 9-Dimensional Geocultural Tensor Architecture
 
@@ -132,10 +132,10 @@ Empirically evaluated on full planetary Earth grids (`strictDeterminism = true`)
 
 | Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Architectural Status | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Canonical Planetary Standard** | **Res 4** | **288,122** | ~16 km | ⭐ **STANDARD CANONIQUE** *(Simulations officielles)* | **0.22 TPS** (4,601.1 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
-| **Regional Windowed Cradle** | **Res 6** | **~28,000** | ~2.3 km | 🎯 **STANDARD FENÊTRÉ** *(Haute résolution régionale)* | **3.42 TPS** (292.4 ms) | **14.28 TPS** (70.0 ms) | 2.50 μs / cell | **11.6 minutes** | **56.0 MB** (2.3 MB / snap) |
-| **Minimum Viable Baseline** | **Res 3** | **41,162** | ~42 km | ⚠️ **Minimum Viable** *(CI & smoke tests rapides)* | **2.33 TPS** (428.9 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
-| **Coarse Global Macro** | **Res 2** | **5,882** | ~110 km | 🚫 **À PROSCRIRE** *(Aliasing spatial inacceptable)* | **7.47 TPS** (133.8 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
+| **Canonical Planetary Standard** | **Res 4** | **288,122** | ~16 km | ⭐ **STANDARD CANONIQUE** *(Simulations officielles)* | **0.39 TPS** (2,579.6 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
+| **Regional Windowed Cradle** | **Res 6** | **~28,000** | ~2.3 km | 🎯 **STANDARD FENÊTRÉ** *(Haute résolution régionale)* | **2.39 TPS** (418.1 ms) | **14.28 TPS** (70.0 ms) | 2.50 μs / cell | **11.6 minutes** | **56.0 MB** (2.3 MB / snap) |
+| **Minimum Viable Baseline** | **Res 3** | **41,162** | ~42 km | ⚠️ **Minimum Viable** *(CI & smoke tests rapides)* | **2.18 TPS** (458.1 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
+| **Coarse Global Macro** | **Res 2** | **5,882** | ~110 km | 🚫 **À PROSCRIRE** *(Aliasing spatial inacceptable)* | **5.80 TPS** (172.5 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
 
 ---
 
@@ -145,10 +145,10 @@ Evaluated on the standard reference grid (**Earth Global Res 3, 41,162 Hexagons*
 
 | Temporal Integration Step (Δt) | Step Days | Simulated Horizon (10k ticks) | 💻 Workstation 4C (10k ticks) | ☁️ GCP 8 vCPUs (10k ticks) | Measured TPS (GCP) | Latency ms/tick (GCP) | Single-Cell Latency |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Daily** (Δt = 1d) | 1.0 day | **27.4 years** (0.3 centuries) | **61.6 minutes** | **10.4 minutes** | **15.97 TPS** | 62.6 ms | 1.52 μs |
-| **Weekly** (Δt = 7d) | 7.0 days | **191.6 years** (1.9 centuries) | **73.3 minutes** | **8.3 minutes** | **20.07 TPS** | 49.8 ms | 1.21 μs |
-| **Monthly** (Δt = 30d) | 30.0 days | **821.4 years** (8.2 centuries) | **46.8 minutes** | **11.6 minutes** | **14.35 TPS** | 69.7 ms | 1.69 μs |
-| **Annual** (Δt = 365d) | 365.3 days | **10,000.0 years** (10 millennia) | **51.4 minutes** | **16.6 minutes** | **10.05 TPS** | 99.5 ms | 2.42 μs |
+| **Daily** (Δt = 1d) | 1.0 day | **27.4 years** (0.3 centuries) | **37.6 minutes** | **10.4 minutes** | **15.97 TPS** | 62.6 ms | 1.52 μs |
+| **Weekly** (Δt = 7d) | 7.0 days | **191.6 years** (1.9 centuries) | **36.2 minutes** | **8.3 minutes** | **20.07 TPS** | 49.8 ms | 1.21 μs |
+| **Monthly** (Δt = 30d) | 30.0 days | **821.4 years** (8.2 centuries) | **47.1 minutes** | **11.6 minutes** | **14.35 TPS** | 69.7 ms | 1.69 μs |
+| **Annual** (Δt = 365d) | 365.3 days | **10,000.0 years** (10 millennia) | **69.0 minutes** | **16.6 minutes** | **10.05 TPS** | 99.5 ms | 2.42 μs |
 
 ---
 
@@ -158,9 +158,9 @@ Measured on **Earth Global Res 3 (41,162 Hexagons)** under full simulation tick 
 
 | Backend Architecture Mode | Hardware Threads | 💻 Workstation TPS | 💻 Workstation Latency | ☁️ GCP VM TPS | ☁️ GCP VM Latency | Single-Cell Latency (GCP) | Measured Speedup vs 1C (GCP) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Java JIT (Monocœur, 1 Thread)** | 1 Thread | **3.90 TPS** | 256.2 ms | **15.60 TPS** | 64.1 ms | 1,557.5 ns | **1.00x (Baseline)** |
-| **Java 25 SIMD Vector (Multicœur)** | 4C (Local) / 8C (GCP) | **4.94 TPS** | 202.3 ms | **20.39 TPS** | 49.0 ms | 1,191.2 ns | **1.31x** |
-| **Native Rust Core (AVX-512 + Rayon)** | 4C (Local) / 8C (GCP) | **1.99 TPS** | 502.5 ms | **16.07 TPS** | 62.2 ms | 1,511.8 ns | **1.03x** |
+| **Java JIT (Monocœur, 1 Thread)** | 1 Thread | **3.96 TPS** | 252.6 ms | **15.60 TPS** | 64.1 ms | 1,557.5 ns | **1.00x (Baseline)** |
+| **Java 25 SIMD Vector (Multicœur)** | 4C (Local) / 8C (GCP) | **4.53 TPS** | 220.6 ms | **20.39 TPS** | 49.0 ms | 1,191.2 ns | **1.31x** |
+| **Native Rust Core (AVX-512 + Rayon)** | 4C (Local) / 8C (GCP) | **3.65 TPS** | 273.8 ms | **16.07 TPS** | 62.2 ms | 1,511.8 ns | **1.03x** |
 
 ---
 
@@ -170,8 +170,8 @@ Evaluated on **Earth Global Res 3 (41,162 Hexagons)**:
 
 | Coupling Tier Configuration | Tier 2 State | Included Physical & Cliodynamic Sub-Systems | Measured TPS (Local) | Latency ms/tick (Local) | Overhead vs Tier 1 |
 | :--- | :---: | :--- | :---: | :---: | :---: |
-| **Tier 1 Invariant Conservation PDEs Only** | **DISABLED** | Atmospheric radiation, Farquhar photosynthesis, Liebig N-P-K soil dynamics, 2D Darcy aquifer diffusion, megafauna trophic cascades, deforestation root cohesion, DOD demographics/culture. | **3.23 TPS** | 310.0 ms | **0.0% (Baseline)** |
-| **Tier 1 + Tier 2 Coupled Cliodynamics** | **ENABLED** | Tier 1 physics + Turchin SDT, Tainter collapse, World3 capital-resource feedback, Acemoglu institutions, Dynamic trade networks, War & Diplomacy, Asabiyyah. | **2.56 TPS** | 390.2 ms | **+25.9%** |
+| **Tier 1 Invariant Conservation PDEs Only** | **DISABLED** | Atmospheric radiation, Farquhar photosynthesis, Liebig N-P-K soil dynamics, 2D Darcy aquifer diffusion, megafauna trophic cascades, deforestation root cohesion, DOD demographics/culture. | **4.33 TPS** | 230.8 ms | **0.0% (Baseline)** |
+| **Tier 1 + Tier 2 Coupled Cliodynamics** | **ENABLED** | Tier 1 physics + Turchin SDT, Tainter collapse, World3 capital-resource feedback, Acemoglu institutions, Dynamic trade networks, War & Diplomacy, Asabiyyah. | **3.31 TPS** | 302.1 ms | **+30.9%** |
 
 ---
 
@@ -181,11 +181,11 @@ Measured on **Earth Global Res 3 (41,162 Hexagons)** across 5 landmark historica
 
 | Historical Epoch Preset | Associated Year | Initial Population ($T_0$) | Initial Tech Level | 💻 Workstation TPS | ☁️ GCP VM TPS | ☁️ GCP VM ms/tick | Final Population ($T_{final}$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Out of Africa** | **100,000 BCE** | **100,000** | 1.0 (Paleolithic) | **4.91 TPS** | **9.43 TPS** | 106.0 ms | 96,041 |
-| **Neolithic Revolution** | **10,000 BCE** | **5,000,000** | 2.0 (Early Agrarian) | **1.97 TPS** | **5.92 TPS** | 168.8 ms | 4,763,058 |
-| **Classical Antiquity** | **500 BCE** | **150,000,000** | 3.5 (Agrarian Empires) | **0.16 TPS** | **0.59 TPS** | 1,697.0 ms | 140,771,780 |
-| **Industrial Revolution** | **1800 CE** | **1,000,000,000** | 6.0 (Steam & Coal) | **0.05 TPS** | **0.09 TPS** | 11,223.9 ms | 922,081,272 |
-| **Modern Anthropocene** | **2026 CE** | **8,000,000,000** | 9.5 (Globalized) | **0.01 TPS** | **0.06 TPS** | 17,639.9 ms | 1,276,229,172 |
+| **Out of Africa** | **100,000 BCE** | **100,000** | 1.0 (Paleolithic) | **3.64 TPS** | **9.43 TPS** | 106.0 ms | 96,041 |
+| **Neolithic Revolution** | **10,000 BCE** | **5,000,000** | 2.0 (Early Agrarian) | **2.38 TPS** | **5.92 TPS** | 168.8 ms | 4,763,058 |
+| **Classical Antiquity** | **500 BCE** | **150,000,000** | 3.5 (Agrarian Empires) | **0.45 TPS** | **0.59 TPS** | 1,697.0 ms | 140,771,780 |
+| **Industrial Revolution** | **1800 CE** | **1,000,000,000** | 6.0 (Steam & Coal) | **0.08 TPS** | **0.09 TPS** | 11,223.9 ms | 922,081,272 |
+| **Modern Anthropocene** | **2026 CE** | **8,000,000,000** | 9.5 (Globalized) | **0.05 TPS** | **0.06 TPS** | 17,639.9 ms | 1,276,229,172 |
 
 ---
 
@@ -193,13 +193,13 @@ Measured on **Earth Global Res 3 (41,162 Hexagons)** across 5 landmark historica
 
 Evaluated on the standard reference grid (**Earth Global Res 3, 41,162 Hexagons**, Multi-Core, identical constant population $N = 100\,000\,000$, Monthly $\Delta t = 30$ days, Tier 1 + Tier 2 coupled cliodynamics):
 
-| Cohort Granularity Regime | Target Cohort Size ($N_{\text{cohort}}$) | Active Agent Nodes | Measured TPS (GCP) | Latency ms/tick (GCP) | Speedup vs Dunbar | Final Population ($T_{\text{final}}$) | Demographic Invariance ($\Delta N / N$) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Micro-Bands & Foragers** | **25 hab/cohort** | 10,000,000 nodes | **0.16 TPS** | 6,098.1 ms | **0.19x** | 95,072,562 | $\pm 0.0003\%$ |
-| **Dunbar Baseline Standard** | **150 hab/cohort** | 5,333,328 nodes | **0.85 TPS** | 1,177.2 ms | **1.00x (Baseline)** | 95,072,818 | **0.0000% (Ref)** |
-| **Agrarian Agglomeration** | **1,000 hab/cohort** | 987,888 nodes | **3.67 TPS** | 272.6 ms | **4.32x** | 95,073,349 | $+0.0006\%$ |
-| **Urban Macro-Cohort** | **10,000 hab/cohort** | 987,888 nodes | **6.40 TPS** | 156.1 ms | **7.54x** | 95,070,119 | $-0.0028\%$ |
-| **Continental Macro-Cohort** | **50,000 hab/cohort** | 987,888 nodes | **6.74 TPS** | 148.4 ms | **7.93x** | 95,063,600 | $-0.0097\%$ |
+| Cohort Granularity Regime | Target Cohort Size ($N_{\text{cohort}}$) | Active Agent Nodes | 💻 Workstation TPS | 💻 Workstation Latency | ☁️ GCP VM TPS | Speedup vs Dunbar | Final Population ($T_{\text{final}}$) | Demographic Invariance ($\Delta N / N$) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Micro-Bands & Foragers** | **25 hab/cohort** | 10,000,000 nodes | **0.13 TPS** | 7,870.3 ms | **0.16 TPS** | **0.21x (Local)** / 0.19x | 95,072,562 | $\pm 0.0003\%$ |
+| **Dunbar Baseline Standard** | **150 hab/cohort** | 5,333,328 nodes | **0.60 TPS** | 1,664.5 ms | **0.85 TPS** | **1.00x (Baseline)** | 95,072,818 | **0.0000% (Ref)** |
+| **Agrarian Agglomeration** | **1,000 hab/cohort** | 987,888 nodes | **2.52 TPS** | 397.6 ms | **3.67 TPS** | **4.19x (Local)** / 4.32x | 95,073,349 | $+0.0006\%$ |
+| **Urban Macro-Cohort** | **10,000 hab/cohort** | 987,888 nodes | **4.37 TPS** | 228.8 ms | **6.40 TPS** | **7.28x (Local)** / 7.54x | 95,070,119 | $-0.0028\%$ |
+| **Continental Macro-Cohort** | **50,000 hab/cohort** | 987,888 nodes | **3.26 TPS** | 306.9 ms | **6.74 TPS** | **5.42x (Local)** / 7.93x | 95,063,600 | $-0.0097\%$ |
 
 > 🔬 **Epistemic Invariance & Scaling Principle**:
 > While throughput accelerates by **$7.93\times$** (from 0.85 TPS to 6.74 TPS) as cohort granularity moves from the anthropological Dunbar number (150 hab/cohort) to continental macro-cohorts (50,000 hab/cohort), **the emergent demographic trajectory remains invariant to within $< 0.01\%$**. This demonstrates that cohort aggregation is a mathematically sound, non-distortive performance scaling dimension for modern and prospective planetary simulations with multi-billion populations.
@@ -409,7 +409,7 @@ Ether includes an empirical validation engine computing **Root Mean Square Error
 - ðŸ”’ [Security & System Integrity Audit](docs/SECURITY.md)
 - ðŸ“¢ [Reddit Launch Post](docs/posts/REDDIT_POST.md)
 - ðŸ’¼ [LinkedIn Announcement Post](docs/posts/LINKEDIN_POST.md)
-- ðŸ“¦ [Version 1.0.0-beta.2 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
+- ðŸ“¦ [Version 1.0.0-beta.3 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
 
 ---
 

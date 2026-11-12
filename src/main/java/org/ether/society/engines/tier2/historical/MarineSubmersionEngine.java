@@ -31,7 +31,7 @@ import java.util.HashMap;
  *    while human life is prioritized through technological foresight and emergency response.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class MarineSubmersionEngine extends AbstractSimulationEngine {
     public MarineSubmersionEngine() {

@@ -14,7 +14,7 @@ import static org.ether.society.data.CliopatriaCulturalTaxonomyRegistry.normaliz
  * Kinship family systems and 4D cliodynamic trait vector mappings for historical polities.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class CliopatriaKinshipAndTraitRegistry {
 

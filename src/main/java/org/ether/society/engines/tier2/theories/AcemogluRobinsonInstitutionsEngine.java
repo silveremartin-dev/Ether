@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * and capital deepening, whereas extractive institutions suffer elite expropriation and capital flight.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class AcemogluRobinsonInstitutionsEngine extends AbstractSimulationEngine {
     public AcemogluRobinsonInstitutionsEngine() {

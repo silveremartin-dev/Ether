@@ -13,7 +13,7 @@ import java.util.List;
  * Built-in fallback catalog of global historical milestones and natural shocks across human history.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class DefaultHistoricalMilestonesRegistry {
 

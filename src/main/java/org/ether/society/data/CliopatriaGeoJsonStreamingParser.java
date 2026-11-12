@@ -27,7 +27,7 @@ import java.util.List;
  * into memory, converting Polygon and MultiPolygon coordinates directly into equirectangular cartographic {@link Path2D} geometries.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class CliopatriaGeoJsonStreamingParser {
 

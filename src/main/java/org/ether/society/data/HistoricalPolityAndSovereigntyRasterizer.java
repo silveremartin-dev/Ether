@@ -20,7 +20,7 @@ import java.util.List;
  * hunter-gatherer spheres, Seshat historical empires, and modern sovereign boundaries.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class HistoricalPolityAndSovereigntyRasterizer {
 

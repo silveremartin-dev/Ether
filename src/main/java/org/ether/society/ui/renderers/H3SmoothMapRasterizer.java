@@ -17,7 +17,7 @@ import java.util.List;
  * 2D spatial rasterizer for continuous smooth texture interpolation across H3 cells.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class H3SmoothMapRasterizer {
 

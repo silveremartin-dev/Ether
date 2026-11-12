@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * 4. <b>Continuous FAO GAEZ Arability Suitability</b>: Closed-form physical function of topographic slope, growing season temperature, and SOC.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SoilNutrientNPKEngine extends AbstractSimulationEngine {
     public SoilNutrientNPKEngine() {

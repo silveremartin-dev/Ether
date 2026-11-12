@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * multiplied by the physical efficiency of mechanical energy transducers (\(C = E \cdot T\)).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see LeslieWhitePureEngine
  */
 public class WhiteEnergyEvolutionEngine extends AbstractSimulationEngine {

@@ -41,7 +41,7 @@ import java.util.zip.ZipFile;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see Hyde34GridReader
  * @see ConservativeRasterResampler
  */

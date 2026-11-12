@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * <b>Infrastructure (Techno-Environmental/Caloric Base) &rarr; Structure (Economy/Polity) &rarr; Superstructure (Ideology/Taboos)</b>.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see CulturalMaterialismPureEngine
  */
 public class HarrisCulturalMaterialismEngine extends AbstractSimulationEngine {

@@ -22,7 +22,7 @@ import java.util.List;
  * breakthroughs induce intense military capital investments and mobilization.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class MilitaryTechShockEngine extends AbstractSimulationEngine {
     public MilitaryTechShockEngine() {

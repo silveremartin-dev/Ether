@@ -27,7 +27,7 @@ import java.util.List;
  *    regional water security and generating hydroelectric energy.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class HydrologicalEngineeringEngine extends AbstractSimulationEngine {
     public HydrologicalEngineeringEngine() {

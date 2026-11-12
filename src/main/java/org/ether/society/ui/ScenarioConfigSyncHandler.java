@@ -20,7 +20,7 @@ import java.util.List;
  * and isolate the serialization/deserialization mapping between scenario domain objects and UI form fields.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ScenarioConfigSyncHandler {
 

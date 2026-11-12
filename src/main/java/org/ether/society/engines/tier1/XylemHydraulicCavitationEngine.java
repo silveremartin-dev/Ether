@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1038/nature11688">Choat et al. (2012), Nature 491</a>
  * @see <a href="https://doi.org/10.1146/annurev.pp.40.060189.000315">Tyree &amp; Sperry (1989)</a>
  */

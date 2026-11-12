@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Zero Double Transition continuity across the 2025 CE observational boundary.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see HistoricalValidationKernel
  * @see BenchmarkInterpolator
  */

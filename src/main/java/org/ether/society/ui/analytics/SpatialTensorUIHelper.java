@@ -41,7 +41,7 @@ import java.util.function.Supplier;
  * and 5-language localization / dynamic custom cultural tensor channel registration.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see SpatialTensorComparisonPane
  */
 final class SpatialTensorUIHelper {

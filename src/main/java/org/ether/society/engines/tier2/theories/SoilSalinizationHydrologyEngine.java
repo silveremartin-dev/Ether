@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * and the modern Aral Sea basin (Jacobsen & Adams, 1958; Gelburd, 1985).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class SoilSalinizationHydrologyEngine extends AbstractSimulationEngine {
     public SoilSalinizationHydrologyEngine() {

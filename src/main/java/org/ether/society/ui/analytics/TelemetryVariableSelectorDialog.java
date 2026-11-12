@@ -34,7 +34,7 @@ import java.util.Set;
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class TelemetryVariableSelectorDialog extends Dialog<Set<String>> {
 
@@ -107,19 +107,19 @@ public class TelemetryVariableSelectorDialog extends Dialog<Set<String>> {
         HBox toolbar = new HBox(8);
         toolbar.setAlignment(Pos.CENTER_LEFT);
 
-        Button btnSelectAll = new Button("Tout SÃ©lectionner");
+        Button btnSelectAll = new Button(I18n.getOrDefault("telemetry.dialog.btn_select_all", "Tout Sélectionner"));
         btnSelectAll.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px;");
         btnSelectAll.setOnAction(e -> setAllSelection(true));
 
-        Button btnDeselectAll = new Button("Tout DÃ©sÃ©lectionner");
+        Button btnDeselectAll = new Button(I18n.getOrDefault("telemetry.dialog.btn_deselect_all", "Tout Désélectionner"));
         btnDeselectAll.setStyle("-fx-background-color: #64748b; -fx-text-fill: white; -fx-font-size: 11px;");
         btnDeselectAll.setOnAction(e -> setAllSelection(false));
 
-        Button btnProfileFast = new Button("Profil Rapide (5 variables)");
+        Button btnProfileFast = new Button(I18n.getOrDefault("telemetry.dialog.btn_profile_fast", "Profil Rapide (5 variables)"));
         btnProfileFast.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-size: 11px;");
         btnProfileFast.setOnAction(e -> applyProfileFast());
 
-        Button btnProfileCliodynamic = new Button("Profil Cliodynamique Turchin");
+        Button btnProfileCliodynamic = new Button(I18n.getOrDefault("telemetry.dialog.btn_profile_cliodynamic", "Profil Cliodynamique Turchin"));
         btnProfileCliodynamic.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-size: 11px;");
         btnProfileCliodynamic.setOnAction(e -> applyProfileCliodynamic());
 

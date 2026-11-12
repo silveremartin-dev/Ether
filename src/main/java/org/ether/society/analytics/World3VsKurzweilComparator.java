@@ -19,7 +19,7 @@ import java.util.List;
  * World3 (Meadows Limits to Growth) vs Kurzweil (Law of Accelerating Returns LOAR) Comparator.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class World3VsKurzweilComparator {
     private static final Logger logger = LoggerFactory.getLogger(World3VsKurzweilComparator.class);

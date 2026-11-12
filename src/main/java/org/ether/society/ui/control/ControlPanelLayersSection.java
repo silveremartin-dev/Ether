@@ -39,7 +39,7 @@ import java.util.function.Supplier;
  * elevation contour overlays, transport flux vectors, and 2.5D altitude floating projection.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ControlPanelLayersSection {
 

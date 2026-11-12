@@ -29,7 +29,7 @@ import java.util.function.BiConsumer;
  * and audit trail list view synchronization for {@link org.ether.society.ui.GodModePanel}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class GodModeInterventionCoordinator {
 

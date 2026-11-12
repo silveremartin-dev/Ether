@@ -13,7 +13,7 @@ import java.util.Map;
  * and Exoplanetary civilizational configurations (Super-Earth, Eyeball World, Water World, Ice World, Archipelago).
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see FutureAndExoplanetScenarioRegistry
  */
 public final class ExoplanetScenarioRegistry {

@@ -22,7 +22,7 @@ import java.util.Base64;
  * Implements AES-256 GCM encryption/decryption and HMAC payload integrity verification.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class EtherSecurityService {
     private static final Logger logger = LoggerFactory.getLogger(EtherSecurityService.class);

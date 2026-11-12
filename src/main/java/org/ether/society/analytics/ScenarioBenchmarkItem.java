@@ -12,7 +12,7 @@ package org.ether.society.analytics;
  * <p>Decouples analytical statistical engines from graphical UI presentation wrappers.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public interface ScenarioBenchmarkItem {
 

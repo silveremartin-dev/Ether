@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class PhysicalMediaPrintingEngine extends AbstractSimulationEngine {
     public PhysicalMediaPrintingEngine() {

@@ -24,7 +24,7 @@ import java.util.Set;
  * equirectangular rasterization discretization error.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class CellularMapComparisonMetrics {
 

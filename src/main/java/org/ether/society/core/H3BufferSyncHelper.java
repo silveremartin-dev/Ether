@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
  * <p>Synchronizes conserved primary biophysical observables exclusively ({@code AGENTS.md} Section 10.1).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see H3BufferAndEventCoordinator
  */
 final class H3BufferSyncHelper {

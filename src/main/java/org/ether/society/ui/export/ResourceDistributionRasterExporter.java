@@ -120,7 +120,7 @@ public final class ResourceDistributionRasterExporter {
             try {
                 Map<String, Object> manifest = new LinkedHashMap<>();
                 manifest.put("manifestVersion", "1.0.0");
-                manifest.put("engineVersion", "Ether 1.0.0-beta.2");
+                manifest.put("engineVersion", "Ether 1.0.0-beta.3");
                 manifest.put("domain", "Geology & Planetary Resources");
                 manifest.put("exportTimestamp", Instant.now().toString());
                 manifest.put("prngSeed", seedInput != null ? seedInput : "45678");

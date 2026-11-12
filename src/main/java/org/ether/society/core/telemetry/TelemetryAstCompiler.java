@@ -23,7 +23,7 @@ import static org.ether.society.core.telemetry.CompiledTelemetryPlan.*;
  * emits an immutable topologically sorted {@link CompiledTelemetryPlan}.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see CompiledTelemetryPlan
  * @see TelemetrySubscription
  */

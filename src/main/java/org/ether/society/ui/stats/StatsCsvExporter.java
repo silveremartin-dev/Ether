@@ -25,7 +25,7 @@ import java.util.Locale;
  * Exports population, energy flux, Kardashev rating, Gini inequality, GDP, life expectancy, and complexity indices.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class StatsCsvExporter {
 
@@ -63,12 +63,12 @@ public final class StatsCsvExporter {
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle(I18n.getOrDefault("stats.title.export_success", "Exportation Réussie"));
-            alert.setContentText("Données statistiques exportées avec succès dans :\n" + file.getAbsolutePath());
+            alert.setContentText(I18n.getOrDefault("stats.content.export_success", "Données statistiques exportées avec succès dans :\n") + file.getAbsolutePath());
             alert.showAndWait();
         } catch (Exception ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur d'Exportation");
-            alert.setContentText("Impossible d'exporter les statistiques : " + ex.getMessage());
+            alert.setTitle(I18n.getOrDefault("stats.title.export_error", "Erreur d'Exportation"));
+            alert.setContentText(I18n.getOrDefault("stats.content.export_error", "Impossible d'exporter les statistiques : ") + ex.getMessage());
             alert.showAndWait();
         }
     }

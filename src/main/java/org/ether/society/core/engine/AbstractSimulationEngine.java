@@ -15,7 +15,7 @@ import java.util.List;
  * Tier 1 and Tier 2 simulation engines.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public abstract class AbstractSimulationEngine implements SimulationEngineModule {
 

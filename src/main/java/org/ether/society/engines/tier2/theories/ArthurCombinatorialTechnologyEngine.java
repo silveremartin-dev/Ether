@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * physical machinery, infrastructure, and tools (\(\Delta K\)).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ArthurCombinatorialTechnologyEngine extends AbstractSimulationEngine {
     public ArthurCombinatorialTechnologyEngine() {

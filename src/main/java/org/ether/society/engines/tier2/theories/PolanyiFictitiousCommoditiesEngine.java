@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://www.beacon.org">Polanyi, K. (1944), The Great Transformation</a>
  * @see TurchinGoldstoneSDTEngine
  * @see OstromCommonsPureEngine

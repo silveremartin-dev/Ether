@@ -16,7 +16,7 @@ package org.ether.society.database.components;
  * @param seaLevelOffsetMeters eustatic sea level offset relative to present in meters
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public record ClimateState(
         double temperature,

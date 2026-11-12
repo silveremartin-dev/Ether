@@ -30,7 +30,7 @@ import java.util.*;
  * biophysical states derive from closed-form models, and zero arbitrary human counts are injected.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class WindowedVsGlobalSpatialFalsificationHarness {
 

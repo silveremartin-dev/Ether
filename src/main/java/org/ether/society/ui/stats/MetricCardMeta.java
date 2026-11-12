@@ -20,7 +20,7 @@ import java.util.List;
  * @param defaultUnit physical or mathematical measurement unit
  * @param defaultTooltip LaTeX equation or scientific explanation
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public record MetricCardMeta(String key, String defaultTitle, String defaultCategory, String defaultUnit, String defaultTooltip) {
 

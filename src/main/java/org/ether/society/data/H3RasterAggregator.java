@@ -45,7 +45,7 @@ import java.util.stream.IntStream;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ConservativeRasterResampler
  */
 public final class H3RasterAggregator {

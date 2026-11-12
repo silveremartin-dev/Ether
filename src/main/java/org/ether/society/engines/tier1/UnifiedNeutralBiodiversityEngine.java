@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://press.princeton.edu/books/hardcover/9780691021287/the-unified-neutral-theory-of-biodiversity-and-biogeography">Hubbell (2001)</a>
  */
 public class UnifiedNeutralBiodiversityEngine extends AbstractSimulationEngine {

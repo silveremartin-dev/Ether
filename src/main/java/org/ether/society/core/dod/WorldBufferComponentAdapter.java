@@ -19,7 +19,7 @@ import org.ether.society.model.OrganismBiophysicalProfile;
  * and computes thermodynamic power flux and emergent technology diagnostics.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class WorldBufferComponentAdapter {
 

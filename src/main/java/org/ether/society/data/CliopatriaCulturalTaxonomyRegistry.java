@@ -16,7 +16,7 @@ import java.awt.Color;
  * and 4D cliodynamic trait vectors (language, kinship, subsistence, religion).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class CliopatriaCulturalTaxonomyRegistry {
 

@@ -25,7 +25,7 @@ import java.util.List;
  * Monitor, and Davies (2013) global surface heat-flow grids into reusable coordinate catalogs.</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see GeologicalResourceMapRasterizer
  */
 final class GeologicalResourceProvincesRegistry {

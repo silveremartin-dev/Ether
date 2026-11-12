@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * Geometric SVG path and element parser converting vectors into pixel coordinates.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public final class SvgGeometryParser {
 

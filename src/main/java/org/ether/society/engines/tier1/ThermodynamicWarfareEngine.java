@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  *    Penetration succeeds if Kinetic Energy Impact > Material Yield Strength * Thickness * Area.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class ThermodynamicWarfareEngine extends AbstractSimulationEngine {
     public ThermodynamicWarfareEngine() {

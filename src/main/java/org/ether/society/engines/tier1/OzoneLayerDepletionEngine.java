@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * 2. <b>UV-B Biological Impact</b>: UV-B influx damages crop photosynthetic DNA and increases human mortality.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public class OzoneLayerDepletionEngine extends AbstractSimulationEngine {
     public OzoneLayerDepletionEngine() {

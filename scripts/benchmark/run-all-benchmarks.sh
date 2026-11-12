@@ -16,7 +16,7 @@ echo "==========================================================================
 echo "Working Directory: ${ROOT_DIR}"
 
 # Locate executable JAR
-JAR_PATH="target/society-simulation-1.0.0-beta.2-executable.jar"
+JAR_PATH="target/society-simulation-1.0.0-beta.3-executable.jar"
 if [[ ! -f "${JAR_PATH}" ]]; then
     echo "[*] Executable JAR not found. Building shaded JAR with Maven..."
     mvn clean package -DskipTests

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1111/j.1467-9957.1954.tb00021.x">Lewis, W. A. (1954), The Manchester School</a>
  * @see WestBettencourtAllometryEngine
  * @see SolowSwanCapitalEngine

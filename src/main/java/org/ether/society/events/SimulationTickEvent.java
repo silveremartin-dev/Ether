@@ -23,7 +23,7 @@ package org.ether.society.events;
  * @param yearChanged     {@code true} if this tick crossed a calendar year boundary
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public record SimulationTickEvent(
     long tickIndex,

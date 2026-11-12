@@ -18,7 +18,7 @@ import java.util.Locale;
  * Package-private console banner and 5-axis summary table formatter for {@link RealPlanetaryEngineBenchmarkRunner}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see RealPlanetaryEngineBenchmarkRunner
  */
 final class PlanetaryBenchmarkReportFormatter {

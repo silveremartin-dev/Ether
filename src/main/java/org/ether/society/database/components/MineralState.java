@@ -21,7 +21,7 @@ package org.ether.society.database.components;
  * @param accessibleAquifer accessible shallow groundwater table volume in m³/km²
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  */
 public record MineralState(
         double resourceCoal,

@@ -44,7 +44,7 @@ import java.util.List;
  * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see <a href="https://doi.org/10.1017/CBO9781139343366">Kleidon (2016), Thermodynamic Foundations of the Earth System</a>
  */
 public class MaximumEntropyProductionEngine extends AbstractSimulationEngine {

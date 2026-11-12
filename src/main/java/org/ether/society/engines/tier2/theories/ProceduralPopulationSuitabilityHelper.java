@@ -14,7 +14,7 @@ import org.ether.society.model.Scenario;
  * coupling, and regional historical geography helper for {@link ProceduralPopulationGenerator}.
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * @version 1.0.0-beta.3
  * @see ProceduralPopulationGenerator
  */
 final class ProceduralPopulationSuitabilityHelper {
