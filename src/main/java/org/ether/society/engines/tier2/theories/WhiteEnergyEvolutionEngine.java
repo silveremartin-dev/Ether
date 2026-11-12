@@ -6,8 +6,11 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
+
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.ProceduralEnginePlugin;
+
 import org.ether.society.engines.tier2.historical.LeslieWhitePureEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,10 @@ import java.util.List;
  * @version 1.0.0-beta.2
  * @see LeslieWhitePureEngine
  */
-public class WhiteEnergyEvolutionEngine implements ProceduralEnginePlugin {
+public class WhiteEnergyEvolutionEngine extends AbstractSimulationEngine {
+    public WhiteEnergyEvolutionEngine() {
+        super("WhiteEnergyEvolutionEngine", "WhiteEnergyEvolutionEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(WhiteEnergyEvolutionEngine.class);
 

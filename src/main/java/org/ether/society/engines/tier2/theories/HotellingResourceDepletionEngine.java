@@ -6,8 +6,11 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
+
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.ProceduralEnginePlugin;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +33,10 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class HotellingResourceDepletionEngine implements ProceduralEnginePlugin {
+public class HotellingResourceDepletionEngine extends AbstractSimulationEngine {
+    public HotellingResourceDepletionEngine() {
+        super("HotellingResourceDepletionEngine", "HotellingResourceDepletionEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
     private static final Logger logger = LoggerFactory.getLogger(HotellingResourceDepletionEngine.class);
 
     public static final double DISCOUNT_RATE_R = 0.03; // Real interest rate (3% per year)

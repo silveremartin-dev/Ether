@@ -9,7 +9,7 @@ package org.ether.society.falsification.debates;
 import org.ether.society.analytics.HistoricalValidationKernel;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
-import org.ether.society.engines.ProceduralEngineRegistry;
+import org.ether.society.core.engine.SimulationEngineRegistry;
 import org.ether.society.engines.tier2.theories.AxialAgeMoralizingGodsEngine;
 import org.ether.society.engines.tier2.theories.BarfieldNomadicSteppeEmpireEngine;
 import org.ether.society.engines.tier2.theories.BoserupAgriculturalIntensificationEngine;
@@ -52,7 +52,7 @@ public class ScientificModelFalsificationAndValidationSuite {
 
     @BeforeEach
     public void setUp() {
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
     }
 
     // =========================================================================

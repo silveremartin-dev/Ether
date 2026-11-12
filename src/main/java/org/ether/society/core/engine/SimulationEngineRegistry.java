@@ -4,7 +4,7 @@
  */
 package org.ether.society.core.engine;
 
-import org.ether.society.engines.ProceduralEnginePlugin;
+
 import org.ether.society.engines.tier2.theories.*;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.model.Scenario;
@@ -151,38 +151,6 @@ public final class SimulationEngineRegistry {
                 Class<?> clazz = Class.forName(pkg + id);
                 if (SimulationEngineModule.class.isAssignableFrom(clazz)) {
                     return (SimulationEngineModule) clazz.getDeclaredConstructor().newInstance();
-                } else if (ProceduralEnginePlugin.class.isAssignableFrom(clazz)) {
-                    ProceduralEnginePlugin plugin = (ProceduralEnginePlugin) clazz.getDeclaredConstructor().newInstance();
-                    return new ProceduralPluginEngineAdapter(plugin);
-                } else {
-                    // Check for static processHybrid / process method
-                    java.lang.reflect.Method m = null;
-                    try {
-                        m = clazz.getMethod("processHybrid", List.class, double.class);
-                    } catch (NoSuchMethodException ignored) {
-                        try {
-                            m = clazz.getMethod("process", List.class, double.class);
-                        } catch (NoSuchMethodException ignored2) {}
-                    }
-                    if (m != null && java.lang.reflect.Modifier.isStatic(m.getModifiers())) {
-                        final java.lang.reflect.Method targetMethod = m;
-                        ProceduralEnginePlugin reflectivePlugin = new ProceduralEnginePlugin() {
-                            @Override
-                            public void process(List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-                                try {
-                                    targetMethod.invoke(null, cells, deltaYears);
-                                } catch (Throwable t) {
-                                    logger.error("Error executing reflective static engine '{}': {}", id, t.getMessage());
-                                }
-                            }
-
-                            @Override
-                            public String getName() {
-                                return id;
-                            }
-                        };
-                        return new ProceduralPluginEngineAdapter(reflectivePlugin);
-                    }
                 }
             } catch (ClassNotFoundException ignored) {
                 // Continue searching candidate packages
@@ -254,24 +222,20 @@ public final class SimulationEngineRegistry {
         register(new BoserupAgriculturalIntensificationEngine());
         register(new SpatialMetapopulationSEIREngine());
 
-        // --- Discover and register all SPI ProceduralEnginePlugin modules automatically ---
+        // --- Discover and register all SPI SimulationEngineModule instances automatically ---
         try {
-            ServiceLoader<ProceduralEnginePlugin> loader = ServiceLoader.load(ProceduralEnginePlugin.class);
+            ServiceLoader<SimulationEngineModule> loader = ServiceLoader.load(SimulationEngineModule.class);
             var it = loader.iterator();
             while (it.hasNext()) {
                 try {
-                    ProceduralEnginePlugin plugin = it.next();
-                    if (plugin instanceof SimulationEngineModule sem) {
-                        register(sem);
-                    } else {
-                        register(new ProceduralPluginEngineAdapter(plugin));
-                    }
+                    SimulationEngineModule module = it.next();
+                    register(module);
                 } catch (Throwable t) {
-                    logger.warn("Skipping unresolvable SPI plugin: {}", t.getMessage());
+                    logger.warn("Skipping unresolvable SPI module: {}", t.getMessage());
                 }
             }
         } catch (Throwable t) {
-            logger.warn("Could not discover SPI plugins into SimulationEngineRegistry: {}", t.getMessage());
+            logger.warn("Could not discover SPI engines into SimulationEngineRegistry: {}", t.getMessage());
         }
     }
 }

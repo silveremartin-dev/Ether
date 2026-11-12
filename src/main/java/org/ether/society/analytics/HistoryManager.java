@@ -230,26 +230,26 @@ public class HistoryManager {
         long totalPop = m.containsKey("population") ? Math.round(m.get("population")) : result.getTotalPopulation();
         double totalFood = result.getTotalFood();
         double totalWealth = m.getOrDefault("builtCapital", result.getBuiltCapitalTotal());
-        double avgLifespan = m.getOrDefault("lifeExpectancy", (double) result.getLifeExpectancy());
-        double globalGini = m.getOrDefault("gini", (double) result.getGini());
-        double avgTech = m.getOrDefault("avgTechLevel", result.getAvgTech());
-        double energyCaptured = m.getOrDefault("energyCaptured", result.getEnergyCapturedMw());
+        double avgLifespan = m.getOrDefault("lifeExpectancy", m.getOrDefault("lifeExpectancyAtBirth", (double) result.getLifeExpectancy()));
+        double globalGini = m.getOrDefault("gini", m.getOrDefault("giniIndex", (double) result.getGini()));
+        double avgTech = m.getOrDefault("avgTechLevel", m.getOrDefault("technology", result.getAvgTech()));
+        double energyCaptured = m.getOrDefault("energyCaptured", m.getOrDefault("primaryEnergy", result.getEnergyCapturedMw()));
         double kardashevScale = m.getOrDefault("kardashevScale", 0.0);
         double happinessIndex = m.getOrDefault("happiness", 0.0);
-        double conflictLevel = m.getOrDefault("conflict", 0.0);
-        double gdpTotal = m.getOrDefault("gdp", (double) result.getGdp());
+        double conflictLevel = m.getOrDefault("conflict", m.getOrDefault("sociopoliticalInstability", 0.0));
+        double gdpTotal = m.getOrDefault("gdp", m.getOrDefault("grossWorldProduct", (double) result.getGdp()));
         double divisionLabor = m.getOrDefault("divisionLabor", 0.0);
         double systemComplexity = m.getOrDefault("systemComplexity", 0.0);
         double collectiveMemory = m.getOrDefault("collectiveMemory", 0.0);
-        double carbonFootprint = m.getOrDefault("carbonFootprint", 0.0);
-        double collapseVulnerability = m.getOrDefault("collapseRisk", 0.0);
+        double carbonFootprint = m.getOrDefault("carbonFootprint", m.getOrDefault("co2Concentration", 0.0));
+        double collapseVulnerability = m.getOrDefault("collapseRisk", m.getOrDefault("collapseVulnerability", 0.0));
         double tps = engine.getCurrentTPS();
         double resourceDepletion = m.getOrDefault("resourceDepletion", 0.0);
         double naturalBiomass = m.getOrDefault("biomassNatural", result.getNaturalBiomass());
         double potableWater = m.getOrDefault("potableWater", result.getPotableWater());
         double fertilityRate = m.getOrDefault("fertilityRate", (double) result.getFertility());
         int cityStates = m.containsKey("cityStates") ? (int) Math.round(m.get("cityStates")) : 0;
-        double eliteOverproduction = m.getOrDefault("eliteOverproduction", 0.0);
+        double eliteOverproduction = m.getOrDefault("eliteOverproduction", m.getOrDefault("eliteOverproductionIndex", 0.0));
 
         history.addSnapshot(new HistorySnapshot(
                 year, month, totalPop, totalFood, totalWealth, avgLifespan, globalGini, avgTech,

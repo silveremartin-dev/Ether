@@ -8,7 +8,7 @@ import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.SimulationEngineModule;
 import org.ether.society.core.engine.SimulationEngineRegistry;
-import org.ether.society.engines.ProceduralEngineRegistry;
+
 import org.ether.society.engines.compiler.*;
 import org.ether.society.engines.tier1.*;
 import org.ether.society.engines.tier2.historical.*;
@@ -37,11 +37,10 @@ public final class TypeBEnginePassRunner {
     private static final Logger logger = LoggerFactory.getLogger(TypeBEnginePassRunner.class);
 
     /**
-     * Resets all mutable simulation states, caches, and plugin registries across all registered engines.
+     * Resets all mutable simulation states, caches, and registries across all registered engines.
      */
     public static void resetGlobalSimulationState() {
         SimulationEngineRegistry.getInstance().resetAll();
-        ProceduralEngineRegistry.clearPlugins();
     }
 
     /**
@@ -163,9 +162,6 @@ public final class TypeBEnginePassRunner {
         // --- WHOLE BUFFER / STENCIL PASSES (DIFFUSION, WATER GRID, ETC.) ---
         for (SimulationEngineModule engine : bufferEngines) {
             engine.tick(worldBuffer, dtYears, dtMonthly);
-            if (engine instanceof org.ether.society.core.engine.ProceduralPluginEngineAdapter adapter && cells != null) {
-                adapter.processCells(cells, dtYears);
-            }
         }
     }
 }

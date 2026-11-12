@@ -12,7 +12,7 @@ import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.h3.H3Service;
-import org.ether.society.engines.ProceduralEnginePlugin;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import java.util.Objects;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class SpatialMetapopulationSEIREngine extends AbstractSimulationEngine implements ProceduralEnginePlugin {
+public class SpatialMetapopulationSEIREngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(SpatialMetapopulationSEIREngine.class);
 
     public static final double SIGMA_LATENCY_RATE = 0.20; // Incubation rate (1/5 days)

@@ -7,7 +7,7 @@ package org.ether.society.scenarios;
 
 import org.ether.society.core.PreComputePhase;
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.ProceduralEngineRegistry;
+import org.ether.society.core.engine.SimulationEngineRegistry;
 import org.ether.society.engines.tier1.BiologicalDemographicsEngine;
 import org.ether.society.engines.tier1.SoilNutrientNPKEngine;
 import org.ether.society.engines.tier2.theories.CoGovernanceTradeEngine;
@@ -61,7 +61,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
      */
     @BeforeEach
     public void setUp() {
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
         h3Service = H3Service.getInstance();
         generator = new ProceduralGenerator();
     }

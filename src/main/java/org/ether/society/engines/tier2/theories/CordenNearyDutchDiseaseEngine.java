@@ -6,9 +6,12 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
+
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.ProceduralEnginePlugin;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +37,10 @@ import java.util.List;
  * @see <a href="https://doi.org/10.2307/2232670">Corden & Neary (1982), The Economic Journal</a>
  * @see HotellingResourceDepletionEngine
  */
-public class CordenNearyDutchDiseaseEngine implements ProceduralEnginePlugin {
+public class CordenNearyDutchDiseaseEngine extends AbstractSimulationEngine {
+    public CordenNearyDutchDiseaseEngine() {
+        super("CordenNearyDutchDiseaseEngine", "CordenNearyDutchDiseaseEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(CordenNearyDutchDiseaseEngine.class);
 

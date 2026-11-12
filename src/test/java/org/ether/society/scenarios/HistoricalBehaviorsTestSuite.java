@@ -6,6 +6,9 @@
  */
 package org.ether.society.scenarios;
 
+import org.ether.society.core.engine.SimulationEngineRegistry;
+import org.ether.society.core.engine.SimulationEngineModule;
+
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.engines.*;
@@ -57,7 +60,7 @@ public class HistoricalBehaviorsTestSuite {
         EdoJapanIsolationEngine.resetState();
         AmerindianEcosystemEngine.resetState();
 
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
         testCells = new ArrayList<>();
         H3Cell cell = new H3Cell(613503380827930701L, 35.0, 35.0);
         cell.setPopulation(10000);

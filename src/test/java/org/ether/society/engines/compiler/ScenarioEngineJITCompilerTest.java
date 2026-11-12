@@ -112,12 +112,17 @@ public class ScenarioEngineJITCompilerTest {
     }
 
     @Test
-    @DisplayName("ProceduralEnginePlugin interface contract default methods behave consistently")
-    public void testProceduralEnginePluginDefaultMethods() {
-        org.ether.society.engines.ProceduralEnginePlugin plugin = (cells, dt) -> {
-            for (H3Cell c : cells) {
-                if (c.getResourceWork() != null) {
-                    c.setResourceWork(c.getResourceWork() + dt * 10.0);
+    @DisplayName("SimulationEngineModule interface contract default methods behave consistently")
+    public void testSimulationEngineModuleDefaultMethods() {
+        org.ether.society.core.engine.AbstractSimulationEngine plugin = new org.ether.society.core.engine.AbstractSimulationEngine("TestDummy", "TestDummy", org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC) {
+            @Override
+            public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {}
+            @Override
+            public void process(List<H3Cell> cells, double dt) {
+                for (H3Cell c : cells) {
+                    if (c.getResourceWork() != null) {
+                        c.setResourceWork(c.getResourceWork() + dt * 10.0);
+                    }
                 }
             }
         };

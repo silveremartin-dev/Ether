@@ -6,11 +6,14 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
+
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.engine.SimulationEngineModule;
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.ProceduralEnginePlugin;
+
 import org.ether.society.model.Scenario;
 import org.ether.society.util.DeterministicPRNG;
 import org.slf4j.Logger;
@@ -41,7 +44,7 @@ import java.util.Random;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class StructuralDemographicBifurcationEngine implements ProceduralEnginePlugin, SimulationEngineModule {
+public class StructuralDemographicBifurcationEngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(StructuralDemographicBifurcationEngine.class);
 
     @Override
@@ -155,6 +158,7 @@ public class StructuralDemographicBifurcationEngine implements ProceduralEngineP
      * @param baseSeed the scenario base seed parameter (long)
      */
     public StructuralDemographicBifurcationEngine(double psiThreshold, double baseJumpIntensity, long baseSeed) {
+        super("StructuralDemographicBifurcationEngine", "StructuralDemographicBifurcationEngine", EngineTier.TIER_2_CLIODYNAMIC);
         this.psiThreshold = Math.max(1.0, psiThreshold);
         this.baseJumpIntensity = Math.max(1e-4, baseJumpIntensity);
         this.baseSeed = baseSeed;

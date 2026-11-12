@@ -5,6 +5,9 @@
  */
 package org.ether.society.scenarios;
 
+import org.ether.society.core.engine.SimulationEngineRegistry;
+import org.ether.society.core.engine.SimulationEngineModule;
+
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.engines.*;
@@ -60,7 +63,7 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
      *
      */
     public void setUp() {
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
         globalCells = new ArrayList<>();
 
         // 1. East Africa / Rift Valley (Sapiens Origin - Cell 0)
@@ -275,9 +278,9 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
      */
     public void testLongTermModelStabilityAndZeroCrashInvariant() {
         // Register empirical Type B engines
-        ProceduralEngineRegistry.registerPlugin("World3", World3HybridEngine::processPlugin);
-        ProceduralEngineRegistry.registerPlugin("NordhausDice", NordhausDiceHybridEngine::processPlugin);
-        ProceduralEngineRegistry.registerPlugin("SmilMaterial", SmilMaterialTransitionsPureEngine::processHybrid);
+        SimulationEngineRegistry.getInstance().register(new World3HybridEngine());
+        SimulationEngineRegistry.getInstance().register(new NordhausDiceHybridEngine());
+        SimulationEngineRegistry.getInstance().register(new SmilMaterialTransitionsPureEngine());
 
         Scenario scenario = new Scenario();
         scenario.setName("Long-Term Stability Battery");

@@ -6,6 +6,9 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.SimulationEngineRegistry;
+import org.ether.society.core.engine.SimulationEngineModule;
+
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.engines.*;
@@ -52,7 +55,7 @@ public class Tier2CliodynamicPluginsTestSuite {
      *
      */
     public void setUp() {
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
         sampleCells = new ArrayList<>();
 
         // Create sample cells with varied demographics and resources
@@ -294,11 +297,11 @@ public class Tier2CliodynamicPluginsTestSuite {
      *
      */
     public void testSpiDiscovery() {
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
         int loaded = ProceduralEngineSpiLoader.loadClasspathPlugins();
-        assertTrue(loaded >= 15, "SPI loader should discover all 16 registered ProceduralEnginePlugin implementations");
+        assertTrue(loaded >= 15, "SPI loader should discover all 16 registered SimulationEngineModule implementations");
         assertTrue(ProceduralEngineRegistry.getPluginCount() >= 15);
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
     }
 
     @Test
@@ -312,16 +315,16 @@ public class Tier2CliodynamicPluginsTestSuite {
      *
      */
     public void testRegistryIntegration() {
-        ProceduralEngineRegistry.clearPlugins();
-        ProceduralEngineRegistry.registerPlugin("WestBettencourt", new WestBettencourtAllometryEngine());
-        ProceduralEngineRegistry.registerPlugin("KummelAyres", new KummelAyresExergyEngine());
-        ProceduralEngineRegistry.registerPlugin("Hotelling", new HotellingResourceDepletionEngine());
+        SimulationEngineRegistry.getInstance().resetAll();
+        SimulationEngineRegistry.getInstance().register(new WestBettencourtAllometryEngine());
+        SimulationEngineRegistry.getInstance().register(new KummelAyresExergyEngine());
+        SimulationEngineRegistry.getInstance().register(new HotellingResourceDepletionEngine());
 
-        assertEquals(3, ProceduralEngineRegistry.getPluginCount());
-        ProceduralEngineRegistry.processPlugins(sampleCells, 1.0);
+        assertNotNull(SimulationEngineRegistry.getInstance().getEngine("WestBettencourtAllometryEngine"));
+        assertNotNull(SimulationEngineRegistry.getInstance().getEngine("KummelAyresExergyEngine"));
+        assertNotNull(SimulationEngineRegistry.getInstance().getEngine("HotellingResourceDepletionEngine"));
 
-        ProceduralEngineRegistry.clearPlugins();
-        assertEquals(0, ProceduralEngineRegistry.getPluginCount());
+        SimulationEngineRegistry.getInstance().resetAll();
     }
 }
 

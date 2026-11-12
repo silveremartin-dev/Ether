@@ -5,11 +5,14 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
+
 import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.engine.SimulationEngineModule;
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.ProceduralEnginePlugin;
+
 import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +46,10 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class PublicSanitationWaterGridEngine implements ProceduralEnginePlugin, SimulationEngineModule {
+public class PublicSanitationWaterGridEngine extends AbstractSimulationEngine {
+    public PublicSanitationWaterGridEngine() {
+        super("PublicSanitationWaterGridEngine", "PublicSanitationWaterGridEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(PublicSanitationWaterGridEngine.class);
 

@@ -4,10 +4,14 @@
  */
 package org.ether.society.engines.compiler;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
+
 import org.ether.society.i18n.I18n;
 import org.ether.society.network.EtherSecurityAuditLogger;
-import org.ether.society.engines.ProceduralEnginePlugin;
-import org.ether.society.engines.ProceduralEngineRegistry;
+
+import org.ether.society.core.engine.SimulationEngineModule;
+import org.ether.society.core.engine.SimulationEngineRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +31,7 @@ import java.util.regex.Pattern;
  * Dynamic Runtime Java Compiler & JIT Engine Loader for Ether.
  * Allows users to import external .java simulation engine files at runtime,
  * validates security constraints via static AST/source inspection,
- * compiles them safely, registers them into the ProceduralEngineRegistry,
+ * compiles them safely, registers them into the SimulationEngineRegistry,
  * and integrates them into the ScenarioEngineJITCompiler execution pipeline.
  *
  * @author Silvere Martin-Michiellot
@@ -74,7 +78,7 @@ public class DynamicEngineCompiler {
 
     private static URLClassLoader persistentClassLoader;
 
-    public record CompilationResult(boolean success, String engineName, String message, ProceduralEnginePlugin plugin) {}
+    public record CompilationResult(boolean success, String engineName, String message, SimulationEngineModule plugin) {}
 
     /**
      * Statically inspects the Java source code to ensure it satisfies security sandboxing rules.
@@ -163,18 +167,18 @@ public class DynamicEngineCompiler {
 
             Class<?> loadedClass = persistentClassLoader.loadClass(fullClassName);
             
-            if (!ProceduralEnginePlugin.class.isAssignableFrom(loadedClass)) {
+            if (!SimulationEngineModule.class.isAssignableFrom(loadedClass)) {
                 return new CompilationResult(false, simpleClassName, 
-                        I18n.getOrDefault("dynamic_engine.error.not_plugin", "Class must implement org.ether.society.engines.ProceduralEnginePlugin"), null);
+                        I18n.getOrDefault("dynamic_engine.error.not_plugin", "Class must implement org.ether.society.core.engine.SimulationEngineModule"), null);
             }
 
-            ProceduralEnginePlugin pluginInstance = (ProceduralEnginePlugin) loadedClass.getDeclaredConstructor().newInstance();
+            SimulationEngineModule pluginInstance = (SimulationEngineModule) loadedClass.getDeclaredConstructor().newInstance();
 
-            // 3. Register in ProceduralEngineRegistry
-            ProceduralEngineRegistry.registerPlugin(simpleClassName, pluginInstance);
+            // 3. Register in SimulationEngineRegistry
+            SimulationEngineRegistry.getInstance().register(pluginInstance);
 
             EtherSecurityAuditLogger.logAuditEvent("ENGINE_LOADED", "DynamicEngineCompiler", "Loaded custom engine: " + fullClassName);
-            logger.info("⚡ Custom Engine '{}' successfully verified, compiled & registered into ProceduralEngineRegistry!", fullClassName);
+            logger.info("⚡ Custom Engine '{}' successfully verified, compiled & registered into SimulationEngineRegistry!", fullClassName);
             return new CompilationResult(true, simpleClassName, 
                     I18n.getOrDefault("dynamic_engine.status.success", "Engine compiled and registered successfully!"), pluginInstance);
 
@@ -192,7 +196,10 @@ public class DynamicEngineCompiler {
         return String.format("""
             package org.ether.society.engines.compiler;
 
-            import org.ether.society.engines.ProceduralEnginePlugin;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
+
+            
             import org.ether.society.database.H3Cell;
             import java.util.List;
 
@@ -200,7 +207,7 @@ public class DynamicEngineCompiler {
              * Custom Simulation Engine for Ether Framework.
              * Implements the ProceduralEnginePlugin interface for deterministic cliodynamic simulation.
              */
-            public class %s implements ProceduralEnginePlugin {
+            public class %s extends AbstractSimulationEngine {
 
                 /**
                  * Process.

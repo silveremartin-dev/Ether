@@ -5,6 +5,9 @@
  */
 package org.ether.society.scenarios;
 
+import org.ether.society.core.engine.SimulationEngineRegistry;
+import org.ether.society.core.engine.SimulationEngineModule;
+
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.engines.*;
@@ -62,7 +65,7 @@ public class OutofAfricaGlobalDispersalSimulationTest {
      *
      */
     public void setUp() {
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
         h3Service = H3Service.getInstance();
         generator = new ProceduralGenerator();
         cellMap = new HashMap<>();

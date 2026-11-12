@@ -49,6 +49,34 @@ public interface SimulationEngineModule {
     boolean isEnabled(Scenario scenario);
 
     /**
+     * Executes legacy cell-list simulation step if supported.
+     *
+     * @param cells active cells list
+     * @param deltaYears time step duration in solar years
+     */
+    default void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
+        // Default no-op for pure DoD buffer engines
+    }
+
+    /**
+     * Returns a human-readable tooltip or documentation of the scientific equations implemented by this engine.
+     *
+     * @return equations tooltip documentation
+     */
+    default String getEquationsTooltip() {
+        return "";
+    }
+
+    /**
+     * Returns the thematic or functional subcategory of this engine.
+     *
+     * @return engine category
+     */
+    default String getCategory() {
+        return tier() != null ? tier().name() : "General";
+    }
+
+    /**
      * Executes one temporal simulation step over the data-oriented planetary buffers.
      *
      * @param buffer    data-oriented world memory buffer

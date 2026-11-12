@@ -11,7 +11,7 @@ import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.ProceduralEnginePlugin;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class RomanImperialCliodynamicEngine extends AbstractSimulationEngine implements ProceduralEnginePlugin {
+public class RomanImperialCliodynamicEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(RomanImperialCliodynamicEngine.class);
 

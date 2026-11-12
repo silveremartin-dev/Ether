@@ -5,6 +5,9 @@
  */
 package org.ether.society.scenarios;
 
+import org.ether.society.core.engine.SimulationEngineRegistry;
+import org.ether.society.core.engine.SimulationEngineModule;
+
 import org.ether.society.generation.*;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.engines.*;
@@ -53,7 +56,7 @@ public class ScenarioAutomatedTestSuite {
      *
      */
     public void setUp() {
-        ProceduralEngineRegistry.clearPlugins();
+        SimulationEngineRegistry.getInstance().resetAll();
         mockCells = new ArrayList<>();
 
         // 1. East Africa / Great Rift Valley (African origin)
@@ -215,11 +218,11 @@ public class ScenarioAutomatedTestSuite {
      */
     public void testModelEngineInvariantsAndTypeBPlugins() {
         // Register representative Type B plugins
-        ProceduralEngineRegistry.registerPlugin("FrontierAsabiyyah", FrontierAsabiyyahEngine::processHybrid);
-        ProceduralEngineRegistry.registerPlugin("MonasticBuffer", MonasticDemographicBufferEngine::processHybrid);
-        ProceduralEngineRegistry.registerPlugin("Lenski", LenskiPureEngine::processHybrid);
-        ProceduralEngineRegistry.registerPlugin("World3", World3HybridEngine::processPlugin);
-        ProceduralEngineRegistry.registerPlugin("NordhausDICE", NordhausDiceHybridEngine::processPlugin);
+        SimulationEngineRegistry.getInstance().register(new FrontierAsabiyyahEngine());
+        SimulationEngineRegistry.getInstance().register(new MonasticDemographicBufferEngine());
+        SimulationEngineRegistry.getInstance().register(new LenskiPureEngine());
+        SimulationEngineRegistry.getInstance().register(new World3HybridEngine());
+        SimulationEngineRegistry.getInstance().register(new NordhausDiceHybridEngine());
 
         Scenario scenario = new Scenario();
         scenario.setInitialHumanCount(100_000L);
