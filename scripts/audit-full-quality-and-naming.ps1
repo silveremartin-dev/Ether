@@ -17,20 +17,6 @@ $legacyCalculators = @()
 $legacyUtils = @()
 $proceduralReferences = @()
 
-$canonicalSuffixes = @(
-    "Engine", "Coordinator", "Factory", "Registry", "Repository", 
-    "Executor", "Helper", "Formatter", "Service", "Buffer", "Config", 
-    "Exception", "Event", "Listener", "Task", "State", "Context", "Model",
-    "Section", "Pane", "View", "Renderer", "Action", "Node", "Record",
-    "Constants", "Runner", "Builder", "Codec", "Bridge", "Exporter", 
-    "Importer", "Generator", "Snapshot", "Aggregator", "Projection", "Vector",
-    "Interpolator", "Filter", "Result", "Entry", "Definition", "Descriptor",
-    "Layer", "Data", "Profile", "Type", "Category", "Level", "Status", "Metric",
-    "Matrix", "Sampler", "Cluster", "Client", "Server", "Protocol", "Message",
-    "Payload", "Signature", "Key", "Token", "Credentials", "Policy", "Rule",
-    "Schema", "Table", "Entity", "Id", "Ref", "Handle", "Iterator", "Cursor"
-)
-
 foreach ($f in $javaFiles) {
     $base = $f.BaseName
     if ($base -match "Manager$") { $legacyManagers += $f.FullName }
@@ -39,29 +25,17 @@ foreach ($f in $javaFiles) {
     if ($base -match "Calculator$") { $legacyCalculators += $f.FullName }
     if ($base -match "Util$|Utils$") { $legacyUtils += $f.FullName }
     
-    # Check for legacy procedural word
     if ($base -match "ProceduralEngine") {
         $proceduralReferences += $f.FullName
     }
 }
 
 Write-Host "Legacy *Manager classes:     $($legacyManagers.Count)"
-foreach ($m in $legacyManagers) { Write-Host "  -> $m" }
-
 Write-Host "Legacy *Catalog classes:     $($legacyCatalogs.Count)"
-foreach ($c in $legacyCatalogs) { Write-Host "  -> $c" }
-
 Write-Host "Legacy *Evaluator classes:   $($legacyEvaluators.Count)"
-foreach ($e in $legacyEvaluators) { Write-Host "  -> $e" }
-
 Write-Host "Legacy *Calculator classes:  $($legacyCalculators.Count)"
-foreach ($ca in $legacyCalculators) { Write-Host "  -> $ca" }
-
 Write-Host "Legacy *Util/*Utils classes: $($legacyUtils.Count)"
-foreach ($u in $legacyUtils) { Write-Host "  -> $u" }
-
 Write-Host "ProceduralEngine remnants:   $($proceduralReferences.Count)"
-foreach ($p in $proceduralReferences) { Write-Host "  -> $p" }
 
 # 2. FILE SIZE LIMIT (<= 500 lines)
 Write-Host "`n--- [2. Line Count Limit (<= 500 Lines)] ---"
@@ -82,35 +56,37 @@ Write-Host "`n--- [3. Javadoc & Documentation Coverage] ---"
 $missingClassJavadoc = @()
 $frenchComments = @()
 
+$frenchWords = @('\bpour\b', '\bavec\b', '\bdans\b', '\bcette\b', '\bclasse\b', '\bmoteur\b', '\bcalcul\b', '\binitialisation\b', '\bdonnées\b', '\bmodèle\b', '\brègle\b', '\bétape\b', '\brésultat\b', '\bvaleur\b')
+$frenchPattern = '(?i)//.*?(?:' + ($frenchWords -join '|') + ')'
+
 foreach ($f in $javaFiles) {
+    if ($f.Name -eq "package-info.java") { continue }
     $content = Get-Content $f.FullName -Raw
     
-    # Check if class declaration has preceding javadoc /** ... */
-    if ($content -notmatch '(?s)/\*\*.*?\*/\s*(?:public|protected|private|abstract|final|sealed)?\s*(?:class|interface|record|enum)\s+' + [regex]::Escape($f.BaseName)) {
-        $missingClassJavadoc += $f.FullName
+    # Accurate detection: find class/interface/record/enum declaration and check preceding comments including any annotations (@Entity, @Table, etc.)
+    $declPattern = '(?m)^((?:@\w+(?:\([^\)]*\))?\s*)*(?:(?:public|protected|private|abstract|final|sealed|non-sealed|static)\s+)*(?:class|interface|record|enum)\s+' + [regex]::Escape($f.BaseName) + '\b)'
+    if ($content -match $declPattern) {
+        $match = [regex]::Match($content, $declPattern)
+        $before = $content.Substring(0, $match.Index).TrimEnd()
+        if (-not $before.EndsWith('*/')) {
+            $missingClassJavadoc += $f.FullName
+        }
     }
     
-    # Check for French words in comments/code
-    # French words common in comments
-    if ($content -match '(?i)//.*?(?:pour|avec|dans|cette|classe|moteur|calcul|initialisation|données|modèle|règle|étape|résultat|valeur)') {
+    # Check for actual French keywords in single line comments
+    if ($content -match $frenchPattern) {
         $frenchComments += $f.FullName
     }
 }
 
 Write-Host "Classes missing class-level Javadoc: $($missingClassJavadoc.Count)"
-for ($i = 0; $i -lt [Math]::Min(10, $missingClassJavadoc.Count); $i++) {
-    Write-Host "  -> $($missingClassJavadoc[$i])"
-}
-if ($missingClassJavadoc.Count -gt 10) {
-    Write-Host "  ... and $($missingClassJavadoc.Count - 10) more."
+foreach ($m in $missingClassJavadoc) {
+    Write-Host "  -> $m"
 }
 
 Write-Host "`nFiles with French comments/text detected: $($frenchComments.Count)"
-for ($i = 0; $i -lt [Math]::Min(10, $frenchComments.Count); $i++) {
-    Write-Host "  -> $($frenchComments[$i])"
-}
-if ($frenchComments.Count -gt 10) {
-    Write-Host "  ... and $($frenchComments.Count - 10) more."
+foreach ($fc in $frenchComments) {
+    Write-Host "  -> $fc"
 }
 
 # 4. ZERO SILENT EXCEPTIONS
@@ -139,9 +115,6 @@ foreach ($f in $javaFiles) {
     }
 }
 Write-Host "Unseeded Random or Math.random() in simulation/engines/core: $($unseededRandomInEngines.Count)"
-foreach ($r in $unseededRandomInEngines) {
-    Write-Host "  -> $r"
-}
 
 Write-Host "`n=========================================================="
 Write-Host "   AUDIT SCAN COMPLETE"
